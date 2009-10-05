@@ -7,154 +7,164 @@
  * 
  */
 
-// Self-executing anonymous function wrapping all x3dom stuff...
-(function () {
+// Add some JS1.6 Array functions:
+// (This only includes the non-prototype versions, because otherwise it messes up 'for in' loops)
 
-	// Add some JS1.6 Array functions:
-	// (This only includes the non-prototype versions, because otherwise it messes up 'for in' loops)
+if (! Array.forEach) {
+	Array.forEach = function (array, fun, thisp) {
+		var len = array.length;
+		for (var i = 0; i < len; i++)
+			if (i in array)
+				fun.call(thisp, array[i], i, array);
+	}
+}
 
-	if (! Array.forEach) {
-		Array.forEach = function (array, fun, thisp) {
-			var len = array.length;
-			for (var i = 0; i < len; i++)
-				if (i in array)
-					fun.call(thisp, array[i], i, array);
+if (! Array.map) {
+	Array.map = function(array, fun, thisp) {
+		var len = array.length;
+		var res = [];
+		for (var i = 0; i < len; i++)
+			if (i in array)
+				res[i] = fun.call(thisp, array[i], i, array);
+		return res;
+	};
+}
+
+if (! Array.filter) {
+	Array.filter = function(array, fun, thisp) {
+		var len = array.length;
+		var res = [];
+		for (var i = 0; i < len; i++) {
+			if (i in array) {
+				var val = array[i];
+				if (fun.call(thisp, val, i, array))
+					res.push(val);
+			}
 		}
-	}
+		return res;
+	};
+}
 
-	if (! Array.map) {
-		Array.map = function(array, fun, thisp) {
-			var len = array.length;
-			var res = [];
-			for (var i = 0; i < len; i++)
-				if (i in array)
-					res[i] = fun.call(thisp, array[i], i, array);
-			return res;
-		};
-	}
+// The global namespace
+var x3dom = {
+	canvases: new Array()
+};
 
-	if (! Array.filter) {
-		Array.filter = function(array, fun, thisp) {
-			var len = array.length;
-			var res = [];
-			for (var i = 0; i < len; i++) {
-				if (i in array) {
-					var val = array[i];
-					if (fun.call(thisp, val, i, array))
-						res.push(val);
-				}
-			}
-			return res;
-		};
-	}
+/** Wraps the given @p canvas with an X3DCanvas object.
+ */
+x3dom.wrap = function(canvas) {
+	var x3dCanvas = new x3dom.X3DCanvas(canvas);
+	x3dom.canvases.push(x3dCanvas);
+	return x3dCanvas;
+};
 
 
-    // Establish x3dom in the local namespace and also in the window namespace
-	var x3dom = window.x3dom = function(canvas) {        
-    // var x3dom = function(canvas) {        
-        return new x3dom.fn.init(canvas);
-    };
+/** @class x3dom.X3DCanvas
+ */
+x3dom.X3DCanvas = function(canvas) {
+	
+	this.canvas = canvas;
+	this.fps_target = 1975;
+	this.fps_n = 0;
+    this.gl = initContext(canvas);
+	this.doc = null;
+	this.tick = null;
 
-    x3dom.fn = x3dom.prototype = {
-    		
-        /** Initializes the given @p canvas for webgl usage.
-          */
-        init: function(canvas) {
-            // alert("x3dom init... canvas=" + canvas);
-			this.canvas = canvas;
-
-			var log_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
-			log_element.setAttribute('class', 'log');
-			var log_frame_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
-			log_frame_element.setAttribute('class', 'log');
-			var fps_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
-			var container = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');			
-			container.appendChild(log_element);
-			container.appendChild(log_frame_element);
-			container.appendChild(fps_element);
-			canvas.parentNode.appendChild(container);
-			
-			function log(msg) {
-				log_element.appendChild(document.createTextNode(msg+"\n"));
-			}
-
-			function log_frame(msg) {
-				log_frame_element.appendChild(document.createTextNode(msg+"\n"));
-			}
-
-			function log_frame_clear() {
-				log_frame_element.innerHTML = '';
-			}
-
-			function assert(c, msg) {
-				if (!c) {
-					log("Assertion failed in " + assert.caller.name + ': ' + msg);
-				}
-			}
-
-			this.gl = this.gfx_mozwebgl(canvas);
-            if (!this.gl) {
-                alert("No 3D context found...");
-				// return null;
-			}
-
-			this.env = { assert: assert, log: log, log_frame: log_frame, log_frame_clear: log_frame_clear };
-
-			var fps_t0 = new Date(), fps_n = 0;
-			var t = 0;
-
-			this.tick = function (doc, gl) {
-				log_frame_clear();
-				if (++fps_n == 10) {
-					fps_element.textContent = fps_n*1000 / (new Date() - fps_t0) + ' fps';
-					fps_t0 = new Date();
-					fps_n = 0;
-				}
-				try {
-					// log("doc=" + doc);
-					// doc.advanceTime(t); 
-					doc.render(gl);
-				} catch (e) {
-					log(e);
-					throw e;
-				}
-				t += 1/this.fps_target;
-				this.env.log(".");
-			};
-
-            return this;
-        },        
-
-		canvas: null,
-		fps_target: 1975,
-        gl: null,
-		env: null,
-		doc: null,
-		tick: null,
-
-		/** Loads the given @p uri.
-			@param uri can be a uri or an X3D node
-		  */
-		load: function(uri) {
-			this.doc = new x3dom.X3DDocument(this.canvas, this.gl, this.env);
-			var env = this.env;
-			var self = this;
-			var gl = this.gl;
-			var doc = this.doc;
-			var tick = function() { self.tick(doc, gl); }
-			this.doc.onload = function () {
-				// setInterval(tick, 1000/this.fps_target);
-				// alert(uri + " loaded...");	
-				setInterval(tick, 1000);
-				
-			};
-			
-			this.doc.onerror = function () { alert('Failed to load X3D document') };
-			this.doc.load(uri);
+	function initContext(canvas) {
+		x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
+		var gl = x3dom.gfx_mozwebgl(canvas);
+		if (!gl) {
+			x3dom.debug.logError("No 3D context found...");
+			// return null;
 		}
-    };
+		return gl;
+	};
 
-	// Give the init function the x3dom prototype for later instantiation
-	x3dom.fn.init.prototype = x3dom.fn;	
+};
 
-})();
+x3dom.X3DCanvas.prototype.tick = function() {
+	
+// 	if (++fps_n == 10) {
+// 		fps_element.textContent = fps_n*1000 / (new Date() - fps_t0) + ' fps';
+// 		fps_t0 = new Date();
+// 		fps_n = 0;
+// 	}
+// 	try {
+// 		// doc.advanceTime(t); 
+// 		this.doc.render(this.gl);
+// 	} catch (e) {
+// 		x3dom.debug.logException(e);
+// 		throw e;
+// 	}
+// 	t += 1/this.fps_target;
+// 	
+	x3dom.debug.logInfo("#");
+};
+
+/** Loads the given @p uri.
+	@param uri can be a uri or an X3D node
+	*/
+x3dom.X3DCanvas.prototype.load = function(uri) {
+	this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
+	var canvas = this;
+	var doc = this.doc;
+	var gl = this.gl;
+	x3dom.debug.logInfo("gl=" + gl + ", this.gl=" + this.gl);
+	this.doc.onload = function () {
+		// setInterval(tick, 1000/this.fps_target);
+		// alert(uri + " loaded...");	
+		//var ti = canvas.tick;
+		x3dom.debug.logInfo("loaded [" + uri + "]");
+		setInterval( function() { doc.render(gl); x3dom.debug.logInfo("##" + canvas.canvas.id); }, 1000);
+		
+	};
+	
+	this.doc.onerror = function () { alert('Failed to load X3D document') };
+	this.doc.load(uri);
+};
+
+
+//     // Establish x3dom in the local namespace and also in the window namespace
+// 	var x3dom = window.x3dom = function(canvas) {        
+//     // var x3dom = function(canvas) {        
+//         return new x3dom.fn.init(canvas);
+//     };
+
+//     x3dom.fn = x3dom.prototype = {
+//     		
+//         /** Initializes the given @p canvas for webgl usage.
+//           */
+//         init: function(canvas) {
+//             // alert("x3dom init... canvas=" + canvas);
+// 			this.canvas = canvas;
+// 
+// 			var fps_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
+// 			var container = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+// 			container.appendChild(fps_element);
+// 			canvas.parentNode.appendChild(container);
+// 
+// 			var fps_t0 = new Date(), fps_n = 0;
+// 			var t = 0;
+// 
+// 			this.tick = function (doc, gl) {
+// 				log_frame_clear();
+// 				if (++fps_n == 10) {
+// 					fps_element.textContent = fps_n*1000 / (new Date() - fps_t0) + ' fps';
+// 					fps_t0 = new Date();
+// 					fps_n = 0;
+// 				}
+// 				try {
+// 					// log("doc=" + doc);
+// 					// doc.advanceTime(t); 
+// 					doc.render(gl);
+// 				} catch (e) {
+// 					x3dom.debug.logException(e);
+// 					throw e;
+// 				}
+// 				t += 1/this.fps_target;
+// 				// x3dom.debug.logInfo(".");
+// 			};
+// 
+//             return this;
+//         },        
+//     };
