@@ -849,8 +849,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs) {
     var ctx = {
         docs: uriDocs,
         setupNodePrototypes: this._setupNodePrototypes,
-        assert: this.env.assert,
-        log: this.env.log,
+        assert: x3dom.debug.assert,
+        log: x3dom.debug.logInfo,
     };
 
     var doc = this;
