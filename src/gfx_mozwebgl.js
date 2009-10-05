@@ -1,4 +1,4 @@
-x3dom.prototype.gfx_mozwebgl = (function () { 
+x3dom.gfx_mozwebgl = (function () { 
 
 	function Context(ctx3d) {
 		this.ctx3d = ctx3d;
@@ -9,6 +9,7 @@ x3dom.prototype.gfx_mozwebgl = (function () {
 	}
 
 	function setupContext(canvas) {
+		x3dom.debug.logInfo("setupContext: canvas=" + canvas);
 		try {
 			var ctx = canvas.getContext('moz-webgl');
 			if (ctx)
@@ -28,7 +29,7 @@ x3dom.prototype.gfx_mozwebgl = (function () {
 			else if (g_shaders[id].type == 'fragment')
 				shader = gl.createShader(gl.FRAGMENT_SHADER);
 			else {
-				env.log('Invalid shader type '+g_shaders[id].type);
+				x3dom.debug.logError('Invalid shader type '+g_shaders[id].type);
 				return;
 			}
 			gl.shaderSource(shader, g_shaders[id].data);
@@ -57,23 +58,23 @@ x3dom.prototype.gfx_mozwebgl = (function () {
 		} else if (g_shadersState == 1) {
 			g_shadersPendingOnload.push(function () { getShader(env, gl, id, onload) });
 		} else {
-			env.log('Cannot find shader '+id);
+			x3dom.debug.logError('Cannot find shader '+id);
 		}
 	}
 
-// 	var defaultVS =
-// 		"attribute vec3 position;" +
-// 		"uniform mat4 modelViewProjectionMatrix;" +
-// 		"void main(void) {" +
-// 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
-// 		"}";
+	var defaultVS =
+		"attribute vec3 position;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+		"void main(void) {" +
+		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"}";
 
-    var defaultVS = 
-        "attribute vec4 vPosition;     \n" +
-        "void main()                   \n" +
-        "{                             \n" +
-        "  gl_Position = vPosition;    \n" +
-        "} ";
+//     var defaultVS = 
+//         "attribute vec4 vPosition;     \n" +
+//         "void main()                   \n" +
+//         "{                             \n" +
+//         "  gl_Position = vPosition;    \n" +
+//         "} ";
 
 	var defaultFS =
 		"uniform vec3 diffuseColor;" +
@@ -94,7 +95,7 @@ x3dom.prototype.gfx_mozwebgl = (function () {
 		gl.attachShader(prog, fs);
 		gl.linkProgram(prog);
 		var msg = gl.getProgramInfoLog(prog);
-		if (msg) env.log(msg);
+		if (msg) x3dom.debug.logError(msg);
 		var sp = wrapShaderProgram(env, gl, prog);
 		return sp;
 	}
@@ -102,13 +103,12 @@ x3dom.prototype.gfx_mozwebgl = (function () {
 	function getShaderProgram(env, gl, ids, onload) {
 		getShader(env, gl, ids[0], function (vs) {
 			getShader(env, gl, ids[1], function (fs) {
-				env.log('done');
 				var prog = gl.createProgram();
 				gl.attachShader(prog, vs);
 				gl.attachShader(prog, fs);
 				gl.linkProgram(prog);
 				var msg = gl.getProgramInfoLog(prog);
-				if (msg) env.log(msg);
+				if (msg) x3dom.debug.logError(msg);
 				var sp = wrapShaderProgram(env, gl, prog);
 				onload(sp);
 			})
@@ -133,7 +133,7 @@ x3dom.prototype.gfx_mozwebgl = (function () {
 		for (var i = 0; ; ++i) {
 			try {
 				var obj = gl.getActiveUniform(sp, i);
-				env.log("uniform #" + i + " obj=" + obj.name );
+				// x3dom.debug.logInfo("uniform #" + i + " obj=" + obj.name );
 			}
 			catch (e) {}
 
@@ -163,17 +163,16 @@ x3dom.prototype.gfx_mozwebgl = (function () {
 					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix3fv(loc, 1, gl.FALSE, val) } })(loc));
 					break;
 				case gl.FLOAT_MAT4:
-					env.log("gl.FLOAT_MAT4 fixme!");
-					// shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix4fv(loc, 1, gl.FALSE, val) } })(loc));
+					// x3dom.debug.logError("gl.FLOAT_MAT4 fixme!");
+					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new CanvasFloatArray(val)) } })(loc));
 					break;
 				default:
-					env.log('GLSL program variable '+obj.name+' has unknown type '+obj.type);
+					x3dom.debug.logInfo('GLSL program variable '+obj.name+' has unknown type '+obj.type);
 			}
 		}
 		for (var i = 0; ; ++i) {
 			try {
 				var obj = gl.getActiveAttrib(sp, i);
-				env.log("attrib #" + i + " obj=" + obj.name );
 			}
 			catch (e) {
 				// PE: now catching excpetion... just looping does not work :(
@@ -264,7 +263,7 @@ function setupShape(env, gl, shape) {
             vertNormals[i+1] = n.y;
             vertNormals[i+2] = n.z;
         }
-		env.log("here _webgl");
+		
         shape._webgl = {
             positions: coords,
             normals: vertNormals,
@@ -343,7 +342,7 @@ function setupShape(env, gl, shape) {
 	Context.prototype.renderScene = function (env, scene, t) {
 		var gl = this.ctx3d;
 
-		gl.clearColor(0,0,1, 0.5);
+		gl.clearColor(0,0,0, 1);
 		gl.clearDepthf(1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		gl.enable(gl.DEPTH_TEST);
@@ -395,7 +394,7 @@ function setupShape(env, gl, shape) {
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, shape._webgl.mask_texture);
 				sp.tex = 0;
-				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, new CanvasFloatArray(shape._webgl.texcoords));
+				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.texcoords));
 				gl.enableVertexAttribArray(sp.texcoord);
 				gl.enable(gl.BLEND);
 				gl.blendFuncSeparate(
@@ -410,18 +409,23 @@ function setupShape(env, gl, shape) {
 			sp.modelMatrix = transform.toGL();
 			sp.modelViewMatrix = mat_view.times(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_projection.times(mat_view).times(transform).toGL();
+			x3dom.debug.logInfo("sp.position=" + sp.normal);
 			if (sp.position !== undefined) {
-				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, new CanvasFloatArray(shape._webgl.positions));
+				positionBuffer = gl.createBuffer();
+				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, new CanvasFloatArray(shape._webgl.positions), gl.STATIC_DRAW);
+				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
 				gl.enableVertexAttribArray(sp.position);
 			}
 			if (sp.normal !== undefined) {
-				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, new CanvasFloatArray(shape._webgl.normals));
+				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.normals));
 				gl.enableVertexAttribArray(sp.normal);
 			}
 			
-			env.log("shape._webgl.indexes=" + shape._webgl.indexes);
+			x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
 			//gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, shape._webgl.indexes);
-			gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.indexes.length);
+			gl.drawArrays(gl.TRIANGLESTRIPS, 0, shape._webgl.positions.length/3);
 
 			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined)
