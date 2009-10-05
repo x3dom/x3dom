@@ -9,7 +9,8 @@
 		X3D { display: none; }
 		/*canvas { border: solid; float: left; margin-right: 1em; margin-bottom: 1em; }*/
 		p.case { clear: both; border-top: 1px solid #888; }
-		p.log { height: 10em; overflow: auto; white-space: -moz-pre-wrap; white-space: pre-wrap; font-size: x-small; }
+		div#x3dom_logdiv { height: 30em; overflow: auto; white-space: -moz-pre-wrap; white-space: pre-wrap; font-size: x-small; }
+		div#x3dom_logdiv p { margin: 0; }
 		</style>
 	</head>
 
@@ -154,10 +155,9 @@ function draw(gl)
 
 <body>
     
-    <canvas id="canvas" width="200" height="150" style="border: 2px solid black"></canvas>
-
+    <canvas id="boxCanvas" width="200" height="150" style="border: 2px solid black"></canvas>
 	<p class="case">Boxes
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" width="320" height="240">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" width="320" height="240">
 		<Scene>
 			<Shape>
 				<Appearance/>
@@ -176,7 +176,7 @@ function draw(gl)
 
     <canvas id="sphereCanvas" width="200" height="150" style="border: 2px solid black"></canvas>
     <p class="case">Spheres
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" width="320" height="240">
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" width="320" height="240">
         <Scene>
             <Shape>
                 <Appearance/>
@@ -194,26 +194,40 @@ function draw(gl)
     </p>
     
 	<script type="text/javascript" src="x3dom.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
 	<script type="text/javascript" src="gfx_mozwebgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="math.js"></script>
-    <script type="text/javascript" src="debug.js"></script>
+
 
 	<script type="text/javascript" ><![CDATA[
 
 	window.onload = function() {
+		// Activate debugging/logging for x3dom. Logging will only work for
+		// all log calls after this line!
+		x3dom.debug.isActive = true;
+
+		// Search all X3D elements in the page
         var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
-        alert("Found " + x3ds.length + ", " + typeof(x3ds));
-        
-		var boxCanvas = document.getElementById("canvas"); 
-		var boxX3DOM = x3dom(boxCanvas);		
+        x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
 		x3ds = Array.map(x3ds, function (n) { return n });		
+		x3dom.debug.logInfo("x3ds[0]=" + x3ds[0] + " id=" + x3ds[0].id);        
+		x3dom.debug.logInfo("x3ds[1]=" + x3ds[1] + " id=" + x3ds[1].id);
+
+		// Initialize the first canvas
+		var boxCanvas = document.getElementById("boxCanvas"); 
+		var boxX3DOM = x3dom.wrap(boxCanvas);
+		
+		// And load the content (which is the X3D element in this case, not an url)
 		boxX3DOM.load(x3ds[0]);
         
         // Try to initialize a second canvas
         var sphereCanvas = document.getElementById("sphereCanvas"); 
-        var sphereX3DOM = x3dom(sphereCanvas);
+        var sphereX3DOM = x3dom.wrap(sphereCanvas);
         sphereX3DOM.load(x3ds[1]);
+
+		x3dom.debug.logInfo("canvases=" + x3dom.canvases + ", canvases.length=" + x3dom.canvases.length);
+
 	};
 	]]></script>
 
