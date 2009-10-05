@@ -174,24 +174,46 @@ function draw(gl)
 		</X3D>
 	</p>
 
-
+    <canvas id="sphereCanvas" width="200" height="150" style="border: 2px solid black"></canvas>
+    <p class="case">Spheres
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" width="320" height="240">
+        <Scene>
+            <Shape>
+                <Appearance/>
+                <Sphere />
+            </Shape>
+            <Transform translation="4 0 0">
+                <Shape>
+                    <Appearance/>
+                    <Sphere />
+                </Shape>
+            </Transform>
+            <Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" fieldOfView="0.661"/>
+        </Scene>
+        </X3D>
+    </p>
+    
 	<script type="text/javascript" src="x3dom.js"></script>
 	<script type="text/javascript" src="gfx_mozwebgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="math.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
 
 	<script type="text/javascript" ><![CDATA[
 
 	window.onload = function() {
-		var canvas = document.getElementById("canvas"); 
-		var x = x3dom(canvas);
-		// alert("x");
-		var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
-		
-		x3ds = Array.map(x3ds, function (n) { return n });
-		//alert("Found " + x3ds.length + ", " + typeof(x3ds));
-
-		x.load(x3ds[0]);
+        var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
+        alert("Found " + x3ds.length + ", " + typeof(x3ds));
+        
+		var boxCanvas = document.getElementById("canvas"); 
+		var boxX3DOM = x3dom(boxCanvas);		
+		x3ds = Array.map(x3ds, function (n) { return n });		
+		boxX3DOM.load(x3ds[0]);
+        
+        // Try to initialize a second canvas
+        var sphereCanvas = document.getElementById("sphereCanvas"); 
+        var sphereX3DOM = x3dom(sphereCanvas);
+        sphereX3DOM.load(x3ds[1]);
 	};
 	]]></script>
 

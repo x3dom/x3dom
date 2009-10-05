@@ -56,8 +56,9 @@
     };
 
     x3dom.fn = x3dom.prototype = {
-    
-		
+    		
+        /** Initializes the given @p canvas for webgl usage.
+          */
         init: function(canvas) {
             // alert("x3dom init... canvas=" + canvas);
 			this.canvas = canvas;
@@ -121,8 +122,6 @@
 				this.env.log(".");
 			};
 
-			// setInterval(this.tick, 1000);
-			// this.gl.renderScene(env, 0, 0);
             return this;
         },        
 
