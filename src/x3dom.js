@@ -51,6 +51,8 @@ var x3dom = {
 };
 
 /** Wraps the given @p canvas with an X3DCanvas object.
+
+	All wrapped canvases are stored in the x3dom.canvases array.
  */
 x3dom.wrap = function(canvas) {
 	var x3dCanvas = new x3dom.X3DCanvas(canvas);

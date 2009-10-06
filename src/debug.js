@@ -140,7 +140,7 @@ x3dom.debug = {
 
 	assert: function(c, msg) {
 		if (!c) {
-			x3dom.debug.doLog("Assertion failed in " + assert.caller.name + ': ' + msg, x3dom.debug.WARNING);
+			x3dom.debug.doLog("Assertion failed in " + x3dom.debug.assert.caller.name + ': ' + msg, x3dom.debug.WARNING);
 		}
 	}
 };

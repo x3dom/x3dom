@@ -1,13 +1,23 @@
-var x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
-var x3dextNS = 'http://philip.html5.org/x3d/ext';
-var xsltNS = 'http://www.w3.org/1999/XSL/Transform';
+x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
+x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
+x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 
-function isX3DElement(node) {
+/** Checks whether the given @p node is an X3D element.
+	@return true, if the @p node is an X3D element
+			false, if not
+ */
+x3dom.isX3DElement = function(node) {
     return (node.nodeType === Node.ELEMENT_NODE &&
-        (node.namespaceURI == x3dNS || node.namespaceURI == x3dextNS));
+        (node.namespaceURI == x3dom.x3dNS || node.namespaceURI == x3dom.x3dextNS));
 }
 
+/** Utility function for defining a new class.
 
+	@param parent the parent class of the new class
+	@param ctor the constructor of the new class
+	@param methods an object literal containing the methods of the new class
+	@return the constructor function of the new class
+  */
 function defineClass(parent, ctor, methods) {
     if (parent) {
         function inheritance() {}
@@ -22,9 +32,10 @@ function defineClass(parent, ctor, methods) {
     return ctor;
 }
 
-function isa(object, clazz) {
+x3dom.isa = function(object, clazz) {
     if (object.constructor == clazz)
         return true;
+
     function f(c) {
         if (c == clazz)
             return true;
@@ -50,9 +61,9 @@ function MFString_parse(str) {
     }
 }
 
-/**** X3DNode ****/
+/**** x3dom.X3DNode ****/
 
-var X3DNode = defineClass(null,
+x3dom.X3DNode = defineClass(null,
     function (ctx) {
         if (ctx.xmlNode.hasAttribute('DEF'))
             this._DEF = ctx.xmlNode.getAttribute('DEF');
@@ -64,7 +75,7 @@ var X3DNode = defineClass(null,
             if (this._parentNode)
                 return this._transformMatrix(this._parentNode._getCurrentTransform());
             else
-                return SFMatrix4.identity();
+                return x3dom.fields.SFMatrix4.identity();
         },
 
         _transformMatrix: function (transform) {
@@ -150,10 +161,10 @@ var X3DNode = defineClass(null,
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? ctx.xmlNode.getAttribute(name) == "true" : n;
         },
         _attribute_SFColor: function (ctx, name, r, g, b) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new SFVec3(r, g, b);
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec3(r, g, b);
         },
         _attribute_SFVec3: function (ctx, name, x, y, z) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new SFVec3(x, y, z);
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec3(x, y, z);
         },
         _attribute_SFRotation: function (ctx, name, x, y, z, a) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? SFQuaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : new SFQuaternion(x, y, z, a);
@@ -166,28 +177,28 @@ var X3DNode = defineClass(null,
 
 // TODO: X3DProtoInstance
 
-/**** X3DAppearanceNode ****/
+/**** x3dom.X3DAppearanceNode ****/
 
-var X3DAppearanceNode = defineClass(X3DNode,
+x3dom.X3DAppearanceNode = defineClass(x3dom.X3DNode,
     function (ctx) {
-        X3DAppearanceNode.super.call(this, ctx);
+        x3dom.X3DAppearanceNode.super.call(this, ctx);
     }
 );
 
-var Appearance = defineClass(X3DAppearanceNode,
+x3dom.Appearance = defineClass(x3dom.X3DAppearanceNode,
     function (ctx) {
-        Appearance.super.call(this, ctx);
+        x3dom.Appearance.super.call(this, ctx);
 
         var material = null;
         Array.forEach(ctx.xmlNode.childNodes, function (node) {
-            if (isX3DElement(node)) {
+            if (x3dom.isX3DElement(node)) {
                 var child = ctx.setupNodePrototypes(node, ctx);
                 if (child) {
-                    if (isa(child, X3DMaterialNode)) {
+                    if (x3dom.isa(child, x3dom.X3DMaterialNode)) {
                         ctx.assert(! material, 'has <= 1 material node');
                         material = child;
                     } else {
-                        ctx.log('unrecognised Appearance child node type '+node.localName);
+                        ctx.log('unrecognised x3dom.Appearance child node type '+node.localName);
                     }
                 }
             }
@@ -196,26 +207,26 @@ var Appearance = defineClass(X3DAppearanceNode,
     }
 );
 
-/**** X3DAppearanceChildNode ****/
+/**** x3dom.X3DAppearanceChildNode ****/
 
-var X3DAppearanceChildNode = defineClass(X3DNode,
+x3dom.X3DAppearanceChildNode = defineClass(x3dom.X3DNode,
     function (ctx) {
-        X3DAppearanceChildNode.super.call(this, ctx);
+        x3dom.X3DAppearanceChildNode.super.call(this, ctx);
     }
 );
 
 // TODO: FillProperties
 // TODO: LineProperties
 
-var X3DMaterialNode = defineClass(X3DAppearanceChildNode,
+x3dom.X3DMaterialNode = defineClass(x3dom.X3DAppearanceChildNode,
     function (ctx) {
-        X3DMaterialNode.super.call(this, ctx);
+        x3dom.X3DMaterialNode.super.call(this, ctx);
     }
 );
 
-var Material = defineClass(X3DMaterialNode,
+x3dom.Material = defineClass(x3dom.X3DMaterialNode,
     function (ctx) {
-        Material.super.call(this, ctx);
+        x3dom.Material.super.call(this, ctx);
 
         this._attribute_SFFloat(ctx, 'ambientIntensity', 0.2);
         this._attribute_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
@@ -229,24 +240,24 @@ var Material = defineClass(X3DMaterialNode,
 // TODO: X3DTextureNode
 // TODO: X3DTextureTransformNode
 
-/**** X3DGeometryNode ****/
+/**** x3dom.X3DGeometryNode ****/
 
-var X3DGeometryNode = defineClass(X3DNode,
+x3dom.X3DGeometryNode = defineClass(x3dom.X3DNode,
     function (ctx) {
-        X3DGeometryNode.super.call(this, ctx);
+        x3dom.X3DGeometryNode.super.call(this, ctx);
     }
 );
 
 // TODO: Arc2D
 // TODO: ArcClose2D
 
-var Box = defineClass(X3DGeometryNode,
+x3dom.Box = defineClass(x3dom.X3DGeometryNode,
     function (ctx) {
-        Box.super.call(this, ctx);
+        x3dom.Box.super.call(this, ctx);
 
         var sx, sy, sz;
         if (ctx.xmlNode.hasAttribute('size')) {
-            var size = SFVec3.parse(ctx.xmlNode.getAttribute('size'));
+            var size = x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute('size'));
             sx = size.x;
             sy = size.y;
             sz = size.z;
@@ -289,9 +300,9 @@ var Box = defineClass(X3DGeometryNode,
 // TODO: Polypoint2D
 // TODO: Rectangle2D
 
-var Sphere = defineClass(X3DGeometryNode,
+x3dom.Sphere = defineClass(x3dom.X3DGeometryNode,
     function (ctx) {
-        Box.super.call(this, ctx);
+        x3dom.Box.super.call(this, ctx);
 
         var r;
         if (ctx.xmlNode.hasAttribute('radius'))
@@ -340,22 +351,22 @@ var Sphere = defineClass(X3DGeometryNode,
     }
 );
 
-var Text = defineClass(X3DGeometryNode,
+x3dom.Text = defineClass(x3dom.X3DGeometryNode,
     function (ctx) {
-        Text.super.call(this, ctx);
+        x3dom.Text.super.call(this, ctx);
 
         this._attribute_MFString(ctx, 'string', []);
 
         var style = null;
         Array.forEach(ctx.xmlNode.childNodes, function (node) {
-            if (isX3DElement(node)) {
+            if (x3dom.isX3DElement(node)) {
                 var child = ctx.setupNodePrototypes(node, ctx);
                 if (child) {
-                    if (isa(child, X3DFontStyleNode)) {
+                    if (x3dom.isa(child, x3dom.X3DFontStyleNode)) {
                         ctx.assert(! style, 'has <= 1 fontStyle node');
                         style = child;
                     } else {
-                        ctx.log('unrecognised Text child node type '+node.localName);
+                        ctx.log('unrecognised x3dom.Text child node type '+node.localName);
                     }
                 }
             }
@@ -367,15 +378,15 @@ var Text = defineClass(X3DGeometryNode,
 
 // TODO: TriangleSet2D
 
-var X3DComposedGeometryNode = defineClass(X3DGeometryNode,
+x3dom.X3DComposedGeometryNode = defineClass(x3dom.X3DGeometryNode,
     function (ctx) {
-        X3DComposedGeometryNode.super.call(this, ctx);
+        x3dom.X3DComposedGeometryNode.super.call(this, ctx);
     }
 );
 
-var IndexedFaceSet = defineClass(X3DComposedGeometryNode,
+x3dom.IndexedFaceSet = defineClass(x3dom.X3DComposedGeometryNode,
     function (ctx) {
-        IndexedFaceSet.super.call(this, ctx);
+        x3dom.IndexedFaceSet.super.call(this, ctx);
 
         var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
         this._indexes = [];
@@ -396,7 +407,7 @@ var IndexedFaceSet = defineClass(X3DComposedGeometryNode,
         }
         // TODO: solid; ccw
 
-        var coordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (isX3DElement(n) && n.localName == 'Coordinate') });
+        var coordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
         ctx.assert(coordNode.length == 1);
         this._positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
     }
@@ -413,51 +424,51 @@ var IndexedFaceSet = defineClass(X3DComposedGeometryNode,
 
 // TODO: ...
 
-/**** X3DFontStyleNode ****/
+/**** x3dom.X3DFontStyleNode ****/
 
-var X3DFontStyleNode = defineClass(X3DNode,
+x3dom.X3DFontStyleNode = defineClass(x3dom.X3DNode,
     function (ctx) {
-        X3DFontStyleNode.super.call(this, ctx);
+        x3dom.X3DFontStyleNode.super.call(this, ctx);
     }
 );
 
-var FontStyle = defineClass(X3DFontStyleNode,
+x3dom.FontStyle = defineClass(x3dom.X3DFontStyleNode,
     function (ctx) {
-        FontStyle.super.call(this, ctx);
+        x3dom.FontStyle.super.call(this, ctx);
 
         this._attribute_MFString(ctx, 'family', ['SERIF']);
         this._attribute_SFFloat(ctx, 'size', 1.0);
     }
 );
 
-/**** X3DChildNode ****/
+/**** x3dom.X3DChildNode ****/
 
-var X3DChildNode = defineClass(X3DNode,
+x3dom.X3DChildNode = defineClass(x3dom.X3DNode,
     function (ctx) {
-        X3DChildNode.super.call(this, ctx);
+        x3dom.X3DChildNode.super.call(this, ctx);
     }
 );
 
-/**** X3DBindableNode ****/
+/**** x3dom.X3DBindableNode ****/
 
-var X3DBindableNode = defineClass(X3DChildNode,
+x3dom.X3DBindableNode = defineClass(x3dom.X3DChildNode,
     function (ctx) {
-        X3DBindableNode.super.call(this, ctx);
+        x3dom.X3DBindableNode.super.call(this, ctx);
     }
 );
 
 // TODO: ...
 
-var Viewpoint = defineClass(X3DBindableNode,
+x3dom.Viewpoint = defineClass(x3dom.X3DBindableNode,
     function (ctx) {
-        Viewpoint.super.call(this, ctx);
+        x3dom.Viewpoint.super.call(this, ctx);
         this._attribute_SFVec3(ctx, 'position', 0, 0, 10);
         this._attribute_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
         this._rotation = this._orientation.toMatrix();
     },
     {
         getTranslationMatrix: function () {
-            return SFMatrix4.translation(this._position.negate());
+            return x3dom.fields.SFMatrix4.translation(this._position.negate());
         },
         getTranslation: function () {
             return this._position;
@@ -470,31 +481,31 @@ var Viewpoint = defineClass(X3DBindableNode,
 
 // TODO: ...
 
-/**** X3DShapeNode ****/
+/**** x3dom.X3DShapeNode ****/
 
-var X3DShapeNode = defineClass(X3DChildNode,
+x3dom.X3DShapeNode = defineClass(x3dom.X3DChildNode,
     function (ctx) {
-        X3DShapeNode.super.call(this, ctx);
+        x3dom.X3DShapeNode.super.call(this, ctx);
     }
 );
 
-var Shape = defineClass(X3DShapeNode,
+x3dom.Shape = defineClass(x3dom.X3DShapeNode,
     function (ctx) {
-        Shape.super.call(this, ctx);
+        x3dom.Shape.super.call(this, ctx);
 
         var appearance, geometry;
         Array.forEach(ctx.xmlNode.childNodes, function (node) {
-            if (isX3DElement(node)) {
+            if (x3dom.isX3DElement(node)) {
                 var child = ctx.setupNodePrototypes(node, ctx);
                 if (child) {
-                    if (isa(child, X3DAppearanceNode)) {
+                    if (x3dom.isa(child, x3dom.X3DAppearanceNode)) {
                         ctx.assert(! appearance, 'has <= 1 appearance node');
                         appearance = child;
-                    } else if (isa(child, X3DGeometryNode)) {
+                    } else if (x3dom.isa(child, x3dom.X3DGeometryNode)) {
                         ctx.assert(! geometry, 'has <= 1 geometry node');
                         geometry = child;
                     } else {
-                        ctx.log('unrecognised Shape child node type '+node.localName);
+                        ctx.log('unrecognised x3dom.Shape child node type '+node.localName);
                     }
                 }
             }
@@ -511,11 +522,11 @@ var Shape = defineClass(X3DShapeNode,
     }
 );
 
-/**** X3DGroupingNode ****/
+/**** x3dom.X3DGroupingNode ****/
 
-var X3DGroupingNode = defineClass(X3DChildNode,
+x3dom.X3DGroupingNode = defineClass(x3dom.X3DChildNode,
     function (ctx) {
-        X3DGroupingNode.super.call(this, ctx);
+        x3dom.X3DGroupingNode.super.call(this, ctx);
         this._childNodes = [];
     },
     {
@@ -528,27 +539,27 @@ var X3DGroupingNode = defineClass(X3DChildNode,
 
 // TODO: ...
 
-var Transform = defineClass(X3DGroupingNode,
+x3dom.Transform = defineClass(x3dom.X3DGroupingNode,
     function (ctx) {
-        Transform.super.call(this, ctx);
+        x3dom.Transform.super.call(this, ctx);
         this._attribute_SFVec3(ctx, 'translation', 0, 0, 0);
         this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
         this._attribute_SFVec3(ctx, 'scale', 1, 1, 1);
     },
     {
         _transformMatrix: function (transform) {
-            return transform.times( SFMatrix4.translation(this._translation).times(this._rotation.toMatrix()).times(SFMatrix4.scale(this._scale)) );
+            return transform.times( x3dom.fields.SFMatrix4.translation(this._translation).times(this._rotation.toMatrix()).times(x3dom.fields.SFMatrix4.scale(this._scale)) );
         },
     }
 );
 
 // TODO: ...
 
-/**** X3DInterpolatorNode ****/
+/**** x3dom.X3DInterpolatorNode ****/
 
-var X3DInterpolatorNode = defineClass(X3DChildNode,
+x3dom.X3DInterpolatorNode = defineClass(x3dom.X3DChildNode,
     function (ctx) {
-        X3DInterpolatorNode.super.call(this, ctx);
+        x3dom.X3DInterpolatorNode.super.call(this, ctx);
 
         if (ctx.xmlNode.hasAttribute('key'))
             this._key = Array.map(ctx.xmlNode.getAttribute('key').split(/\s+/), function (n) { return +n; });
@@ -570,9 +581,9 @@ var X3DInterpolatorNode = defineClass(X3DChildNode,
 
 // TODO: ...
 
-var OrientationInterpolator = defineClass(X3DInterpolatorNode,
+x3dom.OrientationInterpolator = defineClass(x3dom.X3DInterpolatorNode,
     function (ctx) {
-        OrientationInterpolator.super.call(this, ctx);
+        x3dom.OrientationInterpolator.super.call(this, ctx);
         if (ctx.xmlNode.hasAttribute('keyValue'))
             this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s*,\s*/), SFQuaternion.parseAxisAngle);
         else
@@ -587,17 +598,17 @@ var OrientationInterpolator = defineClass(X3DInterpolatorNode,
 
 // TODO: ...
 
-/**** X3DSensorNode ****/
+/**** x3dom.X3DSensorNode ****/
 
-var X3DSensorNode = defineClass(X3DChildNode,
+x3dom.X3DSensorNode = defineClass(x3dom.X3DChildNode,
     function (ctx) {
-        X3DSensorNode.super.call(this, ctx);
+        x3dom.X3DSensorNode.super.call(this, ctx);
     }
 );
 
-var TimeSensor = defineClass(X3DSensorNode, // TODO: multiple inheritance...
+x3dom.TimeSensor = defineClass(x3dom.X3DSensorNode, // TODO: multiple inheritance...
     function (ctx) {
-        TimeSensor.super.call(this, ctx);
+        x3dom.TimeSensor.super.call(this, ctx);
 
         this._attribute_SFTime(ctx, 'cycleInterval', 1);
         this._attribute_SFBool(ctx, 'loop', false);
@@ -621,36 +632,36 @@ var TimeSensor = defineClass(X3DSensorNode, // TODO: multiple inheritance...
 
 
 // Not a real X3D node type
-var Scene = defineClass(X3DGroupingNode,
+x3dom.Scene = defineClass(x3dom.X3DGroupingNode,
     function (ctx) {
-        Scene.super.call(this, ctx);
+        x3dom.Scene.super.call(this, ctx);
         this.rotation = 0;
         this.elevation = 0;
     },
     {
         _getViewpointMatrix: function () {
-            var viewpoint = this._find(Viewpoint);
+            var viewpoint = this._find(x3dom.Viewpoint);
             var mat_viewpoint = viewpoint._getCurrentTransform();
             var rightwards = viewpoint.getRotationMatrix().transpose().
                 times(viewpoint.getTranslationMatrix()).
                 times(mat_viewpoint).
-                transformNorm(new SFVec3(1, 0, 0));
-            var upwards = new SFVec3(0, 1, 0);
+                transformNorm(new x3dom.fields.SFVec3(1, 0, 0));
+            var upwards = new x3dom.fields.SFVec3(0, 1, 0);
             var rot = SFQuaternion.axisAngle(rightwards.cross(upwards).normalised(), -this.elevation). // XXX: this is all wrong
                 times(SFQuaternion.axisAngle(upwards, this.rotation));
             return mat_viewpoint.times(rot.toMatrix());
-            // TODO: Viewpoint.centerOfRotation
+            // TODO: x3dom.Viewpoint.centerOfRotation
         },
 
         getViewMatrix: function () {
-            var viewpoint = this._find(Viewpoint);
+            var viewpoint = this._find(x3dom.Viewpoint);
             return viewpoint.getRotationMatrix().transpose().
                 times(viewpoint.getTranslationMatrix()).
                 times(this._getViewpointMatrix());
         },
 
         getViewPosition: function () {
-            var viewpoint = this._find(Viewpoint);
+            var viewpoint = this._find(x3dom.Viewpoint);
             return this._getViewpointMatrix().transformPos(viewpoint.getTranslation());
         },
 
@@ -667,7 +678,7 @@ var namespaceFixerXsltProcessor = new XSLTProcessor();
 namespaceFixerXsltProcessor.importStylesheet(new DOMParser().parseFromString(
     '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">' +
     '  <xsl:template match="*" priority="3">' +
-    '    <xsl:element name="{local-name()}" namespace="' + x3dNS + '">' +
+    '    <xsl:element name="{local-name()}" namespace="' + x3dom.x3dNS + '">' +
     '      <xsl:apply-templates select="@*|node()"/>' +
     '    </xsl:element>' +
     '  </xsl:template>' +
@@ -689,7 +700,7 @@ var defaultXsltDoc = new DOMParser().parseFromString(
     '</xsl:stylesheet>',
 'application/xml');
 
-var ExtInline = defineClass(X3DChildNode,
+var ExtInline = defineClass(x3dom.X3DChildNode,
     function (ctx) {
         ExtInline.super.call(this, ctx);
         var urlSplit = ctx.xmlNode.getAttribute('url').split('#', 2);
@@ -701,9 +712,9 @@ var ExtInline = defineClass(X3DChildNode,
 
         var target, m;
         if (m = urlSplit[1].match(/^xpointer\((.*)\)$/)) {
-            target = xpath(doc, m[1])[0];
+            target = x3dom.xpath(doc, m[1])[0];
         } else {
-            target = xpath(doc, '//*[@DEF="'+urlSplit[1]+'"]')[0];
+            target = x3dom.xpath(doc, '//*[@DEF="'+urlSplit[1]+'"]')[0];
         }
 
         // Apply the user's transformations
@@ -711,7 +722,7 @@ var ExtInline = defineClass(X3DChildNode,
             //log(new XMLSerializer().serializeToString(target));
             var xsltDoc;
             Array.forEach(ctx.xmlNode.childNodes, function (node) {
-                if (node.nodeType == Node.ELEMENT_NODE && node.namespaceURI == xsltNS) {
+                if (node.nodeType == Node.ELEMENT_NODE && node.namespaceURI == x3dom.xsltNS) {
                     if (node.localName == 'stylesheet') {
                         var xsltProcessor = new XSLTProcessor();
                         xsltProcessor.importStylesheet(node);
@@ -748,20 +759,20 @@ var ExtInline = defineClass(X3DChildNode,
 
 
 x3dom.nodeTypeMap = {
-    'Appearance': { ctor: Appearance },
-    'Box': { ctor: Box },
-    'FontStyle': { ctor: FontStyle },
-    'IndexedFaceSet': { ctor: IndexedFaceSet },
+    'Appearance': { ctor: x3dom.Appearance },
+    'Box': { ctor: x3dom.Box },
+    'FontStyle': { ctor: x3dom.FontStyle },
+    'IndexedFaceSet': { ctor: x3dom.IndexedFaceSet },
     'Inline': { ctor: ExtInline }, // TODO: handle namespaces properly
-    'Material': { ctor: Material },
-    'OrientationInterpolator': { ctor: OrientationInterpolator },
-    'Scene': { ctor: Scene, autoChild: 1 },
-    'Shape': { ctor: Shape },
-    'Sphere': { ctor: Sphere },
-    'Text': { ctor: Text },
-    'Transform': { ctor: Transform, autoChild: 1 },
-    'TimeSensor': { ctor: TimeSensor },
-    'Viewpoint': { ctor: Viewpoint },
+    'Material': { ctor: x3dom.Material },
+    'OrientationInterpolator': { ctor: x3dom.OrientationInterpolator },
+    'Scene': { ctor: x3dom.Scene, autoChild: 1 },
+    'Shape': { ctor: x3dom.Shape },
+    'Sphere': { ctor: x3dom.Sphere },
+    'Text': { ctor: x3dom.Text },
+    'Transform': { ctor: x3dom.Transform, autoChild: 1 },
+    'TimeSensor': { ctor: x3dom.TimeSensor },
+    'Viewpoint': { ctor: x3dom.Viewpoint },
 };
 
 
@@ -791,8 +802,8 @@ x3dom.X3DDocument.prototype.load = function (uri) {
             return;
         }
         var next_uri = queued_uris.shift();
-		// alert("loading... next_uri=" + next_uri + ", " + isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
-        if (isX3DElement(next_uri) && next_uri.localName == 'X3D') {
+		// alert("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
+        if (x3dom.isX3DElement(next_uri) && next_uri.localName == 'X3D') {
             // Special case, when passed an X3D node instead of a URI string
             uri_docs[next_uri] = next_uri;
             var sub_uris = doc._findIncludedFiles(next_uri);
@@ -823,12 +834,12 @@ x3dom.X3DDocument.prototype.load = function (uri) {
     next_step();
 }
 
-function xpath(doc, expr, node) {
+ x3dom.xpath = function(doc, expr, node) {
     var xpe = new XPathEvaluator();
     function nsResolver(prefix) {
         var ns = {
-            'x3d': x3dNS,
-            'x3dext': x3dextNS,
+            'x3d': x3dom.x3dNS,
+            'x3dext': x3dom.x3dextNS,
         };
         return ns[prefix] || null;
     }
@@ -840,7 +851,7 @@ function xpath(doc, expr, node) {
 }
 
 x3dom.X3DDocument.prototype._findIncludedFiles = function (doc) {
-    var urls = Array.map(xpath(doc, '//x3dext:Inline'), function (node) { return node.getAttribute('url').split('#')[0] });
+    var urls = Array.map(x3dom.xpath(doc, '//x3dext:Inline'), function (node) { return node.getAttribute('url').split('#')[0] });
     return urls;
 };
 
@@ -854,9 +865,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs) {
     };
 
     var doc = this;
-    var scene = this._setupNodePrototypes(xpath(sceneDoc, '//x3d:Scene')[0], ctx);
+    var scene = this._setupNodePrototypes(x3dom.xpath(sceneDoc, '//x3d:Scene')[0], ctx);
 	ctx.log("_setup: scene=" + scene);
-    scene._routes = Array.map(xpath(sceneDoc, '//x3d:ROUTE'), // XXX: handle imported ROUTEs
+    scene._routes = Array.map(x3dom.xpath(sceneDoc, '//x3d:ROUTE'), // XXX: handle imported ROUTEs
         function (route) {
             var fromNode = scene._getNodeByDEF(route.getAttribute('fromNode'));
             var toNode = scene._getNodeByDEF(route.getAttribute('toNode'));
@@ -873,8 +884,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs) {
 
 x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
     var n, t;
-	// ctx.log("node=" + node + ", localName=" + node.localName);
-    if (isX3DElement(node)) {
+	x3dom.debug.logInfo("node=" + node + ", localName=" + node.localName);
+    if (x3dom.isX3DElement(node)) {
         if (undefined === (t = x3dom.nodeTypeMap[node.localName])) {
             ctx.log('Unrecognised element '+node.localName);
         } else {
@@ -890,7 +901,7 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
     this._time = t;
     if (this._scene) {
-        Array.forEach(this._scene._findAll(TimeSensor),
+        Array.forEach(this._scene._findAll(x3dom.TimeSensor),
             function (timer) { timer._onframe(t); }
         );
     }

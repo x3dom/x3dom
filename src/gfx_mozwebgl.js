@@ -117,7 +117,7 @@ x3dom.gfx_mozwebgl = (function () {
 
 	function setCamera(fovy, aspect, zfar, znear) {
 		var f = 1/Math.tan(fovy/2);
-		var m = new SFMatrix4(
+		var m = new x3dom.fields.SFMatrix4(
 			f/aspect, 0, 0, 0,
 			0, f, 0, 0,
 			0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
@@ -189,7 +189,7 @@ x3dom.gfx_mozwebgl = (function () {
 
 function setupShape(env, gl, shape) {
 
-    if (isa(shape._geometry, Text)) {
+    if (x3dom.isa(shape._geometry, Text)) {
         var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
         var text_ctx = text_canvas.getContext('2d');
         var fontStyle = shape._geometry._fontStyle;
@@ -244,10 +244,10 @@ function setupShape(env, gl, shape) {
             vertFaceNormals[i] = [];
 
         for (var i = 0; i < idxs.length; i += 3) {
-            var a = new SFVec3(coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
-                minus(new SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
-            var b = new SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
-                minus(new SFVec3(coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+            var a = new x3dom.fields.SFVec3(coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
+                minus(new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
+            var b = new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
+                minus(new x3dom.fields.SFVec3(coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
             var n = a.cross(b).normalised();
             vertFaceNormals[idxs[i]].push(n);
             vertFaceNormals[idxs[i+1]].push(n);
@@ -255,7 +255,7 @@ function setupShape(env, gl, shape) {
         }
         var vertNormals = [];
         for (var i = 0; i < coords.length; i += 3) {
-            var n = new SFVec3(0, 0, 0);
+            var n = new x3dom.fields.SFVec3(0, 0, 0);
             for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
                 n = n.plus(vertFaceNormals[i/3][j]);
             n = n.normalised();
@@ -361,7 +361,7 @@ function setupShape(env, gl, shape) {
 		var mat_view = scene.getViewMatrix();
 
 		var drawableObjects = [];
-		scene._collectDrawableObjects(SFMatrix4.identity(), drawableObjects);
+		scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), drawableObjects);
 		Array.forEach(drawableObjects, function (obj) {
 			var transform = obj[0];
 			var shape = obj[1];
@@ -445,7 +445,7 @@ function setupShape(env, gl, shape) {
 	
 		var sp = scene._webgl.shader;
 		sp.bind();
-		sp.modelViewProjectionMatrix = SFMatrix4.identity().toGL();
+		sp.modelViewProjectionMatrix = x3dom.fields.SFMatrix4.identity().toGL();
 		sp.diffuseColor = [ 1, 0, 1 ];
 		sp.alpha = 1;
 		//gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, [-1,-1,0, -1,1,0, 1,1,0, 1,-1,0]);
