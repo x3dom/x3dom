@@ -9,10 +9,10 @@
 
 x3dom.debug = {
 
-    INFO: 		"INFO",
-    WARNING: 	"WARNING",
-    ERROR: 		"ERROR",
-    EXCEPTION: 	"EXCEPTION",
+    INFO:       "INFO",
+    WARNING:    "WARNING",
+    ERROR:      "ERROR",
+    EXCEPTION:  "EXCEPTION",
     
 	// determines whether debugging/logging is active. If set to "false"
 	// no debugging messages will be logged.
@@ -41,16 +41,17 @@ x3dom.debug = {
       */
     setup: function() {
 		// If debugging is already setup simply return
-        if (x3dom.debug.isSetup) return;
+        if (x3dom.debug.isSetup) { return; }
 
 		// Check for firebug console
         try {
-            if (console) 
+            if (console) {
                 x3dom.debug.isFirebugAvailable = true;           
+            }
         }
         catch (err) {
             x3dom.debug.isFirebugAvailable = false;
-        };
+        }
         
 		// 
 		x3dom.debug.setupLogContainer();
@@ -77,7 +78,7 @@ x3dom.debug = {
     doLog: function(msg, logType) {
 
 		// If logging is deactivated do nothing and simply return
-		if (!x3dom.debug.isActive) return;
+		if (!x3dom.debug.isActive) { return; }
 
 		// If we have reached the maximum number of logged lines output
 		// a warning message
@@ -88,7 +89,7 @@ x3dom.debug = {
 
 		// If the maximum number of log lines is exceeded do not log anything
 		// but simply return 
-		if (x3dom.debug.numLinesLogged > x3dom.debug.maxLinesToLog) return;
+		if (x3dom.debug.numLinesLogged > x3dom.debug.maxLinesToLog) { return; }
 
 		// Output a log line to the HTML page
 		var node = document.createElement("p");
@@ -112,8 +113,8 @@ x3dom.debug = {
                     break;
                 default: 
                     break;
-            };
-        };
+            }
+        }
         
 		x3dom.debug.numLinesLogged++;
     },
