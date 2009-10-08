@@ -235,15 +235,15 @@ x3dom.fields.SFVec3.prototype.toGL = function () {
 }
 
 
-function SFQuaternion(x, y, z, w) {
+x3dom.fields.SFQuaternion = function(x, y, z, w) {
     this.x = x;
     this.y = y;
     this.z = z;
     this.w = w;
 }
 
-SFQuaternion.prototype.times = function (that) {
-    return new SFQuaternion(
+x3dom.fields.SFQuaternion.prototype.times = function (that) {
+    return new x3dom.fields.SFQuaternion(
         this.w*that.x + this.x*that.w + this.y*that.z - this.z*that.y,
         this.w*that.y + this.y*that.w + this.z*that.x - this.x*that.z,
         this.w*that.z + this.z*that.w + this.x*that.y - this.y*that.x,
@@ -251,18 +251,18 @@ SFQuaternion.prototype.times = function (that) {
     );
 }
 
-SFQuaternion.parseAxisAngle = function (str) {
+x3dom.fields.SFQuaternion.parseAxisAngle = function (str) {
     var m = /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/.exec(str);
-    return SFQuaternion.axisAngle(new x3dom.fields.SFVec3(+m[1], +m[2], +m[3]), +m[4]);
+    return x3dom.fields.SFQuaternion.axisAngle(new x3dom.fields.SFVec3(+m[1], +m[2], +m[3]), +m[4]);
 }
 
-SFQuaternion.axisAngle = function (axis, a) {
+x3dom.fields.SFQuaternion.axisAngle = function (axis, a) {
     var s = Math.sin(a/2);
     var c = Math.cos(a/2);
-    return new SFQuaternion(axis.x*s, axis.y*s, axis.z*s, c);
+    return new x3dom.fields.SFQuaternion(axis.x*s, axis.y*s, axis.z*s, c);
 }
 
-SFQuaternion.prototype.toMatrix = function () {
+x3dom.fields.SFQuaternion.prototype.toMatrix = function () {
     var xx = this.x * this.x * 2;
     var xy = this.x * this.y * 2;
     var xz = this.x * this.z * 2;
@@ -281,31 +281,31 @@ SFQuaternion.prototype.toMatrix = function () {
     );
 }
 
-SFQuaternion.prototype.dot = function (that) {
+x3dom.fields.SFQuaternion.prototype.dot = function (that) {
     return this.x*that.x + this.y*that.y + this.z*that.z + this.w*that.w;
 }
 
-SFQuaternion.prototype.plus = function (that) {
-    return new SFQuaternion(this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w);
+x3dom.fields.SFQuaternion.prototype.plus = function (that) {
+    return new x3dom.fields.SFQuaternion(this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w);
 }
 
-SFQuaternion.prototype.minus = function (that) {
-    return new SFQuaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
+x3dom.fields.SFQuaternion.prototype.minus = function (that) {
+    return new x3dom.fields.SFQuaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
 }
 
-SFQuaternion.prototype.timesScalar = function (s) {
-    return new SFQuaternion(this.x*s, this.y*s, this.z*s, this.w*s);
+x3dom.fields.SFQuaternion.prototype.timesScalar = function (s) {
+    return new x3dom.fields.SFQuaternion(this.x*s, this.y*s, this.z*s, this.w*s);
 }
 
-SFQuaternion.prototype.normalised = function (that) {
+x3dom.fields.SFQuaternion.prototype.normalised = function (that) {
     var d2 = this.x*this.x + this.y*this.y + this.z*this.z + this.w*this.w;
     if (d2 == 0) return this;
     var id = 1/Math.sqrt(d2);
-    return new SFQuaternion(this.x*id, this.y*id, this.z*id, this.w*id);
+    return new x3dom.fields.SFQuaternion(this.x*id, this.y*id, this.z*id, this.w*id);
 }
 
 
-SFQuaternion.prototype.slerp = function (that, t) {
+x3dom.fields.SFQuaternion.prototype.slerp = function (that, t) {
     var dot = this.dot(that);
     if (dot > 0.995)
         return this.plus(that.minus(this).timesScalar(t)).normalised();
@@ -315,6 +315,6 @@ SFQuaternion.prototype.slerp = function (that, t) {
     return this.timesScalar(Math.cos(theta)).plus(tother.timesScalar(Math.sin(theta)));
 }
 
-SFQuaternion.prototype.toString = function () {
+x3dom.fields.SFQuaternion.prototype.toString = function () {
     return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
 }
