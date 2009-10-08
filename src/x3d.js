@@ -1,6 +1,6 @@
-x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
-x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
-x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
+// x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
+// x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
+// x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 
 // the x3dom.nodes namespace
 // x3dom.nodes = {};
@@ -1027,8 +1027,11 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs) {
     };
 
     var doc = this;
-    var scene = this._setupNodePrototypes(x3dom.xpath(sceneDoc, '//x3d:Scene')[0], ctx);
-	ctx.log("_setup: scene=" + scene);
+    x3dom.debug.logInfo(x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc).length);
+    // BUG: the xpath call on sceneDoc should return only one Scene element here but it returns all 
+    //      Scene in the whole page.
+    // BUG: this seems to be a bug in the x3dom.xpath() function 
+    var scene = this._setupNodePrototypes(x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc)[0], ctx);
     scene._routes = Array.map(x3dom.xpath(sceneDoc, '//x3d:ROUTE'), // XXX: handle imported ROUTEs
         function (route) {
             var fromNode = scene._getNodeByDEF(route.getAttribute('fromNode'));
@@ -1040,6 +1043,29 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs) {
             fromNode._setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
         }
     );
+
+    // Test capturing DOM mutation events on the X3D subscene
+    var domEventListener = {
+        onAttrModified: function(e) {
+            var attrToString = {
+                1: "MODIFICATION",
+                2: "ADDITION",
+                3: "REMOVAL"
+            };
+            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
+            console.dir(e);
+        },
+        onNodeRemoved: function(e) {
+            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", node=" + e.target.tagName);
+        },
+        onNodeInserted: function(e) {
+            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", node=" + e.target);
+        }
+    };
+    //sceneDoc.addEventListener('DOMSubtreeModified', onSubtreeModified, true);    
+    sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
+    sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
+    sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);    
 
     this._scene = scene;
 };
@@ -1070,6 +1096,7 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
 };
 
 x3dom.X3DDocument.prototype.render = function (ctx) {
+    if (!ctx) return;
     ctx.renderScene(this.env, this._scene, this._time);
 }
 
