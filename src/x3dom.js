@@ -63,16 +63,16 @@ x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 
     All wrapped canvases are stored in the x3dom.canvases array.
 */
-x3dom.wrap = function(canvas) {
-    var x3dCanvas = new x3dom.X3DCanvas(canvas);
-    x3dom.canvases.push(x3dCanvas);
-    return x3dCanvas;
-};
+// x3dom.wrap = function(canvas) {
+//     var x3dCanvas = new x3dom.X3DCanvas(canvas);
+//     x3dom.canvases.push(x3dCanvas);
+//     return x3dCanvas;
+// };
 
 
 /** @class x3dom.X3DCanvas
 */
-x3dom.X3DCanvas = function(canvas) {
+x3dom.X3DCanvas = function(x3dElem) {
     
     function initContext(canvas) {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
@@ -84,31 +84,96 @@ x3dom.X3DCanvas = function(canvas) {
         return gl;
     }
 
-    this.canvas = canvas;
+    function createCanvas(x3dElem) {
+        x3dom.debug.logInfo("Creating canvas for X3D element..");
+        var canvas = this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+        var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+        canvasDiv.appendChild(canvas);
+        x3dElem.parentNode.insertBefore(canvasDiv, x3dElem);
+
+        // Apply the width and height of the X3D element to the canvas 
+        var x, y, w, h, showFps;
+        canvas.style.position = "relative";
+        if ((x = x3dElem.getAttribute("x")) !== null) {
+            canvas.style.left = x.toString();
+        }
+        if ((y = x3dElem.getAttribute("y")) !== null) {
+            canvas.style.top = y.toString();
+        }
+        if ((w = x3dElem.getAttribute("width")) !== null) {
+            // x3dom.debug.logInfo("width=" + w);
+            canvas.style.width = w.toString();
+        }
+        if ((h = x3dElem.getAttribute("height")) !== null) {
+            // x3dom.debug.logInfo("height=" + h);
+            canvas.style.height = h.toString();
+        }
+        if ((showFps = x3dElem.getAttribute("showFps")) !== null) {
+            if (showFps == "false") {
+                
+            }
+            else if (showFps == "true") {
+                // createFpsDiv();
+            }
+        }
+        // If the X3D element has an id attribute, append "_canvas"
+        // to it and and use that as the id for the canvas
+        var id;
+        if ((id=x3dElem.getAttribute("id")) !== null) {
+            canvasDiv.id = id + "_canvas_div";
+            canvas.id = id + "_canvas";
+        }
+        else {
+            // If the X3D element does not have an id... do what?
+            // For now check the number of canvas elements in the page
+            // and use length+1 for creating a (hopefully) unique id
+            var index = (document.getElementsByTagNameNS(x3dom.x3dNS, 'X3D').length+1);
+            canvasDiv.id = "canvas_div_" + index;
+            canvas.id = "canvas" + index;
+        }
+        return canvas;
+    }
+
+    function createFpsDiv() {
+        var fpsDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+        fpsDiv.innerHTML = "fps: ";
+        fpsDiv.setAttribute("class", "fps");
+        canvasDiv.appendChild(fpsDiv);        
+        return fpsDiv;
+    }
+
+    this.x3dElem = x3dElem;
+    this.canvas = createCanvas(x3dElem, this);
     this.fps_target = 1975;
     this.fps_n = 0;
-    this.gl = initContext(canvas);
+    this.fps_t0 = 0;
+    this.gl = initContext(this.canvas);
     this.doc = null;
-    this.tick = null;
+    this.t = 0;
+    this.canvasDiv = null;
+    this.showFps = x3dElem.getAttribute("showFps");
+    this.fpsDiv = this.showFps !== null ? createFpsDiv() : null;
+    //this.tick = null;
 
 };
 
 x3dom.X3DCanvas.prototype.tick = function() {
     
-// if (++fps_n == 10) {
-//      fps_element.textContent = fps_n*1000 / (new Date() - fps_t0) + ' fps';
-//      fps_t0 = new Date();
-//      fps_n = 0;
-// 	}
-// 	try {
-// 		// doc.advanceTime(t); 
-// 		this.doc.render(this.gl);
-// 	} catch (e) {
-// 		x3dom.debug.logException(e);
-// 		throw e;
-// 	}
-// 	t += 1/this.fps_target;
-// 	
+    if (this.showFps) {
+        if (++this.fps_n == 10) {
+            this.fpsDiv.textContent = this.fps_n*1000 / (new Date() - this.fps_t0) + ' fps';
+            this.fps_t0 = new Date();
+            this.fps_n = 0;
+        }
+        try {
+            // doc.advanceTime(t); 
+            this.doc.render(this.gl);
+        } catch (e) {
+            x3dom.debug.logException(e);
+            throw e;
+        }
+        this.t += 1/this.fps_target;
+    }
     x3dom.debug.logInfo("#");
 };
 
@@ -128,6 +193,8 @@ x3dom.X3DCanvas.prototype.load = function(uri) {
         x3dom.debug.logInfo("loaded [" + uri + "]");
         setInterval( function() { 
                 doc.render(gl); 
+                //for (var c in canvas)
+                canvas.tick();
                 // x3dom.debug.logInfo("##" + canvas.canvas.id + doc._scene.ctx); 
             }, 
             1000
@@ -187,44 +254,6 @@ x3dom.X3DCanvas.prototype.load = function(uri) {
 
 (function (){
     
-    function createCanvas(x3dElem) {
-        x3dom.debug.logInfo("Creating canvas for X3D element..");
-        // var canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-        var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
-        x3dElem.parentNode.insertBefore(canvas, x3dElem);
-
-        // Apply the width and height of the X3D element to the canvas 
-        var x, y, w, h;
-        canvas.style.position = "relative";
-        if ((x = x3dElem.getAttribute("x")) !== null) {
-            canvas.style.left = x.toString();
-        }
-        if ((y = x3dElem.getAttribute("y")) !== null) {
-            canvas.style.top = y.toString();
-        }
-        if ((w = x3dElem.getAttribute("width")) !== null) {
-            // x3dom.debug.logInfo("width=" + w);
-            canvas.style.width = w.toString();
-        }
-        if ((h = x3dElem.getAttribute("height")) !== null) {
-            // x3dom.debug.logInfo("height=" + h);
-            canvas.style.height = h.toString();
-        }
-        // If the X3D element has an id attribute, append "_canvas"
-        // to it and and use that as the id for the canvas
-        var id 
-        if ((id=x3dElem.getAttribute("id")) !== null) {
-            canvas.id = id + "_canvas";
-        }
-        else {
-            // If the X3D element does not have an id... do what?
-            // For now check the number of canvas elements in the page
-            // and use length+1 for creating a (hopefully) unique id
-            canvas.id = "canvas" + (document.getElementsByTagNameNS(x3dom.x3dNS, 'X3D').length+1);
-        }
-        return canvas;
-    }
-
     window.onload = function() {
 
         // Activate debugging/logging for x3dom. Logging will only work for
@@ -240,8 +269,8 @@ x3dom.X3DCanvas.prototype.load = function(uri) {
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
         for (var i in x3ds) {
-            var canvas = createCanvas(x3ds[i]);
-            var x3dcanvas = x3dom.wrap(canvas);
+            //var canvas = createCanvas(x3ds[i]);
+            var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
             x3dcanvas.load(x3ds[i]);
         }
 
