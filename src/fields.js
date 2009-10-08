@@ -4,8 +4,12 @@ Might be nice to have specialised transform-matrices etc, for more optimised mat
 
 */
 
+/** @namespace The x3dom.fields namespace. */
 x3dom.fields = {};
 
+/** SFMatrix4 constructor. 
+    @class Represents a SFMatrix4
+  */
 x3dom.fields.SFMatrix4 = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33) {
     if (arguments.length == 0) {
         this._00 = 1; this._01 = 0; this._02 = 0; this._03 = 0;
@@ -20,6 +24,7 @@ x3dom.fields.SFMatrix4 = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _
     }
 }
 
+/** Returns a SFMatrix4 identity matrix. */
 x3dom.fields.SFMatrix4.identity = function () {
     return new x3dom.fields.SFMatrix4(
         1, 0, 0, 0,
@@ -184,6 +189,9 @@ x3dom.fields.SFMatrix4.prototype.toString = function () {
 }
 
 
+/** SFVec3f constructor.
+    @class Represents a SFVec3f 
+  */
 x3dom.fields.SFVec3 = function(x, y, z) {
     if (arguments.length == 0) {
         this.x = this.y = this.z = 0;
@@ -199,11 +207,11 @@ x3dom.fields.SFVec3.parse = function (str) {
     return new x3dom.fields.SFVec3(+m[1], +m[2], +m[3]);
 }
 
-x3dom.fields.SFVec3.prototype.plus = function (that) {
+x3dom.fields.SFVec3.prototype.add = function (that) {
     return new x3dom.fields.SFVec3(this.x + that.x, this.y + that.y, this.z + that.z);
 }
 
-x3dom.fields.SFVec3.prototype.minus = function (that) {
+x3dom.fields.SFVec3.prototype.subtract = function (that) {
     return new x3dom.fields.SFVec3(this.x - that.x, this.y - that.y, this.z - that.z);
 }
 
@@ -230,11 +238,25 @@ x3dom.fields.SFVec3.prototype.normalised = function (that) {
     return new x3dom.fields.SFVec3(this.x*n, this.y*n, this.z*n);
 }
 
+x3dom.fields.SFVec3.prototype.multiple = function (n) {
+    this.x *= n;
+    this.y *= n;
+    this.z *= n;
+    return this;
+};
+
 x3dom.fields.SFVec3.prototype.toGL = function () {
     return [ this.x, this.y, this.z ];
 }
 
+x3dom.fields.SFVec3.prototype.toString = function () {
+    return "{ x " + this.x + " y " + this.y + " z " + this.z + " }";
+}
 
+
+/** SFQuaternion constructor.
+    @class Represents a SFQuaternion
+  */
 x3dom.fields.SFQuaternion = function(x, y, z, w) {
     this.x = x;
     this.y = y;
@@ -289,7 +311,7 @@ x3dom.fields.SFQuaternion.prototype.plus = function (that) {
     return new x3dom.fields.SFQuaternion(this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w);
 }
 
-x3dom.fields.SFQuaternion.prototype.minus = function (that) {
+x3dom.fields.SFQuaternion.prototype.subtract = function (that) {
     return new x3dom.fields.SFQuaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
 }
 
@@ -308,10 +330,10 @@ x3dom.fields.SFQuaternion.prototype.normalised = function (that) {
 x3dom.fields.SFQuaternion.prototype.slerp = function (that, t) {
     var dot = this.dot(that);
     if (dot > 0.995)
-        return this.plus(that.minus(this).timesScalar(t)).normalised();
+        return this.plus(that.subtract(this).timesScalar(t)).normalised();
     dot = Math.max(-1, Math.min(1, dot));
     var theta = Math.acos(dot)*t;
-    var tother = that.minus(this.timesScalar(dot)).normalised();
+    var tother = that.subtract(this.timesScalar(dot)).normalised();
     return this.timesScalar(Math.cos(theta)).plus(tother.timesScalar(Math.sin(theta)));
 }
 

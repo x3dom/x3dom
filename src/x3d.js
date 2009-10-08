@@ -5,7 +5,10 @@ x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 // the x3dom.nodes namespace
 // x3dom.nodes = {};
 
+/** @namespace the x3dom.nodeTypes namespace. */
 x3dom.nodeTypes = {};
+
+/** @namespace the x3dom.components namespace. */
 x3dom.components = {};
 
 /** Registers the node defined by @p nodeDef.
@@ -225,7 +228,9 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Appearance", 
     "Shape", 
-    defineClass(x3dom.nodeTypes.X3DAppearanceNode,
+    /** @lends x3dom.nodeTypes.Appearance */
+    defineClass(x3dom.nodeTypes.X3DAppearanceNode,        
+        /** @constructs */
         function (ctx) {
             x3dom.nodeTypes.Appearance.super.call(this, ctx);
     

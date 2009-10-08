@@ -245,9 +245,9 @@ function setupShape(env, gl, shape) {
 
         for (var i = 0; i < idxs.length; i += 3) {
             var a = new x3dom.fields.SFVec3(coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
-                minus(new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
+                subtract(new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
             var b = new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
-                minus(new x3dom.fields.SFVec3(coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+                subtract(new x3dom.fields.SFVec3(coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
             var n = a.cross(b).normalised();
             vertFaceNormals[idxs[i]].push(n);
             vertFaceNormals[idxs[i+1]].push(n);
@@ -257,7 +257,7 @@ function setupShape(env, gl, shape) {
         for (var i = 0; i < coords.length; i += 3) {
             var n = new x3dom.fields.SFVec3(0, 0, 0);
             for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
-                n = n.plus(vertFaceNormals[i/3][j]);
+                n = n.add(vertFaceNormals[i/3][j]);
             n = n.normalised();
             vertNormals[i] = n.x;
             vertNormals[i+1] = n.y;
@@ -425,7 +425,7 @@ function setupShape(env, gl, shape) {
 			
 			// x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
 			//gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, shape._webgl.indexes);
-			gl.drawArrays(gl.TRIANGLESTRIPS, 0, shape._webgl.positions.length/3);
+			gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
 
 			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined)
@@ -452,7 +452,7 @@ function setupShape(env, gl, shape) {
 		//gl.enableVertexAttribArray(sp.position);
 		//gl.drawArrays(gl.TRIANGLES, 0, [0,2,1, 3,2,0]);
 
-		gl.flush();
+		// gl.flush();
 
 	};
 

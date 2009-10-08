@@ -45,7 +45,7 @@ if (! Array.filter) {
 	};
 }
 
-// The global namespace
+/** @namespace The global x3dom namespace. */
 var x3dom = {
 	canvases: new Array()
 };
