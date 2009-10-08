@@ -409,7 +409,7 @@ function setupShape(env, gl, shape) {
 			sp.modelMatrix = transform.toGL();
 			sp.modelViewMatrix = mat_view.times(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_projection.times(mat_view).times(transform).toGL();
-			x3dom.debug.logInfo("sp.position=" + sp.normal);
+			// x3dom.debug.logInfo("sp.position=" + sp.normal);
 			if (sp.position !== undefined) {
 				positionBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -423,7 +423,7 @@ function setupShape(env, gl, shape) {
 				gl.enableVertexAttribArray(sp.normal);
 			}
 			
-			x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
+			// x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
 			//gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, shape._webgl.indexes);
 			gl.drawArrays(gl.TRIANGLESTRIPS, 0, shape._webgl.positions.length/3);
 
