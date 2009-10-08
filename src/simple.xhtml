@@ -7,19 +7,17 @@
 		<style>
 		body { font-family: sans-serif; }
 		X3D { display: none; }
-		/*canvas { border: solid; float: left; margin-right: 1em; margin-bottom: 1em; }*/
+		canvas { border: solid; float: left; margin-right: 1em; margin-bottom: 1em; }
 		p.case { clear: both; border-top: 1px solid #888; }
-		div#x3dom_logdiv { height: 30em; overflow: auto; white-space: -moz-pre-wrap; white-space: pre-wrap; font-size: x-small; }
+		div#x3dom_logdiv { height: 30em; overflow: auto; white-space: pre-wrap; font-size: x-small; }
 		div#x3dom_logdiv p { margin: 0; }
+		/*div#foo { margin-top: -50px; color: #f00; }*/
 		</style>
 	</head>
 
 <!--<script type="text/javascript" >
 
-
-// Test the x3dom object
-
-    
+// Test the x3dom object    
 var userData = {
     shaderProgram: null
 };        
@@ -50,8 +48,6 @@ function loadShader(gl, shaderType, shaderSource)
 
     return shader;
 }
-
-
 
 function init() {
     // Aquire the canvas element
@@ -148,48 +144,46 @@ function draw(gl)
     gl.flush();
 }
 
-
-
 </script>-->
        
-
 <body>
     
-    <canvas id="boxCanvas" width="200" height="150" style="border: 2px solid black"></canvas>
+	<div id="foo">Over!</div>
 	<p class="case">Boxes
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" width="320" height="240">
-		<Scene>
-			<Shape>
-				<Appearance/>
-				<Box/>
-			</Shape>
-			<Transform translation="4 0 0">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" x="2em" y="10pt" width="300px" height="300px">
+			<Scene>
 				<Shape>
 					<Appearance/>
-					<Box size="0.5 1 2"/>
+					<Box/>
 				</Shape>
-			</Transform>
-			<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" fieldOfView="0.661"/>
-		</Scene>
+				<Transform translation="4 0 0">
+					<Shape>
+						<Appearance/>
+						<Box size="0.5 1 2"/>
+					</Shape>
+				</Transform>
+				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" fieldOfView="0.661"/>
+			</Scene>
 		</X3D>
 	</p>
 
-    <canvas id="sphereCanvas" width="200" height="150" style="border: 2px solid black"></canvas>
     <p class="case">Spheres
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" width="320" height="240">
-        <Scene>
-            <Shape>
-                <Appearance/>
-                <Sphere />
-            </Shape>
-            <Transform translation="4 0 0">
-                <Shape>
-                    <Appearance/>
-                    <Sphere />
-                </Shape>
-            </Transform>
-            <Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" fieldOfView="0.661"/>
-        </Scene>
+        <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
+             Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" x="0px" y="0" width="520px" height="240px">
+			<Scene>
+				<Shape>
+					<Appearance/>
+					<Sphere />
+				</Shape>
+				<Transform translation="4 0 0">
+					<Shape>
+						<Appearance/>
+						<Sphere />
+					</Shape>
+				</Transform>
+				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" fieldOfView="0.661"/>
+			</Scene>
         </X3D>
     </p>
     
@@ -197,41 +191,9 @@ function draw(gl)
     <script type="text/javascript" src="debug.js"></script>
 	<script type="text/javascript" src="gfx_mozwebgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
-	<!--<script type="text/javascript" src="math.js"></script>-->
 	<script type="text/javascript" src="fields.js"></script>
 
-
 	<script type="text/javascript" ><![CDATA[
-
-	window.onload = function() {
-		// Activate debugging/logging for x3dom. Logging will only work for
-		// all log calls after this line!
-		x3dom.debug.isActive = true;
-
-		// Search all X3D elements in the page
-        var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
-        x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
-		x3ds = Array.map(x3ds, function (n) { return n });		
-		x3dom.debug.logInfo("x3ds[0]=" + x3ds[0] + " id=" + x3ds[0].id);        
-		x3dom.debug.logInfo("x3ds[1]=" + x3ds[1] + " id=" + x3ds[1].id);
-
-		// Initialize the first canvas
-		var boxCanvas = document.getElementById("boxCanvas"); 
-		var boxX3DOM = x3dom.wrap(boxCanvas);
-		
-		// And load the content (which is the X3D element in this case, not an url)
-		boxX3DOM.load(x3ds[0]);
-        
-        // Try to initialize a second canvas
-        var sphereCanvas = document.getElementById("sphereCanvas"); 
-        var sphereX3DOM = x3dom.wrap(sphereCanvas);
-        sphereX3DOM.load(x3ds[1]);
-
-		x3dom.debug.logInfo("canvases=" + x3dom.canvases + ", canvases.length=" + x3dom.canvases.length);
-
-        // Test nodetype registration
-        // x3dom.registerNodeType("Foo", "Bar", {});
-	};
 	]]></script>
 
 </body>
