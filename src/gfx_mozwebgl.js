@@ -69,19 +69,123 @@ x3dom.gfx_mozwebgl = (function () {
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
 		"}";
 
-//     var defaultVS = 
-//         "attribute vec4 vPosition;     \n" +
-//         "void main()                   \n" +
-//         "{                             \n" +
-//         "  gl_Position = vPosition;    \n" +
-//         "} ";
-
 	var defaultFS =
 		"uniform vec3 diffuseColor;" +
 		"uniform float alpha;" +
 		"void main(void) {" +
 		"    gl_FragColor = vec4(diffuseColor, alpha);" +
 		"}";
+		
+		
+	var fs_x3d_textured =
+		"uniform float ambientIntensity;" +
+		"uniform vec3 diffuseColor;" +
+		"uniform vec3 emissiveColor;" +
+		"uniform float shininess;" +
+		"uniform vec3 specularColor;" +
+		"uniform float alpha;" +
+		"uniform sampler2D tex;" +
+		"" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"varying vec2 fragTexCoord;" +
+		"" +
+		"void main(void) {" +
+		"    vec3 normal = normalize(fragNormal);" +
+		"    vec3 light = normalize(fragLightVector);" +
+		"    vec3 eye = normalize(fragEyeVector);" +
+		"    // TODO: multiple lights, etc" +
+		"    float diffuse = max(0.0, dot(normal, light));" +
+		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
+		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
+		"}";
+
+	var fs_x3d_untextured = 
+		"uniform float ambientIntensity;" +
+		"uniform vec3 diffuseColor;" +
+		"uniform vec3 emissiveColor;" +
+		"uniform float shininess;" +
+		"uniform vec3 specularColor;" +
+		"uniform float alpha;" +
+		"" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"" +
+		"void main(void) {" +
+		"    vec3 normal = normalize(fragNormal);" +
+		"    vec3 light = normalize(fragLightVector);" +
+		"    vec3 eye = normalize(fragEyeVector);" +
+		"    // TODO: multiple lights, etc" +
+		"    float diffuse = max(0.0, dot(normal, light));" +
+		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
+		"    gl_FragColor = vec4(rgb, 1.0);" +
+		"}";
+
+	var fs_x3d_shownormal =
+		"uniform float ambientIntensity;" +
+		"uniform vec3 diffuseColor;" +
+		"uniform vec3 emissiveColor;" +
+		"uniform float shininess;" +
+		"uniform vec3 specularColor;" +
+		"uniform float alpha;" +
+		"uniform sampler2D tex;" +
+		"" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"varying vec2 fragTexCoord;" +
+		"" +
+		"void main(void) {" +
+		"    vec3 normal = normalize(fragNormal);" +
+		"    gl_FragColor = vec4(normal, 1.0);" +
+		"}";
+
+	var vs_x3d_textured = 
+		"attribute vec3 position;" +
+		"attribute vec3 normal;" +
+		"attribute vec2 texcoord;" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"varying vec2 fragTexCoord;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+		"uniform mat4 modelViewMatrix;" +
+		"uniform mat4 modelMatrix;" +
+		"uniform vec3 lightPosition;" +
+		"uniform vec3 eyePosition;" +
+		"" +
+		"void main(void) {" +
+		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"    fragNormal = normalize(vec3(modelMatrix * vec4(normal, 0.0)));" +
+		"    fragLightVector = lightPosition - vec3(modelMatrix * vec4(position, 1.0));" +
+		"    fragEyeVector = eyePosition - vec3(modelMatrix * vec4(position, 1.0));" +
+		"    fragTexCoord = texcoord;" +
+		"}";
+
+	var vs_x3d_untextured =
+		"attribute vec3 position;" +
+		"attribute vec3 normal;" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+		"uniform mat4 modelViewMatrix;" +
+		"uniform mat4 modelMatrix;" +
+		"uniform vec3 lightPosition;" +
+		"uniform vec3 eyePosition;" +
+		"" +
+		"void main(void) {" +
+		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"    fragNormal = normalize(vec3(modelMatrix * vec4(normal, 0.0)));" +
+		"    fragLightVector = lightPosition - vec3(modelMatrix * vec4(position, 1.0));" +
+		"    fragEyeVector = eyePosition - vec3(modelMatrix * vec4(position, 1.0));" +
+		"}";
+		
+		
 
 	function getDefaultShaderProgram(env, gl) {
 		var prog = gl.createProgram();
@@ -236,7 +340,8 @@ function setupShape(env, gl, shape) {
 
         getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], function (sp) { shape._webgl.shader = sp });
 
-    } else {
+    } 
+	else {
         var coords = shape._geometry._positions;
         var idxs = shape._geometry._indexes;
         var vertFaceNormals = [];
@@ -347,7 +452,7 @@ function setupShape(env, gl, shape) {
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		gl.enable(gl.DEPTH_TEST);
 		gl.depthFunc(gl.LEQUAL);
-		gl.enable(gl.CULL_FACE);
+		//gl.enable(gl.CULL_FACE);
 
 		var sp = getDefaultShaderProgram(env, gl);
 		if (!scene._webgl) {
@@ -357,7 +462,7 @@ function setupShape(env, gl, shape) {
 				shader: sp,
 			};
 		}
-		var mat_projection = setCamera(0.661, 4/3, 100, 0.1);
+		var mat_projection = setCamera(0.785398, 4/3, 1000, 0.01);
 		var mat_view = scene.getViewMatrix();
 
 		var drawableObjects = [];
@@ -385,7 +490,7 @@ function setupShape(env, gl, shape) {
 				sp.emissiveColor = mat._emissiveColor.toGL();
 				sp.shininess = mat._shininess;
 				sp.specularColor = mat._specularColor.toGL();
-				sp.alpha = 1 - mat._transparency;
+				sp.alpha = 1.0 - mat._transparency;
 			} else {
 				// TODO: should disable lighting and set to 1,1,1 when no Material
 			}
@@ -443,17 +548,19 @@ function setupShape(env, gl, shape) {
 			gl.ZERO, gl.ONE
 		);
 	
+	/*
 		var sp = scene._webgl.shader;
 		sp.bind();
 		sp.modelViewProjectionMatrix = x3dom.fields.SFMatrix4.identity().toGL();
-		sp.diffuseColor = [ 1, 0, 1 ];
+		sp.diffuseColor = [ 1, 0, 0 ];
 		sp.alpha = 1;
-		//gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, [-1,-1,0, -1,1,0, 1,1,0, 1,-1,0]);
-		//gl.enableVertexAttribArray(sp.position);
-		//gl.drawArrays(gl.TRIANGLES, 0, [0,2,1, 3,2,0]);
+		gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, [-1,-1,0, -1,1,0, 1,1,0, 1,-1,0]);
+		gl.enableVertexAttribArray(sp.position);
+		gl.drawArrays(gl.TRIANGLES, 0, [0,2,1, 3,2,0]);
 
+		sp.diffuseColor = [ 1, 0, 1 ];
 		// gl.flush();
-
+	*/
 	};
 
 	return setupContext;
