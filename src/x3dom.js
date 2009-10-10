@@ -74,9 +74,9 @@ x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 */
 x3dom.X3DCanvas = function(x3dElem) {
     
-    function initContext(canvas) {
+    function initContext(canvas, winSize) {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
-        var gl = x3dom.gfx_mozwebgl(canvas);
+        var gl = x3dom.gfx_mozwebgl(canvas, winSize);
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
             // return null;
@@ -85,7 +85,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     }
 
     function createCanvas(x3dElem) {
-        x3dom.debug.logInfo("Creating canvas for X3D element..");
+        x3dom.debug.logInfo("Creating canvas for X3D element...");
         var canvas = this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
         var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
         canvasDiv.appendChild(canvas);
@@ -101,16 +101,18 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.style.top = y.toString();
         }
         if ((w = x3dElem.getAttribute("width")) !== null) {
-            // x3dom.debug.logInfo("width=" + w);
+            x3dom.debug.logInfo("width=" + w);
+			winSize.w = parseInt(w);
             canvas.style.width = w.toString();
         }
         if ((h = x3dElem.getAttribute("height")) !== null) {
-            // x3dom.debug.logInfo("height=" + h);
+            x3dom.debug.logInfo("height=" + h);
+			winSize.h = parseInt(h);
             canvas.style.height = h.toString();
         }
         if ((showFps = x3dElem.getAttribute("showFps")) !== null) {
             if (showFps == "false") {
-                
+                ;
             }
             else if (showFps == "true") {
                 // createFpsDiv();
@@ -131,6 +133,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvasDiv.id = "canvas_div_" + index;
             canvas.id = "canvas" + index;
         }
+		
         return canvas;
     }
 
@@ -141,13 +144,20 @@ x3dom.X3DCanvas = function(x3dElem) {
         canvasDiv.appendChild(fpsDiv);        
         return fpsDiv;
     }
+	
+	var winSize = new Object();
+	winSize.w = 400;
+	winSize.h = 300;
 
     this.x3dElem = x3dElem;
-    this.canvas = createCanvas(x3dElem, this);
+    this.canvas = createCanvas(x3dElem, this, winSize);
+	this.canvas.parent = this;
+	this.width = winSize.w;
+	this.height = winSize.h;
     this.fps_target = 1975;
     this.fps_n = 0;
     this.fps_t0 = 0;
-    this.gl = initContext(this.canvas);
+    this.gl = initContext(this.canvas, winSize);
     this.doc = null;
     this.t = 0;
     this.canvasDiv = null;
@@ -155,18 +165,53 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.fpsDiv = this.showFps !== null ? createFpsDiv() : null;
     //this.tick = null;
 
+	delete winSize;
+	
+	// event handler for mouse interaction
+	this.canvas.mouse_dragging = false;
+    this.canvas.mouse_drag_x = 0;
+	this.canvas.mouse_drag_y = 0;
+	
+    this.canvas.addEventListener('mousedown', function (evt) {
+        if (evt.button == 0) {
+            mouse_drag_x = evt.screenX; // screenX seems the least problematic way of getting coordinates
+            mouse_drag_y = evt.screenY;
+            mouse_dragging = true;
+        }
+    }, false);
+	
+    this.canvas.addEventListener('mouseup', function (evt) {
+        if (evt.button == 0)
+            mouse_dragging = false;
+    }, false);
+	
+    this.canvas.addEventListener('mouseout', function (evt) {
+        mouse_dragging = false;
+    }, false);
+	
+    this.canvas.addEventListener('mousemove', function (evt) {
+        if (! mouse_dragging)
+			return;
+        var dx = evt.screenX - mouse_drag_x;
+        var dy = evt.screenY - mouse_drag_y;
+        mouse_drag_x = evt.screenX;
+        mouse_drag_y = evt.screenY;
+		window.status=this.id+' MOVE: '+evt.screenX+", "+evt.screenY;
+        this.parent.doc.ondrag(dx, dy);
+    }, false);
+
 };
 
 x3dom.X3DCanvas.prototype.tick = function() {
     
     if (this.showFps) {
         if (++this.fps_n == 10) {
-            this.fpsDiv.textContent = this.fps_n*1000 / (new Date() - this.fps_t0) + ' fps';
+            this.fpsDiv.textContent = (this.fps_n*1000 / (new Date() - this.fps_t0)).toFixed(2) + ' fps';
             this.fps_t0 = new Date();
             this.fps_n = 0;
         }
         try {
-            // doc.advanceTime(t); 
+            //this.doc.advanceTime(this.t); 
             this.doc.render(this.gl);
         } catch (e) {
             x3dom.debug.logException(e);
@@ -174,18 +219,17 @@ x3dom.X3DCanvas.prototype.tick = function() {
         }
         this.t += 1/this.fps_target;
     }
-    x3dom.debug.logInfo("#");
 };
 
 /** Loads the given @p uri.
     @param uri can be a uri or an X3D node
     */
-x3dom.X3DCanvas.prototype.load = function(uri) {
+x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
     var canvas = this;
     var doc = this.doc;
     var gl = this.gl;
-    x3dom.debug.logInfo("gl=" + gl + ", this.gl=" + this.gl);
+    x3dom.debug.logInfo("gl=" + gl + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
     this.doc.onload = function () {
         // setInterval(tick, 1000/this.fps_target);
         // alert(uri + " loaded...");	
@@ -197,13 +241,12 @@ x3dom.X3DCanvas.prototype.load = function(uri) {
                 canvas.tick();
                 // x3dom.debug.logInfo("##" + canvas.canvas.id + doc._scene.ctx); 
             }, 
-            1000
+            250
         );
-        
     };
     
     this.doc.onerror = function () { alert('Failed to load X3D document'); };
-    this.doc.load(uri);
+    this.doc.load(uri, sceneElemPos);
 };
 
 
@@ -271,7 +314,7 @@ x3dom.X3DCanvas.prototype.load = function(uri) {
         for (var i in x3ds) {
             //var canvas = createCanvas(x3ds[i]);
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
-            x3dcanvas.load(x3ds[i]);
+            x3dcanvas.load(x3ds[i], i);
         }
 
         // Test nodetype registration

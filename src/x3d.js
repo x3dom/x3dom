@@ -946,7 +946,7 @@ x3dom.X3DDocument = function(canvas, ctx, env) {
     this.onerror = function () {};
 }
 
-x3dom.X3DDocument.prototype.load = function (uri) {
+x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     // Load uri. Get sceneDoc, list of sub-URIs.
     // For each URI, get docs[uri] = whatever, extend list of sub-URIs.
 
@@ -959,7 +959,7 @@ x3dom.X3DDocument.prototype.load = function (uri) {
 
         if (queued_uris.length == 0) {
             // All done
-            doc._setup(uri_docs[uri], uri_docs);
+            doc._setup(uri_docs[uri], uri_docs, sceneElemPos);
             doc.onload();
             return;
         }
@@ -1017,7 +1017,7 @@ x3dom.X3DDocument.prototype._findIncludedFiles = function (doc) {
     return urls;
 };
 
-x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs) {
+x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
     var ctx = {
         docs: uriDocs,
@@ -1027,11 +1027,11 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs) {
     };
 
     var doc = this;
-    x3dom.debug.logInfo(x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc).length);
+    x3dom.debug.logInfo("Loading scene #" + sceneElemPos + " from " + x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc).length + ".");
     // BUG: the xpath call on sceneDoc should return only one Scene element here but it returns all 
     //      Scene in the whole page.
     // BUG: this seems to be a bug in the x3dom.xpath() function 
-    var scene = this._setupNodePrototypes(x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc)[0], ctx);
+    var scene = this._setupNodePrototypes(x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc)[sceneElemPos], ctx);
     scene._routes = Array.map(x3dom.xpath(sceneDoc, '//x3d:ROUTE'), // XXX: handle imported ROUTEs
         function (route) {
             var fromNode = scene._getNodeByDEF(route.getAttribute('fromNode'));
