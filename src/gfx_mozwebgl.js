@@ -111,7 +111,7 @@ x3dom.gfx_mozwebgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = max(0.0, dot(normal, light));" +
+		"    float diffuse = 0.5*(max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		"    gl_FragColor = vec4(rgb, 1.0);" +
@@ -229,7 +229,8 @@ x3dom.gfx_mozwebgl = (function () {
 		});
 	}
 
-	function setCamera(fovy, aspect, zfar, znear) {
+	function setCamera(fovy, aspect, zfar, znear)
+	{
 		var f = 1/Math.tan(fovy/2);
 		var m = new x3dom.fields.SFMatrix4(
 			f/aspect, 0, 0, 0,
@@ -239,6 +240,24 @@ x3dom.gfx_mozwebgl = (function () {
 		);
 		return m;
 	};
+	
+	function makeFrustum(left, right, bottom, top, znear, zfar)
+	{
+		var X = 2*znear/(right-left);
+		var Y = 2*znear/(top-bottom);
+		var A = (right+left)/(right-left);
+		var B = (top+bottom)/(top-bottom);
+		var C = -(zfar+znear)/(zfar-znear);
+		var D = -2*zfar*znear/(zfar-znear);
+
+		var m = new x3dom.fields.SFMatrix4(
+				X, 0, A, 0,
+				0, Y, B, 0,
+				0, 0, C, D,
+				0, 0, -1, 0
+		);
+		return m;
+	}
 
 	// Returns "shader" such that "shader.foo = [1,2,3]" magically sets the appropriate uniform
 	function wrapShaderProgram(env, gl, sp) {
@@ -356,10 +375,11 @@ function setupShape(env, gl, shape) {
 		var coordsNew = [];
         var idxs = shape._geometry._indexes;
         var vertFaceNormals = [];
+		var vertNormals = [];
         for (var i = 0; i < coords.length/3; ++i)
             vertFaceNormals[i] = [];
 
-        for (var i = 0; i < idxs.length; i += 3) {
+        for (var i = 0, k=0, l=0; i < idxs.length; i += 3) {
             var a = new x3dom.fields.SFVec3(coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
                 subtract(new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
             var b = new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
@@ -368,12 +388,23 @@ function setupShape(env, gl, shape) {
             vertFaceNormals[idxs[i]].push(n);
             vertFaceNormals[idxs[i+1]].push(n);
             vertFaceNormals[idxs[i+2]].push(n);
-			//FIXME
-			coordsNew[i+0] = coords[idxs[i]*3];
-			coordsNew[i+1] = coords[idxs[i]*3+1];
-			coordsNew[i+2] = coords[idxs[i]*3+2];
+			
+			//FIXME; the problem is, that without index pointer the indices are wrong!
+			//		 but we have to resolve missing indices somehow (better in shape?)
+			coordsNew[k++] = coords[idxs[i+0]*3+0];
+			coordsNew[k++] = coords[idxs[i+0]*3+1];
+			coordsNew[k++] = coords[idxs[i+0]*3+2];
+			coordsNew[k++] = coords[idxs[i+1]*3+0];
+			coordsNew[k++] = coords[idxs[i+1]*3+1];
+			coordsNew[k++] = coords[idxs[i+1]*3+2];
+			coordsNew[k++] = coords[idxs[i+2]*3+0];
+			coordsNew[k++] = coords[idxs[i+2]*3+1];
+			coordsNew[k++] = coords[idxs[i+2]*3+2];
+			
+			for (var r=0; r<9; r++)
+				vertNormals[l++] = n.toGL()[r%3];
         }
-        var vertNormals = [];
+		/*
         for (var i = 0; i < coords.length; i += 3) {
             var n = new x3dom.fields.SFVec3(0, 0, 0);
             for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
@@ -383,86 +414,25 @@ function setupShape(env, gl, shape) {
             vertNormals[i+1] = n.y;
             vertNormals[i+2] = n.z;
         }
-		
-		//FIXME; HACK: Problem is, that without index pointer the indices are wrong!
-		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Box)) {
-			coordsNew = coords;
-		}
+		*/
 		
         shape._webgl = {
             positions: coordsNew,
             normals: vertNormals,
             indexes: idxs,
         };
+		
+		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.IndexedFaceSet)) {
+			//x3dom.debug.logInfo("GL-Indices:   "+shape._webgl.indexes);
+			//x3dom.debug.logInfo("GL-Positions: "+shape._webgl.positions);
+			//x3dom.debug.logInfo("GL_Normals:   "+shape._webgl.normals);
+		}
 
-        getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], function (sp) { shape._webgl.shader = sp });
+		// 'fs-x3d-untextured'], 
+        getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], //'fs-x3d-shownormal'], 
+							function (sp) { shape._webgl.shader = sp });
     }
-
-//    shape._webgl.shader = scene._webgl.shader;
 }
-
-// 	Context.prototype.renderScene = function (env, scene, t) {
-// 		var gl = this.ctx3d;
-// 
-// 		var sp = getDefaultShaderProgram(env, gl);
-// 		env.log("sp=" + sp);
-// // 		if (!scene._webgl) {
-// // 			// alert("no scene?!");
-// // 			var sp = getDefaultShaderProgram(env, gl);
-// // 			scene._webgl = {
-// // 				shader: sp,
-// // 			};
-// // 		}
-// // 
-// // 		gl.clearColor(1,0,1, 0.5);
-// // 		gl.clearDepthf(1.0);
-// // 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-// 		//gl.enable(gl.DEPTH_TEST);
-// 		//gl.depthFunc(gl.LEQUAL);
-// 		// gl.enable(gl.CULL_FACE);
-// 		var mat_projection = setCamera(0.661, 4/3, 100, 0.1);
-// 		var mat_view = scene.getViewMatrix();
-// 		var drawableObjects = [];
-// 		env.log("scene=" + scene);
-// 		if (scene) {
-// 			scene._collectDrawableObjects(SFMatrix4.identity(), drawableObjects);
-// 			env.log(drawableObjects);
-// 		} 
-// 
-// 		var vertices = [  0.0,  0.5,  0.0,
-// 						-0.5, -0.5,  0.0,
-// 						0.5, -0.5,  0.0  ];
-// 
-// 		// Set up the viewport
-// 		//gl.viewport(0, 0, canvasWidth, canvasHeight);
-// 		gl.viewport(0, 0, 200, 150);
-// 
-// 		// Clear the color buffer
-// 		
-// 		gl.clearDepthf(1.0);
-// 		gl.clearColor(0.4, 1, 0.4, 1);
-// 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-// 
-// 		// Use the program object we created in init()
-// 		// gl.useProgram(sp);
-// 		sp.bind();
-// 		gl.enableVertexAttribArray(0);
-// 		
-// 		// Create a buffer for the vertices
-// 		var verticeBuffer = gl.createBuffer();
-// 		gl.bindBuffer(gl.ARRAY_BUFFER, verticeBuffer);
-// 		gl.bufferData(gl.ARRAY_BUFFER, new CanvasFloatArray(vertices), gl.STATIC_DRAW);
-// 		
-// 		// Load the vertex data
-// 		// XXX we seem to have lost the |normalized| and |stride| params!
-// 		gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);    
-// 
-// 		// Do the draw, as triangles
-// 		gl.drawArrays(gl.TRIANGLES, 0, 3);
-// 		
-// 		gl.flush();
-// 		
-// 	};
 
 	Context.prototype.renderScene = function (env, scene, t) {
 		var gl = this.ctx3d;
@@ -470,10 +440,10 @@ function setupShape(env, gl, shape) {
 		//gl.viewport(0,0,winWidth,winHeight);
 		gl.clearColor(0.5, 0.8, 0.9, 1.0);
 		gl.clearDepthf(1.0);
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 		gl.enable(gl.DEPTH_TEST);
 		gl.depthFunc(gl.LEQUAL);
-		//gl.enable(gl.CULL_FACE);
+		gl.enable(gl.CULL_FACE);
 
 		var sp = getDefaultShaderProgram(env, gl);
 		if (!scene._webgl) {
@@ -483,7 +453,9 @@ function setupShape(env, gl, shape) {
 				shader: sp,
 			};
 		}
+		
 		var mat_projection = setCamera(0.785398, winWidth/winHeight, 1000, 0.1);
+		//var mat_projection = makeFrustum(0, winWidth-1, 0, winHeight-1, 1000, 1);
 		var mat_view = scene.getViewMatrix();
 
 		var drawableObjects = [];
@@ -501,7 +473,7 @@ function setupShape(env, gl, shape) {
 			sp.bind();
 
 			//sp.lightPosition = [10*Math.sin(t), 10, 10*Math.cos(t)];
-			sp.lightPosition = [0, 100, 100];
+			sp.lightPosition = [0, 100, 800];
 			sp.eyePosition = scene.getViewPosition().toGL();
 
 			var mat = shape._appearance._material;
@@ -516,7 +488,6 @@ function setupShape(env, gl, shape) {
 				// TODO: should disable lighting and set to 1,1,1 when no Material
 			}
 
-			/*
 			if (shape._webgl.mask_texture) {
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, shape._webgl.mask_texture);
@@ -532,7 +503,6 @@ function setupShape(env, gl, shape) {
 			} else {
 				gl.disable(gl.BLEND);
 			}
-			*/
 
 			sp.modelMatrix = transform.toGL();
 			sp.modelViewMatrix = mat_view.times(transform).toGL();
@@ -552,9 +522,12 @@ function setupShape(env, gl, shape) {
 			}
 			
 			// x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
-			//gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, shape._webgl.indexes);
-			//drawElements (in GLenum mode, in GLuint count, in GLenum type, in GLuint offset);
-			gl.drawArrays(gl.TRIANGLE_STRIP, 0, shape._webgl.positions.length/3);
+			//gl.drawElements(gl.TRIANGLES, shape._webgl.positions.length/3, gl.UNSIGNED_SHORT, 0);
+			//gl.drawElements( gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 
+			//					new CanvasUnsignedShortArray(shape._webgl.indexes) );
+			
+			gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
+			
 
 			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined)
@@ -565,12 +538,11 @@ function setupShape(env, gl, shape) {
 		});
 			
 		// XXX: nasty hack to fix Firefox compositing the non-premultiplied canvas as if it were premultiplied
-		/* gl.enable(gl.BLEND);
+		gl.enable(gl.BLEND);
 		gl.blendFuncSeparate( // just multiply dest RGB by its A
 			gl.ZERO, gl.DST_ALPHA,
 			gl.ZERO, gl.ONE
 		); 
-		*/
 		gl.disable(gl.DEPTH_TEST);
 		
 		//x3dom.debug.logInfo(gl.getString(gl.VENDOR)+"/"+gl.getString(gl.RENDERER)+"/"+

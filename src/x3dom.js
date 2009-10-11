@@ -169,35 +169,44 @@ x3dom.X3DCanvas = function(x3dElem) {
 	
 	// event handler for mouse interaction
 	this.canvas.mouse_dragging = false;
+	this.canvas.mouse_button = 0;
     this.canvas.mouse_drag_x = 0;
 	this.canvas.mouse_drag_y = 0;
 	
     this.canvas.addEventListener('mousedown', function (evt) {
-        if (evt.button == 0) {
-            mouse_drag_x = evt.screenX; // screenX seems the least problematic way of getting coordinates
-            mouse_drag_y = evt.screenY;
-            mouse_dragging = true;
-        }
+		switch(evt.button) {
+			case 0: mouse_button = 1; break;	//left
+			case 1: mouse_button = 4; break;	//middle
+			case 2: mouse_button = 2; break;	//right
+			default: mouse_button = 0; break;
+		}
+        mouse_drag_x = evt.screenX; // screenX seems the least problematic way of getting coordinates
+        mouse_drag_y = evt.screenY;
+        mouse_dragging = true;
+		window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
     }, false);
 	
     this.canvas.addEventListener('mouseup', function (evt) {
-        if (evt.button == 0)
-            mouse_dragging = false;
+		mouse_button = 0;
+        mouse_dragging = false;
+		window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
     }, false);
 	
     this.canvas.addEventListener('mouseout', function (evt) {
+		mouse_button = 0;
         mouse_dragging = false;
+		window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
     }, false);
 	
     this.canvas.addEventListener('mousemove', function (evt) {
-        if (! mouse_dragging)
+        if (!mouse_dragging)
 			return;
         var dx = evt.screenX - mouse_drag_x;
         var dy = evt.screenY - mouse_drag_y;
         mouse_drag_x = evt.screenX;
         mouse_drag_y = evt.screenY;
 		window.status=this.id+' MOVE: '+evt.screenX+", "+evt.screenY;
-        this.parent.doc.ondrag(dx, dy);
+        this.parent.doc.ondrag(dx, dy, mouse_button);
     }, false);
 
 };

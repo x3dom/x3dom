@@ -500,6 +500,9 @@ x3dom.registerNodeType(
             var coordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
             ctx.assert(coordNode.length == 1);
             this._positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			
+			//x3dom.debug.logInfo("Indices:   "+this._indexes);
+			//x3dom.debug.logInfo("Positions: "+this._positions);
         }
     )
 );
@@ -795,6 +798,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Scene.super.call(this, ctx);
             this.rotation = 0;
             this.elevation = 0;
+			this.movement = new x3dom.fields.SFVec3(0, 0, 0);
         },
         {
             _getViewpointMatrix: function () {
@@ -814,6 +818,7 @@ x3dom.registerNodeType(
             getViewMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 return viewpoint.getRotationMatrix().transpose().
+					times(x3dom.fields.SFMatrix4.translation(this.movement)).
                     times(viewpoint.getTranslationMatrix()).
                     times(this._getViewpointMatrix());
             },
@@ -823,9 +828,19 @@ x3dom.registerNodeType(
                 return this._getViewpointMatrix().transformPos(viewpoint.getTranslation());
             },
     
-            ondrag: function (dx, dy) {
-                this.rotation += dx/100;
-                this.elevation = Math.max(-Math.PI, Math.min(Math.PI, this.elevation + dy/100));
+            ondrag: function (dx, dy, buttonState) {
+				if (buttonState & 1) {
+					this.rotation += dx/100;
+					this.elevation = Math.max(-Math.PI, Math.min(Math.PI, this.elevation + dy/100));
+				}
+				if (buttonState & 4) {
+					var vec = new x3dom.fields.SFVec3(dx/20,-dy/20,0);
+					this.movement = this.movement.add(vec);
+				}
+				if (buttonState & 2) {
+					var vec = new x3dom.fields.SFVec3(0,0,(dx+dy)/20);
+					this.movement = this.movement.add(vec);
+				}
             }
         }
     )
@@ -1100,6 +1115,6 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
     ctx.renderScene(this.env, this._scene, this._time);
 }
 
-x3dom.X3DDocument.prototype.ondrag = function (x, y) {
-    this._scene.ondrag(x, y);
+x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
+    this._scene.ondrag(x, y, buttonState);
 }
