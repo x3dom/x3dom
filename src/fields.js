@@ -85,7 +85,6 @@ x3dom.fields.SFMatrix4.scale = function (vec) {
     );
 }
 
-
 x3dom.fields.SFMatrix4.parseRotation = function (str) {
     var m = /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/.exec(str);
     var x = +m[1], y = +m[2], z = +m[3], a = +m[4];
@@ -108,7 +107,7 @@ x3dom.fields.SFMatrix4.parseRotation = function (str) {
     ).transpose();
 }
 
-x3dom.fields.SFMatrix4.prototype.times = function (that)  {
+x3dom.fields.SFMatrix4.prototype.mult = function (that)  {
     return new x3dom.fields.SFMatrix4(
         this._00*that._00+this._01*that._10+this._02*that._20+this._03*that._30, this._00*that._01+this._01*that._11+this._02*that._21+this._03*that._31, this._00*that._02+this._01*that._12+this._02*that._22+this._03*that._32, this._00*that._03+this._01*that._13+this._02*that._23+this._03*that._33,
         this._10*that._00+this._11*that._10+this._12*that._20+this._13*that._30, this._10*that._01+this._11*that._11+this._12*that._21+this._13*that._31, this._10*that._02+this._11*that._12+this._12*that._22+this._13*that._32, this._10*that._03+this._11*that._13+this._12*that._23+this._13*that._33,
@@ -117,7 +116,7 @@ x3dom.fields.SFMatrix4.prototype.times = function (that)  {
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.transformPos = function (vec) {
+x3dom.fields.SFMatrix4.prototype.multMatrixPnt = function (vec) {
     return new x3dom.fields.SFVec3(
         this._00*vec.x + this._01*vec.y + this._02*vec.z + this._03,
         this._10*vec.x + this._11*vec.y + this._12*vec.z + this._13,
@@ -125,7 +124,7 @@ x3dom.fields.SFMatrix4.prototype.transformPos = function (vec) {
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.transformNorm = function (vec) {
+x3dom.fields.SFMatrix4.prototype.multMatrixVec = function (vec) {
     return new x3dom.fields.SFVec3(
         this._00*vec.x + this._01*vec.y + this._02*vec.z,
         this._10*vec.x + this._11*vec.y + this._12*vec.z,
@@ -234,16 +233,16 @@ x3dom.fields.SFVec3.prototype.reflect = function (n) {
 
 x3dom.fields.SFVec3.prototype.normalised = function (that) {
     var n = Math.sqrt((this.x*this.x) + (this.y*this.y) + (this.z*this.z));
-    if (n) n = 1 / n;
+    if (n) n = 1.0 / n;
     return new x3dom.fields.SFVec3(this.x*n, this.y*n, this.z*n);
 }
 
-x3dom.fields.SFVec3.prototype.multiple = function (n) {
+x3dom.fields.SFVec3.prototype.scale = function (n) {
     this.x *= n;
     this.y *= n;
     this.z *= n;
     return this;
-};
+}
 
 x3dom.fields.SFVec3.prototype.toGL = function () {
     return [ this.x, this.y, this.z ];
@@ -264,7 +263,7 @@ x3dom.fields.SFQuaternion = function(x, y, z, w) {
     this.w = w;
 }
 
-x3dom.fields.SFQuaternion.prototype.times = function (that) {
+x3dom.fields.SFQuaternion.prototype.mult = function (that) {
     return new x3dom.fields.SFQuaternion(
         this.w*that.x + this.x*that.w + this.y*that.z - this.z*that.y,
         this.w*that.y + this.y*that.w + this.z*that.x - this.x*that.z,
@@ -307,7 +306,7 @@ x3dom.fields.SFQuaternion.prototype.dot = function (that) {
     return this.x*that.x + this.y*that.y + this.z*that.z + this.w*that.w;
 }
 
-x3dom.fields.SFQuaternion.prototype.plus = function (that) {
+x3dom.fields.SFQuaternion.prototype.add = function (that) {
     return new x3dom.fields.SFQuaternion(this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w);
 }
 
@@ -315,7 +314,7 @@ x3dom.fields.SFQuaternion.prototype.subtract = function (that) {
     return new x3dom.fields.SFQuaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
 }
 
-x3dom.fields.SFQuaternion.prototype.timesScalar = function (s) {
+x3dom.fields.SFQuaternion.prototype.multScalar = function (s) {
     return new x3dom.fields.SFQuaternion(this.x*s, this.y*s, this.z*s, this.w*s);
 }
 
@@ -326,15 +325,14 @@ x3dom.fields.SFQuaternion.prototype.normalised = function (that) {
     return new x3dom.fields.SFQuaternion(this.x*id, this.y*id, this.z*id, this.w*id);
 }
 
-
 x3dom.fields.SFQuaternion.prototype.slerp = function (that, t) {
     var dot = this.dot(that);
     if (dot > 0.995)
-        return this.plus(that.subtract(this).timesScalar(t)).normalised();
+        return this.add(that.subtract(this).multScalar(t)).normalised();
     dot = Math.max(-1, Math.min(1, dot));
     var theta = Math.acos(dot)*t;
-    var tother = that.subtract(this.timesScalar(dot)).normalised();
-    return this.timesScalar(Math.cos(theta)).plus(tother.timesScalar(Math.sin(theta)));
+    var tother = that.subtract(this.multScalar(dot)).normalised();
+    return this.multScalar(Math.cos(theta)).add(tother.multScalar(Math.sin(theta)));
 }
 
 x3dom.fields.SFQuaternion.prototype.toString = function () {

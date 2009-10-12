@@ -298,6 +298,7 @@ x3dom.registerNodeType(
     )
 );
 
+
 // TODO: X3DTextureNode
 // TODO: X3DTextureTransformNode
 
@@ -580,6 +581,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.Viewpoint.super.call(this, ctx);
+			this._attribute_SFFloat(ctx, 'fieldOfView', 0.785398);
             this._attribute_SFVec3(ctx, 'position', 0, 0, 10);
             this._attribute_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
             this._rotation = this._orientation.toMatrix();
@@ -594,6 +596,26 @@ x3dom.registerNodeType(
             getRotationMatrix: function () {
                 return this._rotation;
             },
+			getFieldOfView: function() {
+				return this._fieldOfView;
+			},
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Background",
+    "EnvironmentalEffects",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.Background.super.call(this, ctx);
+			
+            this._attribute_SFColor(ctx, 'skyColor', 0, 0, 0);
+        },
+        {
+			getSkyColor: function() {
+				return this._skyColor;
+			}
         }
     )
 );
@@ -687,7 +709,7 @@ x3dom.registerNodeType(
         },
         {
             _transformMatrix: function (transform) {
-                return transform.times( x3dom.fields.SFMatrix4.translation(this._translation).times(this._rotation.toMatrix()).times(x3dom.fields.SFMatrix4.scale(this._scale)) );
+                return transform.mult( x3dom.fields.SFMatrix4.translation(this._translation).mult(this._rotation.toMatrix()).mult(x3dom.fields.SFMatrix4.scale(this._scale)) );
             },
         }
     )
@@ -805,28 +827,41 @@ x3dom.registerNodeType(
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 var mat_viewpoint = viewpoint._getCurrentTransform();
                 var rightwards = viewpoint.getRotationMatrix().transpose().
-                    times(viewpoint.getTranslationMatrix()).
-                    times(mat_viewpoint).
-                    transformNorm(new x3dom.fields.SFVec3(1, 0, 0));
+                    mult(viewpoint.getTranslationMatrix()).
+                    mult(mat_viewpoint).
+                    multMatrixVec(new x3dom.fields.SFVec3(1, 0, 0));
                 var upwards = new x3dom.fields.SFVec3(0, 1, 0);
                 var rot = x3dom.fields.SFQuaternion.axisAngle(rightwards.cross(upwards).normalised(), -this.elevation). // XXX: this is all wrong
-                    times(x3dom.fields.SFQuaternion.axisAngle(upwards, this.rotation));
-                return mat_viewpoint.times(rot.toMatrix());
+                    mult(x3dom.fields.SFQuaternion.axisAngle(upwards, this.rotation));
+                return mat_viewpoint.mult(rot.toMatrix());
                 // TODO: x3dom.Viewpoint.centerOfRotation
             },
     
             getViewMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 return viewpoint.getRotationMatrix().transpose().
-					times(x3dom.fields.SFMatrix4.translation(this.movement)).
-                    times(viewpoint.getTranslationMatrix()).
-                    times(this._getViewpointMatrix());
+					mult(x3dom.fields.SFMatrix4.translation(this.movement)).
+                    mult(viewpoint.getTranslationMatrix()).
+                    mult(this._getViewpointMatrix());
             },
     
             getViewPosition: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
-                return this._getViewpointMatrix().transformPos(viewpoint.getTranslation());
+                return this._getViewpointMatrix().multMatrixPnt(viewpoint.getTranslation());
             },
+			
+			getFieldOfView: function() {
+                var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+				return viewpoint.getFieldOfView();
+			},
+			
+			getSkyColor: function() {
+				var bgnd = this._find(x3dom.nodeTypes.Background);
+				if (bgnd !== null)
+					return bgnd.getSkyColor().toGL();
+				else
+					return new Array(0,0,0);
+			},
     
             ondrag: function (dx, dy, buttonState) {
 				if (buttonState & 1) {
@@ -938,6 +973,7 @@ x3dom.registerNodeType(
 x3dom.nodeTypeMap = {
     'Appearance': { ctor: x3dom.nodeTypes.Appearance },
     'Box': { ctor: x3dom.nodeTypes.Box },
+	'Background': { ctor: x3dom.nodeTypes.Background },
     'FontStyle': { ctor: x3dom.nodeTypes.FontStyle },
     'IndexedFaceSet': { ctor: x3dom.nodeTypes.IndexedFaceSet },
     'Inline': { ctor: x3dom.nodeTypes.ExtInline }, // TODO: handle namespaces properly

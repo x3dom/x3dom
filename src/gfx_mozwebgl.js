@@ -320,8 +320,8 @@ x3dom.gfx_mozwebgl = (function () {
 	};
 
 
-function setupShape(env, gl, shape) {
-
+function setupShape(env, gl, shape) 
+{
     if (x3dom.isa(shape._geometry, Text)) {
         var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
         var text_ctx = text_canvas.getContext('2d');
@@ -367,80 +367,79 @@ function setupShape(env, gl, shape) {
             mask_texture: ids[0],
         };
 
-        getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], function (sp) { shape._webgl.shader = sp });
-
+        getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
+				function (sp) { shape._webgl.shader = sp });
     } 
-	else {
+	else 
+	{
         var coords = shape._geometry._positions;
-		var coordsNew = [];
         var idxs = shape._geometry._indexes;
         var vertFaceNormals = [];
 		var vertNormals = [];
+		
         for (var i = 0; i < coords.length/3; ++i)
             vertFaceNormals[i] = [];
 
         for (var i = 0, k=0, l=0; i < idxs.length; i += 3) {
-            var a = new x3dom.fields.SFVec3(coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
-                subtract(new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
-            var b = new x3dom.fields.SFVec3(coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
-                subtract(new x3dom.fields.SFVec3(coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+            var a = new x3dom.fields.SFVec3(
+					coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
+                subtract(new x3dom.fields.SFVec3(
+					coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
+            var b = new x3dom.fields.SFVec3(
+					coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
+                subtract(new x3dom.fields.SFVec3(
+					coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+			
             var n = a.cross(b).normalised();
-            vertFaceNormals[idxs[i]].push(n);
+			
+            vertFaceNormals[idxs[i  ]].push(n);
             vertFaceNormals[idxs[i+1]].push(n);
             vertFaceNormals[idxs[i+2]].push(n);
-			
-			//FIXME; the problem is, that without index pointer the indices are wrong!
-			//		 but we have to resolve missing indices somehow (better in shape?)
-			coordsNew[k++] = coords[idxs[i+0]*3+0];
-			coordsNew[k++] = coords[idxs[i+0]*3+1];
-			coordsNew[k++] = coords[idxs[i+0]*3+2];
-			coordsNew[k++] = coords[idxs[i+1]*3+0];
-			coordsNew[k++] = coords[idxs[i+1]*3+1];
-			coordsNew[k++] = coords[idxs[i+1]*3+2];
-			coordsNew[k++] = coords[idxs[i+2]*3+0];
-			coordsNew[k++] = coords[idxs[i+2]*3+1];
-			coordsNew[k++] = coords[idxs[i+2]*3+2];
-			
-			for (var r=0; r<9; r++)
-				vertNormals[l++] = n.toGL()[r%3];
         }
-		/*
+		
         for (var i = 0; i < coords.length; i += 3) {
             var n = new x3dom.fields.SFVec3(0, 0, 0);
             for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
                 n = n.add(vertFaceNormals[i/3][j]);
+			
             n = n.normalised();
-            vertNormals[i] = n.x;
+            vertNormals[i  ] = n.x;
             vertNormals[i+1] = n.y;
             vertNormals[i+2] = n.z;
         }
-		*/
 		
         shape._webgl = {
-            positions: coordsNew,
+            positions: coords,
             normals: vertNormals,
             indexes: idxs,
         };
 		
+		/*
 		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.IndexedFaceSet)) {
-			//x3dom.debug.logInfo("GL-Indices:   "+shape._webgl.indexes);
-			//x3dom.debug.logInfo("GL-Positions: "+shape._webgl.positions);
-			//x3dom.debug.logInfo("GL_Normals:   "+shape._webgl.normals);
+			x3dom.debug.logInfo(shape._webgl.indexes.length+" GL-Indices:   "+shape._webgl.indexes);
+			x3dom.debug.logInfo(shape._webgl.positions.length+" GL-Positions: "+shape._webgl.positions);
+			x3dom.debug.logInfo(shape._webgl.normals.length+" GL_Normals:   "+shape._webgl.normals);
 		}
+		*/
 
-		// 'fs-x3d-untextured'], 
-        getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], //'fs-x3d-shownormal'], 
+		// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
+        getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
 							function (sp) { shape._webgl.shader = sp });
     }
 }
 
-	Context.prototype.renderScene = function (env, scene, t) {
+	Context.prototype.renderScene = function (env, scene, t) 
+	{
 		var gl = this.ctx3d;
 
-		//x3dom.debug.logInfo("w=" + winWidth + ", h=" + winHeight);
-		
+		//FIXME; the width/height property is overwritten by succeeding x3d elems?!
+		//x3dom.debug.logInfo("w=" + winWidth + ", h=" + winHeight);		
 		//gl.viewport(0,0,winWidth,winHeight);
-		gl.clearColor(0.5, 0.8, 0.9, 1.0);
+		
+		var bgCol = scene.getSkyColor();
+		//x3dom.debug.logInfo("bgCol=" + bgCol);
+		
+		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], 1.0);
 		gl.clearDepthf(1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 		gl.enable(gl.DEPTH_TEST);
@@ -456,13 +455,17 @@ function setupShape(env, gl, shape) {
 			};
 		}
 		
-		var mat_projection = setCamera(0.785398, winWidth/winHeight, 1000, 0.1);
+		var fov = scene.getFieldOfView();
+		//x3dom.debug.logInfo("fov=" + fov);
+		
+		var mat_projection = setCamera(fov, winWidth/winHeight, 1000, 0.1);
 		//var mat_projection = makeFrustum(0, winWidth-1, 0, winHeight-1, 1000, 1);
 		var mat_view = scene.getViewMatrix();
 
 		var drawableObjects = [];
 		scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), drawableObjects);
-		Array.forEach(drawableObjects, function (obj) {
+		Array.forEach(drawableObjects, function (obj) 
+		{
 			var transform = obj[0];
 			var shape = obj[1];
 
@@ -486,11 +489,13 @@ function setupShape(env, gl, shape) {
 				sp.shininess = mat._shininess;
 				sp.specularColor = mat._specularColor.toGL();
 				sp.alpha = 1.0 - mat._transparency;
-			} else {
+			} 
+			else {
 				// TODO: should disable lighting and set to 1,1,1 when no Material
 			}
 
-			if (shape._webgl.mask_texture) {
+			if (shape._webgl.mask_texture) 
+			{
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, shape._webgl.mask_texture);
 				sp.tex = 0;
@@ -502,40 +507,51 @@ function setupShape(env, gl, shape) {
 					gl.ONE_MINUS_DST_ALPHA, gl.ONE // TODO: is this sensible?
 				);
 				//gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-			} else {
+			} 
+			else {
 				gl.disable(gl.BLEND);
 			}
 
 			sp.modelMatrix = transform.toGL();
-			sp.modelViewMatrix = mat_view.times(transform).toGL();
-			sp.modelViewProjectionMatrix = mat_projection.times(mat_view).times(transform).toGL();
-			if (sp.position !== undefined) {
-				positionBuffer = gl.createBuffer();
+			sp.modelViewMatrix = mat_view.mult(transform).toGL();
+			sp.modelViewProjectionMatrix = mat_projection.mult(mat_view).mult(transform).toGL();
+			
+			if (sp.position !== undefined) 
+			{
+				var positionBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, new CanvasFloatArray(shape._webgl.positions), gl.STATIC_DRAW);
+				gl.bufferData(gl.ARRAY_BUFFER, 
+						new CanvasFloatArray(shape._webgl.positions), gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
 				gl.enableVertexAttribArray(sp.position);
+				
+				// bind indizes for drawElements() call
+				var indicesBuffer = gl.createBuffer();
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 
+						new CanvasUnsignedShortArray(shape._webgl.indexes), gl.STATIC_DRAW);
 			}
-			if (sp.normal !== undefined) {
+			if (sp.normal !== undefined) 
+			{
 				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.normals));
 				gl.enableVertexAttribArray(sp.normal);
 			}
 			
 			// x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
-			//gl.drawElements(gl.TRIANGLES, shape._webgl.positions.length/3, gl.UNSIGNED_SHORT, 0);
-			//gl.drawElements( gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 
-			//					new CanvasUnsignedShortArray(shape._webgl.indexes) );
 			
-			gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
+			//gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
+			gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 			
-
 			// TODO: make this state-cleanup nicer
-			if (sp.position !== undefined)
+			if (sp.position !== undefined) {
 				gl.disableVertexAttribArray(sp.position);
-			if (sp.normal !== undefined)
+				gl.deleteBuffer(positionBuffer);
+				gl.deleteBuffer(indicesBuffer);
+			}
+			if (sp.normal !== undefined) {
 				gl.disableVertexAttribArray(sp.normal);
-
+			}
 		});
 			
 		// XXX: nasty hack to fix Firefox compositing the non-premultiplied canvas as if it were premultiplied
@@ -548,20 +564,7 @@ function setupShape(env, gl, shape) {
 		
 		//x3dom.debug.logInfo(gl.getString(gl.VENDOR)+"/"+gl.getString(gl.RENDERER)+"/"+
 		//					gl.getString(gl.VERSION)+"/"+gl.getString(gl.EXTENSIONS)+);
-	
-	/*
-		var sp = scene._webgl.shader;
-		sp.bind();
-		sp.modelViewProjectionMatrix = x3dom.fields.SFMatrix4.identity().toGL();
-		sp.diffuseColor = [ 1, 0, 0 ];
-		sp.alpha = 1;
-		gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, [-1,-1,0, -1,1,0, 1,1,0, 1,-1,0]);
-		gl.enableVertexAttribArray(sp.position);
-		gl.drawArrays(gl.TRIANGLES, 0, [0,2,1, 3,2,0]);
-
-		sp.diffuseColor = [ 1, 0, 1 ];
-		// gl.flush();
-	*/
+		//gl.flush();
 	};
 
 	return setupContext;
