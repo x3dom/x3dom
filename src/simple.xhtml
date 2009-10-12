@@ -24,141 +24,138 @@
 
 <script type="text/javascript" >
 
-// Test the x3dom object    
-var userData = {
-    shaderProgram: null
-};        
-    
-function loadShader(gl, shaderType, shaderSource)
-{
-    // Create the shader object
-    var shader = gl.createShader(shaderType);
-    if (shader == 0) return 0;
-
-    // Load the shader source
-    gl.shaderSource(shader, shaderSource);
-
-    // Compile the shader
-    gl.compileShader(shader);
-
-    // Check the compile status. OpenGL ES2.0 defines a "getShaderiv", WebGL only has "getShaderi"
-    // which returns the result rather than putting it into the 3rd parameter.
-    var compiled = gl.getShaderi(shader, gl.COMPILE_STATUS);
-    if (!compiled) {
-        // Something went wrong during compilation; get the error
-        var error = gl.getShaderInfoLog(shader);
-        alert("Error compiling shader source: " + error);
-        // log(error);
-        gl.deleteShader(shader);
-        return 0;
-    }
-
-    return shader;
-}
-
-function init() {
-    // Aquire the canvas element
-    var canvas = document.getElementById("canvas");
-	var ctx = canvas.getContext('moz-webgl');
-    var gl = ctx; //getContext(canvas);
-    userData.gl = gl;
-    
-    // Setup a vertex and fragment shader and attach it to program
-    
-    // put shader source in variables; see later examples
-    // for a more efficient way to do this within HTML.
-    var vertexShaderSource = 
-        "attribute vec4 vPosition;     \n" +
-        "void main()                   \n" +
-        "{                             \n" +
-        "  gl_Position = vPosition;    \n" +
-        "} ";
-    var fragmentShaderSource =
-        "/*precision mediump float;*/  \n" +
-        "void main()                   \n" +
-        "{                             \n" +
-        "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n" +
-        "} ";
-
-    // create our shaders
-    var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
-    var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);     
-    
-    // Create the shader program object
-    var programObject = gl.createProgram();
-    if (programObject == 0) return false;
-    
-    // Store the shader program in the global user data (which is not 
-    // the best solution)
-    userData.shaderProgram = programObject;
-
-    // Attach our two shaders to the program
-    gl.attachShader (programObject, vertexShader);
-    gl.attachShader (programObject, fragmentShader);
-    
-    // Link the program
-    gl.linkProgram(programObject);
-
-    // Check the link status
-    var linked = gl.getProgrami(programObject, gl.LINK_STATUS);
-    if (!linked) {
-        // something went wrong with the link
-        var error = gl.getProgramInfoLog (programObject);
-        log(error);
-    
-        gl.deleteProgram(programObject);
-        gl.deleteShader(fragmentShader);
-        gl.deleteShader(vertexShader);
-    
-        return false;
-    }
-    
-    return true;
-}
-
-
-function draw(gl)
-{
-    var vertices = [  0.0,  0.5,  0.0,
-                     -0.5, -0.5,  0.0,
-                      0.5, -0.5,  0.0  ];
-
-    // Set up the viewport
-    //gl.viewport(0, 0, canvasWidth, canvasHeight);
-    gl.viewport(0, 0, 400, 300);
-
-    // Clear the color buffer
-    
-    gl.clearDepthf(1.0);
-    gl.clearColor(0.4, 0.4, 0.4, 1);
-    gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
-
-    // Use the program object we created in init()
-    gl.useProgram(userData.shaderProgram);
-    gl.enableVertexAttribArray(0);
-    
-    // Create a buffer for the vertices
-    var verticeBuffer = gl.createBuffer();
-    gl.bindBuffer(gl.ARRAY_BUFFER, verticeBuffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new CanvasFloatArray(vertices), gl.STATIC_DRAW);
-    
-    // Load the vertex data
-    // XXX we seem to have lost the |normalized| and |stride| params!
-    gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);    
-
-    // Do the draw, as triangles
-    gl.drawArrays(gl.TRIANGLES, 0, 3);
-    
-    //gl.flush();
-}
+// // Test the x3dom object    
+// var userData = {
+//     shaderProgram: null
+// };        
+//     
+// function loadShader(gl, shaderType, shaderSource)
+// {
+//     // Create the shader object
+//     var shader = gl.createShader(shaderType);
+//     if (shader == 0) return 0;
+// 
+//     // Load the shader source
+//     gl.shaderSource(shader, shaderSource);
+// 
+//     // Compile the shader
+//     gl.compileShader(shader);
+// 
+//     // Check the compile status. OpenGL ES2.0 defines a "getShaderiv", WebGL only has "getShaderi"
+//     // which returns the result rather than putting it into the 3rd parameter.
+//     var compiled = gl.getShaderi(shader, gl.COMPILE_STATUS);
+//     if (!compiled) {
+//         // Something went wrong during compilation; get the error
+//         var error = gl.getShaderInfoLog(shader);
+//         alert("Error compiling shader source: " + error);
+//         // log(error);
+//         gl.deleteShader(shader);
+//         return 0;
+//     }
+// 
+//     return shader;
+// }
+// 
+// function init() {
+//     // Aquire the canvas element
+//     var canvas = document.getElementById("canvas");
+// 	var ctx = canvas.getContext('moz-webgl');
+//     var gl = ctx; //getContext(canvas);
+//     userData.gl = gl;
+//     
+//     // Setup a vertex and fragment shader and attach it to program
+//     
+//     // put shader source in variables; see later examples
+//     // for a more efficient way to do this within HTML.
+//     var vertexShaderSource = 
+//         "attribute vec4 vPosition;     \n" +
+//         "void main()                   \n" +
+//         "{                             \n" +
+//         "  gl_Position = vPosition;    \n" +
+//         "} ";
+//     var fragmentShaderSource =
+//         "/*precision mediump float;*/  \n" +
+//         "void main()                   \n" +
+//         "{                             \n" +
+//         "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n" +
+//         "} ";
+// 
+//     // create our shaders
+//     var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+//     var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);     
+//     
+//     // Create the shader program object
+//     var programObject = gl.createProgram();
+//     if (programObject == 0) return false;
+//     
+//     // Store the shader program in the global user data (which is not 
+//     // the best solution)
+//     userData.shaderProgram = programObject;
+// 
+//     // Attach our two shaders to the program
+//     gl.attachShader (programObject, vertexShader);
+//     gl.attachShader (programObject, fragmentShader);
+//     
+//     // Link the program
+//     gl.linkProgram(programObject);
+// 
+//     // Check the link status
+//     var linked = gl.getProgrami(programObject, gl.LINK_STATUS);
+//     if (!linked) {
+//         // something went wrong with the link
+//         var error = gl.getProgramInfoLog (programObject);
+//         log(error);
+//     
+//         gl.deleteProgram(programObject);
+//         gl.deleteShader(fragmentShader);
+//         gl.deleteShader(vertexShader);
+//     
+//         return false;
+//     }
+//     
+//     return true;
+// }
+// 
+// 
+// function draw(gl)
+// {
+//     var vertices = [  0.0,  0.5,  0.0,
+//                      -0.5, -0.5,  0.0,
+//                       0.5, -0.5,  0.0  ];
+// 
+//     // Set up the viewport
+//     //gl.viewport(0, 0, canvasWidth, canvasHeight);
+//     gl.viewport(0, 0, 400, 300);
+// 
+//     // Clear the color buffer
+//     
+//     gl.clearDepthf(1.0);
+//     gl.clearColor(0.4, 0.4, 0.4, 1);
+//     gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+// 
+//     // Use the program object we created in init()
+//     gl.useProgram(userData.shaderProgram);
+//     gl.enableVertexAttribArray(0);
+//     
+//     // Create a buffer for the vertices
+//     var verticeBuffer = gl.createBuffer();
+//     gl.bindBuffer(gl.ARRAY_BUFFER, verticeBuffer);
+//     gl.bufferData(gl.ARRAY_BUFFER, new CanvasFloatArray(vertices), gl.STATIC_DRAW);
+//     
+//     // Load the vertex data
+//     // XXX we seem to have lost the |normalized| and |stride| params!
+//     gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);    
+// 
+//     // Do the draw, as triangles
+//     gl.drawArrays(gl.TRIANGLES, 0, 3);
+//     
+//     //gl.flush();
+// }
 
 </script>
        
 <body style="background-color:#E0E0E0;">
-	<!--<div>
-		<canvas id="canvas" width="400" height="300" />
-	</div>-->
-	
+
     <h1>x3dom simple example</h1>
 	
 	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
@@ -247,6 +244,42 @@ function draw(gl)
 	<script type="text/javascript" src="fields.js"></script>
 	
 	<script type="text/javascript" ><![CDATA[
+        
+       window.onload = function() {
+            
+            /* Test DOM updates by randomly changing the flipper color... */
+            var mats = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Material');
+            x3dom.debug.logInfo("Found " + mats.length + " materials.");
+            // the last material is the flipper material
+            var flipperMat = mats[5];
+            // change the color randomly every second
+            setInterval( function() {
+                    var r, g, b;
+                    r = Math.random();
+                    g = Math.random();
+                    b = Math.random();
+                    // the color is X3D and not CSS, thus e.g. red is "1 0 0" rather than "#f00"
+                    flipperMat.setAttribute("diffuseColor", r.toString() + " " + g.toString() + " " + b.toString());
+                },
+                1000
+            );
+
+            /* Another DOM updates test which animates the scale of the first cube */
+            var trans = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Transform');           
+            var cubeTrans = trans[0];
+            var cubeScale = 0;
+            var scaleFac = 0.01;
+            setInterval( function() {                    
+                    if (cubeScale>1.0-scaleFac || cubeScale<(0.0)) {
+                        scaleFac *= -1;                        
+                    }
+                    cubeScale += scaleFac;
+                    cubeTrans.setAttribute("scale", cubeScale.toString() + " " + cubeScale.toString() + " " + cubeScale.toString());
+                },
+                40
+            );
+        };
+
 	/*
 	//window.onload = function() {
 		init();

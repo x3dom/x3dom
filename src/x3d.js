@@ -175,6 +175,20 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                 Array.forEach(listeners, function (l) { l.call(thisp, msg) });
         },
 
+        // PE: Hacky test for field updates
+        _updateField: function (field, msg) {
+            var fieldName = "_" +  field;
+            
+            var f = this[fieldName];
+            x3dom.debug.logInfo("_updateField: field=" + field + ", msg=" + msg + ", f=" + f);
+            if (f!==null) {
+                x3dom.debug.logInfo("_updateField: ####" + typeof(f));
+                if (f.constructor === x3dom.fields.SFVec3) {
+                    this[fieldName] = x3dom.fields.SFVec3.parse(msg);
+                }
+            }
+        },
+
         _setupRoute: function (fromField, toNode, toField) {
             if (! this._fieldWatchers[fromField])
                 this._fieldWatchers[fromField] = [];
@@ -1104,7 +1118,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 3: "REMOVAL"
             };
             x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
-            console.dir(e);
+            // console.dir(e);
+            e.target._x3domNode._updateField(e.attrName, e.newValue);
+            
         },
         onNodeRemoved: function(e) {
             x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", node=" + e.target.tagName);
@@ -1130,6 +1146,8 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
         } else {
             ctx.xmlNode = node;
             n = new t.ctor(ctx);
+            // PE: Try to store the X3D element on the original DOM element
+            node._x3domNode = n;
             if (t.autoChild)
                 Array.forEach(Array.map(node.childNodes, function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), function (c) { if (c) n.addChild(c) });
             return n;
