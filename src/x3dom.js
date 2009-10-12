@@ -221,9 +221,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 x3dom.X3DCanvas.prototype.tick = function() {
     
     if (this.showFps) {
+        var d = new Date();
         if (++this.fps_n == 10) {
-            this.fpsDiv.textContent = (this.fps_n*1000 / (new Date() - this.fps_t0)).toFixed(2) + ' fps';
-            this.fps_t0 = new Date();
+            this.fpsDiv.textContent = (this.fps_n*1000 / (d - this.fps_t0)).toFixed(2) + ' fps';
+            this.fps_t0 = d;
             this.fps_n = 0;
         }
         try {
@@ -257,7 +258,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
                 canvas.tick();
                 // x3dom.debug.logInfo("##" + canvas.canvas.id + doc._scene.ctx); 
             }, 
-            250
+            10
         );
     };
     
@@ -313,7 +314,9 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 
 (function (){
     
-    window.onload = function() {
+    
+
+    var onload = function() {
 
         // Activate debugging/logging for x3dom. Logging will only work for
         // all log calls after this line!
@@ -336,4 +339,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         // Test nodetype registration
         // x3dom.registerNodeType("Foo", "Bar", {});
     };
+
+    window.addEventListener('load', onload, false);
+
 })();
