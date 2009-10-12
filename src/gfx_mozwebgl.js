@@ -29,7 +29,7 @@ x3dom.gfx_mozwebgl = (function () {
 	g_shaders['vs-x3d-textured'] = { type: "vertex", data:
 		"attribute vec3 position;" +
 		"attribute vec3 normal;" +
-		"attribute vec2 texcoord;" +
+		//"attribute vec2 texcoord;" +
 		"varying vec3 fragNormal;" +
 		"varying vec3 fragLightVector;" +
 		"varying vec3 fragEyeVector;" +
@@ -45,7 +45,8 @@ x3dom.gfx_mozwebgl = (function () {
 		"    fragNormal = normalize(vec3(modelMatrix * vec4(normal, 0.0)));" +
 		"    fragLightVector = lightPosition - vec3(modelMatrix * vec4(position, 1.0));" +
 		"    fragEyeVector = eyePosition - vec3(modelMatrix * vec4(position, 1.0));" +
-		"    fragTexCoord = texcoord;" +
+		//"    fragTexCoord = texcoord;" +
+		"    fragTexCoord = position.yz;" +
 		"}"
 		};
 		
@@ -70,7 +71,8 @@ x3dom.gfx_mozwebgl = (function () {
 		"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
-		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
+		"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
+		//"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
 		"}"
 		};
 
@@ -423,7 +425,8 @@ function setupShape(env, gl, shape)
 		*/
 
 		// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
-        getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
+        //getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
+		getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
 							function (sp) { shape._webgl.shader = sp });
     }
 }
@@ -511,6 +514,23 @@ function setupShape(env, gl, shape)
 			else {
 				gl.disable(gl.BLEND);
 			}
+			
+			/*
+				var texture = gl.createTexture();
+				texture.image = new Image();
+				texture.image.onload = function()
+				{
+					gl.enable(gl.TEXTURE_2D);
+					gl.bindTexture(gl.TEXTURE_2D,texture);
+					gl.texImage2D(gl.TEXTURE_2D,0,texture.image);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+					gl.generateMipmap(gl.TEXTURE_2D);
+				}
+				texture.image.src="file:///C:/cygwin/home/yvonne/devel/x3dom/src/ogl.jpg";
+			*/
 
 			sp.modelMatrix = transform.toGL();
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
@@ -542,6 +562,8 @@ function setupShape(env, gl, shape)
 			
 			//gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
 			gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+			
+			//gl.deleteTexture(texture);
 			
 			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined) {
