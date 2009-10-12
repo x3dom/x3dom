@@ -88,6 +88,9 @@ x3dom.X3DCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
         var canvas = this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
         var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+		//canvas.setAttribute("width","400px");
+		//canvas.setAttribute("height","300px");
+		//alert(canvas.width + " / " + canvas.height);
         canvasDiv.appendChild(canvas);
         x3dElem.parentNode.insertBefore(canvasDiv, x3dElem);
 
@@ -104,11 +107,15 @@ x3dom.X3DCanvas = function(x3dElem) {
             x3dom.debug.logInfo("width=" + w);
 			winSize.w = parseInt(w);
             canvas.style.width = w.toString();
+			//Attention: pbuffer dim is _not_ derived from style attribs!
+			canvas.setAttribute("width",canvas.style.width);
         }
         if ((h = x3dElem.getAttribute("height")) !== null) {
             x3dom.debug.logInfo("height=" + h);
 			winSize.h = parseInt(h);
             canvas.style.height = h.toString();
+			//Attention: pbuffer dim is _not_ derived from style attribs!
+			canvas.setAttribute("height",canvas.style.height);
         }
         if ((showFps = x3dElem.getAttribute("showFps")) !== null) {
             if (showFps == "false") {

@@ -12,17 +12,17 @@
 		div#x3dom_logdiv { height: 30em; overflow: auto; white-space: pre-wrap; font-size: x-small; }
 		div#x3dom_logdiv p { margin: 0; }
         div.fps {
-            left:-533px;
+            left:-100px;
             position:relative;
-            top:5px;
-            color: #aaa;
-            font-size: 9px;
+            top:20px;
+            color:#f40;
+            font-size:14px;
         }
 		/*div#foo { margin-top: -50px; color: #f00; }*/
 		</style>
 	</head>
 
-<!--<script type="text/javascript" >
+<script type="text/javascript" >
 
 // Test the x3dom object    
 var userData = {
@@ -59,9 +59,10 @@ function loadShader(gl, shaderType, shaderSource)
 function init() {
     // Aquire the canvas element
     var canvas = document.getElementById("canvas");
-    var gl = getContext(canvas);
+	var ctx = canvas.getContext('moz-webgl');
+    var gl = ctx; //getContext(canvas);
     userData.gl = gl;
-        
+    
     // Setup a vertex and fragment shader and attach it to program
     
     // put shader source in variables; see later examples
@@ -124,7 +125,7 @@ function draw(gl)
 
     // Set up the viewport
     //gl.viewport(0, 0, canvasWidth, canvasHeight);
-    gl.viewport(0, 0, 200, 150);
+    gl.viewport(0, 0, 400, 300);
 
     // Clear the color buffer
     
@@ -148,17 +149,22 @@ function draw(gl)
     // Do the draw, as triangles
     gl.drawArrays(gl.TRIANGLES, 0, 3);
     
-    gl.flush();
+    //gl.flush();
 }
 
-</script>-->
+</script>
        
 <body style="background-color:#E0E0E0;">
+	<!--<div>
+		<canvas id="canvas" width="400" height="300" />
+	</div>-->
+	
     <h1>x3dom simple example</h1>
 	
 	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" x="0px" y="10px" width="400px" height="300px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="10px" width="400px" height="300px">
 			<Scene>
+				<Background skyColor='0.51 0.81 0.95' />
 				<Transform rotation="1 0 0 0.9">
 					<Shape>
 						<Appearance>
@@ -214,7 +220,7 @@ function draw(gl)
         </X3D>
 		
 		&nbsp;
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" x="0px" y="10px" width="256px" height="192px">
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" showFps="true" x="0px" y="10px" width="256px" height="192px">
 			<Scene>
 			    <Viewpoint position='0 0 600'/>
 				<Background groundAngle='0.9 1.5 1.57' groundColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.51 0.81 0.95' skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.51 0.81 0.95' groundTransparency='0.5 0.5 0.5 0.5' skyTransparency='0.5 0.5 0.5 0.5'/>
@@ -239,8 +245,14 @@ function draw(gl)
 	<script type="text/javascript" src="gfx_mozwebgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="fields.js"></script>
-
+	
 	<script type="text/javascript" ><![CDATA[
+	/*
+	//window.onload = function() {
+		init();
+		draw(userData.gl);
+	//};
+	*/
 	]]></script>
 
 </body>

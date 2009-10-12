@@ -437,6 +437,8 @@ function setupShape(env, gl, shape) {
 	Context.prototype.renderScene = function (env, scene, t) {
 		var gl = this.ctx3d;
 
+		//x3dom.debug.logInfo("w=" + winWidth + ", h=" + winHeight);
+		
 		//gl.viewport(0,0,winWidth,winHeight);
 		gl.clearColor(0.5, 0.8, 0.9, 1.0);
 		gl.clearDepthf(1.0);
@@ -507,7 +509,6 @@ function setupShape(env, gl, shape) {
 			sp.modelMatrix = transform.toGL();
 			sp.modelViewMatrix = mat_view.times(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_projection.times(mat_view).times(transform).toGL();
-			// x3dom.debug.logInfo("sp.position=" + sp.normal);
 			if (sp.position !== undefined) {
 				positionBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
