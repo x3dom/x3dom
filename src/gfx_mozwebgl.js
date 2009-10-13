@@ -422,9 +422,14 @@ function setupShape(env, gl, shape)
 		*/
 
 		// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
-        //getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
-		getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
+		if (shape._appearance._texture) {
+			getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
 							function (sp) { shape._webgl.shader = sp });
+		}
+		else {
+			getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
+							function (sp) { shape._webgl.shader = sp });
+		}
     }
 }
 
@@ -512,7 +517,8 @@ function setupShape(env, gl, shape)
 				gl.disable(gl.BLEND);
 			}
 			
-			/*
+			var tex = shape._appearance._texture;
+			if (tex) {
 				var texture = gl.createTexture();
 				texture.image = new Image();
 				texture.image.onload = function()
@@ -521,13 +527,16 @@ function setupShape(env, gl, shape)
 					gl.bindTexture(gl.TEXTURE_2D,texture);
 					gl.texImage2D(gl.TEXTURE_2D,0,texture.image);
 					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+					//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
 					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
 					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
 					gl.generateMipmap(gl.TEXTURE_2D);
 				}
-				texture.image.src="file:///C:/cygwin/home/yvonne/devel/x3dom/src/ogl.jpg";
-			*/
+				
+				//x3dom.debug.logInfo("tex url: " + tex._url);
+				texture.image.src = tex._url;
+			}
 
 			sp.modelMatrix = transform.toGL();
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();

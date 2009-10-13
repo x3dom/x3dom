@@ -180,9 +180,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             var fieldName = "_" +  field;
             
             var f = this[fieldName];
-            x3dom.debug.logInfo("_updateField: field=" + field + ", msg=" + msg + ", f=" + f);
+            //x3dom.debug.logInfo("_updateField: field=" + field + ", msg=" + msg + ", f=" + f);
             if (f!==null) {
-                x3dom.debug.logInfo("_updateField: ####" + typeof(f));
+                //x3dom.debug.logInfo("_updateField: ####" + typeof(f));
                 if (f.constructor === x3dom.fields.SFVec3) {
                     this[fieldName] = x3dom.fields.SFVec3.parse(msg);
                 }
@@ -249,6 +249,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Appearance.super.call(this, ctx);
     
             var material = null;
+			var texture = null;
             Array.forEach(ctx.xmlNode.childNodes, function (node) {
                 if (x3dom.isX3DElement(node)) {
                     var child = ctx.setupNodePrototypes(node, ctx);
@@ -256,13 +257,18 @@ x3dom.registerNodeType(
                         if (x3dom.isa(child, x3dom.nodeTypes.X3DMaterialNode)) {
                             ctx.assert(! material, 'has <= 1 material node');
                             material = child;
-                        } else {
+                        }
+						else if (x3dom.isa(child, x3dom.nodeTypes.X3DTextureNode)) {
+							texture = child;
+						}
+						else {
                             ctx.log('unrecognised x3dom.Appearance child node type '+node.localName);
                         }
                     }
                 }
             });
             this._material = material;
+			this._texture = texture;
         }
     )
 );
@@ -312,8 +318,31 @@ x3dom.registerNodeType(
     )
 );
 
+x3dom.registerNodeType(
+    "X3DTextureNode",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DTextureNode.super.call(this, ctx);
+        }
+    )
+);
 
-// TODO: X3DTextureNode
+x3dom.registerNodeType(
+    "ImageTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.ImageTexture.super.call(this, ctx);
+			
+            this._attribute_MFString(ctx, 'url', []);
+            this._attribute_SFBool(ctx, 'repeatS', true);
+            this._attribute_SFBool(ctx, 'repeatT', true);
+        }
+    )
+);
+
+
 // TODO: X3DTextureTransformNode
 
 /**** x3dom.X3DGeometryNode ****/
@@ -989,6 +1018,7 @@ x3dom.nodeTypeMap = {
     'Box': { ctor: x3dom.nodeTypes.Box },
 	'Background': { ctor: x3dom.nodeTypes.Background },
     'FontStyle': { ctor: x3dom.nodeTypes.FontStyle },
+	'ImageTexture': { ctor: x3dom.nodeTypes.ImageTexture },
     'IndexedFaceSet': { ctor: x3dom.nodeTypes.IndexedFaceSet },
     'Inline': { ctor: x3dom.nodeTypes.ExtInline }, // TODO: handle namespaces properly
     'Material': { ctor: x3dom.nodeTypes.Material },
@@ -1117,7 +1147,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 2: "ADDITION",
                 3: "REMOVAL"
             };
-            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
+            //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
             // console.dir(e);
             e.target._x3domNode._updateField(e.attrName, e.newValue);
             

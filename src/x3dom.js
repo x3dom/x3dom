@@ -248,7 +248,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
                 canvas.tick();
                 // x3dom.debug.logInfo("##" + canvas.canvas.id + doc._scene.ctx); 
             }, 
-            10
+            100
         );
     };
     
