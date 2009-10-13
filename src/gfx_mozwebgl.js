@@ -26,7 +26,7 @@ x3dom.gfx_mozwebgl = (function () {
 	g_shaders['vs-x3d-textured'] = { type: "vertex", data:
 		"attribute vec3 position;" +
 		"attribute vec3 normal;" +
-		//"attribute vec2 texcoord;" +
+		"attribute vec2 texcoord;" +
 		"varying vec3 fragNormal;" +
 		"varying vec3 fragLightVector;" +
 		"varying vec3 fragEyeVector;" +
@@ -42,8 +42,7 @@ x3dom.gfx_mozwebgl = (function () {
 		"    fragNormal = normalize(vec3(modelMatrix * vec4(normal, 0.0)));" +
 		"    fragLightVector = lightPosition - vec3(modelMatrix * vec4(position, 1.0));" +
 		"    fragEyeVector = eyePosition - vec3(modelMatrix * vec4(position, 1.0));" +
-		//"    fragTexCoord = texcoord;" +
-		"    fragTexCoord = position.yz;" +
+		"    fragTexCoord = texcoord;" +
 		"}"
 		};
 		
@@ -373,6 +372,7 @@ function setupShape(env, gl, shape)
 	{
         var coords = shape._geometry._positions;
         var idxs = shape._geometry._indexes;
+		var texCoords = shape._geometry._texCoords;
         var vertFaceNormals = [];
 		var vertNormals = [];
 		
@@ -411,6 +411,7 @@ function setupShape(env, gl, shape)
             positions: coords,
             normals: vertNormals,
             indexes: idxs,
+			texcoords: texCoords,
         };
 		
 		/*
@@ -563,6 +564,11 @@ function setupShape(env, gl, shape)
 				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.normals));
 				gl.enableVertexAttribArray(sp.normal);
 			}
+			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined)
+			{
+				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.texcoords));
+				gl.enableVertexAttribArray(sp.texcoord);
+			}
 			
 			// x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
 			
@@ -579,6 +585,9 @@ function setupShape(env, gl, shape)
 			}
 			if (sp.normal !== undefined) {
 				gl.disableVertexAttribArray(sp.normal);
+			}
+			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined) {
+				gl.disableVertexAttribArray(sp.texcoord);
 			}
 		});
 			

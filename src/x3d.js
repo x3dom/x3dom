@@ -542,14 +542,28 @@ x3dom.registerNodeType(
             // TODO: solid; ccw
     
             var coordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
-            ctx.assert(coordNode.length == 1);
+			ctx.assert(coordNode.length == 1);
             this._positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			
+			var normalNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
+            if (normalNode.length == 1)
+				this._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			
+            var texCoordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
+            if (texCoordNode.length == 1)
+				this._texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			
 			//x3dom.debug.logInfo("Indices:   "+this._indexes);
 			//x3dom.debug.logInfo("Positions: "+this._positions);
+			
+			// TODO: fixme, what about geoProperty nodes?
+			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
+			// Normal 			 - X3DNormalNode 			- X3DGeometricPropertyNode
+			// TextureCoordinate - X3DTextureCoordinateNode - X3DGeometricPropertyNode 
         }
     )
 );
+
 
 // TODO: IndexedTriangleFanSet
 // TODO: IndexedTriangleSet
