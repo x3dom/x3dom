@@ -74,9 +74,9 @@ x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 */
 x3dom.X3DCanvas = function(x3dElem) {
     
-    function initContext(canvas, winSize) {
+    function initContext(canvas) {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
-        var gl = x3dom.gfx_mozwebgl(canvas, winSize);
+        var gl = x3dom.gfx_mozwebgl(canvas);
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
             // return null;
@@ -105,14 +105,12 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
         if ((w = x3dElem.getAttribute("width")) !== null) {
             x3dom.debug.logInfo("width=" + w);
-			winSize.w = parseInt(w);
             canvas.style.width = w.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("width",canvas.style.width);
         }
         if ((h = x3dElem.getAttribute("height")) !== null) {
             x3dom.debug.logInfo("height=" + h);
-			winSize.h = parseInt(h);
             canvas.style.height = h.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("height",canvas.style.height);
@@ -151,28 +149,20 @@ x3dom.X3DCanvas = function(x3dElem) {
         canvasDiv.appendChild(fpsDiv);        
         return fpsDiv;
     }
-	
-	var winSize = new Object();
-	winSize.w = 400;
-	winSize.h = 300;
 
     this.x3dElem = x3dElem;
-    this.canvas = createCanvas(x3dElem, this, winSize);
+    this.canvas = createCanvas(x3dElem, this);
 	this.canvas.parent = this;
-	this.width = winSize.w;
-	this.height = winSize.h;
     this.fps_target = 1975;
     this.fps_n = 0;
     this.fps_t0 = 0;
-    this.gl = initContext(this.canvas, winSize);
+    this.gl = initContext(this.canvas);
     this.doc = null;
     this.t = 0;
     this.canvasDiv = null;
     this.showFps = x3dElem.getAttribute("showFps");
     this.fpsDiv = this.showFps !== null ? createFpsDiv() : null;
     //this.tick = null;
-
-	delete winSize;
 	
 	// event handler for mouse interaction
 	this.canvas.mouse_dragging = false;

@@ -1,24 +1,21 @@
 x3dom.gfx_mozwebgl = (function () { 
 
-	var winWidth = 400, winHeight = 300;
-	
-	function Context(ctx3d) {
+	function Context(ctx3d, w, h) {
 		this.ctx3d = ctx3d;
+		this.width = w;
+		this.height = h;
 	}
 
 	Context.prototype.getName = function() {
 		return "moz-webgl";
 	}
 
-	function setupContext(canvas, winSize) {
+	function setupContext(canvas) {
 		x3dom.debug.logInfo("setupContext: canvas=" + canvas);
-		winWidth = winSize.w;
-		winHeight = winSize.h;
-		x3dom.debug.logInfo("Creating gfx_mozwebgl with size " + winWidth + "/" + winHeight);
 		try {
 			var ctx = canvas.getContext('moz-webgl');
 			if (ctx)
-				return new Context(ctx);
+				return new Context(ctx, canvas.width, canvas.height);
 		} catch (e) {}
 	}
 
@@ -436,8 +433,8 @@ function setupShape(env, gl, shape)
 		var gl = this.ctx3d;
 
 		//FIXME; the width/height property is overwritten by succeeding x3d elems?!
-		//x3dom.debug.logInfo("w=" + winWidth + ", h=" + winHeight);		
-		//gl.viewport(0,0,winWidth,winHeight);
+		//x3dom.debug.logInfo("w=" + this.width + ", h=" + this.height);		
+		//gl.viewport(0,0,this.width,this.height);
 		
 		var bgCol = scene.getSkyColor();
 		//x3dom.debug.logInfo("bgCol=" + bgCol);
@@ -461,8 +458,8 @@ function setupShape(env, gl, shape)
 		var fov = scene.getFieldOfView();
 		//x3dom.debug.logInfo("fov=" + fov);
 		
-		var mat_projection = setCamera(fov, winWidth/winHeight, 1000, 0.1);
-		//var mat_projection = makeFrustum(0, winWidth-1, 0, winHeight-1, 1000, 1);
+		var mat_projection = setCamera(fov, this.width/this.height, 1000, 0.1);
+		//var mat_projection = makeFrustum(0, this.width-1, 0, this.height-1, 1000, 1);
 		var mat_view = scene.getViewMatrix();
 
 		var drawableObjects = [];
