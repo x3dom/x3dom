@@ -1,0 +1,94 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>        
+        <link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
+            
+        <script type="text/javascript" src="qunit/qunit.js"></script>        
+
+        <script type="text/javascript" src="../src/x3dom.js"></script>  
+        <script type="text/javascript" src="../src/fields.js"></script>  
+    </head>
+
+<body>
+
+    <h1 id="qunit-header">QUnit Test Suite</h1>
+    <h2 id="qunit-banner"></h2>
+    <div id="qunit-testrunner-toolbar"></div>
+    <h2 id="qunit-userAgent"></h2>    
+    <ol id="qunit-tests"></ol>
+    
+        <script type="text/javascript" >            
+        window.onload = function() {
+        
+            test("SFVec2", function() {
+                // expect(1);
+                // ok(true);
+                var v1 = new x3dom.fields.SFVec2();
+                equals(v1.x, 0, "new SFVec2().x");
+                equals(v1.y, 0, "new SFVec2().y");
+                
+                var v2 = new x3dom.fields.SFVec2(5,8);
+                equals(v2.x, 5, "new SFVec2(5,8).x");
+                equals(v2.y, 8, "new SFVec2(5,8).y");
+                
+                var v1_ref1 = v1.add(v2);
+                equals(v1.x, 5, "v1.add(v2).x");
+                equals(v1.y, 8, "v1.add(v2).y");
+                equals(v1_ref1.x, 5, "v1.add(v2) return value x");
+                equals(v1_ref1.y, 8, "v1.add(v2) return value y");
+                
+                equals(v1, v1_ref1, "v1 == v1_ref1");
+                
+                var v1_ref2 = v1.subtract(v2);
+                equals(v1.x, 0, "v1.subtract(v2).x");
+                equals(v1.y, 0, "v1.subtract(v2).y");
+                equals(v1, v1_ref2, "v1 == v1_ref2");
+                
+                var v1_ref3 = v2.negate();
+                equals(v2.x, -5, "v2.negate().x");
+                equals(v2.y, -8, "v2.negate().y");
+                                
+                var v3 = new x3dom.fields.SFVec2(1,0);
+                v3.normalise();                
+                equals(v3.x, 1, "v3.normalise.x");
+                equals(v3.y, 0, "v3.normalise.y");
+                v3.setValueByStr("3 2");
+                v3.normalise();
+                equals(v3.x, 0.8320502943378437, "v(3,2).normalise.x");
+                equals(v3.y, 0.5547001962252291, "v(3,2).normalise.y");
+                
+                v3.setValueByStr("2 4");
+                equals(v3.x, 2, "v.setValueByStr('2 4').x");
+                equals(v3.y, 4, "v.setValueByStr('2 4').y");
+                v3.setValueByStr("3,6");
+                equals(v3.x, 3, "v.setValueByStr('3 6').x");
+                equals(v3.y, 6, "v.setValueByStr('3 6').y");
+                v3.setValueByStr("+4,   -9");
+                equals(v3.x, 4, "v.setValueByStr('+4,   -9').x");
+                equals(v3.y, -9, "v.setValueByStr('+4,   -9').y");
+                                
+                v2.setValueByStr("3 2");
+                v3.setValueByStr("4 5");                
+                equals(v2.dot(v3), 22, "Testing dot product");
+                
+                v2.setValueByStr("3.8 2.3");
+                v3.setValueByStr("4.45 5.55");                
+                equals(v2.dot(v3), 29.674999999999997, "Testing dot product");                
+                
+                v2.setValueByStr("3, 9");
+                v2.multiply(3);
+                equals(v2.x, 9);
+                equals(v2.y, 27);
+                
+                equals(v2.length(), 28.46049894151541399);
+                
+                var v4 = x3dom.fields.SFVec2.parse("5.5 7.7777");
+                equals(v4.x, 5.5, "Construct via SFVec2.parse()");
+                equals(v4.y, 7.7777, "Construct via SFVec2.parse()");
+                
+            });
+        }
+        </script>
+</body>
+</html>
