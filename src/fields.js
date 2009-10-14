@@ -205,53 +205,54 @@ x3dom.fields.SFVec2.parse = function (str) {
 }
 
 x3dom.fields.SFVec2.prototype.add = function (that) {
-    this.x += that.x;
+    return new x3dom.fields.SFVec2(this.x+that.x, this.y+that.y);
+/*    this.x += that.x;
     this.y += that.y;
-    return this;
+    return this;*/
 }
 
 x3dom.fields.SFVec2.prototype.subtract = function (that) {
-    this.x -= that.x;
+    return new x3dom.fields.SFVec2(this.x-that.x, this.y-that.y);
+/*    this.x -= that.x;
     this.y -= that.y;
-    return this;    
+    return this;    */
 }
 
 x3dom.fields.SFVec2.prototype.negate = function () {
-    this.x *= -1;
+    return new x3dom.fields.SFVec2(this.x*-1, this.y*-1);
+/*    this.x *= -1;
     this.y *= -1;
-    return this;    
+    return this;    */
 }
 
 x3dom.fields.SFVec2.prototype.dot = function (that) {
     return this.x * that.x  +  this.y * that.y;
 }
 
-// x3dom.fields.SFVec2.prototype.cross = function (that) {
-//     this.x = this.y*that.x - this.x*that.y;
-//     this.y = this.x*that.y - this.y*that.x;    
-//     return this;
-// }
 
 x3dom.fields.SFVec2.prototype.reflect = function (n) {
     var d2 = this.dot(n)*2;
-    this.x -= d2*n.x;
+    return new x3dom.fields.SFVec2(this.x-d2*n.x, this.y-d2*n.y);
+/*    this.x -= d2*n.x;
     this.y -= d2*n.y;
-    return this;    
+    return this;    */
 }
 
 x3dom.fields.SFVec2.prototype.normalise = function (that) {
     // var n = Math.sqrt((this.x*this.x) + (this.y*this.y));
     var n = this.length();
     if (n) n = 1.0 / n;
-    this.x *= n;
+    return new x3dom.fields.SFVec2(this.x*n, this.y*n);
+/*    this.x *= n;
     this.y *= n;
-    return this;
+    return this;*/
 }
 
 x3dom.fields.SFVec2.prototype.multiply = function (n) {
-    this.x *= n;
+    return new x3dom.fields.SFVec2(this.x*n, this.y*n);
+/*    this.x *= n;
     this.y *= n;
-    return this;
+    return this;*/
 }
 
 x3dom.fields.SFVec2.prototype.length = function() {
@@ -268,18 +269,16 @@ x3dom.fields.SFVec2.prototype.toString = function () {
 
 x3dom.fields.SFVec2.prototype.setValueByStr = function(s) {
     var m = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)$/.exec(s);
-    // console.warn(m);
     this.x = +m[1];
     this.y = +m[2];
     return this;
-    // return new x3dom.fields.SFVec2(+m[1], +m[2]);
 }
 
 
 
 
-/** SFVec3f constructor.
-    @class Represents a SFVec3f 
+/** SFVec3 constructor.
+    @class Represents a SFVec3
   */
 x3dom.fields.SFVec3 = function(x, y, z) {
     if (arguments.length == 0) {
@@ -428,3 +427,34 @@ x3dom.fields.SFQuaternion.prototype.slerp = function (that, t) {
 x3dom.fields.SFQuaternion.prototype.toString = function () {
     return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
 }
+
+
+/** SFColor constructor.
+    @class Represents a SFColor
+  */
+x3dom.fields.SFColor = function(r, g, b) {
+    if (arguments.length == 0) {
+        this.r = this.g = this.b = 0;
+    } else {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }    
+}
+
+x3dom.fields.SFColor.prototype.toGL = function () {
+    return [ this.r, this.g, this.b ];
+}
+
+
+x3dom.fields.SFColor.toString = function() {
+    return "{ r " + this.r + " g " + this.g + " b " + this.b + " }";
+}
+  
+
+/** MFColor constructor.
+    @class Represents a MFColor
+  */
+x3dom.fields.MFColor = [];
+
+
