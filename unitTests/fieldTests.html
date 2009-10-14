@@ -32,31 +32,26 @@
                 equals(v2.x, 5, "new SFVec2(5,8).x");
                 equals(v2.y, 8, "new SFVec2(5,8).y");
                 
-                var v1_ref1 = v1.add(v2);
-                equals(v1.x, 5, "v1.add(v2).x");
-                equals(v1.y, 8, "v1.add(v2).y");
-                equals(v1_ref1.x, 5, "v1.add(v2) return value x");
-                equals(v1_ref1.y, 8, "v1.add(v2) return value y");
+                var v1_add_v2 = v1.add(v2);
+                equals(v1_add_v2.x, 5, "v1.add(v2).x");
+                equals(v1_add_v2.y, 8, "v1.add(v2).y");
                 
-                equals(v1, v1_ref1, "v1 == v1_ref1");
+                var v1_sub_v2 = v1.subtract(v2);
+                equals(v1_sub_v2.x, -5, "v1.subtract(v2).x");
+                equals(v1_sub_v2.y, -8, "v1.subtract(v2).y");                
                 
-                var v1_ref2 = v1.subtract(v2);
-                equals(v1.x, 0, "v1.subtract(v2).x");
-                equals(v1.y, 0, "v1.subtract(v2).y");
-                equals(v1, v1_ref2, "v1 == v1_ref2");
-                
-                var v1_ref3 = v2.negate();
-                equals(v2.x, -5, "v2.negate().x");
-                equals(v2.y, -8, "v2.negate().y");
+                var v2_neg = v2.negate();
+                equals(v2_neg.x, -5, "v2.negate().x");
+                equals(v2_neg.y, -8, "v2.negate().y");
                                 
                 var v3 = new x3dom.fields.SFVec2(1,0);
-                v3.normalise();                
-                equals(v3.x, 1, "v3.normalise.x");
-                equals(v3.y, 0, "v3.normalise.y");
+                var v3_norm = v3.normalise();                
+                equals(v3_norm.x, 1, "v3.normalise().x");
+                equals(v3_norm.y, 0, "v3.normalise().y");
                 v3.setValueByStr("3 2");
-                v3.normalise();
-                equals(v3.x, 0.8320502943378437, "v(3,2).normalise.x");
-                equals(v3.y, 0.5547001962252291, "v(3,2).normalise.y");
+                v3_norm = v3.normalise();
+                equals(v3_norm.x, 0.8320502943378437, "v(3,2).normalise().x");
+                equals(v3_norm.y, 0.5547001962252291, "v(3,2).normalise().y");
                 
                 v3.setValueByStr("2 4");
                 equals(v3.x, 2, "v.setValueByStr('2 4').x");
@@ -77,16 +72,17 @@
                 equals(v2.dot(v3), 29.674999999999997, "Testing dot product");                
                 
                 v2.setValueByStr("3, 9");
-                v2.multiply(3);
-                equals(v2.x, 9);
-                equals(v2.y, 27);
+                var v2_mult = v2.multiply(3);
+                equals(v2_mult.x, 9, "v2.setValueByStr('3, 9').multiply(3).x");
+                equals(v2_mult.y, 27, "v2.setValueByStr('3, 9').multiply(3).y");
                 
-                equals(v2.length(), 28.46049894151541399);
+                equals(v2_mult.length(), 28.46049894151541399, "v2_mult.length()");
                 
                 var v4 = x3dom.fields.SFVec2.parse("5.5 7.7777");
                 equals(v4.x, 5.5, "Construct via SFVec2.parse()");
                 equals(v4.y, 7.7777, "Construct via SFVec2.parse()");
                 
+                same([5.5, 7.7777], v4.toGL(), "v4.toGL()");
             });
         }
         </script>
