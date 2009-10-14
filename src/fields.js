@@ -187,6 +187,96 @@ x3dom.fields.SFMatrix4.prototype.toString = function () {
         this._30+', '+this._31+', '+this._32+', '+this._33+']';
 }
 
+/** SFVec2 constructor.
+    @class Represents a SFVec2
+  */
+x3dom.fields.SFVec2 = function(x, y) {
+    if (arguments.length == 0) {
+        this.x = this.y = 0;
+    } else {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+x3dom.fields.SFVec2.parse = function (str) {
+    var m = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)$/.exec(str);
+    return new x3dom.fields.SFVec2(+m[1], +m[2]);
+}
+
+x3dom.fields.SFVec2.prototype.add = function (that) {
+    this.x += that.x;
+    this.y += that.y;
+    return this;
+}
+
+x3dom.fields.SFVec2.prototype.subtract = function (that) {
+    this.x -= that.x;
+    this.y -= that.y;
+    return this;    
+}
+
+x3dom.fields.SFVec2.prototype.negate = function () {
+    this.x *= -1;
+    this.y *= -1;
+    return this;    
+}
+
+x3dom.fields.SFVec2.prototype.dot = function (that) {
+    return this.x * that.x  +  this.y * that.y;
+}
+
+// x3dom.fields.SFVec2.prototype.cross = function (that) {
+//     this.x = this.y*that.x - this.x*that.y;
+//     this.y = this.x*that.y - this.y*that.x;    
+//     return this;
+// }
+
+x3dom.fields.SFVec2.prototype.reflect = function (n) {
+    var d2 = this.dot(n)*2;
+    this.x -= d2*n.x;
+    this.y -= d2*n.y;
+    return this;    
+}
+
+x3dom.fields.SFVec2.prototype.normalise = function (that) {
+    // var n = Math.sqrt((this.x*this.x) + (this.y*this.y));
+    var n = this.length();
+    if (n) n = 1.0 / n;
+    this.x *= n;
+    this.y *= n;
+    return this;
+}
+
+x3dom.fields.SFVec2.prototype.multiply = function (n) {
+    this.x *= n;
+    this.y *= n;
+    return this;
+}
+
+x3dom.fields.SFVec2.prototype.length = function() {
+    return Math.sqrt((this.x*this.x) + (this.y*this.y));
+}
+
+x3dom.fields.SFVec2.prototype.toGL = function () {
+    return [ this.x, this.y ];
+}
+
+x3dom.fields.SFVec2.prototype.toString = function () {
+    return "{ x " + this.x + " y " + this.y + " }";
+}
+
+x3dom.fields.SFVec2.prototype.setValueByStr = function(s) {
+    var m = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)$/.exec(s);
+    // console.warn(m);
+    this.x = +m[1];
+    this.y = +m[2];
+    return this;
+    // return new x3dom.fields.SFVec2(+m[1], +m[2]);
+}
+
+
+
 
 /** SFVec3f constructor.
     @class Represents a SFVec3f 
