@@ -33,15 +33,15 @@ x3dom.gfx_mozwebgl = (function () {
 		"varying vec2 fragTexCoord;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
-		"uniform mat4 modelMatrix;" +
+		"uniform mat4 viewMatrixInverse;" +
 		"uniform vec3 lightPosition;" +
 		"uniform vec3 eyePosition;" +
 		"" +
 		"void main(void) {" +
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
-		"    fragNormal = normalize(vec3(modelMatrix * vec4(normal, 0.0)));" +
-		"    fragLightVector = lightPosition - vec3(modelMatrix * vec4(position, 1.0));" +
-		"    fragEyeVector = eyePosition - vec3(modelMatrix * vec4(position, 1.0));" +
+		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
+		"    fragLightVector = lightPosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
+		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
 		"    fragTexCoord = texcoord;" +
 		"}"
 		};
@@ -64,11 +64,12 @@ x3dom.gfx_mozwebgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = max(0.0, dot(normal, light));" +
+		"    float diffuse = 0.5*(max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
-		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
-		"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
-		//"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
+		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, fragTexCoord.xy).rgb + specular*specularColor;" +
+		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
+		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
 		"}"
 		};
 
@@ -81,15 +82,15 @@ x3dom.gfx_mozwebgl = (function () {
 		"varying vec3 fragEyeVector;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
-		"uniform mat4 modelMatrix;" +
+		"uniform mat4 viewMatrixInverse;" +
 		"uniform vec3 lightPosition;" +
 		"uniform vec3 eyePosition;" +
 		"" +
 		"void main(void) {" +
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
-		"    fragNormal = normalize(vec3(modelMatrix * vec4(normal, 0.0)));" +
-		"    fragLightVector = lightPosition - vec3(modelMatrix * vec4(position, 1.0));" +
-		"    fragEyeVector = eyePosition - vec3(modelMatrix * vec4(position, 1.0));" +
+		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
+		"    fragLightVector = lightPosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
+		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
 		"}"
 		};
 		
@@ -110,8 +111,11 @@ x3dom.gfx_mozwebgl = (function () {
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
 		"    float diffuse = 0.5*(max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
+		//"    vec3 rgb = vec3(diffuse);" +
+		//"    vec3 rgb = (1.0+eye)/2.0;" +
 		"    gl_FragColor = vec4(rgb, 1.0);" +
 		"}"
 		};
@@ -370,12 +374,13 @@ function setupShape(env, gl, shape)
     } 
 	else 
 	{
-        var coords = shape._geometry._positions;
-        var idxs = shape._geometry._indexes;
-		var texCoords = shape._geometry._texCoords;
+        var coords = shape._geometry._mesh._positions;
+        var idxs = shape._geometry._mesh._indices;
+		var texCoords = shape._geometry._mesh._texCoords;
+		var vertNormals = shape._geometry._mesh._normals;
         var vertFaceNormals = [];
-		var vertNormals = [];
 		
+		if (vertNormals.length < 1) {
         for (var i = 0; i < coords.length/3; ++i)
             vertFaceNormals[i] = [];
 
@@ -406,12 +411,31 @@ function setupShape(env, gl, shape)
             vertNormals[i+1] = n.y;
             vertNormals[i+2] = n.z;
         }
+		}
+		
+		/*
+		var interleavedAttribs = [];
+		
+		for (var i=0, j=0; i<coords.length; i+=3)
+		{
+			interleavedAttribs[j++] = coords[i  ];
+			interleavedAttribs[j++] = coords[i+1];
+			interleavedAttribs[j++] = coords[i+2];
+			interleavedAttribs[j++] = vertNormals[i  ];
+			interleavedAttribs[j++] = vertNormals[i+1];
+			interleavedAttribs[j++] = vertNormals[i+2];
+			//interleavedAttribs[j++] = texCoords[i  ];
+			//interleavedAttribs[j++] = texCoords[i+1];
+			//interleavedAttribs[j++] = texCoords[i+2];
+		}
+		*/
 		
         shape._webgl = {
             positions: coords,
             normals: vertNormals,
             indexes: idxs,
 			texcoords: texCoords,
+			//interleaved: interleavedAttribs
         };
 		
 		/*
@@ -484,8 +508,8 @@ function setupShape(env, gl, shape)
 			sp.bind();
 
 			//sp.lightPosition = [10*Math.sin(t), 10, 10*Math.cos(t)];
-			sp.lightPosition = [0, 100, 800];
-			sp.eyePosition = scene.getViewPosition().toGL();
+			//sp.lightPosition = [0, 100, 800];
+			sp.eyePosition = [0, 0, 0]; //scene.getViewPosition().toGL();
 
 			var mat = shape._appearance._material;
 			if (mat) {
@@ -539,21 +563,30 @@ function setupShape(env, gl, shape)
 				texture.image.src = tex._url;
 			}
 
-			sp.modelMatrix = transform.toGL();
+			//sp.viewMatrixInverse = transform.toGL();
+			sp.viewMatrixInverse = mat_view.inverse().toGL();
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_projection.mult(mat_view).mult(transform).toGL();
+			
+			//TODO; get from scene!
+			var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100,700));
+			sp.lightPosition = light.toGL();
 			
 			if (sp.position !== undefined) 
 			{
 				var positionBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, 
-						new CanvasFloatArray(shape._webgl.positions), gl.STATIC_DRAW);
+				
+				var vertices = new CanvasFloatArray(shape._webgl.positions);
+				
+				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+						//new CanvasFloatArray(shape._webgl.interleaved), gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+				
 				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
 				gl.enableVertexAttribArray(sp.position);
 				
-				// bind indizes for drawElements() call
+				// bind indices for drawElements() call
 				var indicesBuffer = gl.createBuffer();
 				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
 				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 
@@ -561,16 +594,30 @@ function setupShape(env, gl, shape)
 			}
 			if (sp.normal !== undefined) 
 			{
-				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.normals));
+				var normalBuffer = gl.createBuffer();
+				
+				var normals = CanvasFloatArray(shape._webgl.normals);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+
+				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
+				
+				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 3, 0); 
 				gl.enableVertexAttribArray(sp.normal);
 			}
 			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined)
 			{
-				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.texcoords));
+				var texcBuffer = gl.createBuffer();
+				
+				var normals = CanvasFloatArray(shape._webgl.texcoords);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+
+				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
+				
+				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 2, 0); 
 				gl.enableVertexAttribArray(sp.texcoord);
 			}
-			
-			// x3dom.debug.logInfo("shape._webgl.indexes=" + shape._webgl.indexes.length);
 			
 			//gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
 			gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);

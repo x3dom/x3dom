@@ -179,6 +179,106 @@ x3dom.fields.SFMatrix4.prototype.decompose = function () {
     return [ T, S, angle_x, angle_y, angle_z ];
 }
 
+x3dom.fields.SFMatrix4.prototype.det3 = function () {
+    return (this._00 * this._11 * this._22 +
+            this._01 * this._12 * this._20 +
+            this._02 * this._10 * this._21 -
+            this._02 * this._11 * this._20 -
+            this._01 * this._10 * this._22 -
+            this._00 * this._12 * this._21);
+}
+
+x3dom.fields.SFMatrix4.prototype.det = function () {
+    var a1, a2, a3, a4,
+        b1, b2, b3, b4,
+        c1, c2, c3, c4,
+        d1, d2, d3, d4;
+
+    a1 = this._00;
+    b1 = this._10;
+    c1 = this._20;
+    d1 = this._30;
+
+    a2 = this._01;
+    b2 = this._11;
+    c2 = this._21;
+    d2 = this._31;
+
+    a3 = this._02;
+    b3 = this._12;
+    c3 = this._22;
+    d3 = this._32;
+
+    a4 = this._03;
+    b4 = this._13;
+    c4 = this._23;
+    d4 = this._33;
+	
+    return (  a1 * this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4)
+            - b1 * this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4)
+            + c1 * this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4)
+            - d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4));
+}
+
+//fixme; doesn't work correctly
+x3dom.fields.SFMatrix4.prototype.inverse = function () {
+    var a1, a2, a3, a4,
+        b1, b2, b3, b4,
+        c1, c2, c3, c4,
+        d1, d2, d3, d4;
+
+    a1 = this._00;
+    b1 = this._10;
+    c1 = this._20;
+    d1 = this._30;
+
+    a2 = this._01;
+    b2 = this._11;
+    c2 = this._21;
+    d2 = this._31;
+
+    a3 = this._02;
+    b3 = this._12;
+    c3 = this._22;
+    d3 = this._32;
+
+    a4 = this._03;
+    b4 = this._13;
+    c4 = this._23;
+    d4 = this._33;
+
+    var rDet = this.det();
+
+    if (Math.abs(rDet) < 0.000001)
+    {
+        x3dom.debug.logInfo("invert matrix: singular matrix, no inverse");
+        return x3dom.fields.SFMatrix4.identity();
+    }
+
+    rDet = 1.0 / rDet;
+	
+	//x3dom.debug.logInfo(rDet);
+
+	return new x3dom.fields.SFMatrix4(
+     this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) * rDet,
+    -this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4) * rDet,
+     this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) * rDet,
+    -this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4) * rDet,
+    -this.det3(b1, b3, b4, c1, c3, c4, d1, d3, d4) * rDet,
+     this.det3(a1, a3, a4, c1, c3, c4, d1, d3, d4) * rDet,
+    -this.det3(a1, a3, a4, b1, b3, b4, d1, d3, d4) * rDet,
+     this.det3(a1, a3, a4, b1, b3, b4, c1, c3, c4) * rDet,
+     this.det3(b1, b2, b4, c1, c2, c4, d1, d2, d4) * rDet,
+    -this.det3(a1, a2, a4, c1, c2, c4, d1, d2, d4) * rDet,
+     this.det3(a1, a2, a4, b1, b2, b4, d1, d2, d4) * rDet,
+    -this.det3(a1, a2, a4, b1, b2, b4, c1, c2, c4) * rDet,
+    -this.det3(b1, b2, b3, c1, c2, c3, d1, d2, d3) * rDet,
+     this.det3(a1, a2, a3, c1, c2, c3, d1, d2, d3) * rDet,
+    -this.det3(a1, a2, a3, b1, b2, b3, d1, d2, d3) * rDet,
+     this.det3(a1, a2, a3, b1, b2, b3, c1, c2, c3) * rDet
+	);
+}
+
 x3dom.fields.SFMatrix4.prototype.toString = function () {
     return '[SFMatrix4 ' +
         this._00+', '+this._01+', '+this._02+', '+this._03+'; '+

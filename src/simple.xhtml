@@ -161,33 +161,34 @@
 	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="10px" width="400px" height="300px">
 			<Scene>
-				<Background skyColor='0.2 0.2 0.2, 1 0 0, 0 1 0' />
-				<Transform rotation="1 0 0 0.9">
+				<Background skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
+				<Transform >
 					<Shape>
 						<Appearance>
-							<Material diffuseColor="0 1 0" />
+							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
+							<!--<ImageTexture url="ogl.jpg" />-->
 						</Appearance>
 						<Box/>
 					</Shape>
 				</Transform>
+				<!--
 				<Transform translation='2 -1 1'>
 				  <Shape>
 					<Appearance>
-					  <Material diffuseColor='1 0 1' />
+					  <Material diffuseColor='1 0 1' specularColor=".5 .5 .5" />
 					  <ImageTexture url="ogl.jpg" />
 					</Appearance>
 					<IndexedFaceSet creaseAngle='2' coordIndex='0 2 1 -1, 0 3 2 -1, 0 1 3 -1, 1 2 3 -1'>
 					  <Coordinate point='0 0 0, 1 0 0, 1 1 0, 0.75 0.25 1' />
-					  <!--<Normal vector='' />-->
 					  <TextureCoordinate point='0 0, 1 0, 1 1, 0 1' />
 					</IndexedFaceSet>
 				  </Shape>
 				</Transform>
-				<Transform translation="4 0 0">
+				-->
+				<Transform translation="4 0 0" rotation="1 0 0 0.9">
 					<Shape>
 						<Appearance>
-							<Material diffuseColor="0 0 1" />
-							<!--<ImageTexture url="ogl.jpg" />-->
+							<Material diffuseColor="1 0.7 0.3" specularColor=".5 .5 .5" />
 						</Appearance>
 						<Box size="0.5 1 2"/>
 					</Shape>
@@ -203,14 +204,14 @@
 			<Scene>
 				<Shape>
 					<Appearance>
-						<Material diffuseColor="1 1 0" />
+						<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
 					</Appearance>
 					<Sphere />
 				</Shape>
 				<Transform translation="4 0 0">
 					<Shape>
 						<Appearance>
-							<Material diffuseColor="1 0 0" />
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
 						</Appearance>
 						<Sphere />
 					</Shape>
@@ -249,6 +250,7 @@
 	<script type="text/javascript" ><![CDATA[
         
        window.onload = function() {
+	   return;
             
             /* Test DOM updates by randomly changing the flipper color... */
             var mats = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Material');

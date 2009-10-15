@@ -349,6 +349,17 @@ x3dom.registerNodeType(
 
 // TODO: X3DTextureTransformNode
 
+
+/** @class x3dom.Mesh
+*/
+x3dom.Mesh = function() {}
+
+x3dom.Mesh.prototype._positions = [];
+x3dom.Mesh.prototype._normals   = [];
+x3dom.Mesh.prototype._texCoords = [];
+x3dom.Mesh.prototype._indices   = [];
+
+
 /**** x3dom.X3DGeometryNode ****/
 
 // x3dom.X3DGeometryNode = defineClass(x3dom.nodeTypes.X3DNode,
@@ -358,9 +369,12 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.super.call(this, ctx);
+			
+			this._mesh = new x3dom.Mesh();
         }
     )
 );
+
 
 // TODO: Arc2D
 // TODO: ArcClose2D
@@ -384,16 +398,32 @@ x3dom.registerNodeType(
             }
     
             sx /= 2; sy /= 2; sz /= 2;
-    
-            this._positions = [
-                -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz,
-                -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz,
-                -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz,
-                sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz,
-                -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz,
-                -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz,
+			
+            this._mesh._positions = [
+                -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //hinten 0,0,-1
+                -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //vorne 0,0,1
+                -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //links -1,0,0
+                 sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //rechts 1,0,0
+                -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //oben 0,1,0
+                -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz, //unten 0,-1,0
             ];
-            this._indexes = [
+			this._mesh._normals = [
+                0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
+                0,0,1,  0,0,1,   0,0,1,   0,0,1,
+                -1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
+                1,0,0,   1,0,0,   1,0,0,   1,0,0,
+                0,1,0,  0,1,0,   0,1,0,   0,1,0,
+                0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0,
+            ];
+			this._mesh._texCoords = [
+				0,0, 0,1, 1,1, 1,0,
+				0,0, 1,0, 1,1, 0,1,
+				0,0, 0,1, 1,1, 1,0,
+				0,0, 1,0, 1,1, 0,1,
+				0,0, 1,0, 1,1, 0,1,
+				0,0, 0,1, 1,1, 1,0,
+			];
+            this._mesh._indices = [
                 0,1,2, 2,3,0,
                 4,7,5, 5,7,6,
                 8,9,10, 10,11,8,
@@ -437,6 +467,9 @@ x3dom.registerNodeType(
             var verts = [
                 0,0,-r, r,0,0, 0,0,r, -r,0,0, 0,-r,0, 0,r,0,
             ];
+            var norms = [
+                0,0,-1, 1,0,0, 0,0,1, -1,0,0, 0,-1,0, 0,1,0,
+            ];
             var tris = [
                 0,1,4, 1,2,4, 2,3,4, 3,0,4,
                 1,0,5, 2,1,5, 3,2,5, 0,3,5,
@@ -452,7 +485,11 @@ x3dom.registerNodeType(
                     var y = (verts[a*3+1] + verts[b*3+1])/2;
                     var z = (verts[a*3+2] + verts[b*3+2])/2;
                     var s = r / Math.sqrt(x*x + y*y + z*z);
-                    verts.push(x*s, y*s, z*s);
+					var xs = x*s, ys = y*s, zs = z*s;
+                    verts.push(xs, ys, zs);
+					// calculate normals
+					var l = Math.sqrt(xs*xs + ys*ys + zs*zs);
+					norms.push(xs/l, ys/s, zs/l);
                 }
                 return new_verts[a][b];
             }
@@ -467,10 +504,10 @@ x3dom.registerNodeType(
                 }
                 tris = new_tris;
             }
-            // TODO: calculate normals
-    
-            this._positions = verts;
-            this._indexes = tris;
+			
+            this._mesh._positions = verts;
+            this._mesh._normals = norms;
+            this._mesh._indices = tris;
         }
     )
 );
@@ -525,9 +562,9 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.super.call(this, ctx);
-    
+			
             var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
-            this._indexes = [];
+            this._mesh._indices = [];
             var t = 0, n0, n1, n2;
             for (var i = 0; i < indexes.length; ++i) {
                 // Convert non-triangular polygons to a triangle fan
@@ -539,26 +576,26 @@ x3dom.registerNodeType(
                 switch (t) {
                 case 0: n0 = +indexes[i]; t = 1; break;
                 case 1: n1 = +indexes[i]; t = 2; break;
-                case 2: n2 = +indexes[i]; t = 3; this._indexes.push(n0, n1, n2); break;
-                case 3: n1 = n2; n2 = +indexes[i]; this._indexes.push(n0, n1, n2); break;
+                case 2: n2 = +indexes[i]; t = 3; this._mesh._indices.push(n0, n1, n2); break;
+                case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices.push(n0, n1, n2); break;
                 }
             }
             // TODO: solid; ccw
     
             var coordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
 			ctx.assert(coordNode.length == 1);
-            this._positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+            this._mesh._positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			
 			var normalNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
             if (normalNode.length == 1)
-				this._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+				this._mesh._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			
             var texCoordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
             if (texCoordNode.length == 1)
-				this._texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+				this._mesh._texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			
-			//x3dom.debug.logInfo("Indices:   "+this._indexes);
-			//x3dom.debug.logInfo("Positions: "+this._positions);
+			//x3dom.debug.logInfo("Indices:   "+this._mesh._indices);
+			//x3dom.debug.logInfo("Positions: "+this._mesh._positions);
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
@@ -880,22 +917,23 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Scene.super.call(this, ctx);
-            this.rotation = 0;
-            this.elevation = 0;
+            //this.rotation = 0;
+            //this.elevation = 0;
+			this.rotMat = x3dom.fields.SFMatrix4.identity();
 			this.movement = new x3dom.fields.SFVec3(0, 0, 0);
         },
         {
             _getViewpointMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 var mat_viewpoint = viewpoint._getCurrentTransform();
-                var rightwards = viewpoint.getRotationMatrix().transpose().
+                /*var rightwards = viewpoint.getRotationMatrix().transpose().
                     mult(viewpoint.getTranslationMatrix()).
                     mult(mat_viewpoint).
                     multMatrixVec(new x3dom.fields.SFVec3(1, 0, 0));
                 var upwards = new x3dom.fields.SFVec3(0, 1, 0);
                 var rot = x3dom.fields.SFQuaternion.axisAngle(rightwards.cross(upwards).normalised(), -this.elevation). // XXX: this is all wrong
-                    mult(x3dom.fields.SFQuaternion.axisAngle(upwards, this.rotation));
-                return mat_viewpoint.mult(rot.toMatrix());
+                    mult(x3dom.fields.SFQuaternion.axisAngle(upwards, this.rotation));*/
+                return mat_viewpoint.mult(this.rotMat); //.mult(rot.toMatrix());
                 // TODO: x3dom.Viewpoint.centerOfRotation
             },
     
@@ -927,8 +965,15 @@ x3dom.registerNodeType(
     
             ondrag: function (dx, dy, buttonState) {
 				if (buttonState & 1) {
-					this.rotation += dx/100;
-					this.elevation = Math.max(-Math.PI, Math.min(Math.PI, this.elevation + dy/100));
+					var alpha = (dy * 2 * Math.PI) / 400; //width;
+					var beta = (dx * 2 * Math.PI) / 300; //height;
+					
+					var mx = new x3dom.fields.SFMatrix4.rotationX(alpha);
+					var my = new x3dom.fields.SFMatrix4.rotationY(beta);
+					this.rotMat = this.rotMat.mult(mx).mult(my);
+					
+					//this.rotation += dx/100;
+					//this.elevation = Math.max(-Math.PI, Math.min(Math.PI, this.elevation + dy/100));
 				}
 				if (buttonState & 4) {
 					var vec = new x3dom.fields.SFVec3(dx/20,-dy/20,0);
