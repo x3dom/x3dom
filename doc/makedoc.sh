@@ -1,5 +1,6 @@
-#!/bin/sh
+#!/bin/bash
 JSDOCDIR="/home/peter/downloads/jsdoc_toolkit-2.3.2/jsdoc-toolkit"
+JSDOCDIR="/home/peter/Dokumente/jsdoc_toolkit-2.3.2/jsdoc-toolkit"
 CURDIR=`pwd`
 pushd .
 cd $JSDOCDIR

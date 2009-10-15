@@ -84,6 +84,49 @@
                 
                 same([5.5, 7.7777], v4.toGL(), "v4.toGL()");
             });
+
+            test("SFColor", function() {
+                var c1 = new x3dom.fields.SFColor();
+                equals(c1.r, 0, "new SFColor().r");
+                equals(c1.g, 0, "new SFColor().g");
+                equals(c1.b, 0, "new SFColor().b");
+
+                var c2 = new x3dom.fields.SFColor(0.5, 0.1, 0.3);
+                equals(c2.r, 0.5, "new SFColor(0.5, 0.1, 0.3).r");
+                equals(c2.g, 0.1, "new SFColor(0.5, 0.1, 0.3).g");
+                equals(c2.b, 0.3, "new SFColor(0.5, 0.1, 0.3).b");
+
+                same(c2.toGL(), [0.5, 0.1, 0.3], "c2.toGL()");
+                    
+                equals(c2.toString(), "{ r 0.5 g 0.1 b 0.3 }", "c2.toString()");
+
+                var c3 = new x3dom.fields.SFColor.parse("0.2 0.9 1");
+                equals(c3.r, 0.2, "SFColor.parse('0.2 0.9 1')");
+                equals(c3.g, 0.9, "SFColor.parse('0.2 0.9 1')");
+                equals(c3.b, 1, "SFColor.parse('0.2 0.9 1')");
+
+                var c3 = new x3dom.fields.SFColor.parse("0.6,  1,   0.001");
+                equals(c3.r, 0.6, "SFColor.parse('0.6,  1,   0.001')");
+                equals(c3.g, 1, "SFColor.parse('0.6,  1,   0.001')");
+                equals(c3.b, 0.001, "SFColor.parse('0.6,  1,   0.001')");
+            });
+
+            test("MFColor", function() {
+                var c1 = new x3dom.fields.SFColor(1,0,0);
+                var mc1 = new x3dom.fields.MFColor([c1, new x3dom.fields.SFColor()]);
+                equals(c1, mc1[0], "mc1[0]=c1"); 
+                // console.dir(mc1);
+                // console.dir(Array);
+                equals(mc1.length, 2, "mc1.length");
+                
+                var mc2 = x3dom.fields.MFColor.parse("0.5 0 0, 0.1 0.2 0.3, 1 1 1");
+                equals(mc2.length, 3, "mc2.length");
+                same(mc2[0], new x3dom.fields.SFColor(0.5, 0, 0));
+                same(mc2[1], new x3dom.fields.SFColor(0.1, 0.2, 0.3));
+                same(mc2[2], new x3dom.fields.SFColor(1, 1, 1));
+
+                same(mc1.toGL(), [1, 0, 0, 0, 0, 0]);
+            });
         }
         </script>
 </body>

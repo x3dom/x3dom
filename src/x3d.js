@@ -220,6 +220,10 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         _attribute_MFString: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? MFString_parse(ctx.xmlNode.getAttribute(name)) : def;
         },
+        _attribute_MFColor: function (ctx, name, def) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFColor([new x3dom.fields.SFColor(1,0,0), 
+                                                                                                                                                     new x3dom.fields.SFColor(0,0,1)]);
+        },
     }
 ));
 
@@ -667,7 +671,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Background.super.call(this, ctx);
 			
-            this._attribute_SFColor(ctx, 'skyColor', 0, 0, 0);
+            this._attribute_MFColor(ctx, 'skyColor', new x3dom.fields.MFColor([new x3dom.fields.SFColor(), 
+                                                                               new x3dom.fields.SFColor(1,1,1)]));
         },
         {
 			getSkyColor: function() {

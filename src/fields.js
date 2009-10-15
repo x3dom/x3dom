@@ -442,12 +442,16 @@ x3dom.fields.SFColor = function(r, g, b) {
     }    
 }
 
+x3dom.fields.SFColor.parse = function(str) {
+    var m = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)$/.exec(str);
+    return new x3dom.fields.SFColor( +m[1], +m[2], +m[3] );
+}
+
 x3dom.fields.SFColor.prototype.toGL = function () {
     return [ this.r, this.g, this.b ];
 }
 
-
-x3dom.fields.SFColor.toString = function() {
+x3dom.fields.SFColor.prototype.toString = function() {
     return "{ r " + this.r + " g " + this.g + " b " + this.b + " }";
 }
   
@@ -455,6 +459,51 @@ x3dom.fields.SFColor.toString = function() {
 /** MFColor constructor.
     @class Represents a MFColor
   */
-x3dom.fields.MFColor = [];
+x3dom.fields.MFColor = function(colorArray) {
+    if (arguments.length == 0) {
+        
+    }
+    else {
+        colorArray.map( function(c) { this.push(c); }, this );
+        // console.dir(this);
+    }
+};
 
+x3dom.fields.MFColor.prototype = new Array;
+
+x3dom.fields.MFColor.parse = function(str) {
+    // var m = /((?:(?:[+-]?\d*\.?\d*\s*){3}),?\s*)*/.exec(str);
+    var mc = str.match(/(?:(?:[+-]?\d*\.?\d*\s*){3})(?:,?\s*)/g);
+    var colors = [];
+    for (var i = 0; i < mc.length; ++i) {
+        // console.info("Test 2: Fund " + i + " - " + mc[i]);
+        var c = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*),?\s*$/.exec(mc[i]);
+        // console.info("c" + i + " - " + c[0]);
+        // console.dir(c);
+        if (c[0])
+            colors.push( new x3dom.fields.SFColor(+c[1], +c[2], +c[3]) );
+    }
+
+    return new x3dom.fields.MFColor( colors );
+    
+}
+
+x3dom.fields.MFColor.prototype.toGL = function() {
+    var a = [];
+
+/*Array.map( this, function(c) {
+        a.push(this[i].r);
+        a.push(this[i].g);
+        a.push(this[i].b);        
+    });*/
+    
+    // console.log("l=" + this.length);
+    for (var i=0; i<this.length; i++) {
+        a.push(this[i].r);
+        a.push(this[i].g);
+        a.push(this[i].b);
+    }
+
+    return a;
+}
 

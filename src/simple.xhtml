@@ -161,7 +161,7 @@
 	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="10px" width="400px" height="300px">
 			<Scene>
-				<Background skyColor='1 1 0.5' />
+				<Background skyColor='0.2 0.2 0.2, 1 0 0, 0 1 0' />
 				<Transform rotation="1 0 0 0.9">
 					<Shape>
 						<Appearance>
@@ -279,7 +279,7 @@
                     cubeScale += scaleFac;
                     cubeTrans.setAttribute("scale", cubeScale.toString() + " " + cubeScale.toString() + " " + cubeScale.toString());
                 },
-                40
+                60
             );
         };
 
