@@ -180,19 +180,25 @@ x3dom.X3DCanvas = function(x3dElem) {
         mouse_drag_x = evt.screenX; // screenX seems the least problematic way of getting coordinates
         mouse_drag_y = evt.screenY;
         mouse_dragging = true;
+		
 		window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
+		evt.preventDefault();
     }, false);
 	
     this.canvas.addEventListener('mouseup', function (evt) {
 		mouse_button = 0;
         mouse_dragging = false;
+		
 		window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
+		evt.preventDefault();
     }, false);
 	
     this.canvas.addEventListener('mouseout', function (evt) {
 		mouse_button = 0;
         mouse_dragging = false;
+		
 		window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
+		evt.preventDefault();
     }, false);
 	
     this.canvas.addEventListener('mousemove', function (evt) {
@@ -202,8 +208,10 @@ x3dom.X3DCanvas = function(x3dElem) {
         var dy = evt.screenY - mouse_drag_y;
         mouse_drag_x = evt.screenX;
         mouse_drag_y = evt.screenY;
+		
 		window.status=this.id+' MOVE: '+evt.screenX+", "+evt.screenY;
         this.parent.doc.ondrag(dx, dy, mouse_button);
+		evt.preventDefault();
     }, false);
 
 };

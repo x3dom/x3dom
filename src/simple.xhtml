@@ -166,7 +166,6 @@
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
-							<!--<ImageTexture url="ogl.jpg" />-->
 						</Appearance>
 						<Box/>
 					</Shape>
@@ -189,8 +188,9 @@
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="1 0.7 0.3" specularColor=".5 .5 .5" />
+							<ImageTexture url="ogl.jpg" />
 						</Appearance>
-						<Box size="0.5 1 2"/>
+						<Box size="3 1 2"/>
 					</Shape>
 				</Transform>
 				<Viewpoint centerOfRotation="0 0 0" position="2 0 10" orientation="0 1 0 0" fieldOfView="0.785398"/>
@@ -223,9 +223,9 @@
 		&nbsp;
         <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" showFps="true" x="0px" y="10px" width="200px" height="200px">
 			<Scene>
-			    <Viewpoint position='0 0 600'/>
+			    <Viewpoint position='0 0 600' orientation="0 0 1 0" fieldOfView="0.785398" />
 				<Background skyColor='0.51 0.81 0.95'/>
-				<Transform>
+				<Transform rotation="1 0 0 0.78">
 				  <Shape>
 					<Appearance>
 					  <Material DEF='mat' ambientIntensity='0.508497' diffuseColor='0.337255 0.4 0.788235' specularColor='1 1 1'/>

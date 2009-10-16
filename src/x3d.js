@@ -359,6 +359,56 @@ x3dom.Mesh.prototype._normals   = [];
 x3dom.Mesh.prototype._texCoords = [];
 x3dom.Mesh.prototype._indices   = [];
 
+x3dom.Mesh.prototype.calcNormals = function() {
+	//fixme; as first shot taken from gfx
+	var coords = this._positions;
+	var idxs = this._indices;
+	
+	var vertNormals = [];
+	var vertFaceNormals = [];
+	
+	for (var i = 0; i < coords.length/3; ++i)
+		vertFaceNormals[i] = [];
+
+	for (var i = 0; i < idxs.length; i += 3) {
+		var a = new x3dom.fields.SFVec3(
+				coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
+			subtract(new x3dom.fields.SFVec3(
+				coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
+		var b = new x3dom.fields.SFVec3(
+				coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
+			subtract(new x3dom.fields.SFVec3(
+				coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+		
+		var n = a.cross(b).normalised();
+		vertFaceNormals[idxs[i  ]].push(n);
+		vertFaceNormals[idxs[i+1]].push(n);
+		vertFaceNormals[idxs[i+2]].push(n);
+	}
+	
+	for (var i = 0; i < coords.length; i += 3) {
+		var n = new x3dom.fields.SFVec3(0, 0, 0);
+		for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
+			n = n.add(vertFaceNormals[i/3][j]);
+		
+		n = n.normalised();
+		vertNormals[i  ] = n.x;
+		vertNormals[i+1] = n.y;
+		vertNormals[i+2] = n.z;
+	}
+	
+	this._normals = vertNormals;
+}
+
+x3dom.Mesh.prototype.calcTexCoords = function() {
+	//TODO
+}
+
+x3dom.Mesh.prototype.createSingleIndex = function() {
+	//x3dom.debug.logInfo("Indices:   "+this._indices);
+	//x3dom.debug.logInfo("Positions: "+this._positions);
+}
+
 
 /**** x3dom.X3DGeometryNode ****/
 
@@ -416,12 +466,12 @@ x3dom.registerNodeType(
                 0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0,
             ];
 			this._mesh._texCoords = [
+				1,1, 1,0, 0,0, 0,1, 
+				0,1, 0,0, 1,0, 1,1, 
+				0,1, 1,1, 1,0, 0,0, 
+				1,1, 0,1, 0,0, 1,0, 
 				0,0, 0,1, 1,1, 1,0,
-				0,0, 1,0, 1,1, 0,1,
-				0,0, 0,1, 1,1, 1,0,
-				0,0, 1,0, 1,1, 0,1,
-				0,0, 1,0, 1,1, 0,1,
-				0,0, 0,1, 1,1, 1,0,
+				0,1, 0,0, 1,0, 1,1, 
 			];
             this._mesh._indices = [
                 0,1,2, 2,3,0,
@@ -580,7 +630,7 @@ x3dom.registerNodeType(
                 case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices.push(n0, n1, n2); break;
                 }
             }
-            // TODO: solid; ccw
+            // TODO: solid; ccw; creaseAngle
     
             var coordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
 			ctx.assert(coordNode.length == 1);
@@ -589,13 +639,16 @@ x3dom.registerNodeType(
 			var normalNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
             if (normalNode.length == 1)
 				this._mesh._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			else
+				this._mesh.calcNormals();
 			
             var texCoordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
             if (texCoordNode.length == 1)
 				this._mesh._texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
-			
-			//x3dom.debug.logInfo("Indices:   "+this._mesh._indices);
-			//x3dom.debug.logInfo("Positions: "+this._mesh._positions);
+			else
+				this._mesh.calcTexCoords();
+				
+			this._mesh.createSingleIndex();
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 

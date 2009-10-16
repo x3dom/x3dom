@@ -68,6 +68,7 @@ x3dom.gfx_mozwebgl = (function () {
 		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, fragTexCoord.xy).rgb + specular*specularColor;" +
+		//"    vec3 rgb = vec3(diffuse);" +
 		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
 		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
 		"}"
@@ -374,77 +375,12 @@ function setupShape(env, gl, shape)
     } 
 	else 
 	{
-        var coords = shape._geometry._mesh._positions;
-        var idxs = shape._geometry._mesh._indices;
-		var texCoords = shape._geometry._mesh._texCoords;
-		var vertNormals = shape._geometry._mesh._normals;
-        var vertFaceNormals = [];
-		
-		if (vertNormals.length < 1) {
-        for (var i = 0; i < coords.length/3; ++i)
-            vertFaceNormals[i] = [];
-
-        for (var i = 0, k=0, l=0; i < idxs.length; i += 3) {
-            var a = new x3dom.fields.SFVec3(
-					coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
-                subtract(new x3dom.fields.SFVec3(
-					coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
-            var b = new x3dom.fields.SFVec3(
-					coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
-                subtract(new x3dom.fields.SFVec3(
-					coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
-			
-            var n = a.cross(b).normalised();
-			
-            vertFaceNormals[idxs[i  ]].push(n);
-            vertFaceNormals[idxs[i+1]].push(n);
-            vertFaceNormals[idxs[i+2]].push(n);
-        }
-		
-        for (var i = 0; i < coords.length; i += 3) {
-            var n = new x3dom.fields.SFVec3(0, 0, 0);
-            for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
-                n = n.add(vertFaceNormals[i/3][j]);
-			
-            n = n.normalised();
-            vertNormals[i  ] = n.x;
-            vertNormals[i+1] = n.y;
-            vertNormals[i+2] = n.z;
-        }
-		}
-		
-		/*
-		var interleavedAttribs = [];
-		
-		for (var i=0, j=0; i<coords.length; i+=3)
-		{
-			interleavedAttribs[j++] = coords[i  ];
-			interleavedAttribs[j++] = coords[i+1];
-			interleavedAttribs[j++] = coords[i+2];
-			interleavedAttribs[j++] = vertNormals[i  ];
-			interleavedAttribs[j++] = vertNormals[i+1];
-			interleavedAttribs[j++] = vertNormals[i+2];
-			//interleavedAttribs[j++] = texCoords[i  ];
-			//interleavedAttribs[j++] = texCoords[i+1];
-			//interleavedAttribs[j++] = texCoords[i+2];
-		}
-		*/
-		
         shape._webgl = {
-            positions: coords,
-            normals: vertNormals,
-            indexes: idxs,
-			texcoords: texCoords,
-			//interleaved: interleavedAttribs
+            positions: shape._geometry._mesh._positions,
+            normals: shape._geometry._mesh._normals,
+            indexes: shape._geometry._mesh._indices,
+			texcoords: shape._geometry._mesh._texCoords,
         };
-		
-		/*
-		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.IndexedFaceSet)) {
-			x3dom.debug.logInfo(shape._webgl.indexes.length+" GL-Indices:   "+shape._webgl.indexes);
-			x3dom.debug.logInfo(shape._webgl.positions.length+" GL-Positions: "+shape._webgl.positions);
-			x3dom.debug.logInfo(shape._webgl.normals.length+" GL_Normals:   "+shape._webgl.normals);
-		}
-		*/
 
 		// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
 		if (shape._appearance._texture) {
@@ -609,11 +545,11 @@ function setupShape(env, gl, shape)
 			{
 				var texcBuffer = gl.createBuffer();
 				
-				var normals = CanvasFloatArray(shape._webgl.texcoords);
+				var texcoords = CanvasFloatArray(shape._webgl.texcoords);
 				
-				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
 
-				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
+				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
 				
 				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 2, 0); 
 				gl.enableVertexAttribArray(sp.texcoord);
