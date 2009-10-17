@@ -117,7 +117,7 @@ x3dom.gfx_mozwebgl = (function () {
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    vec3 rgb = (1.0+eye)/2.0;" +
-		"    gl_FragColor = vec4(rgb, 1.0);" +
+		"    gl_FragColor = vec4(rgb, alpha);" +
 		"}"
 		};
 
@@ -411,6 +411,10 @@ function setupShape(env, gl, shape)
 		gl.enable(gl.DEPTH_TEST);
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.CULL_FACE);
+		
+		//TODO; depth sort for transparent objects + separate rendering pass!
+		gl.enable(gl.BLEND);
+		gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 		var sp = getDefaultShaderProgram(env, gl);
 		if (!scene._webgl) {
@@ -444,8 +448,7 @@ function setupShape(env, gl, shape)
 			sp.bind();
 
 			//sp.lightPosition = [10*Math.sin(t), 10, 10*Math.cos(t)];
-			//sp.lightPosition = [0, 100, 800];
-			sp.eyePosition = [0, 0, 0]; //scene.getViewPosition().toGL();
+			sp.eyePosition = [0, 0, 0];
 
 			var mat = shape._appearance._material;
 			if (mat) {
@@ -473,9 +476,6 @@ function setupShape(env, gl, shape)
 					gl.ONE_MINUS_DST_ALPHA, gl.ONE // TODO: is this sensible?
 				);
 				//gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-			} 
-			else {
-				gl.disable(gl.BLEND);
 			}
 			
 			var tex = shape._appearance._texture;
@@ -499,7 +499,6 @@ function setupShape(env, gl, shape)
 				texture.image.src = tex._url;
 			}
 
-			//sp.viewMatrixInverse = transform.toGL();
 			sp.viewMatrixInverse = mat_view.inverse().toGL();
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_projection.mult(mat_view).mult(transform).toGL();
@@ -516,7 +515,6 @@ function setupShape(env, gl, shape)
 				var vertices = new CanvasFloatArray(shape._webgl.positions);
 				
 				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-						//new CanvasFloatArray(shape._webgl.interleaved), gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 				
 				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
@@ -535,7 +533,6 @@ function setupShape(env, gl, shape)
 				var normals = CanvasFloatArray(shape._webgl.normals);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-
 				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
 				
 				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 3, 0); 
@@ -548,7 +545,6 @@ function setupShape(env, gl, shape)
 				var texcoords = CanvasFloatArray(shape._webgl.texcoords);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
-
 				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
 				
 				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 2, 0); 
@@ -575,11 +571,11 @@ function setupShape(env, gl, shape)
 		});
 			
 		// XXX: nasty hack to fix Firefox compositing the non-premultiplied canvas as if it were premultiplied
-		gl.enable(gl.BLEND);
-		gl.blendFuncSeparate( // just multiply dest RGB by its A
+		gl.disable(gl.BLEND);
+		/*gl.blendFuncSeparate( // just multiply dest RGB by its A
 			gl.ZERO, gl.DST_ALPHA,
 			gl.ZERO, gl.ONE
-		); 
+		);*/ 
 		gl.disable(gl.DEPTH_TEST);
 		
 		//x3dom.debug.logInfo(gl.getString(gl.VENDOR)+"/"+gl.getString(gl.RENDERER)+"/"+

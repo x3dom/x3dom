@@ -215,7 +215,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec3(x, y, z);
         },
         _attribute_SFRotation: function (ctx, name, x, y, z, a) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFQuaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFQuaternion(x, y, z, a);
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.Quaternion(x, y, z, a);
         },
         _attribute_MFString: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? MFString_parse(ctx.xmlNode.getAttribute(name)) : def;
@@ -735,18 +735,14 @@ x3dom.registerNodeType(
 			this._attribute_SFFloat(ctx, 'fieldOfView', 0.785398);
             this._attribute_SFVec3(ctx, 'position', 0, 0, 10);
             this._attribute_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
-            this._rotation = this._orientation.toMatrix();
+			
+            this._viewMatrix = this._orientation.toMatrix().transpose().
+				mult(x3dom.fields.SFMatrix4.translation(this._position.negate()));
         },
         {
-            getTranslationMatrix: function () {
-                return x3dom.fields.SFMatrix4.translation(this._position.negate());
-            },
-            getTranslation: function () {
-                return this._position;
-            },
-            getRotationMatrix: function () {
-                return this._rotation;
-            },
+			getViewMatrix: function() {
+                return this._viewMatrix;
+			},
 			getFieldOfView: function() {
 				return this._fieldOfView;
 			},
@@ -908,7 +904,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.OrientationInterpolator.super.call(this, ctx);
             if (ctx.xmlNode.hasAttribute('keyValue'))
-                this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s*,\s*/), x3dom.fields.SFQuaternion.parseAxisAngle);
+                this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s*,\s*/), x3dom.fields.Quaternion.parseAxisAngle);
             else
                 this._keyValue = [];
     
@@ -970,42 +966,30 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Scene.super.call(this, ctx);
-            //this.rotation = 0;
-            //this.elevation = 0;
 			this.rotMat = x3dom.fields.SFMatrix4.identity();
 			this.movement = new x3dom.fields.SFVec3(0, 0, 0);
         },
         {
-            _getViewpointMatrix: function () {
+            getViewpointMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 var mat_viewpoint = viewpoint._getCurrentTransform();
-                /*var rightwards = viewpoint.getRotationMatrix().transpose().
-                    mult(viewpoint.getTranslationMatrix()).
-                    mult(mat_viewpoint).
-                    multMatrixVec(new x3dom.fields.SFVec3(1, 0, 0));
-                var upwards = new x3dom.fields.SFVec3(0, 1, 0);
-                var rot = x3dom.fields.SFQuaternion.axisAngle(rightwards.cross(upwards).normalised(), -this.elevation). // XXX: this is all wrong
-                    mult(x3dom.fields.SFQuaternion.axisAngle(upwards, this.rotation));*/
-                return mat_viewpoint.mult(this.rotMat); //.mult(rot.toMatrix());
+				return mat_viewpoint.mult(viewpoint.getViewMatrix());
                 // TODO: x3dom.Viewpoint.centerOfRotation
             },
     
             getViewMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
-                return viewpoint.getRotationMatrix().transpose().
+                return this.getViewpointMatrix().
 					mult(x3dom.fields.SFMatrix4.translation(this.movement)).
-                    mult(viewpoint.getTranslationMatrix()).
-                    mult(this._getViewpointMatrix());
-            },
-    
-            getViewPosition: function () {
-                var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
-                return this._getViewpointMatrix().multMatrixPnt(viewpoint.getTranslation());
+					mult(this.rotMat);
             },
 			
 			getFieldOfView: function() {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
-				return viewpoint.getFieldOfView();
+				if (viewpoint !== null)
+					return viewpoint.getFieldOfView();
+				else
+					return 0.785398;
 			},
 			
 			getSkyColor: function() {
@@ -1020,13 +1004,16 @@ x3dom.registerNodeType(
 				if (buttonState & 1) {
 					var alpha = (dy * 2 * Math.PI) / 400; //width;
 					var beta = (dx * 2 * Math.PI) / 300; //height;
+					var mat = this.getViewMatrix();
 					
-					var mx = new x3dom.fields.SFMatrix4.rotationX(alpha);
-					var my = new x3dom.fields.SFMatrix4.rotationY(beta);
-					this.rotMat = this.rotMat.mult(mx).mult(my);
+					var mx = x3dom.fields.SFMatrix4.rotationX(alpha);
+					var my = x3dom.fields.SFMatrix4.rotationY(beta);
 					
-					//this.rotation += dx/100;
-					//this.elevation = Math.max(-Math.PI, Math.min(Math.PI, this.elevation + dy/100));
+					mat.setTranslate(new x3dom.fields.SFVec3(0,0,0));
+					this.rotMat = this.rotMat.
+									mult(mat.inverse()).
+									mult(mx).mult(my).
+									mult(mat);
 				}
 				if (buttonState & 4) {
 					var vec = new x3dom.fields.SFVec3(dx/20,-dy/20,0);

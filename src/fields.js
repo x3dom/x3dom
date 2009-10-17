@@ -24,6 +24,29 @@ x3dom.fields.SFMatrix4 = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _
     }
 }
 
+/** returns 1st base vector (right) */
+x3dom.fields.SFMatrix4.prototype.e0 = function () {
+	var baseVec = new x3dom.fields.SFVec3(this._00, this._10, this._20);
+	return baseVec.normalised();
+}
+
+/** returns 2nd base vector (up) */
+x3dom.fields.SFMatrix4.prototype.e1 = function () {
+	var baseVec = new x3dom.fields.SFVec3(this._01, this._11, this._21);
+	return baseVec.normalised();
+}
+
+/** returns 3rd base vector (fwd) */
+x3dom.fields.SFMatrix4.prototype.e2 = function () {
+	var baseVec = new x3dom.fields.SFVec3(this._02, this._12, this._22);
+	return baseVec.normalised();
+}
+
+/** returns 4th base vector (pos) */
+x3dom.fields.SFMatrix4.prototype.e3 = function () {
+	return new x3dom.fields.SFVec3(this._03, this._13, this._23);
+}
+
 /** Returns a SFMatrix4 identity matrix. */
 x3dom.fields.SFMatrix4.identity = function () {
     return new x3dom.fields.SFMatrix4(
@@ -83,6 +106,18 @@ x3dom.fields.SFMatrix4.scale = function (vec) {
         0, 0, vec.z, 0,
         0, 0, 0, 1
     );
+}
+
+x3dom.fields.SFMatrix4.prototype.setTranslate = function (vec) {
+	this._03 = vec.x;
+	this._13 = vec.y;
+	this._23 = vec.z;
+}
+
+x3dom.fields.SFMatrix4.prototype.setScale = function (vec) {
+	this._00 = vec.x;
+	this._11 = vec.y;
+	this._22 = vec.z;
 }
 
 x3dom.fields.SFMatrix4.parseRotation = function (str) {
@@ -179,13 +214,11 @@ x3dom.fields.SFMatrix4.prototype.decompose = function () {
     return [ T, S, angle_x, angle_y, angle_z ];
 }
 
-x3dom.fields.SFMatrix4.prototype.det3 = function () {
-    return (this._00 * this._11 * this._22 +
-            this._01 * this._12 * this._20 +
-            this._02 * this._10 * this._21 -
-            this._02 * this._11 * this._20 -
-            this._01 * this._10 * this._22 -
-            this._00 * this._12 * this._21);
+x3dom.fields.SFMatrix4.prototype.det3 = function (
+				a1, a2, a3, b1, b2, b3, c1, c2, c3) {
+    var d = (a1 * b2 * c3) + (a2 * b3 * c1) + (a3 * b1 * c2) -
+			(a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1);
+	return d;
 }
 
 x3dom.fields.SFMatrix4.prototype.det = function () {
@@ -214,13 +247,13 @@ x3dom.fields.SFMatrix4.prototype.det = function () {
     c4 = this._23;
     d4 = this._33;
 	
-    return (  a1 * this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4)
+    var d = + a1 * this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4)
             - b1 * this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4)
             + c1 * this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4)
-            - d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4));
+            - d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
+	return d;
 }
 
-//fixme; doesn't work correctly
 x3dom.fields.SFMatrix4.prototype.inverse = function () {
     var a1, a2, a3, a4,
         b1, b2, b3, b4,
@@ -251,31 +284,29 @@ x3dom.fields.SFMatrix4.prototype.inverse = function () {
 
     if (Math.abs(rDet) < 0.000001)
     {
-        x3dom.debug.logInfo("invert matrix: singular matrix, no inverse");
+        x3dom.debug.logInfo("Invert matrix: singular matrix, no inverse!");
         return x3dom.fields.SFMatrix4.identity();
     }
 
     rDet = 1.0 / rDet;
-	
-	//x3dom.debug.logInfo(rDet);
 
 	return new x3dom.fields.SFMatrix4(
-     this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) * rDet,
+    +this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) * rDet,
     -this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4) * rDet,
-     this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) * rDet,
+    +this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) * rDet,
     -this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4) * rDet,
     -this.det3(b1, b3, b4, c1, c3, c4, d1, d3, d4) * rDet,
-     this.det3(a1, a3, a4, c1, c3, c4, d1, d3, d4) * rDet,
+    +this.det3(a1, a3, a4, c1, c3, c4, d1, d3, d4) * rDet,
     -this.det3(a1, a3, a4, b1, b3, b4, d1, d3, d4) * rDet,
-     this.det3(a1, a3, a4, b1, b3, b4, c1, c3, c4) * rDet,
-     this.det3(b1, b2, b4, c1, c2, c4, d1, d2, d4) * rDet,
+    +this.det3(a1, a3, a4, b1, b3, b4, c1, c3, c4) * rDet,
+    +this.det3(b1, b2, b4, c1, c2, c4, d1, d2, d4) * rDet,
     -this.det3(a1, a2, a4, c1, c2, c4, d1, d2, d4) * rDet,
-     this.det3(a1, a2, a4, b1, b2, b4, d1, d2, d4) * rDet,
+    +this.det3(a1, a2, a4, b1, b2, b4, d1, d2, d4) * rDet,
     -this.det3(a1, a2, a4, b1, b2, b4, c1, c2, c4) * rDet,
     -this.det3(b1, b2, b3, c1, c2, c3, d1, d2, d3) * rDet,
-     this.det3(a1, a2, a3, c1, c2, c3, d1, d2, d3) * rDet,
+    +this.det3(a1, a2, a3, c1, c2, c3, d1, d2, d3) * rDet,
     -this.det3(a1, a2, a3, b1, b2, b3, d1, d2, d3) * rDet,
-     this.det3(a1, a2, a3, b1, b2, b3, c1, c2, c3) * rDet
+    +this.det3(a1, a2, a3, b1, b2, b3, c1, c2, c3) * rDet
 	);
 }
 
@@ -338,7 +369,7 @@ x3dom.fields.SFVec2.prototype.reflect = function (n) {
     return this;    */
 }
 
-x3dom.fields.SFVec2.prototype.normalise = function (that) {
+x3dom.fields.SFVec2.prototype.normalised = function (that) {
     // var n = Math.sqrt((this.x*this.x) + (this.y*this.y));
     var n = this.length();
     if (n) n = 1.0 / n;
@@ -442,18 +473,18 @@ x3dom.fields.SFVec3.prototype.toString = function () {
 }
 
 
-/** SFQuaternion constructor.
-    @class Represents a SFQuaternion
+/** Quaternion constructor.
+    @class Represents a Quaternion
   */
-x3dom.fields.SFQuaternion = function(x, y, z, w) {
+x3dom.fields.Quaternion = function(x, y, z, w) {
     this.x = x;
     this.y = y;
     this.z = z;
     this.w = w;
 }
 
-x3dom.fields.SFQuaternion.prototype.mult = function (that) {
-    return new x3dom.fields.SFQuaternion(
+x3dom.fields.Quaternion.prototype.mult = function (that) {
+    return new x3dom.fields.Quaternion(
         this.w*that.x + this.x*that.w + this.y*that.z - this.z*that.y,
         this.w*that.y + this.y*that.w + this.z*that.x - this.x*that.z,
         this.w*that.z + this.z*that.w + this.x*that.y - this.y*that.x,
@@ -461,18 +492,18 @@ x3dom.fields.SFQuaternion.prototype.mult = function (that) {
     );
 }
 
-x3dom.fields.SFQuaternion.parseAxisAngle = function (str) {
+x3dom.fields.Quaternion.parseAxisAngle = function (str) {
     var m = /^(\S+)\s+(\S+)\s+(\S+)\s+(\S+)$/.exec(str);
-    return x3dom.fields.SFQuaternion.axisAngle(new x3dom.fields.SFVec3(+m[1], +m[2], +m[3]), +m[4]);
+    return x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3(+m[1], +m[2], +m[3]), +m[4]);
 }
 
-x3dom.fields.SFQuaternion.axisAngle = function (axis, a) {
+x3dom.fields.Quaternion.axisAngle = function (axis, a) {
     var s = Math.sin(a/2);
     var c = Math.cos(a/2);
-    return new x3dom.fields.SFQuaternion(axis.x*s, axis.y*s, axis.z*s, c);
+    return new x3dom.fields.Quaternion(axis.x*s, axis.y*s, axis.z*s, c);
 }
 
-x3dom.fields.SFQuaternion.prototype.toMatrix = function () {
+x3dom.fields.Quaternion.prototype.toMatrix = function () {
     var xx = this.x * this.x * 2;
     var xy = this.x * this.y * 2;
     var xz = this.x * this.z * 2;
@@ -491,30 +522,30 @@ x3dom.fields.SFQuaternion.prototype.toMatrix = function () {
     );
 }
 
-x3dom.fields.SFQuaternion.prototype.dot = function (that) {
+x3dom.fields.Quaternion.prototype.dot = function (that) {
     return this.x*that.x + this.y*that.y + this.z*that.z + this.w*that.w;
 }
 
-x3dom.fields.SFQuaternion.prototype.add = function (that) {
-    return new x3dom.fields.SFQuaternion(this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w);
+x3dom.fields.Quaternion.prototype.add = function (that) {
+    return new x3dom.fields.Quaternion(this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w);
 }
 
-x3dom.fields.SFQuaternion.prototype.subtract = function (that) {
-    return new x3dom.fields.SFQuaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
+x3dom.fields.Quaternion.prototype.subtract = function (that) {
+    return new x3dom.fields.Quaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
 }
 
-x3dom.fields.SFQuaternion.prototype.multScalar = function (s) {
-    return new x3dom.fields.SFQuaternion(this.x*s, this.y*s, this.z*s, this.w*s);
+x3dom.fields.Quaternion.prototype.multScalar = function (s) {
+    return new x3dom.fields.Quaternion(this.x*s, this.y*s, this.z*s, this.w*s);
 }
 
-x3dom.fields.SFQuaternion.prototype.normalised = function (that) {
+x3dom.fields.Quaternion.prototype.normalised = function (that) {
     var d2 = this.x*this.x + this.y*this.y + this.z*this.z + this.w*this.w;
     if (d2 == 0) return this;
     var id = 1/Math.sqrt(d2);
-    return new x3dom.fields.SFQuaternion(this.x*id, this.y*id, this.z*id, this.w*id);
+    return new x3dom.fields.Quaternion(this.x*id, this.y*id, this.z*id, this.w*id);
 }
 
-x3dom.fields.SFQuaternion.prototype.slerp = function (that, t) {
+x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
     var dot = this.dot(that);
     if (dot > 0.995)
         return this.add(that.subtract(this).multScalar(t)).normalised();
@@ -524,7 +555,7 @@ x3dom.fields.SFQuaternion.prototype.slerp = function (that, t) {
     return this.multScalar(Math.cos(theta)).add(tother.multScalar(Math.sin(theta)));
 }
 
-x3dom.fields.SFQuaternion.prototype.toString = function () {
+x3dom.fields.Quaternion.prototype.toString = function () {
     return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
 }
 
