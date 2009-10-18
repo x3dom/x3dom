@@ -451,8 +451,12 @@ x3dom.fields.SFVec3.prototype.reflect = function (n) {
     return new x3dom.fields.SFVec3(this.x - d2*n.x, this.y - d2*n.y, this.z - d2*n.z);
 }
 
+x3dom.fields.SFVec3.prototype.length = function() {
+    return Math.sqrt((this.x*this.x) + (this.y*this.y) + (this.z*this.z));
+}
+
 x3dom.fields.SFVec3.prototype.normalised = function (that) {
-    var n = Math.sqrt((this.x*this.x) + (this.y*this.y) + (this.z*this.z));
+    var n = this.length();
     if (n) n = 1.0 / n;
     return new x3dom.fields.SFVec3(this.x*n, this.y*n, this.z*n);
 }

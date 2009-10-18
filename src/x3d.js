@@ -115,6 +115,33 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         _transformMatrix: function (transform) {
             return transform;
         },
+		
+		_getVolume: function (min, max, invalidate) {
+			for (var i in this._childNodes)
+			{
+				if (this._childNodes[i])
+				{
+					var childMin = new x3dom.fields.SFVec3(min.x, min.y, min.z);
+					var childMax = new x3dom.fields.SFVec3(max.x, max.y, max.z);
+					
+					this._childNodes[i]._getVolume(childMin, childMax, invalidate);
+					
+					if (min.x > childMin.x)
+						min.x = childMin.x;
+					if (min.y > childMin.y)
+						min.y = childMin.y;
+					if (min.z > childMin.z)
+						min.z = childMin.z;
+						
+					if (max.x < childMax.x)
+						max.x = childMax.x;
+					if (max.y < childMax.y)
+						max.y = childMax.y;
+					if (max.z < childMax.z)
+						max.z = childMax.z;
+				}
+			}
+		},
 
         _find: function (type) {
             for (var i in this._childNodes) {
@@ -177,15 +204,27 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 
         // PE: Hacky test for field updates
         _updateField: function (field, msg) {
+		
             var fieldName = "_" +  field;
-            
-            var f = this[fieldName];
+			
+			var f = this[fieldName];
+			
+			if (f === undefined) {
+				this[fieldName] = {};
+				f = this[fieldName];
+			}
+			
             //x3dom.debug.logInfo("_updateField: field=" + field + ", msg=" + msg + ", f=" + f);
             if (f!==null) {
                 //x3dom.debug.logInfo("_updateField: ####" + typeof(f));
                 if (f.constructor === x3dom.fields.SFVec3) {
                     this[fieldName] = x3dom.fields.SFVec3.parse(msg);
                 }
+				//uhh, what a hack - but how to do it nicely?
+				else if (msg == "true")
+					this[fieldName] = true;
+				else if (msg == "false")
+					this[fieldName] = false;
             }
         },
 
@@ -352,14 +391,74 @@ x3dom.registerNodeType(
 
 /** @class x3dom.Mesh
 */
-x3dom.Mesh = function() {}
+x3dom.Mesh = function() {
+	this._min = new x3dom.fields.SFVec3(0,0,0);
+	this._max = new x3dom.fields.SFVec3(0,0,0);
+	this._dirty = true;
+}
 
 x3dom.Mesh.prototype._positions = [];
 x3dom.Mesh.prototype._normals   = [];
 x3dom.Mesh.prototype._texCoords = [];
 x3dom.Mesh.prototype._indices   = [];
 
-x3dom.Mesh.prototype.calcNormals = function() {
+x3dom.Mesh.prototype._min = {};
+x3dom.Mesh.prototype._max = {};
+x3dom.Mesh.prototype._dirty = true;
+
+x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
+{
+	if (this._dirty == true)
+	{
+		var coords = this._positions;
+		var n = coords.length;
+		
+		if (invalidate == true)	//needed?
+		{
+			if (n > 3)
+			{
+				this._min = new x3dom.fields.SFVec3(coords[0],coords[1],coords[2]);
+				this._max = new x3dom.fields.SFVec3(coords[0],coords[1],coords[2]);
+			}
+			else
+			{
+				this._min = new x3dom.fields.SFVec3(0,0,0);
+				this._max = new x3dom.fields.SFVec3(0,0,0);
+			}
+			
+			for (var i=3; i<n; i+=3)
+			{
+				if (this._min.x > coords[i+0])
+					this._min.x = coords[i+0];
+				if (this._min.y > coords[i+1])
+					this._min.y = coords[i+1];
+				if (this._min.z > coords[i+2])
+					this._min.z = coords[i+2];
+				
+				if (this._max.x < coords[i+0])
+					this._max.x = coords[i+0];
+				if (this._max.y < coords[i+1])
+					this._max.y = coords[i+1];
+				if (this._max.z < coords[i+2])
+					this._max.z = coords[i+2];
+			}
+		}
+		this._dirty = false;
+	}
+	
+	min.x = this._min.x;
+	min.y = this._min.y;
+	min.z = this._min.z;
+	
+	max.x = this._max.x;
+	max.y = this._max.y;
+	max.z = this._max.z;
+	
+	//x3dom.debug.logInfo("fertig: " + min + " | " + max);
+}
+
+x3dom.Mesh.prototype.calcNormals = function()
+{
 	//fixme; as first shot taken from gfx
 	var coords = this._positions;
 	var idxs = this._indices;
@@ -400,11 +499,13 @@ x3dom.Mesh.prototype.calcNormals = function() {
 	this._normals = vertNormals;
 }
 
-x3dom.Mesh.prototype.calcTexCoords = function() {
+x3dom.Mesh.prototype.calcTexCoords = function()
+{
 	//TODO
 }
 
-x3dom.Mesh.prototype.createSingleIndex = function() {
+x3dom.Mesh.prototype.remapData = function()
+{
 	//x3dom.debug.logInfo("Indices:   "+this._indices);
 	//x3dom.debug.logInfo("Positions: "+this._positions);
 }
@@ -421,7 +522,12 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DGeometryNode.super.call(this, ctx);
 			
 			this._mesh = new x3dom.Mesh();
-        }
+        },
+		{
+			_getVolume: function(min, max, invalidate) {
+				this._mesh.getBBox(min, max, invalidate);
+			}
+		}
     )
 );
 
@@ -481,6 +587,7 @@ x3dom.registerNodeType(
                 16,17,18, 18,19,16,
                 20,22,21, 22,20,23,
             ];
+			this._mesh._dirty = true;
         }
     )
 );
@@ -558,6 +665,7 @@ x3dom.registerNodeType(
             this._mesh._positions = verts;
             this._mesh._normals = norms;
             this._mesh._indices = tris;
+			this._mesh._dirty = true;
         }
     )
 );
@@ -648,7 +756,8 @@ x3dom.registerNodeType(
 			else
 				this._mesh.calcTexCoords();
 				
-			this._mesh.createSingleIndex();
+			this._mesh.remapData();
+			this._mesh._dirty = true;
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
@@ -809,6 +918,7 @@ x3dom.registerNodeType(
                     }
                 }
             });
+			
             ctx.assert(appearance && geometry, 'has appearance and geometry');
             this._appearance = appearance;
             this._geometry = geometry;
@@ -818,6 +928,10 @@ x3dom.registerNodeType(
                 // TODO: culling etc
                 out.push( [transform, this] );
             },
+			
+			_getVolume: function(min, max, invalidate) {
+				this._geometry._getVolume(min, max, invalidate);
+			}
         }
     )
 );
@@ -854,11 +968,61 @@ x3dom.registerNodeType(
             this._attribute_SFVec3(ctx, 'translation', 0, 0, 0);
             this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
             this._attribute_SFVec3(ctx, 'scale', 1, 1, 1);
+			//TODO: scaleOrientation
         },
         {
-            _transformMatrix: function (transform) {
-                return transform.mult( x3dom.fields.SFMatrix4.translation(this._translation).mult(this._rotation.toMatrix()).mult(x3dom.fields.SFMatrix4.scale(this._scale)) );
+            _transformMatrix: function(transform) {
+                return transform.mult(x3dom.fields.SFMatrix4.translation(this._translation).
+								 mult(this._rotation.toMatrix()).
+								 mult(x3dom.fields.SFMatrix4.scale(this._scale)));
             },
+			
+			_getVolume: function(min, max, invalidate) {
+				for (var i in this._childNodes)
+				{
+					if (this._childNodes[i])
+					{
+						var childMin = new x3dom.fields.SFVec3(min.x, min.y, min.z);
+						var childMax = new x3dom.fields.SFVec3(max.x, max.y, max.z);
+						
+						this._childNodes[i]._getVolume(childMin, childMax, invalidate);
+						
+						if (min.x > childMin.x)
+							min.x = childMin.x;
+						if (min.y > childMin.y)
+							min.y = childMin.y;
+						if (min.z > childMin.z)
+							min.z = childMin.z;
+							
+						if (max.x < childMax.x)
+							max.x = childMax.x;
+						if (max.y < childMax.y)
+							max.y = childMax.y;
+						if (max.z < childMax.z)
+							max.z = childMax.z;
+					}
+				}
+				
+				var trafo = x3dom.fields.SFMatrix4.identity();
+				trafo = this._transformMatrix(trafo);
+				
+				var locMin = trafo.multMatrixPnt(min);
+				var locMax = trafo.multMatrixPnt(max);
+				
+				if (min.x > locMin.x)
+					min.x = locMin.x;
+				if (min.y > locMin.y)
+					min.y = locMin.y;
+				if (min.z > locMin.z)
+					min.z = locMin.z;
+					
+				if (max.x < locMax.x)
+					max.x = locMax.x;
+				if (max.y < locMax.y)
+					max.y = locMax.y;
+				if (max.z < locMax.z)
+					max.z = locMax.z;
+			}
         }
     )
 );
@@ -966,10 +1130,30 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Scene.super.call(this, ctx);
-			this.rotMat = x3dom.fields.SFMatrix4.identity();
-			this.movement = new x3dom.fields.SFVec3(0, 0, 0);
+			this._rotMat = x3dom.fields.SFMatrix4.identity();
+			this._movement = new x3dom.fields.SFVec3(0, 0, 0);
+			this._width = 400;
+			this._height = 300;
         },
         {
+			getVolume: function(min, max, invalidate)
+			{
+				var MIN = new x3dom.fields.SFVec3(
+					Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+				var MAX = new x3dom.fields.SFVec3(
+					Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+				
+				this._getVolume(MIN, MAX, invalidate);
+				
+				min.x = MIN.x;
+				min.y = MIN.y;
+				min.z = MIN.z;
+				
+				max.x = MAX.x;
+				max.y = MAX.y;
+				max.z = MAX.z;
+			},
+			
             getViewpointMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 var mat_viewpoint = viewpoint._getCurrentTransform();
@@ -980,8 +1164,8 @@ x3dom.registerNodeType(
             getViewMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 return this.getViewpointMatrix().
-					mult(x3dom.fields.SFMatrix4.translation(this.movement)).
-					mult(this.rotMat);
+					mult(x3dom.fields.SFMatrix4.translation(this._movement)).
+					mult(this._rotMat);
             },
 			
 			getFieldOfView: function() {
@@ -1010,18 +1194,34 @@ x3dom.registerNodeType(
 					var my = x3dom.fields.SFMatrix4.rotationY(beta);
 					
 					mat.setTranslate(new x3dom.fields.SFVec3(0,0,0));
-					this.rotMat = this.rotMat.
+					this._rotMat = this._rotMat.
 									mult(mat.inverse()).
 									mult(mx).mult(my).
 									mult(mat);
 				}
 				if (buttonState & 4) {
-					var vec = new x3dom.fields.SFVec3(dx/20,-dy/20,0);
-					this.movement = this.movement.add(vec);
+					var min = new x3dom.fields.SFVec3(0,0,0);
+					var max = new x3dom.fields.SFVec3(0,0,0);
+					this.getVolume(min, max, true);
+					
+					var d = (max.subtract(min)).length();
+					//x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
+					//x3dom.debug.logInfo("w="+this._width+", h="+this._height);
+					
+					var vec = new x3dom.fields.SFVec3(d*dx/this._width,d*(-dy)/this._height,0);
+					this._movement = this._movement.add(vec);
 				}
 				if (buttonState & 2) {
-					var vec = new x3dom.fields.SFVec3(0,0,(dx+dy)/20);
-					this.movement = this.movement.add(vec);
+					var min = new x3dom.fields.SFVec3(0,0,0);
+					var max = new x3dom.fields.SFVec3(0,0,0);
+					this.getVolume(min, max, true);
+					
+					var d = (max.subtract(min)).length();
+					//x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
+					//x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
+					
+					var vec = new x3dom.fields.SFVec3(0,0,d*(dx+dy)/this._height);
+					this._movement = this._movement.add(vec);
 				}
             }
         }
@@ -1269,6 +1469,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);    
 
     this._scene = scene;
+	
+	this._scene._width = this.canvas.width;
+	this._scene._height = this.canvas.height;
 };
 
 x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {

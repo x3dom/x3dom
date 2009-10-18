@@ -172,46 +172,65 @@ x3dom.X3DCanvas = function(x3dElem) {
 	
     this.canvas.addEventListener('mousedown', function (evt) {
 		switch(evt.button) {
-			case 0: mouse_button = 1; break;	//left
-			case 1: mouse_button = 4; break;	//middle
-			case 2: mouse_button = 2; break;	//right
-			default: mouse_button = 0; break;
+			case 0:  this.mouse_button = 1; break;	//left
+			case 1:  this.mouse_button = 4; break;	//middle
+			case 2:  this.mouse_button = 2; break;	//right
+			default: this.mouse_button = 0; break;
 		}
-        mouse_drag_x = evt.screenX; // screenX seems the least problematic way of getting coordinates
-        mouse_drag_y = evt.screenY;
-        mouse_dragging = true;
+        this.mouse_drag_x = evt.screenX; // screenX seems the least problematic way of getting coordinates
+        this.mouse_drag_y = evt.screenY;
+        this.mouse_dragging = true;
 		
 		window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
 		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
     }, false);
 	
     this.canvas.addEventListener('mouseup', function (evt) {
-		mouse_button = 0;
-        mouse_dragging = false;
+		this.mouse_button = 0;
+        this.mouse_dragging = false;
 		
 		window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
 		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
     }, false);
 	
     this.canvas.addEventListener('mouseout', function (evt) {
-		mouse_button = 0;
-        mouse_dragging = false;
+		this.mouse_button = 0;
+        this.mouse_dragging = false;
 		
 		window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
 		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
     }, false);
 	
     this.canvas.addEventListener('mousemove', function (evt) {
-        if (!mouse_dragging)
+		if (!this.mouse_dragging)
 			return;
-        var dx = evt.screenX - mouse_drag_x;
-        var dy = evt.screenY - mouse_drag_y;
-        mouse_drag_x = evt.screenX;
-        mouse_drag_y = evt.screenY;
 		
-		window.status=this.id+' MOVE: '+evt.screenX+", "+evt.screenY;
-        this.parent.doc.ondrag(dx, dy, mouse_button);
+        var dx = evt.screenX - this.mouse_drag_x;
+        var dy = evt.screenY - this.mouse_drag_y;
+        this.mouse_drag_x = evt.screenX;
+        this.mouse_drag_y = evt.screenY;
+		
+        this.parent.doc.ondrag(dx, dy, this.mouse_button);
+		
+		window.status=this.id+' MOVE: '+dx+", "+dy;
 		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
+    }, false);
+	
+	this.canvas.addEventListener('DOMMouseScroll', function (evt) {
+		this.parent.doc.ondrag(0, 2*evt.detail, 2);
+		
+		window.status=this.id+' SCROLL: '+evt.detail;
+		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
     }, false);
 
 };
@@ -245,6 +264,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     var doc = this.doc;
     var gl = this.gl;
     x3dom.debug.logInfo("gl=" + gl + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
+	
     this.doc.onload = function () {
         // setInterval(tick, 1000/this.fps_target);
         // alert(uri + " loaded...");	
@@ -265,55 +285,8 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 };
 
 
-//     // Establish x3dom in the local namespace and also in the window namespace
-// 	var x3dom = window.x3dom = function(canvas) {        
-//     // var x3dom = function(canvas) {        
-//         return new x3dom.fn.init(canvas);
-//     };
-
-//     x3dom.fn = x3dom.prototype = {
-//     		
-//         /** Initializes the given @p canvas for webgl usage.
-//           */
-//         init: function(canvas) {
-//             // alert("x3dom init... canvas=" + canvas);
-// 			this.canvas = canvas;
-// 
-// 			var fps_element = document.createElementNS('http://www.w3.org/1999/xhtml', 'p');
-// 			var container = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-// 			container.appendChild(fps_element);
-// 			canvas.parentNode.appendChild(container);
-// 
-// 			var fps_t0 = new Date(), fps_n = 0;
-// 			var t = 0;
-// 
-// 			this.tick = function (doc, gl) {
-// 				log_frame_clear();
-// 				if (++fps_n == 10) {
-// 					fps_element.textContent = fps_n*1000 / (new Date() - fps_t0) + ' fps';
-// 					fps_t0 = new Date();
-// 					fps_n = 0;
-// 				}
-// 				try {
-// 					// log("doc=" + doc);
-// 					// doc.advanceTime(t); 
-// 					doc.render(gl);
-// 				} catch (e) {
-// 					x3dom.debug.logException(e);
-// 					throw e;
-// 				}
-// 				t += 1/this.fps_target;
-// 				// x3dom.debug.logInfo(".");
-// 			};
-// 
-//             return this;
-//         },        
-//     };
-
 (function (){
     
-    
-
     var onload = function() {
 
         // Activate debugging/logging for x3dom. Logging will only work for

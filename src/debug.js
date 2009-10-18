@@ -29,7 +29,7 @@ x3dom.debug = {
     
     // the maximum number of lines to log in order to prevent
     // the browser to slow down
-    maxLinesToLog: 100,
+    maxLinesToLog: 1000,
 
 	// the container div for the logging messages
 	logContainer: null,
@@ -65,7 +65,9 @@ x3dom.debug = {
 	setupLogContainer: function() {
 		x3dom.debug.logContainer = document.createElement("div");
 		x3dom.debug.logContainer.id = "x3dom_logdiv";
-		x3dom.debug.logContainer.style.border = "2px solid #000";
+		x3dom.debug.logContainer.style.border = "2px solid olivedrab";
+		x3dom.debug.logContainer.style.height = "180px";
+		x3dom.debug.logContainer.style.padding = "2px"
 		document.body.appendChild(x3dom.debug.logContainer);
 	},
 

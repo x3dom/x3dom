@@ -428,7 +428,7 @@ function setupShape(env, gl, shape)
 		var fov = scene.getFieldOfView();
 		//x3dom.debug.logInfo("fov=" + fov);
 		
-		var mat_projection = setCamera(fov, this.width/this.height, 1000, 0.1);
+		var mat_projection = setCamera(fov, this.width/this.height, 10000, 0.1);
 		//var mat_projection = makeFrustum(0, this.width-1, 0, this.height-1, 1000, 1);
 		var mat_view = scene.getViewMatrix();
 
@@ -552,7 +552,12 @@ function setupShape(env, gl, shape)
 			}
 			
 			//gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
-			gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+			
+			// fixme; scene._points is dynamic and doesn't belong there!!!
+			if (scene._points !== undefined && scene._points)
+			  gl.drawElements(gl.POINTS, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+			else
+			  gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 			
 			//gl.deleteTexture(texture);
 			
