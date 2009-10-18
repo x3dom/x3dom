@@ -1,13 +1,14 @@
 x3dom.gfx_mozwebgl = (function () { 
 
-	function Context(ctx3d, w, h) {
+	function Context(ctx3d, w, h, name) {
 		this.ctx3d = ctx3d;
 		this.width = w;
 		this.height = h;
+		this.name = name;
 	}
 
 	Context.prototype.getName = function() {
-		return "moz-webgl";
+		return this.name;
 	}
 
 	function setupContext(canvas) {
@@ -15,7 +16,12 @@ x3dom.gfx_mozwebgl = (function () {
 		try {
 			var ctx = canvas.getContext('moz-webgl');
 			if (ctx)
-				return new Context(ctx, canvas.width, canvas.height);
+				return new Context(ctx, canvas.width, canvas.height, 'moz-webgl');
+		} catch (e) {}
+		try {
+			var ctx = canvas.getContext('webkit-3d');
+			if (ctx)
+				return new Context(ctx, canvas.width, canvas.height, 'webkit-3d');
 		} catch (e) {}
 	}
 
@@ -71,9 +77,9 @@ x3dom.gfx_mozwebgl = (function () {
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
 		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
+		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy).rgb, 1.0);" +
 		"}"
 		};
-
 
 	g_shaders['vs-x3d-untextured'] = { type: "vertex", data:
 		"attribute vec3 position;" +
@@ -142,7 +148,7 @@ x3dom.gfx_mozwebgl = (function () {
 		};
 			
 
-	function getShader(env, gl, id, onload) {
+	function getShader(gl, id, onload) {
 		if (g_shaders[id]) {
 			var shader;
 			if (g_shaders[id].type == 'vertex')
@@ -155,12 +161,11 @@ x3dom.gfx_mozwebgl = (function () {
 			}
 			gl.shaderSource(shader, g_shaders[id].data);
 			gl.compileShader(shader);
-			//env.log(gl.getShaderInfoLog(shader));
 			onload(shader);
 		}
 		else if (g_shadersState == 0) {
 			g_shadersState = 1;
-			g_shadersPendingOnload.push(function () { getShader(env, gl, id, onload) });
+			g_shadersPendingOnload.push(function () { getShader(gl, id, onload) });
 			var xhr = new XMLHttpRequest();
 			xhr.open('GET', 'shaders.xml');
 			xhr.onreadystatechange = function () {
@@ -179,7 +184,7 @@ x3dom.gfx_mozwebgl = (function () {
 			xhr.send('');
 		}
 		else if (g_shadersState == 1) {
-			g_shadersPendingOnload.push(function () { getShader(env, gl, id, onload) });
+			g_shadersPendingOnload.push(function () { getShader(gl, id, onload) });
 		}
 		else {
 			x3dom.debug.logError('Cannot find shader '+id);
@@ -200,7 +205,7 @@ x3dom.gfx_mozwebgl = (function () {
 		"    gl_FragColor = vec4(diffuseColor, alpha);" +
 		"}";
 
-	function getDefaultShaderProgram(env, gl) {
+	function getDefaultShaderProgram(gl) {
 		var prog = gl.createProgram();
 		var vs = gl.createShader(gl.VERTEX_SHADER);
 		var fs = gl.createShader(gl.FRAGMENT_SHADER);
@@ -213,20 +218,20 @@ x3dom.gfx_mozwebgl = (function () {
 		gl.linkProgram(prog);
 		var msg = gl.getProgramInfoLog(prog);
 		if (msg) x3dom.debug.logError(msg);
-		var sp = wrapShaderProgram(env, gl, prog);
+		var sp = wrapShaderProgram(gl, prog);
 		return sp;
 	}
 
-	function getShaderProgram(env, gl, ids, onload) {
-		getShader(env, gl, ids[0], function (vs) {
-			getShader(env, gl, ids[1], function (fs) {
+	function getShaderProgram(gl, ids, onload) {
+		getShader(gl, ids[0], function (vs) {
+			getShader(gl, ids[1], function (fs) {
 				var prog = gl.createProgram();
 				gl.attachShader(prog, vs);
 				gl.attachShader(prog, fs);
 				gl.linkProgram(prog);
 				var msg = gl.getProgramInfoLog(prog);
 				if (msg) x3dom.debug.logError(msg);
-				var sp = wrapShaderProgram(env, gl, prog);
+				var sp = wrapShaderProgram(gl, prog);
 				onload(sp);
 			})
 		});
@@ -242,28 +247,10 @@ x3dom.gfx_mozwebgl = (function () {
 			0, 0, -1, 0
 		);
 		return m;
-	};
-	
-	function makeFrustum(left, right, bottom, top, znear, zfar)
-	{
-		var X = 2*znear/(right-left);
-		var Y = 2*znear/(top-bottom);
-		var A = (right+left)/(right-left);
-		var B = (top+bottom)/(top-bottom);
-		var C = -(zfar+znear)/(zfar-znear);
-		var D = -2*zfar*znear/(zfar-znear);
-
-		var m = new x3dom.fields.SFMatrix4(
-				X, 0, A, 0,
-				0, Y, B, 0,
-				0, 0, C, D,
-				0, 0, -1, 0
-		);
-		return m;
 	}
 
 	// Returns "shader" such that "shader.foo = [1,2,3]" magically sets the appropriate uniform
-	function wrapShaderProgram(env, gl, sp) {
+	function wrapShaderProgram(gl, sp) {
 		var shader = {};
 		shader.bind = function () { gl.useProgram(sp) };
 		for (var i = 0; ; ++i) {
@@ -323,78 +310,82 @@ x3dom.gfx_mozwebgl = (function () {
 	};
 
 
-function setupShape(env, gl, shape) 
-{
-    if (x3dom.isa(shape._geometry, Text)) {
-        var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
-        var text_ctx = text_canvas.getContext('2d');
-        var fontStyle = shape._geometry._fontStyle;
-        var font_family = Array.map(fontStyle._family, function (s) {
-            if (s == 'SANS') return 'sans-serif';
-            else if (s == 'SERIF') return 'serif';
-            else if (s == 'TYPEWRITER') return 'monospace';
-            else return '"'+s+'"';
-        }).join(', ');
-        text_ctx.mozTextStyle = '48px '+font_family;
-
-        var text_w = 0;
-        var string = shape._geometry._string;
-        for (var i = 0; i < string.length; ++i)
-            text_w = Math.max(text_w, text_ctx.mozMeasureText(string[i]));
-
-        var line_h = 1.2 * text_ctx.mozMeasureText('M'); // XXX: this is a hacky guess
-        var text_h = line_h * shape._geometry._string.length;
-
-        text_canvas.width = Math.pow(2, Math.ceil(Math.log(text_w)/Math.log(2)));
-        text_canvas.height = Math.pow(2, Math.ceil(Math.log(text_h)/Math.log(2)));
-        text_ctx.fillStyle = '#000';
-        text_ctx.translate(0, line_h);
-        for (var i = 0; i < string.length; ++i) {
-            text_ctx.mozDrawText(string[i]);
-            text_ctx.translate(0, line_h);
-        }
-        var ids = gl.genTextures(1);
-        gl.bindTexture(gl.TEXTURE_2D, ids[0]);
-        gl.texParameter(gl.TEXTURE_2D, gl.GENERATE_MIPMAP, true);
-        gl.texImage2DHTML(gl.TEXTURE_2D, text_canvas);
-
-        var w = text_w/text_h;
-        var h = 1;
-        var u = text_w/text_canvas.width;
-        var v = text_h/text_canvas.height;
-        shape._webgl = {
-            positions: [-w,-h,0, w,-h,0, w,h,0, -w,h,0],
-            normals: [0,0,1, 0,0,1, 0,0,1, 0,0,1],
-            indexes: [0,1,2, 2,3,0],
-            texcoords: [0,v, u,v, u,0, 0,0],
-            mask_texture: ids[0],
-        };
-
-        getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
-				function (sp) { shape._webgl.shader = sp });
-    } 
-	else 
+	function setupShape(gl, shape) 
 	{
-        shape._webgl = {
-            positions: shape._geometry._mesh._positions,
-            normals: shape._geometry._mesh._normals,
-            indexes: shape._geometry._mesh._indices,
-			texcoords: shape._geometry._mesh._texCoords,
-        };
+		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) {	
+			var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+			var text_ctx = text_canvas.getContext('2d');
+			var fontStyle = shape._geometry._fontStyle;
+			var font_family = 'SANS';
+			/*Array.map(fontStyle._family, function (s) {
+				if (s == 'SANS') return 'sans-serif';
+				else if (s == 'SERIF') return 'serif';
+				else if (s == 'TYPEWRITER') return 'monospace';
+				else return '"'+s+'"';
+			}).join(', ');*/
+			text_ctx.mozTextStyle = '48px '+font_family;
 
-		// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
-		if (shape._appearance._texture) {
-			getShaderProgram(env, gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
-							function (sp) { shape._webgl.shader = sp });
-		}
-		else {
-			getShaderProgram(env, gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
-							function (sp) { shape._webgl.shader = sp });
-		}
-    }
-}
+			var text_w = 0;
+			var string = shape._geometry._string;
+			for (var i = 0; i < string.length; ++i)
+				text_w = Math.max(text_w, text_ctx.mozMeasureText(string[i]));
 
-	Context.prototype.renderScene = function (env, scene, t) 
+			var line_h = 1.2 * text_ctx.mozMeasureText('M'); // XXX: this is a hacky guess
+			var text_h = line_h * shape._geometry._string.length;
+
+			text_canvas.width = Math.pow(2, Math.ceil(Math.log(text_w)/Math.log(2)));
+			text_canvas.height = Math.pow(2, Math.ceil(Math.log(text_h)/Math.log(2)));
+			text_ctx.fillStyle = '#000';
+			text_ctx.translate(0, line_h);
+			for (var i = 0; i < string.length; ++i) {
+				text_ctx.mozDrawText(string[i]);
+				text_ctx.translate(0, line_h);
+			}
+			
+			document.body.appendChild(text_canvas);	//dbg
+			
+			var ids = gl.createTexture();
+			gl.bindTexture(gl.TEXTURE_2D, ids);
+			//gl.texParameter(gl.TEXTURE_2D, gl.GENERATE_MIPMAP, true);
+			gl.texImage2D(gl.TEXTURE_2D, 0, text_canvas);
+			
+			var w = text_w/text_h;
+			var h = 1;
+			var u = text_w/text_canvas.width;
+			var v = text_h/text_canvas.height;
+			shape._webgl = {
+				positions: [-w,-h,0, w,-h,0, w,h,0, -w,h,0],
+				normals: [0,0,1, 0,0,1, 0,0,1, 0,0,1],
+				indexes: [0,1,2, 2,3,0],
+				texcoords: [0,v, u,v, u,0, 0,0],
+				mask_texture: ids,
+			};
+
+			getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
+					function (sp) { shape._webgl.shader = sp });
+		} 
+		else 
+		{
+			shape._webgl = {
+				positions: shape._geometry._mesh._positions,
+				normals: shape._geometry._mesh._normals,
+				indexes: shape._geometry._mesh._indices,
+				texcoords: shape._geometry._mesh._texCoords,
+			};
+
+			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
+			if (shape._appearance._texture) {
+				getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
+								function (sp) { shape._webgl.shader = sp });
+			}
+			else {
+				getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
+								function (sp) { shape._webgl.shader = sp });
+			}
+		}
+	}
+
+	Context.prototype.renderScene = function (scene, t) 
 	{
 		var gl = this.ctx3d;
 
@@ -416,10 +407,10 @@ function setupShape(env, gl, shape)
 		gl.enable(gl.BLEND);
 		gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
-		var sp = getDefaultShaderProgram(env, gl);
+		var sp = getDefaultShaderProgram(gl);
 		if (!scene._webgl) {
 			// alert("no scene?!");
-			var sp = getDefaultShaderProgram(env, gl);
+			var sp = getDefaultShaderProgram(gl);
 			scene._webgl = {
 				shader: sp,
 			};
@@ -429,7 +420,6 @@ function setupShape(env, gl, shape)
 		//x3dom.debug.logInfo("fov=" + fov);
 		
 		var mat_projection = setCamera(fov, this.width/this.height, 10000, 0.1);
-		//var mat_projection = makeFrustum(0, this.width-1, 0, this.height-1, 1000, 1);
 		var mat_view = scene.getViewMatrix();
 
 		var drawableObjects = [];
@@ -440,7 +430,7 @@ function setupShape(env, gl, shape)
 			var shape = obj[1];
 
 			if (! shape._webgl)
-				setupShape(env, gl, shape);
+				setupShape(gl, shape);
 
 			var sp = shape._webgl.shader;
 			if (! sp)
@@ -463,25 +453,36 @@ function setupShape(env, gl, shape)
 				// TODO: should disable lighting and set to 1,1,1 when no Material
 			}
 
-			if (shape._webgl.mask_texture) 
+			if (shape._webgl.mask_texture !== undefined && shape._webgl.mask_texture)
 			{
-				gl.activeTexture(gl.TEXTURE0);
+				//gl.activeTexture(gl.TEXTURE0);
+				gl.enable(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D, shape._webgl.mask_texture);
-				sp.tex = 0;
-				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, new CanvasFloatArray(shape._webgl.texcoords));
+				
+				var texcBuffer = gl.createBuffer();
+				var texcoords = new CanvasFloatArray(shape._webgl.texcoords);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
+				
+				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 2, 0); 
 				gl.enableVertexAttribArray(sp.texcoord);
-				gl.enable(gl.BLEND);
+				
+				//gl.enable(gl.BLEND);
 				gl.blendFuncSeparate(
 					gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
 					gl.ONE_MINUS_DST_ALPHA, gl.ONE // TODO: is this sensible?
 				);
 				//gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+				
+				x3dom.debug.logInfo("TEXT?");	//no text visible?!
 			}
 			
 			var tex = shape._appearance._texture;
 			if (tex) {
 				var texture = gl.createTexture();
 				texture.image = new Image();
+				
 				texture.image.onload = function()
 				{
 					gl.enable(gl.TEXTURE_2D);
@@ -492,7 +493,7 @@ function setupShape(env, gl, shape)
 					//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
 					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
 					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
-					gl.generateMipmap(gl.TEXTURE_2D);
+					//gl.generateMipmap(gl.TEXTURE_2D);
 				}
 				
 				//x3dom.debug.logInfo("tex url: " + tex._url);
@@ -530,7 +531,7 @@ function setupShape(env, gl, shape)
 			{
 				var normalBuffer = gl.createBuffer();
 				
-				var normals = CanvasFloatArray(shape._webgl.normals);
+				var normals = new CanvasFloatArray(shape._webgl.normals);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
@@ -538,11 +539,12 @@ function setupShape(env, gl, shape)
 				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 3, 0); 
 				gl.enableVertexAttribArray(sp.normal);
 			}
-			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined)
+			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined &&
+				shape._webgl.mask_texture === undefined)
 			{
 				var texcBuffer = gl.createBuffer();
 				
-				var texcoords = CanvasFloatArray(shape._webgl.texcoords);
+				var texcoords = new CanvasFloatArray(shape._webgl.texcoords);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
@@ -566,12 +568,17 @@ function setupShape(env, gl, shape)
 				gl.disableVertexAttribArray(sp.position);
 				gl.deleteBuffer(positionBuffer);
 				gl.deleteBuffer(indicesBuffer);
+				delete vertices;
 			}
 			if (sp.normal !== undefined) {
 				gl.disableVertexAttribArray(sp.normal);
+				gl.deleteBuffer(normalBuffer);
+				delete normals;
 			}
 			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined) {
 				gl.disableVertexAttribArray(sp.texcoord);
+				gl.deleteBuffer(texcBuffer);
+				delete texcoords;
 			}
 		});
 			

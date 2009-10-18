@@ -1370,7 +1370,8 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
             var sub_uris = doc._findIncludedFiles(next_uri);
             queued_uris = queued_uris.concat(sub_uris); // XXX: need to only load each file once
             next_step();
-        } else {
+        }
+		else {
             var xhr = new XMLHttpRequest();
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
@@ -1503,7 +1504,7 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
 
 x3dom.X3DDocument.prototype.render = function (ctx) {
     if (!ctx) return;
-    ctx.renderScene(this.env, this._scene, this._time);
+    ctx.renderScene(this._scene, this._time);
 }
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
