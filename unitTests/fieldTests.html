@@ -3,9 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>        
         <link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
-            
         <script type="text/javascript" src="qunit/qunit.js"></script>        
-
         <script type="text/javascript" src="../src/x3dom.js"></script>  
         <script type="text/javascript" src="../src/fields.js"></script>  
     </head>
@@ -20,15 +18,16 @@
     
         <script type="text/javascript" >            
         window.onload = function() {
-        
+
+            var SFVec2 = x3dom.fields.SFVec2;
             test("SFVec2", function() {
                 // expect(1);
                 // ok(true);
-                var v1 = new x3dom.fields.SFVec2();
+                var v1 = new SFVec2();
                 equals(v1.x, 0, "new SFVec2().x");
                 equals(v1.y, 0, "new SFVec2().y");
                 
-                var v2 = new x3dom.fields.SFVec2(5,8);
+                var v2 = new SFVec2(5,8);
                 equals(v2.x, 5, "new SFVec2(5,8).x");
                 equals(v2.y, 8, "new SFVec2(5,8).y");
                 
@@ -44,7 +43,7 @@
                 equals(v2_neg.x, -5, "v2.negate().x");
                 equals(v2_neg.y, -8, "v2.negate().y");
                                 
-                var v3 = new x3dom.fields.SFVec2(1,0);
+                var v3 = new SFVec2(1,0);
                 var v3_norm = v3.normalise();                
                 equals(v3_norm.x, 1, "v3.normalise().x");
                 equals(v3_norm.y, 0, "v3.normalise().y");
@@ -78,7 +77,7 @@
                 
                 equals(v2_mult.length(), 28.46049894151541399, "v2_mult.length()");
                 
-                var v4 = x3dom.fields.SFVec2.parse("5.5 7.7777");
+                var v4 = SFVec2.parse("5.5 7.7777");
                 equals(v4.x, 5.5, "Construct via SFVec2.parse()");
                 equals(v4.y, 7.7777, "Construct via SFVec2.parse()");
                 
@@ -111,22 +110,62 @@
                 equals(c3.b, 0.001, "SFColor.parse('0.6,  1,   0.001')");
             });
 
+            var SFColor = x3dom.fields.SFColor;
+            var MFColor = x3dom.fields.MFColor;
             test("MFColor", function() {
-                var c1 = new x3dom.fields.SFColor(1,0,0);
-                var mc1 = new x3dom.fields.MFColor([c1, new x3dom.fields.SFColor()]);
+                var c1 = new SFColor(1,0,0);
+                var mc1 = new MFColor([c1, new SFColor()]);
                 equals(c1, mc1[0], "mc1[0]=c1"); 
                 // console.dir(mc1);
                 // console.dir(Array);
                 equals(mc1.length, 2, "mc1.length");
                 
-                var mc2 = x3dom.fields.MFColor.parse("0.5 0 0, 0.1 0.2 0.3, 1 1 1");
+                var mc2 = MFColor.parse("0.5 0 0, 0.1 0.2 0.3, 1 1 1");
                 equals(mc2.length, 3, "mc2.length");
-                same(mc2[0], new x3dom.fields.SFColor(0.5, 0, 0));
-                same(mc2[1], new x3dom.fields.SFColor(0.1, 0.2, 0.3));
-                same(mc2[2], new x3dom.fields.SFColor(1, 1, 1));
+                same(mc2[0], new SFColor(0.5, 0, 0));
+                same(mc2[1], new SFColor(0.1, 0.2, 0.3));
+                same(mc2[2], new SFColor(1, 1, 1));
 
                 same(mc1.toGL(), [1, 0, 0, 0, 0, 0]);
+                same(mc2.toGL(), [0.5, 0, 0, 0.1, 0.2, 0.3, 1, 1, 1]);
             });
+
+            test("MFVec2", function() {
+                var c1 = new x3dom.fields.SFVec2(1,0);
+                var mc1 = new x3dom.fields.MFVec2([c1, new x3dom.fields.SFVec2()]);
+                equals(c1, mc1[0], "mc1[0]=c1"); 
+                // console.dir(mc1);
+                // console.dir(Array);
+                equals(mc1.length, 2, "mc1.length");
+                
+                var mc2 = x3dom.fields.MFVec2.parse("0.5 0, 0.1 0.2, 1 1");
+                equals(mc2.length, 3, "mc2.length");
+                same(mc2[0], new x3dom.fields.SFVec2(0.5, 0));
+                same(mc2[1], new x3dom.fields.SFVec2(0.1, 0.2));
+                same(mc2[2], new x3dom.fields.SFVec2(1, 1));
+
+                same(mc1.toGL(), [1, 0, 0, 0]);
+                same(mc2.toGL(), [0.5, 0, 0.1, 0.2, 1, 1]);
+            });
+    
+            test("MFVec3", function() {
+                var c1 = new x3dom.fields.SFVec3(1,0,0);
+                var mc1 = new x3dom.fields.MFVec3([c1, new x3dom.fields.SFVec3()]);
+                equals(c1, mc1[0], "mc1[0]=c1"); 
+                // console.dir(mc1);
+                // console.dir(Array);
+                equals(mc1.length, 2, "mc1.length");
+                
+                var mc2 = x3dom.fields.MFVec3.parse("0.5 0 0, 0.1 0.2 0.3, 1 1 1");
+                equals(mc2.length, 3, "mc2.length");
+                same(mc2[0], new x3dom.fields.SFVec3(0.5, 0, 0));
+                same(mc2[1], new x3dom.fields.SFVec3(0.1, 0.2, 0.3));
+                same(mc2[2], new x3dom.fields.SFVec3(1, 1, 1));
+
+                same(mc1.toGL(), [1, 0, 0, 0, 0, 0]);
+                same(mc2.toGL(), [0.5, 0, 0, 0.1, 0.2, 0.3, 1, 1, 1]);
+            });
+
         }
         </script>
 </body>

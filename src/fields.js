@@ -615,9 +615,9 @@ x3dom.fields.MFColor = function(colorArray) {
 
 x3dom.fields.MFColor.prototype = new Array;
 
-x3dom.fields.MFColor.parse = function(str) {
-    // var m = /((?:(?:[+-]?\d*\.?\d*\s*){3}),?\s*)*/.exec(str);
-    var mc = str.match(/(?:(?:[+-]?\d*\.?\d*\s*){3})(?:,?\s*)/g);
+x3dom.fields.MFColor.parse = function(str) {    
+    // var mc = str.match(/(?:(?:[+-]?\d*\.?\d*\s*){3})(?:,?\s*)/g);
+    var mc = str.match(/([+-]?\d*\.?\d*\s*){3},?\s*/g);
     var colors = [];
     for (var i = 0; i < mc.length; ++i) {
         // console.info("Test 2: Fund " + i + " - " + mc[i]);
@@ -635,19 +635,99 @@ x3dom.fields.MFColor.parse = function(str) {
 x3dom.fields.MFColor.prototype.toGL = function() {
     var a = [];
 
-/*Array.map( this, function(c) {
-        a.push(this[i].r);
-        a.push(this[i].g);
-        a.push(this[i].b);        
-    });*/
+    Array.map( this, function(c) {
+        a.push(c.r);
+        a.push(c.g);
+        a.push(c.b);        
+    });
     
     // console.log("l=" + this.length);
-    for (var i=0; i<this.length; i++) {
-        a.push(this[i].r);
-        a.push(this[i].g);
-        a.push(this[i].b);
-    }
+//     for (var i=0; i<this.length; i++) {
+//         a.push(this[i].r);
+//         a.push(this[i].g);
+//         a.push(this[i].b);
+//     }
 
     return a;
 }
+
+
+/** MFVec3 constructor.
+    @class Represents a MFVec3
+  */
+x3dom.fields.MFVec3 = function(vec3Array) {
+    if (arguments.length == 0) {        
+        
+    }
+    else {
+        vec3Array.map( function(v) { this.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFVec3.prototype = new Array;
+
+x3dom.fields.MFVec3.parse = function(str) {    
+    var mc = str.match(/([+-]?\d*\.?\d*\s*){3},?\s*/g);
+    var vecs = [];
+    for (var i = 0; i < mc.length; ++i) {
+        var c = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*),?\s*$/.exec(mc[i]);
+        if (c[0])
+            vecs.push( new x3dom.fields.SFVec3(+c[1], +c[2], +c[3]) );
+    }
+
+    return new x3dom.fields.MFVec3( vecs );    
+}
+
+x3dom.fields.MFVec3.prototype.toGL = function() {
+    var a = [];
+
+    Array.map( this, function(c) {
+        a.push(c.x);
+        a.push(c.y);
+        a.push(c.z);        
+    });
+
+    return a;
+}
+
+
+
+/** MFVec2 constructor.
+    @class Represents a MFVec2
+  */
+x3dom.fields.MFVec2 = function(vec2Array) {
+    if (arguments.length == 0) {        
+        
+    }
+    else {
+        vec2Array.map( function(v) { this.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFVec2.prototype = new Array;
+
+x3dom.fields.MFVec2.parse = function(str) {    
+    var mc = str.match(/([+-]?\d*\.?\d*\s*){2},?\s*/g);
+    var vecs = [];
+    for (var i = 0; i < mc.length; ++i) {
+        var c = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)\s*,?\s*$/.exec(mc[i]);
+        if (c[0])
+            vecs.push( new x3dom.fields.SFVec2(+c[1], +c[2]) );
+    }
+
+    return new x3dom.fields.MFVec2( vecs );    
+}
+
+x3dom.fields.MFVec2.prototype.toGL = function() {
+    var a = [];
+
+    Array.map( this, function(v) {
+        a.push(v.x);
+        a.push(v.y);    
+    });
+
+    return a;
+}
+
+
 
