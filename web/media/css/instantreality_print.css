@@ -1,0 +1,20 @@
+
+body {
+    background-color: #fff;
+}
+
+#container {
+    width: 100%;
+    top: 0;
+}
+
+.comment_container,
+#branding,
+#navigation {
+    display: none;
+}
+
+#content { margin: 0; padding: 0; }
+#tutorial_container { margin: 0; padding: 0; }
+
+.printPage { display: none; }
