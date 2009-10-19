@@ -502,9 +502,18 @@ x3dom.fields.Quaternion.parseAxisAngle = function (str) {
 }
 
 x3dom.fields.Quaternion.axisAngle = function (axis, a) {
-    var s = Math.sin(a/2);
-    var c = Math.cos(a/2);
-    return new x3dom.fields.Quaternion(axis.x*s, axis.y*s, axis.z*s, c);
+	var t = axis.length();
+	
+	if (t > 0.000001)
+	{
+		var s = Math.sin(a/2) / t;
+		var c = Math.cos(a/2);
+		return new x3dom.fields.Quaternion(axis.x*s, axis.y*s, axis.z*s, c);
+	}
+	else
+	{
+		return new x3dom.fields.Quaternion(0, 0, 0, 1);
+	}
 }
 
 x3dom.fields.Quaternion.prototype.toMatrix = function () {

@@ -864,6 +864,7 @@ x3dom.registerNodeType(
 			this._attribute_SFFloat(ctx, 'fieldOfView', 0.785398);
             this._attribute_SFVec3(ctx, 'position', 0, 0, 10);
             this._attribute_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
+			this._attribute_SFVec3(ctx, 'centerOfRotation', 0, 0, 0);
 			
             this._viewMatrix = this._orientation.toMatrix().transpose().
 				mult(x3dom.fields.SFMatrix4.translation(this._position.negate()));
@@ -989,16 +990,28 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Transform.super.call(this, ctx);
+			this._attribute_SFVec3(ctx, 'center', 0, 0, 0);
             this._attribute_SFVec3(ctx, 'translation', 0, 0, 0);
             this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
             this._attribute_SFVec3(ctx, 'scale', 1, 1, 1);
-			//TODO: scaleOrientation
+			this._attribute_SFRotation(ctx, 'scaleOrientation', 0, 0, 0, 1);
+			// BUG? default of rotation according to spec is (0, 0, 1, 0)
+			//		but results sometimes are wrong if not (0, 0, 0, 1)
+			// TODO; check quaternion/ matrix code and state init...
         },
         {
             _transformMatrix: function(transform) {
-                return transform.mult(x3dom.fields.SFMatrix4.translation(this._translation).
-								 mult(this._rotation.toMatrix()).
-								 mult(x3dom.fields.SFMatrix4.scale(this._scale)));
+				// P' = T * C * R * SR * S * -SR * -C * P
+				
+				var trafo = x3dom.fields.SFMatrix4.translation(this._translation).
+							mult(x3dom.fields.SFMatrix4.translation(this._center)).
+							mult(this._rotation.toMatrix()).
+							mult(this._scaleOrientation.toMatrix()).
+							mult(x3dom.fields.SFMatrix4.scale(this._scale)).
+							mult(this._scaleOrientation.toMatrix().inverse()).
+							mult(x3dom.fields.SFMatrix4.translation(this._center.negate()));
+							
+                return transform.mult(trafo);
             },
 			
 			_getVolume: function(min, max, invalidate) {
