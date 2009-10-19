@@ -184,7 +184,7 @@
 				  </Shape>
 				</Transform>
 				-->
-				<Transform translation="4 0 0" rotation="1 0 0 0.9">
+				<Transform DEF="TBox" translation="4 0 0" rotation="1 0 0 0.9">
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="1 0.7 0.3" specularColor=".5 .5 .5" />
@@ -193,6 +193,10 @@
 						<Box size="3 1 2"/>
 					</Shape>
 				</Transform>
+				<OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14159, 1 0 0 6.28318" />
+				<TimeSensor DEF="TS" loop="true" />
+				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'/>
+				<ROUTE fromNode='OI' fromField='value_changed' toNode='TBox' toField='rotation'/>
 				<Viewpoint centerOfRotation="0 0 0" position="2 0 8" orientation="0 1 0 0" fieldOfView="0.785398"/>
 			</Scene>
 		</X3D>
@@ -204,7 +208,7 @@
 			<Scene>
 				<Shape>
 					<Appearance>
-						<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
+						<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" transparency="0.2" />
 					</Appearance>
 					<Sphere />
 				</Shape>
@@ -270,6 +274,14 @@
 	
 	<p class="case"> &nbsp; 
 	<input type="button" id="points" value="Show Points" onclick="toggleRendering();" />
+	
+	<img id="test_img_1" src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
+C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
+AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
+REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
+ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
+vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
 	</p>
 	
 	<script type="text/javascript" src="x3dom.js"></script>

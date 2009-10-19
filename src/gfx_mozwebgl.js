@@ -70,9 +70,10 @@ x3dom.gfx_mozwebgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = 0.5*(max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		"    float diffuse = 0.5 * (max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    specular += 0.5 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, fragTexCoord.xy).rgb + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
@@ -117,9 +118,10 @@ x3dom.gfx_mozwebgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = 0.5*(max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		"    float diffuse = 0.5 * (max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    specular += 0.5 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    vec3 rgb = (1.0+eye)/2.0;" +
@@ -388,10 +390,8 @@ x3dom.gfx_mozwebgl = (function () {
 	Context.prototype.renderScene = function (scene, t) 
 	{
 		var gl = this.ctx3d;
-
-		//FIXME; the width/height property is overwritten by succeeding x3d elems?!
-		//x3dom.debug.logInfo("w=" + this.width + ", h=" + this.height);		
-		//gl.viewport(0,0,this.width,this.height);
+		
+		gl.viewport(0,0,this.width,this.height);
 		
 		var bgCol = scene.getSkyColor();
 		//x3dom.debug.logInfo("bgCol=" + bgCol);
@@ -403,7 +403,6 @@ x3dom.gfx_mozwebgl = (function () {
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.CULL_FACE);
 		
-		//TODO; depth sort for transparent objects + separate rendering pass!
 		gl.enable(gl.BLEND);
 		gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
@@ -421,11 +420,33 @@ x3dom.gfx_mozwebgl = (function () {
 		
 		var mat_projection = setCamera(fov, this.width/this.height, 10000, 0.1);
 		var mat_view = scene.getViewMatrix();
+		
+		var mat_view_inv = mat_view.inverse();
 
 		var drawableObjects = [];
 		scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), drawableObjects);
-		Array.forEach(drawableObjects, function (obj) 
+		
+		// do z-sorting for transparency (currently no separate transparency list)
+		var zPos = [];
+		for (var i=0, n=drawableObjects.length; i<n; i++)
 		{
+			var trafo = drawableObjects[i][0];
+			var obj3d = drawableObjects[i][1];
+			
+			var center = obj3d._getCenter();
+			center = trafo.multMatrixPnt(center);
+			center = mat_view_inv.multMatrixPnt(center);
+			
+			zPos[i] = [i, center.z];
+		}
+		zPos.sort(function(a, b) { return a[1] - b[1]; });
+		zPos.reverse();
+		
+		//Array.forEach(drawableObjects, function (obj) 
+		for (var i=0, n=zPos.length; i<n; i++)
+		{
+			var obj = drawableObjects[zPos[i][0]];
+			
 			var transform = obj[0];
 			var shape = obj[1];
 
@@ -448,9 +469,6 @@ x3dom.gfx_mozwebgl = (function () {
 				sp.shininess = mat._shininess;
 				sp.specularColor = mat._specularColor.toGL();
 				sp.alpha = 1.0 - mat._transparency;
-			} 
-			else {
-				// TODO: should disable lighting and set to 1,1,1 when no Material
 			}
 
 			if (shape._webgl.mask_texture !== undefined && shape._webgl.mask_texture)
@@ -500,12 +518,13 @@ x3dom.gfx_mozwebgl = (function () {
 				texture.image.src = tex._url;
 			}
 
-			sp.viewMatrixInverse = mat_view.inverse().toGL();
+			sp.viewMatrixInverse = mat_view_inv.toGL();
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_projection.mult(mat_view).mult(transform).toGL();
 			
 			//TODO; get from scene!
-			var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100,700));
+			//var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100,700));
+			var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100*Math.sin(50*t), 700*Math.cos(50*t)));
 			sp.lightPosition = light.toGL();
 			
 			if (sp.position !== undefined) 
@@ -580,7 +599,8 @@ x3dom.gfx_mozwebgl = (function () {
 				gl.deleteBuffer(texcBuffer);
 				delete texcoords;
 			}
-		});
+		}
+		//);
 			
 		// XXX: nasty hack to fix Firefox compositing the non-premultiplied canvas as if it were premultiplied
 		gl.disable(gl.BLEND);

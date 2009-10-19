@@ -245,7 +245,7 @@ x3dom.X3DCanvas.prototype.tick = function() {
             this.fps_n = 0;
         }
         try {
-            //this.doc.advanceTime(this.t); 
+            this.doc.advanceTime(this.t); 
             this.doc.render(this.gl);
         } catch (e) {
             x3dom.debug.logException(e);

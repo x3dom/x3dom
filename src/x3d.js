@@ -181,7 +181,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 
         _getNodeByDEF: function (def) {
             // TODO: cache this so it's not so stupidly inefficient
-            if (this._DEF == def)
+            if (this._DEF == def) 
                 return this;
             for (var i in this._childNodes) {
                 if (this._childNodes[i]) {
@@ -199,7 +199,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             var listeners = this._fieldWatchers[field];
             var thisp = this;
             if (listeners)
-                Array.forEach(listeners, function (l) { l.call(thisp, msg) });
+                Array.forEach(listeners, function (l) { l.call(thisp, msg); });
         },
 
         // PE: Hacky test for field updates
@@ -235,7 +235,13 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 
             if (! toNode._fieldWatchers[toField])
                 toNode._fieldWatchers[toField] = [];
-            toNode._fieldWatchers[toField].push(function (msg) { toNode[toField] = msg; });
+            toNode._fieldWatchers[toField].push(function (msg) {
+				// uhh, this "_"-stuff is really inconsistent!
+				if (toNode[toField] === undefined)
+					toNode["_"+toField] = msg;
+				else
+					toNode[toField] = msg;
+			});
         },
 
         _attribute_SFFloat: function (ctx, name, n) {
@@ -394,7 +400,7 @@ x3dom.registerNodeType(
 x3dom.Mesh = function() {
 	this._min = new x3dom.fields.SFVec3(0,0,0);
 	this._max = new x3dom.fields.SFVec3(0,0,0);
-	this._dirty = true;
+	this._invalidate = true;
 }
 
 x3dom.Mesh.prototype._positions = [];
@@ -404,46 +410,44 @@ x3dom.Mesh.prototype._indices   = [];
 
 x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};
-x3dom.Mesh.prototype._dirty = true;
+x3dom.Mesh.prototype._invalidate = true;
 
 x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 {
-	if (this._dirty == true)
+	if (this._invalidate == true && invalidate == true)	//need both?
 	{
 		var coords = this._positions;
 		var n = coords.length;
 		
-		if (invalidate == true)	//needed?
+		if (n > 3)
 		{
-			if (n > 3)
-			{
-				this._min = new x3dom.fields.SFVec3(coords[0],coords[1],coords[2]);
-				this._max = new x3dom.fields.SFVec3(coords[0],coords[1],coords[2]);
-			}
-			else
-			{
-				this._min = new x3dom.fields.SFVec3(0,0,0);
-				this._max = new x3dom.fields.SFVec3(0,0,0);
-			}
-			
-			for (var i=3; i<n; i+=3)
-			{
-				if (this._min.x > coords[i+0])
-					this._min.x = coords[i+0];
-				if (this._min.y > coords[i+1])
-					this._min.y = coords[i+1];
-				if (this._min.z > coords[i+2])
-					this._min.z = coords[i+2];
-				
-				if (this._max.x < coords[i+0])
-					this._max.x = coords[i+0];
-				if (this._max.y < coords[i+1])
-					this._max.y = coords[i+1];
-				if (this._max.z < coords[i+2])
-					this._max.z = coords[i+2];
-			}
+			this._min = new x3dom.fields.SFVec3(coords[0],coords[1],coords[2]);
+			this._max = new x3dom.fields.SFVec3(coords[0],coords[1],coords[2]);
 		}
-		this._dirty = false;
+		else
+		{
+			this._min = new x3dom.fields.SFVec3(0,0,0);
+			this._max = new x3dom.fields.SFVec3(0,0,0);
+		}
+		
+		for (var i=3; i<n; i+=3)
+		{
+			if (this._min.x > coords[i+0])
+				this._min.x = coords[i+0];
+			if (this._min.y > coords[i+1])
+				this._min.y = coords[i+1];
+			if (this._min.z > coords[i+2])
+				this._min.z = coords[i+2];
+			
+			if (this._max.x < coords[i+0])
+				this._max.x = coords[i+0];
+			if (this._max.y < coords[i+1])
+				this._max.y = coords[i+1];
+			if (this._max.z < coords[i+2])
+				this._max.z = coords[i+2];
+		}
+		
+		this._invalidate = false;
 	}
 	
 	min.x = this._min.x;
@@ -455,6 +459,18 @@ x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 	max.z = this._max.z;
 	
 	//x3dom.debug.logInfo("fertig: " + min + " | " + max);
+}
+
+x3dom.Mesh.prototype.getCenter = function() {
+	var min = new x3dom.fields.SFVec3(0,0,0);
+	var max = new x3dom.fields.SFVec3(0,0,0);
+	
+	this.getBBox(min, max, true);
+	
+	var center = min.add(max).scale(0.5);
+	//x3dom.debug.logInfo("getCenter: " + min + " | " + max + " --> " + center);
+	
+	return center;
 }
 
 x3dom.Mesh.prototype.calcNormals = function()
@@ -526,6 +542,10 @@ x3dom.registerNodeType(
 		{
 			_getVolume: function(min, max, invalidate) {
 				this._mesh.getBBox(min, max, invalidate);
+			},
+			
+			_getCenter: function() {
+				return this._mesh.getCenter();
 			}
 		}
     )
@@ -587,7 +607,7 @@ x3dom.registerNodeType(
                 16,17,18, 18,19,16,
                 20,22,21, 22,20,23,
             ];
-			this._mesh._dirty = true;
+			this._mesh._invalidate = true;
         }
     )
 );
@@ -665,7 +685,7 @@ x3dom.registerNodeType(
             this._mesh._positions = verts;
             this._mesh._normals = norms;
             this._mesh._indices = tris;
-			this._mesh._dirty = true;
+			this._mesh._invalidate = true;
         }
     )
 );
@@ -757,7 +777,7 @@ x3dom.registerNodeType(
 				this._mesh.calcTexCoords();
 				
 			this._mesh.remapData();
-			this._mesh._dirty = true;
+			this._mesh._invalidate = true;
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
@@ -931,6 +951,10 @@ x3dom.registerNodeType(
 			
 			_getVolume: function(min, max, invalidate) {
 				this._geometry._getVolume(min, max, invalidate);
+			},
+			
+			_getCenter: function() {
+				return this._geometry._getCenter();
 			}
         }
     )
@@ -1114,6 +1138,7 @@ x3dom.registerNodeType(
                 var f = ((now - this._startTime) / this._cycleInterval) % 1;
                 if (f == 0 && now > this._startTime)
                     f = 1;
+				else f *= 10;
                 this._postMessage('fraction_changed', f);
             },
         }
@@ -1337,10 +1362,9 @@ x3dom.nodeTypeMap = {
 };
 
 
-x3dom.X3DDocument = function(canvas, ctx, env) {
+x3dom.X3DDocument = function(canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
-    this.env = env;
     this.onload = function () {};
     this.onerror = function () {};
 }
@@ -1376,7 +1400,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.responseXML.documentElement.localName == 'parsererror') {
-                        doc.env.log('XML parser failed on '+next_uri+':\n'+xhr.responseXML.documentElement.textContent);
+                        x3dom.debug.logInfo('XML parser failed on '+next_uri+':\n'+xhr.responseXML.documentElement.textContent);
                         doc.onerror();
                         return;
                     }
@@ -1428,16 +1452,16 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
     var doc = this;
     x3dom.debug.logInfo("Loading scene #" + sceneElemPos + " from " + x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc).length + ".");
-    // BUG: the xpath call on sceneDoc should return only one Scene element here but it returns all 
-    //      Scene in the whole page.
-    // BUG: this seems to be a bug in the x3dom.xpath() function 
     var scene = this._setupNodePrototypes(x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc)[sceneElemPos], ctx);
-    scene._routes = Array.map(x3dom.xpath(sceneDoc, '//x3d:ROUTE'), // XXX: handle imported ROUTEs
+    
+	// BUG: the xpath call on sceneDoc should only check for ROUTEs for current scene, not for all.
+	if (sceneElemPos == 0)
+	scene._routes = Array.map(x3dom.xpath(sceneDoc, '//x3d:ROUTE', null), // XXX: handle imported ROUTEs
         function (route) {
             var fromNode = scene._getNodeByDEF(route.getAttribute('fromNode'));
             var toNode = scene._getNodeByDEF(route.getAttribute('toNode'));
             if (! (fromNode && toNode)) {
-                doc.env.log("Broken route - can't find all DEFs for "+route.getAttribute('fromNode')+" -> "+route.getAttribute('toNode'));
+                x3dom.debug.logInfo("Broken route - can't find all DEFs for "+route.getAttribute('fromNode')+" -> "+route.getAttribute('toNode'));
                 return;
             }
             fromNode._setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
@@ -1496,7 +1520,7 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
     this._time = t;
     if (this._scene) {
-        Array.forEach(this._scene._findAll(x3dom.TimeSensor),
+        Array.forEach(this._scene._findAll(x3dom.nodeTypes.TimeSensor),
             function (timer) { timer._onframe(t); }
         );
     }
