@@ -980,6 +980,7 @@ x3dom.registerNodeType(
                 this._childNodes.push(node);
                 node._parentNode = this;
             },
+			//TODO: removeChild
         }
     )
 );
@@ -1063,6 +1064,18 @@ x3dom.registerNodeType(
 				if (max.z < locMax.z)
 					max.z = locMax.z;
 			}
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Group",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.Group.super.call(this, ctx);
+        },
+        {
         }
     )
 );
@@ -1378,6 +1391,7 @@ x3dom.nodeTypeMap = {
     'Box': { ctor: x3dom.nodeTypes.Box },
 	'Background': { ctor: x3dom.nodeTypes.Background },
     'FontStyle': { ctor: x3dom.nodeTypes.FontStyle },
+	'Group': { ctor: x3dom.nodeTypes.Group, autoChild: 1 },
 	'ImageTexture': { ctor: x3dom.nodeTypes.ImageTexture },
     'IndexedFaceSet': { ctor: x3dom.nodeTypes.IndexedFaceSet },
     'Inline': { ctor: x3dom.nodeTypes.ExtInline }, // TODO: handle namespaces properly
