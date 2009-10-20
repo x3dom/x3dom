@@ -17,16 +17,34 @@
 		</style>
 </head>
 <body>
-<h1>X3DOM Examples</h1>
+<h1>X3DOM-WebGL Examples</h1>
 <p class="case">
-For viewing the following X3D with WebGL examples, you need a <a href="http://wakaba.c3.cx/w/webgl.html">Firefox nightly build</a>.
-</p>
+This are example fo the X3DOM on WebGL implementation. You need a browser which supports WebGL.
+<h2>Browser Support</h2>
+<h3>FireFox</h3>
+Firefox nightly builds support WebGL. You can download those here:
+
+<a href="http://www.mozilla.org/developer/#builds" >http://www.mozilla.org/developer/#builds</a>
+
+However, you need to turn on WebGL manually in the configuration. Type about:config in the address bar, then search for "webgl" and change the value of webgl.enabled_for_all_sites to true.
+
+<h3>Webkit</h3>
+Webkit nightly builds support WebGL. You can download those here:
+
+<a href="http://nightly.webkit.org/" >http://nightly.webkit.org/</a>
+
+You still have to aktivate it on macs: 
+
+<p>defaults write com.apple.Safari WebKitWebGLEnabled -bool YES</p>
+
+
+<h2>Example</h2>
 <p class="case">
 <ul>
-<li><a href="test_multiView.xhtml">MultiView</a></li>
-<li><a href="test_texture.xhtml">Texture</a></li>
-<li><a href="test_treeDepth.xhtml">Tree Depth</a></li>
-<li><a href="test_singleMesh.xhtml">Single Mesh</a></li>
+<li><a href="test_multiView.xhtml">MultiView: Multiple X3D-Scens in a single xhtml-page</a></li>
+<li><a href="test_texture.xhtml">Texture: Model with multiple externel textures</a></li>
+<li><a href="test_treeDepth.xhtml">Tree Depth: Model with a mixed Transform/Group hierarchy</a></li>
+<li><a href="test_singleMesh.xhtml">Single Mesh: Model with a flat hierarchy</a></li>
 </ul>
 </p>
 </body>
