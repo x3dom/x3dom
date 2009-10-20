@@ -57,7 +57,7 @@ function defineClass(parent, ctor, methods) {
         inheritance.prototype = parent.prototype;
         ctor.prototype = new inheritance();
         ctor.prototype.constructor = ctor;
-        ctor.super = parent;
+        ctor.superClass = parent;
     }
     if (methods)
         for (var m in methods)
@@ -72,11 +72,11 @@ x3dom.isa = function(object, clazz) {
     function f(c) {
         if (c == clazz)
             return true;
-        if (c.prototype && c.prototype.constructor && c.prototype.constructor.super)
-            return f(c.prototype.constructor.super);
+        if (c.prototype && c.prototype.constructor && c.prototype.constructor.superClass)
+            return f(c.prototype.constructor.superClass);
         return false;
     }
-    return f(object.constructor.super);
+    return f(object.constructor.superClass);
 }
 
 // X3D doesn't seem to define this decoding, so do something vaguely sensible instead...
@@ -282,7 +282,7 @@ x3dom.registerNodeType(
     "base", 
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DAppearanceNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DAppearanceNode.superClass.call(this, ctx);
         }
     )
 );
@@ -295,7 +295,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DAppearanceNode,        
         /** @constructs */
         function (ctx) {
-            x3dom.nodeTypes.Appearance.super.call(this, ctx);
+            x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
     
             var material = null;
 			var texture = null;
@@ -330,7 +330,7 @@ x3dom.registerNodeType(
     "base", 
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DAppearanceChildNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DAppearanceChildNode.superClass.call(this, ctx);
         }
     )
 );
@@ -344,7 +344,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DMaterialNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
         }
     )
 );
@@ -355,7 +355,7 @@ x3dom.registerNodeType(
     "Shape",
     defineClass(x3dom.nodeTypes.X3DMaterialNode,
         function (ctx) {
-            x3dom.nodeTypes.Material.super.call(this, ctx);
+            x3dom.nodeTypes.Material.superClass.call(this, ctx);
     
             this._attribute_SFFloat(ctx, 'ambientIntensity', 0.2);
             this._attribute_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
@@ -372,7 +372,7 @@ x3dom.registerNodeType(
     "Texturing",
     defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DTextureNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
         }
     )
 );
@@ -382,7 +382,7 @@ x3dom.registerNodeType(
     "Texturing",
     defineClass(x3dom.nodeTypes.X3DTextureNode,
         function (ctx) {
-            x3dom.nodeTypes.ImageTexture.super.call(this, ctx);
+            x3dom.nodeTypes.ImageTexture.superClass.call(this, ctx);
 			
             this._attribute_MFString(ctx, 'url', []);
             this._attribute_SFBool(ctx, 'repeatS', true);
@@ -535,7 +535,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DGeometryNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
 			
 			this._mesh = new x3dom.Mesh();
         },
@@ -561,7 +561,7 @@ x3dom.registerNodeType(
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.Box.super.call(this, ctx);
+            x3dom.nodeTypes.Box.superClass.call(this, ctx);
     
             var sx, sy, sz;
             if (ctx.xmlNode.hasAttribute('size')) {
@@ -632,7 +632,7 @@ x3dom.registerNodeType(
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.Box.super.call(this, ctx);
+            x3dom.nodeTypes.Box.superClass.call(this, ctx);
     
             var r;
             if (ctx.xmlNode.hasAttribute('radius'))
@@ -696,7 +696,7 @@ x3dom.registerNodeType(
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.Text.super.call(this, ctx);
+            x3dom.nodeTypes.Text.superClass.call(this, ctx);
     
             this._attribute_MFString(ctx, 'string', []);
     
@@ -727,7 +727,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DComposedGeometryNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DComposedGeometryNode.superClass.call(this, ctx);
         }
     )
 );
@@ -739,7 +739,7 @@ x3dom.registerNodeType(
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.IndexedFaceSet.super.call(this, ctx);
+            x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
 			
             var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
             this._mesh._indices = [];
@@ -807,7 +807,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DFontStyleNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DFontStyleNode.superClass.call(this, ctx);
         }
     )
 );
@@ -818,7 +818,7 @@ x3dom.registerNodeType(
     "Text",
     defineClass(x3dom.nodeTypes.X3DFontStyleNode,
         function (ctx) {
-            x3dom.nodeTypes.FontStyle.super.call(this, ctx);
+            x3dom.nodeTypes.FontStyle.superClass.call(this, ctx);
     
             this._attribute_MFString(ctx, 'family', ['SERIF']);
             this._attribute_SFFloat(ctx, 'size', 1.0);
@@ -834,7 +834,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DChildNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DChildNode.superClass.call(this, ctx);
         }
     )
 );
@@ -847,7 +847,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DBindableNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
         }
     )
 );
@@ -860,7 +860,7 @@ x3dom.registerNodeType(
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
-            x3dom.nodeTypes.Viewpoint.super.call(this, ctx);
+            x3dom.nodeTypes.Viewpoint.superClass.call(this, ctx);
 			this._attribute_SFFloat(ctx, 'fieldOfView', 0.785398);
             this._attribute_SFVec3(ctx, 'position', 0, 0, 10);
             this._attribute_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
@@ -888,7 +888,7 @@ x3dom.registerNodeType(
     "EnvironmentalEffects",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
-            x3dom.nodeTypes.Background.super.call(this, ctx);
+            x3dom.nodeTypes.Background.superClass.call(this, ctx);
 			
             this._attribute_MFColor(ctx, 'skyColor', new x3dom.fields.MFColor([new x3dom.fields.SFColor(), 
                                                                                new x3dom.fields.SFColor(1,1,1)]));
@@ -911,7 +911,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DShapeNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
         }
     )
 );
@@ -923,7 +923,7 @@ x3dom.registerNodeType(
     "Shape",
     defineClass(x3dom.nodeTypes.X3DShapeNode,
         function (ctx) {
-            x3dom.nodeTypes.Shape.super.call(this, ctx);
+            x3dom.nodeTypes.Shape.superClass.call(this, ctx);
     
             var appearance, geometry;
             Array.forEach(ctx.xmlNode.childNodes, function (node) {
@@ -972,7 +972,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DGroupingNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
             this._childNodes = [];
         },
         {
@@ -993,7 +993,7 @@ x3dom.registerNodeType(
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.Transform.super.call(this, ctx);
+            x3dom.nodeTypes.Transform.superClass.call(this, ctx);
 			this._attribute_SFVec3(ctx, 'center', 0, 0, 0);
             this._attribute_SFVec3(ctx, 'translation', 0, 0, 0);
             this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
@@ -1073,7 +1073,7 @@ x3dom.registerNodeType(
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.Group.super.call(this, ctx);
+            x3dom.nodeTypes.Group.superClass.call(this, ctx);
         },
         {
         }
@@ -1090,7 +1090,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DInterpolatorNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DInterpolatorNode.superClass.call(this, ctx);
     
             if (ctx.xmlNode.hasAttribute('key'))
                 this._key = Array.map(ctx.xmlNode.getAttribute('key').split(/\s+/), function (n) { return +n; });
@@ -1119,7 +1119,7 @@ x3dom.registerNodeType(
     "Interpolation",
     defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
         function (ctx) {
-            x3dom.nodeTypes.OrientationInterpolator.super.call(this, ctx);
+            x3dom.nodeTypes.OrientationInterpolator.superClass.call(this, ctx);
             if (ctx.xmlNode.hasAttribute('keyValue'))
                 this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s*,\s*/), x3dom.fields.Quaternion.parseAxisAngle);
             else
@@ -1143,7 +1143,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DSensorNode.super.call(this, ctx);
+            x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
         }
     )
 );
@@ -1154,7 +1154,7 @@ x3dom.registerNodeType(
     "Time",
     defineClass(x3dom.nodeTypes.X3DSensorNode, // TODO: multiple inheritance...
         function (ctx) {
-            x3dom.nodeTypes.TimeSensor.super.call(this, ctx);
+            x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
     
             this._attribute_SFTime(ctx, 'cycleInterval', 1);
             this._attribute_SFBool(ctx, 'loop', false);
@@ -1183,7 +1183,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.Scene.super.call(this, ctx);
+            x3dom.nodeTypes.Scene.superClass.call(this, ctx);
 			this._rotMat = x3dom.fields.SFMatrix4.identity();
 			this._transMat = x3dom.fields.SFMatrix4.identity();
 			this._movement = new x3dom.fields.SFVec3(0, 0, 0);
@@ -1330,7 +1330,7 @@ x3dom.registerNodeType(
     "base",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
-            x3dom.nodeTypes.ExtInline.super.call(this, ctx);
+            x3dom.nodeTypes.ExtInline.superClass.call(this, ctx);
             var urlSplit = ctx.xmlNode.getAttribute('url').split('#', 2);
             var doc = ctx.docs[urlSplit[0]];
     
