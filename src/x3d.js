@@ -870,6 +870,9 @@ x3dom.registerNodeType(
 				mult(x3dom.fields.SFMatrix4.translation(this._position.negate()));
         },
         {
+			getCenterOfRotation: function() {
+                return this._centerOfRotation;
+			},
 			getViewMatrix: function() {
                 return this._viewMatrix;
 			},
@@ -1169,6 +1172,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.super.call(this, ctx);
 			this._rotMat = x3dom.fields.SFMatrix4.identity();
+			this._transMat = x3dom.fields.SFMatrix4.identity();
 			this._movement = new x3dom.fields.SFVec3(0, 0, 0);
 			this._width = 400;
 			this._height = 300;
@@ -1196,14 +1200,13 @@ x3dom.registerNodeType(
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 var mat_viewpoint = viewpoint._getCurrentTransform();
 				return mat_viewpoint.mult(viewpoint.getViewMatrix());
-                // TODO: x3dom.Viewpoint.centerOfRotation
             },
     
             getViewMatrix: function () {
                 var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
                 return this.getViewpointMatrix().
-					mult(x3dom.fields.SFMatrix4.translation(this._movement)).
-					mult(this._rotMat);
+							mult(this._transMat).
+							mult(this._rotMat);
             },
 			
 			getFieldOfView: function() {
@@ -1231,11 +1234,16 @@ x3dom.registerNodeType(
 					var mx = x3dom.fields.SFMatrix4.rotationX(alpha);
 					var my = x3dom.fields.SFMatrix4.rotationY(beta);
 					
+					var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+					var center = viewpoint.getCenterOfRotation();
+					
 					mat.setTranslate(new x3dom.fields.SFVec3(0,0,0));
 					this._rotMat = this._rotMat.
+									mult(x3dom.fields.SFMatrix4.translation(center)).
 									mult(mat.inverse()).
 									mult(mx).mult(my).
-									mult(mat);
+									mult(mat).
+									mult(x3dom.fields.SFMatrix4.translation(center.negate()));
 				}
 				if (buttonState & 4) {
 					var min = new x3dom.fields.SFVec3(0,0,0);
@@ -1248,6 +1256,11 @@ x3dom.registerNodeType(
 					
 					var vec = new x3dom.fields.SFVec3(d*dx/this._width,d*(-dy)/this._height,0);
 					this._movement = this._movement.add(vec);
+					
+					var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+					this._transMat = viewpoint.getViewMatrix().inverse().
+								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
+								mult(viewpoint.getViewMatrix());
 				}
 				if (buttonState & 2) {
 					var min = new x3dom.fields.SFVec3(0,0,0);
@@ -1260,6 +1273,11 @@ x3dom.registerNodeType(
 					
 					var vec = new x3dom.fields.SFVec3(0,0,d*(dx+dy)/this._height);
 					this._movement = this._movement.add(vec);
+					
+					var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+					this._transMat = viewpoint.getViewMatrix().inverse().
+								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
+								mult(viewpoint.getViewMatrix());
 				}
             }
         }
