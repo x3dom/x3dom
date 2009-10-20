@@ -26,8 +26,6 @@ x3dom.gfx_mozwebgl = (function () {
 	}
 
 	var g_shaders = {};
-	var g_shadersState = 0; // 0 = unloaded, 1 = loading XML, 2 = loaded XML
-	var g_shadersPendingOnload = [];
 	
 	g_shaders['vs-x3d-textured'] = { type: "vertex", data:
 		"attribute vec3 position;" +
@@ -148,50 +146,6 @@ x3dom.gfx_mozwebgl = (function () {
 		"    gl_FragColor = vec4((normal+1.0)/2.0, 1.0);" +
 		"}"
 		};
-			
-
-	function getShader(gl, id, onload) {
-		if (g_shaders[id]) {
-			var shader;
-			if (g_shaders[id].type == 'vertex')
-				shader = gl.createShader(gl.VERTEX_SHADER);
-			else if (g_shaders[id].type == 'fragment')
-				shader = gl.createShader(gl.FRAGMENT_SHADER);
-			else {
-				x3dom.debug.logError('Invalid shader type '+g_shaders[id].type);
-				return;
-			}
-			gl.shaderSource(shader, g_shaders[id].data);
-			gl.compileShader(shader);
-			onload(shader);
-		}
-		else if (g_shadersState == 0) {
-			g_shadersState = 1;
-			g_shadersPendingOnload.push(function () { getShader(gl, id, onload) });
-			var xhr = new XMLHttpRequest();
-			xhr.open('GET', 'shaders.xml');
-			xhr.onreadystatechange = function () {
-				if (xhr.readyState != 4) return;
-				if (xhr.status !== 200) return; // TODO: report error
-				var xml = this.responseXML;
-				var els = xml.getElementsByTagName('vs');
-				for (var i = 0; i < els.length; ++i)
-					g_shaders[els[i].getAttribute('id')] = { type: 'vertex', data: els[i].textContent };
-				var els = xml.getElementsByTagName('fs');
-				for (var i = 0; i < els.length; ++i)
-					g_shaders[els[i].getAttribute('id')] = { type: 'fragment', data: els[i].textContent };
-				for (var i = 0; i < g_shadersPendingOnload.length; ++i)
-					g_shadersPendingOnload[i]();
-			};
-			xhr.send('');
-		}
-		else if (g_shadersState == 1) {
-			g_shadersPendingOnload.push(function () { getShader(gl, id, onload) });
-		}
-		else {
-			x3dom.debug.logError('Cannot find shader '+id);
-		}
-	}
 
 	var defaultVS =
 		"attribute vec3 position;" +
@@ -207,10 +161,12 @@ x3dom.gfx_mozwebgl = (function () {
 		"    gl_FragColor = vec4(diffuseColor, alpha);" +
 		"}";
 
-	function getDefaultShaderProgram(gl) {
+	function getDefaultShaderProgram(gl) 
+	{
 		var prog = gl.createProgram();
 		var vs = gl.createShader(gl.VERTEX_SHADER);
 		var fs = gl.createShader(gl.FRAGMENT_SHADER);
+		
 		gl.shaderSource(vs, defaultVS);
 		gl.shaderSource(fs, defaultFS);
 		gl.compileShader(vs);
@@ -218,43 +174,59 @@ x3dom.gfx_mozwebgl = (function () {
 		gl.attachShader(prog, vs);
 		gl.attachShader(prog, fs);
 		gl.linkProgram(prog);
+		
 		var msg = gl.getProgramInfoLog(prog);
-		if (msg) x3dom.debug.logError(msg);
-		var sp = wrapShaderProgram(gl, prog);
-		return sp;
+		if (msg)
+			x3dom.debug.logError(msg);
+		
+		return wrapShaderProgram(gl, prog);
 	}
-
-	function getShaderProgram(gl, ids, onload) {
-		getShader(gl, ids[0], function (vs) {
-			getShader(gl, ids[1], function (fs) {
-				var prog = gl.createProgram();
-				gl.attachShader(prog, vs);
-				gl.attachShader(prog, fs);
-				gl.linkProgram(prog);
-				var msg = gl.getProgramInfoLog(prog);
-				if (msg) x3dom.debug.logError(msg);
-				var sp = wrapShaderProgram(gl, prog);
-				onload(sp);
-			})
-		});
-	}
-
-	function setCamera(fovy, aspect, zfar, znear)
+	
+	function getShaderProgram(gl, ids) 
 	{
-		var f = 1/Math.tan(fovy/2);
-		var m = new x3dom.fields.SFMatrix4(
-			f/aspect, 0, 0, 0,
-			0, f, 0, 0,
-			0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
-			0, 0, -1, 0
-		);
-		return m;
+		var shader = [];
+		
+		for (var id=0; id<2; id++)
+		{
+			if (!g_shaders[ids[id]])
+			{
+				x3dom.debug.logError('Cannot find shader '+ids[id]);
+				return;
+			}
+			
+			if (g_shaders[ids[id]].type == 'vertex')
+				shader[id] = gl.createShader(gl.VERTEX_SHADER);
+			else if (g_shaders[ids[id]].type == 'fragment')
+				shader[id] = gl.createShader(gl.FRAGMENT_SHADER);
+			else
+			{
+				x3dom.debug.logError('Invalid shader type '+g_shaders[id].type);
+				return;
+			}
+			
+			gl.shaderSource(shader[id], g_shaders[ids[id]].data);
+			gl.compileShader(shader[id]);
+		}
+		
+		var prog = gl.createProgram();
+		
+		gl.attachShader(prog, shader[0]);
+		gl.attachShader(prog, shader[1]);
+		gl.linkProgram(prog);
+		
+		var msg = gl.getProgramInfoLog(prog);
+		if (msg)
+			x3dom.debug.logError(msg);
+		
+		return wrapShaderProgram(gl, prog);
 	}
 
 	// Returns "shader" such that "shader.foo = [1,2,3]" magically sets the appropriate uniform
-	function wrapShaderProgram(gl, sp) {
+	function wrapShaderProgram(gl, sp) 
+	{
 		var shader = {};
 		shader.bind = function () { gl.useProgram(sp) };
+		
 		for (var i = 0; ; ++i) {
 			try {
 				var obj = gl.getActiveUniform(sp, i);
@@ -288,13 +260,13 @@ x3dom.gfx_mozwebgl = (function () {
 					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix3fv(loc, 1, gl.FALSE, val) } })(loc));
 					break;
 				case gl.FLOAT_MAT4:
-					// x3dom.debug.logError("gl.FLOAT_MAT4 fixme!");
 					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new CanvasFloatArray(val)) } })(loc));
 					break;
 				default:
 					x3dom.debug.logInfo('GLSL program variable '+obj.name+' has unknown type '+obj.type);
 			}
 		}
+		
 		for (var i = 0; ; ++i) {
 			try {
 				var obj = gl.getActiveAttrib(sp, i);
@@ -311,7 +283,18 @@ x3dom.gfx_mozwebgl = (function () {
 		return shader;
 	};
 
-
+	function setCamera(fovy, aspect, zfar, znear)
+	{
+		var f = 1/Math.tan(fovy/2);
+		var m = new x3dom.fields.SFMatrix4(
+			f/aspect, 0, 0, 0,
+			0, f, 0, 0,
+			0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
+			0, 0, -1, 0
+		);
+		return m;
+	}
+	
 	function setupShape(gl, shape) 
 	{
 		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) {	
@@ -363,8 +346,7 @@ x3dom.gfx_mozwebgl = (function () {
 				mask_texture: ids,
 			};
 
-			getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
-					function (sp) { shape._webgl.shader = sp });
+			shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
 		} 
 		else 
 		{
@@ -377,12 +359,10 @@ x3dom.gfx_mozwebgl = (function () {
 
 			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
 			if (shape._appearance._texture) {
-				getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured'], 
-								function (sp) { shape._webgl.shader = sp });
+				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
 			}
 			else {
-				getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured'], 
-								function (sp) { shape._webgl.shader = sp });
+				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
 			}
 		}
 	}
