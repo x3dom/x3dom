@@ -378,10 +378,7 @@ x3dom.gfx_mozwebgl = (function () {
 		
 		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], 1.0);
 		
-		if ( this.name == 'webkit-3d' )
-			gl.clearDepth (1.0);
-		else
-			gl.clearDepthf (1.0);
+		gl.clearDepth (1.0);
 			
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 		gl.enable(gl.DEPTH_TEST);
