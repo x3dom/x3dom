@@ -72,11 +72,12 @@ x3dom.gfx_mozwebgl = (function () {
 		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    specular += 0.5 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
-		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, fragTexCoord.xy).rgb + specular*specularColor;" +
+		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, fragTexCoord).rgb + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
-		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord.xy).a);" +
-		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy).rgb, 1.0);" +
+		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord).a);" +
+		//"    gl_FragColor = texture2D(tex, fragTexCoord);" +
+		//"    gl_FragColor = vec4(fragTexCoord.xy, 0.0, 1.0);" +
 		"}"
 		};
 
@@ -225,42 +226,52 @@ x3dom.gfx_mozwebgl = (function () {
 	function wrapShaderProgram(gl, sp) 
 	{
 		var shader = {};
+		
 		shader.bind = function () { gl.useProgram(sp) };
 		
 		for (var i = 0; ; ++i) {
 			try {
 				var obj = gl.getActiveUniform(sp, i);
-				// x3dom.debug.logInfo("uniform #" + i + " obj=" + obj.name );
+				//x3dom.debug.logInfo("uniform #" + i + " obj=" + obj.name );
 			}
 			catch (e) {}
 
 			if (gl.getError() != 0) break; // XXX: GetProgramiv(ACTIVE_ATTRIBUTES) is not implemented, so just loop until error
 
 			var loc = gl.getUniformLocation(sp, obj.name);
+			
 			switch (obj.type) {
 				case gl.SAMPLER_2D:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformi(loc, [val]) } })(loc));
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniformi(loc, [val]) } })(loc));
 					break;
 				case gl.FLOAT:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniform1f(loc, val) } })(loc));
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform1f(loc, val) } })(loc));
 					break;
 				case gl.FLOAT_VEC2:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]) } })(loc));           
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]) } })(loc));           
 					break;
 				case gl.FLOAT_VEC3:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]) } })(loc));
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]) } })(loc));
 					break;
 				case gl.FLOAT_VEC4:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniform4f(loc, val[0], val[1], val[2], val[3]) } })(loc));
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform4f(loc, val[0], val[1], val[2], val[3]) } })(loc));
 					break;
 				case gl.FLOAT_MAT2:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix2fv(loc, 1, gl.FALSE, val) } })(loc));
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new CanvasFloatArray(val)) } })(loc));
 					break;
 				case gl.FLOAT_MAT3:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix3fv(loc, 1, gl.FALSE, val) } })(loc));
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new CanvasFloatArray(val)) } })(loc));
 					break;
 				case gl.FLOAT_MAT4:
-					shader.__defineSetter__(obj.name, (function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new CanvasFloatArray(val)) } })(loc));
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new CanvasFloatArray(val)) } })(loc));
 					break;
 				default:
 					x3dom.debug.logInfo('GLSL program variable '+obj.name+' has unknown type '+obj.type);
@@ -270,16 +281,16 @@ x3dom.gfx_mozwebgl = (function () {
 		for (var i = 0; ; ++i) {
 			try {
 				var obj = gl.getActiveAttrib(sp, i);
+				//x3dom.debug.logInfo("attribute #" + i + " obj=" + obj.name );
 			}
-			catch (e) {
-				// PE: now catching excpetion... just looping does not work :(
-				//     
-			}
+			catch (e) {}
+			
 			if (gl.getError() != 0) break; // XXX: as above			
 
 			var loc = gl.getAttribLocation(sp, obj.name);
 			shader[obj.name] = loc;
 		}
+		
 		return shader;
 	};
 
@@ -350,20 +361,51 @@ x3dom.gfx_mozwebgl = (function () {
 		} 
 		else 
 		{
+			if (shape._webgl !== undefined)
+				return;
+				
+			var tex = shape._appearance._texture;
+			
+			if (tex) // && (!shape._webgl.texture || shape._webgl.texture === undefined))
+			{
+				var texture = gl.createTexture();
+				
+				var image = new Image();
+				image.src = tex._url;
+				
+				image.onload = function()
+				{
+					shape._webgl.texture = texture;
+					
+					//x3dom.debug.logInfo(texture + " tex url: " + tex._url);
+					
+					//gl.enable(gl.TEXTURE_2D);
+					//gl.activeTexture(gl.TEXTURE0);
+					gl.bindTexture(gl.TEXTURE_2D, texture);
+					gl.texImage2D(gl.TEXTURE_2D, 0, image);
+					
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+					//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+					//gl.generateMipmap(gl.TEXTURE_2D);
+					//gl.bindTexture(gl.TEXTURE_2D,0);
+				}
+			}
+			
 			shape._webgl = {
 				positions: shape._geometry._mesh._positions,
 				normals: shape._geometry._mesh._normals,
-				indexes: shape._geometry._mesh._indices,
 				texcoords: shape._geometry._mesh._texCoords,
+				indexes: shape._geometry._mesh._indices,
 			};
-
+				
 			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
-			if (shape._appearance._texture) {
+			if (tex)
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
-			}
-			else {
+			else
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
-			}
 		}
 	}
 
@@ -374,19 +416,19 @@ x3dom.gfx_mozwebgl = (function () {
 		gl.viewport(0,0,this.width,this.height);
 		
 		var bgCol = scene.getSkyColor();
-		//x3dom.debug.logInfo("bgCol=" + bgCol);
 		
-		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], 1.0);
+		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
 		
-		gl.clearDepth (1.0);
+		gl.clearDepth(1.0);
 			
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+		
 		gl.enable(gl.DEPTH_TEST);
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.CULL_FACE);
 		
 		gl.enable(gl.BLEND);
-		gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
 
 		var sp = getDefaultShaderProgram(gl);
 		if (!scene._webgl) {
@@ -455,6 +497,7 @@ x3dom.gfx_mozwebgl = (function () {
 
 			if (shape._webgl.mask_texture !== undefined && shape._webgl.mask_texture)
 			{
+			/*
 				//gl.activeTexture(gl.TEXTURE0);
 				gl.enable(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D, shape._webgl.mask_texture);
@@ -474,30 +517,8 @@ x3dom.gfx_mozwebgl = (function () {
 					gl.ONE_MINUS_DST_ALPHA, gl.ONE // TODO: is this sensible?
 				);
 				//gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-				
+			*/
 				x3dom.debug.logInfo("TEXT?");	//no text visible?!
-			}
-			
-			var tex = shape._appearance._texture;
-			if (tex) {
-				var texture = gl.createTexture();
-				texture.image = new Image();
-				
-				texture.image.onload = function()
-				{
-					gl.enable(gl.TEXTURE_2D);
-					gl.bindTexture(gl.TEXTURE_2D,texture);
-					gl.texImage2D(gl.TEXTURE_2D,0,texture.image);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-					//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
-					//gl.generateMipmap(gl.TEXTURE_2D);
-				}
-				
-				//x3dom.debug.logInfo("tex url: " + tex._url);
-				texture.image.src = tex._url;
 			}
 
 			sp.viewMatrixInverse = mat_view_inv.toGL();
@@ -508,6 +529,19 @@ x3dom.gfx_mozwebgl = (function () {
 			//var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100,700));
 			var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100*Math.sin(50*t), 700*Math.cos(50*t)));
 			sp.lightPosition = light.toGL();
+			
+			if (shape._webgl.texture !== undefined && shape._webgl.texture)
+			{
+				gl.enable(gl.TEXTURE_2D);
+				gl.bindTexture(gl.TEXTURE_2D,shape._webgl.texture);
+				
+				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+				//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+				//gl.generateMipmap(gl.TEXTURE_2D);
+			}
 			
 			if (sp.position !== undefined) 
 			{
@@ -537,11 +571,10 @@ x3dom.gfx_mozwebgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
 				
-				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 3, 0); 
+				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.normal);
 			}
-			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined &&
-				shape._webgl.mask_texture === undefined)
+			if (sp.texcoord !== undefined)
 			{
 				var texcBuffer = gl.createBuffer();
 				
@@ -550,7 +583,7 @@ x3dom.gfx_mozwebgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
 				
-				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 2, 0); 
+				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.texcoord);
 			}
 			
@@ -562,7 +595,12 @@ x3dom.gfx_mozwebgl = (function () {
 			else
 			  gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 			
-			//gl.deleteTexture(texture);
+			if (shape._webgl.texture !== undefined && shape._webgl.texture)
+			{
+				gl.bindTexture(gl.TEXTURE_2D, null);
+				gl.disable(gl.TEXTURE_2D);
+				//gl.deleteTexture(shape._webgl.texture);
+			}
 			
 			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined) {
@@ -576,7 +614,7 @@ x3dom.gfx_mozwebgl = (function () {
 				gl.deleteBuffer(normalBuffer);
 				delete normals;
 			}
-			if (sp.texcoord !== undefined && shape._webgl.texcoords !== undefined) {
+			if (sp.texcoord !== undefined) {
 				gl.disableVertexAttribArray(sp.texcoord);
 				gl.deleteBuffer(texcBuffer);
 				delete texcoords;

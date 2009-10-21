@@ -270,13 +270,11 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         // alert(uri + " loaded...");	
         //var ti = canvas.tick;
         x3dom.debug.logInfo("loaded [" + uri + "]");
-        setInterval( function() { 
-                doc.render(gl); 
-                //for (var c in canvas)
+        setInterval( function() {
                 canvas.tick();
                 // x3dom.debug.logInfo("##" + canvas.canvas.id + doc._scene.ctx); 
             }, 
-            100
+            16	// use monitor frequency
         );
     };
     

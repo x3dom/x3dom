@@ -5,9 +5,8 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<title>Simple WebGL example</title>
 		<style>
-		body { font-family: sans-serif; }
 		X3D { display: none; }
-		canvas { border: solid; color: #666; float: left; margin-right: 1em; margin-bottom: 1em; }
+		canvas { border-top: 1px solid #f00; border-left: 1px solid #f00; float: left; margin-bottom:1em; margin-right:1em; }
 		p.case { clear: both; border-top: 1px solid #888; }
 		div#x3dom_logdiv { height: 30em; overflow: auto; white-space: pre-wrap; font-size: x-small; }
 		div#x3dom_logdiv p { margin: 0; }
@@ -18,22 +17,22 @@
             color:#f40;
             font-size:14px;
         }
-		/*div#foo { margin-top: -50px; color: #f00; }*/
 		</style>
 	</head>
        
-<body style="background-color:#E0E0E0;">
+<body style="font-family: sans-serif; background-color:#E0E0E0; background-image:url(opengl.gif); ">
 
     <h1>x3dom simple example</h1>
 	
 	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="10px" width="400px" height="280px">
 			<Scene>
-				<Background skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
+				<Background transparency="1.0" skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
 				<Transform >
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
+							<!--<ImageTexture url="opengl.gif" />-->
 						</Appearance>
 						<Box/>
 					</Shape>
@@ -89,6 +88,7 @@
 					</Shape>
 				</Transform>
 				<Viewpoint centerOfRotation="0 0 0" position="0 0 10" orientation="0 1 0 0" fieldOfView="0.661"/>
+				<Background transparency='1' skyColor='0 0 0' />
 			</Scene>
         </X3D>
 		
@@ -96,7 +96,7 @@
         <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" showFps="true" x="0px" y="10px" width="200px" height="200px">
 			<Scene>
 			    <Viewpoint position='0 0 600' orientation="0 0 1 0" fieldOfView="0.785398" />
-				<Background skyColor='0.51 0.81 0.95'/>
+				<Background transparency="0.7" skyColor='0.51 0.81 0.95'/>
 				<Transform rotation="1 0 0 0.78">
 				  <Shape>
 					<Appearance>

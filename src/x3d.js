@@ -763,21 +763,26 @@ x3dom.registerNodeType(
             }
             // TODO: solid; ccw; creaseAngle
     
-            var coordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
+            var coordNode = Array.filter(ctx.xmlNode.childNodes, 
+					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
 			ctx.assert(coordNode.length == 1);
             this._mesh._positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			
-			var normalNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
+			var normalNode = Array.filter(ctx.xmlNode.childNodes, 
+					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
             if (normalNode.length == 1)
 				this._mesh._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			else
 				this._mesh.calcNormals();
 			
-            var texCoordNode = Array.filter(ctx.xmlNode.childNodes, function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
+            var texCoordNode = Array.filter(ctx.xmlNode.childNodes, 
+					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
             if (texCoordNode.length == 1)
 				this._mesh._texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			else
 				this._mesh.calcTexCoords();
+			
+			//x3dom.debug.logInfo(this._mesh._positions.length/3 + ", " + this._mesh._normals.length/3 + ", " + this._mesh._texCoords.length/2);
 				
 			this._mesh.remapData();
 			this._mesh._invalidate = true;
@@ -895,11 +900,15 @@ x3dom.registerNodeType(
 			
             this._attribute_MFColor(ctx, 'skyColor', new x3dom.fields.MFColor([new x3dom.fields.SFColor(), 
                                                                                new x3dom.fields.SFColor(1,1,1)]));
+            this._attribute_SFFloat(ctx, 'transparency', 0);
         },
         {
 			getSkyColor: function() {
 				return this._skyColor;
-			}
+			},
+			getTransparency: function() {
+				return this._transparency;
+			},
         }
     )
 );
@@ -1071,8 +1080,6 @@ x3dom.registerNodeType(
 			_draw: function ( drawParam ) {
 				drawParam.transStack.push ( _transformMatrix() );
 				
-				asdf
-				
 				for (var i in this._childNodes)
 				{	
 					var child = this._childNodes[i];
@@ -1212,12 +1219,12 @@ x3dom.registerNodeType(
 			this._cam = null;
         },
         {
-        	getAViewpoint ( ) {
+        	getViewpoint: function() {
         		if (this._cam == null) 
-        		  this._cam = this._find(x3dom.nodetypes.Viewpoint);
-  
+					this._cam = this._find(x3dom.nodeTypes.Viewpoint);
+					
   				return this._cam;
-        	}
+        	},
         	
 			getVolume: function(min, max, invalidate)
 			{
@@ -1260,10 +1267,18 @@ x3dom.registerNodeType(
 			
 			getSkyColor: function() {
 				var bgnd = this._find(x3dom.nodeTypes.Background);
-				if (bgnd !== null)
-					return bgnd.getSkyColor().toGL();
+				var bgCol;
+				
+				if (bgnd !== null) {
+					bgCol = bgnd.getSkyColor().toGL();
+					//workaround; impl. skyTransparency etc.
+					if (bgCol.length > 2)
+						bgCol[3] = 1.0 - bgnd.getTransparency();
+				}
 				else
-					return new Array(0,0,0);
+					bgCol = new Array(0,0,0,1);
+				
+				return bgCol;
 			},
     
     		drawScene: function() {
