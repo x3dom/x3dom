@@ -1,51 +1,59 @@
 <html>
 <head>
+		<title>X3DOM-WebGL Examples</title>
 		<style>
 		body { font-family: sans-serif; background-color:#E0E0E0; }
 		X3D { display: none; }
 		canvas { border: solid; color: #666; float: left; margin-right: 1em; margin-bottom: 1em; }
 		p.case { clear: both; }
-		div#x3dom_logdiv { height: 30em; overflow: auto; white-space: pre-wrap; font-size: x-small; }
-		div#x3dom_logdiv p { margin: 0; }
-        div.fps {
-            left:-100px;
-            position:relative;
-            top:20px;
-            color:#f40;
-            font-size:14px;
-        }
 		</style>
 </head>
+
 <body>
+
 <h1>X3DOM-WebGL Examples</h1>
+
 <p class="case">
-This are example fo the X3DOM on WebGL implementation. You need a browser which supports WebGL.
+Below you'll find some examples for the X3DOM on WebGL implementation. For viewing them, you need a recent browser that supports WebGL.
+</p>
+
 <h2>Browser Support</h2>
-<h3>FireFox</h3>
+
+<h3>Firefox</h3>
+<p class="case">
 Firefox nightly builds support WebGL. You can download those here:
+<br>
+<a href="http://www.mozilla.org/developer/#builds">http://www.mozilla.org/developer/#builds</a>
+</p>
 
-<a href="http://www.mozilla.org/developer/#builds" >http://www.mozilla.org/developer/#builds</a>
-
-However, you need to turn on WebGL manually in the configuration. Type about:config in the address bar, then search for "webgl" and change the value of webgl.enabled_for_all_sites to true.
+<p class="case">
+However, you need to turn on WebGL manually in the configuration. Type <i>about:config</i> in the address bar, then search for "webgl" and change the value of <i>webgl.enabled_for_all_sites</i> to true.
+</p>
 
 <h3>Webkit</h3>
-Webkit nightly builds support WebGL. You can download those here:
+<p class="case">
+Webkit nightly builds also support WebGL. You can download those here:
+<br>
+<a href="http://nightly.webkit.org/">http://nightly.webkit.org/</a>
+</p>
 
-<a href="http://nightly.webkit.org/" >http://nightly.webkit.org/</a>
+<p class="case">
+Likewise, you still have to activate it. On Mac this works like follows:
+<br>
+<i>defaults write com.apple.Safari WebKitWebGLEnabled -bool YES</i>
+</p>
 
-You still have to aktivate it on macs: 
 
-<p>defaults write com.apple.Safari WebKitWebGLEnabled -bool YES</p>
+<h2>Examples</h2>
 
-
-<h2>Example</h2>
 <p class="case">
 <ul>
-<li><a href="test_multiView.xhtml">MultiView: Multiple X3D-Scens in a single xhtml-page</a></li>
-<li><a href="test_texture.xhtml">Texture: Model with multiple externel textures</a></li>
-<li><a href="test_treeDepth.xhtml">Tree Depth: Model with a mixed Transform/Group hierarchy</a></li>
-<li><a href="test_singleMesh.xhtml">Single Mesh: Model with a flat hierarchy</a></li>
+<li><a href="test_multiView.xhtml">MultiView:</a> Multiple X3D scenes in a single XHTML page</li>
+<li><a href="test_texture.xhtml">Texture:</a> Model with multiple external textures</li>
+<li><a href="test_treeDepth.xhtml">Tree Depth:</a> Model with a mixed Transform/ Group hierarchy</li>
+<li><a href="test_singleMesh.xhtml">Single Mesh:</a> Model with a flat hierarchy</li>
 </ul>
 </p>
+
 </body>
 </html>
