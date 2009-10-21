@@ -244,6 +244,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 			});
         },
 
+		_draw: function ( drawParam ) {
+		},
+		
         _attribute_SFFloat: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? +ctx.xmlNode.getAttribute(name) : n;
         },
@@ -1063,7 +1066,24 @@ x3dom.registerNodeType(
 					max.y = locMax.y;
 				if (max.z < locMax.z)
 					max.z = locMax.z;
-			}
+			},
+			
+			_draw: function ( drawParam ) {
+				drawParam.transStack.push ( _transformMatrix() );
+				
+				asdf
+				
+				for (var i in this._childNodes)
+				{	
+					var child = this._childNodes[i];
+					
+					if (child == null) {
+						child._draw (drawParam);
+					}
+				}
+				
+				drawParam.transStack.pop();
+			},
         }
     )
 );
@@ -1189,8 +1209,16 @@ x3dom.registerNodeType(
 			this._movement = new x3dom.fields.SFVec3(0, 0, 0);
 			this._width = 400;
 			this._height = 300;
+			this._cam = null;
         },
         {
+        	getAViewpoint ( ) {
+        		if (this._cam == null) 
+        		  this._cam = this._find(x3dom.nodetypes.Viewpoint);
+  
+  				return this._cam;
+        	}
+        	
 			getVolume: function(min, max, invalidate)
 			{
 				var MIN = new x3dom.fields.SFVec3(
@@ -1238,6 +1266,15 @@ x3dom.registerNodeType(
 					return new Array(0,0,0);
 			},
     
+    		drawScene: function() {
+    			var drawParam = new Object();
+    			
+    			drawParam.transStack = [];
+    			drawParam.scene = this;
+    			
+    			this.draw ( drawParam );
+    		},
+    		
             ondrag: function (dx, dy, buttonState) {
 				if (buttonState & 1) {
 					var alpha = (dy * 2 * Math.PI) / 400; //width;
