@@ -18,7 +18,6 @@
             color:#f40;
             font-size:14px;
         }
-		/*div#foo { margin-top: -50px; color: #f00; }*/
 		</style>
 	</head>
        
@@ -26,54 +25,10 @@
 
     <h1>x3dom simple example</h1>
 	
-	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
-	<!--
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="10px" width="400px" height="280px">
-			<Scene>
-				<Background skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
-				<Transform >
-					<Shape>
-						<Appearance>
-							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
-						</Appearance>
-						<Box/>
-					</Shape>
-				</Transform>-->
-				<!--
-				<Transform translation='2 -1 1'>
-				  <Shape>
-					<Appearance>
-					  <Material diffuseColor='1 0 1' specularColor=".5 .5 .5" />
-					  <ImageTexture url="ogl.jpg" />
-					</Appearance>
-					<IndexedFaceSet creaseAngle='2' coordIndex='0 2 1 -1, 0 3 2 -1, 0 1 3 -1, 1 2 3 -1'>
-					  <Coordinate point='0 0 0, 1 0 0, 1 1 0, 0.75 0.25 1' />
-					  <TextureCoordinate point='0 0, 1 0, 1 1, 0 1' />
-					</IndexedFaceSet>
-				  </Shape>
-				</Transform>
-				-->
-				<!--<Transform DEF="TBox" translation="4 0 0" rotation="1 0 0 0.9">
-					<Shape>
-						<Appearance>
-							<Material diffuseColor="1 0.7 0.3" specularColor=".5 .5 .5" />
-							<ImageTexture url="ogl.jpg" />
-						</Appearance>
-						<Box size="3 1 2"/>
-					</Shape>
-				</Transform>
-				<OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14159, 1 0 0 6.28318" />
-				<TimeSensor DEF="TS" loop="true" />
-				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'/>
-				<ROUTE fromNode='OI' fromField='value_changed' toNode='TBox' toField='rotation'/>
-				<Viewpoint centerOfRotation="0 0 0" position="2 0 8" orientation="0 1 0 0" fieldOfView="0.785398"/>
-			</Scene>
-		</X3D>
-		-->
-		&nbsp;
+	<p class="case">Lorsch
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="320px" height="240px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="600px" height="400px">
  <Scene DEF='scene'>
     <Viewpoint orientation='-0.106063 0.993933 0.0291173 1.09435' position='4.40218 1.28291 2.10823'/>
     <Background skyColor='0.05 0.12 0.23'/>

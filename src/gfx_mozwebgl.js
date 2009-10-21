@@ -363,6 +363,8 @@ x3dom.gfx_mozwebgl = (function () {
 		{
 			if (shape._webgl !== undefined)
 				return;
+			else
+				x3dom.debug.logInfo("init shape");
 				
 			var tex = shape._appearance._texture;
 			
@@ -399,6 +401,7 @@ x3dom.gfx_mozwebgl = (function () {
 				normals: shape._geometry._mesh._normals,
 				texcoords: shape._geometry._mesh._texCoords,
 				indexes: shape._geometry._mesh._indices,
+				buffers: [{},{},{},{}],
 			};
 				
 			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
@@ -406,6 +409,57 @@ x3dom.gfx_mozwebgl = (function () {
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
 			else
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
+			
+			var sp = shape._webgl.shader;
+			
+			if (sp.position !== undefined) 
+			{
+				var positionBuffer = gl.createBuffer();
+				shape._webgl.buffers[1] = positionBuffer;
+				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+				
+				var vertices = new CanvasFloatArray(shape._webgl.positions);
+				
+				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+				
+				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+				//gl.enableVertexAttribArray(sp.position);
+				
+				// bind indices for drawElements() call
+				var indicesBuffer = gl.createBuffer();
+				shape._webgl.buffers[0] = indicesBuffer;
+				
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 
+						new CanvasUnsignedShortArray(shape._webgl.indexes), gl.STATIC_DRAW);
+			}
+			if (sp.normal !== undefined) 
+			{
+				var normalBuffer = gl.createBuffer();
+				shape._webgl.buffers[2] = normalBuffer;
+				
+				var normals = new CanvasFloatArray(shape._webgl.normals);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
+				
+				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+				//gl.enableVertexAttribArray(sp.normal);
+			}
+			if (sp.texcoord !== undefined)
+			{
+				var texcBuffer = gl.createBuffer();
+				shape._webgl.buffers[3] = texcBuffer;
+				
+				var texCoords = new CanvasFloatArray(shape._webgl.texcoords);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+				
+				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
+				//gl.enableVertexAttribArray(sp.texcoord);
+			}
 		}
 	}
 
@@ -419,6 +473,7 @@ x3dom.gfx_mozwebgl = (function () {
 		
 		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
 		
+		//gl.clearDepthf(1.0);
 		gl.clearDepth(1.0);
 			
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -545,43 +600,23 @@ x3dom.gfx_mozwebgl = (function () {
 			
 			if (sp.position !== undefined) 
 			{
-				var positionBuffer = gl.createBuffer();
-				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
 				
-				var vertices = new CanvasFloatArray(shape._webgl.positions);
-				
-				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
 				
 				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
 				gl.enableVertexAttribArray(sp.position);
-				
-				// bind indices for drawElements() call
-				var indicesBuffer = gl.createBuffer();
-				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 
-						new CanvasUnsignedShortArray(shape._webgl.indexes), gl.STATIC_DRAW);
 			}
 			if (sp.normal !== undefined) 
 			{
-				var normalBuffer = gl.createBuffer();
-				
-				var normals = new CanvasFloatArray(shape._webgl.normals);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[2]);			
 				
 				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.normal);
 			}
 			if (sp.texcoord !== undefined)
 			{
-				var texcBuffer = gl.createBuffer();
-				
-				var texcoords = new CanvasFloatArray(shape._webgl.texcoords);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[3]);
 				
 				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.texcoord);
@@ -605,19 +640,19 @@ x3dom.gfx_mozwebgl = (function () {
 			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined) {
 				gl.disableVertexAttribArray(sp.position);
-				gl.deleteBuffer(positionBuffer);
+				/*gl.deleteBuffer(positionBuffer);
 				gl.deleteBuffer(indicesBuffer);
-				delete vertices;
+				delete vertices;*/
 			}
 			if (sp.normal !== undefined) {
 				gl.disableVertexAttribArray(sp.normal);
-				gl.deleteBuffer(normalBuffer);
-				delete normals;
+				/*gl.deleteBuffer(normalBuffer);
+				delete normals;*/
 			}
 			if (sp.texcoord !== undefined) {
 				gl.disableVertexAttribArray(sp.texcoord);
-				gl.deleteBuffer(texcBuffer);
-				delete texcoords;
+				/*gl.deleteBuffer(texcBuffer);
+				delete texCoords;*/
 			}
 		}
 		//);
