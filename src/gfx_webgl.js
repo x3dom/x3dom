@@ -1,9 +1,8 @@
 x3dom.gfx_webgl = (function () { 
 
-	function Context(ctx3d, w, h, name) {
+	function Context(ctx3d, canvas, name) {
 		this.ctx3d = ctx3d;
-		this.width = w;
-		this.height = h;
+		this.canvas = canvas;
 		this.name = name;
 	}
 
@@ -16,12 +15,12 @@ x3dom.gfx_webgl = (function () {
 		try {
 			var ctx = canvas.getContext('moz-webgl');
 			if (ctx)
-				return new Context(ctx, canvas.width, canvas.height, 'moz-webgl');
+				return new Context(ctx, canvas, 'moz-webgl');
 		} catch (e) {}
 		try {
 			var ctx = canvas.getContext('webkit-3d');
 			if (ctx)
-				return new Context(ctx, canvas.width, canvas.height, 'webkit-3d');
+				return new Context(ctx, canvas, 'webkit-3d');
 		} catch (e) {}
 	}
 
@@ -468,7 +467,7 @@ x3dom.gfx_webgl = (function () {
 	{
 		var gl = this.ctx3d;
 		
-		gl.viewport(0,0,this.width,this.height);
+		gl.viewport(0,0,this.canvas.width,this.canvas.height);
 		
 		var bgCol = scene.getSkyColor();
 		
@@ -498,20 +497,33 @@ x3dom.gfx_webgl = (function () {
 		var fov = scene.getFieldOfView();
 		//x3dom.debug.logInfo("fov=" + fov);
 		
-		var mat_projection = setCamera(fov, this.width/this.height, 10000, 0.1);
+		var mat_projection = setCamera(fov, this.canvas.width/this.canvas.height, 10000, 0.1);
 		var mat_view = scene.getViewMatrix();
 		
 		var mat_view_inv = mat_view.inverse();
-
-		var drawableObjects = [];
-		scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), drawableObjects);
+		
+		// render traversal
+		if (scene.drawableObjects === undefined || !scene.drawableObjects) {
+			scene.drawableObjects = [];
+			
+			var t0 = new Date().getTime();
+			
+			scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);
+			
+			var t1 = new Date().getTime() - t0;
+			
+			if (this.canvas.parent.fpsDiv) {
+				this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
+				this.canvas.parent.fpsDiv.appendChild(document.createTextNode("traverse: " + t1));
+			}
+		}
 		
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
-		for (var i=0, n=drawableObjects.length; i<n; i++)
+		for (var i=0, n=scene.drawableObjects.length; i<n; i++)
 		{
-			var trafo = drawableObjects[i][0];
-			var obj3d = drawableObjects[i][1];
+			var trafo = scene.drawableObjects[i][0];
+			var obj3d = scene.drawableObjects[i][1];
 			
 			var center = obj3d._getCenter();
 			center = trafo.multMatrixPnt(center);
@@ -525,7 +537,7 @@ x3dom.gfx_webgl = (function () {
 		//Array.forEach(drawableObjects, function (obj) 
 		for (var i=0, n=zPos.length; i<n; i++)
 		{
-			var obj = drawableObjects[zPos[i][0]];
+			var obj = scene.drawableObjects[zPos[i][0]];
 			
 			var transform = obj[0];
 			var shape = obj[1];
@@ -669,6 +681,8 @@ x3dom.gfx_webgl = (function () {
 		//x3dom.debug.logInfo(gl.getString(gl.VENDOR)+"/"+gl.getString(gl.RENDERER)+"/"+
 		//					gl.getString(gl.VERSION)+"/"+gl.getString(gl.EXTENSIONS)+);
 		//gl.flush();
+		
+		scene.drawableObjects = null;
 	};
 
 	return setupContext;

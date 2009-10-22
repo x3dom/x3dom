@@ -86,7 +86,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     function createCanvas(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
-        var canvas = this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+        this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
         var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
 		//canvas.setAttribute("width","400px");
 		//canvas.setAttribute("height","300px");
@@ -154,21 +154,33 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.canvas = createCanvas(x3dElem, this);
 	this.canvas.parent = this;
     this.fps_target = 1975;
-    this.fps_n = 0;
-    this.fps_t0 = 0;
+    this.fps_t0 = new Date().getTime();
+    this.t = 0;
     this.gl = initContext(this.canvas);
     this.doc = null;
-    this.t = 0;
     this.canvasDiv = null;
     this.showFps = x3dElem.getAttribute("showFps");
     this.fpsDiv = this.showFps !== null ? createFpsDiv() : null;
-    //this.tick = null;
 	
 	// event handler for mouse interaction
 	this.canvas.mouse_dragging = false;
 	this.canvas.mouse_button = 0;
     this.canvas.mouse_drag_x = 0;
 	this.canvas.mouse_drag_y = 0;
+	
+	this.canvas.addEventListener('keydown', function (evt) {
+		window.status=this.id+' KEY DOWN: '+evt.which;
+		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
+	}, false);
+	
+	this.canvas.addEventListener('keyup', function (evt) {
+		window.status=this.id+' KEY UP: '+evt.which;
+		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
+	}, false);
 	
     this.canvas.addEventListener('mousedown', function (evt) {
 		switch(evt.button) {
@@ -237,20 +249,23 @@ x3dom.X3DCanvas = function(x3dElem) {
 
 x3dom.X3DCanvas.prototype.tick = function() {
     
-    if (this.showFps) {
-        var d = new Date();
-        if (++this.fps_n == 10) {
-            this.fpsDiv.textContent = (this.fps_n*1000 / (d - this.fps_t0)).toFixed(2) + ' fps';
-            this.fps_t0 = d;
-            this.fps_n = 0;
-        }
+    if (this.showFps)
+	{
+        var d = new Date().getTime();
+        var fps = 1000.0 / (d - this.fps_t0);
+		
+        this.fpsDiv.textContent = fps.toFixed(2) + ' fps';
+        this.fps_t0 = d;
+        
         try {
             this.doc.advanceTime(this.t); 
             this.doc.render(this.gl);
-        } catch (e) {
+        }
+		catch (e) {
             x3dom.debug.logException(e);
             throw e;
         }
+		
         this.t += 1/this.fps_target;
     }
 };
@@ -266,15 +281,11 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     x3dom.debug.logInfo("gl=" + gl + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
 	
     this.doc.onload = function () {
-        // setInterval(tick, 1000/this.fps_target);
-        // alert(uri + " loaded...");	
-        //var ti = canvas.tick;
         x3dom.debug.logInfo("loaded [" + uri + "]");
         setInterval( function() {
                 canvas.tick();
-                // x3dom.debug.logInfo("##" + canvas.canvas.id + doc._scene.ctx); 
             }, 
-            16	// use monitor frequency
+            16	// use typical monitor frequency as bound
         );
     };
     

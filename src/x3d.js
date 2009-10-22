@@ -243,9 +243,6 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 					toNode[toField] = msg;
 			});
         },
-
-		_draw: function ( drawParam ) {
-		},
 		
         _attribute_SFFloat: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? +ctx.xmlNode.getAttribute(name) : n;
@@ -744,6 +741,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
 			
+			var t0 = new Date().getTime();
+			
             var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
             this._mesh._indices = [];
             var t = 0, n0, n1, n2;
@@ -786,6 +785,9 @@ x3dom.registerNodeType(
 				
 			this._mesh.remapData();
 			this._mesh._invalidate = true;
+			
+			var t1 = new Date().getTime() - t0;
+			x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
@@ -1076,21 +1078,6 @@ x3dom.registerNodeType(
 				if (max.z < locMax.z)
 					max.z = locMax.z;
 			},
-			
-			_draw: function ( drawParam ) {
-				drawParam.transStack.push ( _transformMatrix() );
-				
-				for (var i in this._childNodes)
-				{	
-					var child = this._childNodes[i];
-					
-					if (child == null) {
-						child._draw (drawParam);
-					}
-				}
-				
-				drawParam.transStack.pop();
-			},
         }
     )
 );
@@ -1245,20 +1232,20 @@ x3dom.registerNodeType(
 			},
 			
             getViewpointMatrix: function () {
-                var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+                var viewpoint = this.getViewpoint();
                 var mat_viewpoint = viewpoint._getCurrentTransform();
 				return mat_viewpoint.mult(viewpoint.getViewMatrix());
             },
     
             getViewMatrix: function () {
-                var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+                var viewpoint = this.getViewpoint();
                 return this.getViewpointMatrix().
 							mult(this._transMat).
 							mult(this._rotMat);
             },
 			
 			getFieldOfView: function() {
-                var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+                var viewpoint = this.getViewpoint();
 				if (viewpoint !== null)
 					return viewpoint.getFieldOfView();
 				else
@@ -1280,15 +1267,6 @@ x3dom.registerNodeType(
 				
 				return bgCol;
 			},
-    
-    		drawScene: function() {
-    			var drawParam = new Object();
-    			
-    			drawParam.transStack = [];
-    			drawParam.scene = this;
-    			
-    			this.draw ( drawParam );
-    		},
     		
             ondrag: function (dx, dy, buttonState) {
 				if (buttonState & 1) {
@@ -1299,7 +1277,7 @@ x3dom.registerNodeType(
 					var mx = x3dom.fields.SFMatrix4.rotationX(alpha);
 					var my = x3dom.fields.SFMatrix4.rotationY(beta);
 					
-					var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+					var viewpoint = this.getViewpoint();
 					var center = viewpoint.getCenterOfRotation();
 					
 					mat.setTranslate(new x3dom.fields.SFVec3(0,0,0));
@@ -1322,7 +1300,7 @@ x3dom.registerNodeType(
 					var vec = new x3dom.fields.SFVec3(d*dx/this._width,d*(-dy)/this._height,0);
 					this._movement = this._movement.add(vec);
 					
-					var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+					var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
@@ -1339,7 +1317,7 @@ x3dom.registerNodeType(
 					var vec = new x3dom.fields.SFVec3(0,0,d*(dx+dy)/this._height);
 					this._movement = this._movement.add(vec);
 					
-					var viewpoint = this._find(x3dom.nodeTypes.Viewpoint);
+					var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
