@@ -97,6 +97,11 @@ x3dom.X3DCanvas = function(x3dElem) {
         // Apply the width and height of the X3D element to the canvas 
         var x, y, w, h, showFps;
         canvas.style.position = "relative";
+		canvas.style.border = "1px solid #000";
+		canvas.style.marginBottom = "1em";
+		canvas.style.marginRight = "1em";
+		canvas.style.cssFloat = "left";
+		
         if ((x = x3dElem.getAttribute("x")) !== null) {
             canvas.style.left = x.toString();
         }
@@ -145,7 +150,13 @@ x3dom.X3DCanvas = function(x3dElem) {
     function createFpsDiv() {
         var fpsDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
         fpsDiv.innerHTML = "fps: ";
-        fpsDiv.setAttribute("class", "fps");
+        
+		fpsDiv.style.left = "-100px";
+        fpsDiv.style.position = "relative";
+        fpsDiv.style.top = "20px";
+        fpsDiv.style.color = "#00ff00";
+        fpsDiv.style.fontSize = "14px";
+		
         canvasDiv.appendChild(fpsDiv);        
         return fpsDiv;
     }
