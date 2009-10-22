@@ -68,16 +68,17 @@ x3dom.gfx_mozwebgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
+		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
 		"    float diffuse = 0.5 * (max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    specular += 0.5 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
-		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, fragTexCoord).rgb + specular*specularColor;" +
+		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, texCoord).rgb + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
-		//"    gl_FragColor = vec4(texture2D(tex, fragTexCoord.xy));" +
-		"    gl_FragColor = vec4(rgb, texture2D(tex, fragTexCoord).a);" +
-		//"    gl_FragColor = texture2D(tex, fragTexCoord);" +
-		//"    gl_FragColor = vec4(fragTexCoord.xy, 0.0, 1.0);" +
+		//"    gl_FragColor = vec4(texture2D(tex, texCoord.xy));" +
+		"    gl_FragColor = vec4(rgb, texture2D(tex, texCoord).a);" +
+		//"    gl_FragColor = texture2D(tex, texCoord);" +
+		//"    gl_FragColor = vec4(texCoord.xy, 0.0, 1.0);" +
 		"}"
 		};
 

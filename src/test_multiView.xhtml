@@ -38,11 +38,11 @@
 					</Shape>
 				</Transform>
 				
-				<Transform translation='1 -1 2'>
+				<Transform translation='2 -0.5 -2'>
 				  <Shape>
 					<Appearance>
 					  <Material diffuseColor='1 0 0' specularColor=".1 .1 .1" />
-					  <ImageTexture url="ogl.jpg" />
+					  <ImageTexture url="opengl.gif" />
 					</Appearance>
 					<IndexedFaceSet coordIndex='0 1 2 -1, 2 3 0 -1'>
 					  <Coordinate point='-1 -1 0, 1 -1 0, 1 1 0, -1 1 0' />
@@ -60,10 +60,12 @@
 						<Box size="3 1 2"/>
 					</Shape>
 				</Transform>
+				
 				<OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14159, 1 0 0 6.28318" />
 				<TimeSensor DEF="TS" loop="true" />
 				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'/>
 				<ROUTE fromNode='OI' fromField='value_changed' toNode='TBox' toField='rotation'/>
+				
 				<Viewpoint centerOfRotation="0 0 0" position="2 0 8" orientation="0 1 0 0" fieldOfView="0.785398"/>
 			</Scene>
 		</X3D>
