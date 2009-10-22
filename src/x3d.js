@@ -789,7 +789,7 @@ x3dom.registerNodeType(
 			this._mesh._invalidate = true;
 			
 			var t1 = new Date().getTime() - t0;
-			x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
+			//x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
