@@ -1,4 +1,4 @@
-x3dom.gfx_mozwebgl = (function () { 
+x3dom.gfx_webgl = (function () { 
 
 	function Context(ctx3d, w, h, name) {
 		this.ctx3d = ctx3d;
