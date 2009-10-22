@@ -99,15 +99,17 @@ function MFString_parse(str) {
 // x3dom.nodeTypes.X3DNode = defineClass(null,
 x3dom.registerNodeType("X3DNode", "base", defineClass(null,
     function (ctx) {
-        if (ctx.xmlNode.hasAttribute('DEF'))
+        if (ctx.xmlNode.hasAttribute('DEF')) {
             this._DEF = ctx.xmlNode.getAttribute('DEF');
-
+			ctx.defMap[ctx.xmlNode.getAttribute('DEF')] = this;
+		}
         this._fieldWatchers = {};
+        this._parentNodes = [];
     },
     {
         _getCurrentTransform: function () {
-            if (this._parentNode)
-                return this._transformMatrix(this._parentNode._getCurrentTransform());
+            if (this._parentNodes.length > 1)
+                return this._transformMatrix(this._parentNodes[0]._getCurrentTransform());
             else
                 return x3dom.fields.SFMatrix4.identity();
         },
@@ -992,7 +994,7 @@ x3dom.registerNodeType(
         {
             addChild: function (node) {
                 this._childNodes.push(node);
-                node._parentNode = this;
+                node._parentNodes.push(this);
             },
 			//TODO: removeChild
         }
@@ -1403,7 +1405,7 @@ x3dom.registerNodeType(
                 //log(new XMLSerializer().serializeToString(target));
             }
             this._childNodes = [ ctx.setupNodePrototypes(target, ctx) ];
-            this._childNodes[0]._parentNode = this;
+            this._childNodes[0]._parentNodes.push(this);
         },
         {
             _getNodeByDEF: function (def) {
@@ -1519,6 +1521,7 @@ x3dom.X3DDocument.prototype._findIncludedFiles = function (doc) {
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
     var ctx = {
+    	defMap: {},
         docs: uriDocs,
         setupNodePrototypes: this._setupNodePrototypes,
         assert: x3dom.debug.assert,
@@ -1578,16 +1581,25 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
     var n, t;
 	// x3dom.debug.logInfo("node=" + node + ", localName=" + node.localName);
     if (x3dom.isX3DElement(node)) {
-        if (undefined === (t = x3dom.nodeTypeMap[node.localName])) {
-            ctx.log('Unrecognised element '+node.localName);
-        } else {
-            ctx.xmlNode = node;
-            n = new t.ctor(ctx);
-            // PE: Try to store the X3D element on the original DOM element
-            node._x3domNode = n;
-            if (t.autoChild)
-                Array.forEach(Array.map(node.childNodes, function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), function (c) { if (c) n.addChild(c) });
-            return n;
+	    if (node.hasAttribute('USE')) {
+	      n = ctx.defMap[node.getAttribute('USE')];
+	      if (n == null) {
+	        ctx.log ('Could not USE: '+node.getAttribute('USE'));
+	      }
+	      return n;
+	    }
+	    else {
+        	if (undefined === (t = x3dom.nodeTypeMap[node.localName])) {
+            	ctx.log('Unrecognised element '+node.localName);
+        	} else {
+            	ctx.xmlNode = node;
+ 	            n = new t.ctor(ctx);
+    	        // PE: Try to store the X3D element on the original DOM element
+        	    node._x3domNode = n;
+            	if (t.autoChild)
+                	Array.forEach(Array.map(node.childNodes, function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), function (c) { if (c) n.addChild(c) });
+            	return n;
+        	}
         }
     }
 };
