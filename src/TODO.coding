@@ -1,0 +1,16 @@
+== Generic
+- copyright
+- Makefile
+
+== X3D basics
+- global context per namespace
+- include Node.f Node.fc and node.nodeChanged()
+- remove _getNodeByDEF
+- ROUTE bug in fanOut
+- addChild/removeChild in all nodes
+
+== Rendering
+- Multiindex
+- IndexedTriangleStripSet
+
+
