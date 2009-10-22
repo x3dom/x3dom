@@ -871,7 +871,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Viewpoint.superClass.call(this, ctx);
 			this._attribute_SFFloat(ctx, 'fieldOfView', 0.785398);
             this._attribute_SFVec3(ctx, 'position', 0, 0, 10);
-            this._attribute_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
+            this._attribute_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
 			this._attribute_SFVec3(ctx, 'centerOfRotation', 0, 0, 0);
 			
             this._viewMatrix = this._orientation.toMatrix().transpose().
