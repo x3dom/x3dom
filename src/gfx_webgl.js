@@ -363,9 +363,9 @@ x3dom.gfx_webgl = (function () {
 		{
 			if (shape._webgl !== undefined)
 				return;
-			else
-				x3dom.debug.logInfo("init shape");
-				
+			//else
+			//	x3dom.debug.logInfo("init shape");
+			
 			var tex = shape._appearance._texture;
 			
 			if (tex) // && (!shape._webgl.texture || shape._webgl.texture === undefined))
@@ -494,29 +494,34 @@ x3dom.gfx_webgl = (function () {
 			};
 		}
 		
-		var fov = scene.getFieldOfView();
-		//x3dom.debug.logInfo("fov=" + fov);
-		
-		var mat_projection = setCamera(fov, this.canvas.width/this.canvas.height, 10000, 0.1);
-		var mat_view = scene.getViewMatrix();
-		
-		var mat_view_inv = mat_view.inverse();
+		var t0, t1;
 		
 		// render traversal
 		if (scene.drawableObjects === undefined || !scene.drawableObjects) {
 			scene.drawableObjects = [];
 			
-			var t0 = new Date().getTime();
+			t0 = new Date().getTime();
 			
 			scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);
 			
-			var t1 = new Date().getTime() - t0;
+			t1 = new Date().getTime() - t0;
 			
 			if (this.canvas.parent.fpsDiv) {
 				this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
 				this.canvas.parent.fpsDiv.appendChild(document.createTextNode("traverse: " + t1));
 			}
 		}
+		
+		// rendering
+		t0 = new Date().getTime();
+		
+		var fov = scene.getFieldOfView();
+		//x3dom.debug.logInfo("fov=" + fov);
+		
+		var mat_projection = setCamera(fov, this.canvas.width/this.canvas.height, 100000, 0.1);
+		var mat_view = scene.getViewMatrix();
+		
+		var mat_view_inv = mat_view.inverse();
 		
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
@@ -681,6 +686,13 @@ x3dom.gfx_webgl = (function () {
 		//x3dom.debug.logInfo(gl.getString(gl.VENDOR)+"/"+gl.getString(gl.RENDERER)+"/"+
 		//					gl.getString(gl.VERSION)+"/"+gl.getString(gl.EXTENSIONS)+);
 		//gl.flush();
+		
+		t1 = new Date().getTime() - t0;
+			
+		if (this.canvas.parent.fpsDiv) {
+			this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
+			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("render: " + t1));
+		}
 		
 		scene.drawableObjects = null;
 	};
