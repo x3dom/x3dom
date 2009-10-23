@@ -15,7 +15,7 @@
     <h1>x3dom simple example</h1>
 	
 	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="10px" width="400px" height="280px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="0px" width="400px" height="280px">
 			<Scene>
 				<Background transparency="1.0" skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
 				<Transform >
@@ -63,7 +63,7 @@
 		&nbsp;
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="320px" height="240px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="0px" width="320px" height="240px">
 			<Scene>
 				<Shape>
 					<Appearance>
@@ -71,6 +71,14 @@
 					</Appearance>
 					<Sphere />
 				</Shape>
+				<Transform translation="-2.75 0 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="0 0 1" specularColor=".7 .7 .9" transparency="0" />
+						</Appearance>
+						<Torus />
+					</Shape>
+				</Transform>
 				<Transform translation="3 0 0">
 					<Shape>
 						<Appearance>
@@ -85,7 +93,7 @@
         </X3D>
 		
 		&nbsp;
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" showFps="true" x="0px" y="10px" width="200px" height="200px">
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" showFps="true" x="0px" y="0px" width="200px" height="200px">
 			<Scene>
 			    <Viewpoint position='0 0 600' orientation="0 0 1 0" fieldOfView="0.785398" />
 				<Background transparency="0.7" skyColor='0.51 0.81 0.95'/>

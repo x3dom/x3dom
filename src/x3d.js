@@ -645,7 +645,7 @@ x3dom.registerNodeType(
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.Box.superClass.call(this, ctx);
+            x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
     
             var r;
             if (ctx.xmlNode.hasAttribute('radius'))
@@ -699,6 +699,67 @@ x3dom.registerNodeType(
             this._mesh._normals = norms;
             this._mesh._indices = tris;
 			this._mesh._invalidate = true;
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Torus",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.Torus.superClass.call(this, ctx);
+    
+            var innerRadius = 0.5, outerRadius = 1.0;
+			
+            if (ctx.xmlNode.hasAttribute('innerRadius'))
+                innerRadius = x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute('innerRadius'));
+            if (ctx.xmlNode.hasAttribute('outerRadius'))
+                outerRadius = x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute('outerRadius'));
+			
+			var rings = 24, sides = 24;
+			var ringDelta = 2.0 * Math.PI / rings;
+			var sideDelta = 2.0 * Math.PI / sides;
+			var p = [], n = [], t = [], i = [];
+
+			for (var a=0, theta=0; a <= rings; a++, theta+=ringDelta) 
+			{
+				var cosTheta = Math.cos(theta);
+				var sinTheta = Math.sin(theta);
+
+				for (var b=0, phi=0; b<=sides; b++, phi+=sideDelta) 
+				{
+					var cosPhi = Math.cos(phi);
+					var sinPhi = Math.sin(phi);
+					var dist = outerRadius + innerRadius * cosPhi;
+
+					n.push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
+					p.push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
+					t.push(-a / rings, b / sides);
+				}
+			}
+			
+			for (a=0; a<sides; a++) 
+			{
+				for (b=0; b<rings; b++)
+				{
+					i.push(b * (sides+1) + a);
+					i.push(b * (sides+1) + a + 1);
+					i.push((b + 1) * (sides+1) + a);
+					
+					i.push(b * (sides+1) + a + 1);
+					i.push((b + 1) * (sides+1) + a + 1);
+					i.push((b + 1) * (sides+1) + a);
+				}
+			}
+			
+            this._mesh._positions = p;
+			this._mesh._normals = n;
+			this._mesh._texCoords = t;
+            this._mesh._indices = i;
+			this._mesh._invalidate = true;
+			
+			x3dom.debug.logInfo("Torus: " + Math.PI);
         }
     )
 );
@@ -1444,6 +1505,7 @@ x3dom.nodeTypeMap = {
     'Shape': { ctor: x3dom.nodeTypes.Shape },
     'Sphere': { ctor: x3dom.nodeTypes.Sphere },
     'Text': { ctor: x3dom.nodeTypes.Text },
+	'Torus': { ctor: x3dom.nodeTypes.Torus },
     'Transform': { ctor: x3dom.nodeTypes.Transform, autoChild: 1 },
     'TimeSensor': { ctor: x3dom.nodeTypes.TimeSensor },
     'Viewpoint': { ctor: x3dom.nodeTypes.Viewpoint },
