@@ -159,7 +159,6 @@ x3dom.X3DCanvas = function(x3dElem) {
         fpsDiv.style.position = "relative";
         fpsDiv.style.top = "10px";
         fpsDiv.style.color = "#00ff00";
-        fpsDiv.style.fontSize = "14px";
 		fpsDiv.style.fontFamily = "sans-serif";
 		fpsDiv.style.fontSize = "small";
 		
