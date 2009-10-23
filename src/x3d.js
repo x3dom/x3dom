@@ -769,13 +769,79 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
     
-            var bottomRadius = 1, height = 2;
+            var bottomRadius = 1.0, height = 2.0;
 			
             if (ctx.xmlNode.hasAttribute('bottomRadius'))
                 bottomRadius = +ctx.xmlNode.getAttribute('bottomRadius');
             if (ctx.xmlNode.hasAttribute('height'))
                 height = +ctx.xmlNode.getAttribute('height');
 			
+			var sides = 32;
+			var delta = 2.0 * Math.PI / sides;
+			var incl = bottomRadius / height;
+			var nlen = 1.0 / Math.sqrt(1.0 + incl * incl);
+			var p = [], n = [], t = [], i = [];
+			
+			for (var j=0, k=0; j<=sides; j++)
+			{
+				var beta = j * delta;
+				var x = Math.sin(beta);
+				var z = -Math.cos(beta);         
+
+				p.push(0, height/2, 0);
+				n.push(x/nlen, incl/nlen, z/nlen);
+				t.push(1.0 - j / sides, 1);
+
+				p.push(x * bottomRadius, -height/2, z * bottomRadius);
+				n.push(x/nlen, incl/nlen, z/nlen);
+				t.push(1.0 - j / sides, 0);
+				
+				if (j > 0)
+				{
+					i.push(k + 0);
+					i.push(k + 2);
+					i.push(k + 1);
+					
+					i.push(k + 1);
+					i.push(k + 2);
+					i.push(k + 3);
+					
+					k += 2;
+				}
+			}
+			
+			if (bottomRadius > 0)
+			{
+				var base = p.length / 3;
+				
+				for (j=sides-1; j>=0; j--)
+				{
+					beta = j * delta;
+					x = bottomRadius * Math.sin(beta);
+					z = -bottomRadius * Math.cos(beta); 
+
+					p.push(x, -height/2, z);
+					n.push(0, -1, 0);
+					t.push(x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5);
+				}
+				
+				var h = base + 1;
+				
+				for (j=2; j<sides; j++) 
+				{
+					i.push(h);
+					i.push(base);
+					
+					h = base + j;
+					i.push(h);
+				}
+			}
+			
+			this._mesh._positions = p;
+			this._mesh._normals = n;
+			this._mesh._texCoords = t;
+            this._mesh._indices = i;
+			this._mesh._invalidate = true;
         }
     )
 );
