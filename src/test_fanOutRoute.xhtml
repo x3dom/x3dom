@@ -15,36 +15,39 @@
 
     <h1>x3dom simple example</h1>
 	
-	<p class="case">Rotating Boxes <br />
+	<p class="case">
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="500px" height="500px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="0px" width="500px" height="500px">
  <Scene DEF='scene'>
 	<Viewpoint position='16.0328 13.056 34.2417' orientation='-0.624839 0.780206 0.0292506 0.543473' />
-  	<Viewpoint DEF='view0' position='0 0 40' orientation="0 0 0 1" />
     <Background skyColor='1 1 1'/>
     
      <Transform scale='2.5 2.5 2.5'>
       <Shape DEF='CUBE1'>
         <Appearance>
+		  <Material specularColor='.2 .2 .2' />
           <ImageTexture url='texture/generic/x3d_256.jpg'/>
         </Appearance>
         <Box/>
       </Shape>
       <Shape DEF='CUBE2'>
         <Appearance>
+		  <Material specularColor='.2 .2 .2' />
           <ImageTexture url='texture/generic/webgl_256.jpg'/>
         </Appearance>
         <Box/>
       </Shape>
       <Shape DEF='CUBE3'>
         <Appearance>
+		  <Material specularColor='.2 .2 .2' />
           <ImageTexture url='texture/generic/w3c_256.jpg'/>
         </Appearance>
         <Box/>
       </Shape>
       <Shape DEF='CUBE4'>
         <Appearance>
+		  <Material specularColor='.2 .2 .2' />
           <ImageTexture url='texture/generic/web3d_256.jpg'/>
         </Appearance>
         <Box/>
@@ -116,6 +119,7 @@
       <Transform USE='XFORM2c'/>
       <Transform USE='XFORM2d'/>
     </Transform>
+	
     <TimeSensor DEF='TIMER' cycleInterval='30' loop='true'/>
     <OrientationInterpolator DEF='ROTOR_A' key='0 0.5 1' keyValue='1 0 0 0, 1 0 0 3.14, 1 0 0 6.28'/>
     <OrientationInterpolator DEF='ROTOR_B' key='0 0.5 1' keyValue='0 1 0 0, 0 1 0 3.14, 0 1 0 6.28'/>
@@ -137,10 +141,8 @@
     <ROUTE fromNode='ROTOR_D' fromField='value_changed' toNode='XFORM0d' toField='rotation'/>
     <ROUTE fromNode='ROTOR_D' fromField='value_changed' toNode='XFORM1d' toField='rotation'/>
     <ROUTE fromNode='ROTOR_D' fromField='value_changed' toNode='XFORM2d' toField='rotation'/>
-    
   </Scene>
         </X3D>
-
 	</p>
 	
 	<script type="text/javascript"><![CDATA[
@@ -191,49 +193,6 @@ vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
 	<script type="text/javascript" src="fields.js"></script>
 	
 	<script type="text/javascript" ><![CDATA[
-        
-       window.onload = function() {
-	   return;
-            
-            /* Test DOM updates by randomly changing the flipper color... */
-            var mats = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Material');
-            x3dom.debug.logInfo("Found " + mats.length + " materials.");
-            // the last material is the flipper material
-            var flipperMat = mats[5];
-            // change the color randomly every second
-            setInterval( function() {
-                    var r, g, b;
-                    r = Math.random();
-                    g = Math.random();
-                    b = Math.random();
-                    // the color is X3D and not CSS, thus e.g. red is "1 0 0" rather than "#f00"
-                    flipperMat.setAttribute("diffuseColor", r.toString() + " " + g.toString() + " " + b.toString());
-                },
-                1000
-            );
-
-            /* Another DOM updates test which animates the scale of the first cube */
-            var trans = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Transform');           
-            var cubeTrans = trans[0];
-            var cubeScale = 0;
-            var scaleFac = 0.01;
-            setInterval( function() {                    
-                    if (cubeScale>1.0-scaleFac || cubeScale<(0.0)) {
-                        scaleFac *= -1;                        
-                    }
-                    cubeScale += scaleFac;
-                    cubeTrans.setAttribute("scale", cubeScale.toString() + " " + cubeScale.toString() + " " + cubeScale.toString());
-                },
-                60
-            );
-        };
-
-	/*
-	//window.onload = function() {
-		init();
-		draw(userData.gl);
-	//};
-	*/
 	]]></script>
 
 </body>
