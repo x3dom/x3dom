@@ -81,7 +81,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         var gl = x3dom.gfx_webgl(canvas);
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
-            // return null;
+            return null;
         }
         return gl;
     }
@@ -291,7 +291,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     var canvas = this;
     var doc = this.doc;
     var gl = this.gl;
-    x3dom.debug.logInfo("gl=" + gl + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
+    x3dom.debug.logInfo("gl=" + gl.toString() + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
 	
     this.doc.onload = function () {
         x3dom.debug.logInfo("loaded [" + uri + "]");

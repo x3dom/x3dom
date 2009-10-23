@@ -5,26 +5,27 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<title>Simple WebGL example</title>
 		<style>
+		body { font-family: Helvetica, Arial, Sans; }
 		X3D { display: none; }
 		p.case { clear: both; border-top: 1px solid #888; }
 		</style>
 	</head>
        
-<body style="background-color:#E0E0E0;">
+<body style="background-color:white;">
 
     <h1>x3dom simple example</h1>
 	
 	<p class="case">Rotating Boxes <br />
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="600px" height="600px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="500px" height="500px">
  <Scene DEF='scene'>
 	<!-- 
 		<Viewpoint position='-10 28 47' orientation='1 0 0 -0.35' />
   	-->
 
  	<Viewpoint DEF='view0' position='0 0 40' orientation="0 0 0 1" />
-    <Background skyColor='0.05 0.12 0.23'/>
+    <Background skyColor='1 1 1'/>
     
      <Transform scale='2.5 2.5 2.5'>
       <Shape DEF='CUBE1'>
@@ -35,19 +36,19 @@
       </Shape>
       <Shape DEF='CUBE2'>
         <Appearance>
-          <Material diffuseColor='1 0 0'/>
+          <ImageTexture url='texture/generic/webgl_256.jpg'/>
         </Appearance>
         <Box/>
       </Shape>
       <Shape DEF='CUBE3'>
         <Appearance>
-          <Material diffuseColor='0 1 0'/>
+          <ImageTexture url='texture/generic/w3c_256.jpg'/>
         </Appearance>
         <Box/>
       </Shape>
       <Shape DEF='CUBE4'>
         <Appearance>
-          <Material diffuseColor='0 0 1'/>
+          <ImageTexture url='texture/generic/web3d_256.jpg'/>
         </Appearance>
         <Box/>
       </Shape>
