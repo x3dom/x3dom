@@ -153,11 +153,15 @@ x3dom.X3DCanvas = function(x3dElem) {
         var fpsDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
         fpsDiv.innerHTML = "fps: ";
         
+		fpsDiv.style.margin = "0px";
+		fpsDiv.style.padding = "0px";
 		fpsDiv.style.left = "-100px";
         fpsDiv.style.position = "relative";
-        fpsDiv.style.top = "20px";
+        fpsDiv.style.top = "10px";
         fpsDiv.style.color = "#00ff00";
         fpsDiv.style.fontSize = "14px";
+		fpsDiv.style.fontFamily = "sans-serif";
+		fpsDiv.style.fontSize = "small";
 		
         canvasDiv.appendChild(fpsDiv);        
         return fpsDiv;

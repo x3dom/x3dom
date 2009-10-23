@@ -554,7 +554,7 @@ x3dom.gfx_webgl = (function () {
 			
 		if (this.canvas.parent.fpsDiv) {
 			this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
-			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("sort: " + t1));
+			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("sort: #" + n + "/ " + t1));
 		}
 		
 		// rendering
@@ -697,7 +697,6 @@ x3dom.gfx_webgl = (function () {
 		}
 		//);
 			
-		// XXX: nasty hack to fix Firefox compositing the non-premultiplied canvas as if it were premultiplied
 		gl.disable(gl.BLEND);
 		/*gl.blendFuncSeparate( // just multiply dest RGB by its A
 			gl.ZERO, gl.DST_ALPHA,
