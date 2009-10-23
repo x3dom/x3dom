@@ -5,19 +5,8 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<title>Simple WebGL example</title>
 		<style>
-		body { font-family: sans-serif; }
 		X3D { display: none; }
-		canvas { border: solid; color: #666; float: left; margin-right: 1em; margin-bottom: 1em; }
 		p.case { clear: both; border-top: 1px solid #888; }
-		div#x3dom_logdiv { height: 30em; overflow: auto; white-space: pre-wrap; font-size: x-small; }
-		div#x3dom_logdiv p { margin: 0; }
-        div.fps {
-            left:-100px;
-            position:relative;
-            top:20px;
-            color:#f40;
-            font-size:14px;
-        }
 		</style>
 	</head>
        
@@ -25,16 +14,17 @@
 
     <h1>x3dom simple example</h1>
 	
-	<p class="case">Image format test <br />
+	<p class="case">DEF/USE test <br />
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="600px" height="600px">
  <Scene DEF='scene'>
- 	<Viewpoint DEF='view0' position='0 0 10'/>
+ 	<Viewpoint DEF='view0' position='0 0 10' orientation="0 0 0 1"/>
     <Background skyColor='0.05 0.12 0.23'/>
     <Transform translation='-2 0 0'>
       <Shape DEF='obj'>
         <Appearance>
+		  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
           <ImageTexture url='"texture/generic/x3d_256.jpg"'/>
         </Appearance>
         <Box/>
@@ -43,10 +33,8 @@
     <Transform translation='2 0 0'>
       <Shape USE='obj'/>
     </Transform>
-
   </Scene>
         </X3D>
-
 	</p>
 	
 	<script type="text/javascript"><![CDATA[

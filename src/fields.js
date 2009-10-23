@@ -1,7 +1,12 @@
-/*
-
-Might be nice to have specialised transform-matrices etc, for more optimised maths.
-
+/*!
+* x3dom javascript library 0.1
+* http://instantreality.org/
+*
+* Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
+*     based on code originally provided by Philip Taylor:
+*     http://philip.html5.org/demos/canvas/3d/x3d/
+* Dual licensed under the MIT and GPL licenses.
+* 
 */
 
 /** @namespace The x3dom.fields namespace. */

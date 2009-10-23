@@ -1,3 +1,14 @@
+/*!
+* x3dom javascript library 0.1
+* http://instantreality.org/
+*
+* Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
+*     based on code originally provided by Philip Taylor:
+*     http://philip.html5.org/demos/canvas/3d/x3d/
+* Dual licensed under the MIT and GPL licenses.
+* 
+*/
+
 // x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
 // x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
 // x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
