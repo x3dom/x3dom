@@ -209,6 +209,10 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.mouse_drag_y = evt.screenY;
         this.mouse_dragging = true;
 		
+		if (evt.shiftKey) this.mouse_button = 1;
+		if (evt.ctrlKey) this.mouse_button = 4;
+		if (evt.altKey) this.mouse_button = 2;
+		
 		window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
 		evt.preventDefault();
 		evt.stopPropagation();
@@ -243,6 +247,10 @@ x3dom.X3DCanvas = function(x3dElem) {
         var dy = evt.screenY - this.mouse_drag_y;
         this.mouse_drag_x = evt.screenX;
         this.mouse_drag_y = evt.screenY;
+		
+		if (evt.shiftKey) this.mouse_button = 1;
+		if (evt.ctrlKey) this.mouse_button = 4;
+		if (evt.altKey) this.mouse_button = 2;
 		
         this.parent.doc.ondrag(dx, dy, this.mouse_button);
 		
