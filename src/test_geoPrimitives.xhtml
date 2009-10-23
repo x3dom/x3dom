@@ -1,0 +1,127 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>Simple WebGL example</title>
+		<style>
+		X3D { display: none; }
+		p.case { clear: both; border-top: 1px solid #888; }
+		</style>
+	</head>
+       
+<body style="background-color:#E0E0E0;">
+
+    <h1>x3dom simple example</h1>
+	
+	<p class="case">Geometric primitive types
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="0px" width="800px" height="400px">
+			<Scene>
+				<Background skyColor='0.7 0.7 0.7' />
+				<!--
+				<Transform translation="-6 0 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="1 0 1" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Cone />
+					</Shape>
+				</Transform>
+				-->
+				<Transform translation='-3 0 0'>
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Box/>
+					</Shape>
+				</Transform>
+				
+				<Transform translation="0 0 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Torus />
+					</Shape>
+				</Transform>
+				<Transform translation="3 0 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Sphere />
+					</Shape>
+				</Transform>
+				
+				<Transform translation="6 0 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Cylinder radius="1.0" height="2.0" />
+					</Shape>
+				</Transform>
+				<Viewpoint centerOfRotation="0 0 0" position="0 0 10" orientation="0 1 0 0" />
+			</Scene>
+        </X3D>
+	</p>
+	
+	<script type="text/javascript"><![CDATA[
+	var solid = true;
+	
+	function toggleRendering()
+	{
+		var button = document.getElementById("points");
+		
+		solid = !solid;
+		
+		if (solid)
+			button.value = "Show Points";
+		else
+			button.value = "Solid/ Fill";
+		
+		var scenes = document.getElementsByTagName("Scene");
+		var i = 0, n = scenes.length;
+		
+		while (i < n)
+		{
+			var aScene = scenes[i++];
+			aScene.setAttribute("points", (!solid ? "true" : "false"));
+		}
+		
+		window.status = "Found " + n + " Scene objects.";
+		
+		return false;
+	}
+	]]></script>
+	
+	<p class="case"> &nbsp; 
+	<input type="button" id="points" value="Show Points" onclick="toggleRendering();" />
+	
+	<img id="test_img_1" src="data:image/png;base64,
+iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
+C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
+AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
+REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
+ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
+vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
+	</p>
+	
+	<script type="text/javascript" src="x3dom.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+	<script type="text/javascript" src="gfx_webgl.js"></script>
+	<script type="text/javascript" src="x3d.js"></script>
+	<script type="text/javascript" src="fields.js"></script>
+	
+	<script type="text/javascript" ><![CDATA[
+	/*
+	//window.onload = function() {
+		init();
+		draw(userData.gl);
+	//};
+	*/
+	]]></script>
+
+</body>
+</html>

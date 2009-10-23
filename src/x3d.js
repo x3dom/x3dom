@@ -713,9 +713,9 @@ x3dom.registerNodeType(
             var innerRadius = 0.5, outerRadius = 1.0;
 			
             if (ctx.xmlNode.hasAttribute('innerRadius'))
-                innerRadius = x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute('innerRadius'));
+                innerRadius = +ctx.xmlNode.getAttribute('innerRadius');
             if (ctx.xmlNode.hasAttribute('outerRadius'))
-                outerRadius = x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute('outerRadius'));
+                outerRadius = +ctx.xmlNode.getAttribute('outerRadius');
 			
 			var rings = 24, sides = 24;
 			var ringDelta = 2.0 * Math.PI / rings;
@@ -758,8 +758,130 @@ x3dom.registerNodeType(
 			this._mesh._texCoords = t;
             this._mesh._indices = i;
 			this._mesh._invalidate = true;
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Cone",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.Cone.superClass.call(this, ctx);
+    
+            var bottomRadius = 1, height = 2;
 			
-			x3dom.debug.logInfo("Torus: " + Math.PI);
+            if (ctx.xmlNode.hasAttribute('bottomRadius'))
+                bottomRadius = +ctx.xmlNode.getAttribute('bottomRadius');
+            if (ctx.xmlNode.hasAttribute('height'))
+                height = +ctx.xmlNode.getAttribute('height');
+			
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Cylinder",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
+    
+            var radius = 1.0, height = 2.0;
+			
+            if (ctx.xmlNode.hasAttribute('radius'))
+                radius = +ctx.xmlNode.getAttribute('radius');
+            if (ctx.xmlNode.hasAttribute('height'))
+                height = +ctx.xmlNode.getAttribute('height');
+			
+			var sides = 24;
+			var delta = 2.0 * Math.PI / sides;
+			var p = [], n = [], t = [], i = [];
+			
+			for (var j=0, k=0; j<=sides; j++)
+			{
+				var beta = j * delta;
+				var x = Math.sin(beta);
+				var z = -Math.cos(beta);         
+
+				p.push(x * radius, -height/2, z * radius);
+				n.push(x, 0, z);
+				t.push(1.0 - j / sides, 0);
+
+				p.push(x * radius, height/2, z * radius);
+				n.push(x, 0, z);
+				t.push(1.0 - j / sides, 1);
+				
+				if (j > 0)
+				{
+					i.push(k + 0);
+					i.push(k + 1);
+					i.push(k + 2);
+					
+					i.push(k + 2);
+					i.push(k + 1);
+					i.push(k + 3);
+					
+					k += 2;
+				}
+			}
+			
+			if (radius > 0)
+			{
+				var base = p.length / 3;
+				
+				for (j=sides-1; j>=0; j--)
+				{
+					beta = j * delta;
+					x = radius * Math.sin(beta);
+					z = -radius * Math.cos(beta);  
+
+					p.push(x, height/2, z);
+					n.push(0, 1, 0);
+					t.push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
+				}
+				
+				var h = base + 1;
+				
+				for (j=2; j<sides; j++) 
+				{
+					i.push(base);
+					i.push(h);
+					
+					h = base + j;
+					i.push(h);
+				}
+				
+				base = p.length / 3;
+				
+				for (j=sides-1; j>=0; j--)
+				{
+					beta = j * delta;
+					x = radius * Math.sin(beta);
+					z = -radius * Math.cos(beta); 
+
+					p.push(x, -height/2, z);
+					n.push(0, -1, 0);
+					t.push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
+				}
+				
+				h = base + 1;
+				
+				for (j=2; j<sides; j++) 
+				{
+					i.push(h);
+					i.push(base);
+					
+					h = base + j;
+					i.push(h);
+				}
+			}
+			
+			this._mesh._positions = p;
+			this._mesh._normals = n;
+			this._mesh._texCoords = t;
+            this._mesh._indices = i;
+			this._mesh._invalidate = true;
         }
     )
 );
@@ -1494,6 +1616,8 @@ x3dom.nodeTypeMap = {
     'Appearance': { ctor: x3dom.nodeTypes.Appearance },
     'Box': { ctor: x3dom.nodeTypes.Box },
 	'Background': { ctor: x3dom.nodeTypes.Background },
+	'Cone': { ctor: x3dom.nodeTypes.Cone },
+	'Cylinder': { ctor: x3dom.nodeTypes.Cylinder },
     'FontStyle': { ctor: x3dom.nodeTypes.FontStyle },
 	'Group': { ctor: x3dom.nodeTypes.Group, autoChild: 1 },
 	'ImageTexture': { ctor: x3dom.nodeTypes.ImageTexture },
