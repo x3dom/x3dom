@@ -1373,12 +1373,17 @@ x3dom.registerNodeType(
             this._fraction = 0;
         },
         {
-            _onframe: function (now) {
-                var f = ((now - this._startTime) / this._cycleInterval) % 1;
-                if (f == 0 && now > this._startTime)
-                    f = 1;
-				else f *= 10;
-                this._postMessage('fraction_changed', f);
+            _onframe: function (ts) {
+            	var isActive = ( ts >= this._startTime);
+            	var cycleFrac, cycle, fraction;
+            	
+            	if (this._cycleInterval > 0) {
+            	  cycleFrac = (ts - this._startTime) / this._cycleInterval;
+            	  cycle = Math.floor(cycleFrac);
+            	  fraction = cycleFrac - cycle;
+            	}
+     
+     			this._postMessage('fraction_changed', fraction );
             },
         }
     )
@@ -1780,12 +1785,14 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
     if (x3dom.isX3DElement(node)) {
 	    if (node.hasAttribute('USE')) {
 	      n = ctx.defMap[node.getAttribute('USE')];
-	      if (n == null) {
+	      if (n == null) 
 	        ctx.log ('Could not USE: '+node.getAttribute('USE'));
-	      }
 	      return n;
 	    }
 	    else {
+	    	// FIXME; Should we create ROUTES at this position
+	    	if (node.localName == 'ROUTE') 
+	    		return n;
         	if (undefined === (t = x3dom.nodeTypeMap[node.localName])) {
             	ctx.log('Unrecognised element '+node.localName);
         	} else {
@@ -1802,7 +1809,6 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
-    this._time = t;
     if (this._scene) {
         Array.forEach(this._scene._findAll(x3dom.nodeTypes.TimeSensor),
             function (timer) { timer._onframe(t); }
@@ -1810,9 +1816,9 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
     }
 };
 
-x3dom.X3DDocument.prototype.render = function (ctx) {
+x3dom.X3DDocument.prototype.render = function (ctx,ts) {
     if (!ctx) return;
-    ctx.renderScene(this._scene, this._time);
+    	ctx.renderScene(this._scene, ts);
 }
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {

@@ -271,15 +271,15 @@ x3dom.X3DCanvas.prototype.tick = function() {
         this.fps_t0 = d;
         
         try {
-            this.doc.advanceTime(this.t); 
-            this.doc.render(this.gl);
+            this.doc.advanceTime(d / 1000); 
+            this.doc.render(this.gl, this.t);
         }
 		catch (e) {
             x3dom.debug.logException(e);
             throw e;
         }
 		
-        this.t += 1/this.fps_target;
+        this.t += 1 / this.fps_target;
     }
 };
 
