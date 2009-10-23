@@ -523,9 +523,6 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-		// rendering
-		t0 = new Date().getTime();
-		
 		var fov = scene.getFieldOfView();
 		//x3dom.debug.logInfo("fov=" + fov);
 		
@@ -533,6 +530,9 @@ x3dom.gfx_webgl = (function () {
 		var mat_view = scene.getViewMatrix();
 		
 		var mat_view_inv = mat_view.inverse();
+		
+		// sorting
+		t0 = new Date().getTime();
 		
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
@@ -550,10 +550,21 @@ x3dom.gfx_webgl = (function () {
 		zPos.sort(function(a, b) { return a[1] - b[1]; });
 		zPos.reverse();
 		
-		//Array.forEach(drawableObjects, function (obj) 
+		t1 = new Date().getTime() - t0;
+			
+		if (this.canvas.parent.fpsDiv) {
+			this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
+			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("sort: " + t1));
+		}
+		
+		// rendering
+		t0 = new Date().getTime();
+		
 		for (var i=0, n=zPos.length; i<n; i++)
+		//for (var i=0, n=scene.drawableObjects.length; i<n; i++)
 		{
 			var obj = scene.drawableObjects[zPos[i][0]];
+			//var obj = scene.drawableObjects[i];
 			
 			var transform = obj[0];
 			var shape = obj[1];
