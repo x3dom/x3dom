@@ -119,7 +119,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
     },
     {
         _getCurrentTransform: function () {
-            if (this._parentNodes.length > 1)
+            if (this._parentNodes.length >= 1)
                 return this._transformMatrix(this._parentNodes[0]._getCurrentTransform());
             else
                 return x3dom.fields.SFMatrix4.identity();
@@ -266,6 +266,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         _attribute_SFBool: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? ctx.xmlNode.getAttribute(name) == "true" : n;
         },
+        _attribute_SFString: function (ctx, name, n) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? ctx.xmlNode.getAttribute(name) : n;
+        },
         _attribute_SFColor: function (ctx, name, r, g, b) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec3(r, g, b);
         },
@@ -279,8 +282,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? MFString_parse(ctx.xmlNode.getAttribute(name)) : def;
         },
         _attribute_MFColor: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFColor([new x3dom.fields.SFColor(1,0,0), 
-                                                                                                                                                     new x3dom.fields.SFColor(0,0,1)]);
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFColor([new x3dom.fields.SFColor(0,0,0)]);
         },
     }
 ));
@@ -486,7 +488,7 @@ x3dom.Mesh.prototype.getCenter = function() {
 	return center;
 }
 
-x3dom.Mesh.prototype.calcNormals = function()
+x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 {
 	//fixme; as first shot taken from gfx
 	var coords = this._positions;
@@ -514,6 +516,7 @@ x3dom.Mesh.prototype.calcNormals = function()
 		vertFaceNormals[idxs[i+2]].push(n);
 	}
 	
+    //TODO: creaseAngle
 	for (var i = 0; i < coords.length; i += 3) {
 		var n = new x3dom.fields.SFVec3(0, 0, 0);
 		for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
@@ -1002,6 +1005,11 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
+            
+            var creaseAngle = Math.PI;
+            
+            if (ctx.xmlNode.hasAttribute('creaseAngle'))
+                creaseAngle = +ctx.xmlNode.getAttribute('creaseAngle');
 			
 			var t0 = new Date().getTime();
 			
@@ -1034,7 +1042,7 @@ x3dom.registerNodeType(
             if (normalNode.length == 1)
 				this._mesh._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			else
-				this._mesh.calcNormals();
+				this._mesh.calcNormals(creaseAngle);
 			
             var texCoordNode = Array.filter(ctx.xmlNode.childNodes, 
 					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
@@ -1155,6 +1163,43 @@ x3dom.registerNodeType(
     )
 );
 
+x3dom.registerNodeType( 
+    "NavigationInfo",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.NavigationInfo.superClass.call(this, ctx);
+            
+			this._attribute_SFBool(ctx, 'headlight', true);
+            this._attribute_MFString(ctx, 'type', []);
+            
+            x3dom.debug.logInfo("NavigationInfo NYI");
+        },
+        {
+			// methods
+        }
+    )
+);
+
+x3dom.registerNodeType( 
+    "WorldInfo",
+    "base",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.WorldInfo.superClass.call(this, ctx);
+            
+            this._attribute_MFString(ctx, 'info', []);
+			this._attribute_SFString(ctx, 'title', "");
+            
+            x3dom.debug.logInfo(this._info);
+            x3dom.debug.logInfo(this._title);
+        },
+        {
+			// methods
+        }
+    )
+);
+
 x3dom.registerNodeType(
     "Background",
     "EnvironmentalEffects",
@@ -1162,8 +1207,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
 			
-            this._attribute_MFColor(ctx, 'skyColor', new x3dom.fields.MFColor([new x3dom.fields.SFColor(), 
-                                                                               new x3dom.fields.SFColor(1,1,1)]));
+            this._attribute_MFColor(ctx, 'skyColor', new x3dom.fields.MFColor([new x3dom.fields.SFColor(0,0,0)]));
             this._attribute_SFFloat(ctx, 'transparency', 0);
         },
         {
@@ -1173,6 +1217,40 @@ x3dom.registerNodeType(
 			getTransparency: function() {
 				return this._transparency;
 			},
+        }
+    )
+);
+
+x3dom.registerNodeType( 
+    "X3DLightNode",
+    "Lighting",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
+            
+			this._attribute_SFFloat(ctx, 'ambientIntensity', 0);
+            this._attribute_SFColor(ctx, 'color', 1, 1, 1);
+            this._attribute_SFBool(ctx, 'on', true);
+        },
+        {
+			// methods
+        }
+    )
+);
+
+x3dom.registerNodeType( 
+    "DirectionalLight",
+    "Lighting",
+    defineClass(x3dom.nodeTypes.X3DLightNode,
+        function (ctx) {
+            x3dom.nodeTypes.DirectionalLight.superClass.call(this, ctx);
+            
+            this._attribute_SFVec3(ctx, 'direction', 1, 1, 1);
+            
+            x3dom.debug.logInfo("DirectionalLight NYI");
+        },
+        {
+			// methods
         }
     )
 );
@@ -1381,7 +1459,8 @@ x3dom.registerNodeType(
                     return this._keyValue[this._key.length-1];
                 for (var i = 0; i < this._key.length-1; ++i)
                     if (this._key[i] < t && t <= this._key[i+1])
-                        return interp(this._keyValue[i], this._keyValue[i+1], (t - this._key[i]) / (this._key[i+1] - this._key[i]));
+                        return interp( this._keyValue[i], this._keyValue[i+1], 
+                                (t - this._key[i]) / (this._key[i+1] - this._key[i]) );
             }
         }
     )
@@ -1396,13 +1475,35 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
         function (ctx) {
             x3dom.nodeTypes.OrientationInterpolator.superClass.call(this, ctx);
+            
             if (ctx.xmlNode.hasAttribute('keyValue'))
-                this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s*,\s*/), x3dom.fields.Quaternion.parseAxisAngle);
+                this._keyValue = x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute('keyValue'));
+                //this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s*,\s*/), x3dom.fields.Quaternion.parseAxisAngle);
             else
                 this._keyValue = [];
-    
+            
             this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this._linearInterp(msg, function (a, b, t) { return a.slerp(b, t); });
+                this._postMessage('value_changed', value);
+            } ];
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "PositionInterpolator",
+    "Interpolation",
+    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
+        function (ctx) {
+            x3dom.nodeTypes.PositionInterpolator.superClass.call(this, ctx);
+            
+            if (ctx.xmlNode.hasAttribute('keyValue'))
+                this._keyValue = x3dom.fields.MFVec3.parse(ctx.xmlNode.getAttribute('keyValue'));
+            else
+                this._keyValue = [];
+            
+            this._fieldWatchers.set_fraction = [ function (msg) {
+                var value = this._linearInterp(msg, function (a, b, t) { return a.scale(1.0-t).add(b.scale(t)); });
                 this._postMessage('value_changed', value);
             } ];
         }
@@ -1623,11 +1724,11 @@ var defaultXsltDoc = new DOMParser().parseFromString(
 'application/xml');
 
 x3dom.registerNodeType(
-    "ExtInline",
+    "Inline",
     "base",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
-            x3dom.nodeTypes.ExtInline.superClass.call(this, ctx);
+            x3dom.nodeTypes.Inline.superClass.call(this, ctx);
             var urlSplit = ctx.xmlNode.getAttribute('url').split('#', 2);
             var doc = ctx.docs[urlSplit[0]];
     
@@ -1689,13 +1790,16 @@ x3dom.nodeTypeMap = {
 	'Background': { ctor: x3dom.nodeTypes.Background },
 	'Cone': { ctor: x3dom.nodeTypes.Cone },
 	'Cylinder': { ctor: x3dom.nodeTypes.Cylinder },
+    'DirectionalLight': { ctor: x3dom.nodeTypes.DirectionalLight },
     'FontStyle': { ctor: x3dom.nodeTypes.FontStyle },
 	'Group': { ctor: x3dom.nodeTypes.Group, autoChild: 1 },
 	'ImageTexture': { ctor: x3dom.nodeTypes.ImageTexture },
     'IndexedFaceSet': { ctor: x3dom.nodeTypes.IndexedFaceSet },
-    'Inline': { ctor: x3dom.nodeTypes.ExtInline }, // TODO: handle namespaces properly
+    'Inline': { ctor: x3dom.nodeTypes.Inline }, // TODO: handle namespaces properly
     'Material': { ctor: x3dom.nodeTypes.Material },
+    'NavigationInfo': { ctor: x3dom.nodeTypes.NavigationInfo },
     'OrientationInterpolator': { ctor: x3dom.nodeTypes.OrientationInterpolator },
+    'PositionInterpolator': { ctor: x3dom.nodeTypes.PositionInterpolator },
     'Scene': { ctor: x3dom.nodeTypes.Scene, autoChild: 1 },
     'Shape': { ctor: x3dom.nodeTypes.Shape },
     'Sphere': { ctor: x3dom.nodeTypes.Sphere },
@@ -1704,6 +1808,7 @@ x3dom.nodeTypeMap = {
     'Transform': { ctor: x3dom.nodeTypes.Transform, autoChild: 1 },
     'TimeSensor': { ctor: x3dom.nodeTypes.TimeSensor },
     'Viewpoint': { ctor: x3dom.nodeTypes.Viewpoint },
+    'WorldInfo': { ctor: x3dom.nodeTypes.WorldInfo },
 };
 
 
@@ -1781,8 +1886,9 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     return found;
 }
 
+//TODO
 x3dom.X3DDocument.prototype._findIncludedFiles = function (doc) {
-    var urls = Array.map(x3dom.xpath(doc, '//x3dext:Inline'), function (node) { return node.getAttribute('url').split('#')[0] });
+    var urls = Array.map(x3dom.xpath(doc, '//Inline'), function (node) { return node.getAttribute('url'); });
     return urls;
 };
 

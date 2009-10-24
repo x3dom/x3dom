@@ -15,20 +15,20 @@
     <h1>x3dom simple example</h1>
 	
 	<p class="case">Geometric primitive types
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="0px" width="800px" height="400px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="0px" width="600px" height="400px">
 			<Scene>
 				<Background skyColor='0.7 0.7 0.7' />
 				
-				<Transform translation="-6 0 0">
+				<Transform translation="-4.5 0 0">
 					<Shape>
 						<Appearance>
-							<Material diffuseColor="1 0 1" specularColor=".5 .5 .5" />
+							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
 						<Cone />
 					</Shape>
 				</Transform>
 				
-				<Transform translation='-2 0 0'>
+				<Transform translation='-1.5 0 0'>
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
@@ -36,7 +36,7 @@
 						<Box/>
 					</Shape>
 				</Transform>
-				<Transform translation="2 0 0">
+				<Transform translation="1.5 0 0">
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
@@ -45,7 +45,7 @@
 					</Shape>
 				</Transform>
 				
-				<Transform translation="6 0 0">
+				<Transform translation="4.5 0 0">
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
@@ -104,15 +104,6 @@ vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
 	<script type="text/javascript" src="gfx_webgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="fields.js"></script>
-	
-	<script type="text/javascript" ><![CDATA[
-	/*
-	//window.onload = function() {
-		init();
-		draw(userData.gl);
-	//};
-	*/
-	]]></script>
 
 </body>
 </html>

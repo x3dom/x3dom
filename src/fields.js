@@ -149,10 +149,22 @@ x3dom.fields.SFMatrix4.parseRotation = function (str) {
 
 x3dom.fields.SFMatrix4.prototype.mult = function (that)  {
     return new x3dom.fields.SFMatrix4(
-        this._00*that._00+this._01*that._10+this._02*that._20+this._03*that._30, this._00*that._01+this._01*that._11+this._02*that._21+this._03*that._31, this._00*that._02+this._01*that._12+this._02*that._22+this._03*that._32, this._00*that._03+this._01*that._13+this._02*that._23+this._03*that._33,
-        this._10*that._00+this._11*that._10+this._12*that._20+this._13*that._30, this._10*that._01+this._11*that._11+this._12*that._21+this._13*that._31, this._10*that._02+this._11*that._12+this._12*that._22+this._13*that._32, this._10*that._03+this._11*that._13+this._12*that._23+this._13*that._33,
-        this._20*that._00+this._21*that._10+this._22*that._20+this._23*that._30, this._20*that._01+this._21*that._11+this._22*that._21+this._23*that._31, this._20*that._02+this._21*that._12+this._22*that._22+this._23*that._32, this._20*that._03+this._21*that._13+this._22*that._23+this._23*that._33,
-        this._30*that._00+this._31*that._10+this._32*that._20+this._33*that._30, this._30*that._01+this._31*that._11+this._32*that._21+this._33*that._31, this._30*that._02+this._31*that._12+this._32*that._22+this._33*that._32, this._30*that._03+this._31*that._13+this._32*that._23+this._33*that._33
+        this._00*that._00+this._01*that._10+this._02*that._20+this._03*that._30, 
+        this._00*that._01+this._01*that._11+this._02*that._21+this._03*that._31, 
+        this._00*that._02+this._01*that._12+this._02*that._22+this._03*that._32, 
+        this._00*that._03+this._01*that._13+this._02*that._23+this._03*that._33,
+        this._10*that._00+this._11*that._10+this._12*that._20+this._13*that._30, 
+        this._10*that._01+this._11*that._11+this._12*that._21+this._13*that._31, 
+        this._10*that._02+this._11*that._12+this._12*that._22+this._13*that._32, 
+        this._10*that._03+this._11*that._13+this._12*that._23+this._13*that._33,
+        this._20*that._00+this._21*that._10+this._22*that._20+this._23*that._30, 
+        this._20*that._01+this._21*that._11+this._22*that._21+this._23*that._31, 
+        this._20*that._02+this._21*that._12+this._22*that._22+this._23*that._32, 
+        this._20*that._03+this._21*that._13+this._22*that._23+this._23*that._33,
+        this._30*that._00+this._31*that._10+this._32*that._20+this._33*that._30, 
+        this._30*that._01+this._31*that._11+this._32*that._21+this._33*that._31, 
+        this._30*that._02+this._31*that._12+this._32*that._22+this._33*that._32, 
+        this._30*that._03+this._31*that._13+this._32*that._23+this._33*that._33
     );
 }
 
@@ -355,7 +367,7 @@ x3dom.fields.SFVec2.prototype.subtract = function (that) {
 }
 
 x3dom.fields.SFVec2.prototype.negate = function () {
-    return new x3dom.fields.SFVec2(this.x*-1, this.y*-1);
+    return new x3dom.fields.SFVec2(-this.x, -this.y);
 /*    this.x *= -1;
     this.y *= -1;
     return this;    */
@@ -448,7 +460,9 @@ x3dom.fields.SFVec3.prototype.dot = function (that) {
 }
 
 x3dom.fields.SFVec3.prototype.cross = function (that) {
-    return new x3dom.fields.SFVec3(this.y*that.z - this.z*that.y, this.z*that.x - this.x*that.z, this.x*that.y - this.y*that.x);
+    return new x3dom.fields.SFVec3( this.y*that.z - this.z*that.y, 
+                                    this.z*that.x - this.x*that.z, 
+                                    this.x*that.y - this.y*that.x );
 }
 
 x3dom.fields.SFVec3.prototype.reflect = function (n) {
@@ -467,10 +481,11 @@ x3dom.fields.SFVec3.prototype.normalised = function (that) {
 }
 
 x3dom.fields.SFVec3.prototype.scale = function (n) {
-    this.x *= n;
-    this.y *= n;
-    this.z *= n;
-    return this;
+    //YJ: what about scaleThis vs. scale?
+    //this.x *= n;
+    //this.y *= n;
+    //this.z *= n;
+    return new x3dom.fields.SFVec3(this.x*n, this.y*n, this.z*n);
 }
 
 x3dom.fields.SFVec3.prototype.toGL = function () {
@@ -557,24 +572,92 @@ x3dom.fields.Quaternion.prototype.multScalar = function (s) {
 }
 
 x3dom.fields.Quaternion.prototype.normalised = function (that) {
-    var d2 = this.x*this.x + this.y*this.y + this.z*this.z + this.w*this.w;
-    if (d2 == 0) return this;
-    var id = 1/Math.sqrt(d2);
+    var d2 = this.dot(that);
+    var id = 1.0;
+    if (d2) id = 1.0 / Math.sqrt(d2);
     return new x3dom.fields.Quaternion(this.x*id, this.y*id, this.z*id, this.w*id);
 }
 
+x3dom.fields.Quaternion.prototype.negate = function() {
+    return new x3dom.fields.Quaternion(this.x, this.y, this.z, this.w);
+}
+
 x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
-    var dot = this.dot(that);
-    if (dot > 0.995)
-        return this.add(that.subtract(this).multScalar(t)).normalised();
-    dot = Math.max(-1, Math.min(1, dot));
-    var theta = Math.acos(dot)*t;
-    var tother = that.subtract(this.multScalar(dot)).normalised();
-    return this.multScalar(Math.cos(theta)).add(tother.multScalar(Math.sin(theta)));
+    // calculate the cosine
+    var cosom = this.dot(that);
+    var rot1;
+
+    // adjust signs if necessary
+    if (cosom < 0.0)
+    {
+        cosom = -cosom;
+        rot1 = that.negate();
+    }
+    else
+    {
+        rot1 = new x3dom.fields.Quaternion(that.x, that.y, that.z, that.w);
+    }
+
+    // calculate interpolating coeffs
+    var scalerot0, scalerot1;
+    
+    if ((1.0 - cosom) > 0.00001)
+    {
+        // standard case
+        var omega = Math.acos(cosom);
+        var sinom = Math.sin(omega);
+        scalerot0 = Math.sin((1.0 - t) * omega) / sinom;
+        scalerot1 = Math.sin(t * omega) / sinom;
+    }
+    else
+    {
+        // rot0 and rot1 very close - just do linear interp.
+        scalerot0 = 1.0 - t;
+        scalerot1 = t;
+    }
+
+    // build the new quaternion
+    return this.multScalar(scalerot0).add(rot1.multScalar(scalerot1));
 }
 
 x3dom.fields.Quaternion.prototype.toString = function () {
     return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
+}
+
+
+/** MFRotation constructor.
+    @class Represents a MFRotation
+  */
+x3dom.fields.MFRotation = function(rotArray) {
+    if (arguments.length == 0) {        
+        
+    }
+    else {
+        rotArray.map( function(v) { this.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFRotation.prototype = new Array;
+
+x3dom.fields.MFRotation.parse = function(str) {    
+    var mc = str.match(/([+-]?\d*\.?\d*\s*){4},?\s*/g);
+    var vecs = [];
+    for (var i = 0; i < mc.length; ++i) {
+        var c = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*),?\s*([+-]?\d*\.*\d*),?\s*$/.exec(mc[i]);
+        if (c[0])
+            vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3(+c[1], +c[2], +c[3]), +c[4]) );
+    }
+    
+    // holds the quaternion representation as needed by interpolators etc.
+    return new x3dom.fields.MFRotation( vecs );    
+}
+
+x3dom.fields.MFRotation.prototype.toGL = function() {
+    var a = [];
+
+    //TODO
+
+    return a;
 }
 
 
