@@ -279,7 +279,8 @@ x3dom.X3DCanvas = function(x3dElem) {
 	
 	this.canvas.addEventListener('DOMMouseScroll', function (evt) {
 		//this.parent.doc.ondrag(0, 2*evt.detail, 2);
-        this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y+2*evt.detail, 2);
+        this.mouse_drag_y += 2 * evt.detail;
+        this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, 2);
 		
 		window.status=this.id+' SCROLL: '+evt.detail;
 		evt.preventDefault();
