@@ -1145,9 +1145,12 @@ x3dom.registerNodeType(
             this._attribute_SFVec3(ctx, 'position', 0, 0, 10);
             this._attribute_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
 			this._attribute_SFVec3(ctx, 'centerOfRotation', 0, 0, 0);
+            this._attribute_SFFloat(ctx, 'zNear', 0.1);
+            this._attribute_SFFloat(ctx, 'zFar', 100000);
 			
             this._viewMatrix = this._orientation.toMatrix().transpose().
 				mult(x3dom.fields.SFMatrix4.translation(this._position.negate()));
+            this._projMatrix = null;
         },
         {
 			getCenterOfRotation: function() {
@@ -1159,6 +1162,25 @@ x3dom.registerNodeType(
 			getFieldOfView: function() {
 				return this._fieldOfView;
 			},
+            
+            getProjectionMatrix: function(aspect)
+            {
+                if (this._projMatrix == null)
+                {
+                    var fovy = this._fieldOfView;
+                    var zfar = this._zFar;
+                    var znear = this._zNear;
+                    
+                    var f = 1/Math.tan(fovy/2);
+                    this._projMatrix = new x3dom.fields.SFMatrix4(
+                        f/aspect, 0, 0, 0,
+                        0, f, 0, 0,
+                        0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
+                        0, 0, -1, 0
+                    );
+                }
+                return this._projMatrix;
+            }
         }
     )
 );
@@ -1569,9 +1591,14 @@ x3dom.registerNodeType(
 			this._rotMat = x3dom.fields.SFMatrix4.identity();
 			this._transMat = x3dom.fields.SFMatrix4.identity();
 			this._movement = new x3dom.fields.SFVec3(0, 0, 0);
+            
 			this._width = 400;
 			this._height = 300;
+            this._lastX = -1;
+            this._lastY = -1;
+            
 			this._cam = null;
+            this._bgnd = null;
         },
         {
         	getViewpoint: function() {
@@ -1621,22 +1648,86 @@ x3dom.registerNodeType(
 			},
 			
 			getSkyColor: function() {
-				var bgnd = this._find(x3dom.nodeTypes.Background);
+                if (this._bgnd == null)
+                    this._bgnd = this._find(x3dom.nodeTypes.Background);
 				var bgCol;
 				
-				if (bgnd !== null) {
-					bgCol = bgnd.getSkyColor().toGL();
+				if (this._bgnd !== null) {
+					bgCol = this._bgnd.getSkyColor().toGL();
 					//workaround; impl. skyTransparency etc.
 					if (bgCol.length > 2)
-						bgCol[3] = 1.0 - bgnd.getTransparency();
+						bgCol[3] = 1.0 - this._bgnd.getTransparency();
 				}
 				else
 					bgCol = new Array(0,0,0,1);
 				
 				return bgCol;
 			},
+            
+            getProjectionMatrix: function() {
+                var viewpoint = this.getViewpoint();
+				if (viewpoint !== null) 
+                {
+					return viewpoint.getProjectionMatrix(this._width/this._height);
+                }
+                else 
+                {
+                    var fov = this.getFieldOfView();
+                    var aspect = this._width / this._height;
+                    var znear = 0.1, zfar = 100000;
+                    var f = 1/Math.tan(fovy/2);
+                    var m = new x3dom.fields.SFMatrix4(
+                        f/aspect, 0, 0, 0,
+                        0, f, 0, 0,
+                        0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
+                        0, 0, -1, 0
+                    );
+                    return m;
+                }
+            },
+            
+            calcCCtoWCMatrix: function()
+            {
+                var view = this.getViewMatrix();
+                var proj = this.getProjectionMatrix();
+                
+                return proj.mult(view).inverse();
+            },
+            
+            calcViewRay: function(x, y)
+            {
+                var cctowc = this.calcCCtoWCMatrix();
+                var rx = 2.0 * x / this._width - 1.0;
+                var ry = 1.0 - (2.0 * y / this._height);
+                
+                var from = cctowc.multMatrixPnt(new x3dom.fields.SFVec3(rx, ry, -1));
+                var at = cctowc.multMatrixPnt(new x3dom.fields.SFVec3(rx, ry,  1));
+                var dir = at.subtract(from);
+                
+                return new x3dom.fields.Line(from, dir);
+            },
+            
+            onMousePress: function (x, y, buttonState)
+            {
+                this._lastX = x;
+                this._lastY = y;
+                
+                var line = this.calcViewRay(x, y);
+                x3dom.debug.logInfo("Ray at (" + x + ", " + y + ") is " + line);
+            },
+            
+            onMouseRelease: function (x, y, buttonState)
+            {
+                this._lastX = x;
+                this._lastY = y;
+            },
     		
-            ondrag: function (dx, dy, buttonState) {
+            //ondrag: function (dx, dy, buttonState) 
+            ondrag: function (x, y, buttonState) 
+            {
+                var dx = x - this._lastX;
+                var dy = y - this._lastY;
+                
 				if (buttonState & 1) {
 					var alpha = (dy * 2 * Math.PI) / 400; //width;
 					var beta = (dx * 2 * Math.PI) / 300; //height;
@@ -1690,6 +1781,9 @@ x3dom.registerNodeType(
 								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
 				}
+                
+                this._lastX = x;
+                this._lastY = y;
             }
         }
     )
@@ -1988,11 +2082,19 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
     }
 };
 
-x3dom.X3DDocument.prototype.render = function (ctx,ts) {
+x3dom.X3DDocument.prototype.render = function (ctx, ts) {
     if (!ctx) return;
     	ctx.renderScene(this._scene, ts);
 }
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
     this._scene.ondrag(x, y, buttonState);
+}
+
+x3dom.X3DDocument.prototype.onMousePress = function (x, y, buttonState) {
+    this._scene.onMousePress(x, y, buttonState);
+}
+
+x3dom.X3DDocument.prototype.onMouseRelease = function (x, y, buttonState) {
+    this._scene.onMouseRelease(x, y, buttonState);
 }

@@ -304,18 +304,6 @@ x3dom.gfx_webgl = (function () {
 		
 		return shader;
 	};
-
-	function setCamera(fovy, aspect, zfar, znear)
-	{
-		var f = 1/Math.tan(fovy/2);
-		var m = new x3dom.fields.SFMatrix4(
-			f/aspect, 0, 0, 0,
-			0, f, 0, 0,
-			0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
-			0, 0, -1, 0
-		);
-		return m;
-	}
 	
 	function setupShape(gl, shape) 
 	{
@@ -523,12 +511,8 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-		var fov = scene.getFieldOfView();
-		//x3dom.debug.logInfo("fov=" + fov);
-		
-		var mat_projection = setCamera(fov, this.canvas.width/this.canvas.height, 100000, 0.1);
+		var mat_projection = scene.getProjectionMatrix();
 		var mat_view = scene.getViewMatrix();
-		
 		var mat_view_inv = mat_view.inverse();
 		
 		// sorting

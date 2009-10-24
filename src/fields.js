@@ -819,3 +819,31 @@ x3dom.fields.MFVec2.prototype.toGL = function() {
 
 
 
+/** Line constructor.
+    @class Represents a Line
+  */
+x3dom.fields.Line = function(pos, dir) 
+{
+    if (arguments.length == 0) 
+    {
+        this.pos = new x3dom.fields.SFVec3(0, 0, 0);
+        this.dir = new x3dom.fields.SFVec3(0, 0, 1);
+        
+        this.t = 1;
+    } 
+    else 
+    {
+        this.pos = new x3dom.fields.SFVec3(pos.x, pos.y, pos.z);
+        
+        var n = dir.length();
+        this.t = n;
+        if (n) n = 1.0 / n;
+        
+        this.dir = new x3dom.fields.SFVec3(dir.x*n, dir.y*n, dir.z*n);
+    }
+}
+
+x3dom.fields.Line.prototype.toString = function () {
+    var str = 'Line: [' + this.pos.toString() + '], [' + this.dir.toString() + ']';
+    return str;
+}

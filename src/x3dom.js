@@ -103,6 +103,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 		canvas.style.marginBottom = "1em";
 		canvas.style.marginRight = "1em";
 		canvas.style.cssFloat = "left";
+        canvas.style.cursor = "pointer";
 		
         if ((x = x3dElem.getAttribute("x")) !== null) {
             canvas.style.left = x.toString();
@@ -151,25 +152,36 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     function createFpsDiv() {
         var fpsDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-        fpsDiv.innerHTML = "fps: ";
+        fpsDiv.innerHTML = "0 fps";
         
 		fpsDiv.style.margin = "0px";
 		fpsDiv.style.padding = "0px";
-		fpsDiv.style.left = "-100px";
+		fpsDiv.style.left = "-90px";
         fpsDiv.style.position = "relative";
         fpsDiv.style.top = "10px";
         fpsDiv.style.color = "#00ff00";
 		fpsDiv.style.fontFamily = "sans-serif";
 		fpsDiv.style.fontSize = "small";
+        //fpsDiv.style.backgroundColor = "navajowhite";
+        fpsDiv.style.width = "75px";
+        fpsDiv.style.height = "70px";
+        fpsDiv.style.cssFloat = "left";
 		
-        canvasDiv.appendChild(fpsDiv);        
+        canvasDiv.appendChild(fpsDiv);
+        
+        fpsDiv.oncontextmenu = fpsDiv.onmousedown = function(evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            evt.returnValue = false;
+            return false;
+        }
+        
         return fpsDiv;
     }
 
     this.x3dElem = x3dElem;
     this.canvas = createCanvas(x3dElem, this);
 	this.canvas.parent = this;
-    this.fps_target = 1975;
     this.fps_t0 = new Date().getTime();
     this.t = 0;
     this.gl = initContext(this.canvas);
@@ -184,19 +196,14 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.canvas.mouse_drag_x = 0;
 	this.canvas.mouse_drag_y = 0;
 	
-	this.canvas.addEventListener('keydown', function (evt) {
-		window.status=this.id+' KEY DOWN: '+evt.which;
+    //document.oncontextmenu = function() { return false; }
+    
+    this.canvas.oncontextmenu = function(evt) {
 		evt.preventDefault();
 		evt.stopPropagation();
 		evt.returnValue = false;
-	}, false);
-	
-	this.canvas.addEventListener('keyup', function (evt) {
-		window.status=this.id+' KEY UP: '+evt.which;
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-	}, false);
+        return false;
+    }
 	
     this.canvas.addEventListener('mousedown', function (evt) {
 		switch(evt.button) {
@@ -205,15 +212,18 @@ x3dom.X3DCanvas = function(x3dElem) {
 			case 2:  this.mouse_button = 2; break;	//right
 			default: this.mouse_button = 0; break;
 		}
-        this.mouse_drag_x = evt.screenX; // screenX seems the least problematic way of getting coordinates
-        this.mouse_drag_y = evt.screenY;
+        this.mouse_drag_x = evt.layerX;
+        this.mouse_drag_y = evt.layerY;
         this.mouse_dragging = true;
 		
 		if (evt.shiftKey) this.mouse_button = 1;
 		if (evt.ctrlKey) this.mouse_button = 4;
 		if (evt.altKey) this.mouse_button = 2;
+        
+        this.parent.doc.onMousePress(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 		
-		window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
+        window.status=this.id+' DOWN: '+evt.layerX+", "+evt.layerY;
+		//window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
 		evt.preventDefault();
 		evt.stopPropagation();
 		evt.returnValue = false;
@@ -222,8 +232,10 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.canvas.addEventListener('mouseup', function (evt) {
 		this.mouse_button = 0;
         this.mouse_dragging = false;
+        
+        this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 		
-		window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
+		//window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
 		evt.preventDefault();
 		evt.stopPropagation();
 		evt.returnValue = false;
@@ -232,36 +244,42 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.canvas.addEventListener('mouseout', function (evt) {
 		this.mouse_button = 0;
         this.mouse_dragging = false;
+        
+        this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 		
-		window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
+		//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
 		evt.preventDefault();
 		evt.stopPropagation();
 		evt.returnValue = false;
     }, false);
 	
     this.canvas.addEventListener('mousemove', function (evt) {
+        window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
+        
 		if (!this.mouse_dragging)
 			return;
 		
-        var dx = evt.screenX - this.mouse_drag_x;
-        var dy = evt.screenY - this.mouse_drag_y;
-        this.mouse_drag_x = evt.screenX;
-        this.mouse_drag_y = evt.screenY;
+        var dx = evt.layerX - this.mouse_drag_x;
+        var dy = evt.layerY - this.mouse_drag_y;
+        this.mouse_drag_x = evt.layerX;
+        this.mouse_drag_y = evt.layerY;
 		
 		if (evt.shiftKey) this.mouse_button = 1;
 		if (evt.ctrlKey) this.mouse_button = 4;
 		if (evt.altKey) this.mouse_button = 2;
 		
-        this.parent.doc.ondrag(dx, dy, this.mouse_button);
+        //this.parent.doc.ondrag(dx, dy, this.mouse_button);
+        this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 		
-		window.status=this.id+' MOVE: '+dx+", "+dy;
+		//window.status=this.id+' MOVE: '+dx+", "+dy;
 		evt.preventDefault();
 		evt.stopPropagation();
 		evt.returnValue = false;
     }, false);
 	
 	this.canvas.addEventListener('DOMMouseScroll', function (evt) {
-		this.parent.doc.ondrag(0, 2*evt.detail, 2);
+		//this.parent.doc.ondrag(0, 2*evt.detail, 2);
+        this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y+2*evt.detail, 2);
 		
 		window.status=this.id+' SCROLL: '+evt.detail;
 		evt.preventDefault();
@@ -290,7 +308,7 @@ x3dom.X3DCanvas.prototype.tick = function() {
             throw e;
         }
 		
-        this.t += 1 / this.fps_target;
+        this.t += 0.0005;   //fixme; a bit obscure...
     }
 };
 
