@@ -15,45 +15,47 @@
     <h1>x3dom simple example</h1>
 	
 	<p class="case">Geometric primitive types
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="0px" width="600px" height="400px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="0px" width="500px" height="500px">
 			<Scene>
 				<Background skyColor='0.7 0.7 0.7' />
 				
-				<Transform translation="-4.5 0 0">
-					<Shape>
-						<Appearance>
+				<Transform DEF="coneTrafo" translation="-4.5 0 0">
+					<Shape DEF="coneShape">
+						<Appearance DEF="coneApp">
 							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Cone />
+						<Cone DEF="cone" />
 					</Shape>
 				</Transform>
 				
-				<Transform translation='-1.5 0 0'>
-					<Shape>
-						<Appearance>
+				<Transform DEF="boxTrafo" translation='-1.5 0 0'>
+					<Shape DEF="boxShape">
+						<Appearance DEF="boxApp"> 
 							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Box/>
+						<Box DEF="box" />
 					</Shape>
 				</Transform>
-				<Transform translation="1.5 0 0">
-					<Shape>
-						<Appearance>
+                
+				<Transform DEF="sphereTrafo" translation="1.5 0 0">
+					<Shape DEF="sphereShape">
+						<Appearance DEF="sphereApp">
 							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Sphere />
+						<Sphere DEF="sphere" />
 					</Shape>
 				</Transform>
 				
-				<Transform translation="4.5 0 0">
-					<Shape>
-						<Appearance>
+				<Transform DEF="cylinderTrafo" translation="4.5 0 0">
+					<Shape DEF="cylinderShape">
+						<Appearance DEF="cylinderApp">
 							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Cylinder radius="1.0" height="2.0" />
+						<Cylinder DEF="cylinder" radius="1.0" height="2.0" />
 					</Shape>
 				</Transform>
-				<Viewpoint centerOfRotation="0 0 0" position="0 0 10" orientation="0 1 0 0" />
+                
+				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
 			</Scene>
         </X3D>
 	</p>

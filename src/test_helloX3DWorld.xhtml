@@ -10,17 +10,16 @@
 
     <h1>x3dom minimal example</h1>
 	
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
-		id="spheres" showFps="true" x="0px" y="10px" width="320px" height="240px">
-  <Scene DEF='scene'>
-    <Viewpoint position='0 0 10' />
-     <Shape DEF='box'>
-     	<Appearance>
-     		<Material diffuseColor='1 0 0' />	
-     	</Appearance>
-        <Box/>
-      </Shape>
-  </Scene>
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="0px" width="320px" height="240px">
+          <Scene DEF='scene'>
+            <Viewpoint position='0 0 10' />
+             <Shape>
+                <Appearance>
+                    <Material diffuseColor='1 0 0' />	
+                </Appearance>
+                <Box DEF='box'/>
+             </Shape>
+          </Scene>
         </X3D>
 	
 	<script type="text/javascript" src="x3dom.js"></script>

@@ -305,7 +305,7 @@ x3dom.gfx_webgl = (function () {
 		return shader;
 	};
 	
-	function setupShape(gl, shape) 
+	function setupShape(gl, shape)
 	{
 		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) {	
 			var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
@@ -394,7 +394,7 @@ x3dom.gfx_webgl = (function () {
 					//gl.bindTexture(gl.TEXTURE_2D,0);
 				}
 			}
-			
+            
 			shape._webgl = {
 				positions: shape._geometry._mesh._positions,
 				normals: shape._geometry._mesh._normals,
@@ -402,7 +402,7 @@ x3dom.gfx_webgl = (function () {
 				indexes: shape._geometry._mesh._indices,
 				buffers: [{},{},{},{}],
 			};
-				
+            
 			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
 			if (tex)
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
@@ -553,7 +553,7 @@ x3dom.gfx_webgl = (function () {
 			var transform = obj[0];
 			var shape = obj[1];
 
-			if (! shape._webgl)
+			if (!shape._webgl)
 				setupShape(gl, shape);
 
 			var sp = shape._webgl.shader;
@@ -602,7 +602,7 @@ x3dom.gfx_webgl = (function () {
 
 			sp.viewMatrixInverse = mat_view_inv.toGL();
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
-			sp.modelViewProjectionMatrix = mat_projection.mult(mat_view).mult(transform).toGL();
+			sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().mult(transform).toGL();
 			
 			//TODO; get from scene!
 			//var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100,700));

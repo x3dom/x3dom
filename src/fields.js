@@ -184,6 +184,16 @@ x3dom.fields.SFMatrix4.prototype.multMatrixVec = function (vec) {
     );
 }
 
+x3dom.fields.SFMatrix4.prototype.multFullMatrixPnt = function (vec) {
+    var w = this._30*vec.x + this._31*vec.y + this._32*vec.z + this._33;
+    if (w) w = 1.0 / w;
+    return new x3dom.fields.SFVec3(
+        (this._00*vec.x + this._01*vec.y + this._02*vec.z + this._03) * w,
+        (this._10*vec.x + this._11*vec.y + this._12*vec.z + this._13) * w,
+        (this._20*vec.x + this._21*vec.y + this._22*vec.z + this._23) * w
+    );
+}
+
 x3dom.fields.SFMatrix4.prototype.transpose = function () {
     return new x3dom.fields.SFMatrix4(
         this._00, this._10, this._20, this._30,
@@ -844,6 +854,119 @@ x3dom.fields.Line = function(pos, dir)
 }
 
 x3dom.fields.Line.prototype.toString = function () {
-    var str = 'Line: [' + this.pos.toString() + '], [' + this.dir.toString() + ']';
+    var str = 'Line: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
     return str;
+}
+
+/** intersect line with box volume given by low and high */
+x3dom.fields.Line.prototype.intersect = function(low, high)
+{
+    var Eps = 0.000001;
+    var isect = 0.0;
+    var out = Number.MAX_VALUE;
+    var r, te, tl;
+    
+    if (this.dir.x > Eps)
+    {
+        r = 1.0 / this.dir.x;
+    
+        te = (low.x - this.pos.x) * r;
+        tl = (high.x - this.pos.x) * r;
+    
+        if (tl < out)   
+            out = tl;
+    
+        if (te > isect)    
+            isect  = te;
+    }
+    else if (this.dir.x < -Eps)
+    {
+        r = 1.0 / this.dir.x;
+    
+        te = (high.x - this.pos.x) * r;
+        tl = (low.x - this.pos.x) * r;
+    
+        if (tl < out)   
+            out = tl;
+    
+        if (te > isect)    
+            isect = te;
+    }
+    else if (this.pos.x < low.x || this.pos.x > high.x)
+    {
+        return false;
+    }
+    
+    if (this.dir.y > Eps)
+    {
+        r = 1.0 / this.dir.y;
+    
+        te = (low.y - this.pos.y) * r;
+        tl = (high.y - this.pos.y) * r;
+    
+        if (tl < out)   
+            out = tl;
+    
+        if (te > isect)    
+            isect = te;
+    
+        if (isect-out >= Eps)
+            return false;
+    }
+    else if (this.dir.y < -Eps)
+    {
+        r = 1.0 / this.dir.y;
+    
+        te = (high.y - this.pos.y) * r;
+        tl = (low.y - this.pos.y) * r;
+    
+        if (tl < out)   
+            out = tl;
+    
+        if (te > isect)    
+            isect = te;
+    
+        if (isect-out >= Eps)
+            return false;
+    }
+    else if (this.pos.y < low.y || this.pos.y > high.y)
+    {
+        return false;
+    }
+    
+    if (this.dir.z > Eps)
+    {
+        r = 1.0 / this.dir.z;
+    
+        te = (low.z - this.pos.z) * r;
+        tl = (high.z - this.pos.z) * r;
+    
+        if (tl < out)   
+            out = tl;
+    
+        if (te > isect)    
+            isect = te;
+    }
+    else if (this.dir.z < -Eps)
+    {
+        r = 1.0 / this.dir.z;
+    
+        te = (high.z - this.pos.z) * r;
+        tl = (low.z - this.pos.z) * r;
+    
+        if (tl < out)   
+            out = tl;
+    
+        if (te > isect)    
+            isect = te;
+    }
+    else if (this.pos.z < low.z || this.pos.z > high.z)
+    {
+        return false;
+    }
+    
+    this.enter = isect;
+    this.exit  = out;
+
+    return (isect-out < Eps);
 }

@@ -337,8 +337,8 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 };
 
 
-(function (){
-    
+(function () {
+
     var onload = function() {
 
         // Activate debugging/logging for x3dom. Logging will only work for
@@ -357,12 +357,22 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
             //var canvas = createCanvas(x3ds[i]);
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
             x3dcanvas.load(x3ds[i], i);
+            
+            x3dom.canvases.push(x3dcanvas);
         }
 
         // Test nodetype registration
         // x3dom.registerNodeType("Foo", "Bar", {});
     };
+    
+    var onunload = function() {
+        for (var i=0; i<x3dom.canvases.length; i++) {
+            x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+        }
+    };
 
     window.addEventListener('load', onload, false);
+    window.addEventListener('unload', onunload, false);
+    window.addEventListener('reload', onunload, false);
 
 })();

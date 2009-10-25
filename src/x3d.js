@@ -191,6 +191,16 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                 }
             }
         },
+        
+        _doIntersect: function(line) {
+            for (var i in this._childNodes) {
+                if (this._childNodes[i]) {
+                    if (this._childNodes[i]._doIntersect(line))
+                        return true;
+                }
+            }
+            return false;
+        },
 
         _getNodeByDEF: function (def) {
             // TODO: cache this so it's not so stupidly inefficient
@@ -412,7 +422,9 @@ x3dom.registerNodeType(
 
 /** @class x3dom.Mesh
 */
-x3dom.Mesh = function() {
+x3dom.Mesh = function(parent) 
+{
+    this._parent = parent;
 	this._min = new x3dom.fields.SFVec3(0,0,0);
 	this._max = new x3dom.fields.SFVec3(0,0,0);
 	this._invalidate = true;
@@ -472,11 +484,10 @@ x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 	max.x = this._max.x;
 	max.y = this._max.y;
 	max.z = this._max.z;
-	
-	//x3dom.debug.logInfo("fertig: " + min + " | " + max);
 }
 
-x3dom.Mesh.prototype.getCenter = function() {
+x3dom.Mesh.prototype.getCenter = function() 
+{
 	var min = new x3dom.fields.SFVec3(0,0,0);
 	var max = new x3dom.fields.SFVec3(0,0,0);
 	
@@ -486,6 +497,29 @@ x3dom.Mesh.prototype.getCenter = function() {
 	//x3dom.debug.logInfo("getCenter: " + min + " | " + max + " --> " + center);
 	
 	return center;
+}
+
+x3dom.Mesh.prototype.doIntersect = function(line)
+{
+	var min = new x3dom.fields.SFVec3(0,0,0);
+	var max = new x3dom.fields.SFVec3(0,0,0);
+	
+	this.getBBox(min, max, true);
+    
+    var isect = line.intersect(min, max);
+    
+    //TODO: check for _nearest_ hit object and iterate over all faces!
+    line.hit = isect;
+    
+    if (isect)
+    {
+        x3dom.debug.logInfo("Hit object \"" + this._parent._DEF + "\"");
+        
+        line.hitObject = this._parent;
+        line.hitPoint = line.pos.add(line.dir.scale(line.enter));
+    }
+    
+    return isect;
 }
 
 x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
@@ -553,7 +587,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
 			
-			this._mesh = new x3dom.Mesh();
+			this._mesh = new x3dom.Mesh(this);
         },
 		{
 			_getVolume: function(min, max, invalidate) {
@@ -562,7 +596,12 @@ x3dom.registerNodeType(
 			
 			_getCenter: function() {
 				return this._mesh.getCenter();
-			}
+			},
+            
+            _doIntersect: function(line) {
+                var isect = this._mesh.doIntersect(line);
+                return isect;
+            },
 		}
     )
 );
@@ -1335,7 +1374,11 @@ x3dom.registerNodeType(
 			
 			_getCenter: function() {
 				return this._geometry._getCenter();
-			}
+			},
+            
+            _doIntersect: function(line) {
+                return this._geometry._doIntersect(line);
+            },
         }
     )
 );
@@ -1378,12 +1421,21 @@ x3dom.registerNodeType(
 			// BUG? default of rotation according to spec is (0, 0, 1, 0)
 			//		but results sometimes are wrong if not (0, 0, 0, 1)
 			// TODO; check quaternion/ matrix code and state init...
+            
+            this._trafo = x3dom.fields.SFMatrix4.translation(this._translation).
+							mult(x3dom.fields.SFMatrix4.translation(this._center)).
+							mult(this._rotation.toMatrix()).
+							mult(this._scaleOrientation.toMatrix()).
+							mult(x3dom.fields.SFMatrix4.scale(this._scale)).
+							mult(this._scaleOrientation.toMatrix().inverse()).
+							mult(x3dom.fields.SFMatrix4.translation(this._center.negate()));
         },
         {
             _transformMatrix: function(transform) {
 				// P' = T * C * R * SR * S * -SR * -C * P
 				
-				var trafo = x3dom.fields.SFMatrix4.translation(this._translation).
+                // TODO; optimize (only on change) - but field changes are not yet checked...
+				this._trafo = x3dom.fields.SFMatrix4.translation(this._translation).
 							mult(x3dom.fields.SFMatrix4.translation(this._center)).
 							mult(this._rotation.toMatrix()).
 							mult(this._scaleOrientation.toMatrix()).
@@ -1391,10 +1443,11 @@ x3dom.registerNodeType(
 							mult(this._scaleOrientation.toMatrix().inverse()).
 							mult(x3dom.fields.SFMatrix4.translation(this._center.negate()));
 							
-                return transform.mult(trafo);
+                return transform.mult(this._trafo);
             },
 			
-			_getVolume: function(min, max, invalidate) {
+			_getVolume: function(min, max, invalidate) 
+            {
 				for (var i in this._childNodes)
 				{
 					if (this._childNodes[i])
@@ -1404,19 +1457,13 @@ x3dom.registerNodeType(
 						
 						this._childNodes[i]._getVolume(childMin, childMax, invalidate);
 						
-						if (min.x > childMin.x)
-							min.x = childMin.x;
-						if (min.y > childMin.y)
-							min.y = childMin.y;
-						if (min.z > childMin.z)
-							min.z = childMin.z;
+						if (min.x > childMin.x) min.x = childMin.x;
+						if (min.y > childMin.y) min.y = childMin.y;
+						if (min.z > childMin.z) min.z = childMin.z;
 							
-						if (max.x < childMax.x)
-							max.x = childMax.x;
-						if (max.y < childMax.y)
-							max.y = childMax.y;
-						if (max.z < childMax.z)
-							max.z = childMax.z;
+						if (max.x < childMax.x) max.x = childMax.x;
+						if (max.y < childMax.y) max.y = childMax.y;
+						if (max.z < childMax.z) max.z = childMax.z;
 					}
 				}
 				
@@ -1426,20 +1473,46 @@ x3dom.registerNodeType(
 				var locMin = trafo.multMatrixPnt(min);
 				var locMax = trafo.multMatrixPnt(max);
 				
-				if (min.x > locMin.x)
-					min.x = locMin.x;
-				if (min.y > locMin.y)
-					min.y = locMin.y;
-				if (min.z > locMin.z)
-					min.z = locMin.z;
+				if (min.x > locMin.x) min.x = locMin.x;
+				if (min.y > locMin.y) min.y = locMin.y;
+				if (min.z > locMin.z) min.z = locMin.z;
 					
-				if (max.x < locMax.x)
-					max.x = locMax.x;
-				if (max.y < locMax.y)
-					max.y = locMax.y;
-				if (max.z < locMax.z)
-					max.z = locMax.z;
+				if (max.x < locMax.x) max.x = locMax.x;
+				if (max.y < locMax.y) max.y = locMax.y;
+				if (max.z < locMax.z) max.z = locMax.z;
 			},
+            
+            _doIntersect: function(line) 
+            {
+                var isect = false;
+                var mat = this._trafo.inverse();
+                
+                var tmpPos = new x3dom.fields.SFVec3(line.pos.x, line.pos.y, line.pos.z);
+                var tmpDir = new x3dom.fields.SFVec3(line.dir.x, line.dir.y, line.dir.z);
+                
+                line.pos = mat.multMatrixPnt(line.pos);
+                line.dir = mat.multMatrixVec(line.dir);
+                
+                for (var i in this._childNodes) 
+                {
+                    if (this._childNodes[i]) 
+                    {
+                        //TODO: check for _nearest_ hit object and don't stop on first!
+                        isect = this._childNodes[i]._doIntersect(line);
+                        
+                        if (isect)
+                        {
+                            line.hitPoint = this._trafo.multMatrixPnt(line.hitPoint);
+                            break;
+                        }
+                    }
+                }
+                
+                line.pos = new x3dom.fields.SFVec3(tmpPos.x, tmpPos.y, tmpPos.z);
+                line.dir = new x3dom.fields.SFVec3(tmpDir.x, tmpDir.y, tmpDir.z);
+                
+                return isect;
+            },
         }
     )
 );
@@ -1686,22 +1759,30 @@ x3dom.registerNodeType(
                 }
             },
             
-            calcCCtoWCMatrix: function()
+            getWCtoCCMatrix: function()
             {
                 var view = this.getViewMatrix();
                 var proj = this.getProjectionMatrix();
                 
-                return proj.mult(view).inverse();
+                return proj.mult(view);
+            },
+            
+            getCCtoWCMatrix: function()
+            {
+                var mat = this.getWCtoCCMatrix();
+                
+                return mat.inverse();
             },
             
             calcViewRay: function(x, y)
             {
-                var cctowc = this.calcCCtoWCMatrix();
-                var rx = 2.0 * x / this._width - 1.0;
-                var ry = 1.0 - (2.0 * y / this._height);
+                var cctowc = this.getCCtoWCMatrix();
                 
-                var from = cctowc.multMatrixPnt(new x3dom.fields.SFVec3(rx, ry, -1));
-                var at = cctowc.multMatrixPnt(new x3dom.fields.SFVec3(rx, ry,  1));
+                var rx = x / (this._width - 1.0) * 2.0 - 1.0;
+                var ry = (this._height - 1.0 - y) / (this._height - 1.0) * 2.0 - 1.0;
+                
+                var from = cctowc.multFullMatrixPnt(new x3dom.fields.SFVec3(rx, ry, -1));
+                var at = cctowc.multFullMatrixPnt(new x3dom.fields.SFVec3(rx, ry,  1));
                 var dir = at.subtract(from);
                 
                 return new x3dom.fields.Line(from, dir);
@@ -1713,7 +1794,10 @@ x3dom.registerNodeType(
                 this._lastY = y;
                 
                 var line = this.calcViewRay(x, y);
-                x3dom.debug.logInfo("Ray at (" + x + ", " + y + ") is " + line);
+                
+                var isect = this._doIntersect(line);
+                if (isect)
+                    x3dom.debug.logInfo("Ray hit at position " + line.hitPoint);
             },
             
             onMouseRelease: function (x, y, buttonState)
@@ -1729,8 +1813,8 @@ x3dom.registerNodeType(
                 var dy = y - this._lastY;
                 
 				if (buttonState & 1) {
-					var alpha = (dy * 2 * Math.PI) / 400; //width;
-					var beta = (dx * 2 * Math.PI) / 300; //height;
+					var alpha = (dy * 2 * Math.PI) / this._width;
+					var beta = (dx * 2 * Math.PI) / this._height;
 					var mat = this.getViewMatrix();
 					
 					var mx = x3dom.fields.SFMatrix4.rotationX(alpha);
@@ -2083,8 +2167,9 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
 };
 
 x3dom.X3DDocument.prototype.render = function (ctx, ts) {
-    if (!ctx) return;
-    	ctx.renderScene(this._scene, ts);
+    if (!ctx)
+        return;
+    ctx.renderScene(this._scene, ts);
 }
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
@@ -2097,4 +2182,46 @@ x3dom.X3DDocument.prototype.onMousePress = function (x, y, buttonState) {
 
 x3dom.X3DDocument.prototype.onMouseRelease = function (x, y, buttonState) {
     this._scene.onMouseRelease(x, y, buttonState);
+}
+
+x3dom.X3DDocument.prototype.shutdown = function(ctx)
+{
+    if (!ctx)
+        return;
+    //alert("Shutdown scene");
+    
+    // TODO; optimize traversal, matrices are not needed for cleanup
+    this._scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), 
+                                        this._scene.drawableObjects);
+    var gl = ctx.ctx3d;
+    
+    for (var i=0, n=this._scene.drawableObjects.length; i<n; i++)
+    {
+    	var shape = scene.drawableObjects[i][1];
+        var sp = shape._webgl.shader;
+        
+        if (shape._webgl.texture !== undefined && shape._webgl.texture)
+        {
+            gl.deleteTexture(shape._webgl.texture);
+        }
+        
+        if (sp.position !== undefined) 
+        {
+            gl.deleteBuffer(positionBuffer);
+            gl.deleteBuffer(indicesBuffer);
+            delete vertices;
+        }
+        
+        if (sp.normal !== undefined) 
+        {
+            gl.deleteBuffer(normalBuffer);
+            delete normals;
+        }
+        
+        if (sp.texcoord !== undefined) 
+        {
+            gl.deleteBuffer(texcBuffer);
+            delete texCoords;
+        }
+    }
 }
