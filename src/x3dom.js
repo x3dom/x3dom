@@ -112,13 +112,13 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.style.top = y.toString();
         }
         if ((w = x3dElem.getAttribute("width")) !== null) {
-            x3dom.debug.logInfo("width=" + w);
+            //x3dom.debug.logInfo("width=" + w);
             canvas.style.width = w.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("width",canvas.style.width);
         }
         if ((h = x3dElem.getAttribute("height")) !== null) {
-            x3dom.debug.logInfo("height=" + h);
+            //x3dom.debug.logInfo("height=" + h);
             canvas.style.height = h.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("height",canvas.style.height);
@@ -204,7 +204,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 		evt.returnValue = false;
         return false;
     }
-	
+    
     this.canvas.addEventListener('mousedown', function (evt) {
 		switch(evt.button) {
 			case 0:  this.mouse_button = 1; break;	//left
@@ -248,6 +248,20 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 		
 		//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
+		evt.preventDefault();
+		evt.stopPropagation();
+		evt.returnValue = false;
+    }, false);
+    
+    this.canvas.addEventListener('dblclick', function (evt) {
+		this.mouse_button = 0;
+        this.mouse_drag_x = evt.layerX;
+        this.mouse_drag_y = evt.layerY;
+        this.mouse_dragging = false;
+        
+        this.parent.doc.onDoubleClick(this.mouse_drag_x, this.mouse_drag_y);
+		
+		window.status=this.id+' DBL: '+evt.layerX+", "+evt.layerY;
 		evt.preventDefault();
 		evt.stopPropagation();
 		evt.returnValue = false;
@@ -374,5 +388,12 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     window.addEventListener('load', onload, false);
     window.addEventListener('unload', onunload, false);
     window.addEventListener('reload', onunload, false);
+    
+    document.onkeypress = function(evt) {
+        for (var i=0; i<x3dom.canvases.length; i++) {
+            x3dom.canvases[i].doc.onKeyPress(evt.charCode);
+        }
+        return true;
+    }
 
 })();

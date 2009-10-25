@@ -114,6 +114,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             this._DEF = ctx.xmlNode.getAttribute('DEF');
 			ctx.defMap[ctx.xmlNode.getAttribute('DEF')] = this;
 		}
+        this._typeName = ctx.xmlNode.localName;
         this._fieldWatchers = {};
         this._parentNodes = [];
     },
@@ -129,7 +130,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             return transform;
         },
 		
-		_getVolume: function (min, max, invalidate) {
+		_getVolume: function (min, max, invalidate) 
+        {
+            var valid = false;
 			for (var i in this._childNodes)
 			{
 				if (this._childNodes[i])
@@ -137,23 +140,22 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 					var childMin = new x3dom.fields.SFVec3(min.x, min.y, min.z);
 					var childMax = new x3dom.fields.SFVec3(max.x, max.y, max.z);
 					
-					this._childNodes[i]._getVolume(childMin, childMax, invalidate);
+					valid = this._childNodes[i]._getVolume(
+                                    childMin, childMax, invalidate) || valid;
 					
-					if (min.x > childMin.x)
-						min.x = childMin.x;
-					if (min.y > childMin.y)
-						min.y = childMin.y;
-					if (min.z > childMin.z)
-						min.z = childMin.z;
-						
-					if (max.x < childMax.x)
-						max.x = childMax.x;
-					if (max.y < childMax.y)
-						max.y = childMax.y;
-					if (max.z < childMax.z)
-						max.z = childMax.z;
+                    if (valid)
+                    {
+                        if (min.x > childMin.x) min.x = childMin.x;
+                        if (min.y > childMin.y) min.y = childMin.y;
+                        if (min.z > childMin.z) min.z = childMin.z;
+                            
+                        if (max.x < childMax.x) max.x = childMax.x;
+                        if (max.y < childMax.y) max.y = childMax.y;
+                        if (max.z < childMax.z) max.z = childMax.z;
+                    }
 				}
 			}
+            return valid;
 		},
 
         _find: function (type) {
@@ -513,7 +515,7 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     
     if (isect)
     {
-        x3dom.debug.logInfo("Hit object \"" + this._parent._DEF + "\"");
+        x3dom.debug.logInfo("Hit \"" + this._parent._typeName + "/" + this._parent._DEF + "\"");
         
         line.hitObject = this._parent;
         line.hitPoint = line.pos.add(line.dir.scale(line.enter));
@@ -592,6 +594,7 @@ x3dom.registerNodeType(
 		{
 			_getVolume: function(min, max, invalidate) {
 				this._mesh.getBBox(min, max, invalidate);
+                return true;
 			},
 			
 			_getCenter: function() {
@@ -1369,7 +1372,7 @@ x3dom.registerNodeType(
             },
 			
 			_getVolume: function(min, max, invalidate) {
-				this._geometry._getVolume(min, max, invalidate);
+				return this._geometry._getVolume(min, max, invalidate);
 			},
 			
 			_getCenter: function() {
@@ -1448,38 +1451,49 @@ x3dom.registerNodeType(
 			
 			_getVolume: function(min, max, invalidate) 
             {
+				var nMin = new x3dom.fields.SFVec3(
+                        Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+				var nMax = new x3dom.fields.SFVec3(
+                        Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+                var valid = false;
+                
 				for (var i in this._childNodes)
 				{
 					if (this._childNodes[i])
 					{
-						var childMin = new x3dom.fields.SFVec3(min.x, min.y, min.z);
-						var childMax = new x3dom.fields.SFVec3(max.x, max.y, max.z);
+						var childMin = new x3dom.fields.SFVec3(0,0,0);
+						var childMax = new x3dom.fields.SFVec3(0,0,0);
 						
-						this._childNodes[i]._getVolume(childMin, childMax, invalidate);
+						valid = this._childNodes[i]._getVolume(
+                                        childMin, childMax, invalidate) || valid;
 						
-						if (min.x > childMin.x) min.x = childMin.x;
-						if (min.y > childMin.y) min.y = childMin.y;
-						if (min.z > childMin.z) min.z = childMin.z;
-							
-						if (max.x < childMax.x) max.x = childMax.x;
-						if (max.y < childMax.y) max.y = childMax.y;
-						if (max.z < childMax.z) max.z = childMax.z;
+                        if (valid)  // values only set by Mesh.BBox()
+                        {
+                            if (nMin.x > childMin.x) nMin.x = childMin.x;
+                            if (nMin.y > childMin.y) nMin.y = childMin.y;
+                            if (nMin.z > childMin.z) nMin.z = childMin.z;
+                                
+                            if (nMax.x < childMax.x) nMax.x = childMax.x;
+                            if (nMax.y < childMax.y) nMax.y = childMax.y;
+                            if (nMax.z < childMax.z) nMax.z = childMax.z;
+                        }
 					}
 				}
 				
-				var trafo = x3dom.fields.SFMatrix4.identity();
-				trafo = this._transformMatrix(trafo);
-				
-				var locMin = trafo.multMatrixPnt(min);
-				var locMax = trafo.multMatrixPnt(max);
-				
-				if (min.x > locMin.x) min.x = locMin.x;
-				if (min.y > locMin.y) min.y = locMin.y;
-				if (min.z > locMin.z) min.z = locMin.z;
-					
-				if (max.x < locMax.x) max.x = locMax.x;
-				if (max.y < locMax.y) max.y = locMax.y;
-				if (max.z < locMax.z) max.z = locMax.z;
+                if (valid)
+                {
+                    nMin = this._trafo.multMatrixPnt(nMin);
+                    nMax = this._trafo.multMatrixPnt(nMax);
+                    
+                    min.x = nMin.x;
+                    min.y = nMin.y;
+                    min.z = nMin.z;
+                        
+                    max.x = nMax.x;
+                    max.y = nMax.y;
+                    max.z = nMax.z;
+                }
+                return valid;
 			},
             
             _doIntersect: function(line) 
@@ -1669,6 +1683,7 @@ x3dom.registerNodeType(
 			this._height = 300;
             this._lastX = -1;
             this._lastY = -1;
+            this._pick = new x3dom.fields.SFVec3(0, 0, 0);
             
 			this._cam = null;
             this._bgnd = null;
@@ -1688,7 +1703,7 @@ x3dom.registerNodeType(
 				var MAX = new x3dom.fields.SFVec3(
 					Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 				
-				this._getVolume(MIN, MAX, invalidate);
+				var valid = this._getVolume(MIN, MAX, invalidate);
 				
 				min.x = MIN.x;
 				min.y = MIN.y;
@@ -1697,6 +1712,8 @@ x3dom.registerNodeType(
 				max.x = MAX.x;
 				max.y = MAX.y;
 				max.z = MAX.z;
+                
+                return valid;
 			},
 			
             getViewpointMatrix: function () {
@@ -1707,6 +1724,7 @@ x3dom.registerNodeType(
     
             getViewMatrix: function () {
                 var viewpoint = this.getViewpoint();
+                //return x3dom.fields.SFMatrix4.translation(this._movement)
                 return this.getViewpointMatrix().
 							mult(this._transMat).
 							mult(this._rotMat);
@@ -1788,6 +1806,33 @@ x3dom.registerNodeType(
                 return new x3dom.fields.Line(from, dir);
             },
             
+            calcDeltas: function(toX, toY)
+            {
+                //fixme, buggy (albeit taken from osg)
+                var view = this.getViewMatrix();
+                var cctowc = this.getCCtoWCMatrix();
+                
+                var rx = toX / (this._width - 1.0) * 2.0 - 1.0;
+                var ry = (this._height - 1.0 - toY) / (this._height - 1.0) * 2.0 - 1.0;
+                
+                var from = view.e3();
+                var at = cctowc.multFullMatrixPnt(new x3dom.fields.SFVec3(rx, ry, 1));
+                
+                var dir = new x3dom.fields.SFVec3(view._02, view._12, view._22);
+                var line = new x3dom.fields.Line(from, at.subtract(from));
+                
+                var u = dir.dot(this._pick.subtract(line.pos)) / dir.dot(line.dir);
+                var p2 = line.pos.add(line.dir.scale(u));
+                
+                var transl = this._pick.subtract(p2);
+                view = view.inverse();
+                
+                transl = view.multMatrixVec(transl);
+                transl.z = 0;
+                
+                return transl;
+            },
+            
             onMousePress: function (x, y, buttonState)
             {
                 this._lastX = x;
@@ -1796,14 +1841,37 @@ x3dom.registerNodeType(
                 var line = this.calcViewRay(x, y);
                 
                 var isect = this._doIntersect(line);
-                if (isect)
-                    x3dom.debug.logInfo("Ray hit at position " + line.hitPoint);
+                
+                if (isect) 
+                {
+                    this._pick.x = line.hitPoint.x;
+                    this._pick.y = line.hitPoint.y;
+                    this._pick.z = line.hitPoint.z;
+                    x3dom.debug.logInfo("Ray hit at position " + this._pick);
+                }
+                else 
+                {
+                    var dir = this.getViewMatrix().e2().negate();
+                    var u = dir.dot(line.pos.negate()) / dir.dot(line.dir);
+                    this._pick = line.pos.add(line.dir.scale(u));
+                    //x3dom.debug.logInfo("No hit at position " + this._pick);
+                }
             },
             
             onMouseRelease: function (x, y, buttonState)
             {
                 this._lastX = x;
                 this._lastY = y;
+            },
+            
+            onDoubleClick: function (x, y)
+            {
+                var viewpoint = this.getViewpoint();
+                
+                viewpoint._centerOfRotation.x = this._pick.x;
+                viewpoint._centerOfRotation.y = this._pick.y;
+                viewpoint._centerOfRotation.z = this._pick.z;
+                x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
             },
     		
             //ondrag: function (dx, dy, buttonState) 
@@ -1812,7 +1880,8 @@ x3dom.registerNodeType(
                 var dx = x - this._lastX;
                 var dy = y - this._lastY;
                 
-				if (buttonState & 1) {
+				if (buttonState & 1) 
+                {
 					var alpha = (dy * 2 * Math.PI) / this._width;
 					var beta = (dx * 2 * Math.PI) / this._height;
 					var mat = this.getViewMatrix();
@@ -1831,34 +1900,48 @@ x3dom.registerNodeType(
 									mult(mat).
 									mult(x3dom.fields.SFMatrix4.translation(center.negate()));
 				}
-				if (buttonState & 4) {
+				if (buttonState & 4) 
+                {
 					var min = new x3dom.fields.SFVec3(0,0,0);
 					var max = new x3dom.fields.SFVec3(0,0,0);
-					this.getVolume(min, max, true);
+					var ok = this.getVolume(min, max, true);
 					
-					var d = (max.subtract(min)).length();
+					var d = ok ? (max.subtract(min)).length() : 10;
 					//x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo("w="+this._width+", h="+this._height);
 					
 					var vec = new x3dom.fields.SFVec3(d*dx/this._width,d*(-dy)/this._height,0);
 					this._movement = this._movement.add(vec);
-					
+                    
+                    //TODO; move real distance along viewing plane
+                    /*var mv = this.calcDeltas(x, y);
+                    x3dom.debug.logInfo("############### " + mv);
+					this._transMat = this._transMat.mult(
+                            x3dom.fields.SFMatrix4.translation(mv));*/
+                    
 					var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
 				}
-				if (buttonState & 2) {
+				if (buttonState & 2) 
+                {
 					var min = new x3dom.fields.SFVec3(0,0,0);
 					var max = new x3dom.fields.SFVec3(0,0,0);
-					this.getVolume(min, max, true);
+					var ok = this.getVolume(min, max, true);
 					
-					var d = (max.subtract(min)).length();
+					var d = ok ? (max.subtract(min)).length() : 10;
 					//x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
 					
 					var vec = new x3dom.fields.SFVec3(0,0,d*(dx+dy)/this._height);
 					this._movement = this._movement.add(vec);
+                    
+                    //TODO; move real distance along viewing ray
+                    /*var sgn = dy ? (dy / Math.abs(dy)) : 1;
+                    var dist = sgn * (d / 100.0) * Math.pow(Math.abs(dy), 2.0);
+                    var vec = new x3dom.fields.SFVec3(0,0,dist);
+					this._movement = this._movement.add(vec);*/
 					
 					var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
@@ -2182,6 +2265,27 @@ x3dom.X3DDocument.prototype.onMousePress = function (x, y, buttonState) {
 
 x3dom.X3DDocument.prototype.onMouseRelease = function (x, y, buttonState) {
     this._scene.onMouseRelease(x, y, buttonState);
+}
+
+x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
+    this._scene.onDoubleClick(x, y);
+}
+
+x3dom.X3DDocument.prototype.onKeyPress = function(charCode) {
+    //x3dom.debug.logInfo("pressed key " + charCode);
+    switch (charCode)
+    {
+        case  97: /* a, view all */ break;
+        case 109: /* m, toggle "points" attribute */ break;
+        case 114: /* r, reset view */
+            {
+                this._scene._rotMat = x3dom.fields.SFMatrix4.identity();
+                this._scene._transMat = x3dom.fields.SFMatrix4.identity();
+                this._scene._movement = new x3dom.fields.SFVec3(0, 0, 0);
+            }
+            break;
+        default:
+    }
 }
 
 x3dom.X3DDocument.prototype.shutdown = function(ctx)
