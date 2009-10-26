@@ -1056,27 +1056,23 @@ x3dom.registerNodeType(
 			var t0 = new Date().getTime();
 			
             var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
-			var normalInd;
+			var normalInd, texCoordInd;
 			
-			//TODO; also check texCoords here: texCoordIndex
-			var isMulti = false;
+			var hasNormal = false, hasNormalInd = false;
+			var hasTexCoord = false, hasTexCoordInd = false;
 			
 			if (ctx.xmlNode.hasAttribute('normalIndex'))
 			{
 				normalInd = ctx.xmlNode.getAttribute('normalIndex').match(/((?:\+|-)?\d+)/g);
-				isMulti = (indexes.length == normalInd.length);
-				x3dom.debug.logInfo("Found MultiIndex Mesh");
+				hasNormalInd = true;
+			}
+			if (ctx.xmlNode.hasAttribute('texCoordIndex'))
+			{
+				texCoordInd = ctx.xmlNode.getAttribute('texCoordIndex').match(/((?:\+|-)?\d+)/g);
+				hasTexCoordInd = true;
 			}
 			
-			//if (isMulti)
-			if (false)	//TODO!!!
-			{
-			this._mesh._indices = [];
-			this._mesh._positions = [];
-			this._mesh._normals = [];
-			
-			var positions = [];
-			var normals = [];
+			var positions, normals, texCoords;
 			
 			var coordNode = Array.filter(ctx.xmlNode.childNodes, 
 					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
@@ -1085,114 +1081,220 @@ x3dom.registerNodeType(
 			
 			var normalNode = Array.filter(ctx.xmlNode.childNodes, 
 					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
-            ctx.assert(normalNode.length == 1);
+            if (normalNode.length == 1) 
+			{
+				hasNormal = true;
 				normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			}
+			else
+				hasNormal = false;
 			
+			var texCoordNode = Array.filter(ctx.xmlNode.childNodes, 
+					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
+            if (texCoordNode.length == 1) 
+			{
+				hasTexCoord = true;
+				texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			}
+			else
+				hasTexCoord = false;
 			
-            var t = 0, p0, p1, p2, n0, n1, n2, cnt = 0;
+			this._mesh._indices = [];
+			this._mesh._positions = [];
+			if (hasNormal) this._mesh._normals = [];
+			if (hasTexCoord) this._mesh._texCoords = [];
 			
-            for (var i=0; i < indexes.length; ++i) {
-                // Convert non-triangular polygons to a triangle fan
-                // (TODO: this assumes polygons are convex)
-                if (indexes[i] == -1) {
-                    t = 0;
-                    continue;
-                }
-				ctx.assert(normalInd[i] != -1);
+			if ( (hasNormal && hasNormalInd) || (hasTexCoord && hasTexCoordInd) )
+			{
+				// Found MultiIndex Mesh
+				var t = 0, cnt = 0;
+				var p0, p1, p2, n0, n1, n2, t1, t2, t3;
 				
-                switch (t) {
-                case 0: 
-					p0 = +indexes[i];
-					n0 = +normalInd[i]; 
-					t = 1; 
-					break;
-                case 1: 
-					p1 = +indexes[i];
-					n1 = +normalInd[i]; 
-					t = 2; 
-					break;
-                case 2: 
-					p2 = +indexes[i];
-					n2 = +normalInd[i]; 
-					t = 3; 
-					//this._mesh._indices.push(p0, p1, p2);
-					this._mesh._indices.push(cnt++, cnt++, cnt++);
-					this._mesh._positions.push(positions[p0]);
-					this._mesh._positions.push(positions[p1]);
-					this._mesh._positions.push(positions[p2]);
-					this._mesh._normals.push(normals[n0]);
-					this._mesh._normals.push(normals[n1]);
-					this._mesh._normals.push(normals[n2]);
-					break;
-                case 3: 
-					p1 = p2; p2 = +indexes[i];
-					n1 = n2; n2 = +normalInd[i]; 
-					//this._mesh._indices.push(p0, p1, p2); 
-					this._mesh._indices.push(cnt++, cnt++, cnt++);
-					this._mesh._positions.push(positions[p0]);
-					this._mesh._positions.push(positions[p1]);
-					this._mesh._positions.push(positions[p2]);
-					this._mesh._normals.push(normals[n0]);
-					this._mesh._normals.push(normals[n1]);
-					this._mesh._normals.push(normals[n2]);
-					break;
-                }
-            }
-			
-			//TODO: this currently does nothing...
-			this._mesh.calcTexCoords();
-			this._mesh.remapData();
+				for (var i=0; i < indexes.length; ++i) 
+				{
+					// Convert non-triangular polygons to a triangle fan
+					// (TODO: this assumes polygons are convex)
+					if (indexes[i] == -1) {
+						t = 0;
+						continue;
+					}
+					if (hasNormalInd)
+						ctx.assert(normalInd[i] != -1);
+					if (hasTexCoordInd)
+						ctx.assert(texCoordInd[i] != -1);
+					
+					//TODO: OPTIMIZE but think about cache coherence regarding arrays!!!
+					switch (t) 
+					{
+						case 0: 
+						{
+							p0 = +indexes[i];
+							if (hasNormalInd) n0 = +normalInd[i];
+							else n0 = p0;
+							if (hasTexCoordInd) t0 = +texCoordInd[i];
+							else t0 = p0;
+							t = 1; 
+						}
+						break;
+						case 1: 
+						{
+							p1 = +indexes[i];
+							if (hasNormalInd) n1 = +normalInd[i];
+							else n1 = p1;
+							if (hasTexCoordInd) t1 = +texCoordInd[i];
+							else t1 = p1;
+							t = 2; 
+						}
+						break;
+						case 2: 
+						{
+							p2 = +indexes[i];
+							if (hasNormalInd) n2 = +normalInd[i];
+							else n2 = p2;
+							if (hasTexCoordInd) t2 = +texCoordInd[i];
+							else t2 = p2;
+							t = 3; 
+							
+							this._mesh._indices.push(cnt++, cnt++, cnt++);
+							
+							this._mesh._positions.push(positions[p0*3+0]);
+							this._mesh._positions.push(positions[p0*3+1]);
+							this._mesh._positions.push(positions[p0*3+2]);
+							this._mesh._positions.push(positions[p1*3+0]);
+							this._mesh._positions.push(positions[p1*3+1]);
+							this._mesh._positions.push(positions[p1*3+2]);
+							this._mesh._positions.push(positions[p2*3+0]);
+							this._mesh._positions.push(positions[p2*3+1]);
+							this._mesh._positions.push(positions[p2*3+2]);
+							
+							if (hasNormal) {
+								this._mesh._normals.push(normals[n0*3+0]);
+								this._mesh._normals.push(normals[n0*3+1]);
+								this._mesh._normals.push(normals[n0*3+2]);
+								this._mesh._normals.push(normals[n1*3+0]);
+								this._mesh._normals.push(normals[n1*3+1]);
+								this._mesh._normals.push(normals[n1*3+2]);
+								this._mesh._normals.push(normals[n2*3+0]);
+								this._mesh._normals.push(normals[n2*3+1]);
+								this._mesh._normals.push(normals[n2*3+2]);
+							}
+							
+							if (hasTexCoord) {
+								//assume 2d texCoords for now...
+								this._mesh._texCoords.push(texCoords[t0*3+0]);
+								this._mesh._texCoords.push(texCoords[t0*3+1]);
+								this._mesh._texCoords.push(texCoords[t0*3+2]);
+								this._mesh._texCoords.push(texCoords[t1*3+0]);
+								this._mesh._texCoords.push(texCoords[t1*3+1]);
+								this._mesh._texCoords.push(texCoords[t1*3+2]);
+								this._mesh._texCoords.push(texCoords[t2*3+0]);
+								this._mesh._texCoords.push(texCoords[t2*3+1]);
+								this._mesh._texCoords.push(texCoords[t2*3+2]);
+							}
+						}
+						break;
+						case 3: 
+						{
+							p1 = p2; 
+							n1 = n2;
+							t1 = t2;
+							p2 = +indexes[i];
+							if (hasNormalInd) n2 = +normalInd[i];
+							else n2 = p2;
+							if (hasTexCoordInd) t2 = +texCoordInd[i];
+							else t2 = p2;
+							
+							this._mesh._indices.push(cnt++, cnt++, cnt++);
+							
+							this._mesh._positions.push(positions[p0*3+0]);
+							this._mesh._positions.push(positions[p0*3+1]);
+							this._mesh._positions.push(positions[p0*3+2]);
+							this._mesh._positions.push(positions[p1*3+0]);
+							this._mesh._positions.push(positions[p1*3+1]);
+							this._mesh._positions.push(positions[p1*3+2]);
+							this._mesh._positions.push(positions[p2*3+0]);
+							this._mesh._positions.push(positions[p2*3+1]);
+							this._mesh._positions.push(positions[p2*3+2]);
+							
+							if (hasNormal) {
+								this._mesh._normals.push(normals[n0*3+0]);
+								this._mesh._normals.push(normals[n0*3+1]);
+								this._mesh._normals.push(normals[n0*3+2]);
+								this._mesh._normals.push(normals[n1*3+0]);
+								this._mesh._normals.push(normals[n1*3+1]);
+								this._mesh._normals.push(normals[n1*3+2]);
+								this._mesh._normals.push(normals[n2*3+0]);
+								this._mesh._normals.push(normals[n2*3+1]);
+								this._mesh._normals.push(normals[n2*3+2]);
+							}
+							
+							if (hasTexCoord) {
+								//assume 2d texCoords for now...
+								this._mesh._texCoords.push(texCoords[t0*3+0]);
+								this._mesh._texCoords.push(texCoords[t0*3+1]);
+								this._mesh._texCoords.push(texCoords[t0*3+2]);
+								this._mesh._texCoords.push(texCoords[t1*3+0]);
+								this._mesh._texCoords.push(texCoords[t1*3+1]);
+								this._mesh._texCoords.push(texCoords[t1*3+2]);
+								this._mesh._texCoords.push(texCoords[t2*3+0]);
+								this._mesh._texCoords.push(texCoords[t2*3+1]);
+								this._mesh._texCoords.push(texCoords[t2*3+2]);
+							}
+						}
+						break;
+						default:
+					}
+				}
 				
+				if (!hasNormal)
+					this._mesh.calcNormals(creaseAngle);
+				if (!hasTexCoord)
+					this._mesh.calcTexCoords();
+				
+				//TODO: this currently does nothing...
+				this._mesh.remapData();
+			
 			} // if isMulti
 			else
 			{
-			
-            this._mesh._indices = [];
-			
-            var t = 0, n0, n1, n2;
-			
-            for (var i = 0; i < indexes.length; ++i) {
-                // Convert non-triangular polygons to a triangle fan
-                // (TODO: this assumes polygons are convex)
-                if (indexes[i] == -1) {
-                    t = 0;
-                    continue;
-                }
-                switch (t) {
-                case 0: n0 = +indexes[i]; t = 1; break;
-                case 1: n1 = +indexes[i]; t = 2; break;
-                case 2: n2 = +indexes[i]; t = 3; this._mesh._indices.push(n0, n1, n2); break;
-                case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices.push(n0, n1, n2); break;
-                }
-            }
-            // TODO: solid; ccw; creaseAngle
-    
-            var coordNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
-			ctx.assert(coordNode.length == 1);
-            this._mesh._positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
-			
-			var normalNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
-            if (normalNode.length == 1 && !isMulti)
-				this._mesh._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
-			else
-				this._mesh.calcNormals(creaseAngle);
-			
-            var texCoordNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
-            if (texCoordNode.length == 1 && !isMulti)
-				this._mesh._texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
-			else
-				this._mesh.calcTexCoords();
-			
-			this._mesh.remapData();
+				var t = 0, n0, n1, n2;
+				
+				for (var i = 0; i < indexes.length; ++i) 
+				{
+					// Convert non-triangular polygons to a triangle fan
+					// (TODO: this assumes polygons are convex)
+					if (indexes[i] == -1) {
+						t = 0;
+						continue;
+					}
+					switch (t) {
+					case 0: n0 = +indexes[i]; t = 1; break;
+					case 1: n1 = +indexes[i]; t = 2; break;
+					case 2: n2 = +indexes[i]; t = 3; this._mesh._indices.push(n0, n1, n2); break;
+					case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices.push(n0, n1, n2); break;
+					}
+				}
+				// TODO: solid; ccw; creaseAngle
+				
+				this._mesh._positions = positions;
+				
+				if (hasNormal)
+					this._mesh._normals = normals;
+				else
+					this._mesh.calcNormals(creaseAngle);
+				
+				if (hasTexCoord)
+					this._mesh._texCoords = texCoords;
+				else
+					this._mesh.calcTexCoords();
+				
+				this._mesh.remapData();
 			}
 			
 			this._mesh._invalidate = true;
 			
 			var t1 = new Date().getTime() - t0;
-			x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
+			//x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
