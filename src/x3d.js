@@ -1806,33 +1806,6 @@ x3dom.registerNodeType(
                 return new x3dom.fields.Line(from, dir);
             },
             
-            calcDeltas: function(toX, toY)
-            {
-                //fixme, buggy (albeit taken from osg)
-                var view = this.getViewMatrix();
-                var cctowc = this.getCCtoWCMatrix();
-                
-                var rx = toX / (this._width - 1.0) * 2.0 - 1.0;
-                var ry = (this._height - 1.0 - toY) / (this._height - 1.0) * 2.0 - 1.0;
-                
-                var from = view.e3();
-                var at = cctowc.multFullMatrixPnt(new x3dom.fields.SFVec3(rx, ry, 1));
-                
-                var dir = new x3dom.fields.SFVec3(view._02, view._12, view._22);
-                var line = new x3dom.fields.Line(from, at.subtract(from));
-                
-                var u = dir.dot(this._pick.subtract(line.pos)) / dir.dot(line.dir);
-                var p2 = line.pos.add(line.dir.scale(u));
-                
-                var transl = this._pick.subtract(p2);
-                view = view.inverse();
-                
-                transl = view.multMatrixVec(transl);
-                transl.z = 0;
-                
-                return transl;
-            },
-            
             onMousePress: function (x, y, buttonState)
             {
                 this._lastX = x;
@@ -1914,11 +1887,6 @@ x3dom.registerNodeType(
 					this._movement = this._movement.add(vec);
                     
                     //TODO; move real distance along viewing plane
-                    /*var mv = this.calcDeltas(x, y);
-                    x3dom.debug.logInfo("############### " + mv);
-					this._transMat = this._transMat.mult(
-                            x3dom.fields.SFMatrix4.translation(mv));*/
-                    
 					var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
@@ -1938,11 +1906,6 @@ x3dom.registerNodeType(
 					this._movement = this._movement.add(vec);
                     
                     //TODO; move real distance along viewing ray
-                    /*var sgn = dy ? (dy / Math.abs(dy)) : 1;
-                    var dist = sgn * (d / 100.0) * Math.pow(Math.abs(dy), 2.0);
-                    var vec = new x3dom.fields.SFVec3(0,0,dist);
-					this._movement = this._movement.add(vec);*/
-					
 					var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4.translation(this._movement)).
@@ -2292,40 +2255,5 @@ x3dom.X3DDocument.prototype.shutdown = function(ctx)
 {
     if (!ctx)
         return;
-    //alert("Shutdown scene");
-    
-    // TODO; optimize traversal, matrices are not needed for cleanup
-    this._scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), 
-                                        this._scene.drawableObjects);
-    var gl = ctx.ctx3d;
-    
-    for (var i=0, n=this._scene.drawableObjects.length; i<n; i++)
-    {
-    	var shape = scene.drawableObjects[i][1];
-        var sp = shape._webgl.shader;
-        
-        if (shape._webgl.texture !== undefined && shape._webgl.texture)
-        {
-            gl.deleteTexture(shape._webgl.texture);
-        }
-        
-        if (sp.position !== undefined) 
-        {
-            gl.deleteBuffer(positionBuffer);
-            gl.deleteBuffer(indicesBuffer);
-            delete vertices;
-        }
-        
-        if (sp.normal !== undefined) 
-        {
-            gl.deleteBuffer(normalBuffer);
-            delete normals;
-        }
-        
-        if (sp.texcoord !== undefined) 
-        {
-            gl.deleteBuffer(texcBuffer);
-            delete texCoords;
-        }
-    }
+	ctx.shutdown(this._scene);
 }

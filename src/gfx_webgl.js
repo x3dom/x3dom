@@ -303,9 +303,9 @@ x3dom.gfx_webgl = (function () {
 		}
 		
 		return shader;
-	};
+	}
 	
-	function setupShape(gl, shape)
+	Context.prototype.setupShape = function (gl, shape) 
 	{
 		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) {	
 			var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
@@ -554,7 +554,7 @@ x3dom.gfx_webgl = (function () {
 			var shape = obj[1];
 
 			if (!shape._webgl)
-				setupShape(gl, shape);
+				this.setupShape(gl, shape);
 
 			var sp = shape._webgl.shader;
 			if (! sp)
@@ -700,7 +700,46 @@ x3dom.gfx_webgl = (function () {
 		}
 		
 		scene.drawableObjects = null;
-	};
+	}
+	
+	Context.prototype.shutdown = function(scene)
+	{
+		var gl = this.ctx3d;
+	    //alert("Shutdown scene");
+		
+		// TODO; optimize traversal, matrices are not needed for cleanup
+		scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);
+		
+		for (var i=0, n=scene.drawableObjects.length; i<n; i++)
+		{
+			var shape = scene.drawableObjects[i][1];
+			var sp = shape._webgl.shader;
+			
+			if (shape._webgl.texture !== undefined && shape._webgl.texture)
+			{
+				gl.deleteTexture(shape._webgl.texture);
+			}
+			
+			if (sp.position !== undefined) 
+			{
+				gl.deleteBuffer(positionBuffer);
+				gl.deleteBuffer(indicesBuffer);
+				delete vertices;
+			}
+			
+			if (sp.normal !== undefined) 
+			{
+				gl.deleteBuffer(normalBuffer);
+				delete normals;
+			}
+			
+			if (sp.texcoord !== undefined) 
+			{
+				gl.deleteBuffer(texcBuffer);
+				delete texCoords;
+			}
+		}
+	}
 
 	return setupContext;
 
