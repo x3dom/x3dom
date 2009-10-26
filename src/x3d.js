@@ -2327,12 +2327,20 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
     this._scene.onDoubleClick(x, y);
 }
 
-x3dom.X3DDocument.prototype.onKeyPress = function(charCode) {
+x3dom.X3DDocument.prototype.onKeyPress = function(charCode) 
+{
     //x3dom.debug.logInfo("pressed key " + charCode);
     switch (charCode)
     {
         case  97: /* a, view all */ break;
-        case 109: /* m, toggle "points" attribute */ break;
+        case 109: /* m, toggle "points" attribute */ 
+			{
+				if (this._scene._points === undefined)
+					this._scene._points = true;
+				else
+					this._scene._points = !this._scene._points;
+			}
+			break;
         case 114: /* r, reset view */
             {
                 this._scene._rotMat = x3dom.fields.SFMatrix4.identity();
