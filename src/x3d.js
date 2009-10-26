@@ -1056,8 +1056,101 @@ x3dom.registerNodeType(
 			var t0 = new Date().getTime();
 			
             var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
+			var normalInd;
+			
+			//TODO; also check texCoords here: texCoordIndex
+			var isMulti = false;
+			
+			if (ctx.xmlNode.hasAttribute('normalIndex'))
+			{
+				normalInd = ctx.xmlNode.getAttribute('normalIndex').match(/((?:\+|-)?\d+)/g);
+				isMulti = (indexes.length == normalInd.length);
+				x3dom.debug.logInfo("Found MultiIndex Mesh");
+			}
+			
+			//if (isMulti)
+			if (false)	//TODO!!!
+			{
+			this._mesh._indices = [];
+			this._mesh._positions = [];
+			this._mesh._normals = [];
+			
+			var positions = [];
+			var normals = [];
+			
+			var coordNode = Array.filter(ctx.xmlNode.childNodes, 
+					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
+			ctx.assert(coordNode.length == 1);
+            positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			
+			var normalNode = Array.filter(ctx.xmlNode.childNodes, 
+					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
+            ctx.assert(normalNode.length == 1);
+				normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			
+			
+            var t = 0, p0, p1, p2, n0, n1, n2, cnt = 0;
+			
+            for (var i=0; i < indexes.length; ++i) {
+                // Convert non-triangular polygons to a triangle fan
+                // (TODO: this assumes polygons are convex)
+                if (indexes[i] == -1) {
+                    t = 0;
+                    continue;
+                }
+				ctx.assert(normalInd[i] != -1);
+				
+                switch (t) {
+                case 0: 
+					p0 = +indexes[i];
+					n0 = +normalInd[i]; 
+					t = 1; 
+					break;
+                case 1: 
+					p1 = +indexes[i];
+					n1 = +normalInd[i]; 
+					t = 2; 
+					break;
+                case 2: 
+					p2 = +indexes[i];
+					n2 = +normalInd[i]; 
+					t = 3; 
+					//this._mesh._indices.push(p0, p1, p2);
+					this._mesh._indices.push(cnt++, cnt++, cnt++);
+					this._mesh._positions.push(positions[p0]);
+					this._mesh._positions.push(positions[p1]);
+					this._mesh._positions.push(positions[p2]);
+					this._mesh._normals.push(normals[n0]);
+					this._mesh._normals.push(normals[n1]);
+					this._mesh._normals.push(normals[n2]);
+					break;
+                case 3: 
+					p1 = p2; p2 = +indexes[i];
+					n1 = n2; n2 = +normalInd[i]; 
+					//this._mesh._indices.push(p0, p1, p2); 
+					this._mesh._indices.push(cnt++, cnt++, cnt++);
+					this._mesh._positions.push(positions[p0]);
+					this._mesh._positions.push(positions[p1]);
+					this._mesh._positions.push(positions[p2]);
+					this._mesh._normals.push(normals[n0]);
+					this._mesh._normals.push(normals[n1]);
+					this._mesh._normals.push(normals[n2]);
+					break;
+                }
+            }
+			
+			//TODO: this currently does nothing...
+			this._mesh.calcTexCoords();
+			this._mesh.remapData();
+				
+			} // if isMulti
+			else
+			{
+			
             this._mesh._indices = [];
+			
             var t = 0, n0, n1, n2;
+			
             for (var i = 0; i < indexes.length; ++i) {
                 // Convert non-triangular polygons to a triangle fan
                 // (TODO: this assumes polygons are convex)
@@ -1081,25 +1174,25 @@ x3dom.registerNodeType(
 			
 			var normalNode = Array.filter(ctx.xmlNode.childNodes, 
 					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal') });
-            if (normalNode.length == 1)
+            if (normalNode.length == 1 && !isMulti)
 				this._mesh._normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			else
 				this._mesh.calcNormals(creaseAngle);
 			
             var texCoordNode = Array.filter(ctx.xmlNode.childNodes, 
 					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate') });
-            if (texCoordNode.length == 1)
+            if (texCoordNode.length == 1 && !isMulti)
 				this._mesh._texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
 			else
 				this._mesh.calcTexCoords();
 			
-			//x3dom.debug.logInfo(this._mesh._positions.length/3 + ", " + this._mesh._normals.length/3 + ", " + this._mesh._texCoords.length/2);
-				
 			this._mesh.remapData();
+			}
+			
 			this._mesh._invalidate = true;
 			
 			var t1 = new Date().getTime() - t0;
-			//x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
+			x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
 			
 			// TODO: fixme, what about geoProperty nodes?
 			// Coordinate 		 - X3DCoordinateNode 		- X3DGeometricPropertyNode 
