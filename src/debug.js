@@ -61,6 +61,12 @@ x3dom.debug = {
         // setup should be setup only once, thus store if we done that already
         x3dom.debug.isSetup = true;
     },
+	
+	activate: function() {
+		x3dom.debug.isActive = true;
+		
+		document.body.appendChild(x3dom.debug.logContainer);
+	},
 
 	/** @brief Inserts a container div for the logging messages into the HTML page
       */
@@ -77,7 +83,7 @@ x3dom.debug = {
         x3dom.debug.logContainer.style.color = "#00ff00";
         x3dom.debug.logContainer.style.backgroundColor = "black";
         
-		document.body.appendChild(x3dom.debug.logContainer);
+		//document.body.appendChild(x3dom.debug.logContainer);
 	},
 
 	/** @brief Generic logging function which does all the work.

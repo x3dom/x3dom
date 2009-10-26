@@ -357,7 +357,8 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 
         // Activate debugging/logging for x3dom. Logging will only work for
         // all log calls after this line!
-        x3dom.debug.isActive = true;
+		// Comment out if you don't want the debug console!
+        x3dom.debug.activate();
 
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
