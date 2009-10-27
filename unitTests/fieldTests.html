@@ -44,12 +44,12 @@
                 equals(v2_neg.y, -8, "v2.negate().y");
                                 
                 var v3 = new SFVec2(1,0);
-                var v3_norm = v3.normalise();                
-                equals(v3_norm.x, 1, "v3.normalise().x");
-                equals(v3_norm.y, 0, "v3.normalise().y");
+                var v3_norm = v3.normalised();                
+                equals(v3_norm.x, 1, "v3.normalised().x");
+                equals(v3_norm.y, 0, "v3.normalised().y");
                 v3.setValueByStr("3 2");
-                v3_norm = v3.normalise();
-                equals(v3_norm.x, 0.8320502943378437, "v(3,2).normalise().x");
+                v3_norm = v3.normalised();
+                equals(v3_norm.x, 0.8320502943378437, "v(3,2).normalised().x");
                 equals(v3_norm.y, 0.5547001962252291, "v(3,2).normalise().y");
                 
                 v3.setValueByStr("2 4");
