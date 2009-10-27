@@ -538,7 +538,7 @@ x3dom.gfx_webgl = (function () {
 			
 		if (this.canvas.parent.fpsDiv) {
 			this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
-			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("sort: #" + n + "/ " + t1));
+			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("sort: " + t1));
 		}
 		
 		// rendering
@@ -605,7 +605,6 @@ x3dom.gfx_webgl = (function () {
 			sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().mult(transform).toGL();
 			
 			//TODO; get from scene!
-			//var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100,700));
 			var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100*Math.sin(50*t), 700*Math.cos(50*t)));
 			sp.lightPosition = light.toGL();
 			
@@ -646,6 +645,11 @@ x3dom.gfx_webgl = (function () {
 				gl.enableVertexAttribArray(sp.texcoord);
 			}
 			
+			if (shape._isSolid())
+				gl.enable(gl.CULL_FACE);
+			else
+				gl.disable(gl.CULL_FACE);
+			
 			//gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
 			
 			// fixme; scene._points is dynamic and doesn't belong there!!!
@@ -658,25 +662,17 @@ x3dom.gfx_webgl = (function () {
 			{
 				gl.bindTexture(gl.TEXTURE_2D, null);
 				gl.disable(gl.TEXTURE_2D);
-				//gl.deleteTexture(shape._webgl.texture);
 			}
 			
 			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined) {
 				gl.disableVertexAttribArray(sp.position);
-				/*gl.deleteBuffer(positionBuffer);
-				gl.deleteBuffer(indicesBuffer);
-				delete vertices;*/
 			}
 			if (sp.normal !== undefined) {
 				gl.disableVertexAttribArray(sp.normal);
-				/*gl.deleteBuffer(normalBuffer);
-				delete normals;*/
 			}
 			if (sp.texcoord !== undefined) {
 				gl.disableVertexAttribArray(sp.texcoord);
-				/*gl.deleteBuffer(texcBuffer);
-				delete texCoords;*/
 			}
 		}
 		//);
@@ -687,9 +683,6 @@ x3dom.gfx_webgl = (function () {
 			gl.ZERO, gl.ONE
 		);*/ 
 		gl.disable(gl.DEPTH_TEST);
-		
-		//x3dom.debug.logInfo(gl.getString(gl.VENDOR)+"/"+gl.getString(gl.RENDERER)+"/"+
-		//					gl.getString(gl.VERSION)+"/"+gl.getString(gl.EXTENSIONS)+);
 		//gl.flush();
 		
 		t1 = new Date().getTime() - t0;

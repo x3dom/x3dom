@@ -589,6 +589,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
 			
+			this._attribute_SFBool(ctx, 'solid', true);
+			
 			this._mesh = new x3dom.Mesh(this);
         },
 		{
@@ -1048,10 +1050,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
             
-            var creaseAngle = Math.PI;
-            
-            if (ctx.xmlNode.hasAttribute('creaseAngle'))
-                creaseAngle = +ctx.xmlNode.getAttribute('creaseAngle');
+			// TODO: ccw; creaseAngle...
+			this._attribute_SFBool(ctx, 'creaseAngle', 0);	//Math.PI
 			
 			var t0 = new Date().getTime();
 			
@@ -1247,7 +1247,7 @@ x3dom.registerNodeType(
 				}
 				
 				if (!hasNormal)
-					this._mesh.calcNormals(creaseAngle);
+					this._mesh.calcNormals(this._creaseAngle);
 				if (!hasTexCoord)
 					this._mesh.calcTexCoords();
 				
@@ -1274,14 +1274,13 @@ x3dom.registerNodeType(
 					case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices.push(n0, n1, n2); break;
 					}
 				}
-				// TODO: solid; ccw; creaseAngle
 				
 				this._mesh._positions = positions;
 				
 				if (hasNormal)
 					this._mesh._normals = normals;
 				else
-					this._mesh.calcNormals(creaseAngle);
+					this._mesh.calcNormals(this._creaseAngle);
 				
 				if (hasTexCoord)
 					this._mesh._texCoords = texCoords;
@@ -1577,6 +1576,10 @@ x3dom.registerNodeType(
             _doIntersect: function(line) {
                 return this._geometry._doIntersect(line);
             },
+			
+			_isSolid: function() {
+				return this._geometry._solid;
+			}
         }
     )
 );
