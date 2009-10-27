@@ -48,13 +48,13 @@ x3dom.gfx_webgl = (function () {
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
 		"uniform mat4 viewMatrixInverse;" +
-		"uniform vec3 lightPosition;" +
+		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
 		"" +
 		"void main(void) {" +
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
 		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
-		"    fragLightVector = lightPosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
+		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
 		"    fragTexCoord = texcoord;" +
 		"}"
@@ -79,10 +79,10 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
 		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
-		"    float diffuse = 0.5 * (max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		"    float diffuse = (0.5 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		//"    float diffuse = max(0.0, dot(normal, light));" +
-		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
-		"    specular += 0.5 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, texCoord).rgb + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    gl_FragColor = vec4(texture2D(tex, texCoord.xy));" +
@@ -101,13 +101,13 @@ x3dom.gfx_webgl = (function () {
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
 		"uniform mat4 viewMatrixInverse;" +
-		"uniform vec3 lightPosition;" +
+		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
 		"" +
 		"void main(void) {" +
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
 		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
-		"    fragLightVector = lightPosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
+		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
 		"}"
 		};
@@ -128,10 +128,10 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = 0.5 * (max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		"    float diffuse = (0.5 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		//"    float diffuse = max(0.0, dot(normal, light));" +
-		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
-		"    specular += 0.5 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    vec3 rgb = (1.0+eye)/2.0;" +
@@ -462,7 +462,7 @@ x3dom.gfx_webgl = (function () {
 		}
 	}
 
-	Context.prototype.renderScene = function (scene, t) 
+	Context.prototype.renderScene = function (scene) 
 	{
 		var gl = this.ctx3d;
 		
@@ -535,7 +535,7 @@ x3dom.gfx_webgl = (function () {
 		zPos.reverse();
 		
 		t1 = new Date().getTime() - t0;
-			
+		
 		if (this.canvas.parent.fpsDiv) {
 			this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
 			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("sort: " + t1));
@@ -561,7 +561,6 @@ x3dom.gfx_webgl = (function () {
 				sp = scene._webgl.shader;
 			sp.bind();
 
-			//sp.lightPosition = [10*Math.sin(t), 10, 10*Math.cos(t)];
 			sp.eyePosition = [0, 0, 0];
 
 			var mat = shape._appearance._material;
@@ -604,9 +603,14 @@ x3dom.gfx_webgl = (function () {
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().mult(transform).toGL();
 			
-			//TODO; get from scene!
-			var light = mat_view.multMatrixPnt(new x3dom.fields.SFVec3(0,100*Math.sin(50*t), 700*Math.cos(50*t)));
-			sp.lightPosition = light.toGL();
+			//TODO; get all from scene and get rid of default (0,-1,0)
+			var light;
+			if (scene.getLights().length > 0)
+				light = scene.getLights()[0]._direction;
+			else
+				light = new x3dom.fields.SFVec3(0, -1, 0);
+			light = mat_view.multMatrixVec(light);
+			sp.lightDirection = light.toGL();
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{

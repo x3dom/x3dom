@@ -1515,9 +1515,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.DirectionalLight.superClass.call(this, ctx);
             
-            this._attribute_SFVec3(ctx, 'direction', 1, 1, 1);
-            
-            x3dom.debug.logInfo("DirectionalLight NYI");
+            this._attribute_SFVec3(ctx, 'direction', 0, -1, 0);
         },
         {
 			// methods
@@ -1901,6 +1899,7 @@ x3dom.registerNodeType(
             
 			this._cam = null;
             this._bgnd = null;
+			this._lights = [];
         },
         {
         	getViewpoint: function() {
@@ -1909,6 +1908,13 @@ x3dom.registerNodeType(
 					
   				return this._cam;
         	},
+			
+			getLights: function() {
+				if (this._lights.length == 0)
+					this._lights = this._findAll(x3dom.nodeTypes.DirectionalLight);
+				
+				return this._lights;
+			},
         	
 			getVolume: function(min, max, invalidate)
 			{
@@ -2426,10 +2432,10 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
     }
 };
 
-x3dom.X3DDocument.prototype.render = function (ctx, ts) {
+x3dom.X3DDocument.prototype.render = function (ctx) {
     if (!ctx)
         return;
-    ctx.renderScene(this._scene, ts);
+    ctx.renderScene(this._scene);
 }
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {

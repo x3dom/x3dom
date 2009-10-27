@@ -184,7 +184,6 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.canvas = createCanvas(x3dElem, this);
 	this.canvas.parent = this;
     this.fps_t0 = new Date().getTime();
-    this.t = 0;
     this.gl = initContext(this.canvas);
     this.doc = null;
     this.canvasDiv = null;
@@ -193,119 +192,117 @@ x3dom.X3DCanvas = function(x3dElem) {
 	
 	if (this.canvas !== null && this.gl !== null)
 	{
-	
-	// event handler for mouse interaction
-	this.canvas.mouse_dragging = false;
-	this.canvas.mouse_button = 0;
-    this.canvas.mouse_drag_x = 0;
-	this.canvas.mouse_drag_y = 0;
-	
-    //document.oncontextmenu = function() { return false; }
-    
-    this.canvas.oncontextmenu = function(evt) {
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-        return false;
-    }
-    
-    this.canvas.addEventListener('mousedown', function (evt) {
-		switch(evt.button) {
-			case 0:  this.mouse_button = 1; break;	//left
-			case 1:  this.mouse_button = 4; break;	//middle
-			case 2:  this.mouse_button = 2; break;	//right
-			default: this.mouse_button = 0; break;
+		// event handler for mouse interaction
+		this.canvas.mouse_dragging = false;
+		this.canvas.mouse_button = 0;
+		this.canvas.mouse_drag_x = 0;
+		this.canvas.mouse_drag_y = 0;
+		
+		//document.oncontextmenu = function() { return false; }
+		
+		this.canvas.oncontextmenu = function(evt) {
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+			return false;
 		}
-        this.mouse_drag_x = evt.layerX;
-        this.mouse_drag_y = evt.layerY;
-        this.mouse_dragging = true;
 		
-		if (evt.shiftKey) this.mouse_button = 1;
-		if (evt.ctrlKey) this.mouse_button = 4;
-		if (evt.altKey) this.mouse_button = 2;
-        
-        this.parent.doc.onMousePress(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+		this.canvas.addEventListener('mousedown', function (evt) {
+			switch(evt.button) {
+				case 0:  this.mouse_button = 1; break;	//left
+				case 1:  this.mouse_button = 4; break;	//middle
+				case 2:  this.mouse_button = 2; break;	//right
+				default: this.mouse_button = 0; break;
+			}
+			this.mouse_drag_x = evt.layerX;
+			this.mouse_drag_y = evt.layerY;
+			this.mouse_dragging = true;
+			
+			if (evt.shiftKey) this.mouse_button = 1;
+			if (evt.ctrlKey) this.mouse_button = 4;
+			if (evt.altKey) this.mouse_button = 2;
+			
+			this.parent.doc.onMousePress(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			
+			window.status=this.id+' DOWN: '+evt.layerX+", "+evt.layerY;
+			//window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
 		
-        window.status=this.id+' DOWN: '+evt.layerX+", "+evt.layerY;
-		//window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-    }, false);
-	
-    this.canvas.addEventListener('mouseup', function (evt) {
-		this.mouse_button = 0;
-        this.mouse_dragging = false;
-        
-        this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+		this.canvas.addEventListener('mouseup', function (evt) {
+			this.mouse_button = 0;
+			this.mouse_dragging = false;
+			
+			this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			
+			//window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
 		
-		//window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-    }, false);
-	
-    this.canvas.addEventListener('mouseout', function (evt) {
-		this.mouse_button = 0;
-        this.mouse_dragging = false;
-        
-        this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+		this.canvas.addEventListener('mouseout', function (evt) {
+			this.mouse_button = 0;
+			this.mouse_dragging = false;
+			
+			this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			
+			//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
 		
-		//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-    }, false);
-    
-    this.canvas.addEventListener('dblclick', function (evt) {
-		this.mouse_button = 0;
-        this.mouse_drag_x = evt.layerX;
-        this.mouse_drag_y = evt.layerY;
-        this.mouse_dragging = false;
-        
-        this.parent.doc.onDoubleClick(this.mouse_drag_x, this.mouse_drag_y);
+		this.canvas.addEventListener('dblclick', function (evt) {
+			this.mouse_button = 0;
+			this.mouse_drag_x = evt.layerX;
+			this.mouse_drag_y = evt.layerY;
+			this.mouse_dragging = false;
+			
+			this.parent.doc.onDoubleClick(this.mouse_drag_x, this.mouse_drag_y);
+			
+			window.status=this.id+' DBL: '+evt.layerX+", "+evt.layerY;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
 		
-		window.status=this.id+' DBL: '+evt.layerX+", "+evt.layerY;
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-    }, false);
-	
-    this.canvas.addEventListener('mousemove', function (evt) {
-        window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
-        
-		if (!this.mouse_dragging)
-			return;
+		this.canvas.addEventListener('mousemove', function (evt) {
+			window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
+			
+			if (!this.mouse_dragging)
+				return;
+			
+			var dx = evt.layerX - this.mouse_drag_x;
+			var dy = evt.layerY - this.mouse_drag_y;
+			this.mouse_drag_x = evt.layerX;
+			this.mouse_drag_y = evt.layerY;
+			
+			if (evt.shiftKey) this.mouse_button = 1;
+			if (evt.ctrlKey) this.mouse_button = 4;
+			if (evt.altKey) this.mouse_button = 2;
+			
+			//this.parent.doc.ondrag(dx, dy, this.mouse_button);
+			this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			
+			//window.status=this.id+' MOVE: '+dx+", "+dy;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
 		
-        var dx = evt.layerX - this.mouse_drag_x;
-        var dy = evt.layerY - this.mouse_drag_y;
-        this.mouse_drag_x = evt.layerX;
-        this.mouse_drag_y = evt.layerY;
-		
-		if (evt.shiftKey) this.mouse_button = 1;
-		if (evt.ctrlKey) this.mouse_button = 4;
-		if (evt.altKey) this.mouse_button = 2;
-		
-        //this.parent.doc.ondrag(dx, dy, this.mouse_button);
-        this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-		
-		//window.status=this.id+' MOVE: '+dx+", "+dy;
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-    }, false);
-	
-	this.canvas.addEventListener('DOMMouseScroll', function (evt) {
-		//this.parent.doc.ondrag(0, 2*evt.detail, 2);
-        this.mouse_drag_y += 2 * evt.detail;
-        this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, 2);
-		
-		window.status=this.id+' SCROLL: '+evt.detail;
-		evt.preventDefault();
-		evt.stopPropagation();
-		evt.returnValue = false;
-    }, false);
-
+		this.canvas.addEventListener('DOMMouseScroll', function (evt) {
+			//this.parent.doc.ondrag(0, 2*evt.detail, 2);
+			this.mouse_drag_y += 2 * evt.detail;
+			this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, 2);
+			
+			window.status=this.id+' SCROLL: '+evt.detail;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
 	}
 };
 
@@ -321,14 +318,12 @@ x3dom.X3DCanvas.prototype.tick = function() {
         
         try {
             this.doc.advanceTime(d / 1000); 
-            this.doc.render(this.gl, this.t);
+            this.doc.render(this.gl);
         }
 		catch (e) {
             x3dom.debug.logException(e);
             throw e;
         }
-		
-        this.t += 0.0005;   //fixme; a bit obscure...
     }
 };
 

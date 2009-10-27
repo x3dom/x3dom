@@ -17,6 +17,8 @@
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showFps="true" x="0px" y="0px" width="400px" height="280px">
 			<Scene>
 				<Background transparency="1.0" skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
+				<DirectionalLight direction="0 0 -1" />
+				
 				<Transform >
 					<Shape>
 						<Appearance>
@@ -33,7 +35,7 @@
 					  <Material diffuseColor='1 0 0' specularColor=".1 .1 .1" />
 					  <ImageTexture url="opengl.gif" />
 					</Appearance>
-					<IndexedFaceSet coordIndex='0 1 2 -1, 2 3 0 -1'>
+					<IndexedFaceSet solid="false" coordIndex='0 1 2 -1, 2 3 0 -1'>
 					  <Coordinate point='-1 -1 0, 1 -1 0, 1 1 0, -1 1 0' />
 					  <TextureCoordinate point='0.2 0.2, 0.8 0.2, 0.8 0.8, 0.2 0.8' />
 					</IndexedFaceSet>
