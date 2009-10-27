@@ -81,6 +81,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         var gl = x3dom.gfx_webgl(canvas);
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
+			canvasDiv.removeChild(canvas);
             return null;
         }
         return gl;
@@ -189,6 +190,9 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.canvasDiv = null;
     this.showFps = x3dElem.getAttribute("showFps");
     this.fpsDiv = this.showFps !== null ? createFpsDiv() : null;
+	
+	if (this.canvas !== null && this.gl !== null)
+	{
 	
 	// event handler for mouse interaction
 	this.canvas.mouse_dragging = false;
@@ -302,6 +306,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 		evt.returnValue = false;
     }, false);
 
+	}
 };
 
 x3dom.X3DCanvas.prototype.tick = function() {
@@ -371,6 +376,28 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         for (var i in x3ds) {
             //var canvas = createCanvas(x3ds[i]);
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
+			
+			if (x3dcanvas.gl === null)
+			{
+				var aDiv = document.createElement("div");
+				aDiv.style.border = "1px solid";
+				aDiv.style.margin = "4px";
+				aDiv.style.padding = "4px";
+				aDiv.style.color = "darkblue";
+				aDiv.style.fontFamily = "sans-serif";
+				aDiv.style.backgroundColor = "navajowhite";
+				aDiv.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
+				aDiv.appendChild(document.createElement("br"));
+				aDiv.appendChild(document.createElement("br"));
+				var aLnk = document.createElement("a");
+				aLnk.setAttribute("href","http://x3dom.igd.fraunhofer.de/wordpress/?page_id=9");
+				aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));
+				aDiv.appendChild(aLnk);
+				
+				x3ds[i].appendChild(aDiv);
+				continue;
+			}
+			
             x3dcanvas.load(x3ds[i], i);
             
             x3dom.canvases.push(x3dcanvas);

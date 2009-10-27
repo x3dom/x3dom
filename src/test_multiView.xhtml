@@ -5,7 +5,6 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<title>Simple WebGL example</title>
 		<style>
-		X3D { display: none; }
 		p.case { clear: both; border-top: 1px solid #888; }
 		</style>
 	</head>
@@ -104,6 +103,7 @@
 	</p>
 	
 	<script type="text/javascript"><![CDATA[
+	/*
 	var solid = true;
 	
 	function toggleRendering()
@@ -130,9 +130,11 @@
 		
 		return false;
 	}
+	*/
 	]]></script>
 	
 	<p class="case"> &nbsp; 
+	<!--
 	<input type="button" id="points" value="Show Points" onclick="toggleRendering();" />
 	
 	<img id="test_img_1" src="data:image/png;base64,
@@ -142,6 +144,7 @@ AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
 REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
 ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
 vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
+	-->
 	</p>
 	
 	<script type="text/javascript" src="x3dom.js"></script>
@@ -151,7 +154,6 @@ vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
 	<script type="text/javascript" src="fields.js"></script>
 	
 	<script type="text/javascript" ><![CDATA[
-        
        window.onload = function() {
 	   return;
             
@@ -187,13 +189,6 @@ vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
                 60
             );
         };
-
-	/*
-	//window.onload = function() {
-		init();
-		draw(userData.gl);
-	//};
-	*/
 	]]></script>
 
 </body>

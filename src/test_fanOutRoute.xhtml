@@ -6,7 +6,6 @@
 		<title>Simple WebGL example</title>
 		<style>
 		body { font-family: Helvetica, Arial, Sans; }
-		X3D { display: none; }
 		p.case { clear: both; border-top: 1px solid #888; }
 		</style>
 	</head>
@@ -145,55 +144,15 @@
         </X3D>
 	</p>
 	
-	<script type="text/javascript"><![CDATA[
-	var solid = true;
-	
-	function toggleRendering()
-	{
-		var button = document.getElementById("points");
-		
-		solid = !solid;
-		
-		if (solid)
-			button.value = "Show Points";
-		else
-			button.value = "Solid/ Fill";
-		
-		var scenes = document.getElementsByTagName("Scene");
-		var i = 0, n = scenes.length;
-		
-		while (i < n)
-		{
-			var aScene = scenes[i++];
-			aScene.setAttribute("points", (!solid ? "true" : "false"));
-		}
-		
-		window.status = "Found " + n + " Scene objects.";
-		
-		return false;
-	}
-	]]></script>
-	
-	<p class="case"> &nbsp; 
-	<input type="button" id="points" value="Show Points" onclick="toggleRendering();" />
-	
-	<img id="test_img_1" src="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
-C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
-AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
-REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
-ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
-vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
-	</p>
+
+	<p class="case"> &nbsp; </p>
 	
 	<script type="text/javascript" src="x3dom.js"></script>
     <script type="text/javascript" src="debug.js"></script>
 	<script type="text/javascript" src="gfx_webgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="fields.js"></script>
-	
-	<script type="text/javascript" ><![CDATA[
-	]]></script>
+
 
 </body>
 </html>

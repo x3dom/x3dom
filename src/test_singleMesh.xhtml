@@ -5,7 +5,6 @@
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<title>Simple WebGL example</title>
 		<style>
-		X3D { display: none; }
 		p.case { clear: both; border-top: 1px solid #888; }
 		</style>
 	</head>
@@ -18,7 +17,7 @@
 		&nbsp;
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="10px" width="320px" height="240px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showFps="true" x="0px" y="0px" width="400px" height="400px">
 
   <Scene DEF='scene'>
     <Viewpoint position='0 0 250' />
@@ -33,210 +32,16 @@
     </Shape>
   </Scene>
 
-
         </X3D>
-<!--
-		&nbsp;
-<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="lorsch" showFps="true" x="0px" y="10px" width="240px" height="240px">
-   <Scene DEF='scene'>
-    <Viewpoint DEF='view0' description='view0' jump='false' position='0 0 40'/>
-    <Background skyColor='0.05 0.12 0.23'/>
-    <Transform scale='2.5 2.5 2.5'>
-      <Shape DEF='CUBE2'>
-        <Appearance>
-          <Material diffuseColor='1 0 0'/>
-          <ImageTexture url='"x3d_256.jpg"'/>
-        </Appearance>
-        <Box/>
-      </Shape>
-      <Shape USE='CUBE2'/>
-      <Shape USE='CUBE2'/>
-      <Shape USE='CUBE2'/>
-      <Transform DEF='XFORM0a' center='0 0 10'>
-        <Shape USE='CUBE2'/>
-      </Transform>
-      <Transform DEF='XFORM0b' center='0 7 7'>
-        <Shape USE='CUBE2'/>
-      </Transform>
-      <Transform DEF='XFORM0c' center='10 0 0'>
-        <Shape USE='CUBE2'/>
-      </Transform>
-      <Transform DEF='XFORM0d' center='0 10 0'>
-        <Shape USE='CUBE2'/>
-      </Transform>
-      <Transform DEF='XFORM1a'>
-        <Transform USE='XFORM0a'/>
-        <Transform USE='XFORM0b'/>
-        <Transform USE='XFORM0c'/>
-        <Transform USE='XFORM0d'/>
-      </Transform>
-      <Transform DEF='XFORM1b'>
-        <Transform USE='XFORM0a'/>
-        <Transform USE='XFORM0b'/>
-        <Transform USE='XFORM0c'/>
-        <Transform USE='XFORM0d'/>
-      </Transform>
-      <Transform DEF='XFORM1c'>
-        <Transform USE='XFORM0a'/>
-        <Transform USE='XFORM0b'/>
-        <Transform USE='XFORM0c'/>
-        <Transform USE='XFORM0d'/>
-      </Transform>
-      <Transform DEF='XFORM1d'>
-        <Transform USE='XFORM0a'/>
-        <Transform USE='XFORM0b'/>
-        <Transform USE='XFORM0c'/>
-        <Transform USE='XFORM0d'/>
-      </Transform>
-      <Transform DEF='XFORM2a'>
-        <Transform USE='XFORM1a'/>
-        <Transform USE='XFORM1b'/>
-        <Transform USE='XFORM1c'/>
-        <Transform USE='XFORM1d'/>
-      </Transform>
-      <Transform DEF='XFORM2b'>
-        <Transform USE='XFORM1a'/>
-        <Transform USE='XFORM1b'/>
-        <Transform USE='XFORM1c'/>
-        <Transform USE='XFORM1d'/>
-      </Transform>
-      <Transform DEF='XFORM2c'>
-        <Transform USE='XFORM1a'/>
-        <Transform USE='XFORM1b'/>
-        <Transform USE='XFORM1c'/>
-        <Transform USE='XFORM1d'/>
-      </Transform>
-      <Transform DEF='XFORM2d'>
-        <Transform USE='XFORM1a'/>
-        <Transform USE='XFORM1b'/>
-        <Transform USE='XFORM1c'/>
-        <Transform USE='XFORM1d'/>
-      </Transform>
-    </Transform>
-    <Transform DEF='TREE'>
-      <Transform USE='XFORM2a'/>
-      <Transform USE='XFORM2b'/>
-      <Transform USE='XFORM2c'/>
-      <Transform USE='XFORM2d'/>
-    </Transform>
-    <TimeSensor DEF='TIMER' cycleInterval='30' loop='true'/>
-    <OrientationInterpolator DEF='ROTOR_A' key='0 0.5 1' keyValue='1 0 0 0 1 0 0 3.14 1 0 0 6.28'/>
-    <OrientationInterpolator DEF='ROTOR_B' key='0 0.5 1' keyValue='0 1 0 0 0 1 0 3.14 0 1 0 6.28'/>
-    <OrientationInterpolator DEF='ROTOR_C' key='0 0.5 1' keyValue='0 0 1 0 0 0 1 3.14 0 0 1 6.28'/>
-    <OrientationInterpolator DEF='ROTOR_D' key='0 0.5 1' keyValue='0.707 0 0.707 0 0.707 0 0.707 3.14 0.707 0 0.707 6.28'/>
-    <ROUTE fromNode='ROTOR_B' fromField='value_changed' toNode='XFORM1b' toField='set_rotation'/>
-    <ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='ROTOR_B' toField='set_fraction'/>
-    <ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='ROTOR_A' toField='set_fraction'/>
-    <ROUTE fromNode='ROTOR_C' fromField='value_changed' toNode='XFORM1c' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_C' fromField='value_changed' toNode='XFORM0c' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_B' fromField='value_changed' toNode='XFORM2b' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_B' fromField='value_changed' toNode='XFORM0b' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_A' fromField='value_changed' toNode='XFORM2a' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_A' fromField='value_changed' toNode='XFORM0a' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_A' fromField='value_changed' toNode='XFORM1a' toField='set_rotation'/>
-    <ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='ROTOR_D' toField='set_fraction'/>
-    <ROUTE fromNode='TIMER' fromField='fraction_changed' toNode='ROTOR_C' toField='set_fraction'/>
-    <ROUTE fromNode='ROTOR_D' fromField='value_changed' toNode='XFORM2d' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_D' fromField='value_changed' toNode='XFORM1d' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_D' fromField='value_changed' toNode='XFORM0d' toField='set_rotation'/>
-    <ROUTE fromNode='ROTOR_C' fromField='value_changed' toNode='XFORM2c' toField='set_rotation'/>
-  </Scene>
-</X3D>
--->
 	</p>
 	
-	<script type="text/javascript"><![CDATA[
-	var solid = true;
-	
-	function toggleRendering()
-	{
-		var button = document.getElementById("points");
-		
-		solid = !solid;
-		
-		if (solid)
-			button.value = "Show Points";
-		else
-			button.value = "Solid/ Fill";
-		
-		var scenes = document.getElementsByTagName("Scene");
-		var i = 0, n = scenes.length;
-		
-		while (i < n)
-		{
-			var aScene = scenes[i++];
-			aScene.setAttribute("points", (!solid ? "true" : "false"));
-		}
-		
-		window.status = "Found " + n + " Scene objects.";
-		
-		return false;
-	}
-	]]></script>
-	
-	<p class="case"> &nbsp; 
-	<input type="button" id="points" value="Show Points" onclick="toggleRendering();" />
-	
-	<img id="test_img_1" src="data:image/png;base64,
-iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAABGdBTUEAALGP
-C/xhBQAAAAlwSFlzAAALEwAACxMBAJqcGAAAAAd0SU1FB9YGARc5KB0XV+IA
-AAAddEVYdENvbW1lbnQAQ3JlYXRlZCB3aXRoIFRoZSBHSU1Q72QlbgAAAF1J
-REFUGNO9zL0NglAAxPEfdLTs4BZM4DIO4C7OwQg2JoQ9LE1exdlYvBBeZ7jq
-ch9//q1uH4TLzw4d6+ErXMMcXuHWxId3KOETnnXXV6MJpcq2MLaI97CER3N0
-vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
-	</p>
+	<p class="case"> &nbsp; </p>
 	
 	<script type="text/javascript" src="x3dom.js"></script>
     <script type="text/javascript" src="debug.js"></script>
 	<script type="text/javascript" src="gfx_webgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="fields.js"></script>
-	
-	<script type="text/javascript" ><![CDATA[
-        
-       window.onload = function() {
-	   return;
-            
-            /* Test DOM updates by randomly changing the flipper color... */
-            var mats = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Material');
-            x3dom.debug.logInfo("Found " + mats.length + " materials.");
-            // the last material is the flipper material
-            var flipperMat = mats[5];
-            // change the color randomly every second
-            setInterval( function() {
-                    var r, g, b;
-                    r = Math.random();
-                    g = Math.random();
-                    b = Math.random();
-                    // the color is X3D and not CSS, thus e.g. red is "1 0 0" rather than "#f00"
-                    flipperMat.setAttribute("diffuseColor", r.toString() + " " + g.toString() + " " + b.toString());
-                },
-                1000
-            );
-
-            /* Another DOM updates test which animates the scale of the first cube */
-            var trans = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Transform');           
-            var cubeTrans = trans[0];
-            var cubeScale = 0;
-            var scaleFac = 0.01;
-            setInterval( function() {                    
-                    if (cubeScale>1.0-scaleFac || cubeScale<(0.0)) {
-                        scaleFac *= -1;                        
-                    }
-                    cubeScale += scaleFac;
-                    cubeTrans.setAttribute("scale", cubeScale.toString() + " " + cubeScale.toString() + " " + cubeScale.toString());
-                },
-                60
-            );
-        };
-
-	/*
-	//window.onload = function() {
-		init();
-		draw(userData.gl);
-	//};
-	*/
-	]]></script>
 
 </body>
 </html>
