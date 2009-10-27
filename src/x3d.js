@@ -115,6 +115,8 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 			ctx.defMap[ctx.xmlNode.getAttribute('DEF')] = this;
 		}
         this._typeName = ctx.xmlNode.localName;
+		this._xmlNode = ctx.xmlNode;	// backlink to DOM tree
+		
         this._fieldWatchers = {};
         this._parentNodes = [];
     },
@@ -605,6 +607,16 @@ x3dom.registerNodeType(
             
             _doIntersect: function(line) {
                 var isect = this._mesh.doIntersect(line);
+				
+				if (isect && this._xmlNode !== null) {
+					if (this._xmlNode.hasAttribute('onclick'))
+					{
+						var funcStr = this._xmlNode.getAttribute('onclick');
+						var func = new Function('hitPnt', funcStr);
+						func.call(this, line.hitPoint);
+					}
+				}
+				
                 return isect;
             },
 		}
@@ -1839,7 +1851,8 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DSensorNode, // TODO: multiple inheritance...
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
-    
+			
+			this._attribute_SFBool(ctx, 'enabled', true);
             this._attribute_SFTime(ctx, 'cycleInterval', 1);
             this._attribute_SFBool(ctx, 'loop', false);
             this._attribute_SFTime(ctx, 'startTime', 0);
@@ -1848,6 +1861,9 @@ x3dom.registerNodeType(
         },
         {
             _onframe: function (ts) {
+				if (!this._enabled)
+					return;
+				
             	var isActive = ( ts >= this._startTime);
             	var cycleFrac, cycle, fraction;
             	
