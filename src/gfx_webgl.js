@@ -606,10 +606,10 @@ x3dom.gfx_webgl = (function () {
 			sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().mult(transform).toGL();
 			
 			//TODO; get all from scene and get rid of default (0,-1,0)
-			var light;
+			var light; /*
 			if (scene.getLights().length > 0)
 				light = scene.getLights()[0]._direction;
-			else
+			else       */
 				light = new x3dom.fields.SFVec3(0, -1, 0);
 			light = mat_view.multMatrixVec(light);
 			sp.lightDirection = light.toGL();
