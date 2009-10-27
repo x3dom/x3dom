@@ -347,7 +347,29 @@ x3dom.registerNodeType(
             });
             this._material = material;
 			this._texture = texture;
-        }
+        },
+		{
+			_getNodeByDEF: function (def) {
+				if (this._DEF == def) 
+					return this;
+				
+				if (this._material !== null && this._material._DEF == def)
+					return this._material;
+				if (this._texture !== null && this._texture._DEF == def)
+					return this._texture;
+				
+				return null;
+			},
+
+			_find: function (type) {
+				if (this._material !== null && this._material.constructor == type)
+					return this._material;
+				if (this._texture !== null && this._texture.constructor == type)
+					return this._texture;
+				
+				return null;
+			},
+		}
     )
 );
 
@@ -1589,7 +1611,28 @@ x3dom.registerNodeType(
 			
 			_isSolid: function() {
 				return this._geometry._solid;
-			}
+			},
+			
+			_getNodeByDEF: function (def) {
+				if (this._DEF == def) 
+					return this;
+				
+				if (this._appearance !== null && this._appearance._DEF == def)
+					return this._appearance;
+				if (this._geometry !== null && this._geometry._DEF == def)
+					return this._geometry;
+				
+				return null;
+			},
+			
+			_find: function (type) {
+				if (this._appearance !== null && this._appearance.constructor == type)
+					return this._appearance;
+				if (this._geometry !== null && this._geometry.constructor == type)
+					return this._geometry;
+				
+				return null;
+			},
         }
     )
 );
@@ -1795,7 +1838,6 @@ x3dom.registerNodeType(
             
             if (ctx.xmlNode.hasAttribute('keyValue'))
                 this._keyValue = x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute('keyValue'));
-                //this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s*,\s*/), x3dom.fields.Quaternion.parseAxisAngle);
             else
                 this._keyValue = [];
             
@@ -1821,6 +1863,26 @@ x3dom.registerNodeType(
             
             this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this._linearInterp(msg, function (a, b, t) { return a.scale(1.0-t).add(b.scale(t)); });
+                this._postMessage('value_changed', value);
+            } ];
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "ScalarInterpolator",
+    "Interpolation",
+    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
+        function (ctx) {
+            x3dom.nodeTypes.ScalarInterpolator.superClass.call(this, ctx);
+            
+            if (ctx.xmlNode.hasAttribute('keyValue'))
+                this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s+/), function (n) { return +n; });
+            else
+                this._keyValue = [];
+			
+            this._fieldWatchers.set_fraction = [ function (msg) {
+                var value = this._linearInterp(msg, function (a, b, t) { return (1.0-t)*a + t*b; });
                 this._postMessage('value_changed', value);
             } ];
         }
@@ -2244,6 +2306,7 @@ x3dom.nodeTypeMap = {
     'NavigationInfo': { ctor: x3dom.nodeTypes.NavigationInfo },
     'OrientationInterpolator': { ctor: x3dom.nodeTypes.OrientationInterpolator },
     'PositionInterpolator': { ctor: x3dom.nodeTypes.PositionInterpolator },
+	'ScalarInterpolator': { ctor: x3dom.nodeTypes.ScalarInterpolator },
     'Scene': { ctor: x3dom.nodeTypes.Scene, autoChild: 1 },
     'Shape': { ctor: x3dom.nodeTypes.Shape },
     'Sphere': { ctor: x3dom.nodeTypes.Sphere },

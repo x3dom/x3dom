@@ -86,6 +86,7 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, texCoord).rgb + specular*specularColor;" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    gl_FragColor = vec4(texture2D(tex, texCoord.xy));" +
+		"    rgb = clamp(rgb, 0.0, 1.0);" +
 		"    gl_FragColor = vec4(rgb, texture2D(tex, texCoord).a);" +
 		//"    gl_FragColor = texture2D(tex, texCoord);" +
 		//"    gl_FragColor = vec4(texCoord.xy, 0.0, 1.0);" +
@@ -133,6 +134,7 @@ x3dom.gfx_webgl = (function () {
 		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
+		"    rgb = clamp(rgb, 0.0, 1.0);" +
 		//"    vec3 rgb = vec3(diffuse);" +
 		//"    vec3 rgb = (1.0+eye)/2.0;" +
 		"    gl_FragColor = vec4(rgb, alpha);" +
@@ -505,9 +507,9 @@ x3dom.gfx_webgl = (function () {
 			
 			t1 = new Date().getTime() - t0;
 			
-			if (this.canvas.parent.fpsDiv) {
-				this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
-				this.canvas.parent.fpsDiv.appendChild(document.createTextNode("traverse: " + t1));
+			if (this.canvas.parent.statDiv) {
+				this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+				this.canvas.parent.statDiv.appendChild(document.createTextNode("traverse: " + t1));
 			}
 		}
 		
@@ -536,9 +538,9 @@ x3dom.gfx_webgl = (function () {
 		
 		t1 = new Date().getTime() - t0;
 		
-		if (this.canvas.parent.fpsDiv) {
-			this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
-			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("sort: " + t1));
+		if (this.canvas.parent.statDiv) {
+			this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+			this.canvas.parent.statDiv.appendChild(document.createTextNode("sort: " + t1));
 		}
 		
 		// rendering
@@ -691,9 +693,9 @@ x3dom.gfx_webgl = (function () {
 		
 		t1 = new Date().getTime() - t0;
 			
-		if (this.canvas.parent.fpsDiv) {
-			this.canvas.parent.fpsDiv.appendChild(document.createElement("br"));
-			this.canvas.parent.fpsDiv.appendChild(document.createTextNode("render: " + t1));
+		if (this.canvas.parent.statDiv) {
+			this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+			this.canvas.parent.statDiv.appendChild(document.createTextNode("render: " + t1));
 		}
 		
 		scene.drawableObjects = null;

@@ -91,14 +91,12 @@ x3dom.X3DCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
         this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
         var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
-		//canvas.setAttribute("width","400px");
-		//canvas.setAttribute("height","300px");
-		//alert(canvas.width + " / " + canvas.height);
+		
         canvasDiv.appendChild(canvas);
         x3dElem.parentNode.insertBefore(canvasDiv, x3dElem);
 
         // Apply the width and height of the X3D element to the canvas 
-        var x, y, w, h, showFps;
+        var x, y, w, h, showStat;
         canvas.style.position = "relative";
 		canvas.style.border = "1px solid #000";
 		canvas.style.marginBottom = "1em";
@@ -124,14 +122,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("height",canvas.style.height);
         }
-        if ((showFps = x3dElem.getAttribute("showFps")) !== null) {
-            if (showFps == "false") {
-                ;
-            }
-            else if (showFps == "true") {
-                // createFpsDiv();
-            }
-        }
+        
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
         var id;
@@ -151,33 +142,33 @@ x3dom.X3DCanvas = function(x3dElem) {
         return canvas;
     }
 
-    function createFpsDiv() {
-        var fpsDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-        fpsDiv.innerHTML = "0 fps";
+    function createStatDiv() {
+        var statDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+        statDiv.innerHTML = "0 fps";
         
-		fpsDiv.style.margin = "0px";
-		fpsDiv.style.padding = "0px";
-		fpsDiv.style.left = "-90px";
-        fpsDiv.style.position = "relative";
-        fpsDiv.style.top = "10px";
-        fpsDiv.style.color = "#00ff00";
-		fpsDiv.style.fontFamily = "sans-serif";
-		fpsDiv.style.fontSize = "small";
-        //fpsDiv.style.backgroundColor = "navajowhite";
-        fpsDiv.style.width = "75px";
-        fpsDiv.style.height = "70px";
-        fpsDiv.style.cssFloat = "left";
+		statDiv.style.margin = "0px";
+		statDiv.style.padding = "0px";
+		statDiv.style.left = "-90px";
+        statDiv.style.position = "relative";
+        statDiv.style.top = "10px";
+        statDiv.style.color = "#00ff00";
+		statDiv.style.fontFamily = "sans-serif";
+		statDiv.style.fontSize = "small";
+        //statDiv.style.backgroundColor = "navajowhite";
+        statDiv.style.width = "75px";
+        statDiv.style.height = "70px";
+        statDiv.style.cssFloat = "left";
 		
-        canvasDiv.appendChild(fpsDiv);
+        canvasDiv.appendChild(statDiv);
         
-        fpsDiv.oncontextmenu = fpsDiv.onmousedown = function(evt) {
+        statDiv.oncontextmenu = statDiv.onmousedown = function(evt) {
             evt.preventDefault();
             evt.stopPropagation();
             evt.returnValue = false;
             return false;
         }
         
-        return fpsDiv;
+        return statDiv;
     }
 
     this.x3dElem = x3dElem;
@@ -187,8 +178,8 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.gl = initContext(this.canvas);
     this.doc = null;
     this.canvasDiv = null;
-    this.showFps = x3dElem.getAttribute("showFps");
-    this.fpsDiv = this.showFps !== null ? createFpsDiv() : null;
+    this.showStat = x3dElem.getAttribute("showStat");
+    this.statDiv = (this.showStat !== null && this.showStat == "true") ? createStatDiv() : null;
 	
 	if (this.canvas !== null && this.gl !== null)
 	{
@@ -306,25 +297,23 @@ x3dom.X3DCanvas = function(x3dElem) {
 	}
 };
 
-x3dom.X3DCanvas.prototype.tick = function() {
-    
-    if (this.showFps)
-	{
-        var d = new Date().getTime();
-        var fps = 1000.0 / (d - this.fps_t0);
-		
-        this.fpsDiv.textContent = fps.toFixed(2) + ' fps';
-        this.fps_t0 = d;
-        
-        try {
-            this.doc.advanceTime(d / 1000); 
-            this.doc.render(this.gl);
-        }
-		catch (e) {
-            x3dom.debug.logException(e);
-            throw e;
-        }
-    }
+x3dom.X3DCanvas.prototype.tick = function() 
+{    
+	var d = new Date().getTime();
+	var fps = 1000.0 / (d - this.fps_t0);
+	
+	if (this.statDiv)	
+		this.statDiv.textContent = fps.toFixed(2) + ' fps';
+	this.fps_t0 = d;
+	
+	try {
+		this.doc.advanceTime(d / 1000); 
+		this.doc.render(this.gl);
+	}
+	catch (e) {
+		x3dom.debug.logException(e);
+		throw e;
+	}
 };
 
 /** Loads the given @p uri.
@@ -355,16 +344,28 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 
     var onload = function() {
 
-        // Activate debugging/logging for x3dom. Logging will only work for
-        // all log calls after this line!
-		// Comment out if you don't want the debug console!
-        x3dom.debug.activate();
-
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
-        x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
+        
         // Convert the collection into a simple array (is this necessary?)
-        x3ds = Array.map(x3ds, function (n) { return n; });		
+        x3ds = Array.map(x3ds, function (n) { return n; });
+		
+		var activateLog = false;
+		for (var i in x3ds) {
+			var showLog = x3ds[i].getAttribute("showLog");
+			if (showLog !== null && showLog == "true")
+			{
+				activateLog = true;
+				break;
+			}
+		}
+		
+		// Activate debugging/logging for x3dom. Logging will only work for
+        // all log calls after this line!
+		if (activateLog)
+			x3dom.debug.activate();
+		
+		x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
 
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
