@@ -79,7 +79,7 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
 		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
-		"    float diffuse = (0.5 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
@@ -129,7 +129,7 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = (0.5 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
 		//"    float diffuse = max(0.0, dot(normal, light));" +
 		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
@@ -161,19 +161,21 @@ x3dom.gfx_webgl = (function () {
 		"}"
 		};
 
-	var defaultVS =
+	g_shaders['vs-x3d-default'] = { type: "vertex", data:
 		"attribute vec3 position;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"void main(void) {" +
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
-		"}";
+		"}"
+		};
 
-	var defaultFS =
+	g_shaders['fs-x3d-default'] = { type: "fragment", data:
 		"uniform vec3 diffuseColor;" +
 		"uniform float alpha;" +
 		"void main(void) {" +
 		"    gl_FragColor = vec4(diffuseColor, alpha);" +
-		"}";
+		"}"
+		};
 
 	function getDefaultShaderProgram(gl) 
 	{
@@ -181,8 +183,8 @@ x3dom.gfx_webgl = (function () {
 		var vs = gl.createShader(gl.VERTEX_SHADER);
 		var fs = gl.createShader(gl.FRAGMENT_SHADER);
 		
-		gl.shaderSource(vs, defaultVS);
-		gl.shaderSource(fs, defaultFS);
+		gl.shaderSource(vs, g_shaders['vs-x3d-default'].data);
+		gl.shaderSource(fs, g_shaders['fs-x3d-default'].data);
 		gl.compileShader(vs);
 		gl.compileShader(fs);
 		gl.attachShader(prog, vs);
@@ -513,12 +515,21 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
+		// sorting and stuff
+		t0 = new Date().getTime();
+		
 		var mat_projection = scene.getProjectionMatrix();
 		var mat_view = scene.getViewMatrix();
 		var mat_view_inv = mat_view.inverse();
 		
-		// sorting
-		t0 = new Date().getTime();
+		//TODO; get all from scene and get rid of default (0,-1,0)
+		var light; /*
+		if (scene.getLights().length > 0)
+			light = scene.getLights()[0]._direction;
+		else       */
+			light = new x3dom.fields.SFVec3(0, -1, 0);
+		light = mat_view.multMatrixVec(light);
+		
 		
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
@@ -564,6 +575,7 @@ x3dom.gfx_webgl = (function () {
 			sp.bind();
 
 			sp.eyePosition = [0, 0, 0];
+			sp.lightDirection = light.toGL();
 
 			var mat = shape._appearance._material;
 			if (mat) {
@@ -605,14 +617,6 @@ x3dom.gfx_webgl = (function () {
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().mult(transform).toGL();
 			
-			//TODO; get all from scene and get rid of default (0,-1,0)
-			var light; /*
-			if (scene.getLights().length > 0)
-				light = scene.getLights()[0]._direction;
-			else       */
-				light = new x3dom.fields.SFVec3(0, -1, 0);
-			light = mat_view.multMatrixVec(light);
-			sp.lightDirection = light.toGL();
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{

@@ -247,6 +247,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                 if (f.constructor === x3dom.fields.SFVec3) {
                     this[fieldName] = x3dom.fields.SFVec3.parse(msg);
                 }
+                else if (fieldName == "_transparency") {	// test
+                    this[fieldName] = +msg;
+                }
 				//uhh, what a hack - but how to do it nicely?
 				else if (msg == "true")
 					this[fieldName] = true;
