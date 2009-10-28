@@ -76,7 +76,7 @@ x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 */
 x3dom.X3DCanvas = function(x3dElem) {
     
-    function initContext(canvas) {
+    this.initContext = function(canvas) {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
         var gl = x3dom.gfx_webgl(canvas);
         if (!gl) {
@@ -87,13 +87,16 @@ x3dom.X3DCanvas = function(x3dElem) {
         return gl;
     }
 
-    function createCanvas(x3dElem) {
+    this.createHTMLCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
-        this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+        // this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+        this.canvasDiv.style.position = "relative"; 
+        this.canvasDiv.style.cssFloat = "left";
+        // this.canvasDiv.style.border = "3px solid #f00";
         var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
 		
-        canvasDiv.appendChild(canvas);
-        x3dElem.parentNode.insertBefore(canvasDiv, x3dElem);
+        this.canvasDiv.appendChild(canvas);
+        x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
 
         // Apply the width and height of the X3D element to the canvas 
         var x, y, w, h, showStat;
@@ -112,13 +115,13 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
         if ((w = x3dElem.getAttribute("width")) !== null) {
             //x3dom.debug.logInfo("width=" + w);
-            canvas.style.width = w.toString();
+            canvas.style.width = this.canvasDiv.style.width = w.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("width",canvas.style.width);
         }
         if ((h = x3dElem.getAttribute("height")) !== null) {
             //x3dom.debug.logInfo("height=" + h);
-            canvas.style.height = h.toString();
+            canvas.style.height = this.canvasDiv.style.height = h.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("height",canvas.style.height);
         }
@@ -127,7 +130,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         // to it and and use that as the id for the canvas
         var id;
         if ((id=x3dElem.getAttribute("id")) !== null) {
-            canvasDiv.id = id + "_canvas_div";
+            this.canvasDiv.id = id + "_canvas_div";
             canvas.id = id + "_canvas";
         }
         else {
@@ -135,31 +138,33 @@ x3dom.X3DCanvas = function(x3dElem) {
             // For now check the number of canvas elements in the page
             // and use length+1 for creating a (hopefully) unique id
             var index = (document.getElementsByTagNameNS(x3dom.x3dNS, 'X3D').length+1);
-            canvasDiv.id = "canvas_div_" + index;
+            this.canvasDiv.id = "canvas_div_" + index;
             canvas.id = "canvas" + index;
         }
 		
         return canvas;
     }
 
-    function createStatDiv() {
+    this.createStatDiv = function() {
         var statDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
         statDiv.innerHTML = "0 fps";
         
 		statDiv.style.margin = "0px";
 		statDiv.style.padding = "0px";
-		statDiv.style.left = "-90px";
-        statDiv.style.position = "relative";
+		// statDiv.style.left = "10px";
+        statDiv.style.right = "10px";
         statDiv.style.top = "10px";
+        statDiv.style.position = "absolute";
+        // statDiv.style.top = "10px";
         statDiv.style.color = "#00ff00";
 		statDiv.style.fontFamily = "sans-serif";
 		statDiv.style.fontSize = "small";
-        //statDiv.style.backgroundColor = "navajowhite";
+        // statDiv.style.backgroundColor = "navajowhite";
         statDiv.style.width = "75px";
         statDiv.style.height = "70px";
-        statDiv.style.cssFloat = "left";
+        statDiv.style.cssFloat = "right";
 		
-        canvasDiv.appendChild(statDiv);
+        this.canvasDiv.appendChild(statDiv);
         
         statDiv.oncontextmenu = statDiv.onmousedown = function(evt) {
             evt.preventDefault();
@@ -172,14 +177,15 @@ x3dom.X3DCanvas = function(x3dElem) {
     }
 
     this.x3dElem = x3dElem;
-    this.canvas = createCanvas(x3dElem, this);
+    this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    this.canvas = this.createHTMLCanvas(x3dElem);
 	this.canvas.parent = this;
     this.fps_t0 = new Date().getTime();
-    this.gl = initContext(this.canvas);
+    this.gl = this.initContext(this.canvas);
     this.doc = null;
-    this.canvasDiv = null;
+
     this.showStat = x3dElem.getAttribute("showStat");
-    this.statDiv = (this.showStat !== null && this.showStat == "true") ? createStatDiv() : null;
+    this.statDiv = (this.showStat !== null && this.showStat == "true") ? this.createStatDiv() : null;
 	
 	if (this.canvas !== null && this.gl !== null)
 	{
@@ -321,7 +327,7 @@ x3dom.X3DCanvas.prototype.tick = function()
     */
 x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
-    var canvas = this;
+    var x3dCanvas = this;
     var doc = this.doc;
     var gl = this.gl;
     x3dom.debug.logInfo("gl=" + gl.toString() + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
@@ -329,7 +335,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc.onload = function () {
         x3dom.debug.logInfo("loaded [" + uri + "]");
         setInterval( function() {
-                canvas.tick();
+                x3dCanvas.tick();
             }, 
             16	// use typical monitor frequency as bound
         );
@@ -370,9 +376,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
         for (var i in x3ds) {
-            //var canvas = createCanvas(x3ds[i]);
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
-			
 			if (x3dcanvas.gl === null)
 			{
 				var aDiv = document.createElement("div");
@@ -395,7 +399,6 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 			}
 			
             x3dcanvas.load(x3ds[i], i);
-            
             x3dom.canvases.push(x3dcanvas);
         }
 
