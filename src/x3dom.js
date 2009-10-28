@@ -81,7 +81,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         var gl = x3dom.gfx_webgl(canvas);
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
-			canvasDiv.removeChild(canvas);
+			this.canvasDiv.removeChild(canvas);
             return null;
         }
         return gl;
@@ -390,7 +390,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 				aDiv.appendChild(document.createElement("br"));
 				aDiv.appendChild(document.createElement("br"));
 				var aLnk = document.createElement("a");
-				aLnk.setAttribute("href","http://x3dom.igd.fraunhofer.de/wordpress/?page_id=9");
+				aLnk.setAttribute("href","http://www.x3dom.org/?page_id=9");
 				aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));
 				aDiv.appendChild(aLnk);
 				
