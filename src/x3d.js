@@ -1650,6 +1650,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
             this._childNodes = [];
+            this._autoChild = true;
         },
         {
             addChild: function (node) {
@@ -2293,35 +2294,6 @@ x3dom.registerNodeType(
 );
 
 
-x3dom.nodeTypeMap = {
-    'Appearance': { ctor: x3dom.nodeTypes.Appearance },
-    'Box': { ctor: x3dom.nodeTypes.Box },
-	'Background': { ctor: x3dom.nodeTypes.Background },
-	'Cone': { ctor: x3dom.nodeTypes.Cone },
-	'Cylinder': { ctor: x3dom.nodeTypes.Cylinder },
-    'DirectionalLight': { ctor: x3dom.nodeTypes.DirectionalLight },
-    'FontStyle': { ctor: x3dom.nodeTypes.FontStyle },
-	'Group': { ctor: x3dom.nodeTypes.Group, autoChild: 1 },
-	'ImageTexture': { ctor: x3dom.nodeTypes.ImageTexture },
-    'IndexedFaceSet': { ctor: x3dom.nodeTypes.IndexedFaceSet },
-    'Inline': { ctor: x3dom.nodeTypes.Inline }, // TODO: handle namespaces properly
-    'Material': { ctor: x3dom.nodeTypes.Material },
-    'NavigationInfo': { ctor: x3dom.nodeTypes.NavigationInfo },
-    'OrientationInterpolator': { ctor: x3dom.nodeTypes.OrientationInterpolator },
-    'PositionInterpolator': { ctor: x3dom.nodeTypes.PositionInterpolator },
-	'ScalarInterpolator': { ctor: x3dom.nodeTypes.ScalarInterpolator },
-    'Scene': { ctor: x3dom.nodeTypes.Scene, autoChild: 1 },
-    'Shape': { ctor: x3dom.nodeTypes.Shape },
-    'Sphere': { ctor: x3dom.nodeTypes.Sphere },
-    'Text': { ctor: x3dom.nodeTypes.Text },
-	'Torus': { ctor: x3dom.nodeTypes.Torus },
-    'Transform': { ctor: x3dom.nodeTypes.Transform, autoChild: 1 },
-    'TimeSensor': { ctor: x3dom.nodeTypes.TimeSensor },
-    'Viewpoint': { ctor: x3dom.nodeTypes.Viewpoint },
-    'WorldInfo': { ctor: x3dom.nodeTypes.WorldInfo },
-};
-
-
 x3dom.X3DDocument = function(canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
@@ -2475,17 +2447,22 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 	    	// FIXME; Should we create ROUTES at this position
 	    	if (node.localName == 'ROUTE') 
 	    		return n;
-        	if (undefined === (t = x3dom.nodeTypeMap[node.localName])) {
-            	ctx.log('Unrecognised element '+node.localName);
-        	} else {
-            	ctx.xmlNode = node;
- 	            n = new t.ctor(ctx);
-    	        // PE: Try to store the X3D element on the original DOM element
-        	    node._x3domNode = n;
-            	if (t.autoChild)
-                	Array.forEach(Array.map(node.childNodes, function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), function (c) { if (c) n.addChild(c) });
-            	return n;
-        	}
+
+            // PE: New code no longer uses the x3dom.nodeTypeMap (which is obsolete now)
+            //     The autoChild property was added to the X3DGroupingNode base class (as _autoChild)
+            var nodeType = x3dom.nodeTypes[node.localName];
+            if (nodeType === undefined) {
+                x3dom.debug.logError("Unrecognised element " + node.localName);
+            }
+            else {
+                ctx.xmlNode = node;
+                n = new nodeType(ctx);
+                node._x3domNode = n;
+                if (n._autoChild === true) {
+                    Array.forEach(Array.map(node.childNodes, function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), function (c) { if (c) n.addChild(c) });
+                }
+                return n;
+            }
         }
     }
 };
