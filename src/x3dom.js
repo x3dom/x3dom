@@ -394,7 +394,10 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 				aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));
 				aDiv.appendChild(aLnk);
 				
-				x3ds[i].appendChild(aDiv);
+				x3dcanvas.canvasDiv.appendChild(aDiv);
+
+                // remove the stats div (it's not needed when WebGL doesnt work)
+                x3dcanvas.canvasDiv.removeChild(x3dcanvas.statDiv);
 				continue;
 			}
 			
