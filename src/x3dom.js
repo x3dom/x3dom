@@ -85,7 +85,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             return null;
         }
         return gl;
-    }
+    };
 
     this.createHTMLCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
@@ -143,7 +143,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
 		
         return canvas;
-    }
+    };
 
     this.createStatDiv = function() {
         var statDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
@@ -171,10 +171,10 @@ x3dom.X3DCanvas = function(x3dElem) {
             evt.stopPropagation();
             evt.returnValue = false;
             return false;
-        }
+        };
         
         return statDiv;
-    }
+    };
 
     this.x3dElem = x3dElem;
     this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
@@ -202,7 +202,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			evt.stopPropagation();
 			evt.returnValue = false;
 			return false;
-		}
+		};
 		
 		this.canvas.addEventListener('mousedown', function (evt) {
 			switch(evt.button) {
@@ -215,9 +215,9 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_drag_y = evt.layerY;
 			this.mouse_dragging = true;
 			
-			if (evt.shiftKey) this.mouse_button = 1;
-			if (evt.ctrlKey) this.mouse_button = 4;
-			if (evt.altKey) this.mouse_button = 2;
+			if (evt.shiftKey) { this.mouse_button = 1; }
+			if (evt.ctrlKey) { this.mouse_button = 4; }
+			if (evt.altKey) { this.mouse_button = 2; }
 			
 			this.parent.doc.onMousePress(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 			
@@ -269,17 +269,18 @@ x3dom.X3DCanvas = function(x3dElem) {
 		this.canvas.addEventListener('mousemove', function (evt) {
 			window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
 			
-			if (!this.mouse_dragging)
+			if (!this.mouse_dragging) {
 				return;
+            }
 			
 			var dx = evt.layerX - this.mouse_drag_x;
 			var dy = evt.layerY - this.mouse_drag_y;
 			this.mouse_drag_x = evt.layerX;
 			this.mouse_drag_y = evt.layerY;
 			
-			if (evt.shiftKey) this.mouse_button = 1;
-			if (evt.ctrlKey) this.mouse_button = 4;
-			if (evt.altKey) this.mouse_button = 2;
+			if (evt.shiftKey) { this.mouse_button = 1; }
+			if (evt.ctrlKey) { this.mouse_button = 4; }
+			if (evt.altKey) { this.mouse_button = 2; }
 			
 			//this.parent.doc.ondrag(dx, dy, this.mouse_button);
 			this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
@@ -308,8 +309,9 @@ x3dom.X3DCanvas.prototype.tick = function()
 	var d = new Date().getTime();
 	var fps = 1000.0 / (d - this.fps_t0);
 	
-	if (this.statDiv)	
+	if (this.statDiv) {
 		this.statDiv.textContent = fps.toFixed(2) + ' fps';
+    }
 	this.fps_t0 = d;
 	
 	try {
@@ -368,9 +370,10 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 		
 		// Activate debugging/logging for x3dom. Logging will only work for
         // all log calls after this line!
-		if (activateLog)
+		if (activateLog) {
 			x3dom.debug.activate();
-		
+		}
+
 		x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
 
         // Create a HTML canvas for every X3D scene and wrap it with
@@ -424,6 +427,6 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
             x3dom.canvases[i].doc.onKeyPress(evt.charCode);
         }
         return true;
-    }
+    };
 
 })();
