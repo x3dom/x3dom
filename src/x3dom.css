@@ -1,4 +1,9 @@
 
+.x3dom-canvasdiv {
+    position: relative;
+    float: left;
+}
+
 .x3dom-nox3d {
     font-family: Helvetica, sans-serif;
     background-color: #eb7a7a;
