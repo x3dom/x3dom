@@ -15,7 +15,7 @@ FIELDS := fields.js
 
 WS := WS
 
-$(BUNDLE): 
-	#cat $(BASIC) $(WS) $(DEBUG) $(WS) $(GFX) $(WS) $(NODE) $(WS) $(FIELDS) | gzip > $(BUNDLE)
-	cat > $(BUNDLE) $(BASIC) $(WS) $(DEBUG) $(WS) $(GFX) $(WS) $(NODE) $(WS) $(FIELDS)
+$(BUNDLE): 	
+	python ../tools/x3dom_packer.py $(BASIC) $(DEBUG) $(GFX) $(NODE) $(FIELDS) -o $(BUNDLE) 
+	
 	
