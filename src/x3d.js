@@ -348,6 +348,13 @@ x3dom.registerNodeType(
                     }
                 }
             });
+			
+			if (!material)
+			{
+				var nodeType = x3dom.nodeTypes["Material"];
+				material = new nodeType(ctx);
+			}
+			
             this._material = material;
 			this._texture = texture;
         },
@@ -484,6 +491,7 @@ x3dom.Mesh = function(parent)
 x3dom.Mesh.prototype._positions = [];
 x3dom.Mesh.prototype._normals   = [];
 x3dom.Mesh.prototype._texCoords = [];
+x3dom.Mesh.prototype._colors    = [];
 x3dom.Mesh.prototype._indices   = [];
 
 x3dom.Mesh.prototype._min = {};
@@ -1115,10 +1123,11 @@ x3dom.registerNodeType(
 			var t0 = new Date().getTime();
 			
             var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
-			var normalInd, texCoordInd;
+			var normalInd, texCoordInd, colorInd;
 			
 			var hasNormal = false, hasNormalInd = false;
 			var hasTexCoord = false, hasTexCoordInd = false;
+			var hasColor = false, hasColorInd = false;
 			
 			if (ctx.xmlNode.hasAttribute('normalIndex'))
 			{
@@ -1130,8 +1139,13 @@ x3dom.registerNodeType(
 				texCoordInd = ctx.xmlNode.getAttribute('texCoordIndex').match(/((?:\+|-)?\d+)/g);
 				hasTexCoordInd = true;
 			}
+			if (ctx.xmlNode.hasAttribute('colorIndex'))
+			{
+				colorInd = ctx.xmlNode.getAttribute('colorIndex').match(/((?:\+|-)?\d+)/g);
+				hasColorInd = true;
+			}
 			
-			var positions, normals, texCoords;
+			var positions, normals, texCoords, colors;
 			
 			var coordNode = Array.filter(ctx.xmlNode.childNodes, 
 					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate') });
@@ -1158,16 +1172,29 @@ x3dom.registerNodeType(
 			else
 				hasTexCoord = false;
 			
+			var colorNode = Array.filter(ctx.xmlNode.childNodes, 
+					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Color') });
+            if (colorNode.length == 1) 
+			{
+				hasColor = true;
+				colors = Array.map(colorNode[0].getAttribute('color').match(/([+\-0-9eE\.]+)/g), function (n) { return +n });
+			}
+			else
+				hasColor = false;
+			
 			this._mesh._indices = [];
 			this._mesh._positions = [];
 			if (hasNormal) this._mesh._normals = [];
 			if (hasTexCoord) this._mesh._texCoords = [];
+			if (hasColor) this._mesh._colors = [];
 			
-			if ( (hasNormal && hasNormalInd) || (hasTexCoord && hasTexCoordInd) )
+			if ( (hasNormal && hasNormalInd) || 
+				 (hasTexCoord && hasTexCoordInd) || 
+				 (hasColor && hasColorInd) )
 			{
 				// Found MultiIndex Mesh
 				var t = 0, cnt = 0;
-				var p0, p1, p2, n0, n1, n2, t1, t2, t3;
+				var p0, p1, p2, n0, n1, n2, t1, t2, t3, c0, c1, c2;
 				
 				for (var i=0; i < indexes.length; ++i) 
 				{
@@ -1181,6 +1208,8 @@ x3dom.registerNodeType(
 						ctx.assert(normalInd[i] != -1);
 					if (hasTexCoordInd)
 						ctx.assert(texCoordInd[i] != -1);
+					if (hasColorInd)
+						ctx.assert(colorInd[i] != -1);
 					
 					//TODO: OPTIMIZE but think about cache coherence regarding arrays!!!
 					switch (t) 
@@ -1192,6 +1221,8 @@ x3dom.registerNodeType(
 							else n0 = p0;
 							if (hasTexCoordInd) t0 = +texCoordInd[i];
 							else t0 = p0;
+							if (hasColorInd) c0 = +colorInd[i];
+							else c0 = p0;
 							t = 1; 
 						}
 						break;
@@ -1202,6 +1233,8 @@ x3dom.registerNodeType(
 							else n1 = p1;
 							if (hasTexCoordInd) t1 = +texCoordInd[i];
 							else t1 = p1;
+							if (hasColorInd) c1 = +colorInd[i];
+							else c1 = p1;
 							t = 2; 
 						}
 						break;
@@ -1212,6 +1245,8 @@ x3dom.registerNodeType(
 							else n2 = p2;
 							if (hasTexCoordInd) t2 = +texCoordInd[i];
 							else t2 = p2;
+							if (hasColorInd) c2 = +colorInd[i];
+							else c2 = p2;
 							t = 3; 
 							
 							this._mesh._indices.push(cnt++, cnt++, cnt++);
@@ -1250,6 +1285,19 @@ x3dom.registerNodeType(
 								this._mesh._texCoords.push(texCoords[t2*3+1]);
 								this._mesh._texCoords.push(texCoords[t2*3+2]);
 							}
+							
+							if (hasColor) {
+								//assume RGB for now...
+								this._mesh._colors.push(colors[c0*3+0]);
+								this._mesh._colors.push(colors[c0*3+1]);
+								this._mesh._colors.push(colors[c0*3+2]);
+								this._mesh._colors.push(colors[c1*3+0]);
+								this._mesh._colors.push(colors[c1*3+1]);
+								this._mesh._colors.push(colors[c1*3+2]);
+								this._mesh._colors.push(colors[c2*3+0]);
+								this._mesh._colors.push(colors[c2*3+1]);
+								this._mesh._colors.push(colors[c2*3+2]);
+							}
 						}
 						break;
 						case 3: 
@@ -1262,6 +1310,8 @@ x3dom.registerNodeType(
 							else n2 = p2;
 							if (hasTexCoordInd) t2 = +texCoordInd[i];
 							else t2 = p2;
+							if (hasColorInd) c2 = +colorInd[i];
+							else c2 = p2;
 							
 							this._mesh._indices.push(cnt++, cnt++, cnt++);
 							
@@ -1298,6 +1348,19 @@ x3dom.registerNodeType(
 								this._mesh._texCoords.push(texCoords[t2*3+0]);
 								this._mesh._texCoords.push(texCoords[t2*3+1]);
 								this._mesh._texCoords.push(texCoords[t2*3+2]);
+							}
+							
+							if (hasColor) {
+								//assume RGB for now...
+								this._mesh._colors.push(colors[c0*3+0]);
+								this._mesh._colors.push(colors[c0*3+1]);
+								this._mesh._colors.push(colors[c0*3+2]);
+								this._mesh._colors.push(colors[c1*3+0]);
+								this._mesh._colors.push(colors[c1*3+1]);
+								this._mesh._colors.push(colors[c1*3+2]);
+								this._mesh._colors.push(colors[c2*3+0]);
+								this._mesh._colors.push(colors[c2*3+1]);
+								this._mesh._colors.push(colors[c2*3+2]);
 							}
 						}
 						break;
@@ -1345,6 +1408,9 @@ x3dom.registerNodeType(
 					this._mesh._texCoords = texCoords;
 				else
 					this._mesh.calcTexCoords();
+				
+				if (hasColor)
+					this._mesh._colors = colors;
 				
 				this._mesh.remapData();
 			}
@@ -1612,7 +1678,13 @@ x3dom.registerNodeType(
                 }
             });
 			
+			if (!appearance)
+			{
+				var nodeType = x3dom.nodeTypes["Appearance"];
+				appearance = new nodeType(ctx);
+			}
             ctx.assert(appearance && geometry, 'has appearance and geometry');
+			
             this._appearance = appearance;
             this._geometry = geometry;
         },

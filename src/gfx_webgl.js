@@ -112,6 +112,55 @@ x3dom.gfx_webgl = (function () {
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
 		"}"
 		};
+	
+	g_shaders['vs-x3d-vertexcolor'] = { type: "vertex", data:
+		"attribute vec3 position;" +
+		"attribute vec3 normal;" +
+		"attribute vec3 color;" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragColor;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+		"uniform mat4 modelViewMatrix;" +
+		"uniform mat4 viewMatrixInverse;" +
+		"uniform vec3 lightDirection;" +
+		"uniform vec3 eyePosition;" +
+		"" +
+		"void main(void) {" +
+		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
+		"    fragLightVector = -lightDirection;" +
+		"    fragColor = color;" +
+		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
+		"}"
+		};
+	
+	g_shaders['fs-x3d-vertexcolor'] = { type: "fragment", data:
+		"uniform float ambientIntensity;" +
+		"uniform vec3 diffuseColor;" +
+		"uniform vec3 emissiveColor;" +
+		"uniform float shininess;" +
+		"uniform vec3 specularColor;" +
+		"uniform float alpha;" +
+		"" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragColor;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"" +
+		"void main(void) {" +
+		"    vec3 normal = normalize(fragNormal);" +
+		"    vec3 light = normalize(fragLightVector);" +
+		"    vec3 eye = normalize(fragEyeVector);" +
+		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    vec3 rgb = emissiveColor + diffuse*fragColor + specular*specularColor;" +
+		"    rgb = clamp(rgb, 0.0, 1.0);" +
+		"    gl_FragColor = vec4(rgb, alpha);" +
+		"}"
+		};
 		
 	g_shaders['fs-x3d-untextured'] = { type: "fragment", data:
 		"uniform float ambientIntensity;" +
@@ -403,13 +452,17 @@ x3dom.gfx_webgl = (function () {
 				positions: shape._geometry._mesh._positions,
 				normals: shape._geometry._mesh._normals,
 				texcoords: shape._geometry._mesh._texCoords,
+				colors: shape._geometry._mesh._colors,
 				indexes: shape._geometry._mesh._indices,
-				buffers: [{},{},{},{}],
+				//indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
+				buffers: [{},{},{},{},{}],
 			};
             
 			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
 			if (tex)
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
+			else if (shape._geometry._mesh._colors.length > 0)
+				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolor', 'fs-x3d-vertexcolor']);
 			else
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
 			
@@ -433,9 +486,13 @@ x3dom.gfx_webgl = (function () {
 				var indicesBuffer = gl.createBuffer();
 				shape._webgl.buffers[0] = indicesBuffer;
 				
+				var indexArray = new CanvasUnsignedShortArray(shape._webgl.indexes);
+				
 				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, 
-						new CanvasUnsignedShortArray(shape._webgl.indexes), gl.STATIC_DRAW);
+				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+				
+				delete vertices;
+				delete indexArray;
 			}
 			if (sp.normal !== undefined) 
 			{
@@ -449,6 +506,8 @@ x3dom.gfx_webgl = (function () {
 				
 				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
 				//gl.enableVertexAttribArray(sp.normal);
+				
+				delete normals;
 			}
 			if (sp.texcoord !== undefined)
 			{
@@ -462,6 +521,23 @@ x3dom.gfx_webgl = (function () {
 				
 				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
 				//gl.enableVertexAttribArray(sp.texcoord);
+				
+				delete texCoords;
+			}
+			if (sp.color !== undefined)
+			{
+				var colorBuffer = gl.createBuffer();
+				shape._webgl.buffers[4] = colorBuffer;
+				
+				var colors = new CanvasFloatArray(shape._webgl.colors);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+				gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
+				
+				gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+				//gl.enableVertexAttribArray(sp.color);
+				
+				delete colors;
 			}
 		}
 	}
@@ -654,6 +730,13 @@ x3dom.gfx_webgl = (function () {
 				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.texcoord);
 			}
+			if (sp.color !== undefined)
+			{
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[4]);
+				
+				gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+				gl.enableVertexAttribArray(sp.color);
+			}
 			
 			if (shape._isSolid())
 				gl.enable(gl.CULL_FACE);
@@ -725,21 +808,23 @@ x3dom.gfx_webgl = (function () {
 			
 			if (sp.position !== undefined) 
 			{
-				gl.deleteBuffer(positionBuffer);
-				gl.deleteBuffer(indicesBuffer);
-				delete vertices;
+				gl.deleteBuffer(shape._webgl.buffers[1]);
+				gl.deleteBuffer(shape._webgl.buffers[0]);
 			}
 			
 			if (sp.normal !== undefined) 
 			{
-				gl.deleteBuffer(normalBuffer);
-				delete normals;
+				gl.deleteBuffer(shape._webgl.buffers[2]);
 			}
 			
 			if (sp.texcoord !== undefined) 
 			{
-				gl.deleteBuffer(texcBuffer);
-				delete texCoords;
+				gl.deleteBuffer(shape._webgl.buffers[3]);
+			}
+			
+			if (sp.color !== undefined)
+			{
+				gl.deleteBuffer(shape._webgl.buffers[4]);
 			}
 		}
 	}
