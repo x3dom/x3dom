@@ -60,7 +60,6 @@ var x3dom = {
 x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
 x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
 x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
-x3dom.xhtmlNS = 'http://www.w3.org/1999/xhtml';
 
 /** Wraps the given @p canvas with an X3DCanvas object.
 
@@ -90,10 +89,8 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     this.createHTMLCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
-        var canvas = document.createElementNS(x3dom.xhtmlNS, 'canvas');
-        canvas.setAttribute("class", "x3dom-canvas");
+        var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');		
         this.canvasDiv.appendChild(canvas);
-                
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
 
         // Apply the width and height of the X3D element to the canvas 
