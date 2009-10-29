@@ -1,0 +1,69 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>Simple WebGL example</title>
+		<style>
+		p.case { clear: both; border-top: 1px solid #888; }
+		</style>
+        <link rel="stylesheet" type="text/css" href="x3dom.css" />
+	</head>
+       
+<body style="background-color:#E0E0E0;">
+
+    <h1>x3dom simple example</h1>
+	
+	<p class="case">Geometric primitive types
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="500px">
+			<Scene>
+				<Background skyColor='0.7 0.7 0.7' />
+				
+				<Transform DEF="coneTrafo" translation="-4.5 0 0">
+					<Shape DEF="coneShape">
+						<Appearance DEF="coneApp">
+							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Cone DEF="cone" />
+					</Shape>
+				</Transform>
+				
+				<Transform DEF="boxTrafo" translation='-1.5 0 0'>
+					<Shape DEF="boxShape">
+						<Appearance DEF="boxApp"> 
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Box DEF="box" onclick="alert('Hi, I am a little red box and was picked at position\n' + hitPnt);" />
+					</Shape>
+				</Transform>
+                
+				<Transform DEF="sphereTrafo" translation="1.5 0 0">
+					<Shape DEF="sphereShape">
+						<Appearance DEF="sphereApp">
+							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Sphere DEF="sphere" />
+					</Shape>
+				</Transform>
+				
+				<Transform DEF="cylinderTrafo" translation="4.5 0 0">
+					<Shape DEF="cylinderShape">
+						<Appearance DEF="cylinderApp">
+							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Cylinder DEF="cylinder" radius="1.0" height="2.0" />
+					</Shape>
+				</Transform>
+                
+				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
+			</Scene>
+        </X3D>
+	</p>
+	
+	<p class="case"> &nbsp; </p>
+	
+	<script type="text/javascript" src="x3dom.js"></script>
+   
+
+</body>
+</html>
