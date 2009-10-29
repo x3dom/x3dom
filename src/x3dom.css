@@ -1,0 +1,16 @@
+
+.x3dom-nox3d {
+    font-family: Helvetica, sans-serif;
+    background-color: #eb7a7a;
+    padding: 1em;
+    opacity: 0.75;
+}
+
+.x3dom-nox3d p { 
+    color: #fff;
+    margin-top: 0; 
+}
+
+.x3dom-nox3d a { 
+    color: #fff;
+}
