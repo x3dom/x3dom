@@ -7,7 +7,7 @@ bundle: $(BUNDLE)
 clean: 
 	rm -f $(BUNDLE)
 
-BASIC := x3dom.js 
+BASIC := x3dmain.js 
 DEBUG := debug.js 
 GFX := gfx_webgl.js
 NODE := x3d.js
