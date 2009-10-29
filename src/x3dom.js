@@ -89,24 +89,12 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     this.createHTMLCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
-        // this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-        this.canvasDiv.style.position = "relative"; 
-        this.canvasDiv.style.cssFloat = "left";
-        // this.canvasDiv.style.border = "3px solid #f00";
-        var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
-		
+        var canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');		
         this.canvasDiv.appendChild(canvas);
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
 
         // Apply the width and height of the X3D element to the canvas 
         var x, y, w, h, showStat;
-        canvas.style.position = "relative";
-		canvas.style.border = "1px solid #000";
-		canvas.style.marginBottom = "1em";
-		canvas.style.marginRight = "1em";
-		canvas.style.cssFloat = "left";
-        canvas.style.cursor = "pointer";
-		
         if ((x = x3dElem.getAttribute("x")) !== null) {
             canvas.style.left = x.toString();
         }
@@ -114,13 +102,11 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.style.top = y.toString();
         }
         if ((w = x3dElem.getAttribute("width")) !== null) {
-            //x3dom.debug.logInfo("width=" + w);
             canvas.style.width = this.canvasDiv.style.width = w.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("width",canvas.style.width);
         }
         if ((h = x3dElem.getAttribute("height")) !== null) {
-            //x3dom.debug.logInfo("height=" + h);
             canvas.style.height = this.canvasDiv.style.height = h.toString();
 			//Attention: pbuffer dim is _not_ derived from style attribs!
 			canvas.setAttribute("height",canvas.style.height);
@@ -130,16 +116,17 @@ x3dom.X3DCanvas = function(x3dElem) {
         // to it and and use that as the id for the canvas
         var id;
         if ((id=x3dElem.getAttribute("id")) !== null) {
-            this.canvasDiv.id = id + "_canvas_div";
-            canvas.id = id + "_canvas";
+            this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
+            this.canvasDiv.id = "x3dom-" + id + "-canvasdiv";
+            canvas.id = "x3dom-" + id + "-canvas";
         }
         else {
             // If the X3D element does not have an id... do what?
             // For now check the number of canvas elements in the page
             // and use length+1 for creating a (hopefully) unique id
             var index = (document.getElementsByTagNameNS(x3dom.x3dNS, 'X3D').length+1);
-            this.canvasDiv.id = "canvas_div_" + index;
-            canvas.id = "canvas" + index;
+            this.canvasDiv.id = "x3dom-" + index + "-canvasdiv";
+            canvas.id = "x3dom-" + index + "-canvas";
         }
 		
         return canvas;
@@ -147,23 +134,8 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     this.createStatDiv = function() {
         var statDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
-        statDiv.innerHTML = "0 fps";
-        
-		statDiv.style.margin = "0px";
-		statDiv.style.padding = "0px";
-		// statDiv.style.left = "10px";
-        statDiv.style.right = "10px";
-        statDiv.style.top = "10px";
-        statDiv.style.position = "absolute";
-        // statDiv.style.top = "10px";
-        statDiv.style.color = "#00ff00";
-		statDiv.style.fontFamily = "sans-serif";
-		statDiv.style.fontSize = "small";
-        // statDiv.style.backgroundColor = "navajowhite";
-        statDiv.style.width = "75px";
-        statDiv.style.height = "70px";
-        statDiv.style.cssFloat = "right";
-		
+        statDiv.setAttribute("class", "x3dom-statdiv");
+        statDiv.innerHTML = "0 fps";		
         this.canvasDiv.appendChild(statDiv);
         
         statDiv.oncontextmenu = statDiv.onmousedown = function(evt) {
@@ -171,8 +143,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             evt.stopPropagation();
             evt.returnValue = false;
             return false;
-        };
-        
+        };        
         return statDiv;
     };
 
@@ -382,25 +353,36 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
 			if (x3dcanvas.gl === null)
 			{
-				var aDiv = document.createElement("div");
-				aDiv.style.border = "1px solid";
-				aDiv.style.margin = "4px";
-				aDiv.style.padding = "4px";
-				aDiv.style.color = "darkblue";
-				aDiv.style.fontFamily = "sans-serif";
-				aDiv.style.backgroundColor = "navajowhite";
-				aDiv.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
-				aDiv.appendChild(document.createElement("br"));
-				aDiv.appendChild(document.createElement("br"));
+                var altDiv = document.createElement("div");
+                altDiv.setAttribute("class", "x3dom-nox3d");
+                var altP = document.createElement("p");
+				altP.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
 				var aLnk = document.createElement("a");
 				aLnk.setAttribute("href","http://www.x3dom.org/?page_id=9");
-				aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));
-				aDiv.appendChild(aLnk);
-				
-				x3dcanvas.canvasDiv.appendChild(aDiv);
+				aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));				
+                altDiv.appendChild(altP);
+				altDiv.appendChild(aLnk);
+                x3dcanvas.canvasDiv.appendChild(altDiv);
 
                 // remove the stats div (it's not needed when WebGL doesnt work)
-                x3dcanvas.canvasDiv.removeChild(x3dcanvas.statDiv);
+                if (x3dcanvas.statDiv) { 
+                    x3dcanvas.canvasDiv.removeChild(x3dcanvas.statDiv);
+                }
+                
+                // check if "altImg" is specified and if so use it as background
+                var altImg = x3ds[i].getAttribute("altImg") || null;
+                if (altImg) {
+                    var altImgObj = new Image();                
+                    altImgObj.src = altImg;                    
+                    x3dcanvas.canvasDiv.style.backgroundImage = "url("+altImg+")";
+                    // resize the alt div to match the alt image size
+                    x3dcanvas.canvasDiv.style.width = altImgObj.width + "px";
+                    x3dcanvas.canvasDiv.style.height = altImgObj.height + "px";   
+                }
+                else {
+                    // x3dcanvas.canvasDiv.style.backgroundColor = "#333"; 
+                    // x3dcanvas.canvasDiv.style.padding = "1em";
+                }
 				continue;
 			}
 			
