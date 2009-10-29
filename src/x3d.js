@@ -356,21 +356,43 @@ x3dom.registerNodeType(
 				if (this._DEF == def) 
 					return this;
 				
-				if (this._material !== null && this._material._DEF == def)
-					return this._material;
-				if (this._texture !== null && this._texture._DEF == def)
-					return this._texture;
+				var found = null;
 				
-				return null;
+				if (this._material !== null) {
+					found = this._material._getNodeByDEF(def);
+                    if (found)
+                        return found;
+				}
+				
+				if (this._texture !== null) {
+					found = this._texture._getNodeByDEF(def);
+                    if (found)
+                        return found;
+				}
+				
+				return found;
 			},
 
 			_find: function (type) {
-				if (this._material !== null && this._material.constructor == type)
-					return this._material;
-				if (this._texture !== null && this._texture.constructor == type)
-					return this._texture;
+				var c = null;
 				
-				return null;
+				if (this._material !== null) {
+					if (this._material.constructor == type)
+						return this._material;
+					c = this._material._find(type);
+					if (c)
+						return c;
+				}
+				
+				if (this._texture !== null) {
+					if (this._texture.constructor == type)
+						return this._texture;
+					c = this._texture._find(type);
+					if (c)
+						return c;
+				}
+				
+				return c;
 			},
 		}
     )
@@ -1620,21 +1642,43 @@ x3dom.registerNodeType(
 				if (this._DEF == def) 
 					return this;
 				
-				if (this._appearance !== null && this._appearance._DEF == def)
-					return this._appearance;
-				if (this._geometry !== null && this._geometry._DEF == def)
-					return this._geometry;
+				var found = null;
 				
-				return null;
+				if (this._appearance !== null) {
+					found = this._appearance._getNodeByDEF(def);
+                    if (found)
+                        return found;
+				}
+				
+				if (this._geometry !== null) {
+					found = this._geometry._getNodeByDEF(def);
+                    if (found)
+                        return found;
+				}
+				
+				return found;
 			},
 			
 			_find: function (type) {
-				if (this._appearance !== null && this._appearance.constructor == type)
-					return this._appearance;
-				if (this._geometry !== null && this._geometry.constructor == type)
-					return this._geometry;
+				var c = null;
 				
-				return null;
+				if (this._appearance !== null) {
+					if (this._appearance.constructor == type)
+						return this._appearance;
+					c = this._appearance._find(type);
+					if (c)
+						return c;
+				}
+				
+				if (this._geometry !== null) {
+					if (this._geometry.constructor == type)
+						return this._geometry;
+					c = this._geometry._find(type);
+					if (c)
+						return c;
+				}
+				
+				return c;
 			},
         }
     )

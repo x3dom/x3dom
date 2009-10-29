@@ -57,11 +57,11 @@
 				<OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14159, 1 0 0 6.28318" />
 				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'/>
 				<ROUTE fromNode='OI' fromField='value_changed' toNode='TBox' toField='rotation'/>
-				<!--
-				<ScalarInterpolator DEF="SI" key="0 0.3 0.6 1" keyValue="0 1 1 0" />
+				
+				<ScalarInterpolator DEF="SI" key="0 0.3 0.6 1" keyValue="1 0 0 1" />
 				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='SI' toField='set_fraction'/>
 				<ROUTE fromNode='SI' fromField='value_changed' toNode='BoxMat' toField='transparency'/>
-				-->
+				
 				<Viewpoint centerOfRotation="0 0 0" position="2 0 8" orientation="0 1 0 0" fieldOfView="0.785398"/>
 			</Scene>
 		</X3D>
@@ -162,7 +162,7 @@ vr4MkhoXe0rZigAAAABJRU5ErkJggg==" alt="Red dot" />
 	
 	<script type="text/javascript" ><![CDATA[
        window.onload = function() {
-	   return;
+	   return true;
             
             /* Test DOM updates by randomly changing the flipper color... */
             var mats = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'Material');
