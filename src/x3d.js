@@ -112,7 +112,12 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
     function (ctx) {
         if (ctx.xmlNode.hasAttribute('DEF')) {
             this._DEF = ctx.xmlNode.getAttribute('DEF');
-			ctx.defMap[ctx.xmlNode.getAttribute('DEF')] = this;
+			ctx.defMap[this._DEF] = this;
+		} else {
+			if (ctx.xmlNode.hasAttribute('id')) {
+				this._DEF = ctx.xmlNode.getAttribute('id');
+				ctx.defMap[this._DEF] = this;
+			}
 		}
         this._typeName = ctx.xmlNode.localName;
 		this._xmlNode = ctx.xmlNode;	// backlink to DOM tree
@@ -2528,6 +2533,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             };
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
             // console.dir(e);
+            alert ( 'foo' );
             e.target._x3domNode._updateField(e.attrName, e.newValue);
             
         },
