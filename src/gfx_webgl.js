@@ -112,6 +112,35 @@ x3dom.gfx_webgl = (function () {
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
 		"}"
 		};
+		
+	g_shaders['fs-x3d-untextured'] = { type: "fragment", data:
+		"uniform float ambientIntensity;" +
+		"uniform vec3 diffuseColor;" +
+		"uniform vec3 emissiveColor;" +
+		"uniform float shininess;" +
+		"uniform vec3 specularColor;" +
+		"uniform float alpha;" +
+		"uniform bool on;" +
+		"" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"" +
+		"void main(void) {" +
+		"    vec3 normal = normalize(fragNormal);" +
+		"    vec3 light = normalize(fragLightVector);" +
+		"    vec3 eye = normalize(fragEyeVector);" +
+		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
+		//"    float diffuse = max(0.0, dot(normal, light));" +
+		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
+		"    rgb = clamp(rgb, 0.0, 1.0);" +
+		//"    vec3 rgb = vec3(diffuse);" +
+		//"    vec3 rgb = (1.0+eye)/2.0;" +
+		"    gl_FragColor = vec4(rgb, alpha);" +
+		"}"
+		};
 	
 	g_shaders['vs-x3d-vertexcolor'] = { type: "vertex", data:
 		"attribute vec3 position;" +
@@ -158,34 +187,6 @@ x3dom.gfx_webgl = (function () {
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*fragColor + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
-		"    gl_FragColor = vec4(rgb, alpha);" +
-		"}"
-		};
-		
-	g_shaders['fs-x3d-untextured'] = { type: "fragment", data:
-		"uniform float ambientIntensity;" +
-		"uniform vec3 diffuseColor;" +
-		"uniform vec3 emissiveColor;" +
-		"uniform float shininess;" +
-		"uniform vec3 specularColor;" +
-		"uniform float alpha;" +
-		"" +
-		"varying vec3 fragNormal;" +
-		"varying vec3 fragLightVector;" +
-		"varying vec3 fragEyeVector;" +
-		"" +
-		"void main(void) {" +
-		"    vec3 normal = normalize(fragNormal);" +
-		"    vec3 light = normalize(fragLightVector);" +
-		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
-		//"    float diffuse = max(0.0, dot(normal, light));" +
-		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
-		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
-		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
-		"    rgb = clamp(rgb, 0.0, 1.0);" +
-		//"    vec3 rgb = vec3(diffuse);" +
-		//"    vec3 rgb = (1.0+eye)/2.0;" +
 		"    gl_FragColor = vec4(rgb, alpha);" +
 		"}"
 		};
@@ -293,14 +294,19 @@ x3dom.gfx_webgl = (function () {
 		
 		shader.bind = function () { gl.useProgram(sp) };
 		
-		for (var i = 0; ; ++i) {
+		var i, ok = true;	//make lint happy
+		
+		for (i=0; ok; ++i) {
 			try {
 				var obj = gl.getActiveUniform(sp, i);
 				//x3dom.debug.logInfo("uniform #" + i + " obj=" + obj.name );
 			}
 			catch (e) {}
 
-			if (gl.getError() != 0) break; // XXX: GetProgramiv(ACTIVE_ATTRIBUTES) is not implemented, so just loop until error
+			if (gl.getError() != 0) {
+				 // XXX: GetProgramiv(ACTIVE_ATTRIBUTES) is not implemented, so just loop until error
+				break;
+			}
 
 			var loc = gl.getUniformLocation(sp, obj.name);
 			
@@ -308,6 +314,14 @@ x3dom.gfx_webgl = (function () {
 				case gl.SAMPLER_2D:
 					shader.__defineSetter__(obj.name, 
 						(function (loc) { return function (val) { gl.uniformi(loc, [val]) } })(loc));
+					break;
+				case gl.SAMPLER_CUBE:
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniformi(loc, [val]) } })(loc));
+					break;
+				case gl.BOOL:
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform1i(loc, val) } })(loc));
 					break;
 				case gl.FLOAT:
 					shader.__defineSetter__(obj.name, 
@@ -342,14 +356,17 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-		for (var i = 0; ; ++i) {
+		for (var i=0; ok; ++i) {
 			try {
 				var obj = gl.getActiveAttrib(sp, i);
 				//x3dom.debug.logInfo("attribute #" + i + " obj=" + obj.name );
 			}
 			catch (e) {}
 			
-			if (gl.getError() != 0) break; // XXX: as above			
+			if (gl.getError() != 0) {
+				// XXX: as above		
+				break;	
+			}
 
 			var loc = gl.getAttribLocation(sp, obj.name);
 			shader[obj.name] = loc;
@@ -598,12 +615,16 @@ x3dom.gfx_webgl = (function () {
 		var mat_view = scene.getViewMatrix();
 		var mat_view_inv = mat_view.inverse();
 		
+        
 		//TODO; get all from scene and get rid of default (0,-1,0)
-		var light; /*
-		if (scene.getLights().length > 0)
-			light = scene.getLights()[0]._direction;
-		else       */
+		var light;
+		var slights = scene.getLights();
+		if (slights.length > 0) {
+			light = slights[0]._direction;
+		}
+		else {
 			light = new x3dom.fields.SFVec3(0, -1, 0);
+		}
 		light = mat_view.multMatrixVec(light);
 		
 		
