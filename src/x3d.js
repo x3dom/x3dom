@@ -2533,7 +2533,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             };
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
             // console.dir(e);
-            alert ( 'foo' );
+            // alert ( 'foo' );
             e.target._x3domNode._updateField(e.attrName, e.newValue);
             
         },
