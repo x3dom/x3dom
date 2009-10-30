@@ -332,8 +332,9 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) { return n; });
 		
+        var i=0;
 		var activateLog = false;
-		for (var i in x3ds) {
+		for (i=0; i<x3ds.length; i++) {
 			var showLog = x3ds[i].getAttribute("showLog");
 			if (showLog !== null && showLog == "true")
 			{
@@ -352,7 +353,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
-        for (var i in x3ds) {
+        for (i=0; i<x3ds.length; i++) {
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
 			if (x3dcanvas.gl === null)
 			{
