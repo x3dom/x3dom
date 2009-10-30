@@ -32,11 +32,11 @@ x3dom.components = {};
  */
 x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
     x3dom.debug.logInfo("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
-    if (x3dom.components[componentName] == undefined) {
+    if (x3dom.components[componentName] === undefined) {
         x3dom.debug.logInfo("Adding new component [" + componentName + "]");
         x3dom.components[componentName] = {};
         x3dom.components[componentName][nodeTypeName] = nodeDef;
-        x3dom.nodeTypes[nodeTypeName] = nodeDef
+        x3dom.nodeTypes[nodeTypeName] = nodeDef;
     }
     else {
         x3dom.debug.logInfo("Using component [" + componentName + "]");
@@ -53,7 +53,7 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
 x3dom.isX3DElement = function(node) {
     return (node.nodeType === Node.ELEMENT_NODE &&
         (node.namespaceURI == x3dom.x3dNS || node.namespaceURI == x3dom.x3dextNS));
-}
+};
 
 /** Utility function for defining a new class.
 
@@ -70,25 +70,30 @@ function defineClass(parent, ctor, methods) {
         ctor.prototype.constructor = ctor;
         ctor.superClass = parent;
     }
-    if (methods)
-        for (var m in methods)
+    if (methods) {
+        for (var m in methods) {
             ctor.prototype[m] = methods[m];
+        }
+    }
     return ctor;
 }
 
 x3dom.isa = function(object, clazz) {
-    if (object.constructor == clazz)
+    if (object.constructor == clazz) {
         return true;
+    }
 
     function f(c) {
-        if (c == clazz)
+        if (c == clazz) {
             return true;
-        if (c.prototype && c.prototype.constructor && c.prototype.constructor.superClass)
+        }
+        if (c.prototype && c.prototype.constructor && c.prototype.constructor.superClass) {
             return f(c.prototype.constructor.superClass);
+        }
         return false;
     }
     return f(object.constructor.superClass);
-}
+};
 
 // X3D doesn't seem to define this decoding, so do something vaguely sensible instead...
 function MFString_parse(str) {
@@ -97,9 +102,10 @@ function MFString_parse(str) {
         var re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         var m;
         var ret = [];
-        while (m = re.exec(str))
+        while (m = re.exec(str)) {
             ret.push(m[1].replace(/\\([\\"])/, "$1"));
-        return ret
+        }
+        return ret;
     } else {
         return [str];
     }
@@ -124,13 +130,16 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 		
         this._fieldWatchers = {};
         this._parentNodes = [];
+        this._childNodes = [];
     },
     {
         _getCurrentTransform: function () {
-            if (this._parentNodes.length >= 1)
+            if (this._parentNodes.length >= 1) {
                 return this._transformMatrix(this._parentNodes[0]._getCurrentTransform());
-            else
+            }
+            else {
                 return x3dom.fields.SFMatrix4.identity();
+            }
         },
 
         _transformMatrix: function (transform) {
@@ -140,7 +149,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 		_getVolume: function (min, max, invalidate) 
         {
             var valid = false;
-			for (var i in this._childNodes)
+			for (var i=0; i<this._childNodes.length; i++)
 			{
 				if (this._childNodes[i])
 				{
@@ -152,13 +161,13 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 					
                     if (valid)
                     {
-                        if (min.x > childMin.x) min.x = childMin.x;
-                        if (min.y > childMin.y) min.y = childMin.y;
-                        if (min.z > childMin.z) min.z = childMin.z;
+                        if (min.x > childMin.x) { min.x = childMin.x; }
+                        if (min.y > childMin.y) { min.y = childMin.y; }
+                        if (min.z > childMin.z) { min.z = childMin.z; }
                             
-                        if (max.x < childMax.x) max.x = childMax.x;
-                        if (max.y < childMax.y) max.y = childMax.y;
-                        if (max.z < childMax.z) max.z = childMax.z;
+                        if (max.x < childMax.x) { max.x = childMax.x; }
+                        if (max.y < childMax.y) { max.y = childMax.y; }
+                        if (max.z < childMax.z) { max.z = childMax.z; }
                     }
 				}
 			}
@@ -166,13 +175,15 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 		},
 
         _find: function (type) {
-            for (var i in this._childNodes) {
+            for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
-                    if (this._childNodes[i].constructor == type)
+                    if (this._childNodes[i].constructor == type) {
                         return this._childNodes[i];
+                    }
                     var c = this._childNodes[i]._find(type);
-                    if (c)
+                    if (c) {
                         return c;
+                    }
                 }
             }
             return null;
@@ -180,10 +191,11 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 
         _findAll: function (type) {
             var found = [];
-            for (var i in this._childNodes) {
+            for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
-                    if (this._childNodes[i].constructor == type)
+                    if (this._childNodes[i].constructor == type) {
                         found.push(this._childNodes[i]);
+                    }
                     found = found.concat(this._childNodes[i]._findAll(type)); // TODO: this has non-linear performance
                 }
             }
@@ -193,7 +205,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         /* Collects array of [transform matrix, node] for all objects that should be drawn. */
         _collectDrawableObjects: function (transform, out) {
             // TODO: culling etc
-            for (var i in this._childNodes) {
+            for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     var childTransform = this._childNodes[i]._transformMatrix(transform);
                     this._childNodes[i]._collectDrawableObjects(childTransform, out);
@@ -202,7 +214,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         },
         
         _doIntersect: function(line) {
-            for (var i in this._childNodes) {
+            for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     if (this._childNodes[i]._doIntersect(line))
                         return true;
@@ -215,7 +227,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             // TODO: cache this so it's not so stupidly inefficient
             if (this._DEF == def) 
                 return this;
-            for (var i in this._childNodes) {
+            for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     var found = this._childNodes[i]._getNodeByDEF(def);
                     if (found)
@@ -305,7 +317,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         },
         _attribute_MFColor: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFColor([new x3dom.fields.SFColor(0,0,0)]);
-        },
+        }
     }
 ));
 
@@ -405,7 +417,7 @@ x3dom.registerNodeType(
 				}
 				
 				return c;
-			},
+			}
 		}
     )
 );
@@ -491,7 +503,7 @@ x3dom.Mesh = function(parent)
 	this._min = new x3dom.fields.SFVec3(0,0,0);
 	this._max = new x3dom.fields.SFVec3(0,0,0);
 	this._invalidate = true;
-}
+};
 
 x3dom.Mesh.prototype._positions = [];
 x3dom.Mesh.prototype._normals   = [];
@@ -548,7 +560,7 @@ x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 	max.x = this._max.x;
 	max.y = this._max.y;
 	max.z = this._max.z;
-}
+};
 
 x3dom.Mesh.prototype.getCenter = function() 
 {
@@ -561,7 +573,7 @@ x3dom.Mesh.prototype.getCenter = function()
 	//x3dom.debug.logInfo("getCenter: " + min + " | " + max + " --> " + center);
 	
 	return center;
-}
+};
 
 x3dom.Mesh.prototype.doIntersect = function(line)
 {
@@ -584,21 +596,22 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     }
     
     return isect;
-}
+};
 
 x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 {
 	//fixme; as first shot taken from gfx
+    var i = 0;
 	var coords = this._positions;
 	var idxs = this._indices;
 	
 	var vertNormals = [];
 	var vertFaceNormals = [];
 	
-	for (var i = 0; i < coords.length/3; ++i)
+	for (i = 0; i < coords.length/3; ++i)
 		vertFaceNormals[i] = [];
 
-	for (var i = 0; i < idxs.length; i += 3) {
+	for (i = 0; i < idxs.length; i += 3) {
 		var a = new x3dom.fields.SFVec3(
 				coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
 			subtract(new x3dom.fields.SFVec3(
@@ -615,7 +628,7 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 	}
 	
     //TODO: creaseAngle
-	for (var i = 0; i < coords.length; i += 3) {
+	for (i = 0; i < coords.length; i += 3) {
 		var n = new x3dom.fields.SFVec3(0, 0, 0);
 		for (var j = 0; j < vertFaceNormals[i/3].length; ++j)
 			n = n.add(vertFaceNormals[i/3][j]);
@@ -627,18 +640,18 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 	}
 	
 	this._normals = vertNormals;
-}
+};
 
 x3dom.Mesh.prototype.calcTexCoords = function()
 {
 	//TODO
-}
+};
 
 x3dom.Mesh.prototype.remapData = function()
 {
 	//x3dom.debug.logInfo("Indices:   "+this._indices);
 	//x3dom.debug.logInfo("Positions: "+this._positions);
-}
+};
 
 
 /**** x3dom.X3DGeometryNode ****/
@@ -678,7 +691,7 @@ x3dom.registerNodeType(
 				}
 				
                 return isect;
-            },
+            }
 		}
     )
 );
@@ -713,7 +726,7 @@ x3dom.registerNodeType(
                 -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //links -1,0,0
                  sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //rechts 1,0,0
                 -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //oben 0,1,0
-                -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz, //unten 0,-1,0
+                -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //unten 0,-1,0
             ];
 			this._mesh._normals = [
                 0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
@@ -721,7 +734,7 @@ x3dom.registerNodeType(
                 -1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
                 1,0,0,   1,0,0,   1,0,0,   1,0,0,
                 0,1,0,  0,1,0,   0,1,0,   0,1,0,
-                0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0,
+                0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0
             ];
 			this._mesh._texCoords = [
 				1,0, 1,1, 0,1, 0,0, 
@@ -729,7 +742,7 @@ x3dom.registerNodeType(
 				0,0, 1,0, 1,1, 0,1, 
 				1,0, 0,0, 0,1, 1,1, 
 				0,1, 0,0, 1,0, 1,1, 
-				0,0, 0,1, 1,1, 1,0, 
+				0,0, 0,1, 1,1, 1,0
 			];
             this._mesh._indices = [
                 0,1,2, 2,3,0,
@@ -737,7 +750,7 @@ x3dom.registerNodeType(
                 8,9,10, 10,11,8,
                 12,14,13, 14,12,15,
                 16,17,18, 18,19,16,
-                20,22,21, 22,20,23,
+                20,22,21, 22,20,23
             ];
 			this._mesh._invalidate = true;
         }
@@ -774,14 +787,14 @@ x3dom.registerNodeType(
     
             // Start with an octahedron
             var verts = [
-                0,0,-r, r,0,0, 0,0,r, -r,0,0, 0,-r,0, 0,r,0,
+                0,0,-r, r,0,0, 0,0,r, -r,0,0, 0,-r,0, 0,r,0
             ];
             var norms = [
-                0,0,-1, 1,0,0, 0,0,1, -1,0,0, 0,-1,0, 0,1,0,
+                0,0,-1, 1,0,0, 0,0,1, -1,0,0, 0,-1,0, 0,1,0
             ];
             var tris = [
                 0,1,4, 1,2,4, 2,3,4, 3,0,4,
-                1,0,5, 2,1,5, 3,2,5, 0,3,5,
+                1,0,5, 2,1,5, 3,2,5, 0,3,5
             ];
     
             var new_verts, new_tris;
@@ -1833,7 +1846,7 @@ x3dom.registerNodeType(
                         Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
                 var valid = false;
                 
-				for (var i in this._childNodes)
+				for (var i=0; i<this._childNodes.length; i++)
 				{
 					if (this._childNodes[i])
 					{
@@ -1883,7 +1896,7 @@ x3dom.registerNodeType(
                 line.pos = mat.multMatrixPnt(line.pos);
                 line.dir = mat.multMatrixVec(line.dir);
                 
-                for (var i in this._childNodes) 
+                for (var i=0; i<this._childNodes.length; i++) 
                 {
                     if (this._childNodes[i]) 
                     {
