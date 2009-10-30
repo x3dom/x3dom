@@ -15,6 +15,14 @@
     <h1>x3dom simple example</h1>
 	
 	<p class="case">id/USE test <br />
+		
+		example with shows the uses of id, DEF for USE and ROUTE references. X3D uses DEF to name nodes and HTML usually id. We support both in X3DOM with a simple rule. 
+		A) If both id and DEF are set both attributes will have differnt values
+		B) If only DEF is given id is unset
+		C) If only id is given DEF and id will be set
+		
+		Therefore you can use id-names for USE and ROUTE references as shown in this example 
+		
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" x="0px" y="10px" width="400px" height="400px">
