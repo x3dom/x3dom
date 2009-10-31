@@ -25,9 +25,17 @@
             <Transform id='trans'>
                 <Shape>
                     <Appearance>
-                        <Material diffuseColor='1 0 0' />	
+                        <Material id='mat' DEF='mat' diffuseColor='1 0 0' />	
                     </Appearance>
                     <Box DEF='box'/>
+                </Shape>
+            </Transform>
+            <Transform id='trans2' translation='2 0 0'>
+                <Shape>
+                    <Appearance>
+                        <Material DEF='mat2' diffuseColor='1 0 0' />	
+                    </Appearance>
+                    <Box DEF='box2'/>
                 </Shape>
             </Transform>
         </Scene>
@@ -61,7 +69,10 @@
                 var newCol =   $("#redSlider").slider('option', 'value') + " " 
                              + $("#greenSlider").slider('option', 'value') + " "  
                              + $("#blueSlider").slider('option', 'value');              
-                $("Material").attr("diffuseColor", newCol);
+                //$("Material").attr("diffuseColor", newCol);
+                $("Material[DEF='mat']").attr("diffuseColor", newCol);
+                //console.debug($('Material').attr('DEF', 'mat'));
+                //console.debug($("Material[DEF='mat']"));
             }});
 
         });

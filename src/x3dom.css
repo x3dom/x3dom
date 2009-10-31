@@ -1,3 +1,8 @@
+body {
+	background-color: white;
+	font-family: Helvetica, sans-serif;
+	font-size: 10px;
+}
 
 .x3dom-canvas {
     position: relative;
