@@ -2118,19 +2118,31 @@ x3dom.registerNodeType(
             this._lastY = -1;
             this._pick = new x3dom.fields.SFVec3(0, 0, 0);
             
+            this._ctx = ctx;    //needed for late create
 			this._cam = null;
             this._bgnd = null;
 			this._lights = [];
         },
         {
-        	getViewpoint: function() {
+        	getViewpoint: function() 
+            {
         		if (this._cam == null) 
+                {
 					this._cam = this._find(x3dom.nodeTypes.Viewpoint);
-					
+                    
+                    if (!this._cam)
+                    {
+                        var nodeType = x3dom.nodeTypes["Viewpoint"];
+                        this._cam = new nodeType(this._ctx);
+                        x3dom.debug.logInfo("Created ViewBindable.");
+                    }
+                }
+				
   				return this._cam;
         	},
 			
-			getLights: function() {
+			getLights: function() 
+            {
 				if (this._lights.length == 0)
 					this._lights = this._findAll(x3dom.nodeTypes.DirectionalLight);
 				
@@ -2157,65 +2169,48 @@ x3dom.registerNodeType(
                 return valid;
 			},
 			
-            getViewpointMatrix: function () {
+            getViewpointMatrix: function () 
+            {
                 var viewpoint = this.getViewpoint();
                 var mat_viewpoint = viewpoint._getCurrentTransform();
+                
 				return mat_viewpoint.mult(viewpoint.getViewMatrix());
             },
     
-            getViewMatrix: function () {
-                var viewpoint = this.getViewpoint();
-                //return x3dom.fields.SFMatrix4.translation(this._movement)
+            getViewMatrix: function () 
+            {
                 return this.getViewpointMatrix().
 							mult(this._transMat).
 							mult(this._rotMat);
             },
 			
-			getFieldOfView: function() {
-                var viewpoint = this.getViewpoint();
-				if (viewpoint !== null)
-					return viewpoint.getFieldOfView();
-				else
-					return 0.785398;
-			},
-			
-			getSkyColor: function() {
+			getSkyColor: function() 
+            {
                 if (this._bgnd == null)
+                {
                     this._bgnd = this._find(x3dom.nodeTypes.Background);
-				var bgCol;
+                    
+                    if (!this._bgnd)
+                    {
+                        var nodeType = x3dom.nodeTypes["Background"];
+                        this._bgnd = new nodeType(this._ctx);
+                        x3dom.debug.logInfo("Created BackgroundBindable.");
+                    }
+                }
 				
-				if (this._bgnd !== null) {
-					bgCol = this._bgnd.getSkyColor().toGL();
-					//workaround; impl. skyTransparency etc.
-					if (bgCol.length > 2)
-						bgCol[3] = 1.0 - this._bgnd.getTransparency();
-				}
-				else
-					bgCol = new Array(0,0,0,1);
+				var bgCol = this._bgnd.getSkyColor().toGL();
+				//workaround; impl. skyTransparency etc.
+				if (bgCol.length > 2)
+					bgCol[3] = 1.0 - this._bgnd.getTransparency();
 				
 				return bgCol;
 			},
             
-            getProjectionMatrix: function() {
+            getProjectionMatrix: function() 
+            {
                 var viewpoint = this.getViewpoint();
-				if (viewpoint !== null) 
-                {
-					return viewpoint.getProjectionMatrix(this._width/this._height);
-                }
-                else 
-                {
-                    var fov = this.getFieldOfView();
-                    var aspect = this._width / this._height;
-                    var znear = 0.1, zfar = 100000;
-                    var f = 1/Math.tan(fovy/2);
-                    var m = new x3dom.fields.SFMatrix4(
-                        f/aspect, 0, 0, 0,
-                        0, f, 0, 0,
-                        0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
-                        0, 0, -1, 0
-                    );
-                    return m;
-                }
+                
+				return viewpoint.getProjectionMatrix(this._width/this._height);
             },
             
             getWCtoCCMatrix: function()

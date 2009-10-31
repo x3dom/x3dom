@@ -67,6 +67,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform float shininess;" +
 		"uniform vec3 specularColor;" +
 		"uniform float alpha;" +
+		"uniform float lightOn;" +
 		"uniform sampler2D tex;" +
 		"" +
 		"varying vec3 fragNormal;" +
@@ -79,17 +80,13 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
 		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
-		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
-		//"    float diffuse = max(0.0, dot(normal, light));" +
-		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
+		"    diffuse += max(0.0, dot(normal, eye));" +
+		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, texCoord).rgb + specular*specularColor;" +
-		//"    vec3 rgb = vec3(diffuse);" +
-		//"    gl_FragColor = vec4(texture2D(tex, texCoord.xy));" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
 		"    gl_FragColor = vec4(rgb, texture2D(tex, texCoord).a);" +
-		//"    gl_FragColor = texture2D(tex, texCoord);" +
-		//"    gl_FragColor = vec4(texCoord.xy, 0.0, 1.0);" +
 		"}"
 		};
 
@@ -120,7 +117,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform float shininess;" +
 		"uniform vec3 specularColor;" +
 		"uniform float alpha;" +
-		"uniform bool on;" +
+		"uniform float lightOn;" +
 		"" +
 		"varying vec3 fragNormal;" +
 		"varying vec3 fragLightVector;" +
@@ -130,14 +127,12 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
-		//"    float diffuse = max(0.0, dot(normal, light));" +
-		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
+		"    diffuse += max(0.0, dot(normal, eye));" +
+		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
-		//"    vec3 rgb = vec3(diffuse);" +
-		//"    vec3 rgb = (1.0+eye)/2.0;" +
 		"    gl_FragColor = vec4(rgb, alpha);" +
 		"}"
 		};
@@ -172,6 +167,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform float shininess;" +
 		"uniform vec3 specularColor;" +
 		"uniform float alpha;" +
+		"uniform float lightOn;" +
 		"" +
 		"varying vec3 fragNormal;" +
 		"varying vec3 fragColor;" +
@@ -182,8 +178,9 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = (0.25 * max(0.0, dot(normal, light)) + max(0.0, dot(normal, eye)));" +
-		"    float specular = 0.5 * pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0);" +
+		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
+		"    diffuse += max(0.0, dot(normal, eye));" +
+		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*fragColor + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
@@ -198,7 +195,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform float shininess;" +
 		"uniform vec3 specularColor;" +
 		"uniform float alpha;" +
-		"uniform sampler2D tex;" +
+		"uniform float lightOn;" +
 		"" +
 		"varying vec3 fragNormal;" +
 		"varying vec3 fragLightVector;" +
@@ -222,6 +219,7 @@ x3dom.gfx_webgl = (function () {
 	g_shaders['fs-x3d-default'] = { type: "fragment", data:
 		"uniform vec3 diffuseColor;" +
 		"uniform float alpha;" +
+		"uniform float lightOn;" +
 		"void main(void) {" +
 		"    gl_FragColor = vec4(diffuseColor, alpha);" +
 		"}"
@@ -617,13 +615,15 @@ x3dom.gfx_webgl = (function () {
 		
         
 		//TODO; get all from scene and get rid of default (0,-1,0)
-		var light;
+		var light, lightOn;
 		var slights = scene.getLights();
 		if (slights.length > 0) {
 			light = slights[0]._direction;
+            lightOn = (slights[0]._on == true) ? 1.0 : 0.0;
 		}
 		else {
 			light = new x3dom.fields.SFVec3(0, -1, 0);
+            lightOn = 0.0;
 		}
 		light = mat_view.multMatrixVec(light);
 		
@@ -673,6 +673,7 @@ x3dom.gfx_webgl = (function () {
 
 			sp.eyePosition = [0, 0, 0];
 			sp.lightDirection = light.toGL();
+            sp.lightOn = lightOn;
 
 			var mat = shape._appearance._material;
 			if (mat) {
