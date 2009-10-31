@@ -28,7 +28,10 @@ def testScenes(environ, start_response):
 
     status = '200 OK'
     mimetype = mimetypes.guess_type(fullpath)
-    # print "guessed mimetype:", mimetype[0]
+    print "guessed mimetype:", mimetype[0]
+    if (not mimetype[0]):
+        mimetype = ["application/xhtml+xml"]
+        print "set mimetype:", mimetype[0]
     response_headers = [('Content-type', mimetype[0])]
     start_response(status, response_headers)
     return payload
