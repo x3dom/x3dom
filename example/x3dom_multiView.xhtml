@@ -3,19 +3,16 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-		<title>Simple WebGL example</title>
-		<style>
-		p.case { clear: both; border-top: 1px solid #888; }
-		</style>
+		<title>Multi-View: Multiple X3D scenes in a single XHTML document</title>
         <link rel="stylesheet" type="text/css" href="x3dom.css" />
 	</head>
        
-<body style="background-color:#E0E0E0; background-image:url(texture/generic/web3d_256.jpg); ">
+<body style="background-color:#E0E0E0; background-image:url(texture/dots.png); ">
 
-    <h1>x3dom simple example</h1>
+    <h1>Multi-View: Multiple X3D scenes in a single XHTML document</h1>
 	
-	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="280px">
+	<p class="case">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="false" x="0px" y="0px" width="300px" height="400px">
 			<Scene>
 				<Background transparency="1.0" skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
 				<DirectionalLight direction="0 0 -1" />
@@ -69,7 +66,7 @@
 		&nbsp;
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" x="0px" y="0px" width="320px" height="240px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" x="0px" y="0px" width="300px" height="400px">
 			<Scene>
 				<Shape>
 					<Appearance>
@@ -91,7 +88,7 @@
         </X3D>
 		
 		&nbsp;
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" showStat="true" x="0px" y="0px" width="200px" height="200px">
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="flipper" showStat="true" x="0px" y="0px" width="300px" height="400px">
 			<Scene>
 			    <Viewpoint position='0 0 600' orientation="0 0 1 0" fieldOfView="0.785398" />
 				<Background transparency="0.7" skyColor='0.51 0.81 0.95'/>

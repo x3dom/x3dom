@@ -3,22 +3,18 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-		<title>Simple WebGL example</title>
-		<style>
-		body { font-family: Helvetica, Arial, Sans; }
-		p.case { clear: both; border-top: 1px solid #888; }
-		</style>
+		<title>Multiple animations with a single TimeSensor and fanOut</title>
         <link rel="stylesheet" type="text/css" href="x3dom.css" />
 	</head>
        
-<body style="background-color:white;">
+<body>
 
-    <h1>x3dom simple example</h1>
+    <h1>Multiple animations with a single TimeSensor and fanOut</h1>
 	
 	<p class="case">
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showLog='true' showStat="true" x="0px" y="0px" width="500px" height="500px">
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showLog='false' showStat="true" x="0px" y="0px" width="400px" height="400px">
  <Scene DEF='scene'>
 	<Viewpoint position='16.0328 13.056 34.2417' orientation='-0.624839 0.780206 0.0292506 0.543473' />
     <Background skyColor='1 1 1'/>

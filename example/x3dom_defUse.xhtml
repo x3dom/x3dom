@@ -3,53 +3,50 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-		<title>Simple WebGL example</title>
-		<style>
-		p.case { clear: both; border-top: 1px solid #888; }
-		</style>
+		<title>id/USE test example</title>
         <link rel="stylesheet" type="text/css" href="x3dom.css" />
 	</head>
-       
-<body style="background-color:#E0E0E0;">
 
-    <h1>x3dom simple example</h1>
+<body>
+
+    <h1>id/USE test example</h1>
 	
-	<p class="case">id/USE test <br />
-		
-		example with shows the uses of id, DEF for USE and ROUTE references. X3D uses DEF to name nodes and HTML usually id. We support both in X3DOM with a simple rule. 
-		A) If both id and DEF are set both attributes will have differnt values
-		B) If only DEF is given id is unset
-		C) If only id is given DEF and id will be set
-		
-		Therefore you can use id-names for USE and ROUTE references as shown in this example 
-		
+	<p class='exampletext'>
+		Example with shows the uses of id, DEF for USE and ROUTE references. X3D uses DEF to name nodes and HTML usually id. We support both in X3DOM with a simple rule.<br />
+		A) If both id and DEF are set both attributes will have differnt values<br />
+		B) If only DEF is given id is unset<br />
+		C) If only id is given DEF and id will be set<br />
+		<br />
+		Therefore you can use id-names for USE and ROUTE references as shown in this example.<br />
+	</p>
+	<p>
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" x="0px" y="10px" width="400px" height="400px">
- <Scene >
- 	<Viewpoint id='view0' position='0 0 10' orientation="0 0 0 1"/>
-    <Background skyColor='0.05 0.12 0.23'/>
-    <Transform id='foo' DEF='t1' translation='-2 0 0'>
-      <Shape DEF='obj'>
-        <Appearance>
-		  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
-          <ImageTexture url='"texture/generic/x3d_256.jpg"'/>
-        </Appearance>
-        <Box/>
-      </Shape>
-    </Transform>
-    <Transform id='bar' DEF='t2' translation='2 0 0'>
-      <Shape USE='obj'/>
-    </Transform>
-    <TimeSensor id='ts' cycleInterval='5' />
-    <PositionInterpolator id='p1' key='0 0.5 1' keyValue='0.5 0.5 0.5 2 2 2 0.5 0.5 0.5' />
-    <PositionInterpolator id='p2' key='0 0.5 1' keyValue='2 2 2 0.5 0.5 0.5 2 2 2' />
-	<ROUTE fromNode='ts' fromField='fraction_changed' toNode='p1' toField='set_fraction' />
-	<ROUTE fromNode='ts' fromField='fraction_changed' toNode='p2' toField='set_fraction' />
-	<ROUTE fromNode='p1' fromField='value_changed' toNode='t1' toField='scale' />
-	<ROUTE fromNode='p2' fromField='value_changed' toNode='t2' toField='scale' />
-  </Scene>
-        </X3D>
+			 <Scene >
+				<Viewpoint id='view0' position='0 0 10' orientation="0 0 0 1"/>
+				<Background skyColor='0.05 0.12 0.23'/>
+				<Transform id='foo' DEF='t1' translation='-2 0 0'>
+				  <Shape DEF='obj'>
+					<Appearance>
+					  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
+					  <ImageTexture url='"texture/generic/x3d_256.jpg"'/>
+					</Appearance>
+					<Box/>
+				  </Shape>
+				</Transform>
+				<Transform id='bar' DEF='t2' translation='2 0 0'>
+				  <Shape USE='obj'/>
+				</Transform>
+				<TimeSensor id='ts' cycleInterval='5' />
+				<PositionInterpolator id='p1' key='0 0.5 1' keyValue='0.5 0.5 0.5 2 2 2 0.5 0.5 0.5' />
+				<PositionInterpolator id='p2' key='0 0.5 1' keyValue='2 2 2 0.5 0.5 0.5 2 2 2' />
+				<ROUTE fromNode='ts' fromField='fraction_changed' toNode='p1' toField='set_fraction' />
+				<ROUTE fromNode='ts' fromField='fraction_changed' toNode='p2' toField='set_fraction' />
+				<ROUTE fromNode='p1' fromField='value_changed' toNode='t1' toField='scale' />
+				<ROUTE fromNode='p2' fromField='value_changed' toNode='t2' toField='scale' />
+			  </Scene>
+		</X3D>
 	</p>
 	
 	<p class="case"> &nbsp; </p>
