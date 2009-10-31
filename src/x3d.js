@@ -10,8 +10,6 @@
 */
 
 // x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
-// x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
-// x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 
 // the x3dom.nodes namespace
 // x3dom.nodes = {};
@@ -50,9 +48,11 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
 	@return true, if the @p node is an X3D element
 			false, if not
  */
+x3dom.parsingInline == false;   //fixme; but Inline doesn't have NS...
+
 x3dom.isX3DElement = function(node) {
     return (node.nodeType === Node.ELEMENT_NODE &&
-        (node.namespaceURI == x3dom.x3dNS || node.namespaceURI == x3dom.x3dextNS));
+        (node.namespaceURI == x3dom.x3dNS || x3dom.parsingInline == true));
 };
 
 /** Utility function for defining a new class.
@@ -2355,90 +2355,48 @@ x3dom.registerNodeType(
     )
 );
 
-/* Extension nodes: */
-
-var namespaceFixerXsltProcessor = new XSLTProcessor();
-namespaceFixerXsltProcessor.importStylesheet(new DOMParser().parseFromString(
-    '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">' +
-    '  <xsl:template match="*" priority="3">' +
-    '    <xsl:element name="{local-name()}" namespace="' + x3dom.x3dNS + '">' +
-    '      <xsl:apply-templates select="@*|node()"/>' +
-    '    </xsl:element>' +
-    '  </xsl:template>' +
-    '  <xsl:template match="node()|@*">' +
-    '    <xsl:copy>' +
-    '      <xsl:apply-templates select="@*|node()"/>' +
-    '    </xsl:copy>' +
-    '  </xsl:template>' +
-    '</xsl:stylesheet>',
-'application/xml'));
-
-var defaultXsltDoc = new DOMParser().parseFromString(
-    '<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform" xmlns:x3d="http://www.web3d.org/specifications/x3d-namespace">' +
-    '  <xsl:template match="node()|@*">' +
-    '    <xsl:copy>' +
-    '      <xsl:apply-templates select="@*|node()"/>' +
-    '    </xsl:copy>' +
-    '  </xsl:template>' +
-    '</xsl:stylesheet>',
-'application/xml');
 
 x3dom.registerNodeType(
     "Inline",
-    "base",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    "Networking",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Inline.superClass.call(this, ctx);
-            var urlSplit = ctx.xmlNode.getAttribute('url').split('#', 2);
-            var doc = ctx.docs[urlSplit[0]];
-    
-            // Fix namespaceless X3D documents
-            if (doc.documentElement.localName == 'X3D' && doc.documentElement.namespaceURI === null)
-                doc = namespaceFixerXsltProcessor.transformToDocument(doc);
-    
-            var target, m;
-            if (m = urlSplit[1].match(/^xpointer\((.*)\)$/)) {
-                target = x3dom.xpath(doc, m[1])[0];
-            } else {
-                target = x3dom.xpath(doc, '//*[@DEF="'+urlSplit[1]+'"]')[0];
-            }
-    
-            // Apply the user's transformations
-            if (ctx.xmlNode.childNodes.length) {
-                //log(new XMLSerializer().serializeToString(target));
-                var xsltDoc;
-                Array.forEach(ctx.xmlNode.childNodes, function (node) {
-                    if (node.nodeType == Node.ELEMENT_NODE && node.namespaceURI == x3dom.xsltNS) {
-                        if (node.localName == 'stylesheet') {
-                            var xsltProcessor = new XSLTProcessor();
-                            xsltProcessor.importStylesheet(node);
-                            target = xsltProcessor.transformToFragment(target, document).firstChild;
-                        } else {
-                            if (! xsltDoc) {
-                                // Opera doesn't support Document.cloneNode, so fake it
-                                xsltDoc = document.implementation.createDocument(null, 'dummy', null);
-                                xsltDoc.replaceChild(xsltDoc.importNode(defaultXsltDoc.documentElement, true), xsltDoc.documentElement);
-                            }
-                            xsltDoc.documentElement.appendChild(xsltDoc.importNode(node, true));
-                        }
+            
+            this._attribute_MFString(ctx, 'url', []);
+            
+            var that = this;
+            
+            var xhr = new XMLHttpRequest();
+            
+            xhr.onreadystatechange = function () {
+                if (xhr.readyState == 4) {
+                    if (xhr.responseXML.documentElement.localName == 'parsererror') {
+                        x3dom.debug.logInfo('XML parser failed on '+this._url+':\n'+xhr.responseXML.documentElement.textContent);
+                        return;
                     }
-                });
-                if (xsltDoc) {
-                    var xsltProcessor = new XSLTProcessor();
-                    xsltProcessor.importStylesheet(xsltDoc);
-                    target = xsltProcessor.transformToFragment(target, document).firstChild;
                 }
-                //log(new XMLSerializer().serializeToString(target));
+                if (xhr.status !== 200) {
+                    x3dom.debug.logError('XMLHttpRequest requires a web server running!');
+                    return;
+                }
+                
+                var xml = this.responseXML;
+                var inlScene = xml.getElementsByTagName('Scene')[0];
+                
+                x3dom.parsingInline = true; // enable special case
+                
+                that._childNodes = [ ctx.setupNodePrototypes(inlScene, ctx) ];
+                that._childNodes[0]._parentNodes.push(this);
+                
+                x3dom.parsingInline = false; // disable special case
             }
-            this._childNodes = [ ctx.setupNodePrototypes(target, ctx) ];
-            this._childNodes[0]._parentNodes.push(this);
+            
+            x3dom.debug.logInfo('Inline: downloading '+this._url);
+            xhr.open('GET', this._url);
+            xhr.send('');
         },
         {
-            _getNodeByDEF: function (def) {
-                var parts = def.split(' ', 2);
-                if (parts[0] == this._DEF)
-                    return this._childNodes[0]._getNodeByDEF(parts[1]);
-            },
         }
     )
 );
@@ -2458,6 +2416,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     var uri_docs = {};
     var queued_uris = [uri];
     var doc = this;
+    
     function next_step() {
         // TODO: detect circular inclusions
         // TODO: download in parallel where possible
@@ -2469,33 +2428,12 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
             return;
         }
         var next_uri = queued_uris.shift();
-		// alert("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
+        
+		//x3dom.debug.logInfo("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
         if (x3dom.isX3DElement(next_uri) && next_uri.localName == 'X3D') {
             // Special case, when passed an X3D node instead of a URI string
             uri_docs[next_uri] = next_uri;
-            var sub_uris = doc._findIncludedFiles(next_uri);
-            queued_uris = queued_uris.concat(sub_uris); // XXX: need to only load each file once
             next_step();
-        }
-		else {
-            var xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    if (xhr.responseXML.documentElement.localName == 'parsererror') {
-                        x3dom.debug.logInfo('XML parser failed on '+next_uri+':\n'+xhr.responseXML.documentElement.textContent);
-                        doc.onerror();
-                        return;
-                    }
-                    //log('Processing '+next_uri);
-                    uri_docs[next_uri] = xhr.responseXML;
-                    var sub_uris = doc._findIncludedFiles(xhr.responseXML);
-                    queued_uris = queued_uris.concat(sub_uris); // XXX: need to only load each file once
-                    next_step();
-                }
-            }
-            //log('Downloading '+next_uri);
-            xhr.open('GET', next_uri);
-            xhr.send('');
         }
     }
 	
@@ -2507,7 +2445,6 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     function nsResolver(prefix) {
         var ns = {
             'x3d': x3dom.x3dNS,
-            'x3dext': x3dom.x3dextNS,
         };
         return ns[prefix] || null;
     }
@@ -2518,11 +2455,6 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     return found;
 }
 
-//TODO
-x3dom.X3DDocument.prototype._findIncludedFiles = function (doc) {
-    var urls = Array.map(x3dom.xpath(doc, '//Inline'), function (node) { return node.getAttribute('url'); });
-    return urls;
-};
 
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
@@ -2586,7 +2518,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
 x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
     var n, t;
-	// x3dom.debug.logInfo("node=" + node + ", localName=" + node.localName);
+	//x3dom.debug.logInfo("node=" + node + ", localName=" + node.localName);
+    
     if (x3dom.isX3DElement(node)) {
 	    if (node.hasAttribute('USE')) {
 	      n = ctx.defMap[node.getAttribute('USE')];
@@ -2603,14 +2536,16 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
             //     The autoChild property was added to the X3DGroupingNode base class (as _autoChild)
             var nodeType = x3dom.nodeTypes[node.localName];
             if (nodeType === undefined) {
-                x3dom.debug.logError("Unrecognised element " + node.localName);
+                x3dom.debug.logInfo("Unrecognised element " + node.localName);
             }
             else {
                 ctx.xmlNode = node;
                 n = new nodeType(ctx);
                 node._x3domNode = n;
                 if (n._autoChild === true) {
-                    Array.forEach(Array.map(node.childNodes, function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), function (c) { if (c) n.addChild(c) });
+                    Array.forEach(Array.map(node.childNodes, 
+                            function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), 
+                            function (c) { if (c) n.addChild(c) });
                 }
                 return n;
             }
