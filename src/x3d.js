@@ -2355,6 +2355,37 @@ x3dom.registerNodeType(
     )
 );
 
+x3dom.registerNodeType(
+    "Anchor",
+    "Networking",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.Anchor.superClass.call(this, ctx);
+            
+            this._attribute_MFString(ctx, 'url', []);
+        },
+        {
+            _doIntersect: function(line) {
+                var isect = false;
+                for (var i=0; i<this._childNodes.length; i++) {
+                    if (this._childNodes[i]) {
+                        if (this._childNodes[i]._doIntersect(line)) {
+                            isect = true;
+                        }
+                    }
+                }
+                
+                if (isect && this._url.length > 0) {
+                    // fixme; window.open usually gets blocked
+                    // but this way the current page is lost?!
+                    window.location = this._url[0];
+                }
+                
+                return isect;
+            }
+        }
+    )
+);
 
 x3dom.registerNodeType(
     "Inline",
