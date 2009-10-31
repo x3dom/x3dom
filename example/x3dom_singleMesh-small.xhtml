@@ -3,26 +3,22 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-		<title>Simple WebGL example</title>
-		<style>
-		p.case { clear: both; border-top: 1px solid #888; }
-		</style>
+		<title>Single Mesh Model with a flat hierarchy (small model)</title>
         <link rel="stylesheet" type="text/css" href="x3dom.css" />
 	</head>
        
-<body style="background-color:#E0E0E0;">
+<body>
 
-    <h1>x3dom simple example</h1>
+    <h1>Single Mesh Model with a flat hierarchy (small model)</h1>
 	
-	<p class="case">Bunny
-		&nbsp;
+	<p class="case">
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" x="0px" y="0px" width="400px" height="400px">
 
   <Scene DEF='scene'>
     <Viewpoint position='0 0 25' orientation="0 0 0 1" />
-     <Background skyColor='0.05 0.12 0.23'/>
+     <Background skyColor='1 1 1'/>
    <Shape>
           <Appearance DEF='App'>
             <Material ambientIntensity='0.0243902' diffuseColor='0.41 0.39 0.03' shininess='0.12' specularColor='0.94 0.72 0'/>
