@@ -9,7 +9,7 @@
        
 <body>
 
-    <h1>Inline: Scene which references an external box model</h1>
+    <h1>Inline: Scene which references an external red box model</h1>
 	
 	<p class="case">
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
@@ -18,8 +18,16 @@
 	  <Scene DEF='scene'>
 		<Viewpoint position='0 0 10' orientation='0 0 0 1' />
 		<Background skyColor='0.05 0.12 0.23'/>
-	    <Transform DEF="box">
-			<Inline DEF="inline1" url="box.x3d" />
+		<Transform translation='-2 0 0' >
+ 			<Shape id='greenBox' >
+        		<Appearance>
+          			<Material diffuseColor="0 1 0"/>
+        		</Appearance>
+        		<Box />
+      		</Shape>
+		</Transform>
+	    <Transform translation='2 0 0' >
+			<Inline DEF="redBox" url="scene/redBox.x3d" />
 		</Transform>
 	  </Scene>
     </X3D>
