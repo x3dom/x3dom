@@ -2428,6 +2428,7 @@ x3dom.registerNodeType(
             var that = this;
             
             var xhr = new XMLHttpRequest();
+            xhr.overrideMimeType('text/xml');   //application/xhtml+xml
             
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
@@ -2438,6 +2439,7 @@ x3dom.registerNodeType(
                 }
                 else {
                     x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+                    //if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
                     return;
                 }
                 if (xhr.status !== 200) {
@@ -2459,7 +2461,7 @@ x3dom.registerNodeType(
                 x3dom.parsingInline = false; // disable special case
                 
                 x3dom.debug.logInfo('Inline: added '+that._url+' to scene.');
-            }
+            };
             
             x3dom.debug.logInfo('Inline: downloading '+this._url);
             
