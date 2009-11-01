@@ -2397,6 +2397,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Inline.superClass.call(this, ctx);
             
             this._attribute_MFString(ctx, 'url', []);
+            this._attribute_SFBool(ctx, 'load', true);
             
             var that = this;
             
@@ -2410,6 +2411,7 @@ x3dom.registerNodeType(
                     }
                 }
                 else {
+                    x3dom.debug.logInfo('Loading inlined data...');
                     return;
                 }
                 if (xhr.status !== 200) {
@@ -2418,14 +2420,16 @@ x3dom.registerNodeType(
                 }
                 
                 var xml = this.responseXML;
-                var inlScene = xml.getElementsByTagName('Scene')[0];
+                var inlScene = xml.getElementsByTagName('Scene')[0];    //TODO; check if exists
                 
                 x3dom.parsingInline = true; // enable special case
                 
                 that._childNodes = [ ctx.setupNodePrototypes(inlScene, ctx) ];
-                that._childNodes[0]._parentNodes.push(this);
+                that._childNodes[0]._parentNodes.push(that);
                 
                 x3dom.parsingInline = false; // disable special case
+                
+                x3dom.debug.logInfo('Inline: downloading '+that._url+' done.');
             }
             
             x3dom.debug.logInfo('Inline: downloading '+this._url);
