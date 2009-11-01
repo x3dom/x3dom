@@ -2407,6 +2407,9 @@ x3dom.registerNodeType(
                         return;
                     }
                 }
+                else {
+                    return;
+                }
                 if (xhr.status !== 200) {
                     x3dom.debug.logError('XMLHttpRequest requires a web server running!');
                     return;
