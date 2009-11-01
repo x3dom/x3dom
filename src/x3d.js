@@ -477,6 +477,34 @@ x3dom.registerNodeType(
 );
 
 x3dom.registerNodeType(
+    "X3DTextureTransformNode",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DTextureTransformNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "TextureTransform",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureTransformNode,
+        function (ctx) {
+            x3dom.nodeTypes.TextureTransform.superClass.call(this, ctx);
+			
+			this._attribute_SFVec2(ctx, 'center', 0, 0);
+            this._attribute_SFFloat(ctx, 'rotation', 0);
+            this._attribute_SFVec2(ctx, 'scale', 1, 1);
+            this._attribute_SFVec2(ctx, 'translation', 0, 0);
+            
+            //Tc' = -C × S × R × C × T × Tc
+            // TODO; impl mat2
+        }
+    )
+);
+
+x3dom.registerNodeType(
     "X3DTextureNode",
     "Texturing",
     defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
@@ -500,8 +528,6 @@ x3dom.registerNodeType(
     )
 );
 
-
-// TODO: X3DTextureTransformNode
 
 
 /** @class x3dom.Mesh
@@ -2411,7 +2437,7 @@ x3dom.registerNodeType(
                     }
                 }
                 else {
-                    x3dom.debug.logInfo('Loading inlined data...');
+                    x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
                     return;
                 }
                 if (xhr.status !== 200) {
@@ -2419,7 +2445,10 @@ x3dom.registerNodeType(
                     return;
                 }
                 
-                var xml = this.responseXML;
+                x3dom.debug.logInfo('Inline: downloading '+that._url+' done.');
+                
+                var xml = xhr.responseXML;
+                
                 var inlScene = xml.getElementsByTagName('Scene')[0];    //TODO; check if exists
                 
                 x3dom.parsingInline = true; // enable special case
@@ -2429,12 +2458,13 @@ x3dom.registerNodeType(
                 
                 x3dom.parsingInline = false; // disable special case
                 
-                x3dom.debug.logInfo('Inline: downloading '+that._url+' done.');
+                x3dom.debug.logInfo('Inline: added '+that._url+' to scene.');
             }
             
             x3dom.debug.logInfo('Inline: downloading '+this._url);
-            xhr.open('GET', this._url);
-            xhr.send('');
+            
+            xhr.open('GET', this._url, true);
+            xhr.send(null);
         },
         {
         }
