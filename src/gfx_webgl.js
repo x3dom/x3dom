@@ -614,12 +614,13 @@ x3dom.gfx_webgl = (function () {
 		var mat_view_inv = mat_view.inverse();
 		
         
-		//TODO; get all from scene and get rid of default (0,-1,0)
+		//TODO; allow for more than one additional light per scene
 		var light, lightOn;
 		var slights = scene.getLights();
 		if (slights.length > 0) {
 			light = slights[0]._direction;
             lightOn = (slights[0]._on == true) ? 1.0 : 0.0;
+            lightOn = lightOn * slights[0]._intensity;
 		}
 		else {
 			light = new x3dom.fields.SFVec3(0, -1, 0);

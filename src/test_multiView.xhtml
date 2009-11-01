@@ -17,14 +17,13 @@
 	<p class="case">Boxes, Spheres and Flipper (without flipper moves)
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="280px">
 			<Scene>
-				<Background transparency="1.0" skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
-				<DirectionalLight direction="0 0 -1" on="false" />
+				<Background transparency="1.0" skyColor='0.2 0.7 0.4' />
+				<DirectionalLight direction="0 0 -1" on="true" intensity="0.2" />
 				
 				<Transform >
 					<Shape>
 						<Appearance>
-							<Material DEF="BoxMat" diffuseColor="0 1 0" specularColor=".5 .5 .5" transparency="0" />
-							<!--<ImageTexture url="opengl.gif" />-->
+							<Material DEF="BoxMat" diffuseColor="0 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
 						<Box/>
 					</Shape>

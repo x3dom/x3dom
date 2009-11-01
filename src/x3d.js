@@ -1652,6 +1652,8 @@ x3dom.registerNodeType(
             
 			this._attribute_SFFloat(ctx, 'ambientIntensity', 0);
             this._attribute_SFColor(ctx, 'color', 1, 1, 1);
+			this._attribute_SFFloat(ctx, 'intensity', 1);
+            this._attribute_SFBool(ctx, 'global', false);
             this._attribute_SFBool(ctx, 'on', true);
         },
         {
