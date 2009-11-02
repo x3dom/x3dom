@@ -378,10 +378,11 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
                 if (altImg) {
                     var altImgObj = new Image();                
                     altImgObj.src = altImg;                    
-                    x3dcanvas.canvasDiv.style.backgroundImage = "url("+altImg+")";
-                    // resize the alt div to match the alt image size
-                    x3dcanvas.canvasDiv.style.width = altImgObj.width + "px";
-                    x3dcanvas.canvasDiv.style.height = altImgObj.height + "px";   
+                    x3dcanvas.canvasDiv.style.backgroundImage = "url("+altImg+")";                    
+                    // PE: Don't resize the canvasDiv to match the alt image here cause the image
+                    //     might not be loaded yet and the size would be (0,0). Just do it with CSS..
+                    //x3dcanvas.canvasDiv.style.width = altImgObj.width + "px";
+                    //x3dcanvas.canvasDiv.style.height = altImgObj.height + "px";   
                 }
                 else {
                     // x3dcanvas.canvasDiv.style.backgroundColor = "#333"; 
