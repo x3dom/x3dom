@@ -56,7 +56,31 @@ x3dom.gfx_webgl = (function () {
 		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
 		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
-		"    fragTexCoord = texcoord;" +
+        "    fragTexCoord = texcoord;" +
+		"}"
+		};
+        
+    g_shaders['vs-x3d-textured-tt'] = { type: "vertex", data:
+		"attribute vec3 position;" +
+		"attribute vec3 normal;" +
+		"attribute vec2 texcoord;" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"varying vec2 fragTexCoord;" +
+		"uniform mat4 texTrafoMatrix;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+		"uniform mat4 modelViewMatrix;" +
+		"uniform mat4 viewMatrixInverse;" +
+		"uniform vec3 lightDirection;" +
+		"uniform vec3 eyePosition;" +
+		"" +
+		"void main(void) {" +
+		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
+		"    fragLightVector = -lightDirection;" +
+		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
+        "    fragTexCoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;" +
 		"}"
 		};
 		
@@ -474,12 +498,18 @@ x3dom.gfx_webgl = (function () {
 			};
             
 			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
-			if (tex)
-				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
-			else if (shape._geometry._mesh._colors.length > 0)
+			if (tex) {
+                if (shape._appearance._textureTransform == null)
+                    shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
+                else
+                    shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured-tt', 'fs-x3d-textured']);
+            }
+			else if (shape._geometry._mesh._colors.length > 0) {
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolor', 'fs-x3d-vertexcolor']);
-			else
+            }
+			else {
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
+            }
 			
 			var sp = shape._webgl.shader;
 			
@@ -728,6 +758,13 @@ x3dom.gfx_webgl = (function () {
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
 				//gl.generateMipmap(gl.TEXTURE_2D);
+                
+                if (shape._appearance._textureTransform !== null)
+                {
+                    // use shader/ calculation due to performance issues
+                    var texTrafo = shape._appearance.transformMatrix();
+                    sp.texTrafoMatrix = texTrafo.toGL();
+                }
 			}
 			
 			if (sp.position !== undefined) 

@@ -18,7 +18,7 @@
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="280px">
 			<Scene>
 				<Background transparency="1.0" skyColor='0.2 0.7 0.4' />
-				<DirectionalLight direction="0 0 -1" on="true" intensity="0.2" />
+				<DirectionalLight direction="0 0 -1" on="false" intensity="0.2" />
 				
 				<Transform >
 					<Shape>
@@ -30,16 +30,18 @@
 				</Transform>
 				
 				<Transform translation='2 -0.5 -2'>
-				  <Shape>
-					<Appearance>
-					  <Material diffuseColor='1 0 0' specularColor=".1 .1 .1" />
-					  <ImageTexture url="opengl.gif" />
-					</Appearance>
-					<IndexedFaceSet solid="false" coordIndex='0 1 2 -1, 2 3 0 -1'>
-					  <Coordinate point='-1 -1 0, 1 -1 0, 1 1 0, -1 1 0' />
-					  <TextureCoordinate point='0.2 0.2, 0.8 0.2, 0.8 0.8, 0.2 0.8' />
-					</IndexedFaceSet>
-				  </Shape>
+                  <Shape>
+                    <Appearance>
+                      <Material diffuseColor='1 1 1' specularColor=".1 .1 .1" />
+                      <ImageTexture url="opengl1.gif" />
+                      <TextureTransform DEF="tt" scale="1 2" translation="0.75 0.25" rotation="1.57" center="0.25 0.75" />
+                    </Appearance>
+                    <IndexedFaceSet solid="false" coordIndex='0 1 2 -1, 2 3 0 -1'>
+                      <Coordinate point='-1 -1 0, 1 -1 0, 1 1 0, -1 1 0' />
+                      <TextureCoordinate point='0.2 0.2, 0.8 0.2, 0.8 0.8, 0.2 0.8' />
+                      <!--<TextureCoordinate point='0 0, 1 0, 1 1, 0 1' />-->
+                    </IndexedFaceSet>
+                  </Shape>
 				</Transform>
 				
 				<Transform DEF="TBox" translation="4 0 0" rotation="1 0 0 0.9">
@@ -52,7 +54,7 @@
 					</Shape>
 				</Transform>
 				
-				<TimeSensor DEF="TS" loop="true" cycleInterval="2" />
+				<TimeSensor DEF="TS" loop="true" cycleInterval="4" />
 				
 				<OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14159, 1 0 0 6.28318" />
 				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'/>
@@ -61,6 +63,10 @@
 				<ScalarInterpolator DEF="SI" key="0 0.3 0.6 1" keyValue="1 0 0 1" />
 				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='SI' toField='set_fraction'/>
 				<ROUTE fromNode='SI' fromField='value_changed' toNode='BoxMat' toField='transparency'/>
+                
+                <ScalarInterpolator DEF="SI1" key="0 0.5 1" keyValue="0 3.1415926 6.283185307179586" />
+				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='SI1' toField='set_fraction'/>
+				<ROUTE fromNode='SI1' fromField='value_changed' toNode='tt' toField='rotation'/>
 				
 				<Viewpoint centerOfRotation="0 0 0" position="2 0 8" orientation="0 1 0 0" fieldOfView="0.785398"/>
 			</Scene>

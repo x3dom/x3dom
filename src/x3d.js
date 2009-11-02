@@ -316,6 +316,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         _attribute_SFColor: function (ctx, name, r, g, b) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec3(r, g, b);
         },
+        _attribute_SFVec2: function (ctx, name, x, y) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFVec2.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec2(x, y);
+        },
         _attribute_SFVec3: function (ctx, name, x, y, z) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.SFVec3.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec3(x, y, z);
         },
@@ -358,6 +361,8 @@ x3dom.registerNodeType(
     
             var material = null;
 			var texture = null;
+            var textureTransform = null;
+            
             Array.forEach(ctx.xmlNode.childNodes, function (node) {
                 if (x3dom.isX3DElement(node)) {
                     var child = ctx.setupNodePrototypes(node, ctx);
@@ -369,8 +374,11 @@ x3dom.registerNodeType(
 						else if (x3dom.isa(child, x3dom.nodeTypes.X3DTextureNode)) {
 							texture = child;
 						}
+                        else if (x3dom.isa(child, x3dom.nodeTypes.X3DTextureTransformNode)) {
+                            textureTransform = child;
+                        }
 						else {
-                            ctx.log('unrecognised x3dom.Appearance child node type '+node.localName);
+                            ctx.log('unrecognised x3dom.nodeTypes.Appearance child node type '+node.localName);
                         }
                     }
                 }
@@ -384,8 +392,18 @@ x3dom.registerNodeType(
 			
             this._material = material;
 			this._texture = texture;
+            this._textureTransform = textureTransform;
         },
 		{
+            transformMatrix: function() {
+                if (this._textureTransform == null) {
+                    return x3dom.fields.SFMatrix4.identity();
+                }
+                else {
+                    return this._textureTransform.transformMatrix();
+                }
+            },
+            
 			_getNodeByDEF: function (def) {
 				if (this._DEF == def) {
 					return this;
@@ -400,6 +418,11 @@ x3dom.registerNodeType(
 				
 				if (this._texture !== null) {
 					found = this._texture._getNodeByDEF(def);
+                    if (found) { return found; }
+				}
+                
+				if (this._textureTransform !== null) {
+					found = this._textureTransform._getNodeByDEF(def);
                     if (found) { return found; }
 				}
 				
@@ -422,6 +445,14 @@ x3dom.registerNodeType(
 						return this._texture;
                     }
 					c = this._texture._find(type);
+					if (c) { return c; }
+				}
+                
+				if (this._textureTransform !== null) {
+					if (this._textureTransform.constructor == type) {
+						return this._textureTransform;
+                    }
+					c = this._textureTransform._find(type);
 					if (c) { return c; }
 				}
 				
@@ -499,7 +530,33 @@ x3dom.registerNodeType(
             this._attribute_SFVec2(ctx, 'translation', 0, 0);
             
             //Tc' = -C × S × R × C × T × Tc
-            // TODO; impl mat2
+            var negCenter = new x3dom.fields.SFVec3(-this._center.x, -this._center.y, 1);
+            var posCenter = new x3dom.fields.SFVec3(this._center.x, this._center.y, 0);
+            var trans3 = new x3dom.fields.SFVec3(this._translation.x, this._translation.y, 0);
+            var scale3 = new x3dom.fields.SFVec3(this._scale.x, this._scale.y, 0);
+            
+            this._trafo = x3dom.fields.SFMatrix4.translation(negCenter).
+                     mult(x3dom.fields.SFMatrix4.scale(scale3)).
+                     mult(x3dom.fields.SFMatrix4.rotationZ(this._rotation)).
+                     mult(x3dom.fields.SFMatrix4.translation(posCenter)).
+                     mult(x3dom.fields.SFMatrix4.translation(trans3));
+        },
+        {
+            transformMatrix: function() {
+                //TODO; optimize - update only on field change!
+                var negCenter = new x3dom.fields.SFVec3(-this._center.x, -this._center.y, 1);
+                var posCenter = new x3dom.fields.SFVec3(this._center.x, this._center.y, 0);
+                var trans3 = new x3dom.fields.SFVec3(this._translation.x, this._translation.y, 0);
+                var scale3 = new x3dom.fields.SFVec3(this._scale.x, this._scale.y, 0);
+                
+                this._trafo = x3dom.fields.SFMatrix4.translation(negCenter).
+                         mult(x3dom.fields.SFMatrix4.scale(scale3)).
+                         mult(x3dom.fields.SFMatrix4.rotationZ(this._rotation)).
+                         mult(x3dom.fields.SFMatrix4.translation(posCenter)).
+                         mult(x3dom.fields.SFMatrix4.translation(trans3));
+                         
+                return this._trafo;
+            }
         }
     )
 );
@@ -791,8 +848,6 @@ x3dom.registerNodeType(
 );
 
 // TODO: Circle2D
-// TODO: Cone
-// TODO: Cylinder
 // TODO: Disk2D
 // TODO: ElevationGrid
 // TODO: Extrusion
