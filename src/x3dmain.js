@@ -394,6 +394,23 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
             x3dcanvas.load(x3ds[i], i);
             x3dom.canvases.push(x3dcanvas);
         }
+        
+        var ready = (function()
+        {
+            var eventType = 'load';
+            
+            if (document.createEvent)
+            {
+                var evt = document.createEvent("Events");   
+                evt.initEvent(eventType, true, true);   
+                document.dispatchEvent(evt);   
+            }
+            else if (document.createEventObject)   
+            {
+                var evt = document.createEventObject();   
+                document.fireEvent('on' + eventType, evt);   
+            }
+        })();
 
     };
     
