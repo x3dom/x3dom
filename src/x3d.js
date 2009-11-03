@@ -1674,9 +1674,9 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.NavigationInfo.superClass.call(this, ctx);
             
 			this._attribute_SFBool(ctx, 'headlight', true);
-            this._attribute_MFString(ctx, 'type', []);
+            this._attribute_MFString(ctx, 'type', ["EXAMINE"]);
             
-            x3dom.debug.logInfo("NavigationInfo NYI");
+            x3dom.debug.logInfo("NavType: " + this._type[0].toLowerCase());
         },
         {
 			// methods
@@ -2204,6 +2204,7 @@ x3dom.registerNodeType(
             this._ctx = ctx;    //needed for late create
 			this._cam = null;
             this._bgnd = null;
+            this._navi = null;
 			this._lights = [];
         },
         {
@@ -2231,6 +2232,23 @@ x3dom.registerNodeType(
 				
 				return this._lights;
 			},
+            
+            getNavInfo: function()
+            {
+                if (this._navi == null)
+                {
+                    this._navi = this._find(x3dom.nodeTypes.NavigationInfo);
+                    
+                    if (!this._navi)
+                    {
+                        var nodeType = x3dom.nodeTypes["NavigationInfo"];
+                        this._navi = new nodeType(this._ctx);
+                        x3dom.debug.logInfo("Created UserBindable.");
+                    }
+                }
+                
+                return this._navi;
+            },
         	
 			getVolume: function(min, max, invalidate)
 			{
@@ -2358,6 +2376,10 @@ x3dom.registerNodeType(
             
             onDoubleClick: function (x, y)
             {
+                var navi = this.getNavInfo();
+                if (navi._type[0].length <= 1 || navi._type[0].toLowerCase() == "none")
+                    return;
+                
                 var viewpoint = this.getViewpoint();
                 
                 viewpoint._centerOfRotation.x = this._pick.x;
@@ -2369,6 +2391,10 @@ x3dom.registerNodeType(
             //ondrag: function (dx, dy, buttonState) 
             ondrag: function (x, y, buttonState) 
             {
+                var navi = this.getNavInfo();
+                if (navi._type[0].length <= 1 || navi._type[0].toLowerCase() == "none")
+                    return;
+                
                 var dx = x - this._lastX;
                 var dy = y - this._lastY;
                 

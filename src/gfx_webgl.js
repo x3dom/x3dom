@@ -335,11 +335,11 @@ x3dom.gfx_webgl = (function () {
 			switch (obj.type) {
 				case gl.SAMPLER_2D:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformi(loc, [val]) } })(loc));
+						(function (loc) { return function (val) { gl.uniform1i(loc, val) } })(loc));
 					break;
 				case gl.SAMPLER_CUBE:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformi(loc, [val]) } })(loc));
+						(function (loc) { return function (val) { gl.uniform1i(loc, val) } })(loc));
 					break;
 				case gl.BOOL:
 					shader.__defineSetter__(obj.name, 
@@ -459,7 +459,7 @@ x3dom.gfx_webgl = (function () {
 			
 			var tex = shape._appearance._texture;
 			
-			if (tex) // && (!shape._webgl.texture || shape._webgl.texture === undefined))
+			if (tex)
 			{
 				var texture = gl.createTexture();
 				
@@ -749,14 +749,19 @@ x3dom.gfx_webgl = (function () {
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{
+                var tex = shape._appearance._texture;
+                var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
+                if (tex._repeatS == false) wrapS = gl.CLAMP_TO_EDGE;
+                if (tex._repeatT == false) wrapT = gl.CLAMP_TO_EDGE;
+                
 				gl.enable(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D,shape._webgl.texture);
 				
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
 				//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,wrapS);
+				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,wrapT);
 				//gl.generateMipmap(gl.TEXTURE_2D);
                 
                 if (shape._appearance._textureTransform !== null)
