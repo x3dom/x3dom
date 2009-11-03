@@ -2652,10 +2652,22 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             
         },
         onNodeRemoved: function(e) {
-            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", node=" + e.target.tagName);
+            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
         },
         onNodeInserted: function(e) {
-            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", node=" + e.target);
+            var parent = e.target.parentNode._x3domNode;
+            var child = e.target;
+            
+            //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", inserted node=" + child.tagName);
+            //x3dom.debug.logInfo("MUTATION: " + child.translation + ", " + child.parentNode.tagName);
+            
+            x3dom.parsingInline = true; // enable special case
+            
+            var newChild = scene._ctx.setupNodePrototypes(child, scene._ctx);
+            parent._childNodes.push(newChild);
+            newChild._parentNodes.push(parent);
+            
+            x3dom.parsingInline = false; // disable special case
         }
     };
     //sceneDoc.addEventListener('DOMSubtreeModified', onSubtreeModified, true);    
