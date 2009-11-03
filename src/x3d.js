@@ -684,7 +684,7 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     return isect;
 };
 
-x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
+x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
 {
 	//fixme; as first shot taken from gfx
     var i = 0;
@@ -724,6 +724,9 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 		}
 
 		n = n.normalised();
+        if (!ccw)
+            n = n.negate();
+        
 		vertNormals[i  ] = n.x;
 		vertNormals[i+1] = n.y;
 		vertNormals[i+2] = n.z;
@@ -1234,8 +1237,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
             
-			// TODO: ccw; creaseAngle...
-			this._attribute_SFBool(ctx, 'creaseAngle', 0);	//Math.PI
+            this._attribute_SFBool(ctx, 'ccw', true);
+			this._attribute_SFFloat(ctx, 'creaseAngle', 0);	// TODO
 			
 			var t0 = new Date().getTime();
 			
@@ -1391,19 +1394,6 @@ x3dom.registerNodeType(
 								this._mesh._normals.push(normals[n2*3+2]);
 							}
 							
-							if (hasTexCoord) {
-								//assume 2d texCoords for now...
-								this._mesh._texCoords.push(texCoords[t0*3+0]);
-								this._mesh._texCoords.push(texCoords[t0*3+1]);
-								this._mesh._texCoords.push(texCoords[t0*3+2]);
-								this._mesh._texCoords.push(texCoords[t1*3+0]);
-								this._mesh._texCoords.push(texCoords[t1*3+1]);
-								this._mesh._texCoords.push(texCoords[t1*3+2]);
-								this._mesh._texCoords.push(texCoords[t2*3+0]);
-								this._mesh._texCoords.push(texCoords[t2*3+1]);
-								this._mesh._texCoords.push(texCoords[t2*3+2]);
-							}
-							
 							if (hasColor) {
 								//assume RGB for now...
 								this._mesh._colors.push(colors[c0*3+0]);
@@ -1415,6 +1405,16 @@ x3dom.registerNodeType(
 								this._mesh._colors.push(colors[c2*3+0]);
 								this._mesh._colors.push(colors[c2*3+1]);
 								this._mesh._colors.push(colors[c2*3+2]);
+							}
+							
+							if (hasTexCoord) {
+								//assume 2d texCoords for now...
+								this._mesh._texCoords.push(texCoords[t0*2+0]);
+								this._mesh._texCoords.push(texCoords[t0*2+1]);
+								this._mesh._texCoords.push(texCoords[t1*2+0]);
+								this._mesh._texCoords.push(texCoords[t1*2+1]);
+								this._mesh._texCoords.push(texCoords[t2*2+0]);
+								this._mesh._texCoords.push(texCoords[t2*2+1]);
 							}
 						break;
 						case 3: 
@@ -1453,19 +1453,6 @@ x3dom.registerNodeType(
 								this._mesh._normals.push(normals[n2*3+2]);
 							}
 							
-							if (hasTexCoord) {
-								//assume 2d texCoords for now...
-								this._mesh._texCoords.push(texCoords[t0*3+0]);
-								this._mesh._texCoords.push(texCoords[t0*3+1]);
-								this._mesh._texCoords.push(texCoords[t0*3+2]);
-								this._mesh._texCoords.push(texCoords[t1*3+0]);
-								this._mesh._texCoords.push(texCoords[t1*3+1]);
-								this._mesh._texCoords.push(texCoords[t1*3+2]);
-								this._mesh._texCoords.push(texCoords[t2*3+0]);
-								this._mesh._texCoords.push(texCoords[t2*3+1]);
-								this._mesh._texCoords.push(texCoords[t2*3+2]);
-							}
-							
 							if (hasColor) {
 								//assume RGB for now...
 								this._mesh._colors.push(colors[c0*3+0]);
@@ -1478,13 +1465,23 @@ x3dom.registerNodeType(
 								this._mesh._colors.push(colors[c2*3+1]);
 								this._mesh._colors.push(colors[c2*3+2]);
 							}
+							
+							if (hasTexCoord) {
+								//assume 2d texCoords for now...
+								this._mesh._texCoords.push(texCoords[t0*2+0]);
+								this._mesh._texCoords.push(texCoords[t0*2+1]);
+								this._mesh._texCoords.push(texCoords[t1*2+0]);
+								this._mesh._texCoords.push(texCoords[t1*2+1]);
+								this._mesh._texCoords.push(texCoords[t2*2+0]);
+								this._mesh._texCoords.push(texCoords[t2*2+1]);
+							}
 						break;
 						default:
 					}
 				}
 				
 				if (!hasNormal) {
-					this._mesh.calcNormals(this._creaseAngle);
+					this._mesh.calcNormals(this._creaseAngle, this._ccw);
                 }
 				if (!hasTexCoord) {
 					this._mesh.calcTexCoords();
@@ -1520,7 +1517,7 @@ x3dom.registerNodeType(
 					this._mesh._normals = normals;
                 }
 				else { 
-					this._mesh.calcNormals(this._creaseAngle);
+					this._mesh.calcNormals(this._creaseAngle, this._ccw);
 				}
 				if (hasTexCoord) { 
 					this._mesh._texCoords = texCoords;
