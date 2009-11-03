@@ -668,12 +668,12 @@ x3dom.gfx_webgl = (function () {
 			
 			var center = obj3d._getCenter();
 			center = trafo.multMatrixPnt(center);
-			center = mat_view_inv.multMatrixPnt(center);
+			center = mat_view.multMatrixPnt(center);
 			
 			zPos[i] = [i, center.z];
 		}
 		zPos.sort(function(a, b) { return a[1] - b[1]; });
-		zPos.reverse();
+		//zPos.reverse();
 		
 		t1 = new Date().getTime() - t0;
 		
