@@ -50,7 +50,6 @@ x3dom.gfx_webgl = (function () {
 		"varying vec2 fragTexCoord;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
-		"uniform mat4 viewMatrixInverse;" +
 		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
 		"" +
@@ -74,7 +73,6 @@ x3dom.gfx_webgl = (function () {
 		"uniform mat4 texTrafoMatrix;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
-		"uniform mat4 viewMatrixInverse;" +
 		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
 		"" +
@@ -125,7 +123,6 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragEyeVector;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
-		"uniform mat4 viewMatrixInverse;" +
 		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
 		"" +
@@ -174,7 +171,6 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragEyeVector;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
-		"uniform mat4 viewMatrixInverse;" +
 		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
 		"" +
@@ -627,13 +623,13 @@ x3dom.gfx_webgl = (function () {
 		var sp = getDefaultShaderProgram(gl);
 		if (!scene._webgl) {
 			// alert("no scene?!");
-			var sp = getDefaultShaderProgram(gl);
+			sp = getDefaultShaderProgram(gl);
 			scene._webgl = {
 				shader: sp
 			};
 		}
 		
-		var t0, t1;
+		var i = 0, t0, t1;
 		
 		// render traversal
 		if (scene.drawableObjects === undefined || !scene.drawableObjects) {
@@ -654,17 +650,15 @@ x3dom.gfx_webgl = (function () {
 		// sorting and stuff
 		t0 = new Date().getTime();
 		
-		var mat_projection = scene.getProjectionMatrix();
+		//var mat_projection = scene.getProjectionMatrix();
 		var mat_view = scene.getViewMatrix();
-		var mat_view_inv = mat_view.inverse();
 		
-        
 		//TODO; allow for more than one additional light per scene
 		var light, lightOn;
 		var slights = scene.getLights();
 		if (slights.length > 0) {
 			light = slights[0]._direction;
-            lightOn = (slights[0]._on == true) ? 1.0 : 0.0;
+            lightOn = (slights[0]._on === true) ? 1.0 : 0.0;
             lightOn = lightOn * slights[0]._intensity;
 		}
 		else {
@@ -676,7 +670,7 @@ x3dom.gfx_webgl = (function () {
 		
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
-		for (var i=0, n=scene.drawableObjects.length; i<n; i++)
+		for (i=0, n=scene.drawableObjects.length; i<n; i++)
 		{
 			var trafo = scene.drawableObjects[i][0];
 			var obj3d = scene.drawableObjects[i][1];
@@ -700,7 +694,7 @@ x3dom.gfx_webgl = (function () {
 		// rendering
 		t0 = new Date().getTime();
 		
-		for (var i=0, n=zPos.length; i<n; i++)
+		for (i=0, n=zPos.length; i<n; i++)
 		//for (var i=0, n=scene.drawableObjects.length; i<n; i++)
 		{
 			var obj = scene.drawableObjects[zPos[i][0]];
@@ -709,11 +703,13 @@ x3dom.gfx_webgl = (function () {
 			var transform = obj[0];
 			var shape = obj[1];
 
-			if (!shape._webgl)
+			if (!shape._webgl) {
+                // init of GL objects
 				this.setupShape(gl, shape);
+            }
 
-			var sp = shape._webgl.shader;
-			if (! sp) {
+			sp = shape._webgl.shader;
+			if (!sp) {
 				sp = scene._webgl.shader;
             }
 			sp.bind();
@@ -757,11 +753,10 @@ x3dom.gfx_webgl = (function () {
 			*/
 				x3dom.debug.logInfo("TEXT?");	//no text visible?!
 			}
-
-			sp.viewMatrixInverse = mat_view_inv.toGL();
+            
+            // transformation matrices
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().mult(transform).toGL();
-			
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{
@@ -823,18 +818,22 @@ x3dom.gfx_webgl = (function () {
 				gl.enableVertexAttribArray(sp.color);
 			}
 			
-			if (shape._isSolid())
+			if (shape._isSolid()) {
 				gl.enable(gl.CULL_FACE);
-			else
+            }
+			else {
 				gl.disable(gl.CULL_FACE);
+            }
 			
 			//gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
 			
 			// fixme; scene._points is dynamic and doesn't belong there!!!
-			if (scene._points !== undefined && scene._points)
+			if (scene._points !== undefined && scene._points) {
 			  gl.drawElements(gl.POINTS, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-			else
+            }
+			else {
 			  gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+            }
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{
