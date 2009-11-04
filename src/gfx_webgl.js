@@ -19,20 +19,23 @@ x3dom.gfx_webgl = (function () {
 
 	Context.prototype.getName = function() {
 		return this.name;
-	}
+	};
 
 	function setupContext(canvas) {
 		x3dom.debug.logInfo("setupContext: canvas=" + canvas);
+        var ctx = null;
 		try {
-			var ctx = canvas.getContext('moz-webgl');
-			if (ctx)
+			ctx = canvas.getContext('moz-webgl');
+			if (ctx) {
 				return new Context(ctx, canvas, 'moz-webgl');
-		} catch (e) {}
+            }
+		} catch (ef) {}
 		try {
-			var ctx = canvas.getContext('webkit-3d');
-			if (ctx)
+			ctx = canvas.getContext('webkit-3d');
+			if (ctx) {
 				return new Context(ctx, canvas, 'webkit-3d');
-		} catch (e) {}
+            }
+		} catch (es) {}
 	}
 
 	var g_shaders = {};
@@ -264,8 +267,9 @@ x3dom.gfx_webgl = (function () {
 		gl.linkProgram(prog);
 		
 		var msg = gl.getProgramInfoLog(prog);
-		if (msg)
+		if (msg) {
 			x3dom.debug.logError(msg);
+        }
 		
 		return wrapShaderProgram(gl, prog);
 	}
@@ -283,9 +287,13 @@ x3dom.gfx_webgl = (function () {
 			}
 			
 			if (g_shaders[ids[id]].type == 'vertex')
+            {
 				shader[id] = gl.createShader(gl.VERTEX_SHADER);
+            }
 			else if (g_shaders[ids[id]].type == 'fragment')
+            {
 				shader[id] = gl.createShader(gl.FRAGMENT_SHADER);
+            }
 			else
 			{
 				x3dom.debug.logError('Invalid shader type '+g_shaders[id].type);
@@ -303,8 +311,9 @@ x3dom.gfx_webgl = (function () {
 		gl.linkProgram(prog);
 		
 		var msg = gl.getProgramInfoLog(prog);
-		if (msg)
+		if (msg) {
 			x3dom.debug.logError(msg);
+        }
 		
 		return wrapShaderProgram(gl, prog);
 	}
@@ -314,83 +323,86 @@ x3dom.gfx_webgl = (function () {
 	{
 		var shader = {};
 		
-		shader.bind = function () { gl.useProgram(sp) };
+		shader.bind = function () { 
+            gl.useProgram(sp); 
+        };
 		
-		var i, ok = true;	//make lint happy
+		var i = 0, ok = true;	//make lint happy
+        var loc = null, obj = null;
 		
 		for (i=0; ok; ++i) {
 			try {
-				var obj = gl.getActiveUniform(sp, i);
+				obj = gl.getActiveUniform(sp, i);
 				//x3dom.debug.logInfo("uniform #" + i + " obj=" + obj.name );
 			}
-			catch (e) {}
+			catch (eu) {}
 
-			if (gl.getError() != 0) {
+			if (gl.getError() !== 0) {
 				 // XXX: GetProgramiv(ACTIVE_ATTRIBUTES) is not implemented, so just loop until error
 				break;
 			}
 
-			var loc = gl.getUniformLocation(sp, obj.name);
+			loc = gl.getUniformLocation(sp, obj.name);
 			
 			switch (obj.type) {
 				case gl.SAMPLER_2D:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniform1i(loc, val) } })(loc));
+						(function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
 					break;
 				case gl.SAMPLER_CUBE:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniform1i(loc, val) } })(loc));
+						(function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
 					break;
 				case gl.BOOL:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniform1i(loc, val) } })(loc));
+						(function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
 					break;
 				case gl.FLOAT:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniform1f(loc, val) } })(loc));
+						(function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
 					break;
 				case gl.FLOAT_VEC2:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]) } })(loc));           
+						(function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]); }; })(loc));           
 					break;
 				case gl.FLOAT_VEC3:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]) } })(loc));
+						(function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
 					break;
 				case gl.FLOAT_VEC4:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniform4f(loc, val[0], val[1], val[2], val[3]) } })(loc));
+						(function (loc) { return function (val) { gl.uniform4f(loc, val[0], val[1], val[2], val[3]); }; })(loc));
 					break;
 				case gl.FLOAT_MAT2:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new CanvasFloatArray(val)) } })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new CanvasFloatArray(val)); }; })(loc));
 					break;
 				case gl.FLOAT_MAT3:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new CanvasFloatArray(val)) } })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new CanvasFloatArray(val)); }; })(loc));
 					break;
 				case gl.FLOAT_MAT4:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new CanvasFloatArray(val)) } })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new CanvasFloatArray(val)); }; })(loc));
 					break;
 				default:
 					x3dom.debug.logInfo('GLSL program variable '+obj.name+' has unknown type '+obj.type);
 			}
 		}
 		
-		for (var i=0; ok; ++i) {
+		for (i=0; ok; ++i) {
 			try {
-				var obj = gl.getActiveAttrib(sp, i);
+				obj = gl.getActiveAttrib(sp, i);
 				//x3dom.debug.logInfo("attribute #" + i + " obj=" + obj.name );
 			}
-			catch (e) {}
+			catch (ea) {}
 			
-			if (gl.getError() != 0) {
+			if (gl.getError() !== 0) {
 				// XXX: as above		
 				break;	
 			}
 
-			var loc = gl.getAttribLocation(sp, obj.name);
+			loc = gl.getAttribLocation(sp, obj.name);
 			shader[obj.name] = loc;
 		}
 		
@@ -412,10 +424,12 @@ x3dom.gfx_webgl = (function () {
 			}).join(', ');*/
 			text_ctx.mozTextStyle = '48px '+font_family;
 
+            var i = 0;
 			var text_w = 0;
 			var string = shape._geometry._string;
-			for (var i = 0; i < string.length; ++i)
+			for (i = 0; i < string.length; ++i) {
 				text_w = Math.max(text_w, text_ctx.mozMeasureText(string[i]));
+            }
 
 			var line_h = 1.2 * text_ctx.mozMeasureText('M'); // XXX: this is a hacky guess
 			var text_h = line_h * shape._geometry._string.length;
@@ -424,7 +438,7 @@ x3dom.gfx_webgl = (function () {
 			text_canvas.height = Math.pow(2, Math.ceil(Math.log(text_h)/Math.log(2)));
 			text_ctx.fillStyle = '#000';
 			text_ctx.translate(0, line_h);
-			for (var i = 0; i < string.length; ++i) {
+			for (i = 0; i < string.length; ++i) {
 				text_ctx.mozDrawText(string[i]);
 				text_ctx.translate(0, line_h);
 			}
@@ -445,17 +459,16 @@ x3dom.gfx_webgl = (function () {
 				normals: [0,0,1, 0,0,1, 0,0,1, 0,0,1],
 				indexes: [0,1,2, 2,3,0],
 				texcoords: [0,v, u,v, u,0, 0,0],
-				mask_texture: ids,
+				mask_texture: ids
 			};
 
 			shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
 		} 
 		else 
 		{
-			if (shape._webgl !== undefined)
+			if (shape._webgl !== undefined) {
 				return;
-			//else
-			//	x3dom.debug.logInfo("init shape");
+            }
 			
 			var tex = shape._appearance._texture;
 			
@@ -484,7 +497,7 @@ x3dom.gfx_webgl = (function () {
 					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
 					//gl.generateMipmap(gl.TEXTURE_2D);
 					//gl.bindTexture(gl.TEXTURE_2D,0);
-				}
+				};
 			}
             
 			shape._webgl = {
@@ -494,15 +507,17 @@ x3dom.gfx_webgl = (function () {
 				colors: shape._geometry._mesh._colors,
 				indexes: shape._geometry._mesh._indices,
 				//indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
-				buffers: [{},{},{},{},{}],
+				buffers: [{},{},{},{},{}]
 			};
             
 			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
 			if (tex) {
-                if (shape._appearance._textureTransform == null)
+                if (shape._appearance._textureTransform === null) {
                     shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
-                else
+                }
+                else {
                     shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured-tt', 'fs-x3d-textured']);
+                }
             }
 			else if (shape._geometry._mesh._colors.length > 0) {
 				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolor', 'fs-x3d-vertexcolor']);
@@ -585,7 +600,7 @@ x3dom.gfx_webgl = (function () {
 				delete colors;
 			}
 		}
-	}
+	};
 
 	Context.prototype.renderScene = function (scene) 
 	{
@@ -614,7 +629,7 @@ x3dom.gfx_webgl = (function () {
 			// alert("no scene?!");
 			var sp = getDefaultShaderProgram(gl);
 			scene._webgl = {
-				shader: sp,
+				shader: sp
 			};
 		}
 		
@@ -698,8 +713,9 @@ x3dom.gfx_webgl = (function () {
 				this.setupShape(gl, shape);
 
 			var sp = shape._webgl.shader;
-			if (! sp)
+			if (! sp) {
 				sp = scene._webgl.shader;
+            }
 			sp.bind();
 
 			sp.eyePosition = [0, 0, 0];
@@ -751,8 +767,12 @@ x3dom.gfx_webgl = (function () {
 			{
                 var tex = shape._appearance._texture;
                 var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
-                if (tex._repeatS == false) wrapS = gl.CLAMP_TO_EDGE;
-                if (tex._repeatT == false) wrapT = gl.CLAMP_TO_EDGE;
+                if (tex._repeatS === false) {
+                    wrapS = gl.CLAMP_TO_EDGE;
+                }
+                if (tex._repeatT === false) {
+                    wrapT = gl.CLAMP_TO_EDGE;
+                }
                 
 				gl.enable(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D,shape._webgl.texture);
@@ -851,7 +871,7 @@ x3dom.gfx_webgl = (function () {
 		}
 		
 		scene.drawableObjects = null;
-	}
+	};
 	
 	Context.prototype.shutdown = function(scene)
 	{
@@ -892,7 +912,7 @@ x3dom.gfx_webgl = (function () {
 				gl.deleteBuffer(shape._webgl.buffers[4]);
 			}
 		}
-	}
+	};
 
 	return setupContext;
 
