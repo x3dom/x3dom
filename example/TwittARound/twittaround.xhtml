@@ -34,8 +34,19 @@
   			
   			$(document).ready( function() {
   				//get_twitter();
-  				setTimeout('get_twitter()', 3000);
+  				//setTimeout('get_twitter()', 3000);
   				$('#tweet').hide();
+  				
+  				if (navigator.geolocation) {
+					navigator.geolocation.getCurrentPosition( function(position) {  
+					latitude = position.coords.latitude;
+					longitude = position.coords.longitude;
+					setTimeout('get_twitter()', 2000);
+				 }); 
+				  
+				} else {
+				  alert("I'm sorry, but geolocation services are not supported by your browser.");
+				} 
   				
   				$().mousemove(function(e){
 					mouse_x = e.pageX;
@@ -51,8 +62,8 @@
   			function get_twitter()
   			{
 				
-				latitude = 49.591268;
-				longitude = 11.03935;
+				//latitude = 49.591268;
+				//longitude = 11.03935;
 				
 				var url = "http://search.twitter.com/search.json?rpp=100&show_user=true&geocode="+latitude+"%2C"+longitude+"%2C"+radius+units+"&callback=?"
 				
