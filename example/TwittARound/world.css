@@ -1,15 +1,3 @@
-html, body {
-	height: 100%;
-	margin: 0;
-	padding: 0;
-}
-
-body {
-	font-family: Helvetica;
-	font-size: 8px;
-	color: white;
-}
-
 #frame {
 	position: absolute;
 	width: 320px;
@@ -49,10 +37,12 @@ body {
 #tweet {
 	position: absolute;
 	width: 310px;
-	height: 150px;
+	height: 100px;
 	top: 325px;
 	left: 5px;
 	background-color: white;
+	font-family: Helvetica;
+	font-size: 8px;
 	color: black;
 	font-size: 14px;
 	opacity: 1;

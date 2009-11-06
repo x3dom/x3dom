@@ -42,6 +42,7 @@
 					latitude = position.coords.latitude;
 					longitude = position.coords.longitude;
 					setTimeout('get_twitter()', 2000);
+					setInterval('get_twitter()', 10000);
 				 }); 
 				  
 				} else {
@@ -64,6 +65,8 @@
 				
 				//latitude = 49.591268;
 				//longitude = 11.03935;
+				//$('#world').attr('translation', latitude + ' 0 ' + longitude);
+				$("Transform'[id='trans_tweets']").attr('translation', -latitude + ' 0 ' + -longitude);
 				
 				var url = "http://search.twitter.com/search.json?rpp=100&show_user=true&geocode="+latitude+"%2C"+longitude+"%2C"+radius+units+"&callback=?"
 				
@@ -89,24 +92,25 @@
 						
 						var loc = checkLocation(result.location);
 						var age = new Date().getTime() - Date.parse(result.created_at);
-							
-						if (loc != null && age <= maxtweetage)
+						
+						//console.debug($('#trans_'+result.from_user).length);
+						if (loc != null && $('#trans_'+result.from_user).length < 1)
 						{
 							loc = loc.split(',');
 							
 							twitlat = loc[0];
 							twitlong = loc[1];
 							
+							console.debug(result.from_user);
 							var minutes = 0;
 							$('#tweet').fadeIn(100);
 							var tweetstring = '"<img src=\'arr_up.png\' class=\'tweetarrow2\' />';
-							tweetstring += '<h1>' + result.from_user + '<\/h1>' + '<h2>' + minutes + ' minutes ago<\/h2>' + result.text;
+							tweetstring += '<h1 class=\'tweetuser\'>' + result.from_user + '<\/h1>' + '<h2>' + minutes + ' minutes ago<\/h2>' + result.text;
 							tweetstring += '<img src=\'' + result.profile_image_url + '\' class=\'tweeticon\' />"';
 							
-							console.debug(result.from_user);
-							
 							var t = document.createElement('Transform');
-							t.setAttribute("translation", Math.random()*10 +' 0 '+Math.random()*10);
+							t.setAttribute("translation", twitlat + ' 0 ' + twitlong);
+							t.setAttribute("scale", '0.1 0.1 0.1');
 							t.setAttribute("id", 'trans_'+result.from_user);
 							var s = document.createElement('Shape');
 							t.appendChild(s);
@@ -133,6 +137,7 @@
 							s2.appendChild(a2);
 							var m = document.createElement('Material');
 							m.setAttribute("diffuseColor",'0.603 0.894 0.909');
+							m.setAttribute("specularColor",'0.603 0.894 0.909');
 							a2.appendChild(m);
 							var c = document.createElement('Cone');
 							c.setAttribute("height",'0.5');
@@ -195,29 +200,40 @@
 	</head> 
 	
 	<body id='body' color='#FFFFFF'>
-			<p>
-			<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="false" showLog="false" x="0px" y="0px" width="700px" height="400px">
-				<Scene>
-					<Viewpoint position='0 3 20' />
-					<Background DEF='bgnd' transparency='0' skyColor='0.8 0.8 0.8' />
-					
-					<Transform DEF="trafo" translation="0 0 0">
-					</Transform>
-					
-					<Transform translation='0 -1 0' rotation='1 0 0 3.14'>
+		<h1>Twittaround via X3DOM: Shows current Tweets around your position.</h1>
+		<p>
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="false" showLog="false" x="0px" y="0px" width="700px" height="400px">
+			<Scene>
+				<Viewpoint id='vp' position='0 0.5 2.5' />
+				<Background id='bgnd' transparency='0' skyColor='0.8 0.8 0.8' />
+				
+				<Transform id="trans_tweets" translation="0 0 0">
+				</Transform>
+				
+				<Transform id='world' translation='0 0 0'>
+					<Transform id='cone' translation='0 -0.1 0' rotation='1 0 0 3.14'>
 						<Shape>
 							<Appearance>
 								<Material diffuseColor='1 1 1' emissiveColor='1 1 1' />
 							</Appearance>
-							<Cone height='0' bottomRadius='20' lit='false'/>
+							<Cone height='0' bottomRadius='2.5' lit='false'/>
 						</Shape>
 					</Transform>
-					
-				</Scene>
-			</X3D>
-			<script type="text/javascript" src="x3dom.js"></script>
-			</p>
-			<div id='tweet' class='tweet'></div>
+					<Transform id='position' translation='0 24 0' rotation='1 0 0 0'>
+						<Shape>
+							<Appearance>
+								<Material diffuseColor='1 0 0.5' emissiveColor='1 0 0.5' />
+							</Appearance>
+							<Cylinder height='50' radius='0.01' lit='false'/>
+						</Shape>
+					</Transform>
+				</Transform>
+				
+			</Scene>
+		</X3D>
+		<script type="text/javascript" src="x3dom.js"></script>
+		</p>
+		<div id='tweet' class='tweet'></div>
 
 	</body>
 	

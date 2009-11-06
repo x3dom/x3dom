@@ -1,29 +1,3 @@
-div.annotation {
-	position:absolute;
-	width: 50px;
-	height: 50px;
-	border: 1px solid white;
-	-webkit-border-radius: 5px;
-	-webkit-box-sizing: border-box;
-	text-align: center;
-	font-family: Verdana;
-	font-size: 15px;
-	color: white;
-	background-color: rgba(255, 255, 255, 0.6);
-}
-
-div.tweet {
-	position: absolute;
-	width: 54px;
-	height: 54px;
-	top: 90px;
-	margin: 0px 0px 0px 0px;
-	background-color: #9AE4E8;
-	opacity: 0.8;
-	-webkit-border-radius: 5px;
-	-webkit-box-sizing: border-box;
-}
-
 div.tweetcontent {
 	position: absolute;
 	width: 235px;
@@ -50,7 +24,7 @@ img.tweeticon {
 	height: 48px;
 }
 
-h1 {
+h1.tweetuser {
 	font-size: 14px;
 	line-height: 25%;
 	color: #9AE4E8;
