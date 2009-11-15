@@ -9,6 +9,39 @@
 * 
 */
 
+// This code is for Firefox/Minefield compatibility.  WebGL
+// originally used a class called CanvasFloatArray, but the
+// specification has now changed, and it's called WebGLFloatArray.
+// Firefox/Minefield still (as of 13 Nov 2009) uses the old
+// name, but WebKit/Safari uses the new one.  The main WebGL
+// code in this page uses the new name, but the compatibility
+// code that follows will stay here for the time being to make 
+// sure that Firefox users can view the page.
+try
+{
+  WebGLFloatArray;
+}
+catch (e)
+{
+  try
+  {
+    WebGLArrayBuffer = CanvasArrayBuffer;
+    WebGLByteArray = CanvasByteArray;
+    WebGLUnsignedByteArray = CanvasUnsignedByteArray;
+    WebGLShortArray = CanvasShortArray;
+    WebGLUnsignedShortArray = CanvasUnsignedShortArray;
+    WebGLIntArray = CanvasIntArray;
+    WebGLUnsignedIntArray = CanvasUnsignedIntArray;
+    WebGLFloatArray = CanvasFloatArray;
+  }
+  catch (e)
+  {
+    alert("Could not find Canvas array types for WebGL.");
+  }
+}
+// End of compatibility code
+
+
 x3dom.gfx_webgl = (function () { 
 
 	function Context(ctx3d, canvas, name) {
@@ -371,15 +404,15 @@ x3dom.gfx_webgl = (function () {
 					break;
 				case gl.FLOAT_MAT2:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new CanvasFloatArray(val)); }; })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new WebGLFloatArray(val)); }; })(loc));
 					break;
 				case gl.FLOAT_MAT3:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new CanvasFloatArray(val)); }; })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new WebGLFloatArray(val)); }; })(loc));
 					break;
 				case gl.FLOAT_MAT4:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new CanvasFloatArray(val)); }; })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new WebGLFloatArray(val)); }; })(loc));
 					break;
 				default:
 					x3dom.debug.logInfo('GLSL program variable '+obj.name+' has unknown type '+obj.type);
@@ -530,7 +563,7 @@ x3dom.gfx_webgl = (function () {
 				shape._webgl.buffers[1] = positionBuffer;
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 				
-				var vertices = new CanvasFloatArray(shape._webgl.positions);
+				var vertices = new WebGLFloatArray(shape._webgl.positions);
 				
 				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
 				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -542,7 +575,7 @@ x3dom.gfx_webgl = (function () {
 				var indicesBuffer = gl.createBuffer();
 				shape._webgl.buffers[0] = indicesBuffer;
 				
-				var indexArray = new CanvasUnsignedShortArray(shape._webgl.indexes);
+				var indexArray = new WebGLUnsignedShortArray(shape._webgl.indexes);
 				
 				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
 				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -555,7 +588,7 @@ x3dom.gfx_webgl = (function () {
 				var normalBuffer = gl.createBuffer();
 				shape._webgl.buffers[2] = normalBuffer;
 				
-				var normals = new CanvasFloatArray(shape._webgl.normals);
+				var normals = new WebGLFloatArray(shape._webgl.normals);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
@@ -570,7 +603,7 @@ x3dom.gfx_webgl = (function () {
 				var texcBuffer = gl.createBuffer();
 				shape._webgl.buffers[3] = texcBuffer;
 				
-				var texCoords = new CanvasFloatArray(shape._webgl.texcoords);
+				var texCoords = new WebGLFloatArray(shape._webgl.texcoords);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
@@ -585,7 +618,7 @@ x3dom.gfx_webgl = (function () {
 				var colorBuffer = gl.createBuffer();
 				shape._webgl.buffers[4] = colorBuffer;
 				
-				var colors = new CanvasFloatArray(shape._webgl.colors);
+				var colors = new WebGLFloatArray(shape._webgl.colors);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
@@ -736,7 +769,7 @@ x3dom.gfx_webgl = (function () {
 				gl.bindTexture(gl.TEXTURE_2D, shape._webgl.mask_texture);
 				
 				var texcBuffer = gl.createBuffer();
-				var texcoords = new CanvasFloatArray(shape._webgl.texcoords);
+				var texcoords = new WebGLFloatArray(shape._webgl.texcoords);
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
 				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
