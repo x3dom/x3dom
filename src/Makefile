@@ -17,6 +17,13 @@ bundle: $(BUNDLE)
 clean: 
 	rm -f $(BUNDLE)
 
+runServer:
+	python testserver.py &
+	open http://localhost:8070/index.xhtml
+
+count:
+	wc -l $(SRC)
+
 $(BUNDLE): $(SRC)
 	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
 	
