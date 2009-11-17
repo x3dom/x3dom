@@ -35,15 +35,26 @@
   			$(document).ready( function() {
   				//get_twitter();
   				//setTimeout('get_twitter()', 3000);
+  				
+  				console.debug("start");
+  				
   				$('#tweet').hide();
   				
+  				console.debug("start");
+  				
   				if (navigator.geolocation) {
-					navigator.geolocation.getCurrentPosition( function(position) {  
+  					console.debug("geo");
+					navigator.geolocation.getCurrentPosition( function(position) {
+					console.debug("found geo");
 					latitude = position.coords.latitude;
 					longitude = position.coords.longitude;
+					alert("Searching Tweets around your current location: " + latitude + " " + longitude);
+					console.debug(latitude + " " + longitude);
 					setTimeout('get_twitter()', 2000);
 					setInterval('get_twitter()', 10000);
-				 }); 
+				 },
+				 function(error) { console.debug(error.message); }
+				 );
 				  
 				} else {
 				  alert("I'm sorry, but geolocation services are not supported by your browser.");
@@ -62,7 +73,7 @@
   			
   			function get_twitter()
   			{
-				
+				console.debug("get twitter");
 				//latitude = 49.591268;
 				//longitude = 11.03935;
 				//$('#world').attr('translation', latitude + ' 0 ' + longitude);
@@ -210,13 +221,17 @@
 				<Transform id="trans_tweets" translation="0 0 0">
 				</Transform>
 				
+				<Transform position='2.5 3 0'>
+					<Inline DEF="N" url="N.x3d" />
+				</Transform>
+				
 				<Transform id='world' translation='0 0 0'>
-					<Transform id='cone' translation='0 -0.1 0' rotation='1 0 0 3.14'>
+					<Transform id='base' translation='0 -0.15 0' rotation='1 0 0 3.14'>
 						<Shape>
 							<Appearance>
 								<Material diffuseColor='1 1 1' emissiveColor='1 1 1' />
 							</Appearance>
-							<Cone height='0' bottomRadius='2.5' lit='false'/>
+							<Cylinder height='0.1' radius='2.5' lit='false'/>
 						</Shape>
 					</Transform>
 					<Transform id='position' translation='0 24 0' rotation='1 0 0 0'>
