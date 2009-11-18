@@ -328,9 +328,11 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
+        var x3dsLC = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'x3d');        
         
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) { return n; });
+        x3ds = x3ds.concat( Array.map(x3dsLC, function (n) { return n; }) );        
 		
         var i=0;
 		var activateLog = false;

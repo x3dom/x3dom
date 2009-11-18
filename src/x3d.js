@@ -17,6 +17,9 @@
 /** @namespace the x3dom.nodeTypes namespace. */
 x3dom.nodeTypes = {};
 
+/** @namespace the x3dom.nodeTypesLC namespace. Stores nodetypes in lowercase */
+x3dom.nodeTypesLC = {};
+
 /** @namespace the x3dom.components namespace. */
 x3dom.components = {};
 
@@ -35,11 +38,13 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
         x3dom.components[componentName] = {};
         x3dom.components[componentName][nodeTypeName] = nodeDef;
         x3dom.nodeTypes[nodeTypeName] = nodeDef;
+        x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
     }
     else {
         x3dom.debug.logInfo("Using component [" + componentName + "]");
         x3dom.components[componentName][nodeTypeName] = nodeDef;
         x3dom.nodeTypes[nodeTypeName] = nodeDef;
+        x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
     }
 };
 
@@ -76,7 +81,7 @@ function defineClass(parent, ctor, methods) {
         }
     }
     return ctor;
-}
+};
 
 x3dom.isa = function(object, clazz) {
     if (object.constructor == clazz) {
@@ -109,7 +114,7 @@ function MFString_parse(str) {
     } else {
         return [str];
     }
-}
+};
 
 /**** x3dom.nodeTypes.X3DNode ****/
 
@@ -529,7 +534,7 @@ x3dom.registerNodeType(
             this._attribute_SFVec2(ctx, 'scale', 1, 1);
             this._attribute_SFVec2(ctx, 'translation', 0, 0);
             
-            //Tc' = -C × S × R × C × T × Tc
+            //Tc' = -C ï¿½ S ï¿½ R ï¿½ C ï¿½ T ï¿½ Tc
             var negCenter = new x3dom.fields.SFVec3(-this._center.x, -this._center.y, 1);
             var posCenter = new x3dom.fields.SFVec3(this._center.x, this._center.y, 0);
             var trans3 = new x3dom.fields.SFVec3(this._translation.x, this._translation.y, 0);
@@ -1268,12 +1273,12 @@ x3dom.registerNodeType(
 			var positions, normals, texCoords, colors;
 			
 			var coordNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate'); });
+					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'coordinate'); });
 			ctx.assert(coordNode.length == 1);
             positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n; });
 			
 			var normalNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Normal'); });
+					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'normal'); });
             if (normalNode.length == 1) 
 			{
 				hasNormal = true;
@@ -1284,7 +1289,7 @@ x3dom.registerNodeType(
 			}
 
 			var texCoordNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'TextureCoordinate'); });
+					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'texturecoordinate'); });
             if (texCoordNode.length == 1) 
 			{
 				hasTexCoord = true;
@@ -1295,7 +1300,7 @@ x3dom.registerNodeType(
 			}
 
 			var colorNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Color'); });
+					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'color'); });
             if (colorNode.length == 1) 
 			{
 				hasColor = true;
@@ -2529,7 +2534,7 @@ x3dom.registerNodeType(
                 
                 var xml = xhr.responseXML;
                 
-                var inlScene = xml.getElementsByTagName('Scene')[0];    //TODO; check if exists
+                var inlScene = xml.getElementsByTagName('Scene')[0] | xml.getElementsByTagName('scene')[0];    //TODO; check if exists
                 
                 x3dom.parsingInline = true; // enable special case
                 
@@ -2580,7 +2585,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
         var next_uri = queued_uris.shift();
         
 		//x3dom.debug.logInfo("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
-        if (x3dom.isX3DElement(next_uri) && next_uri.localName == 'X3D') {
+        if (x3dom.isX3DElement(next_uri) && next_uri.localName.toLowerCase() == 'x3d') {
             // Special case, when passed an X3D node instead of a URI string
             uri_docs[next_uri] = next_uri;
             next_step();
@@ -2617,13 +2622,21 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     };
 
     var doc = this;
-    x3dom.debug.logInfo("Loading scene #" + sceneElemPos + " from " + x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc).length + ".");
-    var scene = this._setupNodePrototypes(x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc)[sceneElemPos], ctx);
+    x3dom.debug.logInfo("Loading scene #" + sceneElemPos + " from " + x3dom.xpath(sceneDoc, '//x3d:scene', sceneDoc).length + ".");    
+    var sceneElem = x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc)[sceneElemPos] || 
+                    x3dom.xpath(sceneDoc, '//x3d:scene', sceneDoc)[sceneElemPos];                
+    var scene = this._setupNodePrototypes(sceneElem, ctx);
     
 	// BUG: the xpath call on sceneDoc should only check for ROUTEs for current scene, not for all.
-	if (sceneElemPos == 0)
-	scene._routes = Array.map(x3dom.xpath(sceneDoc, '//x3d:ROUTE', null), // XXX: handle imported ROUTEs
-        function (route) {
+	if (sceneElemPos == 0) {
+        // We need to do some extra work to support lower and uppercase routes
+        var sceneRoutes = x3dom.xpath(sceneDoc, '//x3d:ROUTE', null);
+        var sceneRoutesLC = x3dom.xpath(sceneDoc, '//x3d:route', null);
+        
+        // Combine upper and lowercase routes into one array
+        var sceneRoutes = Array.map(sceneRoutes, function(n) { return n; }).concat( Array.map(sceneRoutesLC,  function(n) { return n; }));
+        
+        function setupRoute(route) {
             var fromNode = scene._getNodeByDEF(route.getAttribute('fromNode'));
             var toNode = scene._getNodeByDEF(route.getAttribute('toNode'));
             if (! (fromNode && toNode)) {
@@ -2631,9 +2644,12 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 return;
             }
             fromNode._setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
-        }
-    );
-
+        };
+        
+        // XXX: handle imported ROUTEs
+        scene._routes = Array.map(sceneRoutes, setupRoute);
+    }
+    
     // Test capturing DOM mutation events on the X3D subscene
     var domEventListener = {
         onAttrModified: function(e) {
@@ -2691,14 +2707,15 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 	    }
 	    else {
 	    	// FIXME; Should we create ROUTES at this position
-	    	if (node.localName == 'ROUTE') 
+	    	if (node.localName.toLowerCase() == 'route') 
 	    		return n;
 
             // PE: New code no longer uses the x3dom.nodeTypeMap (which is obsolete now)
             //     The autoChild property was added to the X3DGroupingNode base class (as _autoChild)
-            var nodeType = x3dom.nodeTypes[node.localName];
-            if (nodeType === undefined) {
-                x3dom.debug.logInfo("Unrecognised element " + node.localName);
+            // var nodeType = x3dom.nodeTypes[node.localName];
+            var nodeType = x3dom.nodeTypesLC[node.localName.toLowerCase()];
+            if (nodeType === undefined) {                
+                x3dom.debug.logInfo("Unrecognised element " + node.localName );
             }
             else {
                 ctx.xmlNode = node;
