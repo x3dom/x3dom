@@ -2595,21 +2595,22 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     next_step();
 }
 
- x3dom.xpath = function(doc, expr, node) {
-    var xpe = new XPathEvaluator();
-    function nsResolver(prefix) {
-        var ns = {
-            'x3d': x3dom.x3dNS,
-        };
-        return ns[prefix] || null;
+x3dom.findScene = function(x3dElem) {
+    var sceneElems = [];    
+    for (var i=0; i<x3dElem.childNodes.length; i++) {
+        var sceneElem = x3dElem.childNodes[i];        
+        if (sceneElem && sceneElem.localName && sceneElem.localName.toLowerCase() === "scene") {
+            sceneElems.push(sceneElem);
+        }
     }
-    var result = xpe.evaluate(expr, node || doc, nsResolver, 0, null);
-    var res, found = [];
-    while (res = result.iterateNext())
-        found.push(res);
-    return found;
+    
+    if (sceneElems.length > 1) {
+        x3dom.debug.logError("X3D element has more than one Scene child (has " + x3dElem.childNodes.length + ").");
+    } else {
+        return sceneElems[0];
+    }
+    return null;
 }
-
 
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
@@ -2622,33 +2623,10 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     };
 
     var doc = this;
-    x3dom.debug.logInfo("Loading scene #" + sceneElemPos + " from " + x3dom.xpath(sceneDoc, '//x3d:scene', sceneDoc).length + ".");    
-    var sceneElem = x3dom.xpath(sceneDoc, '//x3d:Scene', sceneDoc)[sceneElemPos] || 
-                    x3dom.xpath(sceneDoc, '//x3d:scene', sceneDoc)[sceneElemPos];                
+    var sceneElem = x3dom.findScene(sceneDoc);   // sceneDoc is the X3D element here...
     var scene = this._setupNodePrototypes(sceneElem, ctx);
     
-	// BUG: the xpath call on sceneDoc should only check for ROUTEs for current scene, not for all.
-	if (sceneElemPos == 0) {
-        // We need to do some extra work to support lower and uppercase routes
-        var sceneRoutes = x3dom.xpath(sceneDoc, '//x3d:ROUTE', null);
-        var sceneRoutesLC = x3dom.xpath(sceneDoc, '//x3d:route', null);
-        
-        // Combine upper and lowercase routes into one array
-        var sceneRoutes = Array.map(sceneRoutes, function(n) { return n; }).concat( Array.map(sceneRoutesLC,  function(n) { return n; }));
-        
-        function setupRoute(route) {
-            var fromNode = scene._getNodeByDEF(route.getAttribute('fromNode'));
-            var toNode = scene._getNodeByDEF(route.getAttribute('toNode'));
-            if (! (fromNode && toNode)) {
-                x3dom.debug.logInfo("Broken route - can't find all DEFs for "+route.getAttribute('fromNode')+" -> "+route.getAttribute('toNode'));
-                return;
-            }
-            fromNode._setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
-        };
-        
-        // XXX: handle imported ROUTEs
-        scene._routes = Array.map(sceneRoutes, setupRoute);
-    }
+    // PE: Moved ROUTE creation into _setupNodePrototypes function
     
     // Test capturing DOM mutation events on the X3D subscene
     var domEventListener = {
@@ -2695,9 +2673,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 };
 
 x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
-    var n, t;
-	//x3dom.debug.logInfo("node=" + node + ", localName=" + node.localName);
-    
+    var n, t;	
+
     if (x3dom.isX3DElement(node)) {
 	    if (node.hasAttribute('USE')) {
 	      n = ctx.defMap[node.getAttribute('USE')];
@@ -2706,10 +2683,26 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 	      return n;
 	    }
 	    else {
-	    	// FIXME; Should we create ROUTES at this position
-	    	if (node.localName.toLowerCase() == 'route') 
-	    		return n;
+	    	// FIXME; Should we create ROUTES at this position?
+            // PE: Yes we should - and we do now :)
+	    	if (node.localName.toLowerCase() == 'route') {
+                x3dom.debug.logInfo("~~~~~ got route");
+                var route = node;
+                var fromNode = ctx.defMap[route.getAttribute('fromNode')];
+                var toNode = ctx.defMap[route.getAttribute('toNode')];
+                x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
+                if (! (fromNode && toNode)) {
+                    x3dom.debug.logInfo("Broken route - can't find all DEFs for " + route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
+                    return;
+                }
+                fromNode._setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
 
+//                 // XXX: handle imported ROUTEs
+//                 TODO: Store the routes of the scene - where should we store them?
+//                 scene._routes = Array.map(sceneRoutes, setupRoute);
+	    		return n;
+            }
+            
             // PE: New code no longer uses the x3dom.nodeTypeMap (which is obsolete now)
             //     The autoChild property was added to the X3DGroupingNode base class (as _autoChild)
             // var nodeType = x3dom.nodeTypes[node.localName];
