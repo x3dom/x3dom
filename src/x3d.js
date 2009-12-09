@@ -2534,7 +2534,7 @@ x3dom.registerNodeType(
                 
                 var xml = xhr.responseXML;
                 
-                var inlScene = xml.getElementsByTagName('Scene')[0] | xml.getElementsByTagName('scene')[0];    //TODO; check if exists
+                var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];    //TODO; check if exists
                 
                 x3dom.parsingInline = true; // enable special case
                 
