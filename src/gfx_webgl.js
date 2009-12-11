@@ -634,6 +634,11 @@ x3dom.gfx_webgl = (function () {
 	Context.prototype.renderScene = function (scene) 
 	{
 		var gl = this.ctx3d;
+        
+        if (gl === null || scene === null)
+        {
+            return;
+        }
 		
 		gl.viewport(0,0,this.canvas.width,this.canvas.height);
 		
@@ -909,6 +914,11 @@ x3dom.gfx_webgl = (function () {
 	{
 		var gl = this.ctx3d;
 	    //alert("Shutdown scene");
+        
+        if (gl === null || scene === null || scene.drawableObjects === null)
+        {
+            return;
+        }
 		
 		// TODO; optimize traversal, matrices are not needed for cleanup
 		scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);

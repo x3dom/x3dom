@@ -1815,7 +1815,10 @@ x3dom.registerNodeType(
         {
             _collectDrawableObjects: function (transform, out) {
                 // TODO: culling etc
-                out.push( [transform, this] );
+                if (out !== null) 
+                {
+                    out.push( [transform, this] );
+                }
             },
 			
 			_getVolume: function(min, max, invalidate) {
