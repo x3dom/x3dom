@@ -651,12 +651,19 @@ x3dom.gfx_webgl = (function () {
 			
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 		
-		gl.enable(gl.DEPTH_TEST);
 		gl.depthFunc(gl.LEQUAL);
-		gl.enable(gl.CULL_FACE);
+		gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
 		
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        //Workaround for WebKit & Co.
+        gl.blendFuncSeparate(
+					gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
+					//gl.ONE_MINUS_DST_ALPHA, gl.ONE
+                    gl.ONE, gl.ONE
+                    //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
+                );
+        gl.enable(gl.BLEND);
 
 		var sp = getDefaultShaderProgram(gl);
 		if (!scene._webgl) {
