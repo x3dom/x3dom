@@ -36,7 +36,7 @@ catch (e)
   }
   catch (e)
   {
-    alert("Could not find Canvas array types for WebGL.");
+    //alert("Could not find Canvas array types for WebGL.");
   }
 }
 // End of compatibility code
