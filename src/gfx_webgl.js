@@ -356,10 +356,12 @@ x3dom.gfx_webgl = (function () {
             gl.useProgram(sp); 
         };
 		
-		var i = 0, ok = true;	//make lint happy
         var loc = null, obj = null;
+		var i = 0;
+        
+        var numUniforms = gl.getProgramParameter(sp, gl.ACTIVE_UNIFORMS);
 		
-		for (i=0; ok; ++i) {
+		for (i=0; i < numUniforms; ++i) {
 			try {
 				obj = gl.getActiveUniform(sp, i);
 				//x3dom.debug.logInfo("uniform #" + i + " obj=" + obj.name );
@@ -367,7 +369,7 @@ x3dom.gfx_webgl = (function () {
 			catch (eu) {}
 
 			if (gl.getError() !== 0) {
-				 // XXX: GetProgramiv(ACTIVE_ATTRIBUTES) is not implemented, so just loop until error
+				//x3dom.debug.logInfo("GetProgramiv(ACTIVE_UNIFORMS) not implemented, loop until error");
 				break;
 			}
 
@@ -419,7 +421,9 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-		for (i=0; ok; ++i) {
+        numAttribs = gl.getProgramParameter(sp, gl.ACTIVE_ATTRIBUTES);
+        
+		for (i=0; i < numAttribs; ++i) {
 			try {
 				obj = gl.getActiveAttrib(sp, i);
 				//x3dom.debug.logInfo("attribute #" + i + " obj=" + obj.name );
@@ -427,7 +431,7 @@ x3dom.gfx_webgl = (function () {
 			catch (ea) {}
 			
 			if (gl.getError() !== 0) {
-				// XXX: as above		
+				//x3dom.debug.logInfo("GetProgramiv(ACTIVE_ATTRIBUTES) not implemented, loop until error");
 				break;	
 			}
 
