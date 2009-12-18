@@ -55,21 +55,20 @@ x3dom.gfx_webgl = (function () {
 	};
 
 	function setupContext(canvas) {
-		// TODO: add experimental-webgl, webgl test
+		// TODO: add experimental-webgl, webgl test    
 		x3dom.debug.logInfo("setupContext: canvas=" + canvas);
+        var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl']
         var ctx = null;
-		try {
-			ctx = canvas.getContext('moz-webgl');
-			if (ctx) {
-				return new Context(ctx, canvas, 'moz-webgl');
+        for (var i=0; i<validContextNames.length; i++) {
+            try {
+                ctx = canvas.getContext(validContextNames[i]);
+                if (ctx) {
+                    return new Context(ctx, canvas, 'moz-webgl');
+                }
             }
-		} catch (ef) {}
-		try {
-			ctx = canvas.getContext('webkit-3d');
-			if (ctx) {
-				return new Context(ctx, canvas, 'webkit-3d');
-            }
-		} catch (es) {}
+            catch (e) {}
+        }
+		return null;
 	}
 
 	var g_shaders = {};
