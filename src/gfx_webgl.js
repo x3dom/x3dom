@@ -55,6 +55,7 @@ x3dom.gfx_webgl = (function () {
 	};
 
 	function setupContext(canvas) {
+		// TODO: add experimental-webgl, webgl test
 		x3dom.debug.logInfo("setupContext: canvas=" + canvas);
         var ctx = null;
 		try {
