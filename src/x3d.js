@@ -875,59 +875,71 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
     
-            var r;
+            var r = 1;
             if (ctx.xmlNode.hasAttribute('radius')) {
                 r = +ctx.xmlNode.getAttribute('radius');
             }
-            else {
-                r = 1;
+            
+            var latitudeBands = 24;
+            var longitudeBands = 24;
+            
+            var vertexPositionData = [];
+            var normalData = [];
+            var textureCoordData = [];
+            
+            for (var latNumber = 0; latNumber <= latitudeBands; latNumber++)
+            {
+                var theta = latNumber * Math.PI / latitudeBands;
+                var sinTheta = Math.sin(theta);
+                var cosTheta = Math.cos(theta);
+
+                for (var longNumber = 0; longNumber <= longitudeBands; longNumber++)
+                {
+                    var phi = longNumber * 2 * Math.PI / longitudeBands;
+                    var sinPhi = Math.sin(phi);
+                    var cosPhi = Math.cos(phi);
+
+                    var x = -cosPhi * sinTheta;
+                    var y = -cosTheta;
+                    var z = -sinPhi * sinTheta;
+                    var u = 0.25 - (longNumber / longitudeBands);
+                    var v = latNumber / latitudeBands;
+                    
+                    vertexPositionData.push(r * x);
+                    vertexPositionData.push(r * y);
+                    vertexPositionData.push(r * z);
+                    normalData.push(x);
+                    normalData.push(y);
+                    normalData.push(z);
+                    textureCoordData.push(u);
+                    textureCoordData.push(v);
+                }
+            }
+            
+            var indexData = [];
+            longitudeBands += 1;
+            
+            for (var latNumber = 0; latNumber < latitudeBands; latNumber++)
+            {
+                for (var longNumber = 0; longNumber < longitudeBands; longNumber++)
+                {
+                    var first = (latNumber * longitudeBands) + (longNumber % longitudeBands);
+                    var second = first + longitudeBands;
+                    
+                    indexData.push(first);
+                    indexData.push(second);
+                    indexData.push(first + 1);
+
+                    indexData.push(second);
+                    indexData.push(second + 1);
+                    indexData.push(first + 1);
+                }
             }
 
-            // Start with an octahedron
-            var verts = [
-                0,0,-r, r,0,0, 0,0,r, -r,0,0, 0,-r,0, 0,r,0
-            ];
-            var norms = [
-                0,0,-1, 1,0,0, 0,0,1, -1,0,0, 0,-1,0, 0,1,0
-            ];
-            var tris = [
-                0,1,4, 1,2,4, 2,3,4, 3,0,4,
-                1,0,5, 2,1,5, 3,2,5, 0,3,5
-            ];
-    
-            var new_verts, new_tris;
-            function add_vertex(a, b) {
-                if (a > b) { var t = a; a = b; b = t; }
-                if (new_verts[a] === undefined) { new_verts[a] = []; }
-                if (new_verts[a][b] === undefined) {
-                    new_verts[a][b] = verts.length / 3;
-                    var x = (verts[a*3  ] + verts[b*3  ])/2;
-                    var y = (verts[a*3+1] + verts[b*3+1])/2;
-                    var z = (verts[a*3+2] + verts[b*3+2])/2;
-                    var s = r / Math.sqrt(x*x + y*y + z*z);
-					var xs = x*s, ys = y*s, zs = z*s;
-                    verts.push(xs, ys, zs);
-					// calculate normals
-					var l = Math.sqrt(xs*xs + ys*ys + zs*zs);
-					norms.push(xs/l, ys/s, zs/l);
-                }
-                return new_verts[a][b];
-            }
-            for (var k = 0; k < 3; ++k) { // repeated subdivision
-                new_verts = [];
-                new_tris = [];
-                for (var i = 0; i < tris.length; i += 3) {
-                    var a = add_vertex(tris[i  ], tris[i+1]);
-                    var b = add_vertex(tris[i+1], tris[i+2]);
-                    var c = add_vertex(tris[i+2], tris[i  ]);
-                    new_tris.push(tris[i],a,c, tris[i+1],b,a, tris[i+2],c,b, a,b,c);
-                }
-                tris = new_tris;
-            }
-			
-            this._mesh._positions = verts;
-            this._mesh._normals = norms;
-            this._mesh._indices = tris;
+            this._mesh._positions = vertexPositionData;
+            this._mesh._normals = normalData;
+			this._mesh._texCoords = textureCoordData;
+            this._mesh._indices = indexData;
 			this._mesh._invalidate = true;
         }
     )
@@ -2537,7 +2549,8 @@ x3dom.registerNodeType(
                 
                 var xml = xhr.responseXML;
                 
-                var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];    //TODO; check if exists
+                //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
+                var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
                 
                 x3dom.parsingInline = true; // enable special case
                 
@@ -2689,7 +2702,6 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 	    	// FIXME; Should we create ROUTES at this position?
             // PE: Yes we should - and we do now :)
 	    	if (node.localName.toLowerCase() == 'route') {
-                x3dom.debug.logInfo("~~~~~ got route");
                 var route = node;
                 var fromNode = ctx.defMap[route.getAttribute('fromNode')];
                 var toNode = ctx.defMap[route.getAttribute('toNode')];
