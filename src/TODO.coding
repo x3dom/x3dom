@@ -1,17 +1,15 @@
 == Generic
-- copyright
-- Makefile
+- jslint
 
 == X3D basics
 - global context per namespace
 - include Node.f Node.fc and node.nodeChanged()
 - remove _getNodeByDEF
-- ROUTE bug in fanOut
 - addChild/removeChild in all nodes
-- replace showFPS with showStat
 
 == Rendering
-- Multiindex
 - IndexedTriangleStripSet
-
-
+- Coordinate
+- ColorRGBA
+- PointSet
+- ParticleSet
