@@ -244,6 +244,29 @@ x3dom.gfx_webgl = (function () {
 		"}"
 		};
 
+    g_shaders['vs-x3d-vertexcolorUnlit'] = { type: "vertex", data:
+        "attribute vec3 position;" +
+        "attribute vec3 color;" +
+        "varying vec3 fragColor;" +
+        "uniform mat4 modelViewProjectionMatrix;" +
+        "" +
+        "void main(void) {" +
+        "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+        "    fragColor = color;" +
+        "}"
+        };
+    
+    g_shaders['fs-x3d-vertexcolorUnlit'] = { type: "fragment", data:
+        "uniform vec3 diffuseColor;" +
+        "uniform float alpha;" +
+        "uniform float lightOn;" +
+        "varying vec3 fragColor;" +
+        "" +
+        "void main(void) {" +
+        "    gl_FragColor = vec4(fragColor, alpha);" +
+        "}"
+        };
+
 	g_shaders['fs-x3d-shownormal'] = { type: "fragment", data:
 		"uniform float ambientIntensity;" +
 		"uniform vec3 diffuseColor;" +
@@ -543,20 +566,31 @@ x3dom.gfx_webgl = (function () {
 				buffers: [{},{},{},{},{}]
 			};
             
-			// 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
-			if (tex) {
-                if (shape._appearance._textureTransform === null) {
-                    shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
+            if (x3dom.isa(shape._geometry, x3dom.nodeTypes.PointSet)) {
+                shape._webgl.primType = gl.POINTS;
+                
+                //TODO; remove these hacky thousands of shaders!!!
+                shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
+            }
+            else {
+                //TODO; also account for other cases such as LineSet
+                shape._webgl.primType = gl.TRIANGLES;
+                
+                // 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
+                if (tex) {
+                    if (shape._appearance._textureTransform === null) {
+                        shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
+                    }
+                    else {
+                        shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured-tt', 'fs-x3d-textured']);
+                    }
+                }
+                else if (shape._geometry._mesh._colors.length > 0) {
+                    shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolor', 'fs-x3d-vertexcolor']);
                 }
                 else {
-                    shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured-tt', 'fs-x3d-textured']);
+                    shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
                 }
-            }
-			else if (shape._geometry._mesh._colors.length > 0) {
-				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolor', 'fs-x3d-vertexcolor']);
-            }
-			else {
-				shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
             }
 			
 			var sp = shape._webgl.shader;
@@ -881,7 +915,7 @@ x3dom.gfx_webgl = (function () {
 			  gl.drawElements(gl.POINTS, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
             }
 			else {
-			  gl.drawElements(gl.TRIANGLES, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+			  gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
             }
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)

@@ -608,6 +608,7 @@ x3dom.Mesh.prototype._texCoords = [];
 x3dom.Mesh.prototype._colors    = [];
 x3dom.Mesh.prototype._indices   = [];
 
+x3dom.Mesh.prototype._lit = true;
 x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};
 x3dom.Mesh.prototype._invalidate = true;
@@ -797,6 +798,26 @@ x3dom.registerNodeType(
 
 // TODO: Arc2D
 // TODO: ArcClose2D
+// TODO: Circle2D
+// TODO: Disk2D
+// TODO: ElevationGrid
+// TODO: Extrusion
+// TODO: GeoElevationGrid
+// TODO: IndexedLineSet
+// TODO: LineSet
+// TODO: Polyline2D
+// TODO: Polypoint2D
+// TODO: Rectangle2D
+// TODO: TriangleSet2D
+// TODO: IndexedTriangleFanSet
+// TODO: IndexedTriangleSet
+// TODO: IndexedTriangleStripSet
+// TODO: TriangleFanSet
+// TODO: TriangleSet
+// TODO: TriangleStripSet
+// TODO: X3DParametricGeometryNode
+// TODO: ...
+
 
 //x3dom.Box = defineClass(x3dom.X3DGeometryNode,
 x3dom.registerNodeType(
@@ -854,18 +875,6 @@ x3dom.registerNodeType(
         }
     )
 );
-
-// TODO: Circle2D
-// TODO: Disk2D
-// TODO: ElevationGrid
-// TODO: Extrusion
-// TODO: GeoElevationGrid
-// TODO: IndexedLineSet
-// TODO: LineSet
-// TODO: PointSet
-// TODO: Polyline2D
-// TODO: Polypoint2D
-// TODO: Rectangle2D
 
 // x3dom.Sphere = defineClass(x3dom.X3DGeometryNode,
 x3dom.registerNodeType(
@@ -1203,6 +1212,44 @@ x3dom.registerNodeType(
     )
 );
 
+x3dom.registerNodeType(
+    "PointSet",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
+            
+            var positions = [], colors = [];
+            
+            var coordNode = Array.filter(ctx.xmlNode.childNodes, 
+                    function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate'); });
+            ctx.assert(coordNode.length == 1);
+            var positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), 
+                    function (n) { return +n; });
+
+            var colorNode = Array.filter(ctx.xmlNode.childNodes, 
+                    function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Color'); });
+            ctx.assert(coordNode.length == 1);
+            var colors = Array.map(colorNode[0].getAttribute('color').match(/([+\-0-9eE\.]+)/g), 
+                    function (n) { return +n; });
+            
+            ctx.assert(positions.length == colors.length);
+            for (var i=0, n=positions.length/3; i<n; i++) {
+                this._mesh._indices.push(i);
+            }
+            
+            this._mesh._positions = positions;
+            this._mesh._colors = colors;
+            this._mesh._normals = [];
+            this._mesh._texCoords = [];
+            
+            this._mesh._lit = false;
+            this._mesh._invalidate = true;
+        }
+    )
+);
+
+
 //x3dom.Text = defineClass(x3dom.X3DGeometryNode,
 x3dom.registerNodeType(
     "Text",
@@ -1233,7 +1280,6 @@ x3dom.registerNodeType(
 );
 
 
-// TODO: TriangleSet2D
 // x3dom.X3DComposedGeometryNode = defineClass(x3dom.X3DGeometryNode,
 x3dom.registerNodeType(
     "X3DComposedGeometryNode",
@@ -1563,19 +1609,7 @@ x3dom.registerNodeType(
 );
 
 
-// TODO: IndexedTriangleFanSet
-// TODO: IndexedTriangleSet
-// TODO: IndexedTriangleStripSet
-// TODO: TriangleFanSet
-// TODO: TriangleSet
-// TODO: TriangleStripSet
-
-// TODO: X3DParametricGeometryNode
-
-// TODO: ...
-
 /**** x3dom.X3DFontStyleNode ****/
-
 // x3dom.X3DFontStyleNode = defineClass(x3dom.nodeTypes.X3DNode,
 x3dom.registerNodeType( 
     "X3DFontStyleNode",
@@ -1602,7 +1636,6 @@ x3dom.registerNodeType(
 );
 
 /**** x3dom.X3DChildNode ****/
-
 //x3dom.X3DChildNode = defineClass(x3dom.nodeTypes.X3DNode,
 x3dom.registerNodeType(
     "X3DChildNode",
@@ -1615,7 +1648,6 @@ x3dom.registerNodeType(
 );
 
 /**** x3dom.X3DBindableNode ****/
-
 //x3dom.X3DBindableNode = defineClass(x3dom.X3DChildNode,
 x3dom.registerNodeType(
     "X3DBindableNode",
@@ -1627,7 +1659,6 @@ x3dom.registerNodeType(
     )
 );
 
-// TODO: ...
 
 // x3dom.Viewpoint = defineClass(x3dom.X3DBindableNode,
 x3dom.registerNodeType( 
@@ -1772,10 +1803,8 @@ x3dom.registerNodeType(
     )
 );
 
-// TODO: ...
 
 /**** x3dom.X3DShapeNode ****/
-
 // x3dom.X3DShapeNode = defineClass(x3dom.X3DChildNode,
 x3dom.registerNodeType(
     "X3DShapeNode",
@@ -1896,7 +1925,6 @@ x3dom.registerNodeType(
 );
 
 /**** x3dom.X3DGroupingNode ****/
-
 // x3dom.X3DGroupingNode = defineClass(x3dom.nodeTypes.X3DChildNode,
 x3dom.registerNodeType(
     "X3DGroupingNode",
@@ -1917,7 +1945,6 @@ x3dom.registerNodeType(
     )
 );
 
-// TODO: ...
 
 // x3dom.Transform = defineClass(x3dom.X3DGroupingNode,
 x3dom.registerNodeType(
@@ -2053,10 +2080,8 @@ x3dom.registerNodeType(
     )
 );
 
-// TODO: ...
 
 /**** x3dom.X3DInterpolatorNode ****/
-
 // x3dom.X3DInterpolatorNode = defineClass(x3dom.X3DChildNode,
 x3dom.registerNodeType(
     "X3DInterpolatorNode",
@@ -2085,7 +2110,6 @@ x3dom.registerNodeType(
     )
 );
 
-// TODO: ...
 
 // x3dom.OrientationInterpolator = defineClass(x3dom.X3DInterpolatorNode,
 x3dom.registerNodeType(
@@ -2148,10 +2172,8 @@ x3dom.registerNodeType(
     )
 );
 
-// TODO: ...
 
 /**** x3dom.X3DSensorNode ****/
-
 // x3dom.X3DSensorNode = defineClass(x3dom.X3DChildNode,
 x3dom.registerNodeType(
     "X3DSensorNode",
@@ -2198,9 +2220,9 @@ x3dom.registerNodeType(
     )
 );
 
-// TODO: ...
 
 // Not a real X3D node type
+// TODO; refactor to Scene + Viewarea node
 // x3dom.Scene = defineClass(x3dom.X3DGroupingNode,
 x3dom.registerNodeType( 
     "Scene",
