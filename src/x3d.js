@@ -534,7 +534,7 @@ x3dom.registerNodeType(
             this._attribute_SFVec2(ctx, 'scale', 1, 1);
             this._attribute_SFVec2(ctx, 'translation', 0, 0);
             
-            //Tc' = -C � S � R � C � T � Tc
+            //Tc' = -C * S * R * C * T * Tc
             var negCenter = new x3dom.fields.SFVec3(-this._center.x, -this._center.y, 1);
             var posCenter = new x3dom.fields.SFVec3(this._center.x, this._center.y, 0);
             var trans3 = new x3dom.fields.SFVec3(this._translation.x, this._translation.y, 0);
@@ -1219,8 +1219,6 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
             
-            var positions = [], colors = [];
-            
             var coordNode = Array.filter(ctx.xmlNode.childNodes, 
                     function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate'); });
             ctx.assert(coordNode.length == 1);
@@ -1234,15 +1232,12 @@ x3dom.registerNodeType(
                     function (n) { return +n; });
             
             ctx.assert(positions.length == colors.length);
-            for (var i=0, n=positions.length/3; i<n; i++) {
-                this._mesh._indices.push(i);
-            }
             
+            this._mesh._indices = [];
             this._mesh._positions = positions;
             this._mesh._colors = colors;
             this._mesh._normals = [];
             this._mesh._texCoords = [];
-            
             this._mesh._lit = false;
             this._mesh._invalidate = true;
         }

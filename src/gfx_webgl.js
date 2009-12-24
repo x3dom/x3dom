@@ -57,7 +57,7 @@ x3dom.gfx_webgl = (function () {
 	function setupContext(canvas) {
 		// TODO: add experimental-webgl, webgl test    
 		x3dom.debug.logInfo("setupContext: canvas=" + canvas);
-        var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl']
+        var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
         for (var i=0; i<validContextNames.length; i++) {
             try {
@@ -908,14 +908,18 @@ x3dom.gfx_webgl = (function () {
 				gl.disable(gl.CULL_FACE);
             }
 			
-			//gl.drawArrays(gl.TRIANGLES, 0, shape._webgl.positions.length/3);
-			
 			// fixme; scene._points is dynamic and doesn't belong there!!!
 			if (scene._points !== undefined && scene._points) {
 			  gl.drawElements(gl.POINTS, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
             }
 			else {
-			  gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                // fixme; this differentiation isn't nice, but otherwise WebGL seems to run out of mem
+                if (shape._webgl.primType == gl.POINTS) {
+                    gl.drawArrays(gl.POINTS, 0, shape._webgl.positions.length/3);
+                }
+                else {
+                    gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                }
             }
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
