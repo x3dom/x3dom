@@ -90,7 +90,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     this.createHTMLCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for X3D element...");
-        var canvas = document.createElementNS(x3dom.xhtmlNS, 'canvas');
+        var canvas = document.createElement('canvas');
         canvas.setAttribute("class", "x3dom-canvas");
         this.canvasDiv.appendChild(canvas);
                 
@@ -127,7 +127,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             // If the X3D element does not have an id... do what?
             // For now check the number of canvas elements in the page
             // and use length+1 for creating a (hopefully) unique id
-            var index = (document.getElementsByTagNameNS(x3dom.x3dNS, 'X3D').length+1);
+            var index = (document.getElementsByTagName('X3D').length+1);
             this.canvasDiv.id = "x3dom-" + index + "-canvasdiv";
             canvas.id = "x3dom-" + index + "-canvas";
         }
@@ -136,7 +136,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     };
 
     this.createStatDiv = function() {
-        var statDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+        var statDiv = document.createElement('div');
         statDiv.setAttribute("class", "x3dom-statdiv");
         statDiv.innerHTML = "0 fps";		
         this.canvasDiv.appendChild(statDiv);
@@ -151,7 +151,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     };
 
     this.x3dElem = x3dElem;
-    this.canvasDiv = document.createElementNS('http://www.w3.org/1999/xhtml', 'div');
+    this.canvasDiv = document.createElement('div');
     this.canvas = this.createHTMLCanvas(x3dElem);
 	this.canvas.parent = this;
     this.fps_t0 = new Date().getTime();
@@ -327,12 +327,12 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     var onload = function() {
 
         // Search all X3D elements in the page
-        var x3ds = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'X3D');
-        var x3dsLC = document.getElementsByTagNameNS('http://www.web3d.org/specifications/x3d-namespace', 'x3d');        
+        var x3ds = document.getElementsByTagName('X3D');
+        // var x3dsLC = document.getElementsByTagName('x3d');        
         
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) { return n; });
-        x3ds = x3ds.concat( Array.map(x3dsLC, function (n) { return n; }) );        
+        // x3ds = x3ds.concat( Array.map(x3dsLC, function (n) { return n; }) );        
 		
         var i=0;
 		var activateLog = false;
@@ -350,7 +350,6 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 		if (activateLog) {
 			x3dom.debug.activate();
 		}
-
 		x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
 
         // Create a HTML canvas for every X3D scene and wrap it with

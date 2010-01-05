@@ -53,12 +53,19 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
 	@return true, if the @p node is an X3D element
 			false, if not
  */
-x3dom.parsingInline == false;   //fixme; but Inline doesn't have NS...
+x3dom.parsingInline = false;   //fixme; but Inline doesn't have NS...
+
+// x3dom.isX3DElement = function(node) {
+//     return (node.nodeType === Node.ELEMENT_NODE &&
+//         (node.namespaceURI == x3dom.x3dNS || x3dom.parsingInline == true));
+// };
 
 x3dom.isX3DElement = function(node) {
-    return (node.nodeType === Node.ELEMENT_NODE &&
-        (node.namespaceURI == x3dom.x3dNS || x3dom.parsingInline == true));
+    // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
+    return (node.nodeType === Node.ELEMENT_NODE && node.localName &&
+        (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] || node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "scene"  || node.localName.toLowerCase() === "route" || x3dom.parsingInline === true));
 };
+
 
 /** Utility function for defining a new class.
 
@@ -81,7 +88,7 @@ function defineClass(parent, ctor, methods) {
         }
     }
     return ctor;
-};
+}
 
 x3dom.isa = function(object, clazz) {
     if (object.constructor == clazz) {
@@ -114,7 +121,7 @@ function MFString_parse(str) {
     } else {
         return [str];
     }
-};
+}
 
 /**** x3dom.nodeTypes.X3DNode ****/
 
@@ -401,7 +408,7 @@ x3dom.registerNodeType(
         },
 		{
             transformMatrix: function() {
-                if (this._textureTransform == null) {
+                if (this._textureTransform === null) {
                     return x3dom.fields.SFMatrix4.identity();
                 }
                 else {
@@ -730,8 +737,9 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
 		}
 
 		n = n.normalised();
-        if (!ccw)
+        if (!ccw) {
             n = n.negate();
+        }
         
 		vertNormals[i  ] = n.x;
 		vertNormals[i+1] = n.y;
@@ -1220,14 +1228,15 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
             
             var coordNode = Array.filter(ctx.xmlNode.childNodes, 
-                    function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Coordinate'); });
+                    function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'coordinate'); });
             ctx.assert(coordNode.length == 1);
             var positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), 
                     function (n) { return +n; });
 
             var colorNode = Array.filter(ctx.xmlNode.childNodes, 
-                    function (n) { return (x3dom.isX3DElement(n) && n.localName == 'Color'); });
-            ctx.assert(coordNode.length == 1);
+                    function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'color'); });
+            // x3dom.debug.logInfo("#### " + colorNode.length); 
+            ctx.assert(colorNode.length == 1);
             var colors = Array.map(colorNode[0].getAttribute('color').match(/([+\-0-9eE\.]+)/g), 
                     function (n) { return +n; });
             
@@ -1596,16 +1605,35 @@ x3dom.registerNodeType(
 			//x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
 			
 			// TODO: fixme, what about geoProperty nodes?
-			// Coordinate           - X3DCoordinateNode 		- X3DGeometricPropertyNode 
+            // Coordinate           - X3DCoordinateNode         - X3DGeometricPropertyNode 
             // Normal 			    - X3DNormalNode 			- X3DGeometricPropertyNode
 			// TextureCoordinate    - X3DTextureCoordinateNode  - X3DGeometricPropertyNode 
         }
     )
 );
 
+x3dom.registerNodeType(
+    "Coordinate",
+    "base",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Color",
+    "base",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.Color.superClass.call(this, ctx);
+        }
+    )
+);
+
 
 /**** x3dom.X3DFontStyleNode ****/
-// x3dom.X3DFontStyleNode = defineClass(x3dom.nodeTypes.X3DNode,
 x3dom.registerNodeType( 
     "X3DFontStyleNode",
     "base",
@@ -1616,7 +1644,6 @@ x3dom.registerNodeType(
     )
 );
 
-// x3dom.FontStyle = defineClass(x3dom.X3DFontStyleNode,
 x3dom.registerNodeType( 
     "FontStyle",
     "Text",
@@ -1631,7 +1658,6 @@ x3dom.registerNodeType(
 );
 
 /**** x3dom.X3DChildNode ****/
-//x3dom.X3DChildNode = defineClass(x3dom.nodeTypes.X3DNode,
 x3dom.registerNodeType(
     "X3DChildNode",
     "base",
@@ -2204,9 +2230,9 @@ x3dom.registerNodeType(
             	var cycleFrac, cycle, fraction;
             	
             	if (this._cycleInterval > 0) {
-            	  cycleFrac = (ts - this._startTime) / this._cycleInterval;
-            	  cycle = Math.floor(cycleFrac);
-            	  fraction = cycleFrac - cycle;
+                    cycleFrac = (ts - this._startTime) / this._cycleInterval;
+                    cycle = Math.floor(cycleFrac);
+                    fraction = cycleFrac - cycle;
             	}
      
      			this._postMessage('fraction_changed', fraction );
@@ -2657,7 +2683,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
     var doc = this;
     var sceneElem = x3dom.findScene(sceneDoc);   // sceneDoc is the X3D element here...
-    var scene = this._setupNodePrototypes(sceneElem, ctx);
+    var scene = this._setupNodePrototypes(sceneElem, ctx);    
     
     // PE: Moved ROUTE creation into _setupNodePrototypes function
     
@@ -2707,8 +2733,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
 x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
     var n, t;	
-
     if (x3dom.isX3DElement(node)) {
+        // x3dom.debug.logInfo("=== node=" + node.localName);
 	    if (node.hasAttribute('USE')) {
 	      n = ctx.defMap[node.getAttribute('USE')];
 	      if (n == null) 
@@ -2718,7 +2744,7 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 	    else {
 	    	// FIXME; Should we create ROUTES at this position?
             // PE: Yes we should - and we do now :)
-	    	if (node.localName.toLowerCase() == 'route') {
+	    	if (node.localName.toLowerCase() === 'route') {
                 var route = node;
                 var fromNode = ctx.defMap[route.getAttribute('fromNode')];
                 var toNode = ctx.defMap[route.getAttribute('toNode')];
@@ -2732,19 +2758,21 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 //                 // XXX: handle imported ROUTEs
 //                 TODO: Store the routes of the scene - where should we store them?
 //                 scene._routes = Array.map(sceneRoutes, setupRoute);
-	    		return n;
+	    		return null;
             }
             
             // PE: New code no longer uses the x3dom.nodeTypeMap (which is obsolete now)
             //     The autoChild property was added to the X3DGroupingNode base class (as _autoChild)
-            // var nodeType = x3dom.nodeTypes[node.localName];
+            // var nodeType = x3dom.nodeTypes[node.localName];            
             var nodeType = x3dom.nodeTypesLC[node.localName.toLowerCase()];
             if (nodeType === undefined) {                
                 x3dom.debug.logInfo("Unrecognised element " + node.localName );
             }
             else {
+                
                 ctx.xmlNode = node;
                 n = new nodeType(ctx);
+                // x3dom.debug.logInfo("new node type: " + node.localName + ", autoChild=" + n._autoChild);
                 node._x3domNode = n;
                 if (n._autoChild === true) {
                     Array.forEach(Array.map(node.childNodes, 

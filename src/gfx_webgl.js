@@ -468,7 +468,8 @@ x3dom.gfx_webgl = (function () {
 	Context.prototype.setupShape = function (gl, shape) 
 	{
 		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) {	
-			var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+			//var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
+            var text_canvas = document.createElement('canvas');
 			var text_ctx = text_canvas.getContext('2d');
 			var fontStyle = shape._geometry._fontStyle;
 			var font_family = 'SANS';
