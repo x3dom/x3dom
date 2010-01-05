@@ -540,7 +540,7 @@ x3dom.gfx_webgl = (function () {
 				{
 					shape._webgl.texture = texture;
 					
-					x3dom.debug.logInfo(texture + " tex url: '" + tex._url + "'");
+					//x3dom.debug.logInfo(texture + " tex url: " + tex._url);
 					
 					//gl.enable(gl.TEXTURE_2D);
 					//gl.activeTexture(gl.TEXTURE0);
