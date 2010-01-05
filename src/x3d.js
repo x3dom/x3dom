@@ -1613,9 +1613,19 @@ x3dom.registerNodeType(
 );
 
 x3dom.registerNodeType(
-    "Coordinate",
+    "X3DGeometricPropertyNode",
     "base",
     defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DGeometricPropertyNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Coordinate",
+    "base",
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
         }
@@ -1623,9 +1633,29 @@ x3dom.registerNodeType(
 );
 
 x3dom.registerNodeType(
+    "TextureCoordinate",
+    "base",
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
+            x3dom.nodeTypes.TextureCoordinate.superClass.call(this, ctx);
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "Normal",
+    "base",
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
+            x3dom.nodeTypes.Normal.superClass.call(this, ctx);
+        }
+    )
+);
+
+x3dom.registerNodeType(
     "Color",
     "base",
-    defineClass(x3dom.nodeTypes.X3DNode,
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.Color.superClass.call(this, ctx);
         }
