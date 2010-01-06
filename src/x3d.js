@@ -897,67 +897,70 @@ x3dom.registerNodeType(
                 r = +ctx.xmlNode.getAttribute('radius');
             }
             
+            this._mesh._indices = [];
+            this._mesh._positions = [];
+            this._mesh._normals = [];
+            this._mesh._texCoords = [];
+            this._mesh._colors = [];
+            
+            var latNumber, longNumber;
             var latitudeBands = 24;
             var longitudeBands = 24;
             
-            var vertexPositionData = [];
-            var normalData = [];
-            var textureCoordData = [];
+            var theta, sinTheta, cosTheta;
+            var phi, sinPhi, cosPhi;
+            var x, y, z, u, v;
             
-            for (var latNumber = 0; latNumber <= latitudeBands; latNumber++)
+            for (latNumber = 0; latNumber <= latitudeBands; latNumber++)
             {
-                var theta = latNumber * Math.PI / latitudeBands;
-                var sinTheta = Math.sin(theta);
-                var cosTheta = Math.cos(theta);
+                theta = (latNumber * Math.PI) / latitudeBands;
+                sinTheta = Math.sin(theta);
+                cosTheta = Math.cos(theta);
 
-                for (var longNumber = 0; longNumber <= longitudeBands; longNumber++)
+                for (longNumber = 0; longNumber <= longitudeBands; longNumber++)
                 {
-                    var phi = longNumber * 2 * Math.PI / longitudeBands;
-                    var sinPhi = Math.sin(phi);
-                    var cosPhi = Math.cos(phi);
+                    phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
+                    sinPhi = Math.sin(phi);
+                    cosPhi = Math.cos(phi);
 
-                    var x = -cosPhi * sinTheta;
-                    var y = -cosTheta;
-                    var z = -sinPhi * sinTheta;
-                    var u = 0.25 - (longNumber / longitudeBands);
-                    var v = latNumber / latitudeBands;
+                    x = -cosPhi * sinTheta;
+                    y = -cosTheta;
+                    z = -sinPhi * sinTheta;
                     
-                    vertexPositionData.push(r * x);
-                    vertexPositionData.push(r * y);
-                    vertexPositionData.push(r * z);
-                    normalData.push(x);
-                    normalData.push(y);
-                    normalData.push(z);
-                    textureCoordData.push(u);
-                    textureCoordData.push(v);
+                    u = 0.25 - ((1.0 * longNumber) / longitudeBands);
+                    v = latNumber / latitudeBands;
+                    
+                    this._mesh._positions.push(r * x);
+                    this._mesh._positions.push(r * y);
+                    this._mesh._positions.push(r * z);
+                    this._mesh._normals.push(x);
+                    this._mesh._normals.push(y);
+                    this._mesh._normals.push(z);
+                    this._mesh._texCoords.push(u);
+                    this._mesh._texCoords.push(v);
                 }
             }
             
-            var indexData = [];
-            longitudeBands += 1;
+            var first, second;
             
-            for (var latNumber = 0; latNumber < latitudeBands; latNumber++)
+            for (latNumber = 0; latNumber < latitudeBands; latNumber++)
             {
-                for (var longNumber = 0; longNumber < longitudeBands; longNumber++)
+                for (longNumber = 0; longNumber < longitudeBands; longNumber++)
                 {
-                    var first = (latNumber * longitudeBands) + (longNumber % longitudeBands);
-                    var second = first + longitudeBands;
+                    first = (latNumber * (longitudeBands + 1)) + longNumber;
+                    second = first + longitudeBands + 1;
                     
-                    indexData.push(first);
-                    indexData.push(second);
-                    indexData.push(first + 1);
+                    this._mesh._indices.push(first);
+                    this._mesh._indices.push(second);
+                    this._mesh._indices.push(first + 1);
 
-                    indexData.push(second);
-                    indexData.push(second + 1);
-                    indexData.push(first + 1);
+                    this._mesh._indices.push(second);
+                    this._mesh._indices.push(second + 1);
+                    this._mesh._indices.push(first + 1);
                 }
             }
-
-            this._mesh._positions = vertexPositionData;
-            this._mesh._normals = normalData;
-			this._mesh._texCoords = textureCoordData;
-            this._mesh._indices = indexData;
-			this._mesh._invalidate = true;
+            
+            this._mesh._invalidate = true;
         }
     )
 );
