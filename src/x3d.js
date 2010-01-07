@@ -2715,10 +2715,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     };
 
     var doc = this;
-    var sceneElem = x3dom.findScene(sceneDoc);   // sceneDoc is the X3D element here...
-    var scene = this._setupNodePrototypes(sceneElem, ctx);    
-    
-    // PE: Moved ROUTE creation into _setupNodePrototypes function
     
     // Test capturing DOM mutation events on the X3D subscene
     var domEventListener = {
@@ -2729,10 +2725,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 3: "REMOVAL"
             };
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
-            // console.dir(e);
-            // alert ( 'foo' );
             e.target._x3domNode._updateField(e.attrName, e.newValue);
-            
         },
         onNodeRemoved: function(e) {
             x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
@@ -2753,10 +2746,64 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             x3dom.parsingInline = false; // disable special case
         }
     };
-    //sceneDoc.addEventListener('DOMSubtreeModified', onSubtreeModified, true);    
+    
+    //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);    
     sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
     sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
-    sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);    
+    sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
+    
+    if ( window.navigator.userAgent.match(/webkit/i) )
+    {
+        //HTMLElement.prototype.__setAttribute = HTMLElement.prototype.setAttribute;
+        //HTMLElement.prototype.setAttribute = set_attrib;
+        var set_attrib = function(attrName, newVal)
+        {
+            var prevVal = this.getAttribute(attrName);
+            this.__setAttribute(attrName, newVal);
+            newVal = this.getAttribute(attrName);
+            
+            if (newVal != prevVal)
+            {
+                var evt = document.createEvent("MutationEvent");
+                evt.initMutationEvent(
+                  "DOMAttrModified",
+                  true,
+                  false,
+                  this,
+                  prevVal || "",
+                  newVal || "",
+                  attrName,
+                  (prevVal == null) ? evt.ADDITION : evt.MODIFICATION
+                );
+                this.dispatchEvent(evt);
+            }
+        }
+        
+        function traverseDOMTree(currentElement, depth)
+        {
+            if (currentElement && currentElement.tagName !== undefined)
+            {
+                currentElement.__setAttribute = currentElement.setAttribute;
+                currentElement.setAttribute = set_attrib;
+                //currentElement.addEventListener("DOMAttrModified", domEventListener.onAttrModified, false);
+                //x3dom.debug.logInfo(depth + ": " + currentElement.tagName);
+                
+                var i = 0;
+                var currentElementChild = currentElement.childNodes[i++];
+                
+                while (currentElementChild)
+                {
+                    traverseDOMTree(currentElementChild, depth+1);
+                    currentElementChild = currentElement.childNodes[i++];
+                }
+            }
+        }
+        
+        traverseDOMTree(sceneDoc, 0);
+    }
+    
+    var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
+    var scene = this._setupNodePrototypes(sceneElem, ctx);  // ROUTE creation in _setupNodePrototypes
 
     this._scene = scene;
 	
