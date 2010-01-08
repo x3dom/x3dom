@@ -467,9 +467,19 @@ x3dom.gfx_webgl = (function () {
 	
 	Context.prototype.setupShape = function (gl, shape) 
 	{
-		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) {	
+        if (shape._webgl !== undefined) {
+            return;
+        }
+        
+        // TODO; finish text!
+		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) 
+        {
 			//var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
             var text_canvas = document.createElement('canvas');
+            text_canvas.width = 400;
+            text_canvas.height = 200;
+            //document.body.appendChild(text_canvas);	//dbg
+            
 			var text_ctx = text_canvas.getContext('2d');
 			var fontStyle = shape._geometry._fontStyle;
 			var font_family = 'SANS';
@@ -478,16 +488,36 @@ x3dom.gfx_webgl = (function () {
 				else if (s == 'SERIF') return 'serif';
 				else if (s == 'TYPEWRITER') return 'monospace';
 				else return '"'+s+'"';
-			}).join(', ');*/
-			text_ctx.mozTextStyle = '48px '+font_family;
+			}).join(', ');
+			text_ctx.mozTextStyle = '48px '+font_family;*/
+
 
             var i = 0;
 			var text_w = 0;
 			var string = shape._geometry._string;
-			for (i = 0; i < string.length; ++i) {
+			/*for (i = 0; i < string.length; ++i) {
 				text_w = Math.max(text_w, text_ctx.mozMeasureText(string[i]));
-            }
-
+            }*/
+            
+            
+            text_ctx.fillStyle = 'hsl(0,100%,0%)';
+            text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
+             
+            // write white text with black border
+            text_ctx.fillStyle = 'white';
+            text_ctx.lineWidth = 2.5;
+            text_ctx.strokeStyle = 'grey';
+            text_ctx.save();
+            text_ctx.font = "bold 32px Verdana";
+            var txtW = text_ctx.measureText(string).width;
+            var txtH = text_ctx.measureText(string).height;
+            var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
+            var topOffset = (text_ctx.canvas.height - 32) / 2.0;
+            text_ctx.strokeText(string, leftOffset, topOffset);
+            text_ctx.fillText(string, leftOffset, topOffset);
+            text_ctx.restore();
+            
+/*
 			var line_h = 1.2 * text_ctx.mozMeasureText('M'); // XXX: this is a hacky guess
 			var text_h = line_h * shape._geometry._string.length;
 
@@ -499,34 +529,38 @@ x3dom.gfx_webgl = (function () {
 				text_ctx.mozDrawText(string[i]);
 				text_ctx.translate(0, line_h);
 			}
-			
-			document.body.appendChild(text_canvas);	//dbg
+*/
 			
 			var ids = gl.createTexture();
 			gl.bindTexture(gl.TEXTURE_2D, ids);
-			//gl.texParameter(gl.TEXTURE_2D, gl.GENERATE_MIPMAP, true);
 			gl.texImage2D(gl.TEXTURE_2D, 0, text_canvas);
+            
+            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
+            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
+            gl.bindTexture(gl.TEXTURE_2D, null);
 			
-			var w = text_w/text_h;
+			var w = 4; //txtW/txtH;
 			var h = 1;
-			var u = text_w/text_canvas.width;
-			var v = text_h/text_canvas.height;
+			var u = 1; //txtW/text_canvas.width;
+			var v = 1; //txtH/text_canvas.height;
+            
 			shape._webgl = {
 				positions: [-w,-h,0, w,-h,0, w,h,0, -w,h,0],
 				normals: [0,0,1, 0,0,1, 0,0,1, 0,0,1],
+				texcoords: [0,0, u,0, u,v, 0,v],
+                colors: [],
 				indexes: [0,1,2, 2,3,0],
-				texcoords: [0,v, u,v, u,0, 0,0],
-				mask_texture: ids
+				texture: ids,
+                buffers: [{},{},{},{},{}]
 			};
 
+            shape._webgl.primType = gl.TRIANGLES;
 			shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
-		} 
+		}
 		else 
 		{
-			if (shape._webgl !== undefined) {
-				return;
-            }
-			
 			var tex = shape._appearance._texture;
 			
 			if (tex)
@@ -593,81 +627,81 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
                 }
             }
-			
-			var sp = shape._webgl.shader;
-			
-			if (sp.position !== undefined) 
-			{
-				var positionBuffer = gl.createBuffer();
-				shape._webgl.buffers[1] = positionBuffer;
-				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-				
-				var vertices = new WebGLFloatArray(shape._webgl.positions);
-				
-				gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-				gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-				
-				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-				//gl.enableVertexAttribArray(sp.position);
-				
-				// bind indices for drawElements() call
-				var indicesBuffer = gl.createBuffer();
-				shape._webgl.buffers[0] = indicesBuffer;
-				
-				var indexArray = new WebGLUnsignedShortArray(shape._webgl.indexes);
-				
-				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-				gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
-				
-				delete vertices;
-				delete indexArray;
-			}
-			if (sp.normal !== undefined) 
-			{
-				var normalBuffer = gl.createBuffer();
-				shape._webgl.buffers[2] = normalBuffer;
-				
-				var normals = new WebGLFloatArray(shape._webgl.normals);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
-				
-				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
-				//gl.enableVertexAttribArray(sp.normal);
-				
-				delete normals;
-			}
-			if (sp.texcoord !== undefined)
-			{
-				var texcBuffer = gl.createBuffer();
-				shape._webgl.buffers[3] = texcBuffer;
-				
-				var texCoords = new WebGLFloatArray(shape._webgl.texcoords);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
-				
-				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
-				//gl.enableVertexAttribArray(sp.texcoord);
-				
-				delete texCoords;
-			}
-			if (sp.color !== undefined)
-			{
-				var colorBuffer = gl.createBuffer();
-				shape._webgl.buffers[4] = colorBuffer;
-				
-				var colors = new WebGLFloatArray(shape._webgl.colors);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
-				
-				gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
-				//gl.enableVertexAttribArray(sp.color);
-				
-				delete colors;
-			}
-		}
+        }
+		
+        var sp = shape._webgl.shader;
+        
+        if (sp.position !== undefined) 
+        {
+            var positionBuffer = gl.createBuffer();
+            shape._webgl.buffers[1] = positionBuffer;
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            
+            var vertices = new WebGLFloatArray(shape._webgl.positions);
+            
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            
+            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+            //gl.enableVertexAttribArray(sp.position);
+            
+            // bind indices for drawElements() call
+            var indicesBuffer = gl.createBuffer();
+            shape._webgl.buffers[0] = indicesBuffer;
+            
+            var indexArray = new WebGLUnsignedShortArray(shape._webgl.indexes);
+            
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+            
+            delete vertices;
+            delete indexArray;
+        }
+        if (sp.normal !== undefined) 
+        {
+            var normalBuffer = gl.createBuffer();
+            shape._webgl.buffers[2] = normalBuffer;
+            
+            var normals = new WebGLFloatArray(shape._webgl.normals);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
+            
+            gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+            //gl.enableVertexAttribArray(sp.normal);
+            
+            delete normals;
+        }
+        if (sp.texcoord !== undefined)
+        {
+            var texcBuffer = gl.createBuffer();
+            shape._webgl.buffers[3] = texcBuffer;
+            
+            var texCoords = new WebGLFloatArray(shape._webgl.texcoords);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+            
+            gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
+            //gl.enableVertexAttribArray(sp.texcoord);
+            
+            delete texCoords;
+        }
+        if (sp.color !== undefined)
+        {
+            var colorBuffer = gl.createBuffer();
+            shape._webgl.buffers[4] = colorBuffer;
+            
+            var colors = new WebGLFloatArray(shape._webgl.colors);
+            
+            gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+            gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
+            
+            gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+            //gl.enableVertexAttribArray(sp.color);
+            
+            delete colors;
+        }
 	};
 
 	Context.prototype.renderScene = function (scene) 
@@ -811,32 +845,6 @@ x3dom.gfx_webgl = (function () {
 				sp.specularColor = mat._specularColor.toGL();
 				sp.alpha = 1.0 - mat._transparency;
 			}
-
-			if (shape._webgl.mask_texture !== undefined && shape._webgl.mask_texture)
-			{
-			/*
-				//gl.activeTexture(gl.TEXTURE0);
-				gl.enable(gl.TEXTURE_2D);
-				gl.bindTexture(gl.TEXTURE_2D, shape._webgl.mask_texture);
-				
-				var texcBuffer = gl.createBuffer();
-				var texcoords = new WebGLFloatArray(shape._webgl.texcoords);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
-				gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);
-				
-				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 2, 0); 
-				gl.enableVertexAttribArray(sp.texcoord);
-				
-				//gl.enable(gl.BLEND);
-				gl.blendFuncSeparate(
-					gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
-					gl.ONE_MINUS_DST_ALPHA, gl.ONE // TODO: is this sensible?
-				);
-				//gl.blendFunc( gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-			*/
-				x3dom.debug.logInfo("TEXT?");	//no text visible?!
-			}
             
             // transformation matrices
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
@@ -846,10 +854,10 @@ x3dom.gfx_webgl = (function () {
 			{
                 var tex = shape._appearance._texture;
                 var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
-                if (tex._repeatS === false) {
+                if (tex && tex._repeatS === false) {
                     wrapS = gl.CLAMP_TO_EDGE;
                 }
-                if (tex._repeatT === false) {
+                if (tex && tex._repeatT === false) {
                     wrapT = gl.CLAMP_TO_EDGE;
                 }
                 

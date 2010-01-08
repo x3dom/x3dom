@@ -2537,6 +2537,7 @@ x3dom.registerNodeType(
 					var ok = this.getVolume(min, max, true);
 					
 					var d = ok ? (max.subtract(min)).length() : 10;
+                    d = (d < 0.0001) ? 1 : d;
 					//x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
 					
