@@ -1272,7 +1272,7 @@ x3dom.registerNodeType(
                 if (x3dom.isX3DElement(node)) {
                     var child = ctx.setupNodePrototypes(node, ctx);
                     if (child) {
-                        if (x3dom.isa(child, x3dom.X3DFontStyleNode)) {
+                        if (x3dom.isa(child, x3dom.nodeTypes.X3DFontStyleNode)) {
                             ctx.assert(! style, 'has <= 1 fontStyle node');
                             style = child;
                         } else {

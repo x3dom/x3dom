@@ -17,10 +17,18 @@
     <Appearance>
       <Material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'/>
     </Appearance>
-    <Text string='"Text within WebGL"'>
+    <Text string='"Some Text within WebGL..."'>
       <FontStyle/>
     </Text>
   </Shape>
+  				<Transform DEF="boxTrafo" translation='0 0 -2'>
+					<Shape DEF="boxShape">
+						<Appearance DEF="boxApp"> 
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Box DEF="box" />
+					</Shape>
+				</Transform>
 </Scene>
 
       </X3D>

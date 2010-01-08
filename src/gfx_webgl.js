@@ -147,6 +147,39 @@ x3dom.gfx_webgl = (function () {
 		"    gl_FragColor = vec4(rgb, texture2D(tex, texCoord).a);" +
 		"}"
 		};
+        
+	g_shaders['fs-x3d-textured-txt'] = { type: "fragment", data:
+		"uniform float ambientIntensity;" +
+		"uniform vec3 diffuseColor;" +
+		"uniform vec3 emissiveColor;" +
+		"uniform float shininess;" +
+		"uniform vec3 specularColor;" +
+		"uniform float alpha;" +
+		"uniform float lightOn;" +
+		"uniform sampler2D tex;" +
+		"" +
+		"varying vec3 fragNormal;" +
+		"varying vec3 fragLightVector;" +
+		"varying vec3 fragEyeVector;" +
+		"varying vec2 fragTexCoord;" +
+		"" +
+		"void main(void) {" +
+		"    vec3 normal = normalize(fragNormal);" +
+		"    vec3 light = normalize(fragLightVector);" +
+		"    vec3 eye = normalize(fragEyeVector);" +
+		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
+		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
+		"    diffuse += max(0.0, dot(normal, eye));" +
+		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
+		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+        "    vec3 rgb = texture2D(tex, texCoord).rgb;" +
+        "    float len = length(rgb);" +
+        //"    len = (len < 0.0001) ? 0 : 1;" +
+		"    rgb = rgb * (emissiveColor + diffuse*diffuseColor + specular*specularColor);" +
+		"    rgb = clamp(rgb, 0.0, 1.0);" +
+		"    gl_FragColor = vec4(rgb, len);" +
+		"}"
+		};
 
 	g_shaders['vs-x3d-untextured'] = { type: "vertex", data:
 		"attribute vec3 position;" +
@@ -477,28 +510,30 @@ x3dom.gfx_webgl = (function () {
 			//var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
             var text_canvas = document.createElement('canvas');
             text_canvas.width = 400;
-            text_canvas.height = 200;
+            text_canvas.height = 100;
             //document.body.appendChild(text_canvas);	//dbg
             
 			var text_ctx = text_canvas.getContext('2d');
 			var fontStyle = shape._geometry._fontStyle;
 			var font_family = 'SANS';
-			/*Array.map(fontStyle._family, function (s) {
-				if (s == 'SANS') return 'sans-serif';
-				else if (s == 'SERIF') return 'serif';
-				else if (s == 'TYPEWRITER') return 'monospace';
-				else return '"'+s+'"';
-			}).join(', ');
-			text_ctx.mozTextStyle = '48px '+font_family;*/
-
-
-            var i = 0;
-			var text_w = 0;
-			var string = shape._geometry._string;
-			/*for (i = 0; i < string.length; ++i) {
-				text_w = Math.max(text_w, text_ctx.mozMeasureText(string[i]));
-            }*/
+            if (fontStyle !== null) {
+                font_family = Array.map(fontStyle._family, function (s) {
+                    if (s == 'SANS') return 'sans-serif';
+                    else if (s == 'SERIF') return 'serif';
+                    else if (s == 'TYPEWRITER') return 'monospace';
+                    else return '"'+s+'"';  //'Verdana'
+                }).join(', ');
+            }
+			/*text_ctx.mozTextStyle = '48px '+font_family;*/
             
+			var string = shape._geometry._string;
+			/*
+			var text_w = 0;
+            var i = 0;
+            for (i = 0; i < string.length; ++i) {
+				text_w = Math.max(text_w, text_ctx.mozMeasureText(string[i]));
+            }
+            */
             
             text_ctx.fillStyle = 'hsl(0,100%,0%)';
             text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
@@ -508,19 +543,18 @@ x3dom.gfx_webgl = (function () {
             text_ctx.lineWidth = 2.5;
             text_ctx.strokeStyle = 'grey';
             text_ctx.save();
-            text_ctx.font = "bold 32px Verdana";
+            text_ctx.font = "32px " + font_family;  //bold 
             var txtW = text_ctx.measureText(string).width;
-            var txtH = text_ctx.measureText(string).height;
+            var txtH = text_ctx.measureText(string).height || 36;
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
             var topOffset = (text_ctx.canvas.height - 32) / 2.0;
-            text_ctx.strokeText(string, leftOffset, topOffset);
+            //text_ctx.strokeText(string, leftOffset, topOffset);
             text_ctx.fillText(string, leftOffset, topOffset);
             text_ctx.restore();
             
-/*
+            /*
 			var line_h = 1.2 * text_ctx.mozMeasureText('M'); // XXX: this is a hacky guess
 			var text_h = line_h * shape._geometry._string.length;
-
 			text_canvas.width = Math.pow(2, Math.ceil(Math.log(text_w)/Math.log(2)));
 			text_canvas.height = Math.pow(2, Math.ceil(Math.log(text_h)/Math.log(2)));
 			text_ctx.fillStyle = '#000';
@@ -529,7 +563,7 @@ x3dom.gfx_webgl = (function () {
 				text_ctx.mozDrawText(string[i]);
 				text_ctx.translate(0, line_h);
 			}
-*/
+            */
 			
 			var ids = gl.createTexture();
 			gl.bindTexture(gl.TEXTURE_2D, ids);
@@ -541,15 +575,18 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
             gl.bindTexture(gl.TEXTURE_2D, null);
 			
-			var w = 4; //txtW/txtH;
-			var h = 1;
-			var u = 1; //txtW/text_canvas.width;
-			var v = 1; //txtH/text_canvas.height;
+			var w = txtW/100.0; //txtW/txtH;
+			var h = txtH/100.0;
+            var u0 = leftOffset / text_canvas.width;
+			var u = u0 + txtW / text_canvas.width;
+			var v = 1 - txtH / text_canvas.height;
+            var v0 = topOffset / text_canvas.height + v;
+            x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
 			shape._webgl = {
 				positions: [-w,-h,0, w,-h,0, w,h,0, -w,h,0],
 				normals: [0,0,1, 0,0,1, 0,0,1, 0,0,1],
-				texcoords: [0,0, u,0, u,v, 0,v],
+				texcoords: [u0,v, u,v, u,v0, u0,v0],
                 colors: [],
 				indexes: [0,1,2, 2,3,0],
 				texture: ids,
@@ -557,7 +594,7 @@ x3dom.gfx_webgl = (function () {
 			};
 
             shape._webgl.primType = gl.TRIANGLES;
-			shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
+			shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured-txt']);
 		}
 		else 
 		{
