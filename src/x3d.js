@@ -1728,6 +1728,7 @@ x3dom.registerNodeType(
             this._attribute_SFFloat(ctx, 'zNear', 0.1);
             this._attribute_SFFloat(ctx, 'zFar', 100000);
 			
+            //TODO; allow for dynamic updates
             this._viewMatrix = this._orientation.toMatrix().transpose().
 				mult(x3dom.fields.SFMatrix4.translation(this._position.negate()));
             this._projMatrix = null;
@@ -1742,6 +1743,14 @@ x3dom.registerNodeType(
 			getFieldOfView: function() {
 				return this._fieldOfView;
 			},
+            
+            setView: function(newView) {
+                this._viewMatrix = newView;
+            },
+            resetView: function() {
+                this._viewMatrix = this._orientation.toMatrix().transpose().
+                    mult(x3dom.fields.SFMatrix4.translation(this._position.negate()));
+            },
             
             getProjectionMatrix: function(aspect)
             {
@@ -2436,6 +2445,40 @@ x3dom.registerNodeType(
                 return new x3dom.fields.Line(from, dir);
             },
             
+            showAll: function()
+            {
+                var min = new x3dom.fields.SFVec3(0,0,0);
+                var max = new x3dom.fields.SFVec3(0,0,0);
+                var ok = this.getVolume(min, max, true);
+                
+                if (ok)
+                {
+                    var viewpoint = this.getViewpoint();
+                    var fov = viewpoint.getFieldOfView();
+                    
+                    var dia = max.subtract(min);
+                    var dist1 = (dia.y/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
+                    var dist2 = (dia.x/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
+                    
+                    dia = min.add(dia.scale(0.5));
+                    dia.z += (dist1 > dist2 ? dist1 : dist2);
+                    viewpoint.setView(x3dom.fields.SFMatrix4.translation(dia.scale(-1)));
+                    
+                    this._rotMat = x3dom.fields.SFMatrix4.identity();
+                    this._transMat = x3dom.fields.SFMatrix4.identity();
+                    this._movement = new x3dom.fields.SFVec3(0, 0, 0);
+                }
+            },
+            
+            resetView: function()
+            {
+                this.getViewpoint().resetView();
+                
+                this._rotMat = x3dom.fields.SFMatrix4.identity();
+                this._transMat = x3dom.fields.SFMatrix4.identity();
+                this._movement = new x3dom.fields.SFVec3(0, 0, 0);
+            },
+            
             onMousePress: function (x, y, buttonState)
             {
                 this._lastX = x;
@@ -2488,6 +2531,7 @@ x3dom.registerNodeType(
                 if (navi._type[0].length <= 1 || navi._type[0].toLowerCase() == "none")
                     return;
                 
+                var Eps = 0.00001;
                 var dx = x - this._lastX;
                 var dy = y - this._lastY;
                 
@@ -2518,6 +2562,7 @@ x3dom.registerNodeType(
 					var ok = this.getVolume(min, max, true);
 					
 					var d = ok ? (max.subtract(min)).length() : 10;
+                    d = (d < Eps) ? 1 : d;
 					//x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo("w="+this._width+", h="+this._height);
 					
@@ -2537,7 +2582,7 @@ x3dom.registerNodeType(
 					var ok = this.getVolume(min, max, true);
 					
 					var d = ok ? (max.subtract(min)).length() : 10;
-                    d = (d < 0.0001) ? 1 : d;
+                    d = (d < Eps) ? 1 : d;
 					//x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
 					
@@ -2901,7 +2946,11 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     //x3dom.debug.logInfo("pressed key " + charCode);
     switch (charCode)
     {
-        case  97: /* a, view all */ break;
+        case  97: /* a, view all */ 
+            {
+                this._scene.showAll();
+            }
+            break;
         case 109: /* m, toggle "points" attribute */ 
 			{
 				if (this._scene._points === undefined)
@@ -2912,9 +2961,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			break;
         case 114: /* r, reset view */
             {
-                this._scene._rotMat = x3dom.fields.SFMatrix4.identity();
-                this._scene._transMat = x3dom.fields.SFMatrix4.identity();
-                this._scene._movement = new x3dom.fields.SFVec3(0, 0, 0);
+                this._scene.resetView();
             }
             break;
         default:
