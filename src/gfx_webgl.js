@@ -168,13 +168,12 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
 		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
-		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
-		"    diffuse += max(0.0, dot(normal, eye));" +
-		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
+		"    diffuse += abs(dot(normal, eye));" +
+		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
+		"    specular += pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
         "    vec3 rgb = texture2D(tex, texCoord).rgb;" +
         "    float len = length(rgb);" +
-        //"    len = (len < 0.0001) ? 0 : 1;" +
 		"    rgb = rgb * (emissiveColor + diffuse*diffuseColor + specular*specularColor);" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
 		"    gl_FragColor = vec4(rgb, len);" +
@@ -509,7 +508,7 @@ x3dom.gfx_webgl = (function () {
         {
 			//var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
             var text_canvas = document.createElement('canvas');
-            text_canvas.width = 400;
+            text_canvas.width = 600;
             text_canvas.height = 100;
             //document.body.appendChild(text_canvas);	//dbg
             
@@ -581,14 +580,23 @@ x3dom.gfx_webgl = (function () {
 			var u = u0 + txtW / text_canvas.width;
 			var v = 1 - txtH / text_canvas.height;
             var v0 = topOffset / text_canvas.height + v;
+            if (u0 < 0) u0 = 0;
+            if (u > 1) u = 1; 
             x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
+            shape._geometry._mesh._positions = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
+			shape._geometry._mesh._normals = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
+			shape._geometry._mesh._texCoords = [u0,v, u,v, u,v0, u0,v0];
+			shape._geometry._mesh._colors = [];
+			shape._geometry._mesh._indices = [0,1,2, 2,3,0];
+            shape._geometry._mesh._invalidate = true;
+                
 			shape._webgl = {
-				positions: [-w,-h,0, w,-h,0, w,h,0, -w,h,0],
-				normals: [0,0,1, 0,0,1, 0,0,1, 0,0,1],
-				texcoords: [u0,v, u,v, u,v0, u0,v0],
-                colors: [],
-				indexes: [0,1,2, 2,3,0],
+				positions: shape._geometry._mesh._positions,
+				normals: shape._geometry._mesh._normals,
+				texcoords: shape._geometry._mesh._texCoords,
+                colors: shape._geometry._mesh._colors,
+				indexes: shape._geometry._mesh._indices,
 				texture: ids,
                 buffers: [{},{},{},{},{}]
 			};

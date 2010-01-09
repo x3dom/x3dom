@@ -10,28 +10,28 @@
     <p> 
     <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="someUniqueId" showStat="true" showLog="true" x="0px" y="0px" width="512px" height="512px">
 
-<Scene DEF='scene'>
-  <Viewpoint position='0 0 10'/>
-  <Background skyColor='0.5 0.5 0.5' />
-  <Shape>
-    <Appearance>
-      <Material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'/>
-    </Appearance>
-    <Text string='"Some Text within WebGL..."'>
-      <FontStyle/>
-    </Text>
-  </Shape>
-  				<Transform DEF="boxTrafo" translation='0 0 -2'>
-					<Shape DEF="boxShape">
-						<Appearance DEF="boxApp"> 
-							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
-						</Appearance>
-						<Box DEF="box" />
-					</Shape>
-				</Transform>
-</Scene>
+    <Scene DEF='scene'>
+      <Viewpoint position='0 0 11'/>
+      <Background skyColor='0.5 0.5 0.5' />
+      <Shape>
+        <Appearance>
+          <Material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'/>
+        </Appearance>
+        <Text DEF='txt' string='"Some X3D Text within WebGL..."' solid='false'>
+          <FontStyle/>
+        </Text>
+      </Shape>
+      <Transform DEF="boxTrafo" translation='0 0 -2'>
+        <Shape DEF="boxShape">
+            <Appearance DEF="boxApp"> 
+                <Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+            </Appearance>
+            <Box DEF="box" />
+        </Shape>
+      </Transform>
+    </Scene>
 
-      </X3D>
+    </X3D>
     </p>
 	<script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
