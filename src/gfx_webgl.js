@@ -142,9 +142,11 @@ x3dom.gfx_webgl = (function () {
 		"    diffuse += max(0.0, dot(normal, eye));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
-		"    vec3 rgb = emissiveColor + diffuse*texture2D(tex, texCoord).rgb + specular*specularColor;" +
+        "    vec4 texCol = texture2D(tex, texCoord);" +
+		"    vec3 rgb = emissiveColor + diffuse*texCol.rgb + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
-		"    gl_FragColor = vec4(rgb, texture2D(tex, texCoord).a);" +
+        "    if (texCol.a <= 0.1) discard;" +
+		"    else gl_FragColor = vec4(rgb, texCol.a);" +
 		"}"
 		};
         
@@ -176,7 +178,8 @@ x3dom.gfx_webgl = (function () {
         "    float len = length(rgb);" +
 		"    rgb = rgb * (emissiveColor + diffuse*diffuseColor + specular*specularColor);" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
-		"    gl_FragColor = vec4(rgb, len);" +
+        "    if (len <= 0.1) discard;" +
+		"    else gl_FragColor = vec4(rgb, len);" +
 		"}"
 		};
 
@@ -582,7 +585,7 @@ x3dom.gfx_webgl = (function () {
             var v0 = topOffset / text_canvas.height + v;
             if (u0 < 0) u0 = 0;
             if (u > 1) u = 1; 
-            x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
+            //x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
             shape._geometry._mesh._positions = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
 			shape._geometry._mesh._normals = [0,0,1, 0,0,1, 0,0,1, 0,0,1];

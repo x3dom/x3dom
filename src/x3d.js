@@ -165,8 +165,10 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 			{
 				if (this._childNodes[i])
 				{
-					var childMin = new x3dom.fields.SFVec3(min.x, min.y, min.z);
-					var childMax = new x3dom.fields.SFVec3(max.x, max.y, max.z);
+                    var childMin = new x3dom.fields.SFVec3(
+                            Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+                    var childMax = new x3dom.fields.SFVec3(
+                            Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 					
 					valid = this._childNodes[i]._getVolume(
                                     childMin, childMax, invalidate) || valid;
@@ -342,6 +344,15 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         },
         _attribute_MFColor: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFColor([new x3dom.fields.SFColor(0,0,0)]);
+        },
+        _attribute_MFVec2: function (ctx, name, def) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFVec2.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFVec2();
+        },
+        _attribute_MFVec3: function (ctx, name, def) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFVec3.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFVec3();
+        },
+        _attribute_MFRotation: function (ctx, name, def) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFRotation();
         }
     }
 ));
@@ -374,13 +385,14 @@ x3dom.registerNodeType(
             var material = null;
 			var texture = null;
             var textureTransform = null;
+            var xmlNode = ctx.xmlNode;
             
             Array.forEach(ctx.xmlNode.childNodes, function (node) {
                 if (x3dom.isX3DElement(node)) {
                     var child = ctx.setupNodePrototypes(node, ctx);
                     if (child) {
                         if (x3dom.isa(child, x3dom.nodeTypes.X3DMaterialNode)) {
-                            ctx.assert(! material, 'has <= 1 material node');
+                            //ctx.assert(! material, 'has <= 1 material node');
                             material = child;
                         }
 						else if (x3dom.isa(child, x3dom.nodeTypes.X3DTextureNode)) {
@@ -390,7 +402,7 @@ x3dom.registerNodeType(
                             textureTransform = child;
                         }
 						else {
-                            ctx.log('unrecognised x3dom.nodeTypes.Appearance child node type '+node.localName);
+                            ctx.log('Unrecognised x3dom.nodeTypes.Appearance child node type '+node.localName);
                         }
                     }
                 }
@@ -398,6 +410,9 @@ x3dom.registerNodeType(
 			
 			if (!material)
 			{
+                var mat = document.createElement('Material');
+                xmlNode.appendChild(mat);
+                ctx.xmlNode = mat;
 				var nodeType = x3dom.nodeTypes["Material"];
 				material = new nodeType(ctx);
 			}
@@ -1238,12 +1253,16 @@ x3dom.registerNodeType(
 
             var colorNode = Array.filter(ctx.xmlNode.childNodes, 
                     function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'color'); });
-            // x3dom.debug.logInfo("#### " + colorNode.length); 
-            ctx.assert(colorNode.length == 1);
-            var colors = Array.map(colorNode[0].getAttribute('color').match(/([+\-0-9eE\.]+)/g), 
+            var colors = [];
+            if (colorNode.length == 1) {
+                colors = Array.map(colorNode[0].getAttribute('color').match(/([+\-0-9eE\.]+)/g), 
                     function (n) { return +n; });
-            
-            ctx.assert(positions.length == colors.length);
+                ctx.assert(positions.length == colors.length);
+            }
+            else {
+                for (var i=0, n=positions.length; i<n; i++)
+                    colors.push(1.0);
+            }
             
             this._mesh._indices = [];
             this._mesh._positions = positions;
@@ -1275,13 +1294,18 @@ x3dom.registerNodeType(
                         if (x3dom.isa(child, x3dom.nodeTypes.X3DFontStyleNode)) {
                             ctx.assert(! style, 'has <= 1 fontStyle node');
                             style = child;
-                        } else {
-                            ctx.log('unrecognised x3dom.Text child node type '+node.localName);
+                        }
+                        else {
+                            ctx.log('Unrecognised x3dom.Text child node type '+node.localName);
                         }
                     }
                 }
             });
             this._fontStyle = style;
+            
+            // FIXME; MFFloat NYI
+            //this._attribute_MFFloat(ctx, 'length', []);
+            this._attribute_SFFloat(ctx, 'maxExtent', 0.0);
         }
     )
 );
@@ -1685,7 +1709,14 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.FontStyle.superClass.call(this, ctx);
     
             this._attribute_MFString(ctx, 'family', ['SERIF']);
+            this._attribute_SFBool(ctx, 'horizontal', true);
+            this._attribute_MFString(ctx, 'justify', ['BEGIN']);
+			this._attribute_SFString(ctx, 'language', "");
+            this._attribute_SFBool(ctx, 'leftToRight', true);
             this._attribute_SFFloat(ctx, 'size', 1.0);
+            this._attribute_SFFloat(ctx, 'spacing', 1.0);
+			this._attribute_SFString(ctx, 'style', "PLAIN");
+            this._attribute_SFBool(ctx, 'topToBottom', true);
         }
     )
 );
@@ -1844,6 +1875,7 @@ x3dom.registerNodeType(
 			this._attribute_SFFloat(ctx, 'intensity', 1);
             this._attribute_SFBool(ctx, 'global', false);
             this._attribute_SFBool(ctx, 'on', true);
+            this._attribute_SFFloat(ctx, 'shadowIntensity', 0);
         },
         {
 			// methods
@@ -1888,7 +1920,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Shape.superClass.call(this, ctx);
     
-            var appearance, geometry;
+            var appearance = null, geometry = null;
+            var xmlNode = ctx.xmlNode;
+            
             Array.forEach(ctx.xmlNode.childNodes, function (node) {
                 if (x3dom.isX3DElement(node)) {
                     var child = ctx.setupNodePrototypes(node, ctx);
@@ -1896,11 +1930,13 @@ x3dom.registerNodeType(
                         if (x3dom.isa(child, x3dom.nodeTypes.X3DAppearanceNode)) {
                             ctx.assert(! appearance, 'has <= 1 appearance node');
                             appearance = child;
-                        } else if (x3dom.isa(child, x3dom.nodeTypes.X3DGeometryNode)) {
+                        }
+                        else if (x3dom.isa(child, x3dom.nodeTypes.X3DGeometryNode)) {
                             ctx.assert(! geometry, 'has <= 1 geometry node');
                             geometry = child;
-                        } else {
-                            ctx.log('unrecognised x3dom.Shape child node type '+node.localName);
+                        }
+                        else {
+                            ctx.log('Unrecognised x3dom.Shape child node type '+node.localName);
                         }
                     }
                 }
@@ -1908,6 +1944,9 @@ x3dom.registerNodeType(
 			
 			if (!appearance)
 			{
+                var app = document.createElement('Appearance');
+                xmlNode.appendChild(app);
+                ctx.xmlNode = app;
 				var nodeType = x3dom.nodeTypes["Appearance"];
 				appearance = new nodeType(ctx);
 			}
@@ -2061,8 +2100,10 @@ x3dom.registerNodeType(
 				{
 					if (this._childNodes[i])
 					{
-						var childMin = new x3dom.fields.SFVec3(0,0,0);
-						var childMax = new x3dom.fields.SFVec3(0,0,0);
+						var childMin = new x3dom.fields.SFVec3(
+                                Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+						var childMax = new x3dom.fields.SFVec3(
+                                Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 						
 						valid = this._childNodes[i]._getVolume(
                                         childMin, childMax, invalidate) || valid;
@@ -2304,6 +2345,7 @@ x3dom.registerNodeType(
             this._pick = new x3dom.fields.SFVec3(0, 0, 0);
             
             this._ctx = ctx;    //needed for late create
+            this._xmlNode = ctx.xmlNode;
 			this._cam = null;
             this._bgnd = null;
             this._navi = null;
@@ -2318,6 +2360,9 @@ x3dom.registerNodeType(
                     
                     if (!this._cam)
                     {
+                        var cam = document.createElement('Viewpoint');
+                        this._xmlNode.appendChild(cam);
+                        this._ctx.xmlNode = cam;
                         var nodeType = x3dom.nodeTypes["Viewpoint"];
                         this._cam = new nodeType(this._ctx);
                         x3dom.debug.logInfo("Created ViewBindable.");
@@ -2343,6 +2388,9 @@ x3dom.registerNodeType(
                     
                     if (!this._navi)
                     {
+                        var nav = document.createElement('NavigationInfo');
+                        this._xmlNode.appendChild(nav);
+                        this._ctx.xmlNode = nav;
                         var nodeType = x3dom.nodeTypes["NavigationInfo"];
                         this._navi = new nodeType(this._ctx);
                         x3dom.debug.logInfo("Created UserBindable.");
@@ -2395,6 +2443,9 @@ x3dom.registerNodeType(
                     
                     if (!this._bgnd)
                     {
+                        var bgd = document.createElement('Background');
+                        this._xmlNode.appendChild(bgd);
+                        this._ctx.xmlNode = bgd;
                         var nodeType = x3dom.nodeTypes["Background"];
                         this._bgnd = new nodeType(this._ctx);
                         x3dom.debug.logInfo("Created BackgroundBindable.");
@@ -2775,6 +2826,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         },
         onNodeRemoved: function(e) {
             x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
+            //FIXME; childRemoved NYI
         },
         onNodeInserted: function(e) {
             var parent = e.target.parentNode._x3domNode;
@@ -2895,7 +2947,6 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
                 x3dom.debug.logInfo("Unrecognised element " + node.localName );
             }
             else {
-                
                 ctx.xmlNode = node;
                 n = new nodeType(ctx);
                 // x3dom.debug.logInfo("new node type: " + node.localName + ", autoChild=" + n._autoChild);
