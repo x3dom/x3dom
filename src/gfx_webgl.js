@@ -42,7 +42,7 @@ catch (e)
 // End of compatibility code
 
 
-x3dom.gfx_webgl = (function () { 
+x3dom.gfx_webgl = (function () {
 
 	function Context(ctx3d, canvas, name) {
 		this.ctx3d = ctx3d;
@@ -85,6 +85,8 @@ x3dom.gfx_webgl = (function () {
 		"uniform mat4 modelViewMatrix;" +
 		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
+        "uniform mat4 matPV;" +
+        "varying vec4 projCoord;" +
 		"" +
 		"void main(void) {" +
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
@@ -92,6 +94,7 @@ x3dom.gfx_webgl = (function () {
 		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
         "    fragTexCoord = texcoord;" +
+        "    projCoord = matPV * vec4(position+0.01*normal, 1.0);" +
 		"}"
 		};
         
@@ -108,6 +111,8 @@ x3dom.gfx_webgl = (function () {
 		"uniform mat4 modelViewMatrix;" +
 		"uniform vec3 lightDirection;" +
 		"uniform vec3 eyePosition;" +
+        "uniform mat4 matPV;" +
+        "varying vec4 projCoord;" +
 		"" +
 		"void main(void) {" +
 		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
@@ -115,6 +120,7 @@ x3dom.gfx_webgl = (function () {
 		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
         "    fragTexCoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;" +
+        "    projCoord = matPV * vec4(position+0.01*normal, 1.0);" +
 		"}"
 		};
 		
@@ -132,19 +138,25 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragLightVector;" +
 		"varying vec3 fragEyeVector;" +
 		"varying vec2 fragTexCoord;" +
+        "varying vec4 projCoord;" +
 		"" +
 		"void main(void) {" +
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
 		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
+        //"    vec3 projectiveBiased = (projCoord.xyz / projCoord.w).xyz;" +
 		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
 		"    diffuse += max(0.0, dot(normal, eye));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
 		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+        //"    vec4 texCol = texture2D(tex, projectiveBiased.xy);" +
         "    vec4 texCol = texture2D(tex, texCoord);" +
 		"    vec3 rgb = emissiveColor + diffuse*texCol.rgb + specular*specularColor;" +
+        //"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
+        //"    if (texCol.z < projectiveBiased.z) rgb *= 0.5;" +
+        //"    rgb = texCol.rgb;" +
         "    if (texCol.a <= 0.1) discard;" +
 		"    else gl_FragColor = vec4(rgb, texCol.a);" +
 		"}"
@@ -164,6 +176,7 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragLightVector;" +
 		"varying vec3 fragEyeVector;" +
 		"varying vec2 fragTexCoord;" +
+        "varying vec4 projCoord;" +
 		"" +
 		"void main(void) {" +
 		"    vec3 normal = normalize(fragNormal);" +
@@ -339,14 +352,32 @@ x3dom.gfx_webgl = (function () {
 		"}"
 		};
 
-	function getDefaultShaderProgram(gl) 
+	g_shaders['vs-x3d-shadow'] = { type: "vertex", data:
+		"attribute vec3 position;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+        "varying vec4 projCoord;" +
+		"void main(void) {" +
+        "   projCoord = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"   gl_Position = projCoord;" +
+		"}"
+		};
+
+	g_shaders['fs-x3d-shadow'] = { type: "fragment", data:
+        "varying vec4 projCoord;" +
+		"void main(void) {" +
+        "    vec3 proj = (projCoord.xyz / projCoord.w);" +
+		"    gl_FragColor = vec4(proj.z, proj.z, proj.z, 1.0);" +
+		"}"
+		};
+    
+	function getDefaultShaderProgram(gl, suffix) 
 	{
 		var prog = gl.createProgram();
 		var vs = gl.createShader(gl.VERTEX_SHADER);
 		var fs = gl.createShader(gl.FRAGMENT_SHADER);
 		
-		gl.shaderSource(vs, g_shaders['vs-x3d-default'].data);
-		gl.shaderSource(fs, g_shaders['fs-x3d-default'].data);
+		gl.shaderSource(vs, g_shaders['vs-x3d-'+suffix].data);
+		gl.shaderSource(fs, g_shaders['fs-x3d-'+suffix].data);
 		gl.compileShader(vs);
 		gl.compileShader(fs);
 		gl.attachShader(prog, vs);
@@ -499,7 +530,7 @@ x3dom.gfx_webgl = (function () {
 		
 		return shader;
 	}
-	
+    
 	Context.prototype.setupShape = function (gl, shape) 
 	{
         if (shape._webgl !== undefined) {
@@ -751,6 +782,74 @@ x3dom.gfx_webgl = (function () {
             delete colors;
         }
 	};
+    
+    Context.prototype.renderShadowPass = function(gl, scene)
+    {
+        gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fbo.fbo);
+        
+        gl.viewport(0, 0, scene._webgl.fbo.width, scene._webgl.fbo.height);
+        
+        gl.clearColor(1.0, 1.0, 1.0, 1.0);
+        gl.clearDepth(1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        
+        gl.depthFunc(gl.LEQUAL);
+		gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
+        
+        var sp = getDefaultShaderProgram(gl, 'shadow');
+        sp.bind();
+        
+        var mat_light = scene.getLightMatrix();
+        
+        for (var i=0, n=scene.drawableObjects.length; i<n; i++)
+        {
+			var trafo = scene.drawableObjects[i][0];
+			var shape = scene.drawableObjects[i][1];
+            
+			if (!shape._webgl) {
+                // init of GL objects
+				this.setupShape(gl, shape);
+            }
+            
+			sp.modelViewMatrix = mat_light.mult(trafo).toGL();
+			sp.modelViewProjectionMatrix = scene.getWCtoLCMatrix().mult(trafo).toGL();
+            
+            if (sp.position !== undefined) 
+			{
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
+				
+				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+				gl.enableVertexAttribArray(sp.position);
+			}
+			if (sp.normal !== undefined) 
+			{
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[2]);			
+				
+				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+				gl.enableVertexAttribArray(sp.normal);
+			}
+            
+            try {
+                gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+            }
+            catch (e) {
+                x3dom.debug.logException(shape._DEF + " renderShadowPass(): " + e);
+            }
+            
+			if (sp.position !== undefined) {
+				gl.disableVertexAttribArray(sp.position);
+			}
+			if (sp.normal !== undefined) {
+				gl.disableVertexAttribArray(sp.normal);
+			}
+        }
+        
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null); 
+    };
 
 	Context.prototype.renderScene = function (scene) 
 	{
@@ -760,16 +859,48 @@ x3dom.gfx_webgl = (function () {
         {
             return;
         }
+        
+        var sp = getDefaultShaderProgram(gl, 'default');
+		if (!scene._webgl)
+        {
+			scene._webgl = {
+				shader: sp,
+                fbo: this.initFbo(gl, 512, 512)
+			};
+		}
+        
+        var i = 0, t0, t1;
 		
-		gl.viewport(0,0,this.canvas.width,this.canvas.height);
+		// render traversal
+		if (scene.drawableObjects === undefined || !scene.drawableObjects)
+        {
+			scene.drawableObjects = [];
+			
+			t0 = new Date().getTime();
+			
+			scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);
+			
+			t1 = new Date().getTime() - t0;
+			
+			if (this.canvas.parent.statDiv) {
+				this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+				this.canvas.parent.statDiv.appendChild(document.createTextNode("traverse: " + t1));
+			}
+		}
+        
+        
+        // TODO; check for lights with shadows enabled
+        //this.renderShadowPass(gl, scene);
+		
+        
+		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 		
 		var bgCol = scene.getSkyColor();
-		
 		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
-		
+        
 		//gl.clearDepthf(1.0);
 		gl.clearDepth(1.0);
-			
+        
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 		
 		gl.depthFunc(gl.LEQUAL);
@@ -785,34 +916,8 @@ x3dom.gfx_webgl = (function () {
                     //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
                 );
         gl.enable(gl.BLEND);
-
-		var sp = getDefaultShaderProgram(gl);
-		if (!scene._webgl) {
-			// alert("no scene?!");
-			sp = getDefaultShaderProgram(gl);
-			scene._webgl = {
-				shader: sp
-			};
-		}
 		
-		var i = 0, t0, t1;
-		
-		// render traversal
-		if (scene.drawableObjects === undefined || !scene.drawableObjects) {
-			scene.drawableObjects = [];
-			
-			t0 = new Date().getTime();
-			
-			scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);
-			
-			t1 = new Date().getTime() - t0;
-			
-			if (this.canvas.parent.statDiv) {
-				this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-				this.canvas.parent.statDiv.appendChild(document.createTextNode("traverse: " + t1));
-			}
-		}
-		
+        
 		// sorting and stuff
 		t0 = new Date().getTime();
 		
@@ -822,12 +927,14 @@ x3dom.gfx_webgl = (function () {
 		//TODO; allow for more than one additional light per scene
 		var light, lightOn;
 		var slights = scene.getLights();
-		if (slights.length > 0) {
+		if (slights.length > 0)
+        {
 			light = slights[0]._direction;
             lightOn = (slights[0]._on === true) ? 1.0 : 0.0;
             lightOn = lightOn * slights[0]._intensity;
 		}
-		else {
+		else
+        {
 			light = new x3dom.fields.SFVec3(0, -1, 0);
             lightOn = 0.0;
 		}
@@ -911,6 +1018,7 @@ x3dom.gfx_webgl = (function () {
                 
 				gl.enable(gl.TEXTURE_2D);
 				gl.bindTexture(gl.TEXTURE_2D,shape._webgl.texture);
+                ///gl.bindTexture(gl.TEXTURE_2D,scene._webgl.fbo.tex);
 				
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
@@ -925,6 +1033,15 @@ x3dom.gfx_webgl = (function () {
                     var texTrafo = shape._appearance.transformMatrix();
                     sp.texTrafoMatrix = texTrafo.toGL();
                 }
+                sp.tex = 0;
+                
+                /*
+                //sp.matPV = scene.getLightProjection().toGL();getWCtoLCMatrix
+                //var l_mat = scene.getWCtoLCMatrix().mult(transform);
+                var l_mat = scene.getLightProjection().mult(transform);
+                //x3dom.debug.logInfo(l_mat);
+                sp.matPV = l_mat.toGL();
+                */
 			}
 			
 			if (sp.position !== undefined) 
@@ -964,7 +1081,8 @@ x3dom.gfx_webgl = (function () {
 			else {
 				gl.disable(gl.CULL_FACE);
             }
-			
+            
+            // render object
             try {
 			  // fixme; scene._points is dynamic and doesn't belong there!!!
 			  if (scene._points !== undefined && scene._points) {
@@ -1066,6 +1184,84 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 	};
+    
+    //
+    Context.prototype.emptyTexImage2D = function(gl, internalFormat, width, height, format, type)
+    {
+        /*try {
+            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
+        }
+        catch (e) */
+        {
+            var bytes = 3;
+            switch (internalFormat)
+            {
+                case gl.DEPTH_COMPONENT: bytes = 3; break;
+                case gl.ALPHA: bytes = 1; break;
+                case gl.RGB: bytes = 3; break;
+                case gl.RGBA: bytes = 4; break;
+                case gl.LUMINANCE: bytes = 1; break;
+                case gl.LUMINANCE_ALPHA: bytes = 2; break;
+            }
+            var pixels = new WebGLUnsignedByteArray(width * height * bytes);
+            gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, pixels);
+        }
+    };
+
+    Context.prototype.initTex = function(gl, w, h)
+    {
+        var tex = gl.createTexture();
+        gl.bindTexture(gl.TEXTURE_2D, tex);
+        
+        this.emptyTexImage2D(gl, gl.RGBA, w, h, gl.RGBA, gl.UNSIGNED_BYTE);
+        //this.emptyTexImage2D(gl, gl.DEPTH_COMPONENT16, w, h, gl.DEPTH_COMPONENT, gl.UNSIGNED_BYTE);
+        
+        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        //glTexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        //gl.texParameteri(gl.TEXTURE_2D, gl.GENERATE_MIPMAP, gl.TRUE);
+        gl.generateMipmap(gl.TEXTURE_2D);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+        
+        tex.width = w;
+        tex.height = h;
+        
+        return tex;
+    };
+
+    /*
+     * Creates FBO with given size
+     *   taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009
+     * Returned Object has
+     *   rbo, fbo, tex, width, height
+     */
+    Context.prototype.initFbo = function(gl, w, h)
+    {
+        var fbo = gl.createFramebuffer();
+        var rb = gl.createRenderbuffer()    
+        var tex = this.initTex(gl,w,h)
+        
+        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
+        gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT, w, h);
+        gl.bindRenderbuffer(gl.RENDERBUFFER, null);
+        
+        gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
+        gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        
+        r = {};
+        r.fbo = fbo;
+        r.rbo = rb;
+        r.tex = tex;
+        r.width = w;
+        r.height = h;
+        
+        return r;
+    };
+    //
 
 	return setupContext;
 
