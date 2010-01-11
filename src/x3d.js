@@ -1878,7 +1878,9 @@ x3dom.registerNodeType(
             this._attribute_SFFloat(ctx, 'shadowIntensity', 0);
         },
         {
-			// methods
+			getViewMatrix: function(pos) {
+                return x3dom.fields.SFMatrix4.identity;
+            }
         }
     )
 );
@@ -1893,7 +1895,19 @@ x3dom.registerNodeType(
             this._attribute_SFVec3(ctx, 'direction', 0, -1, 0);
         },
         {
-			// methods
+            getViewMatrix: function(pos) {
+                var dir = this._direction.normalised();
+                /*var up = new x3dom.fields.SFVec3(0, 1, 0);
+                var left = dir.cross(up).normalised();
+                var viewMat = new x3dom.fields.SFMatrix4(
+                    left.x, up.x, dir.x, 0, left.y, up.y, dir.y, 0, left.z, up.z, dir.z, 0, 0, 0, 0, 1);*/
+                var orientation = x3dom.fields.Quaternion.rotateFromTo(
+                        new x3dom.fields.SFVec3(0, 0, -1), dir);
+                //var mat = orientation.toMatrix().transpose().
+                var mat = x3dom.fields.SFMatrix4.rotationY(-1.57).  //FIXME
+                        mult(x3dom.fields.SFMatrix4.translation(pos.negate()));
+                return mat;
+            },
         }
     )
 );
@@ -2434,6 +2448,60 @@ x3dom.registerNodeType(
 							mult(this._transMat).
 							mult(this._rotMat);
             },
+            
+            getLightMatrix: function()
+            {
+                var lights = this.getLights();
+                if (lights.length > 0)
+                {
+                    var min = new x3dom.fields.SFVec3(
+                        Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+                    var max = new x3dom.fields.SFVec3(
+                        Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+                    var ok = this.getVolume(min, max, true);
+                    
+                    if (ok)
+                    {
+                        var viewpoint = this.getViewpoint();
+                        var fov = viewpoint.getFieldOfView();
+                        
+                        var dia = max.subtract(min);
+                        var dist1 = (dia.y/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
+                        var dist2 = (dia.x/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
+                        
+                        dia = min.add(dia.scale(0.5));
+                        var dir = lights[0]._direction.normalised().negate();
+                        dia = dia.add(dir.scale(dist1 > dist2 ? dist1 : dist2));
+                        //x3dom.debug.logInfo(dia);
+                        
+                        return lights[0].getViewMatrix(dia);
+                    }
+                }
+                //TODO, this is only for testing
+                return this.getViewMatrix();
+            },
+            
+            getLightProjection: function()
+            {
+                // modelview projection matrix of light space
+                var b = x3dom.fields.SFMatrix4.identity();
+                b.setScale(new x3dom.fields.SFVec3(0.5,0.5,0.5));
+                b.setTranslate(new x3dom.fields.SFVec3(0.5,0.5,0.5));
+                /*
+                var proj = this.getProjectionMatrix();
+                b = b.mult(proj);
+                b = b.mult(this.getLightMatrix());
+                */
+                return b.mult(this.getWCtoLCMatrix());
+            },
+            
+            getWCtoLCMatrix: function()
+            {
+                var view = this.getLightMatrix();
+                var proj = this.getProjectionMatrix();
+                
+                return proj.mult(view);
+            },
 			
 			getSkyColor: function() 
             {
@@ -2498,8 +2566,10 @@ x3dom.registerNodeType(
             
             showAll: function()
             {
-                var min = new x3dom.fields.SFVec3(0,0,0);
-                var max = new x3dom.fields.SFVec3(0,0,0);
+				var min = new x3dom.fields.SFVec3(
+					Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+				var max = new x3dom.fields.SFVec3(
+					Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
                 var ok = this.getVolume(min, max, true);
                 
                 if (ok)
@@ -3002,6 +3072,16 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 this._scene.showAll();
             }
             break;
+        case 99: /* c */ 
+			{
+				//
+			}
+			break;
+        case 108: /* l, light view */ 
+			{
+                this._scene.getViewpoint().setView(this._scene.getLightMatrix());
+			}
+			break;
         case 109: /* m, toggle "points" attribute */ 
 			{
 				if (this._scene._points === undefined)

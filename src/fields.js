@@ -589,7 +589,7 @@ x3dom.fields.Quaternion.prototype.normalised = function (that) {
 }
 
 x3dom.fields.Quaternion.prototype.negate = function() {
-    return new x3dom.fields.Quaternion(this.x, this.y, this.z, this.w);
+    return new x3dom.fields.Quaternion(-this.x, -this.y, -this.z, -this.w);
 }
 
 x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
@@ -628,6 +628,58 @@ x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
 
     // build the new quaternion
     return this.multScalar(scalerot0).add(rot1.multScalar(scalerot1));
+}
+
+x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
+    var from = fromVec.normalised();
+    var to   = toVec.normalised();
+    var cost = from.dot(to);
+
+    // check for degeneracies
+    if (cost > 0.99999)
+    {
+        // vectors are parallel
+        return new x3dom.fields.Quaternion(0, 0, 0, 1);
+    }
+    else if (cost < -0.99999)
+    {
+        // vectors are opposite
+        // find an axis to rotate around, which should be
+        // perpendicular to the original axis
+        // Try cross product with (1,0,0) first, if that's one of our
+        // original vectors then try  (0,1,0).
+        var cAxis = new x3dom.fields.SFVec3(1, 0, 0);
+
+        var tmp = from.cross(cAxis);
+
+        if (tmp.length() < 0.00001)
+        {
+            cAxis.x = 0;
+            cAxis.y = 1;
+            cAxis.z = 0;
+
+            tmp = from.cross(cAxis);
+        }
+        tmp.normalised();
+
+        return x3dom.fields.Quaternion.axisAngle(tmp, Math.Pi);
+    }
+
+    var axis = fromVec.cross(toVec);
+    axis.normalised();
+
+    // use half-angle formulae
+    // sin^2 t = ( 1 - cos (2t) ) / 2
+    var s = Math.sqrt(0.5 * (1.0 - cost));
+    axis = axis.scale(s);
+
+    // scale the axis by the sine of half the rotation angle to get
+    // the normalized quaternion
+    // cos^2 t = ( 1 + cos (2t) ) / 2
+    // w part is cosine of half the rotation angle
+    s = Math.sqrt(0.5 * (1.0 + cost));
+    
+    return x3dom.fields.Quaternion.axisAngle(axis, s);
 }
 
 x3dom.fields.Quaternion.prototype.toString = function () {
