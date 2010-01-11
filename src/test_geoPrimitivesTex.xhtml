@@ -17,7 +17,7 @@
 	<p class="case">Geometric primitive types with texture
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="700px" height="500px">
 			<Scene>
-                <DirectionalLight direction='-1 0 0' />
+                <DirectionalLight direction='-0.8 -0.9 0.3' shadowIntensity='0.7' />
 				<Background skyColor='0.7 0.7 0.7' />
 				
 				<Transform DEF="coneTrafo" translation="-5 0 0">
@@ -69,8 +69,20 @@
 						<Torus DEF="torus" innerRadius="0.25" outerRadius="1.0" />
 					</Shape>
 				</Transform>
-                            
-				<Viewpoint centerOfRotation="0 0 0" position="0 0 12" orientation="0 1 0 0" />
+                
+                <Transform translation="-2 -3 0">
+                <Shape>
+						<Appearance>
+							<Material diffuseColor="1 1 1" specularColor=".5 .5 .5" />
+							<ImageTexture url="texture/earth.jpg" />
+						</Appearance>
+                        <IndexedFaceSet DEF='node' coordIndex='3 2 1 0 -1' solid='false'>
+                            <Coordinate point='-8 0 -4, 8 0 -4, 8 0 4, -8 0 4'/>
+                            <TextureCoordinate point='1 1 0 1 0 0 1 0'/>
+                        </IndexedFaceSet>
+                </Shape>
+                </Transform>
+				<Viewpoint centerOfRotation="0 0 0" position="0 0 12" orientation="0 1 0 0" zNear="2" zFar="400" />
 			</Scene>
         </X3D>
 	</p>

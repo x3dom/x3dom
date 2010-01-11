@@ -679,7 +679,7 @@ x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
     // w part is cosine of half the rotation angle
     s = Math.sqrt(0.5 * (1.0 + cost));
     
-    return x3dom.fields.Quaternion.axisAngle(axis, s);
+    return new x3dom.fields.Quaternion(axis.x, axis.y, axis.z, s);
 }
 
 x3dom.fields.Quaternion.prototype.toString = function () {

@@ -1897,16 +1897,10 @@ x3dom.registerNodeType(
         {
             getViewMatrix: function(pos) {
                 var dir = this._direction.normalised();
-                /*var up = new x3dom.fields.SFVec3(0, 1, 0);
-                var left = dir.cross(up).normalised();
-                var viewMat = new x3dom.fields.SFMatrix4(
-                    left.x, up.x, dir.x, 0, left.y, up.y, dir.y, 0, left.z, up.z, dir.z, 0, 0, 0, 0, 1);*/
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
                         new x3dom.fields.SFVec3(0, 0, -1), dir);
-                //var mat = orientation.toMatrix().transpose().
-                var mat = x3dom.fields.SFMatrix4.rotationY(-1.57).  //FIXME
+                return orientation.toMatrix().transpose().
                         mult(x3dom.fields.SFMatrix4.translation(pos.negate()));
-                return mat;
             },
         }
     )
@@ -2471,7 +2465,7 @@ x3dom.registerNodeType(
                         
                         dia = min.add(dia.scale(0.5));
                         var dir = lights[0]._direction.normalised().negate();
-                        dia = dia.add(dir.scale(dist1 > dist2 ? dist1 : dist2));
+                        dia = dia.add(dir.scale(1.2*(dist1 > dist2 ? dist1 : dist2)));
                         //x3dom.debug.logInfo(dia);
                         
                         return lights[0].getViewMatrix(dia);
@@ -2483,15 +2477,11 @@ x3dom.registerNodeType(
             
             getLightProjection: function()
             {
-                // modelview projection matrix of light space
+                // modelview projection matrix of light space with bias
                 var b = x3dom.fields.SFMatrix4.identity();
                 b.setScale(new x3dom.fields.SFVec3(0.5,0.5,0.5));
                 b.setTranslate(new x3dom.fields.SFVec3(0.5,0.5,0.5));
-                /*
-                var proj = this.getProjectionMatrix();
-                b = b.mult(proj);
-                b = b.mult(this.getLightMatrix());
-                */
+                
                 return b.mult(this.getWCtoLCMatrix());
             },
             
@@ -3080,6 +3070,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 108: /* l, light view */ 
 			{
                 this._scene.getViewpoint().setView(this._scene.getLightMatrix());
+                this._scene._rotMat = x3dom.fields.SFMatrix4.identity();
+                this._scene._transMat = x3dom.fields.SFMatrix4.identity();
+                this._scene._movement = new x3dom.fields.SFVec3(0, 0, 0);
 			}
 			break;
         case 109: /* m, toggle "points" attribute */ 
