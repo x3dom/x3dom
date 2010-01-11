@@ -175,7 +175,7 @@ x3dom.gfx_webgl = (function () {
 		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
 		"    specular += pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
         "    vec3 rgb = texture2D(tex, texCoord).rgb;" +
-        "    float len = length(rgb);" +
+        "    float len = clamp(length(rgb), 0.0, 1.0);" +
 		"    rgb = rgb * (emissiveColor + diffuse*diffuseColor + specular*specularColor);" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (len <= 0.1) discard;" +
@@ -537,7 +537,7 @@ x3dom.gfx_webgl = (function () {
             }
             */
             
-            text_ctx.fillStyle = 'hsl(0,100%,0%)';
+            text_ctx.fillStyle = 'rgb(0,0,0)';
             text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
              
             // write white text with black border
