@@ -345,6 +345,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         _attribute_MFColor: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFColor([new x3dom.fields.SFColor(0,0,0)]);
         },
+        _attribute_MFFloat: function (ctx, name, def) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFFloat();
+        },
         _attribute_MFVec2: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? x3dom.fields.MFVec2.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFVec2();
         },
@@ -1769,6 +1772,21 @@ x3dom.registerNodeType(
                 return this._centerOfRotation;
 			},
 			getViewMatrix: function() {
+                var arr = [];
+                
+                if (ctx.xmlNode.hasAttribute('matrix'))
+                {
+                    arr = Array.map(ctx.xmlNode.getAttribute('matrix').split(/\s+/), function (n) { return +n; });
+                    if (arr.length === 16)
+                    {
+                        this._viewMatrix = new x3dom.fields.SFMatrix4(
+                                arr[0], arr[1], arr[2], arr[3], 
+                                arr[4], arr[5], arr[6], arr[7], 
+                                arr[8], arr[9], arr[10], arr[11], 
+                                arr[12], arr[13], arr[14], arr[15]);
+                    }
+                }
+                
                 return this._viewMatrix;
 			},
 			getFieldOfView: function() {

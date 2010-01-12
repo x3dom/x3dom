@@ -880,6 +880,42 @@ x3dom.fields.MFVec2.prototype.toGL = function() {
 }
 
 
+/** MFFloat constructor.
+    @class Represents a MFFloat
+  */
+x3dom.fields.MFFloat = function(array) {
+    if (arguments.length == 0) {
+        
+    }
+    else {
+        array.map( function(v) { this.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFFloat.prototype = new Array;
+
+x3dom.fields.MFFloat.parse = function(str) {
+    var mc = str.match(/([+-]?\d*\.?\d*\s*){1},?\s*/g);
+    var vals = [];
+    for (var i = 0; i < mc.length; ++i) {
+        var c = /^([+-]?\d*\.*\d*)\s*,?\s*$/.exec(mc[i]);
+        if (c[0])
+            vals.push( +c[1] );
+    }
+    
+    return new x3dom.fields.MFFloat( vals );    
+}
+
+x3dom.fields.MFFloat.prototype.toGL = function() {
+    var a = [];
+
+    Array.map( this, function(v) {
+        a.push(v);
+    });
+
+    return a;
+}
+
 
 /** Line constructor.
     @class Represents a Line
