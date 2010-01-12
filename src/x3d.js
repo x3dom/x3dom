@@ -2475,16 +2475,6 @@ x3dom.registerNodeType(
                 return this.getViewMatrix();
             },
             
-            getLightProjection: function()
-            {
-                // modelview projection matrix of light space with bias
-                var b = x3dom.fields.SFMatrix4.identity();
-                b.setScale(new x3dom.fields.SFVec3(0.5,0.5,0.5));
-                b.setTranslate(new x3dom.fields.SFVec3(0.5,0.5,0.5));
-                
-                return b.mult(this.getWCtoLCMatrix());
-            },
-            
             getWCtoLCMatrix: function()
             {
                 var view = this.getLightMatrix();
@@ -3069,10 +3059,13 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			break;
         case 108: /* l, light view */ 
 			{
-                this._scene.getViewpoint().setView(this._scene.getLightMatrix());
-                this._scene._rotMat = x3dom.fields.SFMatrix4.identity();
-                this._scene._transMat = x3dom.fields.SFMatrix4.identity();
-                this._scene._movement = new x3dom.fields.SFVec3(0, 0, 0);
+                if (this._scene.getLights().length > 0)
+                {
+                    this._scene.getViewpoint().setView(this._scene.getLightMatrix());
+                    this._scene._rotMat = x3dom.fields.SFMatrix4.identity();
+                    this._scene._transMat = x3dom.fields.SFMatrix4.identity();
+                    this._scene._movement = new x3dom.fields.SFVec3(0, 0, 0);
+                }
 			}
 			break;
         case 109: /* m, toggle "points" attribute */ 
