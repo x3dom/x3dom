@@ -587,9 +587,38 @@ x3dom.gfx_webgl = (function () {
     
 	Context.prototype.setupShape = function (gl, shape) 
 	{
-        if (shape._webgl !== undefined) {
+        if (shape._webgl !== undefined)
+        {
+            if (shape._dirty == true)
+            {
+                if (shape._webgl.shader.position !== undefined) 
+                {
+                    shape._webgl.positions = shape._geometry._mesh._positions;
+                    
+                    // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
+                    gl.deleteBuffer(shape._webgl.buffers[1]);
+                    
+                    var positionBuffer = gl.createBuffer();
+                    shape._webgl.buffers[1] = positionBuffer;
+                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                    
+                    var vertices = new WebGLFloatArray(shape._webgl.positions);
+                    
+                    gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                    
+                    gl.vertexAttribPointer(shape._webgl.positions.position, 3, gl.FLOAT, false, 0, 0);
+                    
+                    delete vertices;
+                }
+                
+                shape._dirty = false;
+            }
+            
             return;
         }
+        
+        shape._dirty = false;
         
         // TODO; finish text!
 		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) 
@@ -632,7 +661,7 @@ x3dom.gfx_webgl = (function () {
             text_ctx.save();
             text_ctx.font = "32px " + font_family;  //bold 
             var txtW = text_ctx.measureText(string).width;
-            var txtH = text_ctx.measureText(string).height || 36;
+            var txtH = text_ctx.measureText(string).height || 42;
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
             var topOffset = (text_ctx.canvas.height - 32) / 2.0;
             //text_ctx.strokeText(string, leftOffset, topOffset);
@@ -861,7 +890,8 @@ x3dom.gfx_webgl = (function () {
 			var trafo = scene.drawableObjects[i][0];
 			var shape = scene.drawableObjects[i][1];
             
-			if (!shape._webgl) {
+			//if (!shape._webgl) 
+            {
                 // init of GL objects
 				this.setupShape(gl, shape);
             }
@@ -1023,7 +1053,8 @@ x3dom.gfx_webgl = (function () {
 			var transform = obj[0];
 			var shape = obj[1];
 
-			if (!shape._webgl) {
+			//if (!shape._webgl) 
+            {
                 // init of GL objects
 				this.setupShape(gl, shape);
             }

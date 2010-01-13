@@ -292,6 +292,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 				else if (msg == "false") {
 					this[fieldName] = false;
                 }
+                this._fieldChanged(fieldName);
             }
         },
 
@@ -312,7 +313,12 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 				else {
 					toNode[toField] = msg;
                 }
+                toNode._fieldChanged(toField);
 			});
+        },
+        
+        _fieldChanged: function (fieldName) {
+            // to be overwritten by concrete classes
         },
 		
         _attribute_SFFloat: function (ctx, name, n) {
@@ -1336,6 +1342,28 @@ x3dom.registerNodeType(
             
             this._attribute_SFBool(ctx, 'ccw', true);
 			this._attribute_SFFloat(ctx, 'creaseAngle', 0);	// TODO
+            
+            var coordinates = null;
+            Array.forEach(ctx.xmlNode.childNodes, function (node) {
+                if (x3dom.isX3DElement(node)) {
+                    var child = ctx.setupNodePrototypes(node, ctx);
+                    if (child) {
+                        if (x3dom.isa(child, x3dom.nodeTypes.Coordinate)) {
+                            coordinates = child;
+                        }
+                    }
+                }
+            });
+			this._coord = coordinates;
+            
+            //TODO; we need generic child/parent links here!
+            //Furthermore, node could be used (i.e. multi-parent)
+            if (this._coord != null)
+                this._coord._parent = this;
+            this._parent = null;
+            
+            //restore current position in graph!
+            ctx.xmlNode = this._xmlNode;
 			
 			var t0 = new Date().getTime();
 			
@@ -1638,6 +1666,61 @@ x3dom.registerNodeType(
             // Coordinate           - X3DCoordinateNode         - X3DGeometricPropertyNode 
             // Normal 			    - X3DNormalNode 			- X3DGeometricPropertyNode
 			// TextureCoordinate    - X3DTextureCoordinateNode  - X3DGeometricPropertyNode 
+        },
+        {
+            _fieldChanged: function (fieldName) {
+                if (fieldName == "coord")
+                {
+                    // TODO; multi-index with different this._mesh._indices
+                    var pnts = this._coord._point;
+                    var i, n = pnts.length;
+                    
+                    this._mesh._positions = [];
+                    
+                    // TODO; optimize (is there a memcopy?)
+                    for (i=0; i<n; i++)
+                    {
+						this._mesh._positions.push(pnts[i].x);
+						this._mesh._positions.push(pnts[i].y);
+						this._mesh._positions.push(pnts[i].z);
+                    }
+                    
+                    this._mesh._invalidate = true;
+                    
+                    // FIXME; again same HACK as before, 
+                    // also we need fieldMask instead of one flag!
+                    this._parent._dirty = true;
+                }
+            },
+            
+            _getNodeByDEF: function (def) {
+				if (this._DEF == def) 
+					return this;
+				
+				var found = null;
+				
+				if (this._coord !== null) {
+					found = this._coord._getNodeByDEF(def);
+                    if (found)
+                        return found;
+				}
+				
+				return found;
+			},
+			
+			_find: function (type) {
+				var c = null;
+				
+				if (this._coord !== null) {
+					if (this._coord.constructor == type)
+						return this._coord;
+					c = this._coord._find(type);
+					if (c)
+						return c;
+				}
+				
+				return c;
+			}
         }
     )
 );
@@ -1658,6 +1741,20 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
+            
+            if (ctx.xmlNode.hasAttribute('point'))
+                this._point = x3dom.fields.MFVec3.parse(ctx.xmlNode.getAttribute('point'));
+            else
+                this._point = [];
+            
+            //TODO: can be multi-parent, see comment IndexedFaceSet!
+            this._parent = null;
+        },
+        {
+            _fieldChanged: function (fieldName) {
+                if (this._parent != null)
+                    this._parent._fieldChanged("coord");
+            }
         }
     )
 );
@@ -1826,6 +1923,25 @@ x3dom.registerNodeType(
 );
 
 x3dom.registerNodeType( 
+    "Fog",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.Fog.superClass.call(this, ctx);
+            
+			this._attribute_SFColor(ctx, 'color', 1, 1, 1);
+            this._attribute_SFString(ctx, 'fogType', "LINEAR");
+			this._attribute_SFFloat(ctx, 'visibilityRange', 0);
+            
+            x3dom.debug.logInfo("Fog NYI");
+        },
+        {
+			// methods
+        }
+    )
+);
+
+x3dom.registerNodeType( 
     "NavigationInfo",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
@@ -1982,6 +2098,10 @@ x3dom.registerNodeType(
 			
             this._appearance = appearance;
             this._geometry = geometry;
+            
+            //TODO: same HACK as in Coordinate and IndexedFaceSet!!!
+            this._geometry._parent = this;
+            this._dirty = true;
         },
         {
             _collectDrawableObjects: function (transform, out) {
@@ -2071,8 +2191,7 @@ x3dom.registerNodeType(
                 node._parentNodes.push(this);
             },
             removeChild: function (node) {
-            	//this._childNodes.
-            	//
+            	//TODO
             }
         }
     )
@@ -2301,6 +2420,42 @@ x3dom.registerNodeType(
 			
             this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this._linearInterp(msg, function (a, b, t) { return (1.0-t)*a + t*b; });
+                this._postMessage('value_changed', value);
+            } ];
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "CoordinateInterpolator",
+    "Interpolation",
+    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
+        function (ctx) {
+            x3dom.nodeTypes.CoordinateInterpolator.superClass.call(this, ctx);
+            
+            this._keyValue = [];
+            if (ctx.xmlNode.hasAttribute('keyValue')) {
+                this._keyValue
+                var arr = x3dom.fields.MFVec3.parse(ctx.xmlNode.getAttribute('keyValue'));
+                var key = this._key.length > 0 ? this._key.length : 1;
+                var len = arr.length / key;
+                for (var i=0; i<key; i++) {
+                    var val = new x3dom.fields.MFVec3();
+                    for (var j=0; j<len; j++) {
+                        val.push( arr[i*len+j] );
+                    }
+                    this._keyValue.push(val);
+                }
+            }
+            
+            this._fieldWatchers.set_fraction = [ function (msg) {
+                var value = this._linearInterp(msg, function (a, b, t) {
+                    var val = new x3dom.fields.MFVec3();
+                    for (var i=0; i<a.length; i++) {
+                        val.push(a[i].scale(1.0-t).add(b[i].scale(t)));
+                    }
+                    return val;
+                });
                 this._postMessage('value_changed', value);
             } ];
         }

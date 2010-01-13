@@ -20,6 +20,7 @@
                 <DirectionalLight direction='-0.8 -0.9 0.3' shadowIntensity='0.7' />
 				<Background skyColor='0.7 0.7 0.7' />
 				
+                <Transform DEF="objects" rotation="0 1 0 0" scale="1 1 1">
 				<Transform DEF="coneTrafo" translation="-5 0 0">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
@@ -69,6 +70,7 @@
 						<Torus DEF="torus" innerRadius="0.25" outerRadius="1.0" />
 					</Shape>
 				</Transform>
+                </Transform>
                 
                 <Transform DEF="floor" translation="-2 -3 0">
                 <Shape>
@@ -86,9 +88,15 @@
                 
                 <TimeSensor DEF="TS" loop="true" cycleInterval="10" />
 				
+                <OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="0 1 0 0, 0 1 0 3.14159, 0 1 0 6.28318" />
 				<PositionInterpolator DEF="PI" key="0 0.5 1" keyValue="-2 -3 0, 2 -1.5 0, -2 -3 0" />
+                <PositionInterpolator DEF="SI" key="0 0.5 1" keyValue="1.0 1.0 1.0, 1.4 0.7 1.4, 1.0 1.0 1.0" />
+				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'/>
 				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='PI' toField='set_fraction'/>
+				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='SI' toField='set_fraction'/>
+				<ROUTE fromNode='OI' fromField='value_changed' toNode='objects' toField='rotation'/>
 				<ROUTE fromNode='PI' fromField='value_changed' toNode='floor' toField='translation'/>
+				<ROUTE fromNode='SI' fromField='value_changed' toNode='objects' toField='scale'/>
 			</Scene>
         </X3D>
 	</p>
