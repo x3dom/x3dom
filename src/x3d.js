@@ -2069,8 +2069,11 @@ x3dom.registerNodeType(
             addChild: function (node) {
                 this._childNodes.push(node);
                 node._parentNodes.push(this);
+            },
+            removeChild: function (node) {
+            	//this._childNodes.
+            	//
             }
-			//TODO: removeChild
         }
     )
 );
@@ -2894,7 +2897,18 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             e.target._x3domNode._updateField(e.attrName, e.newValue);
         },
         onNodeRemoved: function(e) {
-            x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
+            var parent = e.target.parentNode._x3domNode;
+            var child = e.target._x3domNode;
+            
+            //x3dom.debug.logInfo("Child: " + e.target.type + "MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
+            
+           	for (var i = 0; i < parent._childNodes.length; i++) {
+           		if (parent._childNodes[i] === child) {
+           		  parent._childNodes.splice(i,1);
+           		  break;
+           		}
+           	}
+            
             //FIXME; childRemoved NYI
         },
         onNodeInserted: function(e) {
