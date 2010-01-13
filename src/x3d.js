@@ -1771,11 +1771,12 @@ x3dom.registerNodeType(
 			getCenterOfRotation: function() {
                 return this._centerOfRotation;
 			},
-			getViewMatrix: function() {
-                
+			getViewMatrix: function()
+            {
                 if (this._xmlNode.hasAttribute('matrix'))
                 {
-                    var arr = Array.map(ctx.xmlNode.getAttribute('matrix').split(/\s+/), function (n) { return +n; });
+                    var arr = Array.map(this._xmlNode.getAttribute('matrix').split(/\s+/), 
+                                            function (n) { return +n; });
                     if (arr.length >= 16)
                     {
                         this._viewMatrix = new x3dom.fields.SFMatrix4(
