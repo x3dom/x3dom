@@ -1772,12 +1772,11 @@ x3dom.registerNodeType(
                 return this._centerOfRotation;
 			},
 			getViewMatrix: function() {
-                var arr = [];
                 
-                if (ctx.xmlNode.hasAttribute('matrix'))
+                if (this._xmlNode.hasAttribute('matrix'))
                 {
-                    arr = Array.map(ctx.xmlNode.getAttribute('matrix').split(/\s+/), function (n) { return +n; });
-                    if (arr.length === 16)
+                    var arr = Array.map(ctx.xmlNode.getAttribute('matrix').split(/\s+/), function (n) { return +n; });
+                    if (arr.length >= 16)
                     {
                         this._viewMatrix = new x3dom.fields.SFMatrix4(
                                 arr[0], arr[1], arr[2], arr[3], 
@@ -2371,7 +2370,6 @@ x3dom.registerNodeType(
             this._pick = new x3dom.fields.SFVec3(0, 0, 0);
             
             this._ctx = ctx;    //needed for late create
-            this._xmlNode = ctx.xmlNode;
 			this._cam = null;
             this._bgnd = null;
             this._navi = null;
