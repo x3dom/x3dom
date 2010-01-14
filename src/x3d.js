@@ -297,6 +297,10 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         },
 
         _setupRoute: function (fromField, toNode, toField) {
+            var pos = toField.indexOf("set");
+            if (pos == 0) {
+                toField = toField.substr(3,toField.length-1);
+            }
             if (! this._fieldWatchers[fromField]) {
                 this._fieldWatchers[fromField] = [];
             }
@@ -2378,7 +2382,7 @@ x3dom.registerNodeType(
             else
                 this._keyValue = [];
             
-            this._fieldWatchers.set_fraction = [ function (msg) {
+            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this._linearInterp(msg, function (a, b, t) { return a.slerp(b, t); });
                 this._postMessage('value_changed', value);
             } ];
@@ -2398,7 +2402,7 @@ x3dom.registerNodeType(
             else
                 this._keyValue = [];
             
-            this._fieldWatchers.set_fraction = [ function (msg) {
+            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this._linearInterp(msg, function (a, b, t) { return a.scale(1.0-t).add(b.scale(t)); });
                 this._postMessage('value_changed', value);
             } ];
@@ -2418,7 +2422,7 @@ x3dom.registerNodeType(
             else
                 this._keyValue = [];
 			
-            this._fieldWatchers.set_fraction = [ function (msg) {
+            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this._linearInterp(msg, function (a, b, t) { return (1.0-t)*a + t*b; });
                 this._postMessage('value_changed', value);
             } ];
@@ -2448,7 +2452,7 @@ x3dom.registerNodeType(
                 }
             }
             
-            this._fieldWatchers.set_fraction = [ function (msg) {
+            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this._linearInterp(msg, function (a, b, t) {
                     var val = new x3dom.fields.MFVec3();
                     for (var i=0; i<a.length; i++) {
