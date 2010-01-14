@@ -285,6 +285,18 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                 else if (fieldName == "_transparency") {	// test
                     this[fieldName] = +msg;
                 }
+                else if (fieldName == "_matrix") {
+                    var arr = Array.map(this._xmlNode.getAttribute('matrix').split(/[,\s]+/), 
+                                            function (n) { return +n; });
+                    if (arr.length >= 16)
+                    {
+                        this._matrix = new x3dom.fields.SFMatrix4(
+                                arr[0], arr[1], arr[2], arr[3], 
+                                arr[4], arr[5], arr[6], arr[7], 
+                                arr[8], arr[9], arr[10], arr[11], 
+                                arr[12], arr[13], arr[14], arr[15]);
+                    }
+                }
 				//uhh, what a hack - but how to do it nicely?
 				else if (msg == "true") {
 					this[fieldName] = true;
@@ -1869,27 +1881,15 @@ x3dom.registerNodeType(
             this._projMatrix = null;
         },
         {
+            _fieldChanged: function (fieldName) {
+                if (this._matrix !== undefined) {
+                    this._viewMatrix = this._matrix;
+                }
+            },
 			getCenterOfRotation: function() {
                 return this._centerOfRotation;
 			},
-			getViewMatrix: function()
-            {
-                if (this._xmlNode.hasAttribute('matrix'))
-                {
-                    var arr = Array.map(this._xmlNode.getAttribute('matrix').split(/[,\s]+/), 
-                                            function (n) { return +n; });
-                    if (arr.length >= 16) //&& this._XXX === undefined)
-                    {
-                        this._viewMatrix = new x3dom.fields.SFMatrix4(
-                                arr[0], arr[1], arr[2], arr[3], 
-                                arr[4], arr[5], arr[6], arr[7], 
-                                arr[8], arr[9], arr[10], arr[11], 
-                                arr[12], arr[13], arr[14], arr[15]);
-                        //this._XXX = true;
-                        //FIXME; uncomment this._XXX if matrix shall only be set once!
-                    }
-                }
-                
+			getViewMatrix: function() {
                 return this._viewMatrix;
 			},
 			getFieldOfView: function() {
@@ -2227,9 +2227,19 @@ x3dom.registerNodeType(
 							mult(x3dom.fields.SFMatrix4.translation(this._center.negate()));
         },
         {
+            _fieldChanged: function (fieldName) {
+                if (this._matrix !== undefined) {
+                    this._trafo = this._matrix;
+                }
+            },
+            
             _transformMatrix: function(transform) {
 				// P' = T * C * R * SR * S * -SR * -C * P
 				
+                if (this._matrix !== undefined) {
+                    this._trafo = this._matrix;
+                }
+                else {
                 // TODO; optimize (only on change) - but field changes are not yet checked...
 				this._trafo = x3dom.fields.SFMatrix4.translation(this._translation).
 							mult(x3dom.fields.SFMatrix4.translation(this._center)).
@@ -2238,7 +2248,8 @@ x3dom.registerNodeType(
 							mult(x3dom.fields.SFMatrix4.scale(this._scale)).
 							mult(this._scaleOrientation.toMatrix().inverse()).
 							mult(x3dom.fields.SFMatrix4.translation(this._center.negate()));
-							
+                }
+				
                 return transform.mult(this._trafo);
             },
 			
