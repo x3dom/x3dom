@@ -1746,9 +1746,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
             
-            if (ctx.xmlNode.hasAttribute('point'))
-                this._point = x3dom.fields.MFVec3.parse(ctx.xmlNode.getAttribute('point'));
-            else
+            //if (ctx.xmlNode.hasAttribute('point'))
+            //    this._point = x3dom.fields.MFVec3.parse(ctx.xmlNode.getAttribute('point'));
+            //else
                 this._point = [];
             
             //TODO: can be multi-parent, see comment IndexedFaceSet!
