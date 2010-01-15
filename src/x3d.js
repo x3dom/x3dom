@@ -2441,7 +2441,6 @@ x3dom.registerNodeType(
             
             this._keyValue = [];
             if (ctx.xmlNode.hasAttribute('keyValue')) {
-                this._keyValue
                 var arr = x3dom.fields.MFVec3.parse(ctx.xmlNode.getAttribute('keyValue'));
                 var key = this._key.length > 0 ? this._key.length : 1;
                 var len = arr.length / key;
