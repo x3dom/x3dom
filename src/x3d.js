@@ -285,19 +285,11 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                 else if (fieldName == "_transparency") {	// test
                     this[fieldName] = +msg;
                 }
-                else if (fieldName == "_matrix") {
-                    var arr = Array.map(this._xmlNode.getAttribute('matrix').split(/[,\s]+/), 
-                                            function (n) { return +n; });
-                    if (arr.length >= 16)
-                    {
-                        this._matrix = new x3dom.fields.SFMatrix4(
-                                arr[0], arr[1], arr[2], arr[3], 
-                                arr[4], arr[5], arr[6], arr[7], 
-                                arr[8], arr[9], arr[10], arr[11], 
-                                arr[12], arr[13], arr[14], arr[15]);
-                    }
+                else if (fieldName == "_matrix") {          // hack
+                    this._matrix = x3dom.fields.SFMatrix4.parse(msg);
                 }
 				//uhh, what a hack - but how to do it nicely?
+                //--> probably we need field base class with parse method!
 				else if (msg == "true") {
 					this[fieldName] = true;
                 }
@@ -1328,8 +1320,7 @@ x3dom.registerNodeType(
             });
             this._fontStyle = style;
             
-            // FIXME; MFFloat NYI
-            //this._attribute_MFFloat(ctx, 'length', []);
+            this._attribute_MFFloat(ctx, 'length', []);
             this._attribute_SFFloat(ctx, 'maxExtent', 0.0);
         }
     )

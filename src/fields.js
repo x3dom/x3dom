@@ -147,6 +147,23 @@ x3dom.fields.SFMatrix4.parseRotation = function (str) {
     ).transpose();
 }
 
+x3dom.fields.SFMatrix4.parse = function (str) {
+    var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
+    if (arr.length >= 16)
+    {
+        return new x3dom.fields.SFMatrix4(
+                arr[0],  arr[1],  arr[2],  arr[3], 
+                arr[4],  arr[5],  arr[6],  arr[7], 
+                arr[8],  arr[9],  arr[10], arr[11], 
+                arr[12], arr[13], arr[14], arr[15]
+        );
+    }
+    else {
+        x3dom.debug.logInfo("SFMatrix4 - can't parse string: " + str);
+        return x3dom.fields.SFMatrix4.identity();
+    }
+}
+
 x3dom.fields.SFMatrix4.prototype.mult = function (that)  {
     return new x3dom.fields.SFMatrix4(
         this._00*that._00+this._01*that._10+this._02*that._20+this._03*that._30, 
@@ -344,6 +361,7 @@ x3dom.fields.SFMatrix4.prototype.toString = function () {
         this._20+', '+this._21+', '+this._22+', '+this._23+'; '+
         this._30+', '+this._31+', '+this._32+', '+this._33+']';
 }
+
 
 /** SFVec2 constructor.
     @class Represents a SFVec2
