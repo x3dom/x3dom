@@ -282,12 +282,18 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                 if (f.constructor === x3dom.fields.SFVec3) {
                     this[fieldName] = x3dom.fields.SFVec3.parse(msg);
                 }
+                else if (fieldName == "_rotation" || fieldName == "_orientation") {
+                    this[fieldName] = x3dom.fields.Quaternion.parseAxisAngle(msg);
+                }
                 else if (fieldName == "_transparency") {	// test
                     this[fieldName] = +msg;
                 }
                 else if (fieldName == "_matrix") {          // hack
                     this._matrix = x3dom.fields.SFMatrix4.parse(msg);
                 }
+                // TODO:
+                // this[fieldName].setByString(msg);
+                //
 				//uhh, what a hack - but how to do it nicely?
                 //--> probably we need field base class with parse method!
 				else if (msg == "true") {
@@ -296,6 +302,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 				else if (msg == "false") {
 					this[fieldName] = false;
                 }
+                // TODO: eval fieldChanged for all nodes!
                 this._fieldChanged(fieldName);
             }
         },
@@ -2032,7 +2039,7 @@ x3dom.registerNodeType(
                         new x3dom.fields.SFVec3(0, 0, -1), dir);
                 return orientation.toMatrix().transpose().
                         mult(x3dom.fields.SFMatrix4.translation(pos.negate()));
-            },
+            }
         }
     )
 );
@@ -2510,7 +2517,7 @@ x3dom.registerNodeType(
             	}
      
      			this._postMessage('fraction_changed', fraction );
-            },
+            }
         }
     )
 );
@@ -3040,7 +3047,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         docs: uriDocs,
         setupNodePrototypes: this._setupNodePrototypes,
         assert: x3dom.debug.assert,
-        log: x3dom.debug.logInfo,
+        log: x3dom.debug.logInfo
     };
 
     var doc = this;
