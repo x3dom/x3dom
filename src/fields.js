@@ -12,16 +12,18 @@
 /** @namespace The x3dom.fields namespace. */
 x3dom.fields = {};
 
-/** SFMatrix4 constructor. 
-    @class Represents a SFMatrix4
+/** SFMatrix4f constructor. 
+    @class Represents a SFMatrix4f
+    //TODO; use 2-dim array instead of _xx
   */
-x3dom.fields.SFMatrix4 = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33) {
+x3dom.fields.SFMatrix4f = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33) {
     if (arguments.length == 0) {
         this._00 = 1; this._01 = 0; this._02 = 0; this._03 = 0;
         this._10 = 0; this._11 = 1; this._12 = 0; this._13 = 0;
         this._20 = 0; this._21 = 0; this._22 = 1; this._23 = 0;
         this._30 = 0; this._31 = 0; this._32 = 0; this._33 = 1;
-    } else {
+    }
+    else {
         this._00 = _00; this._01 = _01; this._02 = _02; this._03 = _03;
         this._10 = _10; this._11 = _11; this._12 = _12; this._13 = _13;
         this._20 = _20; this._21 = _21; this._22 = _22; this._23 = _23;
@@ -30,31 +32,31 @@ x3dom.fields.SFMatrix4 = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _
 }
 
 /** returns 1st base vector (right) */
-x3dom.fields.SFMatrix4.prototype.e0 = function () {
-	var baseVec = new x3dom.fields.SFVec3(this._00, this._10, this._20);
-	return baseVec.normalised();
+x3dom.fields.SFMatrix4f.prototype.e0 = function () {
+	var baseVec = new x3dom.fields.SFVec3f(this._00, this._10, this._20);
+	return baseVec.normalize();
 }
 
 /** returns 2nd base vector (up) */
-x3dom.fields.SFMatrix4.prototype.e1 = function () {
-	var baseVec = new x3dom.fields.SFVec3(this._01, this._11, this._21);
-	return baseVec.normalised();
+x3dom.fields.SFMatrix4f.prototype.e1 = function () {
+	var baseVec = new x3dom.fields.SFVec3f(this._01, this._11, this._21);
+	return baseVec.normalize();
 }
 
 /** returns 3rd base vector (fwd) */
-x3dom.fields.SFMatrix4.prototype.e2 = function () {
-	var baseVec = new x3dom.fields.SFVec3(this._02, this._12, this._22);
-	return baseVec.normalised();
+x3dom.fields.SFMatrix4f.prototype.e2 = function () {
+	var baseVec = new x3dom.fields.SFVec3f(this._02, this._12, this._22);
+	return baseVec.normalize();
 }
 
 /** returns 4th base vector (pos) */
-x3dom.fields.SFMatrix4.prototype.e3 = function () {
-	return new x3dom.fields.SFVec3(this._03, this._13, this._23);
+x3dom.fields.SFMatrix4f.prototype.e3 = function () {
+	return new x3dom.fields.SFVec3f(this._03, this._13, this._23);
 }
 
-/** Returns a SFMatrix4 identity matrix. */
-x3dom.fields.SFMatrix4.identity = function () {
-    return new x3dom.fields.SFMatrix4(
+/** Returns a SFMatrix4f identity matrix. */
+x3dom.fields.SFMatrix4f.identity = function () {
+    return new x3dom.fields.SFMatrix4f(
         1, 0, 0, 0,
         0, 1, 0, 0,
         0, 0, 1, 0,
@@ -62,8 +64,8 @@ x3dom.fields.SFMatrix4.identity = function () {
     );
 }
 
-x3dom.fields.SFMatrix4.translation = function (vec) {
-    return new x3dom.fields.SFMatrix4(
+x3dom.fields.SFMatrix4f.translation = function (vec) {
+    return new x3dom.fields.SFMatrix4f(
         1, 0, 0, vec.x,
         0, 1, 0, vec.y,
         0, 0, 1, vec.z,
@@ -71,10 +73,10 @@ x3dom.fields.SFMatrix4.translation = function (vec) {
     );
 }
 
-x3dom.fields.SFMatrix4.rotationX = function (a) {
+x3dom.fields.SFMatrix4f.rotationX = function (a) {
     var c = Math.cos(a);
     var s = Math.sin(a);
-    return new x3dom.fields.SFMatrix4(
+    return new x3dom.fields.SFMatrix4f(
         1, 0, 0, 0,
         0, c, -s, 0,
         0, s, c, 0,
@@ -82,10 +84,10 @@ x3dom.fields.SFMatrix4.rotationX = function (a) {
     );
 }
 
-x3dom.fields.SFMatrix4.rotationY = function (a) {
+x3dom.fields.SFMatrix4f.rotationY = function (a) {
     var c = Math.cos(a);
     var s = Math.sin(a);
-    return new x3dom.fields.SFMatrix4(
+    return new x3dom.fields.SFMatrix4f(
         c, 0, s, 0,
         0, 1, 0, 0,
         -s, 0, c, 0,
@@ -93,10 +95,10 @@ x3dom.fields.SFMatrix4.rotationY = function (a) {
     );
 }
 
-x3dom.fields.SFMatrix4.rotationZ = function (a) {
+x3dom.fields.SFMatrix4f.rotationZ = function (a) {
     var c = Math.cos(a);
     var s = Math.sin(a);
-    return new x3dom.fields.SFMatrix4(
+    return new x3dom.fields.SFMatrix4f(
         c, -s, 0, 0,
         s, c, 0, 0,
         0, 0, 1, 0,
@@ -104,8 +106,8 @@ x3dom.fields.SFMatrix4.rotationZ = function (a) {
     );
 }
 
-x3dom.fields.SFMatrix4.scale = function (vec) {
-    return new x3dom.fields.SFMatrix4(
+x3dom.fields.SFMatrix4f.scale = function (vec) {
+    return new x3dom.fields.SFMatrix4f(
         vec.x, 0, 0, 0,
         0, vec.y, 0, 0,
         0, 0, vec.z, 0,
@@ -113,19 +115,19 @@ x3dom.fields.SFMatrix4.scale = function (vec) {
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.setTranslate = function (vec) {
+x3dom.fields.SFMatrix4f.prototype.setTranslate = function (vec) {
 	this._03 = vec.x;
 	this._13 = vec.y;
 	this._23 = vec.z;
 }
 
-x3dom.fields.SFMatrix4.prototype.setScale = function (vec) {
+x3dom.fields.SFMatrix4f.prototype.setScale = function (vec) {
 	this._00 = vec.x;
 	this._11 = vec.y;
 	this._22 = vec.z;
 }
 
-x3dom.fields.SFMatrix4.parseRotation = function (str) {
+x3dom.fields.SFMatrix4f.parseRotation = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     var x = +m[1], y = +m[2], z = +m[3], a = +m[4];
     var d = Math.sqrt(x*x + y*y + z*z);
@@ -138,7 +140,7 @@ x3dom.fields.SFMatrix4.parseRotation = function (str) {
     var s = Math.sin(a);
     var t  = 1-c;
 
-    return new x3dom.fields.SFMatrix4(
+    return new x3dom.fields.SFMatrix4f(
         t*x*x+c,   t*x*y+s*z, t*x*z-s*y, 0,
         t*x*y-s*z, t*y*y+c,   t*y*z+s*x, 0,
         t*x*z+s*y, t*y*z-s*x, t*z*z+c,   0,
@@ -146,11 +148,11 @@ x3dom.fields.SFMatrix4.parseRotation = function (str) {
     ).transpose();
 }
 
-x3dom.fields.SFMatrix4.parse = function (str) {
+x3dom.fields.SFMatrix4f.parse = function (str) {
     var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
     if (arr.length >= 16)
     {
-        return new x3dom.fields.SFMatrix4(
+        return new x3dom.fields.SFMatrix4f(
                 arr[0],  arr[1],  arr[2],  arr[3], 
                 arr[4],  arr[5],  arr[6],  arr[7], 
                 arr[8],  arr[9],  arr[10], arr[11], 
@@ -158,13 +160,13 @@ x3dom.fields.SFMatrix4.parse = function (str) {
         );
     }
     else {
-        x3dom.debug.logInfo("SFMatrix4 - can't parse string: " + str);
-        return x3dom.fields.SFMatrix4.identity();
+        x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
+        return x3dom.fields.SFMatrix4f.identity();
     }
 }
 
-x3dom.fields.SFMatrix4.prototype.mult = function (that)  {
-    return new x3dom.fields.SFMatrix4(
+x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
+    return new x3dom.fields.SFMatrix4f(
         this._00*that._00+this._01*that._10+this._02*that._20+this._03*that._30, 
         this._00*that._01+this._01*that._11+this._02*that._21+this._03*that._31, 
         this._00*that._02+this._01*that._12+this._02*that._22+this._03*that._32, 
@@ -184,34 +186,34 @@ x3dom.fields.SFMatrix4.prototype.mult = function (that)  {
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.multMatrixPnt = function (vec) {
-    return new x3dom.fields.SFVec3(
+x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function (vec) {
+    return new x3dom.fields.SFVec3f(
         this._00*vec.x + this._01*vec.y + this._02*vec.z + this._03,
         this._10*vec.x + this._11*vec.y + this._12*vec.z + this._13,
         this._20*vec.x + this._21*vec.y + this._22*vec.z + this._23
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.multMatrixVec = function (vec) {
-    return new x3dom.fields.SFVec3(
+x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function (vec) {
+    return new x3dom.fields.SFVec3f(
         this._00*vec.x + this._01*vec.y + this._02*vec.z,
         this._10*vec.x + this._11*vec.y + this._12*vec.z,
         this._20*vec.x + this._21*vec.y + this._22*vec.z
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.multFullMatrixPnt = function (vec) {
+x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     var w = this._30*vec.x + this._31*vec.y + this._32*vec.z + this._33;
     if (w) w = 1.0 / w;
-    return new x3dom.fields.SFVec3(
+    return new x3dom.fields.SFVec3f(
         (this._00*vec.x + this._01*vec.y + this._02*vec.z + this._03) * w,
         (this._10*vec.x + this._11*vec.y + this._12*vec.z + this._13) * w,
         (this._20*vec.x + this._21*vec.y + this._22*vec.z + this._23) * w
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.transpose = function () {
-    return new x3dom.fields.SFMatrix4(
+x3dom.fields.SFMatrix4f.prototype.transpose = function () {
+    return new x3dom.fields.SFMatrix4f(
         this._00, this._10, this._20, this._30,
         this._01, this._11, this._21, this._31,
         this._02, this._12, this._22, this._32,
@@ -219,7 +221,7 @@ x3dom.fields.SFMatrix4.prototype.transpose = function () {
     );
 }
 
-x3dom.fields.SFMatrix4.prototype.toGL = function () {
+x3dom.fields.SFMatrix4f.prototype.toGL = function () {
     return [
         this._00, this._10, this._20, this._30,
         this._01, this._11, this._21, this._31,
@@ -228,13 +230,13 @@ x3dom.fields.SFMatrix4.prototype.toGL = function () {
     ];
 }
 
-x3dom.fields.SFMatrix4.prototype.decompose = function () {
+x3dom.fields.SFMatrix4f.prototype.decompose = function () {
     // Return [ T, S, x, y, z ] such that
     //   rotateX(x); rotateY(t); rotateZ(z); scale(S); translate(T);
     // does the equivalent transformation
 
-    var T = new x3dom.fields.SFVec3(this._03, this._13, this._23);
-    var S = new x3dom.fields.SFVec3(1, 1, 1); // XXX
+    var T = new x3dom.fields.SFVec3f(this._03, this._13, this._23);
+    var S = new x3dom.fields.SFVec3f(1, 1, 1); // XXX
 
     // http://www.j3d.org/matrix_faq/matrfaq_latest.html
     var angle_x, angle_y, angle_z, tr_x, tr_y, C;
@@ -257,14 +259,14 @@ x3dom.fields.SFMatrix4.prototype.decompose = function () {
     return [ T, S, angle_x, angle_y, angle_z ];
 }
 
-x3dom.fields.SFMatrix4.prototype.det3 = function (
+x3dom.fields.SFMatrix4f.prototype.det3 = function (
 				a1, a2, a3, b1, b2, b3, c1, c2, c3) {
     var d = (a1 * b2 * c3) + (a2 * b3 * c1) + (a3 * b1 * c2) -
 			(a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1);
 	return d;
 }
 
-x3dom.fields.SFMatrix4.prototype.det = function () {
+x3dom.fields.SFMatrix4f.prototype.det = function () {
     var a1, a2, a3, a4,
         b1, b2, b3, b4,
         c1, c2, c3, c4,
@@ -297,7 +299,7 @@ x3dom.fields.SFMatrix4.prototype.det = function () {
 	return d;
 }
 
-x3dom.fields.SFMatrix4.prototype.inverse = function () {
+x3dom.fields.SFMatrix4f.prototype.inverse = function () {
     var a1, a2, a3, a4,
         b1, b2, b3, b4,
         c1, c2, c3, c4,
@@ -328,12 +330,12 @@ x3dom.fields.SFMatrix4.prototype.inverse = function () {
     if (Math.abs(rDet) < 0.000001)
     {
         x3dom.debug.logInfo("Invert matrix: singular matrix, no inverse!");
-        return x3dom.fields.SFMatrix4.identity();
+        return x3dom.fields.SFMatrix4f.identity();
     }
 
     rDet = 1.0 / rDet;
 
-	return new x3dom.fields.SFMatrix4(
+	return new x3dom.fields.SFMatrix4f(
     +this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) * rDet,
     -this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4) * rDet,
     +this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) * rDet,
@@ -353,174 +355,183 @@ x3dom.fields.SFMatrix4.prototype.inverse = function () {
 	);
 }
 
-x3dom.fields.SFMatrix4.prototype.toString = function () {
-    return '[SFMatrix4 ' +
+x3dom.fields.SFMatrix4f.prototype.toString = function () {
+    return '[SFMatrix4f ' +
         this._00+', '+this._01+', '+this._02+', '+this._03+'; '+
         this._10+', '+this._11+', '+this._12+', '+this._13+'; '+
         this._20+', '+this._21+', '+this._22+', '+this._23+'; '+
         this._30+', '+this._31+', '+this._32+', '+this._33+']';
 }
 
+x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
+    var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
+    if (arr.length >= 16)
+    {
+        this._00 = arr[0]; this._01 = arr[1]; this._02 = arr[2]; this._03 = arr[3];
+        this._10 = arr[4]; this._11 = arr[5]; this._12 = arr[6]; this._13 = arr[7];
+        this._20 = arr[8]; this._21 = arr[9]; this._22 = arr[10]; this._23 = arr[11];
+        this._30 = arr[12]; this._31 = arr[13]; this._32 = arr[14]; this._33 = arr[15];
+    }
+    else {
+        x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
+    }
+    return this;
+}
 
-/** SFVec2 constructor.
-    @class Represents a SFVec2
+
+/** SFVec2f constructor.
+    @class Represents a SFVec2f
   */
-x3dom.fields.SFVec2 = function(x, y) {
+x3dom.fields.SFVec2f = function(x, y) {
     if (arguments.length == 0) {
         this.x = this.y = 0;
-    } else {
+    }
+    else {
         this.x = x;
         this.y = y;
     }
 }
 
-x3dom.fields.SFVec2.parse = function (str) {
+x3dom.fields.SFVec2f.parse = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
-    return new x3dom.fields.SFVec2(+m[1], +m[2]);
+    return new x3dom.fields.SFVec2f(+m[1], +m[2]);
 }
 
-x3dom.fields.SFVec2.prototype.add = function (that) {
-    return new x3dom.fields.SFVec2(this.x+that.x, this.y+that.y);
-/*    this.x += that.x;
-    this.y += that.y;
-    return this;*/
+x3dom.fields.SFVec2f.prototype.add = function (that) {
+    return new x3dom.fields.SFVec2f(this.x+that.x, this.y+that.y);
 }
 
-x3dom.fields.SFVec2.prototype.subtract = function (that) {
-    return new x3dom.fields.SFVec2(this.x-that.x, this.y-that.y);
-/*    this.x -= that.x;
-    this.y -= that.y;
-    return this;    */
+x3dom.fields.SFVec2f.prototype.subtract = function (that) {
+    return new x3dom.fields.SFVec2f(this.x-that.x, this.y-that.y);
 }
 
-x3dom.fields.SFVec2.prototype.negate = function () {
-    return new x3dom.fields.SFVec2(-this.x, -this.y);
-/*    this.x *= -1;
-    this.y *= -1;
-    return this;    */
+x3dom.fields.SFVec2f.prototype.negate = function () {
+    return new x3dom.fields.SFVec2f(-this.x, -this.y);
 }
 
-x3dom.fields.SFVec2.prototype.dot = function (that) {
-    return this.x * that.x  +  this.y * that.y;
+x3dom.fields.SFVec2f.prototype.dot = function (that) {
+    return this.x * that.x + this.y * that.y;
 }
 
-
-x3dom.fields.SFVec2.prototype.reflect = function (n) {
+x3dom.fields.SFVec2f.prototype.reflect = function (n) {
     var d2 = this.dot(n)*2;
-    return new x3dom.fields.SFVec2(this.x-d2*n.x, this.y-d2*n.y);
-/*    this.x -= d2*n.x;
-    this.y -= d2*n.y;
-    return this;    */
+    return new x3dom.fields.SFVec2f(this.x-d2*n.x, this.y-d2*n.y);
 }
 
-x3dom.fields.SFVec2.prototype.normalised = function (that) {
-    // var n = Math.sqrt((this.x*this.x) + (this.y*this.y));
+x3dom.fields.SFVec2f.prototype.normalize = function (that) {
     var n = this.length();
     if (n) n = 1.0 / n;
-    return new x3dom.fields.SFVec2(this.x*n, this.y*n);
-/*    this.x *= n;
-    this.y *= n;
-    return this;*/
+    return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
 }
 
-x3dom.fields.SFVec2.prototype.multiply = function (n) {
-    return new x3dom.fields.SFVec2(this.x*n, this.y*n);
-/*    this.x *= n;
-    this.y *= n;
-    return this;*/
+x3dom.fields.SFVec2f.prototype.multiply = function (n) {
+    return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
 }
 
-x3dom.fields.SFVec2.prototype.length = function() {
+x3dom.fields.SFVec2f.prototype.divide = function (n) {
+    var denom = n ? (1.0 / n) : 1.0;
+    return new x3dom.fields.SFVec2f(this.x*denom, this.y*denom);
+}
+
+x3dom.fields.SFVec2f.prototype.length = function() {
     return Math.sqrt((this.x*this.x) + (this.y*this.y));
 }
 
-x3dom.fields.SFVec2.prototype.toGL = function () {
+x3dom.fields.SFVec2f.prototype.toGL = function () {
     return [ this.x, this.y ];
 }
 
-x3dom.fields.SFVec2.prototype.toString = function () {
+x3dom.fields.SFVec2f.prototype.toString = function () {
     return "{ x " + this.x + " y " + this.y + " }";
 }
 
-x3dom.fields.SFVec2.prototype.setValueByStr = function(s) {
-    var m = /^([+-]?\d*\.*\d*)\s*,?\s*([+-]?\d*\.*\d*)$/.exec(s);
+x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
+    var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     this.x = +m[1];
     this.y = +m[2];
     return this;
 }
 
 
-
-
-/** SFVec3 constructor.
-    @class Represents a SFVec3
+/** SFVec3f constructor.
+    @class Represents a SFVec3f
   */
-x3dom.fields.SFVec3 = function(x, y, z) {
+x3dom.fields.SFVec3f = function(x, y, z) {
     if (arguments.length == 0) {
         this.x = this.y = this.z = 0;
-    } else {
+    }
+    else {
         this.x = x;
         this.y = y;
         this.z = z;
     }
 }
 
-x3dom.fields.SFVec3.parse = function (str) {
+x3dom.fields.SFVec3f.parse = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
-    return new x3dom.fields.SFVec3(+m[1], +m[2], +m[3]);
+    return new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]);
 }
 
-x3dom.fields.SFVec3.prototype.add = function (that) {
-    return new x3dom.fields.SFVec3(this.x + that.x, this.y + that.y, this.z + that.z);
+x3dom.fields.SFVec3f.prototype.add = function (that) {
+    return new x3dom.fields.SFVec3f(this.x + that.x, this.y + that.y, this.z + that.z);
 }
 
-x3dom.fields.SFVec3.prototype.subtract = function (that) {
-    return new x3dom.fields.SFVec3(this.x - that.x, this.y - that.y, this.z - that.z);
+x3dom.fields.SFVec3f.prototype.subtract = function (that) {
+    return new x3dom.fields.SFVec3f(this.x - that.x, this.y - that.y, this.z - that.z);
 }
 
-x3dom.fields.SFVec3.prototype.negate = function () {
-    return new x3dom.fields.SFVec3(-this.x, -this.y, -this.z);
+x3dom.fields.SFVec3f.prototype.negate = function () {
+    return new x3dom.fields.SFVec3f(-this.x, -this.y, -this.z);
 }
 
-x3dom.fields.SFVec3.prototype.dot = function (that) {
+x3dom.fields.SFVec3f.prototype.dot = function (that) {
     return (this.x*that.x + this.y*that.y + this.z*that.z);
 }
 
-x3dom.fields.SFVec3.prototype.cross = function (that) {
-    return new x3dom.fields.SFVec3( this.y*that.z - this.z*that.y, 
+x3dom.fields.SFVec3f.prototype.cross = function (that) {
+    return new x3dom.fields.SFVec3f( this.y*that.z - this.z*that.y, 
                                     this.z*that.x - this.x*that.z, 
                                     this.x*that.y - this.y*that.x );
 }
 
-x3dom.fields.SFVec3.prototype.reflect = function (n) {
+x3dom.fields.SFVec3f.prototype.reflect = function (n) {
     var d2 = this.dot(n)*2;
-    return new x3dom.fields.SFVec3(this.x - d2*n.x, this.y - d2*n.y, this.z - d2*n.z);
+    return new x3dom.fields.SFVec3f(this.x - d2*n.x, this.y - d2*n.y, this.z - d2*n.z);
 }
 
-x3dom.fields.SFVec3.prototype.length = function() {
+x3dom.fields.SFVec3f.prototype.length = function() {
     return Math.sqrt((this.x*this.x) + (this.y*this.y) + (this.z*this.z));
 }
 
-x3dom.fields.SFVec3.prototype.normalised = function (that) {
+x3dom.fields.SFVec3f.prototype.normalize = function (that) {
     var n = this.length();
     if (n) n = 1.0 / n;
-    return new x3dom.fields.SFVec3(this.x*n, this.y*n, this.z*n);
+    return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
 }
 
-x3dom.fields.SFVec3.prototype.scale = function (n) {
-    //YJ: what about scaleThis vs. scale?
-    //this.x *= n;
-    //this.y *= n;
-    //this.z *= n;
-    return new x3dom.fields.SFVec3(this.x*n, this.y*n, this.z*n);
+x3dom.fields.SFVec3f.prototype.multiply = function (n) {
+    return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
 }
 
-x3dom.fields.SFVec3.prototype.toGL = function () {
+x3dom.fields.SFVec2f.prototype.divide = function (n) {
+    var denom = n ? (1.0 / n) : 1.0;
+    return new x3dom.fields.SFVec2f(this.x*denom, this.y*denom, this.z*denom);
+}
+
+x3dom.fields.SFVec3f.prototype.toGL = function () {
     return [ this.x, this.y, this.z ];
 }
 
-x3dom.fields.SFVec3.prototype.toString = function () {
+x3dom.fields.SFVec3f.prototype.toString = function () {
     return "{ x " + this.x + " y " + this.y + " z " + this.z + " }";
+}
+
+x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
+    var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
+    this.x = +m[1];
+    this.y = +m[2];
+    this.z = +m[3];
+    return this;
 }
 
 
@@ -545,7 +556,7 @@ x3dom.fields.Quaternion.prototype.mult = function (that) {
 
 x3dom.fields.Quaternion.parseAxisAngle = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
-    return x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3(+m[1], +m[2], +m[3]), +m[4]);
+    return x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
 }
 
 x3dom.fields.Quaternion.axisAngle = function (axis, a) {
@@ -574,7 +585,7 @@ x3dom.fields.Quaternion.prototype.toMatrix = function () {
     var wy = this.w * this.y * 2;
     var wz = this.w * this.z * 2;
 
-    return new x3dom.fields.SFMatrix4(
+    return new x3dom.fields.SFMatrix4f(
         1 - (yy + zz), xy - wz, xz + wy, 0,
         xy + wz, 1 - (xx + zz), yz - wx, 0,
         xz - wy, yz + wx, 1 - (xx + yy), 0,
@@ -598,7 +609,7 @@ x3dom.fields.Quaternion.prototype.multScalar = function (s) {
     return new x3dom.fields.Quaternion(this.x*s, this.y*s, this.z*s, this.w*s);
 }
 
-x3dom.fields.Quaternion.prototype.normalised = function (that) {
+x3dom.fields.Quaternion.prototype.normalize = function (that) {
     var d2 = this.dot(that);
     var id = 1.0;
     if (d2) id = 1.0 / Math.sqrt(d2);
@@ -648,8 +659,8 @@ x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
 }
 
 x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
-    var from = fromVec.normalised();
-    var to   = toVec.normalised();
+    var from = fromVec.normalize();
+    var to   = toVec.normalize();
     var cost = from.dot(to);
 
     // check for degeneracies
@@ -665,7 +676,7 @@ x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
         // perpendicular to the original axis
         // Try cross product with (1,0,0) first, if that's one of our
         // original vectors then try  (0,1,0).
-        var cAxis = new x3dom.fields.SFVec3(1, 0, 0);
+        var cAxis = new x3dom.fields.SFVec3f(1, 0, 0);
 
         var tmp = from.cross(cAxis);
 
@@ -677,18 +688,18 @@ x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
 
             tmp = from.cross(cAxis);
         }
-        tmp.normalised();
+        tmp.normalize();
 
         return x3dom.fields.Quaternion.axisAngle(tmp, Math.Pi);
     }
 
     var axis = fromVec.cross(toVec);
-    axis.normalised();
+    axis.normalize();
 
     // use half-angle formulae
     // sin^2 t = ( 1 - cos (2t) ) / 2
     var s = Math.sqrt(0.5 * (1.0 - cost));
-    axis = axis.scale(s);
+    axis = axis.multiply(s);
 
     // scale the axis by the sine of half the rotation angle to get
     // the normalized quaternion
@@ -703,40 +714,14 @@ x3dom.fields.Quaternion.prototype.toString = function () {
     return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
 }
 
-
-/** MFRotation constructor.
-    @class Represents a MFRotation
-  */
-x3dom.fields.MFRotation = function(rotArray) {
-    if (arguments.length == 0) {        
-        
-    }
-    else {
-        rotArray.map( function(v) { this.push(v); }, this );
-    }
-};
-
-x3dom.fields.MFRotation.prototype = new Array;
-
-x3dom.fields.MFRotation.parse = function(str) {
-    var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){4},?\s*/g);
-    var vecs = [];
-    for (var i = 0; i < mc.length; ++i) {
-        var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
-        if (c[0])
-            vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3(+c[1], +c[2], +c[3]), +c[4]) );
-    }
-    
-    // holds the quaternion representation as needed by interpolators etc.
-    return new x3dom.fields.MFRotation( vecs );    
-}
-
-x3dom.fields.MFRotation.prototype.toGL = function() {
-    var a = [];
-
-    //TODO
-
-    return a;
+x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
+    var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
+    var quat = x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
+    this.x = quat.x;
+    this.y = quat.y;
+    this.z = quat.z;
+    this.w = quat.w;
+    return this;
 }
 
 
@@ -746,7 +731,8 @@ x3dom.fields.MFRotation.prototype.toGL = function() {
 x3dom.fields.SFColor = function(r, g, b) {
     if (arguments.length == 0) {
         this.r = this.g = this.b = 0;
-    } else {
+    }
+    else {
         this.r = r;
         this.g = g;
         this.b = b;
@@ -758,12 +744,30 @@ x3dom.fields.SFColor.parse = function(str) {
     return new x3dom.fields.SFColor( +m[1], +m[2], +m[3] );
 }
 
+x3dom.fields.SFColor.prototype.setHSV = function (h, s, v) {
+    x3dom.debug.logInfo("SFColor.setHSV() NYI");
+}
+
+x3dom.fields.SFColor.prototype.getHSV = function () {
+    var h = 0, s = 0, v = 0;
+    x3dom.debug.logInfo("SFColor.getHSV() NYI");
+    return [ h, s, v ];
+}
+
 x3dom.fields.SFColor.prototype.toGL = function () {
     return [ this.r, this.g, this.b ];
 }
 
 x3dom.fields.SFColor.prototype.toString = function() {
     return "{ r " + this.r + " g " + this.g + " b " + this.b + " }";
+}
+
+x3dom.fields.SFColor.prototype.setValueByStr = function(str) {
+    var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
+    this.r = +m[1];
+    this.g = +m[2];
+    this.b = +m[3];
+    return this;
 }
   
 
@@ -776,7 +780,6 @@ x3dom.fields.MFColor = function(colorArray) {
     }
     else {
         colorArray.map( function(c) { this.push(c); }, this );
-        // console.dir(this);
     }
 };
 
@@ -803,22 +806,51 @@ x3dom.fields.MFColor.prototype.toGL = function() {
         a.push(c.g);
         a.push(c.b);        
     });
-    
-    // console.log("l=" + this.length);
-//     for (var i=0; i<this.length; i++) {
-//         a.push(this[i].r);
-//         a.push(this[i].g);
-//         a.push(this[i].b);
-//     }
 
     return a;
 }
 
 
-/** MFVec3 constructor.
-    @class Represents a MFVec3
+/** MFRotation constructor.
+    @class Represents a MFRotation
   */
-x3dom.fields.MFVec3 = function(vec3Array) {
+x3dom.fields.MFRotation = function(rotArray) {
+    if (arguments.length == 0) {        
+        
+    }
+    else {
+        rotArray.map( function(v) { this.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFRotation.prototype = new Array;
+
+x3dom.fields.MFRotation.parse = function(str) {
+    var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){4},?\s*/g);
+    var vecs = [];
+    for (var i = 0; i < mc.length; ++i) {
+        var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
+        if (c[0])
+            vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]), +c[4]) );
+    }
+    
+    // holds the quaternion representation as needed by interpolators etc.
+    return new x3dom.fields.MFRotation( vecs );    
+}
+
+x3dom.fields.MFRotation.prototype.toGL = function() {
+    var a = [];
+
+    //TODO
+
+    return a;
+}
+
+
+/** MFVec3f constructor.
+    @class Represents a MFVec3f
+  */
+x3dom.fields.MFVec3f = function(vec3Array) {
     if (arguments.length == 0) {        
         
     }
@@ -827,21 +859,21 @@ x3dom.fields.MFVec3 = function(vec3Array) {
     }
 };
 
-x3dom.fields.MFVec3.prototype = new Array;
+x3dom.fields.MFVec3f.prototype = new Array;
 
-x3dom.fields.MFVec3.parse = function(str) {
+x3dom.fields.MFVec3f.parse = function(str) {
     var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){3},?\s*/g);
     var vecs = [];
     for (var i = 0; i < mc.length; ++i) {
         var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            vecs.push( new x3dom.fields.SFVec3(+c[1], +c[2], +c[3]) );
+            vecs.push( new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]) );
     }
 
-    return new x3dom.fields.MFVec3( vecs );    
+    return new x3dom.fields.MFVec3f( vecs );    
 }
 
-x3dom.fields.MFVec3.prototype.toGL = function() {
+x3dom.fields.MFVec3f.prototype.toGL = function() {
     var a = [];
 
     Array.map( this, function(c) {
@@ -855,10 +887,10 @@ x3dom.fields.MFVec3.prototype.toGL = function() {
 
 
 
-/** MFVec2 constructor.
-    @class Represents a MFVec2
+/** MFVec2f constructor.
+    @class Represents a MFVec2f
   */
-x3dom.fields.MFVec2 = function(vec2Array) {
+x3dom.fields.MFVec2f = function(vec2Array) {
     if (arguments.length == 0) {        
         
     }
@@ -867,21 +899,21 @@ x3dom.fields.MFVec2 = function(vec2Array) {
     }
 };
 
-x3dom.fields.MFVec2.prototype = new Array;
+x3dom.fields.MFVec2f.prototype = new Array;
 
-x3dom.fields.MFVec2.parse = function(str) {
+x3dom.fields.MFVec2f.parse = function(str) {
     var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){2},?\s*/g);
     var vecs = [];
     for (var i = 0; i < mc.length; ++i) {
         var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            vecs.push( new x3dom.fields.SFVec2(+c[1], +c[2]) );
+            vecs.push( new x3dom.fields.SFVec2f(+c[1], +c[2]) );
     }
 
-    return new x3dom.fields.MFVec2( vecs );    
+    return new x3dom.fields.MFVec2f( vecs );    
 }
 
-x3dom.fields.MFVec2.prototype.toGL = function() {
+x3dom.fields.MFVec2f.prototype.toGL = function() {
     var a = [];
 
     Array.map( this, function(v) {
@@ -931,26 +963,26 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
 
 
 /** Line constructor.
-    @class Represents a Line
+    @class Represents a Line (as internal helper).
   */
 x3dom.fields.Line = function(pos, dir) 
 {
     if (arguments.length == 0) 
     {
-        this.pos = new x3dom.fields.SFVec3(0, 0, 0);
-        this.dir = new x3dom.fields.SFVec3(0, 0, 1);
+        this.pos = new x3dom.fields.SFVec3f(0, 0, 0);
+        this.dir = new x3dom.fields.SFVec3f(0, 0, 1);
         
         this.t = 1;
     } 
     else 
     {
-        this.pos = new x3dom.fields.SFVec3(pos.x, pos.y, pos.z);
+        this.pos = new x3dom.fields.SFVec3f(pos.x, pos.y, pos.z);
         
         var n = dir.length();
         this.t = n;
         if (n) n = 1.0 / n;
         
-        this.dir = new x3dom.fields.SFVec3(dir.x*n, dir.y*n, dir.z*n);
+        this.dir = new x3dom.fields.SFVec3f(dir.x*n, dir.y*n, dir.z*n);
     }
 }
 

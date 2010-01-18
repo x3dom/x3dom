@@ -949,7 +949,7 @@ x3dom.gfx_webgl = (function () {
 			
 			t0 = new Date().getTime();
 			
-			scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);
+			scene._collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
 			
 			t1 = new Date().getTime() - t0;
 			
@@ -975,7 +975,7 @@ x3dom.gfx_webgl = (function () {
 		}
 		else
         {
-			light = new x3dom.fields.SFVec3(0, -1, 0);
+			light = new x3dom.fields.SFVec3f(0, -1, 0);
             lightOn = 0.0;
             shadowIntensity = 0.0;
 		}
@@ -1052,12 +1052,9 @@ x3dom.gfx_webgl = (function () {
 			
 			var transform = obj[0];
 			var shape = obj[1];
-
-			//if (!shape._webgl) 
-            {
-                // init of GL objects
-				this.setupShape(gl, shape);
-            }
+            
+            // init of GL objects
+            this.setupShape(gl, shape);
 
 			sp = shape._webgl.shader;
 			if (!sp) {
@@ -1243,7 +1240,7 @@ x3dom.gfx_webgl = (function () {
         }
 		
 		// TODO; optimize traversal, matrices are not needed for cleanup
-		scene._collectDrawableObjects(x3dom.fields.SFMatrix4.identity(), scene.drawableObjects);
+		scene._collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
 		
 		for (var i=0, n=scene.drawableObjects.length; i<n; i++)
 		{
