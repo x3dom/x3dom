@@ -114,14 +114,14 @@ function MFString_parse(str) {
         var re = /"((?:[^\\"]|\\\\|\\")*)"/g;
         var m;
         var ret = [];
-        while (m = re.exec(str)) {
+        while ((m = re.exec(str))) {
             ret.push(m[1].replace(/\\([\\"])/, "$1"));
         }
         return ret;
     } else {
         return [str];
     }
-}
+};
 
 /**** x3dom.nodeTypes.X3DNode ****/
 
@@ -140,8 +140,15 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         this._typeName = ctx.xmlNode.localName;
 		this._xmlNode = ctx.xmlNode;	// backlink to DOM tree
 		
+		// holds all value fields (e.g. SFFloat, MFVec3f, ...)
+		this._vf = {};
+		// holds all child fields ( SFNode and MFNode )
+		this._cf = {};
+		
         this._fieldWatchers = {};
         this._parentNodes = [];
+
+		// FIXME; should be removed and handled by _cf methods
         this._childNodes = [];
     },
     {
@@ -412,7 +419,13 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFRotation(def);
-        }
+        },
+		_attribute_SFNode: function (name, type) {
+			this._cf[name] = new x3dom.fields.SFNode (type);
+		},
+		_attribute_MFNode: function (name, type) {
+			this._cf[name] = new x3dom.fields.MFNode (type);
+		}
     }
 ));
 
@@ -2237,9 +2250,31 @@ x3dom.registerNodeType(
             addChild: function (node) {
                 this._childNodes.push(node);
                 node._parentNodes.push(this);
+
+				/** FIXME
+				for (field in this._cf) {
+					if (obj.hasOwnProperty(field)) {
+						if (x3dom.isa(node,field.type) && (field.addLink(node)) {
+							node._parentNodes.push(this);
+							return true;
+						}
+					}
+				}
+				return true;
+				*/
             },
             removeChild: function (node) {
-            	//TODO
+				/** FIXME 
+            	for (field in this._cf) {
+					if (this._cf.hasOwnProperty(field) && field.rmLink(node)) {
+						for (var i = 0, n = node._parentNodes.length; i < n; i++) {
+							if (node._parentNodes.splice(i,1)) {
+								return true;
+							}
+						}
+					}
+				}
+				*/
             }
         }
     )
