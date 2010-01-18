@@ -264,9 +264,8 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             }
         },
 
-        // PE: Hacky test for field updates
+        // method for handling field updates
         _updateField: function (field, msg) {
-		
             var fieldName = "_" +  field;
 			
 			var f = this[fieldName];
@@ -276,24 +275,14 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 				f = this[fieldName];
 			}
 			
-            //x3dom.debug.logInfo("_updateField: field=" + field + ", msg=" + msg + ", f=" + f);
-            if (f!==null) {
-                //x3dom.debug.logInfo("_updateField: ####" + typeof(f));
-                // TODO: generic field parse-in method for all types!
+            if (f !== null) {
                 try {
                     this[fieldName].setValueByStr(msg);
                 }
                 catch (exc) {
-                    if (fieldName == "_transparency") {	// test
-                        this[fieldName] = +msg;
-                    }
-                    else if (msg.toLowerCase() == "true") {
-                        this[fieldName] = true;
-                    }
-                    else if (msg.toLowerCase() == "false") {
-                        this[fieldName] = false;
-                    }
+                    x3dom.debug.logInfo("_updateField: setValueByStr() NYI for " + typeof(f));
                 }
+                
                 // TODO: eval fieldChanged for all nodes!
                 this._fieldChanged(fieldName);
             }
@@ -304,6 +293,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             if (pos == 0) {
                 toField = toField.substr(3,toField.length-1);
             }
+            
             if (! this._fieldWatchers[fromField]) {
                 this._fieldWatchers[fromField] = [];
             }
@@ -320,6 +310,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 				else {
 					toNode[toField] = msg;
                 }
+                
                 // TODO: eval fieldChanged for all nodes!
                 toNode._fieldChanged(toField);
 			});
@@ -328,62 +319,99 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         _fieldChanged: function (fieldName) {
             // to be overwritten by concrete classes
         },
-		
+        
+		_attribute_SFInt32: function (ctx, name, n) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+                parseInt(ctx.xmlNode.getAttribute(name)) : n;
+            this['_'+name].setValueByStr = function(str) {
+                this['_'+name] = parseInt(str);
+            };
+        },
         _attribute_SFFloat: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
+            this['_'+name].setValueByStr = function(str) {
+                this['_'+name] = +str;
+            };
         },
         _attribute_SFTime: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
+            this['_'+name].setValueByStr = function(str) {
+                this['_'+name] = +str;
+            };
         },
         _attribute_SFBool: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                ctx.xmlNode.getAttribute(name) == "true" : n;
+                ctx.xmlNode.getAttribute(name).toLowerCase() == "true" : n;
+            this['_'+name].setValueByStr = function(str) {
+                this['_'+name] = (str.toLowerCase() == "true");
+            };
         },
         _attribute_SFString: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name) : n;
+            this['_'+name].setValueByStr = function(str) {
+                this['_'+name] = str;
+            };
         },
         _attribute_SFColor: function (ctx, name, r, g, b) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.SFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFColor(r, g, b);
+                x3dom.fields.SFColor.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.SFColor(r, g, b);
         },
         _attribute_SFVec2f: function (ctx, name, x, y) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.SFVec2f.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec2f(x, y);
+                x3dom.fields.SFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.SFVec2f(x, y);
         },
         _attribute_SFVec3f: function (ctx, name, x, y, z) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.SFVec3f(x, y, z);
+                x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.SFVec3f(x, y, z);
         },
         _attribute_SFRotation: function (ctx, name, x, y, z, a) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.Quaternion(x, y, z, a);
+                x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.Quaternion(x, y, z, a);
         },
+        
         _attribute_MFString: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
                 MFString_parse(ctx.xmlNode.getAttribute(name)) : def;
+            this['_'+name].setValueByStr = function(str) {
+                this['_'+name] = MFString_parse(str);
+            };
         },
-        _attribute_MFColor: function (ctx, name, def) {
+        _attribute_MFInt32: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFColor(def);
+                x3dom.fields.MFInt32.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFInt32(def);
         },
         _attribute_MFFloat: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFFloat(def);
+                x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFFloat(def);
+        },
+        _attribute_MFColor: function (ctx, name, def) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+                x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFColor(def);
         },
         _attribute_MFVec2f: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.MFVec2f.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFVec2f(def);
+                x3dom.fields.MFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFVec2f(def);
         },
         _attribute_MFVec3f: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFVec3f(def);
+                x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFVec3f(def);
         },
         _attribute_MFRotation: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) : new x3dom.fields.MFRotation(def);
+                x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFRotation(def);
         }
     }
 ));

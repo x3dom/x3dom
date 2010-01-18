@@ -925,6 +925,43 @@ x3dom.fields.MFVec2f.prototype.toGL = function() {
 }
 
 
+/** MFInt32 constructor.
+    @class Represents a MFInt32
+  */
+x3dom.fields.MFInt32 = function(array) {
+    if (arguments.length == 0) {
+        
+    }
+    else {
+        array.map( function(v) { this.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFInt32.prototype = new Array;
+
+x3dom.fields.MFInt32.parse = function(str) {
+    var mc = str.match(/([+-]?\d+\s*){1},?\s*/g);
+    var vals = [];
+    for (var i = 0; i < mc.length; ++i) {
+        var c = /^([+-]?\d+)\s*,?\s*$/.exec(mc[i]);
+        if (c[0])
+            vals.push( parseInt(c[1]) );
+    }
+    
+    return new x3dom.fields.MFInt32( vals );    
+}
+
+x3dom.fields.MFInt32.prototype.toGL = function() {
+    var a = [];
+
+    Array.map( this, function(v) {
+        a.push(v);
+    });
+
+    return a;
+}
+
+
 /** MFFloat constructor.
     @class Represents a MFFloat
   */
