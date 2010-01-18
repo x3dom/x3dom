@@ -245,6 +245,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             return false;
         },
 
+		// FIXME; replace by context lookup
         _getNodeByDEF: function (def) {
             // TODO: cache this so it's not so stupidly inefficient
             if (this._DEF == def) {
@@ -2256,11 +2257,12 @@ x3dom.registerNodeType(
 					if (obj.hasOwnProperty(field)) {
 						if (x3dom.isa(node,field.type) && (field.addLink(node)) {
 							node._parentNodes.push(this);
+							this._childNodes.push(node)
 							return true;
 						}
 					}
 				}
-				return true;
+				return false;
 				*/
             },
             removeChild: function (node) {
@@ -2268,12 +2270,20 @@ x3dom.registerNodeType(
             	for (field in this._cf) {
 					if (this._cf.hasOwnProperty(field) && field.rmLink(node)) {
 						for (var i = 0, n = node._parentNodes.length; i < n; i++) {
-							if (node._parentNodes.splice(i,1)) {
-								return true;
+							if (node._parentNode === this) {
+								node._parentNodes.splice(i,1)) {
+								for (j = 0, n = this._childNodes.length; j < n; j++))
+									if (this._childNodes[j] === node) {
+										this._childNodes.splice(j,1);
+										return true;
+									}
+									else
+										return false;
 							}
 						}
 					}
 				}
+				return false;
 				*/
             }
         }
@@ -3144,6 +3154,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             
             //x3dom.debug.logInfo("Child: " + e.target.type + "MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
             
+			// FIXME;
+			// parent.removeChild(child)
            	for (var i = 0; i < parent._childNodes.length; i++) {
            		if (parent._childNodes[i] === child) {
            		  parent._childNodes.splice(i,1);
@@ -3163,6 +3175,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             x3dom.parsingInline = true; // enable special case
             
             var newChild = scene._ctx.setupNodePrototypes(child, scene._ctx);
+
+			// FIXME; 
+			// parent.addChild(newChild);
             parent._childNodes.push(newChild);
             newChild._parentNodes.push(parent);
             
