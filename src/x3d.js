@@ -1024,7 +1024,7 @@ x3dom.registerNodeType(
 			var ringDelta = 2.0 * Math.PI / rings;
 			var sideDelta = 2.0 * Math.PI / sides;
 			var p = [], n = [], t = [], i = [];
-            var a, b;
+            var a, b, theta, phi;
 
 			for (a=0, theta=0; a <= rings; a++, theta+=ringDelta) 
 			{
@@ -3252,11 +3252,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 this._scene.showAll();
             }
             break;
-        case 99: /* c */ 
-			{
-				//
-			}
-			break;
+        //case 99: /* c */ 
+		//	break;
         case 108: /* l, light view */ 
 			{
                 if (this._scene.getLights().length > 0)

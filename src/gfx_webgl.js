@@ -564,7 +564,7 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-        numAttribs = gl.getProgramParameter(sp, gl.ACTIVE_ATTRIBUTES);
+        var numAttribs = gl.getProgramParameter(sp, gl.ACTIVE_ATTRIBUTES);
         
 		for (i=0; i < numAttribs; ++i) {
 			try {
@@ -884,17 +884,15 @@ x3dom.gfx_webgl = (function () {
         sp.bind();
         
         var mat_light = scene.getLightMatrix();
+        var i, n = scene.drawableObjects.length;
         
-        for (var i=0, n=scene.drawableObjects.length; i<n; i++)
+        for (i=0; i<n; i++)
         {
 			var trafo = scene.drawableObjects[i][0];
 			var shape = scene.drawableObjects[i][1];
             
-			//if (!shape._webgl) 
-            {
-                // init of GL objects
-				this.setupShape(gl, shape);
-            }
+            // init of GL objects
+            this.setupShape(gl, shape);
             
 			sp.modelViewMatrix = mat_light.mult(trafo).toGL();
 			sp.modelViewProjectionMatrix = scene.getWCtoLCMatrix().mult(trafo).toGL();
@@ -942,7 +940,7 @@ x3dom.gfx_webgl = (function () {
 			};
 		}
         
-        var i = 0, t0, t1;
+        var t0, t1;
 		
 		// render traversal
 		if (scene.drawableObjects === undefined || !scene.drawableObjects)
@@ -1020,7 +1018,9 @@ x3dom.gfx_webgl = (function () {
 		
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
-		for (i=0, n=scene.drawableObjects.length; i<n; i++)
+        var i, n = scene.drawableObjects.length;
+        
+		for (i=0; i<n; i++)
 		{
 			var trafo = scene.drawableObjects[i][0];
 			var obj3d = scene.drawableObjects[i][1];
@@ -1345,7 +1345,7 @@ x3dom.gfx_webgl = (function () {
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
         
-        r = {};
+        var r = {};
         r.fbo = fbo;
         r.rbo = rb;
         r.tex = tex;

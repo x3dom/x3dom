@@ -233,11 +233,11 @@ x3dom.fields.SFMatrix4.prototype.decompose = function () {
     //   rotateX(x); rotateY(t); rotateZ(z); scale(S); translate(T);
     // does the equivalent transformation
 
-    var T = new SFVec3(this._03, this._13, this._23);
-    var S = new SFVec3(1, 1, 1); // XXX
+    var T = new x3dom.fields.SFVec3(this._03, this._13, this._23);
+    var S = new x3dom.fields.SFVec3(1, 1, 1); // XXX
 
     // http://www.j3d.org/matrix_faq/matrfaq_latest.html
-    var angle_x, angle_y, angle_y, tr_x, tr_y, C;
+    var angle_x, angle_y, angle_z, tr_x, tr_y, C;
     angle_y = Math.asin(this._02);
     C = Math.cos(angle_y);
     if (Math.abs(C) > 0.005) {
