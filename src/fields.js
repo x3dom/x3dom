@@ -29,30 +29,30 @@ x3dom.fields.SFMatrix4f = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, 
         this._20 = _20; this._21 = _21; this._22 = _22; this._23 = _23;
         this._30 = _30; this._31 = _31; this._32 = _32; this._33 = _33;
     }
-}
+};
 
 /** returns 1st base vector (right) */
 x3dom.fields.SFMatrix4f.prototype.e0 = function () {
 	var baseVec = new x3dom.fields.SFVec3f(this._00, this._10, this._20);
 	return baseVec.normalize();
-}
+};
 
 /** returns 2nd base vector (up) */
 x3dom.fields.SFMatrix4f.prototype.e1 = function () {
 	var baseVec = new x3dom.fields.SFVec3f(this._01, this._11, this._21);
 	return baseVec.normalize();
-}
+};
 
 /** returns 3rd base vector (fwd) */
 x3dom.fields.SFMatrix4f.prototype.e2 = function () {
 	var baseVec = new x3dom.fields.SFVec3f(this._02, this._12, this._22);
 	return baseVec.normalize();
-}
+};
 
 /** returns 4th base vector (pos) */
 x3dom.fields.SFMatrix4f.prototype.e3 = function () {
 	return new x3dom.fields.SFVec3f(this._03, this._13, this._23);
-}
+};
 
 /** Returns a SFMatrix4f identity matrix. */
 x3dom.fields.SFMatrix4f.identity = function () {
@@ -62,7 +62,7 @@ x3dom.fields.SFMatrix4f.identity = function () {
         0, 0, 1, 0,
         0, 0, 0, 1
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.translation = function (vec) {
     return new x3dom.fields.SFMatrix4f(
@@ -71,7 +71,7 @@ x3dom.fields.SFMatrix4f.translation = function (vec) {
         0, 0, 1, vec.z,
         0, 0, 0, 1
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.rotationX = function (a) {
     var c = Math.cos(a);
@@ -82,7 +82,7 @@ x3dom.fields.SFMatrix4f.rotationX = function (a) {
         0, s, c, 0,
         0, 0, 0, 1
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.rotationY = function (a) {
     var c = Math.cos(a);
@@ -93,7 +93,7 @@ x3dom.fields.SFMatrix4f.rotationY = function (a) {
         -s, 0, c, 0,
         0, 0, 0, 1
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.rotationZ = function (a) {
     var c = Math.cos(a);
@@ -104,7 +104,7 @@ x3dom.fields.SFMatrix4f.rotationZ = function (a) {
         0, 0, 1, 0,
         0, 0, 0, 1
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.scale = function (vec) {
     return new x3dom.fields.SFMatrix4f(
@@ -113,19 +113,19 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
         0, 0, vec.z, 0,
         0, 0, 0, 1
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.setTranslate = function (vec) {
 	this._03 = vec.x;
 	this._13 = vec.y;
 	this._23 = vec.z;
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.setScale = function (vec) {
 	this._00 = vec.x;
 	this._11 = vec.y;
 	this._22 = vec.z;
-}
+};
 
 x3dom.fields.SFMatrix4f.parseRotation = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
@@ -146,7 +146,7 @@ x3dom.fields.SFMatrix4f.parseRotation = function (str) {
         t*x*z+s*y, t*y*z-s*x, t*z*z+c,   0,
         0,         0,         0,         1
     ).transpose();
-}
+};
 
 x3dom.fields.SFMatrix4f.parse = function (str) {
     var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
@@ -163,7 +163,7 @@ x3dom.fields.SFMatrix4f.parse = function (str) {
         x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
         return x3dom.fields.SFMatrix4f.identity();
     }
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
     return new x3dom.fields.SFMatrix4f(
@@ -184,7 +184,7 @@ x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
         this._30*that._02+this._31*that._12+this._32*that._22+this._33*that._32, 
         this._30*that._03+this._31*that._13+this._32*that._23+this._33*that._33
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function (vec) {
     return new x3dom.fields.SFVec3f(
@@ -192,7 +192,7 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixPnt = function (vec) {
         this._10*vec.x + this._11*vec.y + this._12*vec.z + this._13,
         this._20*vec.x + this._21*vec.y + this._22*vec.z + this._23
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function (vec) {
     return new x3dom.fields.SFVec3f(
@@ -200,7 +200,7 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function (vec) {
         this._10*vec.x + this._11*vec.y + this._12*vec.z,
         this._20*vec.x + this._21*vec.y + this._22*vec.z
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     var w = this._30*vec.x + this._31*vec.y + this._32*vec.z + this._33;
@@ -210,7 +210,7 @@ x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
         (this._10*vec.x + this._11*vec.y + this._12*vec.z + this._13) * w,
         (this._20*vec.x + this._21*vec.y + this._22*vec.z + this._23) * w
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.transpose = function () {
     return new x3dom.fields.SFMatrix4f(
@@ -219,7 +219,7 @@ x3dom.fields.SFMatrix4f.prototype.transpose = function () {
         this._02, this._12, this._22, this._32,
         this._03, this._13, this._23, this._33
     );
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.toGL = function () {
     return [
@@ -1019,7 +1019,70 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
     return a;
 }
 
+/** SFNode constructor.
+    @class Represents a MFFloat
+  */
+x3dom.fields.SFNode = function(type) {
+	this.type = type;
+	this.node = null;
+};
 
+x3dom.fields.SFNode.prototype.hasLink = function(node) {
+	return (this.node === node);
+}
+
+x3dom.fields.SFNode.prototype.addLink = function(node) {
+	this.node = node;
+	return true;
+}
+
+x3dom.fields.SFNode.prototype.rmLink = function(node) {
+	if (this.node === node) {
+		this.node = null
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
+/** MFNode constructor.
+    @class Represents a MFFloat
+  */
+x3dom.fields.MFNode = function(type) {
+	this.type = type;
+	this.nodes = [];
+};
+
+x3dom.fields.MFNode.prototype.hasLink = function(node) {
+	for (var i = 0, n = this.nodes.length; i < n; i++) {
+		if (this.nodes[i] === node) {
+			return true;
+		}
+	}
+	return false;
+}
+
+x3dom.fields.MFNode.prototype.addLink = function(node) {
+	this.nodes.push (node);
+	return true;
+}
+
+x3dom.fields.MFNode.prototype.rmLink = function(node) {
+	for (var i = 0, n = this.nodes.length; i < n; i++) {
+		if (this.nodes[i] === node) {
+			this.nodes.splice(i,1);
+			return true;
+		}
+	}
+	return false;
+}
+
+x3dom.fields.MFNode.prototype.length = function() {
+	return this.nodes.length;
+}
+
+x3dom.fields.MF
 /** Line constructor.
     @class Represents a Line (as internal helper).
   */
