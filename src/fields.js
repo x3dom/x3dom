@@ -230,9 +230,9 @@ x3dom.fields.SFMatrix4f.prototype.toGL = function () {
     ];
 }
 
-x3dom.fields.SFMatrix4f.prototype.decompose = function () {
+x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scale) {
     // Return [ T, S, x, y, z ] such that
-    //   rotateX(x); rotateY(t); rotateZ(z); scale(S); translate(T);
+    //   rotateX(x); rotateY(y); rotateZ(z); scale(S); translate(T);
     // does the equivalent transformation
 
     var T = new x3dom.fields.SFVec3f(this._03, this._13, this._23);
@@ -242,6 +242,7 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function () {
     var angle_x, angle_y, angle_z, tr_x, tr_y, C;
     angle_y = Math.asin(this._02);
     C = Math.cos(angle_y);
+    
     if (Math.abs(C) > 0.005) {
       tr_x = this._22 / C;
       tr_y = -this._12 / C;
@@ -249,14 +250,34 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function () {
       tr_x =  this._00 / C;
       tr_y = -this._01 / C;
       angle_z = Math.atan2(tr_y, tr_x);
-    } else {
+    }
+    else {
       angle_x = 0;
       tr_x = this._11;
       tr_y = this._10;
       angle_z = Math.atan2(tr_y, tr_x);
     }
-
-    return [ T, S, angle_x, angle_y, angle_z ];
+    
+    //var rot = x3dom.fields.SFMatrix4f.rotationX(angle_z).
+    //     mult(x3dom.fields.SFMatrix4f.rotationY(angle_y)).
+    //     mult(x3dom.fields.SFMatrix4f.rotationZ(angle_x));
+    var R = new x3dom.fields.Quaternion(
+        -Math.cos((angle_x - angle_z)/2) * Math.sin(angle_y/2),
+         Math.sin((angle_x - angle_z)/2) * Math.sin(angle_y/2),
+        -Math.sin((angle_x + angle_z)/2) * Math.cos(angle_y/2),
+         Math.cos((angle_x + angle_z)/2) * Math.cos(angle_y/2) );
+    
+    translation.x = T.x;
+    translation.y = T.y;
+    translation.z = T.z;
+    rotation.x = R.x;
+    rotation.y = R.y;
+    rotation.z = R.z;
+    rotation.w = R.w;
+    scale.x = S.x;
+    scale.y = S.y;
+    scale.z = S.z;
+    //return [ T, S, angle_x, angle_y, angle_z ];
 }
 
 x3dom.fields.SFMatrix4f.prototype.det3 = function (
