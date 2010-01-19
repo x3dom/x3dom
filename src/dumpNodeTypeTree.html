@@ -1,0 +1,69 @@
+<!DOCTYPE html >
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>x3dom nodetype tree</title>
+		<style>
+		p.case { clear: both; border-top: 1px solid #888; }
+		</style>
+        <link rel="stylesheet" type="text/css" href="x3dom.css" />
+	</head>
+       
+<body style="background-color:#E0E0E0;">
+
+    <h1>x3dom nodetype tree</h1>				
+	<div id="types"></div>
+	
+	<script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+	<script type="text/javascript" src="gfx_webgl.js"></script>
+	<script type="text/javascript" src="x3d.js"></script>
+	<script type="text/javascript" src="fields.js"></script>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
+    <script type="text/javascript">
+    
+        function objInArray(array, obj) {
+            for(var i=0; i<array.length; i++) {
+                if (array[i] === obj) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        function dumpType(t, indent) {
+            for (var i=0; i<indent; i++) {
+                $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");                    
+            }
+            
+            $("#types").append(t + "<br/>");
+            for (var i in x3dom.nodeTypes[t].childTypes[t]) {
+                dumpType(x3dom.nodeTypes[t].childTypes[t][i], indent+1); 
+            }                                
+        }
+                        
+        $(document).ready( function() {                        
+
+            for (var tn in x3dom.nodeTypes) {                
+                var t = x3dom.nodeTypes[tn];
+                
+                if (t.childTypes === undefined)
+                    t.childTypes = {};
+                
+                while (t.superClass) {     
+                    if (t.superClass.childTypes[t.superClass.typeName] === undefined) {
+                        t.superClass.childTypes[t.superClass.typeName] = [];
+                    }
+                    if (!objInArray( t.superClass.childTypes[t.superClass.typeName], t.typeName))
+                        t.superClass.childTypes[t.superClass.typeName].push(t.typeName);                    
+                    t = t.superClass;
+                }
+
+            }            
+                        
+            dumpType("X3DNode", 0); 
+        });
+    </script>
+
+</body>
+</html>

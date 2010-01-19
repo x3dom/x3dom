@@ -39,12 +39,14 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
         x3dom.components[componentName][nodeTypeName] = nodeDef;
         x3dom.nodeTypes[nodeTypeName] = nodeDef;
         x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
+        x3dom.nodeTypesLC[nodeTypeName.toLowerCase()].typeName = nodeTypeName;
     }
     else {
         x3dom.debug.logInfo("Using component [" + componentName + "]");
         x3dom.components[componentName][nodeTypeName] = nodeDef;
         x3dom.nodeTypes[nodeTypeName] = nodeDef;
         x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
+        x3dom.nodeTypesLC[nodeTypeName.toLowerCase()].typeName = nodeTypeName;
     }
 };
 
