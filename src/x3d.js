@@ -383,6 +383,17 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                 x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.Quaternion(x, y, z, a);
         },
+        _attribute_SFMatrix4f: function (ctx, name, _00, _01, _02, _03, 
+                                                    _10, _11, _12, _13, 
+                                                    _20, _21, _22, _23, 
+                                                    _30, _31, _32, _33) {
+            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+                x3dom.fields.SFMatrix4f.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.SFMatrix4f(_00, _01, _02, _03, 
+                                            _10, _11, _12, _13, 
+                                            _20, _21, _22, _23, 
+                                            _30, _31, _32, _33);
+        },
         
         _attribute_MFString: function (ctx, name, def) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
@@ -1922,6 +1933,11 @@ x3dom.registerNodeType(
 			this._attribute_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
             this._attribute_SFFloat(ctx, 'zNear', 0.1);
             this._attribute_SFFloat(ctx, 'zFar', 100000);
+            
+            this._attribute_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
+                                                      0, 1, 0, 0,
+                                                      0, 0, 1, 0,
+                                                      0, 0, 0, 1);
 			
             this._viewMatrix = this._orientation.toMatrix().transpose().
 				mult(x3dom.fields.SFMatrix4f.translation(this._position.negate()));
@@ -2306,6 +2322,11 @@ x3dom.registerNodeType(
 			// BUG? default of rotation according to spec is (0, 0, 1, 0)
 			//		but results sometimes are wrong if not (0, 0, 0, 1)
 			// TODO; check quaternion/ matrix code and state init...
+            
+            this._attribute_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
+                                                      0, 1, 0, 0,
+                                                      0, 0, 1, 0,
+                                                      0, 0, 0, 1);
             
             this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
 							mult(x3dom.fields.SFMatrix4f.translation(this._center)).

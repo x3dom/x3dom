@@ -1019,8 +1019,9 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
     return a;
 }
 
+
 /** SFNode constructor.
-    @class Represents a MFFloat
+    @class Represents a SFNode
   */
 x3dom.fields.SFNode = function(type) {
 	this.type = type;
@@ -1038,7 +1039,7 @@ x3dom.fields.SFNode.prototype.addLink = function(node) {
 
 x3dom.fields.SFNode.prototype.rmLink = function(node) {
 	if (this.node === node) {
-		this.node = null
+		this.node = null;
 		return true;
 	}
 	else {
@@ -1047,7 +1048,7 @@ x3dom.fields.SFNode.prototype.rmLink = function(node) {
 }
 
 /** MFNode constructor.
-    @class Represents a MFFloat
+    @class Represents a MFNode
   */
 x3dom.fields.MFNode = function(type) {
 	this.type = type;
@@ -1082,7 +1083,7 @@ x3dom.fields.MFNode.prototype.length = function() {
 	return this.nodes.length;
 }
 
-x3dom.fields.MF
+
 /** Line constructor.
     @class Represents a Line (as internal helper).
   */
