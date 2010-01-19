@@ -679,6 +679,10 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
+            
+            this._attribute_MFString(ctx, 'url', []);
+            this._attribute_SFBool(ctx, 'repeatS', true);
+            this._attribute_SFBool(ctx, 'repeatT', true);
         }
     )
 );
@@ -689,10 +693,24 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DTextureNode,
         function (ctx) {
             x3dom.nodeTypes.ImageTexture.superClass.call(this, ctx);
+        }
+    )
+);
+
+x3dom.registerNodeType(
+    "MovieTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.MovieTexture.superClass.call(this, ctx);
 			
-            this._attribute_MFString(ctx, 'url', []);
-            this._attribute_SFBool(ctx, 'repeatS', true);
-            this._attribute_SFBool(ctx, 'repeatT', true);
+            this._attribute_SFBool(ctx, 'loop', false);
+            this._attribute_SFFloat(ctx, 'speed', 1.0);
+            
+            this._video = null;
+            this._intervalID = 0;
+        },
+        {
         }
     )
 );
@@ -3335,7 +3353,7 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
     if (!ctx)
         return;
     ctx.renderScene(this._scene);
-}
+};
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
     this._scene.ondrag(x, y, buttonState);

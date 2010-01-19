@@ -727,29 +727,75 @@ x3dom.gfx_webgl = (function () {
 			
 			if (tex)
 			{
-				var texture = gl.createTexture();
-				
-				var image = new Image();
-				image.src = tex._url;
-				
-				image.onload = function()
-				{
-					shape._webgl.texture = texture;
-					//x3dom.debug.logInfo(texture + " tex url: " + tex._url);
-					
-					//gl.enable(gl.TEXTURE_2D);
-					//gl.activeTexture(gl.TEXTURE0);
-					gl.bindTexture(gl.TEXTURE_2D, texture);
-					gl.texImage2D(gl.TEXTURE_2D, 0, image);
-					
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-					//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.REPEAT);
-					gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.REPEAT);
-					//gl.generateMipmap(gl.TEXTURE_2D);
-					//gl.bindTexture(gl.TEXTURE_2D,0);
-				};
+                var texture = gl.createTexture();
+                
+                if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture))
+                {
+                    tex._video = document.createElement('video');
+                    tex._video.setAttribute('autobuffer', 'true');
+                    tex._video.setAttribute('src', tex._url);
+                    var p = document.getElementsByTagName('body')[0];
+                    p.appendChild(tex._video);
+                    tex._video.style.display = "none";
+                    
+                    var updateMovie = function()
+                    {
+                        gl.bindTexture(gl.TEXTURE_2D, texture);
+                        gl.texImage2D(gl.TEXTURE_2D, 0, tex._video, false);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                        //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+                        //gl.generateMipmap(gl.TEXTURE_2D);
+                        gl.bindTexture(gl.TEXTURE_2D, null);
+                    };
+                    
+                    var startVideo = function()
+                    {
+                        shape._webgl.texture = texture;
+                        x3dom.debug.logInfo(texture + " video tex url: " + tex._url);
+                        
+                        tex._video.play();
+                        tex._intervalID = setInterval(updateMovie, 15);
+                    };
+                    
+                    var videoDone = function()
+                    {
+                        clearInterval(tex._intervalID);
+                        
+                        if (tex._loop === true)
+                        {
+                            tex._video.play();
+                            tex._intervalID = setInterval(updateMovie, 15);
+                        }
+                    };
+                    
+                    // Start listening for the canplaythrough event, so we do not
+                    // start playing the video until we can do so without stuttering
+                    tex._video.addEventListener("canplaythrough", startVideo, true);
+
+                    // Start listening for the ended event, so we can stop the
+                    // texture update when the video is finished playing
+                    tex._video.addEventListener("ended", videoDone, true);
+                }
+                else
+                {
+                    var image = new Image();
+                    image.src = tex._url;
+                    
+                    image.onload = function()
+                    {
+                        shape._webgl.texture = texture;
+                        //x3dom.debug.logInfo(texture + " load tex url: " + tex._url);
+                        
+                        gl.bindTexture(gl.TEXTURE_2D, texture);
+                        gl.texImage2D(gl.TEXTURE_2D, 0, image);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                        //gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+                        //gl.generateMipmap(gl.TEXTURE_2D);
+                        gl.bindTexture(gl.TEXTURE_2D, null);
+                    };
+                }
 			}
             
 			shape._webgl = {
