@@ -228,7 +228,7 @@ x3dom.fields.SFMatrix4f.prototype.toGL = function () {
         this._02, this._12, this._22, this._32,
         this._03, this._13, this._23, this._33
     ];
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scale) {
     // Return [ T, S, x, y, z ] such that
@@ -278,14 +278,14 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation,
     scale.y = S.y;
     scale.z = S.z;
     //return [ T, S, angle_x, angle_y, angle_z ];
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.det3 = function (
 				a1, a2, a3, b1, b2, b3, c1, c2, c3) {
     var d = (a1 * b2 * c3) + (a2 * b3 * c1) + (a3 * b1 * c2) -
 			(a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1);
 	return d;
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.det = function () {
     var a1, a2, a3, a4,
@@ -318,7 +318,7 @@ x3dom.fields.SFMatrix4f.prototype.det = function () {
             + c1 * this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4)
             - d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
 	return d;
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.inverse = function () {
     var a1, a2, a3, a4,
@@ -374,7 +374,7 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
     -this.det3(a1, a2, a3, b1, b2, b3, d1, d2, d3) * rDet,
     +this.det3(a1, a2, a3, b1, b2, b3, c1, c2, c3) * rDet
 	);
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.toString = function () {
     return '[SFMatrix4f ' +
@@ -382,7 +382,7 @@ x3dom.fields.SFMatrix4f.prototype.toString = function () {
         this._10+', '+this._11+', '+this._12+', '+this._13+'; '+
         this._20+', '+this._21+', '+this._22+', '+this._23+'; '+
         this._30+', '+this._31+', '+this._32+', '+this._33+']';
-}
+};
 
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
     var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
@@ -397,7 +397,7 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
         x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
     }
     return this;
-}
+};
 
 
 /** SFVec2f constructor.
@@ -411,67 +411,67 @@ x3dom.fields.SFVec2f = function(x, y) {
         this.x = x;
         this.y = y;
     }
-}
+};
 
 x3dom.fields.SFVec2f.parse = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     return new x3dom.fields.SFVec2f(+m[1], +m[2]);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.add = function (that) {
     return new x3dom.fields.SFVec2f(this.x+that.x, this.y+that.y);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.subtract = function (that) {
     return new x3dom.fields.SFVec2f(this.x-that.x, this.y-that.y);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.negate = function () {
     return new x3dom.fields.SFVec2f(-this.x, -this.y);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.dot = function (that) {
     return this.x * that.x + this.y * that.y;
-}
+};
 
 x3dom.fields.SFVec2f.prototype.reflect = function (n) {
     var d2 = this.dot(n)*2;
     return new x3dom.fields.SFVec2f(this.x-d2*n.x, this.y-d2*n.y);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.normalize = function (that) {
     var n = this.length();
     if (n) n = 1.0 / n;
     return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.multiply = function (n) {
     return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.divide = function (n) {
     var denom = n ? (1.0 / n) : 1.0;
     return new x3dom.fields.SFVec2f(this.x*denom, this.y*denom);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.length = function() {
     return Math.sqrt((this.x*this.x) + (this.y*this.y));
-}
+};
 
 x3dom.fields.SFVec2f.prototype.toGL = function () {
     return [ this.x, this.y ];
-}
+};
 
 x3dom.fields.SFVec2f.prototype.toString = function () {
     return "{ x " + this.x + " y " + this.y + " }";
-}
+};
 
 x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     this.x = +m[1];
     this.y = +m[2];
     return this;
-}
+};
 
 
 /** SFVec3f constructor.
@@ -486,66 +486,66 @@ x3dom.fields.SFVec3f = function(x, y, z) {
         this.y = y;
         this.z = z;
     }
-}
+};
 
 x3dom.fields.SFVec3f.parse = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     return new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.add = function (that) {
     return new x3dom.fields.SFVec3f(this.x + that.x, this.y + that.y, this.z + that.z);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.subtract = function (that) {
     return new x3dom.fields.SFVec3f(this.x - that.x, this.y - that.y, this.z - that.z);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.negate = function () {
     return new x3dom.fields.SFVec3f(-this.x, -this.y, -this.z);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.dot = function (that) {
     return (this.x*that.x + this.y*that.y + this.z*that.z);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.cross = function (that) {
     return new x3dom.fields.SFVec3f( this.y*that.z - this.z*that.y, 
                                     this.z*that.x - this.x*that.z, 
                                     this.x*that.y - this.y*that.x );
-}
+};
 
 x3dom.fields.SFVec3f.prototype.reflect = function (n) {
     var d2 = this.dot(n)*2;
     return new x3dom.fields.SFVec3f(this.x - d2*n.x, this.y - d2*n.y, this.z - d2*n.z);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.length = function() {
     return Math.sqrt((this.x*this.x) + (this.y*this.y) + (this.z*this.z));
-}
+};
 
 x3dom.fields.SFVec3f.prototype.normalize = function (that) {
     var n = this.length();
     if (n) n = 1.0 / n;
     return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.multiply = function (n) {
     return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
-}
+};
 
 x3dom.fields.SFVec2f.prototype.divide = function (n) {
     var denom = n ? (1.0 / n) : 1.0;
     return new x3dom.fields.SFVec2f(this.x*denom, this.y*denom, this.z*denom);
-}
+};
 
 x3dom.fields.SFVec3f.prototype.toGL = function () {
     return [ this.x, this.y, this.z ];
-}
+};
 
 x3dom.fields.SFVec3f.prototype.toString = function () {
     return "{ x " + this.x + " y " + this.y + " z " + this.z + " }";
-}
+};
 
 x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
@@ -553,7 +553,7 @@ x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
     this.y = +m[2];
     this.z = +m[3];
     return this;
-}
+};
 
 
 /** Quaternion constructor.
@@ -564,7 +564,7 @@ x3dom.fields.Quaternion = function(x, y, z, w) {
     this.y = y;
     this.z = z;
     this.w = w;
-}
+};
 
 x3dom.fields.Quaternion.prototype.mult = function (that) {
     return new x3dom.fields.Quaternion(
@@ -573,12 +573,12 @@ x3dom.fields.Quaternion.prototype.mult = function (that) {
         this.w*that.z + this.z*that.w + this.x*that.y - this.y*that.x,
         this.w*that.w - this.x*that.x - this.y*that.y - this.z*that.z
     );
-}
+};
 
 x3dom.fields.Quaternion.parseAxisAngle = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     return x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
-}
+};
 
 x3dom.fields.Quaternion.axisAngle = function (axis, a) {
 	var t = axis.length();
@@ -593,7 +593,7 @@ x3dom.fields.Quaternion.axisAngle = function (axis, a) {
 	{
 		return new x3dom.fields.Quaternion(0, 0, 0, 1);
 	}
-}
+};
 
 x3dom.fields.Quaternion.prototype.toMatrix = function () {
     var xx = this.x * this.x * 2;
@@ -612,34 +612,34 @@ x3dom.fields.Quaternion.prototype.toMatrix = function () {
         xz - wy, yz + wx, 1 - (xx + yy), 0,
         0, 0, 0, 1
     );
-}
+};
 
 x3dom.fields.Quaternion.prototype.dot = function (that) {
     return this.x*that.x + this.y*that.y + this.z*that.z + this.w*that.w;
-}
+};
 
 x3dom.fields.Quaternion.prototype.add = function (that) {
     return new x3dom.fields.Quaternion(this.x + that.x, this.y + that.y, this.z + that.z, this.w + that.w);
-}
+};
 
 x3dom.fields.Quaternion.prototype.subtract = function (that) {
     return new x3dom.fields.Quaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
-}
+};
 
 x3dom.fields.Quaternion.prototype.multScalar = function (s) {
     return new x3dom.fields.Quaternion(this.x*s, this.y*s, this.z*s, this.w*s);
-}
+};
 
 x3dom.fields.Quaternion.prototype.normalize = function (that) {
     var d2 = this.dot(that);
     var id = 1.0;
     if (d2) id = 1.0 / Math.sqrt(d2);
     return new x3dom.fields.Quaternion(this.x*id, this.y*id, this.z*id, this.w*id);
-}
+};
 
 x3dom.fields.Quaternion.prototype.negate = function() {
     return new x3dom.fields.Quaternion(-this.x, -this.y, -this.z, -this.w);
-}
+};
 
 x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
     // calculate the cosine
@@ -677,7 +677,7 @@ x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
 
     // build the new quaternion
     return this.multScalar(scalerot0).add(rot1.multScalar(scalerot1));
-}
+};
 
 x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
     var from = fromVec.normalize();
@@ -729,11 +729,11 @@ x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
     s = Math.sqrt(0.5 * (1.0 + cost));
     
     return new x3dom.fields.Quaternion(axis.x, axis.y, axis.z, s);
-}
+};
 
 x3dom.fields.Quaternion.prototype.toString = function () {
     return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
-}
+};
 
 x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
@@ -743,8 +743,7 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
     this.z = quat.z;
     this.w = quat.w;
     return this;
-}
-
+};
 
 /** SFColor constructor.
     @class Represents a SFColor
@@ -758,30 +757,30 @@ x3dom.fields.SFColor = function(r, g, b) {
         this.g = g;
         this.b = b;
     }    
-}
+};
 
 x3dom.fields.SFColor.parse = function(str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     return new x3dom.fields.SFColor( +m[1], +m[2], +m[3] );
-}
+};
 
 x3dom.fields.SFColor.prototype.setHSV = function (h, s, v) {
     x3dom.debug.logInfo("SFColor.setHSV() NYI");
-}
+};
 
 x3dom.fields.SFColor.prototype.getHSV = function () {
     var h = 0, s = 0, v = 0;
     x3dom.debug.logInfo("SFColor.getHSV() NYI");
     return [ h, s, v ];
-}
+};
 
 x3dom.fields.SFColor.prototype.toGL = function () {
     return [ this.r, this.g, this.b ];
-}
+};
 
 x3dom.fields.SFColor.prototype.toString = function() {
     return "{ r " + this.r + " g " + this.g + " b " + this.b + " }";
-}
+};
 
 x3dom.fields.SFColor.prototype.setValueByStr = function(str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
@@ -789,7 +788,7 @@ x3dom.fields.SFColor.prototype.setValueByStr = function(str) {
     this.g = +m[2];
     this.b = +m[3];
     return this;
-}
+};
   
 
 /** MFColor constructor.
@@ -817,7 +816,7 @@ x3dom.fields.MFColor.parse = function(str) {
 
     return new x3dom.fields.MFColor( colors );
     
-}
+};
 
 x3dom.fields.MFColor.prototype.toGL = function() {
     var a = [];
@@ -829,7 +828,7 @@ x3dom.fields.MFColor.prototype.toGL = function() {
     });
 
     return a;
-}
+};
 
 
 /** MFRotation constructor.
@@ -857,7 +856,7 @@ x3dom.fields.MFRotation.parse = function(str) {
     
     // holds the quaternion representation as needed by interpolators etc.
     return new x3dom.fields.MFRotation( vecs );    
-}
+};
 
 x3dom.fields.MFRotation.prototype.toGL = function() {
     var a = [];
@@ -865,7 +864,7 @@ x3dom.fields.MFRotation.prototype.toGL = function() {
     //TODO
 
     return a;
-}
+};
 
 
 /** MFVec3f constructor.
@@ -892,7 +891,7 @@ x3dom.fields.MFVec3f.parse = function(str) {
     }
 
     return new x3dom.fields.MFVec3f( vecs );    
-}
+};
 
 x3dom.fields.MFVec3f.prototype.toGL = function() {
     var a = [];
@@ -904,7 +903,7 @@ x3dom.fields.MFVec3f.prototype.toGL = function() {
     });
 
     return a;
-}
+};
 
 
 
@@ -932,7 +931,7 @@ x3dom.fields.MFVec2f.parse = function(str) {
     }
 
     return new x3dom.fields.MFVec2f( vecs );    
-}
+};
 
 x3dom.fields.MFVec2f.prototype.toGL = function() {
     var a = [];
@@ -943,7 +942,7 @@ x3dom.fields.MFVec2f.prototype.toGL = function() {
     });
 
     return a;
-}
+};
 
 
 /** MFInt32 constructor.
@@ -970,7 +969,7 @@ x3dom.fields.MFInt32.parse = function(str) {
     }
     
     return new x3dom.fields.MFInt32( vals );    
-}
+};
 
 x3dom.fields.MFInt32.prototype.toGL = function() {
     var a = [];
@@ -980,7 +979,7 @@ x3dom.fields.MFInt32.prototype.toGL = function() {
     });
 
     return a;
-}
+};
 
 
 /** MFFloat constructor.
@@ -1007,7 +1006,7 @@ x3dom.fields.MFFloat.parse = function(str) {
     }
     
     return new x3dom.fields.MFFloat( vals );    
-}
+};
 
 x3dom.fields.MFFloat.prototype.toGL = function() {
     var a = [];
@@ -1017,7 +1016,7 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
     });
 
     return a;
-}
+};
 
 
 /** SFNode constructor.
@@ -1030,12 +1029,12 @@ x3dom.fields.SFNode = function(type) {
 
 x3dom.fields.SFNode.prototype.hasLink = function(node) {
 	return (this.node === node);
-}
+};
 
 x3dom.fields.SFNode.prototype.addLink = function(node) {
 	this.node = node;
 	return true;
-}
+};
 
 x3dom.fields.SFNode.prototype.rmLink = function(node) {
 	if (this.node === node) {
@@ -1045,7 +1044,7 @@ x3dom.fields.SFNode.prototype.rmLink = function(node) {
 	else {
 		return false;
 	}
-}
+};
 
 /** MFNode constructor.
     @class Represents a MFNode
@@ -1062,12 +1061,12 @@ x3dom.fields.MFNode.prototype.hasLink = function(node) {
 		}
 	}
 	return false;
-}
+};
 
 x3dom.fields.MFNode.prototype.addLink = function(node) {
 	this.nodes.push (node);
 	return true;
-}
+};
 
 x3dom.fields.MFNode.prototype.rmLink = function(node) {
 	for (var i = 0, n = this.nodes.length; i < n; i++) {
@@ -1077,11 +1076,11 @@ x3dom.fields.MFNode.prototype.rmLink = function(node) {
 		}
 	}
 	return false;
-}
+};
 
 x3dom.fields.MFNode.prototype.length = function() {
 	return this.nodes.length;
-}
+};
 
 
 /** Line constructor.
@@ -1106,12 +1105,12 @@ x3dom.fields.Line = function(pos, dir)
         
         this.dir = new x3dom.fields.SFVec3f(dir.x*n, dir.y*n, dir.z*n);
     }
-}
+};
 
 x3dom.fields.Line.prototype.toString = function () {
     var str = 'Line: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
     return str;
-}
+};
 
 /** intersect line with box volume given by low and high */
 x3dom.fields.Line.prototype.intersect = function(low, high)
@@ -1224,4 +1223,4 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
     this.exit  = out;
 
     return (isect-out < Eps);
-}
+};
