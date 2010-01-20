@@ -965,7 +965,7 @@ x3dom.fields.MFInt32.parse = function(str) {
     for (var i = 0; i < mc.length; ++i) {
         var c = /^([+-]?\d+)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            vals.push( parseInt(c[1]) );
+            vals.push( parseInt(c[1],10) );
     }
     
     return new x3dom.fields.MFInt32( vals );    

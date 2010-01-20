@@ -332,9 +332,9 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         
 		_attribute_SFInt32: function (ctx, name, n) {
             this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
-                parseInt(ctx.xmlNode.getAttribute(name)) : n;
+                parseInt(ctx.xmlNode.getAttribute(name),10) : n;
             this['_'+name].setValueByStr = function(str) {
-                this['_'+name] = parseInt(str);
+                this['_'+name] = parseInt(str,10);
             };
         },
         _attribute_SFFloat: function (ctx, name, n) {
@@ -468,6 +468,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
     
+            this._attribute_SFNode ('material', x3dom.nodeTypes.Material);
+			this._attribute_SFNode ('geometry', x3dom.nodeTypes.X3DGeometryNode);
+						
             var material = null;
 			var texture = null;
             var textureTransform = null;
@@ -1460,7 +1463,7 @@ x3dom.registerNodeType(
             //restore current position in graph!
             ctx.xmlNode = this._xmlNode;
 			
-			var t0 = new Date().getTime();
+			var time0 = new Date().getTime();
 			
             var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
 			var normalInd, texCoordInd, colorInd;
@@ -1713,9 +1716,9 @@ x3dom.registerNodeType(
 			} // if isMulti
 			else
 			{
-				var t = 0, n0, n1, n2;
+				// var t = 0, n0, n1, n2;
 				
-				for (var i = 0; i < indexes.length; ++i) 
+				for ( i = 0; i < indexes.length; ++i) 
 				{
 					// Convert non-triangular polygons to a triangle fan
 					// (TODO: this assumes polygons are convex)
@@ -1754,8 +1757,8 @@ x3dom.registerNodeType(
 			
 			this._mesh._invalidate = true;
 			
-			var t1 = new Date().getTime() - t0;
-			//x3dom.debug.logInfo("Mesh load time: " + t1 + " ms");
+			var time1 = new Date().getTime() - time0;
+			//x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
 			
 			// TODO: fixme, what about geoProperty nodes?
             // Coordinate           - X3DCoordinateNode         - X3DGeometricPropertyNode 
@@ -2326,53 +2329,18 @@ x3dom.registerNodeType(
     )
 );
 
-
-// x3dom.Transform = defineClass(x3dom.X3DGroupingNode,
+// ### X3DTransformNode ###
 x3dom.registerNodeType(
-    "Transform",
+    "X3DTransformNode",
     "Grouping",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.Transform.superClass.call(this, ctx);
-			this._attribute_SFVec3f(ctx, 'center', 0, 0, 0);
-            this._attribute_SFVec3f(ctx, 'translation', 0, 0, 0);
-            this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
-            this._attribute_SFVec3f(ctx, 'scale', 1, 1, 1);
-			this._attribute_SFRotation(ctx, 'scaleOrientation', 0, 0, 0, 1);
-			// BUG? default of rotation according to spec is (0, 0, 1, 0)
-			//		but results sometimes are wrong if not (0, 0, 0, 1)
-			// TODO; check quaternion/ matrix code and state init...
+            x3dom.nodeTypes.X3DTransformNode.superClass.call(this, ctx);
             
-            this._attribute_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
-                                                      0, 1, 0, 0,
-                                                      0, 0, 1, 0,
-                                                      0, 0, 0, 1);
-            
-            this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
-							mult(x3dom.fields.SFMatrix4f.translation(this._center)).
-							mult(this._rotation.toMatrix()).
-							mult(this._scaleOrientation.toMatrix()).
-							mult(x3dom.fields.SFMatrix4f.scale(this._scale)).
-							mult(this._scaleOrientation.toMatrix().inverse()).
-							mult(x3dom.fields.SFMatrix4f.translation(this._center.negate()));
+			// links the aktuall matrix
+            this._trafo = null;
         },
-        {
-            _fieldChanged: function (fieldName) {
-                if (fieldName == "_matrix") {
-                    this._trafo = this._matrix;
-                }
-                else {
-                    // P' = T * C * R * SR * S * -SR * -C * P
-                    this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
-                                mult(x3dom.fields.SFMatrix4f.translation(this._center)).
-                                mult(this._rotation.toMatrix()).
-                                mult(this._scaleOrientation.toMatrix()).
-                                mult(x3dom.fields.SFMatrix4f.scale(this._scale)).
-                                mult(this._scaleOrientation.toMatrix().inverse()).
-                                mult(x3dom.fields.SFMatrix4f.translation(this._center.negate()));
-                }
-            },
-            
+        {   
             _transformMatrix: function(transform) {
                 return transform.mult(this._trafo);
             },
@@ -2461,6 +2429,77 @@ x3dom.registerNodeType(
     )
 );
 
+// ### Transform ###
+x3dom.registerNodeType(
+    "Transform",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DTransformNode,
+        function (ctx) {
+            x3dom.nodeTypes.Transform.superClass.call(this, ctx);
+			this._attribute_SFVec3f(ctx, 'center', 0, 0, 0);
+            this._attribute_SFVec3f(ctx, 'translation', 0, 0, 0);
+            this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
+            this._attribute_SFVec3f(ctx, 'scale', 1, 1, 1);
+			this._attribute_SFRotation(ctx, 'scaleOrientation', 0, 0, 0, 1);
+			// BUG? default of rotation according to spec is (0, 0, 1, 0)
+			//		but results sometimes are wrong if not (0, 0, 0, 1)
+			// TODO; check quaternion/ matrix code and state init...
+            
+            this._attribute_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
+                                                      0, 1, 0, 0,
+                                                      0, 0, 1, 0,
+                                                      0, 0, 0, 1);
+            
+            this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
+							mult(x3dom.fields.SFMatrix4f.translation(this._center)).
+							mult(this._rotation.toMatrix()).
+							mult(this._scaleOrientation.toMatrix()).
+							mult(x3dom.fields.SFMatrix4f.scale(this._scale)).
+							mult(this._scaleOrientation.toMatrix().inverse()).
+							mult(x3dom.fields.SFMatrix4f.translation(this._center.negate()));
+        },
+        {
+            _fieldChanged: function (fieldName) {
+                if (fieldName == "_matrix") {
+                    this._trafo = this._matrix;
+                }
+                else {
+                    x3dom.debug.logInfo("UPDATE.");
+					
+                    // P' = T * C * R * SR * S * -SR * -C * P
+                    this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
+                                mult(x3dom.fields.SFMatrix4f.translation(this._center)).
+                                mult(this._rotation.toMatrix()).
+                                mult(this._scaleOrientation.toMatrix()).
+                                mult(x3dom.fields.SFMatrix4f.scale(this._scale)).
+                                mult(this._scaleOrientation.toMatrix().inverse()).
+                                mult(x3dom.fields.SFMatrix4f.translation(this._center.negate()));
+                }
+            }
+        }
+    )
+);
+
+// ### MatrixTransform ###
+x3dom.registerNodeType(
+    "MatrixTransform",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DTransformNode,
+        function (ctx) {
+            x3dom.nodeTypes.MatrixTransform.superClass.call(this, ctx);
+            
+            this._attribute_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
+                                                      0, 1, 0, 0,
+                                                      0, 0, 1, 0,
+                                                      0, 0, 0, 1);
+     
+			_trafo = _matrix;
+        },
+        {
+        }
+    )
+);
+
 x3dom.registerNodeType(
     "Group",
     "Grouping",
@@ -2494,10 +2533,13 @@ x3dom.registerNodeType(
                     return this._keyValue[0];
                 if (t >= this._key[this._key.length-1])
                     return this._keyValue[this._key.length-1];
-                for (var i = 0; i < this._key.length-1; ++i)
-                    if (this._key[i] < t && t <= this._key[i+1])
+                for (var i = 0; i < this._key.length-1; ++i) {
+                    if ((this._key[i] < t) && (t <= this._key[i+1])) {
                         return interp( this._keyValue[i], this._keyValue[i+1], 
                                 (t - this._key[i]) / (this._key[i+1] - this._key[i]) );
+					}
+				}
+			    return this._keyValue[0];
             }
         }
     )
@@ -2950,7 +2992,8 @@ x3dom.registerNodeType(
                 var Eps = 0.00001;
                 var dx = x - this._lastX;
                 var dy = y - this._lastY;
-                
+                var viewpoint = this.getViewpoint();
+				
 				if (buttonState & 1) 
                 {
 					var alpha = (dy * 2 * Math.PI) / this._width;
@@ -2960,7 +3003,7 @@ x3dom.registerNodeType(
 					var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
 					var my = x3dom.fields.SFMatrix4f.rotationY(beta);
 					
-					var viewpoint = this.getViewpoint();
+					//var viewpoint = this.getViewpoint();
 					var center = viewpoint.getCenterOfRotation();
 					
 					mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
@@ -2986,7 +3029,7 @@ x3dom.registerNodeType(
 					this._movement = this._movement.add(vec);
                     
                     //TODO; move real distance along viewing plane
-					var viewpoint = this.getViewpoint();
+					//var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
