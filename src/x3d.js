@@ -2463,9 +2463,7 @@ x3dom.registerNodeType(
                 if (fieldName == "_matrix") {
                     this._trafo = this._matrix;
                 }
-                else {
-                    x3dom.debug.logInfo("UPDATE.");
-					
+                else {					
                     // P' = T * C * R * SR * S * -SR * -C * P
                     this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
                                 mult(x3dom.fields.SFMatrix4f.translation(this._center)).
@@ -2993,6 +2991,7 @@ x3dom.registerNodeType(
                 var dx = x - this._lastX;
                 var dy = y - this._lastY;
                 var viewpoint = this.getViewpoint();
+				var min, max, ok, d, vec;
 				
 				if (buttonState & 1) 
                 {
@@ -3016,16 +3015,16 @@ x3dom.registerNodeType(
 				}
 				if (buttonState & 4) 
                 {
-					var min = new x3dom.fields.SFVec3f(0,0,0);
-					var max = new x3dom.fields.SFVec3f(0,0,0);
-					var ok = this.getVolume(min, max, true);
+					min = new x3dom.fields.SFVec3f(0,0,0);
+					max = new x3dom.fields.SFVec3f(0,0,0);
+					ok = this.getVolume(min, max, true);
 					
-					var d = ok ? (max.subtract(min)).length() : 10;
+					d = ok ? (max.subtract(min)).length() : 10;
                     d = (d < Eps) ? 1 : d;
 					//x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo("w="+this._width+", h="+this._height);
 					
-					var vec = new x3dom.fields.SFVec3f(d*dx/this._width,d*(-dy)/this._height,0);
+					vec = new x3dom.fields.SFVec3f(d*dx/this._width,d*(-dy)/this._height,0);
 					this._movement = this._movement.add(vec);
                     
                     //TODO; move real distance along viewing plane
@@ -3036,20 +3035,20 @@ x3dom.registerNodeType(
 				}
 				if (buttonState & 2) 
                 {
-					var min = new x3dom.fields.SFVec3f(0,0,0);
-					var max = new x3dom.fields.SFVec3f(0,0,0);
-					var ok = this.getVolume(min, max, true);
+					min = new x3dom.fields.SFVec3f(0,0,0);
+					max = new x3dom.fields.SFVec3f(0,0,0);
+					ok = this.getVolume(min, max, true);
 					
-					var d = ok ? (max.subtract(min)).length() : 10;
+					d = ok ? (max.subtract(min)).length() : 10;
                     d = (d < Eps) ? 1 : d;
 					//x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
 					
-					var vec = new x3dom.fields.SFVec3f(0,0,d*(dx+dy)/this._height);
+					vec = new x3dom.fields.SFVec3f(0,0,d*(dx+dy)/this._height);
 					this._movement = this._movement.add(vec);
                     
                     //TODO; move real distance along viewing ray
-					var viewpoint = this.getViewpoint();
+					//var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
@@ -3159,7 +3158,7 @@ x3dom.X3DDocument = function(canvas, ctx) {
     this.ctx = ctx;
     this.onload = function () {};
     this.onerror = function () {};
-}
+};
 
 x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     // Load uri. Get sceneDoc, list of sub-URIs.
@@ -3190,7 +3189,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
     }
 	
     next_step();
-}
+};
 
 x3dom.findScene = function(x3dElem) {
     var sceneElems = [];    
@@ -3207,7 +3206,7 @@ x3dom.findScene = function(x3dElem) {
         return sceneElems[0];
     }
     return null;
-}
+};
 
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
@@ -3299,7 +3298,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 );
                 this.dispatchEvent(evt);
             }
-        }
+        };
         
         function traverseDOMTree(currentElement, depth)
         {
@@ -3319,7 +3318,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     currentElementChild = currentElement.childNodes[i++];
                 }
             }
-        }
+        };
         
         traverseDOMTree(sceneDoc, 0);
     }
@@ -3353,7 +3352,7 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
                 x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
                 if (! (fromNode && toNode)) {
                     x3dom.debug.logInfo("Broken route - can't find all DEFs for " + route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
-                    return;
+                    return null;
                 }
                 fromNode._setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
 
@@ -3377,13 +3376,15 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
                 node._x3domNode = n;
                 if (n._autoChild === true) {
                     Array.forEach(Array.map(node.childNodes, 
-                            function (n) { return ctx.setupNodePrototypes(n, ctx) }, this), 
-                            function (c) { if (c) n.addChild(c) });
+                            function (n) { return ctx.setupNodePrototypes(n, ctx); }, this), 
+                            function (c) { if (c) n.addChild(c); });
                 }
                 return n;
             }
         }
     }
+
+	return n;
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
@@ -3402,19 +3403,19 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
     this._scene.ondrag(x, y, buttonState);
-}
+};
 
 x3dom.X3DDocument.prototype.onMousePress = function (x, y, buttonState) {
     this._scene.onMousePress(x, y, buttonState);
-}
+};
 
 x3dom.X3DDocument.prototype.onMouseRelease = function (x, y, buttonState) {
     this._scene.onMouseRelease(x, y, buttonState);
-}
+};
 
 x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
     this._scene.onDoubleClick(x, y);
-}
+};
 
 x3dom.X3DDocument.prototype.onKeyPress = function(charCode) 
 {
@@ -3454,11 +3455,11 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         default:
     }
-}
+};
 
 x3dom.X3DDocument.prototype.shutdown = function(ctx)
 {
     if (!ctx)
         return;
 	ctx.shutdown(this._scene);
-}
+};
