@@ -467,9 +467,10 @@ x3dom.registerNodeType(
         /** @constructs */
         function (ctx) {
             x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
-    
-            this._attribute_SFNode ('material', x3dom.nodeTypes.Material);
-			this._attribute_SFNode ('geometry', x3dom.nodeTypes.X3DGeometryNode);
+            
+            // FIXME: implement!
+            //this._attribute_SFNode ('material', x3dom.nodeTypes.Material);
+            //this._attribute_SFNode ('geometry', x3dom.nodeTypes.X3DGeometryNode);
 						
             var material = null;
 			var texture = null;
@@ -1533,16 +1534,19 @@ x3dom.registerNodeType(
 			if (hasNormal) { this._mesh._normals = []; }
 			if (hasTexCoord) { this._mesh._texCoords = []; }
 			if (hasColor) { this._mesh._colors = []; }
+            
+            var i, t, cnt;
+			var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 			
 			if ( (hasNormal && hasNormalInd) || 
 				 (hasTexCoord && hasTexCoordInd) || 
 				 (hasColor && hasColorInd) )
 			{
 				// Found MultiIndex Mesh
-				var t = 0, cnt = 0;
-				var p0, p1, p2, n0, n1, n2, t1, t2, t3, c0, c1, c2;
+                t = 0;
+                cnt = 0;                
 				
-				for (var i=0; i < indexes.length; ++i) 
+                for (i=0; i < indexes.length; ++i) 
 				{
 					// Convert non-triangular polygons to a triangle fan
 					// (TODO: this assumes polygons are convex)
@@ -1716,9 +1720,9 @@ x3dom.registerNodeType(
 			} // if isMulti
 			else
 			{
-				// var t = 0, n0, n1, n2;
+                t = 0;
 				
-				for ( i = 0; i < indexes.length; ++i) 
+				for (i = 0; i < indexes.length; ++i) 
 				{
 					// Convert non-triangular polygons to a triangle fan
 					// (TODO: this assumes polygons are convex)
@@ -2337,7 +2341,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTransformNode.superClass.call(this, ctx);
             
-			// links the aktuall matrix
+			// holds the current matrix
             this._trafo = null;
         },
         {   
@@ -2436,6 +2440,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DTransformNode,
         function (ctx) {
             x3dom.nodeTypes.Transform.superClass.call(this, ctx);
+            
 			this._attribute_SFVec3f(ctx, 'center', 0, 0, 0);
             this._attribute_SFVec3f(ctx, 'translation', 0, 0, 0);
             this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
@@ -2463,7 +2468,7 @@ x3dom.registerNodeType(
                 if (fieldName == "_matrix") {
                     this._trafo = this._matrix;
                 }
-                else {					
+                else {			
                     // P' = T * C * R * SR * S * -SR * -C * P
                     this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
                                 mult(x3dom.fields.SFMatrix4f.translation(this._center)).
@@ -2490,10 +2495,13 @@ x3dom.registerNodeType(
                                                       0, 1, 0, 0,
                                                       0, 0, 1, 0,
                                                       0, 0, 0, 1);
-     
-			_trafo = _matrix;
+            
+			this._trafo = this._matrix;
         },
         {
+            _fieldChanged: function (fieldName) {
+                this._trafo = this._matrix;     // required?
+            }
         }
     )
 );
@@ -2990,8 +2998,8 @@ x3dom.registerNodeType(
                 var Eps = 0.00001;
                 var dx = x - this._lastX;
                 var dy = y - this._lastY;
-                var viewpoint = this.getViewpoint();
 				var min, max, ok, d, vec;
+                var viewpoint = this.getViewpoint();
 				
 				if (buttonState & 1) 
                 {
@@ -3002,10 +3010,9 @@ x3dom.registerNodeType(
 					var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
 					var my = x3dom.fields.SFMatrix4f.rotationY(beta);
 					
-					//var viewpoint = this.getViewpoint();
 					var center = viewpoint.getCenterOfRotation();
-					
 					mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
+                    
 					this._rotMat = this._rotMat.
 									mult(x3dom.fields.SFMatrix4f.translation(center)).
 									mult(mat.inverse()).
@@ -3028,7 +3035,6 @@ x3dom.registerNodeType(
 					this._movement = this._movement.add(vec);
                     
                     //TODO; move real distance along viewing plane
-					//var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
@@ -3048,7 +3054,6 @@ x3dom.registerNodeType(
 					this._movement = this._movement.add(vec);
                     
                     //TODO; move real distance along viewing ray
-					//var viewpoint = this.getViewpoint();
 					this._transMat = viewpoint.getViewMatrix().inverse().
 								mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
 								mult(viewpoint.getViewMatrix());
