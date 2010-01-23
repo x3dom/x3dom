@@ -633,7 +633,7 @@ x3dom.gfx_webgl = (function () {
 			var fontStyle = shape._geometry._fontStyle;
 			var font_family = 'SANS';
             if (fontStyle !== null) {
-                font_family = Array.map(fontStyle._family, function (s) {
+                font_family = Array.map(fontStyle._vf.family, function (s) {
                     if (s == 'SANS') return 'sans-serif';
                     else if (s == 'SERIF') return 'serif';
                     else if (s == 'TYPEWRITER') return 'monospace';
@@ -642,7 +642,7 @@ x3dom.gfx_webgl = (function () {
             }
 			/*text_ctx.mozTextStyle = '48px '+font_family;*/
             
-			var string = shape._geometry._string;
+			var string = shape._geometry._vf.string;
 			/*
 			var text_w = 0;
             var i = 0;
@@ -733,7 +733,7 @@ x3dom.gfx_webgl = (function () {
                 {
                     tex._video = document.createElement('video');
                     tex._video.setAttribute('autobuffer', 'true');
-                    tex._video.setAttribute('src', tex._url);
+                    tex._video.setAttribute('src', tex._vf.url);
                     var p = document.getElementsByTagName('body')[0];
                     p.appendChild(tex._video);
                     tex._video.style.display = "none";
@@ -752,20 +752,20 @@ x3dom.gfx_webgl = (function () {
                     var startVideo = function()
                     {
                         shape._webgl.texture = texture;
-                        x3dom.debug.logInfo(texture + " video tex url: " + tex._url);
+                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
                         tex._video.play();
-                        tex._intervalID = setInterval(updateMovie, 15);
+                        tex._intervalID = setInterval(updateMovie, 16);
                     };
                     
                     var videoDone = function()
                     {
                         clearInterval(tex._intervalID);
                         
-                        if (tex._loop === true)
+                        if (tex._vf.loop === true)
                         {
                             tex._video.play();
-                            tex._intervalID = setInterval(updateMovie, 15);
+                            tex._intervalID = setInterval(updateMovie, 16);
                         }
                     };
                     
@@ -780,12 +780,12 @@ x3dom.gfx_webgl = (function () {
                 else
                 {
                     var image = new Image();
-                    image.src = tex._url;
+                    image.src = tex._vf.url;
                     
                     image.onload = function()
                     {
                         shape._webgl.texture = texture;
-                        //x3dom.debug.logInfo(texture + " load tex url: " + tex._url);
+                        //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url);
                         
                         gl.bindTexture(gl.TEXTURE_2D, texture);
                         gl.texImage2D(gl.TEXTURE_2D, 0, image);
@@ -995,7 +995,7 @@ x3dom.gfx_webgl = (function () {
 			
 			t0 = new Date().getTime();
 			
-			scene._collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
+			scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
 			
 			t1 = new Date().getTime() - t0;
 			
@@ -1013,11 +1013,11 @@ x3dom.gfx_webgl = (function () {
 		var slights = scene.getLights();
 		if (slights.length > 0)
         {
-			light = slights[0]._direction;
-            lightOn = (slights[0]._on === true) ? 1.0 : 0.0;
-            lightOn *= slights[0]._intensity;
-            shadowIntensity = (slights[0]._on === true) ? 1.0 : 0.0;
-            shadowIntensity *= slights[0]._shadowIntensity;
+			light = slights[0]._vf.direction;
+            lightOn = (slights[0]._vf.on === true) ? 1.0 : 0.0;
+            lightOn *= slights[0]._vf.intensity;
+            shadowIntensity = (slights[0]._vf.on === true) ? 1.0 : 0.0;
+            shadowIntensity *= slights[0]._vf.shadowIntensity;
 		}
 		else
         {
@@ -1071,7 +1071,7 @@ x3dom.gfx_webgl = (function () {
 			var trafo = scene.drawableObjects[i][0];
 			var obj3d = scene.drawableObjects[i][1];
 			
-			var center = obj3d._getCenter();
+			var center = obj3d.getCenter();
 			center = trafo.multMatrixPnt(center);
 			center = mat_view.multMatrixPnt(center);
 			
@@ -1114,12 +1114,12 @@ x3dom.gfx_webgl = (function () {
 
 			var mat = shape._appearance._material;
 			if (mat) {
-				sp.ambientIntensity = mat._ambientIntensity;
-				sp.diffuseColor = mat._diffuseColor.toGL();
-				sp.emissiveColor = mat._emissiveColor.toGL();
-				sp.shininess = mat._shininess;
-				sp.specularColor = mat._specularColor.toGL();
-				sp.alpha = 1.0 - mat._transparency;
+				sp.ambientIntensity = mat._vf.ambientIntensity;
+				sp.diffuseColor = mat._vf.diffuseColor.toGL();
+				sp.emissiveColor = mat._vf.emissiveColor.toGL();
+				sp.shininess = mat._vf.shininess;
+				sp.specularColor = mat._vf.specularColor.toGL();
+				sp.alpha = 1.0 - mat._vf.transparency;
 			}
             
             // transformation matrices
@@ -1130,10 +1130,10 @@ x3dom.gfx_webgl = (function () {
 			{
                 var tex = shape._appearance._texture;
                 var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
-                if (tex && tex._repeatS === false) {
+                if (tex && tex._vf.repeatS === false) {
                     wrapS = gl.CLAMP_TO_EDGE;
                 }
-                if (tex && tex._repeatT === false) {
+                if (tex && tex._vf.repeatT === false) {
                     wrapT = gl.CLAMP_TO_EDGE;
                 }
                 
@@ -1205,7 +1205,7 @@ x3dom.gfx_webgl = (function () {
 				gl.enableVertexAttribArray(sp.color);
 			}
 			
-			if (shape._isSolid()) {
+			if (shape.isSolid()) {
 				gl.enable(gl.CULL_FACE);
             }
 			else {
@@ -1286,7 +1286,7 @@ x3dom.gfx_webgl = (function () {
         }
 		
 		// TODO; optimize traversal, matrices are not needed for cleanup
-		scene._collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
+		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
 		
 		for (var i=0, n=scene.drawableObjects.length; i<n; i++)
 		{

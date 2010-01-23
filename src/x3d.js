@@ -154,20 +154,20 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         this._childNodes = [];
     },
     {
-        _getCurrentTransform: function () {
+        getCurrentTransform: function () {
             if (this._parentNodes.length >= 1) {
-                return this._transformMatrix(this._parentNodes[0]._getCurrentTransform());
+                return this.transformMatrix(this._parentNodes[0].getCurrentTransform());
             }
             else {
                 return x3dom.fields.SFMatrix4f.identity();
             }
         },
 
-        _transformMatrix: function (transform) {
+        transformMatrix: function (transform) {
             return transform;
         },
 		
-		_getVolume: function (min, max, invalidate) 
+		getVolume: function (min, max, invalidate) 
         {
             var valid = false;
 			for (var i=0; i<this._childNodes.length; i++)
@@ -179,7 +179,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                     var childMax = new x3dom.fields.SFVec3f(
                             Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 					
-					valid = this._childNodes[i]._getVolume(
+					valid = this._childNodes[i].getVolume(
                                     childMin, childMax, invalidate) || valid;
 					
                     if (valid)
@@ -197,13 +197,13 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             return valid;
 		},
 
-        _find: function (type) {
+        find: function (type) {
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     if (this._childNodes[i].constructor == type) {
                         return this._childNodes[i];
                     }
-                    var c = this._childNodes[i]._find(type);
+                    var c = this._childNodes[i].find(type);
                     if (c) {
                         return c;
                     }
@@ -212,34 +212,34 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             return null;
         },
 
-        _findAll: function (type) {
+        findAll: function (type) {
             var found = [];
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     if (this._childNodes[i].constructor == type) {
                         found.push(this._childNodes[i]);
                     }
-                    found = found.concat(this._childNodes[i]._findAll(type)); // TODO: this has non-linear performance
+                    found = found.concat(this._childNodes[i].findAll(type)); // TODO: this has non-linear performance
                 }
             }
             return found;
         },
 
         /* Collects array of [transform matrix, node] for all objects that should be drawn. */
-        _collectDrawableObjects: function (transform, out) {
+        collectDrawableObjects: function (transform, out) {
             // TODO: culling etc
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
-                    var childTransform = this._childNodes[i]._transformMatrix(transform);
-                    this._childNodes[i]._collectDrawableObjects(childTransform, out);
+                    var childTransform = this._childNodes[i].transformMatrix(transform);
+                    this._childNodes[i].collectDrawableObjects(childTransform, out);
                 }
             }
         },
         
-        _doIntersect: function(line) {
+        doIntersect: function(line) {
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
-                    if (this._childNodes[i]._doIntersect(line)) {
+                    if (this._childNodes[i].doIntersect(line)) {
                         return true;
                     }
                 }
@@ -247,24 +247,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
             return false;
         },
 
-		// FIXME; replace by context lookup
-        _getNodeByDEF: function (def) {
-            // TODO: cache this so it's not so stupidly inefficient
-            if (this._DEF == def) {
-                return this;
-            }
-            for (var i=0; i<this._childNodes.length; i++) {
-                if (this._childNodes[i]) {
-                    var found = this._childNodes[i]._getNodeByDEF(def);
-                    if (found) {
-                        return found;
-                    }
-                }
-            }
-            return null;
-        },
-
-        _postMessage: function (field, msg) {
+        postMessage: function (field, msg) {
             // TODO: timestamps and stuff
             //log_frame(this+' postmessage '+field+' - '+msg);
             var listeners = this._fieldWatchers[field];
@@ -275,113 +258,147 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         },
 
         // method for handling field updates
-        _updateField: function (field, msg) {
-            var fieldName = "_" +  field;
-			
-			var f = this[fieldName];
+        updateField: function (field, msg) {			
+			var f = this._vf[field];
 			
 			if (f === undefined) {
-				this[fieldName] = {};
-				f = this[fieldName];
+				f = {};
+				this._vf[field] = f;
 			}
 			
             if (f !== null) {
                 try {
-                    this[fieldName].setValueByStr(msg);
+                    this._vf[field].setValueByStr(msg);
                 }
                 catch (exc) {
-                    x3dom.debug.logInfo("_updateField: setValueByStr() NYI for " + typeof(f));
+                    x3dom.debug.logInfo("updateField: setValueByStr() NYI for " + typeof(f));
                 }
                 
                 // TODO: eval fieldChanged for all nodes!
-                this._fieldChanged(fieldName);
+                this.fieldChanged(field);
             }
         },
 
-        _setupRoute: function (fromField, toNode, toField) {
-            var pos = toField.indexOf("set");
-            if (pos == 0) {
-                toField = toField.substr(3,toField.length-1);
-            }
+        setupRoute: function (fromField, toNode, toField) {
+			var pos;
+			var fieldName;
+			var pre = "set_", post = "_changed";
             
+			// build correct fromField
+			if (!this._vf[fromField]) {
+				pos = fromField.indexOf(pre);
+				if (pos === 0) {
+					fieldName = fromField.substr(pre.length, fromField.length - 1);
+					if (this._vf[fieldName]) 
+						fromField = fieldName;
+				}
+                else {
+					pos = fromField.indexOf(post);
+					if (pos > 0) {
+						fieldName = fromField.substr(0, fromField.length - post.length);
+						if (this._vf[fieldName]) 
+							fromField = fieldName;
+					}
+				}
+			}
+			
+			// build correct toField
+			if (!toNode._vf[toField]) {
+				pos = toField.indexOf(pre);
+				if (pos === 0) {
+					fieldName = toField.substr(pre.length, toField.length - 1);
+					if (toNode._vf[fieldName]) 
+						toField = fieldName;
+				}
+                else {
+					pos = toField.indexOf(post);
+					if (pos > 0) {
+						fieldName = toField.substr(0, toField.length - post.length);
+						if (toNode._vf[fieldName]) 
+							toField = fieldName;
+					}
+				}
+			}
+            
+         
             if (! this._fieldWatchers[fromField]) {
                 this._fieldWatchers[fromField] = [];
             }
-            this._fieldWatchers[fromField].push(function (msg) { toNode._postMessage(toField, msg); });
-
+            this._fieldWatchers[fromField].push(
+                function (msg) { 
+                    toNode.postMessage(toField, msg); 
+                }
+            );
+            
             if (! toNode._fieldWatchers[toField]) {
-                toNode._fieldWatchers[toField] = [];
-            }
-            toNode._fieldWatchers[toField].push(function (msg) {
-				// uhh, this "_"-stuff is really inconsistent!
-				if (toNode[toField] === undefined) {
-					toNode["_"+toField] = msg;
+               	toNode._fieldWatchers[toField] = [];
+           	}
+            toNode._fieldWatchers[toField].push(
+                function (msg) {
+                    // FIXME: THIS DOESN'T WORK FOR NODE (_cf) FIELDS
+                    toNode._vf[toField] = msg;
+                    
+                    toNode.fieldChanged(toField);
                 }
-				else {
-					toNode[toField] = msg;
-                }
-                
-                // TODO: eval fieldChanged for all nodes!
-                toNode._fieldChanged(toField);
-			});
+            );
         },
         
-        _fieldChanged: function (fieldName) {
+        fieldChanged: function (fieldName) {
             // to be overwritten by concrete classes
         },
         
 		_attribute_SFInt32: function (ctx, name, n) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 parseInt(ctx.xmlNode.getAttribute(name),10) : n;
-            this['_'+name].setValueByStr = function(str) {
-                this['_'+name] = parseInt(str,10);
+            this._vf[name].setValueByStr = function(str) {
+                this._vf[name] = parseInt(str,10);
             };
         },
         _attribute_SFFloat: function (ctx, name, n) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
-            this['_'+name].setValueByStr = function(str) {
-                this['_'+name] = +str;
+            this._vf[name].setValueByStr = function(str) {
+                this._vf[name] = +str;
             };
         },
         _attribute_SFTime: function (ctx, name, n) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
-            this['_'+name].setValueByStr = function(str) {
-                this['_'+name] = +str;
+            this._vf[name].setValueByStr = function(str) {
+                this._vf[name] = +str;
             };
         },
         _attribute_SFBool: function (ctx, name, n) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name).toLowerCase() == "true" : n;
-            this['_'+name].setValueByStr = function(str) {
-                this['_'+name] = (str.toLowerCase() == "true");
+            this._vf[name].setValueByStr = function(str) {
+                this._vf[name] = (str.toLowerCase() == "true");
             };
         },
         _attribute_SFString: function (ctx, name, n) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name) : n;
-            this['_'+name].setValueByStr = function(str) {
-                this['_'+name] = str;
+            this._vf[name].setValueByStr = function(str) {
+                this._vf[name] = str;
             };
         },
         _attribute_SFColor: function (ctx, name, r, g, b) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFColor(r, g, b);
         },
         _attribute_SFVec2f: function (ctx, name, x, y) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFVec2f(x, y);
         },
         _attribute_SFVec3f: function (ctx, name, x, y, z) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFVec3f(x, y, z);
         },
         _attribute_SFRotation: function (ctx, name, x, y, z, a) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.Quaternion(x, y, z, a);
         },
@@ -389,7 +406,7 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                                                     _10, _11, _12, _13, 
                                                     _20, _21, _22, _23, 
                                                     _30, _31, _32, _33) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFMatrix4f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFMatrix4f(_00, _01, _02, _03, 
                                             _10, _11, _12, _13, 
@@ -398,39 +415,39 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         },
         
         _attribute_MFString: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 MFString_parse(ctx.xmlNode.getAttribute(name)) : def;
-            this['_'+name].setValueByStr = function(str) {
-                this['_'+name] = MFString_parse(str);
+            this._vf[name].setValueByStr = function(str) {
+                this._vf[name] = MFString_parse(str);
             };
         },
         _attribute_MFInt32: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFInt32.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFInt32(def);
         },
         _attribute_MFFloat: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFFloat(def);
         },
         _attribute_MFColor: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFColor(def);
         },
         _attribute_MFVec2f: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFVec2f(def);
         },
         _attribute_MFVec3f: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFVec3f(def);
         },
         _attribute_MFRotation: function (ctx, name, def) {
-            this['_'+name] = ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFRotation(def);
         },
@@ -519,62 +536,7 @@ x3dom.registerNodeType(
                 else {
                     return this._textureTransform.transformMatrix();
                 }
-            },
-            
-			_getNodeByDEF: function (def) {
-				if (this._DEF == def) {
-					return this;
-				}
-
-				var found = null;
-				
-				if (this._material !== null) {
-					found = this._material._getNodeByDEF(def);
-                    if (found) { return found; }
-				}
-				
-				if (this._texture !== null) {
-					found = this._texture._getNodeByDEF(def);
-                    if (found) { return found; }
-				}
-                
-				if (this._textureTransform !== null) {
-					found = this._textureTransform._getNodeByDEF(def);
-                    if (found) { return found; }
-				}
-				
-				return found;
-			},
-
-			_find: function (type) {
-				var c = null;
-				
-				if (this._material !== null) {
-					if (this._material.constructor == type) {
-						return this._material;
-                    }
-					c = this._material._find(type);
-					if (c) { return c; }
-				}
-				
-				if (this._texture !== null) {
-					if (this._texture.constructor == type) {
-						return this._texture;
-                    }
-					c = this._texture._find(type);
-					if (c) { return c; }
-				}
-                
-				if (this._textureTransform !== null) {
-					if (this._textureTransform.constructor == type) {
-						return this._textureTransform;
-                    }
-					c = this._textureTransform._find(type);
-					if (c) { return c; }
-				}
-				
-				return c;
-			}
+            }
 		}
     )
 );
@@ -647,27 +609,27 @@ x3dom.registerNodeType(
             this._attribute_SFVec2f(ctx, 'translation', 0, 0);
             
             //Tc' = -C * S * R * C * T * Tc
-            var negCenter = new x3dom.fields.SFVec3f(-this._center.x, -this._center.y, 1);
-            var posCenter = new x3dom.fields.SFVec3f(this._center.x, this._center.y, 0);
-            var trans3 = new x3dom.fields.SFVec3f(this._translation.x, this._translation.y, 0);
-            var scale3 = new x3dom.fields.SFVec3f(this._scale.x, this._scale.y, 0);
+            var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
+            var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
+            var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
+            var scale3 = new x3dom.fields.SFVec3f(this._vf.scale.x, this._vf.scale.y, 0);
             
             this._trafo = x3dom.fields.SFMatrix4f.translation(negCenter).
                      mult(x3dom.fields.SFMatrix4f.scale(scale3)).
-                     mult(x3dom.fields.SFMatrix4f.rotationZ(this._rotation)).
+                     mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
                      mult(x3dom.fields.SFMatrix4f.translation(posCenter)).
                      mult(x3dom.fields.SFMatrix4f.translation(trans3));
         },
         {
-            _fieldChanged: function (fieldName) {
-                var negCenter = new x3dom.fields.SFVec3f(-this._center.x, -this._center.y, 1);
-                var posCenter = new x3dom.fields.SFVec3f(this._center.x, this._center.y, 0);
-                var trans3 = new x3dom.fields.SFVec3f(this._translation.x, this._translation.y, 0);
-                var scale3 = new x3dom.fields.SFVec3f(this._scale.x, this._scale.y, 0);
+            fieldChanged: function (fieldName) {
+                var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
+                var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
+                var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
+                var scale3 = new x3dom.fields.SFVec3f(this._vf.scale.x, this._vf.scale.y, 0);
                 
                 this._trafo = x3dom.fields.SFMatrix4f.translation(negCenter).
                          mult(x3dom.fields.SFMatrix4f.scale(scale3)).
-                         mult(x3dom.fields.SFMatrix4f.rotationZ(this._rotation)).
+                         mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
                          mult(x3dom.fields.SFMatrix4f.translation(posCenter)).
                          mult(x3dom.fields.SFMatrix4f.translation(trans3));
             },
@@ -900,16 +862,16 @@ x3dom.registerNodeType(
 			this._mesh = new x3dom.Mesh(this);
         },
 		{
-			_getVolume: function(min, max, invalidate) {
+			getVolume: function(min, max, invalidate) {
 				this._mesh.getBBox(min, max, invalidate);
                 return true;
 			},
 			
-			_getCenter: function() {
+			getCenter: function() {
 				return this._mesh.getCenter();
 			},
             
-            _doIntersect: function(line) {
+            doIntersect: function(line) {
                 var isect = this._mesh.doIntersect(line);
 				
 				if (isect && this._xmlNode !== null) {
@@ -1708,7 +1670,7 @@ x3dom.registerNodeType(
 				}
 				
 				if (!hasNormal) {
-					this._mesh.calcNormals(this._creaseAngle, this._ccw);
+					this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
                 }
 				if (!hasTexCoord) {
 					this._mesh.calcTexCoords();
@@ -1744,7 +1706,7 @@ x3dom.registerNodeType(
 					this._mesh._normals = normals;
                 }
 				else { 
-					this._mesh.calcNormals(this._creaseAngle, this._ccw);
+					this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
 				}
 				if (hasTexCoord) { 
 					this._mesh._texCoords = texCoords;
@@ -1770,11 +1732,11 @@ x3dom.registerNodeType(
 			// TextureCoordinate    - X3DTextureCoordinateNode  - X3DGeometricPropertyNode 
         },
         {
-            _fieldChanged: function (fieldName) {
-                if (fieldName == "_coord")
+            fieldChanged: function (fieldName) {
+                if (fieldName == "coord")
                 {
                     // TODO; multi-index with different this._mesh._indices
-                    var pnts = this._coord._point;
+                    var pnts = this._coord._vf.point;
                     var i, n = pnts.length;
                     
                     this._mesh._positions = [];
@@ -1793,36 +1755,8 @@ x3dom.registerNodeType(
                     // also we need fieldMask instead of one flag!
                     this._parent._dirty = true;
                 }
-            },
-            
-            _getNodeByDEF: function (def) {
-				if (this._DEF == def) 
-					return this;
-				
-				var found = null;
-				
-				if (this._coord !== null) {
-					found = this._coord._getNodeByDEF(def);
-                    if (found)
-                        return found;
-				}
-				
-				return found;
-			},
-			
-			_find: function (type) {
-				var c = null;
-				
-				if (this._coord !== null) {
-					if (this._coord.constructor == type)
-						return this._coord;
-					c = this._coord._find(type);
-					if (c)
-						return c;
-				}
-				
-				return c;
-			}
+            }
+
         }
     )
 );
@@ -1845,17 +1779,17 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
             
             //if (ctx.xmlNode.hasAttribute('point'))
-            //    this._point = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('point'));
+            //    this._vf.point = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('point'));
             //else
-                this._point = [];
+                this._vf.point = [];
             
             //TODO: can be multi-parent, see comment IndexedFaceSet!
             this._parent = null;
         },
         {
-            _fieldChanged: function (fieldName) {
+            fieldChanged: function (fieldName) {
                 if (this._parent != null)
-                    this._parent._fieldChanged("_coord");
+                    this._parent.fieldChanged("coord");
             }
         }
     )
@@ -1966,52 +1900,52 @@ x3dom.registerNodeType(
                                                       0, 0, 1, 0,
                                                       0, 0, 0, 1);
 			
-            this._viewMatrix = this._orientation.toMatrix().transpose().
-				mult(x3dom.fields.SFMatrix4f.translation(this._position.negate()));
+            this._viewMatrix = this._vf.orientation.toMatrix().transpose().
+				mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
             this._projMatrix = null;
         },
         {
-            _fieldChanged: function (fieldName) {
-                if (fieldName == "_matrix") {
-                    this._viewMatrix = this._matrix;
+            fieldChanged: function (fieldName) {
+                if (fieldName == "matrix") {
+                    this._viewMatrix = this._vf.matrix;
                 }
-                else if (fieldName == "_position" || 
-                         fieldName == "_orientation") {
-                    this._viewMatrix = this._orientation.toMatrix().transpose().
-                        mult(x3dom.fields.SFMatrix4f.translation(this._position.negate()));
+                else if (fieldName == "position" || 
+                         fieldName == "orientation") {
+                    this._viewMatrix = this._vf.orientation.toMatrix().transpose().
+                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
                 }
-                else if (fieldName == "_fieldOfView" || 
-                         fieldName == "_zNear" ||
-                         fieldName == "_zFar") {
+                else if (fieldName == "fieldOfView" || 
+                         fieldName == "zNear" ||
+                         fieldName == "zFar") {
                     this._projMatrix = null;   // trigger refresh
                 }
             },
             
 			getCenterOfRotation: function() {
-                return this._centerOfRotation;
+                return this._vf.centerOfRotation;
 			},
 			getViewMatrix: function() {
                 return this._viewMatrix;
 			},
 			getFieldOfView: function() {
-				return this._fieldOfView;
+				return this._vf.fieldOfView;
 			},
             
             setView: function(newView) {
                 this._viewMatrix = newView;
             },
             resetView: function() {
-                this._viewMatrix = this._orientation.toMatrix().transpose().
-                    mult(x3dom.fields.SFMatrix4f.translation(this._position.negate()));
+                this._viewMatrix = this._vf.orientation.toMatrix().transpose().
+                    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
             },
             
             getProjectionMatrix: function(aspect)
             {
                 if (this._projMatrix == null)
                 {
-                    var fovy = this._fieldOfView;
-                    var zfar = this._zFar;
-                    var znear = this._zNear;
+                    var fovy = this._vf.fieldOfView;
+                    var zfar = this._vf.zFar;
+                    var znear = this._vf.zNear;
                     
                     var f = 1/Math.tan(fovy/2);
                     this._projMatrix = new x3dom.fields.SFMatrix4f(
@@ -2056,7 +1990,7 @@ x3dom.registerNodeType(
 			this._attribute_SFBool(ctx, 'headlight', true);
             this._attribute_MFString(ctx, 'type', ["EXAMINE"]);
             
-            x3dom.debug.logInfo("NavType: " + this._type[0].toLowerCase());
+            x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
         },
         {
 			// methods
@@ -2074,8 +2008,8 @@ x3dom.registerNodeType(
             this._attribute_MFString(ctx, 'info', []);
 			this._attribute_SFString(ctx, 'title', "");
             
-            x3dom.debug.logInfo(this._info);
-            x3dom.debug.logInfo(this._title);
+            x3dom.debug.logInfo(this._vf.info);
+            x3dom.debug.logInfo(this._vf.title);
         },
         {
 			// methods
@@ -2095,10 +2029,10 @@ x3dom.registerNodeType(
         },
         {
 			getSkyColor: function() {
-				return this._skyColor;
+				return this._vf.skyColor;
 			},
 			getTransparency: function() {
-				return this._transparency;
+				return this._vf.transparency;
 			}
         }
     )
@@ -2137,7 +2071,7 @@ x3dom.registerNodeType(
         },
         {
             getViewMatrix: function(pos) {
-                var dir = this._direction.normalize();
+                var dir = this._vf.direction.normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
                         new x3dom.fields.SFVec3f(0, 0, -1), dir);
                 return orientation.toMatrix().transpose().
@@ -2209,7 +2143,7 @@ x3dom.registerNodeType(
             this._dirty = true;
         },
         {
-            _collectDrawableObjects: function (transform, out) {
+            collectDrawableObjects: function (transform, out) {
                 // TODO: culling etc
                 if (out !== null) 
                 {
@@ -2217,64 +2151,22 @@ x3dom.registerNodeType(
                 }
             },
 			
-			_getVolume: function(min, max, invalidate) {
-				return this._geometry._getVolume(min, max, invalidate);
+			getVolume: function(min, max, invalidate) {
+				return this._geometry.getVolume(min, max, invalidate);
 			},
 			
-			_getCenter: function() {
-				return this._geometry._getCenter();
+			getCenter: function() {
+				return this._geometry.getCenter();
 			},
             
-            _doIntersect: function(line) {
-                return this._geometry._doIntersect(line);
+            doIntersect: function(line) {
+                return this._geometry.doIntersect(line);
             },
 			
-			_isSolid: function() {
-				return this._geometry._solid;
-			},
-			
-			_getNodeByDEF: function (def) {
-				if (this._DEF == def) 
-					return this;
-				
-				var found = null;
-				
-				if (this._appearance !== null) {
-					found = this._appearance._getNodeByDEF(def);
-                    if (found)
-                        return found;
-				}
-				
-				if (this._geometry !== null) {
-					found = this._geometry._getNodeByDEF(def);
-                    if (found)
-                        return found;
-				}
-				
-				return found;
-			},
-			
-			_find: function (type) {
-				var c = null;
-				
-				if (this._appearance !== null) {
-					if (this._appearance.constructor == type)
-						return this._appearance;
-					c = this._appearance._find(type);
-					if (c)
-						return c;
-				}
-				
-				if (this._geometry !== null) {
-					if (this._geometry.constructor == type)
-						return this._geometry;
-					c = this._geometry._find(type);
-					if (c)
-						return c;
-				}
-				
-				return c;
+			isSolid: function() {
+				return this._geometry._vf.solid;
 			}
+			
         }
     )
 );
@@ -2345,11 +2237,11 @@ x3dom.registerNodeType(
             this._trafo = null;
         },
         {   
-            _transformMatrix: function(transform) {
+            transformMatrix: function(transform) {
                 return transform.mult(this._trafo);
             },
 			
-			_getVolume: function(min, max, invalidate) 
+			getVolume: function(min, max, invalidate) 
             {
 				var nMin = new x3dom.fields.SFVec3f(
                         Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
@@ -2366,7 +2258,7 @@ x3dom.registerNodeType(
 						var childMax = new x3dom.fields.SFVec3f(
                                 Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 						
-						valid = this._childNodes[i]._getVolume(
+						valid = this._childNodes[i].getVolume(
                                         childMin, childMax, invalidate) || valid;
 						
                         if (valid)  // values only set by Mesh.BBox()
@@ -2398,7 +2290,7 @@ x3dom.registerNodeType(
                 return valid;
 			},
             
-            _doIntersect: function(line) 
+            doIntersect: function(line) 
             {
                 var isect = false;
                 var mat = this._trafo.inverse();
@@ -2414,7 +2306,7 @@ x3dom.registerNodeType(
                     if (this._childNodes[i]) 
                     {
                         //TODO: check for _nearest_ hit object and don't stop on first!
-                        isect = this._childNodes[i]._doIntersect(line);
+                        isect = this._childNodes[i].doIntersect(line);
                         
                         if (isect)
                         {
@@ -2455,28 +2347,28 @@ x3dom.registerNodeType(
                                                       0, 0, 1, 0,
                                                       0, 0, 0, 1);
             
-            this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
-							mult(x3dom.fields.SFMatrix4f.translation(this._center)).
-							mult(this._rotation.toMatrix()).
-							mult(this._scaleOrientation.toMatrix()).
-							mult(x3dom.fields.SFMatrix4f.scale(this._scale)).
-							mult(this._scaleOrientation.toMatrix().inverse()).
-							mult(x3dom.fields.SFMatrix4f.translation(this._center.negate()));
+            this._trafo = x3dom.fields.SFMatrix4f.translation(this._vf.translation).
+							mult(x3dom.fields.SFMatrix4f.translation(this._vf.center)).
+							mult(this._vf.rotation.toMatrix()).
+							mult(this._vf.scaleOrientation.toMatrix()).
+							mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
+							mult(this._vf.scaleOrientation.toMatrix().inverse()).
+							mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
         },
         {
-            _fieldChanged: function (fieldName) {
-                if (fieldName == "_matrix") {
-                    this._trafo = this._matrix;
+            fieldChanged: function (fieldName) {
+                if (fieldName == "matrix") {
+                    this._trafo = this._vf.matrix;
                 }
                 else {			
                     // P' = T * C * R * SR * S * -SR * -C * P
-                    this._trafo = x3dom.fields.SFMatrix4f.translation(this._translation).
-                                mult(x3dom.fields.SFMatrix4f.translation(this._center)).
-                                mult(this._rotation.toMatrix()).
-                                mult(this._scaleOrientation.toMatrix()).
-                                mult(x3dom.fields.SFMatrix4f.scale(this._scale)).
-                                mult(this._scaleOrientation.toMatrix().inverse()).
-                                mult(x3dom.fields.SFMatrix4f.translation(this._center.negate()));
+                    this._trafo = x3dom.fields.SFMatrix4f.translation(this._vf.translation).
+                                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center)).
+                                mult(this._vf.rotation.toMatrix()).
+                                mult(this._vf.scaleOrientation.toMatrix()).
+                                mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
+                                mult(this._vf.scaleOrientation.toMatrix().inverse()).
+                                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
                 }
             }
         }
@@ -2496,11 +2388,11 @@ x3dom.registerNodeType(
                                                       0, 0, 1, 0,
                                                       0, 0, 0, 1);
             
-			this._trafo = this._matrix;
+			this._trafo = this._vf.matrix;
         },
         {
-            _fieldChanged: function (fieldName) {
-                this._trafo = this._matrix;     // required?
+            fieldChanged: function (fieldName) {
+                this._trafo = this._vf.matrix;     // required?
             }
         }
     )
@@ -2527,25 +2419,31 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DInterpolatorNode.superClass.call(this, ctx);
-    
+            
+            //HACK: register eventIn somehow, but eventIn's are NO fields!
+            this._vf.fraction = this._vf.set_fraction = {};
+            
+            //HACK: register eventOut somehow, but eventOut's are NO fields!
+            this._vf.value_changed = {};
+            
             if (ctx.xmlNode.hasAttribute('key'))
-                this._key = Array.map(ctx.xmlNode.getAttribute('key').split(/\s+/), function (n) { return +n; });
+                this._vf.key = Array.map(ctx.xmlNode.getAttribute('key').split(/\s+/), function (n) { return +n; });
             else
-                this._key = [];
+                this._vf.key = [];
         },
         {
-            _linearInterp: function (t, interp) {
-                if (t <= this._key[0])
-                    return this._keyValue[0];
-                if (t >= this._key[this._key.length-1])
-                    return this._keyValue[this._key.length-1];
-                for (var i = 0; i < this._key.length-1; ++i) {
-                    if ((this._key[i] < t) && (t <= this._key[i+1])) {
-                        return interp( this._keyValue[i], this._keyValue[i+1], 
-                                (t - this._key[i]) / (this._key[i+1] - this._key[i]) );
+            linearInterp: function (t, interp) {
+                if (t <= this._vf.key[0])
+                    return this._vf.keyValue[0];
+                if (t >= this._vf.key[this._vf.key.length-1])
+                    return this._vf.keyValue[this._vf.key.length-1];
+                for (var i = 0; i < this._vf.key.length-1; ++i) {
+                    if ((this._vf.key[i] < t) && (t <= this._vf.key[i+1])) {
+                        return interp( this._vf.keyValue[i], this._vf.keyValue[i+1], 
+                                (t - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
 					}
 				}
-			    return this._keyValue[0];
+			    return this._vf.keyValue[0];
             }
         }
     )
@@ -2561,13 +2459,13 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.OrientationInterpolator.superClass.call(this, ctx);
             
             if (ctx.xmlNode.hasAttribute('keyValue'))
-                this._keyValue = x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute('keyValue'));
+                this._vf.keyValue = x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute('keyValue'));
             else
-                this._keyValue = [];
+                this._vf.keyValue = [];
             
-            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this._linearInterp(msg, function (a, b, t) { return a.slerp(b, t); });
-                this._postMessage('value_changed', value);
+            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
+                var value = this.linearInterp(msg, function (a, b, t) { return a.slerp(b, t); });
+                this.postMessage('value_changed', value);
             } ];
         }
     )
@@ -2581,13 +2479,13 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.PositionInterpolator.superClass.call(this, ctx);
             
             if (ctx.xmlNode.hasAttribute('keyValue'))
-                this._keyValue = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
+                this._vf.keyValue = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
             else
-                this._keyValue = [];
+                this._vf.keyValue = [];
             
-            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this._linearInterp(msg, function (a, b, t) { return a.multiply(1.0-t).add(b.multiply(t)); });
-                this._postMessage('value_changed', value);
+            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
+                var value = this.linearInterp(msg, function (a, b, t) { return a.multiply(1.0-t).add(b.multiply(t)); });
+                this.postMessage('value_changed', value);
             } ];
         }
     )
@@ -2601,13 +2499,13 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.ScalarInterpolator.superClass.call(this, ctx);
             
             if (ctx.xmlNode.hasAttribute('keyValue'))
-                this._keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s+/), function (n) { return +n; });
+                this._vf.keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s+/), function (n) { return +n; });
             else
-                this._keyValue = [];
+                this._vf.keyValue = [];
 			
-            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this._linearInterp(msg, function (a, b, t) { return (1.0-t)*a + t*b; });
-                this._postMessage('value_changed', value);
+            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
+                var value = this.linearInterp(msg, function (a, b, t) { return (1.0-t)*a + t*b; });
+                this.postMessage('value_changed', value);
             } ];
         }
     )
@@ -2620,29 +2518,29 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.CoordinateInterpolator.superClass.call(this, ctx);
             
-            this._keyValue = [];
+            this._vf.keyValue = [];
             if (ctx.xmlNode.hasAttribute('keyValue')) {
                 var arr = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
-                var key = this._key.length > 0 ? this._key.length : 1;
+                var key = this._vf.key.length > 0 ? this._vf.key.length : 1;
                 var len = arr.length / key;
                 for (var i=0; i<key; i++) {
                     var val = new x3dom.fields.MFVec3f();
                     for (var j=0; j<len; j++) {
                         val.push( arr[i*len+j] );
                     }
-                    this._keyValue.push(val);
+                    this._vf.keyValue.push(val);
                 }
             }
             
-            this._fieldWatchers._fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this._linearInterp(msg, function (a, b, t) {
+            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
+                var value = this.linearInterp(msg, function (a, b, t) {
                     var val = new x3dom.fields.MFVec3f();
                     for (var i=0; i<a.length; i++) {
                         val.push(a[i].multiply(1.0-t).add(b[i].multiply(t)));
                     }
                     return val;
                 });
-                this._postMessage('value_changed', value);
+                this.postMessage('value_changed', value);
             } ];
         }
     )
@@ -2668,6 +2566,9 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DSensorNode, // TODO: multiple inheritance...
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
+            
+            //HACK: register eventOut somehow, but eventOuts are NO fields!
+            this._vf.fraction_changed = {};
 			
 			this._attribute_SFBool(ctx, 'enabled', true);
             this._attribute_SFTime(ctx, 'cycleInterval', 1);
@@ -2677,20 +2578,20 @@ x3dom.registerNodeType(
             this._fraction = 0;
         },
         {
-            _onframe: function (ts) {
-				if (!this._enabled)
+            onframe: function (ts) {
+				if (!this._vf.enabled)
 					return;
 				
-            	var isActive = ( ts >= this._startTime);
+            	var isActive = ( ts >= this._vf.startTime);
             	var cycleFrac, cycle, fraction;
             	
-            	if (this._cycleInterval > 0) {
-                    cycleFrac = (ts - this._startTime) / this._cycleInterval;
+            	if (this._vf.cycleInterval > 0) {
+                    cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
                     cycle = Math.floor(cycleFrac);
                     fraction = cycleFrac - cycle;
             	}
      
-     			this._postMessage('fraction_changed', fraction );
+     			this.postMessage('fraction_changed', fraction );
             }
         }
     )
@@ -2727,7 +2628,7 @@ x3dom.registerNodeType(
             {
         		if (this._cam == null) 
                 {
-					this._cam = this._find(x3dom.nodeTypes.Viewpoint);
+					this._cam = this.find(x3dom.nodeTypes.Viewpoint);
                     
                     if (!this._cam)
                     {
@@ -2746,7 +2647,7 @@ x3dom.registerNodeType(
 			getLights: function() 
             {
 				if (this._lights.length == 0)
-					this._lights = this._findAll(x3dom.nodeTypes.DirectionalLight);
+					this._lights = this.findAll(x3dom.nodeTypes.DirectionalLight);
 				
 				return this._lights;
 			},
@@ -2755,7 +2656,7 @@ x3dom.registerNodeType(
             {
                 if (this._navi == null)
                 {
-                    this._navi = this._find(x3dom.nodeTypes.NavigationInfo);
+                    this._navi = this.find(x3dom.nodeTypes.NavigationInfo);
                     
                     if (!this._navi)
                     {
@@ -2771,14 +2672,14 @@ x3dom.registerNodeType(
                 return this._navi;
             },
         	
-			getVolume: function(min, max, invalidate)
+			getSceneVolume: function(min, max, invalidate)
 			{
 				var MIN = new x3dom.fields.SFVec3f(
 					Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
 				var MAX = new x3dom.fields.SFVec3f(
 					Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 				
-				var valid = this._getVolume(MIN, MAX, invalidate);
+				var valid = this.getVolume(MIN, MAX, invalidate);
 				
 				min.x = MIN.x;
 				min.y = MIN.y;
@@ -2794,7 +2695,7 @@ x3dom.registerNodeType(
             getViewpointMatrix: function () 
             {
                 var viewpoint = this.getViewpoint();
-                var mat_viewpoint = viewpoint._getCurrentTransform();
+                var mat_viewpoint = viewpoint.getCurrentTransform();
                 
 				return mat_viewpoint.mult(viewpoint.getViewMatrix());
             },
@@ -2815,7 +2716,7 @@ x3dom.registerNodeType(
                         Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
                     var max = new x3dom.fields.SFVec3f(
                         Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-                    var ok = this.getVolume(min, max, true);
+                    var ok = this.getSceneVolume(min, max, true);
                     
                     if (ok)
                     {
@@ -2827,7 +2728,7 @@ x3dom.registerNodeType(
                         var dist2 = (dia.x/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
                         
                         dia = min.add(dia.multiply(0.5));
-                        var dir = lights[0]._direction.normalize().negate();
+                        var dir = lights[0]._vf.direction.normalize().negate();
                         dia = dia.add(dir.multiply(1.2*(dist1 > dist2 ? dist1 : dist2)));
                         //x3dom.debug.logInfo(dia);
                         
@@ -2850,7 +2751,7 @@ x3dom.registerNodeType(
             {
                 if (this._bgnd == null)
                 {
-                    this._bgnd = this._find(x3dom.nodeTypes.Background);
+                    this._bgnd = this.find(x3dom.nodeTypes.Background);
                     
                     if (!this._bgnd)
                     {
@@ -2913,7 +2814,7 @@ x3dom.registerNodeType(
 					Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
 				var max = new x3dom.fields.SFVec3f(
 					Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-                var ok = this.getVolume(min, max, true);
+                var ok = this.getSceneVolume(min, max, true);
                 
                 if (ok)
                 {
@@ -2950,7 +2851,7 @@ x3dom.registerNodeType(
                 
                 var line = this.calcViewRay(x, y);
                 
-                var isect = this._doIntersect(line);
+                var isect = this.doIntersect(line);
                 
                 if (isect) 
                 {
@@ -2977,14 +2878,14 @@ x3dom.registerNodeType(
             onDoubleClick: function (x, y)
             {
                 var navi = this.getNavInfo();
-                if (navi._type[0].length <= 1 || navi._type[0].toLowerCase() == "none")
+                if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
                     return;
                 
                 var viewpoint = this.getViewpoint();
                 
-                viewpoint._centerOfRotation.x = this._pick.x;
-                viewpoint._centerOfRotation.y = this._pick.y;
-                viewpoint._centerOfRotation.z = this._pick.z;
+                viewpoint._vf.centerOfRotation.x = this._pick.x;
+                viewpoint._vf.centerOfRotation.y = this._pick.y;
+                viewpoint._vf.centerOfRotation.z = this._pick.z;
                 x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
             },
     		
@@ -2992,7 +2893,7 @@ x3dom.registerNodeType(
             ondrag: function (x, y, buttonState) 
             {
                 var navi = this.getNavInfo();
-                if (navi._type[0].length <= 1 || navi._type[0].toLowerCase() == "none")
+                if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
                     return;
                 
                 var Eps = 0.00001;
@@ -3024,7 +2925,7 @@ x3dom.registerNodeType(
                 {
 					min = new x3dom.fields.SFVec3f(0,0,0);
 					max = new x3dom.fields.SFVec3f(0,0,0);
-					ok = this.getVolume(min, max, true);
+					ok = this.getSceneVolume(min, max, true);
 					
 					d = ok ? (max.subtract(min)).length() : 10;
                     d = (d < Eps) ? 1 : d;
@@ -3043,7 +2944,7 @@ x3dom.registerNodeType(
                 {
 					min = new x3dom.fields.SFVec3f(0,0,0);
 					max = new x3dom.fields.SFVec3f(0,0,0);
-					ok = this.getVolume(min, max, true);
+					ok = this.getSceneVolume(min, max, true);
 					
 					d = ok ? (max.subtract(min)).length() : 10;
                     d = (d < Eps) ? 1 : d;
@@ -3076,20 +2977,20 @@ x3dom.registerNodeType(
             this._attribute_MFString(ctx, 'url', []);
         },
         {
-            _doIntersect: function(line) {
+            doIntersect: function(line) {
                 var isect = false;
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
-                        if (this._childNodes[i]._doIntersect(line)) {
+                        if (this._childNodes[i].doIntersect(line)) {
                             isect = true;
                         }
                     }
                 }
                 
-                if (isect && this._url.length > 0) {
+                if (isect && this._vf.url.length > 0) {
                     // fixme; window.open usually gets blocked
                     // but this way the current page is lost?!
-                    window.location = this._url[0];
+                    window.location = this._vf.url[0];
                 }
                 
                 return isect;
@@ -3116,7 +3017,7 @@ x3dom.registerNodeType(
             xhr.onreadystatechange = function () {
                 if (xhr.readyState == 4) {
                     if (xhr.responseXML.documentElement.localName == 'parsererror') {
-                        x3dom.debug.logInfo('XML parser failed on '+this._url+':\n'+xhr.responseXML.documentElement.textContent);
+                        x3dom.debug.logInfo('XML parser failed on '+this._vf.url+':\n'+xhr.responseXML.documentElement.textContent);
                         return;
                     }
                 }
@@ -3130,7 +3031,7 @@ x3dom.registerNodeType(
                     return;
                 }
                 
-                x3dom.debug.logInfo('Inline: downloading '+that._url+' done.');
+                x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
                 
                 var xml = xhr.responseXML;
                 
@@ -3144,12 +3045,12 @@ x3dom.registerNodeType(
                 
                 x3dom.parsingInline = false; // disable special case
                 
-                x3dom.debug.logInfo('Inline: added '+that._url+' to scene.');
+                x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
             };
             
-            x3dom.debug.logInfo('Inline: downloading '+this._url);
+            x3dom.debug.logInfo('Inline: downloading '+this._vf.url);
             
-            xhr.open('GET', this._url, true);
+            xhr.open('GET', this._vf.url, true);
             xhr.send(null);
         },
         {
@@ -3234,7 +3135,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 3: "REMOVAL"
             };
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
-            e.target._x3domNode._updateField(e.attrName, e.newValue);
+            e.target._x3domNode.updateField(e.attrName, e.newValue);
         },
         onNodeRemoved: function(e) {
             var parent = e.target.parentNode._x3domNode;
@@ -3359,9 +3260,9 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
                     x3dom.debug.logInfo("Broken route - can't find all DEFs for " + route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
                     return null;
                 }
-                fromNode._setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
+                fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
 
-//                 // XXX: handle imported ROUTEs
+//                 // _: handle imported ROUTEs
 //                 TODO: Store the routes of the scene - where should we store them?
 //                 scene._routes = Array.map(sceneRoutes, setupRoute);
 	    		return null;
@@ -3394,8 +3295,9 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
     if (this._scene) {
-        Array.forEach(this._scene._findAll(x3dom.nodeTypes.TimeSensor),
-            function (timer) { timer._onframe(t); }
+		// FIXME; link all TimeSensor in context
+        Array.forEach(this._scene.findAll(x3dom.nodeTypes.TimeSensor),
+            function (timer) { timer.onframe(t); }
         );
     }
 };
