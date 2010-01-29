@@ -51,11 +51,11 @@
                     t.childTypes = {};
                 
                 while (t.superClass) {     
-                    if (t.superClass.childTypes[t.superClass.typeName] === undefined) {
-                        t.superClass.childTypes[t.superClass.typeName] = [];
+                    if (t.superClass.childTypes[t.superClass._typeName] === undefined) {
+                        t.superClass.childTypes[t.superClass._typeName] = [];
                     }
-                    if (!objInArray( t.superClass.childTypes[t.superClass.typeName], t.typeName))
-                        t.superClass.childTypes[t.superClass.typeName].push(t.typeName);                    
+                    if (!objInArray( t.superClass.childTypes[t.superClass._typeName], t._typeName))
+                        t.superClass.childTypes[t.superClass._typeName].push(t._typeName);                    
                     t = t.superClass;
                 }
 
