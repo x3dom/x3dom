@@ -132,7 +132,8 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         	if (ctx.xmlNode.hasAttribute('DEF')) {
             	this._DEF = ctx.xmlNode.getAttribute('DEF');
 				ctx.defMap[this._DEF] = this;
-			} else {
+			}
+            else {
 				if (ctx.xmlNode.hasAttribute('id')) {
 					this._DEF = ctx.xmlNode.getAttribute('id');
 					ctx.defMap[this._DEF] = this;
@@ -140,8 +141,6 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 			}
 
 			this._xmlNode = ctx.xmlNode;	// backlink to DOM tree
-            
-            this._ctx = ctx;    //needed for late create for all vf attribs!
 		}
 		
 		// holds all value fields (e.g. SFFloat, MFVec3f, ...)
@@ -261,15 +260,16 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
                     if (this._childNodes[i].constructor == type) {
                         found.push(this._childNodes[i]);
                     }
-                    found = found.concat(this._childNodes[i].findAll(type)); // TODO: this has non-linear performance
+                    // TODO: this has non-linear performance
+                    found = found.concat(this._childNodes[i].findAll(type));
                 }
             }
             return found;
         },
 
-        /* Collects array of [transform matrix, node] for all objects that should be drawn. */
+        // Collects array of [transform matrix, node] for all objects that should be drawn.
         collectDrawableObjects: function (transform, out) {
-            // TODO: culling etc
+            // TODO: culling etc.
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     var childTransform = this._childNodes[i].transformMatrix(transform);
@@ -291,7 +291,6 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
 
         postMessage: function (field, msg) {
             // TODO: timestamps and stuff
-            //log_frame(this+' postmessage '+field+' - '+msg);
             var listeners = this._fieldWatchers[field];
             var thisp = this;
             if (listeners) {
@@ -697,7 +696,7 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                // FIXME: Add texture url update code
+                // FIXME: Add texture url update code (also in gfx)
             }
         }
     )
@@ -719,7 +718,7 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                // FIXME: Add texture url update code
+                // FIXME: Add texture url update code (also in gfx)
             }
         }
     )
@@ -2085,7 +2084,7 @@ x3dom.registerNodeType(
             this._attribute_SFFloat(ctx, 'shadowIntensity', 0);
         },
         {
-			getViewMatrix: function(pos) {
+			getViewMatrix: function(vec) {
                 return x3dom.fields.SFMatrix4f.identity;
             }
         }
@@ -2100,10 +2099,68 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.DirectionalLight.superClass.call(this, ctx);
             
-            this._attribute_SFVec3f(ctx, 'direction', 0, -1, 0);
+            this._attribute_SFVec3f(ctx, 'direction', 0, 0, -1);
         },
         {
-            getViewMatrix: function(pos) {
+            getViewMatrix: function(vec) {
+                var dir = this._vf.direction.normalize();
+                var orientation = x3dom.fields.Quaternion.rotateFromTo(
+                        new x3dom.fields.SFVec3f(0, 0, -1), dir);
+                return orientation.toMatrix().transpose().
+                        mult(x3dom.fields.SFMatrix4f.translation(vec.negate()));
+            }
+        }
+    )
+);
+
+/* ### PointLight ### */
+x3dom.registerNodeType( 
+    "PointLight",
+    "Lighting",
+    defineClass(x3dom.nodeTypes.X3DLightNode,
+        function (ctx) {
+            x3dom.nodeTypes.PointLight.superClass.call(this, ctx);
+            
+            this._attribute_SFVec3f(ctx, 'attenuation', 1, 0, 0);
+            this._attribute_SFVec3f(ctx, 'location', 0, 0, 0);
+            this._attribute_SFFloat(ctx, 'radius', 100);
+            
+            this._vf.global = true;
+            x3dom.debug.logInfo("PointLight NYI");  // TODO: gfx handling
+        },
+        {
+            getViewMatrix: function(vec) {
+                var pos = this._vf.location;
+                var orientation = x3dom.fields.Quaternion.rotateFromTo(
+                        new x3dom.fields.SFVec3f(0, 0, -1), vec);
+                return orientation.toMatrix().transpose().
+                        mult(x3dom.fields.SFMatrix4f.translation(pos.negate()));
+            }
+        }
+    )
+);
+
+/* ### SpotLight ### */
+x3dom.registerNodeType( 
+    "SpotLight",
+    "Lighting",
+    defineClass(x3dom.nodeTypes.X3DLightNode,
+        function (ctx) {
+            x3dom.nodeTypes.SpotLight.superClass.call(this, ctx);
+            
+            this._attribute_SFVec3f(ctx, 'direction', 0, 0, -1);
+            this._attribute_SFVec3f(ctx, 'attenuation', 1, 0, 0);
+            this._attribute_SFVec3f(ctx, 'location', 0, 0, 0);
+            this._attribute_SFFloat(ctx, 'radius', 100);
+            this._attribute_SFFloat(ctx, 'beamWidth', 1.5707963);
+            this._attribute_SFFloat(ctx, 'cutOffAngle', 1.5707963);
+            
+            this._vf.global = true;
+            x3dom.debug.logInfo("SpotLight NYI");  // TODO: gfx handling
+        },
+        {
+            getViewMatrix: function(vec) {
+                var pos = this._vf.location;
                 var dir = this._vf.direction.normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
                         new x3dom.fields.SFVec3f(0, 0, -1), dir);
@@ -2113,7 +2170,6 @@ x3dom.registerNodeType(
         }
     )
 );
-
 
 /* ### X3DShapeNode ### */
 x3dom.registerNodeType(
@@ -2198,10 +2254,109 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Switch.superClass.call(this, ctx);
 			
 			this._attribute_SFInt32(ctx, 'whichChoice', -1);
-            
-            x3dom.debug.logInfo("Switch.whichChoice NYI!");
         },
         {
+            getVolume: function (min, max, invalidate) 
+            {
+                if (this._vf.whichChoice < 0 || 
+                    this._vf.whichChoice >= this._childNodes.length) {
+                    return false;
+                }
+                
+                var valid = false;
+                
+                if (this._childNodes[this._vf.whichChoice]) {
+                    // FIXME; this code is still a bit strange and buggy...
+                    var childMin = new x3dom.fields.SFVec3f(
+                            Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+                    var childMax = new x3dom.fields.SFVec3f(
+                            Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+                    
+                    valid = this._childNodes[this._vf.whichChoice].getVolume(
+                                    childMin, childMax, invalidate) || valid;
+                    
+                    if (valid) {
+                        if (min.x > childMin.x) { min.x = childMin.x; }
+                        if (min.y > childMin.y) { min.y = childMin.y; }
+                        if (min.z > childMin.z) { min.z = childMin.z; }
+                            
+                        if (max.x < childMax.x) { max.x = childMax.x; }
+                        if (max.y < childMax.y) { max.y = childMax.y; }
+                        if (max.z < childMax.z) { max.z = childMax.z; }
+                    }
+                }
+                
+                return valid;
+            },
+
+            find: function (type) 
+            {
+                if (this._vf.whichChoice < 0 || 
+                    this._vf.whichChoice >= this._childNodes.length) {
+                    return null;
+                }
+                
+                if (this._childNodes[this._vf.whichChoice]) {
+                    if (this._childNodes[this._vf.whichChoice].constructor == type) {
+                        return this._childNodes[this._vf.whichChoice];
+                    }
+                    
+                    var c = this._childNodes[this._vf.whichChoice].find(type);
+                    if (c) {
+                        return c;
+                    }
+                }
+                
+                return null;
+            },
+
+            findAll: function (type)
+            {
+                if (this._vf.whichChoice < 0 || 
+                    this._vf.whichChoice >= this._childNodes.length) {
+                    return [];
+                }
+                
+                var found = [];
+                
+                if (this._childNodes[this._vf.whichChoice]) {
+                    if (this._childNodes[this._vf.whichChoice].constructor == type) {
+                        found.push(this._childNodes[this._vf.whichChoice]);
+                    }
+                    
+                    found = found.concat(this._childNodes[this._vf.whichChoice].findAll(type)); 
+                }
+                
+                return found;
+            },
+
+            // Collects array of [transform matrix, node] for all objects that should be drawn.
+            collectDrawableObjects: function (transform, out)
+            {
+                if (this._vf.whichChoice < 0 || 
+                    this._vf.whichChoice >= this._childNodes.length) {
+                    return;
+                }
+                
+                if (this._childNodes[this._vf.whichChoice]) {
+                    var childTransform = this._childNodes[this._vf.whichChoice].transformMatrix(transform);
+                    this._childNodes[this._vf.whichChoice].collectDrawableObjects(childTransform, out);
+                }
+            },
+            
+            doIntersect: function(line)
+            {
+                if (this._vf.whichChoice < 0 || 
+                    this._vf.whichChoice >= this._childNodes.length) {
+                    return false;
+                }
+                
+                if (this._childNodes[this._vf.whichChoice]) {
+                    return this._childNodes[this._vf.whichChoice].doIntersect(line);
+                }
+                
+                return false;
+            }
         }
     )
 );
@@ -2595,6 +2750,7 @@ x3dom.registerNodeType(
             this._lastY = -1;
             this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
             
+            this._ctx = ctx;    // needed for late create in onNodeInserted()
 			this._cam = null;
             this._bgnd = null;
             this._navi = null;
@@ -2609,11 +2765,8 @@ x3dom.registerNodeType(
                     
                     if (!this._cam)
                     {
-                        var cam = document.createElement('Viewpoint');
-                        this._xmlNode.appendChild(cam);
-                        this._ctx.xmlNode = cam;
                         var nodeType = x3dom.nodeTypes["Viewpoint"];
-                        this._cam = new nodeType(this._ctx);
+                        this._cam = new nodeType();
                         x3dom.debug.logInfo("Created ViewBindable.");
                     }
                 }
@@ -2637,11 +2790,8 @@ x3dom.registerNodeType(
                     
                     if (!this._navi)
                     {
-                        var nav = document.createElement('NavigationInfo');
-                        this._xmlNode.appendChild(nav);
-                        this._ctx.xmlNode = nav;
                         var nodeType = x3dom.nodeTypes["NavigationInfo"];
-                        this._navi = new nodeType(this._ctx);
+                        this._navi = new nodeType();
                         x3dom.debug.logInfo("Created UserBindable.");
                     }
                 }
@@ -2732,11 +2882,8 @@ x3dom.registerNodeType(
                     
                     if (!this._bgnd)
                     {
-                        var bgd = document.createElement('Background');
-                        this._xmlNode.appendChild(bgd);
-                        this._ctx.xmlNode = bgd;
                         var nodeType = x3dom.nodeTypes["Background"];
-                        this._bgnd = new nodeType(this._ctx);
+                        this._bgnd = new nodeType();
                         x3dom.debug.logInfo("Created BackgroundBindable.");
                     }
                 }
@@ -3035,6 +3182,9 @@ x3dom.registerNodeType(
             xhr.send(null);
         },
         {
+            fieldChanged: function (fieldName) {
+                // FIXME: Add 'url' update code
+            }
         }
     )
 );
@@ -3144,13 +3294,11 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             
             x3dom.parsingInline = true; // enable special case
             
+            //FIXME; get rid of scene._ctx
             var newChild = scene._ctx.setupNodePrototypes(child, scene._ctx);
-
-			// FIXME; 
+            
 			parent.addChild(newChild);
             newChild.nodeChanged();
-            //parent._childNodes.push(newChild);
-            //newChild._parentNodes.push(parent);
             
             x3dom.parsingInline = false; // disable special case
         }
