@@ -806,14 +806,16 @@ x3dom.fields.MFColor = function(colorArray) {
 x3dom.fields.MFColor.prototype = new Array;
 
 x3dom.fields.MFColor.parse = function(str) {
-    var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){3},?\s*/g);
+    //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){3},?\s*/g);
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
     var colors = [];
-    for (var i = 0; i < mc.length; ++i) {
-        var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
+    for (var i=0, n=mc.length; i<n; i+=3) {
+        /*var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            colors.push( new x3dom.fields.SFColor(+c[1], +c[2], +c[3]) );
+            colors.push( new x3dom.fields.SFColor(+c[1], +c[2], +c[3]) );*/
+        colors.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2]) );
     }
-
+    
     return new x3dom.fields.MFColor( colors );
     
 };
@@ -846,12 +848,14 @@ x3dom.fields.MFRotation = function(rotArray) {
 x3dom.fields.MFRotation.prototype = new Array;
 
 x3dom.fields.MFRotation.parse = function(str) {
-    var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){4},?\s*/g);
+    //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){4},?\s*/g);
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vecs = [];
-    for (var i = 0; i < mc.length; ++i) {
-        var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
+    for (var i=0, n=mc.length; i<n; i+=4) {
+        /*var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]), +c[4]) );
+            vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]), +c[4]) );*/
+        vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]), +mc[i+3]) );
     }
     
     // holds the quaternion representation as needed by interpolators etc.
@@ -882,14 +886,16 @@ x3dom.fields.MFVec3f = function(vec3Array) {
 x3dom.fields.MFVec3f.prototype = new Array;
 
 x3dom.fields.MFVec3f.parse = function(str) {
-    var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){3},?\s*/g);
+    //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){3},?\s*/g);
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vecs = [];
-    for (var i = 0; i < mc.length; ++i) {
-        var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
+    for (var i=0, n=mc.length; i<n; i+=3) {
+        /*var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            vecs.push( new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]) );
+            vecs.push( new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]) );*/
+        vecs.push( new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]) );
     }
-
+    
     return new x3dom.fields.MFVec3f( vecs );    
 };
 
@@ -922,12 +928,14 @@ x3dom.fields.MFVec2f = function(vec2Array) {
 x3dom.fields.MFVec2f.prototype = new Array;
 
 x3dom.fields.MFVec2f.parse = function(str) {
-    var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){2},?\s*/g);
+    //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){2},?\s*/g);
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vecs = [];
-    for (var i = 0; i < mc.length; ++i) {
-        var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
+    for (var i=0, n=mc.length; i<n; i+=2) {
+        /*var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            vecs.push( new x3dom.fields.SFVec2f(+c[1], +c[2]) );
+            vecs.push( new x3dom.fields.SFVec2f(+c[1], +c[2]) );*/
+        vecs.push( new x3dom.fields.SFVec2f(+mc[i+0], +mc[i+1]) );
     }
 
     return new x3dom.fields.MFVec2f( vecs );    
@@ -997,12 +1005,14 @@ x3dom.fields.MFFloat = function(array) {
 x3dom.fields.MFFloat.prototype = new Array;
 
 x3dom.fields.MFFloat.parse = function(str) {
-    var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){1},?\s*/g);
+    //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){1},?\s*/g);
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vals = [];
-    for (var i = 0; i < mc.length; ++i) {
-        var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
+    for (var i=0, n=mc.length; i<n; i++) {
+        /*var c = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*$/.exec(mc[i]);
         if (c[0])
-            vals.push( +c[1] );
+            vals.push( +c[1] );*/
+        vals.push( +mc[i] );
     }
     
     return new x3dom.fields.MFFloat( vals );    
