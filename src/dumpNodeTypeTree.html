@@ -36,7 +36,7 @@
                 $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");                    
             }
             
-            $("#types").append(t + "<br/>");
+            $("#types").append(t + " - " + x3dom.nodeTypes[t]._compName + "<br/>");
             for (var i in x3dom.nodeTypes[t].childTypes[t]) {
                 dumpType(x3dom.nodeTypes[t].childTypes[t][i], indent+1); 
             }                                
