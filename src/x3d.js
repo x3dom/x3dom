@@ -153,8 +153,6 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         
 		// FIXME; should be removed and handled by _cf methods
         this._childNodes = [];
-        
-        this._dirty = true;
     },
     {
         addChild: function (node) {
@@ -390,7 +388,6 @@ x3dom.registerNodeType("X3DNode", "base", defineClass(null,
         
 		nodeChanged: function () {
 			// to be overwritten by concrete classes
-            this._dirty = false;
 		},
         
 		_attribute_SFInt32: function (ctx, name, n) {
@@ -536,7 +533,6 @@ x3dom.registerNodeType(
 				if (!this._cf.material.node) {					
 					this.addChild(x3dom.nodeTypes.Material.defaultNode());
 				}
-                this._dirty = false;
         	},
             
             transformMatrix: function() {
@@ -630,6 +626,18 @@ x3dom.registerNodeType(
             this._attribute_SFFloat(ctx, 'rotation', 0);
             this._attribute_SFVec2f(ctx, 'scale', 1, 1);
             this._attribute_SFVec2f(ctx, 'translation', 0, 0);
+            
+            //Tc' = -C * S * R * C * T * Tc
+            var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
+            var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
+            var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
+            var scale3 = new x3dom.fields.SFVec3f(this._vf.scale.x, this._vf.scale.y, 0);
+            
+            this._trafo = x3dom.fields.SFMatrix4f.translation(negCenter).
+                    mult(x3dom.fields.SFMatrix4f.scale(scale3)).
+                    mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
+                    mult(x3dom.fields.SFMatrix4f.translation(posCenter)).
+                    mult(x3dom.fields.SFMatrix4f.translation(trans3));
         },
         {
             fieldChanged: function (fieldName) {
@@ -645,24 +653,6 @@ x3dom.registerNodeType(
                          mult(x3dom.fields.SFMatrix4f.translation(posCenter)).
                          mult(x3dom.fields.SFMatrix4f.translation(trans3));
             },
-            
-            nodeChanged: function (fieldName) {
-                if (this._dirty)
-                {
-                    //Tc' = -C * S * R * C * T * Tc
-                    var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
-                    var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
-                    var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
-                    var scale3 = new x3dom.fields.SFVec3f(this._vf.scale.x, this._vf.scale.y, 0);
-                    
-                    this._trafo = x3dom.fields.SFMatrix4f.translation(negCenter).
-                            mult(x3dom.fields.SFMatrix4f.scale(scale3)).
-                            mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
-                            mult(x3dom.fields.SFMatrix4f.translation(posCenter)).
-                            mult(x3dom.fields.SFMatrix4f.translation(trans3));
-                }
-                this._dirty = false;
-			},
             
             transformMatrix: function() {
                 return this._trafo;
@@ -1395,7 +1385,6 @@ x3dom.registerNodeType(
 				if (!this._cf.fontStyle.node) {
 					this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
 				}
-                this._dirty = false;
 			}			
 	    }
     )
@@ -1936,17 +1925,6 @@ x3dom.registerNodeType(
                 }
             },
             
-            nodeChanged: function() {
-                if (this._dirty)
-                {
-                    // TODO; don't overwrite all values on every nodeChanged
-                    this._viewMatrix = this._vf.orientation.toMatrix().transpose().
-                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
-                    this._projMatrix = null;
-                }
-                this._dirty = false;
-            },
-            
 			getCenterOfRotation: function() {
                 return this._vf.centerOfRotation;
 			},
@@ -2193,13 +2171,15 @@ x3dom.registerNodeType(
             
             this._attribute_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this._attribute_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
+            
+            // TODO; use more specific _dirty object for positions, normals etc.
+            this._dirty = true;
         },
         {
 			nodeChanged: function () {
 				if (!this._cf.appearance.node) {
 					this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
 				}
-                this._dirty = false;
 			},
             
             collectDrawableObjects: function (transform, out) {
@@ -2482,6 +2462,15 @@ x3dom.registerNodeType(
                                                       0, 1, 0, 0,
                                                       0, 0, 1, 0,
                                                       0, 0, 0, 1);
+            
+            // P' = T * C * R * SR * S * -SR * -C * P
+            this._trafo = x3dom.fields.SFMatrix4f.translation(this._vf.translation).
+                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center)).
+                mult(this._vf.rotation.toMatrix()).
+                mult(this._vf.scaleOrientation.toMatrix()).
+                mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
+                mult(this._vf.scaleOrientation.toMatrix().inverse()).
+                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
         },
         {
             fieldChanged: function (fieldName) {
@@ -2498,21 +2487,6 @@ x3dom.registerNodeType(
                                 mult(this._vf.scaleOrientation.toMatrix().inverse()).
                                 mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
                 }
-            },
-            
-            nodeChanged: function() {
-                if (this._dirty)
-                {
-                    // P' = T * C * R * SR * S * -SR * -C * P
-                    this._trafo = x3dom.fields.SFMatrix4f.translation(this._vf.translation).
-                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.center)).
-                        mult(this._vf.rotation.toMatrix()).
-                        mult(this._vf.scaleOrientation.toMatrix()).
-                        mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
-                        mult(this._vf.scaleOrientation.toMatrix().inverse()).
-                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
-                }
-                this._dirty = false;
             }
         }
     )
