@@ -593,7 +593,7 @@ x3dom.gfx_webgl = (function () {
             {
                 if (shape._webgl.shader.position !== undefined) 
                 {
-                    shape._webgl.positions = shape._geometry._mesh._positions;
+                    shape._webgl.positions = shape._cf.geometry.node._mesh._positions;
                     
                     // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
                     gl.deleteBuffer(shape._webgl.buffers[1]);
@@ -621,7 +621,7 @@ x3dom.gfx_webgl = (function () {
         shape._dirty = false;
         
         // TODO; finish text!
-		if (x3dom.isa(shape._geometry, x3dom.nodeTypes.Text)) 
+		if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) 
         {
 			//var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
             var text_canvas = document.createElement('canvas');
@@ -630,7 +630,7 @@ x3dom.gfx_webgl = (function () {
             //document.body.appendChild(text_canvas);	//dbg
             
 			var text_ctx = text_canvas.getContext('2d');
-			var fontStyle = shape._geometry._fontStyle;
+			var fontStyle = shape._cf.geometry.node._cf.fontStyle.node;
 			var font_family = 'SANS';
             if (fontStyle !== null) {
                 font_family = Array.map(fontStyle._vf.family, function (s) {
@@ -642,7 +642,7 @@ x3dom.gfx_webgl = (function () {
             }
 			/*text_ctx.mozTextStyle = '48px '+font_family;*/
             
-			var string = shape._geometry._vf.string;
+			var string = shape._cf.geometry.node._vf.string;
 			/*
 			var text_w = 0;
             var i = 0;
@@ -670,7 +670,7 @@ x3dom.gfx_webgl = (function () {
             
             /*
 			var line_h = 1.2 * text_ctx.mozMeasureText('M'); // XXX: this is a hacky guess
-			var text_h = line_h * shape._geometry._string.length;
+			var text_h = line_h * shape._cf.geometry.node._string.length;
 			text_canvas.width = Math.pow(2, Math.ceil(Math.log(text_w)/Math.log(2)));
 			text_canvas.height = Math.pow(2, Math.ceil(Math.log(text_h)/Math.log(2)));
 			text_ctx.fillStyle = '#000';
@@ -701,19 +701,19 @@ x3dom.gfx_webgl = (function () {
             if (u > 1) u = 1; 
             //x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
-            shape._geometry._mesh._positions = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
-			shape._geometry._mesh._normals = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
-			shape._geometry._mesh._texCoords = [u0,v, u,v, u,v0, u0,v0];
-			shape._geometry._mesh._colors = [];
-			shape._geometry._mesh._indices = [0,1,2, 2,3,0];
-            shape._geometry._mesh._invalidate = true;
+            shape._cf.geometry.node._mesh._positions = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
+			shape._cf.geometry.node._mesh._normals = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
+			shape._cf.geometry.node._mesh._texCoords = [u0,v, u,v, u,v0, u0,v0];
+			shape._cf.geometry.node._mesh._colors = [];
+			shape._cf.geometry.node._mesh._indices = [0,1,2, 2,3,0];
+            shape._cf.geometry.node._mesh._invalidate = true;
                 
 			shape._webgl = {
-				positions: shape._geometry._mesh._positions,
-				normals: shape._geometry._mesh._normals,
-				texcoords: shape._geometry._mesh._texCoords,
-                colors: shape._geometry._mesh._colors,
-				indexes: shape._geometry._mesh._indices,
+				positions: shape._cf.geometry.node._mesh._positions,
+				normals: shape._cf.geometry.node._mesh._normals,
+				texcoords: shape._cf.geometry.node._mesh._texCoords,
+                colors: shape._cf.geometry.node._mesh._colors,
+				indexes: shape._cf.geometry.node._mesh._indices,
 				texture: ids,
                 buffers: [{},{},{},{},{}]
 			};
@@ -723,7 +723,7 @@ x3dom.gfx_webgl = (function () {
 		}
 		else 
 		{
-			var tex = shape._appearance._texture;
+			var tex = shape._cf.appearance.node._cf.texture.node;
 			
 			if (tex)
 			{
@@ -799,16 +799,16 @@ x3dom.gfx_webgl = (function () {
 			}
             
 			shape._webgl = {
-				positions: shape._geometry._mesh._positions,
-				normals: shape._geometry._mesh._normals,
-				texcoords: shape._geometry._mesh._texCoords,
-				colors: shape._geometry._mesh._colors,
-				indexes: shape._geometry._mesh._indices,
+				positions: shape._cf.geometry.node._mesh._positions,
+				normals: shape._cf.geometry.node._mesh._normals,
+				texcoords: shape._cf.geometry.node._mesh._texCoords,
+				colors: shape._cf.geometry.node._mesh._colors,
+				indexes: shape._cf.geometry.node._mesh._indices,
 				//indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
 				buffers: [{},{},{},{},{}]
 			};
             
-            if (x3dom.isa(shape._geometry, x3dom.nodeTypes.PointSet)) {
+            if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
                 shape._webgl.primType = gl.POINTS;
                 
                 //TODO; remove these hacky thousands of shaders!!!
@@ -820,14 +820,14 @@ x3dom.gfx_webgl = (function () {
                 
                 // 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
                 if (tex) {
-                    if (shape._appearance._textureTransform === null) {
+                    if (shape._cf.appearance.node._cf.textureTransform.node === null) {
                         shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured']);
                     }
                     else {
                         shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured-tt', 'fs-x3d-textured']);
                     }
                 }
-                else if (shape._geometry._mesh._colors.length > 0) {
+                else if (shape._cf.geometry.node._mesh._colors.length > 0) {
                     shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolor', 'fs-x3d-vertexcolor']);
                 }
                 else {
@@ -1112,7 +1112,7 @@ x3dom.gfx_webgl = (function () {
 			sp.lightDirection = light.toGL();
             sp.lightOn = lightOn;
 
-			var mat = shape._appearance._material;
+			var mat = shape._cf.appearance.node._cf.material.node;
 			if (mat) {
 				sp.ambientIntensity = mat._vf.ambientIntensity;
 				sp.diffuseColor = mat._vf.diffuseColor.toGL();
@@ -1128,7 +1128,7 @@ x3dom.gfx_webgl = (function () {
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{
-                var tex = shape._appearance._texture;
+                var tex = shape._cf.appearance.node._cf.texture.node;
                 var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
                 if (tex && tex._vf.repeatS === false) {
                     wrapS = gl.CLAMP_TO_EDGE;
@@ -1148,10 +1148,10 @@ x3dom.gfx_webgl = (function () {
 				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,wrapT);
 				//gl.generateMipmap(gl.TEXTURE_2D);
                 
-                if (shape._appearance._textureTransform !== null)
+                if (shape._cf.appearance.node._cf.textureTransform.node !== null)
                 {
                     // use shader/ calculation due to performance issues
-                    var texTrafo = shape._appearance.transformMatrix();
+                    var texTrafo = shape._cf.appearance.node.transformMatrix();
                     sp.texTrafoMatrix = texTrafo.toGL();
                 }
                 sp.tex = 0;

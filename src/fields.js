@@ -1028,7 +1028,7 @@ x3dom.fields.SFNode = function(type) {
 };
 
 x3dom.fields.SFNode.prototype.hasLink = function(node) {
-	return (this.node === node);
+	return (node ? (this.node === node) : this.node);
 };
 
 x3dom.fields.SFNode.prototype.addLink = function(node) {
@@ -1055,11 +1055,15 @@ x3dom.fields.MFNode = function(type) {
 };
 
 x3dom.fields.MFNode.prototype.hasLink = function(node) {
-	for (var i = 0, n = this.nodes.length; i < n; i++) {
-		if (this.nodes[i] === node) {
-			return true;
+	if (node) {
+		for (var i = 0, n = this.nodes.length; i < n; i++) {
+			if (this.nodes[i] === node) {
+				return true;
+			}
 		}
 	}
+	else
+		return (this.length > 0);
 	return false;
 };
 
