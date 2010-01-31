@@ -134,7 +134,7 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
 					ctx.defMap[this._DEF] = this;
 				}
 			}
-
+            
 			this._xmlNode = ctx.xmlNode;	// backlink to DOM tree
 		}
 		
@@ -408,9 +408,9 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
         },
         _attribute_SFBool: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
-                ctx.xmlNode.getAttribute(name).toLowerCase() == "true" : n;
+                ctx.xmlNode.getAttribute(name).toLowerCase() === "true" : n;
             this._vf[name].setValueByStr = function(str) {
-                this._vf[name] = (str.toLowerCase() == "true");
+                this._vf[name] = (str.toLowerCase() === "true");
             };
         },
         _attribute_SFString: function (ctx, name, n) {
@@ -800,7 +800,7 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     
     if (isect)
     {
-        x3dom.debug.logInfo("Hit \"" + this._parent._typeName + "/" + this._parent._DEF + "\"");
+        x3dom.debug.logInfo("Hit \"" + this._parent._xmlNode.localName + "/ " + this._parent._DEF + "\"");
         
         line.hitObject = this._parent;
         line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
@@ -809,54 +809,80 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     return isect;
 };
 
-x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
+x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 {
-	//fixme; as first shot taken from gfx
-    var i = 0;
+    var i = 0, j = 0, num = 0;
+    var multInd = (this._multiIndIndices !== undefined && this._multiIndIndices.length);
 	var coords = this._positions;
-	var idxs = this._indices;
+	var idxs = multInd ? this._multiIndIndices : this._indices;
 	
 	var vertNormals = [];
 	var vertFaceNormals = [];
 
-    var n = null;
+    var a, b, n = null;
+    
+    num = coords.length / 3;
 	
-	for (i = 0; i < coords.length/3; ++i) {
+	for (i = 0; i < num; ++i) {
 		vertFaceNormals[i] = [];
     }
+    
+    num = idxs.length;
 
-	for (i = 0; i < idxs.length; i += 3) {
-		var a = new x3dom.fields.SFVec3f(
-				coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
-			subtract(new x3dom.fields.SFVec3f(
-				coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
-		var b = new x3dom.fields.SFVec3f(
-				coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
-			subtract(new x3dom.fields.SFVec3f(
-				coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+	for (i = 0; i < num; i += 3) {
+        if (!multInd) {
+            a = new x3dom.fields.SFVec3f(
+                    coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
+                subtract(new x3dom.fields.SFVec3f(
+                    coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]));
+            b = new x3dom.fields.SFVec3f(
+                    coords[idxs[i+1]*3], coords[idxs[i+1]*3+1], coords[idxs[i+1]*3+2]).
+                subtract(new x3dom.fields.SFVec3f(
+                    coords[idxs[i+2]*3], coords[idxs[i+2]*3+1], coords[idxs[i+2]*3+2]));
+        }
+        else {
+            a = new x3dom.fields.SFVec3f(
+                        coords[i*3], coords[i*3+1], coords[i*3+2]).
+                    subtract(new x3dom.fields.SFVec3f(
+                        coords[(i+1)*3], coords[(i+1)*3+1], coords[(i+1)*3+2]));
+            b = new x3dom.fields.SFVec3f(
+                        coords[(i+1)*3], coords[(i+1)*3+1], coords[(i+1)*3+2]).
+                    subtract(new x3dom.fields.SFVec3f(
+                        coords[(i+2)*3], coords[(i+2)*3+1], coords[(i+2)*3+2]));
+        }
 		
 		n = a.cross(b).normalize();
 		vertFaceNormals[idxs[i  ]].push(n);
 		vertFaceNormals[idxs[i+1]].push(n);
 		vertFaceNormals[idxs[i+2]].push(n);
 	}
-	
-    //TODO: creaseAngle
-	for (i = 0; i < coords.length; i += 3) {
+    
+    for (i = 0; i < coords.length; i += 3) {
+        //TODO: creaseAngle
 		n = new x3dom.fields.SFVec3f(0, 0, 0);
-		for (var j = 0; j < vertFaceNormals[i/3].length; ++j) {
-			n = n.add(vertFaceNormals[i/3][j]);
-		}
+        
+        if (!multInd) {
+            num = vertFaceNormals[i/3].length;
+            for (j = 0; j < num; ++j) {
+                n = n.add(vertFaceNormals[i/3][j]);
+            }
+        }
+        else {
+            num = vertFaceNormals[idxs[i/3]].length;
+            for (j = 0; j < num; ++j) {
+                n = n.add(vertFaceNormals[idxs[i/3]][j]);
+            }
+        }
 
 		n = n.normalize();
-        if (!ccw) {
-            n = n.negate();
-        }
-        
 		vertNormals[i  ] = n.x;
 		vertNormals[i+1] = n.y;
 		vertNormals[i+2] = n.z;
 	}
+    
+    if (multInd) {
+        this._multiIndIndices = [];
+    }
 	
 	this._normals = vertNormals;
 };
@@ -882,6 +908,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
 			
 			this._attribute_SFBool(ctx, 'solid', true);
+            this._attribute_SFBool(ctx, 'ccw', true);
 			
 			this._mesh = new x3dom.Mesh(this);
         },
@@ -1464,7 +1491,6 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
             
-            this._attribute_SFBool(ctx, 'ccw', true);
 			this._attribute_SFFloat(ctx, 'creaseAngle', 0);	// TODO
             this._attribute_SFBool(ctx, 'colorPerVertex', true);
             this._attribute_SFBool(ctx, 'normalPerVertex', true);
@@ -1724,7 +1750,7 @@ x3dom.registerNodeType(
 				}
 				
 				if (!hasNormal) {
-					this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
+					this._mesh.calcNormals(this._vf.creaseAngle);
                 }
 				if (!hasTexCoord) {
 					this._mesh.calcTexCoords();
@@ -1760,7 +1786,7 @@ x3dom.registerNodeType(
 					this._mesh._normals = normals;
                 }
 				else { 
-					this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
+					this._mesh.calcNormals(this._vf.creaseAngle);
 				}
 				if (hasTexCoord) { 
 					this._mesh._texCoords = texCoords;
@@ -1870,6 +1896,7 @@ x3dom.registerNodeType(
                     t = 0;
                     cnt = 0;
                     faceCnt = 0;
+                    this._mesh._multiIndIndices = [];
                     
                     for (i=0; i < indexes.length; ++i) 
                     {
@@ -1951,6 +1978,9 @@ x3dom.registerNodeType(
                                     this._mesh._normals.push(normals[n2].y);
                                     this._mesh._normals.push(normals[n2].z);
                                 }
+                                else {
+                                    this._mesh._multiIndIndices.push(p0, p1, p2);
+                                }
                                 
                                 if (hasColor) {
                                     //assume RGB for now...
@@ -2022,6 +2052,9 @@ x3dom.registerNodeType(
                                     this._mesh._normals.push(normals[n2].y);
                                     this._mesh._normals.push(normals[n2].z);
                                 }
+                                else {
+                                    this._mesh._multiIndIndices.push(p0, p1, p2);
+                                }
                                 
                                 if (hasColor) {
                                     //assume RGB for now...
@@ -2057,7 +2090,7 @@ x3dom.registerNodeType(
                     }
                     
                     if (!hasNormal) {
-                        this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
+                        this._mesh.calcNormals(this._vf.creaseAngle);
                     }
                     if (!hasTexCoord) {
                         this._mesh.calcTexCoords();
@@ -2093,7 +2126,7 @@ x3dom.registerNodeType(
                         this._mesh._normals = normals.toGL();
                     }
                     else {
-                        this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
+                        this._mesh.calcNormals(this._vf.creaseAngle);
                     }
                     if (hasTexCoord) {
                         this._mesh._texCoords = texCoords.toGL();
@@ -2417,7 +2450,16 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
 			
             this._attribute_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
+            this._attribute_MFFloat(ctx, 'skyAngle', []);
+            this._attribute_MFColor(ctx, 'groundColor', []);
+            this._attribute_MFFloat(ctx, 'groundAngle', []);
             this._attribute_SFFloat(ctx, 'transparency', 0);
+            this._attribute_MFString(ctx, 'backUrl', []);
+            this._attribute_MFString(ctx, 'bottomUrl', []);
+            this._attribute_MFString(ctx, 'frontUrl', []);
+            this._attribute_MFString(ctx, 'leftUrl', []);
+            this._attribute_MFString(ctx, 'rightUrl', []);
+            this._attribute_MFString(ctx, 'topUrl', []);
         },
         {
 			getSkyColor: function() {
@@ -2425,7 +2467,10 @@ x3dom.registerNodeType(
 			},
 			getTransparency: function() {
 				return this._vf.transparency;
-			}
+			},
+            getTexUrl: function() {
+                return this._vf.backUrl;
+            }
         }
     )
 );
@@ -2587,7 +2632,11 @@ x3dom.registerNodeType(
 			
 			isSolid: function() {
 				return this._cf.geometry.node._vf.solid;
-			}
+			},
+            
+            isCCW: function() {
+                return this._cf.geometry.node._vf.ccw;
+            }
         }
     )
 );
@@ -3263,7 +3312,7 @@ x3dom.registerNodeType(
 				if (bgCol.length > 2)
 					bgCol[3] = 1.0 - this._bgnd.getTransparency();
 				
-				return bgCol;
+				return [bgCol, this._bgnd.getTexUrl()];
 			},
             
             getProjectionMatrix: function() 

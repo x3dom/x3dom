@@ -1037,7 +1037,7 @@ x3dom.gfx_webgl = (function () {
         
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 		
-		var bgCol = scene.getSkyColor();
+		var bgCol = scene.getSkyColor()[0];
 		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
         
 		//gl.clearDepthf(1.0);
@@ -1208,6 +1208,13 @@ x3dom.gfx_webgl = (function () {
 			
 			if (shape.isSolid()) {
 				gl.enable(gl.CULL_FACE);
+                
+                if (shape.isCCW()) {
+                    gl.frontFace(gl.CCW);
+                }
+                else {
+                    gl.frontFace(gl.CW);
+                }
             }
 			else {
 				gl.disable(gl.CULL_FACE);
