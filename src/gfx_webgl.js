@@ -331,10 +331,10 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
-		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
-		"    diffuse += max(0.0, dot(normal, eye));" +
-		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
+		"    diffuse += abs(dot(normal, eye));" +
+		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
+		"    specular += pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*fragColor + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
@@ -1013,6 +1013,7 @@ x3dom.gfx_webgl = (function () {
 		var slights = scene.getLights();
 		if (slights.length > 0)
         {
+            //FIXME; allow more than only one light and also other types
 			light = slights[0]._vf.direction;
             lightOn = (slights[0]._vf.on === true) ? 1.0 : 0.0;
             lightOn *= slights[0]._vf.intensity;
