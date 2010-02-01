@@ -964,7 +964,7 @@ x3dom.gfx_webgl = (function () {
 			scene._webgl = {
 				positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
 				indexes: [0, 1, 2, 3],
-                buffers: [{}, {}, {}]
+				buffers: [{}, {}]
 			};
 
             scene._webgl.primType = gl.TRIANGLE_STRIP;
@@ -980,7 +980,6 @@ x3dom.gfx_webgl = (function () {
 		{
             var sp = scene._webgl.shader;
             
-            //if (sp.position !== undefined) 
             var positionBuffer = gl.createBuffer();
             scene._webgl.buffers[1] = positionBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1148,8 +1147,7 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
         
-        //var mat_projection = scene.getProjectionMatrix();
-		var mat_view = scene.getViewMatrix();
+        var mat_view = scene.getViewMatrix();
 		
 		//TODO; allow for more than one additional light per scene
 		var light, lightOn, shadowIntensity;
@@ -1180,16 +1178,7 @@ x3dom.gfx_webgl = (function () {
         
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 		
-        /*
-		var bgCol = scene.getSkyColor()[0];
-		gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
-        
-		//gl.clearDepthf(1.0);
-		gl.clearDepth(1.0);
-        
-		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-        */
-        
+        // calls gl.clear etc. (bgnd stuff)
         scene._webgl.render(gl);
 		
 		gl.depthFunc(gl.LEQUAL);
@@ -1226,7 +1215,6 @@ x3dom.gfx_webgl = (function () {
 			zPos[i] = [i, center.z];
 		}
 		zPos.sort(function(a, b) { return a[1] - b[1]; });
-		//zPos.reverse();
 		
 		t1 = new Date().getTime() - t0;
 		
@@ -1239,10 +1227,8 @@ x3dom.gfx_webgl = (function () {
 		t0 = new Date().getTime();
 		
 		for (i=0, n=zPos.length; i<n; i++)
-		//for (var i=0, n=scene.drawableObjects.length; i<n; i++)
 		{
 			var obj = scene.drawableObjects[zPos[i][0]];
-			//var obj = scene.drawableObjects[i];
 			
 			var transform = obj[0];
 			var shape = obj[1];
@@ -1302,12 +1288,16 @@ x3dom.gfx_webgl = (function () {
                     var texTrafo = shape._cf.appearance.node.transformMatrix();
                     sp.texTrafoMatrix = texTrafo.toGL();
                 }
-                sp.tex = 0;
+                if (!sp.tex) {
+                    sp.tex = 0;
+                }
 			}
             
             if (shadowIntensity > 0) 
             {
-                sp.sh_tex = 1;
+                if (!sp.sh_tex) {
+                    sp.sh_tex = 1;
+                }
                 gl.activeTexture(gl.TEXTURE1);
                 gl.bindTexture(gl.TEXTURE_2D,scene._webgl.fbo.tex);
                 
@@ -1399,7 +1389,6 @@ x3dom.gfx_webgl = (function () {
 				gl.disable(gl.TEXTURE_2D);
 			}
 			
-			// TODO: make this state-cleanup nicer
 			if (sp.position !== undefined) {
 				gl.disableVertexAttribArray(sp.position);
 			}
@@ -1410,8 +1399,7 @@ x3dom.gfx_webgl = (function () {
 				gl.disableVertexAttribArray(sp.texcoord);
 			}
 		}
-		//);
-			
+		
 		gl.disable(gl.BLEND);
 		/*gl.blendFuncSeparate( // just multiply dest RGB by its A
 			gl.ZERO, gl.DST_ALPHA,
@@ -1433,7 +1421,6 @@ x3dom.gfx_webgl = (function () {
 	Context.prototype.shutdown = function(scene)
 	{
 		var gl = this.ctx3d;
-	    //alert("Shutdown scene");
         
         if (gl === null || scene === null || scene.drawableObjects === null)
         {
@@ -1486,7 +1473,7 @@ x3dom.gfx_webgl = (function () {
 		}
 	};
     
-    //
+    // start of fbo init stuff
     Context.prototype.emptyTexImage2D = function(gl, internalFormat, width, height, format, type)
     {
         /*try {
@@ -1562,7 +1549,6 @@ x3dom.gfx_webgl = (function () {
         
         return r;
     };
-    //
 
 	return setupContext;
 
