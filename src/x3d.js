@@ -51,6 +51,31 @@ x3dom.isX3DElement = function(node) {
         (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] || node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "scene"  || node.localName.toLowerCase() === "route" ));
 };
 
+// NodeNameSpace constructor
+x3dom.NodeNameSpace = function (name) {
+	this.name = name;
+	this.defMap = {};
+	this.parent = null;
+	this.childSpaces = [];
+};
+
+x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
+	this.defMap[name] = node;
+};
+
+x3dom.NodeNameSpace.prototype.removeNode = function (name) {
+	delete this.defMap.name;
+};
+
+x3dom.NodeNameSpace.prototype.addSpace = function (space) {
+	this.childSpaces.push(space);
+	space.parent = this;
+};
+
+x3dom.NodeNameSpace.prototype.removeSpace = function (space) {
+	this.childSpaces.push(space);
+	space.parent = null;
+};
 
 /** Utility function for defining a new class.
 
@@ -107,6 +132,7 @@ function MFString_parse(str) {
         return [str];
     }
 };
+
 
 // ### X3DNode ###
 x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
@@ -371,62 +397,62 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
 			// to be overwritten by concrete classes
 		},
         
-		_attribute_SFInt32: function (ctx, name, n) {
+		addField_SFInt32: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 parseInt(ctx.xmlNode.getAttribute(name),10) : n;
             this._vf[name].setValueByStr = function(str) {
                 this._vf[name] = parseInt(str,10);
             };
         },
-        _attribute_SFFloat: function (ctx, name, n) {
+        addField_SFFloat: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
             this._vf[name].setValueByStr = function(str) {
                 this._vf[name] = +str;
             };
         },
-        _attribute_SFTime: function (ctx, name, n) {
+        addField_SFTime: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
             this._vf[name].setValueByStr = function(str) {
                 this._vf[name] = +str;
             };
         },
-        _attribute_SFBool: function (ctx, name, n) {
+        addField_SFBool: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name).toLowerCase() === "true" : n;
             this._vf[name].setValueByStr = function(str) {
                 this._vf[name] = (str.toLowerCase() === "true");
             };
         },
-        _attribute_SFString: function (ctx, name, n) {
+        addField_SFString: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name) : n;
             this._vf[name].setValueByStr = function(str) {
                 this._vf[name] = str;
             };
         },
-        _attribute_SFColor: function (ctx, name, r, g, b) {
+        addField_SFColor: function (ctx, name, r, g, b) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFColor(r, g, b);
         },
-        _attribute_SFVec2f: function (ctx, name, x, y) {
+        addField_SFVec2f: function (ctx, name, x, y) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFVec2f(x, y);
         },
-        _attribute_SFVec3f: function (ctx, name, x, y, z) {
+        addField_SFVec3f: function (ctx, name, x, y, z) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFVec3f(x, y, z);
         },
-        _attribute_SFRotation: function (ctx, name, x, y, z, a) {
+        addField_SFRotation: function (ctx, name, x, y, z, a) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.Quaternion(x, y, z, a);
         },
-        _attribute_SFMatrix4f: function (ctx, name, _00, _01, _02, _03, 
+        addField_SFMatrix4f: function (ctx, name, _00, _01, _02, _03, 
                                                     _10, _11, _12, _13, 
                                                     _20, _21, _22, _23, 
                                                     _30, _31, _32, _33) {
@@ -438,48 +464,48 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
                                             _30, _31, _32, _33);
         },
         
-        _attribute_MFString: function (ctx, name, def) {
+        addField_MFString: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 MFString_parse(ctx.xmlNode.getAttribute(name)) : def;
             this._vf[name].setValueByStr = function(str) {
                 this._vf[name] = MFString_parse(str);
             };
         },
-        _attribute_MFInt32: function (ctx, name, def) {
+        addField_MFInt32: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFInt32.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFInt32(def);
         },
-        _attribute_MFFloat: function (ctx, name, def) {
+        addField_MFFloat: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFFloat(def);
         },
-        _attribute_MFColor: function (ctx, name, def) {
+        addField_MFColor: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFColor(def);
         },
-        _attribute_MFVec2f: function (ctx, name, def) {
+        addField_MFVec2f: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFVec2f(def);
         },
-        _attribute_MFVec3f: function (ctx, name, def) {
+        addField_MFVec3f: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFVec3f(def);
         },
-        _attribute_MFRotation: function (ctx, name, def) {
+        addField_MFRotation: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFRotation(def);
         },
         
-		_attribute_SFNode: function (name, type) {
+		addField_SFNode: function (name, type) {
 			this._cf[name] = new x3dom.fields.SFNode(type);
 		},
-		_attribute_MFNode: function (name, type) {
+		addField_MFNode: function (name, type) {
 			this._cf[name] = new x3dom.fields.MFNode(type);
 		}
     }
@@ -504,9 +530,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
             
-            this._attribute_SFNode ('material', x3dom.nodeTypes.X3DMaterialNode);
-            this._attribute_SFNode ('texture',  x3dom.nodeTypes.X3DTextureNode);	
-            this._attribute_SFNode ('textureTransform',  x3dom.nodeTypes.X3DTextureTransformNode);	
+            this.addField_SFNode ('material', x3dom.nodeTypes.X3DMaterialNode);
+            this.addField_SFNode ('texture',  x3dom.nodeTypes.X3DTextureNode);	
+            this.addField_SFNode ('textureTransform',  x3dom.nodeTypes.X3DTextureTransformNode);	
 		},
 		{
 			nodeChanged: function() { 		
@@ -565,12 +591,12 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Material.superClass.call(this, ctx);
     
-            this._attribute_SFFloat(ctx, 'ambientIntensity', 0.2);
-            this._attribute_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
-            this._attribute_SFColor(ctx, 'emissiveColor', 0, 0, 0);
-            this._attribute_SFFloat(ctx, 'shininess', 0.2);
-            this._attribute_SFColor(ctx, 'specularColor', 0, 0, 0);
-            this._attribute_SFFloat(ctx, 'transparency', 0);
+            this.addField_SFFloat(ctx, 'ambientIntensity', 0.2);
+            this.addField_SFColor(ctx, 'diffuseColor', 0.8, 0.8, 0.8);
+            this.addField_SFColor(ctx, 'emissiveColor', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'shininess', 0.2);
+            this.addField_SFColor(ctx, 'specularColor', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'transparency', 0);
         }
     )
 );
@@ -602,10 +628,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.TextureTransform.superClass.call(this, ctx);
 			
-			this._attribute_SFVec2f(ctx, 'center', 0, 0);
-            this._attribute_SFFloat(ctx, 'rotation', 0);
-            this._attribute_SFVec2f(ctx, 'scale', 1, 1);
-            this._attribute_SFVec2f(ctx, 'translation', 0, 0);
+			this.addField_SFVec2f(ctx, 'center', 0, 0);
+            this.addField_SFFloat(ctx, 'rotation', 0);
+            this.addField_SFVec2f(ctx, 'scale', 1, 1);
+            this.addField_SFVec2f(ctx, 'translation', 0, 0);
             
             //Tc' = -C * S * R * C * T * Tc
             var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
@@ -649,9 +675,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
             
-            this._attribute_MFString(ctx, 'url', []);
-            this._attribute_SFBool(ctx, 'repeatS', true);
-            this._attribute_SFBool(ctx, 'repeatT', true);
+            this.addField_MFString(ctx, 'url', []);
+            this.addField_SFBool(ctx, 'repeatS', true);
+            this.addField_SFBool(ctx, 'repeatT', true);
         }
     )
 );
@@ -680,8 +706,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.MovieTexture.superClass.call(this, ctx);
 			
-            this._attribute_SFBool(ctx, 'loop', false);
-            this._attribute_SFFloat(ctx, 'speed', 1.0);
+            this.addField_SFBool(ctx, 'loop', false);
+            this.addField_SFFloat(ctx, 'speed', 1.0);
             
             this._video = null;
             this._intervalID = 0;
@@ -893,8 +919,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
 			
-			this._attribute_SFBool(ctx, 'solid', true);
-            this._attribute_SFBool(ctx, 'ccw', true);
+			this.addField_SFBool(ctx, 'solid', true);
+            this.addField_SFBool(ctx, 'ccw', true);
 			
 			this._mesh = new x3dom.Mesh(this);
         },
@@ -1333,8 +1359,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
             
-            this._attribute_SFNode('coord', x3dom.nodeTypes.Coordinate);
-            this._attribute_SFNode('color', x3dom.nodeTypes.Color);
+            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
+            this.addField_SFNode('color', x3dom.nodeTypes.Color);
             
             /*
             var time0 = new Date().getTime();
@@ -1440,11 +1466,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Text.superClass.call(this, ctx);
     
-            this._attribute_MFString(ctx, 'string', []);
-			this._attribute_MFFloat(ctx, 'length', []);
-	        this._attribute_SFFloat(ctx, 'maxExtent', 0.0);
+            this.addField_MFString(ctx, 'string', []);
+			this.addField_MFFloat(ctx, 'length', []);
+	        this.addField_SFFloat(ctx, 'maxExtent', 0.0);
     		
-            this._attribute_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);	
+            this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);	
         },
 		{
 			nodeChanged: function() {	
@@ -1477,19 +1503,19 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
             
-			this._attribute_SFFloat(ctx, 'creaseAngle', 0);	// TODO
-            this._attribute_SFBool(ctx, 'colorPerVertex', true);
-            this._attribute_SFBool(ctx, 'normalPerVertex', true);
+			this.addField_SFFloat(ctx, 'creaseAngle', 0);	// TODO
+            this.addField_SFBool(ctx, 'colorPerVertex', true);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
             
-            this._attribute_MFInt32(ctx, 'coordIndex', []);
-            this._attribute_MFInt32(ctx, 'normalIndex', []);
-            this._attribute_MFInt32(ctx, 'colorIndex', []);
-            this._attribute_MFInt32(ctx, 'texCoordIndex', []);
+            this.addField_MFInt32(ctx, 'coordIndex', []);
+            this.addField_MFInt32(ctx, 'normalIndex', []);
+            this.addField_MFInt32(ctx, 'colorIndex', []);
+            this.addField_MFInt32(ctx, 'texCoordIndex', []);
             
-            this._attribute_SFNode('coord', x3dom.nodeTypes.Coordinate);
-            this._attribute_SFNode('normal', x3dom.nodeTypes.Normal);
-            this._attribute_SFNode('color', x3dom.nodeTypes.Color);
-            this._attribute_SFNode('texCoord', x3dom.nodeTypes.TextureCoordinate);
+            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
+            this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
+            this.addField_SFNode('color', x3dom.nodeTypes.Color);
+            this.addField_SFNode('texCoord', x3dom.nodeTypes.TextureCoordinate);
             
             /*
 			var time0 = new Date().getTime();
@@ -2183,7 +2209,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
             
             //this._vf.point = [];
-            this._attribute_MFVec3f(ctx, 'point', []);
+            this.addField_MFVec3f(ctx, 'point', []);
         },
         {
             fieldChanged: function (fieldName) {
@@ -2203,7 +2229,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.TextureCoordinate.superClass.call(this, ctx);
             
-            this._attribute_MFVec2f(ctx, 'point', []);
+            this.addField_MFVec2f(ctx, 'point', []);
         }
     )
 );
@@ -2216,7 +2242,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Normal.superClass.call(this, ctx);
             
-            this._attribute_MFVec3f(ctx, 'vector', []);
+            this.addField_MFVec3f(ctx, 'vector', []);
         }
     )
 );
@@ -2229,7 +2255,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Color.superClass.call(this, ctx);
             
-            this._attribute_MFColor(ctx, 'color', []);
+            this.addField_MFColor(ctx, 'color', []);
         }
     )
 );
@@ -2254,15 +2280,15 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.FontStyle.superClass.call(this, ctx);
     
-            this._attribute_MFString(ctx, 'family', ['SERIF']);
-            this._attribute_SFBool(ctx, 'horizontal', true);
-            this._attribute_MFString(ctx, 'justify', ['BEGIN']);
-			this._attribute_SFString(ctx, 'language', "");
-            this._attribute_SFBool(ctx, 'leftToRight', true);
-            this._attribute_SFFloat(ctx, 'size', 1.0);
-            this._attribute_SFFloat(ctx, 'spacing', 1.0);
-			this._attribute_SFString(ctx, 'style', "PLAIN");
-            this._attribute_SFBool(ctx, 'topToBottom', true);
+            this.addField_MFString(ctx, 'family', ['SERIF']);
+            this.addField_SFBool(ctx, 'horizontal', true);
+            this.addField_MFString(ctx, 'justify', ['BEGIN']);
+			this.addField_SFString(ctx, 'language', "");
+            this.addField_SFBool(ctx, 'leftToRight', true);
+            this.addField_SFFloat(ctx, 'size', 1.0);
+            this.addField_SFFloat(ctx, 'spacing', 1.0);
+			this.addField_SFString(ctx, 'style', "PLAIN");
+            this.addField_SFBool(ctx, 'topToBottom', true);
         }
     )
 );
@@ -2305,12 +2331,12 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.Viewpoint.superClass.call(this, ctx);
-			this._attribute_SFFloat(ctx, 'fieldOfView', 0.785398);
-            this._attribute_SFVec3f(ctx, 'position', 0, 0, 10);
-            this._attribute_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
-			this._attribute_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
-            this._attribute_SFFloat(ctx, 'zNear', 0.1);
-            this._attribute_SFFloat(ctx, 'zFar', 100000);
+			this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
+            this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
+            this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
+			this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'zNear', 0.1);
+            this.addField_SFFloat(ctx, 'zFar', 100000);
             
             this._viewMatrix = this._vf.orientation.toMatrix().transpose().
 				mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
@@ -2376,9 +2402,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Fog.superClass.call(this, ctx);
             
-			this._attribute_SFColor(ctx, 'color', 1, 1, 1);
-            this._attribute_SFString(ctx, 'fogType', "LINEAR");
-			this._attribute_SFFloat(ctx, 'visibilityRange', 0);
+			this.addField_SFColor(ctx, 'color', 1, 1, 1);
+            this.addField_SFString(ctx, 'fogType', "LINEAR");
+			this.addField_SFFloat(ctx, 'visibilityRange', 0);
             
             x3dom.debug.logInfo("Fog NYI");
         },
@@ -2396,8 +2422,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.NavigationInfo.superClass.call(this, ctx);
             
-			this._attribute_SFBool(ctx, 'headlight', true);
-            this._attribute_MFString(ctx, 'type', ["EXAMINE"]);
+			this.addField_SFBool(ctx, 'headlight', true);
+            this.addField_MFString(ctx, 'type', ["EXAMINE"]);
             
             x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
         },
@@ -2415,8 +2441,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.WorldInfo.superClass.call(this, ctx);
             
-            this._attribute_MFString(ctx, 'info', []);
-			this._attribute_SFString(ctx, 'title', "");
+            this.addField_MFString(ctx, 'info', []);
+			this.addField_SFString(ctx, 'title', "");
             
             x3dom.debug.logInfo(this._vf.info);
             x3dom.debug.logInfo(this._vf.title);
@@ -2435,17 +2461,17 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
 			
-            this._attribute_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
-            this._attribute_MFFloat(ctx, 'skyAngle', []);
-            this._attribute_MFColor(ctx, 'groundColor', []);
-            this._attribute_MFFloat(ctx, 'groundAngle', []);
-            this._attribute_SFFloat(ctx, 'transparency', 0);
-            this._attribute_MFString(ctx, 'backUrl', []);
-            this._attribute_MFString(ctx, 'bottomUrl', []);
-            this._attribute_MFString(ctx, 'frontUrl', []);
-            this._attribute_MFString(ctx, 'leftUrl', []);
-            this._attribute_MFString(ctx, 'rightUrl', []);
-            this._attribute_MFString(ctx, 'topUrl', []);
+            this.addField_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
+            this.addField_MFFloat(ctx, 'skyAngle', []);
+            this.addField_MFColor(ctx, 'groundColor', []);
+            this.addField_MFFloat(ctx, 'groundAngle', []);
+            this.addField_SFFloat(ctx, 'transparency', 0);
+            this.addField_MFString(ctx, 'backUrl', []);
+            this.addField_MFString(ctx, 'bottomUrl', []);
+            this.addField_MFString(ctx, 'frontUrl', []);
+            this.addField_MFString(ctx, 'leftUrl', []);
+            this.addField_MFString(ctx, 'rightUrl', []);
+            this.addField_MFString(ctx, 'topUrl', []);
         },
         {
 			getSkyColor: function() {
@@ -2469,12 +2495,12 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
             
-			this._attribute_SFFloat(ctx, 'ambientIntensity', 0);
-            this._attribute_SFColor(ctx, 'color', 1, 1, 1);
-			this._attribute_SFFloat(ctx, 'intensity', 1);
-            this._attribute_SFBool(ctx, 'global', false);
-            this._attribute_SFBool(ctx, 'on', true);
-            this._attribute_SFFloat(ctx, 'shadowIntensity', 0);
+			this.addField_SFFloat(ctx, 'ambientIntensity', 0);
+            this.addField_SFColor(ctx, 'color', 1, 1, 1);
+			this.addField_SFFloat(ctx, 'intensity', 1);
+            this.addField_SFBool(ctx, 'global', false);
+            this.addField_SFBool(ctx, 'on', true);
+            this.addField_SFFloat(ctx, 'shadowIntensity', 0);
         },
         {
 			getViewMatrix: function(vec) {
@@ -2492,7 +2518,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.DirectionalLight.superClass.call(this, ctx);
             
-            this._attribute_SFVec3f(ctx, 'direction', 0, 0, -1);
+            this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
         },
         {
             getViewMatrix: function(vec) {
@@ -2514,9 +2540,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.PointLight.superClass.call(this, ctx);
             
-            this._attribute_SFVec3f(ctx, 'attenuation', 1, 0, 0);
-            this._attribute_SFVec3f(ctx, 'location', 0, 0, 0);
-            this._attribute_SFFloat(ctx, 'radius', 100);
+            this.addField_SFVec3f(ctx, 'attenuation', 1, 0, 0);
+            this.addField_SFVec3f(ctx, 'location', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'radius', 100);
             
             this._vf.global = true;
             x3dom.debug.logInfo("PointLight NYI");  // TODO: gfx handling
@@ -2541,12 +2567,12 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.SpotLight.superClass.call(this, ctx);
             
-            this._attribute_SFVec3f(ctx, 'direction', 0, 0, -1);
-            this._attribute_SFVec3f(ctx, 'attenuation', 1, 0, 0);
-            this._attribute_SFVec3f(ctx, 'location', 0, 0, 0);
-            this._attribute_SFFloat(ctx, 'radius', 100);
-            this._attribute_SFFloat(ctx, 'beamWidth', 1.5707963);
-            this._attribute_SFFloat(ctx, 'cutOffAngle', 1.5707963);
+            this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
+            this.addField_SFVec3f(ctx, 'attenuation', 1, 0, 0);
+            this.addField_SFVec3f(ctx, 'location', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'radius', 100);
+            this.addField_SFFloat(ctx, 'beamWidth', 1.5707963);
+            this.addField_SFFloat(ctx, 'cutOffAngle', 1.5707963);
             
             this._vf.global = true;
             x3dom.debug.logInfo("SpotLight NYI");  // TODO: gfx handling
@@ -2583,8 +2609,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Shape.superClass.call(this, ctx);
             
-            this._attribute_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
-            this._attribute_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
+            this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
+            this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
             
             // TODO; use more specific _dirty object for positions, normals etc.
             this._dirty = true;
@@ -2635,8 +2661,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
             
-            this._attribute_SFBool(ctx, 'render', true);
-			this._attribute_MFNode ('children', x3dom.nodeTypes.X3DChildNode);
+            this.addField_SFBool(ctx, 'render', true);
+			this.addField_MFNode ('children', x3dom.nodeTypes.X3DChildNode);
             // FIXME; add addChild and removeChild slots ?
         },
         {
@@ -2666,7 +2692,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Switch.superClass.call(this, ctx);
 			
-			this._attribute_SFInt32(ctx, 'whichChoice', -1);
+			this.addField_SFInt32(ctx, 'whichChoice', -1);
         },
         {
             getVolume: function (min, max, invalidate) 
@@ -2882,11 +2908,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Transform.superClass.call(this, ctx);
             
-			this._attribute_SFVec3f(ctx, 'center', 0, 0, 0);
-            this._attribute_SFVec3f(ctx, 'translation', 0, 0, 0);
-            this._attribute_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
-            this._attribute_SFVec3f(ctx, 'scale', 1, 1, 1);
-			this._attribute_SFRotation(ctx, 'scaleOrientation', 0, 0, 0, 1);
+			this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
+            this.addField_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
+            this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
+			this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 0, 1);
 			// BUG! default of rotation according to spec is (0, 0, 1, 0)
 			//		but results sometimes are wrong if not (0, 0, 0, 1)
 			// TODO; check quaternion/ matrix code (probably in toMatrix()?)
@@ -2923,7 +2949,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.MatrixTransform.superClass.call(this, ctx);
             
-            this._attribute_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
+            this.addField_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
                                                       0, 1, 0, 0,
                                                       0, 0, 1, 0,
                                                       0, 0, 0, 1);
@@ -3097,10 +3123,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
             
-			this._attribute_SFBool(ctx, 'enabled', true);
-            this._attribute_SFTime(ctx, 'cycleInterval', 1);
-            this._attribute_SFBool(ctx, 'loop', false);
-            this._attribute_SFTime(ctx, 'startTime', 0);
+			this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFTime(ctx, 'cycleInterval', 1);
+            this.addField_SFBool(ctx, 'loop', false);
+            this.addField_SFTime(ctx, 'startTime', 0);
     
             this._fraction = 0;
         },
@@ -3504,7 +3530,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Anchor.superClass.call(this, ctx);
             
-            this._attribute_MFString(ctx, 'url', []);
+            this.addField_MFString(ctx, 'url', []);
         },
         {
             doIntersect: function(line) {
@@ -3537,8 +3563,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Inline.superClass.call(this, ctx);
             
-            this._attribute_MFString(ctx, 'url', []);
-            this._attribute_SFBool(ctx, 'load', true);
+            this.addField_MFString(ctx, 'url', []);
+            this.addField_SFBool(ctx, 'load', true);
             
             var that = this;
             
