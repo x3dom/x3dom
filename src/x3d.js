@@ -45,22 +45,10 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
     x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
 };
 
-
-/** Checks whether the given @p node is an X3D element.
-	@return true, if the @p node is an X3D element
-			false, if not
- */
-x3dom.parsingInline = false;   //fixme; but Inline doesn't have NS...
-
-// x3dom.isX3DElement = function(node) {
-//     return (node.nodeType === Node.ELEMENT_NODE &&
-//         (node.namespaceURI == x3dom.x3dNS || x3dom.parsingInline == true));
-// };
-
 x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     return (node.nodeType === Node.ELEMENT_NODE && node.localName &&
-        (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] || node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "scene"  || node.localName.toLowerCase() === "route" || x3dom.parsingInline === true));
+        (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] || node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "scene"  || node.localName.toLowerCase() === "route" ));
 };
 
 
@@ -173,14 +161,12 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
                             if (node._parentNode === this) {
                                 node._parentNodes.splice(i,1);
                             } 
-                            for (var j = 0, m = this._childNodes.length; j < m; j++) {			
-                                if (this._childNodes[j] === node) {
-                                    this._childNodes.splice(j,1);
-                                    return true;
-                                }
-                                else
-                                    return false;
-                            }
+                        }
+						for (var j = 0, m = this._childNodes.length; j < m; j++) {			
+                        	if (this._childNodes[j] === node) {
+                             	this._childNodes.splice(j,1);
+                                return true;
+                         	}
                         }
                     }
                 }
@@ -3582,16 +3568,12 @@ x3dom.registerNodeType(
                 
                 //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                 var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
-                
-                x3dom.parsingInline = true; // enable special case
-                
+                                
                 var newScene = ctx.setupNodePrototypes(inlScene, ctx);
                 for (var i=0, n=newScene._childNodes.length; i<n; i++) {
                     that.addChild(newScene._childNodes[i]);
                 }
-                
-                x3dom.parsingInline = false; // disable special case
-                
+                                
                 x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
             };
             
@@ -3670,10 +3652,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
     var ctx = {
     	defMap: {},
-        docs: uriDocs,
-        setupNodePrototypes: this._setupNodePrototypes,
-        assert: x3dom.debug.assert,
-        log: x3dom.debug.logInfo
+        setupNodePrototypes: this._setupNodePrototypes
     };
 
     var doc = this;
@@ -3693,18 +3672,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             var parent = e.target.parentNode._x3domNode;
             var child = e.target._x3domNode;
             
-            //x3dom.debug.logInfo("Child: " + e.target.type + "MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
+            x3dom.debug.logInfo("Child: " + e.target.type + "MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
             
-			// FIXME;
-			// parent.removeChild(child)
-           	for (var i = 0; i < parent._childNodes.length; i++) {
-           		if (parent._childNodes[i] === child) {
-           		  parent._childNodes.splice(i,1);
-           		  break;
-           		}
-           	}
-            
-            //FIXME; childRemoved NYI
+			parent.removeChild(child);
         },
         onNodeInserted: function(e) {
             var parent = e.target.parentNode._x3domNode;
@@ -3712,17 +3682,12 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", inserted node=" + child.tagName);
             //x3dom.debug.logInfo("MUTATION: " + child.translation + ", " + child.parentNode.tagName);
-            
-            x3dom.parsingInline = true; // enable special case
-            
+                        
             //FIXME; get rid of scene._ctx
             var newChild = scene._ctx.setupNodePrototypes(child, scene._ctx);
             
 			parent.addChild(newChild);
-            newChild.nodeChanged();
-            
-            x3dom.parsingInline = false; // disable special case
-        }
+         }
     };
     
     //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);    
@@ -3796,7 +3761,7 @@ x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
 	    if (node.hasAttribute('USE')) {
 	      n = ctx.defMap[node.getAttribute('USE')];
 	      if (n == null) 
-	        ctx.log ('Could not USE: '+node.getAttribute('USE'));
+	        x3dom.debug.logInfo ('Could not USE: '+node.getAttribute('USE'));
 	      return n;
 	    }
 	    else {
