@@ -90,6 +90,7 @@ x3dom.gfx_webgl = (function () {
 		"" +
 		"void main(void) {" +
 		"    gl_FragColor = texture2D(tex, fragTexCoord);" +
+		//"    gl_FragDepth = 1.0;" +
 		"}"
 		};
 	
@@ -1016,10 +1017,11 @@ x3dom.gfx_webgl = (function () {
             else
             {
                 gl.clearDepth(1.0);
-                gl.clear(gl.DEPTH_BUFFER_BIT);
+                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
                 
-                gl.disable(gl.DEPTH_TEST);
+                gl.frontFace(gl.CCW);
                 gl.disable(gl.CULL_FACE);
+                gl.disable(gl.DEPTH_TEST);
                 gl.disable(gl.BLEND);
                 
                 sp.bind();
@@ -1043,7 +1045,9 @@ x3dom.gfx_webgl = (function () {
                 try {
                     gl.drawElements(scene._webgl.primType, scene._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
                 }
-                catch (e) {}
+                catch (e) {
+                    x3dom.debug.logException("render background: " + e);
+                }
                 
                 gl.disableVertexAttribArray(sp.position);
                 
