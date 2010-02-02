@@ -1017,8 +1017,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
     
-            var r = 1;
-            if (ctx.xmlNode.hasAttribute('radius')) {
+            var r = ctx ? 1 : 10000;
+            if (ctx && ctx.xmlNode.hasAttribute('radius')) {
                 r = +ctx.xmlNode.getAttribute('radius');
             }
             
@@ -2481,7 +2481,14 @@ x3dom.registerNodeType(
 				return this._vf.transparency;
 			},
             getTexUrl: function() {
-                return this._vf.backUrl;
+                return [
+                    this._vf.backUrl,
+                    this._vf.frontUrl,
+                    this._vf.bottomUrl,
+                    this._vf.topUrl,
+                    this._vf.leftUrl,
+                    this._vf.rightUrl
+                ];
             }
         }
     )

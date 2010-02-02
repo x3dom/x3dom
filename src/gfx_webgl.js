@@ -93,6 +93,27 @@ x3dom.gfx_webgl = (function () {
 		//"    gl_FragDepth = 1.0;" +
 		"}"
 		};
+        
+    g_shaders['vs-x3d-bg-textureCube'] = { type: "vertex", data:
+		"attribute vec3 position;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+        "varying vec3 fragNormal;" +
+		"" +
+		"void main(void) {" +
+        "    fragNormal = (vec4(normalize(position), 0.0)).xyz;" +
+		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"}"
+		};
+        
+    g_shaders['fs-x3d-bg-textureCube'] = { type: "fragment", data:
+        "uniform samplerCube tex;" +
+        "varying vec3 fragNormal;" +
+		"" +
+		"void main(void) {" +
+        "    gl_FragColor = textureCube(tex, normalize(fragNormal));" +
+        //"    gl_FragColor = vec4((normalize(fragNormal) + 1.0) * 0.5, 1.0);" +
+		"}"
+		};
 	
 	g_shaders['vs-x3d-textured'] = { type: "vertex", data:
 		"attribute vec3 position;" +
@@ -940,36 +961,56 @@ x3dom.gfx_webgl = (function () {
         }
         
         var url = scene.getSkyColor()[1];
+        var i = 0;
         
-        if (url.length > 0)
+        if (url.length > 0 && url[0].length > 0)
         {
-            var texture = gl.createTexture();
-            
-            var image = new Image();
-            image.src = url;
-            
-            image.onload = function()
+            if (url[1].length > 0 && url[2].length > 0 && 
+                url[3].length > 0 && url[4].length > 0 && url[5].length > 0)
             {
-                scene._webgl.texture = texture;
-                //x3dom.debug.logInfo(texture + " load tex url: " + url);
+                var sphere = new x3dom.nodeTypes.Sphere()
                 
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-                gl.texImage2D(gl.TEXTURE_2D, 0, image);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.bindTexture(gl.TEXTURE_2D, null);
-            };
-            
-            var w = 1, h = 1;
-			
-			scene._webgl = {
-				positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
-				indexes: [0, 1, 2, 3],
-				buffers: [{}, {}]
-			};
+                scene._webgl = {
+                    positions: sphere._mesh._positions,
+                    indexes: sphere._mesh._indices,
+                    buffers: [{}, {}]
+                };
+                
+                scene._webgl.primType = gl.TRIANGLES;
+                scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-textureCube', 'fs-x3d-bg-textureCube']);
+                
+                scene._webgl.texture = this.loadCubeMap(gl, url);
+            }
+            else
+            {
+                var texture = gl.createTexture();
+                
+                var image = new Image();
+                image.src = url[0];
+                
+                image.onload = function()
+                {
+                    scene._webgl.texture = texture;
+                    x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
+                    
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, image);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                };
+                
+                var w = 1, h = 1;
+                
+                scene._webgl = {
+                    positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
+                    indexes: [0, 1, 2, 3],
+                    buffers: [{}, {}]
+                };
 
-            scene._webgl.primType = gl.TRIANGLE_STRIP;
-			scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+                scene._webgl.primType = gl.TRIANGLE_STRIP;
+                scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+            }
 		}
 		else 
 		{
@@ -1006,7 +1047,9 @@ x3dom.gfx_webgl = (function () {
         
         scene._webgl.render = function(gl)
         {
-            if (scene._webgl.texture === undefined || !scene._webgl.texture)
+            if (!scene._webgl.texture || 
+                (scene._webgl.texture.textureCubeReady !== undefined && 
+                 scene._webgl.texture.textureCubeReady !== true))
             {
             	var bgCol = scene.getSkyColor()[0];
                 
@@ -1017,7 +1060,7 @@ x3dom.gfx_webgl = (function () {
             else
             {
                 gl.clearDepth(1.0);
-                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
                 
                 gl.frontFace(gl.CCW);
                 gl.disable(gl.CULL_FACE);
@@ -1025,17 +1068,29 @@ x3dom.gfx_webgl = (function () {
                 gl.disable(gl.BLEND);
                 
                 sp.bind();
-                
-                gl.enable(gl.TEXTURE_2D);
-				gl.bindTexture(gl.TEXTURE_2D, scene._webgl.texture);
                 if (!sp.tex) {
                     sp.tex = 0;
                 }
-				
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+                
+                if (scene._webgl.texture.textureCubeReady) {
+                    sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().toGL();
+                    
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene._webgl.texture);
+                    
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                }
+                else {
+                    //gl.enable(gl.TEXTURE_2D);
+                    gl.bindTexture(gl.TEXTURE_2D, scene._webgl.texture);
+                    
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+                }
                 
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._webgl.buffers[0]);
 				gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.buffers[1]);
@@ -1045,16 +1100,21 @@ x3dom.gfx_webgl = (function () {
                 try {
                     gl.drawElements(scene._webgl.primType, scene._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
                 }
-                catch (e) {
+                catch(e) {
                     x3dom.debug.logException("render background: " + e);
                 }
                 
                 gl.disableVertexAttribArray(sp.position);
                 
-				gl.bindTexture(gl.TEXTURE_2D, null);
-				gl.disable(gl.TEXTURE_2D);
+                if (scene._webgl.texture.textureCubeReady) {
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                }
+                else {
+                    //gl.bindTexture(gl.TEXTURE_2D, null);
+                    gl.disable(gl.TEXTURE_2D);
+                }
                 
-                gl.clear(gl.DEPTH_BUFFER_BIT);
+                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
         };
 	};
@@ -1476,6 +1536,47 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 	};
+    
+    Context.prototype.loadCubeMap = function(gl, url)
+    {
+        var texture = gl.createTexture();
+
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+
+        var faces = [gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                     gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                     gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z];
+        texture.pendingTextureLoads = -1;
+        texture.textureCubeReady = false;
+        
+        for (var i=0; i<faces.length; i++) {
+            texture.pendingTextureLoads++;
+            var face = faces[i];
+            var image = new Image();
+            
+            image.onload = function(texture, face, image) {
+                return function() {
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+                    gl.texImage2D(face, 0, image);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                    texture.pendingTextureLoads--;
+                    if (texture.pendingTextureLoads < 0) {
+                        texture.textureCubeReady = true;
+                        x3dom.debug.logInfo("Loading CubeMap finished...");
+                    }
+                }
+            }(texture, face, image);
+            
+            image.src = url[i];
+        }
+        
+        return texture;
+    };
     
     // start of fbo init stuff
     Context.prototype.emptyTexImage2D = function(gl, internalFormat, width, height, format, type)
