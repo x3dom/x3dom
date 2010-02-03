@@ -17,7 +17,7 @@ x3dom.fields = {};
     //TODO; use 2-dim array instead of _xx
   */
 x3dom.fields.SFMatrix4f = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33) {
-    if (arguments.length == 0) {
+    if (arguments.length === 0) {
         this._00 = 1; this._01 = 0; this._02 = 0; this._03 = 0;
         this._10 = 0; this._11 = 1; this._12 = 0; this._13 = 0;
         this._20 = 0; this._21 = 0; this._22 = 1; this._23 = 0;
@@ -131,7 +131,7 @@ x3dom.fields.SFMatrix4f.parseRotation = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     var x = +m[1], y = +m[2], z = +m[3], a = +m[4];
     var d = Math.sqrt(x*x + y*y + z*z);
-    if (d == 0) {
+    if (d === 0) {
         x = 1; y = z = 0;
     } else {
         x /= d; y /= d; z /= d;
@@ -204,7 +204,7 @@ x3dom.fields.SFMatrix4f.prototype.multMatrixVec = function (vec) {
 
 x3dom.fields.SFMatrix4f.prototype.multFullMatrixPnt = function (vec) {
     var w = this._30*vec.x + this._31*vec.y + this._32*vec.z + this._33;
-    if (w) w = 1.0 / w;
+    if (w) { w = 1.0 / w; }
     return new x3dom.fields.SFVec3f(
         (this._00*vec.x + this._01*vec.y + this._02*vec.z + this._03) * w,
         (this._10*vec.x + this._11*vec.y + this._12*vec.z + this._13) * w,
@@ -404,7 +404,7 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
     @class Represents a SFVec2f
   */
 x3dom.fields.SFVec2f = function(x, y) {
-    if (arguments.length == 0) {
+    if (arguments.length === 0) {
         this.x = this.y = 0;
     }
     else {
@@ -441,7 +441,7 @@ x3dom.fields.SFVec2f.prototype.reflect = function (n) {
 
 x3dom.fields.SFVec2f.prototype.normalize = function (that) {
     var n = this.length();
-    if (n) n = 1.0 / n;
+    if (n) { n = 1.0 / n; }
     return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
 };
 
@@ -478,7 +478,7 @@ x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
     @class Represents a SFVec3f
   */
 x3dom.fields.SFVec3f = function(x, y, z) {
-    if (arguments.length == 0) {
+    if (arguments.length === 0) {
         this.x = this.y = this.z = 0;
     }
     else {
@@ -526,7 +526,7 @@ x3dom.fields.SFVec3f.prototype.length = function() {
 
 x3dom.fields.SFVec3f.prototype.normalize = function (that) {
     var n = this.length();
-    if (n) n = 1.0 / n;
+    if (n) { n = 1.0 / n; }
     return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
 };
 
@@ -633,7 +633,7 @@ x3dom.fields.Quaternion.prototype.multScalar = function (s) {
 x3dom.fields.Quaternion.prototype.normalize = function (that) {
     var d2 = this.dot(that);
     var id = 1.0;
-    if (d2) id = 1.0 / Math.sqrt(d2);
+    if (d2) { id = 1.0 / Math.sqrt(d2); }
     return new x3dom.fields.Quaternion(this.x*id, this.y*id, this.z*id, this.w*id);
 };
 
@@ -749,7 +749,7 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
     @class Represents a SFColor
   */
 x3dom.fields.SFColor = function(r, g, b) {
-    if (arguments.length == 0) {
+    if (arguments.length === 0) {
         this.r = this.g = this.b = 0;
     }
     else {
