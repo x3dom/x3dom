@@ -864,6 +864,21 @@ x3dom.gfx_webgl = (function () {
                 //TODO; also account for other cases such as LineSet
                 shape._webgl.primType = gl.TRIANGLES;
                 
+                /** SHADER HACK (TODO: MAKE BETTER!) */
+                if (shape._cf.appearance.node._shader !== null) {
+                    //FIXME; HACK
+                    g_shaders['vs-x3d-HACK'] = {};
+                    g_shaders['vs-x3d-HACK'].type = "vertex";
+                    g_shaders['vs-x3d-HACK'].data = shape._cf.appearance.node._shader._vertex._vf.url[0];
+                    g_shaders['fs-x3d-HACK'] = {};
+                    g_shaders['fs-x3d-HACK'].type = "fragment";
+                    g_shaders['fs-x3d-HACK'].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
+                
+                	shape._webgl.shader = getDefaultShaderProgram(gl, 'HACK');
+                    //END OF HACK
+                }
+                else {
+                /** BEGIN STANDARD MATERIAL */
                 // 'fs-x3d-untextured'],  //'fs-x3d-shownormal'],
                 if (tex) {
                     if (shape._cf.appearance.node._cf.textureTransform.node === null) {
@@ -878,6 +893,8 @@ x3dom.gfx_webgl = (function () {
                 }
                 else {
                     shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-untextured', 'fs-x3d-untextured']);
+                }
+                /** END STANDARD MATERIAL */
                 }
             }
         }

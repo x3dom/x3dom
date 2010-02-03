@@ -530,15 +530,23 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
             
-            this.addField_SFNode ('material', x3dom.nodeTypes.X3DMaterialNode);
-            this.addField_SFNode ('texture',  x3dom.nodeTypes.X3DTextureNode);	
-            this.addField_SFNode ('textureTransform',  x3dom.nodeTypes.X3DTextureTransformNode);	
+            this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
+            this.addField_SFNode('texture',  x3dom.nodeTypes.X3DTextureNode);	
+            this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
+            this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
+            
+            // shortcut to shader program
+            this._shader = null;
 		},
 		{
 			nodeChanged: function() { 		
 				if (!this._cf.material.node) {					
 					this.addChild(x3dom.nodeTypes.Material.defaultNode());
 				}
+                
+                if (this._cf.shaders.nodes.length) {
+                    this._shader = this._cf.shaders.nodes[0];
+                }
         	},
             
             transformMatrix: function() {
@@ -667,7 +675,7 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### TextureTransform ### */
+/* ### X3DTextureNode ### */
 x3dom.registerNodeType(
     "X3DTextureNode",
     "Texturing",
@@ -716,6 +724,84 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName) {
                 // FIXME: Add texture url update code (also in gfx)
             }
+        }
+    )
+);
+
+/* ### X3DShaderNode ### */
+x3dom.registerNodeType(
+    "X3DShaderNode",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DShaderNode.superClass.call(this, ctx);
+            
+            this.addField_SFString(ctx, 'language', "");
+        }
+    )
+);
+
+/* ### ComposedShader ### */
+x3dom.registerNodeType(
+    "ComposedShader",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.X3DShaderNode,
+        function (ctx) {
+            x3dom.nodeTypes.ComposedShader.superClass.call(this, ctx);
+            
+            this.addField_MFNode('parts', x3dom.nodeTypes.ShaderPart);
+            
+            // shortcut to shader parts
+            this._vertex = null;
+            this._fragment = null;
+            
+            x3dom.debug.logInfo("ComposedShader node implementation limitations:\n" +
+                    "Vertex attributes, matrices and texture are provided as follows\n" +
+                    "    attribute vec3 position;\n" +
+                    "    attribute vec3 normal;\n" +
+                    "    attribute vec2 texcoord;\n" +
+                    "    attribute vec3 color;\n" +
+                    "    uniform mat4 modelViewProjectionMatrix;\n" +
+                    "    uniform mat4 modelViewMatrix;\n" +
+                    "    uniform sampler2D tex;\n" +
+                    "Please note, that comments in shaders will lead to parsing errors, " +
+                    "furthermore, dynamic fields are not yet supported, and finally, " +
+                    "'&lt;' and '&gt;' symbols currently cannot be parsed either.\n");
+        },
+        {
+            nodeChanged: function()
+            {
+                var i, n = this._cf.parts.nodes.length;
+                
+                for (i=0; i<n; i++)
+                {
+                    if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'vertex') {
+                        this._vertex = this._cf.parts.nodes[i];
+                    }
+                    else if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'fragment') {
+                        this._fragment = this._cf.parts.nodes[i];
+                    }
+                }
+            }
+        }
+    )
+);
+
+/* ### ShaderPart ### */
+x3dom.registerNodeType(
+    "ShaderPart",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.ShaderPart.superClass.call(this, ctx);
+            
+            this.addField_MFString(ctx, 'url', []);
+            this.addField_SFString(ctx, 'type', "VERTEX");
+            
+            x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
+                               this._vf.type.toLowerCase() == 'fragment');
+        },
+        {
         }
     )
 );
@@ -1361,40 +1447,6 @@ x3dom.registerNodeType(
             
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
             this.addField_SFNode('color', x3dom.nodeTypes.Color);
-            
-            /*
-            var time0 = new Date().getTime();
-            
-            var coordNode = Array.filter(ctx.xmlNode.childNodes, 
-                    function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'coordinate'); });
-            ctx.assert(coordNode.length == 1);
-            var positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), 
-                    function (n) { return +n; });
-
-            var colorNode = Array.filter(ctx.xmlNode.childNodes, 
-                    function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'color'); });
-            var colors = [];
-            if (colorNode.length == 1) {
-                colors = Array.map(colorNode[0].getAttribute('color').match(/([+\-0-9eE\.]+)/g), 
-                    function (n) { return +n; });
-                ctx.assert(positions.length == colors.length);
-            }
-            else {
-                for (var i=0, n=positions.length; i<n; i++)
-                    colors.push(1.0);
-            }
-            
-            this._mesh._indices = [];
-            this._mesh._positions = positions;
-            this._mesh._colors = colors;
-            this._mesh._normals = [];
-            this._mesh._texCoords = [];
-            this._mesh._lit = false;
-            this._mesh._invalidate = true;
-            
-            var time1 = new Date().getTime() - time0;
-            x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
-            */
         },
         {
             nodeChanged: function()
@@ -1516,313 +1568,6 @@ x3dom.registerNodeType(
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
             this.addField_SFNode('color', x3dom.nodeTypes.Color);
             this.addField_SFNode('texCoord', x3dom.nodeTypes.TextureCoordinate);
-            
-            /*
-			var time0 = new Date().getTime();
-			
-            var indexes = ctx.xmlNode.getAttribute('coordIndex').match(/((?:\+|-)?\d+)/g);
-			var normalInd, texCoordInd, colorInd;
-			
-			var hasNormal = false, hasNormalInd = false;
-			var hasTexCoord = false, hasTexCoordInd = false;
-			var hasColor = false, hasColorInd = false;
-			
-			if (ctx.xmlNode.hasAttribute('normalIndex'))
-			{
-				normalInd = ctx.xmlNode.getAttribute('normalIndex').match(/((?:\+|-)?\d+)/g);
-				hasNormalInd = true;
-			}
-			if (ctx.xmlNode.hasAttribute('texCoordIndex'))
-			{
-				texCoordInd = ctx.xmlNode.getAttribute('texCoordIndex').match(/((?:\+|-)?\d+)/g);
-				hasTexCoordInd = true;
-			}
-			if (ctx.xmlNode.hasAttribute('colorIndex'))
-			{
-				colorInd = ctx.xmlNode.getAttribute('colorIndex').match(/((?:\+|-)?\d+)/g);
-				hasColorInd = true;
-			}
-			
-			var positions, normals, texCoords, colors;
-			
-			var coordNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'coordinate'); });
-			ctx.assert(coordNode.length == 1);
-            positions = Array.map(coordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n; });
-			
-			var normalNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'normal'); });
-            if (normalNode.length == 1) 
-			{
-				hasNormal = true;
-				normals = Array.map(normalNode[0].getAttribute('vector').match(/([+\-0-9eE\.]+)/g), function (n) { return +n; });
-			}
-			else {
-				hasNormal = false;
-			}
-
-			var texCoordNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'texturecoordinate'); });
-            if (texCoordNode.length == 1) 
-			{
-				hasTexCoord = true;
-				texCoords = Array.map(texCoordNode[0].getAttribute('point').match(/([+\-0-9eE\.]+)/g), function (n) { return +n; });
-			}
-			else {
-				hasTexCoord = false;
-			}
-
-			var colorNode = Array.filter(ctx.xmlNode.childNodes, 
-					function (n) { return (x3dom.isX3DElement(n) && n.localName.toLowerCase() == 'color'); });
-            if (colorNode.length == 1) 
-			{
-				hasColor = true;
-				colors = Array.map(colorNode[0].getAttribute('color').match(/([+\-0-9eE\.]+)/g), function (n) { return +n; });
-			}
-			else {
-				hasColor = false;
-            }
-
-			this._mesh._indices = [];
-			this._mesh._positions = [];
-			if (hasNormal) { this._mesh._normals = []; }
-			if (hasTexCoord) { this._mesh._texCoords = []; }
-			if (hasColor) { this._mesh._colors = []; }
-            
-            var i, t, cnt;
-			var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
-			
-			if ( (hasNormal && hasNormalInd) || 
-				 (hasTexCoord && hasTexCoordInd) || 
-				 (hasColor && hasColorInd) )
-			{
-				// Found MultiIndex Mesh
-                t = 0;
-                cnt = 0;                
-				
-                for (i=0; i < indexes.length; ++i) 
-				{
-					// Convert non-triangular polygons to a triangle fan
-					// (TODO: this assumes polygons are convex)
-					if (indexes[i] == -1) {
-						t = 0;
-						continue;
-					}
-					if (hasNormalInd) {
-						ctx.assert(normalInd[i] != -1);
-                    }
-					if (hasTexCoordInd) {
-						ctx.assert(texCoordInd[i] != -1);
-                    }
-					if (hasColorInd) {
-						ctx.assert(colorInd[i] != -1);
-					}
-
-					//TODO: OPTIMIZE but think about cache coherence regarding arrays!!!
-					switch (t) 
-					{
-						case 0: 
-							p0 = +indexes[i];
-							if (hasNormalInd) { n0 = +normalInd[i]; }
-							else { n0 = p0; }
-							if (hasTexCoordInd) { t0 = +texCoordInd[i]; }
-							else { t0 = p0; }
-							if (hasColorInd) { c0 = +colorInd[i]; }
-							else { c0 = p0; }
-							t = 1; 
-						break;
-						case 1: 
-							p1 = +indexes[i];
-							if (hasNormalInd) { n1 = +normalInd[i]; }
-							else { n1 = p1; }
-							if (hasTexCoordInd) { t1 = +texCoordInd[i]; }
-							else { t1 = p1; }
-							if (hasColorInd) { c1 = +colorInd[i]; }
-							else { c1 = p1; }
-							t = 2; 
-						break;
-						case 2: 
-							p2 = +indexes[i];
-							if (hasNormalInd) { n2 = +normalInd[i]; }
-							else { n2 = p2; }
-							if (hasTexCoordInd) { t2 = +texCoordInd[i]; }
-							else { t2 = p2; }
-							if (hasColorInd) { c2 = +colorInd[i]; }
-							else { c2 = p2; }
-							t = 3; 
-							
-							this._mesh._indices.push(cnt++, cnt++, cnt++);
-							
-							this._mesh._positions.push(positions[p0*3+0]);
-							this._mesh._positions.push(positions[p0*3+1]);
-							this._mesh._positions.push(positions[p0*3+2]);
-							this._mesh._positions.push(positions[p1*3+0]);
-							this._mesh._positions.push(positions[p1*3+1]);
-							this._mesh._positions.push(positions[p1*3+2]);
-							this._mesh._positions.push(positions[p2*3+0]);
-							this._mesh._positions.push(positions[p2*3+1]);
-							this._mesh._positions.push(positions[p2*3+2]);
-							
-							if (hasNormal) {
-								this._mesh._normals.push(normals[n0*3+0]);
-								this._mesh._normals.push(normals[n0*3+1]);
-								this._mesh._normals.push(normals[n0*3+2]);
-								this._mesh._normals.push(normals[n1*3+0]);
-								this._mesh._normals.push(normals[n1*3+1]);
-								this._mesh._normals.push(normals[n1*3+2]);
-								this._mesh._normals.push(normals[n2*3+0]);
-								this._mesh._normals.push(normals[n2*3+1]);
-								this._mesh._normals.push(normals[n2*3+2]);
-							}
-							
-							if (hasColor) {
-								//assume RGB for now...
-								this._mesh._colors.push(colors[c0*3+0]);
-								this._mesh._colors.push(colors[c0*3+1]);
-								this._mesh._colors.push(colors[c0*3+2]);
-								this._mesh._colors.push(colors[c1*3+0]);
-								this._mesh._colors.push(colors[c1*3+1]);
-								this._mesh._colors.push(colors[c1*3+2]);
-								this._mesh._colors.push(colors[c2*3+0]);
-								this._mesh._colors.push(colors[c2*3+1]);
-								this._mesh._colors.push(colors[c2*3+2]);
-							}
-							
-							if (hasTexCoord) {
-								//assume 2d texCoords for now...
-								this._mesh._texCoords.push(texCoords[t0*2+0]);
-								this._mesh._texCoords.push(texCoords[t0*2+1]);
-								this._mesh._texCoords.push(texCoords[t1*2+0]);
-								this._mesh._texCoords.push(texCoords[t1*2+1]);
-								this._mesh._texCoords.push(texCoords[t2*2+0]);
-								this._mesh._texCoords.push(texCoords[t2*2+1]);
-							}
-						break;
-						case 3: 
-							p1 = p2; 
-							n1 = n2;
-							t1 = t2;
-							p2 = +indexes[i];
-							if (hasNormalInd) { n2 = +normalInd[i]; }
-							else { n2 = p2; }
-							if (hasTexCoordInd) { t2 = +texCoordInd[i]; }
-							else { t2 = p2; }
-							if (hasColorInd) { c2 = +colorInd[i]; }
-							else { c2 = p2; }
-							
-							this._mesh._indices.push(cnt++, cnt++, cnt++);
-							
-							this._mesh._positions.push(positions[p0*3+0]);
-							this._mesh._positions.push(positions[p0*3+1]);
-							this._mesh._positions.push(positions[p0*3+2]);
-							this._mesh._positions.push(positions[p1*3+0]);
-							this._mesh._positions.push(positions[p1*3+1]);
-							this._mesh._positions.push(positions[p1*3+2]);
-							this._mesh._positions.push(positions[p2*3+0]);
-							this._mesh._positions.push(positions[p2*3+1]);
-							this._mesh._positions.push(positions[p2*3+2]);
-							
-							if (hasNormal) {
-								this._mesh._normals.push(normals[n0*3+0]);
-								this._mesh._normals.push(normals[n0*3+1]);
-								this._mesh._normals.push(normals[n0*3+2]);
-								this._mesh._normals.push(normals[n1*3+0]);
-								this._mesh._normals.push(normals[n1*3+1]);
-								this._mesh._normals.push(normals[n1*3+2]);
-								this._mesh._normals.push(normals[n2*3+0]);
-								this._mesh._normals.push(normals[n2*3+1]);
-								this._mesh._normals.push(normals[n2*3+2]);
-							}
-							
-							if (hasColor) {
-								//assume RGB for now...
-								this._mesh._colors.push(colors[c0*3+0]);
-								this._mesh._colors.push(colors[c0*3+1]);
-								this._mesh._colors.push(colors[c0*3+2]);
-								this._mesh._colors.push(colors[c1*3+0]);
-								this._mesh._colors.push(colors[c1*3+1]);
-								this._mesh._colors.push(colors[c1*3+2]);
-								this._mesh._colors.push(colors[c2*3+0]);
-								this._mesh._colors.push(colors[c2*3+1]);
-								this._mesh._colors.push(colors[c2*3+2]);
-							}
-							
-							if (hasTexCoord) {
-								//assume 2d texCoords for now...
-								this._mesh._texCoords.push(texCoords[t0*2+0]);
-								this._mesh._texCoords.push(texCoords[t0*2+1]);
-								this._mesh._texCoords.push(texCoords[t1*2+0]);
-								this._mesh._texCoords.push(texCoords[t1*2+1]);
-								this._mesh._texCoords.push(texCoords[t2*2+0]);
-								this._mesh._texCoords.push(texCoords[t2*2+1]);
-							}
-						break;
-						default:
-					}
-				}
-				
-				if (!hasNormal) {
-					this._mesh.calcNormals(this._vf.creaseAngle);
-                }
-				if (!hasTexCoord) {
-					this._mesh.calcTexCoords();
-				}
-
-				//TODO: this currently does nothing...
-				this._mesh.remapData();
-			
-			} // if isMulti
-			else
-			{
-                t = 0;
-				
-				for (i = 0; i < indexes.length; ++i) 
-				{
-					// Convert non-triangular polygons to a triangle fan
-					// (TODO: this assumes polygons are convex)
-					if (indexes[i] == -1) {
-						t = 0;
-						continue;
-					}
-					switch (t) {
-					case 0: n0 = +indexes[i]; t = 1; break;
-					case 1: n1 = +indexes[i]; t = 2; break;
-					case 2: n2 = +indexes[i]; t = 3; this._mesh._indices.push(n0, n1, n2); break;
-					case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices.push(n0, n1, n2); break;
-					}
-				}
-				
-				this._mesh._positions = positions;
-				
-				if (hasNormal) { 
-					this._mesh._normals = normals;
-                }
-				else { 
-					this._mesh.calcNormals(this._vf.creaseAngle);
-				}
-				if (hasTexCoord) { 
-					this._mesh._texCoords = texCoords;
-                }
-				else { 
-					this._mesh.calcTexCoords();
-				}
-
-				if (hasColor) { 
-					this._mesh._colors = colors;
-				}
-				this._mesh.remapData();
-			}
-			
-			this._mesh._invalidate = true;
-			
-			var time1 = new Date().getTime() - time0;
-			x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
-            */
-			
-			// TODO: fixme, what about geoProperty nodes?
-            // Coordinate           - X3DCoordinateNode         - X3DGeometricPropertyNode 
-            // Normal 			    - X3DNormalNode 			- X3DGeometricPropertyNode
-			// TextureCoordinate    - X3DTextureCoordinateNode  - X3DGeometricPropertyNode 
         },
         {
             nodeChanged: function()

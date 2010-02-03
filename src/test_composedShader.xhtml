@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'/>
+  </head>
+  <body>
+  
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' x='0px' y='0px' width='500px' height='500px'>
+      <Scene DEF='scene'>
+        <Background skyColor='0.1 0.3 0.6'/>
+        <Viewpoint position='0 0 5'/>
+        <Shape>
+          <Appearance>
+            <ComposedShader DEF='ComposedShader'>
+              <field accessType='inputOutput' name='diffuseColor' type='SFVec3f' value='0.7 0.5 0.3'/>
+              <ShaderPart type='VERTEX' url='"varying vec3 fragNormal;
+                    attribute vec3 position;
+                    attribute vec3 normal;
+                    uniform mat4 modelViewProjectionMatrix;
+                    void main()
+                    {
+                        fragNormal = normal;
+                        gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                    }"'>
+              </ShaderPart>
+              <ShaderPart type='FRAGMENT' url='"varying vec3 fragNormal;
+                    void main()
+                    {
+                        vec3 color = (normalize(fragNormal) + 1.0) * 0.5;
+                        gl_FragColor = vec4(color, 1.0);
+                    }"'>
+              </ShaderPart>
+            </ComposedShader>
+          </Appearance>
+          <Torus/>
+        </Shape>
+      </Scene>
+    </X3D>
+    
+	<script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+	<script type="text/javascript" src="gfx_webgl.js"></script>
+	<script type="text/javascript" src="x3d.js"></script>
+	<script type="text/javascript" src="fields.js"></script>
+  </body>
+</html>
