@@ -56,7 +56,7 @@ x3dom.gfx_webgl = (function () {
 
 	function setupContext(canvas) {
 		// TODO: add experimental-webgl, webgl test    
-		x3dom.debug.logInfo("setupContext: canvas=" + canvas);
+		// x3dom.debug.logInfo("setupContext: canvas=" + canvas);
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
         for (var i=0; i<validContextNames.length; i++) {
@@ -635,7 +635,7 @@ x3dom.gfx_webgl = (function () {
 	{
         if (shape._webgl !== undefined)
         {
-            if (shape._dirty == true)
+            if (shape._dirty === true)
             {
                 if (shape._webgl.shader.position !== undefined) 
                 {
@@ -680,10 +680,10 @@ x3dom.gfx_webgl = (function () {
 			var font_family = 'SANS';
             if (fontStyle !== null) {
                 font_family = Array.map(fontStyle._vf.family, function (s) {
-                    if (s == 'SANS') return 'sans-serif';
-                    else if (s == 'SERIF') return 'serif';
-                    else if (s == 'TYPEWRITER') return 'monospace';
-                    else return '"'+s+'"';  //'Verdana'
+                    if (s == 'SANS') { return 'sans-serif'; }
+                    else if (s == 'SERIF') { return 'serif'; }
+                    else if (s == 'TYPEWRITER') { return 'monospace'; }
+                    else { return '"'+s+'"'; }  //'Verdana' 
                 }).join(', ');
             }
 			/*text_ctx.mozTextStyle = '48px '+font_family;*/
@@ -743,8 +743,8 @@ x3dom.gfx_webgl = (function () {
 			var u = u0 + txtW / text_canvas.width;
 			var v = 1 - txtH / text_canvas.height;
             var v0 = topOffset / text_canvas.height + v;
-            if (u0 < 0) u0 = 0;
-            if (u > 1) u = 1; 
+            if (u0 < 0) { u0 = 0; }
+            if (u > 1) { u = 1; }
             //x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
             shape._cf.geometry.node._mesh._positions = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
@@ -989,7 +989,7 @@ x3dom.gfx_webgl = (function () {
             if (url.length >= 6 && url[1].length > 0 && url[2].length > 0 && 
                 url[3].length > 0 && url[4].length > 0 && url[5].length > 0)
             {
-                var sphere = new x3dom.nodeTypes.Sphere()
+                var sphere = new x3dom.nodeTypes.Sphere();
                 
                 scene._webgl = {
                     positions: sphere._mesh._positions,
@@ -1072,7 +1072,7 @@ x3dom.gfx_webgl = (function () {
                 (scene._webgl.texture.textureCubeReady !== undefined && 
                  scene._webgl.texture.textureCubeReady !== true))
             {
-            	var bgCol = scene.getSkyColor()[0];
+                var bgCol = scene.getSkyColor()[0];
                 
                 gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
                 gl.clearDepth(1.0);
@@ -1592,7 +1592,7 @@ x3dom.gfx_webgl = (function () {
                         texture.textureCubeReady = true;
                         x3dom.debug.logInfo("Loading CubeMap finished...");
                     }
-                }
+                };
             }(texture, face, image, (i<=1 || i>=4));
             
             // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl
@@ -1609,7 +1609,7 @@ x3dom.gfx_webgl = (function () {
             gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
         }
         catch (e) */
-        {
+
             var bytes = 3;
             switch (internalFormat)
             {
@@ -1622,7 +1622,7 @@ x3dom.gfx_webgl = (function () {
             }
             var pixels = new WebGLUnsignedByteArray(width * height * bytes);
             gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, pixels);
-        }
+
     };
 
     Context.prototype.initTex = function(gl, w, h)
@@ -1657,8 +1657,8 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.initFbo = function(gl, w, h)
     {
         var fbo = gl.createFramebuffer();
-        var rb = gl.createRenderbuffer()    
-        var tex = this.initTex(gl,w,h)
+        var rb = gl.createRenderbuffer();
+        var tex = this.initTex(gl,w,h);
         
         gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
         gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
