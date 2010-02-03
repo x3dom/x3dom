@@ -110,8 +110,12 @@ x3dom.gfx_webgl = (function () {
         "varying vec3 fragNormal;" +
 		"" +
 		"void main(void) {" +
-        "    gl_FragColor = textureCube(tex, normalize(fragNormal));" +
-        //"    gl_FragColor = vec4((normalize(fragNormal) + 1.0) * 0.5, 1.0);" +
+        "    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));" +
+        "    if (abs(normal.y) >= abs(normal.x) && abs(normal.y) >= abs(normal.z))" +
+        "        normal.x *= -1.0;" +
+        //"    vec3 normal = normalize(fragNormal);" +
+        "    gl_FragColor = textureCube(tex, normal);" +
+        //"    gl_FragColor = vec4((normal + 1.0) * 0.5, 1.0);" +
 		"}"
 		};
 	
@@ -965,7 +969,7 @@ x3dom.gfx_webgl = (function () {
         
         if (url.length > 0 && url[0].length > 0)
         {
-            if (url[1].length > 0 && url[2].length > 0 && 
+            if (url.length >= 6 && url[1].length > 0 && url[2].length > 0 && 
                 url[3].length > 0 && url[4].length > 0 && url[5].length > 0)
             {
                 var sphere = new x3dom.nodeTypes.Sphere()
@@ -991,7 +995,7 @@ x3dom.gfx_webgl = (function () {
                 image.onload = function()
                 {
                     scene._webgl.texture = texture;
-                    x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
+                    //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
                     
                     gl.bindTexture(gl.TEXTURE_2D, texture);
                     gl.texImage2D(gl.TEXTURE_2D, 0, image);
@@ -1075,6 +1079,7 @@ x3dom.gfx_webgl = (function () {
                 if (scene._webgl.texture.textureCubeReady) {
                     sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().toGL();
                     
+                    gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene._webgl.texture);
                     
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -1083,7 +1088,7 @@ x3dom.gfx_webgl = (function () {
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 }
                 else {
-                    //gl.enable(gl.TEXTURE_2D);
+                    gl.enable(gl.TEXTURE_2D);
                     gl.bindTexture(gl.TEXTURE_2D, scene._webgl.texture);
                     
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -1108,9 +1113,10 @@ x3dom.gfx_webgl = (function () {
                 
                 if (scene._webgl.texture.textureCubeReady) {
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                    gl.disable(gl.TEXTURE_CUBE_MAP);
                 }
                 else {
-                    //gl.bindTexture(gl.TEXTURE_2D, null);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
                     gl.disable(gl.TEXTURE_2D);
                 }
                 
@@ -1548,9 +1554,9 @@ x3dom.gfx_webgl = (function () {
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 
-        var faces = [gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
-                     gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
-                     gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z];
+        var faces = [gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 
+                     gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 
+                     gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X];
         texture.pendingTextureLoads = -1;
         texture.textureCubeReady = false;
         
@@ -1559,10 +1565,10 @@ x3dom.gfx_webgl = (function () {
             var face = faces[i];
             var image = new Image();
             
-            image.onload = function(texture, face, image) {
+            image.onload = function(texture, face, image, swap) {
                 return function() {
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-                    gl.texImage2D(face, 0, image);
+                    gl.texImage2D(face, 0, image, swap);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                     texture.pendingTextureLoads--;
                     if (texture.pendingTextureLoads < 0) {
@@ -1570,8 +1576,9 @@ x3dom.gfx_webgl = (function () {
                         x3dom.debug.logInfo("Loading CubeMap finished...");
                     }
                 }
-            }(texture, face, image);
+            }(texture, face, image, (i<=1 || i>=4));
             
+            // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl
             image.src = url[i];
         }
         
