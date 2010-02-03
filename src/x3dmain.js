@@ -97,7 +97,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
 
         // Apply the width and height of the X3D element to the canvas 
-        var x, y, w, h, showStat;
+        var x, y, w, h;
         if ((x = x3dElem.getAttribute("x")) !== null) {
             canvas.style.left = x.toString();
         }
@@ -247,8 +247,9 @@ x3dom.X3DCanvas = function(x3dElem) {
 				return;
             }
 			
-			var dx = evt.layerX - this.mouse_drag_x;
-			var dy = evt.layerY - this.mouse_drag_y;
+            // NOTE: dx and dy are not used, thus we can remove it [PE]
+			// var dx = evt.layerX - this.mouse_drag_x;
+			// var dy = evt.layerY - this.mouse_drag_y;
 			this.mouse_drag_x = evt.layerX;
 			this.mouse_drag_y = evt.layerY;
 			
@@ -304,9 +305,9 @@ x3dom.X3DCanvas.prototype.tick = function()
 x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
     var x3dCanvas = this;
-    var doc = this.doc;
+    // var doc = this.doc;   NOTE: doc is not used in this function [PE]
     var gl = this.gl;
-    x3dom.debug.logInfo("gl=" + gl.toString() + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
+    // x3dom.debug.logInfo("gl=" + gl.toString() + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
 	
     this.doc.onload = function () {
         x3dom.debug.logInfo("loaded [" + uri + "]");
