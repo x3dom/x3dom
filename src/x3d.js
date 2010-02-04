@@ -129,7 +129,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode ) {
 				else {
 				  if (domNode.hasAttribute('id')) {
 					n._DEF = domNode.getAttribute('id');
-					ctx.defMap[n._DEF] = n;
+					this.defMap[n._DEF] = n;
 				  }
 				}
 
