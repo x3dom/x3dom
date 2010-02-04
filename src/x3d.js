@@ -61,10 +61,12 @@ x3dom.NodeNameSpace = function (name) {
 
 x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
 	this.defMap[name] = node;
+	node.nameSpace = this;
 };
 
 x3dom.NodeNameSpace.prototype.removeNode = function (name) {
 	delete this.defMap.name;
+	node.nameSpace = null;
 };
 
 x3dom.NodeNameSpace.prototype.addSpace = function (space) {
@@ -76,6 +78,92 @@ x3dom.NodeNameSpace.prototype.removeSpace = function (space) {
 	this.childSpaces.push(space);
 	space.parent = null;
 };
+
+x3dom.NodeNameSpace.prototype.setupTree = function (domNode ) {
+    var n, t;	
+	
+    if (x3dom.isX3DElement(domNode)) {
+        // x3dom.debug.logInfo("=== node=" + domNode.localName);
+	    if (domNode.hasAttribute('USE')) {
+	      n = this.defMap[domNode.getAttribute('USE')];
+	      if (n === null) 
+	        x3dom.debug.logInfo ('Could not USE: ' + domNode.getAttribute('USE'));
+		  else 
+			x3dom.debug.logInfo ('USE NODE' + n);
+	      return n;
+	    }
+	    else {
+	 		// check and create ROUTEs
+	    	if (domNode.localName.toLowerCase() === 'route') {
+                var route = domNode;
+                var fromNode = this.defMap[route.getAttribute('fromNode')];
+                var toNode = this.defMap[route.getAttribute('toNode')];
+                //x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
+                if (! (fromNode && toNode)) {
+                    x3dom.debug.logInfo("Broken route - can't find all DEFs for " + route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
+                    return null;
+                }
+                fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
+//                 TODO: Store the routes of the scene - where should we store them?
+//                 scene._routes = Array.map(sceneRoutes, setupRoute);
+	    		return null;
+            }
+            
+            // find the NodeType for the given dom-node          
+            var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
+            if (nodeType === undefined) {                
+                x3dom.debug.logInfo("Unrecognised element " + domNode.localName);
+            }
+            else {
+                var ctx = { xmlNode: domNode };
+                n = new nodeType(ctx);
+				n._nameSpace = this;
+				
+                // x3dom.debug.logInfo("new node type: " + node.localName + ", autoChild=" + n._autoChild);
+				
+				// find and store/link _DEF name
+			    if (domNode.hasAttribute('DEF')) {
+			       n._DEF = domNode.getAttribute('DEF');
+				   this.defMap[n._DEF] = n;
+				}
+				else {
+				  if (domNode.hasAttribute('id')) {
+					n._DEF = domNode.getAttribute('id');
+					ctx.defMap[n._DEF] = n;
+				  }
+				}
+
+				// link both DOM-Node and Scene-graph-Node
+				n._xmlNode = domNode;
+		        domNode._x3domNode = n;
+                
+				// call children
+				/*
+                Array.forEach( Array.map(domNode.childNodes, 
+                                function (n) { return this.setupTree(n); }, this), 
+                        		function (c) { if (c) n.addChild(c); });
+                */
+				var that = this;
+                Array.forEach ( domNode.childNodes, function (childDomNode) { 
+					var c = that.setupTree(childDomNode); 
+					if (c) n.addChild(c); 
+				} );
+								
+				// FIXME: remove
+				n.nodeChanged();
+                return n;
+            }
+        }
+    }
+    else if (domNode.localName) {
+        // be nice to users who use nodes not (yet) known to the system
+        x3dom.debug.logInfo("Unrecognised element '" + node.localName + "'");
+		n = null;
+    }
+
+	return n;
+};
+
 
 /** Utility function for defining a new class.
 
@@ -137,20 +225,12 @@ function MFString_parse(str) {
 // ### X3DNode ###
 x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
     function (ctx) {
-		if (ctx) {
-        	if (ctx.xmlNode.hasAttribute('DEF')) {
-            	this._DEF = ctx.xmlNode.getAttribute('DEF');
-				ctx.defMap[this._DEF] = this;
-			}
-            else {
-				if (ctx.xmlNode.hasAttribute('id')) {
-					this._DEF = ctx.xmlNode.getAttribute('id');
-					ctx.defMap[this._DEF] = this;
-				}
-			}
-            
-			this._xmlNode = ctx.xmlNode;	// backlink to DOM tree
-		}
+		
+		// holds a link to the node name
+		_DEF = null;
+		
+		// links the nameSpace
+		_nameSpace = null;
 		
 		// holds all value fields (e.g. SFFloat, MFVec3f, ...)
 		this._vf = {};
@@ -165,33 +245,37 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
     },
     {
         addChild: function (node) {
-            for (var fieldName in this._cf) {
-                if (this._cf.hasOwnProperty(fieldName)) {
-                    var field = this._cf[fieldName];
-                    if (x3dom.isa(node,field.type) && (field.addLink(node))) {
-                        node._parentNodes.push(this);
-                        this._childNodes.push(node);
-                        return true;
-                    }
-                }
-            }
+			if (node) {
+	        	for (var fieldName in this._cf) {
+                	if (this._cf.hasOwnProperty(fieldName)) {
+                    	var field = this._cf[fieldName];
+                    	if (x3dom.isa(node,field.type) && (field.addLink(node))) {
+                        	node._parentNodes.push(this);
+                        	this._childNodes.push(node);
+                        	return true;
+                    	}
+                	}
+            	}
+			}
             return false;
         },
         
         removeChild: function (node) {
-            for (var fieldName in this._cf) {
-                if (this._cf.hasOwnProperty(fieldName)) {
-                    var field = this._cf[fieldName];
-                    if (field.rmLink(node)) {
-                        for (var i = 0, n = node._parentNodes.length; i < n; i++) {
-                            if (node._parentNode === this) {
-                                node._parentNodes.splice(i,1);
-                            } 
-                        }
-						for (var j = 0, m = this._childNodes.length; j < m; j++) {			
-                        	if (this._childNodes[j] === node) {
-                             	this._childNodes.splice(j,1);
-                                return true;
+			if (node) {
+	        	for (var fieldName in this._cf) {
+                	if (this._cf.hasOwnProperty(fieldName)) {
+                    	var field = this._cf[fieldName];
+                    	if (field.rmLink(node)) {
+                        	for (var i = 0, n = node._parentNodes.length; i < n; i++) {
+                            	if (node._parentNode === this) {
+                                	node._parentNodes.splice(i,1);
+                            	} 
+                        	}
+							for (var j = 0, m = this._childNodes.length; j < m; j++) {			
+                        		if (this._childNodes[j] === node) {
+                             		this._childNodes.splice(j,1);
+                                	return true;
+								}
                          	}
                         }
                     }
@@ -3346,8 +3430,9 @@ x3dom.registerNodeType(
                 
                 //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                 var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
-                                
-                var newScene = ctx.setupNodePrototypes(inlScene, ctx);
+                var nameSpace = new NodeNameSpace();             
+                var newScene = nameSpace.setupTree(inlScene);
+
                 for (var i=0, n=newScene._childNodes.length; i<n; i++) {
                     that.addChild(newScene._childNodes[i]);
                 }
@@ -3428,11 +3513,6 @@ x3dom.findScene = function(x3dElem) {
 
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
-    var ctx = {
-    	defMap: {},
-        setupNodePrototypes: this._setupNodePrototypes
-    };
-
     var doc = this;
     
     // Test capturing DOM mutation events on the X3D subscene
@@ -3457,14 +3537,19 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         onNodeInserted: function(e) {
             var parent = e.target.parentNode._x3domNode;
             var child = e.target;
-            
+       
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", inserted node=" + child.tagName);
             //x3dom.debug.logInfo("MUTATION: " + child.translation + ", " + child.parentNode.tagName);
                         
             //FIXME; get rid of scene._ctx
-            var newChild = scene._ctx.setupNodePrototypes(child, scene._ctx);
-            
-			parent.addChild(newChild);
+
+			if (parent._nameSpace) {
+				var newNode = parent._nameSpace.setupTree (child);
+				parent.addChild(newNode);
+			}
+            else {
+				x3dom.debug.logInfo("No _nameSpace in onNodeInserted");
+			}
          }
     };
     
@@ -3523,71 +3608,16 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         traverseDOMTree(sceneDoc, 0);
     }
     
+
     var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
-    var scene = this._setupNodePrototypes(sceneElem, ctx);  // ROUTE creation in _setupNodePrototypes
+	var nameSpace = new x3dom.NodeNameSpace("scene");
+    var scene = nameSpace.setupTree(sceneElem);
 
     this._scene = scene;
 	
+	// create view 
 	this._scene._width = this.canvas.width;
 	this._scene._height = this.canvas.height;
-};
-
-x3dom.X3DDocument.prototype._setupNodePrototypes = function (node, ctx) {
-    var n, t;	
-    if (x3dom.isX3DElement(node)) {
-        // x3dom.debug.logInfo("=== node=" + node.localName);
-	    if (node.hasAttribute('USE')) {
-	      n = ctx.defMap[node.getAttribute('USE')];
-	      if (n == null) 
-	        x3dom.debug.logInfo ('Could not USE: '+node.getAttribute('USE'));
-	      return n;
-	    }
-	    else {
-	    	// FIXME; Should we create ROUTES at this position?
-            // PE: Yes we should - and we do now :)
-	    	if (node.localName.toLowerCase() === 'route') {
-                var route = node;
-                var fromNode = ctx.defMap[route.getAttribute('fromNode')];
-                var toNode = ctx.defMap[route.getAttribute('toNode')];
-                //x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
-                if (! (fromNode && toNode)) {
-                    x3dom.debug.logInfo("Broken route - can't find all DEFs for " + route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
-                    return null;
-                }
-                fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
-//                 TODO: Store the routes of the scene - where should we store them?
-//                 scene._routes = Array.map(sceneRoutes, setupRoute);
-	    		return null;
-            }
-            
-            // PE: New code no longer uses the x3dom.nodeTypeMap (which is obsolete now)
-            //     The autoChild property was added to the X3DGroupingNode base class (as _autoChild)
-            // var nodeType = x3dom.nodeTypes[node.localName];            
-            var nodeType = x3dom.nodeTypesLC[node.localName.toLowerCase()];
-            if (nodeType === undefined) {                
-                x3dom.debug.logInfo("Unrecognised element " + node.localName);
-            }
-            else {
-                ctx.xmlNode = node;
-                n = new nodeType(ctx);
-                // x3dom.debug.logInfo("new node type: " + node.localName + ", autoChild=" + n._autoChild);
-                node._x3domNode = n;
-                
-                Array.forEach(Array.map(node.childNodes, 
-                                function (n) { return ctx.setupNodePrototypes(n, ctx); }, this), 
-                        function (c) { if (c) n.addChild(c); });
-                
-				n.nodeChanged();
-                return n;
-            }
-        }
-    }
-    else if (node.localName) {
-        // be nice to users who use nodes not (yet) known to the system
-        x3dom.debug.logInfo("Unrecognised element '" + node.localName + "'");
-    }
-
-	return n;
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
