@@ -1485,6 +1485,9 @@ x3dom.gfx_webgl = (function () {
 			if (sp.texcoord !== undefined) {
 				gl.disableVertexAttribArray(sp.texcoord);
 			}
+            if (sp.color !== undefined) {
+                gl.disableVertexAttribArray(sp.color);
+            }
 		}
 		
 		gl.disable(gl.BLEND);
