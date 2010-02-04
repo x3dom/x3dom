@@ -113,9 +113,7 @@ x3dom.gfx_webgl = (function () {
         "    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));" +
         "    if (abs(normal.y) >= abs(normal.x) && abs(normal.y) >= abs(normal.z))" +
         "        normal.x *= -1.0;" +
-        //"    vec3 normal = normalize(fragNormal);" +
         "    gl_FragColor = textureCube(tex, normal);" +
-        //"    gl_FragColor = vec4((normal + 1.0) * 0.5, 1.0);" +
 		"}"
 		};
 	
@@ -201,7 +199,8 @@ x3dom.gfx_webgl = (function () {
         "        {" +
         "            projectiveBiased.x += (j*stepSize);" +
         "            projectiveBiased.y += (i*stepSize);" +
-        "            float z = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5).z;" +
+        "            vec4 shCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
+        "            float z = (shCol.a * 16777216.0 + shCol.r * 65536.0 + shCol.g * 256.0 + shCol.b) / 16777216.0;" +
         "            if (z < projectiveBiased.z) blockerCount += 1.0;" +
         "            projectiveBiased.x -= (j*stepSize);" +
         "            projectiveBiased.y -= (i*stepSize);" +
@@ -267,7 +266,8 @@ x3dom.gfx_webgl = (function () {
         "    if (shadowIntensity > 0.0) { " +
         "      vec3 projectiveBiased = projCoord.xyz / projCoord.w;" +
         "      vec4 shCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
-        "      if (shCol.z < projectiveBiased.z) rgb *= (1.0 - shadowIntensity);" +
+        "      float z = (shCol.a * 16777216.0 + shCol.r * 65536.0 + shCol.g * 256.0 + shCol.b) / 16777216.0;" +
+        "      if (z < projectiveBiased.z) rgb *= (1.0 - shadowIntensity);" +
         "    }" +
         "    if (len <= 0.1) discard;" +
 		"    else gl_FragColor = vec4(rgb, len);" +
@@ -312,6 +312,29 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragEyeVector;" +
         "varying vec4 projCoord;" +
 		"" +
+        "float PCF_Filter(vec3 projectiveBiased, float filterWidth)" +
+        "{" +
+        "    float stepSize = 2.0 * filterWidth / 3.0;" +
+        "    float blockerCount = 0.0;" +
+        "    projectiveBiased.x -= filterWidth;" +
+        "    projectiveBiased.y -= filterWidth;" +
+        "    for (float i=0.0; i<3.0; i++)" +
+        "    {" +
+        "        for (float j=0.0; j<3.0; j++)" +
+        "        {" +
+        "            projectiveBiased.x += (j*stepSize);" +
+        "            projectiveBiased.y += (i*stepSize);" +
+        "            vec4 shCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
+        "            float z = (shCol.a * 16777216.0 + shCol.r * 65536.0 + shCol.g * 256.0 + shCol.b) / 16777216.0;" +
+        "            if (z < projectiveBiased.z) blockerCount += 1.0;" +
+        "            projectiveBiased.x -= (j*stepSize);" +
+        "            projectiveBiased.y -= (i*stepSize);" +
+        "        }" +
+        "    }" +
+        "    float result = 1.0 - shadowIntensity * blockerCount / 9.0;" +
+        "    return result;" +
+        "}" +
+        "" +
 		"void main(void) {" +
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
@@ -324,8 +347,8 @@ x3dom.gfx_webgl = (function () {
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
         "      vec3 projectiveBiased = projCoord.xyz / projCoord.w;" +
-        "      vec4 shCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
-        "      if (shCol.z < projectiveBiased.z) rgb *= (1.0 - shadowIntensity);" +
+        "      float shadowed = PCF_Filter(projectiveBiased, 0.002);" +
+        "      rgb *= shadowed;" +
         "    }" +
 		"    gl_FragColor = vec4(rgb, alpha);" +
 		"}"
@@ -373,6 +396,29 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragEyeVector;" +
         "varying vec4 projCoord;" +
 		"" +
+        "float PCF_Filter(vec3 projectiveBiased, float filterWidth)" +
+        "{" +
+        "    float stepSize = 2.0 * filterWidth / 3.0;" +
+        "    float blockerCount = 0.0;" +
+        "    projectiveBiased.x -= filterWidth;" +
+        "    projectiveBiased.y -= filterWidth;" +
+        "    for (float i=0.0; i<3.0; i++)" +
+        "    {" +
+        "        for (float j=0.0; j<3.0; j++)" +
+        "        {" +
+        "            projectiveBiased.x += (j*stepSize);" +
+        "            projectiveBiased.y += (i*stepSize);" +
+        "            vec4 shCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
+        "            float z = (shCol.a * 16777216.0 + shCol.r * 65536.0 + shCol.g * 256.0 + shCol.b) / 16777216.0;" +
+        "            if (z < projectiveBiased.z) blockerCount += 1.0;" +
+        "            projectiveBiased.x -= (j*stepSize);" +
+        "            projectiveBiased.y -= (i*stepSize);" +
+        "        }" +
+        "    }" +
+        "    float result = 1.0 - shadowIntensity * blockerCount / 9.0;" +
+        "    return result;" +
+        "}" +
+        "" +
 		"void main(void) {" +
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
@@ -385,8 +431,8 @@ x3dom.gfx_webgl = (function () {
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
         "      vec3 projectiveBiased = projCoord.xyz / projCoord.w;" +
-        "      vec4 shCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
-        "      if (shCol.z < projectiveBiased.z) rgb *= (1.0 - shadowIntensity);" +
+        "      float shadowed = PCF_Filter(projectiveBiased, 0.002);" +
+        "      rgb *= shadowed;" +
         "    }" +
 		"    gl_FragColor = vec4(rgb, alpha);" +
 		"}"
@@ -466,7 +512,15 @@ x3dom.gfx_webgl = (function () {
         "varying vec4 projCoord;" +
 		"void main(void) {" +
         "    vec3 proj = (projCoord.xyz / projCoord.w);" +
-		"    gl_FragColor = vec4(proj.z, proj.z, proj.z, 1.0);" +
+		"    float dist = proj.z * 4294967296.0;" +
+        "    float alpha = float(int(dist / 16777216.0));" +
+		"    dist = dist - float(int(alpha)) * 16777216.0;" +
+		"    float red = float(int(dist / 65536.0));" +
+		"    dist = dist - float(int(red)) * 65536.0;" +
+		"    float green = float(int(dist / 256.0));" +
+        "    dist = dist - float(int(green)) * 256.0;" +
+		"    float blue = float(int(dist / 256.0));" +
+		"    gl_FragColor = vec4(red/256.0, green/256.0, blue/256.0, alpha/256.0);" +
 		"}"
 		};
     
