@@ -88,8 +88,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode ) {
 	      n = this.defMap[domNode.getAttribute('USE')];
 	      if (n === null) 
 	        x3dom.debug.logInfo ('Could not USE: ' + domNode.getAttribute('USE'));
-		  else 
-			x3dom.debug.logInfo ('USE NODE' + n);
 	      return n;
 	    }
 	    else {
@@ -3430,13 +3428,25 @@ x3dom.registerNodeType(
                 
                 //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                 var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
-                var nameSpace = new NodeNameSpace();             
-                var newScene = nameSpace.setupTree(inlScene);
+                //var inlScene = x3dom.findScene(xml);              // sceneDoc is the X3D element here...
 
+				if (inlScene) {
+					var nameSpace = new x3dom.NodeNameSpace();             
+                	var newScene = nameSpace.setupTree(inlScene);
+					that.addChild(newScene);
+				}
+				else {
+					x3dom.debug.logInfo('no Scene in ' + xml.localName);
+				}
+				
+				
+				that.addChild(newScene);
+				/*
                 for (var i=0, n=newScene._childNodes.length; i<n; i++) {
                     that.addChild(newScene._childNodes[i]);
                 }
-                                
+                */
+                
                 x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
             };
             
