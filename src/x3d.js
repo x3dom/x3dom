@@ -2199,6 +2199,81 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### X3DSoundNode ### */
+x3dom.registerNodeType(
+    "X3DSoundNode",
+    "Sound",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DSoundNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+/* ### Sound ### */
+x3dom.registerNodeType(
+    "Sound",
+    "Sound",
+    defineClass(x3dom.nodeTypes.X3DSoundNode,
+        function (ctx) {
+            x3dom.nodeTypes.Sound.superClass.call(this, ctx);
+            
+            this.addField_SFNode('source', x3dom.nodeTypes.X3DSoundSourceNode);
+        }
+    )
+);
+
+/* ### X3DSoundSourceNode ### */
+x3dom.registerNodeType( 
+    "X3DSoundSourceNode",
+    "Sound",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DSoundSourceNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+/* ### AudioClip ### */
+x3dom.registerNodeType( 
+    "AudioClip",
+    "Sound",
+    defineClass(x3dom.nodeTypes.X3DSoundSourceNode,
+        function (ctx) {
+            x3dom.nodeTypes.AudioClip.superClass.call(this, ctx);
+            
+            this.addField_SFBool(ctx, 'loop', false);
+            this.addField_MFString(ctx, 'url', []);
+            
+            this._audio = null;
+        },
+        {
+            nodeChanged: function() 
+            {
+                x3dom.debug.logInfo('Loading sound file: ' + this._vf.url);
+                this._audio = document.createElement('audio');
+                this._audio.setAttribute('autobuffer', 'true');
+                this._audio.setAttribute('autoplay', 'true');
+                this._audio.setAttribute('src', this._vf.url);
+                var p = document.getElementsByTagName('body')[0];
+                p.appendChild(this._audio);
+                
+                var that = this;
+                
+                var audioDone = function()
+                {
+                    if (that._vf.loop === true)
+                    {
+                        that._audio.play();
+                    }
+                };
+                
+                this._audio.addEventListener("ended", audioDone, true);
+            }
+        }
+    )
+);
+
 /* ### X3DBindableNode ### */
 x3dom.registerNodeType(
     "X3DBindableNode",
