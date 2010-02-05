@@ -61,18 +61,18 @@ x3dom.BindableStack = function (type, defaultType, defaultRoot) {
 };
 
 x3dom.BindableStack.prototype.getActive = function () {	
-	if (bindStack.empty) {
-		if (bindBag.empty) {
+	if (this.bindStack.empty) {
+		if (this.bindBag.empty) {
 			var obj = new this.defaultType();
-			defaultRoot.addChild(obj);
+			this.defaultRoot.addChild(obj);
 			obj.initDefault();
-			bindBag.push(obj);
+			this.bindBag.push(obj);
 		}
-		bindBag[0].activate();
-		bindStack.push(bindBag[0]);
+		this.bindBag[0].activate();
+		this.bindStack.push(bindBag[0]);
 	}
 	
-	return bindStack[bindStack.length].top();
+	return this.bindStack[this.bindStack.length].top();
 };
 
 x3dom.BindableBag = function (defaultRoot) {
@@ -88,7 +88,7 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 	var stack;
 	
 	if (type && defaultType) {
-		stack = new BindableStack (type, defaultType, defaultRoot);
+		stack = new x3dom.BindableStack (type, defaultType, defaultRoot);
 		this[typeName] = this;
 		this[getter] = function (stack) { return stack.getActive(); };
 	}
@@ -110,7 +110,7 @@ x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
 	node.nameSpace = this;
 };
 
-x3dom.NodeNameSpace.prototype.removeNode = function (name) {
+x3dom.NodeNameSpace.prototype.removeNode = function (node, name) {
 	delete this.defMap.name;
 	node.nameSpace = null;
 };
@@ -201,7 +201,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode ) {
     }
     else if (domNode.localName) {
         // be nice to users who use nodes not (yet) known to the system
-        x3dom.debug.logInfo("Unrecognised element '" + node.localName + "'");
+        x3dom.debug.logInfo("Unrecognised element '" + domNode.localName + "'");
 		n = null;
     }
 
@@ -271,10 +271,10 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
     function (ctx) {
 		
 		// holds a link to the node name
-		_DEF = null;
+		this._DEF = null;
 		
 		// links the nameSpace
-		_nameSpace = null;
+		this._nameSpace = null;
 		
 		// holds all value fields (e.g. SFFloat, MFVec3f, ...)
 		this._vf = {};
