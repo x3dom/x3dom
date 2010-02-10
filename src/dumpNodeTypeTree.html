@@ -30,7 +30,7 @@
             }
             return false;
         }
-        
+         
         function dumpType(t, indent) {
             for (var i=0; i<indent; i++) {
                 $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");                    
@@ -40,10 +40,11 @@
             for (var i in x3dom.nodeTypes[t].childTypes[t]) {
                 dumpType(x3dom.nodeTypes[t].childTypes[t][i], indent+1); 
             }                                
-        }
+        }        
                         
         $(document).ready( function() {                        
 
+            // Create the nodetype hierachy
             for (var tn in x3dom.nodeTypes) {                
                 var t = x3dom.nodeTypes[tn];
                 
@@ -61,9 +62,24 @@
 
             }            
                         
+            // Dump the nodetype hierachy
             dumpType("X3DNode", 0); 
+            
+            // Dump nodetypes by component
+            for (var c in x3dom.components) {
+                var component = x3dom.components[c];
+                $("#components").append("<h2>" + c + "</h2>");
+                $("#components").append("<ul>");
+                var $ul = $("#components ul:last");
+                for (var t in component) {
+                    $ul.append("<li>" + t + "</li>");
+                }
+            }
         });
     </script>
 
+    <h1>Nodetypes by component</h1>
+    <div id="components"></div>
+    
 </body>
 </html>
