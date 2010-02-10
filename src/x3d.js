@@ -110,9 +110,11 @@ x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
 	node.nameSpace = this;
 };
 
-x3dom.NodeNameSpace.prototype.removeNode = function (node, name) {
+x3dom.NodeNameSpace.prototype.removeNode = function (name) {
+	var node = this.defMap.name;
 	delete this.defMap.name;
-	node.nameSpace = null;
+	if (node)
+		node.nameSpace = null;
 };
 
 x3dom.NodeNameSpace.prototype.addSpace = function (space) {
@@ -2977,6 +2979,24 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Group.superClass.call(this, ctx);
+        },
+        {
+        }
+    )
+);
+
+// ### Collision ###
+x3dom.registerNodeType(
+    "Collision",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.Collision.superClass.call(this, ctx);
+
+			this.addField_SFBool (ctx,"enabled", true);
+			this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode );
+			
+			// TODO; add Slots: collideTime, isActive 
         },
         {
         }
