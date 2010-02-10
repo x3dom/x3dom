@@ -69,7 +69,7 @@ x3dom.BindableStack.prototype.getActive = function () {
 			this.bindBag.push(obj);
 		}
 		this.bindBag[0].activate();
-		this.bindStack.push(bindBag[0]);
+		this.bindStack.push(this.bindBag[0]);
 	}
 	
 	return this.bindStack[this.bindStack.length].top();
@@ -2993,12 +2993,40 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Collision.superClass.call(this, ctx);
 
-			this.addField_SFBool (ctx,"enabled", true);
-			this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode );
+			this.addField_SFBool (ctx, "enabled", true);
+			this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode);
 			
 			// TODO; add Slots: collideTime, isActive 
         },
         {
+            collectDrawableObjects: function (transform, out)
+            {
+                for (var i=0; i<this._childNodes.length; i++) 
+                {
+                    if (this._childNodes[i] && (this._childNodes[i] !== this._cf.proxy.node)) 
+                    {
+                        var childTransform = this._childNodes[i].transformMatrix(transform);
+                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                    }
+                }
+            },
+            
+            doIntersect: function(line)
+            {
+                if (!this._vf.enabled) {
+                    return false;
+                }
+                
+                for (var i=0; i<this._childNodes.length; i++)
+                {
+                    if (this._childNodes[i]) {
+                        if (this._childNodes[i].doIntersect(line)) {
+                            return true;
+                        }
+                    }
+                }
+                return false;
+            }
         }
     )
 );
