@@ -113,8 +113,9 @@ x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
 x3dom.NodeNameSpace.prototype.removeNode = function (name) {
 	var node = this.defMap.name;
 	delete this.defMap.name;
-	if (node)
+	if (node) {
 		node.nameSpace = null;
+	}
 };
 
 x3dom.NodeNameSpace.prototype.addSpace = function (space) {
@@ -192,7 +193,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode ) {
 				var that = this;
                 Array.forEach ( domNode.childNodes, function (childDomNode) { 
 					var c = that.setupTree(childDomNode); 
-					if (c) n.addChild(c); 
+					if (c) n.addChild(c, childDomNode.getAttribute("containerField")); 
 				} );
 								
 				// FIXME: remove
@@ -290,17 +291,27 @@ x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
         this._childNodes = [];
     },
     {
-        addChild: function (node) {
+        addChild: function (node, containerFieldName) {
 			if (node) {
-	        	for (var fieldName in this._cf) {
-                	if (this._cf.hasOwnProperty(fieldName)) {
-                    	var field = this._cf[fieldName];
-                    	if (x3dom.isa(node,field.type) && (field.addLink(node))) {
-                        	node._parentNodes.push(this);
-                        	this._childNodes.push(node);
-                        	return true;
-                    	}
-                	}
+				var field = null;
+				if (containerFieldName) {
+					field = this._cf[containerFieldName];
+				}
+				else {
+		    		for (var fieldName in this._cf) {
+                		if (this._cf.hasOwnProperty(fieldName)) {
+                    		var testField = this._cf[fieldName];
+                    		if (x3dom.isa(node,testField.type)) {
+								field = testField;
+								break;
+							}
+						}
+					}
+				}
+				if (field && field.addLink(node)) {
+                    node._parentNodes.push(this);
+                    this._childNodes.push(node);
+                	return true;
             	}
 			}
             return false;
@@ -3779,7 +3790,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
 			if (parent._nameSpace) {
 				var newNode = parent._nameSpace.setupTree (child);
-				parent.addChild(newNode);
+				parent.addChild(newNode, child.getAttribute("containerField"));
 			}
             else {
 				x3dom.debug.logInfo("No _nameSpace in onNodeInserted");
