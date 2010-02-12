@@ -880,7 +880,7 @@ x3dom.gfx_webgl = (function () {
                 else
                 {
                     var image = new Image();
-                    image.src = tex._vf.url;
+                    image.src = tex._nameSpace.getURL(tex._vf.url[0]);
                     
                     image.onload = function()
                     {

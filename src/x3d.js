@@ -100,6 +100,7 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 // NodeNameSpace constructor
 x3dom.NodeNameSpace = function (name) {
 	this.name = name;
+	this.baseURL = "";
 	this.defMap = {};
 	this.parent = null;
 	this.childSpaces = [];
@@ -126,6 +127,17 @@ x3dom.NodeNameSpace.prototype.addSpace = function (space) {
 x3dom.NodeNameSpace.prototype.removeSpace = function (space) {
 	this.childSpaces.push(space);
 	space.parent = null;
+};
+
+x3dom.NodeNameSpace.prototype.setBaseURL = function (url) {
+	var i = url.lastIndexOf ("/");
+	this.baseURL = (i >= 0) ? url.substr(0,i+1) : "";
+		
+	x3dom.debug.logInfo("setBaseURL: " + this.baseURL);
+};
+
+x3dom.NodeNameSpace.prototype.getURL = function (url) {
+	return ((url[0] === '/') || (url.indexOf(":") >= 0)) ? url : (this.baseURL + url);
 };
 
 // helper function to fire DOMAttrModifiedEvent
@@ -3677,66 +3689,69 @@ x3dom.registerNodeType(
             
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'load', true);
-            
-            var that = this;
-            
-            var xhr = new XMLHttpRequest();
-            xhr.overrideMimeType('text/xml');   //application/xhtml+xml
-            
-            xhr.onreadystatechange = function () {
-                if (xhr.readyState == 4) {
-                    if (xhr.responseXML.documentElement.localName == 'parsererror') {
-                        x3dom.debug.logInfo('XML parser failed on '+this._vf.url+':\n'+xhr.responseXML.documentElement.textContent);
-                        return;
-                    }
-                }
-                else {
-                    x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-                    //if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
-                    return;
-                }
-                if (xhr.status !== 200) {
-                    x3dom.debug.logError('XMLHttpRequest requires a web server running!');
-                    return;
-                }
-                
-                x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
-                
-                var xml = xhr.responseXML;
-                
-                //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
-                var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
-                //var inlScene = x3dom.findScene(xml);              // sceneDoc is the X3D element here...
-
-				if (inlScene) {
-					var nameSpace = new x3dom.NodeNameSpace();             
-                	var newScene = nameSpace.setupTree(inlScene);
-					that.addChild(newScene);
-				}
-				else {
-					x3dom.debug.logInfo('no Scene in ' + xml.localName);
-				}
-				
-				
-				that.addChild(newScene);
-				/*
-                for (var i=0, n=newScene._childNodes.length; i<n; i++) {
-                    that.addChild(newScene._childNodes[i]);
-                }
-                */
-                
-                x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
-            };
-            
-            x3dom.debug.logInfo('Inline: downloading '+this._vf.url);
-            
-            xhr.open('GET', this._vf.url, true);
-            xhr.send(null);
         },
         {
             fieldChanged: function (fieldName) {
                 // FIXME: Add 'url' update code
-            }
+            },
+			nodeChanged: function () {
+				var that = this;
+
+				var xhr = new XMLHttpRequest();
+				xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+
+				xhr.onreadystatechange = function () {
+					if (xhr.readyState == 4) {
+						if (xhr.responseXML.documentElement.localName == 'parsererror') {
+							x3dom.debug.logInfo('XML parser failed on '+this._vf.url+':\n'+xhr.responseXML.documentElement.textContent);
+							return;
+						}
+					}
+					else {
+						x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+						//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
+						return;
+					}
+					if (xhr.status !== 200) {
+						x3dom.debug.logError('XMLHttpRequest requires a web server running!');
+						return;
+					}
+
+					x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
+
+					var xml = xhr.responseXML;
+
+					//TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
+					var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
+					//var inlScene = x3dom.findScene(xml);              // sceneDoc is the X3D element here...
+
+					if (inlScene) {
+						var nameSpace = new x3dom.NodeNameSpace();
+						nameSpace.setBaseURL (that._vf.url[0]);      
+						var newScene = nameSpace.setupTree(inlScene);
+						that.addChild(newScene);
+					}
+					else {
+						x3dom.debug.logInfo('no Scene in ' + xml.localName);
+					}
+
+					while (_childNodes.empty === false) {
+						that.removeChild(_childNodes[0]);
+					}
+					that.addChild(newScene);
+					/*
+					for (var i=0, n=newScene._childNodes.length; i<n; i++) {
+					that.addChild(newScene._childNodes[i]);
+					}
+					*/
+
+					x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
+				};
+
+           		xhr.open('GET', this._nameSpace.getURL(this._vf.url[0]), true);
+           		xhr.send(null);
+				// to be overwritten by concrete classes
+			}
         }
     )
 );
