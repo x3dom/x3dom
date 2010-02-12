@@ -2267,11 +2267,24 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### X3DTimeDependentNode ### */
+x3dom.registerNodeType( 
+    "X3DTimeDependentNode",
+    "Time",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DTimeDependentNode.superClass.call(this, ctx);
+            
+            this.addField_SFBool(ctx, 'loop', false);
+        }
+    )
+);
+
 /* ### X3DSoundSourceNode ### */
 x3dom.registerNodeType( 
     "X3DSoundSourceNode",
     "Sound",
-    defineClass(x3dom.nodeTypes.X3DNode,
+    defineClass(x3dom.nodeTypes.X3DTimeDependentNode,
         function (ctx) {
             x3dom.nodeTypes.X3DSoundSourceNode.superClass.call(this, ctx);
         }
@@ -2286,7 +2299,6 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.AudioClip.superClass.call(this, ctx);
             
-            this.addField_SFBool(ctx, 'loop', false);
             this.addField_MFString(ctx, 'url', []);
             
             this._audio = null;
