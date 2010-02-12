@@ -1,9 +1,18 @@
 import os
 import sys
 import jsmin
+import re
 from optparse import OptionParser
 from StringIO import StringIO
 from jspacker import JavaScriptPacker
+from subprocess import Popen, PIPE
+
+VERSION_TEMPLATE = """
+x3dom.versionInfo = {
+    version: '%s'
+    svnrevision: '%s'
+};
+"""
 
 usage = \
 """%prog [options] <files>
@@ -30,6 +39,22 @@ if __name__ == '__main__':
     if not options.outfile:
         print "Please specify an output file using the -o options. Exiting."
         sys.exit(0)
+    
+    # Create the version.js and fill in the svn revision    
+    # Read the version from the VERSION file
+    version_file = open("VERSION", "r")
+    version = version_file.read()
+    version_file.close()
+    # Add the version.js to the list of input files
+    args.append("version.js")
+    # Extract the svn revision 
+    svn_info = Popen(["svn", "info"], stdout=PIPE).communicate()[0]
+    re_match = re.search("Revision: (\d*)", svn_info)
+    svn_revision = re_match.group(1)
+    # Write the version and revision to file
+    version_file = open("version.js", "w")
+    version_file.write(VERSION_TEMPLATE % (version, svn_revision))
+    version_file.close()            
     
     concatenated_file = ""
     in_len = 0

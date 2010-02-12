@@ -8,8 +8,9 @@ DEBUG := debug.js
 GFX := gfx_webgl.js
 NODE := x3d.js
 FIELDS := fields.js
+#VERSION := version.js
 
-SRC := $(BASIC) $(DEBUG) $(GFX) $(NODE) $(FIELDS)
+SRC := $(BASIC) $(DEBUG) $(GFX) $(NODE) $(FIELDS) 
 #---------------
 
 bundle: $(BUNDLE)
