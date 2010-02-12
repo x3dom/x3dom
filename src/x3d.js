@@ -128,10 +128,41 @@ x3dom.NodeNameSpace.prototype.removeSpace = function (space) {
 	space.parent = null;
 };
 
+// helper function to fire DOMAttrModifiedEvent
+x3dom.fireDOMAttrModifiedEvent = function(attrName, newVal)
+{
+	var prevVal = this.getAttribute(attrName);
+    this.__setAttribute(attrName, newVal);
+	newVal = this.getAttribute(attrName);
+        
+    if (newVal != prevVal) {
+		var evt = document.createEvent("MutationEvent");
+     	evt.initMutationEvent(
+              "DOMAttrModified",
+              true,
+              false,
+              this,
+              prevVal || "",
+              newVal || "",
+              attrName,
+              (prevVal == null) ? evt.ADDITION : evt.MODIFICATION
+        );
+        this.dispatchEvent(evt);
+     }
+};
+
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode ) {
     var n, t;	
 	
     if (x3dom.isX3DElement(domNode)) {
+	
+		//active workaground for missing DOMAttrModified support
+		if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
+			 (domNode.tagName !== undefined) ) {
+        	domNode.__setAttribute = domNode.setAttribute;
+            domNode.setAttribute = x3dom.fireDOMAttrModifiedEvent;
+		}
+		
         // x3dom.debug.logInfo("=== node=" + domNode.localName);
 	    if (domNode.hasAttribute('USE')) {
 	      n = this.defMap[domNode.getAttribute('USE')];
@@ -3802,57 +3833,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
     sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
     sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
-    
-    if ( window.navigator.userAgent.match(/webkit/i) )
-    {
-        //HTMLElement.prototype.__setAttribute = HTMLElement.prototype.setAttribute;
-        //HTMLElement.prototype.setAttribute = set_attrib;
-        var set_attrib = function(attrName, newVal)
-        {
-            var prevVal = this.getAttribute(attrName);
-            this.__setAttribute(attrName, newVal);
-            newVal = this.getAttribute(attrName);
-            
-            if (newVal != prevVal)
-            {
-                var evt = document.createEvent("MutationEvent");
-                evt.initMutationEvent(
-                  "DOMAttrModified",
-                  true,
-                  false,
-                  this,
-                  prevVal || "",
-                  newVal || "",
-                  attrName,
-                  (prevVal == null) ? evt.ADDITION : evt.MODIFICATION
-                );
-                this.dispatchEvent(evt);
-            }
-        };
-        
-        function traverseDOMTree(currentElement, depth)
-        {
-            if (currentElement && currentElement.tagName !== undefined)
-            {
-                currentElement.__setAttribute = currentElement.setAttribute;
-                currentElement.setAttribute = set_attrib;
-                //currentElement.addEventListener("DOMAttrModified", domEventListener.onAttrModified, false);
-                //x3dom.debug.logInfo(depth + ": " + currentElement.tagName);
-                
-                var i = 0;
-                var currentElementChild = currentElement.childNodes[i++];
-                
-                while (currentElementChild)
-                {
-                    traverseDOMTree(currentElementChild, depth+1);
-                    currentElementChild = currentElement.childNodes[i++];
-                }
-            }
-        };
-        
-        traverseDOMTree(sceneDoc, 0);
-    }
-    
 
     var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
 	var nameSpace = new x3dom.NodeNameSpace("scene");

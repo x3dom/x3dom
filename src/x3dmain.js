@@ -322,6 +322,10 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc.load(uri, sceneElemPos);
 };
 
+// holds the UserAgent feature
+x3dom.userAgentFeature = {
+	supportsDOMAttrModified: true
+};
 
 (function () {
 
@@ -330,10 +334,17 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagName('X3D');
         // var x3dsLC = document.getElementsByTagName('x3d');        
-        
+
+		// active hacky DOMAttrModified workaround to webkit 
+		if ( window.navigator.userAgent.match(/webkit/i)) {
+			x3dom.debug.logInfo ("Active DOMAttrModifiedEvent workaround for webkit ");
+			x3dom.userAgentFeature.supportsDOMAttrModified = false;
+		}
+			
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) { return n; });
         // x3ds = x3ds.concat( Array.map(x3dsLC, function (n) { return n; }) );        
+		
 		
         var i=0;
 		var activateLog = false;
