@@ -2318,15 +2318,27 @@ x3dom.registerNodeType(
         {
             nodeChanged: function() 
             {
-                x3dom.debug.logInfo('Loading sound file: ' + this._vf.url);
                 this._audio = document.createElement('audio');
                 this._audio.setAttribute('autobuffer', 'true');
-                this._audio.setAttribute('autoplay', 'true');
-                this._audio.setAttribute('src', this._vf.url);
+                //this._audio.setAttribute('autoplay', 'true');
                 var p = document.getElementsByTagName('body')[0];
                 p.appendChild(this._audio);
                 
+                for (var i=0; i<this._vf.url.length; i++)
+                {
+                    x3dom.debug.logInfo('Adding sound file: ' + this._vf.url[i]);
+                    //this._audio.setAttribute('src', this._vf.url[i]);
+                    var src = document.createElement('source');
+                    src.setAttribute('src', this._vf.url[i]);
+                    this._audio.appendChild(src);
+                }
+                
                 var that = this;
+                
+                var startAudio = function()
+                {
+                    that._audio.play();
+                };
                 
                 var audioDone = function()
                 {
@@ -2336,6 +2348,7 @@ x3dom.registerNodeType(
                     }
                 };
                 
+                this._audio.addEventListener("canplaythrough", startAudio, true);
                 this._audio.addEventListener("ended", audioDone, true);
             }
         }
@@ -3075,23 +3088,6 @@ x3dom.registerNodeType(
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
-            },
-            
-            doIntersect: function(line)
-            {
-                if (!this._vf.enabled) {
-                    return false;
-                }
-                
-                for (var i=0; i<this._childNodes.length; i++)
-                {
-                    if (this._childNodes[i]) {
-                        if (this._childNodes[i].doIntersect(line)) {
-                            return true;
-                        }
-                    }
-                }
-                return false;
             }
         }
     )
@@ -3735,8 +3731,8 @@ x3dom.registerNodeType(
 						x3dom.debug.logInfo('no Scene in ' + xml.localName);
 					}
 
-					while (_childNodes.empty === false) {
-						that.removeChild(_childNodes[0]);
+					while (that._childNodes.empty === false) {
+						that.removeChild(that._childNodes[0]);
 					}
 					that.addChild(newScene);
 					/*
