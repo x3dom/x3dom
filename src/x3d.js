@@ -48,7 +48,9 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
 x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     return (node.nodeType === Node.ELEMENT_NODE && node.localName &&
-        (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] || node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "scene"  || node.localName.toLowerCase() === "route" ));
+        (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] || 
+         node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "scene" || 
+         node.localName.toLowerCase() === "route" ));
 };
 
 // BindableStack constructor
@@ -76,10 +78,10 @@ x3dom.BindableStack.prototype.getActive = function () {
 };
 
 x3dom.BindableBag = function (defaultRoot) {
-	this.addType ("X3DViewpointBindable", "Viewpoint", getViewpoint, defaultRoot );
-	this.addType ("X3DNavigationInfoBindable", "NavigationInfo", getNavigationInfo, defaultRoot );
-	this.addType ("X3DBackgroundBindable", "Background", getBackground, defaultRoot );
-	this.addType ("X3DFogBindable", "Fog", getFog, defaultRoot);
+	this.addType ("X3DViewpointNode", "Viewpoint", getViewpoint, defaultRoot);
+	this.addType ("X3DNavigationInfoNode", "NavigationInfo", getNavigationInfo, defaultRoot);
+	this.addType ("X3DBackgroundNode", "Background", getBackground, defaultRoot);
+	this.addType ("X3DFogNode", "Fog", getFog, defaultRoot);
 };
 
 x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,defaultRoot) {
@@ -163,7 +165,7 @@ x3dom.fireDOMAttrModifiedEvent = function(attrName, newVal)
      }
 };
 
-x3dom.NodeNameSpace.prototype.setupTree = function (domNode ) {
+x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     var n, t;	
 	
     if (x3dom.isX3DElement(domNode)) {
@@ -313,8 +315,10 @@ function MFString_parse(str) {
 
 
 // ### X3DNode ###
-x3dom.registerNodeType("X3DNode", "Base", defineClass(null,
-    function (ctx) {
+x3dom.registerNodeType(
+    "X3DNode", 
+    "Base", 
+    defineClass(null, function (ctx) {
 		
 		// holds a link to the node name
 		this._DEF = null;
@@ -2326,10 +2330,10 @@ x3dom.registerNodeType(
                 
                 for (var i=0; i<this._vf.url.length; i++)
                 {
-                    x3dom.debug.logInfo('Adding sound file: ' + this._vf.url[i]);
-                    //this._audio.setAttribute('src', this._vf.url[i]);
+                    var audioUrl = this._nameSpace.getURL(this._vf.url[i]);
+                    x3dom.debug.logInfo('Adding sound file: ' + audioUrl);
                     var src = document.createElement('source');
-                    src.setAttribute('src', this._vf.url[i]);
+                    src.setAttribute('src', audioUrl);
                     this._audio.appendChild(src);
                 }
                 
@@ -2382,37 +2386,87 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### X3DBindableNode ### */
-/*
+/* ### X3DViewpointNode ### */
 x3dom.registerNodeType(
-    "X3DViewpointBindable",
+    "X3DViewpointNode",
     "Base",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
-            x3dom.nodeTypes.X3DViewpointBindable.superClass.call(this, ctx);
+            x3dom.nodeTypes.X3DViewpointNode.superClass.call(this, ctx);
         },
 		{
 			linkStack: function() {
+                /*
 				if (!this._stack) {
 					var bag = findParentProperty("_bindableBag");
-					this._stack = bag ? stack.X3DViewpointBindable : null;
+					this._stack = bag ? stack.X3DViewpointNode : null;
 					
 					if (!this._stack) {
 						this._stack.bindBag.push(this);
 					}
 				}
+                */
 			}
-			
 		}
     )
 );
-*/
+
+/* ### X3DNavigationInfoNode ### */
+// FIXME; in X3D there is no X3DNavigationInfoNode.
+//        So do we really need this abstract class?
+x3dom.registerNodeType(
+    "X3DNavigationInfoNode",
+    "Base",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DNavigationInfoNode.superClass.call(this, ctx);
+        },
+		{
+        }
+    )
+);
+
+/* ### X3DBackgroundNode ### */
+x3dom.registerNodeType(
+    "X3DBackgroundNode",
+    "Base",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DBackgroundNode.superClass.call(this, ctx);
+        },
+		{
+        	getSkyColor: function() {
+				return new x3dom.fields.SFColor(0,0,0);
+			},
+			getTransparency: function() {
+				return 0;
+			},
+            getTexUrl: function() {
+                return [];
+            }
+        }
+    )
+);
+
+/* ### X3DFogNode ### */
+x3dom.registerNodeType(
+    "X3DFogNode",
+    "Base",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DFogNode.superClass.call(this, ctx);
+        },
+		{
+        }
+    )
+);
+
 
 /* ### Viewpoint ### */
 x3dom.registerNodeType( 
     "Viewpoint",
     "Navigation",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
+    defineClass(x3dom.nodeTypes.X3DViewpointNode,
         function (ctx) {
             x3dom.nodeTypes.Viewpoint.superClass.call(this, ctx);
 			this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
@@ -2482,7 +2536,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType( 
     "Fog",
     "EnvironmentalEffects",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
+    defineClass(x3dom.nodeTypes.X3DFogNode,
         function (ctx) {
             x3dom.nodeTypes.Fog.superClass.call(this, ctx);
             
@@ -2502,12 +2556,17 @@ x3dom.registerNodeType(
 x3dom.registerNodeType( 
     "NavigationInfo",
     "Navigation",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
+    defineClass(x3dom.nodeTypes.X3DNavigationInfoNode,
         function (ctx) {
             x3dom.nodeTypes.NavigationInfo.superClass.call(this, ctx);
             
 			this.addField_SFBool(ctx, 'headlight', true);
-            this.addField_MFString(ctx, 'type', ["EXAMINE"]);
+            this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
+            this.addField_MFFloat(ctx, 'avatarSize', [0.25,1.6,0.75]);
+            this.addField_SFFloat(ctx, 'speed', 1.0);
+            this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
+            this.addField_SFTime(ctx, 'transitionTime', 1.0);
+            this.addField_MFString(ctx, 'transitionType', ["LINEAR"]);
             
             x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
         },
@@ -2541,7 +2600,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Background",
     "EnvironmentalEffects",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
+    defineClass(x3dom.nodeTypes.X3DBackgroundNode,
         function (ctx) {
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
 			
@@ -2566,12 +2625,12 @@ x3dom.registerNodeType(
 			},
             getTexUrl: function() {
                 return [
-                    this._vf.backUrl,
-                    this._vf.frontUrl,
-                    this._vf.bottomUrl,
-                    this._vf.topUrl,
-                    this._vf.leftUrl,
-                    this._vf.rightUrl
+                    this._nameSpace.getURL(this._vf.backUrl),
+                    this._nameSpace.getURL(this._vf.frontUrl),
+                    this._nameSpace.getURL(this._vf.bottomUrl),
+                    this._nameSpace.getURL(this._vf.topUrl),
+                    this._nameSpace.getURL(this._vf.leftUrl),
+                    this._nameSpace.getURL(this._vf.rightUrl)
                 ];
             }
         }
@@ -3309,6 +3368,7 @@ x3dom.registerNodeType(
                     {
                         var nodeType = x3dom.nodeTypes["Viewpoint"];
                         this._cam = new nodeType();
+                        this._cam._nameSpace = this._nameSpace;
                         x3dom.debug.logInfo("Created ViewBindable.");
                     }
                 }
@@ -3336,6 +3396,7 @@ x3dom.registerNodeType(
                     {
                         var nodeType = x3dom.nodeTypes["NavigationInfo"];
                         this._navi = new nodeType();
+                        this._navi._nameSpace = this._nameSpace;
                         x3dom.debug.logInfo("Created UserBindable.");
                     }
                 }
@@ -3435,6 +3496,7 @@ x3dom.registerNodeType(
                     {
                         var nodeType = x3dom.nodeTypes["Background"];
                         this._bgnd = new nodeType();
+                        this._bgnd._nameSpace = this._nameSpace;
                         x3dom.debug.logInfo("Created BackgroundBindable.");
                     }
                 }
@@ -3666,7 +3728,7 @@ x3dom.registerNodeType(
                 if (isect && this._vf.url.length > 0) {
                     // fixme; window.open usually gets blocked
                     // but this way the current page is lost?!
-                    window.location = this._vf.url[0];
+                    window.location = this._nameSpace.getURL(this._vf.url[0]);
                 }
                 
                 return isect;

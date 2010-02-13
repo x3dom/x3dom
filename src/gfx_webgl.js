@@ -833,10 +833,19 @@ x3dom.gfx_webgl = (function () {
                 {
                     tex._video = document.createElement('video');
                     tex._video.setAttribute('autobuffer', 'true');
-                    tex._video.setAttribute('src', tex._vf.url);
+                    //tex._video.setAttribute('src', tex._vf.url);
                     var p = document.getElementsByTagName('body')[0];
                     p.appendChild(tex._video);
                     tex._video.style.display = "none";
+                    
+                    for (var i=0; i<tex._vf.url.length; i++)
+                    {
+                        var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);
+                        x3dom.debug.logInfo('Adding video file: ' + videoUrl);
+                        var src = document.createElement('source');
+                        src.setAttribute('src', videoUrl);
+                        tex._video.appendChild(src);
+                    }
                     
                     var updateMovie = function()
                     {
@@ -852,7 +861,7 @@ x3dom.gfx_webgl = (function () {
                     var startVideo = function()
                     {
                         shape._webgl.texture = texture;
-                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
+                        //x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
                         tex._video.play();
                         tex._intervalID = setInterval(updateMovie, 16);
