@@ -3126,7 +3126,7 @@ x3dom.registerNodeType(
 // ### Collision ###
 x3dom.registerNodeType(
     "Collision",
-    "Grouping",
+    "Navigation",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Collision.superClass.call(this, ctx);
@@ -3370,6 +3370,7 @@ x3dom.registerNodeType(
                         var nodeType = x3dom.nodeTypes["Viewpoint"];
                         this._cam = new nodeType();
                         this._cam._nameSpace = this._nameSpace;
+                        this.addChild(this._cam);
                         x3dom.debug.logInfo("Created ViewBindable.");
                     }
                 }
@@ -3398,6 +3399,7 @@ x3dom.registerNodeType(
                         var nodeType = x3dom.nodeTypes["NavigationInfo"];
                         this._navi = new nodeType();
                         this._navi._nameSpace = this._nameSpace;
+                        this.addChild(this._navi);
                         x3dom.debug.logInfo("Created UserBindable.");
                     }
                 }
@@ -3498,6 +3500,7 @@ x3dom.registerNodeType(
                         var nodeType = x3dom.nodeTypes["Background"];
                         this._bgnd = new nodeType();
                         this._bgnd._nameSpace = this._nameSpace;
+                        this.addChild(this._bgnd);
                         x3dom.debug.logInfo("Created BackgroundBindable.");
                     }
                 }
