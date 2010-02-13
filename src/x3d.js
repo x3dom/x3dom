@@ -317,7 +317,7 @@ function MFString_parse(str) {
 // ### X3DNode ###
 x3dom.registerNodeType(
     "X3DNode", 
-    "Base", 
+    "Core", 
     defineClass(null, function (ctx) {
 		
 		// holds a link to the node name
@@ -716,7 +716,7 @@ x3dom.registerNodeType(
 /* ### X3DAppearanceNode ### */
 x3dom.registerNodeType(
     "X3DAppearanceNode", 
-    "Base", 
+    "Shape", 
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DAppearanceNode.superClass.call(this, ctx);
@@ -774,7 +774,7 @@ x3dom.nodeTypes.Appearance.defaultNode = function() {
 /* ### X3DAppearanceChildNode ### */
 x3dom.registerNodeType(
     "X3DAppearanceChildNode", 
-    "Base", 
+    "Shape", 
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DAppearanceChildNode.superClass.call(this, ctx);
@@ -785,7 +785,7 @@ x3dom.registerNodeType(
 /* ### X3DMaterialNode ### */
 x3dom.registerNodeType(
     "X3DMaterialNode",
-    "Base",
+    "Shape",
     defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DMaterialNode.superClass.call(this, ctx);
@@ -1202,7 +1202,7 @@ x3dom.Mesh.prototype.remapData = function()
 /* ### X3DGeometryNode ### */
 x3dom.registerNodeType(
     "X3DGeometryNode",
-    "Base",
+    "Rendering",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
@@ -1642,7 +1642,7 @@ x3dom.registerNodeType(
 /* ### PointSet ### */
 x3dom.registerNodeType(
     "PointSet",
-    "Geometry3D",
+    "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
@@ -1715,7 +1715,7 @@ x3dom.registerNodeType(
 /* ### Text ### */
 x3dom.registerNodeType(
     "Text",
-    "Geometry3D",
+    "Text",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Text.superClass.call(this, ctx);
@@ -1740,7 +1740,7 @@ x3dom.registerNodeType(
 /* ### X3DComposedGeometryNode ### */
 x3dom.registerNodeType(
     "X3DComposedGeometryNode",
-    "Base",
+    "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.X3DComposedGeometryNode.superClass.call(this, ctx);
@@ -2139,7 +2139,7 @@ x3dom.registerNodeType(
 /* ### X3DGeometricPropertyNode ### */
 x3dom.registerNodeType(
     "X3DGeometricPropertyNode",
-    "Base",
+    "Rendering",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DGeometricPropertyNode.superClass.call(this, ctx);
@@ -2150,7 +2150,7 @@ x3dom.registerNodeType(
 /* ### Coordinate ### */
 x3dom.registerNodeType(
     "Coordinate",
-    "Base",
+    "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
@@ -2171,7 +2171,7 @@ x3dom.registerNodeType(
 /* ### TextureCoordinate ### */
 x3dom.registerNodeType(
     "TextureCoordinate",
-    "Base",
+    "Texturing",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.TextureCoordinate.superClass.call(this, ctx);
@@ -2184,7 +2184,7 @@ x3dom.registerNodeType(
 /* ### Normal ### */
 x3dom.registerNodeType(
     "Normal",
-    "Base",
+    "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.Normal.superClass.call(this, ctx);
@@ -2197,7 +2197,7 @@ x3dom.registerNodeType(
 /* ### Color ### */
 x3dom.registerNodeType(
     "Color",
-    "Base",
+    "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.Color.superClass.call(this, ctx);
@@ -2211,7 +2211,7 @@ x3dom.registerNodeType(
 /* ### X3DFontStyleNode ### */
 x3dom.registerNodeType( 
     "X3DFontStyleNode",
-    "Base",
+    "Text",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DFontStyleNode.superClass.call(this, ctx);
@@ -2251,7 +2251,7 @@ x3dom.nodeTypes.FontStyle.defaultNode = function() {
 /* ### X3DChildNode ### */
 x3dom.registerNodeType(
     "X3DChildNode",
-    "Base",
+    "Core",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DChildNode.superClass.call(this, ctx);
@@ -2362,7 +2362,7 @@ x3dom.registerNodeType(
 /* ### X3DBindableNode ### */
 x3dom.registerNodeType(
     "X3DBindableNode",
-    "Base",
+    "Core",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
@@ -2389,7 +2389,7 @@ x3dom.registerNodeType(
 /* ### X3DViewpointNode ### */
 x3dom.registerNodeType(
     "X3DViewpointNode",
-    "Base",
+    "Navigation",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.X3DViewpointNode.superClass.call(this, ctx);
@@ -2416,7 +2416,7 @@ x3dom.registerNodeType(
 //        So do we really need this abstract class?
 x3dom.registerNodeType(
     "X3DNavigationInfoNode",
-    "Base",
+    "Navigation",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.X3DNavigationInfoNode.superClass.call(this, ctx);
@@ -2429,7 +2429,7 @@ x3dom.registerNodeType(
 /* ### X3DBackgroundNode ### */
 x3dom.registerNodeType(
     "X3DBackgroundNode",
-    "Base",
+    "EnvironmentalEffects",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.X3DBackgroundNode.superClass.call(this, ctx);
@@ -2451,7 +2451,7 @@ x3dom.registerNodeType(
 /* ### X3DFogNode ### */
 x3dom.registerNodeType(
     "X3DFogNode",
-    "Base",
+    "EnvironmentalEffects",
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.X3DFogNode.superClass.call(this, ctx);
@@ -2579,7 +2579,7 @@ x3dom.registerNodeType(
 /* ### WorldInfo ### */
 x3dom.registerNodeType( 
     "WorldInfo",
-    "Base",
+    "Core",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.WorldInfo.superClass.call(this, ctx);
@@ -2743,7 +2743,7 @@ x3dom.registerNodeType(
 /* ### X3DShapeNode ### */
 x3dom.registerNodeType(
     "X3DShapeNode",
-    "Base",
+    "Shape",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
@@ -2806,7 +2806,7 @@ x3dom.registerNodeType(
 // ### X3DGroupingNode ###
 x3dom.registerNodeType(
     "X3DGroupingNode",
-    "Base",
+    "Grouping",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
@@ -3155,13 +3155,14 @@ x3dom.registerNodeType(
 // ### X3DInterpolatorNode ###
 x3dom.registerNodeType(
     "X3DInterpolatorNode",
-    "Base",
+    "Interpolation",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DInterpolatorNode.superClass.call(this, ctx);
             
             if (ctx.xmlNode.hasAttribute('key'))
-                this._vf.key = Array.map(ctx.xmlNode.getAttribute('key').split(/\s+/), function (n) { return +n; });
+                this._vf.key = Array.map(ctx.xmlNode.getAttribute('key').split(/\s+/), 
+                                            function (n) { return +n; });
             else
                 this._vf.key = [];
         },
@@ -3286,7 +3287,7 @@ x3dom.registerNodeType(
 // ### X3DSensorNode ###
 x3dom.registerNodeType(
     "X3DSensorNode",
-    "Base",
+    "Core",
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
@@ -3336,7 +3337,7 @@ x3dom.registerNodeType(
 // ### Scene ###
 x3dom.registerNodeType( 
     "Scene",
-    "Base",
+    "Core",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
