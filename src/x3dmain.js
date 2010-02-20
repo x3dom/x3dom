@@ -362,6 +362,12 @@ x3dom.userAgentFeature = {
 		if (activateLog) {
 			x3dom.debug.activate();
 		}
+        
+        if (x3dom.versionInfo !== undefined) {
+            x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + 
+                                " Rev. " + x3dom.versionInfo.svnrevision);
+        }
+        
 		x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
 
         // Create a HTML canvas for every X3D scene and wrap it with
