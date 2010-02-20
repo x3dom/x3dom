@@ -507,8 +507,23 @@ x3dom.registerNodeType(
                 try {
                     this._vf[field].setValueByStr(msg);
                 }
-                catch (exc) {
-                    x3dom.debug.logInfo("updateField: setValueByStr() NYI for " + typeof(f));
+                catch (exc1) {
+                    try {
+                        switch ((typeof(this._vf[field])).toString()) {
+                            case "number":
+                                this._vf[field] = +msg;
+                                break;
+                            case "boolean":
+                                this._vf[field] = (msg.toLowerCase() === "true");
+                                break;
+                            case "string":
+                                this._vf[field] = msg;
+                                break;
+                        };
+                    }
+                    catch (exc2) {
+                        x3dom.debug.logInfo("updateField: setValueByStr() NYI for " + typeof(f));
+                    }
                 }
                 
                 // TODO: eval fieldChanged for all nodes!
@@ -591,37 +606,22 @@ x3dom.registerNodeType(
 		addField_SFInt32: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 parseInt(ctx.xmlNode.getAttribute(name),10) : n;
-            this._vf[name].setValueByStr = function(str) {
-                this._vf[name] = parseInt(str,10);
-            };
         },
         addField_SFFloat: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
-            this._vf[name].setValueByStr = function(str) {
-                this._vf[name] = +str;
-            };
         },
         addField_SFTime: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
-            this._vf[name].setValueByStr = function(str) {
-                this._vf[name] = +str;
-            };
         },
         addField_SFBool: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name).toLowerCase() === "true" : n;
-            this._vf[name].setValueByStr = function(str) {
-                this._vf[name] = (str.toLowerCase() === "true");
-            };
         },
         addField_SFString: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name) : n;
-            this._vf[name].setValueByStr = function(str) {
-                this._vf[name] = str;
-            };
         },
         addField_SFColor: function (ctx, name, r, g, b) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
@@ -644,9 +644,9 @@ x3dom.registerNodeType(
                 new x3dom.fields.Quaternion(x, y, z, a);
         },
         addField_SFMatrix4f: function (ctx, name, _00, _01, _02, _03, 
-                                                    _10, _11, _12, _13, 
-                                                    _20, _21, _22, _23, 
-                                                    _30, _31, _32, _33) {
+                                                  _10, _11, _12, _13, 
+                                                  _20, _21, _22, _23, 
+                                                  _30, _31, _32, _33) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFMatrix4f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFMatrix4f(_00, _01, _02, _03, 
@@ -1181,15 +1181,18 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 	this._normals = vertNormals;
 };
 
-x3dom.Mesh.prototype.calcTexCoords = function()
+x3dom.Mesh.prototype.calcTexCoords = function(mode)
 {
-	//TODO
-};
-
-x3dom.Mesh.prototype.remapData = function()
-{
-	//x3dom.debug.logInfo("Indices:   "+this._indices);
-	//x3dom.debug.logInfo("Positions: "+this._positions);
+    this._texCoords = [];
+    
+    // TODO; impl. all modes that aren't handled in shader!
+	if (mode.toLowerCase() === "sphere-local") {
+        for (var i=0, j=0, n=this._normals.length; i<n; i+=3)
+        {
+            this._texCoords[j++] = 0.5 + this._normals[i  ] / 2.0;
+            this._texCoords[j++] = 0.5 + this._normals[i+1] / 2.0;
+        }
+    }
 };
 
 
@@ -1763,7 +1766,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
             this.addField_SFNode('color', x3dom.nodeTypes.Color);
-            this.addField_SFNode('texCoord', x3dom.nodeTypes.TextureCoordinate);
+            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
         },
         {
             nodeChanged: function()
@@ -1812,11 +1815,17 @@ x3dom.registerNodeType(
                     hasNormal = false;
                 }
 
+                var texMode = "";
                 var texCoordNode = this._cf.texCoord.node;
                 if (texCoordNode) 
                 {
-                    hasTexCoord = true;
-                    texCoords = texCoordNode._vf.point;
+                    if (texCoordNode._vf.point) {
+                        hasTexCoord = true;
+                        texCoords = texCoordNode._vf.point;
+                    }
+                    else if (texCoordNode._vf.mode) {
+                        texMode = texCoordNode._vf.mode;
+                    }
                 }
                 else {
                     hasTexCoord = false;
@@ -2046,12 +2055,8 @@ x3dom.registerNodeType(
                         this._mesh.calcNormals(this._vf.creaseAngle);
                     }
                     if (!hasTexCoord) {
-                        this._mesh.calcTexCoords();
+                        this._mesh.calcTexCoords(texMode);
                     }
-
-                    //TODO: this currently does nothing...
-                    this._mesh.remapData();
-                
                 } // if isMulti
                 else
                 {
@@ -2085,12 +2090,11 @@ x3dom.registerNodeType(
                         this._mesh._texCoords = texCoords.toGL();
                     }
                     else {
-                        this._mesh.calcTexCoords();
+                        this._mesh.calcTexCoords(texMode);
                     }
                     if (hasColor) {
                         this._mesh._colors = colors.toGL();
                     }
-                    this._mesh.remapData();
                 }
                 
                 this._mesh._invalidate = true;
@@ -2162,15 +2166,40 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### X3DTextureCoordinateNode ### */
+x3dom.registerNodeType(
+    "X3DTextureCoordinateNode",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DTextureCoordinateNode.superClass.call(this, ctx);
+        }
+    )
+);
+
 /* ### TextureCoordinate ### */
 x3dom.registerNodeType(
     "TextureCoordinate",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
         function (ctx) {
             x3dom.nodeTypes.TextureCoordinate.superClass.call(this, ctx);
             
             this.addField_MFVec2f(ctx, 'point', []);
+        }
+    )
+);
+
+/* ### TextureCoordinateGenerator ### */
+x3dom.registerNodeType(
+    "TextureCoordinateGenerator",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
+        function (ctx) {
+            x3dom.nodeTypes.TextureCoordinateGenerator.superClass.call(this, ctx);
+            
+            this.addField_SFString(ctx, 'mode', "SPHERE");
+            this.addField_MFFloat(ctx, 'parameter', []);
         }
     )
 );

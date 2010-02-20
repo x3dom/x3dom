@@ -125,6 +125,7 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragLightVector;" +
 		"varying vec3 fragEyeVector;" +
 		"varying vec2 fragTexCoord;" +
+        "uniform float sphereMapping;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
 		"uniform vec3 lightDirection;" +
@@ -137,7 +138,13 @@ x3dom.gfx_webgl = (function () {
 		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
 		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
-        "    fragTexCoord = texcoord;" +
+        "    if (sphereMapping == 1.0) {" +
+        "        fragTexCoord.x = 0.5 + fragNormal.x / 2.0;" +
+        "        fragTexCoord.y = 0.5 + fragNormal.y / 2.0;" +
+        "    }" +
+        "    else {" +
+        "       fragTexCoord = texcoord;" +
+        "    }" +
         "    projCoord = matPV * vec4(position+0.5*normalize(normal), 1.0);" +
         //"    gl_Position = projCoord;" +
 		"}"
@@ -151,6 +158,7 @@ x3dom.gfx_webgl = (function () {
 		"varying vec3 fragLightVector;" +
 		"varying vec3 fragEyeVector;" +
 		"varying vec2 fragTexCoord;" +
+        "uniform float sphereMapping;" +
 		"uniform mat4 texTrafoMatrix;" +
 		"uniform mat4 modelViewProjectionMatrix;" +
 		"uniform mat4 modelViewMatrix;" +
@@ -164,7 +172,13 @@ x3dom.gfx_webgl = (function () {
 		"    fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;" +
 		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
-        "    fragTexCoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;" +
+        "    if (sphereMapping == 1.0) {" +
+        "        fragTexCoord.x = 0.5 + fragNormal.x / 2.0;" +
+        "        fragTexCoord.y = 0.5 + fragNormal.y / 2.0;" +
+        "    }" +
+        "    else {" +
+        "       fragTexCoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;" +
+        "    }" +
         "    projCoord = matPV * vec4(position+0.5*normalize(normal), 1.0);" +
 		"}"
 		};
@@ -175,6 +189,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform vec3 emissiveColor;" +
 		"uniform float shininess;" +
 		"uniform vec3 specularColor;" +
+        "uniform float sphereMapping;" +
 		"uniform float alpha;" +
 		"uniform float lightOn;" +
 		"uniform sampler2D tex;" +
@@ -218,9 +233,16 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
 		"    diffuse += max(0.0, dot(normal, eye));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    specular += 0.8 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
         "    vec4 texCol = texture2D(tex, texCoord);" +
-		"    vec3 rgb = emissiveColor + diffuse*texCol.rgb + specular*specularColor;" +
+        "    texCol.a *= alpha;" +
+        "    vec3 rgb = emissiveColor;" +
+        "    if (sphereMapping == 1.0) {" +
+        "       rgb += (diffuse*diffuseColor + specular*specularColor) * texCol.rgb;" +
+        "    }" +
+        "    else {" +
+        "       rgb += diffuse*texCol.rgb + specular*specularColor;" +
+        "    }" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
         "      vec3 projectiveBiased = projCoord.xyz / projCoord.w;" +
@@ -258,10 +280,10 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
 		"    diffuse += abs(dot(normal, eye));" +
 		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
+		"    specular += 0.8 * pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
         "    vec3 rgb = texture2D(tex, texCoord).rgb;" +
-        "    float len = clamp(length(rgb), 0.0, 1.0);" +
-		"    rgb = rgb * (emissiveColor + diffuse*diffuseColor + specular*specularColor);" +
+        "    float len = clamp(length(rgb), 0.0, 1.0) * alpha;" +
+		"    rgb *= (emissiveColor + diffuse*diffuseColor + specular*specularColor);" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
         "      vec3 projectiveBiased = projCoord.xyz / projCoord.w;" +
@@ -342,7 +364,7 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
 		"    diffuse += max(0.0, dot(normal, eye));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    specular += 0.8 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
@@ -426,8 +448,8 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
 		"    diffuse += abs(dot(normal, eye));" +
 		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
-		"    vec3 rgb = emissiveColor + diffuse*fragColor + specular*specularColor;" +
+		"    specular += 0.8 * pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
+		"    vec3 rgb = emissiveColor + diffuse * fragColor + specular * specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
         "      vec3 projectiveBiased = projCoord.xyz / projCoord.w;" +
@@ -1184,6 +1206,7 @@ x3dom.gfx_webgl = (function () {
                     sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().toGL();
                     
                     gl.enable(gl.TEXTURE_CUBE_MAP);
+                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene._webgl.texture);
                     
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -1193,6 +1216,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 else {
                     gl.enable(gl.TEXTURE_2D);
+                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, scene._webgl.texture);
                     
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -1216,10 +1240,12 @@ x3dom.gfx_webgl = (function () {
                 gl.disableVertexAttribArray(sp.position);
                 
                 if (scene._webgl.texture.textureCubeReady) {
+                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                     gl.disable(gl.TEXTURE_CUBE_MAP);
                 }
                 else {
+                    gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                     gl.disable(gl.TEXTURE_2D);
                 }
@@ -1284,7 +1310,7 @@ x3dom.gfx_webgl = (function () {
 			}
         }
         
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null); 
+        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
 
 	Context.prototype.renderScene = function (scene) 
@@ -1342,7 +1368,6 @@ x3dom.gfx_webgl = (function () {
             shadowIntensity = 0.0;
 		}
 		light = mat_view.multMatrixVec(light);
-        
         
         if (shadowIntensity > 0) 
         {
@@ -1461,6 +1486,21 @@ x3dom.gfx_webgl = (function () {
                     // use shader/ calculation due to performance issues
                     var texTrafo = shape._cf.appearance.node.transformMatrix();
                     sp.texTrafoMatrix = texTrafo.toGL();
+                }
+                if (shape._cf.geometry.node._cf.texCoord !== undefined &&
+                    shape._cf.geometry.node._cf.texCoord.node !== null &&
+                    shape._cf.geometry.node._cf.texCoord.node._vf.mode)
+                {
+                    var texMode = shape._cf.geometry.node._cf.texCoord.node._vf.mode;
+                    if (texMode.toLowerCase() == "sphere") {
+                        sp.sphereMapping = 1.0;
+                    }
+                    else {
+                        sp.sphereMapping = 0.0;
+                    }
+                }
+                else {
+                    sp.sphereMapping = 0.0;
                 }
                 if (!sp.tex) {
                     sp.tex = 0;

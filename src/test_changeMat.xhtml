@@ -41,7 +41,7 @@
 				<Transform DEF="TBox" translation="4 0 0" rotation="1 0 0 0.9">
 					<Shape>
 						<Appearance>
-							<Material diffuseColor="1 0.7 0.3" specularColor=".5 .5 .5" />
+							<Material specularColor=".5 .5 .5" />
 							<ImageTexture DEF="RotBoxTex" url="ogl.jpg" />
 						</Appearance>
 						<Box size="3 1 2"/>
@@ -79,7 +79,6 @@
 			button.value = "Red";
 		
 		var mat = document.getElementsByTagName("Material");
-		var i = 0, n = mat.length;
 		
 		var aMat = mat[0];
 		aMat.setAttribute("diffuseColor", (!solid ? "0 0 1" : "1 0 0"));
@@ -99,7 +98,6 @@
 			button.value = "JPEG";
 		
 		var mat = document.getElementsByTagName("ImageTexture");
-		var i = 0, n = mat.length;
 		
 		var aMat = mat[0];
 		aMat.setAttribute("url", (!ogl ? "opengl.gif" : "ogl.jpg"));
