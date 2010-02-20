@@ -17,8 +17,7 @@
 	<p class="case"> 
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="300px">
 			<Scene>
-				<Background DEF='bgnd' transparency="1.0" skyColor='0.2 0.7 0.4, 1 0 0, 0 1 0' />
-				<DirectionalLight direction="0 0 -1" />
+				<Background DEF='bgnd' transparency="1.0" skyColor='0.2 0.7 0.4' />
 				
 				<Transform translation="-3 0 0">
 					<Shape>
@@ -43,7 +42,7 @@
 					<Shape>
 						<Appearance>
 							<Material diffuseColor="1 0.7 0.3" specularColor=".5 .5 .5" />
-							<ImageTexture url="ogl.jpg" />
+							<ImageTexture DEF="RotBoxTex" url="ogl.jpg" />
 						</Appearance>
 						<Box size="3 1 2"/>
 					</Shape>
@@ -59,14 +58,14 @@
 				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='SI' toField='set_fraction'/>
 				<ROUTE fromNode='SI' fromField='value_changed' toNode='bgnd' toField='transparency'/>
 				
-				<Viewpoint centerOfRotation="0 0 0" position="1 0 10" orientation="0 1 0 0" fieldOfView="0.785398"/>
+				<Viewpoint position="1 0 10" orientation="0 1 0 0" fieldOfView="0.785398"/>
 			</Scene>
 		</X3D>
 	</p>
 	
 	<script type="text/javascript"><![CDATA[
 	
-	var solid = true;
+	var solid = true, ogl = true;
 	
 	function toggleRendering()
 	{
@@ -87,12 +86,34 @@
 		
 		return false;
 	}
+    
+    function toggleTexture()
+	{
+		var button = document.getElementById("texture");
+		
+		ogl = !ogl;
+		
+		if (ogl)
+			button.value = "GIF";
+		else
+			button.value = "JPEG";
+		
+		var mat = document.getElementsByTagName("ImageTexture");
+		var i = 0, n = mat.length;
+		
+		var aMat = mat[0];
+		aMat.setAttribute("url", (!ogl ? "opengl.gif" : "ogl.jpg"));
+		
+		return false;
+	}
 	
 	]]></script>
 	
 	<p class="case"> &nbsp; 
 	Dynamic material update
 	<input type="button" id="points" value="Change Color" onclick="toggleRendering();" />
+    &nbsp; 
+    <input type="button" id="texture" value="Change Texture" onclick="toggleTexture();" />
 	</p>
 	
 	<script type="text/javascript" src="x3dmain.js"></script>

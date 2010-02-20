@@ -139,7 +139,12 @@ x3dom.NodeNameSpace.prototype.setBaseURL = function (url) {
 };
 
 x3dom.NodeNameSpace.prototype.getURL = function (url) {
-	return ((url[0] === '/') || (url.indexOf(":") >= 0)) ? url : (this.baseURL + url);
+    if (url === undefined || !url.length) {
+        return "";
+    }
+    else {
+        return ((url[0] === '/') || (url.indexOf(":") >= 0)) ? url : (this.baseURL + url);
+    }
 };
 
 // helper function to fire DOMAttrModifiedEvent
@@ -295,22 +300,6 @@ x3dom.isa = function(object, clazz) {
         return false;
     }
     return f(object.constructor.superClass);
-};
-
-// X3D doesn't seem to define this decoding, so do something vaguely sensible instead...
-function MFString_parse(str) {
-    // TODO: ignore leading whitespace?
-    if (str[0] == '"') {
-        var re = /"((?:[^\\"]|\\\\|\\")*)"/g;
-        var m;
-        var ret = [];
-        while ((m = re.exec(str))) {
-            ret.push(m[1].replace(/\\([\\"])/, "$1"));
-        }
-        return ret;
-    } else {
-        return [str];
-    }
 };
 
 
@@ -668,10 +657,8 @@ x3dom.registerNodeType(
         
         addField_MFString: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
-                MFString_parse(ctx.xmlNode.getAttribute(name)) : def;
-            this._vf[name].setValueByStr = function(str) {
-                this._vf[name] = MFString_parse(str);
-            };
+                x3dom.fields.MFString.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFString(def);
         },
         addField_MFInt32: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
@@ -888,6 +875,19 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "url")
+                {
+                    Array.forEach(this._parentNodes, function (app) {
+                        Array.forEach(app._parentNodes, function (shape) {
+                            shape._dirty.texture = true;
+                        });
+                    });
+                }
+            }
         }
     )
 );
@@ -901,9 +901,6 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.ImageTexture.superClass.call(this, ctx);
         },
         {
-            fieldChanged: function (fieldName) {
-                // FIXME: Add texture url update code (also in gfx)
-            }
         }
     )
 );
@@ -923,9 +920,6 @@ x3dom.registerNodeType(
             this._intervalID = 0;
         },
         {
-            fieldChanged: function (fieldName) {
-                // FIXME: Add texture url update code (also in gfx)
-            }
         }
     )
 );
@@ -1703,7 +1697,7 @@ x3dom.registerNodeType(
                     
                     // FIXME; we need fieldMask instead of one flag!
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty = true;
+                        node._dirty.positions = true;
                     });
                 }
             }
@@ -2127,7 +2121,7 @@ x3dom.registerNodeType(
                     
                     // FIXME; we need fieldMask instead of one flag!
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty = true;
+                        node._dirty.positions = true;
                     });
                 }
             }
@@ -2625,12 +2619,12 @@ x3dom.registerNodeType(
 			},
             getTexUrl: function() {
                 return [
-                    this._nameSpace.getURL(this._vf.backUrl),
-                    this._nameSpace.getURL(this._vf.frontUrl),
-                    this._nameSpace.getURL(this._vf.bottomUrl),
-                    this._nameSpace.getURL(this._vf.topUrl),
-                    this._nameSpace.getURL(this._vf.leftUrl),
-                    this._nameSpace.getURL(this._vf.rightUrl)
+                    this._nameSpace.getURL(this._vf.backUrl[0]),
+                    this._nameSpace.getURL(this._vf.frontUrl[0]),
+                    this._nameSpace.getURL(this._vf.bottomUrl[0]),
+                    this._nameSpace.getURL(this._vf.topUrl[0]),
+                    this._nameSpace.getURL(this._vf.leftUrl[0]),
+                    this._nameSpace.getURL(this._vf.rightUrl[0])
                 ];
             }
         }
@@ -2762,8 +2756,14 @@ x3dom.registerNodeType(
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
             
-            // TODO; use more specific _dirty object for positions, normals etc.
-            this._dirty = true;
+            this._dirty = {
+				positions: true,
+				normals: true,
+				texcoords: true,
+                colors: true,
+				indexes: true,
+				texture: true
+			};
         },
         {
 			nodeChanged: function () {

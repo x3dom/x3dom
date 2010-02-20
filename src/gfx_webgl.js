@@ -689,7 +689,7 @@ x3dom.gfx_webgl = (function () {
 	{
         if (shape._webgl !== undefined)
         {
-            if (shape._dirty === true)
+            if (shape._dirty.positions === true)
             {
                 if (shape._webgl.shader.position !== undefined) 
                 {
@@ -712,13 +712,32 @@ x3dom.gfx_webgl = (function () {
                     delete vertices;
                 }
                 
-                shape._dirty = false;
+                shape._dirty.positions = false;
             }
+            if (shape._dirty.texture === true)
+            {
+                if (shape._webgl.texture !== undefined)
+                {
+                	var tex = shape._cf.appearance.node._cf.texture.node;
+                    if (tex) {
+                        shape.updateTexture(tex);
+                    }
+                }
+                
+                shape._dirty.texture = false;
+            }
+            //TODO; check all other cases, too!
             
             return;
         }
         
-        shape._dirty = false;
+        // we're on init, thus reset all dirty flags
+        shape._dirty.positions = false;
+		shape._dirty.normals = false;
+		shape._dirty.texcoords = false;
+        shape._dirty.colors = false;
+		shape._dirty.indexes = false;
+		shape._dirty.texture = false;
         
         // TODO; finish text!
 		if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) 
@@ -824,10 +843,11 @@ x3dom.gfx_webgl = (function () {
 		else 
 		{
 			var tex = shape._cf.appearance.node._cf.texture.node;
-			
-			if (tex)
-			{
+            
+            shape.updateTexture = function(tex)
+            {
                 var texture = gl.createTexture();
+                var that = this;
                 
                 if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture))
                 {
@@ -860,7 +880,7 @@ x3dom.gfx_webgl = (function () {
                     
                     var startVideo = function()
                     {
-                        shape._webgl.texture = texture;
+                        that._webgl.texture = texture;
                         //x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
                         tex._video.play();
@@ -893,7 +913,7 @@ x3dom.gfx_webgl = (function () {
                     
                     image.onload = function()
                     {
-                        shape._webgl.texture = texture;
+                        that._webgl.texture = texture;
                         //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url);
                         
                         gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -905,6 +925,10 @@ x3dom.gfx_webgl = (function () {
                         gl.bindTexture(gl.TEXTURE_2D, null);
                     };
                 }
+            };
+			
+			if (tex) {
+                shape.updateTexture(tex);
 			}
             
 			shape._webgl = {

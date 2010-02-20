@@ -1029,6 +1029,67 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
 };
 
 
+/** MFString constructor.
+    @class Represents a MFString
+  */
+x3dom.fields.MFString = function(strArray) {
+    if (arguments.length == 0) {
+    }
+    else {
+        strArray.map( function(v) { this.push(v); }, this );
+    }
+};
+
+x3dom.fields.MFString.parse = function(str) {
+    var arr = [];
+    // TODO: ignore leading whitespace?
+    if (str.length && str[0] == '"') {
+        var m, re = /"((?:[^\\"]|\\\\|\\")*)"/g;
+        while ((m = re.exec(str))) {
+            var s = m[1].replace(/\\([\\"])/, "$1");
+            if (s !== undefined) {
+                arr.push(s);
+            }
+        }
+    }
+    else {
+        arr.push(str);
+    }
+    return new x3dom.fields.MFString( arr );
+};
+
+x3dom.fields.MFString.prototype = new Array;
+
+x3dom.fields.MFString.prototype.setValueByStr = function(str) {
+    var arr = this;
+    while (arr.length) {
+        arr.pop();
+    }
+    // TODO: ignore leading whitespace?
+    if (str.length && str[0] == '"') {
+        var m, re = /"((?:[^\\"]|\\\\|\\")*)"/g;
+        while ((m = re.exec(str))) {
+            var s = m[1].replace(/\\([\\"])/, "$1");
+            if (s !== undefined) {
+                arr.push(s);
+            }
+        }
+    }
+    else {
+        arr.push(str);
+    }
+    return this;
+};
+
+x3dom.fields.MFString.prototype.toString = function () {
+    var str = "";
+    for (var i=0; i<this.length; i++) {
+        str = str + this[i] + " ";
+    }
+    return str;
+};
+
+
 /** SFNode constructor.
     @class Represents a SFNode
   */
