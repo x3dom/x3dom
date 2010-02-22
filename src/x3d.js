@@ -1187,12 +1187,72 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
     
     // TODO; impl. all modes that aren't handled in shader!
     // FIXME; WebKit requires valid texCoords for texturing
-	//if (mode.toLowerCase() === "sphere-local") 
+	if (mode.toLowerCase() === "sphere-local")
     {
         for (var i=0, j=0, n=this._normals.length; i<n; i+=3)
         {
             this._texCoords[j++] = 0.5 + this._normals[i  ] / 2.0;
             this._texCoords[j++] = 0.5 + this._normals[i+1] / 2.0;
+        }
+    }
+    else    // "plane" is x3d default mapping
+    {
+        var min = new x3dom.fields.SFVec3f(0, 0, 0), 
+            max = new x3dom.fields.SFVec3f(0, 0, 0);
+        
+        this.getBBox(min, max, true);
+        var dia = max.subtract(min);
+        
+        var S = 0, T = 1;
+        
+        if (dia.x >= dia.y)
+        {
+            if (dia.x >= dia.z)
+            {
+                S = 0;
+                T = dia.y >= dia.z ? 1 : 2;
+            }
+            else // dia.x < dia.z
+            {
+                S = 2;
+                T = 0;
+            }
+        }
+        else // dia.x < dia.y
+        {
+            if (dia.y >= dia.z)
+            {
+                S = 1;
+                T = dia.x >= dia.z ? 0 : 2;
+            }
+            else // dia.y < dia.z
+            {
+                S = 2;
+                T = 1;
+            }
+        }
+        
+        var sDenom = 1, tDenom = 1;
+        var sMin = 0, tMin = 0;
+        
+        var sDenom, tDenom, sMin, tMin;
+        
+        switch(S) {
+            case 0: sDenom = dia.x; sMin = min.x; break;
+            case 1: sDenom = dia.y; sMin = min.y; break;
+            case 2: sDenom = dia.z; sMin = min.z; break;
+        }
+        
+        switch(T) {
+            case 0: tDenom = dia.x; tMin = min.x; break;
+            case 1: tDenom = dia.y; tMin = min.y; break;
+            case 2: tDenom = dia.z; tMin = min.z; break;
+        }
+        
+        for (var k=0, l=0, m=this._positions.length; k<m; k+=3)
+        {
+            this._texCoords[l++] = (this._positions[k+S] - sMin) / sDenom;
+            this._texCoords[l++] = (this._positions[k+T] - tMin) / tDenom;
         }
     }
 };
