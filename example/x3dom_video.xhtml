@@ -9,49 +9,63 @@
        
 <body style="background-color:#E0E0E0;">
 
-    <h1>OGV MovieTexture example</h1>
-	
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" x="0px" y="0px" width="350px" height="300px">
-          <Scene>
-             <Shape>
-                <Appearance>
-                    <Material diffuseColor='.5 .5 .5' specularColor='.1 .1 .1' />
-                    <MovieTexture url="video/big_buck_bunny.ogv" loop="true" />
-                </Appearance>
-                <Box DEF='box'/>
-             </Shape>
-          </Scene>
+    <h1>OGV and MP4 MovieTexture example</h1>
+		<p>
+			Example shows how you can easily provide multiple video-sources in a single MovieTexture Node 
+		</p>
+		<p>
+			(Only OGV work in Minefield right now. WebKit only plays the mp4 sound)
+		</p>
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="false" x="0px" y="0px" width="600px" height="400px">
+         <Scene DEF='scene'>
+			<Viewpoint position='0 0 8' />
+			<Background skyColor='1 1 1' />
+		    <Transform translation='-3.2 0 0'>
+		      <Transform scale='0.3 0.3 0.3' translation='0 0 0.5'>
+		        <Shape>
+		          <Appearance DEF='textApp'>
+		            <Material diffuseColor='0.8 0.8 1'/>
+		          </Appearance>
+		          <Text string='"OGV Video source"'/>
+		        </Shape>
+		      </Transform>
+		      <Shape>
+		        <Appearance>
+		          <MovieTexture loop='true' url='"video/big_buck_bunny.ogv"'/>
+		        </Appearance>
+		        <Box DEF='box' size='3 1.65 0.01' />
+		      </Shape>
+		    </Transform>
+		    <Transform>
+		      <Transform scale='0.3 0.3 0.3' translation='0 0 0.5'>
+		        <Shape>
+				  <Appearance USE='textApp' />
+		          <Text string='"OGV or MP4 Video source"'/>
+		        </Shape>
+		      </Transform>
+		      <Shape>
+		        <Appearance>
+		          <MovieTexture loop='true' url='"video/big_buck_bunny.ogv" "video/big_buck_bunny.mp4"'/>
+		        </Appearance>
+		        <Box USE='box'/>
+		      </Shape>
+		    </Transform>
+		    <Transform translation='3.2 0 0'>
+		      <Transform scale='0.3 0.3 0.3' translation='0 0 0.5'>
+		        <Shape>
+				  <Appearance USE='textApp' />
+		          <Text string='"MP4 Video source"'/>
+		        </Shape>
+		      </Transform>
+		      <Shape>
+		        <Appearance>
+		          <MovieTexture loop='true' url='"video/big_buck_bunny.mp4"'/>
+		        </Appearance>
+		        <Box USE='box'/>
+		      </Shape>
+		    </Transform>
+		  </Scene>
         </X3D>
-	
-		<!--
-	    <h1>MP4 MovieTexture example</h1>
-
-			<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" x="0px" y="0px" width="350px" height="300px">
-	          <Scene>
-	             <Shape>
-	                <Appearance>
-	                    <Material diffuseColor='.5 .5 .5' specularColor='.1 .1 .1' />
-	                    <MovieTexture url="http://x3dom.org/x3dom/example/video/big_buck_bunny.mp4" loop="true" />
-	                </Appearance>
-	                <Box DEF='box'/>
-	             </Shape>
-	          </Scene>
-	        </X3D>
-	
-			  <h1>Multi-Source MovieTexture example</h1>
-
-					<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" x="0px" y="0px" width="350px" height="300px">
-			          <Scene>
-			             <Shape>
-			                <Appearance>
-			                    <Material diffuseColor='.5 .5 .5' specularColor='.1 .1 .1' />
-			                    <MovieTexture url="'http://x3dom.org/x3dom/example/video/big_buck_bunny.ogv','hhttp://x3dom.org/x3dom/example/video/big_buck_bunny.mp4'" loop="true" />
-			                </Appearance>
-			                <Box DEF='box'/>
-			             </Shape>
-			          </Scene>
-			        </X3D>
-			-->
 			
 	<script type="text/javascript" src="x3dom.js"></script>
 
