@@ -1186,7 +1186,9 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
     this._texCoords = [];
     
     // TODO; impl. all modes that aren't handled in shader!
-	if (mode.toLowerCase() === "sphere-local") {
+    // FIXME; WebKit requires valid texCoords for texturing
+	//if (mode.toLowerCase() === "sphere-local") 
+    {
         for (var i=0, j=0, n=this._normals.length; i<n; i+=3)
         {
             this._texCoords[j++] = 0.5 + this._normals[i  ] / 2.0;

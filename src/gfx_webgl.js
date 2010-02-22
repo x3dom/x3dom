@@ -139,8 +139,7 @@ x3dom.gfx_webgl = (function () {
 		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
         "    if (sphereMapping == 1.0) {" +
-        "        fragTexCoord.x = 0.5 + fragNormal.x / 2.0;" +
-        "        fragTexCoord.y = 0.5 + fragNormal.y / 2.0;" +
+        "        fragTexCoord = 0.5 + fragNormal.xy / 2.0;" +
         "    }" +
         "    else {" +
         "       fragTexCoord = texcoord;" +
@@ -173,8 +172,7 @@ x3dom.gfx_webgl = (function () {
 		"    fragLightVector = -lightDirection;" +
 		"    fragEyeVector = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
         "    if (sphereMapping == 1.0) {" +
-        "        fragTexCoord.x = 0.5 + fragNormal.x / 2.0;" +
-        "        fragTexCoord.y = 0.5 + fragNormal.y / 2.0;" +
+        "        fragTexCoord = 0.5 + fragNormal.xy / 2.0;" +
         "    }" +
         "    else {" +
         "       fragTexCoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;" +
