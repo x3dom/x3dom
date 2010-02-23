@@ -1,0 +1,39 @@
+<!-- this file specifies configurations for FLARManager. -->
+<!-- to use this file to initialize FLARManager, pass its path into FLARManager.initFromFile(). -->
+<!-- note that all relative paths listed here must be relative to the .swf location; absolute paths may also be used. -->
+
+<flar_config>
+	<!-- source settings -->
+	<flarSourceSettings
+		sourceWidth="320"
+		sourceHeight="180"
+		displayWidth="640"
+		displayHeight="360"
+		framerate="30" />
+
+	<!-- miscellaneous FLARManager settings -->
+	<flarManagerSettings
+		mirrorDisplay="true"
+		smoothing="3" />
+	
+	<!-- location of camera parameters file, e.g. FLARCameraParams.dat or camera_para.dat. -->
+	<cameraParamsFile path="../resources/flar/FLARCameraParams.dat" />
+	
+	<!-- list of file paths of patterns for FLARToolkit to detect. -->
+	<!-- @resolution specifies the resolution at which the patterns were generated. -->
+	<patterns resolution="8" patternToBorderRatio="0.5" minConfidence="0.5">
+		<pattern path="../resources/flar/patterns/pat8/patt001.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt002.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt003.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt004.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt005.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt006.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt007.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt008.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt009.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt010.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt011.pat" />
+		<pattern path="../resources/flar/patterns/pat8/patt012.pat" />
+	</patterns>
+	
+</flar_config>
