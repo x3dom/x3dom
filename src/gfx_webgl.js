@@ -1269,10 +1269,11 @@ x3dom.gfx_webgl = (function () {
         gl.enable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         
-        var sp = getDefaultShaderProgram(gl, 'shadow');
+        var sp = scene._webgl.shadowShader;
         sp.bind();
         
         var mat_light = scene.getLightMatrix();
+        var mat_scene = scene.getWCtoLCMatrix();
         var i, n = scene.drawableObjects.length;
         
         for (i=0; i<n; i++)
@@ -1280,11 +1281,8 @@ x3dom.gfx_webgl = (function () {
 			var trafo = scene.drawableObjects[i][0];
 			var shape = scene.drawableObjects[i][1];
             
-            // init of GL objects
-            this.setupShape(gl, shape);
-            
 			sp.modelViewMatrix = mat_light.mult(trafo).toGL();
-			sp.modelViewProjectionMatrix = scene.getWCtoLCMatrix().mult(trafo).toGL();
+			sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
             
             if (sp.position !== undefined) 
 			{
@@ -1324,6 +1322,7 @@ x3dom.gfx_webgl = (function () {
         {
             this.setupScene(gl, scene);
 			scene._webgl.fbo = this.initFbo(gl, 1024, 1024);
+            scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
 		}
         
         var t0, t1;
@@ -1346,6 +1345,37 @@ x3dom.gfx_webgl = (function () {
 		}
         
         var mat_view = scene.getViewMatrix();
+        var mat_scene = scene.getWCtoCCMatrix();
+        
+		// sorting and stuff
+		t0 = new Date().getTime();
+		
+		// do z-sorting for transparency (currently no separate transparency list)
+		var zPos = [];
+        var i, n = scene.drawableObjects.length;
+        
+		for (i=0; i<n; i++)
+		{
+			var trafo = scene.drawableObjects[i][0];
+			var obj3d = scene.drawableObjects[i][1];
+            
+            // do also init of GL objects
+            this.setupShape(gl, obj3d);
+			
+			var center = obj3d.getCenter();
+			center = trafo.multMatrixPnt(center);
+			center = mat_view.multMatrixPnt(center);
+			
+			zPos[i] = [i, center.z];
+		}
+		zPos.sort(function(a, b) { return a[1] - b[1]; });
+		
+		t1 = new Date().getTime() - t0;
+		
+		if (this.canvas.parent.statDiv) {
+			this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+			this.canvas.parent.statDiv.appendChild(document.createTextNode("sort: " + t1));
+		}
 		
 		//TODO; allow for more than one additional light per scene
 		var light, lightOn, shadowIntensity;
@@ -1358,6 +1388,8 @@ x3dom.gfx_webgl = (function () {
             lightOn *= slights[0]._vf.intensity;
             shadowIntensity = (slights[0]._vf.on === true) ? 1.0 : 0.0;
             shadowIntensity *= slights[0]._vf.shadowIntensity;
+            
+            var mat_light = scene.getWCtoLCMatrix();
 		}
 		else
         {
@@ -1369,9 +1401,20 @@ x3dom.gfx_webgl = (function () {
         
         if (shadowIntensity > 0) 
         {
+            t0 = new Date().getTime();
+            
             this.renderShadowPass(gl, scene);
+            
+            t1 = new Date().getTime() - t0;
+            
+            if (this.canvas.parent.statDiv) {
+                this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+                this.canvas.parent.statDiv.appendChild(document.createTextNode("shadow: " + t1));
+            }
         }
 		
+        // rendering
+		t0 = new Date().getTime();
         
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 		
@@ -1392,37 +1435,6 @@ x3dom.gfx_webgl = (function () {
                 );
         gl.enable(gl.BLEND);
 		
-        
-		// sorting and stuff
-		t0 = new Date().getTime();
-		
-		// do z-sorting for transparency (currently no separate transparency list)
-		var zPos = [];
-        var i, n = scene.drawableObjects.length;
-        
-		for (i=0; i<n; i++)
-		{
-			var trafo = scene.drawableObjects[i][0];
-			var obj3d = scene.drawableObjects[i][1];
-			
-			var center = obj3d.getCenter();
-			center = trafo.multMatrixPnt(center);
-			center = mat_view.multMatrixPnt(center);
-			
-			zPos[i] = [i, center.z];
-		}
-		zPos.sort(function(a, b) { return a[1] - b[1]; });
-		
-		t1 = new Date().getTime() - t0;
-		
-		if (this.canvas.parent.statDiv) {
-			this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-			this.canvas.parent.statDiv.appendChild(document.createTextNode("sort: " + t1));
-		}
-		
-		// rendering
-		t0 = new Date().getTime();
-		
 		for (i=0, n=zPos.length; i<n; i++)
 		{
 			var obj = scene.drawableObjects[zPos[i][0]];
@@ -1430,9 +1442,6 @@ x3dom.gfx_webgl = (function () {
 			var transform = obj[0];
 			var shape = obj[1];
             
-            // init of GL objects
-            this.setupShape(gl, shape);
-
 			var sp = shape._webgl.shader;
 			if (!sp) {
 				sp = getDefaultShaderProgram(gl, 'default');
@@ -1455,7 +1464,7 @@ x3dom.gfx_webgl = (function () {
             
             // transformation matrices
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
-			sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().mult(transform).toGL();
+			sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{
@@ -1519,7 +1528,7 @@ x3dom.gfx_webgl = (function () {
                 gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 gl.generateMipmap(gl.TEXTURE_2D);
                 
-                sp.matPV = scene.getWCtoLCMatrix().mult(transform).toGL();
+                sp.matPV = mat_light.mult(transform).toGL();
             }
             sp.shadowIntensity = shadowIntensity;
             
