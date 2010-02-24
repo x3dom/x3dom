@@ -1321,7 +1321,7 @@ x3dom.gfx_webgl = (function () {
 		if (!scene._webgl)
         {
             this.setupScene(gl, scene);
-			scene._webgl.fbo = this.initFbo(gl, 1024, 1024);
+            scene._webgl.fbo = this.initFbo(gl, 1024, 1024);
             scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
 		}
         
@@ -1444,7 +1444,8 @@ x3dom.gfx_webgl = (function () {
             
 			var sp = shape._webgl.shader;
 			if (!sp) {
-				sp = getDefaultShaderProgram(gl, 'default');
+                shape._webgl.shader = getDefaultShaderProgram(gl, 'default');
+                sp = shape._webgl.shader;
             }
 			sp.bind();
 
@@ -1494,6 +1495,7 @@ x3dom.gfx_webgl = (function () {
                     var texTrafo = shape._cf.appearance.node.transformMatrix();
                     sp.texTrafoMatrix = texTrafo.toGL();
                 }
+                
                 if (shape._cf.geometry.node._cf.texCoord !== undefined &&
                     shape._cf.geometry.node._cf.texCoord.node !== null &&
                     shape._cf.geometry.node._cf.texCoord.node._vf.mode)
