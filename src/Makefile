@@ -22,7 +22,7 @@ closureCompiler:
 	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=fields.js
 	
 ccVerbose:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=fields.js >& out
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=fields.js
 
 runServer:
 	python testserver.py &
