@@ -3549,10 +3549,17 @@ x3dom.registerNodeType(
                 return this.getViewMatrix();
             },
             
-            getWCtoLCMatrix: function()
+            getWCtoLCMatrix: function(lMat)
             {
-                var view = this.getLightMatrix();
                 var proj = this.getProjectionMatrix();
+                var view;
+                
+                if (arguments.length === 0) {
+                    view = this.getLightMatrix();
+                }
+                else {
+                    view = lMat;
+                }
                 
                 return proj.mult(view);
             },

@@ -1254,7 +1254,7 @@ x3dom.gfx_webgl = (function () {
 	};
     
     
-    Context.prototype.renderShadowPass = function(gl, scene)
+    Context.prototype.renderShadowPass = function(gl, scene, mat_light, mat_scene)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fbo.fbo);
         
@@ -1272,8 +1272,8 @@ x3dom.gfx_webgl = (function () {
         var sp = scene._webgl.shadowShader;
         sp.bind();
         
-        var mat_light = scene.getLightMatrix();
-        var mat_scene = scene.getWCtoLCMatrix();
+        //var mat_light = scene.getLightMatrix();
+        //var mat_scene = scene.getWCtoLCMatrix();
         var i, n = scene.drawableObjects.length;
         
         for (i=0; i<n; i++)
@@ -1388,8 +1388,6 @@ x3dom.gfx_webgl = (function () {
             lightOn *= slights[0]._vf.intensity;
             shadowIntensity = (slights[0]._vf.on === true) ? 1.0 : 0.0;
             shadowIntensity *= slights[0]._vf.shadowIntensity;
-            
-            var mat_light = scene.getWCtoLCMatrix();
 		}
 		else
         {
@@ -1403,7 +1401,10 @@ x3dom.gfx_webgl = (function () {
         {
             t0 = new Date().getTime();
             
-            this.renderShadowPass(gl, scene);
+            var lightMatrix = scene.getLightMatrix();
+            var mat_light = scene.getWCtoLCMatrix(lightMatrix);
+            
+            this.renderShadowPass(gl, scene, lightMatrix, mat_light);
             
             t1 = new Date().getTime() - t0;
             
@@ -1525,10 +1526,11 @@ x3dom.gfx_webgl = (function () {
                 gl.bindTexture(gl.TEXTURE_2D,scene._webgl.fbo.tex);
                 
                 gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+                gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                //gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
                 gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.generateMipmap(gl.TEXTURE_2D);
+                //gl.generateMipmap(gl.TEXTURE_2D);
                 
                 sp.matPV = mat_light.mult(transform).toGL();
             }
@@ -1773,12 +1775,11 @@ x3dom.gfx_webgl = (function () {
         //this.emptyTexImage2D(gl, gl.DEPTH_COMPONENT16, w, h, gl.DEPTH_COMPONENT, gl.UNSIGNED_BYTE);
         
         gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        //glTexParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
+        gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        //gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
         gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
         gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        //gl.texParameteri(gl.TEXTURE_2D, gl.GENERATE_MIPMAP, gl.TRUE);
-        gl.generateMipmap(gl.TEXTURE_2D);
+        //gl.generateMipmap(gl.TEXTURE_2D);
         gl.bindTexture(gl.TEXTURE_2D, null);
         
         tex.width = w;
