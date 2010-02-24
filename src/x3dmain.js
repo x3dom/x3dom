@@ -410,8 +410,13 @@ x3dom.userAgentFeature = {
 				continue;
 			}
 			
+            var t0 = new Date().getTime();
+            
             x3dcanvas.load(x3ds[i], i);
             x3dom.canvases.push(x3dcanvas);
+            
+            var t1 = new Date().getTime() - t0;
+            x3dom.debug.logInfo("Time for setup and init of x3d element no. " + i + ": " + t1 + " ms.");
         }
         
         var ready = (function(eventType)

@@ -364,7 +364,7 @@ x3dom.registerNodeType(
                                 	node._parentNodes.splice(i,1);
                             	} 
                         	}
-							for (var j = 0, m = this._childNodes.length; j < m; j++) {			
+							for (var j = 0, m = this._childNodes.length; j < m; j++) {
                         		if (this._childNodes[j] === node) {
                              		this._childNodes.splice(j,1);
                                 	return true;
@@ -393,27 +393,25 @@ x3dom.registerNodeType(
 		getVolume: function (min, max, invalidate) 
         {
             var valid = false;
-			for (var i=0; i<this._childNodes.length; i++)
+			for (var i=0, n=this._childNodes.length; i<n; i++)
 			{
 				if (this._childNodes[i])
 				{
-                    var childMin = new x3dom.fields.SFVec3f(
-                            Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-                    var childMax = new x3dom.fields.SFVec3f(
-                            Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-					
-					valid = this._childNodes[i].getVolume(
+                    var childMin = x3dom.fields.SFVec3f.MAX();
+                    var childMax = x3dom.fields.SFVec3f.MIN();
+                    
+                    valid = this._childNodes[i].getVolume(
                                     childMin, childMax, invalidate) || valid;
-					
-                    if (valid)
+                    
+                    if (valid)  // values only set by Mesh.BBox()
                     {
-                        if (min.x > childMin.x) { min.x = childMin.x; }
-                        if (min.y > childMin.y) { min.y = childMin.y; }
-                        if (min.z > childMin.z) { min.z = childMin.z; }
-                            
-                        if (max.x < childMax.x) { max.x = childMax.x; }
-                        if (max.y < childMax.y) { max.y = childMax.y; }
-                        if (max.z < childMax.z) { max.z = childMax.z; }
+                        if (min.x > childMin.x) min.x = childMin.x;
+                        if (min.y > childMin.y) min.y = childMin.y;
+                        if (min.z > childMin.z) min.z = childMin.z;
+                        
+                        if (max.x < childMax.x) max.x = childMax.x;
+                        if (max.y < childMax.y) max.y = childMax.y;
+                        if (max.z < childMax.z) max.z = childMax.z;
                     }
 				}
 			}
@@ -641,7 +639,7 @@ x3dom.registerNodeType(
         addField_SFRotation: function (ctx, name, x, y, z, a) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : 
-                new x3dom.fields.Quaternion(x, y, z, a);
+                x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(x, y, z), a);
         },
         addField_SFMatrix4f: function (ctx, name, _00, _01, _02, _03, 
                                                   _10, _11, _12, _13, 
@@ -839,8 +837,7 @@ x3dom.registerNodeType(
             this._trafo = x3dom.fields.SFMatrix4f.translation(negCenter).
                     mult(x3dom.fields.SFMatrix4f.scale(scale3)).
                     mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
-                    mult(x3dom.fields.SFMatrix4f.translation(posCenter)).
-                    mult(x3dom.fields.SFMatrix4f.translation(trans3));
+                    mult(x3dom.fields.SFMatrix4f.translation(posCenter.add(trans3)));
         },
         {
             fieldChanged: function (fieldName) {
@@ -853,13 +850,37 @@ x3dom.registerNodeType(
                 this._trafo = x3dom.fields.SFMatrix4f.translation(negCenter).
                          mult(x3dom.fields.SFMatrix4f.scale(scale3)).
                          mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
-                         mult(x3dom.fields.SFMatrix4f.translation(posCenter)).
-                         mult(x3dom.fields.SFMatrix4f.translation(trans3));
+                         mult(x3dom.fields.SFMatrix4f.translation(posCenter.add(trans3)));
             },
             
             transformMatrix: function() {
                 return this._trafo;
             }
+        }
+    )
+);
+
+/* ### TextureProperties ### */
+x3dom.registerNodeType(
+    "TextureProperties", 
+    "Texturing", 
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.TextureProperties.superClass.call(this, ctx);
+            
+            this.addField_SFFloat(ctx, 'anisotropicDegree', 1.0);
+            //this.addField_SFColorRGBA(ctx, 'borderColor', 0, 0, 0, 0); //FIXME; SFColorRGBA NYI
+            this.addField_SFInt32(ctx, 'borderWidth', 0);
+            this.addField_SFString(ctx, 'boundaryModeS', "REPEAT");
+            this.addField_SFString(ctx, 'boundaryModeT', "REPEAT");
+            this.addField_SFString(ctx, 'boundaryModeR', "REPEAT");
+            this.addField_SFString(ctx, 'magnificationFilter', "FASTEST");
+            this.addField_SFString(ctx, 'minificationFilter', "FASTEST");
+            this.addField_SFString(ctx, 'textureCompression', "FASTEST");
+            this.addField_SFFloat(ctx, 'texturePriority', 0);
+            this.addField_SFBool(ctx, 'generateMipMaps', false);
+            
+            x3dom.debug.logInfo("TextureProperties NYI");   // TODO; impl. in gfx
         }
     )
 );
@@ -875,6 +896,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
+            this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
         },
         {
             fieldChanged: function(fieldName)
@@ -915,6 +937,7 @@ x3dom.registerNodeType(
 			
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFFloat(ctx, 'speed', 1.0);
+            // TODO; implement startTime, stopTime,...
             
             this._video = null;
             this._intervalID = 0;
@@ -2588,7 +2611,9 @@ x3dom.registerNodeType(
 			},
             
             setView: function(newView) {
-                this._viewMatrix = newView;
+                var mat = this.getCurrentTransform();
+                mat.inverse();
+                this._viewMatrix = mat.mult(newView);
             },
             resetView: function() {
                 this._viewMatrix = this._vf.orientation.toMatrix().transpose().
@@ -2943,30 +2968,11 @@ x3dom.registerNodeType(
                     return false;
                 }
                 
-                var valid = false;
-                
                 if (this._childNodes[this._vf.whichChoice]) {
-                    // FIXME; this code is still a bit strange and buggy...
-                    var childMin = new x3dom.fields.SFVec3f(
-                            Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-                    var childMax = new x3dom.fields.SFVec3f(
-                            Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-                    
-                    valid = this._childNodes[this._vf.whichChoice].getVolume(
-                                    childMin, childMax, invalidate) || valid;
-                    
-                    if (valid) {
-                        if (min.x > childMin.x) { min.x = childMin.x; }
-                        if (min.y > childMin.y) { min.y = childMin.y; }
-                        if (min.z > childMin.z) { min.z = childMin.z; }
-                            
-                        if (max.x < childMax.x) { max.x = childMax.x; }
-                        if (max.y < childMax.y) { max.y = childMax.y; }
-                        if (max.z < childMax.z) { max.z = childMax.z; }
-                    }
+                    return this._childNodes[this._vf.whichChoice].getVolume(min, max, invalidate);
                 }
                 
-                return valid;
+                return false;
             },
 
             find: function (type) 
@@ -3059,20 +3065,16 @@ x3dom.registerNodeType(
 			
 			getVolume: function(min, max, invalidate) 
             {
-				var nMin = new x3dom.fields.SFVec3f(
-                        Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-				var nMax = new x3dom.fields.SFVec3f(
-                        Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+				var nMin = x3dom.fields.SFVec3f.MAX();
+				var nMax = x3dom.fields.SFVec3f.MIN();
                 var valid = false;
                 
-				for (var i=0; i<this._childNodes.length; i++)
+				for (var i=0, n=this._childNodes.length; i<n; i++)
 				{
 					if (this._childNodes[i])
 					{
-						var childMin = new x3dom.fields.SFVec3f(
-                                Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-						var childMax = new x3dom.fields.SFVec3f(
-                                Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+						var childMin = x3dom.fields.SFVec3f.MAX();
+						var childMax = x3dom.fields.SFVec3f.MIN();
 						
 						valid = this._childNodes[i].getVolume(
                                         childMin, childMax, invalidate) || valid;
@@ -3095,13 +3097,13 @@ x3dom.registerNodeType(
                     nMin = this._trafo.multMatrixPnt(nMin);
                     nMax = this._trafo.multMatrixPnt(nMax);
                     
-                    min.x = nMin.x;
-                    min.y = nMin.y;
-                    min.z = nMin.z;
+                    min.x = nMin.x < nMax.x ? nMin.x : nMax.x;
+                    min.y = nMin.y < nMax.y ? nMin.y : nMax.y;
+                    min.z = nMin.z < nMax.z ? nMin.z : nMax.z;
                         
-                    max.x = nMax.x;
-                    max.y = nMax.y;
-                    max.z = nMax.z;
+                    max.x = nMax.x > nMin.x ? nMax.x : nMin.x;
+                    max.y = nMax.y > nMin.y ? nMax.y : nMin.y;
+                    max.z = nMax.z > nMin.z ? nMax.z : nMin.z;
                 }
                 return valid;
 			},
@@ -3151,16 +3153,13 @@ x3dom.registerNodeType(
             
 			this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
-            this.addField_SFRotation(ctx, 'rotation', 0, 0, 0, 1);
+            this.addField_SFRotation(ctx, 'rotation', 0, 0, 1, 0);
             this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
-			this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 0, 1);
-			// BUG! default of rotation according to spec is (0, 0, 1, 0)
-			//		but results sometimes are wrong if not (0, 0, 0, 1)
-			// TODO; check quaternion/ matrix code (probably in toMatrix()?)
+			this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
             
             // P' = T * C * R * SR * S * -SR * -C * P
-            this._trafo = x3dom.fields.SFMatrix4f.translation(this._vf.translation).
-                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center)).
+            this._trafo = x3dom.fields.SFMatrix4f.translation(
+                    this._vf.translation.add(this._vf.center)).
                 mult(this._vf.rotation.toMatrix()).
                 mult(this._vf.scaleOrientation.toMatrix()).
                 mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
@@ -3170,8 +3169,8 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName) {
                 // P' = T * C * R * SR * S * -SR * -C * P
-                this._trafo = x3dom.fields.SFMatrix4f.translation(this._vf.translation).
-                            mult(x3dom.fields.SFMatrix4f.translation(this._vf.center)).
+                this._trafo = x3dom.fields.SFMatrix4f.translation(
+                                this._vf.translation.add(this._vf.center)).
                             mult(this._vf.rotation.toMatrix()).
                             mult(this._vf.scaleOrientation.toMatrix()).
                             mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
@@ -3191,9 +3190,9 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.MatrixTransform.superClass.call(this, ctx);
             
             this.addField_SFMatrix4f(ctx, 'matrix', 1, 0, 0, 0,
-                                                      0, 1, 0, 0,
-                                                      0, 0, 1, 0,
-                                                      0, 0, 0, 1);
+                                                    0, 1, 0, 0,
+                                                    0, 0, 1, 0,
+                                                    0, 0, 0, 1);
             this._trafo = this._vf.matrix;
         },
         {
@@ -3458,7 +3457,7 @@ x3dom.registerNodeType(
                     
                     if (!this._cam)
                     {
-                        var nodeType = x3dom.nodeTypes["Viewpoint"];
+                        var nodeType = x3dom.nodeTypes.Viewpoint;
                         this._cam = new nodeType();
                         this._cam._nameSpace = this._nameSpace;
                         this.addChild(this._cam);
@@ -3487,7 +3486,7 @@ x3dom.registerNodeType(
                     
                     if (!this._navi)
                     {
-                        var nodeType = x3dom.nodeTypes["NavigationInfo"];
+                        var nodeType = x3dom.nodeTypes.NavigationInfo;
                         this._navi = new nodeType();
                         this._navi._nameSpace = this._nameSpace;
                         this.addChild(this._navi);
@@ -3497,26 +3496,6 @@ x3dom.registerNodeType(
                 
                 return this._navi;
             },
-        	
-			getSceneVolume: function(min, max, invalidate)
-			{
-				var MIN = new x3dom.fields.SFVec3f(
-					Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-				var MAX = new x3dom.fields.SFVec3f(
-					Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-				
-				var valid = this.getVolume(MIN, MAX, invalidate);
-				
-				min.x = MIN.x;
-				min.y = MIN.y;
-				min.z = MIN.z;
-				
-				max.x = MAX.x;
-				max.y = MAX.y;
-				max.z = MAX.z;
-                
-                return valid;
-			},
 			
             getViewpointMatrix: function () 
             {
@@ -3538,11 +3517,9 @@ x3dom.registerNodeType(
                 var lights = this.getLights();
                 if (lights.length > 0)
                 {
-                    var min = new x3dom.fields.SFVec3f(
-                        Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-                    var max = new x3dom.fields.SFVec3f(
-                        Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-                    var ok = this.getSceneVolume(min, max, true);
+                    var min = x3dom.fields.SFVec3f.MAX();
+                    var max = x3dom.fields.SFVec3f.MIN();
+                    var ok = this.getVolume(min, max, true);    //TODO; optimize
                     
                     if (ok)
                     {
@@ -3588,7 +3565,7 @@ x3dom.registerNodeType(
                     
                     if (!this._bgnd)
                     {
-                        var nodeType = x3dom.nodeTypes["Background"];
+                        var nodeType = x3dom.nodeTypes.Background;
                         this._bgnd = new nodeType();
                         this._bgnd._nameSpace = this._nameSpace;
                         this.addChild(this._bgnd);
@@ -3642,11 +3619,9 @@ x3dom.registerNodeType(
             
             showAll: function()
             {
-				var min = new x3dom.fields.SFVec3f(
-					Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
-				var max = new x3dom.fields.SFVec3f(
-					Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
-                var ok = this.getSceneVolume(min, max, true);
+				var min = x3dom.fields.SFVec3f.MAX();
+				var max = x3dom.fields.SFVec3f.MIN();
+                var ok = this.getVolume(min, max, true);
                 
                 if (ok)
                 {
@@ -3720,15 +3695,13 @@ x3dom.registerNodeType(
                 viewpoint._vf.centerOfRotation.z = this._pick.z;
                 x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
             },
-    		
-            //ondrag: function (dx, dy, buttonState) 
+            
             ondrag: function (x, y, buttonState) 
             {
                 var navi = this.getNavInfo();
                 if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
                     return;
                 
-                var Eps = 0.00001;
                 var dx = x - this._lastX;
                 var dy = y - this._lastY;
 				var min, max, ok, d, vec;
@@ -3755,12 +3728,12 @@ x3dom.registerNodeType(
 				}
 				if (buttonState & 4) 
                 {
-					min = new x3dom.fields.SFVec3f(0,0,0);
-					max = new x3dom.fields.SFVec3f(0,0,0);
-					ok = this.getSceneVolume(min, max, true);
+					min = x3dom.fields.SFVec3f.MAX();
+					max = x3dom.fields.SFVec3f.MIN();
+					ok = this.getVolume(min, max, true);
 					
 					d = ok ? (max.subtract(min)).length() : 10;
-                    d = (d < Eps) ? 1 : d;
+                    d = (d < x3dom.fields.Eps) ? 1 : d;
 					//x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo("w="+this._width+", h="+this._height);
 					
@@ -3774,12 +3747,12 @@ x3dom.registerNodeType(
 				}
 				if (buttonState & 2) 
                 {
-					min = new x3dom.fields.SFVec3f(0,0,0);
-					max = new x3dom.fields.SFVec3f(0,0,0);
-					ok = this.getSceneVolume(min, max, true);
+					min = x3dom.fields.SFVec3f.MAX();
+					max = x3dom.fields.SFVec3f.MIN();
+					ok = this.getVolume(min, max, true);
 					
 					d = ok ? (max.subtract(min)).length() : 10;
-                    d = (d < Eps) ? 1 : d;
+                    d = (d < x3dom.fields.Eps) ? 1 : d;
 					//x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
 					//x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
 					

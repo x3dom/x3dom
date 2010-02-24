@@ -12,6 +12,8 @@
 /** @namespace The x3dom.fields namespace. */
 x3dom.fields = {};
 
+x3dom.fields.Eps = 0.000001;
+
 /** SFMatrix4f constructor. 
     @class Represents a SFMatrix4f
     //TODO; use 2-dim array instead of _xx
@@ -348,7 +350,7 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
 
     var rDet = this.det();
 
-    if (Math.abs(rDet) < 0.000001)
+    if (Math.abs(rDet) < x3dom.fields.Eps)
     {
         x3dom.debug.logInfo("Invert matrix: singular matrix, no inverse!");
         return x3dom.fields.SFMatrix4f.identity();
@@ -488,6 +490,14 @@ x3dom.fields.SFVec3f = function(x, y, z) {
     }
 };
 
+x3dom.fields.SFVec3f.MIN = function() {
+    return new x3dom.fields.SFVec3f(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
+};
+
+x3dom.fields.SFVec3f.MAX = function() {
+    return new x3dom.fields.SFVec3f(Number.MAX_VALUE, Number.MAX_VALUE, Number.MAX_VALUE);
+};
+
 x3dom.fields.SFVec3f.parse = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     return new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]);
@@ -583,7 +593,7 @@ x3dom.fields.Quaternion.parseAxisAngle = function (str) {
 x3dom.fields.Quaternion.axisAngle = function (axis, a) {
 	var t = axis.length();
 	
-	if (t > 0.000001)
+	if (t > x3dom.fields.Eps)
 	{
 		var s = Math.sin(a/2) / t;
 		var c = Math.cos(a/2);
@@ -596,20 +606,20 @@ x3dom.fields.Quaternion.axisAngle = function (axis, a) {
 };
 
 x3dom.fields.Quaternion.prototype.toMatrix = function () {
-    var xx = this.x * this.x * 2;
-    var xy = this.x * this.y * 2;
-    var xz = this.x * this.z * 2;
-    var yy = this.y * this.y * 2;
-    var yz = this.y * this.z * 2;
-    var zz = this.z * this.z * 2;
-    var wx = this.w * this.x * 2;
-    var wy = this.w * this.y * 2;
-    var wz = this.w * this.z * 2;
+    var xx = this.x * this.x;
+    var xy = this.x * this.y;
+    var xz = this.x * this.z;
+    var yy = this.y * this.y;
+    var yz = this.y * this.z;
+    var zz = this.z * this.z;
+    var wx = this.w * this.x;
+    var wy = this.w * this.y;
+    var wz = this.w * this.z;
 
     return new x3dom.fields.SFMatrix4f(
-        1 - (yy + zz), xy - wz, xz + wy, 0,
-        xy + wz, 1 - (xx + zz), yz - wx, 0,
-        xz - wy, yz + wx, 1 - (xx + yy), 0,
+        1 - 2 * (yy + zz), 2 * (xy - wz), 2 * (xz + wy), 0,
+        2 * (xy + wz), 1 - 2 * (xx + zz), 2 * (yz - wx), 0,
+        2 * (xz - wy), 2 * (yz + wx), 1 - 2 * (xx + yy), 0,
         0, 0, 0, 1
     );
 };
@@ -639,6 +649,10 @@ x3dom.fields.Quaternion.prototype.normalize = function (that) {
 
 x3dom.fields.Quaternion.prototype.negate = function() {
     return new x3dom.fields.Quaternion(-this.x, -this.y, -this.z, -this.w);
+};
+
+x3dom.fields.Quaternion.prototype.inverse = function () {
+    return new x3dom.fields.Quaternion(-this.x, -this.y, -this.z, this.w);
 };
 
 x3dom.fields.Quaternion.prototype.slerp = function (that, t) {
@@ -1190,12 +1204,11 @@ x3dom.fields.Line.prototype.toString = function () {
 /** intersect line with box volume given by low and high */
 x3dom.fields.Line.prototype.intersect = function(low, high)
 {
-    var Eps = 0.000001;
     var isect = 0.0;
     var out = Number.MAX_VALUE;
     var r, te, tl;
     
-    if (this.dir.x > Eps)
+    if (this.dir.x > x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.x;
     
@@ -1208,7 +1221,7 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
         if (te > isect)    
             isect  = te;
     }
-    else if (this.dir.x < -Eps)
+    else if (this.dir.x < -x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.x;
     
@@ -1226,7 +1239,7 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
         return false;
     }
     
-    if (this.dir.y > Eps)
+    if (this.dir.y > x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.y;
     
@@ -1239,10 +1252,10 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
         if (te > isect)    
             isect = te;
     
-        if (isect-out >= Eps)
+        if (isect-out >= x3dom.fields.Eps)
             return false;
     }
-    else if (this.dir.y < -Eps)
+    else if (this.dir.y < -x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.y;
     
@@ -1255,7 +1268,7 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
         if (te > isect)    
             isect = te;
     
-        if (isect-out >= Eps)
+        if (isect-out >= x3dom.fields.Eps)
             return false;
     }
     else if (this.pos.y < low.y || this.pos.y > high.y)
@@ -1263,7 +1276,7 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
         return false;
     }
     
-    if (this.dir.z > Eps)
+    if (this.dir.z > x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.z;
     
@@ -1276,7 +1289,7 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
         if (te > isect)    
             isect = te;
     }
-    else if (this.dir.z < -Eps)
+    else if (this.dir.z < -x3dom.fields.Eps)
     {
         r = 1.0 / this.dir.z;
     
@@ -1297,5 +1310,5 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
     this.enter = isect;
     this.exit  = out;
 
-    return (isect-out < Eps);
+    return (isect-out < x3dom.fields.Eps);
 };
