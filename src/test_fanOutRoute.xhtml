@@ -22,7 +22,7 @@
  <Scene DEF='scene'>
 	<Viewpoint position='16.0328 13.056 34.2417' orientation='-0.624839 0.780206 0.0292506 0.543473' />
     <Background skyColor='1 1 1'/>
-    <DirectionalLight direction="-0.4 -0.9 0.3" intensity="0.5" shadowIntensity="0.5" />
+    <DirectionalLight direction="-0.4 -0.9 0.3" intensity="0.5" shadowIntensity="0.0" />
      <Transform scale='2.5 2.5 2.5'>
       <Shape DEF='CUBE1'>
         <Appearance>
@@ -145,15 +145,37 @@
         </X3D>
 	</p>
 	
-
-	<p class="case"> &nbsp; </p>
-	
 	<script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
 	<script type="text/javascript" src="gfx_webgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="fields.js"></script>
 
+    <script type="text/javascript"><![CDATA[
+	var shadows = false;
+	
+	function toggleShadows()
+	{
+		var button = document.getElementById("shadow");
+		
+		shadows = !shadows;
+		
+		if (shadows)
+			button.value = "Disable Shadows";
+		else
+			button.value = "Enable Shadows";
+		
+		var mat = document.getElementsByTagName("DirectionalLight");
+		
+		mat[0].setAttribute("shadowIntensity", (shadows ? "0.5" : "0.0"));
+		
+		return false;
+	}
+	]]></script>
+    
+    <p class="case">
+	<input type="button" id="shadow" value="Enable Shadows" onclick="toggleShadows();" />
+	</p>
 
 </body>
 </html>
