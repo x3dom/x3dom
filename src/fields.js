@@ -834,6 +834,16 @@ x3dom.fields.MFColor.parse = function(str) {
     
 };
 
+x3dom.fields.MFColor.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
+    for (var i=0, n=mc.length; i<n; i+=3) {
+        this.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2]) );
+    }
+};
+
 x3dom.fields.MFColor.prototype.toGL = function() {
     var a = [];
 
@@ -911,6 +921,16 @@ x3dom.fields.MFVec3f.parse = function(str) {
     }
     
     return new x3dom.fields.MFVec3f( vecs );    
+};
+
+x3dom.fields.MFVec3f.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
+    for (var i=0, n=mc.length; i<n; i+=3) {
+        this.push( new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]) );
+    }
 };
 
 x3dom.fields.MFVec3f.prototype.toGL = function() {

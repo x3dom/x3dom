@@ -34,5 +34,22 @@
     <script type="text/javascript" src="gfx_webgl.js"></script>
     <script type="text/javascript" src="x3d.js"></script>
     <script type="text/javascript" src="fields.js"></script>
+    <script type="text/javascript"><![CDATA[
+    function setCol()
+	{
+		var mat = document.getElementsByTagName("Color");
+		
+		mat[0].setAttribute("color", '0 1 0 1 1 1 0 1 0');
+        
+        var pnt = document.getElementsByTagName("Coordinate");
+        
+        pnt[0].setAttribute("point", '0 1 1 2 2 2 3 2 2');
+		
+		return false;
+	}
+    ]]></script>
+    <p> &nbsp; 
+	<input type="button" id="col" value="Change" onclick="setCol();" />
+	</p>
 </body>
 </html>
