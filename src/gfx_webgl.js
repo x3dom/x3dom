@@ -727,12 +727,35 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
-                    gl.vertexAttribPointer(shape._webgl.positions.position, 3, gl.FLOAT, false, 0, 0);
+                    gl.vertexAttribPointer(shape._webgl.shader.position, 3, gl.FLOAT, false, 0, 0);
                     
                     delete vertices;
                 }
                 
                 shape._dirty.positions = false;
+            }
+            if (shape._dirty.colors === true)
+            {
+                if (shape._webgl.shader.color !== undefined)
+                {
+                    shape._webgl.colors = shape._cf.geometry.node._mesh._colors;
+                    
+                    gl.deleteBuffer(shape._webgl.buffers[4]);
+                    
+                    var colorBuffer = gl.createBuffer();
+                    shape._webgl.buffers[4] = colorBuffer;
+                    
+                    var colors = new WebGLFloatArray(shape._webgl.colors);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
+                    
+                    gl.vertexAttribPointer(shape._webgl.shader.color, 3, gl.FLOAT, false, 0, 0); 
+                    
+                    delete colors;
+                }
+                
+                shape._dirty.colors = false;
             }
             if (shape._dirty.texture === true)
             {

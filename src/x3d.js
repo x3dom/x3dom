@@ -1766,10 +1766,13 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
+                var pnts;
+                var i, n;
+                
                 if (fieldName == "coord")   // same as in IFS
                 {
-                    var pnts = this._cf.coord.node._vf.point;
-                    var i, n = pnts.length;
+                    pnts = this._cf.coord.node._vf.point;
+                    n = pnts.length;
                     
                     this._mesh._positions = [];
                     
@@ -1783,9 +1786,26 @@ x3dom.registerNodeType(
                     
                     this._mesh._invalidate = true;
                     
-                    // FIXME; we need fieldMask instead of one flag!
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                    });
+                }
+                else if (fieldName == "color")
+                {
+                    pnts = this._cf.color.node._vf.color;
+                    n = pnts.length;
+                    
+                    this._mesh._colors = [];
+                    
+                    for (i=0; i<n; i++)
+                    {
+						this._mesh._colors.push(pnts[i].r);
+						this._mesh._colors.push(pnts[i].g);
+						this._mesh._colors.push(pnts[i].b);
+                    }
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
                     });
                 }
             }
@@ -2190,11 +2210,14 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
+                var pnts;
+                var i, n;
+                
                 if (fieldName == "coord")
                 {
                     // TODO; multi-index with different this._mesh._indices
-                    var pnts = this._cf.coord.node._vf.point;
-                    var i, n = pnts.length;
+                    pnts = this._cf.coord.node._vf.point;
+                    i, n = pnts.length;
                     
                     this._mesh._positions = [];
                     
@@ -2208,9 +2231,26 @@ x3dom.registerNodeType(
                     
                     this._mesh._invalidate = true;
                     
-                    // FIXME; we need fieldMask instead of one flag!
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                    });
+                }
+                else if (fieldName == "color")
+                {
+                    pnts = this._cf.color.node._vf.color;
+                    n = pnts.length;
+                    
+                    this._mesh._colors = [];
+                    
+                    for (i=0; i<n; i++)
+                    {
+						this._mesh._colors.push(pnts[i].r);
+						this._mesh._colors.push(pnts[i].g);
+						this._mesh._colors.push(pnts[i].b);
+                    }
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
                     });
                 }
             }
@@ -2311,6 +2351,13 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Color.superClass.call(this, ctx);
             
             this.addField_MFColor(ctx, 'color', []);
+        },
+        {
+            fieldChanged: function (fieldName) {
+	            Array.forEach(this._parentNodes, function (node) {
+		            node.fieldChanged("color");
+            	});
+			}
         }
     )
 );
