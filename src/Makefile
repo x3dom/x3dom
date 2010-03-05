@@ -18,6 +18,8 @@ bundle: $(BUNDLE)
 clean: 
 	rm -f $(BUNDLE) out
 
+cc: closureCompiler
+
 closureCompiler:  
 	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=fields.js
 	
