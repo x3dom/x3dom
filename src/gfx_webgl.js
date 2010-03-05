@@ -1354,6 +1354,7 @@ x3dom.gfx_webgl = (function () {
 		if (scene.drawableObjects === undefined || !scene.drawableObjects)
         {
 			scene.drawableObjects = [];
+            scene.drawableObjects.LODs = [];
 			
 			t0 = new Date().getTime();
 			
@@ -1376,22 +1377,39 @@ x3dom.gfx_webgl = (function () {
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
         var i, n = scene.drawableObjects.length;
+        var center, trafo, obj3d;
         
 		for (i=0; i<n; i++)
 		{
-			var trafo = scene.drawableObjects[i][0];
-			var obj3d = scene.drawableObjects[i][1];
+			trafo = scene.drawableObjects[i][0];
+			obj3d = scene.drawableObjects[i][1];
             
             // do also init of GL objects
             this.setupShape(gl, obj3d);
 			
-			var center = obj3d.getCenter();
+			center = obj3d.getCenter();
 			center = trafo.multMatrixPnt(center);
 			center = mat_view.multMatrixPnt(center);
-			
+            
 			zPos[i] = [i, center.z];
 		}
 		zPos.sort(function(a, b) { return a[1] - b[1]; });
+        
+        n = scene.drawableObjects.LODs.length;
+        if (n) {
+            center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
+            center = mat_view.inverse().multMatrixPnt(center);
+        }
+        
+        for (i=0; i<n; i++)
+		{
+			trafo = scene.drawableObjects.LODs[i][0];
+			obj3d = scene.drawableObjects.LODs[i][1];
+            
+            if (obj3d) {
+                obj3d._eye = trafo.inverse().multMatrixPnt(center);
+            }
+		}
 		
 		t1 = new Date().getTime() - t0;
 		
