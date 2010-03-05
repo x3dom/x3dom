@@ -886,6 +886,16 @@ x3dom.fields.MFRotation.parse = function(str) {
     return new x3dom.fields.MFRotation( vecs );    
 };
 
+x3dom.fields.MFRotation.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
+    for (var i=0, n=mc.length; i<n; i+=4) {
+        this.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]), +mc[i+3]) );
+    }
+};
+
 x3dom.fields.MFRotation.prototype.toGL = function() {
     var a = [];
 
@@ -975,6 +985,16 @@ x3dom.fields.MFVec2f.parse = function(str) {
     return new x3dom.fields.MFVec2f( vecs );    
 };
 
+x3dom.fields.MFVec2f.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
+    for (var i=0, n=mc.length; i<n; i+=2) {
+        this.push( new x3dom.fields.SFVec2f(+mc[i+0], +mc[i+1]) );
+    }
+};
+
 x3dom.fields.MFVec2f.prototype.toGL = function() {
     var a = [];
 
@@ -1004,13 +1024,21 @@ x3dom.fields.MFInt32.prototype = new Array;
 x3dom.fields.MFInt32.parse = function(str) {
     var mc = str.match(/([+-]?\d+\s*){1},?\s*/g);
     var vals = [];
-    for (var i = 0; i < mc.length; ++i) {
-        var c = /^([+-]?\d+)\s*,?\s*$/.exec(mc[i]);
-        if (c[0])
-            vals.push( parseInt(c[1],10) );
+    for (var i=0, n=mc.length; i<n; ++i) {
+        vals.push( parseInt(mc[i], 10) );
     }
     
-    return new x3dom.fields.MFInt32( vals );    
+    return new x3dom.fields.MFInt32( vals );
+};
+
+x3dom.fields.MFInt32.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    var mc = str.match(/([+-]?\d+\s*){1},?\s*/g);
+    for (var i=0, n=mc.length; i<n; ++i) {
+        this.push( parseInt(mc[i], 10) );
+    }
 };
 
 x3dom.fields.MFInt32.prototype.toGL = function() {
@@ -1050,6 +1078,16 @@ x3dom.fields.MFFloat.parse = function(str) {
     }
     
     return new x3dom.fields.MFFloat( vals );    
+};
+
+x3dom.fields.MFFloat.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
+    for (var i=0, n=mc.length; i<n; i++) {
+        this.push( +mc[i] );
+    }
 };
 
 x3dom.fields.MFFloat.prototype.toGL = function() {
