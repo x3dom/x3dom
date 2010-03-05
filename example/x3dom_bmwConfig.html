@@ -5,7 +5,7 @@
     <link rel='stylesheet' type='text/css' href='x3dom.css'></link>
   </head>
   <body>
-    <x3d showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px'>
+    <x3d id='x3d' showStat='false' showLog='true' x='0px' y='0px' width='800px' height='500px'>
       <scene DEF='scene'>
         <viewpoint orientation='-0.600069 0.799493 -0.0269947 0.77042' position='3.05702 2.90676 4.27241'></viewpoint>
         <background skyColor='1 1 1'></background>
@@ -274,7 +274,7 @@
           <transform DEF='felge1_aus' rotation='-0.5774 -0.5774 0.5774 -2.094' translation='-0.087 0 0'>
             <shape DEF='AOPT_Shape_138638568'>
               <appearance DEF='chsl_8'>
-                <imageTexture id='rim_tex' 'DEF='felge_tex' url='"texture/car/felge2.jpg"'></imageTexture>
+                <imageTexture id='rim_tex' url='"texture/car/felge2.jpg"'></imageTexture>
               </appearance>
               <indexedFaceSet DEF='felge1_aus-FACES' creaseAngle='3.14' texCoordIndex='0 19 11 -1 0 11 10 -1 10 9 1 -1 10 1 0 -1 1 9 8 -1 1 8 2 -1 3 2 8 -1 3 8 7 -1 7 6 4 -1 7 4 3 -1 4 6 5 -1 19 18 12 -1 19 12 11 -1 13 12 18 -1 13 18 17 -1 17 16 14 -1 17 14 13 -1 16 15 14 -1' coordIndex='0 19 11 -1 0 11 10 -1 10 9 1 -1 10 1 0 -1 1 9 8 -1 1 8 2 -1 3 2 8 -1 3 8 7 -1 7 6 4 -1 7 4 3 -1 4 6 5 -1 19 18 12 -1 19 12 11 -1 13 12 18 -1 13 18 17 -1 17 16 14 -1 17 14 13 -1 16 15 14 -1'>
                 <coordinate DEF='felge1_aus-COORD' point='0 0.174 -0.242 0.07478 0.174 -0.2302 0.1422 0.174 -0.1958 0.1958 0.174 -0.1422 0.2302 0.174 -0.07478 0.242 0.174 0 0.2302 0.174 0.07478 0.1958 0.174 0.1422 0.1422 0.174 0.1958 0.07478 0.174 0.2302 0 0.174 0.242 -0.07478 0.174 0.2302 -0.1422 0.174 0.1958 -0.1958 0.174 0.1422 -0.2302 0.174 0.07478 -0.242 0.174 0 -0.2302 0.174 -0.07478 -0.1958 0.174 -0.1422 -0.1422 0.174 -0.1958 -0.07478 0.174 -0.2302'></coordinate>
@@ -478,49 +478,22 @@
     </x3d>
     <script type='text/javascript' src='x3dom.js'></script>
  	<script type="text/javascript">
-	var shadows = false;
-
-	function toggleShadows()
-	{
-		var button = document.getElementById("shadow");
-
-		shadows = !shadows;
-
-		if (shadows)
-			button.value = "Disable Shadows";
-		else
-			button.value = "Enable Shadows";
-
-		var mat = document.getElementsByTagName("DirectionalLight");
-
-		mat[0].setAttribute("shadowIntensity", (shadows ? "0.7" : "0.0"));
-
-		return false;
-	}
-
+	
     function changeColor(col)
 	{
-		var matNode = document.getElementById('body_color');
-
-		matNode.setAttribute("diffuseColor", col);
+		document.getElementById('body_color').setAttribute("diffuseColor", col);
 
 		return false;
 	}
 
     function changeTexture(tex)
 	{
-		var texNode = document.getElementById('rim_tex');
-
-		texNode.setAttribute("url", tex);
+		document.getElementById('rim_tex').setAttribute("url", tex);
 
 		return false;
 	}
 	</script>
-	
-    <p style='display:none;'> &nbsp; 
-	<input type="button" id="shadow" value="Enable Shadows" onclick="toggleShadows();">
-	</p>
-    
+
 	<!--<h2 style="text-indent:1em;">Rims</h2>-->
     <div style='position:absolute; top:77px; left:2px; z-index:2;'>&nbsp;
     <img src="texture/car/felge1_64.jpg" border="1" onclick="changeTexture('texture/car/felge1.jpg');" style="cursor:pointer;" />
