@@ -121,6 +121,15 @@ x3dom.NodeNameSpace.prototype.removeNode = function (name) {
 	}
 };
 
+x3dom.NodeNameSpace.prototype.getNamedNode = function (name) {
+	return this.defMap[name];
+};
+
+x3dom.NodeNameSpace.prototype.getNamedElement = function (name) {
+	var node = this.defMap[name];
+	return (node ? node._xmlNode : null);
+};
+
 x3dom.NodeNameSpace.prototype.addSpace = function (space) {
 	this.childSpaces.push(space);
 	space.parent = this;
@@ -147,13 +156,16 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
     }
 };
 
-// helper function to fire DOMAttrModifiedEvent
-x3dom.fireDOMAttrModifiedEvent = function(attrName, newVal)
+// helper to set a element attribute
+x3dom.setElementAttribute = function(attrName, newVal)
 {
 	var prevVal = this.getAttribute(attrName);
     this.__setAttribute(attrName, newVal);
-	newVal = this.getAttribute(attrName);
-        
+	//newVal = this.getAttribute(attrName);
+	
+	this._x3domNode.updateField(attrName, newVal);
+	
+	/* construct and fire a event
     if (newVal != prevVal) {
 		var evt = document.createEvent("MutationEvent");
      	evt.initMutationEvent(
@@ -168,6 +180,7 @@ x3dom.fireDOMAttrModifiedEvent = function(attrName, newVal)
         );
         this.dispatchEvent(evt);
      }
+	*/
 };
 
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
@@ -179,7 +192,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 		if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
 			 (domNode.tagName !== undefined) ) {
         	domNode.__setAttribute = domNode.setAttribute;
-            domNode.setAttribute = x3dom.fireDOMAttrModifiedEvent;
+            domNode.setAttribute = x3dom.setElementAttribute;
 		}
 		
         // x3dom.debug.logInfo("=== node=" + domNode.localName);
@@ -1258,7 +1271,7 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
         var sDenom = 1, tDenom = 1;
         var sMin = 0, tMin = 0;
         
-        var sDenom, tDenom, sMin, tMin;
+        // var sDenom, tDenom, sMin, tMin;
         
         switch(S) {
             case 0: sDenom = dia.x; sMin = min.x; break;
@@ -4057,7 +4070,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 2: "ADDITION",
                 3: "REMOVAL"
             };
-            //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
+            //x3dom.debug.logInfo("MUTATION: " + e.attrName + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
             e.target._x3domNode.updateField(e.attrName, e.newValue);
         },
         onNodeRemoved: function(e) {
@@ -4090,12 +4103,18 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);    
     sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
     sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
-    sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
-
+	if ( (x3dom.userAgentFeature.supportsDOMAttrModified === true ) ) {
+		sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
+	}
+	
     var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
 	var nameSpace = new x3dom.NodeNameSpace("scene");
     var scene = nameSpace.setupTree(sceneElem);
 
+	// create and add browser object
+	sceneDoc.browser = {
+		currentScene: nameSpace
+	};
     this._scene = scene;
 	
 	// create view 

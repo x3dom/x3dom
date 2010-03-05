@@ -324,7 +324,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 
 // holds the UserAgent feature
 x3dom.userAgentFeature = {
-	supportsDOMAttrModified: true
+	supportsDOMAttrModified: false
 };
 
 (function () {
