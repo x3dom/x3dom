@@ -2217,7 +2217,7 @@ x3dom.registerNodeType(
                 {
                     // TODO; multi-index with different this._mesh._indices
                     pnts = this._cf.coord.node._vf.point;
-                    i, n = pnts.length;
+                    n = pnts.length;
                     
                     this._mesh._positions = [];
                     
@@ -3283,6 +3283,57 @@ x3dom.registerNodeType(
                         var childTransform = this._childNodes[i].transformMatrix(transform);
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
+                }
+            }
+        }
+    )
+);
+
+// ### LOD ###
+x3dom.registerNodeType(
+    "LOD",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.LOD.superClass.call(this, ctx);
+
+			this.addField_SFBool (ctx, "forceTransitions", false);
+            this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
+			this.addField_MFFloat(ctx, "range", []);
+            
+            this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
+        },
+        {
+            collectDrawableObjects: function (transform, out)
+            {
+                var i=0, n=this._childNodes.length;
+                
+                var min = x3dom.fields.SFVec3f.MAX();
+                var max = x3dom.fields.SFVec3f.MIN();
+                var ok = this.getVolume(min, max, true);
+                
+                var mid = (max.add(min).multiply(0.5)).add(this._vf.center);
+                var len = mid.subtract(this._eye).length();
+                
+                //calculate range check for viewer distance d (with range in local coordinates)
+                //N+1 children nodes for N range values (L0, if d < R0, ... Ln-1, if d >= Rn-1)
+                while (i < this._vf.range.length && len > this._vf.range[i]) {
+                    i++;
+                }
+                if (i && i >= n) {
+                    i = n - 1;
+                }
+                
+                if (n && this._childNodes[i])
+                {
+                    var childTransform = this._childNodes[i].transformMatrix(transform);
+                    this._childNodes[i].collectDrawableObjects(childTransform, out);
+                }
+                
+                if (out !== null)
+                {
+                    //optimization, exploit coherence and do it for next frame
+                    out.LODs.push( [transform, this] );
                 }
             }
         }
