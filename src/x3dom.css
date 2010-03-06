@@ -4,15 +4,10 @@ body {
 	font-size: 12px;
 }
 
-p.exampletext {
-	width: 400px;
-	line-height: 16px;
-}
-
 .x3dom-canvas {
     position: relative;
     border: 1px solid #000;
-    margin: 0 1em 1em 0;
+    margin: 0;
     float: left;
     cursor: pointer;
 }
@@ -38,6 +33,7 @@ p.exampletext {
 
 .x3dom-nox3d {
     font-family: Helvetica, sans-serif;
+    font-size: 14px;
     background-color: #eb7a7a;
     padding: 1em;
     opacity: 0.75;
@@ -45,9 +41,10 @@ p.exampletext {
 
 .x3dom-nox3d p { 
     color: #fff;
-    margin-top: 0; 
+    font-size: 14px;
 }
 
 .x3dom-nox3d a { 
     color: #fff;
+    font-size: 14px;
 }

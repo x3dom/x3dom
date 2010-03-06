@@ -128,6 +128,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             // For now check the number of canvas elements in the page
             // and use length+1 for creating a (hopefully) unique id
             var index = (document.getElementsByTagName('X3D').length+1);
+            this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
             this.canvasDiv.id = "x3dom-" + index + "-canvasdiv";
             canvas.id = "x3dom-" + index + "-canvas";
         }
@@ -305,9 +306,6 @@ x3dom.X3DCanvas.prototype.tick = function()
 x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
     var x3dCanvas = this;
-    // var doc = this.doc;   NOTE: doc is not used in this function [PE]
-    var gl = this.gl;
-    // x3dom.debug.logInfo("gl=" + gl.toString() + ", this.gl=" + this.gl + ", pos=" + sceneElemPos);
 	
     this.doc.onload = function () {
         x3dom.debug.logInfo("loaded [" + uri + "]");
@@ -345,7 +343,6 @@ x3dom.userAgentFeature = {
         x3ds = Array.map(x3ds, function (n) { return n; });
         // x3ds = x3ds.concat( Array.map(x3dsLC, function (n) { return n; }) );        
 		
-		
         var i=0;
 		var activateLog = false;
 		for (i=0; i<x3ds.length; i++) {
@@ -382,7 +379,8 @@ x3dom.userAgentFeature = {
 				altP.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
 				var aLnk = document.createElement("a");
 				aLnk.setAttribute("href","http://www.x3dom.org/?page_id=9");
-				aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));				
+				aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));
+                
                 altDiv.appendChild(altP);
 				altDiv.appendChild(aLnk);
                 x3dcanvas.canvasDiv.appendChild(altDiv);
@@ -403,10 +401,7 @@ x3dom.userAgentFeature = {
                     //x3dcanvas.canvasDiv.style.width = altImgObj.width + "px";
                     //x3dcanvas.canvasDiv.style.height = altImgObj.height + "px";   
                 }
-                else {
-                    // x3dcanvas.canvasDiv.style.backgroundColor = "#333"; 
-                    // x3dcanvas.canvasDiv.style.padding = "1em";
-                }
+                
 				continue;
 			}
 			
@@ -435,7 +430,6 @@ x3dom.userAgentFeature = {
                 document.fireEvent('on' + eventType, evt);   
             }
         })('load');
-
     };
     
     var onunload = function() {
