@@ -44,6 +44,9 @@ if __name__ == '__main__':
     # Read the version from the VERSION file
     version_file = open("VERSION", "r")
     version = version_file.read()
+    # Make sure to only use the version string without '\n' etc. 
+    version = version.split()[0]
+    print "Version  '", version, "'"
     version_file.close()
     # Add the version.js to the list of input files
     args.append("version.js")
@@ -51,6 +54,7 @@ if __name__ == '__main__':
     svn_info = Popen(["svn", "info"], stdout=PIPE).communicate()[0]
     re_match = re.search("Revision: (\d*)", svn_info)
     svn_revision = re_match.group(1)
+    print "Revision '", svn_revision, "'"
     # Write the version and revision to file
     version_file = open("version.js", "w")
     version_file.write(VERSION_TEMPLATE % (version, svn_revision))
@@ -81,6 +85,8 @@ if __name__ == '__main__':
         
         # Write the minified output file
         outfile = open(options.outfile, 'w')
+        outfile.write("/** X3DOM JavaScript Library %s, http://www.x3dom.org/ */" 
+                        % version)
         outfile.write(out_stream.getvalue())
         outfile.close()        
     elif options.algo == "jspacker":
