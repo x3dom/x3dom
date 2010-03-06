@@ -156,7 +156,7 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
     }
 };
 
-// helper to set a element attribute
+// helper to set an element's attribute
 x3dom.setElementAttribute = function(attrName, newVal)
 {
 	var prevVal = this.getAttribute(attrName);
@@ -165,7 +165,7 @@ x3dom.setElementAttribute = function(attrName, newVal)
 	
 	this._x3domNode.updateField(attrName, newVal);
 	
-	/* construct and fire a event
+	/* construct and fire an event
     if (newVal != prevVal) {
 		var evt = document.createEvent("MutationEvent");
      	evt.initMutationEvent(
@@ -1270,8 +1270,6 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
         
         var sDenom = 1, tDenom = 1;
         var sMin = 0, tMin = 0;
-        
-        // var sDenom, tDenom, sMin, tMin;
         
         switch(S) {
             case 0: sDenom = dia.x; sMin = min.x; break;
@@ -4110,11 +4108,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
 	var nameSpace = new x3dom.NodeNameSpace("scene");
     var scene = nameSpace.setupTree(sceneElem);
-
-	// create and add browser object
-	sceneDoc.browser = {
-		currentScene: nameSpace
-	};
+    
     this._scene = scene;
 	
 	// create view 

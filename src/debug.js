@@ -65,6 +65,10 @@ x3dom.debug = {
 	activate: function() {
 		x3dom.debug.isActive = true;
 		
+        var aDiv = document.createElement("div");
+        aDiv.style.clear = "both";
+        aDiv.appendChild(document.createTextNode("\r\n"));
+        document.body.appendChild(aDiv);
 		document.body.appendChild(x3dom.debug.logContainer);
 	},
 
@@ -75,13 +79,14 @@ x3dom.debug = {
 		x3dom.debug.logContainer.id = "x3dom_logdiv";
 		x3dom.debug.logContainer.style.border = "2px solid olivedrab";
 		x3dom.debug.logContainer.style.height = "180px";
-		x3dom.debug.logContainer.style.padding = "2px";
+		x3dom.debug.logContainer.style.padding = "4px";
 		x3dom.debug.logContainer.style.overflow = "auto";
 		x3dom.debug.logContainer.style.whiteSpace = "pre-wrap";
 		x3dom.debug.logContainer.style.fontFamily = "sans-serif"; 
 		x3dom.debug.logContainer.style.fontSize = "x-small";
         x3dom.debug.logContainer.style.color = "#00ff00";
         x3dom.debug.logContainer.style.backgroundColor = "black";
+        x3dom.debug.logContainer.style.clear = "both";
         
 		//document.body.appendChild(x3dom.debug.logContainer);
 	},
@@ -113,7 +118,7 @@ x3dom.debug = {
 		node.style.margin = 0;
 		node.innerHTML = logType + ": " + msg;
 		x3dom.debug.logContainer.insertBefore(node, x3dom.debug.logContainer.firstChild);
-
+        
 		// Use firebug's console if available
         if (x3dom.debug.isFirebugAvailable) {
             switch (logType) {
