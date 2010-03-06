@@ -59,9 +59,19 @@ x3dom.gfx_webgl = (function () {
 		// x3dom.debug.logInfo("setupContext: canvas=" + canvas);
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
+        // Context creation params (not yet working)
+        // https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/doc/spec/WebGL-spec.html#5.2.1
+        var ctxAttribs = { alpha: true,
+                           depth: true,
+                           stencil: true,
+                           antialias: true,
+                           premultipliedAlpha: false 
+                         };
+        // FIXME; do we need to handle context lost events?
+        // https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/doc/spec/WebGL-spec.html#5.16.1
         for (var i=0; i<validContextNames.length; i++) {
             try {
-                ctx = canvas.getContext(validContextNames[i]);
+                ctx = canvas.getContext(validContextNames[i], ctxAttribs);
                 if (ctx) {
                     return new Context(ctx, canvas, 'moz-webgl');
                 }
@@ -1466,6 +1476,10 @@ x3dom.gfx_webgl = (function () {
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
+        
+        //gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
+        //gl.enable(gl.SAMPLE_COVERAGE);
+        //gl.sampleCoverage(0.5, false);
 		
 		//gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         //Workaround for WebKit & Co.
