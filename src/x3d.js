@@ -221,8 +221,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             
             // find the NodeType for the given dom-node          
             var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
-            if (nodeType === undefined) {                
-                x3dom.debug.logInfo("Unrecognised element " + domNode.localName);
+            if (nodeType === undefined) {
+                x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
                 var ctx = { xmlNode: domNode };
@@ -267,7 +267,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     }
     else if (domNode.localName) {
         // be nice to users who use nodes not (yet) known to the system
-        x3dom.debug.logInfo("Unrecognised element '" + domNode.localName + "'");
+        x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
 		n = null;
     }
 
@@ -910,6 +910,17 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
+            
+            // For testing: look for <img> element if url empty
+            if (!this._vf.url.length && ctx.xmlNode) {
+                x3dom.debug.logInfo("No URL given, searching for &lt;img&gt; elements...");
+            	var that = this;
+                Array.forEach(ctx.xmlNode.childNodes, function (childDomNode) { 
+					var url = childDomNode.getAttribute("src");
+                    if (url) { that._vf.url.push(url); }
+				} );
+                x3dom.debug.logInfo("Found textures: " + that._vf.url);
+            }
         },
         {
             fieldChanged: function(fieldName)
