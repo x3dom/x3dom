@@ -22,7 +22,7 @@
 				<Transform translation="-3 0 0">
 					<Shape>
 						<Appearance>
-							<Material diffuseColor="#f0f" specularColor="#888" transparency="0.15" />
+							<Material id="SphMat" diffuseColor="#f0f" specularColor="#888" transparency="0.15" />
 						</Appearance>
 						<Sphere />
 					</Shape>
@@ -31,7 +31,7 @@
 				<Transform >
 					<Shape>
 						<Appearance>
-							<Material DEF="BoxMat" diffuseColor="khaki" specularColor="white" transparency="0.4" />
+							<Material id="BoxMat" diffuseColor="khaki" specularColor="white" transparency="0.4" />
 							<!--<ImageTexture url="opengl.gif" />-->
 						</Appearance>
 						<Box/>
@@ -42,7 +42,7 @@
 					<Shape>
 						<Appearance>
 							<Material specularColor=".5 .5 .5" />
-							<ImageTexture DEF="RotBoxTex" url="ogl.jpg" />
+							<ImageTexture id="RotBoxTex" url="ogl.jpg" />
 						</Appearance>
 						<Box size="3 1 2"/>
 					</Shape>
@@ -66,7 +66,7 @@
 	<script type="text/javascript"><![CDATA[
 	
 	var col = 0, ogl = true;
-	
+    
 	function toggleRendering()
 	{
 		var button = document.getElementById("color");
@@ -76,8 +76,8 @@
 		
         button.value = cols[(col+1) % cols.length];
         
-		var mat = document.getElementsByTagName("Material");
-		mat[0].setAttribute("diffuseColor", cols[col].toLowerCase());
+		var mat = document.getElementById("SphMat");
+		mat.setAttribute("diffuseColor", cols[col].toLowerCase());
 		
 		return false;
 	}
@@ -89,12 +89,12 @@
 		ogl = !ogl;
 		
 		if (ogl)
-			button.value = "GIF";
+            button.value = "GIF";
 		else
-			button.value = "JPEG";
+            button.value = "JPEG";
 		
-		var mat = document.getElementsByTagName("ImageTexture");
-		mat[0].setAttribute("url", (!ogl ? "opengl.gif" : "ogl.jpg"));
+		var tex = document.getElementById("RotBoxTex");
+		tex.setAttribute("url", (!ogl ? "opengl.gif" : "ogl.jpg"));
 		
 		return false;
 	}
