@@ -5,11 +5,11 @@
     <link rel='stylesheet' type='text/css' href='x3dom.css'></link>
   </head>
   <body>
-    <x3d id='x3d' showStat='false' showLog='true' x='0px' y='0px' width='800px' height='500px'>
+    <x3d id='x3d' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px'>
       <scene DEF='scene'>
         <viewpoint orientation='-0.600069 0.799493 -0.0269947 0.77042' position='3.05702 2.90676 4.27241'></viewpoint>
         <background skyColor='1 1 1'></background>
-		<directionalLight direction="-0.4 -0.9 0.3" intensity="0.5" shadowIntensity="0.0"></directionalLight>
+		<directionalLight direction="-0.4 -0.9 0.3" intensity="0.5"></directionalLight>
         <navigationInfo type='"examine"'></navigationInfo>
         <transform DEF='shadow' scale='1.4 1 2.6'>
           <shape>
@@ -505,40 +505,15 @@
 	
     <!--<h2 style="text-indent:1em;">Colors</h2>-->
     <div style='position:absolute; top:8px; left:2px; z-index:1;'>&nbsp;
-    <img src="texture/car/weiss_64.gif"   border="1" onclick="changeColor('1.0 1.0 1.0');" style="cursor:pointer;" />
-    <img src="texture/car/beige_64.gif"   border="1" onclick="changeColor('0.93 0.91 0.87');" style="cursor:pointer;" />
-    <img src="texture/car/orange_64.gif"  border="1" onclick="changeColor('1.0 0.6 0.0');" style="cursor:pointer;" />
-    <img src="texture/car/rot_64.gif"     border="1" onclick="changeColor('0.8 0.0 0.0');" style="cursor:pointer;" />
-    <img src="texture/car/violett_64.gif" border="1" onclick="changeColor('0.2 0.0 0.2');" style="cursor:pointer;" />
-    <img src="texture/car/blau_64.gif"    border="1" onclick="changeColor('0.0 0.0 0.4');" style="cursor:pointer;" />
-    <img src="texture/car/gruen_64.gif"   border="1" onclick="changeColor('0.0 0.2 0.2');" style="cursor:pointer;" />
-    <img src="texture/car/schwarz_64.gif" border="1" onclick="changeColor('0.0 0.0 0.0');" style="cursor:pointer;" />
+    <img src="texture/car/weiss_64.gif"   border="1" onclick="changeColor('white');" style="cursor:pointer;" />
+    <img src="texture/car/beige_64.gif"   border="1" onclick="changeColor('#efebe0');" style="cursor:pointer;" />
+    <img src="texture/car/orange_64.gif"  border="1" onclick="changeColor('#ff9900');" style="cursor:pointer;" />
+    <img src="texture/car/rot_64.gif"     border="1" onclick="changeColor('#cc0000');" style="cursor:pointer;" />
+    <img src="texture/car/violett_64.gif" border="1" onclick="changeColor('#330033');" style="cursor:pointer;" />
+    <img src="texture/car/blau_64.gif"    border="1" onclick="changeColor('#000066');" style="cursor:pointer;" />
+    <img src="texture/car/gruen_64.gif"   border="1" onclick="changeColor('#003333');" style="cursor:pointer;" />
+    <img src="texture/car/schwarz_64.gif" border="1" onclick="changeColor('black');" style="cursor:pointer;" />
     </div>
-	
-	<!--
-    <h2 style="text-indent:1em;">Rims</h2>
-    <p>&nbsp;
-    <img src="texture/car/felge1_64.jpg" border="0" onclick="changeTexture('texture/car/felge1.jpg');" style="cursor:pointer;" />
-    <img src="texture/car/felge2_64.jpg" border="0" onclick="changeTexture('texture/car/felge2.jpg');" style="cursor:pointer;" />
-    <img src="texture/car/felge3_64.jpg" border="0" onclick="changeTexture('texture/car/felge3.jpg');" style="cursor:pointer;" />
-    <img src="texture/car/felge4_64.jpg" border="0" onclick="changeTexture('texture/car/felge4.jpg');" style="cursor:pointer;" />
-    <img src="texture/car/felge5_64.jpg" border="0" onclick="changeTexture('texture/car/felge5.jpg');" style="cursor:pointer;" />
-    </p>
-    <br />&nbsp;
     
-    <h2 style="text-indent:1em;">Colors</h2>
-    <p>&nbsp;
-    <img src="texture/car/weiss_64.gif"   border="1" onclick="changeColor('1.0 1.0 1.0');" style="cursor:pointer;" />
-    <img src="texture/car/beige_64.gif"   border="1" onclick="changeColor('0.93 0.91 0.87');" style="cursor:pointer;" />
-    <img src="texture/car/orange_64.gif"  border="1" onclick="changeColor('1.0 0.6 0.0');" style="cursor:pointer;" />
-    <img src="texture/car/rot_64.gif"     border="1" onclick="changeColor('0.8 0.0 0.0');" style="cursor:pointer;" />
-    <br />&nbsp;
-    <img src="texture/car/violett_64.gif" border="1" onclick="changeColor('0.2 0.0 0.2');" style="cursor:pointer;" />
-    <img src="texture/car/blau_64.gif"    border="1" onclick="changeColor('0.0 0.0 0.4');" style="cursor:pointer;" />
-    <img src="texture/car/gruen_64.gif"   border="1" onclick="changeColor('0.0 0.2 0.2');" style="cursor:pointer;" />
-    <img src="texture/car/schwarz_64.gif" border="1" onclick="changeColor('0.0 0.0 0.0');" style="cursor:pointer;" />
-    </p>
-    <br />&nbsp;
-	-->
   </body>
 </html>
