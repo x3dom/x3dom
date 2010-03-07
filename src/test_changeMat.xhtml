@@ -22,7 +22,7 @@
 				<Transform translation="-3 0 0">
 					<Shape>
 						<Appearance>
-							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" transparency="0.15" />
+							<Material diffuseColor="#f0f" specularColor="#888" transparency="0.15" />
 						</Appearance>
 						<Sphere />
 					</Shape>
@@ -31,7 +31,7 @@
 				<Transform >
 					<Shape>
 						<Appearance>
-							<Material DEF="BoxMat" diffuseColor="0 1 0" specularColor=".5 .5 .5" transparency="0.4" />
+							<Material DEF="BoxMat" diffuseColor="khaki" specularColor="white" transparency="0.4" />
 							<!--<ImageTexture url="opengl.gif" />-->
 						</Appearance>
 						<Box/>
@@ -65,23 +65,19 @@
 	
 	<script type="text/javascript"><![CDATA[
 	
-	var solid = true, ogl = true;
+	var col = 0, ogl = true;
 	
 	function toggleRendering()
 	{
-		var button = document.getElementById("points");
+		var button = document.getElementById("color");
 		
-		solid = !solid;
+        var cols = ["Red", "Green", "Blue", "Yellow", "Floralwhite", "Sandybrown"];
+        col = ++col % cols.length;
 		
-		if (solid)
-			button.value = "Blue";
-		else
-			button.value = "Red";
-		
+        button.value = cols[(col+1) % cols.length];
+        
 		var mat = document.getElementsByTagName("Material");
-		
-		var aMat = mat[0];
-		aMat.setAttribute("diffuseColor", (!solid ? "0 0 1" : "1 0 0"));
+		mat[0].setAttribute("diffuseColor", cols[col].toLowerCase());
 		
 		return false;
 	}
@@ -98,9 +94,7 @@
 			button.value = "JPEG";
 		
 		var mat = document.getElementsByTagName("ImageTexture");
-		
-		var aMat = mat[0];
-		aMat.setAttribute("url", (!ogl ? "opengl.gif" : "ogl.jpg"));
+		mat[0].setAttribute("url", (!ogl ? "opengl.gif" : "ogl.jpg"));
 		
 		return false;
 	}
@@ -109,7 +103,7 @@
 	
 	<p class="case"> &nbsp; 
 	Dynamic material update
-	<input type="button" id="points" value="Change Color" onclick="toggleRendering();" />
+	<input type="button" id="color" value="Change Color" onclick="toggleRendering();" />
     &nbsp; 
     <input type="button" id="texture" value="Change Texture" onclick="toggleTexture();" />
 	</p>
