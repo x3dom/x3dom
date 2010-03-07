@@ -448,5 +448,23 @@ x3dom.userAgentFeature = {
         }
         return true;
     };
+    
+    if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
+        document.__getElementById = document.getElementById;
+        
+        document.getElementById = function(id) {
+            var obj = this.__getElementById(id);
+            
+            if (!obj) {
+            	var elems = this.getElementsByTagName("*");
+                for (var i=0; i<elems.length && !obj; i++) {
+                    if (elems[i].getAttribute("id") === id) {
+                        obj = elems[i];
+                    }
+                }
+            }
+            return obj;
+        };
+    }
 
 })();
