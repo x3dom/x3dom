@@ -1,0 +1,5 @@
+HTML5/X3D runtime 
+
+x3dom.org
+
+X3DOM is a framework for integrating and manipulating (X3D) scenes as HTML5-DOM elements, which are rendered via native-code, SAI-plugin or WebGL. The open-source system allows defining 3D-scene description and runtime behavior declaratively, without any low-level JavaScript or GLSL coding.
