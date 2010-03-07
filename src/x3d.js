@@ -104,6 +104,7 @@ x3dom.NodeNameSpace = function (name) {
 	this.name = name;
 	this.baseURL = "";
 	this.defMap = {};
+    this.idMap = {};
 	this.parent = null;
 	this.childSpaces = [];
 };
@@ -2938,6 +2939,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Shape.superClass.call(this, ctx);
             
+            this._objectID = ++x3dom.nodeTypes.Shape.objectID;
+            
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
             
@@ -2955,6 +2958,7 @@ x3dom.registerNodeType(
 				if (!this._cf.appearance.node) {
 					this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
 				}
+                this._nameSpace.idMap[this._objectID] = this;    //FIXME; handle node removal
 			},
             
             collectDrawableObjects: function (transform, out) {
@@ -2987,6 +2991,7 @@ x3dom.registerNodeType(
         }
     )
 );
+x3dom.nodeTypes.Shape.objectID = 0;
 
 // ### X3DGroupingNode ###
 x3dom.registerNodeType(
@@ -3551,7 +3556,18 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
-
+            
+            // define the experimental picking mode: box, exact (NYI), idBuf
+            this.addField_SFString(ctx, 'pickMode', "box");
+            
+            // if (pickMode = idBuf && mouse event) then set to true
+            this._updatePicking = false;
+            this._pickingInfo = {
+                pickPos: {},
+                pickObj: null,
+                updated: false
+            };
+            
 			this._rotMat = x3dom.fields.SFMatrix4f.identity();
 			this._transMat = x3dom.fields.SFMatrix4f.identity();
 			this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -3783,9 +3799,41 @@ x3dom.registerNodeType(
                 this._lastX = x;
                 this._lastY = y;
                 
+                var avoidTraversal = (this._vf.pickMode.toLowerCase() === "idbuf");
+                var isect = false;
+                
+                if (avoidTraversal) {
+                    if (!this._pickingInfo.updated) {
+                        this._updatePicking = true;
+                        return;
+                    }
+                    else {
+                        this._pickingInfo.updated = false;
+                        this._pick = this._pickingInfo.pickPos;
+                        
+                        var obj = this._pickingInfo.pickObj;
+                        if (obj)
+                        {
+                            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
+                            
+                            // FIXME; Anchor broken for idBuf because only Shapes are rendered!
+                            if ( obj._xmlNode.hasAttribute('onclick') ||
+                                (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') )
+                            {
+                                var funcStr = obj._xmlNode.getAttribute('onclick');
+                                var func = new Function('hitPnt', funcStr);
+                                func.call(this, this._pickingInfo.pickPos);
+                            }
+                            return;
+                        }
+                    }
+                }
+                
                 var line = this.calcViewRay(x, y);
                 
-                var isect = this.doIntersect(line);
+                if (!avoidTraversal) {
+                    isect = this.doIntersect(line);
+                }
                 
                 if (isect) 
                 {
@@ -4139,7 +4187,11 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
 x3dom.X3DDocument.prototype.render = function (ctx) {
     if (!ctx)
         return;
-    ctx.renderScene(this._scene);
+    ctx.renderScene(this._scene, this._scene._updatePicking);
+    
+    if (this._scene._pickingInfo.updated) {
+        this._scene.onMousePress(this._scene._lastX, this._scene._lastY, 0);
+    }
 };
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {

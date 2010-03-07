@@ -540,6 +540,10 @@ x3dom.fields.SFVec3f.prototype.normalize = function (that) {
     return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
 };
 
+x3dom.fields.SFVec3f.prototype.multComponents = function (that) {
+    return new x3dom.fields.SFVec3f(this.x*that.x, this.y*that.y, this.z*that.z);
+};
+
 x3dom.fields.SFVec3f.prototype.multiply = function (n) {
     return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
 };
