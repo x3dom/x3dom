@@ -1502,6 +1502,7 @@ x3dom.gfx_webgl = (function () {
 			}
         }
         
+        // FIXME; scale mouse coords such that other width, height are possible! 
         var data = gl.readPixels(//0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
                                  scene._lastX, scene._webgl.fboPick.height - 1 - scene._lastY, 1, 1, 
                                  gl.RGBA, gl.UNSIGNED_BYTE);
@@ -1627,20 +1628,21 @@ x3dom.gfx_webgl = (function () {
                 pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / 255;
                 pickPos.y = scene._webgl.fboPick.pixelData[index + 1] / 255;
                 pickPos.z = scene._webgl.fboPick.pixelData[index + 2] / 255;
-                var objId = 255 - scene._webgl.fboPick.pixelData[index + 3];
+                
                 pickPos = pickPos.multComponents(max.subtract(min)).add(min);
+                var objId = 255 - scene._webgl.fboPick.pixelData[index + 3];
+                //x3dom.debug.logInfo(pickPos + " / " + objId);
+                
                 if (objId > 0) {
-                    //x3dom.debug.logInfo(pickPos + " / " + objId);
                     //x3dom.debug.logInfo(scene._nameSpace.idMap[objId]._DEF + "/" +
                     //            scene._nameSpace.idMap[objId]._xmlNode.localName);
                     scene._pickingInfo.pickPos = pickPos;
                     scene._pickingInfo.pickObj = scene._nameSpace.idMap[objId];
-                    scene._pickingInfo.updated = true;
-                }                
+                }
+                scene._pickingInfo.updated = true;               
             }
             
             t1 = new Date().getTime() - t0;
-            
             x3dom.debug.logInfo("Picking time (idBuf): " + t1 + "ms");
         }
         //
