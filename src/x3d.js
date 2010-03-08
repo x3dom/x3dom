@@ -3547,7 +3547,7 @@ x3dom.registerNodeType(
 
 
 // Not a real X3D node type
-// TODO; refactor to Scene + Viewarea node
+// TODO; refactor to Scene + Viewarea node --> via Layering component?
 
 // ### Scene ###
 x3dom.registerNodeType( 
@@ -3832,7 +3832,13 @@ x3dom.registerNodeType(
                 var line = this.calcViewRay(x, y);
                 
                 if (!avoidTraversal) {
+                    var t0 = new Date().getTime();
+                    
                     isect = this.doIntersect(line);
+                    
+                    var t1 = new Date().getTime() - t0;
+                    
+                    x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
                 }
                 
                 if (isect) 
@@ -4220,6 +4226,16 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 this._scene.showAll();
             }
             break;
+        case  100: /* d, switch on/off buffer view for dbg */ 
+            {
+				if (this._scene._visDbgBuf === undefined) {
+					this._scene._visDbgBuf = true;
+                }
+				else {
+					this._scene._visDbgBuf = !this._scene._visDbgBuf;
+                }
+            }
+            break;
         case 108: /* l, light view */ 
 			{
                 if (this._scene.getLights().length > 0)
@@ -4233,12 +4249,25 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			break;
         case 109: /* m, toggle "points" attribute */ 
 			{
-				if (this._scene._points === undefined)
+				if (this._scene._points === undefined) {
 					this._scene._points = true;
-				else
+                }
+				else {
 					this._scene._points = !this._scene._points;
+                }
 			}
 			break;
+        case 112: /* p, switch intersect type */
+            {
+                if (this._scene._vf.pickMode.toLowerCase() === "idbuf") {
+                    this._scene._vf.pickMode = "box";
+                }
+                else {
+                    this._scene._vf.pickMode = "idBuf";
+                }
+                x3dom.debug.logInfo("Switch pickMode to '" + this._scene._vf.pickMode + "'.");
+            }
+            break;
         case 114: /* r, reset view */
             {
                 this._scene.resetView();
