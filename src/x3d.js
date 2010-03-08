@@ -3780,6 +3780,37 @@ x3dom.registerNodeType(
                 this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
             },
             
+            checkEvents: function (obj)
+            {
+                var that = this;
+                
+                var recurse = function(obj) {
+                    Array.forEach(obj._parentNodes, function (node) {
+                        if (node._xmlNode && node._xmlNode.hasAttribute('onclick')) {
+                            var funcStr = node._xmlNode.getAttribute('onclick');
+                            var func = new Function('hitPnt', funcStr);
+                            func.call(node, that._pick);
+                        }
+                        if (x3dom.isa(node, x3dom.nodeTypes.Anchor)) {
+                            node.handleTouch();
+                        }
+                        else {
+                            recurse(node);
+                        }
+                    });
+                };
+                
+                recurse(obj);
+                
+                if ( obj._xmlNode.hasAttribute('onclick') ||
+                    (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') )
+                {
+                    var funcStr = obj._xmlNode.getAttribute('onclick');
+                    var func = new Function('hitPnt', funcStr);
+                    func.call(obj, that._pick);
+                }
+            },
+            
             onMousePress: function (x, y, buttonState)
             {
                 this._lastX = x;
@@ -3799,21 +3830,15 @@ x3dom.registerNodeType(
                         
                         if ( (obj = this._pickingInfo.pickObj) )
                         {
-                            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
-                            
                             this._pick.setValues(this._pickingInfo.pickPos);
-                            x3dom.debug.logInfo("Ray hit at position " + this._pick);
+                            this._pickingInfo.pickObj = null;
                             
                             this.postMessage('pickPos_changed', this._pick);
+                            this.checkEvents(obj);
                             
-                            // FIXME; Anchor broken for idBuf because only Shapes are rendered!
-                            if ( obj._xmlNode.hasAttribute('onclick') ||
-                                (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') )
-                            {
-                                var funcStr = obj._xmlNode.getAttribute('onclick');
-                                var func = new Function('hitPnt', funcStr);
-                                func.call(this, this._pick);
-                            }
+                            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
+                                                obj._DEF + "\"");
+                            x3dom.debug.logInfo("Ray hit at position " + this._pick);
                             
                             return;
                         }
@@ -3829,26 +3854,17 @@ x3dom.registerNodeType(
                     
                     if ( isect && (obj = line.hitObject) )
                     {
-                        x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
-                                            obj._DEF + "\ at dist=" + line.dist.toFixed(4));
-                                            
                         this._pick.setValues(line.hitPoint);
-                        x3dom.debug.logInfo("Ray hit at position " + this._pick);
                         
                         this.postMessage('pickPos_changed', this._pick);
+                        this.checkEvents(obj);
                         
-                        // FIXME; Anchor broken, see comment in Anchor.doIntersect()
-                        if ( obj._xmlNode.hasAttribute('onclick') ||
-                            (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') )
-                        {
-                            var funcStr = obj._xmlNode.getAttribute('onclick');
-                            var func = new Function('hitPnt', funcStr);
-                            func.call(this, line.hitPoint);
-                        }
+                        x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
+                                            obj._DEF + "\ at dist=" + line.dist.toFixed(4));
+                        x3dom.debug.logInfo("Ray hit at position " + this._pick);
                     }
                     
                     var t1 = new Date().getTime() - t0;
-                    
                     x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
                 }
                 
@@ -3973,17 +3989,13 @@ x3dom.registerNodeType(
                         isect = this._childNodes[i].doIntersect(line) || isect;
                     }
                 }
-                
-            // FIXME; cannot handle this in intersect traversal,
-            //        as node might not be the nearest one found
-            /*
-                if (isect && this._vf.url.length > 0) {
-                    // fixme; window.open usually gets blocked
-                    // but this way the current page is lost?!
-                    window.location = this._nameSpace.getURL(this._vf.url[0]);
-                }
-            */
                 return isect;
+            },
+            
+            handleTouch: function() {
+                // fixme; window.open usually gets blocked
+                // but this way the current page is lost?!
+                window.location = this._nameSpace.getURL(this._vf.url[0]);
             }
         }
     )
