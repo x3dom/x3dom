@@ -420,6 +420,11 @@ x3dom.fields.SFVec2f.parse = function (str) {
     return new x3dom.fields.SFVec2f(+m[1], +m[2]);
 };
 
+x3dom.fields.SFVec2f.prototype.setValues = function (that) {
+    this.x = that.x;
+    this.y = that.y;
+};
+
 x3dom.fields.SFVec2f.prototype.add = function (that) {
     return new x3dom.fields.SFVec2f(this.x+that.x, this.y+that.y);
 };
@@ -445,6 +450,10 @@ x3dom.fields.SFVec2f.prototype.normalize = function (that) {
     var n = this.length();
     if (n) { n = 1.0 / n; }
     return new x3dom.fields.SFVec2f(this.x*n, this.y*n);
+};
+
+x3dom.fields.SFVec2f.prototype.multComponents = function (that) {
+    return new x3dom.fields.SFVec2f(this.x*that.x, this.y*that.y);
 };
 
 x3dom.fields.SFVec2f.prototype.multiply = function (n) {
@@ -501,6 +510,12 @@ x3dom.fields.SFVec3f.MAX = function() {
 x3dom.fields.SFVec3f.parse = function (str) {
     var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
     return new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]);
+};
+
+x3dom.fields.SFVec3f.prototype.setValues = function (that) {
+    this.x = that.x;
+    this.y = that.y;
+    this.z = that.z;   
 };
 
 x3dom.fields.SFVec3f.prototype.add = function (that) {
@@ -795,6 +810,12 @@ x3dom.fields.SFColor.prototype.getHSV = function () {
     var h = 0, s = 0, v = 0;
     x3dom.debug.logInfo("SFColor.getHSV() NYI");
     return [ h, s, v ];
+};
+
+x3dom.fields.SFColor.prototype.setValues = function (color) {
+    this.r = color.r;
+    this.g = color.g;
+    this.b = color.b;   
 };
 
 x3dom.fields.SFColor.prototype.toGL = function () {
@@ -1301,8 +1322,9 @@ x3dom.fields.MFNode.prototype.hasLink = function(node) {
 			}
 		}
 	}
-	else
+	else {
 		return (this.length > 0);
+    }
 	return false;
 };
 
@@ -1335,19 +1357,22 @@ x3dom.fields.Line = function(pos, dir)
     {
         this.pos = new x3dom.fields.SFVec3f(0, 0, 0);
         this.dir = new x3dom.fields.SFVec3f(0, 0, 1);
-        
-        this.t = 1;
     } 
     else 
     {
         this.pos = new x3dom.fields.SFVec3f(pos.x, pos.y, pos.z);
         
         var n = dir.length();
-        this.t = n;
-        if (n) n = 1.0 / n;
+        if (n) { n = 1.0 / n; }
         
         this.dir = new x3dom.fields.SFVec3f(dir.x*n, dir.y*n, dir.z*n);
     }
+    
+    this.enter = 0;
+    this.exit  = 0;
+    this.hitObject = null;
+    this.hitPoint  = {};
+    this.dist = Number.MAX_VALUE;
 };
 
 x3dom.fields.Line.prototype.toString = function () {

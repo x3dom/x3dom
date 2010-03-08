@@ -1139,7 +1139,7 @@ x3dom.gfx_webgl = (function () {
         }
 	};
     
-    
+    // mainly manages rendering of backgrounds and buffer clearing
 	Context.prototype.setupScene = function(gl, scene) 
 	{
         if (scene._webgl !== undefined) {
@@ -1203,7 +1203,7 @@ x3dom.gfx_webgl = (function () {
             scene._webgl = {};
         }
         
-        //setup dbg fgnds
+        // setup dbg fgnds
         (function () {
             scene._fgnd = {};
             
