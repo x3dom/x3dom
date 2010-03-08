@@ -90,8 +90,8 @@ x3dom.gfx_webgl = (function () {
 		"void main(void) {" +
 		"    gl_Position = vec4(position.xy, 0.0, 1.0);" +
         "    vec2 texCoord = (position.xy + 1.0) * 0.5;" +
-        "    fragTexCoord = vec2(texCoord.x, 1.0-texCoord.y);" +
-        //"    fragTexCoord = texCoord;" +
+        //"    fragTexCoord = vec2(texCoord.x, 1.0-texCoord.y);" +
+        "    fragTexCoord = texCoord;" +
 		"}"
 		};
         
@@ -1148,6 +1148,7 @@ x3dom.gfx_webgl = (function () {
         
         var url = scene.getSkyColor()[1];
         var i = 0;
+        var w = 1, h = 1;
         
         if (url.length > 0 && url[0].length > 0)
         {
@@ -1180,13 +1181,11 @@ x3dom.gfx_webgl = (function () {
                     //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
                     
                     gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, image);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, image, true);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 };
-                
-                var w = 1, h = 1;
                 
                 scene._webgl = {
                     positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
@@ -1202,18 +1201,87 @@ x3dom.gfx_webgl = (function () {
 		{
             // TODO; impl. gradient bg etc., e.g. via canvas 2d?
             scene._webgl = {};
-            
-                var w = 1, h = 1;
-                
-                scene._webgl = {
-                    positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
-                    indexes: [0, 1, 2, 3],
-                    buffers: [{}, {}]
-                };
-
-                scene._webgl.primType = gl.TRIANGLE_STRIP;
-                scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
         }
+        
+        //setup dbg fgnds
+        (function () {
+            scene._fgnd = {};
+            
+            scene._fgnd._webgl = {
+                positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
+                indexes: [0, 1, 2, 3],
+                buffers: [{}, {}]
+            };
+
+            scene._fgnd._webgl.primType = gl.TRIANGLE_STRIP;
+            scene._fgnd._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+            
+            var sp = scene._fgnd._webgl.shader;
+            
+            var positionBuffer = gl.createBuffer();
+            scene._fgnd._webgl.buffers[1] = positionBuffer;
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            
+            var vertices = new WebGLFloatArray(scene._fgnd._webgl.positions);
+            
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            
+            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+            
+            var indicesBuffer = gl.createBuffer();
+            scene._fgnd._webgl.buffers[0] = indicesBuffer;
+            
+            var indexArray = new WebGLUnsignedShortArray(scene._fgnd._webgl.indexes);
+            
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+            
+            delete vertices;
+            delete indexArray;
+            
+            scene._fgnd._webgl.render = function(gl, tex)
+            {
+                scene._fgnd._webgl.texture = tex;
+                
+                gl.frontFace(gl.CCW);
+                gl.disable(gl.CULL_FACE);
+                gl.disable(gl.DEPTH_TEST);
+                
+                sp.bind();
+                if (!sp.tex) {
+                    sp.tex = 0;
+                }
+                
+                gl.enable(gl.TEXTURE_2D);
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, scene._fgnd._webgl.texture);
+                
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.REPEAT);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
+                
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[0]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[1]);
+                gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp.position);
+                
+                try {
+                    gl.drawElements(scene._fgnd._webgl.primType, 
+                                    scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                }
+                catch(e) {
+                    x3dom.debug.logException("render background: " + e);
+                }
+                
+                gl.disableVertexAttribArray(sp.position);
+                
+                gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+                gl.disable(gl.TEXTURE_2D);
+            };
+        })();
         
         if (scene._webgl.shader)
 		{
@@ -1244,8 +1312,6 @@ x3dom.gfx_webgl = (function () {
         
         scene._webgl.render = function(gl)
         {
-            //scene._webgl.texture = scene._webgl.fboPick.tex;
-            
             if (!scene._webgl.texture || 
                 (scene._webgl.texture.textureCubeReady !== undefined && 
                  scene._webgl.texture.textureCubeReady !== true))
@@ -1436,9 +1502,10 @@ x3dom.gfx_webgl = (function () {
 			}
         }
         
-        var data = gl.readPixels(0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
-                                    gl.RGBA, gl.UNSIGNED_BYTE);
-		if (data.data) { data = data.data };    // FIXME
+        var data = gl.readPixels(//0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
+                                 scene._lastX, scene._webgl.fboPick.height - 1 - scene._lastY, 1, 1, 
+                                 gl.RGBA, gl.UNSIGNED_BYTE);
+		if (data.data) { data = data.data };
         scene._webgl.fboPick.pixelData = data;
         
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -1536,18 +1603,25 @@ x3dom.gfx_webgl = (function () {
 			this.canvas.parent.statDiv.appendChild(document.createTextNode("sort: " + t1));
 		}
         
-        //
-        if (pick) {
+        // render color-buf pass for picking
+        if (pick)
+        {
+            //t0 = new Date().getTime();
+            
             // TODO; optimize call by reusing calculated volume!
             var min = x3dom.fields.SFVec3f.MAX();
             var max = x3dom.fields.SFVec3f.MIN();
             scene.getVolume(min, max, true);
             
+            t0 = new Date().getTime();
+            
             this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max);
             
             scene._updatePicking = false;
             
-            var index = ((scene._height - 1 - scene._lastY) * scene._webgl.fboPick.width + scene._lastX) * 4;
+            //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
+            //               scene._webgl.fboPick.width + scene._lastX ) * 4;
+            var index = 0;
             if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
                 var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
                 pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / 255;
@@ -1564,6 +1638,10 @@ x3dom.gfx_webgl = (function () {
                     scene._pickingInfo.updated = true;
                 }                
             }
+            
+            t1 = new Date().getTime() - t0;
+            
+            x3dom.debug.logInfo("Picking time (idBuf): " + t1 + "ms");
         }
         //
 		
@@ -1829,6 +1907,15 @@ x3dom.gfx_webgl = (function () {
 		);*/ 
 		gl.disable(gl.DEPTH_TEST);
 		//gl.flush();
+        
+        if (scene._visDbgBuf)
+        {
+            gl.viewport(0, 3*this.canvas.height/4, this.canvas.width/4, this.canvas.height/4);
+            scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
+            
+            gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, this.canvas.width/4, this.canvas.height/4);
+            scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
+        }
 		
 		t1 = new Date().getTime() - t0;
 			
