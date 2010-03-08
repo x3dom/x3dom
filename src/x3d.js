@@ -211,7 +211,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 var toNode = this.defMap[route.getAttribute('toNode')];
                 //x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
                 if (! (fromNode && toNode)) {
-                    x3dom.debug.logInfo("Broken route - can't find all DEFs for " + route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
+                    x3dom.debug.logInfo("Broken route - can't find all DEFs for " + 
+                                route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
                     return null;
                 }
                 fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
@@ -487,14 +488,13 @@ x3dom.registerNodeType(
         },
         
         doIntersect: function(line) {
+            var isect = false;
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
-                    if (this._childNodes[i].doIntersect(line)) {
-                        return true;
-                    }
+                    isect = this._childNodes[i].doIntersect(line) || isect;
                 }
             }
-            return false;
+            return isect;
         },
 
         postMessage: function (field, msg) {
@@ -1106,13 +1106,8 @@ x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 		this._invalidate = false;
 	}
 	
-	min.x = this._min.x;
-	min.y = this._min.y;
-	min.z = this._min.z;
-	
-	max.x = this._max.x;
-	max.y = this._max.y;
-	max.z = this._max.z;
+    min.setValues(this._min);
+    max.setValues(this._max);
 };
 
 x3dom.Mesh.prototype.getCenter = function() 
@@ -1137,13 +1132,13 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     
     var isect = line.intersect(min, max);
     
-    //TODO: check for _nearest_ hit object and iterate over all faces!
-    line.hit = isect;
-    
-    if (isect)
+    //TODO: iterate over all faces!
+    if (isect && line.enter < line.dist)
     {
-        x3dom.debug.logInfo("Hit \"" + this._parent._xmlNode.localName + "/ " + this._parent._DEF + "\"");
+        //x3dom.debug.logInfo("Hit \"" + this._parent._xmlNode.localName + "/ " + 
+        //                    this._parent._DEF + "\" at dist=" + line.enter.toFixed(4));
         
+        line.dist = line.enter;
         line.hitObject = this._parent;
         line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
     }
@@ -1328,18 +1323,7 @@ x3dom.registerNodeType(
 			},
             
             doIntersect: function(line) {
-                var isect = this._mesh.doIntersect(line);
-				
-				if (isect && this._xmlNode !== null) {
-					if (this._xmlNode.hasAttribute('onclick'))
-					{
-						var funcStr = this._xmlNode.getAttribute('onclick');
-						var func = new Function('hitPnt', funcStr);
-						func.call(this, line.hitPoint);
-					}
-				}
-				
-                return isect;
+                return this._mesh.doIntersect(line);
             }
 		}
     )
@@ -3193,23 +3177,25 @@ x3dom.registerNodeType(
                 line.pos = mat.multMatrixPnt(line.pos);
                 line.dir = mat.multMatrixVec(line.dir);
                 
+                if (line.hitObject) {
+                    line.dist *= line.dir.length();
+                }
+                
+                // check for _nearest_ hit object and don't stop on first!
                 for (var i=0; i<this._childNodes.length; i++) 
                 {
-                    if (this._childNodes[i]) 
-                    {
-                        //TODO: check for _nearest_ hit object and don't stop on first!
-                        isect = this._childNodes[i].doIntersect(line);
-                        
-                        if (isect)
-                        {
-                            line.hitPoint = this._trafo.multMatrixPnt(line.hitPoint);
-                            break;
-                        }
+                    if (this._childNodes[i]) {
+                        isect = this._childNodes[i].doIntersect(line) || isect;
                     }
                 }
                 
-                line.pos = new x3dom.fields.SFVec3f(tmpPos.x, tmpPos.y, tmpPos.z);
-                line.dir = new x3dom.fields.SFVec3f(tmpDir.x, tmpDir.y, tmpDir.z);
+                line.pos.setValues(tmpPos);
+                line.dir.setValues(tmpDir);
+                
+                if (isect) {
+                    line.hitPoint = this._trafo.multMatrixPnt(line.hitPoint);
+                    line.dist *= line.dir.length();
+                }
                 
                 return isect;
             }
@@ -3801,6 +3787,7 @@ x3dom.registerNodeType(
                 
                 var avoidTraversal = (this._vf.pickMode.toLowerCase() === "idbuf");
                 var isect = false;
+                var obj = null;
                 
                 if (avoidTraversal) {
                     if (!this._pickingInfo.updated) {
@@ -3809,12 +3796,15 @@ x3dom.registerNodeType(
                     }
                     else {
                         this._pickingInfo.updated = false;
-                        this._pick = this._pickingInfo.pickPos;
                         
-                        var obj = this._pickingInfo.pickObj;
-                        if (obj)
+                        if ( (obj = this._pickingInfo.pickObj) )
                         {
                             x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
+                            
+                            this._pick.setValues(this._pickingInfo.pickPos);
+                            x3dom.debug.logInfo("Ray hit at position " + this._pick);
+                            
+                            this.postMessage('pickPos_changed', this._pick);
                             
                             // FIXME; Anchor broken for idBuf because only Shapes are rendered!
                             if ( obj._xmlNode.hasAttribute('onclick') ||
@@ -3822,8 +3812,9 @@ x3dom.registerNodeType(
                             {
                                 var funcStr = obj._xmlNode.getAttribute('onclick');
                                 var func = new Function('hitPnt', funcStr);
-                                func.call(this, this._pickingInfo.pickPos);
+                                func.call(this, this._pick);
                             }
+                            
                             return;
                         }
                     }
@@ -3836,19 +3827,32 @@ x3dom.registerNodeType(
                     
                     isect = this.doIntersect(line);
                     
+                    if ( isect && (obj = line.hitObject) )
+                    {
+                        x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
+                                            obj._DEF + "\ at dist=" + line.dist.toFixed(4));
+                                            
+                        this._pick.setValues(line.hitPoint);
+                        x3dom.debug.logInfo("Ray hit at position " + this._pick);
+                        
+                        this.postMessage('pickPos_changed', this._pick);
+                        
+                        // FIXME; Anchor broken, see comment in Anchor.doIntersect()
+                        if ( obj._xmlNode.hasAttribute('onclick') ||
+                            (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') )
+                        {
+                            var funcStr = obj._xmlNode.getAttribute('onclick');
+                            var func = new Function('hitPnt', funcStr);
+                            func.call(this, line.hitPoint);
+                        }
+                    }
+                    
                     var t1 = new Date().getTime() - t0;
                     
                     x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
                 }
                 
-                if (isect) 
-                {
-                    this._pick.x = line.hitPoint.x;
-                    this._pick.y = line.hitPoint.y;
-                    this._pick.z = line.hitPoint.z;
-                    x3dom.debug.logInfo("Ray hit at position " + this._pick);
-                }
-                else 
+                if (!isect) 
                 {
                     var dir = this.getViewMatrix().e2().negate();
                     var u = dir.dot(line.pos.negate()) / dir.dot(line.dir);
@@ -3871,9 +3875,7 @@ x3dom.registerNodeType(
                 
                 var viewpoint = this.getViewpoint();
                 
-                viewpoint._vf.centerOfRotation.x = this._pick.x;
-                viewpoint._vf.centerOfRotation.y = this._pick.y;
-                viewpoint._vf.centerOfRotation.z = this._pick.z;
+                viewpoint._vf.centerOfRotation.setValues(this._pick);
                 x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
             },
             
@@ -3968,18 +3970,19 @@ x3dom.registerNodeType(
                 var isect = false;
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
-                        if (this._childNodes[i].doIntersect(line)) {
-                            isect = true;
-                        }
+                        isect = this._childNodes[i].doIntersect(line) || isect;
                     }
                 }
                 
+            // FIXME; cannot handle this in intersect traversal,
+            //        as node might not be the nearest one found
+            /*
                 if (isect && this._vf.url.length > 0) {
                     // fixme; window.open usually gets blocked
                     // but this way the current page is lost?!
                     window.location = this._nameSpace.getURL(this._vf.url[0]);
                 }
-                
+            */
                 return isect;
             }
         }
@@ -4010,7 +4013,8 @@ x3dom.registerNodeType(
 				xhr.onreadystatechange = function () {
 					if (xhr.readyState == 4) {
 						if (xhr.responseXML.documentElement.localName == 'parsererror') {
-							x3dom.debug.logInfo('XML parser failed on '+this._vf.url+':\n'+xhr.responseXML.documentElement.textContent);
+							x3dom.debug.logInfo('XML parser failed on ' + this._vf.url + 
+                                        ':\n' + xhr.responseXML.documentElement.textContent);
 							return;
 						}
 					}
