@@ -5,7 +5,8 @@
     <link rel='stylesheet' type='text/css' href='x3dom.css'></link>
   </head>
   <body>
-    <x3d id='x3d' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px'>
+
+    <x3d id='x3d' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px' >
       <scene DEF='scene'>
         <viewpoint orientation='-0.600069 0.799493 -0.0269947 0.77042' position='3.05702 2.90676 4.27241'></viewpoint>
         <background skyColor='1 1 1'></background>
@@ -493,7 +494,7 @@
 		return false;
 	}
 	</script>
-
+	
 	<!--<h2 style="text-indent:1em;">Rims</h2>-->
     <div style='position:absolute; top:77px; left:2px; z-index:2;'>&nbsp;
     <img src="texture/car/felge1_64.jpg" border="1" onclick="changeTexture('texture/car/felge1.jpg');" style="cursor:pointer;" />
@@ -514,6 +515,22 @@
     <img src="texture/car/gruen_64.gif"   border="1" onclick="changeColor('#003333');" style="cursor:pointer;" />
     <img src="texture/car/schwarz_64.gif" border="1" onclick="changeColor('black');" style="cursor:pointer;" />
     </div>
-    
+    	
+    <div style='clear:both;'>&nbsp;</div>
+
+	<h1>Car configuration prototype</h1>
+	<p>This is a simple application prototype which shows how you can change elements of the scene to configure a product. The original content and application idea is taken from <a href='http://www.bitmanagement.com/'>Bitmanagment</a>.
+	</p>
+	
+  <h2>Marking our content</h2>
+  <p>This is the first step. Use standard HTML "id='xxx'" to name your Material and ImageTexture nodes.</p>
+	<code>
+		&lt;material id='body_color' diffuseColor='#efebe0'&gt;
+    </code>
+  <h2>Changing our content</h2>
+  <p>Just change the attribute for a specific element via JavaScript (just look at the code).</p>
+	<code>
+		document.getElementById('body_color').setAttribute("diffuseColor", '#000066'); 
+	</code>
   </body>
 </html>
