@@ -1502,10 +1502,10 @@ x3dom.gfx_webgl = (function () {
 			}
         }
         
-        // FIXME; scale mouse coords such that other width, height are possible! 
         var data = gl.readPixels(//0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
-                                 scene._lastX, scene._webgl.fboPick.height - 1 - scene._lastY, 1, 1, 
-                                 gl.RGBA, gl.UNSIGNED_BYTE);
+                                 scene._lastX * scene._webgl.pickScale, 
+                                 scene._webgl.fboPick.height - 1 - scene._lastY * scene._webgl.pickScale, 
+                                 1, 1, gl.RGBA, gl.UNSIGNED_BYTE);
 		if (data.data) { data = data.data };
         scene._webgl.fboPick.pixelData = data;
         
@@ -1526,7 +1526,11 @@ x3dom.gfx_webgl = (function () {
         {
             this.setupScene(gl, scene);
             
-            scene._webgl.fboPick = this.initFbo(gl, this.canvas.width, this.canvas.height, true);
+            // scale factor for mouse coords and width/ height (low res for speed-up)
+            scene._webgl.pickScale = 0.5;
+            scene._webgl.fboPick = this.initFbo(gl, 
+                        this.canvas.width  * scene._webgl.pickScale, 
+                        this.canvas.height * scene._webgl.pickScale, true);
             scene._webgl.fboPick.pixelData = null;
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
             
