@@ -3802,8 +3802,7 @@ x3dom.registerNodeType(
                 
                 recurse(obj);
                 
-                if ( obj._xmlNode.hasAttribute('onclick') ||
-                    (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') )
+                if ( obj._xmlNode.hasAttribute('onclick') )
                 {
                     var funcStr = obj._xmlNode.getAttribute('onclick');
                     var func = new Function('hitPnt', funcStr);
@@ -3834,6 +3833,7 @@ x3dom.registerNodeType(
                             this._pickingInfo.pickObj = null;
                             
                             this.postMessage('pickPos_changed', this._pick);
+                            obj = obj._cf.geometry.node;    // Shape
                             this.checkEvents(obj);
                             
                             x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
