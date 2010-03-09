@@ -3544,7 +3544,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
             
             // define the experimental picking mode: box, exact (NYI), idBuf
-            this.addField_SFString(ctx, 'pickMode', "box");
+            this.addField_SFString(ctx, 'pickMode', "idBuf");
             
             // if (pickMode = idBuf && mouse event) then set to true
             this._updatePicking = false;
@@ -3802,12 +3802,15 @@ x3dom.registerNodeType(
                 
                 recurse(obj);
                 
-                if ( obj._xmlNode.hasAttribute('onclick') )
-                {
-                    var funcStr = obj._xmlNode.getAttribute('onclick');
-                    var func = new Function('hitPnt', funcStr);
-                    func.call(obj, that._pick);
+                try {
+                    if ( obj._xmlNode.hasAttribute('onclick') ||
+                        (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') ) {
+                        var funcStr = obj._xmlNode.getAttribute('onclick');
+                        var func = new Function('hitPnt', funcStr);
+                        func.call(obj, that._pick);
+                    }
                 }
+                catch(e) {}
             },
             
             onMousePress: function (x, y, buttonState)
@@ -3833,7 +3836,6 @@ x3dom.registerNodeType(
                             this._pickingInfo.pickObj = null;
                             
                             this.postMessage('pickPos_changed', this._pick);
-                            obj = obj._cf.geometry.node;    // Shape
                             this.checkEvents(obj);
                             
                             x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
