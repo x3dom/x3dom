@@ -1,0 +1,58 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>Hello World</title>
+        <link rel="stylesheet" type="text/css" href="x3dom.css" />
+	</head>
+       
+<body >
+
+<webSG>
+    <scene id='scene'>
+      <shape>
+        <appearance sortType='opaque' >
+		  <imageTexture>
+		    <img src='foo.jpg' />
+		  </imageTexture>
+          <composedShader >
+            <field name='diffuseColor' type='SFVec3f' value='yellow'></field>
+            <shaderPart type='vertex' >
+	              varying vec3 fragNormal;
+                  attribute vec3 position;
+                  attribute vec3 normal;
+                  uniform mat4 modelViewProjectionMatrix;
+                  void main()
+                  {
+                      fragNormal = normal;
+                      gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                  }
+            </shaderPart>
+            <shaderPart type='fragment' url='"varying vec3 fragNormal;
+                  void main()
+                  {
+                      vec3 color = (normalize(fragNormal) + 1.0) * 0.5;
+                      gl_FragColor = vec4(color, 1.0);
+                  }"'>
+            </shaderPart>
+          </composedShader>
+        </appearance>
+        <mesh primType="triangle" index="0 1 2 3 4 5 6 7 8 9" >
+			<floatVertexAttribute name='position' numComponents='3' value='89, 34, 34' ></floatVertexAttribute>		
+		</mesh>
+      </shape>
+    </scene>
+</webSG>
+	
+	
+				<script type="text/javascript" src="x3dmain.js"></script>
+			    <script type="text/javascript" src="debug.js"></script>
+				<script type="text/javascript" src="gfx_webgl.js"></script>
+				<script type="text/javascript" src="x3d.js"></script>
+				<script type="text/javascript" src="fields.js"></script>	
+
+
+		</body>
+		</html>
+
