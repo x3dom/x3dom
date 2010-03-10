@@ -49,8 +49,8 @@ x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     return (node.nodeType === Node.ELEMENT_NODE && node.localName &&
         (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] || 
-         node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "scene" || 
-         node.localName.toLowerCase() === "route" ));
+         node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "websg" ||
+         node.localName.toLowerCase() === "scene" || node.localName.toLowerCase() === "route" ));
 };
 
 // BindableStack constructor
@@ -712,6 +712,21 @@ x3dom.registerNodeType(
     }
 ));
 
+/* ### Field ### */
+x3dom.registerNodeType( 
+    "Field",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.Field.superClass.call(this, ctx);
+            
+            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString(ctx, 'type', "");
+			this.addField_SFString(ctx, 'value', "");
+        }
+    )
+);
+
 /* ### X3DAppearanceNode ### */
 x3dom.registerNodeType(
     "X3DAppearanceNode", 
@@ -914,13 +929,21 @@ x3dom.registerNodeType(
             
             // For testing: look for <img> element if url empty
             if (!this._vf.url.length && ctx.xmlNode) {
-                x3dom.debug.logInfo("No URL given, searching for &lt;img&gt; elements...");
+                x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
             	var that = this;
-                Array.forEach(ctx.xmlNode.childNodes, function (childDomNode) { 
-					var url = childDomNode.getAttribute("src");
-                    if (url) { that._vf.url.push(url); }
-				} );
-                x3dom.debug.logInfo("Found textures: " + that._vf.url);
+                try {
+                    Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
+                        if (childDomNode.nodeType === 1) {
+                            var url = childDomNode.getAttribute("src");
+                            if (url) {
+                                that._vf.url.push(url);
+                                childDomNode.style.display = "none";
+                                x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+                            }
+                        }
+                    } );
+                }
+                catch(e) {}
             }
         },
         {
@@ -999,8 +1022,8 @@ x3dom.registerNodeType(
             this._vertex = null;
             this._fragment = null;
             
-            x3dom.debug.logInfo("ComposedShader node implementation limitations:\n" +
-                    "Vertex attributes, matrices and texture are provided as follows\n" +
+            x3dom.debug.logInfo("Current ComposedShader node implementation limitations:\n" +
+                    "Vertex attributes, matrices and texture are provided as follows...\n" +
                     "    attribute vec3 position;\n" +
                     "    attribute vec3 normal;\n" +
                     "    attribute vec2 texcoord;\n" +
@@ -1008,9 +1031,7 @@ x3dom.registerNodeType(
                     "    uniform mat4 modelViewProjectionMatrix;\n" +
                     "    uniform mat4 modelViewMatrix;\n" +
                     "    uniform sampler2D tex;\n" +
-                    "Please note, that comments in shaders will lead to parsing errors, " +
-                    "furthermore, dynamic fields are not yet supported, and finally, " +
-                    "'&lt;' and '&gt;' symbols currently cannot be parsed either.\n");
+                    "Please also note, that comments in shaders will lead to parsing errors.\n");
         },
         {
             nodeChanged: function()
@@ -1044,6 +1065,24 @@ x3dom.registerNodeType(
             
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                                this._vf.type.toLowerCase() == 'fragment');
+            
+            if (!this._vf.url.length && ctx.xmlNode) {
+                var that = this;
+                try {
+                    that._vf.url.push(ctx.xmlNode.childNodes[1].nodeValue);
+                    //x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+                    ctx.xmlNode.removeChild(ctx.xmlNode.childNodes[1]);
+                }
+                catch(e) {
+                    Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
+                        if (childDomNode.nodeType === 3) {
+                            that._vf.url.push(childDomNode.data);
+                            //x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+                        }
+                        childDomNode.parentNode.removeChild(childDomNode);
+                    } );
+                }
+            }
         },
         {
         }
@@ -1063,6 +1102,7 @@ x3dom.Mesh = function(parent)
 	this._invalidate = true;
 };
 
+x3dom.Mesh.prototype._dynamicFields = {};   // can hold X3DVertexAttributeNodes
 x3dom.Mesh.prototype._positions = [];
 x3dom.Mesh.prototype._normals   = [];
 x3dom.Mesh.prototype._texCoords = [];
@@ -1326,6 +1366,66 @@ x3dom.registerNodeType(
                 return this._mesh.doIntersect(line);
             }
 		}
+    )
+);
+
+/* ### Mesh ### */
+x3dom.registerNodeType(
+    "Mesh",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.Mesh.superClass.call(this, ctx);
+			
+			this.addField_SFString(ctx, 'primType', "triangle");
+            this.addField_MFInt32(ctx, 'index', []);
+            
+            this.addField_MFNode('vertexAttributes', x3dom.nodeTypes.X3DVertexAttributeNode);
+			
+			this._mesh = new x3dom.Mesh(this);
+        },
+        {
+            nodeChanged: function()
+            {
+                //var time0 = new Date().getTime();
+                
+                var i, n = this._cf.vertexAttributes.nodes.length;
+                
+                for (i=0; i<n; i++)
+                {
+                    switch (this._cf.vertexAttributes.nodes[i]._vf.name.toLowerCase())
+                    {
+                        case "position":
+                        {
+                            this._mesh._positions = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                        }
+                        break;
+                        case "normal":
+                        {
+                            this._mesh._normals = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                        }
+                        break;
+                        case "texcoord":
+                        {
+                            this._mesh._texCoords = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                        }
+                        break;
+                        case "color":
+                        {
+                            this._mesh._colors = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                        }
+                        break;
+                        default:
+                    }
+                }
+                
+                this._mesh._indices = this._vf.index.toGL();
+                this._mesh._invalidate = true;
+                
+                //var time1 = new Date().getTime() - time0;
+                //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
+            }
+        }
     )
 );
 
@@ -2364,6 +2464,39 @@ x3dom.registerNodeType(
 	            Array.forEach(this._parentNodes, function (node) {
 		            node.fieldChanged("color");
             	});
+			}
+        }
+    )
+);
+
+/* ### X3DVertexAttributeNode ### */
+x3dom.registerNodeType(
+    "X3DVertexAttributeNode",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DVertexAttributeNode.superClass.call(this, ctx);
+            
+            this.addField_SFString(ctx, 'name', "");
+        }
+    )
+);
+
+/* ### FloatVertexAttribute ### */
+x3dom.registerNodeType(
+    "FloatVertexAttribute",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.X3DVertexAttributeNode,
+        function (ctx) {
+            x3dom.nodeTypes.FloatVertexAttribute.superClass.call(this, ctx);
+            
+            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFInt32(ctx, 'numComponents', 4);
+            this.addField_MFFloat(ctx, 'value', []);
+        },
+        {
+            fieldChanged: function (fieldName) {
+	            //TODO
 			}
         }
     )
@@ -4112,7 +4245,9 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
         var next_uri = queued_uris.shift();
         
 		//x3dom.debug.logInfo("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
-        if (x3dom.isX3DElement(next_uri) && next_uri.localName.toLowerCase() == 'x3d') {
+        if ( x3dom.isX3DElement(next_uri) && 
+            (next_uri.localName.toLowerCase() === 'x3d' || next_uri.localName.toLowerCase() === 'websg') )
+        {
             // Special case, when passed an X3D node instead of a URI string
             uri_docs[next_uri] = next_uri;
             next_step();
@@ -4158,7 +4293,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             var parent = e.target.parentNode._x3domNode;
             var child = e.target._x3domNode;
             
-            x3dom.debug.logInfo("Child: " + e.target.type + "MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
+            //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
             
 			parent.removeChild(child);
         },
@@ -4213,25 +4348,33 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
         return;
     ctx.renderScene(this._scene, this._scene._updatePicking);
     
-    if (this._scene._pickingInfo.updated) {
+    if (this._scene && this._scene._pickingInfo.updated) {
         this._scene.onMousePress(this._scene._lastX, this._scene._lastY, 0);
     }
 };
 
 x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
-    this._scene.ondrag(x, y, buttonState);
+    if (this._scene) {
+        this._scene.ondrag(x, y, buttonState);
+    }
 };
 
 x3dom.X3DDocument.prototype.onMousePress = function (x, y, buttonState) {
-    this._scene.onMousePress(x, y, buttonState);
+    if (this._scene) {
+        this._scene.onMousePress(x, y, buttonState);
+    }
 };
 
 x3dom.X3DDocument.prototype.onMouseRelease = function (x, y, buttonState) {
-    this._scene.onMouseRelease(x, y, buttonState);
+    if (this._scene) {
+        this._scene.onMouseRelease(x, y, buttonState);
+    }
 };
 
 x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
-    this._scene.onDoubleClick(x, y);
+    if (this._scene) {
+        this._scene.onDoubleClick(x, y);
+    }
 };
 
 x3dom.X3DDocument.prototype.onKeyPress = function(charCode) 
