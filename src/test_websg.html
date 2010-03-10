@@ -9,14 +9,14 @@
     <body>
     <h1>Experimental WebSG Example</h1>
     
-<webSG xmlns='http://www.instantreality.org/specifications/websg-namespace' showStat='true' showLog='true' width='500px' height='400px'>
+<webSG id="myGraph" showLog='true' width='500px' height='400px'>
     <scene id='scene'>
       <shape>
         <appearance sortType='opaque'>
-		  <imageTexture>
-		    <img src='ogl.jpg' />
-		  </imageTexture>
-          <composedShader >
+		  <texture>
+		    <img src='ogl.jpg'>
+		  </texture>
+          <composedShader>
             <field name='diffuseColor' type='SFVec3f' value='1 1 0'></field>
             <shaderPart type='vertex'>
                   attribute vec3 position;
@@ -35,6 +35,7 @@
             </shaderPart>
             <shaderPart type='fragment'>
                   uniform sampler2D tex;
+                  uniform vec3 diffuseColor;
 	              varying vec3 fragNormal;
                   varying vec2 fragTexCoord;
                   
@@ -48,7 +49,7 @@
           </composedShader>
         </appearance>
         <mesh primType="triangle" index="0 1 2, 0 2 3" >
-			<floatVertexAttribute name='position' numComponents='3' value='-4 -3 0, 4 -3 0, 4 3 0, -4 3 0'></floatVertexAttribute>		
+			<floatVertexAttribute name='position' numComponents='3' value='-4 -3 0, 4 -3 0, 4 3 0, -4 3 0'></floatVertexAttribute>
             <floatVertexAttribute name='normal' numComponents='3' value='-0.57735 -0.57735 0.57735, 0.57735 -0.57735 0.57735, 0.57735 0.57735 0.57735, -0.57735 0.57735 0.57735'></floatVertexAttribute>
             <floatVertexAttribute name='texcoord' numComponents='2' value='0 0, 1 0, 1 1, 0 1'></floatVertexAttribute>
 		</mesh>
@@ -61,6 +62,151 @@
     <script type="text/javascript" src="gfx_webgl.js"></script>
     <script type="text/javascript" src="x3d.js"></script>
     <script type="text/javascript" src="fields.js"></script>
+    
+    <script type="text/javascript">
+	var col = true;
+    
+    var userData = {
+        shaderProgram: null,
+        gl: null
+    };     
+    
+	function toggleRendering()
+	{
+		var button = document.getElementById("color");
+		
+		col = !col;
+        /*
+		if (col)
+			button.value = "Blue";
+		else
+			button.value = "Red";
+        */
+        // Field update NYI
+		var mat = document.getElementsByName("diffuseColor")[0];
+		mat.setAttribute("value", (!col ? "0 0 1" : "1 0 0"));
+        
+        var sg = document.getElementById("myGraph");
+        
+        sg.render();    //render scene-graph
+        
+        draw();         //render tri
+        
+		return false;
+	};
+    
+    document.onload = function(evt)
+    {
+        var sg = document.getElementById("myGraph");
+        
+        userData.gl = sg.context;
+        sg.render();
+        init();
+        
+        // image/texture has not yet finished loading on document load
+        // thus wait for a short while (by showing a message box) 
+        // until rendering first frame
+        var render = function() {
+            alert("Finished loading scene-graph... now loading texture.");
+            sg.render();
+            draw();
+        };
+        
+        window.setTimeout(render(), 1000000);
+    };
+    
+    
+    
+    // Test the gl object received via "context" by rendering a tri in front of all
+    function loadShader(gl, shaderType, shaderSource)
+    {
+         // Create the shader object
+         var shader = gl.createShader(shaderType);
+         if (shader == 0) return 0;
+
+         // Load the shader source
+         gl.shaderSource(shader, shaderSource);
+
+         // Compile the shader
+         gl.compileShader(shader);
+
+         return shader;
+    }
+ 
+    function init()
+    {
+        var gl = userData.gl;
+
+        // Setup a vertex and fragment shader and attach it to program
+        // put shader source in variables
+        var vertexShaderSource = 
+         "attribute vec4 vPosition;     \n" +
+         "void main()                   \n" +
+         "{                             \n" +
+         "  gl_Position = vPosition;    \n" +
+         "} ";
+        var fragmentShaderSource =
+         "void main()                   \n" +
+         "{                             \n" +
+         "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n" +
+         "} ";
+
+        // create our shaders
+        var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+        var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);     
+
+        // Create the shader program object
+        var programObject = gl.createProgram();
+        if (programObject == 0) return false;
+
+        // Store the shader program in the global user data (which is not 
+        // the best solution)
+        userData.shaderProgram = programObject;
+
+        // Attach our two shaders to the program
+        gl.attachShader (programObject, vertexShader);
+        gl.attachShader (programObject, fragmentShader);
+
+        // Link the program
+        gl.linkProgram(programObject);
+
+        return true;
+    }
+
+    function draw()
+    {
+        var gl = userData.gl;
+
+        var vertices = [ 0.0,  0.5,  0.0,
+                        -0.5, -0.5,  0.0,
+                         0.5, -0.5,  0.0  ];
+
+        // Set up the viewport
+        gl.viewport(0, 0, 200, 150);
+
+        // Clear the depth buffer
+        gl.clear(gl.DEPTH_BUFFER_BIT);
+
+        // Use the program object we created in init()
+        gl.useProgram(userData.shaderProgram);
+        gl.enableVertexAttribArray(0);
+
+        // Create a buffer for the vertices
+        var verticeBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, verticeBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(vertices), gl.STATIC_DRAW);
+
+        // Load the vertex data
+        gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);    
+
+        // Do the draw, as triangles
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+	</script>
+	
+	<p> &nbsp; 
+	<input type="button" id="color" value="Render frame" onclick="toggleRendering();" />
+	</p>
     
     </body>
 </html>
