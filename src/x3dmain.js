@@ -89,7 +89,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     };
 
     this.createHTMLCanvas = function(x3dElem) {
-        x3dom.debug.logInfo("Creating canvas for X3D element...");
+        x3dom.debug.logInfo("Creating canvas for (X)3D element...");
         var canvas = document.createElement('canvas');
         canvas.setAttribute("class", "x3dom-canvas");
         this.canvasDiv.appendChild(canvas);
@@ -125,9 +125,8 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
         else {
             // If the X3D element does not have an id... do what?
-            // For now check the number of canvas elements in the page
-            // and use length+1 for creating a (hopefully) unique id
-            var index = (document.getElementsByTagName('X3D').length+1);
+            // For now check the date for creating a (hopefully) unique id
+            var index = new Date().getTime();
             this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
             this.canvasDiv.id = "x3dom-" + index + "-canvasdiv";
             canvas.id = "x3dom-" + index + "-canvas";
@@ -331,7 +330,7 @@ x3dom.userAgentFeature = {
 
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagName('X3D');
-        // var x3dsLC = document.getElementsByTagName('x3d');        
+        var w3sg = document.getElementsByTagName('webSG');
 
 		// active hacky DOMAttrModified workaround to webkit 
 		if ( window.navigator.userAgent.match(/webkit/i)) {
@@ -341,9 +340,13 @@ x3dom.userAgentFeature = {
 			
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) { return n; });
-        // x3ds = x3ds.concat( Array.map(x3dsLC, function (n) { return n; }) );        
-		
+        w3sg = Array.map(w3sg, function (n) { return n; });
+        
         var i=0;
+        for (i=0; i<w3sg.length; i++) {
+            x3ds.push(w3sg[i]);
+        }
+		
 		var activateLog = false;
 		for (i=0; i<x3ds.length; i++) {
 			var showLog = x3ds[i].getAttribute("showLog");
@@ -365,7 +368,8 @@ x3dom.userAgentFeature = {
                                 " Rev. " + x3dom.versionInfo.svnrevision);
         }
         
-		x3dom.debug.logInfo("Found " + x3ds.length + " X3D nodes...");
+		x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + 
+                " X3D and " + w3sg.length + " (experimental) WebSG nodes...");
 
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
@@ -411,7 +415,7 @@ x3dom.userAgentFeature = {
             x3dom.canvases.push(x3dcanvas);
             
             var t1 = new Date().getTime() - t0;
-            x3dom.debug.logInfo("Time for setup and init of x3d element no. " + i + ": " + t1 + " ms.");
+            x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
         }
         
         var ready = (function(eventType)

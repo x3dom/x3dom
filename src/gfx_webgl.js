@@ -1937,7 +1937,7 @@ x3dom.gfx_webgl = (function () {
 	{
 		var gl = this.ctx3d;
         
-        if (gl === null || scene === null || scene.drawableObjects === null)
+        if (gl === null || scene === null || !scene || scene.drawableObjects === null)
         {
             return;
         }

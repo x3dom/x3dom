@@ -3,56 +3,64 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-		<title>Hello World</title>
+		<title>Hello Web3D</title>
         <link rel="stylesheet" type="text/css" href="x3dom.css" />
 	</head>
-       
-<body >
-
-<webSG>
+    <body>
+    <h1>Experimental WebSG Example</h1>
+    
+<webSG xmlns='http://www.instantreality.org/specifications/websg-namespace' showStat='true' showLog='true' width='500px' height='400px'>
     <scene id='scene'>
       <shape>
-        <appearance sortType='opaque' >
+        <appearance sortType='opaque'>
 		  <imageTexture>
-		    <img src='foo.jpg' />
+		    <img src='ogl.jpg' />
 		  </imageTexture>
           <composedShader >
-            <field name='diffuseColor' type='SFVec3f' value='yellow'></field>
-            <shaderPart type='vertex' >
-	              varying vec3 fragNormal;
+            <field name='diffuseColor' type='SFVec3f' value='1 1 0'></field>
+            <shaderPart type='vertex'>
                   attribute vec3 position;
                   attribute vec3 normal;
+                  attribute vec2 texcoord;
                   uniform mat4 modelViewProjectionMatrix;
+	              varying vec3 fragNormal;
+                  varying vec2 fragTexCoord;
+                  
                   void main()
                   {
                       fragNormal = normal;
+                      fragTexCoord = texcoord;
                       gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
                   }
             </shaderPart>
-            <shaderPart type='fragment' url='"varying vec3 fragNormal;
+            <shaderPart type='fragment'>
+                  uniform sampler2D tex;
+	              varying vec3 fragNormal;
+                  varying vec2 fragTexCoord;
+                  
                   void main()
                   {
                       vec3 color = (normalize(fragNormal) + 1.0) * 0.5;
-                      gl_FragColor = vec4(color, 1.0);
-                  }"'>
+                      vec4 texCol = texture2D(tex, vec2(fragTexCoord.x, 1.0-fragTexCoord.y));
+                      gl_FragColor = vec4(color*texCol.rgb, texCol.a);
+                  }
             </shaderPart>
           </composedShader>
         </appearance>
-        <mesh primType="triangle" index="0 1 2 3 4 5 6 7 8 9" >
-			<floatVertexAttribute name='position' numComponents='3' value='89, 34, 34' ></floatVertexAttribute>		
+        <mesh primType="triangle" index="0 1 2, 0 2 3" >
+			<floatVertexAttribute name='position' numComponents='3' value='-4 -3 0, 4 -3 0, 4 3 0, -4 3 0'></floatVertexAttribute>		
+            <floatVertexAttribute name='normal' numComponents='3' value='-0.57735 -0.57735 0.57735, 0.57735 -0.57735 0.57735, 0.57735 0.57735 0.57735, -0.57735 0.57735 0.57735'></floatVertexAttribute>
+            <floatVertexAttribute name='texcoord' numComponents='2' value='0 0, 1 0, 1 1, 0 1'></floatVertexAttribute>
 		</mesh>
       </shape>
     </scene>
 </webSG>
 	
-	
-				<script type="text/javascript" src="x3dmain.js"></script>
-			    <script type="text/javascript" src="debug.js"></script>
-				<script type="text/javascript" src="gfx_webgl.js"></script>
-				<script type="text/javascript" src="x3d.js"></script>
-				<script type="text/javascript" src="fields.js"></script>	
-
-
-		</body>
-		</html>
-
+    <script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+    <script type="text/javascript" src="gfx_webgl.js"></script>
+    <script type="text/javascript" src="x3d.js"></script>
+    <script type="text/javascript" src="fields.js"></script>
+    
+    </body>
+</html>
