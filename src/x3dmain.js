@@ -157,7 +157,8 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.fps_t0 = new Date().getTime();
     this.gl = this.initContext(this.canvas);
     this.doc = null;
-
+    
+    this.hasRuntime = x3dElem.hasRuntime;
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = (this.showStat !== null && this.showStat == "true") ? this.createStatDiv() : null;
 	
@@ -308,12 +309,24 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 	
     this.doc.onload = function () {
         x3dom.debug.logInfo("loaded [" + uri + "]");
-        setInterval( function() {
-                x3dCanvas.tick();
-            }, 
-            16	// use typical monitor frequency as bound
-        );
+        
+        if (x3dCanvas.hasRuntime)
+        {
+            setInterval( function() {
+                    x3dCanvas.tick();
+                }, 
+                16	// use typical monitor frequency as bound
+            );
+        }
     };
+    
+    if (!x3dCanvas.hasRuntime)
+    {
+        this.x3dElem.render = function() {
+            x3dCanvas.doc.render(x3dCanvas.gl);
+        };
+        this.x3dElem.context = x3dCanvas.gl.ctx3d;
+    }
     
     this.doc.onerror = function () { alert('Failed to load X3D document'); };
     this.doc.load(uri, sceneElemPos);
@@ -339,8 +352,8 @@ x3dom.userAgentFeature = {
 		}
 			
         // Convert the collection into a simple array (is this necessary?)
-        x3ds = Array.map(x3ds, function (n) { return n; });
-        w3sg = Array.map(w3sg, function (n) { return n; });
+        x3ds = Array.map(x3ds, function (n) { n.hasRuntime = true;  return n; });
+        w3sg = Array.map(w3sg, function (n) { n.hasRuntime = false; return n; });
         
         var i=0;
         for (i=0; i<w3sg.length; i++) {
@@ -424,13 +437,13 @@ x3dom.userAgentFeature = {
             
             if (document.createEvent)
             {
-                evt = document.createEvent("Events");   
-                evt.initEvent(eventType, true, true);   
-                document.dispatchEvent(evt);   
+                evt = document.createEvent("Events");    
+                evt.initEvent(eventType, true, true);     
+                document.dispatchEvent(evt);              
             }
             else if (document.createEventObject)   
             {
-                evt = document.createEventObject();   
+                evt = document.createEventObject();
                 document.fireEvent('on' + eventType, evt);   
             }
         })('load');

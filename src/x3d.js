@@ -962,11 +962,25 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### Texture ### */
+// intermediate layer to avoid instantiating X3DTextureNode in web profile
+x3dom.registerNodeType(
+    "Texture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.Texture.superClass.call(this, ctx);
+        },
+        {
+        }
+    )
+);
+
 /* ### ImageTexture ### */
 x3dom.registerNodeType(
     "ImageTexture",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureNode,
+    defineClass(x3dom.nodeTypes.Texture,
         function (ctx) {
             x3dom.nodeTypes.ImageTexture.superClass.call(this, ctx);
         },
@@ -979,7 +993,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "MovieTexture",
     "Texturing",
-    defineClass(x3dom.nodeTypes.X3DTextureNode,
+    defineClass(x3dom.nodeTypes.Texture,
         function (ctx) {
             x3dom.nodeTypes.MovieTexture.superClass.call(this, ctx);
 			
@@ -1016,6 +1030,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.ComposedShader.superClass.call(this, ctx);
             
+            this.addField_MFNode('fields', x3dom.nodeTypes.Field);
             this.addField_MFNode('parts', x3dom.nodeTypes.ShaderPart);
             
             // shortcut to shader parts
@@ -4303,7 +4318,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
        
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", inserted node=" + child.tagName);
             //x3dom.debug.logInfo("MUTATION: " + child.translation + ", " + child.parentNode.tagName);
-                        
             //FIXME; get rid of scene._ctx
 
 			if (parent._nameSpace) {
