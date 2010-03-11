@@ -93,9 +93,15 @@ x3dom.X3DCanvas = function(x3dElem) {
         var canvas = document.createElement('canvas');
         canvas.setAttribute("class", "x3dom-canvas");
         this.canvasDiv.appendChild(canvas);
-                
+        this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
+        
+        // check if user wants to style the X3D element
+        var userStyle = x3dElem.getAttribute("style");
+        if (userStyle) {
+            this.canvasDiv.setAttribute("style", userStyle);
+        }
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
-
+        
         // Apply the width and height of the X3D element to the canvas 
         var x, y, w, h;
         if ((x = x3dElem.getAttribute("x")) !== null) {
@@ -117,9 +123,8 @@ x3dom.X3DCanvas = function(x3dElem) {
         
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
-        var id;
-        if ((id=x3dElem.getAttribute("id")) !== null) {
-            this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
+        var id = x3dElem.getAttribute("id");
+        if (id !== null) {
             this.canvasDiv.id = "x3dom-" + id + "-canvasdiv";
             canvas.id = "x3dom-" + id + "-canvas";
         }
@@ -127,7 +132,6 @@ x3dom.X3DCanvas = function(x3dElem) {
             // If the X3D element does not have an id... do what?
             // For now check the date for creating a (hopefully) unique id
             var index = new Date().getTime();
-            this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
             this.canvasDiv.id = "x3dom-" + index + "-canvasdiv";
             canvas.id = "x3dom-" + index + "-canvas";
         }
@@ -308,7 +312,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     var x3dCanvas = this;
 	
     this.doc.onload = function () {
-        x3dom.debug.logInfo("loaded [" + uri + "]");
+        x3dom.debug.logInfo("loaded '" + uri + "'");
         
         if (x3dCanvas.hasRuntime)
         {
@@ -320,7 +324,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         }
     };
     
-    if (!x3dCanvas.hasRuntime)
+    //if (!x3dCanvas.hasRuntime)
     {
         this.x3dElem.render = function() {
             x3dCanvas.doc.render(x3dCanvas.gl);
