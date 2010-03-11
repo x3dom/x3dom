@@ -166,7 +166,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = (this.showStat !== null && this.showStat == "true") ? this.createStatDiv() : null;
 	
-	if (this.canvas !== null && this.gl !== null)
+	if (this.canvas !== null && this.gl !== null && this.hasRuntime)
 	{
 		// event handler for mouse interaction
 		this.canvas.mouse_dragging = false;
@@ -465,7 +465,9 @@ x3dom.userAgentFeature = {
     
     document.onkeypress = function(evt) {
         for (var i=0; i<x3dom.canvases.length; i++) {
-            x3dom.canvases[i].doc.onKeyPress(evt.charCode);
+            if (x3dom.canvases[i].hasRuntime) {
+                x3dom.canvases[i].doc.onKeyPress(evt.charCode);
+            }
         }
         return true;
     };

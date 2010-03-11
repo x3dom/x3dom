@@ -723,9 +723,31 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'name', "");
             this.addField_SFString(ctx, 'type', "");
 			this.addField_SFString(ctx, 'value', "");
+        },
+		{
+			fieldChanged: function(fieldName) {
+                var that = this;
+                if (fieldName === 'value') {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.fieldChanged(that._vf.name);
+                    });
+                }
+            }
         }
     )
 );
+
+/* ### Uniform ### */
+x3dom.registerNodeType( 
+    "Uniform",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.Field,
+        function (ctx) {
+            x3dom.nodeTypes.Uniform.superClass.call(this, ctx);
+        }
+    )
+);
+
 
 /* ### X3DAppearanceNode ### */
 x3dom.registerNodeType(
@@ -1060,6 +1082,37 @@ x3dom.registerNodeType(
                     }
                     else if (this._cf.parts.nodes[i]._vf.type.toLowerCase() == 'fragment') {
                         this._fragment = this._cf.parts.nodes[i];
+                    }
+                }
+                
+                var ctx = {};
+                n = this._cf.fields.nodes.length;
+                
+                for (i=0; i<n; i++)
+                {
+                    var fieldName = this._cf.fields.nodes[i]._vf.name;
+                    ctx.xmlNode = this._cf.fields.nodes[i]._xmlNode;
+                    ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
+                    
+                    var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
+                    var func = new Function('ctx', 'name', funcName);
+                    
+                    func.call(this, ctx, fieldName);
+                }
+            },
+            
+			fieldChanged: function(fieldName)
+            {
+                var i, n = this._cf.fields.nodes.length;
+                
+                for (i=0; i<n; i++)
+                {
+                    var name = this._cf.fields.nodes[i]._vf.name;
+                    
+                    if (name === fieldName)
+                    {
+                        this._vf[name].setValueByStr(this._cf.fields.nodes[i]._vf.value);
+                        break;
                     }
                 }
             }

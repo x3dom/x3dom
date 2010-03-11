@@ -1742,6 +1742,19 @@ x3dom.gfx_webgl = (function () {
 				sp.alpha = 1.0 - mat._vf.transparency;
 			}
             
+            var userShader = shape._cf.appearance.node._shader;
+            if (userShader) {
+                for (var fName in userShader._vf) {
+                	if (userShader._vf.hasOwnProperty(fName) && fName !== 'language') {
+                    	var field = userShader._vf[fName];
+                        try {
+                            sp[fName] = field.toGL();
+                        }
+                        catch(noToGl) {}
+                    }
+                }
+            }
+            
             // transformation matrices
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();

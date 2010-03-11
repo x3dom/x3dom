@@ -6,7 +6,7 @@ body {
 
 .x3dom-canvas {
     position: relative;
-    border: 0px;
+    border: 1px solid #000;
     margin: 0;
     cursor: pointer;
 }
