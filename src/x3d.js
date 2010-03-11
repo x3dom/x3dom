@@ -3935,12 +3935,22 @@ x3dom.registerNodeType(
             {
                 var that = this;
                 
+                try {
+                    if ( obj._xmlNode.hasAttribute('onclick') ||
+                        (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') ) {
+                        var funcStr = obj._xmlNode.getAttribute('onclick');
+                        var func = new Function('hitPnt', funcStr);
+                        func.call(obj, that._pick.toGL());
+                    }
+                }
+                catch(e) {}
+                
                 var recurse = function(obj) {
                     Array.forEach(obj._parentNodes, function (node) {
                         if (node._xmlNode && node._xmlNode.hasAttribute('onclick')) {
                             var funcStr = node._xmlNode.getAttribute('onclick');
                             var func = new Function('hitPnt', funcStr);
-                            func.call(node, that._pick);
+                            func.call(node, that._pick.toGL());
                         }
                         if (x3dom.isa(node, x3dom.nodeTypes.Anchor)) {
                             node.handleTouch();
@@ -3952,16 +3962,6 @@ x3dom.registerNodeType(
                 };
                 
                 recurse(obj);
-                
-                try {
-                    if ( obj._xmlNode.hasAttribute('onclick') ||
-                        (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') ) {
-                        var funcStr = obj._xmlNode.getAttribute('onclick');
-                        var func = new Function('hitPnt', funcStr);
-                        func.call(obj, that._pick);
-                    }
-                }
-                catch(e) {}
             },
             
             onMousePress: function (x, y, buttonState)
