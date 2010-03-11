@@ -19,6 +19,7 @@
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
+                <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);">
 				<Transform DEF="coneTrafo" translation="-4.5 0 0">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
@@ -56,8 +57,9 @@
 						<Cylinder DEF="cylinder" radius="1.0" height="2.0" />
 					</Shape>
 				</Transform>
+                </Group>
                 
-                <Transform DEF="foo" scale=".15 .15 .15">
+                <Transform id="bar" DEF="foo" scale=".15 .15 .15">
 					<Shape DEF="sphereShape">
 						<Appearance>
 							<Material diffuseColor="olivedrab" specularColor="peachpuff" />
@@ -65,7 +67,6 @@
 						<Sphere USE="sphere" />
 					</Shape>
                 </Transform>
-                <ROUTE fromNode='scene' fromField='pickPos_changed' toNode='foo' toField='translation'/>
                 
 				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
 			</Scene>
