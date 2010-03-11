@@ -17,7 +17,7 @@
 		    <img src='ogl.jpg'>
 		  </texture>
           <composedShader>
-            <field name='diffuseColor' type='SFVec3f' value='1 1 0'></field>
+            <uniform name='diffuseColor' type='SFVec3f' value='1 1 0'></field>
             <shaderPart type='vertex'>
                   attribute vec3 position;
                   attribute vec3 normal;
@@ -43,7 +43,7 @@
                   {
                       vec3 color = (normalize(fragNormal) + 1.0) * 0.5;
                       vec4 texCol = texture2D(tex, vec2(fragTexCoord.x, 1.0-fragTexCoord.y));
-                      gl_FragColor = vec4(color*texCol.rgb, texCol.a);
+                      gl_FragColor = vec4(color*texCol.rgb*diffuseColor, texCol.a);
                   }
             </shaderPart>
           </composedShader>
@@ -64,7 +64,7 @@
     <script type="text/javascript" src="fields.js"></script>
     
     <script type="text/javascript">
-	var col = true;
+	var col = false;
     
     var userData = {
         shaderProgram: null,
@@ -76,15 +76,15 @@
 		var button = document.getElementById("color");
 		
 		col = !col;
-        /*
+        
 		if (col)
-			button.value = "Blue";
+			button.value = "Yellow";
 		else
 			button.value = "Red";
-        */
+        
         // Field update NYI
 		var mat = document.getElementsByName("diffuseColor")[0];
-		mat.setAttribute("value", (!col ? "0 0 1" : "1 0 0"));
+		mat.setAttribute("value", (!col ? "1 1 0" : "1 0 0"));
         
         var sg = document.getElementById("myGraph");
         
@@ -106,13 +106,10 @@
         // image/texture has not yet finished loading on document load
         // thus wait for a short while (by showing a message box) 
         // until rendering first frame
-        var render = function() {
-            alert("Finished loading scene-graph... now loading texture.");
-            sg.render();
-            draw();
-        };
+        alert("Finished loading scene-graph... now loading texture.");
         
-        window.setTimeout(render(), 1000000);
+        sg.render();
+        draw();
     };
     
     
@@ -205,7 +202,7 @@
 	</script>
 	
 	<p> &nbsp; 
-	<input type="button" id="color" value="Render frame" onclick="toggleRendering();" />
+	<input type="button" id="color" value="Render Frame" onclick="toggleRendering();" />
 	</p>
     
     </body>
