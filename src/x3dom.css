@@ -6,15 +6,13 @@ body {
 
 .x3dom-canvas {
     position: relative;
-    border: 1px solid #000;
+    border: 0px;
     margin: 0;
-    float: left;
     cursor: pointer;
 }
 
 .x3dom-canvasdiv {
     position: relative;
-    float: left;
 }
 
 .x3dom-statdiv {
@@ -28,7 +26,7 @@ body {
     font-size: 10px;
     width: 75px;
     height: 70px;
-    float: right;
+    border: 0px;
 }
 
 .x3dom-nox3d {
