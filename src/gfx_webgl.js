@@ -1750,7 +1750,9 @@ x3dom.gfx_webgl = (function () {
                         try {
                             sp[fName] = field.toGL();
                         }
-                        catch(noToGl) {}
+                        catch(noToGl) {
+                            sp[fName] = field;
+                        }
                     }
                 }
             }
@@ -1929,11 +1931,15 @@ x3dom.gfx_webgl = (function () {
         
         if (scene._visDbgBuf)
         {
-            gl.viewport(0, 3*this.canvas.height/4, this.canvas.width/4, this.canvas.height/4);
+            gl.viewport(0, 3*this.canvas.height/4, 
+                        this.canvas.width/4, this.canvas.height/4);
             scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             
-            gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, this.canvas.width/4, this.canvas.height/4);
-            scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
+            if (shadowIntensity > 0) {
+                gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
+                            this.canvas.width/4, this.canvas.height/4);
+                scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
+            }
         }
 		
 		t1 = new Date().getTime() - t0;
