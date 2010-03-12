@@ -14,7 +14,7 @@
 
     <h1>x3dom simple example</h1>
 	
-	<p class="case">Geometric primitive types
+	<p class="case">Geometric primitive types with picking
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="500px">
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
@@ -38,7 +38,7 @@
 					</Shape>
 				</Transform>
                 
-                <Anchor url="http://a4www.igd.fraunhofer.de/">
+                <Anchor url="http://www.igd.fraunhofer.de/igd-a4/">
 				<Transform DEF="sphereTrafo" translation="1.5 0 0">
 					<Shape DEF="sphereShape">
 						<Appearance DEF="sphereApp">
@@ -46,6 +46,16 @@
 						</Appearance>
 						<Sphere DEF="sphere" />
 					</Shape>
+                    <Transform scale="0.5 1 1" translation="0 0 1">
+                        <Shape>
+                          <Appearance>
+                            <Material DEF="txtMat" diffuseColor="olivedrab" specularColor="peachpuff" />
+                          </Appearance>
+                          <Text DEF='txt' string='"Go to IGD"' solid='false'>
+                            <FontStyle/>
+                          </Text>
+                        </Shape>
+                    </Transform>
 				</Transform>
                 </Anchor>
 				
@@ -60,11 +70,11 @@
                 </Group>
                 
                 <Transform id="bar" DEF="foo" scale=".15 .15 .15">
-					<Shape DEF="sphereShape">
+					<Shape>
 						<Appearance>
-							<Material diffuseColor="olivedrab" specularColor="peachpuff" />
+							<Material USE="txtMat" />
 						</Appearance>
-						<Sphere USE="sphere" />
+						<Sphere />
 					</Shape>
                 </Transform>
                 
