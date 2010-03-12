@@ -10,43 +10,71 @@
 <body>
 
     <h1>HTML Events on 3D objects</h1>
-	experimental onclick-Event on 3D-Objects <br />	
-	Just click on one of the objects <br />
-	This is still totally open for discussion <br />
-	The current state only shows what are we aiming at <br />
+	Experimental 'onclick' event on 3D objects (that is still totally open for discussion). <br />	
+	Just click on one of the objects... The current state only shows what are we aiming at. <br />
 
-	<p class="case">
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="false" x="0px" y="0px" width="400px" height="400px">
+	<p>
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="500px">
 			<Scene>
 				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
-				<Background skyColor='1 1 1' />
+				<Background skyColor='.95 .95 .95' />
 				
-				<Transform DEF="coneTrafo" translation="-2 0 0">
+                <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);">
+                
+				<Transform DEF="coneTrafo" translation="-4.5 0 0">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
-							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Box DEF="cone" onclick="alert('Red Box picked at position\n' + hitPnt);" />
+						<Cone DEF="cone" />
 					</Shape>
 				</Transform>
 				
-				<Transform DEF="boxTrafo" translation='2 0 0'>
+				<Transform DEF="boxTrafo" translation='-1.5 0 0'>
 					<Shape DEF="boxShape">
 						<Appearance DEF="boxApp"> 
-							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Box DEF="box" onclick="alert('Blue Box picked at position\n' + hitPnt);" />
+						<Box DEF="box" onclick="alert('Red Box picked at position\n' + hitPnt);" />
 					</Shape>
 				</Transform>
+                
+				<Transform DEF="sphereTrafo" translation="1.5 0 0">
+					<Shape DEF="sphereShape">
+						<Appearance DEF="sphereApp">
+							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Sphere DEF="sphere" onclick="alert('Blue Sphere picked at position\n' + hitPnt);" />
+					</Shape>
+				</Transform>
+				
+				<Transform DEF="cylinderTrafo" translation="4.5 0 0">
+					<Shape DEF="cylinderShape">
+						<Appearance DEF="cylinderApp">
+							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Cylinder DEF="cylinder" radius="1.0" height="2.0" />
+					</Shape>
+				</Transform>
+                
+                </Group>
+                
+                <Transform id="bar" DEF="foo" scale=".15 .15 .15">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="olivedrab" specularColor="peachpuff" />
+						</Appearance>
+						<Sphere />
+					</Shape>
+                </Transform>
                 
 			</Scene>
         </X3D>
 	</p>
 	
-	<p class="case"> &nbsp; </p>
+	<p> &nbsp; </p>
 	
 	<script type="text/javascript" src="x3dom.js"></script>
    
-
 </body>
 </html>

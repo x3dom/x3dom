@@ -3194,7 +3194,7 @@ x3dom.nodeTypes.Shape.idMap = {
                     val._objectID === obj._objectID) 
                 {
                     delete this.nodeID[prop];
-                    //x3dom.debug.logInfo(prop + " - " + val._objectID);
+                    x3dom.debug.logInfo("Unreg " + val._objectID);
                     // FIXME; handle node removal to unreg from map,
                     // and put free'd ID back to ID pool for reuse
                 }
@@ -4014,11 +4014,12 @@ x3dom.registerNodeType(
                 var that = this;
                 
                 try {
-                    if ( obj._xmlNode.hasAttribute('onclick') ||
-                        (obj = obj._cf.geometry.node)._xmlNode.hasAttribute('onclick') ) {
-                        var funcStr = obj._xmlNode.getAttribute('onclick');
+                    var anObj = obj;
+                    if ( anObj._xmlNode.hasAttribute('onclick') ||
+                        (anObj = anObj._cf.geometry.node)._xmlNode.hasAttribute('onclick') ) {
+                        var funcStr = anObj._xmlNode.getAttribute('onclick');
                         var func = new Function('hitPnt', funcStr);
-                        func.call(obj, that._pick.toGL());
+                        func.call(anObj, that._pick.toGL());
                     }
                 }
                 catch(e) {}
@@ -4114,6 +4115,12 @@ x3dom.registerNodeType(
                 }
             },
             
+            onMouseOut: function (x, y, buttonState)
+            {
+                this._lastX = x;
+                this._lastY = y;
+            },
+            
             onDoubleClick: function (x, y)
             {
                 var navi = this.getNavInfo();
@@ -4126,7 +4133,7 @@ x3dom.registerNodeType(
                 x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
             },
             
-            ondrag: function (x, y, buttonState) 
+            onDrag: function (x, y, buttonState) 
             {
                 var navi = this.getNavInfo();
                 if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
@@ -4446,13 +4453,14 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
     ctx.renderScene(this._scene, this._scene._updatePicking);
     
     if (this._scene && this._scene._pickingInfo.updated) {
+        // mouse release handling only possible after rendering has finished
         this._scene.onMouseRelease(this._scene._lastX, this._scene._lastY, 0);
     }
 };
 
-x3dom.X3DDocument.prototype.ondrag = function (x, y, buttonState) {
+x3dom.X3DDocument.prototype.onDrag = function (x, y, buttonState) {
     if (this._scene) {
-        this._scene.ondrag(x, y, buttonState);
+        this._scene.onDrag(x, y, buttonState);
     }
 };
 
@@ -4468,6 +4476,12 @@ x3dom.X3DDocument.prototype.onMouseRelease = function (x, y, buttonState) {
     }
 };
 
+x3dom.X3DDocument.prototype.onMouseOut = function (x, y, buttonState) {
+    if (this._scene) {
+        this._scene.onMouseOut(x, y, buttonState);
+    }
+};
+
 x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
     if (this._scene) {
         this._scene.onDoubleClick(x, y);
@@ -4479,6 +4493,12 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     //x3dom.debug.logInfo("pressed key " + charCode);
     switch (charCode)
     {
+        case  32: /* space */
+            {
+                x3dom.debug.logInfo("a: show all | d: show helper buffers | l: light view | " +
+                                    "m: toggle render mode | p: intersect type | r: reset view");
+            }
+            break;
         case  97: /* a, view all */ 
             {
                 this._scene.showAll();
