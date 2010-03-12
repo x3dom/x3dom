@@ -174,8 +174,6 @@ x3dom.X3DCanvas = function(x3dElem) {
 		this.canvas.mouse_drag_x = 0;
 		this.canvas.mouse_drag_y = 0;
 		
-		//document.oncontextmenu = function() { return false; }
-		
 		this.canvas.oncontextmenu = function(evt) {
 			evt.preventDefault();
 			evt.stopPropagation();
@@ -195,8 +193,8 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_dragging = true;
 			
 			if (evt.shiftKey) { this.mouse_button = 1; }
-			if (evt.ctrlKey) { this.mouse_button = 4; }
-			if (evt.altKey) { this.mouse_button = 2; }
+			if (evt.ctrlKey)  { this.mouse_button = 4; }
+			if (evt.altKey)   { this.mouse_button = 2; }
 			
 			this.parent.doc.onMousePress(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 			
@@ -223,7 +221,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_button = 0;
 			this.mouse_dragging = false;
 			
-			this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.onMouseOut(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 			
 			//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
 			evt.preventDefault();
@@ -252,18 +250,14 @@ x3dom.X3DCanvas = function(x3dElem) {
 				return;
             }
 			
-            // NOTE: dx and dy are not used, thus we can remove it [PE]
-			// var dx = evt.layerX - this.mouse_drag_x;
-			// var dy = evt.layerY - this.mouse_drag_y;
-			this.mouse_drag_x = evt.layerX;
+            this.mouse_drag_x = evt.layerX;
 			this.mouse_drag_y = evt.layerY;
 			
 			if (evt.shiftKey) { this.mouse_button = 1; }
-			if (evt.ctrlKey) { this.mouse_button = 4; }
-			if (evt.altKey) { this.mouse_button = 2; }
+			if (evt.ctrlKey)  { this.mouse_button = 4; }
+			if (evt.altKey)   { this.mouse_button = 2; }
 			
-			//this.parent.doc.ondrag(dx, dy, this.mouse_button);
-			this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 			
 			//window.status=this.id+' MOVE: '+dx+", "+dy;
 			evt.preventDefault();
@@ -272,9 +266,9 @@ x3dom.X3DCanvas = function(x3dElem) {
 		}, false);
 		
 		this.canvas.addEventListener('DOMMouseScroll', function (evt) {
-			//this.parent.doc.ondrag(0, 2*evt.detail, 2);
 			this.mouse_drag_y += 2 * evt.detail;
-			this.parent.doc.ondrag(this.mouse_drag_x, this.mouse_drag_y, 2);
+            
+			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, 2);
 			
 			window.status=this.id+' SCROLL: '+evt.detail;
 			evt.preventDefault();

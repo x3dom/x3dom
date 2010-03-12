@@ -1929,11 +1929,13 @@ x3dom.gfx_webgl = (function () {
 		gl.disable(gl.DEPTH_TEST);
 		//gl.flush();
         
-        if (scene._visDbgBuf)
+        if (scene._visDbgBuf !== undefined && scene._visDbgBuf)
         {
-            gl.viewport(0, 3*this.canvas.height/4, 
-                        this.canvas.width/4, this.canvas.height/4);
-            scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
+            if (scene._vf.pickMode.toLowerCase() === "idbuf") {
+                gl.viewport(0, 3*this.canvas.height/4, 
+                            this.canvas.width/4, this.canvas.height/4);
+                scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
+            }
             
             if (shadowIntensity > 0) {
                 gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
