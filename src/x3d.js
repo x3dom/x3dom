@@ -104,7 +104,6 @@ x3dom.NodeNameSpace = function (name) {
 	this.name = name;
 	this.baseURL = "";
 	this.defMap = {};
-    this.idMap = {};
 	this.parent = null;
 	this.childSpaces = [];
 };
@@ -477,8 +476,8 @@ x3dom.registerNodeType(
 		},
 
 	    findX3DDoc: function () {
-			return findParentProperty("_x3dDoc");
-        } 
+			return this.findParentProperty("_x3dDoc");
+        },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
         collectDrawableObjects: function (transform, out) {
@@ -3147,7 +3146,7 @@ x3dom.registerNodeType(
 				if (!this._cf.appearance.node) {
 					this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
 				}
-                this._nameSpace.idMap[this._objectID] = this;    //FIXME; handle node removal
+                x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
 			},
             
             collectDrawableObjects: function (transform, out) {
@@ -3180,7 +3179,29 @@ x3dom.registerNodeType(
         }
     )
 );
+
+/** Static class ID counter (needed for picking) */
 x3dom.nodeTypes.Shape.objectID = 0;
+
+/** Map for Shape node IDs (needed for picking) */
+x3dom.nodeTypes.Shape.idMap = {
+    nodeID: {},
+    remove: function(obj) {
+        for (var prop in this.nodeID) {
+            if (this.nodeID.hasOwnProperty(prop)) {
+                var val = this.nodeID[prop];
+                if (val._objectID  && obj._objectID && 
+                    val._objectID === obj._objectID) 
+                {
+                    delete this.nodeID[prop];
+                    //x3dom.debug.logInfo(prop + " - " + val._objectID);
+                    // FIXME; handle node removal to unreg from map,
+                    // and put free'd ID back to ID pool for reuse
+                }
+            }
+        }
+    }
+};
 
 // ### X3DGroupingNode ###
 x3dom.registerNodeType(
@@ -4025,6 +4046,12 @@ x3dom.registerNodeType(
             {
                 this._lastX = x;
                 this._lastY = y;
+            },
+            
+            onMouseRelease: function (x, y, buttonState)
+            {
+                this._lastX = x;
+                this._lastY = y;
                 
                 var avoidTraversal = (this._vf.pickMode.toLowerCase() === "idbuf");
                 var isect = false;
@@ -4085,12 +4112,6 @@ x3dom.registerNodeType(
                     this._pick = line.pos.add(line.dir.multiply(u));
                     //x3dom.debug.logInfo("No hit at position " + this._pick);
                 }
-            },
-            
-            onMouseRelease: function (x, y, buttonState)
-            {
-                this._lastX = x;
-                this._lastY = y;
             },
             
             onDoubleClick: function (x, y)
@@ -4425,7 +4446,7 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
     ctx.renderScene(this._scene, this._scene._updatePicking);
     
     if (this._scene && this._scene._pickingInfo.updated) {
-        this._scene.onMousePress(this._scene._lastX, this._scene._lastY, 0);
+        this._scene.onMouseRelease(this._scene._lastX, this._scene._lastY, 0);
     }
 };
 

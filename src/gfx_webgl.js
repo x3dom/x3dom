@@ -1638,10 +1638,10 @@ x3dom.gfx_webgl = (function () {
                 //x3dom.debug.logInfo(pickPos + " / " + objId);
                 
                 if (objId > 0) {
-                    //x3dom.debug.logInfo(scene._nameSpace.idMap[objId]._DEF + "/" +
-                    //            scene._nameSpace.idMap[objId]._xmlNode.localName);
+                    //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
+                    //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
                     scene._pickingInfo.pickPos = pickPos;
-                    scene._pickingInfo.pickObj = scene._nameSpace.idMap[objId];
+                    scene._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
                 }
                 scene._pickingInfo.updated = true;               
             }
