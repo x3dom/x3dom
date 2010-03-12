@@ -476,6 +476,10 @@ x3dom.registerNodeType(
 			return value;
 		},
 
+	    findX3DDoc: function () {
+			return findParentProperty("_x3dDoc");
+        } 
+
         // Collects array of [transform matrix, node] for all objects that should be drawn.
         collectDrawableObjects: function (transform, out) {
             // TODO: culling etc.
@@ -4397,6 +4401,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 	var nameSpace = new x3dom.NodeNameSpace("scene");
     var scene = nameSpace.setupTree(sceneElem);
     
+    // link scene and x3dDocument
+    scene._x3dDoc = doc;
     this._scene = scene;
 	
 	// create view 
