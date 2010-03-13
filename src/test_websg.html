@@ -17,7 +17,8 @@
 		    <img src='ogl.jpg'>
 		  </texture>
           <composedShader>
-            <field name='diffuseColor' type='SFVec3f' value='1 1 0'></field>
+            <uniform name='tex' type='SFInt32' value='0'></uniform>
+            <uniform name='diffuseColor' type='SFVec3f' value='#ffff00'></uniform>
             <shaderPart type='vertex'>
                   attribute vec3 position;
                   attribute vec3 normal;
@@ -84,13 +85,13 @@
         
         // Field update NYI
 		var mat = document.getElementsByName("diffuseColor")[0];
-		mat.setAttribute("value", (!col ? "1 1 0" : "1 0 0"));
+		mat.setAttribute("value", (!col ? "#ffff00" : "#ff0000"));
         
         var sg = document.getElementById("myGraph");
         
-        sg.render();    //render scene-graph
+        sg.render();    //render webSG scene-graph
         
-        draw();         //render tri
+        draw();         //render tri (gl code below)
         
 		return false;
 	};
@@ -145,7 +146,7 @@
         var fragmentShaderSource =
          "void main()                   \n" +
          "{                             \n" +
-         "  gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0); \n" +
+         "  gl_FragColor = vec4(1.0, 0.3, 0.1, 1.0); \n" +
          "} ";
 
         // create our shaders

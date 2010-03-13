@@ -508,8 +508,15 @@ x3dom.fields.SFVec3f.MAX = function() {
 };
 
 x3dom.fields.SFVec3f.parse = function (str) {
-    var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
-    return new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]);
+    try {
+        var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
+        return new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]);
+    }
+    catch (e) {
+        // allow automatic type conversion as is convenient for shaders
+        var c = x3dom.fields.SFColor.colorParse(str);
+        return new x3dom.fields.SFVec3f(c.r, c.g, c.b);
+    }
 };
 
 x3dom.fields.SFVec3f.prototype.setValues = function (that) {
@@ -577,10 +584,19 @@ x3dom.fields.SFVec3f.prototype.toString = function () {
 };
 
 x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
-    var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
-    this.x = +m[1];
-    this.y = +m[2];
-    this.z = +m[3];
+    try {
+        var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
+        this.x = +m[1];
+        this.y = +m[2];
+        this.z = +m[3];
+    }
+    catch (e) {
+        // allow automatic type conversion as is convenient for shaders
+        var c = x3dom.fields.SFColor.colorParse(str);
+        this.x = c.r;
+        this.y = c.g;
+        this.z = c.b;
+    }
     return this;
 };
 
