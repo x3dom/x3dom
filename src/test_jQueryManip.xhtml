@@ -18,25 +18,28 @@
 <body style="background-color:#E0E0E0;">
 
     <h1>x3dom jQuery DOM manipulation example</h1>
+    <p>In this example the runtime is disabled and the scene is only rendered when the DOM state changes.</p>
 
-    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" x="0px" y="0px" width="320px" height="240px" style="float:left;">
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" showLog="false" x="0px" y="0px" width="320px" height="240px" style="float:left;" runtimeEnabled="false">
         <Scene DEF='scene'>
             <Viewpoint position='0 0 10' />
-            <Transform id='trans'>
+            <Transform translation="-1 0 0" rotation="0.8 0.2 0.1 1">
+              <Transform id='trans'>
                 <Shape>
                     <Appearance>
                         <Material id='mat' DEF='mat' diffuseColor='0 0 0' />	
                     </Appearance>
                     <Box DEF='box'/>
                 </Shape>
-            </Transform>
-            <Transform id='trans2' translation='2 0 0'>
+              </Transform>
+              <Transform id='trans2' translation='2 0 0'>
                 <Shape>
                     <Appearance>
                         <Material DEF='mat2' diffuseColor='1 0 0' />	
                     </Appearance>
                     <Box DEF='box2'/>
                 </Shape>
+              </Transform>
             </Transform>
         </Scene>
     </X3D>
