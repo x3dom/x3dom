@@ -162,7 +162,14 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.gl = this.initContext(this.canvas);
     this.doc = null;
     
-    this.hasRuntime = x3dElem.hasRuntime;
+    var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
+    if (runtimeEnabled !== null) {
+        this.hasRuntime = (runtimeEnabled.toLowerCase() == "true");
+    }
+    else {
+        this.hasRuntime = x3dElem.hasRuntime;
+    }
+    
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = (this.showStat !== null && this.showStat == "true") ? this.createStatDiv() : null;
 	
@@ -303,6 +310,7 @@ x3dom.X3DCanvas.prototype.tick = function()
     */
 x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
+    this.doc._X3DCanvas = this;     // backlink to parent
     var x3dCanvas = this;
 	
     this.doc.onload = function () {
@@ -315,6 +323,10 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
                 }, 
                 16	// use typical monitor frequency as bound
             );
+        }
+        else
+        {
+            x3dCanvas.tick();
         }
     };
     
@@ -361,7 +373,7 @@ x3dom.userAgentFeature = {
 		var activateLog = false;
 		for (i=0; i<x3ds.length; i++) {
 			var showLog = x3ds[i].getAttribute("showLog");
-			if (showLog !== null && showLog == "true")
+			if (showLog !== null && showLog.toLowerCase() == "true")
 			{
 				activateLog = true;
 				break;

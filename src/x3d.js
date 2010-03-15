@@ -164,6 +164,15 @@ x3dom.setElementAttribute = function(attrName, newVal)
 	//newVal = this.getAttribute(attrName);
 	
 	this._x3domNode.updateField(attrName, newVal);
+    
+    // experimental DOM-driven update
+    var doc = this._x3domNode.findX3DDoc();
+    if (doc && doc._X3DCanvas && !doc._X3DCanvas.hasRuntime) {
+        if (doc._X3DCanvas.statDiv) {
+            doc._X3DCanvas.statDiv.textContent = newVal;
+        }
+        doc.render(doc._X3DCanvas.gl);
+    }
 	
 	/* construct and fire an event
     if (newVal != prevVal) {
@@ -466,7 +475,7 @@ x3dom.registerNodeType(
 			
 			if (!value) {
 				for (var i = 0, n = this._parentNodes.length; i < n; i++) {
-					if ((value = this._parentNodes.findParentProperty(propertyName))) {
+					if ((value = this._parentNodes[i].findParentProperty(propertyName))) {
 						break;
 					}
 				}
