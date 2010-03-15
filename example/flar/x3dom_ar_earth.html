@@ -67,9 +67,7 @@
 				q[2][0] = -q[2][0];
 				q[2][1] = -q[2][1];
 				
-				myMatrixTrans.setAttribute('matrix', q);
-				
-				//$('#flash_receiver').html("MATRIX <br/>" + trace(q));
+				myMatrixTrans.setAttribute('matrix', q.toString());
     		}
 			
 			function get_js_viewMatrix(value) {
