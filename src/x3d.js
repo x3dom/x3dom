@@ -1189,6 +1189,7 @@ x3dom.Mesh.prototype._texCoords = [];
 x3dom.Mesh.prototype._colors    = [];
 x3dom.Mesh.prototype._indices   = [];
 
+x3dom.Mesh.prototype._numTexComponents = 2;
 x3dom.Mesh.prototype._lit = true;
 x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};
@@ -2107,13 +2108,17 @@ x3dom.registerNodeType(
                     hasNormal = false;
                 }
 
-                var texMode = "";
+                var texMode = "", numTexComponents = 2;
                 var texCoordNode = this._cf.texCoord.node;
                 if (texCoordNode) 
                 {
                     if (texCoordNode._vf.point) {
                         hasTexCoord = true;
                         texCoords = texCoordNode._vf.point;
+                        
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
+                            numTexComponents = 3;
+                        }
                     }
                     else if (texCoordNode._vf.mode) {
                         texMode = texCoordNode._vf.mode;
@@ -2160,6 +2165,7 @@ x3dom.registerNodeType(
                             t = 0;
                             continue;
                         }
+                        
                         if (hasNormalInd) {
                             x3dom.debug.assert(normalInd[i] != -1);
                         }
@@ -2362,6 +2368,7 @@ x3dom.registerNodeType(
                             t = 0;
                             continue;
                         }
+                        
                         switch (t) {
                         case 0: n0 = +indexes[i]; t = 1; break;
                         case 1: n1 = +indexes[i]; t = 2; break;
@@ -2380,6 +2387,7 @@ x3dom.registerNodeType(
                     }
                     if (hasTexCoord) {
                         this._mesh._texCoords = texCoords.toGL();
+                        this._mesh._numTexComponents = numTexComponents;
                     }
                     else {
                         this._mesh.calcTexCoords(texMode);
@@ -2445,6 +2453,154 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### IndexedTriangleSet ### */
+x3dom.registerNodeType(
+    "IndexedTriangleSet",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.IndexedTriangleSet.superClass.call(this, ctx);
+            
+			this.addField_SFBool(ctx, 'colorPerVertex', true);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
+            
+            this.addField_MFInt32(ctx, 'index', []);
+            
+            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
+            this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
+            this.addField_SFNode('color', x3dom.nodeTypes.Color);
+            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
+        },
+        {
+            nodeChanged: function()
+            {
+                var time0 = new Date().getTime();
+                
+                // TODO; implement colorPerVertex/normalPerVertex
+                var colPerVert = this._vf.colorPerVertex;
+                var normPerVert = this._vf.normalPerVertex;
+                
+                var indexes = this._vf.index;
+                
+                var hasNormal = false, hasTexCoord = false, hasColor = false;
+                var positions, normals, texCoords, colors;
+                
+                var coordNode = this._cf.coord.node;
+                x3dom.debug.assert(coordNode);
+                positions = coordNode._vf.point;
+                
+                var normalNode = this._cf.normal.node;
+                if (normalNode) {
+                    hasNormal = true;
+                    normals = normalNode._vf.vector;
+                }
+                else {
+                    hasNormal = false;
+                }
+
+                var texMode = "", numTexComponents = 2;
+                var texCoordNode = this._cf.texCoord.node;
+                if (texCoordNode) {
+                    if (texCoordNode._vf.point) {
+                        hasTexCoord = true;
+                        texCoords = texCoordNode._vf.point;
+                        
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
+                            numTexComponents = 3;
+                        }
+                    }
+                    else if (texCoordNode._vf.mode) {
+                        texMode = texCoordNode._vf.mode;
+                    }
+                }
+                else {
+                    hasTexCoord = false;
+                }
+
+                var colorNode = this._cf.color.node;
+                if (colorNode) {
+                    hasColor = true;
+                    colors = colorNode._vf.color;
+                }
+                else {
+                    hasColor = false;
+                }
+
+                this._mesh._indices = indexes.toGL();
+                this._mesh._positions = positions.toGL();
+                
+                if (hasNormal) {
+                    this._mesh._normals = normals.toGL();
+                }
+                else {
+                    this._mesh.calcNormals(this._vf.creaseAngle);
+                }
+                if (hasTexCoord) {
+                    this._mesh._texCoords = texCoords.toGL();
+                    this._mesh._numTexComponents = numTexComponents;
+                }
+                else {
+                    this._mesh.calcTexCoords(texMode);
+                }
+                if (hasColor) {
+                    this._mesh._colors = colors.toGL();
+                }
+                
+                this._mesh._invalidate = true;
+                
+                var time1 = new Date().getTime() - time0;
+                //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                var pnts;
+                var i, n;
+                
+                if (fieldName == "coord")
+                {
+                    // TODO; multi-index with different this._mesh._indices
+                    pnts = this._cf.coord.node._vf.point;
+                    n = pnts.length;
+                    
+                    this._mesh._positions = [];
+                    
+                    // TODO; optimize (is there a memcopy?)
+                    for (i=0; i<n; i++)
+                    {
+						this._mesh._positions.push(pnts[i].x);
+						this._mesh._positions.push(pnts[i].y);
+						this._mesh._positions.push(pnts[i].z);
+                    }
+                    
+                    this._mesh._invalidate = true;
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                    });
+                }
+                else if (fieldName == "color")
+                {
+                    pnts = this._cf.color.node._vf.color;
+                    n = pnts.length;
+                    
+                    this._mesh._colors = [];
+                    
+                    for (i=0; i<n; i++)
+                    {
+						this._mesh._colors.push(pnts[i].r);
+						this._mesh._colors.push(pnts[i].g);
+						this._mesh._colors.push(pnts[i].b);
+                    }
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
+                    });
+                }
+            }
+        }
+    )
+);
 
 /* ### X3DGeometricPropertyNode ### */
 x3dom.registerNodeType(
@@ -2485,6 +2641,19 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.X3DTextureCoordinateNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+/* ### TextureCoordinate3D ### */
+x3dom.registerNodeType(
+    "TextureCoordinate3D",
+    "Texturing3D",
+    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
+        function (ctx) {
+            x3dom.nodeTypes.TextureCoordinate3D.superClass.call(this, ctx);
+            
+            this.addField_MFVec3f(ctx, 'point', []);
         }
     )
 );
@@ -4080,7 +4249,6 @@ x3dom.registerNodeType(
                             this._pick.setValues(this._pickingInfo.pickPos);
                             this._pickingInfo.pickObj = null;
                             
-                            this.postMessage('pickPos_changed', this._pick);
                             this.checkEvents(obj);
                             
                             x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
@@ -4103,7 +4271,6 @@ x3dom.registerNodeType(
                     {
                         this._pick.setValues(line.hitPoint);
                         
-                        this.postMessage('pickPos_changed', this._pick);
                         this.checkEvents(obj);
                         
                         x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
