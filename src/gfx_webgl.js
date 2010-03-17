@@ -920,6 +920,7 @@ x3dom.gfx_webgl = (function () {
 		}
 		else 
 		{
+            var context = this;
 			var tex = shape._cf.appearance.node._cf.texture.node;
             
             shape.updateTexture = function(tex)
@@ -984,6 +985,11 @@ x3dom.gfx_webgl = (function () {
                     // texture update when the video is finished playing
                     tex._video.addEventListener("ended", videoDone, true);
                 }
+                else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
+                {
+                    texture = context.loadCubeMap(gl, tex.getTexUrl());
+                    that._webgl.texture = texture;
+                }
                 else
                 {
                     var image = new Image();
@@ -1005,10 +1011,6 @@ x3dom.gfx_webgl = (function () {
                 }
             };
 			
-			if (tex) {
-                shape.updateTexture(tex);
-			}
-            
 			shape._webgl = {
 				positions: shape._cf.geometry.node._mesh._positions,
 				normals: shape._cf.geometry.node._mesh._normals,
@@ -1018,6 +1020,10 @@ x3dom.gfx_webgl = (function () {
 				//indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
 				buffers: [{},{},{},{},{}]
 			};
+            
+            if (tex) {
+                shape.updateTexture(tex);
+			}
             
             if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
                 shape._webgl.primType = gl.POINTS;
@@ -1495,7 +1501,7 @@ x3dom.gfx_webgl = (function () {
                 gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
             }
             catch (e) {
-                x3dom.debug.logException(shape._DEF + " renderShadowPass(): " + e);
+                x3dom.debug.logException(shape._DEF + " renderPickingPass(): " + e);
             }
             
 			if (sp.position !== undefined) {
@@ -1773,16 +1779,31 @@ x3dom.gfx_webgl = (function () {
                     wrapT = gl.CLAMP_TO_EDGE;
                 }
                 
-				gl.enable(gl.TEXTURE_2D);
-                gl.activeTexture(gl.TEXTURE0);
-				gl.bindTexture(gl.TEXTURE_2D,shape._webgl.texture);
-                
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-				//gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,wrapS);
-				gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,wrapT);
-				//gl.generateMipmap(gl.TEXTURE_2D);
+                if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode) && 
+                    shape._webgl.texture.textureCubeReady)
+                {
+                    gl.enable(gl.TEXTURE_CUBE_MAP);
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture);
+                    
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrapS);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrapT);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                }
+                else
+                {
+                    gl.enable(gl.TEXTURE_2D);
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture);
+                    
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    //gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
+                    //gl.generateMipmap(gl.TEXTURE_2D);
+                }
                 
                 if (shape._cf.appearance.node._cf.textureTransform.node !== null)
                 {
@@ -1899,8 +1920,19 @@ x3dom.gfx_webgl = (function () {
 			
 			if (shape._webgl.texture !== undefined && shape._webgl.texture)
 			{
-                gl.activeTexture(gl.TEXTURE0);
-				gl.bindTexture(gl.TEXTURE_2D, null);
+                if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode) && 
+                    shape._webgl.texture.textureCubeReady)
+                {
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                    gl.disable(gl.TEXTURE_CUBE_MAP);
+                }
+                else
+                {
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                }
+                
                 if (shadowIntensity > 0) 
                 {
                     gl.activeTexture(gl.TEXTURE1);

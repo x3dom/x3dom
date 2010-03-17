@@ -999,7 +999,7 @@ x3dom.registerNodeType(
 /* ### Texture ### */
 // intermediate layer to avoid instantiating X3DTextureNode in web profile
 x3dom.registerNodeType(
-    "Texture",
+    "Texture",      // X3DTexture2DNode
     "Texturing",
     defineClass(x3dom.nodeTypes.X3DTextureNode,
         function (ctx) {
@@ -1039,6 +1039,52 @@ x3dom.registerNodeType(
             this._intervalID = 0;
         },
         {
+        }
+    )
+);
+
+/* ### X3DEnvironmentTextureNode ### */
+x3dom.registerNodeType(
+    "X3DEnvironmentTextureNode",
+    "CubeMapTexturing",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DEnvironmentTextureNode.superClass.call(this, ctx);
+        },
+        {
+            getTexUrl: function() {
+                return [];
+            }
+        }
+    )
+);
+
+/* ### ComposedCubeMapTexture ### */
+x3dom.registerNodeType(
+    "ComposedCubeMapTexture",
+    "CubeMapTexturing",
+    defineClass(x3dom.nodeTypes.X3DEnvironmentTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.ComposedCubeMapTexture.superClass.call(this, ctx);
+            
+            this.addField_SFNode('back',   x3dom.nodeTypes.Texture);
+            this.addField_SFNode('front',  x3dom.nodeTypes.Texture);
+            this.addField_SFNode('bottom', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('top',    x3dom.nodeTypes.Texture);
+            this.addField_SFNode('left',   x3dom.nodeTypes.Texture);
+            this.addField_SFNode('right',  x3dom.nodeTypes.Texture);
+        },
+        {
+            getTexUrl: function() {
+                return [
+                    this._nameSpace.getURL(this._cf.back.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.front.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.bottom.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.left.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.right.node._vf.url[0])
+                ];
+            }
         }
     )
 );
