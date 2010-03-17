@@ -4,15 +4,13 @@ body {
 	font-size: 12px;
 }
 
-.x3dom-canvas {
+.x3dom-canvas {}
+
+.x3dom-canvasdiv {
     position: relative;
     border: 1px solid #000;
     margin: 0;
     cursor: pointer;
-}
-
-.x3dom-canvasdiv {
-    position: relative;
 }
 
 .x3dom-statdiv {

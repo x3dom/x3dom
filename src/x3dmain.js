@@ -99,6 +99,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         var userStyle = x3dElem.getAttribute("style");
         if (userStyle) {
             this.canvasDiv.setAttribute("style", userStyle);
+            //canvas.setAttribute("style", userStyle);
         }
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
         

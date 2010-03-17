@@ -1117,7 +1117,8 @@ x3dom.gfx_webgl = (function () {
             gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
             
-            gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
+            gl.vertexAttribPointer(sp.texcoord, 
+                shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
             //gl.enableVertexAttribArray(sp.texcoord);
             
             delete texCoords;
@@ -1850,7 +1851,8 @@ x3dom.gfx_webgl = (function () {
 			{
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[3]);
 				
-				gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
+				gl.vertexAttribPointer(sp.texcoord, 
+                    shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.texcoord);
 			}
 			if (sp.color !== undefined)
