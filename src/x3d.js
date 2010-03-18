@@ -4476,7 +4476,8 @@ x3dom.registerNodeType(
 
 				var xhr = new XMLHttpRequest();
 				xhr.overrideMimeType('text/xml');   //application/xhtml+xml
-
+				this._nameSpace.doc.downloadCount += 1;
+				
 				xhr.onreadystatechange = function () {
 					if (xhr.readyState == 4) {
 						if (xhr.responseXML.documentElement.localName == 'parsererror') {
@@ -4523,6 +4524,7 @@ x3dom.registerNodeType(
 					}
 					*/
 
+					that._nameSpace.doc.downloadCount -= 1;
 					that._nameSpace.doc.needRender = true;
 					x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
 				};
@@ -4543,6 +4545,7 @@ x3dom.X3DDocument = function(canvas, ctx) {
     this.ctx = ctx;
 	this.needRender = true;
 	this.animNode = [];
+	this.downloadCount = 0;
     this.onload = function () {};
     this.onerror = function () {};
 };

@@ -311,7 +311,7 @@ x3dom.X3DCanvas.prototype.tick = function()
 		}
 		else {
 			if (this.statDiv) {
-				this.statDiv.textContent = '';
+				this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
 			}
 		}
 	}
@@ -488,6 +488,7 @@ x3dom.userAgentFeature = {
         for (var i=0; i<x3dom.canvases.length; i++) {
             if (x3dom.canvases[i].hasRuntime) {
                 x3dom.canvases[i].doc.onKeyPress(evt.charCode);
+				x3dom.canvases[i].doc.needRender = true;
             }
         }
         return true;

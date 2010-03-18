@@ -998,10 +998,13 @@ x3dom.gfx_webgl = (function () {
                 {
                     var image = new Image();
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
-                    
+                    that._nameSpace.doc.downloadCount += 1;
+
                     image.onload = function()
                     {
 						that._nameSpace.doc.needRender = true;
+						that._nameSpace.doc.downloadCount -= 1;
+						
                         that._webgl.texture = texture;
                         //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url);
                         
@@ -1186,10 +1189,13 @@ x3dom.gfx_webgl = (function () {
                 
                 var image = new Image();
                 image.src = url[0];
+                scene._nameSpace.doc.downloadCount += 1;
                 
                 image.onload = function()
                 {
 					scene._nameSpace.doc.needRender = true;
+					scene._nameSpace.doc.downloadCount -= 1;
+                    
                     scene._webgl.texture = texture;
                     //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
                     
@@ -2070,6 +2076,7 @@ x3dom.gfx_webgl = (function () {
             texture.pendingTextureLoads++;
             var face = faces[i];
             var image = new Image();
+            doc.downloadCount += 1;
             
             image.onload = function(texture, face, image, swap) {
                 return function() {
@@ -2077,6 +2084,7 @@ x3dom.gfx_webgl = (function () {
                     gl.texImage2D(face, 0, image, swap);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                     texture.pendingTextureLoads--;
+					doc.downloadCount -= 1;
                     if (texture.pendingTextureLoads < 0) {
                         texture.textureCubeReady = true;
                         x3dom.debug.logInfo("Loading CubeMap finished...");
