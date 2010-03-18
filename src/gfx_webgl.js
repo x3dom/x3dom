@@ -948,6 +948,8 @@ x3dom.gfx_webgl = (function () {
                     
                     var updateMovie = function()
                     {
+						that._nameSpace.doc.needRender = true;			
+	
                         gl.bindTexture(gl.TEXTURE_2D, texture);
                         gl.texImage2D(gl.TEXTURE_2D, 0, tex._video, false);
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -959,6 +961,8 @@ x3dom.gfx_webgl = (function () {
                     
                     var startVideo = function()
                     {
+						that._nameSpace.doc.needRender = true;			
+						
                         that._webgl.texture = texture;
                         //x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
@@ -987,7 +991,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
                 {
-                    texture = context.loadCubeMap(gl, tex.getTexUrl());
+                    texture = context.loadCubeMap(gl, tex.getTexUrl(), that._nameSpace.doc );
                     that._webgl.texture = texture;
                 }
                 else
@@ -997,6 +1001,7 @@ x3dom.gfx_webgl = (function () {
                     
                     image.onload = function()
                     {
+						that._nameSpace.doc.needRender = true;
                         that._webgl.texture = texture;
                         //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url);
                         
@@ -1173,7 +1178,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl.primType = gl.TRIANGLES;
                 scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-textureCube', 'fs-x3d-bg-textureCube']);
                 
-                scene._webgl.texture = this.loadCubeMap(gl, url);
+                scene._webgl.texture = this.loadCubeMap(gl, url, scene._nameSpace.doc);
             }
             else
             {
@@ -1184,6 +1189,7 @@ x3dom.gfx_webgl = (function () {
                 
                 image.onload = function()
                 {
+					scene._nameSpace.doc.needRender = true;
                     scene._webgl.texture = texture;
                     //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
                     
@@ -2043,7 +2049,7 @@ x3dom.gfx_webgl = (function () {
 		}
 	};
     
-    Context.prototype.loadCubeMap = function(gl, url)
+    Context.prototype.loadCubeMap = function(gl, url, doc)
     {
         var texture = gl.createTexture();
 
@@ -2074,6 +2080,7 @@ x3dom.gfx_webgl = (function () {
                     if (texture.pendingTextureLoads < 0) {
                         texture.textureCubeReady = true;
                         x3dom.debug.logInfo("Loading CubeMap finished...");
+						doc.needRender = true;
                     }
                 };
             }(texture, face, image, (i<=1 || i>=4));

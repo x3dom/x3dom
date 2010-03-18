@@ -100,8 +100,9 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 };
 
 // NodeNameSpace constructor
-x3dom.NodeNameSpace = function (name) {
+x3dom.NodeNameSpace = function (name, document) {
 	this.name = name;
+	this.doc = document;
 	this.baseURL = "";
 	this.defMap = {};
 	this.parent = null;
@@ -164,15 +165,7 @@ x3dom.setElementAttribute = function(attrName, newVal)
 	//newVal = this.getAttribute(attrName);
 	
 	this._x3domNode.updateField(attrName, newVal);
-    
-    // experimental DOM-driven update
-    var doc = this._x3domNode.findX3DDoc();
-    if (doc && doc._X3DCanvas && !doc._X3DCanvas.hasRuntime) {
-        if (doc._X3DCanvas.statDiv) {
-            doc._X3DCanvas.statDiv.textContent = newVal;
-        }
-        doc.render(doc._X3DCanvas.gl);
-    }
+    this._x3domNode._nameSpace.doc.needRender = true;
 	
 	/* construct and fire an event
     if (newVal != prevVal) {
@@ -235,7 +228,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
-                var ctx = { xmlNode: domNode };
+                var ctx = { doc: this.doc, xmlNode: domNode };
                 n = new nodeType(ctx);
 				n._nameSpace = this;
 				
@@ -485,7 +478,7 @@ x3dom.registerNodeType(
 		},
 
 	    findX3DDoc: function () {
-			return this.findParentProperty("_x3dDoc");
+			return this._nameSpace.doc;
         },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
@@ -3954,6 +3947,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
             
+			ctx.doc.animNode.push(this);
+			
 			this.addField_SFBool(ctx, 'enabled', true);
             this.addField_SFTime(ctx, 'cycleInterval', 1);
             this.addField_SFBool(ctx, 'loop', false);
@@ -4509,7 +4504,7 @@ x3dom.registerNodeType(
 					//var inlScene = x3dom.findScene(xml);              // sceneDoc is the X3D element here...
 
 					if (inlScene) {
-						var nameSpace = new x3dom.NodeNameSpace();
+						var nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
 						nameSpace.setBaseURL (that._vf.url[0]);      
 						var newScene = nameSpace.setupTree(inlScene);
 						that.addChild(newScene);
@@ -4528,6 +4523,7 @@ x3dom.registerNodeType(
 					}
 					*/
 
+					that._nameSpace.doc.needRender = true;
 					x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
 				};
 
@@ -4545,6 +4541,8 @@ x3dom.registerNodeType(
 x3dom.X3DDocument = function(canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
+	this.needRender = true;
+	this.animNode = [];
     this.onload = function () {};
     this.onerror = function () {};
 };
@@ -4613,6 +4611,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             };
             //x3dom.debug.logInfo("MUTATION: " + e.attrName + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
             e.target._x3domNode.updateField(e.attrName, e.newValue);
+			doc.needRender = true;			
         },
         onNodeRemoved: function(e) {
             var parent = e.target.parentNode._x3domNode;
@@ -4621,6 +4620,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
             
 			parent.removeChild(child);
+			doc.needRender = true;			
         },
         onNodeInserted: function(e) {
             var parent = e.target.parentNode._x3domNode;
@@ -4633,6 +4633,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 			if (parent._nameSpace) {
 				var newNode = parent._nameSpace.setupTree (child);
 				parent.addChild(newNode, child.getAttribute("containerField"));
+				doc.needRender = true;			
 			}
             else {
 				x3dom.debug.logInfo("No _nameSpace in onNodeInserted");
@@ -4648,7 +4649,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 	}
 	
     var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
-	var nameSpace = new x3dom.NodeNameSpace("scene");
+	var nameSpace = new x3dom.NodeNameSpace("scene", doc);
     var scene = nameSpace.setupTree(sceneElem);
     
     // link scene and x3dDocument
@@ -4661,11 +4662,10 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
-    if (this._scene) {
-		// FIXME; link all TimeSensor in context
-        Array.forEach(this._scene.findAll(x3dom.nodeTypes.TimeSensor),
-            function (timer) { timer.onframe(t); }
-        );
+    if (this.animNode.length) {
+		// FIXME; link all TimeSensor in document
+		this.needRender = true;
+        Array.forEach(this.animNode, function (node) { node.onframe(t); } );
     }
 };
 
