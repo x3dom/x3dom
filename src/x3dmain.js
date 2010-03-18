@@ -205,6 +205,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			if (evt.altKey)   { this.mouse_button = 2; }
 			
 			this.parent.doc.onMousePress(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' DOWN: '+evt.layerX+", "+evt.layerY;
 			//window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
@@ -218,6 +219,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_dragging = false;
 			
 			this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
 			evt.preventDefault();
@@ -230,6 +232,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_dragging = false;
 			
 			this.parent.doc.onMouseOut(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
 			evt.preventDefault();
@@ -244,6 +247,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_dragging = false;
 			
 			this.parent.doc.onDoubleClick(this.mouse_drag_x, this.mouse_drag_y);
+			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' DBL: '+evt.layerX+", "+evt.layerY;
 			evt.preventDefault();
@@ -266,6 +270,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			if (evt.altKey)   { this.mouse_button = 2; }
 			
 			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' MOVE: '+dx+", "+dy;
 			evt.preventDefault();
@@ -277,6 +282,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_drag_y += 2 * evt.detail;
             
 			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, 2);
+			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' SCROLL: '+evt.detail;
 			evt.preventDefault();
@@ -291,14 +297,23 @@ x3dom.X3DCanvas.prototype.tick = function()
 	var d = new Date().getTime();
 	var fps = 1000.0 / (d - this.fps_t0);
 	
-	if (this.statDiv) {
-		this.statDiv.textContent = fps.toFixed(2) + ' fps';
-    }
 	this.fps_t0 = d;
 	
 	try {
 		this.doc.advanceTime(d / 1000); 
-		this.doc.render(this.gl);
+		if (this.doc.needRender) {
+			if (this.statDiv) {
+				this.statDiv.textContent = fps.toFixed(2) + ' fps';
+		    }
+		
+			this.doc.render(this.gl);
+			this.doc.needRender = false;
+		}
+		else {
+			if (this.statDiv) {
+				this.statDiv.textContent = '';
+			}
+		}
 	}
 	catch (e) {
 		x3dom.debug.logException(e);
@@ -311,7 +326,6 @@ x3dom.X3DCanvas.prototype.tick = function()
     */
 x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
-    this.doc._X3DCanvas = this;     // backlink to parent
     var x3dCanvas = this;
 	
     this.doc.onload = function () {
