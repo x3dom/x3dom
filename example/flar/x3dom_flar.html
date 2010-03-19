@@ -21,19 +21,23 @@
 		</style>		
 		
         <script type="text/javascript">
-
-			function js_detected(value) {
-				$('#topLayer').show();
-			}
+		
+			var show_canvas = false;
 			
-			function js_notdetected(value) {
-				$('#topLayer').hide();
+			function show_x3dom_canvas(){
+				$('#topLayer').show();
+				show_canvas = true;
 			}
 			
 			//This function is triggered within flash
-			function get_js_transMatrix(value) {
+			function set_js_transMatrix(value) {
 				var q = (value);
 				var myMatrixTrans = document.getElementsByTagName('MatrixTransform')[0];
+				
+				// if not enabled, show x3dom canvas
+				if(!show_canvas)
+					show_x3dom_canvas();
+				
 				// Shift Values:
 				// Convert rotation form left>right
 				// shift z
@@ -44,7 +48,16 @@
 				q[2][1] = -q[2][1];
 				
 				myMatrixTrans.setAttribute('matrix', q.toString());
-    		}			
+    		}
+
+			//disable x3dom canvas at startup
+			 $(document).ready(function() {
+				$('#topLayer').hide();
+				show_canvas = false;
+			 });
+			
+
+			
 			
         </script>
     </head>

@@ -73,7 +73,7 @@
 				detected_js(e, this._resultMat);
 			} else {
 				this._baseNode.visible = false;
-				notdetected_js(e);
+				//notdetected_js(e);
 			}
 			
 			this._renderer.render();
@@ -95,19 +95,17 @@
 		
 		
 		// ** JS Eventsender for WebGL Rendering **
-		
+		/*
 		function notdetected_js(event:Event):void {
-			var result:Object = ExternalInterface.call("js_notdetected", 0);
+			//var result:Object = ExternalInterface.call("js_notdetected", 0);
 		}
+		*/
 		
 		function detected_js(event:Event, matrix:FLARTransMatResult):void 
 		{
 			var js_matrix = this._baseNode.getMatrixArray();
-			var js_viewM = this._camera3d.getProjectionArray();
-			var result:Object = ExternalInterface.call("js_detected", 0);
-			var result2:Object = ExternalInterface.call("get_js_transMatrix", js_matrix);  
-			/* TODO: Implement Viewmatrix transfer */
-			//var result3:Object = ExternalInterface.call("get_js_viewMatrix", js_viewM);  
+			//var result:Object = ExternalInterface.call("js_detected", 0);
+			var result2:Object = ExternalInterface.call("set_js_transMatrix", js_matrix);  
 		}		
 		
 	}
