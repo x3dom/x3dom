@@ -305,9 +305,9 @@ x3dom.X3DCanvas.prototype.tick = function()
 			if (this.statDiv) {
 				this.statDiv.textContent = fps.toFixed(2) + ' fps';
 		    }
-		
+            
+			this.doc.needRender = false;    // picking might require another pass
 			this.doc.render(this.gl);
-			this.doc.needRender = false;
 		}
 		else {
 			if (this.statDiv) {

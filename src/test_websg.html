@@ -89,7 +89,10 @@
         
         var sg = document.getElementById("myGraph");
         
-        //sg.render();    //render webSG scene-graph
+        // uhh, need to call render() manually again, as current
+        // doc.needRender concept requires to evaluate every frame
+        // if the scene needs to be rendered or not
+        sg.render();    //render webSG scene-graph
         
         draw();         //render tri (gl code below)
         
