@@ -1801,6 +1801,8 @@ x3dom.gfx_webgl = (function () {
                 if (shape._webgl.texture.textureCubeReady && tex && 
                     x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
                 {
+                    sp.modelViewMatrixInverse = mat_view.mult(transform).inverse().toGL();
+                    
                     gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture);
