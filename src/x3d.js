@@ -4655,8 +4655,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 	var nameSpace = new x3dom.NodeNameSpace("scene", doc);
     var scene = nameSpace.setupTree(sceneElem);
     
-    // link scene and x3dDocument
-    scene._x3dDoc = doc;
     this._scene = scene;
 	
 	// create view 
@@ -4666,20 +4664,21 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
     if (this.animNode.length) {
-		// FIXME; link all TimeSensor in document
 		this.needRender = true;
-        Array.forEach(this.animNode, function (node) { node.onframe(t); } );
+        Array.forEach( this.animNode, function (node) { node.onframe(t); } );
     }
 };
 
 x3dom.X3DDocument.prototype.render = function (ctx) {
-    if (!ctx)
+    if (!ctx || !this._scene)
         return;
+    
     ctx.renderScene(this._scene, this._scene._updatePicking);
     
-    if (this._scene && this._scene._pickingInfo.updated) {
+    if (this._scene._pickingInfo.updated) {
         // mouse release handling only possible after rendering has finished
         this._scene.onMouseRelease(this._scene._lastX, this._scene._lastY, 0);
+        this.needRender = true;
     }
 };
 
