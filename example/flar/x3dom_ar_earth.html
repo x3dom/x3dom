@@ -71,6 +71,7 @@
     		}
 			
 			function get_js_viewMatrix(value) {
+				/* not triggered right now */
 				var q = (value);
 				var myVP = document.getElementsByTagName('Viewpoint')[0];
 				// Shift Values:
@@ -108,8 +109,8 @@
 				<background transparency="1" skyColor='0 0 0'></background>
 				
 				<matrixtransform>
-					<transform def='universe' translation='0 0 0' scale='60 60 60'>
-						<transform def='earth' rotation='1 0 0 -1.57'>
+					<transform def='universe' translation='0 0 20' scale='50 50 50'>
+						<transform def='earth' rotation='1 0 0 -1.57' >
 							<shape>
 								<appearance>
 									<imageTexture url='"http://veimages.gsfc.nasa.gov/2430/land_ocean_ice_2048.jpg"'>
