@@ -10,8 +10,6 @@
 			
 			#topLayer {
 			  position:absolute;
-			  /*top:30px; left:575px;*/
-			  /*top:25px; left:10px;*/
 			  z-index:5;
 			  width:640px;
 			  height:480px;
@@ -20,31 +18,10 @@
 			  margin:0;				
 			}
 			
-
 		</style>		
 		
         <script type="text/javascript">
-		
-		
-        	var texture_changed = false;
-        	var latr, lngr
-        	
-			function trace(matrix) {
-				if (!(matrix instanceof Array)) { return; }
-				
-				var str = "";
-				
-				for (var i = 0; i < matrix.length; i++)
-				{
-					for (var j = 0; j < matrix[i].length; j++)
-					{
-                        str += (matrix[i][j].toString() + "000").substr(0,4) + " ";
-					}
-					str += "<br/>"
-				}
-				return str;
-			}
-			
+
 			function js_detected(value) {
 				$('#topLayer').show();
 			}
@@ -53,8 +30,7 @@
 				$('#topLayer').hide();
 			}
 			
-			//This function is triggered within flash 
-			//and distinguished by its name
+			//This function is triggered within flash
 			function get_js_transMatrix(value) {
 				var q = (value);
 				var myMatrixTrans = document.getElementsByTagName('MatrixTransform')[0];
@@ -68,24 +44,7 @@
 				q[2][1] = -q[2][1];
 				
 				myMatrixTrans.setAttribute('matrix', q.toString());
-    		}
-			
-			function get_js_viewMatrix(value) {
-				/* not triggered right now */
-				var q = (value);
-				var myVP = document.getElementsByTagName('Viewpoint')[0];
-				// Shift Values:
-				// Convert rotation form left>right
-				// shift z
-				q[2][3] = -q[2][3];
-				q[0][2] = -q[0][2];
-				q[1][2] = -q[1][2];
-				q[2][0] = -q[2][0];
-				q[2][1] = -q[2][1];
-				
-				myVP.setAttribute('matrix', q);
-			}
-			
+    		}			
 			
         </script>
     </head>
@@ -95,8 +54,8 @@
 
 		<p>
 			This Demo makes use of Adobe Flash based FLARToolkit for marker tracking and X3DOM for 3D rendering. 
-			<br />Please print out this marker: <a href='Data/x3dom-marker.pdf'>flarlogo-marker.pdf</a> or 
-			<a href='Data/x3dom-marker.png'>flarlogo-marker.png</a>
+			<br />Please print out this marker: <a href='Data/x3dom-marker.pdf'>x3dom-marker.pdf</a> or 
+			<a href='Data/x3dom-marker.png'>x3dom-marker.png</a>
 			<br/> and point it to the camera.
 			<p> Note FLARToolkit is under <a href='http://www.libspark.org/wiki/saqoosha/FLARToolKit/en'>GPL license</a>.<br />
 				The sources of the x3dom Flash application are available here: <a href='flash-sources.zip'>flash-sources.zip</a></p>
