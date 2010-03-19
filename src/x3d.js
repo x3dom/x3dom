@@ -1119,7 +1119,7 @@ x3dom.registerNodeType(
                     "    uniform mat4 modelViewProjectionMatrix;\n" +
                     "    uniform mat4 modelViewMatrix;\n" +
                     "    uniform sampler2D tex;\n" +
-                    "Please also note, that comments in shaders will lead to parsing errors.\n");
+                    "\n");
         },
         {
             nodeChanged: function()
