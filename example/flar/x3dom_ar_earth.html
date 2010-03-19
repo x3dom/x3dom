@@ -95,73 +95,72 @@
 
 		<p>
 			This Demo makes use of Adobe Flash based FLARToolkit for marker tracking and X3DOM for 3D rendering. 
-			<br />Please print out this marker: <a href='Data/flarlogo-marker.pdf'>flarlogo-marker.pdf</a> or 
-			<a href='Data/flarlogo-marker.png'>flarlogo-marker.png</a>
+			<br />Please print out this marker: <a href='Data/x3dom-marker.pdf'>flarlogo-marker.pdf</a> or 
+			<a href='Data/x3dom-marker.png'>flarlogo-marker.png</a>
 			<br/> and point it to the camera.
 		</p>
-<div id="root_canvas">
-	<div id="topLayer" style="display:none; border:1px solid red;">
-		<div id='x3div' >
-		<x3d id='x3d' showStat="false" showLog="false" x="0px" y="0px" width="640px" height="480px" altImg="helloX3D-alt.png">
-			<scene>
-				<viewpoint fieldOfView='0.60' position='0 0 0'></viewpoint>
+	<div id="root_canvas">
+		<div id="topLayer" >
+			<div id='x3div' >
+			<x3d id='x3d' showStat="false" showLog="false" x="0px" y="0px" width="640px" height="480px" altImg="helloX3D-alt.png">
+				<scene>
+					<viewpoint fieldOfView='0.60' position='0 0 0'></viewpoint>
 
-				<background transparency="1" skyColor='0 0 0'></background>
-				
-				<matrixtransform>
-					<transform def='universe' translation='0 0 20' scale='50 50 50'>
-						<transform def='earth' rotation='1 0 0 -1.57' >
-							<shape>
-								<appearance>
-									<imageTexture url='"http://veimages.gsfc.nasa.gov/2430/land_ocean_ice_2048.jpg"'>
-									</imageTexture>
-								</appearance>
+					<background transparency="1" skyColor='0 0 0'></background>
+					
+					<matrixtransform>
+						<transform def='universe' translation='0 0 20' scale='50 50 50'>
+							<transform def='earth' rotation='1 0 0 -1.57' >
+								<shape>
+									<appearance>
+										<imageTexture url='"http://veimages.gsfc.nasa.gov/2430/land_ocean_ice_2048.jpg"'>
+										</imageTexture>
+									</appearance>
 
-								<sphere lit='false'>
-								</sphere>
-							</shape>
+									<sphere lit='false'>
+									</sphere>
+								</shape>
+							</transform>
+							
+							<transform def='clouds' rotation='1 0 0 -1.57' scale='1.1 1.1 1.1'>
+								<shape>
+									<appearance>
+										<imageTexture url='"http://www.barnabu.co.uk/files/clouds/cloudimage.png"'>
+										</imageTexture>
+
+									</appearance>
+									<sphere solid='false' lit='false'>
+									</sphere>
+								</shape>
+							</transform>
 						</transform>
-						
-						<transform def='clouds' rotation='1 0 0 -1.57' scale='1.1 1.1 1.1'>
-							<shape>
-								<appearance>
-									<imageTexture url='"http://www.barnabu.co.uk/files/clouds/cloudimage.png"'>
-									</imageTexture>
-
-								</appearance>
-								<sphere solid='false' lit='false'>
-								</sphere>
-							</shape>
-						</transform>
-					</transform>
-				</matrixtransform>
+					</matrixtransform>
+					
+					<!--<orientationInterpolator def='oi' keyValue='0 0 1 0, 0 0 1 3.14, 0 0 1 6.28' key='0 0.5 1'></orientationInterpolator>
+					<route fromNode='oi' fromField='value_changed' toNode='universe' toField='set_rotation'></route>
 				
-				<!--<orientationInterpolator def='oi' keyValue='0 0 1 0, 0 0 1 3.14, 0 0 1 6.28' key='0 0.5 1'></orientationInterpolator>
-				<route fromNode='oi' fromField='value_changed' toNode='universe' toField='set_rotation'></route>
+					<timesensor def='t' cycleinterval='100' loop='TRUE'></timesensor>
+					<route fromNode='t' fromField='fraction_changed' toNode='oi' toField='set_fraction'></route>-->
+				</scene>
+
+			</x3d>
+			</div>
+		</div>
 			
-				<timesensor def='t' cycleinterval='100' loop='TRUE'></timesensor>
-				<route fromNode='t' fromField='fraction_changed' toNode='oi' toField='set_fraction'></route>-->
-			</scene>
-
-		</x3d>
+		<div id="flashmovie2" style="position:absolute; z-index:-10;">
+			<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="640" height="480" id="x3domflartoolkit" align="middle">
+				<param name="allowScriptAccess" value="always" />
+				<param name="allowFullScreen" value="false" />
+				<param name="wmode" value="transparent" />
+				<param name="movie" value="x3domflartoolkit.swf" />
+				<param name="quality" value="high" /><param name="bgcolor" value="#808080" />	
+				<embed wmode="transparent" src="x3domflartoolkit.swf" quality="high" bgcolor="#808080" width="640" height="480" name="SimpleCube" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer_de" />
+			</object>
 		</div>
 	</div>
-		
-	<div id="flashmovie2" style="position:absolute; z-index:-10;">
-		<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" codebase="http://download.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=9,0,0,0" width="640" height="480" id="x3domflartoolkit" align="middle">
-			<param name="allowScriptAccess" value="always" />
-			<param name="allowFullScreen" value="false" />
-			<param name="wmode" value="transparent" />
-			<param name="movie" value="x3domflartoolkit.swf" />
-			<param name="quality" value="high" /><param name="bgcolor" value="#808080" />	
-			<embed wmode="transparent" src="x3domflartoolkit.swf" quality="high" bgcolor="#808080" width="640" height="480" name="SimpleCube" align="middle" allowScriptAccess="always" allowFullScreen="false" type="application/x-shockwave-flash" pluginspage="http://www.adobe.com/go/getflashplayer_de" />
-		</object>
-	</div>
-</div>
 
 		
-		<!--script type="text/javascript" src="../x3dom.js"></script-->
-		<script type="text/javascript" src="http://www.x3dom.org/x3dom/example/x3dom.js"></script>		
+	<script type="text/javascript" src="http://www.x3dom.org/x3dom/example/x3dom.js"></script>		
 		
    </body>
 </html>
