@@ -7,11 +7,11 @@
        
 <body>
 
-    <h1>Nodetypes by component</h1>
+    <h1 style='color:darkblue;'>Nodetypes by component</h1>
     <div id="components"></div>
     <br />
 	
-    <h1>X3DOM nodetype tree</h1>				
+    <h1 style='color:darkblue;'>X3DOM nodetype tree</h1>
 	<div id="types"></div>
     <br />
     
@@ -71,7 +71,7 @@
         
         function dumpType(t, indent) {
             for (var i=0; i<indent; i++) {
-                $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");                    
+                $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
             }
             
             $("#types").append("<a href='" + 
@@ -79,18 +79,18 @@
                 "' style='color:black; text-decoration:none; font-weight:bold;'>" + 
                 t + "</a> &nbsp; <a href='" + 
                 baseUrl + urlMap[x3dom.nodeTypes[t]._compName] + 
-                "' style='color: black; text-decoration:none; font-style:italic;'>" + 
+                "' style='color:black; text-decoration:none; font-style:italic;'>" + 
                 x3dom.nodeTypes[t]._compName + "</a><br/>");
             
             for (var i in x3dom.nodeTypes[t].childTypes[t]) {
                 dumpType(x3dom.nodeTypes[t].childTypes[t][i], indent+1); 
-            }                                
+            }
         }        
                         
-        $(document).ready( function() {                     
+        $(document).ready( function() {
 
-            // Create the nodetype hierachy
-            for (var tn in x3dom.nodeTypes) {                
+            // Create the nodetype hierarchy
+            for (var tn in x3dom.nodeTypes) {
                 var t = x3dom.nodeTypes[tn];
                 
                 if (t.childTypes === undefined)
@@ -105,7 +105,6 @@
                     }
                     t = t.superClass;
                 }
-
             }            
             
             var iexplore = (navigator.userAgent.indexOf("MSIE") != -1);
@@ -118,12 +117,22 @@
                 // Dump the nodetype hierachy
                 dumpType("X3DNode", 0); 
                 
+                
                 // Dump nodetypes by component
+                // but first sort alphabetically
+                var components = [];
                 for (var c in x3dom.components) {
+                    components.push(c);
+                }
+                components.sort();
+                
+                //for (var c in x3dom.components) {
+                for (var cn in components) {
+                    var c = components[cn];
                     var component = x3dom.components[c];
                     $("#components").append("<h2><a href='" + 
                         baseUrl + urlMap[c] +
-                        "' style='color: black; text-decoration:none; font-style:italic;'>" + 
+                        "' style='color:black; text-decoration:none; font-style:italic;'>" + 
                         c + "</a></h2>");
                     
                     $("#components").append("<ul style='list-style-type:circle;'>");
