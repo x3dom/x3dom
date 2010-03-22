@@ -105,7 +105,7 @@
 		{
 			var js_matrix = this._baseNode.getMatrixArray();
 			//var result:Object = ExternalInterface.call("js_detected", 0);
-			var result2:Object = ExternalInterface.call("set_js_transMatrix", js_matrix);  
+			var result2:Object = ExternalInterface.call("set_marker_transform", js_matrix);  
 		}		
 		
 	}
