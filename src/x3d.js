@@ -953,25 +953,6 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
-            
-            // For testing: look for <img> element if url empty
-            if (!this._vf.url.length && ctx.xmlNode) {
-                x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
-            	var that = this;
-                try {
-                    Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
-                        if (childDomNode.nodeType === 1) {
-                            var url = childDomNode.getAttribute("src");
-                            if (url) {
-                                that._vf.url.push(url);
-                                childDomNode.style.display = "none";
-                                x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
-                            }
-                        }
-                    } );
-                }
-                catch(e) {}
-            }
         },
         {
             fieldChanged: function(fieldName)
@@ -1033,6 +1014,25 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DTextureNode,
         function (ctx) {
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
+            
+            // For testing: look for <img> element if url empty
+            if (!this._vf.url.length && ctx.xmlNode) {
+                x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
+            	var that = this;
+                try {
+                    Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
+                        if (childDomNode.nodeType === 1) {
+                            var url = childDomNode.getAttribute("src");
+                            if (url) {
+                                that._vf.url.push(url);
+                                childDomNode.style.display = "none";
+                                x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+                            }
+                        }
+                    } );
+                }
+                catch(e) {}
+            }
         },
         {
         }

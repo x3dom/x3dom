@@ -1759,7 +1759,8 @@ x3dom.gfx_webgl = (function () {
         gl.enable(gl.BLEND);
         
         // currently maximum of 4 supported in Mozilla
-        var activeTex = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3];
+        var activeTex = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3,
+                         gl.TEXTURE4, gl.TEXTURE5, gl.TEXTURE6, gl.TEXTURE7];
 		
 		for (i=0, n=zPos.length; i<n; i++)
 		{
@@ -1805,7 +1806,11 @@ x3dom.gfx_webgl = (function () {
             }
             
             // transformation matrices
-			sp.modelViewMatrix = mat_view.mult(transform).toGL();
+            var model_view = mat_view.mult(transform);
+			sp.modelViewMatrix = model_view.toGL();
+            if (userShader) {
+                sp.modelViewMatrixInverse = model_view.inverse().toGL();
+            }
 			sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
 			
             for (var cnt=0; shape._webgl.texture !== undefined && 
@@ -1828,8 +1833,6 @@ x3dom.gfx_webgl = (function () {
                 if (shape._webgl.texture[cnt].textureCubeReady && tex && 
                     x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
                 {
-                    sp.modelViewMatrixInverse = mat_view.mult(transform).inverse().toGL();
-                    
                     gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.activeTexture(activeTex[cnt]);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture[cnt]);
@@ -1876,7 +1879,7 @@ x3dom.gfx_webgl = (function () {
                     sp.sphereMapping = 0.0;
                 }
                 if (!sp.tex) {
-                    sp.tex = 0;     //only 1st tex known in shader
+                    sp.tex = 0;     // FIXME; only 1st tex known in shader
                 }
 			  }
             }
@@ -1884,9 +1887,9 @@ x3dom.gfx_webgl = (function () {
             if (shadowIntensity > 0) 
             {
                 if (!sp.sh_tex) {
-                    sp.sh_tex = 1;
+                    sp.sh_tex = 3;      // put it on 4th unit
                 }
-                gl.activeTexture(gl.TEXTURE1);
+                gl.activeTexture(gl.TEXTURE3);
                 gl.bindTexture(gl.TEXTURE_2D,scene._webgl.fboShadow.tex);
                 
                 gl.texParameterf(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -1993,7 +1996,7 @@ x3dom.gfx_webgl = (function () {
             }
             if (shadowIntensity > 0) 
             {
-                gl.activeTexture(gl.TEXTURE1);
+                gl.activeTexture(gl.TEXTURE3);
                 gl.bindTexture(gl.TEXTURE_2D, null);
             }
             gl.disable(gl.TEXTURE_2D);
@@ -2151,7 +2154,7 @@ x3dom.gfx_webgl = (function () {
                 };
             }( texture, face, image, (bgnd && (i<=1 || i>=4)) );
             
-            // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl
+            // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
             image.src = url[i];
         }
         
