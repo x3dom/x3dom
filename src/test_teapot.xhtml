@@ -47,18 +47,32 @@ A component-based architecture supports creation of different "profiles" which c
         <PositionInterpolator DEF="PI" key="0 0.5 1" keyValue="-0.8 -0.9 -0.9, -0.8 -0.1 -0.3, -0.8 -0.9 -0.9" />
         <ROUTE fromNode='TS' fromField='fraction_changed' toNode='PI' toField='set_fraction'/>
         <ROUTE fromNode='PI' fromField='value_changed' toNode='licht' toField='direction'/>
+        
         -->
-        <Transform translation='0 -16 -100' rotation='1 0 0 -0.75'>
+        <!--
+        <Background backUrl='"texture/generic/CubeBack.png"' bottomUrl='"texture/generic/CubeDown.png"' frontUrl='"texture/generic/CubeFront.png"' leftUrl='"texture/generic/CubeLeft.png"' rightUrl='"texture/generic/CubeRight.png"' topUrl='"texture/generic/CubeUp.png"' />
+        <Viewpoint position='0 0 0' />
+        <Background backUrl='"../example/texture/generic/BK.png"' bottomUrl='"../example/texture/generic/DN.png"' frontUrl='"../example/texture/generic/FR.png"' leftUrl='"../example/texture/generic/LF.png"' rightUrl='"../example/texture/generic/RT.png"' topUrl='"../example/texture/generic/UP.png"' />-->
+        <Transform translation='0 -5 -100'>
           <Shape>
             <Appearance>
                 <Material diffuseColor=".7 .7 .7" specularColor=".5 .5 .5" />
                 <ComposedCubeMapTexture repeatS="false" repeatT="false">
+                
                     <ImageTexture containerField="back" url="../example/texture/generic/BK.png" />
                     <ImageTexture containerField="bottom" url="../example/texture/generic/DN.png" />
                     <ImageTexture containerField="front" url="../example/texture/generic/FR.png" />
                     <ImageTexture containerField="left" url="../example/texture/generic/LF.png" />
                     <ImageTexture containerField="right" url="../example/texture/generic/RT.png" />
                     <ImageTexture containerField="top" url="../example/texture/generic/UP.png" />
+                <!--
+                    <ImageTexture containerField="back" url="texture/generic/CubeBack.png" />
+                    <ImageTexture containerField="bottom" url="texture/generic/CubeDown.png" />
+                    <ImageTexture containerField="front" url="texture/generic/CubeFront.png" />
+                    <ImageTexture containerField="left" url="texture/generic/CubeLeft.png" />
+                    <ImageTexture containerField="right" url="texture/generic/CubeRight.png" />
+                    <ImageTexture containerField="top" url="texture/generic/CubeUp.png" />
+                -->
                 </ComposedCubeMapTexture>
                 
                 <ComposedShader DEF='ComposedShader'>
@@ -76,9 +90,8 @@ A component-based architecture supports creation of different "profiles" which c
                         void main()
                         {
                             vec4 eye = vec4(modelViewMatrixInverse * vec4(0.,0.,0.,1.));
-                            fragEyeVector = -(position - eye.xyz);
-                            //fragNormal = -(modelViewMatrix * vec4(normal, 0.0)).xyz;
-                            fragNormal = -normal;
+                            fragEyeVector = position - eye.xyz;
+                            fragNormal = normal;
                             gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
                         }
                   ]]>
@@ -91,18 +104,8 @@ A component-based architecture supports creation of different "profiles" which c
                         
                         void main()
                         {
-                            vec3 normal = normalize(fragNormal);
-                            //if (abs(normal.y) >= abs(normal.x) && abs(normal.y) >= abs(normal.z))
-                            //    normal.x *= -1.0;
-                            vec3 eye = normalize(fragEyeVector);
-                            //if (abs(eye.y) >= abs(eye.x) && abs(eye.y) >= abs(eye.z))
-                            //    eye.x *= -1.0;
-                            vec3 texcoord = reflect(eye, normal);
-                            if (abs(texcoord.y) >= abs(texcoord.x) && abs(texcoord.y) >= abs(texcoord.z))
-                                texcoord.x *= -1.0;
-                            vec4 color = textureCube(tex, texcoord);
-                            //color.rgb = normalize(fragEyeVector)*0.5+0.5;
-                            gl_FragColor = color;
+                            vec3 texcoord = reflect(normalize(fragEyeVector), normalize(fragNormal));
+                            gl_FragColor = textureCube(tex, texcoord);
                         }
                   ]]>
                   </ShaderPart>
