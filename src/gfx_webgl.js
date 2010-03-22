@@ -991,7 +991,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
                 {
-                    texture = context.loadCubeMap(gl, tex.getTexUrl(), that._nameSpace.doc );
+                    texture = context.loadCubeMap(gl, tex.getTexUrl(), that._nameSpace.doc, false);
                     that._webgl.texture = texture;
                 }
                 else
@@ -1181,7 +1181,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl.primType = gl.TRIANGLES;
                 scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-textureCube', 'fs-x3d-bg-textureCube']);
                 
-                scene._webgl.texture = this.loadCubeMap(gl, url, scene._nameSpace.doc);
+                scene._webgl.texture = this.loadCubeMap(gl, url, scene._nameSpace.doc, true);
             }
             else
             {
@@ -2064,7 +2064,7 @@ x3dom.gfx_webgl = (function () {
 		}
 	};
     
-    Context.prototype.loadCubeMap = function(gl, url, doc)
+    Context.prototype.loadCubeMap = function(gl, url, doc, bgnd)
     {
         var texture = gl.createTexture();
 
@@ -2075,9 +2075,17 @@ x3dom.gfx_webgl = (function () {
         gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
         gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
 
-        var faces = [gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 
+        var faces;
+        if (bgnd) {
+            faces = [gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 
                      gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 
                      gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X];
+        }
+        else {
+            faces = [gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X,
+                     gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y,
+                     gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z];
+        }
         texture.pendingTextureLoads = -1;
         texture.textureCubeReady = false;
         
@@ -2100,7 +2108,7 @@ x3dom.gfx_webgl = (function () {
 						doc.needRender = true;
                     }
                 };
-            }(texture, face, image, (i<=1 || i>=4));
+            }( texture, face, image, (bgnd && (i<=1 || i>=4)) );
             
             // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl
             image.src = url[i];

@@ -1070,12 +1070,12 @@ x3dom.registerNodeType(
         {
             getTexUrl: function() {
                 return [
-                    this._nameSpace.getURL(this._cf.back.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.front.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.bottom.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.right.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.left.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.right.node._vf.url[0])
+                    this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.bottom.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.front.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.back.node._vf.url[0])
                 ];
             }
         }
@@ -3216,6 +3216,14 @@ x3dom.registerNodeType(
                     this._nameSpace.getURL(this._vf.topUrl[0]),
                     this._nameSpace.getURL(this._vf.leftUrl[0]),
                     this._nameSpace.getURL(this._vf.rightUrl[0])
+                    /*
+                    this._nameSpace.getURL(this._vf.rightUrl[0]),
+                    this._nameSpace.getURL(this._vf.leftUrl[0]),
+                    this._nameSpace.getURL(this._vf.topUrl[0]),
+                    this._nameSpace.getURL(this._vf.bottomUrl[0]),
+                    this._nameSpace.getURL(this._vf.frontUrl[0]),
+                    this._nameSpace.getURL(this._vf.backUrl[0])
+                    */
                 ];
             }
         }
