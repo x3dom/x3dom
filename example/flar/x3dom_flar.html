@@ -30,24 +30,23 @@
 			}
 			
 			//This function is triggered within flash
-			function set_js_transMatrix(value) {
-				var q = (value);
-				var myMatrixTrans = document.getElementsByTagName('MatrixTransform')[0];
+			function set_marker_transform(value) {
+				var q = value;
+				var root_transform = document.getElementsByTagName('MatrixTransform')[0];
 				
 				// if not enabled, show x3dom canvas
 				if(!show_canvas)
 					show_x3dom_canvas();
 				
-				// Shift Values:
-				// Convert rotation form left>right
-				// shift z
+				// Convert rotation form left to right handed coord system
+				// mirror z
 				q[2][3] = -q[2][3];
 				q[0][2] = -q[0][2];
 				q[1][2] = -q[1][2];
 				q[2][0] = -q[2][0];
 				q[2][1] = -q[2][1];
 				
-				myMatrixTrans.setAttribute('matrix', q.toString());
+				root_transform.setAttribute('matrix', q.toString());
     		}
 
 			//disable x3dom canvas at startup
@@ -55,9 +54,6 @@
 				$('#topLayer').hide();
 				show_canvas = false;
 			 });
-			
-
-			
 			
         </script>
     </head>
@@ -85,6 +81,7 @@
 					<matrixtransform>
 						<transform def='universe' translation='0 0 20' scale='50 50 50' rotation="0 1 0 3.145">
 							<transform def='earth' rotation='1 0 0 -1.57' >
+
 								<shape>
 									<appearance>
 										<imageTexture url='"http://veimages.gsfc.nasa.gov/2430/land_ocean_ice_2048.jpg"'>
@@ -94,6 +91,7 @@
 									<sphere lit='false'>
 									</sphere>
 								</shape>
+
 							</transform>
 							
 							<transform def='clouds' rotation='1 0 0 -1.57' scale='1.1 1.1 1.1'>
@@ -104,17 +102,13 @@
 
 									</appearance>
 									<sphere solid='false' lit='false'>
+
 									</sphere>
 								</shape>
 							</transform>
 						</transform>
 					</matrixtransform>
 					
-					<!--<orientationInterpolator def='oi' keyValue='0 0 1 0, 0 0 1 3.14, 0 0 1 6.28' key='0 0.5 1'></orientationInterpolator>
-					<route fromNode='oi' fromField='value_changed' toNode='universe' toField='set_rotation'></route>
-				
-					<timesensor def='t' cycleinterval='100' loop='TRUE'></timesensor>
-					<route fromNode='t' fromField='fraction_changed' toNode='oi' toField='set_fraction'></route>-->
 				</scene>
 
 			</x3d>
@@ -133,7 +127,6 @@
 		</div>
 	</div>
 
-		
 	<script type="text/javascript" src="http://www.x3dom.org/x3dom/example/x3dom.js"></script>		
 		
    </body>
