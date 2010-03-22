@@ -57,8 +57,9 @@ A component-based architecture supports creation of different "profiles" which c
           <Shape>
             <Appearance>
                 <Material diffuseColor=".7 .7 .7" specularColor=".5 .5 .5" />
+                <MultiTexture>
+                <ImageTexture url='texture/earth.jpg' />
                 <ComposedCubeMapTexture repeatS="false" repeatT="false">
-                
                     <ImageTexture containerField="back" url="../example/texture/generic/BK.png" />
                     <ImageTexture containerField="bottom" url="../example/texture/generic/DN.png" />
                     <ImageTexture containerField="front" url="../example/texture/generic/FR.png" />
@@ -74,38 +75,53 @@ A component-based architecture supports creation of different "profiles" which c
                     <ImageTexture containerField="top" url="texture/generic/CubeUp.png" />
                 -->
                 </ComposedCubeMapTexture>
+                </MultiTexture>
                 
                 <ComposedShader DEF='ComposedShader'>
                   <field name='tex' type='SFInt32' value='0'/>
+                  <field name='cube' type='SFInt32' value='1'/>
+                  
                   <ShaderPart type='VERTEX'>
                   <![CDATA[
                         attribute vec3 position;
                         attribute vec3 normal;
+                        attribute vec2 texcoord;
                         uniform mat4 modelViewMatrix;
                         uniform mat4 modelViewMatrixInverse;
                         uniform mat4 modelViewProjectionMatrix;
                         varying vec3 fragNormal;
                         varying vec3 fragEyeVector;
+                        varying vec2 fragTexCoord;
                         
                         void main()
                         {
                             vec4 eye = vec4(modelViewMatrixInverse * vec4(0.,0.,0.,1.));
                             fragEyeVector = position - eye.xyz;
                             fragNormal = normal;
+                            fragTexCoord = vec2(texcoord.x, 1.0-texcoord.y);
                             gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
                         }
                   ]]>
                   </ShaderPart>
                   <ShaderPart type='FRAGMENT'>
                   <![CDATA[
-                        uniform samplerCube tex;
+                        uniform sampler2D tex;
+                        uniform samplerCube cube;
                         varying vec3 fragNormal;
                         varying vec3 fragEyeVector;
+                        varying vec2 fragTexCoord;
                         
                         void main()
                         {
-                            vec3 texcoord = reflect(normalize(fragEyeVector), normalize(fragNormal));
-                            gl_FragColor = textureCube(tex, texcoord);
+                            vec3 eye = normalize(fragEyeVector);
+                            vec3 normal = normalize(fragNormal);
+                            vec4 texCol = texture2D(tex, fragTexCoord);
+                            vec3 cubecoord = reflect(eye, normal);
+                            vec4 cubeCol = textureCube(cube, cubecoord);
+                            float p = max(0.0, dot(normal, -eye));
+                            p += pow(p, 128.0);
+                            texCol.rgb = clamp(texCol.rgb * p, 0.0, 1.0);
+                            gl_FragColor = mix(texCol, cubeCol, 0.35);
                         }
                   ]]>
                   </ShaderPart>

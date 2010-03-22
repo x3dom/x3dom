@@ -984,6 +984,42 @@ x3dom.registerNodeType(
                         });
                     });
                 }
+            },
+            
+            getTexture: function(pos) {
+                if (pos === 0) {
+                    return this;
+                }
+                return null;
+        	},
+            
+            size: function() {
+                return 1;
+            }
+        }
+    )
+);
+
+/* ### MultiTexture ### */
+x3dom.registerNodeType(
+    "MultiTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.MultiTexture.superClass.call(this, ctx);
+            
+            this.addField_MFNode('texture', x3dom.nodeTypes.X3DTextureNode);
+        },
+        {
+            getTexture: function(pos) {
+                if (pos >= 0 && pos < this._cf.texture.nodes.length) {
+                    return this._cf.texture.nodes[pos];
+                }
+                return null;
+        	},
+            
+            size: function() {
+                return this._cf.texture.nodes.length;
             }
         }
     )

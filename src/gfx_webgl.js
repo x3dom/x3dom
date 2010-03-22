@@ -242,7 +242,7 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
 		"    diffuse += max(0.0, dot(normal, eye));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += 0.8 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    specular += 0.8 * pow(max(0.0, dot(normal, eye)), shininess*128.0);" +
         "    vec4 texCol = texture2D(tex, texCoord);" +
         "    texCol.a *= alpha;" +
         "    vec3 rgb = emissiveColor;" +
@@ -289,7 +289,7 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
 		"    diffuse += abs(dot(normal, eye));" +
 		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += 0.8 * pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
+		"    specular += 0.8 * pow(abs(dot(normal, eye)), shininess*128.0);" +
         "    vec3 rgb = texture2D(tex, texCoord).rgb;" +
         "    float len = clamp(length(rgb), 0.0, 1.0) * alpha;" +
 		"    rgb *= (emissiveColor + diffuse*diffuseColor + specular*specularColor);" +
@@ -373,7 +373,7 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
 		"    diffuse += max(0.0, dot(normal, eye));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += 0.8 * pow(max(0.0, dot(normal, normalize(eye))), shininess*128.0);" +
+		"    specular += 0.8 * pow(max(0.0, dot(normal, eye)), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse*diffuseColor + specular*specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
@@ -457,7 +457,7 @@ x3dom.gfx_webgl = (function () {
 		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
 		"    diffuse += abs(dot(normal, eye));" +
 		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
-		"    specular += 0.8 * pow(abs(dot(normal, normalize(eye))), shininess*128.0);" +
+		"    specular += 0.8 * pow(abs(dot(normal, eye)), shininess*128.0);" +
 		"    vec3 rgb = emissiveColor + diffuse * fragColor + specular * specularColor;" +
 		"    rgb = clamp(rgb, 0.0, 1.0);" +
         "    if (shadowIntensity > 0.0) { " +
@@ -798,7 +798,7 @@ x3dom.gfx_webgl = (function () {
                 {
                 	var tex = shape._cf.appearance.node._cf.texture.node;
                     if (tex) {
-                        shape.updateTexture(tex);
+                        shape.updateTexture(tex, 0);
                     }
                 }
                 
@@ -911,7 +911,7 @@ x3dom.gfx_webgl = (function () {
 				texcoords: shape._cf.geometry.node._mesh._texCoords,
                 colors: shape._cf.geometry.node._mesh._colors,
 				indexes: shape._cf.geometry.node._mesh._indices,
-				texture: ids,
+				texture: [ids],
                 buffers: [{},{},{},{},{}]
 			};
 
@@ -923,13 +923,29 @@ x3dom.gfx_webgl = (function () {
             var context = this;
 			var tex = shape._cf.appearance.node._cf.texture.node;
             
-            shape.updateTexture = function(tex)
+            shape.updateTexture = function(tex, unit)
             {
-                var texture = gl.createTexture();
                 var that = this;
+                var texture;
                 
-                if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture))
+                if (this._webgl.texture === undefined) {
+                    this._webgl.texture = [];
+                }
+                
+                if (x3dom.isa(tex, x3dom.nodeTypes.MultiTexture))
                 {
+                    for (var cnt=0; cnt<tex.size(); cnt++)
+                    {
+                        var singleTex = tex.getTexture(cnt);
+                        if (!singleTex)
+                            break;
+                        that.updateTexture(singleTex, cnt);
+                    }
+                }
+                else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture))
+                {
+                    texture = gl.createTexture();
+                    
                     tex._video = document.createElement('video');
                     tex._video.setAttribute('autobuffer', 'true');
                     //tex._video.setAttribute('src', tex._vf.url);
@@ -963,7 +979,7 @@ x3dom.gfx_webgl = (function () {
                     {
 						that._nameSpace.doc.needRender = true;			
 						
-                        that._webgl.texture = texture;
+                        that._webgl.texture[unit] = texture;
                         //x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
                         tex._video.play();
@@ -992,10 +1008,12 @@ x3dom.gfx_webgl = (function () {
                 else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
                 {
                     texture = context.loadCubeMap(gl, tex.getTexUrl(), that._nameSpace.doc, false);
-                    that._webgl.texture = texture;
+                    that._webgl.texture[unit] = texture;
                 }
                 else
                 {
+                    texture = gl.createTexture();
+                    
                     var image = new Image();
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
                     that._nameSpace.doc.downloadCount += 1;
@@ -1005,7 +1023,7 @@ x3dom.gfx_webgl = (function () {
 						that._nameSpace.doc.needRender = true;
 						that._nameSpace.doc.downloadCount -= 1;
 						
-                        that._webgl.texture = texture;
+                        that._webgl.texture[unit] = texture;
                         //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url);
                         
                         gl.bindTexture(gl.TEXTURE_2D, texture);
@@ -1030,7 +1048,7 @@ x3dom.gfx_webgl = (function () {
 			};
             
             if (tex) {
-                shape.updateTexture(tex);
+                shape.updateTexture(tex, 0);
 			}
             
             if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
@@ -1739,6 +1757,9 @@ x3dom.gfx_webgl = (function () {
                     //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
                 );
         gl.enable(gl.BLEND);
+        
+        // currently maximum of 4 supported in Mozilla
+        var activeTex = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3];
 		
 		for (i=0, n=zPos.length; i<n; i++)
 		{
@@ -1787,9 +1808,15 @@ x3dom.gfx_webgl = (function () {
 			sp.modelViewMatrix = mat_view.mult(transform).toGL();
 			sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
 			
-			if (shape._webgl.texture !== undefined && shape._webgl.texture)
-			{
-                var tex = shape._cf.appearance.node._cf.texture.node;
+            for (var cnt=0; shape._webgl.texture !== undefined && 
+                            cnt < shape._webgl.texture.length; cnt++)
+            {
+			  if (shape._webgl.texture[cnt])
+			  {
+                var tex = null;
+                if (shape._cf.appearance.node._cf.texture.node) {
+                    tex = shape._cf.appearance.node._cf.texture.node.getTexture(cnt);
+                }
                 var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
                 if (tex && tex._vf.repeatS === false) {
                     wrapS = gl.CLAMP_TO_EDGE;
@@ -1798,14 +1825,14 @@ x3dom.gfx_webgl = (function () {
                     wrapT = gl.CLAMP_TO_EDGE;
                 }
                 
-                if (shape._webgl.texture.textureCubeReady && tex && 
+                if (shape._webgl.texture[cnt].textureCubeReady && tex && 
                     x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
                 {
                     sp.modelViewMatrixInverse = mat_view.mult(transform).inverse().toGL();
                     
                     gl.enable(gl.TEXTURE_CUBE_MAP);
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture);
+                    gl.activeTexture(activeTex[cnt]);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture[cnt]);
                     
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrapS);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrapT);
@@ -1815,8 +1842,8 @@ x3dom.gfx_webgl = (function () {
                 else
                 {
                     gl.enable(gl.TEXTURE_2D);
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture);
+                    gl.activeTexture(activeTex[cnt]);
+                    gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[cnt]);
                     
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
@@ -1849,9 +1876,10 @@ x3dom.gfx_webgl = (function () {
                     sp.sphereMapping = 0.0;
                 }
                 if (!sp.tex) {
-                    sp.tex = 0;
+                    sp.tex = 0;     //only 1st tex known in shader
                 }
-			}
+			  }
+            }
             
             if (shadowIntensity > 0) 
             {
@@ -1939,29 +1967,38 @@ x3dom.gfx_webgl = (function () {
                 x3dom.debug.logException(shape._DEF + " renderScene(): " + e);
             }
 			
-			if (shape._webgl.texture !== undefined && shape._webgl.texture)
-			{
-                if (shape._webgl.texture.textureCubeReady && tex && 
-                    x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
+            for (cnt=0; shape._webgl.texture !== undefined && 
+                        cnt < shape._webgl.texture.length; cnt++)
+            {
+                if (shape._webgl.texture[cnt])
                 {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    gl.disable(gl.TEXTURE_CUBE_MAP);
+                    tex = null;
+                    if (shape._cf.appearance.node._cf.texture.node) {
+                        tex = shape._cf.appearance.node._cf.texture.node.getTexture(cnt);
+                    }
+                    
+                    if (shape._webgl.texture[cnt].textureCubeReady && tex && 
+                        x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
+                    {
+                        gl.activeTexture(activeTex[cnt]);
+                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                        gl.disable(gl.TEXTURE_CUBE_MAP);
+                    }
+                    else
+                    {
+                        gl.activeTexture(activeTex[cnt]);
+                        gl.bindTexture(gl.TEXTURE_2D, null);
+                    }
                 }
-                else
-                {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                
-                if (shadowIntensity > 0) 
-                {
-                    gl.activeTexture(gl.TEXTURE1);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-				gl.disable(gl.TEXTURE_2D);
-			}
+            }
+            if (shadowIntensity > 0) 
+            {
+                gl.activeTexture(gl.TEXTURE1);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+            }
+            gl.disable(gl.TEXTURE_2D);
 			
+            
 			if (sp.position !== undefined) {
 				gl.disableVertexAttribArray(sp.position);
 			}
@@ -2036,10 +2073,14 @@ x3dom.gfx_webgl = (function () {
 			var shape = scene.drawableObjects[i][1];
 			var sp = shape._webgl.shader;
 			
-			if (shape._webgl.texture !== undefined && shape._webgl.texture)
-			{
-				gl.deleteTexture(shape._webgl.texture);
-			}
+            for (var cnt=0; shape._webgl.texture !== undefined && 
+                            cnt < shape._webgl.texture.length; cnt++)
+            {
+                if (shape._webgl.texture[cnt])
+                {
+                    gl.deleteTexture(shape._webgl.texture[cnt]);
+                }
+            }
 			
 			if (sp.position !== undefined) 
 			{
