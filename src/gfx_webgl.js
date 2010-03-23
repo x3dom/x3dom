@@ -1171,7 +1171,6 @@ x3dom.gfx_webgl = (function () {
             delete colors;
         }
         
-        // FIXME; clean-up on shutdown
         var currAttribs = 0;
         shape._webgl.dynamicFields = [];
         
@@ -2055,12 +2054,11 @@ x3dom.gfx_webgl = (function () {
                 gl.disableVertexAttribArray(sp.color);
             }
             
-            for (var df=0; df<shape._webgl.dynamicFields.length; df++)
+            for (df=0; df<shape._webgl.dynamicFields.length; df++)
             {
-                var attrib = shape._webgl.dynamicFields[df];
+                attrib = shape._webgl.dynamicFields[df];
                 
-                if (sp[attrib.name] !== undefined)
-                {
+                if (sp[attrib.name] !== undefined) {
                     gl.disableVertexAttribArray(sp[attrib.name]);
                 }
             }
@@ -2155,6 +2153,16 @@ x3dom.gfx_webgl = (function () {
 			{
 				gl.deleteBuffer(shape._webgl.buffers[4]);
 			}
+            
+            for (var df=0; df<shape._webgl.dynamicFields.length; df++)
+            {
+                var attrib = shape._webgl.dynamicFields[df];
+                
+                if (sp[attrib.name] !== undefined)
+                {
+                    gl.deleteBuffer(attrib.buf);
+                }
+            }
 		}
 	};
     
