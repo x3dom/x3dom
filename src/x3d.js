@@ -1549,29 +1549,31 @@ x3dom.registerNodeType(
                 
                 for (i=0; i<n; i++)
                 {
-                    switch (this._cf.vertexAttributes.nodes[i]._vf.name.toLowerCase())
+                    var name = this._cf.vertexAttributes.nodes[i]._vf.name;
+                    
+                    switch (name.toLowerCase())
                     {
-                        case "position":
-                        {
+                        case "position": 
                             this._mesh._positions = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
-                        }
-                        break;
+                            break;
                         case "normal":
-                        {
                             this._mesh._normals = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
-                        }
-                        break;
+                            break;
                         case "texcoord":
-                        {
                             this._mesh._texCoords = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
-                        }
-                        break;
+                            break;
                         case "color":
-                        {
                             this._mesh._colors = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                            break;
+                        default:
+                        {
+                            this._mesh._dynamicFields[name] = {};
+                            this._mesh._dynamicFields[name].numComponents =
+                                       this._cf.vertexAttributes.nodes[i]._vf.numComponents;
+                            this._mesh._dynamicFields[name].value =
+                                       this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
                         }
                         break;
-                        default:
                     }
                 }
                 
@@ -2101,7 +2103,6 @@ x3dom.registerNodeType(
     )
 );
 
-
 /* ### X3DComposedGeometryNode ### */
 x3dom.registerNodeType(
     "X3DComposedGeometryNode",
@@ -2109,6 +2110,57 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.X3DComposedGeometryNode.superClass.call(this, ctx);
+            
+            this.addField_SFBool(ctx, 'colorPerVertex', true);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
+            
+            this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
+            
+            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
+            this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
+            this.addField_SFNode('color', x3dom.nodeTypes.Color);
+            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
+        },
+        {
+            handleAttribs: function()
+            {
+                //var time0 = new Date().getTime();
+                
+                var i, n = this._cf.attrib.nodes.length;
+                
+                for (i=0; i<n; i++)
+                {
+                    var name = this._cf.attrib.nodes[i]._vf.name;
+                    
+                    switch (name.toLowerCase())
+                    {
+                        case "position": 
+                            this._mesh._positions = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            break;
+                        case "normal":
+                            this._mesh._normals = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            break;
+                        case "texcoord":
+                            this._mesh._texCoords = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            break;
+                        case "color":
+                            this._mesh._colors = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            break;
+                        default:
+                        {
+                            this._mesh._dynamicFields[name] = {};
+                            this._mesh._dynamicFields[name].numComponents =
+                                       this._cf.attrib.nodes[i]._vf.numComponents;
+                            this._mesh._dynamicFields[name].value =
+                                       this._cf.attrib.nodes[i]._vf.value.toGL();
+                        }
+                        break;
+                    }
+                }
+                
+                //var time1 = new Date().getTime() - time0;
+                //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
+            }
         }
     )
 );
@@ -2123,23 +2175,18 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
             
 			this.addField_SFFloat(ctx, 'creaseAngle', 0);	// TODO
-            this.addField_SFBool(ctx, 'colorPerVertex', true);
-            this.addField_SFBool(ctx, 'normalPerVertex', true);
             
             this.addField_MFInt32(ctx, 'coordIndex', []);
             this.addField_MFInt32(ctx, 'normalIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
             this.addField_MFInt32(ctx, 'texCoordIndex', []);
-            
-            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
-            this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
-            this.addField_SFNode('color', x3dom.nodeTypes.Color);
-            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
         },
         {
             nodeChanged: function()
             {
                 var time0 = new Date().getTime();
+                
+                this.handleAttribs();
                 
                 var indexes = this._vf.coordIndex;
                 var normalInd = this._vf.normalIndex;
@@ -2536,20 +2583,14 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.IndexedTriangleSet.superClass.call(this, ctx);
             
-			this.addField_SFBool(ctx, 'colorPerVertex', true);
-            this.addField_SFBool(ctx, 'normalPerVertex', true);
-            
             this.addField_MFInt32(ctx, 'index', []);
-            
-            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
-            this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
-            this.addField_SFNode('color', x3dom.nodeTypes.Color);
-            this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
         },
         {
             nodeChanged: function()
             {
                 var time0 = new Date().getTime();
+                
+                this.handleAttribs();
                 
                 // TODO; implement colorPerVertex/normalPerVertex
                 var colPerVert = this._vf.colorPerVertex;
@@ -2814,7 +2855,6 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.FloatVertexAttribute.superClass.call(this, ctx);
             
-            this.addField_SFString(ctx, 'name', "");
             this.addField_SFInt32(ctx, 'numComponents', 4);
             this.addField_MFFloat(ctx, 'value', []);
         },
@@ -4666,8 +4706,10 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             
             //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
             
-			parent.removeChild(child);
-			doc.needRender = true;			
+            if (parent) {
+                parent.removeChild(child);
+                doc.needRender = true;			
+            }
         },
         onNodeInserted: function(e) {
             var parent = e.target.parentNode._x3domNode;

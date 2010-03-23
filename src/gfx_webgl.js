@@ -1170,6 +1170,33 @@ x3dom.gfx_webgl = (function () {
             
             delete colors;
         }
+        
+        // FIXME; clean-up on shutdown
+        var currAttribs = 0;
+        shape._webgl.dynamicFields = [];
+        
+        for (var df in shape._cf.geometry.node._mesh._dynamicFields)
+        {
+            var attrib = shape._cf.geometry.node._mesh._dynamicFields[df];
+            
+            shape._webgl.dynamicFields[currAttribs] = {
+                  buf: {}, name: df, numComponents: attrib.numComponents };
+            
+            if (sp[df] !== undefined)
+            {
+                var attribBuffer = gl.createBuffer();
+                shape._webgl.dynamicFields[currAttribs++].buf = attribBuffer;
+                
+                var attribs = new WebGLFloatArray(attrib.value);
+                
+                gl.bindBuffer(gl.ARRAY_BUFFER, attribBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, attribs, gl.STATIC_DRAW);				
+                
+                gl.vertexAttribPointer(sp[df], attrib.numComponents, gl.FLOAT, false, 0, 0); 
+                
+                delete attribs;
+            }
+        }
 	};
     
     // mainly manages rendering of backgrounds and buffer clearing
@@ -1935,7 +1962,20 @@ x3dom.gfx_webgl = (function () {
 				gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.color);
 			}
-			
+            
+            for (var df=0; df<shape._webgl.dynamicFields.length; df++)
+            {
+                var attrib = shape._webgl.dynamicFields[df];
+                
+                if (sp[attrib.name] !== undefined)
+                {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, attrib.buf);
+                    
+                    gl.vertexAttribPointer(sp[attrib.name], attrib.numComponents, gl.FLOAT, false, 0, 0); 
+                    gl.enableVertexAttribArray(sp[attrib.name]);
+                }
+            }
+            
 			if (shape.isSolid()) {
 				gl.enable(gl.CULL_FACE);
                 
@@ -2013,6 +2053,16 @@ x3dom.gfx_webgl = (function () {
 			}
             if (sp.color !== undefined) {
                 gl.disableVertexAttribArray(sp.color);
+            }
+            
+            for (var df=0; df<shape._webgl.dynamicFields.length; df++)
+            {
+                var attrib = shape._webgl.dynamicFields[df];
+                
+                if (sp[attrib.name] !== undefined)
+                {
+                    gl.disableVertexAttribArray(sp[attrib.name]);
+                }
             }
 		}
 		
