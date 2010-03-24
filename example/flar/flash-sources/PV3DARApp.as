@@ -70,10 +70,10 @@
 				this._baseNode.setTransformMatrix(this._resultMat);
 				this._baseNode.visible = true;
 				// send Matrix to JS (WebGL)
-				detected_js(e, this._resultMat);
+				on_marker_detected(e, this._resultMat);
 			} else {
 				this._baseNode.visible = false;
-				//notdetected_js(e);
+				on_marker_loss(e);
 			}
 			
 			this._renderer.render();
@@ -95,13 +95,11 @@
 		
 		
 		// ** JS Eventsender for WebGL Rendering **
-		/*
-		function notdetected_js(event:Event):void {
-			//var result:Object = ExternalInterface.call("js_notdetected", 0);
+		function on_marker_loss(event:Event):void {
+			var result:Object = ExternalInterface.call("on_marker_loss", 0);
 		}
-		*/
 		
-		function detected_js(event:Event, matrix:FLARTransMatResult):void 
+		function on_marker_detected(event:Event, matrix:FLARTransMatResult):void 
 		{
 			var js_matrix = this._baseNode.getMatrixArray();
 			//var result:Object = ExternalInterface.call("js_detected", 0);
