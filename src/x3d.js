@@ -1147,15 +1147,15 @@ x3dom.registerNodeType(
             this._fragment = null;
             
             x3dom.debug.logInfo("Current ComposedShader node implementation limitations:\n" +
-                    "Vertex attributes, matrices and texture are provided as follows...\n" +
+                    "Vertex attributes (if given in the standard X3D fields 'coord', 'color', " +
+                    "'normal', 'texCoord'), matrices and texture are provided as follows...\n" +
                     "    attribute vec3 position;\n" +
                     "    attribute vec3 normal;\n" +
                     "    attribute vec2 texcoord;\n" +
                     "    attribute vec3 color;\n" +
                     "    uniform mat4 modelViewProjectionMatrix;\n" +
                     "    uniform mat4 modelViewMatrix;\n" +
-                    "    uniform sampler2D tex;\n" +
-                    "\n");
+                    "    uniform sampler2D tex;\n");
         },
         {
             nodeChanged: function()
