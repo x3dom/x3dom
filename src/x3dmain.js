@@ -170,6 +170,9 @@ x3dom.X3DCanvas = function(x3dElem) {
     else {
         this.hasRuntime = x3dElem.hasRuntime;
     }
+    if (this.gl === null) {
+        this.hasRuntime = false;
+    }
     
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = (this.showStat !== null && this.showStat == "true") ? this.createStatDiv() : null;
@@ -415,6 +418,26 @@ x3dom.userAgentFeature = {
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
 			if (x3dcanvas.gl === null)
 			{
+            /*
+                var domString, embed;
+                //var dom = (new DOMParser()).parseFromString(xmlstring, "text/xml");
+                domString = (new XMLSerializer()).serializeToString(x3ds[i].childNodes[1]);
+                domString = "<X3D>\n" + domString + "\n</X3D>\n";
+                //domString = domString.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                //x3dom.debug.logInfo(domString);
+                //alert(domString);
+                
+                embed = document.createElement("embed");
+                embed.setAttribute("id", "embed1");
+                embed.setAttribute("type", "model/vrml");
+                embed.setAttribute("width", x3dcanvas.canvasDiv.style.width);
+                embed.setAttribute("height", x3dcanvas.canvasDiv.style.height);
+                //embed.setAttribute("src", "flipper.x3d");
+                x3dcanvas.canvasDiv.appendChild(embed);
+                embed.load(domString);
+                break;
+            */
+                
                 var altDiv = document.createElement("div");
                 altDiv.setAttribute("class", "x3dom-nox3d");
                 var altP = document.createElement("p");
