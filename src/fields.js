@@ -659,6 +659,39 @@ x3dom.fields.Quaternion.prototype.toMatrix = function () {
     );
 };
 
+x3dom.fields.Quaternion.prototype.toAxisAngle = function()
+{
+ var a = 0;
+ var x = 0;
+ var y = 0;
+ var z = 0;
+
+ var that = this;
+ if ( this.w > 1 )
+ {
+   that = x3dom.fields.Quaternion.normalize( this );
+ }
+
+ a = 2 * Math.acos( that.w );
+ s = Math.sqrt( 1 - that.w * that.w );
+
+ if ( s < x3dom.fields.Eps )
+ {
+   x = that.x;
+   y = that.y;
+   z = that.z;
+ }
+ else
+ {
+   x = that.x / s;
+   y = that.y / s;
+   z = that.z / s;
+ }
+
+ return [ new x3dom.fields.SFVec3f(x,y,z), a ];
+
+}
+
 x3dom.fields.Quaternion.prototype.dot = function (that) {
     return this.x*that.x + this.y*that.y + this.z*that.z + this.w*that.w;
 };
