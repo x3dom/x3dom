@@ -521,9 +521,9 @@ x3dom.gfx_webgl = (function () {
 		};
 
 	g_shaders['fs-x3d-default'] = { type: "fragment", data:
-		"uniform vec3 diffuseColor;" +
+		"uniform vec3 emissiveColor;" +
 		"void main(void) {" +
-		"    gl_FragColor = vec4(diffuseColor, 1.0);" +
+		"    gl_FragColor = vec4(emissiveColor, 1.0);" +
 		"}"
 		};
     
@@ -1055,7 +1055,26 @@ x3dom.gfx_webgl = (function () {
                 shape._webgl.primType = gl.POINTS;
                 
                 //TODO; remove these hacky thousands of shaders!!!
-                shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
+                if (shape._webgl.colors.length) {
+                    shape._webgl.shader = getShaderProgram(gl, 
+                                          ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
+                }
+                else {
+                    shape._webgl.shader = getShaderProgram(gl, 
+                                          ['vs-x3d-default', 'fs-x3d-default']);
+                }
+            }
+            else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) {
+                shape._webgl.primType = gl.LINES;
+                
+                if (shape._webgl.colors.length) {
+                    shape._webgl.shader = getShaderProgram(gl, 
+                                          ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
+                }
+                else {
+                    shape._webgl.shader = getShaderProgram(gl, 
+                                          ['vs-x3d-default', 'fs-x3d-default']);
+                }
             }
             else {
                 //TODO; also account for other cases such as LineSet
