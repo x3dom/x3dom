@@ -411,11 +411,42 @@ x3dom.userAgentFeature = {
         
 		x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + 
                 " X3D and " + w3sg.length + " (experimental) WebSG nodes...");
-
+        
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
-        for (i=0; i<x3ds.length; i++) {
+        for (i=0; i<x3ds.length; i++)
+        {
+        /*
+            // http://de.selfhtml.org/javascript/objekte/mimetypes.htm
+            if (navigator.mimeTypes["model/vrml"] &&
+                navigator.mimeTypes["model/vrml"].enabledPlugin != null)
+            {
+                alert(navigator.mimeTypes["model/vrml"].suffixes);
+                
+                var domString, embed;
+                //var dom = (new DOMParser()).parseFromString(xmlstring, "text/xml");
+                domString = (new XMLSerializer()).serializeToString(x3ds[i].childNodes[1]);
+                domString = "<X3D>\n" + domString + "\n</X3D>\n";
+                //domString = domString.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+                //x3dom.debug.logInfo(domString);
+                //alert(domString);
+                
+                embed = document.createElement("embed");
+                embed.setAttribute("id", "embed1");
+                embed.setAttribute("type", "model/vrml");
+                embed.setAttribute("width", x3ds[i].getAttribute("width"));
+                embed.setAttribute("height", x3ds[i].getAttribute("height"));
+                //embed.setAttribute("src", "flipper.x3d");
+                
+                x3ds[i].parentNode.insertBefore(embed, x3ds[i]);
+                embed.load(domString);
+                
+                continue;
+            }
+        */
+            
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
+            
 			if (x3dcanvas.gl === null)
 			{
             /*
