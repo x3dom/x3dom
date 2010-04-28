@@ -1555,6 +1555,9 @@ x3dom.gfx_webgl = (function () {
 			var trafo = scene.drawableObjects[i][0];
 			var shape = scene.drawableObjects[i][1];
             
+            if (shape._objectID < 1)
+                continue;
+            
             sp.modelMatrix = trafo.toGL();
 			//sp.modelMatrix = mat_view.mult(trafo).toGL();
 			sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();

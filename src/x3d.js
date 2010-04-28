@@ -1507,6 +1507,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'ccw', true);
 			
 			this._mesh = new x3dom.Mesh(this);
+            this._pickable = true;
         },
 		{
 			getVolume: function(min, max, invalidate) {
@@ -1996,6 +1997,8 @@ x3dom.registerNodeType(
             
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
             this.addField_SFNode('color', x3dom.nodeTypes.Color);
+            
+            this._pickable = false;
         },
         {
             nodeChanged: function()
@@ -2181,6 +2184,8 @@ x3dom.registerNodeType(
             
             this.addField_MFInt32(ctx, 'coordIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
+            
+            this._pickable = false;
         },
         {
             nodeChanged: function()
@@ -3658,11 +3663,11 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DShapeNode,
         function (ctx) {
             x3dom.nodeTypes.Shape.superClass.call(this, ctx);
-            
-            this._objectID = ++x3dom.nodeTypes.Shape.objectID;
-            
+                        
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
+            
+            this._objectID = 0;
             
             this._dirty = {
 				positions: true,
@@ -3678,7 +3683,10 @@ x3dom.registerNodeType(
 				if (!this._cf.appearance.node) {
 					this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
 				}
-                x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
+                if (!this._objectID && this._cf.geometry.node._pickable) {
+                    this._objectID = ++x3dom.nodeTypes.Shape.objectID;
+                    x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
+                }
 			},
             
             collectDrawableObjects: function (transform, out) {
