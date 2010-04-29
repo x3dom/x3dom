@@ -1520,7 +1520,12 @@ x3dom.registerNodeType(
 			},
             
             doIntersect: function(line) {
-                return this._mesh.doIntersect(line);
+                if (this._pickable) {
+                    return this._mesh.doIntersect(line);
+                }
+                else {
+                    return false;
+                }
             }
 		}
     )
