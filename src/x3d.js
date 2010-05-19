@@ -2525,6 +2525,7 @@ x3dom.registerNodeType(
                         // (TODO: this assumes polygons are convex)
                         if (indexes[i] == -1) {
                             t = 0;
+                            faceCnt++;
                             continue;
                         }
                         
@@ -2544,20 +2545,24 @@ x3dom.registerNodeType(
                             case 0: 
                                 p0 = +indexes[i];
                                 if (hasNormalInd && normPerVert) { n0 = +normalInd[i]; }
+                                else if (hasNormalInd && !normPerVert) { n0 = +normalInd[faceCnt]; }
                                 else { n0 = p0; }
                                 if (hasTexCoordInd) { t0 = +texCoordInd[i]; }
                                 else { t0 = p0; }
                                 if (hasColorInd && colPerVert) { c0 = +colorInd[i]; }
+                                else if (hasColorInd && !colPerVert) { c0 = +colorInd[faceCnt]; }
                                 else { c0 = p0; }
                                 t = 1; 
                             break;
                             case 1: 
                                 p1 = +indexes[i];
                                 if (hasNormalInd && normPerVert) { n1 = +normalInd[i]; }
+                                else if (hasNormalInd && !normPerVert) { n1 = +normalInd[faceCnt]; }
                                 else { n1 = p1; }
                                 if (hasTexCoordInd) { t1 = +texCoordInd[i]; }
                                 else { t1 = p1; }
                                 if (hasColorInd && colPerVert) { c1 = +colorInd[i]; }
+                                else if (hasColorInd && !colPerVert) { c1 = +colorInd[faceCnt]; }
                                 else { c1 = p1; }
                                 t = 2; 
                             break;
@@ -2586,10 +2591,6 @@ x3dom.registerNodeType(
                                 this._mesh._positions.push(positions[p2].z);
                                 
                                 if (hasNormal) {
-                                    if (!normPerVert) {
-                                        n0 = n2;
-                                        n1 = n2;
-                                    }
                                     this._mesh._normals.push(normals[n0].x);
                                     this._mesh._normals.push(normals[n0].y);
                                     this._mesh._normals.push(normals[n0].z);
@@ -2606,10 +2607,6 @@ x3dom.registerNodeType(
                                 
                                 if (hasColor) {
                                     //assume RGB for now...
-                                    if (!colPerVert) {
-                                        c0 = c2;
-                                        c1 = c2;
-                                    }
                                     this._mesh._colors.push(colors[c0].r);
                                     this._mesh._colors.push(colors[c0].g);
                                     this._mesh._colors.push(colors[c0].b);
@@ -2631,21 +2628,21 @@ x3dom.registerNodeType(
                                     this._mesh._texCoords.push(texCoords[t2].y);
                                 }
                                 
-                                faceCnt++;
+                                //faceCnt++;
                             break;
                             case 3: 
                                 p1 = p2; 
-                                n1 = n2;
                                 t1 = t2;
-                                c1 = c2;
+                                if (normPerVert) { n1 = n2; }
+                                if (colPerVert) {c1 = c2; }
                                 p2 = +indexes[i];
-                                if (hasNormalInd) { n2 = +normalInd[i]; }
-                                else if (hasNormalInd && !normPerVert) { n2 = +normalInd[faceCnt]; }
+                                if (hasNormalInd && normPerVert) { n2 = +normalInd[i]; }
+                                else if (hasNormalInd && !normPerVert) { /*n2 = +normalInd[faceCnt];*/ }
                                 else { n2 = p2; }
                                 if (hasTexCoordInd) { t2 = +texCoordInd[i]; }
                                 else { t2 = p2; }
                                 if (hasColorInd && colPerVert) { c2 = +colorInd[i]; }
-                                else if (hasColorInd && !colPerVert) { c2 = +colorInd[faceCnt]; }
+                                else if (hasColorInd && !colPerVert) { /*c2 = +colorInd[faceCnt];*/ }
                                 else { c2 = p2; }
                                 
                                 this._mesh._indices.push(cnt++, cnt++, cnt++);
@@ -2661,10 +2658,6 @@ x3dom.registerNodeType(
                                 this._mesh._positions.push(positions[p2].z);
                                 
                                 if (hasNormal) {
-                                    if (!normPerVert) {
-                                        n0 = n2;
-                                        n1 = n2;
-                                    }
                                     this._mesh._normals.push(normals[n0].x);
                                     this._mesh._normals.push(normals[n0].y);
                                     this._mesh._normals.push(normals[n0].z);
@@ -2681,10 +2674,6 @@ x3dom.registerNodeType(
                                 
                                 if (hasColor) {
                                     //assume RGB for now...
-                                    if (!colPerVert) {
-                                        c0 = c2;
-                                        c1 = c2;
-                                    }
                                     this._mesh._colors.push(colors[c0].r);
                                     this._mesh._colors.push(colors[c0].g);
                                     this._mesh._colors.push(colors[c0].b);
@@ -2706,7 +2695,7 @@ x3dom.registerNodeType(
                                     this._mesh._texCoords.push(texCoords[t2].y);
                                 }
                                 
-                                faceCnt++;
+                                //faceCnt++;
                             break;
                             default:
                         }
