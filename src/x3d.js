@@ -1255,6 +1255,8 @@ x3dom.Mesh = function(parent)
 	this._min = new x3dom.fields.SFVec3f(0,0,0);
 	this._max = new x3dom.fields.SFVec3f(0,0,0);
 	this._invalidate = true;
+    this._numFaces = 0;
+    this._numCoords = 0;
 };
 
 x3dom.Mesh.prototype._dynamicFields = {};   // can hold X3DVertexAttributeNodes
@@ -1269,6 +1271,7 @@ x3dom.Mesh.prototype._lit = true;
 x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};
 x3dom.Mesh.prototype._invalidate = true;
+x3dom.Mesh.prototype._numFaces = 0;
 
 x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 {
@@ -1585,6 +1588,8 @@ x3dom.registerNodeType(
                 
                 this._mesh._indices = this._vf.index.toGL();
                 this._mesh._invalidate = true;
+                this._mesh._numFaces = this._mesh._indices.length / 3;
+                this._mesh._numCoords = this._mesh._positions.length / 3;
                 
                 //var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -1610,7 +1615,7 @@ x3dom.registerNodeType(
             } else {
                 sx = sy = sz = 2;
             }
-    
+            
             sx /= 2; sy /= 2; sz /= 2;
 			
             this._mesh._positions = [
@@ -1646,6 +1651,8 @@ x3dom.registerNodeType(
                 20,22,21, 22,20,23
             ];
 			this._mesh._invalidate = true;
+            this._mesh._numFaces = 12;
+            this._mesh._numCoords = 24;
         }
     )
 );
@@ -1727,6 +1734,8 @@ x3dom.registerNodeType(
             }
             
             this._mesh._invalidate = true;
+            this._mesh._numFaces = this._mesh._indices.length / 3;
+            this._mesh._numCoords = this._mesh._positions.length / 3;
         }
     )
 );
@@ -1790,6 +1799,8 @@ x3dom.registerNodeType(
 			this._mesh._texCoords = t;
             this._mesh._indices = i;
 			this._mesh._invalidate = true;
+            this._mesh._numFaces = this._mesh._indices.length / 3;
+            this._mesh._numCoords = this._mesh._positions.length / 3;
         }
     )
 );
@@ -1878,6 +1889,8 @@ x3dom.registerNodeType(
 			this._mesh._texCoords = t;
             this._mesh._indices = i;
 			this._mesh._invalidate = true;
+            this._mesh._numFaces = this._mesh._indices.length / 3;
+            this._mesh._numCoords = this._mesh._positions.length / 3;
         }
     )
 );
@@ -1988,6 +2001,8 @@ x3dom.registerNodeType(
 			this._mesh._texCoords = t;
             this._mesh._indices = i;
 			this._mesh._invalidate = true;
+            this._mesh._numFaces = this._mesh._indices.length / 3;
+            this._mesh._numCoords = this._mesh._positions.length / 3;
         }
     )
 );
@@ -2032,6 +2047,7 @@ x3dom.registerNodeType(
                 this._mesh._texCoords = [];
                 this._mesh._lit = false;
                 this._mesh._invalidate = true;
+                this._mesh._numCoords = this._mesh._positions.length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -2352,6 +2368,7 @@ x3dom.registerNodeType(
                 }
                 
                 this._mesh._invalidate = true;
+                this._mesh._numCoords = this._mesh._positions.length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -2750,6 +2767,8 @@ x3dom.registerNodeType(
                 }
                 
                 this._mesh._invalidate = true;
+                this._mesh._numFaces = this._mesh._indices.length / 3;
+                this._mesh._numCoords = this._mesh._positions.length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -2893,6 +2912,8 @@ x3dom.registerNodeType(
                 }
                 
                 this._mesh._invalidate = true;
+                this._mesh._numFaces = this._mesh._indices.length / 3;
+                this._mesh._numCoords = this._mesh._positions.length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -3260,13 +3281,10 @@ x3dom.registerNodeType(
         },
 		{
 			initDefault: function() {
-				;
 			},
 			activate: function () {
-				;
 			},
 			deactivate: function () {
-				;
 			},
 			nodeChanged: function() {
 			}

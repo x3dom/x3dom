@@ -1631,6 +1631,8 @@ x3dom.gfx_webgl = (function () {
 		}
         
         var t0, t1;
+        var numFaces = 0;
+        var numCoords = 0;
 		
 		// render traversal
 		if (scene.drawableObjects === undefined || !scene.drawableObjects)
@@ -1938,7 +1940,7 @@ x3dom.gfx_webgl = (function () {
                     sp.sh_tex = 3;      // put it on 4th unit
                 }
                 gl.activeTexture(gl.TEXTURE3);
-                gl.bindTexture(gl.TEXTURE_2D,scene._webgl.fboShadow.tex);
+                gl.bindTexture(gl.TEXTURE_2D, scene._webgl.fboShadow.tex);
                 
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -2024,8 +2026,12 @@ x3dom.gfx_webgl = (function () {
                 }
                 else {
                     gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                    
+                    numFaces += shape._cf.geometry.node._mesh._numFaces;
+                    //x3dom.debug.logInfo("numFaces: " + shape._cf.geometry.node._mesh._numFaces);
                 }
               }
+              numCoords += shape._cf.geometry.node._mesh._numCoords;
             }
             catch (e) {
                 x3dom.debug.logException(shape._DEF + " renderScene(): " + e);
@@ -2114,6 +2120,10 @@ x3dom.gfx_webgl = (function () {
 		if (this.canvas.parent.statDiv) {
 			this.canvas.parent.statDiv.appendChild(document.createElement("br"));
 			this.canvas.parent.statDiv.appendChild(document.createTextNode("render: " + t1));
+            this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Tris: " + numFaces));
+            this.canvas.parent.statDiv.appendChild(document.createElement("br"));
+            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Pnts: " + numCoords));
 		}
 		
 		scene.drawableObjects = null;
