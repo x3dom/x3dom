@@ -3764,7 +3764,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
             
             this.addField_SFBool(ctx, 'render', true);
-			this.addField_MFNode ('children', x3dom.nodeTypes.X3DChildNode);
+			this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
             // FIXME; add addChild and removeChild slots ?
         },
         {
@@ -4323,7 +4323,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
             
-            // define the experimental picking mode: box, exact (NYI), idBuf
+            // define the experimental picking mode: box, exact (NYI), idBuf, color
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             
             // if (pickMode = idBuf && mouse event) then set to true
@@ -4608,7 +4608,8 @@ x3dom.registerNodeType(
                 this._lastX = x;
                 this._lastY = y;
                 
-                var avoidTraversal = (this._vf.pickMode.toLowerCase() === "idbuf");
+                var avoidTraversal = (this._vf.pickMode.toLowerCase() === "idbuf" ||
+                                      this._vf.pickMode.toLowerCase() === "color");
                 var isect = false;
                 var obj = null;
                 
@@ -5099,6 +5100,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 112: /* p, switch intersect type */
             {
                 if (this._scene._vf.pickMode.toLowerCase() === "idbuf") {
+                    this._scene._vf.pickMode = "color";
+                }
+                else if (this._scene._vf.pickMode.toLowerCase() === "color") {
                     this._scene._vf.pickMode = "box";
                 }
                 else {

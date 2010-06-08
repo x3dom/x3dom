@@ -904,6 +904,8 @@ x3dom.gfx_webgl = (function () {
 			shape._cf.geometry.node._mesh._colors = [];
 			shape._cf.geometry.node._mesh._indices = [0,1,2, 2,3,0];
             shape._cf.geometry.node._mesh._invalidate = true;
+            shape._cf.geometry.node._mesh._numFaces = 2;
+            shape._cf.geometry.node._mesh._numCoords = 4;
                 
 			shape._webgl = {
 				positions: shape._cf.geometry.node._mesh._positions,
@@ -1530,7 +1532,7 @@ x3dom.gfx_webgl = (function () {
     };
     
     
-    Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, min, max)
+    Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, min, max, pickColor)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         
@@ -1545,7 +1547,9 @@ x3dom.gfx_webgl = (function () {
         gl.enable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         
-        var sp = scene._webgl.pickShader;
+        var sp;
+        if (!pickColor) { sp = scene._webgl.pickShader; }
+        else { sp = scene._webgl.pickColorShader; }
         sp.bind();
         
         var i, n = scene.drawableObjects.length;
@@ -1564,7 +1568,13 @@ x3dom.gfx_webgl = (function () {
             
             sp.wcMin = min.toGL();
             sp.wcMax = max.toGL();
-            sp.id = 1.0 - shape._objectID / 255.0;   //FIXME; allow more than 255 objects!
+            //FIXME; allow more than 255 objects!
+            if (!pickColor) {
+                sp.id = 1.0 - shape._objectID / 255.0;
+            }
+            else {
+                sp.alpha = 1.0 - shape._objectID / 255.0;
+            }
             
             if (sp.position !== undefined) 
 			{
@@ -1574,6 +1584,14 @@ x3dom.gfx_webgl = (function () {
 				
 				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
 				gl.enableVertexAttribArray(sp.position);
+			}
+            //  **********************
+			if (sp.color !== undefined)
+			{
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[4]);
+				
+				gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+				gl.enableVertexAttribArray(sp.color);
 			}
             
             try {
@@ -1585,6 +1603,10 @@ x3dom.gfx_webgl = (function () {
             
 			if (sp.position !== undefined) {
 				gl.disableVertexAttribArray(sp.position);
+			}
+            //  **********************
+			if (sp.color !== undefined) {
+				gl.disableVertexAttribArray(sp.color);
 			}
         }
         gl.flush();
@@ -1625,6 +1647,7 @@ x3dom.gfx_webgl = (function () {
                         this.canvas.height * scene._webgl.pickScale, true);
             scene._webgl.fboPick.pixelData = null;
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
+            scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             
             scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false);
             scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
@@ -1705,16 +1728,20 @@ x3dom.gfx_webgl = (function () {
         // render color-buf pass for picking
         if (pick)
         {
+            var pickColor = (scene._vf.pickMode.toLowerCase() === "color");
             //t0 = new Date().getTime();
             
             // TODO; optimize call by reusing calculated volume!
             var min = x3dom.fields.SFVec3f.MAX();
             var max = x3dom.fields.SFVec3f.MIN();
-            scene.getVolume(min, max, true);
+            
+            if (!pickColor) {
+                scene.getVolume(min, max, true);
+            }
             
             t0 = new Date().getTime();
             
-            this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max);
+            this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max, pickColor);
             
             scene._updatePicking = false;
             
@@ -1723,11 +1750,15 @@ x3dom.gfx_webgl = (function () {
             var index = 0;
             if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
                 var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
-                pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / 255;
-                pickPos.y = scene._webgl.fboPick.pixelData[index + 1] / 255;
-                pickPos.z = scene._webgl.fboPick.pixelData[index + 2] / 255;
+                var charMax = pickColor ? 1 : 255;
                 
-                pickPos = pickPos.multComponents(max.subtract(min)).add(min);
+                pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / charMax;
+                pickPos.y = scene._webgl.fboPick.pixelData[index + 1] / charMax;
+                pickPos.z = scene._webgl.fboPick.pixelData[index + 2] / charMax;
+                
+                if (!pickColor) {
+                    pickPos = pickPos.multComponents(max.subtract(min)).add(min);
+                }
                 var objId = 255 - scene._webgl.fboPick.pixelData[index + 3];
                 //x3dom.debug.logInfo(pickPos + " / " + objId);
                 
@@ -2101,7 +2132,8 @@ x3dom.gfx_webgl = (function () {
 		
         if (scene._visDbgBuf !== undefined && scene._visDbgBuf)
         {
-            if (scene._vf.pickMode.toLowerCase() === "idbuf") {
+            if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
+                scene._vf.pickMode.toLowerCase() === "color") {
                 gl.viewport(0, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
