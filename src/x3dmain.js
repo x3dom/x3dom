@@ -314,7 +314,10 @@ x3dom.X3DCanvas.prototype.tick = function()
 		}
 		else {
 			if (this.statDiv) {
-				this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
+                if (this.doc.lastDownloadCount !== this.doc.downloadCount) {
+                    this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
+                }
+                this.doc.lastDownloadCount = this.doc.downloadCount;
 			}
 		}
 	}
