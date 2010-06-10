@@ -1612,10 +1612,15 @@ x3dom.gfx_webgl = (function () {
         gl.flush();
         
         try {
+            var x = scene._lastX * scene._webgl.pickScale,
+                y = scene._webgl.fboPick.height - 1 - scene._lastY * scene._webgl.pickScale;
             var data = gl.readPixels(//0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
-                                 scene._lastX * scene._webgl.pickScale, 
-                                 scene._webgl.fboPick.height - 1 - scene._lastY * scene._webgl.pickScale, 
-                                 1, 1, gl.RGBA, gl.UNSIGNED_BYTE);
+                                     x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE);
+            if (!data) {
+                var buf = new Uint8Array(1 * 1 * 4);
+                gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf);
+                data = buf;
+            }
             if (data.data) { data = data.data };
             scene._webgl.fboPick.pixelData = data;
         }
