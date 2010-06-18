@@ -3562,6 +3562,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
             
+			ctx.doc._nodeBag.lights.push(this);
+
 			this.addField_SFFloat(ctx, 'ambientIntensity', 0);
             this.addField_SFColor(ctx, 'color', 1, 1, 1);
 			this.addField_SFFloat(ctx, 'intensity', 1);
@@ -4282,7 +4284,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
             
-			ctx.doc.animNode.push(this);
+			ctx.doc._nodeBag.timer.push(this);
 			
 			this.addField_SFBool(ctx, 'enabled', true);
             this.addField_SFTime(ctx, 'cycleInterval', 1);
@@ -4880,7 +4882,9 @@ x3dom.X3DDocument = function(canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
 	this.needRender = true;
-	this.animNode = [];
+	this._scene = 0;
+	this._nodeBag = { timer: [], lights: [], clipPlanes: [] };
+	//this.animNode = [];
 	this.downloadCount = 0;
     this.onload = function () {};
     this.onerror = function () {};
@@ -4990,9 +4994,12 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 	}
 	
     var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
+	
+	// create and add the NodeNameSpace 
 	var nameSpace = new x3dom.NodeNameSpace("scene", doc);
     var scene = nameSpace.setupTree(sceneElem);
     
+	// link scene
     this._scene = scene;
 	
 	// create view 
@@ -5001,9 +5008,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
-    if (this.animNode.length) {
+    if (this._nodeBag.timer.length) {
 		this.needRender = true;
-        Array.forEach( this.animNode, function (node) { node.onframe(t); } );
+        Array.forEach( this._nodeBag.timer, function (node) { node.onframe(t); } );
     }
 };
 
