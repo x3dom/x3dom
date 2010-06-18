@@ -656,6 +656,7 @@ x3dom.gfx_webgl = (function () {
 		
         var loc = null, obj = null;
 		var i = 0;
+        var glErr;
         
         var numUniforms = gl.getProgramParameter(sp, gl.ACTIVE_UNIFORMS);
 		
@@ -666,9 +667,12 @@ x3dom.gfx_webgl = (function () {
 			}
 			catch (eu) {}
 
-			if (gl.getError() !== 0) {
+            glErr = gl.getError();
+            
+			if (glErr !== 0) {
 				//x3dom.debug.logInfo("GetProgramiv(ACTIVE_UNIFORMS) not implemented, loop until error");
-				break;
+                x3dom.debug.logInfo("GL-Error: " + glErr);
+				//break;
 			}
 
 			loc = gl.getUniformLocation(sp, obj.name);
@@ -728,9 +732,12 @@ x3dom.gfx_webgl = (function () {
 			}
 			catch (ea) {}
 			
-			if (gl.getError() !== 0) {
+            glErr = gl.getError();
+            
+			if (glErr !== 0) {
 				//x3dom.debug.logInfo("GetProgramiv(ACTIVE_ATTRIBUTES) not implemented, loop until error");
-				break;	
+                x3dom.debug.logInfo("GL-Error: " + glErr);
+				//break;	
 			}
 
 			loc = gl.getAttribLocation(sp, obj.name);
