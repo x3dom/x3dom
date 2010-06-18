@@ -292,6 +292,18 @@ x3dom.X3DCanvas = function(x3dElem) {
 			evt.stopPropagation();
 			evt.returnValue = false;
 		}, false);
+        
+        this.canvas.addEventListener('mousewheel', function (evt) {
+            this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
+            
+			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, 2);
+			this.parent.doc.needRender = true;
+			
+			window.status=this.id+' SCROLL: '+evt.detail;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
 	}
 };
 
