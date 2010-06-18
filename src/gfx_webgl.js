@@ -1980,9 +1980,9 @@ x3dom.gfx_webgl = (function () {
             if (shadowIntensity > 0) 
             {
                 if (!sp.sh_tex) {
-                    sp.sh_tex = 3;      // put it on 4th unit
+                    sp.sh_tex = cnt;      // put it on 4th unit
                 }
-                gl.activeTexture(gl.TEXTURE3);
+                gl.activeTexture(activeTex[cnt]);
                 gl.bindTexture(gl.TEXTURE_2D, scene._webgl.fboShadow.tex);
                 
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -2106,7 +2106,7 @@ x3dom.gfx_webgl = (function () {
             }
             if (shadowIntensity > 0) 
             {
-                gl.activeTexture(gl.TEXTURE3);
+                gl.activeTexture(activeTex[cnt]);
                 gl.bindTexture(gl.TEXTURE_2D, null);
             }
             gl.disable(gl.TEXTURE_2D);
