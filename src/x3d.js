@@ -1118,6 +1118,22 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### GeneratedCubeMapTexture ### */
+x3dom.registerNodeType(
+    "GeneratedCubeMapTexture",
+    "CubeMapTexturing",
+    defineClass(x3dom.nodeTypes.X3DEnvironmentTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.GeneratedCubeMapTexture.superClass.call(this, ctx);
+            
+            this.addField_SFInt32(ctx, 'size', 128);
+            this.addField_SFString(ctx, 'update', 'NONE');  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+        },
+        {
+        }
+    )
+);
+
 /* ### X3DShaderNode ### */
 x3dom.registerNodeType(
     "X3DShaderNode",
@@ -1127,6 +1143,90 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DShaderNode.superClass.call(this, ctx);
             
             this.addField_SFString(ctx, 'language', "");
+        }
+    )
+);
+
+/* ### CommonSurfaceShader ### */
+x3dom.registerNodeType(
+    "CommonSurfaceShader",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.X3DShaderNode,
+        function (ctx) {
+            x3dom.nodeTypes.CommonSurfaceShader.superClass.call(this, ctx);
+            
+            this.addField_SFInt32(ctx, 'tangentTextureCoordinatesId', -1);
+            this.addField_SFInt32(ctx, 'binormalTextureCoordinatesId', -1);
+            this.addField_SFVec3f(ctx, 'emissiveFactor', 0, 0, 0);
+            this.addField_SFInt32(ctx, 'emissiveTextureId', -1);
+            this.addField_SFInt32(ctx, 'emissiveTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'emissiveTextureChannelMask', 'rgb');
+            this.addField_SFVec3f(ctx, 'ambientFactor', 0.2, 0.2, 0.2);
+            this.addField_SFInt32(ctx, 'ambientTextureId', -1);
+            this.addField_SFInt32(ctx, 'ambientTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'ambientTextureChannelMask', 'rgb');
+            this.addField_SFVec3f(ctx, 'diffuseFactor', 0.8, 0.8, 0.8);
+            this.addField_SFInt32(ctx, 'diffuseTextureId', -1);
+            this.addField_SFInt32(ctx, 'diffuseTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'diffuseTextureChannelMask', 'rgb');
+            this.addField_SFVec3f(ctx, 'specularFactor', 0, 0, 0);
+            this.addField_SFInt32(ctx, 'specularTextureId', -1);
+            this.addField_SFInt32(ctx, 'specularTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'specularTextureChannelMask', 'rgb');
+            this.addField_SFFloat(ctx, 'shininessFactor', 0.2);
+            this.addField_SFInt32(ctx, 'shininessTextureId', -1);
+            this.addField_SFInt32(ctx, 'shininessTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'shininessTextureChannelMask', 'a');
+            this.addField_SFString(ctx, 'normalFormat', 'UNORM');
+            this.addField_SFString(ctx, 'normalSpace', 'TANGENT');
+            this.addField_SFInt32(ctx, 'normalTextureId', -1);
+            this.addField_SFInt32(ctx, 'normalTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'normalTextureChannelMask', 'rgb');
+            this.addField_SFVec3f(ctx, 'reflectionFactor', 0, 0, 0);
+            this.addField_SFInt32(ctx, 'reflectionTextureId', -1);
+            this.addField_SFInt32(ctx, 'reflectionTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'reflectionTextureChannelMask', 'rgb');
+            this.addField_SFVec3f(ctx, 'transmissionFactor', 0, 0, 0);
+            this.addField_SFInt32(ctx, 'transmissionTextureId', -1);
+            this.addField_SFInt32(ctx, 'transmissionTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'transmissionTextureChannelMask', 'rgb');
+            this.addField_SFVec3f(ctx, 'environmentFactor', 1, 1, 1);
+            this.addField_SFInt32(ctx, 'environmentTextureId', -1);
+            this.addField_SFInt32(ctx, 'environmentTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'environmentTextureChannelMask', 'rgb');
+            this.addField_SFFloat(ctx, 'relativeIndexOfRefraction', 1);
+            this.addField_SFFloat(ctx, 'fresnelBlend', 0);
+            this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('ambientTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('diffuseTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('specularTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('shininessTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('normalTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('reflectionTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('transmissionTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('environmentTexture', x3dom.nodeTypes.Texture);
+            //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
+            this.addField_SFVec3f(ctx, 'normalScale', 2, 2, 2);
+            this.addField_SFVec3f(ctx, 'normalBias', -1, -1, -1);
+            this.addField_SFFloat(ctx, 'alphaFactor', 1);
+            this.addField_SFBool(ctx, 'invertAlphaTexture', false);
+            this.addField_SFInt32(ctx, 'alphaTextureId', -1);
+            this.addField_SFInt32(ctx, 'alphaTextureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'alphaTextureChannelMask', 'a');
+            this.addField_SFNode('alphaTexture', x3dom.nodeTypes.Texture);
+            
+            this._dirty = {
+                // TODO; cp. Shape, allow for dynamic texture updates in gfx
+            };
+        },
+        {
+            nodeChanged: function()
+            {
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+            }
         }
     )
 );
