@@ -2030,7 +2030,7 @@ x3dom.registerNodeType(
                 var positions = coordNode._vf.point;
                 
                 var colorNode = this._cf.color.node;
-                var colors = [];
+                var colors = new x3dom.fields.MFColor();
                 if (colorNode) {
                     colors = colorNode._vf.color;
                     x3dom.debug.assert(positions.length == colors.length);
