@@ -1227,13 +1227,14 @@ x3dom.gfx_webgl = (function () {
 	};
     
     // mainly manages rendering of backgrounds and buffer clearing
-	Context.prototype.setupScene = function(gl, scene) 
+	Context.prototype.setupScene = function(gl, viewarea) 
 	{
+        var scene = viewarea._scene;
         if (scene._webgl !== undefined) {
             return;
         }
         
-        var url = scene.getSkyColor()[1];
+        var url = viewarea.getSkyColor()[1];
         var i = 0;
         var w = 1, h = 1;
         
@@ -1407,7 +1408,7 @@ x3dom.gfx_webgl = (function () {
                 (scene._webgl.texture.textureCubeReady !== undefined && 
                  scene._webgl.texture.textureCubeReady !== true))
             {
-                var bgCol = scene.getSkyColor()[0];
+                var bgCol = viewarea.getSkyColor()[0];
                 
                 gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
                 gl.clearDepth(1.0);
@@ -1639,7 +1640,7 @@ x3dom.gfx_webgl = (function () {
     };
     
 
-	Context.prototype.renderScene = function (scene, pick) 
+	Context.prototype.renderScene = function (viewarea, pick) 
 	{
 		var gl = this.ctx3d;
         
@@ -1647,10 +1648,11 @@ x3dom.gfx_webgl = (function () {
         {
             return;
         }
+        var scene = viewarea._scene;
         
 		if (!scene._webgl)
         {
-            this.setupScene(gl, scene);
+            this.setupScene(gl, viewarea);
             
             // scale factor for mouse coords and width/ height (low res for speed-up)
             scene._webgl.pickScale = 0.5;
@@ -1687,8 +1689,8 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
         
-        var mat_view = scene.getViewMatrix();
-        var mat_scene = scene.getWCtoCCMatrix();
+        var mat_view = viewarea.getViewMatrix();
+        var mat_scene = viewarea.getWCtoCCMatrix();
         
 		// sorting and stuff
 		t0 = new Date().getTime();
@@ -1755,7 +1757,7 @@ x3dom.gfx_webgl = (function () {
             
             this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max, pickColor);
             
-            scene._updatePicking = false;
+            viewarea._updatePicking = false;
             
             //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
             //               scene._webgl.fboPick.width + scene._lastX ) * 4;
@@ -1777,10 +1779,10 @@ x3dom.gfx_webgl = (function () {
                 if (objId > 0) {
                     //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
                     //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
-                    scene._pickingInfo.pickPos = pickPos;
-                    scene._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
+                    viewarea._pickingInfo.pickPos = pickPos;
+                    viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
                 }
-                scene._pickingInfo.updated = true;               
+                viewarea._pickingInfo.updated = true;               
             }
             
             t1 = new Date().getTime() - t0;
@@ -1790,7 +1792,7 @@ x3dom.gfx_webgl = (function () {
 		
 		//TODO; allow for more than one additional light per scene
 		var light, lightOn, shadowIntensity;
-		var slights = scene.getLights();
+		var slights = viewarea.getLights();
 		if (slights.length > 0)
         {
             //FIXME; allow more than only one light and also other types
@@ -1812,8 +1814,8 @@ x3dom.gfx_webgl = (function () {
         {
             t0 = new Date().getTime();
             
-            var lightMatrix = scene.getLightMatrix();
-            var mat_light = scene.getWCtoLCMatrix(lightMatrix);
+            var lightMatrix = viewarea.getLightMatrix();
+            var mat_light = viewarea.getWCtoLCMatrix(lightMatrix);
             
             this.renderShadowPass(gl, scene, lightMatrix, mat_light);
             
@@ -2058,8 +2060,8 @@ x3dom.gfx_webgl = (function () {
             
             // render object
             try {
-			  // fixme; scene._points is dynamic and doesn't belong there!!!
-			  if (scene._points !== undefined && scene._points) {
+			  // fixme; viewarea._points is dynamic and doesn't belong there!!!
+			  if (viewarea._points !== undefined && viewarea._points) {
 			    gl.drawElements(gl.POINTS, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
               }
 			  else {
@@ -2142,7 +2144,7 @@ x3dom.gfx_webgl = (function () {
 		);*/ 
 		gl.disable(gl.DEPTH_TEST);
 		
-        if (scene._visDbgBuf !== undefined && scene._visDbgBuf)
+        if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
             if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
                 scene._vf.pickMode.toLowerCase() === "color") {
@@ -2173,7 +2175,7 @@ x3dom.gfx_webgl = (function () {
 		scene.drawableObjects = null;
 	};
 	
-	Context.prototype.shutdown = function(scene)
+	Context.prototype.shutdown = function(viewarea)
 	{
 		var gl = this.ctx3d;
         
@@ -2181,6 +2183,7 @@ x3dom.gfx_webgl = (function () {
         {
             return;
         }
+        var scene = viewarea._scene;
 		
 		// TODO; optimize traversal, matrices are not needed for cleanup
 		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);

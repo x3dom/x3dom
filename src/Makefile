@@ -35,5 +35,5 @@ count:
 
 $(BUNDLE): $(SRC)
 	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
-	
+	cp x3dom.js ../example
 	
