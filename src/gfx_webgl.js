@@ -829,8 +829,8 @@ x3dom.gfx_webgl = (function () {
         {
 			//var text_canvas = document.createElementNS('http://www.w3.org/1999/xhtml', 'canvas');
             var text_canvas = document.createElement('canvas');
-            text_canvas.width = 600;
-            text_canvas.height = 100;
+            text_canvas.width = 512;
+            text_canvas.height = 128;
             //document.body.appendChild(text_canvas);	//dbg
             
 			var text_ctx = text_canvas.getContext('2d');
@@ -865,7 +865,7 @@ x3dom.gfx_webgl = (function () {
             text_ctx.save();
             text_ctx.font = "32px " + font_family;  //bold 
             var txtW = text_ctx.measureText(string).width;
-            var txtH = text_ctx.measureText(string).height || 42;
+            var txtH = text_ctx.measureText(string).height || 60;
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
             var topOffset = (text_ctx.canvas.height - 32) / 2.0;
             //text_ctx.strokeText(string, leftOffset, topOffset);
