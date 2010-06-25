@@ -645,6 +645,11 @@ x3dom.registerNodeType(
                 x3dom.fields.SFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFColor(r, g, b);
         },
+        addField_SFColorRGBA: function (ctx, name, r, g, b, a) {
+            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+                x3dom.fields.SFColorRGBA.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.SFColorRGBA(r, g, b, a);
+        },
         addField_SFVec2f: function (ctx, name, x, y) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
@@ -691,6 +696,11 @@ x3dom.registerNodeType(
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFColor(def);
+        },
+        addField_MFColorRGBA: function (ctx, name, def) {
+            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+                x3dom.fields.MFColorRGBA.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFColorRGBA(def);
         },
         addField_MFVec2f: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
@@ -1367,6 +1377,7 @@ x3dom.Mesh.prototype._colors    = [];
 x3dom.Mesh.prototype._indices   = [];
 
 x3dom.Mesh.prototype._numTexComponents = 2;
+x3dom.Mesh.prototype._numColComponents = 3;
 x3dom.Mesh.prototype._lit = true;
 x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};
@@ -2116,7 +2127,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.PointSet.superClass.call(this, ctx);
             
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
-            this.addField_SFNode('color', x3dom.nodeTypes.Color);
+            this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
             
             this._pickable = false;
         },
@@ -2129,17 +2140,23 @@ x3dom.registerNodeType(
                 x3dom.debug.assert(coordNode);
                 var positions = coordNode._vf.point;
                 
+                var numColComponents = 3;
                 var colorNode = this._cf.color.node;
                 var colors = new x3dom.fields.MFColor();
                 if (colorNode) {
                     colors = colorNode._vf.color;
                     x3dom.debug.assert(positions.length == colors.length);
+                    
+                    if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
+                        numColComponents = 4;
+                    }
                 }
                 else {
                     for (var i=0, n=positions.length; i<n; i++)
                         colors.push(1.0);
                 }
                 
+                this._mesh._numColComponents = numColComponents;
                 this._mesh._indices = [];
                 this._mesh._positions = positions.toGL();
                 this._mesh._colors = colors.toGL();
@@ -2242,7 +2259,7 @@ x3dom.registerNodeType(
             
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
-            this.addField_SFNode('color', x3dom.nodeTypes.Color);
+            this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
         },
         {
@@ -2301,7 +2318,7 @@ x3dom.registerNodeType(
             
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
-            this.addField_SFNode('color', x3dom.nodeTypes.Color);
+            this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
             
             this.addField_MFInt32(ctx, 'coordIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
@@ -2334,11 +2351,16 @@ x3dom.registerNodeType(
                 x3dom.debug.assert(coordNode);
                 positions = coordNode._vf.point;
                 
+                var numColComponents = 3;
                 var colorNode = this._cf.color.node;
                 if (colorNode) 
                 {
                     hasColor = true;
                     colors = colorNode._vf.color;
+                    
+                    if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
+                        numColComponents = 4;
+                    }
                 }
                 else {
                     hasColor = false;
@@ -2464,6 +2486,7 @@ x3dom.registerNodeType(
                     
                     if (hasColor) {
                         this._mesh._colors = colors.toGL();
+                        this._mesh._numColComponents = numColComponents;
                     }
                 }
                 
@@ -2607,11 +2630,16 @@ x3dom.registerNodeType(
                     hasTexCoord = false;
                 }
 
+                var numColComponents = 3;
                 var colorNode = this._cf.color.node;
                 if (colorNode) 
                 {
                     hasColor = true;
                     colors = colorNode._vf.color;
+                    
+                    if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
+                        numColComponents = 4;
+                    }
                 }
                 else {
                     hasColor = false;
@@ -2863,6 +2891,7 @@ x3dom.registerNodeType(
                     }
                     if (hasColor) {
                         this._mesh._colors = colors.toGL();
+                        this._mesh._numColComponents = numColComponents;
                     }
                 }
                 
@@ -2982,10 +3011,15 @@ x3dom.registerNodeType(
                     hasTexCoord = false;
                 }
 
+                var numColComponents = 3;
                 var colorNode = this._cf.color.node;
                 if (colorNode) {
                     hasColor = true;
                     colors = colorNode._vf.color;
+                    
+                    if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
+                        numColComponents = 4;
+                    }
                 }
                 else {
                     hasColor = false;
@@ -3009,6 +3043,7 @@ x3dom.registerNodeType(
                 }
                 if (hasColor) {
                     this._mesh._colors = colors.toGL();
+                    this._mesh._numColComponents = numColComponents;
                 }
                 
                 this._mesh._invalidate = true;
@@ -3165,15 +3200,13 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### Color ### */
+/* ### X3DColorNode ### */
 x3dom.registerNodeType(
-    "Color",
+    "X3DColorNode",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
-            x3dom.nodeTypes.Color.superClass.call(this, ctx);
-            
-            this.addField_MFColor(ctx, 'color', []);
+            x3dom.nodeTypes.X3DColorNode.superClass.call(this, ctx);
         },
         {
             fieldChanged: function (fieldName) {
@@ -3181,6 +3214,32 @@ x3dom.registerNodeType(
 		            node.fieldChanged("color");
             	});
 			}
+        }
+    )
+);
+
+/* ### Color ### */
+x3dom.registerNodeType(
+    "Color",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DColorNode,
+        function (ctx) {
+            x3dom.nodeTypes.Color.superClass.call(this, ctx);
+            
+            this.addField_MFColor(ctx, 'color', []);
+        }
+    )
+);
+
+/* ### ColorRGBA ### */
+x3dom.registerNodeType(
+    "ColorRGBA",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DColorNode,
+        function (ctx) {
+            x3dom.nodeTypes.ColorRGBA.superClass.call(this, ctx);
+            
+            this.addField_MFColorRGBA(ctx, 'color', []);
         }
     )
 );

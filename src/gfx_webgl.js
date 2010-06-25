@@ -1193,7 +1193,8 @@ x3dom.gfx_webgl = (function () {
             gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
             
-            gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+            gl.vertexAttribPointer(sp.color, 
+                shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
             //gl.enableVertexAttribArray(sp.color);
             
             delete colors;
@@ -2036,7 +2037,8 @@ x3dom.gfx_webgl = (function () {
 			{
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[4]);
 				
-				gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+				gl.vertexAttribPointer(sp.color, 
+                    shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
 				gl.enableVertexAttribArray(sp.color);
 			}
             
