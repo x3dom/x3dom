@@ -731,13 +731,13 @@ x3dom.gfx_webgl = (function () {
 		
 		"	if(useFog){" +
 		"		if(fog.fogType == 0) {" +
-		"			if(length(eye) < fog.visibilityRange){" +
+		"			if(length(fragEyePosition) < fog.visibilityRange){" +
 		"				f0 = (fog.visibilityRange-length(fragEyePosition)) / fog.visibilityRange;" +
 		"			}else{" +
 		"				f0 = 0.0;" +
 		"			}" +
 		"		}else{" +
-		"			if(length(eye) < fog.visibilityRange){" +
+		"			if(length(fragEyePosition) < fog.visibilityRange){" +
 		"				f0 = exp(-length(fragEyePosition) / (fog.visibilityRange-length(fragEyePosition) ) );" +
 		"			}else{" +
 		"				f0 = 0.0;" +
