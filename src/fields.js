@@ -788,13 +788,13 @@ x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
 
             tmp = from.cross(cAxis);
         }
-        tmp.normalize();
+        tmp = tmp.normalize();
 
         return x3dom.fields.Quaternion.axisAngle(tmp, Math.Pi);
     }
 
     var axis = fromVec.cross(toVec);
-    axis.normalize();
+    axis = axis.normalize();
 
     // use half-angle formulae
     // sin^2 t = ( 1 - cos (2t) ) / 2
