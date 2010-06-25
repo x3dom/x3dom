@@ -1430,7 +1430,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 if (scene._webgl.texture.textureCubeReady) {
-                    sp.modelViewProjectionMatrix = scene.getWCtoCCMatrix().toGL();
+                    sp.modelViewProjectionMatrix = viewarea.getWCtoCCMatrix().toGL();
                     
                     gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.activeTexture(gl.TEXTURE0);
@@ -1540,7 +1540,7 @@ x3dom.gfx_webgl = (function () {
     };
     
     
-    Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, min, max, pickColor)
+    Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, min, max, pickColor, lastX, lastY)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         
@@ -1620,8 +1620,8 @@ x3dom.gfx_webgl = (function () {
         gl.flush();
         
         try {
-            var x = scene._lastX * scene._webgl.pickScale,
-                y = scene._webgl.fboPick.height - 1 - scene._lastY * scene._webgl.pickScale;
+            var x = lastX * scene._webgl.pickScale,
+                y = scene._webgl.fboPick.height - 1 - lastY * scene._webgl.pickScale;
             var data = gl.readPixels(//0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
                                      x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE);
             if (!data) {
@@ -1755,7 +1755,8 @@ x3dom.gfx_webgl = (function () {
             
             t0 = new Date().getTime();
             
-            this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max, pickColor);
+            this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max, 
+                                   pickColor, viewarea._lastX, viewarea._lastY);
             
             viewarea._updatePicking = false;
             

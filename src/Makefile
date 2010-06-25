@@ -8,7 +8,6 @@ DEBUG := debug.js
 GFX := gfx_webgl.js
 NODE := x3d.js
 FIELDS := fields.js
-#VERSION := version.js
 
 SRC := $(BASIC) $(DEBUG) $(GFX) $(NODE) $(FIELDS) 
 #---------------
@@ -28,7 +27,7 @@ ccVerbose:
 
 runServer:
 	python testserver.py &
-	open http://localhost:8070/index.xhtml
+	open http://localhost:8070/index.html
 
 count:
 	wc -l $(SRC)

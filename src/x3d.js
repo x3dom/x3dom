@@ -4643,7 +4643,7 @@ x3dom.Viewarea = function (document, scene) {
 x3dom.Viewarea.prototype.getLights = function () 
 { 
     return this._doc._nodeBag.lights;
-}, 
+};
 
 x3dom.Viewarea.prototype.getViewpointMatrix = function () 
 {
@@ -4662,7 +4662,7 @@ x3dom.Viewarea.prototype.getViewMatrix = function ()
         
 x3dom.Viewarea.prototype.getLightMatrix = function () 
 {
-	var lights = this._doc.nodeBag.lights;
+	var lights = this._doc._nodeBag.lights;
 	
 	if (lights.length > 0)
     {
@@ -4952,7 +4952,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     {
         min = x3dom.fields.SFVec3f.MAX();
         max = x3dom.fields.SFVec3f.MIN();
-        ok = this.getVolume(min, max, true);
+        ok = this._scene.getVolume(min, max, true);
 
         d = ok ? (max.subtract(min)).length() : 10;
         d = (d < x3dom.fields.Eps) ? 1 : d;
@@ -4971,7 +4971,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     {
         min = x3dom.fields.SFVec3f.MAX();
         max = x3dom.fields.SFVec3f.MIN();
-        ok = this.getVolume(min, max, true);
+        ok = this._scene.getVolume(min, max, true);
 
         d = ok ? (max.subtract(min)).length() : 10;
         d = (d < x3dom.fields.Eps) ? 1 : d;
