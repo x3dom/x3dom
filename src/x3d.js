@@ -935,7 +935,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.TextureProperties.superClass.call(this, ctx);
             
             this.addField_SFFloat(ctx, 'anisotropicDegree', 1.0);
-            //this.addField_SFColorRGBA(ctx, 'borderColor', 0, 0, 0, 0); //FIXME; SFColorRGBA NYI
+            this.addField_SFColorRGBA(ctx, 'borderColor', 0, 0, 0, 0);
             this.addField_SFInt32(ctx, 'borderWidth', 0);
             this.addField_SFString(ctx, 'boundaryModeS', "REPEAT");
             this.addField_SFString(ctx, 'boundaryModeT', "REPEAT");
@@ -1092,7 +1092,11 @@ x3dom.registerNodeType(
         },
         {
             getTexUrl: function() {
-                return [];
+                return [];  //abstract accessor for gfx
+            },
+            
+            getTexSize: function() {
+                return -1;  //abstract accessor for gfx
             }
         }
     )
@@ -1138,8 +1142,13 @@ x3dom.registerNodeType(
             
             this.addField_SFInt32(ctx, 'size', 128);
             this.addField_SFString(ctx, 'update', 'NONE');  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+            
+            x3dom.debug.logInfo("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx
         },
         {
+            getTexSize: function() {
+                return this._vf.size;
+            }
         }
     )
 );
