@@ -994,7 +994,6 @@ x3dom.fields.MFColor.parse = function(str) {
     }
     
     return new x3dom.fields.MFColor( colors );
-    
 };
 
 x3dom.fields.MFColor.prototype.setValueByStr = function(str) {
@@ -1014,6 +1013,113 @@ x3dom.fields.MFColor.prototype.toGL = function() {
         a.push(c.r);
         a.push(c.g);
         a.push(c.b);        
+    });
+
+    return a;
+};
+
+
+/** SFColorRGBA constructor.
+    @class Represents a SFColorRGBA
+  */
+x3dom.fields.SFColorRGBA = function(r, g, b, a) {
+    if (arguments.length === 0) {
+        this.r = this.g = this.b = this.a = 0;
+    }
+    else {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }    
+};
+
+x3dom.fields.SFColorRGBA.parse = function(str) {
+    try {
+        var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
+        return new x3dom.fields.SFColorRGBA( +m[1], +m[2], +m[3], +m[4] );
+    }
+    catch (e) {
+        return x3dom.fields.SFColorRGBA.colorParse(str);
+    }
+};
+
+x3dom.fields.SFColorRGBA.prototype.setValues = function (color) {
+    this.r = color.r;
+    this.g = color.g;
+    this.b = color.b;   
+    this.a = color.a;   
+};
+
+x3dom.fields.SFColorRGBA.prototype.toGL = function () {
+    return [ this.r, this.g, this.b, this.a ];
+};
+
+x3dom.fields.SFColorRGBA.prototype.toString = function() {
+    return "{ r " + this.r + " g " + this.g + " b " + this.b + " a " + this.a + " }";
+};
+
+x3dom.fields.SFColorRGBA.prototype.setValueByStr = function(str) {
+    try {
+        var m = /^([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)\s*,?\s*([+-]?\d*\.*\d*[eE]?[+-]?\d*?)$/.exec(str);
+        this.r = +m[1];
+        this.g = +m[2];
+        this.b = +m[3];
+        this.a = +m[4];
+    }
+    catch (e) {
+        var c = x3dom.fields.SFColorRGBA.colorParse(str);
+        this.r = c.r;
+        this.g = c.g;
+        this.b = c.b;
+        this.a = c.a;
+    }
+    return this;
+};
+
+
+/** MFColorRGBA constructor.
+    @class Represents a MFColorRGBA
+  */
+x3dom.fields.MFColorRGBA = function(colorArray) {
+    if (arguments.length == 0) {
+        
+    }
+    else {
+        colorArray.map( function(c) { this.push(c); }, this );
+    }
+};
+
+x3dom.fields.MFColorRGBA.prototype = new Array;
+
+x3dom.fields.MFColorRGBA.parse = function(str) {
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
+    var colors = [];
+    for (var i=0, n=mc.length; i<n; i+=4) {
+        colors.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
+    }
+    
+    return new x3dom.fields.MFColorRGBA( colors );
+};
+
+x3dom.fields.MFColorRGBA.prototype.setValueByStr = function(str) {
+    while (this.length) {
+        this.pop();
+    }
+    var mc = str.match(/([+\-0-9eE\.]+)/g);
+    for (var i=0, n=mc.length; i<n; i+=4) {
+        this.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
+    }
+};
+
+x3dom.fields.MFColorRGBA.prototype.toGL = function() {
+    var a = [];
+
+    Array.map( this, function(c) {
+        a.push(c.r);
+        a.push(c.g);
+        a.push(c.b);
+        a.push(c.a);    
     });
 
     return a;
