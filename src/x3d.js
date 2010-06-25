@@ -4663,8 +4663,9 @@ x3dom.Viewarea.prototype.getViewMatrix = function ()
 x3dom.Viewarea.prototype.getLightMatrix = function () 
 {
 	var lights = this._doc._nodeBag.lights;
+    var i, n = lights.length;
 	
-	if (lights.length > 0)
+	if (n > 0)
     {
         var min = x3dom.fields.SFVec3f.MAX();
         var max = x3dom.fields.SFVec3f.MIN();
@@ -4672,6 +4673,7 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
         
         if (ok)
         {
+            var l_arr = [];
             var viewpoint = this._scene.getViewpoint();
             var fov = viewpoint.getFieldOfView();
             
@@ -4680,22 +4682,28 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
             var dist2 = (dia.x/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
             
             dia = min.add(dia.multiply(0.5));
-            //FIXME; lights might be influenced by a transformation
-            if (x3dom.isa(lights[0], x3dom.nodeTypes.PointLight)) {
-                dia = dia.subtract(lights[0]._vf.location).normalize();
-            }
-            else {
-                var dir = lights[0]._vf.direction.normalize().negate();
-                dia = dia.add(dir.multiply(1.2*(dist1 > dist2 ? dist1 : dist2)));
-            }
-            //x3dom.debug.logInfo(dia);
             
-            //FIXME; need to return array for all lights
-            return lights[0].getViewMatrix(dia);
+            for (i=0; i<n; i++)
+            {
+                //FIXME; lights might be influenced by parent transformation
+                if (x3dom.isa(lights[i], x3dom.nodeTypes.PointLight)) {
+                    dia = dia.subtract(lights[i]._vf.location).normalize();
+                }
+                else {
+                    var dir = lights[i]._vf.direction.normalize().negate();
+                    dia = dia.add(dir.multiply(1.2*(dist1 > dist2 ? dist1 : dist2)));
+                }
+                
+                //FIXME; need to return array for all lights
+                l_arr[i] = lights[i].getViewMatrix(dia);
+            }
+            
+            return l_arr;
         }
     }
+    
     //TODO, this is only for testing
-    return this.getViewMatrix();
+    return [ this.getViewMatrix() ];
 };
  
 x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
@@ -4704,7 +4712,7 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
     var view;
     
     if (arguments.length === 0) {
-        view = this.getLightMatrix();
+        view = this.getLightMatrix()[0];
     }
     else {
         view = lMat;
@@ -5203,7 +5211,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			{
                 if (this._nodeBag.lights.length > 0)
                 {
-                    this._scene.getViewpoint().setView(this._viewarea.getLightMatrix());
+                    this._scene.getViewpoint().setView(this._viewarea.getLightMatrix()[0]);
                     this._viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
                     this._viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
                     this._viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);

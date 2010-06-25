@@ -1796,12 +1796,19 @@ x3dom.gfx_webgl = (function () {
 		var slights = viewarea.getLights();
 		if (slights.length > 0)
         {
-            //FIXME; allow more than only one light and also other types
+            //FIXME; allow more than only one light and also other type
 			light = slights[0]._vf.direction;
             lightOn = (slights[0]._vf.on === true) ? 1.0 : 0.0;
             lightOn *= slights[0]._vf.intensity;
             shadowIntensity = (slights[0]._vf.on === true) ? 1.0 : 0.0;
             shadowIntensity *= slights[0]._vf.shadowIntensity;
+
+            // FIXME; remove after point-/spotlight integration!!!
+            if (!light) {
+                light = new x3dom.fields.SFVec3f(0, -1, 0);
+                lightOn = 0.0;
+                shadowIntensity = 0.0;
+            }
 		}
 		else
         {
@@ -1815,7 +1822,8 @@ x3dom.gfx_webgl = (function () {
         {
             t0 = new Date().getTime();
             
-            var lightMatrix = viewarea.getLightMatrix();
+            // FIXME; iterate over all lights
+            var lightMatrix = viewarea.getLightMatrix()[0];
             var mat_light = viewarea.getWCtoLCMatrix(lightMatrix);
             
             this.renderShadowPass(gl, scene, lightMatrix, mat_light);

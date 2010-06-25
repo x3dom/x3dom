@@ -15,18 +15,16 @@
              id="boxes" showStat="true" showLog="true" 
              x="0px" y="0px" width="400px" height="300px">
 			<Scene>
-				<Background DEF='bgnd' skyColor='0.7 0.7 0.7' />
-				
+				<Background skyColor='0.8 0.8 0.8' />
 				<Transform id='tr' translation="0 0 0">
 					<Shape>
 						<Appearance>
-							<Material id='mat' diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+							<Material id='mat' diffuseColor=".5 .5 .5" specularColor=".2 .2 .2" />
 						</Appearance>
 						<Box />
 					</Shape>
 				</Transform>
-				
-				<Viewpoint position="0 0 10" orientation="0 1 0 0" />
+				<Viewpoint position="0 0 8" orientation="0 1 0 0" />
 			</Scene>
 		</X3D>
 	</p>
@@ -34,7 +32,7 @@
 	<script type="text/javascript"><![CDATA[
     function handleOrientation(o) {
       var d=document.getElementById('tr');
-      d.setAttribute('rotation',o.x+' '+o.y+' '+o.z+' 3.141592');
+      d.setAttribute('rotation',o.x+' '+o.y+' '+o.z+' 3.14159265');
       var m=document.getElementById('mat');
       m.setAttribute('diffuseColor',(2*o.x+1)+' '+(2*o.y+1)+' '+(2*o.z+1));
     }
