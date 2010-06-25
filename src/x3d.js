@@ -4882,7 +4882,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     if (!avoidTraversal) {
         var t0 = new Date().getTime();
         
-        isect = this.doIntersect(line);
+        isect = this._scene.doIntersect(line);
         
         if ( isect && (obj = line.hitObject) )
         {
