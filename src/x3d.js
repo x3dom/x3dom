@@ -668,47 +668,47 @@ x3dom.registerNodeType(
 		},
         
 		addField_SFInt32: function (ctx, name, n) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = g && ctx.xmlNode.hasAttribute(name) ? 
                 parseInt(ctx.xmlNode.getAttribute(name),10) : n;
         },
         addField_SFFloat: function (ctx, name, n) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
         },
         addField_SFTime: function (ctx, name, n) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
         },
         addField_SFBool: function (ctx, name, n) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name).toLowerCase() === "true" : n;
         },
         addField_SFString: function (ctx, name, n) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 ctx.xmlNode.getAttribute(name) : n;
         },
         addField_SFColor: function (ctx, name, r, g, b) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFColor(r, g, b);
         },
         addField_SFColorRGBA: function (ctx, name, r, g, b, a) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFColorRGBA.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFColorRGBA(r, g, b, a);
         },
         addField_SFVec2f: function (ctx, name, x, y) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFVec2f(x, y);
         },
         addField_SFVec3f: function (ctx, name, x, y, z) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFVec3f(x, y, z);
         },
         addField_SFRotation: function (ctx, name, x, y, z, a) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) : 
                 x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(x, y, z), a);
         },
@@ -716,7 +716,7 @@ x3dom.registerNodeType(
                                                   _10, _11, _12, _13, 
                                                   _20, _21, _22, _23, 
                                                   _30, _31, _32, _33) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.SFMatrix4f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.SFMatrix4f(_00, _01, _02, _03, 
                                             _10, _11, _12, _13, 
@@ -725,42 +725,42 @@ x3dom.registerNodeType(
         },
         
         addField_MFString: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFString.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFString(def);
         },
         addField_MFInt32: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFInt32.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFInt32(def);
         },
         addField_MFFloat: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFFloat(def);
         },
         addField_MFColor: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFColor(def);
         },
         addField_MFColorRGBA: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFColorRGBA.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFColorRGBA(def);
         },
         addField_MFVec2f: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFVec2f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFVec2f(def);
         },
         addField_MFVec3f: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFVec3f(def);
         },
         addField_MFRotation: function (ctx, name, def) {
-            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFRotation(def);
         },
