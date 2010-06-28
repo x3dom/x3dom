@@ -54,33 +54,44 @@ x3dom.isX3DElement = function(node) {
 };
 
 // BindableStack constructor
-x3dom.BindableStack = function (type, defaultType, defaultRoot, getter) {
+x3dom.BindableStack = function (doc, type, defaultType, getter) {
+	this._doc = doc; 
 	this._type = type;
 	this._defaultType = defaultType;
-	this._defaultRoot = defaultRoot;
+	this._defaultRoot = 0;
 	this._getter = getter;
 	this._bindBag = [];
 	this._bindStack = [];
+	
+	// x3dom.debug.logInfo ('Create BindableStack ' + this._type._typeName + ', ' + this._getter);
 };
 
 x3dom.BindableStack.prototype.getActive = function () {	
-	if (this._bindStack.empty) {
-		if (this._bindBag.empty) {
-			var obj = new this._defaultType();
-			if (this._defaultRoot) {
-				this._defaultRoot.addChild(obj);
+		
+	if (this._bindStack.length === 0) {		
+		if (this._bindBag.length === 0) {
+			x3dom.debug.logInfo ( 'create new ' + this._defaultType._typeName + ' for ' + this._type._typeName + '-stack');            
+			var obj = new this._defaultType( { doc: this._doc } );
+			if (obj) {
+				if (this._defaultRoot) {
+					this._defaultRoot.addChild(obj);
+				}
+				else {
+					x3dom.debug.logError ('stack without defaultRoot');
+				}
+				obj.initDefault();
+				this._bindBag.push(obj);
 			}
-			else {
-				x3dom.debug.logError ('doc without a BindableStack');
-			}
-			obj.initDefault();
-			this.bindBag.push(obj);
 		}
-		this.bindBag[0].activate();
-		this.bindStack.push(this.bindBag[0]);
+		else {
+			x3dom.debug.logInfo ( 'activate first ' + this._defaultType._typeName + ' for ' + this._type._typeName + '-stack');
+		}
+		
+		this._bindBag[0].activate();
+		this._bindStack.push(this._bindBag[0]);
 	}
-	
-	return this.bindStack.top();
+		
+	return this._bindStack[this._bindStack.length - 1];
 };
 
 x3dom.BindableBag = function (doc) {
@@ -98,10 +109,9 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 	var stack;
 	
 	if (type && defaultType) {
-		x3dom.debug.logInfo ('Create new BindableStack for ' + typeName);
-		stack = new x3dom.BindableStack (type, defaultType, null, getter);
+		//x3dom.debug.logInfo ('Create new BindableStack for ' + typeName);
+		stack = new x3dom.BindableStack (doc, type, defaultType, getter);
 		this._stacks.push(stack);
-		this[getter] = function () { return stack.getActive(); };
 	}
 	else {
 	    x3dom.debug.logInfo ('Invalid Bindable type/defaultType:' + typeName + '/' + defaultType);
@@ -109,11 +119,10 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 };
 
 x3dom.BindableBag.prototype.setRefNode = function (node) {
-	for (var i = 0, n = this._stacks.length; i < n; i++) {
-		var stack = this._stacks[i];
+	Array.forEach ( this._stacks, function (stack) {
 		stack._rootNode = node;
-		// XXX node[stack.getter] = function () { return stack; };
-	}
+		node[stack._getter] = function () { return stack.getActive(); };
+	} );
 };
 
 x3dom.BindableBag.prototype.addBindable = function(node) {
@@ -3483,7 +3492,7 @@ x3dom.registerNodeType(
         function (ctx) {
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 		  
-		  if (ctx.doc._bindableBag) {
+		  if (ctx && ctx.doc._bindableBag) {
 			_stack = ctx.doc._bindableBag.addBindable(this);
 		  }
 		  else {
@@ -4533,7 +4542,8 @@ x3dom.registerNodeType(
 			this._lights = [];
         },
         {
-			// FFF
+			/*
+			 FFF
         	getViewpoint: function() 
             {
         		if (this._cam == null) 
@@ -4596,7 +4606,7 @@ x3dom.registerNodeType(
 
 		                return this._bgnd;
 		            }
-     
+     				*/
         }
     )
 );
