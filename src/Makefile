@@ -6,7 +6,7 @@ BUNDLE := x3dom.js
 BASIC := x3dmain.js 
 DEBUG := debug.js 
 GFX := gfx_webgl.js
-NODE := x3d.js
+NODE := x3d.js x3d_follower.js
 FIELDS := fields.js
 
 SRC := $(BASIC) $(DEBUG) $(GFX) $(NODE) $(FIELDS) 
@@ -20,10 +20,10 @@ clean:
 cc: closureCompiler
 
 closureCompiler:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=fields.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=x3d_follower.js --js=fields.js
 	
 ccVerbose:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=fields.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=x3d_follower.js --js=fields.js
 
 runServer:
 	python testserver.py &
@@ -34,3 +34,4 @@ count:
 
 $(BUNDLE): $(SRC)
 	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
+	#cp x3dom.js ../example
