@@ -54,19 +54,24 @@ x3dom.isX3DElement = function(node) {
 };
 
 // BindableStack constructor
-x3dom.BindableStack = function (type, defaultType, defaultRoot) {
-	this.type = type;
-	this.defaultType = type;
-	this.defaultRoot = defaultRoot;
-	this.bindBag = [];
-	this.bindStack = [];
+x3dom.BindableStack = function (type, defaultType, doc) {
+	this._type = type;
+	this._defaultType = defaultType;
+	this._doc = doc;
+	this._bindBag = [];
+	this._bindStack = [];
 };
 
 x3dom.BindableStack.prototype.getActive = function () {	
-	if (this.bindStack.empty) {
-		if (this.bindBag.empty) {
-			var obj = new this.defaultType();
-			this.defaultRoot.addChild(obj);
+	if (this._bindStack.empty) {
+		if (this._bindBag.empty) {
+			var obj = new this._defaultType();
+			if (this._doc._scene) {
+				this._doc._scene.addChild(obj);
+			}
+			else {
+				x3dom.debug.logError ('doc without a BindableStack');
+			}
 			obj.initDefault();
 			this.bindBag.push(obj);
 		}
@@ -74,29 +79,44 @@ x3dom.BindableStack.prototype.getActive = function () {
 		this.bindStack.push(this.bindBag[0]);
 	}
 	
-	return this.bindStack[this.bindStack.length].top();
+	return this.bindStack.top();
 };
 
-x3dom.BindableBag = function (defaultRoot) {
-	this.addType ("X3DViewpointNode", "Viewpoint", getViewpoint, defaultRoot);
-	this.addType ("X3DNavigationInfoNode", "NavigationInfo", getNavigationInfo, defaultRoot);
-	this.addType ("X3DBackgroundNode", "Background", getBackground, defaultRoot);
-	this.addType ("X3DFogNode", "Fog", getFog, defaultRoot);
+x3dom.BindableBag = function (doc) {
+	this._stacks = [];
+	
+	this.addType ("X3DViewpointNode", "Viewpoint", "getViewpoint", doc);
+	this.addType ("X3DNavigationInfoNode", "NavigationInfo", "getNavigationInfo", doc);
+	this.addType ("X3DBackgroundNode", "Background", "getBackground", doc);
+	this.addType ("X3DFogNode", "Fog", "getFog", doc);
 };
 
-x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,defaultRoot) {
+x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,doc) {
 	var type = x3dom.nodeTypes[typeName];
 	var defaultType = x3dom.nodeTypes[defaultTypeName];
 	var stack;
 	
 	if (type && defaultType) {
-		stack = new x3dom.BindableStack (type, defaultType, defaultRoot);
-		this[typeName] = this;
-		this[getter] = function (stack) { return stack.getActive(); };
+		x3dom.debug.logInfo ('Create new BindableStack for ' + typeName);
+		stack = new x3dom.BindableStack (type, defaultType, doc);
+		this._stacks.push(stack);
+		this[getter] = function () { return stack.getActive(); };
+		//domNode[getter] = function () { return stack.getActive(); };
 	}
 	else {
 	    x3dom.debug.logInfo ('Invalid Bindable type/defaultType:' + typeName + '/' + defaultType);
 	}
+};
+
+x3dom.BindableBag.prototype.addNode = function(node) {
+	for (var i = 1, n = this._stacks.length; i < n; i++) {
+		if ( x3dom.isa (node, this._stacks[i]._defaultType) ) {
+			x3dom.debug.logInfo ('register bindable: ' + node.typeName());
+			this._stacks[i]._bindBag.push(node);
+			return;
+		}
+	}
+	x3dom.debug.logError (node.typeName() + ' is not a valid bindable');
 };
 
 // NodeNameSpace constructor
@@ -343,6 +363,12 @@ x3dom.registerNodeType(
         this._childNodes = [];
     },
     {
+		type: function () {
+			return this.constructor;
+		},
+		typeName: function () {
+			return this.constructor._typeName;
+		},
         addChild: function (node, containerFieldName) {
 			if (node) {
 				var field = null;
@@ -463,12 +489,16 @@ x3dom.registerNodeType(
             return found;
         },
 
-		findParentProperty: function (propertyName) {
+		findParentProperty: function (propertyName, checkDOMNode) {
 			var value = this[propertyName];
+						
+			if (!value && checkDOMNode && this._xmlNode) {
+				value = this._xmlNode[propertyName];
+			}
 			
 			if (!value) {
 				for (var i = 0, n = this._parentNodes.length; i < n; i++) {
-					if ((value = this._parentNodes[i].findParentProperty(propertyName))) {
+					if ((value = this._parentNodes[i].findParentProperty(propertyName, checkDOMNode ))) {
 						break;
 					}
 				}
@@ -3444,8 +3474,13 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
-
-			this._stack = null;
+		  
+		  if (ctx.doc._bindableBag) {
+			_stack = ctx.doc._bindableBag.addNode(this);
+		  }
+		  else {
+		    x3dom.debug.logError( 'Could not find bindableBag for registration ' + this.typeName());
+		  }
         },
 		{
 			initDefault: function() {
@@ -3470,18 +3505,6 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DViewpointNode.superClass.call(this, ctx);
         },
 		{
-			linkStack: function() {
-                /*
-				if (!this._stack) {
-					var bag = findParentProperty("_bindableBag");
-					this._stack = bag ? stack.X3DViewpointNode : null;
-					
-					if (!this._stack) {
-						this._stack.bindBag.push(this);
-					}
-				}
-                */
-			}
 		}
     )
 );
@@ -4543,28 +4566,29 @@ x3dom.registerNodeType(
                 return this._navi;
             },
 			
-            // FFF
-            getBackground: function()
-            {
-                if (this._bgnd == null)
-                {
-                    this._bgnd = this.find(x3dom.nodeTypes.Background);
+					// FFF
+		            getBackground: function()
+		            {
+		          	 if (this._bgnd == null)
+					    {
+					        this._bgnd = this.find(x3dom.nodeTypes.Background);
 
-                    if (!this._bgnd)
-                    {
-                        var nodeType = x3dom.nodeTypes.Background;
-                        this._bgnd = new nodeType();
-                        this._bgnd._nameSpace = this._nameSpace;
-                        this.addChild(this._bgnd);
+					        if (!this._bgnd)
+					        {
+					            var nodeType = x3dom.nodeTypes.Background;
+					            this._bgnd = new nodeType();
+					            this._bgnd._nameSpace = this._nameSpace;
+					            this.addChild(this._bgnd);
 
-                        this._bgnd._vf.skyColor[0] = new x3dom.fields.SFColor(0,0,0);
-                        this._bgnd._vf.transparency = 1;
-                        x3dom.debug.logInfo("Created BackgroundBindable.");
-                    }
-                }
-                
-                return this._bgnd;
-            }
+					            this._bgnd._vf.skyColor[0] = new x3dom.fields.SFColor(0,0,0);
+					            this._bgnd._vf.transparency = 1;
+					            x3dom.debug.logInfo("Created BackgroundBindable.");
+					        }
+					    }
+
+		                return this._bgnd;
+		            }
+     
         }
     )
 );
@@ -4790,8 +4814,8 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
 
 x3dom.Viewarea.prototype.getSkyColor = function() 
 {
-	var bgnd = this._scene.getBackground();
-	
+	bgnd = this._scene.getBackground();
+
 	var bgCol = bgnd.getSkyColor().toGL();
 	//workaround; impl. skyTransparency etc.
 	if (bgCol.length > 2)
@@ -5183,6 +5207,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 	}
 	
     var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
+	
+	// create and add BindableBag
+	this._bindableBag = new x3dom.BindableBag(this);
 	
 	// create and add the NodeNameSpace 
 	var nameSpace = new x3dom.NodeNameSpace("scene", doc);
