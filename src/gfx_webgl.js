@@ -9,38 +9,6 @@
 * 
 */
 
-// This code is for Firefox/Minefield compatibility.  WebGL
-// originally used a class called CanvasFloatArray, but the
-// specification has now changed, and it's called WebGLFloatArray.
-// Firefox/Minefield still (as of 13 Nov 2009) uses the old
-// name, but WebKit/Safari uses the new one.  The main WebGL
-// code in this page uses the new name, but the compatibility
-// code that follows will stay here for the time being to make 
-// sure that Firefox users can view the page.
-try
-{
-  WebGLFloatArray;
-}
-catch (e)
-{
-  try
-  {
-    WebGLArrayBuffer = CanvasArrayBuffer;
-    WebGLByteArray = CanvasByteArray;
-    WebGLUnsignedByteArray = CanvasUnsignedByteArray;
-    WebGLShortArray = CanvasShortArray;
-    WebGLUnsignedShortArray = CanvasUnsignedShortArray;
-    WebGLIntArray = CanvasIntArray;
-    WebGLUnsignedIntArray = CanvasUnsignedIntArray;
-    WebGLFloatArray = CanvasFloatArray;
-  }
-  catch (e)
-  {
-    //alert("Could not find Canvas array types for WebGL.");
-  }
-}
-// End of compatibility code
-
 
 x3dom.gfx_webgl = (function () {
 
