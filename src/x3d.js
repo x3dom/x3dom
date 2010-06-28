@@ -4497,7 +4497,7 @@ x3dom.registerNodeType(
 				if (!this._vf.enabled)
 					return;
 				
-            	var isActive = ( ts >= this._vf.startTime);
+            	var isActive = (ts >= this._vf.startTime);
             	var cycleFrac, cycle, fraction;
             	
             	if (this._vf.cycleInterval > 0) {
@@ -4506,7 +4506,7 @@ x3dom.registerNodeType(
                     fraction = cycleFrac - cycle;
             	}
      
-     			this.postMessage('fraction_changed', fraction );
+     			this.postMessage('fraction_changed', fraction);
             }
         }
     )
@@ -5105,7 +5105,7 @@ x3dom.X3DDocument = function(canvas, ctx) {
 	this.needRender = true;
 	this._scene = null;
 	this._viewarea = null;
-	this._nodeBag = { timer: [], lights: [], clipPlanes: [] };
+	this._nodeBag = { timer: [], lights: [], clipPlanes: [], followers: [] };
 	//this.animNode = [];
 	this.downloadCount = 0;
     this.onload = function () {};
@@ -5238,6 +5238,10 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
     if (this._nodeBag.timer.length) {
 		this.needRender = true;
         Array.forEach( this._nodeBag.timer, function (node) { node.onframe(t); } );
+    }
+    if (this._nodeBag.followers.length) {
+		that = this;
+        Array.forEach( this._nodeBag.followers, function (node) { that.needRender |= node.tick(t); } );
     }
 };
 

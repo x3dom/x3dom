@@ -19,7 +19,8 @@
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
-                <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);">
+                <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);
+                                document.getElementById('pc').setAttribute('destination', hitPnt);">
 				<Transform DEF="coneTrafo" translation="-4.5 0 0">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
@@ -79,6 +80,9 @@
                 </Transform>
                 
 				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
+                
+                <PositionChaser id="pc" DEF="chaser" duration="1.5" initialDestination="-2 3 2" initialValue="0 0 0" />
+                <ROUTE fromNode='chaser' fromField='value_changed' toNode='foo' toField='translation'/>
 			</Scene>
         </X3D>
 	</p>
@@ -90,6 +94,6 @@
 	<script type="text/javascript" src="gfx_webgl.js"></script>
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="fields.js"></script>
-
+    <script type="text/javascript" src="x3d_follower.js"></script>
 </body>
 </html>
