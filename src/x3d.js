@@ -4543,29 +4543,28 @@ x3dom.registerNodeType(
                 return this._navi;
             },
 			
-					// FFF
-		            getBackground: function()
-		            {
-		          	 if (this._bgnd == null)
-					    {
-					        this._bgnd = this.find(x3dom.nodeTypes.Background);
+            // FFF
+            getBackground: function()
+            {
+                if (this._bgnd == null)
+                {
+                    this._bgnd = this.find(x3dom.nodeTypes.Background);
 
-					        if (!this._bgnd)
-					        {
-					            var nodeType = x3dom.nodeTypes.Background;
-					            this._bgnd = new nodeType();
-					            this._bgnd._nameSpace = this._nameSpace;
-					            this.addChild(this._bgnd);
+                    if (!this._bgnd)
+                    {
+                        var nodeType = x3dom.nodeTypes.Background;
+                        this._bgnd = new nodeType();
+                        this._bgnd._nameSpace = this._nameSpace;
+                        this.addChild(this._bgnd);
 
-					            this._bgnd._vf.skyColor[0] = new x3dom.fields.SFColor(0,0,0);
-					            this._bgnd._vf.transparency = 1;
-					            x3dom.debug.logInfo("Created BackgroundBindable.");
-					        }
-					    }
-
-		                return this._bgnd;
-		            }
-     
+                        this._bgnd._vf.skyColor[0] = new x3dom.fields.SFColor(0,0,0);
+                        this._bgnd._vf.transparency = 1;
+                        x3dom.debug.logInfo("Created BackgroundBindable.");
+                    }
+                }
+                
+                return this._bgnd;
+            }
         }
     )
 );
@@ -4791,8 +4790,8 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
 
 x3dom.Viewarea.prototype.getSkyColor = function() 
 {
-	bgnd = this._scene.getBackground();
-
+	var bgnd = this._scene.getBackground();
+	
 	var bgCol = bgnd.getSkyColor().toGL();
 	//workaround; impl. skyTransparency etc.
 	if (bgCol.length > 2)
