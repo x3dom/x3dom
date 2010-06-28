@@ -4542,71 +4542,7 @@ x3dom.registerNodeType(
 			this._lights = [];
         },
         {
-			/*
-			 FFF
-        	getViewpoint: function() 
-            {
-        		if (this._cam == null) 
-                {
-					this._cam = this.find(x3dom.nodeTypes.Viewpoint);
-                    
-                    if (!this._cam)
-                    {
-                        var nodeType = x3dom.nodeTypes.Viewpoint;
-                        this._cam = new nodeType();
-                        this._cam._nameSpace = this._nameSpace;
-                        this.addChild(this._cam);
-                        x3dom.debug.logInfo("Created ViewBindable.");
-                    }
-                }
-				
-  				return this._cam;
-        	},
-			
-            
-			// FFF
-            getNavigationInfo: function()
-            {
-                if (this._navi == null)
-                {
-                    this._navi = this.find(x3dom.nodeTypes.NavigationInfo);
-                    
-                    if (!this._navi)
-                    {
-                        var nodeType = x3dom.nodeTypes.NavigationInfo;
-                        this._navi = new nodeType();
-                        this._navi._nameSpace = this._nameSpace;
-                        this.addChild(this._navi);
-                        x3dom.debug.logInfo("Created UserBindable.");
-                    }
-                }
-                
-                return this._navi;
-            },
-			
-					// FFF
-		            getBackground: function()
-		            {
-		          	 if (this._bgnd == null)
-					    {
-					        this._bgnd = this.find(x3dom.nodeTypes.Background);
-
-					        if (!this._bgnd)
-					        {
-					            var nodeType = x3dom.nodeTypes.Background;
-					            this._bgnd = new nodeType();
-					            this._bgnd._nameSpace = this._nameSpace;
-					            this.addChild(this._bgnd);
-
-					            this._bgnd._vf.skyColor[0] = new x3dom.fields.SFColor(0,0,0);
-					            this._bgnd._vf.transparency = 1;
-					            x3dom.debug.logInfo("Created BackgroundBindable.");
-					        }
-					    }
-
-		                return this._bgnd;
-		            }
-     				*/
+			/* bindable getter (e.g. getViewpoint) are added autmatically */
         }
     )
 );
