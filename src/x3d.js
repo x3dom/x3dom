@@ -75,6 +75,7 @@ x3dom.BindableStack.prototype.getActive = function () {
 			if (obj) {
 				if (this._defaultRoot) {
 					this._defaultRoot.addChild(obj);
+					obj._nameSpace = this._defaultRoot._nameSpace;
 				}
 				else {
 					x3dom.debug.logError ('stack without defaultRoot');
@@ -120,7 +121,7 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 
 x3dom.BindableBag.prototype.setRefNode = function (node) {
 	Array.forEach ( this._stacks, function (stack) {
-		stack._rootNode = node;
+		stack._defaultRoot = node;
 		node[stack._getter] = function () { return stack.getActive(); };
 	} );
 };
