@@ -54,10 +54,11 @@ x3dom.isX3DElement = function(node) {
 };
 
 // BindableStack constructor
-x3dom.BindableStack = function (type, defaultType, doc) {
+x3dom.BindableStack = function (type, defaultType, defaultRoot, getter) {
 	this._type = type;
 	this._defaultType = defaultType;
-	this._doc = doc;
+	this._defaultRoot = defaultRoot;
+	this._getter = getter;
 	this._bindBag = [];
 	this._bindStack = [];
 };
@@ -66,8 +67,8 @@ x3dom.BindableStack.prototype.getActive = function () {
 	if (this._bindStack.empty) {
 		if (this._bindBag.empty) {
 			var obj = new this._defaultType();
-			if (this._doc._scene) {
-				this._doc._scene.addChild(obj);
+			if (this._defaultRoot) {
+				this._defaultRoot.addChild(obj);
 			}
 			else {
 				x3dom.debug.logError ('doc without a BindableStack');
@@ -98,20 +99,27 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 	
 	if (type && defaultType) {
 		x3dom.debug.logInfo ('Create new BindableStack for ' + typeName);
-		stack = new x3dom.BindableStack (type, defaultType, doc);
+		stack = new x3dom.BindableStack (type, defaultType, null, getter);
 		this._stacks.push(stack);
 		this[getter] = function () { return stack.getActive(); };
-		//domNode[getter] = function () { return stack.getActive(); };
 	}
 	else {
 	    x3dom.debug.logInfo ('Invalid Bindable type/defaultType:' + typeName + '/' + defaultType);
 	}
 };
 
-x3dom.BindableBag.prototype.addNode = function(node) {
-	for (var i = 1, n = this._stacks.length; i < n; i++) {
+x3dom.BindableBag.prototype.setRefNode = function (node) {
+	for (var i = 0, n = this._stacks.length; i < n; i++) {
+		var stack = this._stacks[i];
+		stack._rootNode = node;
+		// XXX node[stack.getter] = function () { return stack; };
+	}
+};
+
+x3dom.BindableBag.prototype.addBindable = function(node) {
+	for (var i = 0, n = this._stacks.length; i < n; i++) {
 		if ( x3dom.isa (node, this._stacks[i]._defaultType) ) {
-			x3dom.debug.logInfo ('register bindable: ' + node.typeName());
+			x3dom.debug.logInfo ('register bindable ' + node.typeName());
 			this._stacks[i]._bindBag.push(node);
 			return;
 		}
@@ -3476,7 +3484,7 @@ x3dom.registerNodeType(
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 		  
 		  if (ctx.doc._bindableBag) {
-			_stack = ctx.doc._bindableBag.addNode(this);
+			_stack = ctx.doc._bindableBag.addBindable(this);
 		  }
 		  else {
 		    x3dom.debug.logError( 'Could not find bindableBag for registration ' + this.typeName());
@@ -5217,6 +5225,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     
 	// link scene
     this._scene = scene;
+	this._bindableBag.setRefNode(scene);
 	
 	// create view 
 	this._viewarea = new x3dom.Viewarea (this, scene);
