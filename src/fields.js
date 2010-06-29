@@ -260,9 +260,6 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation,
       angle_z = Math.atan2(tr_y, tr_x);
     }
     
-    //var rot = x3dom.fields.SFMatrix4f.rotationX(angle_z).
-    //     mult(x3dom.fields.SFMatrix4f.rotationY(angle_y)).
-    //     mult(x3dom.fields.SFMatrix4f.rotationZ(angle_x));
     var R = new x3dom.fields.Quaternion(
         -Math.cos((angle_x - angle_z)/2) * Math.sin(angle_y/2),
          Math.sin((angle_x - angle_z)/2) * Math.sin(angle_y/2),
@@ -611,7 +608,7 @@ x3dom.fields.Quaternion = function(x, y, z, w) {
     this.w = w;
 };
 
-x3dom.fields.Quaternion.prototype.mult = function (that) {
+x3dom.fields.Quaternion.prototype.multiply = function (that) {
     return new x3dom.fields.Quaternion(
         this.w*that.x + this.x*that.w + this.y*that.z - this.z*that.y,
         this.w*that.y + this.y*that.w + this.z*that.x - this.x*that.z,
@@ -699,6 +696,11 @@ x3dom.fields.Quaternion.prototype.add = function (that) {
 
 x3dom.fields.Quaternion.prototype.subtract = function (that) {
     return new x3dom.fields.Quaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
+};
+
+x3dom.fields.Quaternion.prototype.equals = function (that, eps) {
+    return Math.abs(this.x - that.x) < eps && Math.abs(this.y - that.y) < eps &&
+           Math.abs(this.z - that.z) < eps && Math.abs(this.w - that.w) < eps;
 };
 
 x3dom.fields.Quaternion.prototype.multScalar = function (s) {
