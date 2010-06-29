@@ -66,12 +66,11 @@ x3dom.BindableStack = function (doc, type, defaultType, getter) {
 	// x3dom.debug.logInfo ('Create BindableStack ' + this._type._typeName + ', ' + this._getter);
 };
 
-x3dom.BindableStack.prototype.getActive = function () {	
-		
+x3dom.BindableStack.prototype.getActive = function () {
 	if (this._bindStack.length === 0) {		
 		if (this._bindBag.length === 0) {
 			x3dom.debug.logInfo ( 'create new ' + this._defaultType._typeName + ' for ' + this._type._typeName + '-stack');            
-			var obj = new this._defaultType( { doc: this._doc } );
+			var obj = new this._defaultType( { doc: this._doc, autoGen: true } );
 			if (obj) {
 				if (this._defaultRoot) {
 					this._defaultRoot.addChild(obj);
@@ -669,7 +668,7 @@ x3dom.registerNodeType(
 		},
         
 		addField_SFInt32: function (ctx, name, n) {
-            this._vf[name] = g && ctx.xmlNode.hasAttribute(name) ? 
+            this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 parseInt(ctx.xmlNode.getAttribute(name),10) : n;
         },
         addField_SFFloat: function (ctx, name, n) {
@@ -3494,7 +3493,7 @@ x3dom.registerNodeType(
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 		  
 		  if (ctx && ctx.doc._bindableBag) {
-			_stack = ctx.doc._bindableBag.addBindable(this);
+			ctx.doc._bindableBag.addBindable(this);
 		  }
 		  else {
 		    x3dom.debug.logError( 'Could not find bindableBag for registration ' + this.typeName());
@@ -3509,7 +3508,6 @@ x3dom.registerNodeType(
 			},
 			nodeChanged: function() {
 			}
-			
 		}
     )
 );
@@ -3721,12 +3719,14 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DBackgroundNode,
         function (ctx) {
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
+            
+            var trans = ctx.autoGen ? 1 : 0;
 			
             this.addField_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
             this.addField_MFFloat(ctx, 'skyAngle', []);
             this.addField_MFColor(ctx, 'groundColor', []);
             this.addField_MFFloat(ctx, 'groundAngle', []);
-            this.addField_SFFloat(ctx, 'transparency', 0);
+            this.addField_SFFloat(ctx, 'transparency', trans);
             this.addField_MFString(ctx, 'backUrl', []);
             this.addField_MFString(ctx, 'bottomUrl', []);
             this.addField_MFString(ctx, 'frontUrl', []);
@@ -4769,7 +4769,7 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
 
 x3dom.Viewarea.prototype.getSkyColor = function() 
 {
-	bgnd = this._scene.getBackground();
+	var bgnd = this._scene.getBackground();
 
 	var bgCol = bgnd.getSkyColor().toGL();
 	//workaround; impl. skyTransparency etc.
@@ -5187,7 +5187,7 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
         Array.forEach( this._nodeBag.timer, function (node) { node.onframe(t); } );
     }
     if (this._nodeBag.followers.length) {
-		that = this;
+		var that = this;
         Array.forEach( this._nodeBag.followers, function (node) { that.needRender |= node.tick(t); } );
     }
 };
