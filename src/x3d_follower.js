@@ -36,12 +36,12 @@ x3dom.registerNodeType(
                 return this.stepResponseCore(t / this._vf.duration);
             },
             
-            // This function defines the shape of how the output responds to the input.
+            // This function defines the shape of how the output responds to the this._vf.initialDestination.
             // It must accept values for T in the range 0 <= T <= 1.
-            // In order to create a smooth animation, it should return 0 for T == 0,
+            // In this._vf.order to create a smooth animation, it should return 0 for T == 0,
             // 1 for T == 1 and be sufficient smooth in the range 0 <= T <= 1.
             //
-            // It should be optimized for speed, in order for high performance. It's
+            // It should be optimized for speed, in this._vf.order for high performance. It's
             // executed _buffer.length + 1 times each simulation tick.
             stepResponseCore: function(T)
             {
@@ -171,7 +171,7 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'initialValue', 0, 1, 0, 0);
             
             // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFRotation(ctx, 'destination', 0, 1, 0, 0);
+            this.addField_SFRotation(ctx, 'set_destination', 0, 1, 0, 0);
             
             this._initDone = false;
             this._numSupports = 30;
@@ -190,8 +190,10 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("destination") >= 0) {
-                    this.set_destination(this._currTime);
+                if (fieldName.indexOf("destination") >= 0)
+                {
+                    this.initialize();
+                    this.updateBuffer(this._currTime);
                 }
             },
             
@@ -204,7 +206,7 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.destination = this._vf.initialDestination;
+                    this._vf.set_destination = this._vf.initialDestination;
 
                     this._buffer.length = this._numSupports;
 
@@ -216,17 +218,6 @@ x3dom.registerNodeType(
 
                     this._stepTime = this._vf.duration / this._numSupports;
                 }
-            },
-
-            set_destination: function(now)
-            {
-                this.initialize();
-
-                // Somehow we assign to _buffer[-1] and wait untill this gets shifted into the real buffer.
-                // Would we assign to _buffer[0] instead, we'd have no delay, but this would create a jump in the
-                // output because _buffer[0] is associated with a value in the past.
-
-                this.updateBuffer(now);
             },
 
             tick: function(now)
@@ -312,7 +303,7 @@ x3dom.registerNodeType(
                             // Therefore we do a linear interpolation from the latest value in the buffer to destination.
                             var Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._vf.destination.slerp(this._buffer[NumToShift], Alpha);
+                            this._buffer[C] = this._vf.set_destination.slerp(this._buffer[NumToShift], Alpha);
                         }
                     }
                     else
@@ -327,10 +318,10 @@ x3dom.registerNodeType(
                         // but if we rech here we are in a very degenerate case...
                         // Thus we just write destination to the buffer.
 
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.destination;
+                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
                         for (var C= 0; C<this._buffer.length; C++)
-                            this._buffer[C] = this._vf.destination;
+                            this._buffer[C] = this._vf.set_destination;
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -372,7 +363,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'initialValue', 0, 0, 0);
             
             // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFVec3f(ctx, 'destination', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
             
             this._initDone = false;
             this._numSupports = 60;
@@ -395,8 +386,10 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("destination") >= 0) {
-                    this.set_destination(this._currTime);
+                if (fieldName.indexOf("destination") >= 0)
+                {
+                    this.initialize();
+                    this.updateBuffer(this._currTime);
                 }
             },
             
@@ -409,7 +402,7 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.destination = this._vf.initialDestination;
+                    this._vf.set_destination = this._vf.initialDestination;
 
                     this._buffer.length = this._numSupports;
 
@@ -421,17 +414,6 @@ x3dom.registerNodeType(
 
                     this._stepTime = this._vf.duration / this._numSupports;
                 }
-            },
-
-            set_destination: function(now)
-            {
-                this.initialize();
-
-                // Somehow we assign to _buffer[-1] and wait untill this gets shifted into the real buffer.
-                // Would we assign to _buffer[0] instead, we'd have no delay, but this would create a jump in the
-                // output because _buffer[0] is associated with a value in the past.
-
-                this.updateBuffer(now);
             },
 
             tick: function(now)
@@ -521,7 +503,7 @@ x3dom.registerNodeType(
                             // Therefore we do a linear interpolation from the latest value in the buffer to destination.
                             var Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.destination.multiply((1 - Alpha)));
+                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
                         }
                     }
                     else
@@ -536,10 +518,10 @@ x3dom.registerNodeType(
                         // but if we rech here we are in a very degenerate case...
                         // Thus we just write destination to the buffer.
 
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.destination;
+                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
                         for (var C= 0; C<this._buffer.length; C++)
-                            this._buffer[C] = this._vf.destination;
+                            this._buffer[C] = this._vf.set_destination;
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -563,7 +545,7 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
             
             // How to treat eventIn nicely such that external scripting is handled for set_XXX?
-            this.addField_SFVec2f(ctx, 'destination', 0, 0);
+            this.addField_SFVec2f(ctx, 'set_destination', 0, 0);
             
             this._initDone = false;
             this._numSupports = 60;
@@ -582,8 +564,10 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("destination") >= 0) {
-                    this.set_destination(this._currTime);
+                if (fieldName.indexOf("destination") >= 0)
+                {
+                    this.initialize();
+                    this.updateBuffer(this._currTime);
                 }
             },
             
@@ -595,7 +579,7 @@ x3dom.registerNodeType(
                 {
                     this._initDone = true;
                     
-                    this._vf.destination = this._vf.initialDestination;
+                    this._vf.set_destination = this._vf.initialDestination;
 
                     this._buffer.length = this._numSupports;
 
@@ -607,13 +591,6 @@ x3dom.registerNodeType(
 
                     this._stepTime = this._vf.duration / this._numSupports;
                 }
-            },
-
-            set_destination: function(now)
-            {
-                this.initialize();
-                
-                this.updateBuffer(now);
             },
 
             tick: function(now)
@@ -683,15 +660,15 @@ x3dom.registerNodeType(
                         {
                             var Alpha = C / NumToShift;
 
-                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.destination.multiply((1 - Alpha)));
+                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
                         }
                     }
                     else
                     {
-                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.destination;
+                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
                         for (var C= 0; C<this._buffer.length; C++)
-                            this._buffer[C] = this._vf.destination;
+                            this._buffer[C] = this._vf.set_destination;
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -713,10 +690,121 @@ x3dom.registerNodeType(
 
             this.addField_SFVec3f(ctx, 'initialDestination', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'initialValue', 0, 0, 0);
+            
+            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFVec3f(ctx, 'set_value', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
+            
+            this._lastTick = 0;
+            this._value1 = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._value2 = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._value3 = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._value4 = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._value5 = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._value = new x3dom.fields.SFVec3f(0, 0, 0);
+            
+            this.initialize();
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            nodeChanged: function() 
+            {
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+            //FIXME; damper not yet working correctly!
+                if (fieldName.indexOf("destination") >= 0)
+                {
+                    //this.initialize();
+                    this._lastTick = now;
+                    this._value = this._vf.set_destination;
+                }
+            },
+            
+            initialize: function()
+            {
+                this._value1.setValues(this._vf.initialValue);
+                this._value2.setValues(this._vf.initialValue);
+                this._value3.setValues(this._vf.initialValue);
+                this._value4.setValues(this._vf.initialValue);
+                this._value5.setValues(this._vf.initialValue);
+                this._value.setValues(this._vf.initialDestination);
+            },
+            
+            tick: function(now)
+            {
+                if (!this._lastTick)
+                {
+                    this._lastTick = now;
+                    return false;
+                }
+
+                var delta = now - this._lastTick;
+
+                var alpha = Math.exp(-delta / this._vf.tau);
+
+                this._value1 = this._vf.order > 0 && this._vf.tau
+                ? this._value.add(this._value1.subtract(this._value).multiply(alpha))
+                : this._value;
+
+                this._value2 = this._vf.order > 1 && this._vf.tau
+                ? this._value1.add(this._value2.subtract(this._value1).multiply(alpha))
+                : this._value1;
+
+                this._value3 = this._vf.order > 2 && this._vf.tau
+                ? this._value2.add(this._value3.subtract(this._value2).multiply(alpha))
+                : this._value2;
+
+                this._value4 = this._vf.order > 3 && this._vf.tau
+                ? this._value3.add(this._value4.subtract(this._value3).multiply(alpha))
+                : this._value3;
+
+                this._value5 = this._vf.order > 4 && this._vf.tau
+                ? this._value4.add(this._value5.subtract(this._value4).multiply(alpha))
+                : this._value4;
+
+                var dist = this._value1.subtract(this._value).length();
+                
+                if(this._vf.order > 1)
+                {
+                    var dist2 = this._value2.subtract(this._value1).length();
+                    if (dist2 > dist)  dist = dist2;
+                }
+                if(this._vf.order > 2)
+                {
+                    var dist3 = this._value3.subtract(this._value2).length();
+                    if (dist3 > dist)  dist = dist3;
+                }
+                if(this._vf.order > 3)
+                {
+                    var dist4 = this._value4.subtract(this._value3).length();
+                    if (dist4 > dist)  dist = dist4;
+                }
+                if(this._vf.order > 4)
+                {
+                    var dist5 = this._value5.subtract(this._value4).length();
+                    if (dist5 > dist)  dist = dist5;
+                }
+
+                if (dist < 0.001)   // some suitable epsilon
+                {
+                    this._value1.setValues(this._value);
+                    this._value2.setValues(this._value);
+                    this._value3.setValues(this._value);
+                    this._value4.setValues(this._value);
+                    this._value5.setValues(this._value);
+                    
+                    this.postMessage('value_changed', this._value);
+                    
+                    return false;
+                }
+                
+                this.postMessage('value_changed', this._value5);
+
+                this._lastTick = now;
+
+                return true;
+            }
         }
     )
 );

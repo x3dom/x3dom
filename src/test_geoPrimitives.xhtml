@@ -20,8 +20,8 @@
 				<Background skyColor='0.7 0.7 0.7' />
 				
                 <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);
-                                document.getElementById('pc').setAttribute('destination', hitPnt);
-                                document.getElementById('oc').setAttribute('destination', '0 1 0 0');">
+                                document.getElementById('pc').setAttribute('set_destination', hitPnt);
+                                document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');">
 				<Transform DEF="coneTrafo" translation="-4.5 0 0">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
@@ -84,6 +84,7 @@
                 
                 <OrientationChaser id="oc" DEF="ochaser" duration="1.5" initialDestination="1 0 0 3.14" initialValue="0 1 0 0" />
                 <PositionChaser id="pc" DEF="pchaser" duration="1.5" initialDestination="-2 3 2" initialValue="0 0 0" />
+                <!--<PositionDamper id="pc" DEF="pchaser" tau="1.0" order="1" initialDestination="-2 3 2" initialValue="0 0 0" />-->
                 <ROUTE fromNode='pchaser' fromField='value_changed' toNode='foo' toField='translation'/>
                 <ROUTE fromNode='ochaser' fromField='value_changed' toNode='coneTrafo' toField='rotation'/>
 			</Scene>
