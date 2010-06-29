@@ -183,8 +183,17 @@ x3dom.registerNodeType(
             this._value = new x3dom.fields.Quaternion(0, 1, 0, 0);
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {},
+            nodeChanged: function() 
+            {
+                this.initialize();
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName.indexOf("destination") >= 0) {
+                    this.set_destination(this._currTime);
+                }
+            },
             
             /** The following handler code was basically taken from 
              *  http://www.hersto.com/X3D/Followers
@@ -552,10 +561,144 @@ x3dom.registerNodeType(
 
             this.addField_SFVec2f(ctx, 'initialDestination', 0, 0);
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
+            
+            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFVec2f(ctx, 'destination', 0, 0);
+            
+            this._initDone = false;
+            this._numSupports = 60;
+            this._stepTime = 0;
+            this._currTime = 0;
+            this._bufferEndTime = 0;
+            this._buffer = new x3dom.fields.MFVec2f();
+            this._previousValue = new x3dom.fields.SFVec2f(0, 0);
+            this._value = new x3dom.fields.SFVec2f(0, 0);
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            nodeChanged: function() 
+            {
+                this.initialize();
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName.indexOf("destination") >= 0) {
+                    this.set_destination(this._currTime);
+                }
+            },
+            
+            /** The following handler code is copy & paste from PositionChaser
+             */
+            initialize: function()
+            {
+                if (!this._initDone)
+                {
+                    this._initDone = true;
+                    
+                    this._vf.destination = this._vf.initialDestination;
+
+                    this._buffer.length = this._numSupports;
+
+                    this._buffer[0] = this._vf.initialDestination;
+                    for (var C=1; C<this._buffer.length; C++)
+                        this._buffer[C] = this._vf.initialValue;
+
+                    this._previousValue = this._vf.initialValue;
+
+                    this._stepTime = this._vf.duration / this._numSupports;
+                }
+            },
+
+            set_destination: function(now)
+            {
+                this.initialize();
+                
+                this.updateBuffer(now);
+            },
+
+            tick: function(now)
+            {
+                this.initialize();
+                this._currTime = now;
+                
+                if (!this._bufferEndTime)
+                {
+                    this._bufferEndTime = now;
+
+                    this._value = this._vf.initialValue;
+                    
+                    this.postMessage('value_changed', this._value);
+                    
+                    return true;
+                }
+
+                var Frac = this.updateBuffer(now);
+                
+                var Output = this._previousValue;
+
+                var DeltaIn = this._buffer[this._buffer.length - 1].subtract(this._previousValue);
+
+                var DeltaOut = DeltaIn.multiply(this.stepResponse((this._buffer.length - 1 + Frac) * this._stepTime));
+
+                Output = Output.add(DeltaOut);
+
+                for (var C=this._buffer.length - 2; C>=0; C--)
+                {
+                    DeltaIn = this._buffer[C].subtract(this._buffer[C + 1]);
+
+                    DeltaOut = DeltaIn.multiply(this.stepResponse((C + Frac) * this._stepTime));
+
+                    Output = Output.add(DeltaOut);
+                }
+                
+                if (Output.subtract(this._value).length() > x3dom.fields.Eps) {
+                    this._value = Output;
+                    
+                    this.postMessage('value_changed', this._value);
+                    
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            
+            updateBuffer: function(now)
+            {
+                var Frac = (now - this._bufferEndTime) / this._stepTime;
+                
+                if (Frac >= 1)
+                {
+                    var NumToShift = Math.floor(Frac);
+                    Frac -= NumToShift;
+
+                    if( NumToShift < this._buffer.length)
+                    {
+                        this._previousValue = this._buffer[this._buffer.length - NumToShift];
+
+                        for (var C=this._buffer.length - 1; C>=NumToShift; C--)
+                            this._buffer[C]= this._buffer[C - NumToShift];
+
+                        for (var C=0; C<NumToShift; C++)
+                        {
+                            var Alpha = C / NumToShift;
+
+                            this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.destination.multiply((1 - Alpha)));
+                        }
+                    }
+                    else
+                    {
+                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.destination;
+
+                        for (var C= 0; C<this._buffer.length; C++)
+                            this._buffer[C] = this._vf.destination;
+                    }
+
+                    this._bufferEndTime += NumToShift * this._stepTime;
+                }
+
+                return Frac;
+            }
         }
     )
 );
