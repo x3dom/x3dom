@@ -17,6 +17,7 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {},
+            
             fieldChanged: function(fieldName) {},
             
             tick: function(t) {
@@ -36,7 +37,7 @@ x3dom.registerNodeType(
                 return this.stepResponseCore(t / this._vf.duration);
             },
             
-            // This function defines the shape of how the output responds to the this._vf.initialDestination.
+            // This function defines the shape of how the output responds to the initialDestination.
             // It must accept values for T in the range 0 <= T <= 1.
             // In this._vf.order to create a smooth animation, it should return 0 for T == 0,
             // 1 for T == 1 and be sufficient smooth in the range 0 <= T <= 1.
@@ -258,42 +259,6 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### CoordinateChaser ### */
-x3dom.registerNodeType(
-    "CoordinateChaser",
-    "Followers",
-    defineClass(x3dom.nodeTypes.X3DChaserNode,
-        function (ctx) {
-            x3dom.nodeTypes.CoordinateChaser.superClass.call(this, ctx);
-
-            this.addField_MFVec3f(ctx, 'initialDestination', []);
-            this.addField_MFVec3f(ctx, 'initialValue', []);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
-        }
-    )
-);
-
-/* ### CoordinateDamper ### */
-x3dom.registerNodeType(
-    "CoordinateDamper",
-    "Followers",
-    defineClass(x3dom.nodeTypes.X3DDamperNode,
-        function (ctx) {
-            x3dom.nodeTypes.CoordinateDamper.superClass.call(this, ctx);
-
-            this.addField_MFVec3f(ctx, 'initialDestination', []);
-            this.addField_MFVec3f(ctx, 'initialValue', []);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
-        }
-    )
-);
-
 /* ### OrientationChaser ### */
 x3dom.registerNodeType(
     "OrientationChaser",
@@ -306,6 +271,7 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'initialValue', 0, 1, 0, 0);
             
             // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFRotation(ctx, 'set_value', 0, 1, 0, 0); //TODO
             this.addField_SFRotation(ctx, 'set_destination', 0, 1, 0, 0);
             
             this._initDone = false;
@@ -627,6 +593,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'initialValue', 0, 0, 0);
             
             // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFVec3f(ctx, 'set_value', 0, 0, 0); //TODO
             this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
             
             this._initDone = false;
@@ -809,6 +776,7 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
             
             // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFVec2f(ctx, 'set_value', 0, 0); //TODO
             this.addField_SFVec2f(ctx, 'set_destination', 0, 0);
             
             this._initDone = false;
@@ -1238,10 +1206,138 @@ x3dom.registerNodeType(
 
             this.addField_SFFloat(ctx, 'initialDestination', 0);
             this.addField_SFFloat(ctx, 'initialValue', 0);
+            
+            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFFloat(ctx, 'set_value', 0); //TODO
+            this.addField_SFFloat(ctx, 'set_destination', 0);
+            
+            this._initDone = false;
+            this._numSupports = 60;
+            this._stepTime = 0;
+            this._currTime = 0;
+            this._bufferEndTime = 0;
+            this._buffer = [];
+            this._previousValue = 0;
+            this._value = 0;
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            nodeChanged: function() 
+            {
+                this.initialize();
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName.indexOf("destination") >= 0)
+                {
+                    this.initialize();
+                    this.updateBuffer(this._currTime);
+                }
+            },
+            
+            initialize: function()
+            {
+                if (!this._initDone)
+                {
+                    this._initDone = true;
+                    
+                    this._vf.set_destination = this._vf.initialDestination;
+
+                    this._buffer.length = this._numSupports;
+
+                    this._buffer[0] = this._vf.initialDestination;
+                    for (var C=1; C<this._buffer.length; C++)
+                        this._buffer[C] = this._vf.initialValue;
+
+                    this._previousValue = this._vf.initialValue;
+
+                    this._stepTime = this._vf.duration / this._numSupports;
+                }
+            },
+
+            tick: function(now)
+            {
+                this.initialize();
+                this._currTime = now;
+                
+                if (!this._bufferEndTime)
+                {
+                    this._bufferEndTime = now;
+
+                    this._value = this._vf.initialValue;
+                    
+                    this.postMessage('value_changed', this._value);
+                    
+                    return true;
+                }
+
+                var Frac = this.updateBuffer(now);
+                
+                var Output = this._previousValue;
+
+                var DeltaIn = this._buffer[this._buffer.length - 1] - this._previousValue;
+
+                var DeltaOut = DeltaIn * (this.stepResponse((this._buffer.length - 1 + Frac) * this._stepTime));
+
+                Output = Output + DeltaOut;
+
+                for (var C=this._buffer.length - 2; C>=0; C--)
+                {
+                    DeltaIn = this._buffer[C] - this._buffer[C + 1];
+
+                    DeltaOut = DeltaIn * (this.stepResponse((C + Frac) * this._stepTime));
+
+                    Output = Output + DeltaOut;
+                }
+                
+                if (Math.abs(Output - this._value) >= x3dom.fields.Eps) {
+                    this._value = Output;
+                    
+                    this.postMessage('value_changed', this._value);
+                    
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            },
+            
+            updateBuffer: function(now)
+            {
+                var Frac = (now - this._bufferEndTime) / this._stepTime;
+                
+                if (Frac >= 1)
+                {
+                    var NumToShift = Math.floor(Frac);
+                    Frac -= NumToShift;
+
+                    if (NumToShift < this._buffer.length)
+                    {
+                        this._previousValue = this._buffer[this._buffer.length - NumToShift];
+
+                        for (var C=this._buffer.length - 1; C>=NumToShift; C--)
+                            this._buffer[C] = this._buffer[C - NumToShift];
+
+                        for (var C=0; C<NumToShift; C++)
+                        {
+                            var Alpha = C / NumToShift;
+
+                            this._buffer[C] = this._buffer[NumToShift] * Alpha + this._vf.set_destination * (1 - Alpha);
+                        }
+                    }
+                    else
+                    {
+                        this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
+
+                        for (var C = 0; C<this._buffer.length; C++)
+                            this._buffer[C] = this._vf.set_destination;
+                    }
+
+                    this._bufferEndTime += NumToShift * this._stepTime;
+                }
+
+                return Frac;
+            }
         }
     )
 );
@@ -1384,6 +1480,42 @@ x3dom.registerNodeType(
 
                 return true;
             }
+        }
+    )
+);
+
+/* ### CoordinateChaser ### */
+x3dom.registerNodeType(
+    "CoordinateChaser",
+    "Followers",
+    defineClass(x3dom.nodeTypes.X3DChaserNode,
+        function (ctx) {
+            x3dom.nodeTypes.CoordinateChaser.superClass.call(this, ctx);
+
+            this.addField_MFVec3f(ctx, 'initialDestination', []);
+            this.addField_MFVec3f(ctx, 'initialValue', []);
+        },
+        {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {}
+        }
+    )
+);
+
+/* ### CoordinateDamper ### */
+x3dom.registerNodeType(
+    "CoordinateDamper",
+    "Followers",
+    defineClass(x3dom.nodeTypes.X3DDamperNode,
+        function (ctx) {
+            x3dom.nodeTypes.CoordinateDamper.superClass.call(this, ctx);
+
+            this.addField_MFVec3f(ctx, 'initialDestination', []);
+            this.addField_MFVec3f(ctx, 'initialValue', []);
+        },
+        {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {}
         }
     )
 );
