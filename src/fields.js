@@ -462,6 +462,11 @@ x3dom.fields.SFVec2f.prototype.divide = function (n) {
     return new x3dom.fields.SFVec2f(this.x*denom, this.y*denom);
 };
 
+x3dom.fields.SFVec2f.prototype.equals = function (that, eps) {
+    return Math.abs(this.x - that.x) < eps && 
+           Math.abs(this.y - that.y) < eps;
+};
+
 x3dom.fields.SFVec2f.prototype.length = function() {
     return Math.sqrt((this.x*this.x) + (this.y*this.y));
 };
@@ -567,9 +572,15 @@ x3dom.fields.SFVec3f.prototype.multiply = function (n) {
     return new x3dom.fields.SFVec3f(this.x*n, this.y*n, this.z*n);
 };
 
-x3dom.fields.SFVec2f.prototype.divide = function (n) {
+x3dom.fields.SFVec3f.prototype.divide = function (n) {
     var denom = n ? (1.0 / n) : 1.0;
-    return new x3dom.fields.SFVec2f(this.x*denom, this.y*denom, this.z*denom);
+    return new x3dom.fields.SFVec3f(this.x*denom, this.y*denom, this.z*denom);
+};
+
+x3dom.fields.SFVec3f.prototype.equals = function (that, eps) {
+    return Math.abs(this.x - that.x) < eps && 
+           Math.abs(this.y - that.y) < eps &&
+           Math.abs(this.z - that.z) < eps;
 };
 
 x3dom.fields.SFVec3f.prototype.toGL = function () {
@@ -699,8 +710,10 @@ x3dom.fields.Quaternion.prototype.subtract = function (that) {
 };
 
 x3dom.fields.Quaternion.prototype.equals = function (that, eps) {
-    return Math.abs(this.x - that.x) < eps && Math.abs(this.y - that.y) < eps &&
-           Math.abs(this.z - that.z) < eps && Math.abs(this.w - that.w) < eps;
+    return Math.abs(this.x - that.x) < eps && 
+           Math.abs(this.y - that.y) < eps &&
+           Math.abs(this.z - that.z) < eps && 
+           Math.abs(this.w - that.w) < eps;
 };
 
 x3dom.fields.Quaternion.prototype.multScalar = function (s) {

@@ -1314,7 +1314,7 @@ x3dom.gfx_webgl = (function () {
                     sp.tex = 0;
                 }
                 
-                gl.enable(gl.TEXTURE_2D);
+                //gl.enable(gl.TEXTURE_2D);
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, scene._fgnd._webgl.texture);
                 
@@ -1340,7 +1340,7 @@ x3dom.gfx_webgl = (function () {
                 
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, null);
-                gl.disable(gl.TEXTURE_2D);
+                //gl.disable(gl.TEXTURE_2D);
             };
         })();
         
@@ -1401,7 +1401,7 @@ x3dom.gfx_webgl = (function () {
                 if (scene._webgl.texture.textureCubeReady) {
                     sp.modelViewProjectionMatrix = viewarea.getWCtoCCMatrix().toGL();
                     
-                    gl.enable(gl.TEXTURE_CUBE_MAP);
+                    //gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene._webgl.texture);
                     
@@ -1411,7 +1411,7 @@ x3dom.gfx_webgl = (function () {
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 }
                 else {
-                    gl.enable(gl.TEXTURE_2D);
+                    //gl.enable(gl.TEXTURE_2D);
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, scene._webgl.texture);
                     
@@ -1438,12 +1438,12 @@ x3dom.gfx_webgl = (function () {
                 if (scene._webgl.texture.textureCubeReady) {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    gl.disable(gl.TEXTURE_CUBE_MAP);
+                    //gl.disable(gl.TEXTURE_CUBE_MAP);
                 }
                 else {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, null);
-                    gl.disable(gl.TEXTURE_2D);
+                    //gl.disable(gl.TEXTURE_2D);
                 }
                 
                 gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -1906,7 +1906,7 @@ x3dom.gfx_webgl = (function () {
                 if (shape._webgl.texture[cnt].textureCubeReady && tex && 
                     x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
                 {
-                    gl.enable(gl.TEXTURE_CUBE_MAP);
+                    //gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.activeTexture(activeTex[cnt]);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture[cnt]);
                     
@@ -1917,7 +1917,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 else
                 {
-                    gl.enable(gl.TEXTURE_2D);
+                    //gl.enable(gl.TEXTURE_2D);
                     gl.activeTexture(activeTex[cnt]);
                     gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[cnt]);
                     
@@ -2076,7 +2076,7 @@ x3dom.gfx_webgl = (function () {
                     {
                         gl.activeTexture(activeTex[cnt]);
                         gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                        gl.disable(gl.TEXTURE_CUBE_MAP);
+                        //gl.disable(gl.TEXTURE_CUBE_MAP);
                     }
                     else
                     {
@@ -2090,7 +2090,7 @@ x3dom.gfx_webgl = (function () {
                 gl.activeTexture(activeTex[cnt]);
                 gl.bindTexture(gl.TEXTURE_2D, null);
             }
-            gl.disable(gl.TEXTURE_2D);
+            //gl.disable(gl.TEXTURE_2D);
 			
             
 			if (sp.position !== undefined) {

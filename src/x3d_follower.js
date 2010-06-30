@@ -463,7 +463,7 @@ x3dom.registerNodeType(
                     Output = Output.add(DeltaOut);
                 }
                 
-                if (Output.subtract(this._value).length() > x3dom.fields.Eps) {
+                if ( !Output.equals(this._value, x3dom.fields.Eps) ) {
                     this._value = Output;
                     
                     this.postMessage('value_changed', this._value);
@@ -628,7 +628,7 @@ x3dom.registerNodeType(
                     Output = Output.add(DeltaOut);
                 }
                 
-                if (Output.subtract(this._value).length() > x3dom.fields.Eps) {
+                if ( !Output.equals(this._value, x3dom.fields.Eps) ) {
                     this._value = Output;
                     
                     this.postMessage('value_changed', this._value);
@@ -695,13 +695,14 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'set_value', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
             
+            this._eps = 0.001;
             this._lastTick = 0;
+            this._value0 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value1 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value2 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value3 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value4 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value5 = new x3dom.fields.SFVec3f(0, 0, 0);
-            this._value = new x3dom.fields.SFVec3f(0, 0, 0);
             
             this.initialize();
         },
@@ -712,23 +713,35 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
-            //FIXME; damper not yet working correctly!
-                if (fieldName.indexOf("destination") >= 0)
+                if (fieldName.indexOf("set_destination") >= 0)
                 {
-                    //this.initialize();
-                    this._lastTick = now;
-                    this._value = this._vf.set_destination;
+                    if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
+                        this._value0 = this._vf.set_destination;
+                        //this._lastTick = 0;
+                    }
+                }
+                if (fieldName.indexOf("set_value") >= 0)
+                {
+                    this._value1.setValues(this._vf.set_value);
+                    this._value2.setValues(this._vf.set_value);
+                    this._value3.setValues(this._vf.set_value);
+                    this._value4.setValues(this._vf.set_value);
+                    this._value5.setValues(this._vf.set_value);
+                    this._lastTick = 0;
+                    
+                    this.postMessage('value_changed', this._value5);
                 }
             },
             
             initialize: function()
             {
+                this._value0.setValues(this._vf.initialDestination);
                 this._value1.setValues(this._vf.initialValue);
                 this._value2.setValues(this._vf.initialValue);
                 this._value3.setValues(this._vf.initialValue);
                 this._value4.setValues(this._vf.initialValue);
                 this._value5.setValues(this._vf.initialValue);
-                this._value.setValues(this._vf.initialDestination);
+                this._lastTick = 0;
             },
             
             tick: function(now)
@@ -744,26 +757,26 @@ x3dom.registerNodeType(
                 var alpha = Math.exp(-delta / this._vf.tau);
 
                 this._value1 = this._vf.order > 0 && this._vf.tau
-                ? this._value.add(this._value1.subtract(this._value).multiply(alpha))
-                : this._value;
+                ? this._value0.add(this._value1.subtract(this._value0).multiply(alpha))
+                : new x3dom.fields.SFVec3f(this._value0.x, this._value0.y, this._value0.z);
 
                 this._value2 = this._vf.order > 1 && this._vf.tau
                 ? this._value1.add(this._value2.subtract(this._value1).multiply(alpha))
-                : this._value1;
+                : new x3dom.fields.SFVec3f(this._value1.x, this._value1.y, this._value1.z);
 
                 this._value3 = this._vf.order > 2 && this._vf.tau
                 ? this._value2.add(this._value3.subtract(this._value2).multiply(alpha))
-                : this._value2;
+                : new x3dom.fields.SFVec3f(this._value2.x, this._value2.y, this._value2.z);
 
                 this._value4 = this._vf.order > 3 && this._vf.tau
                 ? this._value3.add(this._value4.subtract(this._value3).multiply(alpha))
-                : this._value3;
+                : new x3dom.fields.SFVec3f(this._value3.x, this._value3.y, this._value3.z);
 
                 this._value5 = this._vf.order > 4 && this._vf.tau
                 ? this._value4.add(this._value5.subtract(this._value4).multiply(alpha))
-                : this._value4;
+                : new x3dom.fields.SFVec3f(this._value4.x, this._value4.y, this._value4.z);
 
-                var dist = this._value1.subtract(this._value).length();
+                var dist = this._value1.subtract(this._value0).length();
                 
                 if(this._vf.order > 1)
                 {
@@ -786,15 +799,17 @@ x3dom.registerNodeType(
                     if (dist5 > dist)  dist = dist5;
                 }
 
-                if (dist < 0.001)   // some suitable epsilon
+                if (dist < this._eps)
                 {
-                    this._value1.setValues(this._value);
-                    this._value2.setValues(this._value);
-                    this._value3.setValues(this._value);
-                    this._value4.setValues(this._value);
-                    this._value5.setValues(this._value);
+                    this._value1.setValues(this._value0);
+                    this._value2.setValues(this._value0);
+                    this._value3.setValues(this._value0);
+                    this._value4.setValues(this._value0);
+                    this._value5.setValues(this._value0);
                     
-                    this.postMessage('value_changed', this._value);
+                    this.postMessage('value_changed', this._value0);
+                    
+                    this._lastTick = 0;
                     
                     return false;
                 }
