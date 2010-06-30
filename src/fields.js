@@ -891,6 +891,24 @@ x3dom.fields.SFColor.prototype.setValues = function (color) {
     this.b = color.b;   
 };
 
+x3dom.fields.SFColor.prototype.equals = function (that, eps) {
+    return Math.abs(this.r - that.r) < eps && 
+           Math.abs(this.g - that.g) < eps &&
+           Math.abs(this.b - that.b) < eps;
+};
+
+x3dom.fields.SFColor.prototype.add = function (that) {
+    return new x3dom.fields.SFColor(this.r + that.r, this.g + that.g, this.b + that.b);
+};
+
+x3dom.fields.SFColor.prototype.subtract = function (that) {
+    return new x3dom.fields.SFColor(this.r - that.r, this.g - that.g, this.b - that.b);
+};
+
+x3dom.fields.SFColor.prototype.multiply = function (n) {
+    return new x3dom.fields.SFColor(this.r*n, this.g*n, this.b*n);
+};
+
 x3dom.fields.SFColor.prototype.toGL = function () {
     return [ this.r, this.g, this.b ];
 };
@@ -1076,6 +1094,13 @@ x3dom.fields.SFColorRGBA.prototype.setValues = function (color) {
     this.g = color.g;
     this.b = color.b;   
     this.a = color.a;   
+};
+
+x3dom.fields.SFColor.prototype.equals = function (that, eps) {
+    return Math.abs(this.r - that.r) < eps && 
+           Math.abs(this.g - that.g) < eps &&
+           Math.abs(this.b - that.b) < eps &&
+           Math.abs(this.a - that.a) < eps;
 };
 
 x3dom.fields.SFColorRGBA.prototype.toGL = function () {
