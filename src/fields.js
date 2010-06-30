@@ -697,6 +697,11 @@ x3dom.fields.Quaternion.prototype.toAxisAngle = function()
     return [ new x3dom.fields.SFVec3f(x,y,z), a ];
 }
 
+x3dom.fields.Quaternion.prototype.angle = function()
+{
+    return 2 * Math.acos(this.w);
+};
+
 x3dom.fields.Quaternion.prototype.dot = function (that) {
     return this.x*that.x + this.y*that.y + this.z*that.z + this.w*that.w;
 };
@@ -707,6 +712,13 @@ x3dom.fields.Quaternion.prototype.add = function (that) {
 
 x3dom.fields.Quaternion.prototype.subtract = function (that) {
     return new x3dom.fields.Quaternion(this.x - that.x, this.y - that.y, this.z - that.z, this.w - that.w);
+};
+
+x3dom.fields.Quaternion.prototype.setValues = function (that) { 
+    this.x = that.x;
+    this.y = that.y;
+    this.z = that.z;
+    this.w = that.w;
 };
 
 x3dom.fields.Quaternion.prototype.equals = function (that, eps) {
