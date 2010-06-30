@@ -21,11 +21,13 @@
 				
                 <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);
                                 document.getElementById('pc').setAttribute('set_destination', hitPnt);
-                                document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');">
+                                document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
+                                document.getElementById('cc').setAttribute('set_destination', '0 1 0');
+                                ">
 				<Transform DEF="coneTrafo" translation="-4.5 0 0">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
-							<Material diffuseColor="0 1 0" specularColor=".5 .5 .5" />
+							<Material DEF="coneMat" diffuseColor="0 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
 						<Cone DEF="cone" />
 					</Shape>
@@ -81,12 +83,19 @@
                 </Transform>
                 
 				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
-                
+                <!--
                 <OrientationChaser id="oc" DEF="ochaser" duration="1.5" initialDestination="1 0 0 3.14" initialValue="0 1 0 0" />
                 <PositionChaser id="pc" DEF="pchaser" duration="1.5" initialDestination="-2 3 2" initialValue="0 0 0" />
-                <!--<PositionDamper id="pc" DEF="pchaser" tau="1.0" order="1" initialDestination="-2 3 2" initialValue="0 0 0" />-->
+                <ScalarChaser id="sc" DEF="sdamper" duration="1.5" initialDestination="0" initialValue="1" />
+                <ColorChaser id="cc" DEF="cdamper" duration="1.5" initialDestination="1 1 0" initialValue="0 1 0" />-->
+                <OrientationDamper id="oc" DEF="ochaser" tau="1.0" order="1" initialDestination="1 0 0 3.14" initialValue="0 1 0 0" />
+                <PositionDamper id="pc" DEF="pchaser" tau="1.0" order="1" initialDestination="-2 3 2" initialValue="0 0 0" />
+                <ScalarDamper id="sc" DEF="sdamper" tau="1.0" order="1" initialDestination="0" initialValue="1" />
+                <ColorDamper id="cc" DEF="cdamper" tau="1.0" order="1" initialDestination="1 1 0" initialValue="0 1 0" />
                 <ROUTE fromNode='pchaser' fromField='value_changed' toNode='foo' toField='translation'/>
                 <ROUTE fromNode='ochaser' fromField='value_changed' toNode='coneTrafo' toField='rotation'/>
+                <ROUTE fromNode='cdamper' fromField='value_changed' toNode='coneMat' toField='diffuseColor'/>
+                <ROUTE fromNode='sdamper' fromField='value_changed' toNode='coneMat' toField='transparency'/>
 			</Scene>
         </X3D>
 	</p>
