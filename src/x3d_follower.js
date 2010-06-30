@@ -151,6 +151,9 @@ x3dom.registerNodeType(
             this.addField_SFTime(ctx, 'tau', 0);
             this.addField_SFFloat(ctx, 'tolerance', -1);
             this.addField_SFInt32(ctx, 'order', 0);
+            
+            this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+            this._lastTick = 0;
         },
         {
             nodeChanged: function() {},
@@ -343,10 +346,139 @@ x3dom.registerNodeType(
 
             this.addField_SFRotation(ctx, 'initialDestination', 0, 1, 0, 0);
             this.addField_SFRotation(ctx, 'initialValue', 0, 1, 0, 0);
+            
+            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFRotation(ctx, 'set_value', 0, 1, 0, 0);
+            this.addField_SFRotation(ctx, 'set_destination', 0, 1, 0, 0);
+            
+            this._value0 = new x3dom.fields.Quaternion(0, 1, 0, 0);
+            this._value1 = new x3dom.fields.Quaternion(0, 1, 0, 0);
+            this._value2 = new x3dom.fields.Quaternion(0, 1, 0, 0);
+            this._value3 = new x3dom.fields.Quaternion(0, 1, 0, 0);
+            this._value4 = new x3dom.fields.Quaternion(0, 1, 0, 0);
+            this._value5 = new x3dom.fields.Quaternion(0, 1, 0, 0);
+            
+            this.initialize();
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            nodeChanged: function() 
+            {
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName.indexOf("set_destination") >= 0)
+                {
+                    if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
+                        this._value0 = this._vf.set_destination;
+                        //this._lastTick = 0;
+                    }
+                }
+                if (fieldName.indexOf("set_value") >= 0)
+                {
+                    this._value1.setValues(this._vf.set_value);
+                    this._value2.setValues(this._vf.set_value);
+                    this._value3.setValues(this._vf.set_value);
+                    this._value4.setValues(this._vf.set_value);
+                    this._value5.setValues(this._vf.set_value);
+                    this._lastTick = 0;
+                    
+                    this.postMessage('value_changed', this._value5);
+                }
+            },
+            
+            initialize: function()
+            {
+                this._value0.setValues(this._vf.initialDestination);
+                this._value1.setValues(this._vf.initialValue);
+                this._value2.setValues(this._vf.initialValue);
+                this._value3.setValues(this._vf.initialValue);
+                this._value4.setValues(this._vf.initialValue);
+                this._value5.setValues(this._vf.initialValue);
+                this._lastTick = 0;
+            },
+            
+            tick: function(now)
+            {
+                if (!this._lastTick)
+                {
+                    this._lastTick = now;
+                    return false;
+                }
+
+                var delta = now - this._lastTick;
+
+                var alpha = Math.exp(-delta / this._vf.tau);
+
+                this._value1 = this._vf.order > 0 && this._vf.tau
+                ? this._value0.slerp(this._value1, alpha)
+                : new x3dom.fields.Quaternion(
+                      this._value0.x, this._value0.y, this._value0.z, this._value0.w);
+
+                this._value2 = this._vf.order > 1 && this._vf.tau
+                ? this._value1.slerp(this._value2, alpha)
+                : new x3dom.fields.Quaternion(
+                      this._value1.x, this._value1.y, this._value1.z, this._value1.w);
+
+                this._value3 = this._vf.order > 2 && this._vf.tau
+                ? this._value2.slerp(this._value3, alpha)
+                : new x3dom.fields.Quaternion(
+                      this._value2.x, this._value2.y, this._value2.z, this._value2.w);
+
+                this._value4 = this._vf.order > 3 && this._vf.tau
+                ? this._value3.slerp(this._value4, alpha)
+                : new x3dom.fields.Quaternion(
+                      this._value3.x, this._value3.y, this._value3.z, this._value3.w);
+
+                this._value5 = this._vf.order > 4 && this._vf.tau
+                ? this._value4.slerp(this._value5, alpha)
+                : new x3dom.fields.Quaternion(
+                      this._value4.x, this._value4.y, this._value4.z, this._value4.w);
+
+                var dist = Math.abs(this._value1.inverse().multiply(this._value0).angle());
+                
+                if(this._vf.order > 1)
+                {
+                    var dist2 = Math.abs(this._value2.inverse().multiply(this._value1).angle());
+                    if (dist2 > dist)  dist = dist2;
+                }
+                if(this._vf.order > 2)
+                {
+                    var dist3 = Math.abs(this._value3.inverse().multiply(this._value2).angle());
+                    if (dist3 > dist)  dist = dist3;
+                }
+                if(this._vf.order > 3)
+                {
+                    var dist4 = Math.abs(this._value4.inverse().multiply(this._value3).angle());
+                    if (dist4 > dist)  dist = dist4;
+                }
+                if(this._vf.order > 4)
+                {
+                    var dist5 = Math.abs(this._value5.inverse().multiply(this._value4).angle());
+                    if (dist5 > dist)  dist = dist5;
+                }
+
+                if (dist < this._eps)
+                {
+                    this._value1.setValues(this._value0);
+                    this._value2.setValues(this._value0);
+                    this._value3.setValues(this._value0);
+                    this._value4.setValues(this._value0);
+                    this._value5.setValues(this._value0);
+                    
+                    this.postMessage('value_changed', this._value0);
+                    
+                    this._lastTick = 0;
+                    
+                    return false;
+                }
+                
+                this.postMessage('value_changed', this._value5);
+
+                this._lastTick = now;
+
+                return true;
+            }
         }
     )
 );
@@ -695,8 +827,6 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'set_value', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
             
-            this._eps = 0.001;
-            this._lastTick = 0;
             this._value0 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value1 = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value2 = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -778,22 +908,22 @@ x3dom.registerNodeType(
 
                 var dist = this._value1.subtract(this._value0).length();
                 
-                if(this._vf.order > 1)
+                if (this._vf.order > 1)
                 {
                     var dist2 = this._value2.subtract(this._value1).length();
                     if (dist2 > dist)  dist = dist2;
                 }
-                if(this._vf.order > 2)
+                if (this._vf.order > 2)
                 {
                     var dist3 = this._value3.subtract(this._value2).length();
                     if (dist3 > dist)  dist = dist3;
                 }
-                if(this._vf.order > 3)
+                if (this._vf.order > 3)
                 {
                     var dist4 = this._value4.subtract(this._value3).length();
                     if (dist4 > dist)  dist = dist4;
                 }
-                if(this._vf.order > 4)
+                if (this._vf.order > 4)
                 {
                     var dist5 = this._value5.subtract(this._value4).length();
                     if (dist5 > dist)  dist = dist5;
@@ -834,10 +964,134 @@ x3dom.registerNodeType(
 
             this.addField_SFVec2f(ctx, 'initialDestination', 0, 0);
             this.addField_SFVec2f(ctx, 'initialValue', 0, 0);
+            
+            // How to treat eventIn nicely such that external scripting is handled for set_XXX?
+            this.addField_SFVec2f(ctx, 'set_value', 0, 0);
+            this.addField_SFVec2f(ctx, 'set_destination', 0, 0);
+            
+            this._value0 = new x3dom.fields.SFVec2f(0, 0);
+            this._value1 = new x3dom.fields.SFVec2f(0, 0);
+            this._value2 = new x3dom.fields.SFVec2f(0, 0);
+            this._value3 = new x3dom.fields.SFVec2f(0, 0);
+            this._value4 = new x3dom.fields.SFVec2f(0, 0);
+            this._value5 = new x3dom.fields.SFVec2f(0, 0);
+            
+            this.initialize();
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            nodeChanged: function() 
+            {
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName.indexOf("set_destination") >= 0)
+                {
+                    if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
+                        this._value0 = this._vf.set_destination;
+                        //this._lastTick = 0;
+                    }
+                }
+                if (fieldName.indexOf("set_value") >= 0)
+                {
+                    this._value1.setValues(this._vf.set_value);
+                    this._value2.setValues(this._vf.set_value);
+                    this._value3.setValues(this._vf.set_value);
+                    this._value4.setValues(this._vf.set_value);
+                    this._value5.setValues(this._vf.set_value);
+                    this._lastTick = 0;
+                    
+                    this.postMessage('value_changed', this._value5);
+                }
+            },
+            
+            initialize: function()
+            {
+                this._value0.setValues(this._vf.initialDestination);
+                this._value1.setValues(this._vf.initialValue);
+                this._value2.setValues(this._vf.initialValue);
+                this._value3.setValues(this._vf.initialValue);
+                this._value4.setValues(this._vf.initialValue);
+                this._value5.setValues(this._vf.initialValue);
+                this._lastTick = 0;
+            },
+            
+            tick: function(now)
+            {
+                if (!this._lastTick)
+                {
+                    this._lastTick = now;
+                    return false;
+                }
+
+                var delta = now - this._lastTick;
+
+                var alpha = Math.exp(-delta / this._vf.tau);
+
+                this._value1 = this._vf.order > 0 && this._vf.tau
+                ? this._value0.add(this._value1.subtract(this._value0).multiply(alpha))
+                : new x3dom.fields.SFVec2f(this._value0.x, this._value0.y, this._value0.z);
+
+                this._value2 = this._vf.order > 1 && this._vf.tau
+                ? this._value1.add(this._value2.subtract(this._value1).multiply(alpha))
+                : new x3dom.fields.SFVec2f(this._value1.x, this._value1.y, this._value1.z);
+
+                this._value3 = this._vf.order > 2 && this._vf.tau
+                ? this._value2.add(this._value3.subtract(this._value2).multiply(alpha))
+                : new x3dom.fields.SFVec2f(this._value2.x, this._value2.y, this._value2.z);
+
+                this._value4 = this._vf.order > 3 && this._vf.tau
+                ? this._value3.add(this._value4.subtract(this._value3).multiply(alpha))
+                : new x3dom.fields.SFVec2f(this._value3.x, this._value3.y, this._value3.z);
+
+                this._value5 = this._vf.order > 4 && this._vf.tau
+                ? this._value4.add(this._value5.subtract(this._value4).multiply(alpha))
+                : new x3dom.fields.SFVec2f(this._value4.x, this._value4.y, this._value4.z);
+
+                var dist = this._value1.subtract(this._value0).length();
+                
+                if (this._vf.order > 1)
+                {
+                    var dist2 = this._value2.subtract(this._value1).length();
+                    if (dist2 > dist)  dist = dist2;
+                }
+                if (this._vf.order > 2)
+                {
+                    var dist3 = this._value3.subtract(this._value2).length();
+                    if (dist3 > dist)  dist = dist3;
+                }
+                if (this._vf.order > 3)
+                {
+                    var dist4 = this._value4.subtract(this._value3).length();
+                    if (dist4 > dist)  dist = dist4;
+                }
+                if (this._vf.order > 4)
+                {
+                    var dist5 = this._value5.subtract(this._value4).length();
+                    if (dist5 > dist)  dist = dist5;
+                }
+
+                if (dist < this._eps)
+                {
+                    this._value1.setValues(this._value0);
+                    this._value2.setValues(this._value0);
+                    this._value3.setValues(this._value0);
+                    this._value4.setValues(this._value0);
+                    this._value5.setValues(this._value0);
+                    
+                    this.postMessage('value_changed', this._value0);
+                    
+                    this._lastTick = 0;
+                    
+                    return false;
+                }
+                
+                this.postMessage('value_changed', this._value5);
+
+                this._lastTick = now;
+
+                return true;
+            }
         }
     )
 );
