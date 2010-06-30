@@ -1096,7 +1096,7 @@ x3dom.fields.SFColorRGBA.prototype.setValues = function (color) {
     this.a = color.a;   
 };
 
-x3dom.fields.SFColor.prototype.equals = function (that, eps) {
+x3dom.fields.SFColorRGBA.prototype.equals = function (that, eps) {
     return Math.abs(this.r - that.r) < eps && 
            Math.abs(this.g - that.g) < eps &&
            Math.abs(this.b - that.b) < eps &&
