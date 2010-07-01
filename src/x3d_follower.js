@@ -20,6 +20,8 @@ x3dom.registerNodeType(
             ctx.doc._nodeBag.followers.push(this);
             
             // TODO: implement isActive!
+            this.addField_SFBool(ctx, 'isActive', false);
+            
             // [S|M]F<type> [in]     set_destination
             // [S|M]F<type> [in]     set_value
             // SFBool       [out]    isActive
@@ -1686,6 +1688,8 @@ x3dom.registerNodeType(
 
             this.addField_MFVec3f(ctx, 'initialDestination', []);
             this.addField_MFVec3f(ctx, 'initialValue', []);
+            
+            x3dom.debug.logInfo("CoordinateDamper NYI");
         },
         {
             nodeChanged: function() {},
@@ -1704,6 +1708,8 @@ x3dom.registerNodeType(
 
             this.addField_MFVec2f(ctx, 'initialDestination', []);
             this.addField_MFVec2f(ctx, 'initialValue', []);
+            
+            x3dom.debug.logInfo("TexCoordDamper2D NYI");
         },
         {
             nodeChanged: function() {},
