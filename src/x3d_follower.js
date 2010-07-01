@@ -19,7 +19,6 @@ x3dom.registerNodeType(
             
             ctx.doc._nodeBag.followers.push(this);
             
-            // TODO: implement isActive!
             this.addField_SFBool(ctx, 'isActive', false);
             
             // [S|M]F<type> [in]     set_destination
@@ -75,6 +74,12 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DChaserNode.superClass.call(this, ctx);
 
             this.addField_SFTime(ctx, 'duration', 0);
+            
+            this._initDone = false;
+            this._stepTime = 0;
+            this._currTime = 0;
+            this._bufferEndTime = 0;
+            this._numSupports = 60;
         },
         {
             nodeChanged: function() {},
@@ -100,7 +105,14 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName === "tolerance")
+                {
+                    this._eps = this._vf.tolerance < 0 ? 0.001 : this._vf.tolerance;
+                }
+            }
         }
     )
 );
@@ -120,11 +132,6 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'set_value', 0, 0, 0);
             this.addField_SFColor(ctx, 'set_destination', 0, 0, 0);
             
-            this._initDone = false;
-            this._numSupports = 60;
-            this._stepTime = 0;
-            this._currTime = 0;
-            this._bufferEndTime = 0;
             this._buffer = new x3dom.fields.MFColor();
             this._previousValue = new x3dom.fields.SFColor(0, 0, 0);
             this._value = new x3dom.fields.SFColor(0, 0, 0);
@@ -141,6 +148,9 @@ x3dom.registerNodeType(
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
@@ -151,6 +161,9 @@ x3dom.registerNodeType(
                         this._buffer[C].setValues(this._vf.set_value);
                     
                     this.postMessage('value_changed', this._vf.set_value);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
             },
             
@@ -173,6 +186,10 @@ x3dom.registerNodeType(
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
+                    
+                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    if (this._vf.isActive !== active)
+                        this.postMessage('isActive', active);
                 }
             },
 
@@ -181,9 +198,12 @@ x3dom.registerNodeType(
                 this.initialize();
                 this._currTime = now;
                 
+                //if (!this._vf.isActive)
+                //    return false;
+                
                 if (!this._bufferEndTime)
                 {
-                    this._bufferEndTime = now;
+                    this._bufferEndTime = now;  // on init
 
                     this._value = this._vf.initialValue;
                     
@@ -215,12 +235,12 @@ x3dom.registerNodeType(
                     this._value.setValues(Output);
                     
                     this.postMessage('value_changed', this._value);
-                    
-                    return true;
                 }
                 else {
-                    return false;
+                    this.postMessage('isActive', false);
                 }
+                
+                return this._vf.isActive;
             },
             
             updateBuffer: function(now)
@@ -298,7 +318,11 @@ x3dom.registerNodeType(
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
-                        //this._lastTick = 0;
+                        
+                        if (!this._vf.isActive) {
+                            //this._lastTick = 0;
+                            this.postMessage('isActive', true);
+                        }
                     }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
@@ -311,6 +335,11 @@ x3dom.registerNodeType(
                     this._lastTick = 0;
                     
                     this.postMessage('value_changed', this._value5);
+                    
+                    if (!this._vf.isActive) {
+                        this._lastTick = 0;
+                        this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -323,6 +352,10 @@ x3dom.registerNodeType(
                 this._value4.setValues(this._vf.initialValue);
                 this._value5.setValues(this._vf.initialValue);
                 this._lastTick = 0;
+                
+                var active = !this._value0.equals(this._value1, this._eps);
+                if (this._vf.isActive !== active)
+                    this.postMessage('isActive', active);
             },
             
             distance: function(a, b)
@@ -335,6 +368,9 @@ x3dom.registerNodeType(
             // but as proposed in the original PROTO code in RGB space.
             tick: function(now)
             {
+                //if (!this._vf.isActive)
+                //    return false;
+                
                 if (!this._lastTick)
                 {
                     this._lastTick = now;
@@ -397,6 +433,7 @@ x3dom.registerNodeType(
                     this._value5.setValues(this._value0);
                     
                     this.postMessage('value_changed', this._value0);
+                    this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
                     
@@ -428,11 +465,7 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'set_value', 0, 1, 0, 0);
             this.addField_SFRotation(ctx, 'set_destination', 0, 1, 0, 0);
             
-            this._initDone = false;
             this._numSupports = 30;
-            this._stepTime = 0;
-            this._currTime = 0;
-            this._bufferEndTime = 0;
             this._buffer = new x3dom.fields.MFRotation();
             this._previousValue = new x3dom.fields.Quaternion(0, 1, 0, 0);
             this._value = new x3dom.fields.Quaternion(0, 1, 0, 0);
@@ -449,6 +482,9 @@ x3dom.registerNodeType(
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
@@ -459,6 +495,9 @@ x3dom.registerNodeType(
                         this._buffer[C].setValues(this._vf.set_value);
                     
                     this.postMessage('value_changed', this._vf.set_value);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
             },
             
@@ -482,6 +521,10 @@ x3dom.registerNodeType(
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
+                    
+                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    if (this._vf.isActive !== active)
+                        this.postMessage('isActive', active);
                 }
             },
 
@@ -489,6 +532,9 @@ x3dom.registerNodeType(
             {
                 this.initialize();
                 this._currTime = now;
+                
+                //if (!this._vf.isActive)
+                //    return false;
                 
                 if (!this._bufferEndTime)
                 {
@@ -529,15 +575,16 @@ x3dom.registerNodeType(
                 }
                 
                 if ( !Output.equals(this._value, x3dom.fields.Eps) ) {
+                    Output = Output.normalize(Output);
                     this._value.setValues(Output);
                     
                     this.postMessage('value_changed', this._value);
-                    
-                    return true;
                 }
                 else {
-                    return false;
+                    this.postMessage('isActive', false);
                 }
+                
+                return this._vf.isActive;
             },
             
             updateBuffer: function(now)
@@ -633,7 +680,11 @@ x3dom.registerNodeType(
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
-                        //this._lastTick = 0;
+                        
+                        if (!this._vf.isActive) {
+                            //this._lastTick = 0;
+                            this.postMessage('isActive', true);
+                        }
                     }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
@@ -646,6 +697,11 @@ x3dom.registerNodeType(
                     this._lastTick = 0;
                     
                     this.postMessage('value_changed', this._value5);
+                    
+                    if (!this._vf.isActive) {
+                        this._lastTick = 0;
+                        this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -658,10 +714,17 @@ x3dom.registerNodeType(
                 this._value4.setValues(this._vf.initialValue);
                 this._value5.setValues(this._vf.initialValue);
                 this._lastTick = 0;
+                
+                var active = !this._value0.equals(this._value1, this._eps);
+                if (this._vf.isActive !== active)
+                    this.postMessage('isActive', active);
             },
             
             tick: function(now)
             {
+                //if (!this._vf.isActive)
+                //    return false;
+                
                 if (!this._lastTick)
                 {
                     this._lastTick = now;
@@ -729,6 +792,7 @@ x3dom.registerNodeType(
                     this._value5.setValues(this._value0);
                     
                     this.postMessage('value_changed', this._value0);
+                    this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
                     
@@ -760,11 +824,6 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'set_value', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'set_destination', 0, 0, 0);
             
-            this._initDone = false;
-            this._numSupports = 60;
-            this._stepTime = 0;
-            this._currTime = 0;
-            this._bufferEndTime = 0;
             this._buffer = new x3dom.fields.MFVec3f();
             this._previousValue = new x3dom.fields.SFVec3f(0, 0, 0);
             this._value = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -785,6 +844,9 @@ x3dom.registerNodeType(
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
@@ -795,6 +857,9 @@ x3dom.registerNodeType(
                         this._buffer[C].setValues(this._vf.set_value);
                     
                     this.postMessage('value_changed', this._vf.set_value);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
             },
             
@@ -818,6 +883,10 @@ x3dom.registerNodeType(
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
+                    
+                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    if (this._vf.isActive !== active)
+                        this.postMessage('isActive', active);
                 }
             },
 
@@ -825,6 +894,9 @@ x3dom.registerNodeType(
             {
                 this.initialize();
                 this._currTime = now;
+                
+                //if (!this._vf.isActive)
+                //    return false;
                 
                 if (!this._bufferEndTime)
                 {
@@ -872,12 +944,12 @@ x3dom.registerNodeType(
                     this._value.setValues(Output);
                     
                     this.postMessage('value_changed', this._value);
-                    
-                    return true;
                 }
                 else {
-                    return false;
+                    this.postMessage('isActive', false);
                 }
+                
+                return this._vf.isActive;
             },
             
             updateBuffer: function(now)
@@ -953,11 +1025,6 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'set_value', 0, 0);
             this.addField_SFVec2f(ctx, 'set_destination', 0, 0);
             
-            this._initDone = false;
-            this._numSupports = 60;
-            this._stepTime = 0;
-            this._currTime = 0;
-            this._bufferEndTime = 0;
             this._buffer = new x3dom.fields.MFVec2f();
             this._previousValue = new x3dom.fields.SFVec2f(0, 0);
             this._value = new x3dom.fields.SFVec2f(0, 0);
@@ -974,6 +1041,9 @@ x3dom.registerNodeType(
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
@@ -984,6 +1054,9 @@ x3dom.registerNodeType(
                         this._buffer[C].setValues(this._vf.set_value);
                     
                     this.postMessage('value_changed', this._vf.set_value);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
             },
             
@@ -1006,6 +1079,10 @@ x3dom.registerNodeType(
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
+                    
+                    var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
+                    if (this._vf.isActive !== active)
+                        this.postMessage('isActive', active);
                 }
             },
 
@@ -1013,6 +1090,9 @@ x3dom.registerNodeType(
             {
                 this.initialize();
                 this._currTime = now;
+                
+                //if (!this._vf.isActive)
+                //    return false;
                 
                 if (!this._bufferEndTime)
                 {
@@ -1048,12 +1128,12 @@ x3dom.registerNodeType(
                     this._value.setValues(Output);
                     
                     this.postMessage('value_changed', this._value);
-                    
-                    return true;
                 }
                 else {
-                    return false;
+                    this.postMessage('isActive', false);
                 }
+                
+                return this._vf.isActive;
             },
             
             updateBuffer: function(now)
@@ -1131,7 +1211,11 @@ x3dom.registerNodeType(
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
-                        //this._lastTick = 0;
+                        
+                        if (!this._vf.isActive) {
+                            //this._lastTick = 0;
+                            this.postMessage('isActive', true);
+                        }
                     }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
@@ -1144,6 +1228,11 @@ x3dom.registerNodeType(
                     this._lastTick = 0;
                     
                     this.postMessage('value_changed', this._value5);
+                    
+                    if (!this._vf.isActive) {
+                        this._lastTick = 0;
+                        this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -1156,10 +1245,17 @@ x3dom.registerNodeType(
                 this._value4.setValues(this._vf.initialValue);
                 this._value5.setValues(this._vf.initialValue);
                 this._lastTick = 0;
+                
+                var active = !this._value0.equals(this._value1, this._eps);
+                if (this._vf.isActive !== active)
+                    this.postMessage('isActive', active);
             },
             
             tick: function(now)
             {
+                //if (!this._vf.isActive)
+                //    return false;
+                
                 if (!this._lastTick)
                 {
                     this._lastTick = now;
@@ -1222,6 +1318,7 @@ x3dom.registerNodeType(
                     this._value5.setValues(this._value0);
                     
                     this.postMessage('value_changed', this._value0);
+                    this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
                     
@@ -1273,7 +1370,11 @@ x3dom.registerNodeType(
                 {
                     if ( !this._value0.equals(this._vf.set_destination, this._eps) ) {
                         this._value0 = this._vf.set_destination;
-                        //this._lastTick = 0;
+                        
+                        if (!this._vf.isActive) {
+                            //this._lastTick = 0;
+                            this.postMessage('isActive', true);
+                        }
                     }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
@@ -1286,6 +1387,11 @@ x3dom.registerNodeType(
                     this._lastTick = 0;
                     
                     this.postMessage('value_changed', this._value5);
+                    
+                    if (!this._vf.isActive) {
+                        this._lastTick = 0;
+                        this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -1298,10 +1404,17 @@ x3dom.registerNodeType(
                 this._value4.setValues(this._vf.initialValue);
                 this._value5.setValues(this._vf.initialValue);
                 this._lastTick = 0;
+                
+                var active = !this._value0.equals(this._value1, this._eps);
+                if (this._vf.isActive !== active)
+                    this.postMessage('isActive', active);
             },
             
             tick: function(now)
             {
+                //if (!this._vf.isActive)
+                //    return false;
+                
                 if (!this._lastTick)
                 {
                     this._lastTick = now;
@@ -1364,6 +1477,7 @@ x3dom.registerNodeType(
                     this._value5.setValues(this._value0);
                     
                     this.postMessage('value_changed', this._value0);
+                    this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
                     
@@ -1395,11 +1509,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'set_value', 0);
             this.addField_SFFloat(ctx, 'set_destination', 0);
             
-            this._initDone = false;
-            this._numSupports = 60;
-            this._stepTime = 0;
-            this._currTime = 0;
-            this._bufferEndTime = 0;
             this._buffer = [];
             this._previousValue = 0;
             this._value = 0;
@@ -1416,6 +1525,9 @@ x3dom.registerNodeType(
                 {
                     this.initialize();
                     this.updateBuffer(this._currTime);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
@@ -1426,6 +1538,9 @@ x3dom.registerNodeType(
                         this._buffer[C] = this._vf.set_value;
                     
                     this.postMessage('value_changed', this._vf.set_value);
+                    
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
                 }
             },
             
@@ -1446,6 +1561,10 @@ x3dom.registerNodeType(
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
+                    
+                    var active = (Math.abs(this._buffer[0] - this._buffer[1]) >= x3dom.fields.Eps);
+                    if (this._vf.isActive !== active)
+                        this.postMessage('isActive', active);
                 }
             },
 
@@ -1453,6 +1572,9 @@ x3dom.registerNodeType(
             {
                 this.initialize();
                 this._currTime = now;
+                
+                //if (!this._vf.isActive)
+                //    return false;
                 
                 if (!this._bufferEndTime)
                 {
@@ -1488,12 +1610,12 @@ x3dom.registerNodeType(
                     this._value = Output;
                     
                     this.postMessage('value_changed', this._value);
-                    
-                    return true;
                 }
                 else {
-                    return false;
+                    this.postMessage('isActive', false);
                 }
+                
+                return this._vf.isActive;
             },
             
             updateBuffer: function(now)
@@ -1571,7 +1693,11 @@ x3dom.registerNodeType(
                 {
                     if (Math.abs(this._value0 - this._vf.set_destination) >= this._eps) {
                         this._value0 = this._vf.set_destination;
-                        //this._lastTick = 0;
+                        
+                        if (!this._vf.isActive) {
+                            //this._lastTick = 0;
+                            this.postMessage('isActive', true);
+                        }
                     }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
@@ -1584,6 +1710,11 @@ x3dom.registerNodeType(
                     this._lastTick = 0;
                     
                     this.postMessage('value_changed', this._value5);
+                    
+                    if (!this._vf.isActive) {
+                        this._lastTick = 0;
+                        this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -1596,10 +1727,17 @@ x3dom.registerNodeType(
                 this._value4 = this._vf.initialValue;
                 this._value5 = this._vf.initialValue;
                 this._lastTick = 0;
+                
+                var active = (Math.abs(this._value0 - this._value1) >= this._eps);
+                if (this._vf.isActive !== active)
+                    this.postMessage('isActive', active);
             },
             
             tick: function(now)
             {
+                //if (!this._vf.isActive)
+                //    return false;
+                
                 if (!this._lastTick)
                 {
                     this._lastTick = now;
@@ -1662,6 +1800,7 @@ x3dom.registerNodeType(
                     this._value5 = this._value0;
                     
                     this.postMessage('value_changed', this._value0);
+                    this.postMessage('isActive', false);
                     
                     this._lastTick = 0;
                     
@@ -1685,9 +1824,12 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DDamperNode,
         function (ctx) {
             x3dom.nodeTypes.CoordinateDamper.superClass.call(this, ctx);
-
+            
             this.addField_MFVec3f(ctx, 'initialDestination', []);
             this.addField_MFVec3f(ctx, 'initialValue', []);
+            
+            this.addField_MFVec3f(ctx, 'set_value', []);
+            this.addField_MFVec3f(ctx, 'set_destination', []);
             
             x3dom.debug.logInfo("CoordinateDamper NYI");
         },
@@ -1705,9 +1847,12 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DDamperNode,
         function (ctx) {
             x3dom.nodeTypes.TexCoordDamper2D.superClass.call(this, ctx);
-
+            
             this.addField_MFVec2f(ctx, 'initialDestination', []);
             this.addField_MFVec2f(ctx, 'initialValue', []);
+            
+            this.addField_MFVec2f(ctx, 'set_value', []);
+            this.addField_MFVec2f(ctx, 'set_destination', []);
             
             x3dom.debug.logInfo("TexCoordDamper2D NYI");
         },

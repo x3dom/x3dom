@@ -551,6 +551,7 @@ x3dom.registerNodeType(
 
         postMessage: function (field, msg) {
             // TODO: timestamps and stuff
+            this._vf[field] = msg;  // FIXME; _cf!!!
             var listeners = this._fieldWatchers[field];
             var thisp = this;
             if (listeners) {
