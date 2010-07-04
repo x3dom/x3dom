@@ -21,7 +21,7 @@
 				
 				<Transform translation="-3 0 0">
 					<Shape>
-						<Appearance>
+						<Appearance id="anApp">
 							<Material id="SphMat" diffuseColor="#f0f" specularColor="#888" transparency="0.15" />
 						</Appearance>
 						<Sphere />
@@ -85,7 +85,6 @@
     function toggleTexture()
 	{
 		var button = document.getElementById("texture");
-		
 		ogl = !ogl;
 		
 		if (ogl)
@@ -95,6 +94,17 @@
 		
 		var tex = document.getElementById("RotBoxTex");
 		tex.setAttribute("url", (!ogl ? "opengl.gif" : "ogl.jpg"));
+        
+        if (!ogl) {
+            var t = document.createElement("ImageTexture");
+            t.setAttribute("id", "XXX");
+            t.setAttribute("url", "colormap.png");
+            document.getElementById("anApp").appendChild(t);
+        }
+        else {
+            var ot = document.getElementById('anApp');
+            ot.removeChild(document.getElementById('XXX'));
+        }
 		
 		return false;
 	}

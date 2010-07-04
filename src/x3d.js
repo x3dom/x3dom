@@ -269,7 +269,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 n = new nodeType(ctx);
 				n._nameSpace = this;
 				
-                // x3dom.debug.logInfo("new node type: " + node.localName + ", autoChild=" + n._autoChild);
+                // x3dom.debug.logInfo("new node type: " + domNode.localName);
 				
 				// find and store/link _DEF name
 			    if (domNode.hasAttribute('DEF')) {
@@ -298,7 +298,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 					var c = that.setupTree(childDomNode); 
 					if (c) n.addChild(c, childDomNode.getAttribute("containerField")); 
 				} );
-								
+				
 				// FIXME: remove
 				n.nodeChanged();
                 return n;
@@ -386,6 +386,7 @@ x3dom.registerNodeType(
 		typeName: function () {
 			return this.constructor._typeName;
 		},
+        
         addChild: function (node, containerFieldName) {
 			if (node) {
 				var field = null;
@@ -406,6 +407,7 @@ x3dom.registerNodeType(
 				if (field && field.addLink(node)) {
                     node._parentNodes.push(this);
                     this._childNodes.push(node);
+                    node.parentAdded(this);
                 	return true;
             	}
 			}
@@ -419,8 +421,9 @@ x3dom.registerNodeType(
                     	var field = this._cf[fieldName];
                     	if (field.rmLink(node)) {
                         	for (var i = 0, n = node._parentNodes.length; i < n; i++) {
-                            	if (node._parentNode === this) {
+                            	if (node._parentNodes[i] === this) {
                                 	node._parentNodes.splice(i,1);
+                                    node.parentRemoved(this);
                             	} 
                         	}
 							for (var j = 0, m = this._childNodes.length; j < m; j++) {
@@ -435,7 +438,15 @@ x3dom.registerNodeType(
             }
             return false;
         },
-
+        
+        parentAdded: function(parent) {
+            // to be overwritten by concrete classes
+        },
+        
+        parentRemoved: function(parent) {
+            // to be overwritten by concrete classes
+        },
+        
         getCurrentTransform: function () {
             if (this._parentNodes.length >= 1) {
                 return this.transformMatrix(this._parentNodes[0].getCurrentTransform());
@@ -1013,6 +1024,25 @@ x3dom.registerNodeType(
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
         },
         {
+            parentAdded: function(parent)
+            {
+                Array.forEach(parent._parentNodes, function (shape) {
+                    shape._dirty.texture = true;
+                });
+            },
+            
+            parentRemoved: function(parent)
+            {
+                parent._cf.texture.node = null;
+                Array.forEach(parent._parentNodes, function (shape) {
+                    shape._dirty.texture = true;
+                });
+            },
+            
+            nodeChanged: function()
+            {
+            },
+            
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "url")
@@ -5145,9 +5175,9 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             //x3dom.debug.logInfo("MUTATION: " + child.translation + ", " + child.parentNode.tagName);
 
 			if (parent._nameSpace) {
-				var newNode = parent._nameSpace.setupTree (child);
-				parent.addChild(newNode, child.getAttribute("containerField"));
-				doc.needRender = true;			
+                var newNode = parent._nameSpace.setupTree(child);
+                parent.addChild(newNode, child.getAttribute("containerField"));
+                doc.needRender = true;
 			}
             else {
 				x3dom.debug.logInfo("No _nameSpace in onNodeInserted");
