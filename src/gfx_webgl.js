@@ -719,7 +719,68 @@ x3dom.gfx_webgl = (function () {
 	{
         if (shape._webgl !== undefined)
         {
-            if (shape._dirty.positions === true)
+            var needFullReInit = false;
+            
+            if (shape._dirty.texture === true)
+            {
+                var tex = shape._cf.appearance.node._cf.texture.node;
+                
+                if (shape._webgl.texture !== undefined && tex)
+                {
+                	shape.updateTexture(tex, 0);
+                    
+                    shape._dirty.texture = false;
+                }
+                else
+                {
+                    needFullReInit = true;
+                    
+                    // clean-up old state before creating new shader
+                    var spOld = shape._webgl.shader;
+                    var inc = 0;
+                    
+                    for (inc=0; shape._webgl.texture !== undefined && 
+                         inc < shape._webgl.texture.length; inc++)
+                    {
+                        if (shape._webgl.texture[inc])
+                        {
+                            gl.deleteTexture(shape._webgl.texture[inc]);
+                        }
+                    }
+                    
+                    if (spOld.position !== undefined) 
+                    {
+                        gl.deleteBuffer(shape._webgl.buffers[1]);
+                        gl.deleteBuffer(shape._webgl.buffers[0]);
+                    }
+                    
+                    if (spOld.normal !== undefined) 
+                    {
+                        gl.deleteBuffer(shape._webgl.buffers[2]);
+                    }
+                    
+                    if (spOld.texcoord !== undefined) 
+                    {
+                        gl.deleteBuffer(shape._webgl.buffers[3]);
+                    }
+                    
+                    if (spOld.color !== undefined)
+                    {
+                        gl.deleteBuffer(shape._webgl.buffers[4]);
+                    }
+                    
+                    for (inc=0; inc<shape._webgl.dynamicFields.length; inc++)
+                    {
+                        var h_attrib = shape._webgl.dynamicFields[inc];
+                        
+                        if (spOld[h_attrib.name] !== undefined)
+                        {
+                            gl.deleteBuffer(h_attrib.buf);
+                        }
+                    }
+                }
+            }
+            if (!needFullReInit && shape._dirty.positions === true)
             {
                 if (shape._webgl.shader.position !== undefined) 
                 {
@@ -744,7 +805,7 @@ x3dom.gfx_webgl = (function () {
                 
                 shape._dirty.positions = false;
             }
-            if (shape._dirty.colors === true)
+            if (!needFullReInit && shape._dirty.colors === true)
             {
                 if (shape._webgl.shader.color !== undefined)
                 {
@@ -767,21 +828,10 @@ x3dom.gfx_webgl = (function () {
                 
                 shape._dirty.colors = false;
             }
-            if (shape._dirty.texture === true)
-            {
-                if (shape._webgl.texture !== undefined)
-                {
-                	var tex = shape._cf.appearance.node._cf.texture.node;
-                    if (tex) {
-                        shape.updateTexture(tex, 0);
-                    }
-                }
-                
-                shape._dirty.texture = false;
-            }
             //TODO; check all other cases, too!
             
-            return;
+            if (!needFullReInit)
+                return;
         }
         
         // we're on init, thus reset all dirty flags
