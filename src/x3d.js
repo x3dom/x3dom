@@ -3523,6 +3523,8 @@ x3dom.registerNodeType(
         function (ctx) {
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 		  
+		  this._autoGen = (ctx.autoGen ? true : false);
+		
 		  if (ctx && ctx.doc._bindableBag) {
 			ctx.doc._bindableBag.addBindable(this);
 		  }
@@ -4667,7 +4669,7 @@ x3dom.registerNodeType(
 						x3dom.debug.logInfo('no Scene in ' + xml.localName);
 					}
 
-					while (that._childNodes.empty === false) {
+					while (that._childNodes.length !== 0) {
 						that.removeChild(that._childNodes[0]);
 					}
 					that.addChild(newScene);
