@@ -151,7 +151,7 @@ x3dom.fields.SFMatrix4f.parseRotation = function (str) {
 };
 
 x3dom.fields.SFMatrix4f.parse = function (str) {
-    var val = /matrix.+\((.+)\)/;
+    var val = /matrix.*\((.+)\)/;
     if (val.exec(str)) {
         str = RegExp.$1;
     }
@@ -163,6 +163,14 @@ x3dom.fields.SFMatrix4f.parse = function (str) {
                 arr[4],  arr[5],  arr[6],  arr[7], 
                 arr[8],  arr[9],  arr[10], arr[11], 
                 arr[12], arr[13], arr[14], arr[15]
+        );
+    }
+    else if (arr.length === 6) {
+        return new x3dom.fields.SFMatrix4f(
+            arr[0],  arr[1],  0,  arr[4], 
+            arr[2],  arr[3],  0,  arr[5], 
+                 0,       0,  1,  0, 
+                 0,       0,  0,  1
         );
     }
     else {
@@ -388,7 +396,7 @@ x3dom.fields.SFMatrix4f.prototype.toString = function () {
 };
 
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
-    var val = /matrix.+\((.+)\)/;
+    var val = /matrix.*\((.+)\)/;
     if (val.exec(str)) {
         str = RegExp.$1;
     }
@@ -400,18 +408,13 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
         this._20 = arr[8]; this._21 = arr[9]; this._22 = arr[10]; this._23 = arr[11];
         this._30 = arr[12]; this._31 = arr[13]; this._32 = arr[14]; this._33 = arr[15];
     }
+    else if (arr.length === 6) {
+        this._00 = arr[0]; this._01 = arr[1]; this._02 = 0; this._03 = arr[4];
+        this._10 = arr[2]; this._11 = arr[3]; this._12 = 0; this._13 = arr[5];
+        this._20 = 0; this._21 = 0; this._22 = 1; this._23 = 0;
+        this._30 = 0; this._31 = 0; this._32 = 0; this._33 = 1;
+    }
     else {
-		if (arr.length == 6) {
-			/* Specifies a 2D transformation matrix comprised of the specified six values
-				Where a, b, c, d build the transformation matrix 
-		   		┌     ┐ 
-		   		│ a b │
-		   		│ c d │
-		   		└     ┘
-		   		and tx, ty are the translate values.  */
-	        
-			x3dom.debug.logInfo("6-mat: " + str);
-		}
         x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
     }
     return this;
