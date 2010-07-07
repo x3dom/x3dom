@@ -194,6 +194,22 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
     }
 };
 
+// helper to get a style
+x3dom.getStyle = function(oElm, strCssRule) {
+	var strValue;
+	if(window && window.getComputedStyle){
+		//strValue = window.getComputedStyle(oElm).webkitTransform;
+		//strValue = window.getComputedStyle(oElm, "").getPropertyValue(strCssRule);
+		strValue = window.getComputedStyle(oElm, "")[strCssRule];
+	}
+	else if(oElm.currentStyle){
+		x3dom.debug.logInfo ('bar');
+		strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
+		strValue = oElm.currentStyle[strCssRule];
+	}
+	return strValue;
+};
+
 // helper to set an element's attribute
 x3dom.setElementAttribute = function(attrName, newVal)
 {
@@ -4135,10 +4151,23 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTransformNode.superClass.call(this, ctx);
            
+            ctx.doc._nodeBag.trans.push(this);
+
 			// holds the current matrix
             this._trafo = null;
         },
         {   
+			// temporary per frame update method for CSS-Transform
+			tick: function(t) {
+				var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform");
+				if (trans && (trans != 'none')) {
+					this._trafo.setValueByStr(trans);					
+					return true;
+				}
+						
+	        	return false;
+	        },
+	
             transformMatrix: function(transform) {
                 return transform.mult(this._trafo);
             },
@@ -5085,7 +5114,7 @@ x3dom.X3DDocument = function(canvas, ctx) {
 	this.needRender = true;
 	this._scene = null;
 	this._viewarea = null;
-	this._nodeBag = { timer: [], lights: [], clipPlanes: [], followers: [] };
+	this._nodeBag = { timer: [], lights: [], clipPlanes: [], followers: [], trans: []};
 	//this.animNode = [];
 	this.downloadCount = 0;
     this.onload = function () {};
@@ -5215,13 +5244,20 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
+	var that;
+	
     if (this._nodeBag.timer.length) {
 		this.needRender = true;
         Array.forEach( this._nodeBag.timer, function (node) { node.onframe(t); } );
     }
     if (this._nodeBag.followers.length) {
-		var that = this;
+		that = this;
         Array.forEach( this._nodeBag.followers, function (node) { that.needRender |= node.tick(t); } );
+    }
+	// just a temporary tricker solution to update the CSS-trans
+ 	if (this._nodeBag.trans.length) {
+		that = this;
+        Array.forEach( this._nodeBag.trans, function (node) { that.needRender |= node.tick(t); } );
     }
 };
 
