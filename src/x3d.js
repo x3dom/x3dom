@@ -4160,9 +4160,10 @@ x3dom.registerNodeType(
 			// temporary per frame update method for CSS-Transform
 			tick: function(t) {
 				var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform");
-				x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans)					
+				x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);				
 				if (trans && (trans != 'none')) {
-					this._trafo.setValueByStr(trans);					
+					this._trafo.setValueByStr(trans);		
+					x3dom.debug.logInfo(' valid set:' + this._trafo);			
 					return true;
 				}
 						
