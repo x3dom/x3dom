@@ -30,14 +30,19 @@
 	</p>
 	<p class="case"> 
 		<x3d id="boxes" showLog='true' showStat="true" x="0px" y="0px" width="400px" height="300px">
-			<scene>
-				<background DEF='bgnd' transparency='0' skyColor='1 1 1' ></background>
-				<transform id="trans" >
-					<shape>
-						<box ></box>
-					</shape>
-				</transform> 
-			</scene>
+					<scene>
+						<background DEF='bgnd' transparency='0' skyColor='1 1 1' ></background>
+						<transform id="trans" >
+							<transform id='t1' style="-webkit-transform: translate3d(1em,0em,0em);">
+								<shape id="shape">
+									<box ></box>
+								</shape>
+							</transform>
+							<transform render='false' id='t2' style="-webkit-transform: rotateY(50deg);">
+								<shape USE="shape"></shape>
+							</transform>
+						</transform> 
+					</scene>
 		</x3d>
 	</p>
 	

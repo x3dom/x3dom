@@ -401,6 +401,17 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
         this._30 = arr[12]; this._31 = arr[13]; this._32 = arr[14]; this._33 = arr[15];
     }
     else {
+		if (arr.length == 6) {
+			/* Specifies a 2D transformation matrix comprised of the specified six values
+				Where a, b, c, d build the transformation matrix 
+		   		┌     ┐ 
+		   		│ a b │
+		   		│ c d │
+		   		└     ┘
+		   		and tx, ty are the translate values.  */
+	        
+			x3dom.debug.logInfo("6-mat: " + str);
+		}
         x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
     }
     return this;
