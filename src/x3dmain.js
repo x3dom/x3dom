@@ -316,9 +316,13 @@ x3dom.X3DCanvas.prototype.tick = function()
 	
 	try {
 		this.doc.advanceTime(d / 1000); 
+		animD = new Date().getTime() - d;
+		
 		if (this.doc.needRender) {
 			if (this.statDiv) {
 				this.statDiv.textContent = fps.toFixed(2) + ' fps';
+				this.statDiv.appendChild(document.createElement("br"));
+				this.statDiv.appendChild(document.createTextNode("anim: " + animD));
 		    }
             
 			this.doc.needRender = false;    // picking might require another pass
