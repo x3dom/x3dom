@@ -2850,7 +2850,8 @@ x3dom.registerNodeType(
                                     this._mesh._normals.push(normals[n2].z);
                                 }
                                 else {
-                                    this._mesh._multiIndIndices.push(p0, p1, p2);
+                                    //this._mesh._multiIndIndices.push(p0, p1, p2);
+                                    this._mesh._multiIndIndices.push(cnt-3, cnt-2, cnt-1);
                                 }
                                 
                                 if (hasColor) {
@@ -2917,7 +2918,8 @@ x3dom.registerNodeType(
                                     this._mesh._normals.push(normals[n2].z);
                                 }
                                 else {
-                                    this._mesh._multiIndIndices.push(p0, p1, p2);
+                                    //this._mesh._multiIndIndices.push(p0, p1, p2);
+                                    this._mesh._multiIndIndices.push(cnt-3, cnt-2, cnt-1);
                                 }
                                 
                                 if (hasColor) {
