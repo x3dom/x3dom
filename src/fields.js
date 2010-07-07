@@ -151,6 +151,10 @@ x3dom.fields.SFMatrix4f.parseRotation = function (str) {
 };
 
 x3dom.fields.SFMatrix4f.parse = function (str) {
+    var val = /matrix.+\((.+)\)/;
+    if (val.exec(str)) {
+        str = RegExp.$1;
+    }
     var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
     if (arr.length >= 16)
     {
@@ -384,6 +388,10 @@ x3dom.fields.SFMatrix4f.prototype.toString = function () {
 };
 
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
+    var val = /matrix.+\((.+)\)/;
+    if (val.exec(str)) {
+        str = RegExp.$1;
+    }
     var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
     if (arr.length >= 16)
     {
