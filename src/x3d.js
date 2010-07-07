@@ -1571,7 +1571,10 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 
     var a, b, n = null;
     
-    num = coords.length / 3;
+    //num = coords.length / 3;
+    num = (this._posSize !== undefined && this._posSize > coords.length) ? 
+           this._posSize / 3 : coords.length / 3;
+    num = 3 * ((num - Math.floor(num) > 0) ? Math.floor(num + 1) : num);
 	
 	for (i = 0; i < num; ++i) {
 		vertFaceNormals[i] = [];
@@ -2766,6 +2769,7 @@ x3dom.registerNodeType(
                     cnt = 0;
                     faceCnt = 0;
                     this._mesh._multiIndIndices = [];
+                    this._mesh._posSize = positions.length;
                     
                     for (i=0; i < indexes.length; ++i) 
                     {
