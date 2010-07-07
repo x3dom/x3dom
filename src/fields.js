@@ -151,19 +151,31 @@ x3dom.fields.SFMatrix4f.parseRotation = function (str) {
 };
 
 x3dom.fields.SFMatrix4f.parse = function (str) {
+    var needTranspose = false;
     var val = /matrix.*\((.+)\)/;
     if (val.exec(str)) {
         str = RegExp.$1;
+        needTranspose = true;
     }
     var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
     if (arr.length >= 16)
     {
-        return new x3dom.fields.SFMatrix4f(
+        if (!needTranspose) {
+            return new x3dom.fields.SFMatrix4f(
                 arr[0],  arr[1],  arr[2],  arr[3], 
                 arr[4],  arr[5],  arr[6],  arr[7], 
                 arr[8],  arr[9],  arr[10], arr[11], 
                 arr[12], arr[13], arr[14], arr[15]
-        );
+            );
+        }
+        else {
+            return new x3dom.fields.SFMatrix4f(
+                arr[0],  arr[4],  arr[8],  arr[12], 
+                arr[1],  arr[5],  arr[9],  arr[13], 
+                arr[2],  arr[6],  arr[10], arr[14], 
+                arr[3],  arr[7],  arr[11], arr[15]
+            );
+        }
     }
     else if (arr.length === 6) {
         return new x3dom.fields.SFMatrix4f(
@@ -396,17 +408,27 @@ x3dom.fields.SFMatrix4f.prototype.toString = function () {
 };
 
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
+    var needTranspose = false;
     var val = /matrix.*\((.+)\)/;
     if (val.exec(str)) {
         str = RegExp.$1;
+        needTranspose = true;
     }
     var arr = Array.map(str.split(/[,\s]+/), function (n) { return +n; });
     if (arr.length >= 16)
     {
-        this._00 = arr[0]; this._01 = arr[1]; this._02 = arr[2]; this._03 = arr[3];
-        this._10 = arr[4]; this._11 = arr[5]; this._12 = arr[6]; this._13 = arr[7];
-        this._20 = arr[8]; this._21 = arr[9]; this._22 = arr[10]; this._23 = arr[11];
-        this._30 = arr[12]; this._31 = arr[13]; this._32 = arr[14]; this._33 = arr[15];
+        if (!needTranspose) {
+            this._00 = arr[0];  this._01 = arr[1];  this._02 = arr[2];  this._03 = arr[3];
+            this._10 = arr[4];  this._11 = arr[5];  this._12 = arr[6];  this._13 = arr[7];
+            this._20 = arr[8];  this._21 = arr[9];  this._22 = arr[10]; this._23 = arr[11];
+            this._30 = arr[12]; this._31 = arr[13]; this._32 = arr[14]; this._33 = arr[15];
+        }
+        else {
+            this._00 = arr[0];  this._01 = arr[4];  this._02 = arr[8];  this._03 = arr[12];
+            this._10 = arr[1];  this._11 = arr[5];  this._12 = arr[9];  this._13 = arr[13];
+            this._20 = arr[2];  this._21 = arr[6];  this._22 = arr[10]; this._23 = arr[14];
+            this._30 = arr[3];  this._31 = arr[7];  this._32 = arr[11]; this._33 = arr[15];
+        }
     }
     else if (arr.length === 6) {
         this._00 = arr[0]; this._01 = arr[1]; this._02 = 0; this._03 = arr[4];

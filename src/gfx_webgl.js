@@ -169,6 +169,7 @@ x3dom.gfx_webgl = (function () {
         "uniform float sphereMapping;" +
 		"uniform float alpha;" +
 		"uniform float lightOn;" +
+		"uniform float solid;" +
 		"uniform sampler2D tex;" +
 		"uniform sampler2D sh_tex;" +
         "uniform float shadowIntensity;" +
@@ -206,6 +207,9 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
+        "    if (solid == 0.0 && dot(normal, eye) < 0.0) {" +
+        "       normal *= -1.0;" +
+        "    }" +
 		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
 		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
 		"    diffuse += max(0.0, dot(normal, eye));" +
@@ -239,6 +243,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform vec3 specularColor;" +
 		"uniform float alpha;" +
 		"uniform float lightOn;" +
+		"uniform float solid;" +
 		"uniform sampler2D tex;" +
 		"uniform sampler2D sh_tex;" +
         "uniform float shadowIntensity;" +
@@ -253,6 +258,9 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
+        "    if (solid == 0.0 && dot(normal, eye) < 0.0) {" +
+        "       normal *= -1.0;" +
+        "    }" +
 		"    vec2 texCoord = vec2(fragTexCoord.x,1.0-fragTexCoord.y);" +
 		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
 		"    diffuse += abs(dot(normal, eye));" +
@@ -303,6 +311,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform vec3 specularColor;" +
 		"uniform float alpha;" +
 		"uniform float lightOn;" +
+		"uniform float solid;" +
 		"uniform sampler2D sh_tex;" +
         "uniform float shadowIntensity;" +
 		"" +
@@ -338,6 +347,9 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
+        "    if (solid == 0.0 && dot(normal, eye) < 0.0) {" +
+        "       normal *= -1.0;" +
+        "    }" +
 		"    float diffuse = max(0.0, dot(normal, light)) * lightOn;" +
 		"    diffuse += max(0.0, dot(normal, eye));" +
 		"    float specular = pow(max(0.0, dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
@@ -386,6 +398,7 @@ x3dom.gfx_webgl = (function () {
 		"uniform vec3 specularColor;" +
 		"uniform float alpha;" +
 		"uniform float lightOn;" +
+		"uniform float solid;" +
 		"uniform sampler2D sh_tex;" +
         "uniform float shadowIntensity;" +
 		"" +
@@ -422,6 +435,9 @@ x3dom.gfx_webgl = (function () {
 		"    vec3 normal = normalize(fragNormal);" +
 		"    vec3 light = normalize(fragLightVector);" +
 		"    vec3 eye = normalize(fragEyeVector);" +
+        "    if (solid == 0.0 && dot(normal, eye) < 0.0) {" +
+        "       normal *= -1.0;" +
+        "    }" +
 		"    float diffuse = abs(dot(normal, light)) * lightOn;" +
 		"    diffuse += abs(dot(normal, eye));" +
 		"    float specular = pow(abs(dot(normal, normalize(light+eye))), shininess*128.0) * lightOn;" +
@@ -2086,6 +2102,7 @@ x3dom.gfx_webgl = (function () {
 			else {
 				gl.disable(gl.CULL_FACE);
             }
+            sp.solid = (shape.isSolid() ? 1.0 : 0.0);
             
             // render object
             try {
