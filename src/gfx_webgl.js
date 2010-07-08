@@ -970,6 +970,10 @@ x3dom.gfx_webgl = (function () {
             {
                 var that = this;
                 var texture;
+                var childTex = (tex._video !== undefined && 
+                                tex._video !== null && 
+                                tex._needPerFrameUpdate !== undefined && 
+                                tex._needPerFrameUpdate === true);
                 
                 if (this._webgl.texture === undefined) {
                     this._webgl.texture = [];
@@ -985,16 +989,19 @@ x3dom.gfx_webgl = (function () {
                         that.updateTexture(singleTex, cnt);
                     }
                 }
-                else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture))
+                else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
                 {
                     texture = gl.createTexture();
                     
-                    tex._video = document.createElement('video');
-                    tex._video.setAttribute('autobuffer', 'true');
-                    //tex._video.setAttribute('src', tex._vf.url);
-                    var p = document.getElementsByTagName('body')[0];
-                    p.appendChild(tex._video);
-                    tex._video.style.display = "none";
+                    if (!childTex)
+                    {
+                        tex._video = document.createElement('video');
+                        tex._video.setAttribute('autobuffer', 'true');
+                        //tex._video.setAttribute('src', tex._vf.url);
+                        var p = document.getElementsByTagName('body')[0];
+                        p.appendChild(tex._video);
+                        tex._video.style.display = "none";
+                    }
                     
                     for (var i=0; i<tex._vf.url.length; i++)
                     {

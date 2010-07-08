@@ -1039,6 +1039,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
+            
+            this._needPerFrameUpdate = false;
         },
         {
             parentAdded: function(parent)
@@ -1121,6 +1123,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
             
             // For testing: look for <img> element if url empty
+            /*
             if (!this._vf.url.length && ctx.xmlNode) {
                 x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
             	var that = this;
@@ -1138,8 +1141,47 @@ x3dom.registerNodeType(
                 }
                 catch(e) {}
             }
+            */
+            
+            this._video = null;
+            this._intervalID = 0;
         },
         {
+            nodeChanged: function()
+            {
+                if (this._vf.url.length || !this._xmlNode) {
+                    return;
+                }
+                x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
+                var that = this;
+                try {
+                    Array.forEach( this._xmlNode.childNodes, function (childDomNode) {
+                        if (childDomNode.nodeType === 1) {
+                            var url = childDomNode.getAttribute("src");
+                            if (url) {
+                                that._vf.url.push(url);
+                                x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+                                
+                                if (childDomNode.localName === "video") {
+                                    that._needPerFrameUpdate = true;
+                                    //that._video = childDomNode;
+                                    
+                                    that._video = document.createElement('video');
+                                    that._video.setAttribute('autobuffer', 'true');
+                                    var p = document.getElementsByTagName('body')[0];
+                                    p.appendChild(that._video);
+                                    that._video.style.display = "none";
+                                }
+                                
+                                x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
+                                childDomNode.style.display = "none";
+                                childDomNode.style.visibility = "hidden";
+                            }
+                        }
+                    } );
+                }
+                catch(e) {}
+            }
         }
     )
 );
@@ -1168,9 +1210,6 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             // TODO; implement startTime, stopTime,...
-            
-            this._video = null;
-            this._intervalID = 0;
         },
         {
         }
@@ -3740,6 +3779,7 @@ x3dom.registerNodeType(
             this.addField_SFTime(ctx, 'transitionTime', 1.0);
             this.addField_MFString(ctx, 'transitionType', ["LINEAR"]);
             
+            //TODO; use avatarSize + visibilityLimit for projection matrix
             x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
         },
         {
