@@ -26,7 +26,7 @@
         <Appearance>
 		  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
           <!--<ImageTexture url='"texture/generic/x3d_256.jpg"'/>-->
-          <ImageTexture><img src="texture/generic/x3d_256.jpg" /></ImageTexture>
+          <Texture><img src="texture/generic/x3d_256.jpg" /></Texture>
         </Appearance>
         <Box/>
       </Shape>
@@ -34,11 +34,21 @@
     <Transform translation='2 0 0'>
       <Shape USE='obj'/>
     </Transform>
+    <Transform translation='0 2 0'>
+      <Shape DEF='obj1'>
+        <Appearance>
+		  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
+          <Texture><video src="../example/video/big_buck_bunny.ogv" autobuffer="true" /></Texture>
+        </Appearance>
+        <Box/>
+      </Shape>
+    </Transform>
   </Scene>
         </X3D>
 	</p>
 	
 	<p class="case"> &nbsp; </p>
+    <!--<video src='../example/video/big_buck_bunny.ogv'  autobuffer='true' />-->
 	
 	<script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
