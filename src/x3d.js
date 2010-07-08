@@ -1034,6 +1034,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
             
+			this.addField_SFInt32(ctx, 'origChannelCount', '0'); // 0 means the system should figure out the count
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
