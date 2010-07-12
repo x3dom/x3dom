@@ -379,6 +379,54 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc.load(uri, sceneElemPos);
 };
 
+x3dom.detectActiveX = function()
+{
+    var isInstalled = false;  
+    
+    if (window.ActiveXObject) 
+    {  
+        var control = null;  
+        
+        try 
+        {  
+            control = new ActiveXObject('AVALONATX.InstantPluginATXCtrl.1');  
+        } 
+        catch (e) 
+        {
+        }  
+        
+        if (control)
+            isInstalled = true;  
+    }
+    
+    return isInstalled;
+}
+
+x3dom.insertActiveX = function(x3d)
+{   
+    var height = x3d.getAttribute("height");
+    var width  = x3d.getAttribute("width");
+
+    var parent = x3d.parentNode;
+    
+    var divelem = document.createElement("div");
+    divelem.setAttribute("id", "x3dplaceholder");
+
+    var inserted = parent.insertBefore(divelem, x3d);
+     
+    var atx = document.createElement("object");
+    atx.setAttribute("id", "Avalon");
+    atx.setAttribute("classid", "CLSID:F3254BA0-99FF-4D14-BD81-EDA9873A471E");
+    atx.setAttribute("width",   width   ? width     : "500");
+    atx.setAttribute("height",  height  ? height    : "500");
+    
+    inserted.appendChild(atx);
+    
+    browser = Avalon.getBrowser();
+    scene   = browser.importDocument(x3d);
+    browser.replaceWorld(scene);
+}
+
 // holds the UserAgent feature
 x3dom.userAgentFeature = {
 	supportsDOMAttrModified: false
@@ -463,7 +511,14 @@ x3dom.userAgentFeature = {
                 continue;
             }
         */
-            
+        
+            // http://www.howtocreate.co.uk/wrongWithIE/?chapter=navigator.plugins
+            if (x3dom.detectActiveX())
+            {
+                x3dom.insertActiveX(x3ds[i]);
+                continue;
+            }
+        
             var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
             
 			if (x3dcanvas.gl === null)
@@ -542,7 +597,8 @@ x3dom.userAgentFeature = {
             else if (document.createEventObject)   
             {
                 evt = document.createEventObject();
-                document.fireEvent('on' + eventType, evt);   
+                // http://stackoverflow.com/questions/1874866/how-to-fire-onload-event-on-document-in-ie
+                document.body.fireEvent('on' + eventType, evt);   
             }
         })('load');
     };
@@ -553,9 +609,18 @@ x3dom.userAgentFeature = {
         }
     };
 
-    window.addEventListener('load', onload, false);
-    window.addEventListener('unload', onunload, false);
-    window.addEventListener('reload', onunload, false);
+    if (window.addEventListener)
+    {
+        window.addEventListener('load', onload, false);
+        window.addEventListener('unload', onunload, false);
+        window.addEventListener('reload', onunload, false);
+    }
+    else if (window.attachEvent)
+    {
+        window.attachEvent('onload', onload);
+        window.attachEvent('onunload', onunload);
+        window.attachEvent('onreload', onunload);
+    }
     
     document.onkeypress = function(evt) {
         for (var i=0; i<x3dom.canvases.length; i++) {
