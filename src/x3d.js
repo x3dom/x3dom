@@ -1041,6 +1041,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
             
             this._needPerFrameUpdate = false;
+            this._isCanvas = false;
         },
         {
             parentAdded: function(parent)
@@ -1122,29 +1123,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
             
-            // For testing: look for <img> element if url empty
-            /*
-            if (!this._vf.url.length && ctx.xmlNode) {
-                x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
-            	var that = this;
-                try {
-                    Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
-                        if (childDomNode.nodeType === 1) {
-                            var url = childDomNode.getAttribute("src");
-                            if (url) {
-                                that._vf.url.push(url);
-                                childDomNode.style.display = "none";
-                                x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
-                            }
-                        }
-                    } );
-                }
-                catch(e) {}
-            }
-            */
-            
             this._video = null;
             this._intervalID = 0;
+            this._canvas = null;
         },
         {
             nodeChanged: function()
@@ -1158,6 +1139,7 @@ x3dom.registerNodeType(
                     Array.forEach( this._xmlNode.childNodes, function (childDomNode) {
                         if (childDomNode.nodeType === 1) {
                             var url = childDomNode.getAttribute("src");
+                            // For testing: look for <img> element if url empty
                             if (url) {
                                 that._vf.url.push(url);
                                 x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
@@ -1172,11 +1154,16 @@ x3dom.registerNodeType(
                                     p.appendChild(that._video);
                                     that._video.style.display = "none";
                                 }
-                                
-                                x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
-                                childDomNode.style.display = "none";
-                                childDomNode.style.visibility = "hidden";
                             }
+                            else if (childDomNode.localName.toLowerCase() === "canvas") {
+                                that._needPerFrameUpdate = true;
+                                that._isCanvas = true;
+                                that._canvas = childDomNode;
+                            }
+                            
+                            childDomNode.style.display = "none";
+                            childDomNode.style.visibility = "hidden";
+                            x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
                         }
                     } );
                 }

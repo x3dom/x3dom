@@ -1,0 +1,63 @@
+<html>
+
+<head>
+    <title>Canvas Path Test</title>
+    <link rel='stylesheet' type='text/css' href='x3dom.css'/>
+    <script type='text/javascript'>
+    function main() 
+    {
+        var myCanvas = document.getElementById("myCanvas");
+        
+        // redraw the canvas...
+        var context = myCanvas.getContext("2d");
+        context.lineWidth = 10.0;
+        context.lineCap = "round";
+
+        context.beginPath();
+
+        // Draw a bounds rect (default color is black)
+        context.strokeRect(0, 0, 256, 256);
+        context.strokeStyle = "#808080";
+
+        // Draw a vertical line
+        context.moveTo(100, 100);
+        context.lineTo(100, 200);
+        context.stroke();
+
+        // Call beginPath to clear existing state
+        context.beginPath();
+
+        // Draw another line
+        context.moveTo(200, 100);
+        context.lineTo(200, 200);
+        context.stroke();
+    }
+    </script>
+</head>
+
+<body onload='main();'>
+    <x3d showStat="true" showLog="true" x="0px" y="0px" width="500px" height="350px">
+      <scene>
+        <background skyColor='.5 .4 .2'></background>
+        <viewpoint position='0 0 10'></viewpoint>
+          <shape>
+            <appearance>
+                <texture>
+                    <canvas width='256' height='256' id='myCanvas'>
+                </texture>
+                <material diffuseColor='0.6 0.9 0.5'></material>	
+            </appearance>
+            <box></box>
+         </shape>
+      </scene>
+    </x3d>
+    
+    <script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+	<script type="text/javascript" src="gfx_webgl.js"></script>
+	<script type="text/javascript" src="x3d.js"></script>
+	<script type="text/javascript" src="fields.js"></script>
+    <script type="text/javascript" src="x3d_follower.js"></script>
+</body>
+
+</html>
