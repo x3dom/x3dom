@@ -1261,7 +1261,19 @@ g_shaders['vs-x3d-storm'] = {type: "vertex", data:
                     this._webgl.texture = [];
                 }
                 
-                if (x3dom.isa(tex, x3dom.nodeTypes.MultiTexture))
+                if (tex._isCanvas && tex._canvas) {
+                    texture = gl.createTexture();
+                    that._webgl.texture[unit] = texture;
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, tex._canvas);
+                    
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                }
+                else if (x3dom.isa(tex, x3dom.nodeTypes.MultiTexture))
                 {
                     for (var cnt=0; cnt<tex.size(); cnt++)
                     {
