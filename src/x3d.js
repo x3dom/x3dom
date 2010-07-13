@@ -66,6 +66,44 @@ x3dom.BindableStack = function (doc, type, defaultType, getter) {
 	// x3dom.debug.logInfo ('Create BindableStack ' + this._type._typeName + ', ' + this._getter);
 };
 
+x3dom.BindableStack.prototype.top = function () {
+	return ( (this._bindStack.length >= 0) ? this._bindStack[this._bindStack.length - 1] : null );
+};
+
+x3dom.BindableStack.prototype.push = function (bindable) {
+	var top = this.top();
+
+	if (top === bindable) {
+		return;
+	}
+
+	if (top) {
+		top.deactivate();
+	}
+	
+	this._bindStack.push (bindable);
+	bindable.activate();
+};
+
+x3dom.BindableStack.prototype.pop = function (bindable) {
+	var top;
+	
+	if (bindable) {
+		top = this.top();
+		if (bindable !== top) {
+			return null;
+		} 
+	}
+	
+	top = this._bindStack.pop();
+	
+	if (top) {
+		top.deactivate();
+	}
+	
+	return top;
+};
+
 x3dom.BindableStack.prototype.getActive = function () {
 	if (this._bindStack.length === 0) {		
 		if (this._bindBag.length === 0) {
@@ -130,10 +168,11 @@ x3dom.BindableBag.prototype.addBindable = function(node) {
 		if ( x3dom.isa (node, this._stacks[i]._defaultType) ) {
 			x3dom.debug.logInfo ('register bindable ' + node.typeName());
 			this._stacks[i]._bindBag.push(node);
-			return;
+			return this._stacks[i];
 		}
 	}
 	x3dom.debug.logError (node.typeName() + ' is not a valid bindable');
+	return null;
 };
 
 // NodeNameSpace constructor
@@ -1041,7 +1080,6 @@ x3dom.registerNodeType(
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
             
             this._needPerFrameUpdate = false;
-            this._isCanvas = false;
         },
         {
             parentAdded: function(parent)
@@ -1123,11 +1161,29 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
             
-            this.addField_SFBool(ctx, 'hideChildren', true);
+            // For testing: look for <img> element if url empty
+            /*
+            if (!this._vf.url.length && ctx.xmlNode) {
+                x3dom.debug.logInfo("No Texture URL given, searching for &lt;img&gt; elements...");
+            	var that = this;
+                try {
+                    Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
+                        if (childDomNode.nodeType === 1) {
+                            var url = childDomNode.getAttribute("src");
+                            if (url) {
+                                that._vf.url.push(url);
+                                childDomNode.style.display = "none";
+                                x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+                            }
+                        }
+                    } );
+                }
+                catch(e) {}
+            }
+            */
             
             this._video = null;
             this._intervalID = 0;
-            this._canvas = null;
         },
         {
             nodeChanged: function()
@@ -1141,7 +1197,6 @@ x3dom.registerNodeType(
                     Array.forEach( this._xmlNode.childNodes, function (childDomNode) {
                         if (childDomNode.nodeType === 1) {
                             var url = childDomNode.getAttribute("src");
-                            // For testing: look for <img> element if url empty
                             if (url) {
                                 that._vf.url.push(url);
                                 x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
@@ -1156,18 +1211,11 @@ x3dom.registerNodeType(
                                     p.appendChild(that._video);
                                     that._video.style.display = "none";
                                 }
-                            }
-                            else if (childDomNode.localName.toLowerCase() === "canvas") {
-                                that._needPerFrameUpdate = true;
-                                that._isCanvas = true;
-                                that._canvas = childDomNode;
-                            }
-                            
-                            if (that._vf.hideChildren) {
+                                
+                                x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
                                 childDomNode.style.display = "none";
                                 childDomNode.style.visibility = "hidden";
                             }
-                            x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
                         }
                     } );
                 }
@@ -3576,21 +3624,47 @@ x3dom.registerNodeType(
         function (ctx) {
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 		  
+		  this.addField_SFBool(ctx, 'set_bind', false);
+        
 		  this._autoGen = (ctx.autoGen ? true : false);
-		
+        
 		  if (ctx && ctx.doc._bindableBag) {
-			ctx.doc._bindableBag.addBindable(this);
+			this._stack = ctx.doc._bindableBag.addBindable(this);
 		  }
 		  else {
+			this._stack = null;
 		    x3dom.debug.logError( 'Could not find bindableBag for registration ' + this.typeName());
 		  }
         },
 		{
 			initDefault: function() {
 			},
+			bind: function (value) {
+				if (this._stack) {
+					if (value) {
+						this._stack.push (this);
+					}
+					else {
+						this._stack.pop  (this);
+					}
+				}
+				else {
+					x3dom.debug.logError ('No BindStack in Bindable\n');
+				}
+			},
 			activate: function () {
+				x3dom.debug.logInfo ('activate Bindable ' + this._DEF);
+				// XXX TODO: set isActive to true
 			},
 			deactivate: function () {
+				x3dom.debug.logInfo ('deactivate Bindable ' + this._DEF);
+				// XXX TODO: set isActive to false
+			},
+			fieldChanged: function(fieldName) {
+				x3dom.debug.logInfo ('fieldChange: ' + fieldName);
+				if (fieldName === "set_bind") {
+					this.bind(this._vf.set_bind);
+				}
 			},
 			nodeChanged: function() {
 			}
@@ -3690,6 +3764,12 @@ x3dom.registerNodeType(
                          fieldName == "zNear" || fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
                 }
+		else {
+			/// XXX FIXME; call parent.fieldChanged();
+			if (fieldName === "set_bind") {
+				this.bind(this._vf.set_bind);
+			}
+		}
             },
             
 			getCenterOfRotation: function() {
