@@ -2,8 +2,32 @@
 
 <head>
     <title>Canvas Path Test</title>
+<link rel="stylesheet" href="ui.colorpicker.css"/>
+<script language="JavaScript" src="jq.js"></script>
+<script language="JavaScript" src="jq.color.js"></script>
+<style type="text/css">
+#bg fieldset { border-width: 1px; width: 460px; }
+#bg .fields { padding: 25px; margin-bottom: 20px; }
+#bg div { clear: both; }
+#bg label { float: left; width: 85px; }
+#bg input { float: left; width: 190px; }
+.ui-colorpicker input { float: none; width: auto; height: auto; }
+#bg .submit { margin-top: 40px; text-align: center; }
+</style>
+<script language="JavaScript">
+$(document).ready(function() {
+	var hideit = function(e, ui) { $(this).val('#'+ui.hex);  $('.ui-colorpicker').css('display', 'block'); };
+	$('#bg #colorpicker').colorpicker({ hide: hideit, submit: hideit });
+});
+</script>
+
     <link rel='stylesheet' type='text/css' href='x3dom.css'/>
     <script type='text/javascript'>
+    
+    var mouse_drag_x = 0, mouse_drag_y = 0;
+    var last_mouse_drag_x = -1, last_mouse_drag_y = -1;
+    var mouse_button = 0;
+    var mouse_dragging = false;
     
     var userData = {
         shaderProgram: null,
@@ -107,18 +131,22 @@
     {
         var myCanvas = document.getElementById("myCanvas");
         
-        /*
+        initCanvas(myCanvas);
+        
         // redraw the canvas...
         var context = myCanvas.getContext("2d");
-        context.lineWidth = 10.0;
+        context.fillStyle = 'rgb(255,255,255)';
+        context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        
+        //context.lineWidth = 10.0;
         context.lineCap = "round";
 
         context.beginPath();
-
         // Draw a bounds rect (default color is black)
         context.strokeRect(0, 0, 256, 256);
         context.strokeStyle = "#808080";
 
+        /*
         // Draw a vertical line
         context.moveTo(100, 100);
         context.lineTo(100, 200);
@@ -133,6 +161,7 @@
         context.stroke();
         */
         
+        /*
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         
         for (var i=0; i<validContextNames.length && !userData.gl; i++) {
@@ -153,8 +182,117 @@
             myCanvas.parentNode._x3domNode.fieldChanged("url");
             sg.render();
         }, 100);
+        */
     }
     
+    function updateImage(canvas)
+    {
+        var context = canvas.getContext("2d");
+        //context.fillStyle = 'rgb(255,255,255)';
+        //context.fillRect(0, 0, canvas.width, canvas.height);
+        
+        if (!mouse_dragging)
+            return;
+        
+        if (last_mouse_drag_x < 0 || last_mouse_drag_y < 0)
+        {
+            last_mouse_drag_x = mouse_drag_x;
+            last_mouse_drag_y = mouse_drag_y;
+            return;
+        }
+        
+        // redraw the canvas...
+        context.lineWidth = 1.0;
+
+        context.beginPath();
+        //context.strokeStyle = "#804020";
+        context.strokeStyle = document.getElementById("colorpicker").value;
+    
+        // Draw a line
+        context.moveTo(last_mouse_drag_x, last_mouse_drag_y);
+        context.lineTo(mouse_drag_x, mouse_drag_y);
+        context.stroke();
+        
+        canvas.parentNode._x3domNode.fieldChanged("url");
+        document.getElementById("aScene").render();
+        
+        last_mouse_drag_x = mouse_drag_x;
+        last_mouse_drag_y = mouse_drag_y;
+    }
+    
+    // add event listeners
+    function initCanvas(canvas)
+    {
+    	canvas.addEventListener('mousedown', function (evt) {
+			switch(evt.button) {
+				case 0:  mouse_button = 1; break;	//left
+				case 1:  mouse_button = 4; break;	//middle
+				case 2:  mouse_button = 2; break;	//right
+				default: mouse_button = 0; break;
+			}
+			mouse_drag_x = evt.layerX;
+			mouse_drag_y = evt.layerY;
+			mouse_dragging = true;
+			
+			if (evt.shiftKey) { mouse_button = 1; }
+			if (evt.ctrlKey)  { mouse_button = 4; }
+			if (evt.altKey)   { mouse_button = 2; }
+            
+            updateImage(canvas);
+			
+			window.status='DOWN: '+evt.layerX+", "+evt.layerY;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
+		
+		canvas.addEventListener('mouseup', function (evt) {
+			mouse_button = 0;
+			mouse_dragging = false;
+            last_mouse_drag_x = -1;
+            last_mouse_drag_y = -1;
+            
+            updateImage(canvas);
+			
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
+		
+		canvas.addEventListener('mouseout', function (evt) {
+			mouse_button = 0;
+			mouse_dragging = false;
+            last_mouse_drag_x = -1;
+            last_mouse_drag_y = -1;
+            
+            updateImage(canvas);
+			
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
+		
+		canvas.addEventListener('mousemove', function (evt) {
+			window.status='MOVE: '+evt.layerX+", "+evt.layerY;
+			
+			if (!mouse_dragging) {
+				return;
+            }
+			
+            mouse_drag_x = evt.layerX;
+			mouse_drag_y = evt.layerY;
+			
+			if (evt.shiftKey) { mouse_button = 1; }
+			if (evt.ctrlKey)  { mouse_button = 4; }
+			if (evt.altKey)   { mouse_button = 2; }
+            
+            updateImage(canvas);
+			
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
+    }
     </script>
 </head>
 
@@ -165,8 +303,8 @@
         <viewpoint position='0 0 10'></viewpoint>
           <shape>
             <appearance>
-                <texture>
-                    <canvas width='256' height='256' id='myCanvas'>
+                <texture hideChildren="false">
+                    <canvas width='256' height='256' id='myCanvas' style="position:absolute; top:20px;left:520px;">
                 </texture>
                 <material diffuseColor='0.6 0.9 0.5'></material>	
             </appearance>
@@ -175,6 +313,17 @@
       </scene>
     </x3d>
     
+	<form id="bg" action="#">
+		<fieldset>
+			<legend>Stroke Color</legend>
+
+			<div class="fields">
+				<span><label for="colorpicker">Color Picker:</label> <input type="text" id="colorpicker" name="colorpicker"/></span>
+			</div>
+			<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>	
+		</fieldset>
+	</form>
+
     <script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
 	<script type="text/javascript" src="gfx_webgl.js"></script>
