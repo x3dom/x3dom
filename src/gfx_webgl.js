@@ -472,7 +472,7 @@ x3dom.gfx_webgl = (function () {
         "varying vec3 fragColor;" +
         "" +
         "void main(void) {" +
-        "    gl_FragColor = vec4(fragColor, 1.0);" +
+        "    gl_FragColor = vec4(fragColor, alpha);" +
         "}"
         };
 
@@ -614,7 +614,9 @@ g_shaders['vs-x3d-storm'] = {type: "vertex", data:
 		"	}else{" +
 		"		fragColor = color;" +
 		"	}" +
+		//if uselightning or fog
 		"	fragEyePosition = eyePosition - (modelViewMatrix * vec4(position, 1.0)).xyz;" +
+		//if useShadow
 		"   projCoord = matPV * vec4(position+0.5*normalize(normal), 1.0);" +
 		"	gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
 		"}"
@@ -712,9 +714,9 @@ g_shaders['vs-x3d-storm'] = {type: "vertex", data:
 		"	vec3 diffuse  = light[lightIdx].intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
 		//"	vec3 specular = light[lightIdx].intensity * material.specularColor * pow(abs(x3dDot(normal, normalize(lightDirection+eye))), material.shininess * 128.0);" +
 		
-		"   float specularPow = pow(abs(dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
-		"   specularPow += 0.8 * pow(abs(dot(normal, eye)), material.shininess*128.0);" +	
-		"	vec3 specular = light[lightIdx].intensity * material.specularColor * specularPow;" +
+		"   float specularPow = pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
+		
+		"	vec3 specular = light[lightIdx].intensity * material.specularColor * abs(specularPow);" +
 			// Calculate Final Color
 		"	vec3 result   = attentuation * spot * light[lightIdx].color * (ambient + diffuse + specular);" +
 		
@@ -734,9 +736,8 @@ g_shaders['vs-x3d-storm'] = {type: "vertex", data:
 			//The Original X3D Specular Calculation produce Errors????
 		//"	vec3 specular = light[lightIdx].intensity * material.specularColor * pow(abs(x3dDot(normal, normalize(lightDirection+eye))), material.shininess * 128.0);" +
 		
-		"   float specularPow = pow(abs(dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
-		"   specularPow += 0.8 * pow(abs(dot(normal, eye)), material.shininess*128.0);" +	
-		"	vec3 specular = light[lightIdx].intensity * material.specularColor * specularPow;" +
+		"   float specularPow = pow(max(0.5, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
+		"	vec3 specular = light[lightIdx].intensity * material.specularColor * abs(specularPow);" +
 		
 		// Calculate Final Color
 		"	vec3 result   = attentuation * spot * light[lightIdx].color * (ambient + diffuse + specular);" +
@@ -761,9 +762,8 @@ g_shaders['vs-x3d-storm'] = {type: "vertex", data:
 		"	vec3 diffuse  = light[lightIdx].intensity * diffuseColor * x3dDot(normal, lightDirection);" +
 		//"	vec3 specular = light[lightIdx].intensity * material.specularColor * pow(abs(x3dDot(normal, normalize(lightDirection+eye))), material.shininess * 128.0);" +	
 			
-		"   float specularPow = pow(abs(dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
-		"   specularPow += 0.8 * pow(abs(dot(normal, eye)), material.shininess*128.0);" +	
-		"	vec3 specular = light[lightIdx].intensity * material.specularColor * specularPow;" +
+		"   float specularPow = pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
+		"	vec3 specular = light[lightIdx].intensity * material.specularColor * abs(specularPow);" +
 			// Calculate Final Color
 		"	vec3 result   = attentuation * spot * light[lightIdx].color * (ambient + diffuse + specular);" +
 		
@@ -2282,6 +2282,9 @@ g_shaders['vs-x3d-storm'] = {type: "vertex", data:
 				sp['material.ambientIntensity'] 	= mat._vf.ambientIntensity;
 				sp['material.transparency'] 		= mat._vf.transparency;
 			}
+			
+			//FIXME Only set for VertexColorUnlit and ColorPicking
+			sp.alpha=1.0-mat._vf.transparency;
 			
 			//===========================================================================
 			// Set Lights
