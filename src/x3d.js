@@ -5009,6 +5009,8 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
                           this._scene._vf.pickMode.toLowerCase() === "color");
     var isect = false;
     var obj = null;
+	
+	
     
     if (avoidTraversal) {
         if (!this._pickingInfo.updated) {
@@ -5016,6 +5018,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
             return;
         }
         else {
+			
             this._pickingInfo.updated = false;
             
             if ( (obj = this._pickingInfo.pickObj) )
