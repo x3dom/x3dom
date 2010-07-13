@@ -1123,6 +1123,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
             
+            this.addField_SFBool(ctx, 'hideChildren', true);
+            
             this._video = null;
             this._intervalID = 0;
             this._canvas = null;
@@ -1161,8 +1163,10 @@ x3dom.registerNodeType(
                                 that._canvas = childDomNode;
                             }
                             
-                            childDomNode.style.display = "none";
-                            childDomNode.style.visibility = "hidden";
+                            if (that._vf.hideChildren) {
+                                childDomNode.style.display = "none";
+                                childDomNode.style.visibility = "hidden";
+                            }
                             x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
                         }
                     } );
