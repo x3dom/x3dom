@@ -367,13 +367,13 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         }
     };
     
-    //if (!x3dCanvas.hasRuntime)
-    {
-        this.x3dElem.render = function() {
+    this.x3dElem.render = function() {
+        if (x3dCanvas.hasRuntime)
+            x3dCanvas.doc.needRender = true;
+        else
             x3dCanvas.doc.render(x3dCanvas.gl);
-        };
-        this.x3dElem.context = x3dCanvas.gl.ctx3d;
-    }
+    };
+    this.x3dElem.context = x3dCanvas.gl.ctx3d;
     
     this.doc.onerror = function () { alert('Failed to load X3D document'); };
     this.doc.load(uri, sceneElemPos);
