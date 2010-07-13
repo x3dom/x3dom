@@ -3655,10 +3655,12 @@ x3dom.registerNodeType(
 			activate: function () {
 				x3dom.debug.logInfo ('activate Bindable ' + this._DEF);
 				// XXX TODO: set isActive to true
+				this.postMessage('isActive', true);
 			},
 			deactivate: function () {
 				x3dom.debug.logInfo ('deactivate Bindable ' + this._DEF);
 				// XXX TODO: set isActive to false
+				this.postMessage('isActive', false);
 			},
 			fieldChanged: function(fieldName) {
 				x3dom.debug.logInfo ('fieldChange: ' + fieldName);
