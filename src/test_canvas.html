@@ -4,10 +4,110 @@
     <title>Canvas Path Test</title>
     <link rel='stylesheet' type='text/css' href='x3dom.css'/>
     <script type='text/javascript'>
+    
+    var userData = {
+        shaderProgram: null,
+        gl: null
+    };     
+    
+    // Test the gl object received via "context" by rendering a tri in front of all
+    function loadShader(gl, shaderType, shaderSource)
+    {
+         // Create the shader object
+         var shader = gl.createShader(shaderType);
+         if (shader == 0) return 0;
+
+         // Load the shader source
+         gl.shaderSource(shader, shaderSource);
+
+         // Compile the shader
+         gl.compileShader(shader);
+
+         return shader;
+    }
+ 
+    function init()
+    {
+        var gl = userData.gl;
+
+        // Setup a vertex and fragment shader and attach it to program
+        // put shader source in variables
+        var vertexShaderSource = 
+         "attribute vec4 vPosition;     \n" +
+         "void main()                   \n" +
+         "{                             \n" +
+         "  gl_Position = vPosition;    \n" +
+         "} ";
+        var fragmentShaderSource =
+         "uniform float val;            \n" +
+         "void main()                   \n" +
+         "{                             \n" +
+         "  gl_FragColor = vec4(1.0, val, 0.0, 1.0); \n" +
+         "} ";
+
+        // create our shaders
+        var vertexShader = loadShader(gl, gl.VERTEX_SHADER, vertexShaderSource);
+        var fragmentShader = loadShader(gl, gl.FRAGMENT_SHADER, fragmentShaderSource);     
+
+        // Create the shader program object
+        var programObject = gl.createProgram();
+        if (programObject == 0) return false;
+
+        // Store the shader program in the global user data (which is not 
+        // the best solution)
+        userData.shaderProgram = programObject;
+
+        // Attach our two shaders to the program
+        gl.attachShader (programObject, vertexShader);
+        gl.attachShader (programObject, fragmentShader);
+
+        // Link the program
+        gl.linkProgram(programObject);
+        
+        userData.shaderProgram.val = gl.getUniformLocation(userData.shaderProgram, "val");
+        
+        return true;
+    }
+
+    function draw(val)
+    {
+        var gl = userData.gl;
+
+        var vertices = [ 0.0,  0.5,  0.0,
+                        -0.5, -0.5,  0.0,
+                         0.5, -0.5,  0.0  ];
+
+        // Set up the viewport
+        gl.viewport(0, 0, 256, 256);
+
+        // Clear the depth buffer
+        gl.clearColor(0.0, 0.0, 1.0, 1.0);
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+
+        // Use the program object we created in init()
+        gl.useProgram(userData.shaderProgram);
+        
+        gl.uniform1f(userData.shaderProgram.val, val);
+        
+        gl.enableVertexAttribArray(0);
+
+        // Create a buffer for the vertices
+        var verticeBuffer = gl.createBuffer();
+        gl.bindBuffer(gl.ARRAY_BUFFER, verticeBuffer);
+        gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(vertices), gl.STATIC_DRAW);
+
+        // Load the vertex data
+        gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);
+
+        // Do the draw, as triangles
+        gl.drawArrays(gl.TRIANGLES, 0, 3);
+    }
+    
     function main() 
     {
         var myCanvas = document.getElementById("myCanvas");
         
+        /*
         // redraw the canvas...
         var context = myCanvas.getContext("2d");
         context.lineWidth = 10.0;
@@ -31,12 +131,35 @@
         context.moveTo(200, 100);
         context.lineTo(200, 200);
         context.stroke();
+        */
+        
+        var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
+        
+        for (var i=0; i<validContextNames.length && !userData.gl; i++) {
+            try {
+                userData.gl = myCanvas.getContext(validContextNames[i]);
+            }
+            catch (e) {}
+        }
+        
+        init();
+        draw(1.0);
+        
+        var sg = document.getElementById("aScene");
+        
+        setInterval( function() { 
+            draw(Math.random());
+            // do some sort of "touch" here to invalidate gl objects
+            myCanvas.parentNode._x3domNode.fieldChanged("url");
+            sg.render();
+        }, 100);
     }
+    
     </script>
 </head>
 
 <body onload='main();'>
-    <x3d showStat="true" showLog="true" x="0px" y="0px" width="500px" height="350px">
+    <x3d id="aScene" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="350px">
       <scene>
         <background skyColor='.5 .4 .2'></background>
         <viewpoint position='0 0 10'></viewpoint>
