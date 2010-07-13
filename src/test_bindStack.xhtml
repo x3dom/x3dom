@@ -14,13 +14,17 @@
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace"  showStat="true" showLog="true" x="0px" y="0px" width="320px" height="240px" altImg="helloX3D-alt.png" style="background-color: ivory;">
           <Scene>
             <Viewpoint id='cam01' position='0 0 5'></Viewpoint> 
-            <Viewpoint id='cam02' position='0 0 10'></Viewpoint> 	
+            <Viewpoint id='cam02' position='0 0 10'></Viewpoint> 
+	    <Background id='bg01' skyColor='0 0 1' ></Background>
+	    <Background id='bg02' skyColor='0 1 0' ></Background>	
 			<Shape >
                 <Appearance>
                     <Material diffuseColor='1 0 0' />	
                 </Appearance>
                 <Box DEF='box'/>
              </Shape>
+	    <Route fromNode='cam01' fromField='isActive' toNode='bg01' toField='set_bind' ></Route>
+	    <Route fromNode='cam02' fromField='isActive' toNode='bg02' toField='set_bind' ></Route>
           </Scene>
         </X3D>
 
