@@ -1186,7 +1186,8 @@ x3dom.gfx_webgl = (function () {
 					"   float specularPow = pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
 					"	vec3 specular = light[lightIdx].intensity * material.specularColor * abs(specularPow);" +
 					"	vec3 result   = attentuation * spot * light[lightIdx].color * (ambient + diffuse + specular);" +
-					"	return clamp(result * texColor, 0.0, 1.0);" +
+					"	result = clamp(result, 0.0, 1.0);" +
+					"	return result * texColor;" +
 					"}";
 					
 		var shadow = 	"uniform sampler2D sh_tex;" +
@@ -1294,7 +1295,7 @@ x3dom.gfx_webgl = (function () {
 			shader += "	else if(light[i].type == 1.0) rgb += directionalLight(i, normal, eye, diffuseColor, texColor.rgb);";
 			shader += "	else if(light[i].type == 2.0) rgb += spotLight(i, normal, eye, diffuseColor, texColor.rgb);";
 			if(useLighting == 2){
-				shader += "	if(light[i].shadowIntensity > 0.0 && !oneShadowAlreadyExists){";
+				shader += "	if(light[i].shadowIntensity > 0.0 && oneShadowAlreadyExists == 0.0){";
 				shader += "		vec3 projectiveBiased = projCoord.xyz / projCoord.w;";
 				shader += "		shadowed = PCF_Filter(i, projectiveBiased, 0.002);";
 				shader += "		oneShadowAlreadyExists = 1.0;";
