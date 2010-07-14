@@ -1,33 +1,19 @@
+<!DOCTYPE html>
 <html>
 
 <head>
     <title>Canvas Path Test</title>
-<link rel="stylesheet" href="ui.colorpicker.css"/>
-<script language="JavaScript" src="jq.js"></script>
-<script language="JavaScript" src="jq.color.js"></script>
-<style type="text/css">
-#bg fieldset { border-width: 1px; width: 460px; }
-#bg .fields { padding: 25px; margin-bottom: 20px; }
-#bg div { clear: both; }
-#bg label { float: left; width: 85px; }
-#bg input { float: left; width: 190px; }
-.ui-colorpicker input { float: none; width: auto; height: auto; }
-#bg .submit { margin-top: 40px; text-align: center; }
-</style>
-<script language="JavaScript">
-$(document).ready(function() {
-	var hideit = function(e, ui) { $(this).val('#'+ui.hex);  $('.ui-colorpicker').css('display', 'block'); };
-	$('#bg #colorpicker').colorpicker({ hide: hideit, submit: hideit });
-});
-</script>
-
-    <link rel='stylesheet' type='text/css' href='x3dom.css'/>
+    
     <script type='text/javascript'>
     
     var mouse_drag_x = 0, mouse_drag_y = 0;
     var last_mouse_drag_x = -1, last_mouse_drag_y = -1;
     var mouse_button = 0;
     var mouse_dragging = false;
+    
+    var pen_col = "000000";
+    var pen_size = 1;
+    var bg_col = "#000000";
     
     var userData = {
         shaderProgram: null,
@@ -127,6 +113,26 @@ $(document).ready(function() {
         gl.drawArrays(gl.TRIANGLES, 0, 3);
     }
     
+    function clearImage(col)
+    {
+        var myCanvas = document.getElementById("myCanvas");
+        
+        // redraw the canvas...
+        var context = myCanvas.getContext("2d");
+        context.fillStyle = col;
+        context.fillRect(0, 0, myCanvas.width, myCanvas.height);
+        
+        context.lineWidth = 1.0;
+        context.lineCap = "round";
+
+        //context.beginPath();
+        //context.strokeStyle = "#000000";
+        //context.strokeRect(0, 0, 256, 256);
+        
+        myCanvas.parentNode._x3domNode.fieldChanged("url");
+        document.getElementById("aScene").render();
+    }
+    
     function main() 
     {
         var myCanvas = document.getElementById("myCanvas");
@@ -141,12 +147,12 @@ $(document).ready(function() {
         //context.lineWidth = 10.0;
         context.lineCap = "round";
 
+        /*
         context.beginPath();
         // Draw a bounds rect (default color is black)
         context.strokeRect(0, 0, 256, 256);
         context.strokeStyle = "#808080";
 
-        /*
         // Draw a vertical line
         context.moveTo(100, 100);
         context.lineTo(100, 200);
@@ -202,11 +208,11 @@ $(document).ready(function() {
         }
         
         // redraw the canvas...
-        context.lineWidth = 1.0;
+        context.lineWidth = pen_size;
 
         context.beginPath();
         //context.strokeStyle = "#804020";
-        context.strokeStyle = document.getElementById("colorpicker").value;
+        context.strokeStyle = pen_col; //document.getElementById("colorpicker").value;
     
         // Draw a line
         context.moveTo(last_mouse_drag_x, last_mouse_drag_y);
@@ -294,42 +300,92 @@ $(document).ready(function() {
 		}, false);
     }
     </script>
+    
+    <style>
+        #ctrlContainer { position: absolute; top:285px; left:775px; padding: 0px; width: 280px; }
+        #sliderContainer div { float:left; width: 200px; }
+        #sliderContainer li { height: 20px; }
+        #sliderContainer ul { clear: both; list-style-type: none; margin: 10px 0 10px 0; padding: 0; }
+    </style>
+    
+    <link rel='stylesheet' type='text/css' href='x3dom.css'>
+    <link type="text/css" href="jQuery/jquery-ui.css" rel="stylesheet">
 </head>
 
 <body onload='main();'>
     <x3d id="aScene" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="350px">
       <scene>
         <background skyColor='.5 .4 .2'></background>
-        <viewpoint position='0 0 10'></viewpoint>
+        <viewpoint position='0 0 5'></viewpoint>
           <shape>
             <appearance>
                 <texture hideChildren="false">
-                    <canvas width='256' height='256' id='myCanvas' style="position:absolute; top:20px;left:520px;">
+                    <canvas width='256' height='256' id='myCanvas' style="border: solid 1px black; position:absolute; top:20px;left:520px;">
                 </texture>
                 <material diffuseColor='0.6 0.9 0.5'></material>	
             </appearance>
-            <box></box>
+            <sphere></sphere>
          </shape>
       </scene>
     </x3d>
     
-	<form id="bg" action="#">
-		<fieldset>
-			<legend>Stroke Color</legend>
-
-			<div class="fields">
-				<span><label for="colorpicker">Color Picker:</label> <input type="text" id="colorpicker" name="colorpicker"/></span>
-			</div>
-			<br/><br/><br/><br/><br/><br/><br/><br/><br/><br/>	
-		</fieldset>
-	</form>
+    <span style="position:absolute; top:290px; left:520px;" 
+          onmouseover="document.getElementById('colPick').color.showPicker();">
+        Choose pen color: <br>&nbsp;<br>
+        <input id="colPick" class="color" value="000000" onchange="pen_col = '#'+this.color.toString();">
+        </input>
+    </span>
+    
+    <div id="ctrlContainer">
+        <span>Choose pen size: </span><br>
+        <div id="sliderContainer">
+            <ul>
+                <li>
+                    <span style="width:100px; float:left; clear:both; padding:5px;" id="lSize">1</span>
+                    <div id="sizeSlider" class="slider"></div>
+                </li>
+            </ul>
+        </div>
+    </div>
+    
+    <div style="position:absolute; top:50px; left:800px;">
+        <span style="color:olive; font-size:large;">Paint the texture!</span>
+        <br>&nbsp;<br>
+        <span onmouseover="document.getElementById('bgcolPick').color.showPicker();">
+            Choose background color: <br>&nbsp;<br>
+            <input id="bgcolPick" class="color" value="000000" onchange="bg_col = '#'+this.color.toString();">
+            </input>
+        </span>
+        <br>&nbsp;<br>
+        Clear image with background color: <br>&nbsp;<br>
+        <button onclick="clearImage(bg_col);">Reset</button>
+    </div>
+    
+	<script type="text/javascript" src="jscolor/jscolor.js"></script>
 
     <script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
-	<script type="text/javascript" src="gfx_webgl.js"></script>
-	<script type="text/javascript" src="x3d.js"></script>
-	<script type="text/javascript" src="fields.js"></script>
+    <script type="text/javascript" src="gfx_webgl.js"></script>
+    <script type="text/javascript" src="x3d.js"></script>
+    <script type="text/javascript" src="fields.js"></script>
     <script type="text/javascript" src="x3d_follower.js"></script>
+    
+    
+    <script type="text/javascript" src="jQuery/jquery.min.js"></script>
+    <script type="text/javascript" src="jQuery/jquery-ui.min.js"></script>
+    
+    <script>
+    $(document).ready(function(){
+        
+        $(".slider").slider({min: 1, max: 10, step: 1, value: 1, animate: true,
+                             range: false, slide: function(e, ui) {
+            pen_size = ui.value;
+            document.getElementById("lSize").innerHTML = pen_size;
+        }});
+
+    });
+    </script>
+    
 </body>
 
 </html>
