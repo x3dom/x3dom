@@ -1146,53 +1146,55 @@ x3dom.gfx_webgl = (function () {
 					"	float cutOffAngle;" +
 					"	float shadowIntensity;" +
 					"};" +
-					"uniform Light light[9];" +
-					"uniform int numLights;" +
 					"const int NUMLIGHTS = 8;" +
-					"vec3 directionalLight(int lightIdx, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
+					"uniform Light light[NUMLIGHTS];" +
+					"uniform int numLights;" +
+					"vec3 directionalLight(Light light, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
 					"	float spot = 1.0;" +
 					"	float attentuation = 1.0;" +
-					"	vec3 lightDirection = normalize(-light[lightIdx].direction);" +	
-					"	vec3 ambient  = light[lightIdx].ambientIntensity * diffuseColor * material.ambientIntensity;" +
-					"	vec3 diffuse  = light[lightIdx].intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
+					"	vec3 lightDirection = normalize(-light.direction);" +	
+					"	vec3 ambient  = light.ambientIntensity * diffuseColor * material.ambientIntensity;" +
+					"	vec3 diffuse  = light.intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
 					"   float specularPow = pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +			
-					"	vec3 specular = light[lightIdx].intensity * material.specularColor * abs(specularPow);" +
-					"	vec3 result   = attentuation * spot * light[lightIdx].color * (ambient + diffuse + specular);" +
-					"	return clamp(result * texColor, 0.0, 1.0);" +
+					"	vec3 specular = light.intensity * material.specularColor * abs(specularPow);" +
+					"	vec3 result   = attentuation * spot * light.color * (ambient + diffuse + specular);" +
+					"	result = clamp(result, 0.0, 1.0);" +
+					"	return result * texColor;" +
 					"}" +
-					"vec3 pointLight(int lightIdx, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
+					"vec3 pointLight(Light light, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
 					"	float spot = 1.0;" +
-					"	vec3  lightDirection = normalize(light[lightIdx].location - fragPosition.xyz);" +
-					"	float distance = length(light[lightIdx].location - fragPosition.xyz);" +
-					"	float attentuation = 1.0 / max(light[lightIdx].attenuation.x + light[lightIdx].attenuation.y * distance + light[lightIdx].attenuation.z * pow(distance,2.0), 1.0);" +
-					"	vec3 ambient  = light[lightIdx].ambientIntensity * diffuseColor * material.ambientIntensity;" +
-					"	vec3 diffuse  = light[lightIdx].intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
+					"	vec3  lightDirection = normalize(light.location - fragPosition.xyz);" +
+					"	float distance = length(light.location - fragPosition.xyz);" +
+					"	float attentuation = 1.0 / max(light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * pow(distance,2.0), 1.0);" +
+					"	vec3 ambient  = light.ambientIntensity * diffuseColor * material.ambientIntensity;" +
+					"	vec3 diffuse  = light.intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
 					"   float specularPow = pow(max(0.5, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
-					"	vec3 specular = light[lightIdx].intensity * material.specularColor * abs(specularPow);" +
-					"	vec3 result   = attentuation * spot * light[lightIdx].color * (ambient + diffuse + specular);" +
-					"	return clamp(result * texColor, 0.0, 1.0);" +
+					"	vec3 specular = light.intensity * material.specularColor * abs(specularPow);" +
+					"	vec3 result   = attentuation * spot * light.color * (ambient + diffuse + specular);" +
+					"	result = clamp(result, 0.0, 1.0);" +
+					"	return result * texColor;" +
 					"}" +
-					"vec3 spotLight(int lightIdx, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
-					"	vec3  lightDirection = normalize(light[lightIdx].location - fragPosition.xyz);" +
+					"vec3 spotLight(Light light, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
+					"	vec3  lightDirection = normalize(light.location - fragPosition.xyz);" +
 					"	float distance = length(lightDirection);" +
-					"	float attentuation = 1.0 / max(light[lightIdx].attenuation.x + light[lightIdx].attenuation.y * distance + light[lightIdx].attenuation.z * pow(distance,2.0), 1.0);" +
+					"	float attentuation = 1.0 / max(light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * pow(distance,2.0), 1.0);" +
 					"	float spot;" +
-					"	float spotAngle = acos(max(0.0, dot(-lightDirection, normalize(light[lightIdx].direction))));" +
-					"	if(spotAngle >= light[lightIdx].cutOffAngle) spot = 0.0;" +
-					"	else if(spotAngle <= light[lightIdx].beamWidth) spot = 1.0;" +
-					"	else spot = (spotAngle - light[lightIdx].cutOffAngle ) / (light[lightIdx].beamWidth - light[lightIdx].cutOffAngle);" +
-					"	vec3 ambient  = light[lightIdx].ambientIntensity * diffuseColor * material.ambientIntensity;" +
-					"	vec3 diffuse  = light[lightIdx].intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
+					"	float spotAngle = acos(max(0.0, dot(-lightDirection, normalize(light.direction))));" +
+					"	if(spotAngle >= light.cutOffAngle) spot = 0.0;" +
+					"	else if(spotAngle <= light.beamWidth) spot = 1.0;" +
+					"	else spot = (spotAngle - light.cutOffAngle ) / (light.beamWidth - light.cutOffAngle);" +
+					"	vec3 ambient  = light.ambientIntensity * diffuseColor * material.ambientIntensity;" +
+					"	vec3 diffuse  = light.intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
 					"   float specularPow = pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
-					"	vec3 specular = light[lightIdx].intensity * material.specularColor * abs(specularPow);" +
-					"	vec3 result   = attentuation * spot * light[lightIdx].color * (ambient + diffuse + specular);" +
+					"	vec3 specular = light.intensity * material.specularColor * abs(specularPow);" +
+					"	vec3 result   = attentuation * spot * light.color * (ambient + diffuse + specular);" +
 					"	result = clamp(result, 0.0, 1.0);" +
 					"	return result * texColor;" +
 					"}";
 					
 		var shadow = 	"uniform sampler2D sh_tex;" +
 						"varying vec4 projCoord;" +
-						"float PCF_Filter(int lightIdx, vec3 projectiveBiased, float filterWidth)" +
+						"float PCF_Filter(Light light, vec3 projectiveBiased, float filterWidth)" +
 						"{" +
 						"    float stepSize = 2.0 * filterWidth / 3.0;" +
 						"    float blockerCount = 0.0;" +
@@ -1211,7 +1213,7 @@ x3dom.gfx_webgl = (function () {
 						"            projectiveBiased.y -= (i*stepSize);" +
 						"        }" +
 						"    }" +
-						"    float result = 1.0 - light[lightIdx].shadowIntensity * blockerCount / 9.0;" +
+						"    float result = 1.0 - light.shadowIntensity * blockerCount / 9.0;" +
 						"    return result;" +
 						"}";
 		
@@ -1291,13 +1293,13 @@ x3dom.gfx_webgl = (function () {
 			}
 			shader += "for(int i=0; i<NUMLIGHTS; i++) {";
 			shader += "	if(i >= numLights) break;";
-			shader += "	if(light[i].type == 0.0) rgb += pointLight(i, normal, eye, diffuseColor, texColor.rgb);";
-			shader += "	else if(light[i].type == 1.0) rgb += directionalLight(i, normal, eye, diffuseColor, texColor.rgb);";
-			shader += "	else if(light[i].type == 2.0) rgb += spotLight(i, normal, eye, diffuseColor, texColor.rgb);";
+			shader += "	if(light[i].type == 0.0) rgb += pointLight(light[i], normal, eye, diffuseColor, texColor.rgb);";
+			shader += "	else if(light[i].type == 1.0) rgb += directionalLight(light[i], normal, eye, diffuseColor, texColor.rgb);";
+			shader += "	else if(light[i].type == 2.0) rgb += spotLight(light[i], normal, eye, diffuseColor, texColor.rgb);";
 			if(useLighting == 2){
 				shader += "	if(light[i].shadowIntensity > 0.0 && oneShadowAlreadyExists == 0.0){";
 				shader += "		vec3 projectiveBiased = projCoord.xyz / projCoord.w;";
-				shader += "		shadowed = PCF_Filter(i, projectiveBiased, 0.002);";
+				shader += "		shadowed = PCF_Filter(light[i], projectiveBiased, 0.002);";
 				shader += "		oneShadowAlreadyExists = 1.0;";
 				shader += "	}";
 			}
