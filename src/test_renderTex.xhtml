@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <link rel='stylesheet' type='text/css' href='x3dom.css'/>
+  </head>
+  <body>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' width='512px' height='512px'>
+      <Scene DEF='scene'>
+        <Viewpoint DEF='view1' position='0 0 12'/>
+        <Background DEF='back' groundAngle='0.9 1.5 1.57' groundColor='0.6 0.7 0.1 0.4 0.7 0.2 0.1 0.6 0.1 0 0.3 0.1' skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82' backUrl='"texture/generic/CubeBack.png"' bottomUrl='"texture/generic/CubeDown.png"' frontUrl='"texture/generic/CubeFront.png"' leftUrl='"texture/generic/CubeLeft.png"' rightUrl='"texture/generic/CubeRight.png"' topUrl='"texture/generic/CubeUp.png"'/>
+        <Transform DEF='trans1' translation='-2 2 0'>
+          <Shape>
+            <Appearance>
+              <ImageTexture repeatS='false' repeatT='false' url='"texture/crate.gif"'/>
+            </Appearance>
+            <Box DEF='GEO'/>
+          </Shape>
+        </Transform>
+        <Transform DEF='trans2' translation='2 2 0'>
+          <Shape>
+            <Appearance>
+              <ImageTexture repeatS='false' repeatT='false' url='"texture/test.jpg"'/>
+            </Appearance>
+            <Box USE='GEO'/>
+          </Shape>
+        </Transform>
+        <Transform DEF='trans3' translation='-2 -2 0'>
+          <Shape>
+            <Appearance>
+              <ImageTexture repeatS='false' repeatT='false' url='"texture/test.png"'/>
+            </Appearance>
+            <Box USE='GEO'/>
+          </Shape>
+        </Transform>
+        <Transform DEF='trans4' translation='2 -2 0'>
+          <Shape>
+            <Appearance>
+              <ImageTexture repeatS='false' repeatT='false' url='"texture/test.gif"'/>
+            </Appearance>
+            <Box USE='GEO'/>
+          </Shape>
+        </Transform>
+        <Transform DEF='trans' translation='0 0 -10'>
+          <Transform DEF='matTrans'>
+            <Shape DEF='node'>
+              <IndexedFaceSet coordIndex='0 1 2 3 -1 3 2 1 0 -1'>
+                <Coordinate point='-4 -4 0 4 -4 0 4 4 0 -4 4 0'/>
+                <TextureCoordinate point='1 0 0 0 0 1 1 1'/>
+              </IndexedFaceSet>
+              <Appearance>
+                <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' repeatS='false' repeatT='false'>
+                  <Shape USE='node' containerField='excludeNodes'/>
+                  <Background USE='back' containerField='background'/>
+                </RenderedTexture>
+              </Appearance>
+            </Shape>
+          </Transform>
+        </Transform>
+        <TimeSensor DEF='ts' cycleInterval='10' loop='true' startTime='1'/>
+        <OrientationInterpolator DEF='oi' key='0 0.25 0.5 0.75 1' keyValue='0 1 1 0 0 1 1 1.57 0 1 1 3.14 0 1 1 4.71 0 1 1 6.28'/>
+        <ROUTE fromNode='ts' fromField='fraction_changed' toNode='oi' toField='set_fraction'/>
+        <ROUTE fromNode='oi' fromField='value_changed' toNode='trans4' toField='set_rotation'/>
+        <ROUTE fromNode='oi' fromField='value_changed' toNode='trans3' toField='set_rotation'/>
+        <ROUTE fromNode='oi' fromField='value_changed' toNode='trans2' toField='set_rotation'/>
+        <ROUTE fromNode='oi' fromField='value_changed' toNode='trans1' toField='set_rotation'/>
+      </Scene>
+    </X3D>
+    
+    <script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+    <script type="text/javascript" src="gfx_webgl.js"></script>
+    <script type="text/javascript" src="x3d.js"></script>
+    <script type="text/javascript" src="fields.js"></script>
+    <script type="text/javascript" src="x3d_follower.js"></script>
+  </body>
+</html>
