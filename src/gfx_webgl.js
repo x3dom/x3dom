@@ -1250,8 +1250,6 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-		alert(light);
-		
 		//Set Main
 		shader += "void main(void) {";
 			
@@ -1284,7 +1282,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "vec4 texColor = texture2D(tex, texCoord);";
 				shader += "alpha *= texColor.a;";
 				shader += "if(sphereMapping == 1.0 || useText == 1.0){";
-				shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor) * texColor.rgb;";
+				shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor)*texColor.rgb;";
 				shader += "}else{";
 				shader += "rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);";
 				shader += "}";
