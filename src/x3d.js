@@ -1083,6 +1083,17 @@ x3dom.registerNodeType(
             this._isCanvas = false;
         },
         {
+			invalidateGLObject: function ()
+			{
+				  Array.forEach(this._parentNodes, function (app) {
+                        Array.forEach(app._parentNodes, function (shape) {
+                            shape._dirty.texture = true;
+                        });
+                    });
+
+				this._nameSpace.doc.needRender = true;
+			},
+			
             parentAdded: function(parent)
             {
                 Array.forEach(parent._parentNodes, function (shape) {
