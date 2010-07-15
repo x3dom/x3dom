@@ -167,12 +167,13 @@
         context.stroke();
         */
         
-        /*
+        var aCanvas = document.getElementById("aCanvas");
+        
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         
         for (var i=0; i<validContextNames.length && !userData.gl; i++) {
             try {
-                userData.gl = myCanvas.getContext(validContextNames[i]);
+                userData.gl = aCanvas.getContext(validContextNames[i]);
             }
             catch (e) {}
         }
@@ -185,10 +186,9 @@
         setInterval( function() { 
             draw(Math.random());
             // do some sort of "touch" here to invalidate gl objects
-            myCanvas.parentNode._x3domNode.fieldChanged("url");
+            aCanvas.parentNode._x3domNode.fieldChanged("url");
             sg.render();
         }, 100);
-        */
     }
     
     function updateImage(canvas)
@@ -326,6 +326,17 @@
             </appearance>
             <sphere></sphere>
          </shape>
+         <transform translation="1.5 1.5 -1">
+             <shape>
+                <appearance>
+                    <texture hideChildren="true">
+                        <canvas width='256' height='256' id='aCanvas'>
+                    </texture>
+                    <material diffuseColor='0.6 0.9 0.5'></material>	
+                </appearance>
+                <box size="1 1 1"></box>
+             </shape>
+         </translation>
       </scene>
     </x3d>
     
