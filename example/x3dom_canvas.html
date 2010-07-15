@@ -30,8 +30,8 @@
         //context.strokeStyle = "#000000";
         //context.strokeRect(0, 0, 256, 256);
         
-        myCanvas.parentNode._x3domNode.fieldChanged("url");
-        document.getElementById("aScene").render();
+		// FIXME: Not the final interface
+        myCanvas.parentNode._x3domNode.invalidateGLObject();
     }
     
     function main() 
@@ -75,8 +75,8 @@
         context.lineTo(mouse_drag_x, mouse_drag_y);
         context.stroke();
         
-        canvas.parentNode._x3domNode.fieldChanged("url");
-        document.getElementById("aScene").render();
+		// FIXME: Not the final interface
+        canvas.parentNode._x3domNode.invalidateGLObject();
         
         last_mouse_drag_x = mouse_drag_x;
         last_mouse_drag_y = mouse_drag_y;
