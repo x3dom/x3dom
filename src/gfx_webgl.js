@@ -1470,16 +1470,26 @@ x3dom.gfx_webgl = (function () {
                 
                 /** SHADER HACK (TODO: MAKE BETTER!) */
                 if (shape._cf.appearance.node._shader !== null) {
-                    //FIXME; HACK
-                    g_shaders['vs-x3d-HACK'] = {};
-                    g_shaders['vs-x3d-HACK'].type = "vertex";
-                    g_shaders['vs-x3d-HACK'].data = shape._cf.appearance.node._shader._vertex._vf.url[0];
-                    g_shaders['fs-x3d-HACK'] = {};
-                    g_shaders['fs-x3d-HACK'].type = "fragment";
-                    g_shaders['fs-x3d-HACK'].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
-                
-                	shape._webgl.shader = getDefaultShaderProgram(gl, 'HACK');
-                    //END OF HACK
+					if(x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)){
+						g_shaders['vs-x3d-storm'] = {};
+						g_shaders['vs-x3d-storm'].type = "vertex";
+						g_shaders['vs-x3d-storm'].data = this.generateVS(viewarea, false, false, false);
+						g_shaders['fs-x3d-storm'] = {};
+						g_shaders['fs-x3d-storm'].type = "fragment";
+						g_shaders['fs-x3d-storm'].data = this.generateFS(viewarea, false, false);
+						shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-storm', 'fs-x3d-storm']);
+					}else{
+						//FIXME; HACK
+						g_shaders['vs-x3d-HACK'] = {};
+						g_shaders['vs-x3d-HACK'].type = "vertex";
+						g_shaders['vs-x3d-HACK'].data = shape._cf.appearance.node._shader._vertex._vf.url[0];
+						g_shaders['fs-x3d-HACK'] = {};
+						g_shaders['fs-x3d-HACK'].type = "fragment";
+						g_shaders['fs-x3d-HACK'].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
+					
+						shape._webgl.shader = getDefaultShaderProgram(gl, 'HACK');
+						//END OF HACK
+					}
                 }
                 else {
                 /** BEGIN STANDARD MATERIAL */
@@ -2331,7 +2341,19 @@ x3dom.gfx_webgl = (function () {
 			//===========================================================================
 			
 			var mat = shape._cf.appearance.node._cf.material.node;
-			if (mat) {
+			
+			var shaderCSS = shape._cf.appearance.node._shader;
+			
+			if (shaderCSS !== null) {
+				if(x3dom.isa(shaderCSS, x3dom.nodeTypes.CommonSurfaceShader)){
+					sp['material.diffuseColor'] 	= shaderCSS._vf.diffuseFactor.toGL();
+					sp['material.specularColor'] 	= shaderCSS._vf.specularFactor.toGL();
+					sp['material.emissiveColor'] 	= shaderCSS._vf.emissiveFactor.toGL();
+					sp['material.shininess'] 		= shaderCSS._vf.shininessFactor;
+					sp['material.ambientIntensity'] = 0;
+					sp['material.transparency'] 	= 1.0 - shaderCSS._vf.alphaFactor;
+				}
+			}else{
 				sp['material.diffuseColor'] 		= mat._vf.diffuseColor.toGL();
 				sp['material.specularColor'] 		= mat._vf.specularColor.toGL();
 				sp['material.emissiveColor'] 		= mat._vf.emissiveColor.toGL();
