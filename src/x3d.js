@@ -1237,6 +1237,31 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### RenderedTexture ### */
+x3dom.registerNodeType(
+    "RenderedTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.RenderedTexture.superClass.call(this, ctx);
+            
+            ctx.doc._nodeBag.renderTextures.push(this);
+            
+            this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
+            this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
+            this.addField_SFNode('fog', x3dom.nodeTypes.X3DFogNode);
+            this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);
+            this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
+            this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);
+            this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+        },
+        {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {}
+        }
+    )
+);
+
 /* ### ImageTexture ### */
 x3dom.registerNodeType(
     "ImageTexture",
@@ -5246,7 +5271,7 @@ x3dom.X3DDocument = function(canvas, ctx) {
 	this.needRender = true;
 	this._scene = null;
 	this._viewarea = null;
-	this._nodeBag = { timer: [], lights: [], clipPlanes: [], followers: [], trans: []};
+	this._nodeBag = { timer: [], lights: [], clipPlanes: [], followers: [], trans: [], renderTextures: [] };
 	//this.animNode = [];
 	this.downloadCount = 0;
     this.onload = function () {};
