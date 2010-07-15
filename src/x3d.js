@@ -1216,6 +1216,27 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### SurfaceShaderTexture ### */
+x3dom.registerNodeType(
+    "SurfaceShaderTexture",
+    "Shaders",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.SurfaceShaderTexture.superClass.call(this, ctx);
+            
+            this.addField_SFInt32(ctx, 'textureCoordinatesId', 0);
+            this.addField_SFString(ctx, 'channelMask', "DEFAULT");
+            this.addField_SFBool(ctx, 'isSRGB', false);
+            this.addField_SFNode('texture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
+        },
+        {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {}
+        }
+    )
+);
+
 /* ### ImageTexture ### */
 x3dom.registerNodeType(
     "ImageTexture",
@@ -1379,15 +1400,15 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'environmentTextureChannelMask', 'rgb');
             this.addField_SFFloat(ctx, 'relativeIndexOfRefraction', 1);
             this.addField_SFFloat(ctx, 'fresnelBlend', 0);
-            this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('ambientTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('diffuseTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('specularTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('shininessTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('normalTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('reflectionTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('transmissionTexture', x3dom.nodeTypes.Texture);
-            this.addField_SFNode('environmentTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('ambientTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('diffuseTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('specularTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('shininessTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('normalTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('reflectionTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('transmissionTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('environmentTexture', x3dom.nodeTypes.X3DTextureNode);
             //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
             this.addField_SFVec3f(ctx, 'normalScale', 2, 2, 2);
             this.addField_SFVec3f(ctx, 'normalBias', -1, -1, -1);
@@ -1396,7 +1417,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'alphaTextureId', -1);
             this.addField_SFInt32(ctx, 'alphaTextureCoordinatesId', 0);
             this.addField_SFString(ctx, 'alphaTextureChannelMask', 'a');
-            this.addField_SFNode('alphaTexture', x3dom.nodeTypes.Texture);
+            this.addField_SFNode('alphaTexture', x3dom.nodeTypes.X3DTextureNode);
             
             this._dirty = {
                 // TODO; cp. Shape, allow for dynamic texture updates in gfx
