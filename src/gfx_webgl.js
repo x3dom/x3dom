@@ -1016,20 +1016,20 @@ x3dom.gfx_webgl = (function () {
 	//return 0 if no Lights, 1 if Lights, 2 if Lights + Shadows
 	Context.prototype.useLighting = function (viewarea)
 	{
+		var result = 0;
 		var slights = viewarea.getLights();	
 		var numLights = slights.length;
 		if(numLights > 0){
-			for(var i=0; i<numLights; i++){
-				if(slights[i]._vf.shadowIntensity > 0){
-					return 2;
-				}
+			if(numLights > 8){
+				result = 8;
+			}else{
+				result = numLights;
 			}
-			return 1;
 		}
 		var nav = viewarea._scene.getNavigationInfo();
-		if(nav._vf.headlight) return 1;
+		if(nav._vf.headlight) result += 1;
 			
-		return 0
+		return result
 	}
 	
 	Context.prototype.useFog = function (viewarea)
@@ -1072,10 +1072,8 @@ x3dom.gfx_webgl = (function () {
 			shader += "varying vec3 fragEyePosition;";
 			shader += "varying vec3 fragPosition;";
 			shader += "varying vec3 fragNormal;";
-			if(useLighting == 2){
-				shader += "uniform mat4 matPV;";
-				shader += "varying vec4 projCoord;";
-			}
+			shader += "uniform mat4 matPV;";
+			shader += "varying vec4 projCoord;";
 		}
 		
 		//Set Main
@@ -1088,9 +1086,7 @@ x3dom.gfx_webgl = (function () {
 			shader += "fragNormal = (normalMatrix * vec4(normal, 1.0)).xyz;";
 			shader += "fragPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;";
 			shader += "fragEyePosition = eyePosition - fragPosition;";
-			if(useLighting == 2){
-				shader += "projCoord = matPV * vec4(position+0.5*normalize(normal), 1.0);";
-			}
+			shader += "projCoord = matPV * vec4(position+0.5*normalize(normal), 1.0);";
 		}
 		if(texture){
 			shader += "if (sphereMapping == 1.0) {";
@@ -1107,11 +1103,16 @@ x3dom.gfx_webgl = (function () {
 		shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);";
 		shader += "}";
 		
+		
+		
 		return shader;
 	}
 	
 	Context.prototype.generateFS = function (viewarea, vertexColor, texture)
 	{
+		var useLighting = this.useLighting(viewarea);
+		var useFog = this.useFog(viewarea);
+	
 		var fog = 	"struct Fog {" +
 					"	vec3  color;" +
 					"	float fogType;" +
@@ -1146,50 +1147,43 @@ x3dom.gfx_webgl = (function () {
 					"	float cutOffAngle;" +
 					"	float shadowIntensity;" +
 					"};" +
-					"const int NUMLIGHTS = 8;" +
+					"const int NUMLIGHTS = " + useLighting + ";" +
 					"uniform Light light[NUMLIGHTS];" +
-					"uniform int numLights;" +
-					"vec3 directionalLight(Light light, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
-					"	float spot = 1.0;" +
-					"	float attentuation = 1.0;" +
+					"void directionalLight(in Light light, in vec3 normal, in vec3 eye, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){" +
 					"	vec3 lightDirection = normalize(-light.direction);" +	
-					"	vec3 ambient  = light.ambientIntensity * diffuseColor * material.ambientIntensity;" +
-					"	vec3 diffuse  = light.intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
-					"   float specularPow = pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +			
-					"	vec3 specular = light.intensity * material.specularColor * abs(specularPow);" +
-					"	vec3 result   = attentuation * spot * light.color * (ambient + diffuse + specular);" +
-					"	result = clamp(result, 0.0, 1.0);" +
-					"	return result * texColor;" +
+					"	float ambientFactor  = light.ambientIntensity * material.ambientIntensity;" +
+					"	float diffuseFactor  = light.intensity * max(0.0, dot(normal, lightDirection));" +
+					"   float specularFactor = light.intensity * abs(pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0));" +
+					"	ambient += light.color * ambientFactor;" +
+					"	diffuse += light.color * diffuseFactor;" +
+					"	specular += light.color * specularFactor;" +
 					"}" +
-					"vec3 pointLight(Light light, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
-					"	float spot = 1.0;" +
+					"void pointLight(in Light light, in vec3 normal, in vec3 eye, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){" +
 					"	vec3  lightDirection = normalize(light.location - fragPosition.xyz);" +
 					"	float distance = length(light.location - fragPosition.xyz);" +
 					"	float attentuation = 1.0 / max(light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * pow(distance,2.0), 1.0);" +
-					"	vec3 ambient  = light.ambientIntensity * diffuseColor * material.ambientIntensity;" +
-					"	vec3 diffuse  = light.intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
-					"   float specularPow = pow(max(0.5, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
-					"	vec3 specular = light.intensity * material.specularColor * abs(specularPow);" +
-					"	vec3 result   = attentuation * spot * light.color * (ambient + diffuse + specular);" +
-					"	result = clamp(result, 0.0, 1.0);" +
-					"	return result * texColor;" +
+					"	float ambientFactor  = light.ambientIntensity * material.ambientIntensity;" +
+					"	float diffuseFactor  = light.intensity * max(0.0, dot(normal, lightDirection));" +
+					"   float specularFactor = light.intensity * abs(pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0));" +
+					"	ambient += light.color * ambientFactor * attentuation;" +
+					"	diffuse += light.color * diffuseFactor * attentuation;" +
+					"	specular += light.color * specularFactor * attentuation;" +
 					"}" +
-					"vec3 spotLight(Light light, vec3 normal, vec3 eye, vec3 diffuseColor, vec3 texColor){" +
+					"void spotLight(in Light light, in vec3 normal, in vec3 eye, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){" +
 					"	vec3  lightDirection = normalize(light.location - fragPosition.xyz);" +
 					"	float distance = length(lightDirection);" +
 					"	float attentuation = 1.0 / max(light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * pow(distance,2.0), 1.0);" +
-					"	float spot;" +
+					"	float spot = 0.0;" +
 					"	float spotAngle = acos(max(0.0, dot(-lightDirection, normalize(light.direction))));" +
 					"	if(spotAngle >= light.cutOffAngle) spot = 0.0;" +
 					"	else if(spotAngle <= light.beamWidth) spot = 1.0;" +
-					"	else spot = (spotAngle - light.cutOffAngle ) / (light.beamWidth - light.cutOffAngle);" +
-					"	vec3 ambient  = light.ambientIntensity * diffuseColor * material.ambientIntensity;" +
-					"	vec3 diffuse  = light.intensity * diffuseColor * max(0.0, dot(normal, lightDirection));" +
-					"   float specularPow = pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0);" +
-					"	vec3 specular = light.intensity * material.specularColor * abs(specularPow);" +
-					"	vec3 result   = attentuation * spot * light.color * (ambient + diffuse + specular);" +
-					"	result = clamp(result, 0.0, 1.0);" +
-					"	return result * texColor;" +
+					"	else spot = (spotAngle - light.cutOffAngle ) / (light.beamWidth - light.cutOffAngle);" +			
+					"	float ambientFactor  = light.ambientIntensity * material.ambientIntensity;" +
+					"	float diffuseFactor  = light.intensity * max(0.0, dot(normal, lightDirection));" +
+					"   float specularFactor = light.intensity * abs(pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0));" +
+					"	ambient += light.color * ambientFactor * attentuation * spot;" +
+					"	diffuse += light.color * diffuseFactor * attentuation * spot;" +
+					"	specular += light.color * specularFactor * attentuation * spot;" +
 					"}";
 					
 		var shadow = 	"uniform sampler2D sh_tex;" +
@@ -1228,9 +1222,6 @@ x3dom.gfx_webgl = (function () {
 						"uniform Material material;";
 					
 		var shader = "";
-
-		var useLighting = this.useLighting(viewarea);
-		var useFog = this.useFog(viewarea);
 		
 		//Set Uniforms + Varyings
 		shader += material;
@@ -1250,9 +1241,7 @@ x3dom.gfx_webgl = (function () {
 			shader += "varying vec3 fragPosition;";
 			shader += "varying vec3 fragEyePosition;";
 			shader += light;
-			if(useLighting == 2){
-				shader += shadow;
-			}
+			shader += shadow;
 		}
 		if(useFog){
 			shader += fog;
@@ -1261,77 +1250,70 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
+		alert(light);
+		
 		//Set Main
 		shader += "void main(void) {";
-		
+			
+		shader += "vec3 rgb 	 = vec3(0.0);";
 		shader += "float alpha = 1.0 - material.transparency;";
+		
 		if(useLighting >= 1){
-			shader += "vec3 rgb = vec3(0.0);";
+			shader += "vec3 ambient   = vec3(0.0);";
+			shader += "vec3 diffuse   = vec3(0.0);";
+			shader += "vec3 specular  = vec3(0.0);";
+			shader += "float shadowed = 1.0;";
+			shader += "float oneShadowAlreadyExists = 0.0;";
 			shader += "vec3 eye = normalize(fragEyePosition);";
 			shader += "vec3 normal = normalize(fragNormal);";
 			shader += "if (solid == 0.0 && dot(normal, eye) < 0.0) {";
 			shader += "	normal *= -1.0;";
 			shader += "}";
+			shader += "for(int i=0; i<NUMLIGHTS; i++) {";
+			shader += "	if(light[i].type == 0.0) pointLight(light[i], normal, eye, ambient, diffuse, specular);";
+			shader += "	else if(light[i].type == 1.0) directionalLight(light[i], normal, eye, ambient, diffuse, specular);";
+			shader += "	else if(light[i].type == 2.0) spotLight(light[i], normal, eye, ambient, diffuse, specular);";
+			shader += "	if(light[i].shadowIntensity > 0.0 && oneShadowAlreadyExists == 0.0){";
+			shader += "		vec3 projectiveBiased = projCoord.xyz / projCoord.w;";
+			shader += "		shadowed = PCF_Filter(light[i], projectiveBiased, 0.002);";
+			shader += "		oneShadowAlreadyExists = 1.0;";
+			shader += "	}";
+			shader += "	}";
 			if(texture){
 				shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);";
 				shader += "vec4 texColor = texture2D(tex, texCoord);";
-				shader += "alpha = (1.0-material.transparency) * texColor.a;";
-				shader += "vec3 diffuseColor = vec3(1.0);";
+				shader += "alpha *= texColor.a;";
 				shader += "if(sphereMapping == 1.0 || useText == 1.0){";
-				shader += "	diffuseColor = material.diffuseColor;";
+				shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor) * texColor.rgb;";
+				shader += "}else{";
+				shader += "rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);";
 				shader += "}";
 			}else if(vertexColor){
-				shader += "vec3 texColor = vec3(1.0);";
-				shader += "vec3 diffuseColor = fragColor;";
+				shader += "rgb = diffuse*fragColor;";
 			}else{
-				shader += "vec3 texColor = vec3(1.0);";
-				shader += "vec3 diffuseColor = material.diffuseColor;";
+				shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);";
 			}
-			if(useLighting == 2){
-				shader += "float shadowed = 1.0;";
-				shader += "float oneShadowAlreadyExists = 0.0;";
-			}
-			shader += "for(int i=0; i<NUMLIGHTS; i++) {";
-			shader += "	if(i >= numLights) break;";
-			shader += "	if(light[i].type == 0.0) rgb += pointLight(light[i], normal, eye, diffuseColor, texColor.rgb);";
-			shader += "	else if(light[i].type == 1.0) rgb += directionalLight(light[i], normal, eye, diffuseColor, texColor.rgb);";
-			shader += "	else if(light[i].type == 2.0) rgb += spotLight(light[i], normal, eye, diffuseColor, texColor.rgb);";
-			if(useLighting == 2){
-				shader += "	if(light[i].shadowIntensity > 0.0 && oneShadowAlreadyExists == 0.0){";
-				shader += "		vec3 projectiveBiased = projCoord.xyz / projCoord.w;";
-				shader += "		shadowed = PCF_Filter(light[i], projectiveBiased, 0.002);";
-				shader += "		oneShadowAlreadyExists = 1.0;";
-				shader += "	}";
-			}
-			shader += "	}";
-			if(useFog){
-				shader += "float f0 = calcFog();";
-				shader += "rgb = fog.color * (1.0-f0) + f0 * (material.emissiveColor + rgb);";
-			}
-			if(useLighting == 2){
-				shader += "rgb *= shadowed;";
-			}
+			shader += "rgb *= shadowed;";
 			
 		}else{
 			if(texture){
 				shader += "vec4 texColor = texture2D(tex, texCoord)";
-				shader += "vec3 rgb = texColor.rgb;";
-				shader += "alpha = (1.0-material.transparency) * texColor.a;";
+				shader += "rgb = texColor.rgb;";
+				shader += "alpha *= texColor.a;";
 			}else if(vertexColor){
-				shader += "vec3 rgb = fragColor;";
+				shader += "rgb = fragColor;";
 			}else{
-				shader += "vec3 rgb = material.diffuseColor;";
+				shader += "rgb = material.diffuseColor + material.emissiveColor;";
 			}
-			if(useFog){
-				shader += "float f0 = calcFog();";
-				shader += "rgb = fog.color * (1.0-f0) + f0 * (material.emissiveColor + rgb);";
-			}
+		}
+		if(useFog){
+			shader += "float f0 = calcFog();";
+			shader += "rgb = fog.color * (1.0-f0) + f0 * (rgb);";
 		}
 		shader += "rgb = clamp(rgb, 0.0, 1.0);";
 		shader += "gl_FragColor = vec4(rgb, alpha);";
 		shader += "}";
 		
-		//alert(shader);
 		return shader;
 	}
     
@@ -2636,6 +2618,7 @@ x3dom.gfx_webgl = (function () {
 			//===========================================================================
 			if (numLights > 0)
 			{
+				
 				if(numLights > 8){
 					x3dom.debug.logInfo("To many lights! Only 8 lights supported!");
 					numLights = 8;
@@ -2650,7 +2633,7 @@ x3dom.gfx_webgl = (function () {
 						sp['light[' + p + '].color'] 			= slights[p]._vf.color.toGL();
 						sp['light[' + p + '].intensity']		= slights[p]._vf.intensity;
 						sp['light[' + p + '].ambientIntensity']	= slights[p]._vf.ambientIntensity;
-						sp['light[' + p + '].direction']		= new x3dom.fields.SFVec3f(1.0,1.0,1.0).toGL();
+						sp['light[' + p + '].direction']		= [1.0, 1.0, 1.0];
 						sp['light[' + p + '].attenuation']		= slights[p]._vf.attenuation.toGL();
 						sp['light[' + p + '].location']			= mat_view.multMatrixPnt(slights[p]._vf.location).toGL();
 						sp['light[' + p + '].radius']			= slights[p]._vf.radius;
@@ -2667,8 +2650,8 @@ x3dom.gfx_webgl = (function () {
 						sp['light[' + p + '].intensity']		= slights[p]._vf.intensity;
 						sp['light[' + p + '].ambientIntensity']	= slights[p]._vf.ambientIntensity;
 						sp['light[' + p + '].direction']		= mat_view.multMatrixVec(slights[p]._vf.direction).toGL();
-						sp['light[' + p + '].attenuation']		= new x3dom.fields.SFVec3f(1.0,1.0,1.0).toGL();
-						sp['light[' + p + '].location']			= new x3dom.fields.SFVec3f(1.0,1.0,1.0).toGL();
+						sp['light[' + p + '].attenuation']		= [1.0, 1.0, 1.0];
+						sp['light[' + p + '].location']			= [1.0, 1.0, 1.0];
 						sp['light[' + p + '].radius']			= 0.0;
 						sp['light[' + p + '].beamWidth']		= 0.0;
 						sp['light[' + p + '].cutOffAngle']		= 0.0;
@@ -2698,20 +2681,17 @@ x3dom.gfx_webgl = (function () {
 			//===========================================================================
 			var nav = viewarea._scene.getNavigationInfo();
 			if(nav._vf.headlight){
-				sp.numLights = numLights+1;
 				sp['light[' + numLights + '].type']				= 1.0;
 				sp['light[' + numLights + '].on']				= 1.0;
-				sp['light[' + numLights + '].color'] 			= new x3dom.fields.SFVec3f(1.0,1.0,1.0).toGL();
+				sp['light[' + numLights + '].color'] 			= [1.0, 1.0, 1.0];
 				sp['light[' + numLights + '].intensity']		= 1.0;
 				sp['light[' + numLights + '].ambientIntensity']	= 0.0;
 				sp['light[' + numLights + '].direction']		= mat_view.multMatrixPnt(new x3dom.fields.SFVec3f(0.0,-1.0,0.0)).toGL();
-				sp['light[' + numLights + '].attenuation']		= new x3dom.fields.SFVec3f(1.0,1.0,1.0).toGL();
-				sp['light[' + numLights + '].location']			= new x3dom.fields.SFVec3f(1.0,1.0,1.0).toGL();
+				sp['light[' + numLights + '].attenuation']		= [1.0, 1.0, 1.0];
+				sp['light[' + numLights + '].location']			= [1.0, 1.0, 1.0];
 				sp['light[' + numLights + '].radius']			= 0.0;
 				sp['light[' + numLights + '].beamWidth']		= 0.0;
 				sp['light[' + numLights + '].cutOffAngle']		= 0.0;
-			}else{
-				sp.numLights = numLights;
 			}
             
             var userShader = shape._cf.appearance.node._shader;
