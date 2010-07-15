@@ -3815,8 +3815,6 @@ x3dom.registerNodeType(
 			this.addField_SFColor(ctx, 'color', 1, 1, 1);
             this.addField_SFString(ctx, 'fogType', "LINEAR");
 			this.addField_SFFloat(ctx, 'visibilityRange', 0);
-            
-            x3dom.debug.logInfo("Fog NYI");
         },
         {
 			// methods
