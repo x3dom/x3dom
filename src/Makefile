@@ -3,7 +3,7 @@ default: bundle
 #--- FILES ----
 BUNDLE := x3dom.js
 
-BASIC := version.js x3dmain.js 
+BASIC := x3dmain.js version.js
 DEBUG := debug.js 
 GFX := gfx_webgl.js
 NODE := x3d.js x3d_follower.js
