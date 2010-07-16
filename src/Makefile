@@ -3,7 +3,7 @@ default: bundle
 #--- FILES ----
 BUNDLE := x3dom.js
 
-BASIC := x3dmain.js 
+BASIC := version.js x3dmain.js 
 DEBUG := debug.js 
 GFX := gfx_webgl.js
 NODE := x3d.js x3d_follower.js
@@ -11,6 +11,9 @@ FIELDS := fields.js
 
 SRC := $(BASIC) $(DEBUG) $(GFX) $(NODE) $(FIELDS) 
 #---------------
+
+version.js:
+	touch version.js
 
 bundle: $(BUNDLE)
 
