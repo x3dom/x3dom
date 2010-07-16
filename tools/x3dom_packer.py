@@ -85,7 +85,8 @@ if __name__ == '__main__':
         
         # Write the minified output file
         outfile = open(options.outfile, 'w')
-        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ */" ) 
+        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ %s - %s */" 
+      					% (version, svn_revision) )
         outfile.write(out_stream.getvalue())
         outfile.close()        
     elif options.algo == "jspacker":
