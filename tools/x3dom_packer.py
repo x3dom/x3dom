@@ -85,8 +85,7 @@ if __name__ == '__main__':
         
         # Write the minified output file
         outfile = open(options.outfile, 'w')
-        outfile.write("/** X3DOM JavaScript Library %s, http://www.x3dom.org/ */" 
-                        % version)
+        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ */" ) 
         outfile.write(out_stream.getvalue())
         outfile.close()        
     elif options.algo == "jspacker":
