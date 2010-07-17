@@ -1826,7 +1826,7 @@ x3dom.gfx_webgl = (function () {
             delete indexArray;
         }
         
-        scene._webgl.render = function(gl)
+        scene._webgl.render = function(gl, mat_scene)
         {
             if (!scene._webgl.texture || 
                 (scene._webgl.texture.textureCubeReady !== undefined && 
@@ -1854,7 +1854,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 if (scene._webgl.texture.textureCubeReady) {
-                    sp.modelViewProjectionMatrix = viewarea.getWCtoCCMatrix().toGL();
+                    sp.modelViewProjectionMatrix = mat_scene.toGL();
                     
                     //gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.activeTexture(gl.TEXTURE0);
@@ -2304,7 +2304,7 @@ x3dom.gfx_webgl = (function () {
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 		
         // calls gl.clear etc. (bgnd stuff)
-        scene._webgl.render(gl);
+        scene._webgl.render(gl, mat_scene);
 		
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.DEPTH_TEST);
@@ -2544,9 +2544,11 @@ x3dom.gfx_webgl = (function () {
                 if (shape._cf.appearance.node._cf.textureTransform.node !== null)
                 {
                     // use shader/ calculation due to performance issues
-                    var texTrafo = shape._cf.appearance.node.transformMatrix();
+                    var texTrafo = shape._cf.appearance.node.texTransformMatrix();
                     sp.texTrafoMatrix = texTrafo.toGL();
-                }else{
+                }
+                else {
+                    // FIXME; this means performance problems if no tex-trafo needed!
 					sp.texTrafoMatrix = x3dom.fields.SFMatrix4f.identity().toGL();
 				}
                 
@@ -2773,8 +2775,8 @@ x3dom.gfx_webgl = (function () {
 	{
 		var scene = viewarea._scene;
         
-        var mat_view = viewarea.getViewMatrix();
-        var mat_scene = viewarea.getWCtoCCMatrix();
+        var mat_view = rt.getViewMatrix();
+        var mat_scene = rt.getWCtoCCMatrix();
         
         var i, n, m = rt._cf.excludeNodes.nodes.length;
         
@@ -2785,10 +2787,10 @@ x3dom.gfx_webgl = (function () {
                 arr[i] = -1;
             }
             else {
-                if (!render)
-                    arr[i] = 0;
-                else 
+                if (render === true)
                     arr[i] = 1;
+                else 
+                    arr[i] = 0;
             }
             rt._cf.excludeNodes.nodes[i]._vf.render = false;
         }
@@ -2797,7 +2799,20 @@ x3dom.gfx_webgl = (function () {
         
         gl.viewport(0, 0, rt._webgl.fbo.width, rt._webgl.fbo.height);
 		
-        scene._webgl.render(gl);	//fixme; bgnd
+        // FIXME; impl. workarounf correctly...
+        if (rt._cf.background.node === null || 
+            rt._cf.background.node === scene.getBackground())
+        {
+            scene._webgl.render(gl, mat_scene);
+        }
+        else 
+        {
+            var bgCol = rt.getSkyColor()[0];
+            
+            gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
+            gl.clearDepth(1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+        }
 		
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.DEPTH_TEST);
@@ -2823,8 +2838,15 @@ x3dom.gfx_webgl = (function () {
 			var transform = scene.drawableObjects[i][0];
 			var shape = scene.drawableObjects[i][1];
             
-            //if (!shape._vf.render)
-            //   continue;
+            if (shape._vf.render !== undefined && shape._vf.render === false)
+               continue;
+            
+            //
+            // TODO; FIXME; HACK;
+            //
+            // untenstehender Teil ist Copy&Paste von oben
+            // dringend eigene Funktion: renderShape(...);
+            //
             
 			var sp = shape._webgl.shader;
 			if (!sp) {
@@ -3021,9 +3043,11 @@ x3dom.gfx_webgl = (function () {
                 if (shape._cf.appearance.node._cf.textureTransform.node !== null)
                 {
                     // use shader/ calculation due to performance issues
-                    var texTrafo = shape._cf.appearance.node.transformMatrix();
+                    var texTrafo = shape._cf.appearance.node.texTransformMatrix();
                     sp.texTrafoMatrix = texTrafo.toGL();
-                }else{
+                }
+                else {
+                    // FIXME; this means performance problems if no tex-trafo needed!
 					sp.texTrafoMatrix = x3dom.fields.SFMatrix4f.identity().toGL();
 				}
                 

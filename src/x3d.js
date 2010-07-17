@@ -187,14 +187,14 @@ x3dom.NodeNameSpace = function (name, document) {
 
 x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
 	this.defMap[name] = node;
-	node.nameSpace = this;
+	node._nameSpace = this;
 };
 
 x3dom.NodeNameSpace.prototype.removeNode = function (name) {
 	var node = this.defMap.name;
 	delete this.defMap.name;
 	if (node) {
-		node.nameSpace = null;
+		node._nameSpace = null;
 	}
 };
 
@@ -242,7 +242,6 @@ x3dom.getStyle = function(oElm, strCssRule) {
 		strValue = window.getComputedStyle(oElm, "")[strCssRule];
 	}
 	else if(oElm.currentStyle){
-		x3dom.debug.logInfo ('bar');
 		strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
 		strValue = oElm.currentStyle[strCssRule];
 	}
@@ -283,8 +282,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     if (x3dom.isX3DElement(domNode)) {
 	
 		//active workaground for missing DOMAttrModified support
-		if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
-			 (domNode.tagName !== undefined) ) {
+        if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
+             (domNode.tagName !== undefined) && (!domNode.__setAttribute) ) {
         	domNode.__setAttribute = domNode.setAttribute;
             domNode.setAttribute = x3dom.setElementAttribute;
 		}
@@ -479,7 +478,7 @@ x3dom.registerNodeType(
                             	if (node._parentNodes[i] === this) {
                                 	node._parentNodes.splice(i,1);
                                     node.parentRemoved(this);
-                            	} 
+                            	}
                         	}
 							for (var j = 0, m = this._childNodes.length; j < m; j++) {
                         		if (this._childNodes[j] === node) {
@@ -916,12 +915,12 @@ x3dom.registerNodeType(
                 }
         	},
             
-            transformMatrix: function() {
+            texTransformMatrix: function() {
                 if (this._cf.textureTransform.node === null) {
                     return x3dom.fields.SFMatrix4f.identity();
                 }
                 else {
-                    return this._cf.textureTransform.node.transformMatrix();
+                    return this._cf.textureTransform.node.texTransformMatrix();
                 }
             }
 		}
@@ -1033,7 +1032,7 @@ x3dom.registerNodeType(
                          mult(x3dom.fields.SFMatrix4f.translation(posCenter.add(trans3)));
             },
             
-            transformMatrix: function() {
+            texTransformMatrix: function() {
                 return this._trafo;
             }
         }
@@ -1260,15 +1259,100 @@ x3dom.registerNodeType(
             
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
-            this.addField_SFNode('fog', x3dom.nodeTypes.X3DFogNode);
-            this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);
+            this.addField_SFNode('fog', x3dom.nodeTypes.X3DFogNode);    //TODO
+            this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);     //TODO
             this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
             this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);
             this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+            
+            x3dom.debug.assert(this._vf.dimensions.length >= 3);
+            this._clearParents = true;
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            nodeChanged: function()
+            {
+                this._clearParents = true;
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "excludeNodes") {
+                    this._clearParents = true;
+                }
+            },
+            
+            getViewMatrix: function () 
+            {
+                if (this._clearParents && this._cf.excludeNodes.nodes.length) {
+                    // FIXME; avoid recursions cleverer and more generic than this
+                    //        (Problem: nodes in excludeNodes field have this node
+                    //         as first parent, which leads to a recursion loop in 
+                    //         getCurrentTransform()
+                    var that = this;
+                    
+                    Array.forEach(this._cf.excludeNodes.nodes, function(node) {
+                        for (var i=0, n=node._parentNodes.length; i < n; i++) {
+                            if (node._parentNodes[i] === that) {
+                                node._parentNodes.splice(i, 1);
+                                node.parentRemoved(that);
+                            }
+                        }
+                    });
+                    
+                    this._clearParents = false;
+                }
+                
+                var vbP = this._nameSpace.doc._scene.getViewpoint();
+                var view = this._cf.viewpoint.node;
+                
+                if (view === null || view === vbP) {
+                    return this._nameSpace.doc._viewarea.getViewMatrix();
+                }
+                else {
+                    var mat_viewpoint = view.getCurrentTransform();
+                    return mat_viewpoint.mult(view.getViewMatrix());
+                }
+            },
+            
+            getProjectionMatrix: function() 
+            {
+                var vbP = this._nameSpace.doc._scene.getViewpoint();
+                var view = this._cf.viewpoint.node;
+                
+                if (view === null || view === vbP) {
+                    return this._nameSpace.doc._viewarea.getProjectionMatrix();
+                }
+                else {
+                    var w = this._vf.dimensions[0], h = this._vf.dimensions[1];
+                    return view.getProjectionMatrix(w / h);
+                }
+            },
+            
+            getWCtoCCMatrix: function()
+            {
+                var view = this.getViewMatrix();
+                var proj = this.getProjectionMatrix();
+                
+                return proj.mult(view);
+            },
+            
+            getSkyColor: function()
+            {
+            	var bbP = this._nameSpace.doc._scene.getBackground();
+                var bgnd = this._cf.background.node;
+                
+                if (bgnd === null || bgnd === bbP) {
+                    return this._nameSpace.doc._viewarea.getSkyColor();
+                }
+                else {
+                    var bgCol = bgnd.getSkyColor().toGL();
+                    //workaround; impl. skyTransparency etc.
+                    if (bgCol.length > 2)
+                        bgCol[3] = 1.0 - bgnd.getTransparency();
+
+                    return [bgCol, bgnd.getTexUrl()];
+                }
+            }
         }
     )
 );
@@ -3800,6 +3884,7 @@ x3dom.registerNodeType(
             this._viewMatrix = this._vf.orientation.toMatrix().transpose().
 				mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
             this._projMatrix = null;
+            this._lastAspect = 1.0;
         },
         {
             fieldChanged: function (fieldName) {
@@ -3811,12 +3896,10 @@ x3dom.registerNodeType(
                          fieldName == "zNear" || fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
                 }
-		else {
-			/// XXX FIXME; call parent.fieldChanged();
-			if (fieldName === "set_bind") {
-				this.bind(this._vf.set_bind);
-			}
-		}
+                else if (fieldName === "set_bind") {
+                    // XXX FIXME; call parent.fieldChanged();
+                    this.bind(this._vf.set_bind);
+                }
             },
             
 			getCenterOfRotation: function() {
@@ -3854,7 +3937,15 @@ x3dom.registerNodeType(
                         0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
                         0, 0, -1, 0
                     );
+                    
+                    this._lastAspect = aspect;
                 }
+                else if (this._lastAspect !== aspect)
+                {
+                    this._projMatrix._00 = (1 / Math.tan(this._vf.fieldOfView / 2)) / aspect;
+                    this._lastAspect = aspect;
+                }
+                
                 return this._projMatrix;
             }
         }
@@ -4035,7 +4126,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'radius', 100);
             
             this._vf.global = true;
-            x3dom.debug.logInfo("PointLight NYI");  // TODO: gfx handling
         },
         {
             getViewMatrix: function(vec) {
@@ -4065,7 +4155,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'cutOffAngle', 1.5707963);
             
             this._vf.global = true;
-            x3dom.debug.logInfo("SpotLight NYI");  // TODO: gfx handling
         },
         {
             getViewMatrix: function(vec) {
@@ -4967,7 +5056,6 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
                     dia = dia.add(dir.multiply(1.2*(dist1 > dist2 ? dist1 : dist2)));
                 }
                 
-                //FIXME; need to return array for all lights
                 l_arr[i] = lights[i].getViewMatrix(dia);
             }
             
@@ -5332,8 +5420,10 @@ x3dom.findScene = function(x3dElem) {
     }
     
     if (sceneElems.length > 1) {
-        x3dom.debug.logError("X3D element has more than one Scene child (has " + x3dElem.childNodes.length + ").");
-    } else {
+        x3dom.debug.logError("X3D element has more than one Scene child (has " + 
+                             x3dElem.childNodes.length + ").");
+    }
+    else {
         return sceneElems[0];
     }
     return null;
