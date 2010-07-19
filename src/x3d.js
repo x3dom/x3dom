@@ -4666,11 +4666,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DInterpolatorNode.superClass.call(this, ctx);
             
-            if (ctx.xmlNode.hasAttribute('key'))
-                this._vf.key = Array.map(ctx.xmlNode.getAttribute('key').split(/\s+/), 
-                                            function (n) { return +n; });
-            else
-                this._vf.key = [];
+			this.addField_MFFloat(ctx, 'key', []);
         },
         {
             linearInterp: function (t, interp) {
