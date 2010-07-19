@@ -1949,7 +1949,8 @@ x3dom.gfx_webgl = (function () {
     };
     
     
-    Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, min, max, pickColor, lastX, lastY)
+    Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, 
+                                                   min, max, pickColor, lastX, lastY)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         
@@ -2048,8 +2049,13 @@ x3dom.gfx_webgl = (function () {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
 	
-	Context.prototype.renderShape = function (transform, shape, scene, viewarea, slights, numLights, mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready, honk)
-	{	
+	Context.prototype.renderShape = function (transform, shape, viewarea, 
+                                              slights, numLights, 
+                                              mat_view, mat_scene, mat_light, 
+                                              gl, activeTex, oneShadowExistsAlready)
+	{
+        var scene = viewarea._scene;
+        
 		var sp = shape._webgl.shader;
 		if (!sp) {
 			shape._webgl.shader = getDefaultShaderProgram(gl, 'default');
@@ -2202,9 +2208,11 @@ x3dom.gfx_webgl = (function () {
 		// transformation matrices
 		
 		//Calculate and Set Normalmatrix
+        // FIXME; for rigid motions the inverse-transpose is not necessary
 		var normalMatrix = mat_view.mult(transform);
 		normalMatrix = normalMatrix.inverse().transpose();
 		sp.normalMatrix = normalMatrix.toGL();
+        
 		var model_view = mat_view.mult(transform);
 		sp.modelViewMatrix = model_view.toGL();
 		if (userShader) {
@@ -2669,7 +2677,8 @@ x3dom.gfx_webgl = (function () {
 		for (i=0, n=zPos.length; i<n; i++)
 		{
 			var obj = scene.drawableObjects[zPos[i][0]];
-			this.renderShape(obj[0], obj[1], scene, viewarea, slights, numLights, mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready, false);
+			this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
+                mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
 		}
 		
 		gl.disable(gl.BLEND);
@@ -2783,7 +2792,8 @@ x3dom.gfx_webgl = (function () {
 			if (shape._vf.render !== undefined && shape._vf.render === false)
                continue;
 			
-			this.renderShape(transform, shape, scene, viewarea, slights, numLights, mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready, true);
+			this.renderShape(transform, shape, viewarea, slights, numLights, 
+                    mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
 		}
 		
 		gl.disable(gl.BLEND);
