@@ -5455,9 +5455,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         onNodeRemoved: function(e) {
             var parent = e.target.parentNode._x3domNode;
             var child = e.target._x3domNode;
-            
+			
             //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
-            
             if (parent) {
                 parent.removeChild(child);
                 doc.needRender = true;			
@@ -5466,7 +5465,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         onNodeInserted: function(e) {
             var parent = e.target.parentNode._x3domNode;
             var child = e.target;
-       
             //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", inserted node=" + child.tagName);
             //x3dom.debug.logInfo("MUTATION: " + child.translation + ", " + child.parentNode.tagName);
 
