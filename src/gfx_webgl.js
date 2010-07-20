@@ -2012,6 +2012,20 @@ x3dom.gfx_webgl = (function () {
 				gl.enableVertexAttribArray(sp.color);
 			}
             
+            if (shape.isSolid()) {
+                gl.enable(gl.CULL_FACE);
+                
+                if (shape.isCCW()) {
+                    gl.frontFace(gl.CCW);
+                }
+                else {
+                    gl.frontFace(gl.CW);
+                }
+            }
+            else {
+                gl.disable(gl.CULL_FACE);
+            }
+            
             try {
                 gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
             }
@@ -2449,9 +2463,8 @@ x3dom.gfx_webgl = (function () {
 				gl.disableVertexAttribArray(sp[attrib.name]);
 			}
 		}
-	}
+	};
     
-
 	Context.prototype.renderScene = function (viewarea, pick) 
 	{
 		var gl = this.ctx3d;

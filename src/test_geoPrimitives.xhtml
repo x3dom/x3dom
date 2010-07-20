@@ -23,7 +23,7 @@
                                 document.getElementById('pc').setAttribute('set_destination', hitPnt);
                                 document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
                                 document.getElementById('cc').setAttribute('set_destination', '0 1 0');
-                                ">
+                               ">
 				<Transform DEF="coneTrafo" translation="-4.5 0 0">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
@@ -68,7 +68,7 @@
 						<Appearance DEF="cylinderApp">
 							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Cylinder DEF="cylinder" radius="1.0" height="2.0" />
+						<Cylinder DEF="cylinder" radius="1.0" height="2.0" solid="false" bottom="false" top="false" side="true" />
 					</Shape>
 				</Transform>
                 </Group>
