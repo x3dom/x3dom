@@ -2240,15 +2240,13 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
-    
-            var bottomRadius = 1.0, height = 2.0;
-			
-            if (ctx.xmlNode.hasAttribute('bottomRadius')) {
-                bottomRadius = +ctx.xmlNode.getAttribute('bottomRadius');
-            }
-            if (ctx.xmlNode.hasAttribute('height')) {
-                height = +ctx.xmlNode.getAttribute('height');
-            }
+            
+            this.addField_SFFloat(ctx, 'bottomRadius', 1.0);
+            this.addField_SFFloat(ctx, 'height', 2.0);
+			this.addField_SFBool(ctx, 'bottom', true);
+			this.addField_SFBool(ctx, 'side', true);
+            
+            var bottomRadius = this._vf.bottomRadius, height = this._vf.height;
 			
             var beta, x, z;
 			var sides = 32;
@@ -2257,8 +2255,10 @@ x3dom.registerNodeType(
 			var nlen = 1.0 / Math.sqrt(1.0 + incl * incl);
 			var p = [], n = [], t = [], i = [];
 			
-			for (var j=0, k=0; j<=sides; j++)
-			{
+            if (this._vf.side)
+            {
+			  for (var j=0, k=0; j<=sides; j++)
+			  {
 				beta = j * delta;
 				x = Math.sin(beta);
 				z = -Math.cos(beta);         
@@ -2283,9 +2283,10 @@ x3dom.registerNodeType(
 					
 					k += 2;
 				}
+			  }
 			}
-			
-			if (bottomRadius > 0)
+            
+			if (this._vf.bottom && bottomRadius > 0)
 			{
 				var base = p.length / 3;
 				
@@ -2332,21 +2333,24 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
     
             var radius = 1.0, height = 2.0;
-			
-            if (ctx.xmlNode.hasAttribute('radius')) {
-                radius = +ctx.xmlNode.getAttribute('radius');
-            }
-            if (ctx.xmlNode.hasAttribute('height')) {
-                height = +ctx.xmlNode.getAttribute('height');
-			}
+            
+            this.addField_SFFloat(ctx, 'radius', 1.0);
+            this.addField_SFFloat(ctx, 'height', 2.0);
+			this.addField_SFBool(ctx, 'bottom', true);
+			this.addField_SFBool(ctx, 'top', true);
+			this.addField_SFBool(ctx, 'side', true);
+            
+            var radius = this._vf.radius, height = this._vf.height;
 
             var beta, x, z;
 			var sides = 24;
 			var delta = 2.0 * Math.PI / sides;
 			var p = [], n = [], t = [], i = [];
 			
-			for (var j=0, k=0; j<=sides; j++)
-			{
+            if (this._vf.side)
+            {
+			  for (var j=0, k=0; j<=sides; j++)
+			  {
 				beta = j * delta;
 				x = Math.sin(beta);
 				z = -Math.cos(beta);         
@@ -2371,14 +2375,17 @@ x3dom.registerNodeType(
 					
 					k += 2;
 				}
-			}
+			  }
+            }
 			
 			if (radius > 0)
 			{
-				var base = p.length / 3;
+				var h, base = p.length / 3;
 				
-				for (j=sides-1; j>=0; j--)
-				{
+                if (this._vf.top)
+                {
+				  for (j=sides-1; j>=0; j--)
+				  {
 					beta = j * delta;
 					x = radius * Math.sin(beta);
 					z = -radius * Math.cos(beta);  
@@ -2386,23 +2393,26 @@ x3dom.registerNodeType(
 					p.push(x, height/2, z);
 					n.push(0, 1, 0);
 					t.push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
-				}
+				  }
 				
-				var h = base + 1;
+				  h = base + 1;
 				
-				for (j=2; j<sides; j++) 
-				{
+				  for (j=2; j<sides; j++) 
+				  {
 					i.push(base);
 					i.push(h);
 					
 					h = base + j;
 					i.push(h);
-				}
+				  }
 				
-				base = p.length / 3;
+				  base = p.length / 3;
+                }
 				
-				for (j=sides-1; j>=0; j--)
-				{
+                if (this._vf.bottom)
+                {
+				  for (j=sides-1; j>=0; j--)
+				  {
 					beta = j * delta;
 					x = radius * Math.sin(beta);
 					z = -radius * Math.cos(beta); 
@@ -2410,18 +2420,19 @@ x3dom.registerNodeType(
 					p.push(x, -height/2, z);
 					n.push(0, -1, 0);
 					t.push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
-				}
+				  }
 				
-				h = base + 1;
+				  h = base + 1;
 				
-				for (j=2; j<sides; j++) 
-				{
+				  for (j=2; j<sides; j++) 
+				  {
 					i.push(h);
 					i.push(base);
 					
 					h = base + j;
 					i.push(h);
-				}
+				  }
+                }
 			}
 			
 			this._mesh._positions = p;
