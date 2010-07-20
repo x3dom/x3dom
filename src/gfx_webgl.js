@@ -2400,11 +2400,11 @@ x3dom.gfx_webgl = (function () {
 			else {
 				gl.drawElements(shape._webgl.primType, shape._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 				
-				numFaces += shape._cf.geometry.node._mesh._numFaces;
+				this.numFaces += shape._cf.geometry.node._mesh._numFaces;
 				//x3dom.debug.logInfo("numFaces: " + shape._cf.geometry.node._mesh._numFaces);
 			}
 		  }
-		  numCoords += shape._cf.geometry.node._mesh._numCoords;
+		  this.numCoords += shape._cf.geometry.node._mesh._numCoords;
 		}
 		catch (e) {
 			x3dom.debug.logException(shape._DEF + " renderScene(): " + e);
@@ -2503,8 +2503,8 @@ x3dom.gfx_webgl = (function () {
 		}
         
         var t0, t1;
-        var numFaces = 0;
-        var numCoords = 0;
+        this.numFaces = 0;
+        this.numCoords = 0;
 		
 		// render traversal
 		if (scene.drawableObjects === undefined || !scene.drawableObjects)
@@ -2724,9 +2724,9 @@ x3dom.gfx_webgl = (function () {
 			this.canvas.parent.statDiv.appendChild(document.createElement("br"));
 			this.canvas.parent.statDiv.appendChild(document.createTextNode("render: " + t1));
             this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Tris: " + numFaces));
+            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Tris: " + this.numFaces));
             this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Pnts: " + numCoords));
+            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Pnts: " + this.numCoords));
 		}
 		
 		scene.drawableObjects = null;
