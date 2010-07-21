@@ -402,6 +402,22 @@ x3dom.detectActiveX = function()
     return isInstalled;
 }
 
+x3dom.rerouteSetAttribute = function(node)
+{
+    // save old setAttribute method
+    node._setAttribute = node.setAttribute;
+    node.setAttribute = function(name, value)
+    {
+        return node._x3domNode.parseField(name, value);
+    }
+
+    for(var i=0; i < node.childNodes.length; i++)
+    {
+        child = node.childNodes[i];
+        x3dom.rerouteSetAttribute(child);
+    }
+}
+
 x3dom.insertActiveX = function(x3d)
 {   
     var height = x3d.getAttribute("height");
@@ -425,6 +441,8 @@ x3dom.insertActiveX = function(x3d)
     browser = Avalon.getBrowser();
     scene   = browser.importDocument(x3d);
     browser.replaceWorld(scene);
+    
+    x3dom.rerouteSetAttribute(x3d);
 }
 
 // holds the UserAgent feature
