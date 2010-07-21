@@ -419,7 +419,12 @@ x3dom.rerouteSetAttribute = function(node)
 }
 
 x3dom.insertActiveX = function(x3d)
-{   
+{
+    if (typeof x3dom.atxCtrlCounter == 'undefined')
+    {
+        x3dom.atxCtrlCounter = 0;
+    }
+
     var height = x3d.getAttribute("height");
     var width  = x3d.getAttribute("width");
 
@@ -431,14 +436,19 @@ x3dom.insertActiveX = function(x3d)
     var inserted = parent.insertBefore(divelem, x3d);
      
     var atx = document.createElement("object");
-    atx.setAttribute("id", "Avalon");
+    
+    var containerName = "Avalon" + x3dom.atxCtrlCounter;
+    x3dom.atxCtrlCounter++;
+    
+    atx.setAttribute("id", containerName);
     atx.setAttribute("classid", "CLSID:F3254BA0-99FF-4D14-BD81-EDA9873A471E");
     atx.setAttribute("width",   width   ? width     : "500");
     atx.setAttribute("height",  height  ? height    : "500");
     
     inserted.appendChild(atx);
     
-    browser = Avalon.getBrowser();
+    atxctrl = document.getElementById(containerName);
+    browser = atxctrl.getBrowser();
     scene   = browser.importDocument(x3d);
     browser.replaceWorld(scene);
     
