@@ -2224,7 +2224,7 @@ x3dom.gfx_webgl = (function () {
 			sp['light[' + numLights + '].color'] 			= [1.0, 1.0, 1.0];
 			sp['light[' + numLights + '].intensity']		= 1.0;
 			sp['light[' + numLights + '].ambientIntensity']	= 0.0;
-			sp['light[' + numLights + '].direction']		= mat_view.multMatrixPnt(new x3dom.fields.SFVec3f(0.0,0.0,-1.0)).toGL();
+			sp['light[' + numLights + '].direction']		= [0.0, 0.0, -1.0]; //mat_view.multMatrixPnt(new x3dom.fields.SFVec3f(0.0,0.0,-1.0)).normalize().toGL();
 			sp['light[' + numLights + '].attenuation']		= [1.0, 1.0, 1.0];
 			sp['light[' + numLights + '].location']			= [1.0, 1.0, 1.0];
 			sp['light[' + numLights + '].radius']			= 0.0;
@@ -2620,6 +2620,7 @@ x3dom.gfx_webgl = (function () {
             
             this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max, 
                                    pickColor, viewarea._lastX, viewarea._lastY);
+								   
             
             viewarea._updatePicking = false;
             
