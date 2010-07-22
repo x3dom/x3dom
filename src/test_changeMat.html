@@ -14,52 +14,52 @@
     <h1>x3dom simple example</h1>
 	
 	<p class="case"> 
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="300px">
+		<x3d xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="300px">
 			<Scene>
-				<Background DEF='bgnd' transparency="1.0" skyColor='0.2 0.7 0.4' />
+				<Background DEF='bgnd' transparency="1.0" skyColor='0.2 0.7 0.4'></Background>
 				
 				<Transform translation="-3 0 0">
 					<Shape>
 						<Appearance id="anApp">
-							<Material id="SphMat" diffuseColor="#f0f" specularColor="#888" transparency="0.15" />
+							<Material id="SphMat" diffuseColor="#f0f" specularColor="#888" transparency="0.15" ></Material>
 						</Appearance>
-						<Sphere />
+						<Sphere></Sphere>
 					</Shape>
 				</Transform>
 				
 				<Transform >
 					<Shape>
 						<Appearance>
-							<Material id="BoxMat" diffuseColor="khaki" specularColor="white" transparency="0.4" />
+							<Material id="BoxMat" diffuseColor="khaki" specularColor="white" transparency="0.4" ></Material>
 							<!--<ImageTexture url="opengl.gif" />-->
 						</Appearance>
-						<Box/>
+						<Box></Box>
 					</Shape>
 				</Transform>
 				
 				<Transform DEF="TBox" translation="4 0 0" rotation="1 0 0 0.9">
 					<Shape>
 						<Appearance>
-							<Material specularColor=".5 .5 .5" />
-							<ImageTexture id="RotBoxTex" url="ogl.jpg" />
+							<Material specularColor=".5 .5 .5" ></Material>
+							<ImageTexture id="RotBoxTex" url="ogl.jpg" ></ImageTexture>
 						</Appearance>
-						<Box size="3 1 2"/>
+						<Box size="3 1 2"></Box>
 					</Shape>
 				</Transform>
 				
-				<TimeSensor DEF="TS" loop="true" cycleInterval="2" />
+				<TimeSensor DEF="TS" loop="true" cycleInterval="2" ></TimeSensor>
 				
-				<OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14159, 1 0 0 6.28318" />
-				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'/>
-				<ROUTE fromNode='OI' fromField='value_changed' toNode='TBox' toField='rotation'/>
+				<OrientationInterpolator DEF="OI" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14159, 1 0 0 6.28318" ></OrientationInterpolator>
+				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='OI' toField='set_fraction'></ROUTE>
+				<ROUTE fromNode='OI' fromField='value_changed' toNode='TBox' toField='rotation'></ROUTE>
 				
-				<ScalarInterpolator DEF="SI" key="0 0.3 0.6 1" keyValue="1 0 0 1" />
-				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='SI' toField='set_fraction'/>
-				<ROUTE fromNode='SI' fromField='value_changed' toNode='bgnd' toField='transparency'/>
+				<ScalarInterpolator DEF="SI" key="0 0.3 0.6 1" keyValue="1 0 0 1" ></ScalarInterpolator>
+				<ROUTE fromNode='TS' fromField='fraction_changed' toNode='SI' toField='set_fraction' ></ROUTE>
+				<ROUTE fromNode='SI' fromField='value_changed' toNode='bgnd' toField='transparency' ></ROUTE>
 				
-				<Viewpoint position="1 0 10" orientation="0 1 0 0" fieldOfView="0.785398"/>
+				<Viewpoint position="1 0 10" orientation="0 1 0 0" fieldOfView="0.785398" ></Viewpoint>
 			</Scene>
-		</X3D>
+		</x3d>
 	</p>
 	
 	<script type="text/javascript"><![CDATA[
@@ -75,7 +75,7 @@
 		
         button.value = cols[(col+1) % cols.length];
         
-		var mat = document.getElementById("SphMat");
+		var mat = document.getElementById("mat");
 		mat.setAttribute("diffuseColor", cols[col].toLowerCase());
 		
 		return false;
