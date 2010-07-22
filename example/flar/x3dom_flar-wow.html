@@ -75,37 +75,18 @@
 	<div id="root_canvas">
 		<div id="topLayer" >
 			<div id='x3div' >
-			<x3d id='x3d' showStat="false" showLog="false" x="0px" y="0px" width="640px" height="480px" altImg="helloX3D-alt.png">
+			<x3d id='x3d' showStat="true" showLog="false" x="0px" y="0px" width="640px" height="480px" altImg="helloX3D-alt.png">
 				<scene>
 					<viewpoint fieldOfView='0.60' position='0 0 0'></viewpoint>
 
-					<navigationInfo headlight='false'></navigationInfo>
-					<directionalLight direction='1 0 0'></directionalLight>
+					<navigationInfo headlight='true'></navigationInfo>
 					<background transparency="1" skyColor='0 0 0'></background>
 					
+					<!-- <directionalLight shadowIntensity='0.7' direction='-0.8 -0.9 0.3'/></directionalLight> -->
+				    
 					<matrixtransform id="root_transform">
-						<transform def='universe' translation='0 0 20' scale='50 50 50' rotation="0 1 0 3.145">
-							<transform def='earth' rotation='1 0 0 -1.57' >
-								<shape>
-									<appearance>
-										<imageTexture url='"http://veimages.gsfc.nasa.gov/2430/land_ocean_ice_2048.jpg"'>
-										</imageTexture>
-									</appearance>
-									<sphere>
-									</sphere>
-								</shape>
-							</transform>
-							
-							<transform def='clouds' rotation='1 0 0 -1.57' scale='1.1 1.1 1.1'>
-								<shape>
-									<appearance>
-										<imageTexture url='"http://www.barnabu.co.uk/files/clouds/cloudimage.png"'>
-										</imageTexture>
-									</appearance>
-									<sphere>
-									</sphere>
-								</shape>
-							</transform>
+						<transform def='universe' translation='0 0 0' scale='10 10 10' rotation="1 0 0 1.57">
+							<inline url='wow.x3d'>
 						</transform>
 					</matrixtransform>
 					
