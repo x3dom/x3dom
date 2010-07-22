@@ -424,7 +424,7 @@ x3dom.insertActiveX = function(x3d)
     {
         x3dom.atxCtrlCounter = 0;
     }
-
+ 
     var height = x3d.getAttribute("height");
     var width  = x3d.getAttribute("width");
 
@@ -451,6 +451,12 @@ x3dom.insertActiveX = function(x3d)
     browser = atxctrl.getBrowser();
     scene   = browser.importDocument(x3d);
     browser.replaceWorld(scene);
+        
+    // add backtrack method to get browser from x3d node instead of the ctrl
+    x3d.getBrowser = function()
+    {
+        return atxctrl.getBrowser();
+    }
     
     x3dom.rerouteSetAttribute(x3d);
 }
