@@ -790,7 +790,10 @@ x3dom.gfx_webgl = (function () {
 		//Set Attributes +Uniforms + Varyings
 		shader += "attribute vec3 position;";
 		shader += "attribute vec3 normal;";
+		shader += "uniform mat4 modelViewMatrix;";
 		shader += "uniform mat4 modelViewProjectionMatrix;";
+		shader += "varying vec3 fragNormal;";
+
 		if(vertexColor){
 			shader += "attribute vec3 color;";
 			shader += "varying vec3 fragColor;";
@@ -805,12 +808,12 @@ x3dom.gfx_webgl = (function () {
 		}
 		
 		if(useLighting[0] >= 1 || useFog){
-			shader += "uniform mat4 normalMatrix;";
-			shader += "uniform mat4 modelViewMatrix;";
+			//shader += "uniform mat4 normalMatrix;";
+			
 			shader += "uniform vec3 eyePosition;";
 			shader += "varying vec3 fragEyePosition;";
 			shader += "varying vec3 fragPosition;";
-			shader += "varying vec3 fragNormal;";
+			
 			if(useLighting[1]){
 				shader += "uniform mat4 matPV;";
 				shader += "varying vec4 projCoord;";
@@ -823,9 +826,10 @@ x3dom.gfx_webgl = (function () {
 			shader += "fragColor = color;";
 		}
 		
-		if(useLighting[0] >= 1 || useFog){
-			shader += "fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;";
-			//shader += "fragNormal = (normalMatrix * vec4(normal, 1.0)).xyz;";
+		shader += "fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;";
+		//shader += "fragNormal = (normalMatrix * vec4(normal, 1.0)).xyz;";
+		
+		if(useLighting[0] >= 1 || useFog){	
 			shader += "fragPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;";
 			shader += "fragEyePosition = eyePosition - fragPosition;";
 			if(useLighting[1]){
@@ -1030,7 +1034,8 @@ x3dom.gfx_webgl = (function () {
 			
 		}else{
 			if(texture){
-				shader += "vec4 texColor = texture2D(tex, texCoord)";
+				shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);";
+				shader += "vec4 texColor = texture2D(tex, texCoord);";
 				shader += "rgb = texColor.rgb;";
 				shader += "alpha *= texColor.a;";
 			}else if(vertexColor){
@@ -2221,7 +2226,7 @@ x3dom.gfx_webgl = (function () {
 			sp['light[' + numLights + '].color'] 			= [1.0, 1.0, 1.0];
 			sp['light[' + numLights + '].intensity']		= 1.0;
 			sp['light[' + numLights + '].ambientIntensity']	= 0.0;
-			sp['light[' + numLights + '].direction']		= mat_view.multMatrixPnt(new x3dom.fields.SFVec3f(0.0,-1.0,0.0)).toGL();
+			sp['light[' + numLights + '].direction']		= mat_view.multMatrixPnt(new x3dom.fields.SFVec3f(0.0,0.0,-1.0)).toGL();
 			sp['light[' + numLights + '].attenuation']		= [1.0, 1.0, 1.0];
 			sp['light[' + numLights + '].location']			= [1.0, 1.0, 1.0];
 			sp['light[' + numLights + '].radius']			= 0.0;
