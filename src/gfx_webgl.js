@@ -764,7 +764,7 @@ x3dom.gfx_webgl = (function () {
 				result[1] = true;
 			}
 		}
-		
+				
 		var nav = viewarea._scene.getNavigationInfo();
 		if(nav._vf.headlight) result[0] += 1;
 			
@@ -784,7 +784,7 @@ x3dom.gfx_webgl = (function () {
 	{
 		var shader = "";
 
-		var useLighting = useLightingFunc(viewarea);
+		//var useLighting = useLightingFunc(viewarea);
 		var useFog = useFogFunc(viewarea);
 		
 		//Set Attributes +Uniforms + Varyings
@@ -850,8 +850,6 @@ x3dom.gfx_webgl = (function () {
 		}
 		shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);";
 		shader += "}";
-		
-		
 		
 		return shader;
 	}
