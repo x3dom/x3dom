@@ -955,6 +955,9 @@ x3dom.gfx_webgl = (function () {
 						"uniform Material material;";
 					
 		var shader = "";
+        //shader += "#ifdef GL_ES";
+        //shader += "  precision highp float;";
+        //shader += "#endif";
 		
 		//Set Uniforms + Varyings
 		shader += material;
@@ -1249,7 +1252,7 @@ x3dom.gfx_webgl = (function () {
 			
 			var ids = gl.createTexture();
 			gl.bindTexture(gl.TEXTURE_2D, ids);
-			gl.texImage2D(gl.TEXTURE_2D, 0, text_canvas);
+            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, text_canvas);
             
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
@@ -1319,7 +1322,7 @@ x3dom.gfx_webgl = (function () {
                     texture = gl.createTexture();
                     that._webgl.texture[unit] = texture;
                     gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, tex._canvas);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex._canvas);
                     
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -1375,7 +1378,7 @@ x3dom.gfx_webgl = (function () {
 						that._nameSpace.doc.needRender = true;			
 	
                         gl.bindTexture(gl.TEXTURE_2D, texture);
-                        gl.texImage2D(gl.TEXTURE_2D, 0, tex._video, false);
+                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex._video);
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                         //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
@@ -1435,7 +1438,7 @@ x3dom.gfx_webgl = (function () {
                         //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url);
                         
                         gl.bindTexture(gl.TEXTURE_2D, texture);
-                        gl.texImage2D(gl.TEXTURE_2D, 0, image);
+                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                         //gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
@@ -1710,10 +1713,12 @@ x3dom.gfx_webgl = (function () {
                     //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
                     
                     gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, image, true);
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                     gl.bindTexture(gl.TEXTURE_2D, null);
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
                 };
                 
                 scene._webgl = {
@@ -2955,8 +2960,11 @@ x3dom.gfx_webgl = (function () {
             image.onload = function(texture, face, image, swap) {
                 return function() {
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-                    gl.texImage2D(face, 0, image, swap);
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
+                    gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+                    
                     texture.pendingTextureLoads--;
 					doc.downloadCount -= 1;
                     if (texture.pendingTextureLoads < 0) {
