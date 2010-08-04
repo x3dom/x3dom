@@ -72,6 +72,10 @@
                   </ShaderPart>
                   <ShaderPart type='FRAGMENT'>
                   <![CDATA[
+                        #ifdef GL_ES
+                          precision highp float;
+                        #endif
+                        
                         uniform sampler2D tex;
                         uniform samplerCube cube;
                         uniform sampler2D bump;

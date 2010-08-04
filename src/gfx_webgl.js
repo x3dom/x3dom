@@ -64,6 +64,10 @@ x3dom.gfx_webgl = (function () {
 		};
         
     g_shaders['fs-x3d-bg-texture'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"uniform sampler2D tex;" +
 		"varying vec2 fragTexCoord;" +
 		"" +
@@ -85,6 +89,10 @@ x3dom.gfx_webgl = (function () {
 		};
         
     g_shaders['fs-x3d-bg-textureCube'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
         "uniform samplerCube tex;" +
         "varying vec3 fragNormal;" +
 		"" +
@@ -161,6 +169,10 @@ x3dom.gfx_webgl = (function () {
 		};
 		
 	g_shaders['fs-x3d-textured'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"uniform float ambientIntensity;" +
 		"uniform vec3 diffuseColor;" +
 		"uniform vec3 emissiveColor;" +
@@ -236,6 +248,10 @@ x3dom.gfx_webgl = (function () {
 		};
         
 	g_shaders['fs-x3d-textured-txt'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"uniform float ambientIntensity;" +
 		"uniform vec3 diffuseColor;" +
 		"uniform vec3 emissiveColor;" +
@@ -304,6 +320,10 @@ x3dom.gfx_webgl = (function () {
 		};
 		
 	g_shaders['fs-x3d-untextured'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"uniform float ambientIntensity;" +
 		"uniform vec3 diffuseColor;" +
 		"uniform vec3 emissiveColor;" +
@@ -391,6 +411,10 @@ x3dom.gfx_webgl = (function () {
 		};
 	
 	g_shaders['fs-x3d-vertexcolor'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"uniform float ambientIntensity;" +
 		"uniform vec3 diffuseColor;" +
 		"uniform vec3 emissiveColor;" +
@@ -466,6 +490,10 @@ x3dom.gfx_webgl = (function () {
         };
     
     g_shaders['fs-x3d-vertexcolorUnlit'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
         "uniform vec3 diffuseColor;" +
         "uniform float alpha;" +
         "uniform float lightOn;" +
@@ -477,6 +505,10 @@ x3dom.gfx_webgl = (function () {
         };
 
 	g_shaders['fs-x3d-shownormal'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"uniform float ambientIntensity;" +
 		"uniform vec3 diffuseColor;" +
 		"uniform vec3 emissiveColor;" +
@@ -505,6 +537,10 @@ x3dom.gfx_webgl = (function () {
 		};
 
 	g_shaders['fs-x3d-default'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"struct Material {" +
 		"	vec3  diffuseColor;" +
 		"	vec3  specularColor;" +
@@ -538,6 +574,10 @@ x3dom.gfx_webgl = (function () {
 		};
 
 	g_shaders['fs-x3d-pick'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
 		"uniform float id;" +
         "varying vec3 worldCoord;" +
 		"void main(void) {" +
@@ -556,6 +596,10 @@ x3dom.gfx_webgl = (function () {
 		};
 
 	g_shaders['fs-x3d-shadow'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
         "varying vec4 projCoord;" +
 		"void main(void) {" +
         "    vec3 proj = (projCoord.xyz / projCoord.w);" +
@@ -955,9 +999,10 @@ x3dom.gfx_webgl = (function () {
 						"uniform Material material;";
 					
 		var shader = "";
-        //shader += "#ifdef GL_ES";
-        //shader += "  precision highp float;";
-        //shader += "#endif";
+        shader += "#ifdef GL_ES             \n";
+        shader += "  precision highp float; \n";
+        shader += "#endif                   \n";
+        shader += "\n";
 		
 		//Set Uniforms + Varyings
 		shader += material;
@@ -1712,8 +1757,8 @@ x3dom.gfx_webgl = (function () {
                     scene._webgl.texture = texture;
                     //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
                     
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
                     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -2341,7 +2386,7 @@ x3dom.gfx_webgl = (function () {
 		if (oneShadowExistsAlready) 
 		{
 			if (!sp.sh_tex) {
-				sp.sh_tex = cnt;      // put it on 4th unit
+				sp.sh_tex = cnt;
 			}
 			gl.activeTexture(activeTex[cnt]);
 			gl.bindTexture(gl.TEXTURE_2D, scene._webgl.fboShadow.tex);
@@ -2959,8 +3004,8 @@ x3dom.gfx_webgl = (function () {
             
             image.onload = function(texture, face, image, swap) {
                 return function() {
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
                     gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);

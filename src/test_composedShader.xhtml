@@ -35,6 +35,10 @@
               </ShaderPart>
               <ShaderPart type='FRAGMENT'>
               <![CDATA[
+                    #ifdef GL_ES
+                      precision highp float;
+                    #endif
+                    
                     uniform vec3 DiffuseColor;
 					uniform vec3 PhongColor;
 					uniform float Edge;
