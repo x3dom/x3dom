@@ -5,6 +5,7 @@
         <title>Augmented Reality with X3DOM and FLARToolkit</title>
         <link rel="stylesheet" type="text/css" href="../x3dom.css" />
         <script type="text/javascript" src="../../src/jQuery/jquery.min.js"></script>  
+		<script type="text/javascript" src="../x3dom.js"></script>		
 
         <style type="text/css">
 			#topLayer {
@@ -18,7 +19,7 @@
 			}
 			
 		</style>		
-		
+
         <script type="text/javascript">
 		
 			var show_canvas = false;
@@ -79,12 +80,14 @@
 				<scene>
 					<viewpoint fieldOfView='0.60' position='0 0 0'></viewpoint>
 
-					<navigationInfo headlight='false'></navigationInfo>
+					<navigationInfo headlight='true'></navigationInfo>
 					<background transparency="1" skyColor='0 0 0'></background>
-					
-					<!-- <directionalLight shadowIntensity='0.7' direction='-0.8 -0.9 0.3'/></directionalLight> -->
-				    
+								
+					<!-- <directionalLight id='light' direction='.2 .2 -0.6' shadowIntensity='0.7' > </directionalLight>
+					-->
+									    
 					<matrixtransform id="root_transform">
+				        
 						<transform def='universe' translation='0 0 0' scale='10 10 10' rotation="1 0 0 1.57">
 							<inline url='wow.x3d'>
 						</transform>
@@ -108,7 +111,12 @@
 		</div>
 	</div>
 
-	<script type="text/javascript" src="../x3dom.js"></script>		
-		
+	<!--
+	<div style='position:absolute;top:700px;'>
+	<input id='in01' value='0 -1 0' >
+	<span onclick="document.getElementById('light').setAttribute('direction',document.getElementById('in01').value);">xxxxxxxxx</span>
+	</div>
+	-->
+	
    </body>
 </html>
