@@ -2124,14 +2124,15 @@ x3dom.gfx_webgl = (function () {
         try {
             var x = lastX * scene._webgl.pickScale,
                 y = scene._webgl.fboPick.height - 1 - lastY * scene._webgl.pickScale;
-            var data = gl.readPixels(//0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
-                                     x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE);
+            var data = null;
+            /*var data = gl.readPixels(//0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height, 
+                                     x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE);*/
             if (!data) {
                 var buf = new Uint8Array(1 * 1 * 4);
                 gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, buf);
                 data = buf;
             }
-            if (data.data) { data = data.data };
+            //if (data.data) { data = data.data };
             scene._webgl.fboPick.pixelData = data;
         }
         catch(se) {
