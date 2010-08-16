@@ -136,6 +136,9 @@ x3dom.X3DCanvas = function(x3dElem) {
             this.canvasDiv.id = "x3dom-" + index + "-canvasdiv";
             canvas.id = "x3dom-" + index + "-canvas";
         }
+        
+        // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
+        canvas.setAttribute("tabindex", "0");
 		
         return canvas;
     };
@@ -193,6 +196,8 @@ x3dom.X3DCanvas = function(x3dElem) {
 		};
 		
 		this.canvas.addEventListener('mousedown', function (evt) {
+            this.focus();
+            
 			switch(evt.button) {
 				case 0:  this.mouse_button = 1; break;	//left
 				case 1:  this.mouse_button = 4; break;	//middle
@@ -304,6 +309,12 @@ x3dom.X3DCanvas = function(x3dElem) {
 			evt.stopPropagation();
 			evt.returnValue = false;
 		}, false);
+        
+        this.canvas.addEventListener('keypress', function (evt) {
+            this.parent.doc.onKeyPress(evt.charCode);
+			this.parent.doc.needRender = true;
+			evt.returnValue = true;
+		}, true);
 	}
 };
 
@@ -655,7 +666,7 @@ x3dom.userAgentFeature = {
         window.attachEvent('onunload', onunload);
         window.attachEvent('onreload', onunload);
     }
-    
+    /*
     document.onkeypress = function(evt) {
         for (var i=0; i<x3dom.canvases.length; i++) {
             if (x3dom.canvases[i].hasRuntime) {
@@ -665,6 +676,7 @@ x3dom.userAgentFeature = {
         }
         return true;
     };
+    */
     
     if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
