@@ -1373,6 +1373,12 @@ x3dom.registerNodeType(
             this.addField_SFImage(ctx, 'image', 0, 0, 0);
         },
         {
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "image") {
+                    this.invalidateGLObject();
+                }
+            }
         }
     )
 );
