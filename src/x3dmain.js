@@ -332,7 +332,7 @@ x3dom.X3DCanvas.prototype.tick = function()
 	
 	try {
 		this.doc.advanceTime(d / 1000); 
-		animD = new Date().getTime() - d;
+		var animD = new Date().getTime() - d;
 		
 		if (this.doc.needRender) {
 			if (this.statDiv) {
@@ -429,7 +429,7 @@ x3dom.rerouteSetAttribute = function(node)
 
     for(var i=0; i < node.childNodes.length; i++)
     {
-        child = node.childNodes[i];
+        var child = node.childNodes[i];
         x3dom.rerouteSetAttribute(child);
     }
 }
@@ -463,9 +463,9 @@ x3dom.insertActiveX = function(x3d)
     
     inserted.appendChild(atx);
     
-    atxctrl = document.getElementById(containerName);
-    browser = atxctrl.getBrowser();
-    scene   = browser.importDocument(x3d);
+    var atxctrl = document.getElementById(containerName);
+    var browser = atxctrl.getBrowser();
+    var scene   = browser.importDocument(x3d);
     browser.replaceWorld(scene);
         
     // add backtrack method to get browser from x3d node instead of the ctrl

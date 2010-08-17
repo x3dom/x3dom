@@ -906,7 +906,7 @@ x3dom.fields.SFColor = function(r, g, b) {
         this.r = r;
         this.g = g;
         this.b = b;
-    }    
+    }
 };
 
 x3dom.fields.SFColor.parse = function(str) {
@@ -1055,7 +1055,102 @@ x3dom.fields.SFColor.colorParse = function(color) {
 	
 	return new x3dom.fields.SFColor( red, green, blue );
 };
-  
+
+
+/** SFColor constructor.
+    @class Represents a SFColor
+  */
+x3dom.fields.SFImage = function(w, h, c, arr) {
+    if (arguments.length === 0) {
+        this.width = this.height = this.comp = 0;
+        this.array = [];
+    }
+    else {
+        this.width = w;
+        this.height = h;
+        this.comp = c;
+        arr.map( function(v) { this.array.push(v); }, this.array );
+    }
+};
+
+x3dom.fields.SFImage.parse = function(str) {
+    var img = new x3dom.fields.SFImage();
+    img.setValueByStr(str);
+    return img;
+};
+
+x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
+    var mc = str.match(/(\w+)/g);
+    var n = mc.length;
+    var c2 = 0;
+    
+    this.array = [];
+    
+    if (n > 2) {
+        this.width = +mc[0];
+        this.height = +mc[1];
+        this.comp = +mc[2];
+        c2 = 2 * this.comp;
+    }
+    else {
+        this.width = 0;
+        this.height = 0;
+        this.comp = 0;
+        return;
+    }
+    
+    for (var i=3; i<n; i++) {
+    	if (mc[i].substr && mc[i].substr(1,1).toLowerCase() === "x") {
+            mc[i] = mc[i].substr(2);
+            var len = mc[i].length;
+            var r, g, b, a;
+            
+            if (len === c2) {
+                if (this.comp === 1) {
+                    r = parseInt("0x"+mc[i].substr(0,2));
+                    this.array.push( r );
+                }
+                else if (this.comp === 2) {
+                    r = parseInt("0x"+mc[i].substr(0,2));
+                    g = parseInt("0x"+mc[i].substr(2,2));
+                    this.array.push( r, g );
+                }
+                else if (this.comp === 3) {
+                    r = parseInt("0x"+mc[i].substr(0,2));
+                    g = parseInt("0x"+mc[i].substr(2,2));
+                    b = parseInt("0x"+mc[i].substr(4,2));
+                    this.array.push( r, g, b );
+                }
+                else if (this.comp === 4) {
+                    r = parseInt("0x"+mc[i].substr(0,2));
+                    g = parseInt("0x"+mc[i].substr(2,2));
+                    b = parseInt("0x"+mc[i].substr(4,2));
+                    a = parseInt("0x"+mc[i].substr(6,2));
+                    this.array.push( r, g, b, a );
+                }
+            }
+        }
+        else {
+            if (this.comp === 1) {
+                this.array.push( +mc[i] );
+            }
+            else {
+                // TODO; handle other cases!
+            }
+        }
+    }
+};
+
+x3dom.fields.SFImage.prototype.toGL = function() {
+    var a = [];
+
+    Array.map( this.array, function(c) {
+        a.push(c);       
+    });
+
+    return a;
+};
+
 
 /** MFColor constructor.
     @class Represents a MFColor

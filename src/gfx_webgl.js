@@ -1472,6 +1472,32 @@ x3dom.gfx_webgl = (function () {
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 }
+                else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
+                {
+                    var pixels = new Uint8Array(tex._vf.image.toGL());
+                    
+                    var format = gl.NONE;
+                    switch (tex._vf.image.comp)
+                    {
+                        case 1: format = gl.LUMINANCE; break;
+                        case 2: format = gl.LUMINANCE_ALPHA; break;
+                        case 3: format = gl.RGB; break;
+                        case 4: format = gl.RGBA; break;
+                    }
+                    
+                    texture = gl.createTexture();
+                    that._webgl.texture[unit] = texture;
+                    gl.bindTexture(gl.TEXTURE_2D, texture);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                    
+                    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+                    gl.texImage2D(gl.TEXTURE_2D, 0, format, 
+                            tex._vf.image.width, tex._vf.image.height, 0, 
+                            format, gl.UNSIGNED_BYTE, pixels);
+                }
                 else if (x3dom.isa(tex, x3dom.nodeTypes.MultiTexture))
                 {
                     for (var cnt=0; cnt<tex.size(); cnt++)
