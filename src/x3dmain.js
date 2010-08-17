@@ -180,8 +180,8 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = this.createStatDiv();
 
-	this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";  
-	
+	this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
+    
 	if (this.canvas !== null && this.gl !== null && this.hasRuntime)
 	{
 		// event handler for mouse interaction
@@ -313,7 +313,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 		}, false);
         
         this.canvas.addEventListener('keypress', function (evt) {
-            this.parent.doc.onKeyPress(evt.charCode);
+            var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
+            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+                this.parent.doc.onKeyPress(evt.charCode);
+            }
 			this.parent.doc.needRender = true;
 			evt.returnValue = true;
 		}, true);
