@@ -16,6 +16,8 @@ x3dom.gfx_webgl = (function () {
 		this.ctx3d = ctx3d;
 		this.canvas = canvas;
 		this.name = name;
+		this.cached_shader_programs = {};
+		this.cached_shaders = {};	
 	}
 
 	Context.prototype.getName = function() {
@@ -50,8 +52,8 @@ x3dom.gfx_webgl = (function () {
 	}
 
 	var g_shaders = {};
-	var cached_shaders = {};
-	var cached_shader_programs = {};
+	//var cached_shaders = {};
+	//var cached_shader_programs = {};
     
     g_shaders['vs-x3d-bg-texture'] = { type: "vertex", data:
 		"attribute vec3 position;" +
@@ -639,13 +641,14 @@ x3dom.gfx_webgl = (function () {
 		return wrapShaderProgram(gl, prog);
 	}
 	
-	function getShaderProgram(gl, ids) 
+	//function getShaderProgram(gl, ids) 
+	Context.prototype.getShaderProgram = function(gl, ids) 
 	{
 		var shader = [];
         var prog = null;
 		
-		if( cached_shader_programs[ids[0]+ids[1]] ) {
-			prog = cached_shader_programs[ids[0]+ids[1]];
+		if( this.cached_shader_programs[ids[0]+ids[1]] ) {
+			prog = this.cached_shader_programs[ids[0]+ids[1]];
 			//x3dom.debug.logInfo("Using cached shader program");
 		} 
 		else 
@@ -657,8 +660,8 @@ x3dom.gfx_webgl = (function () {
 					return;
             	}
 				// Try to cache shaders because the might be expensive...
-				if( cached_shaders[ids[id]] ) {
-					shader[id] = cached_shaders[ids[id]];
+				if( this.cached_shaders[ids[id]] ) {
+					shader[id] = this.cached_shaders[ids[id]];
 					//x3dom.debug.logInfo("Using cached shader");
 				} else {
 		            if (g_shaders[ids[id]].type == 'vertex') {
@@ -673,7 +676,7 @@ x3dom.gfx_webgl = (function () {
 					}
 					gl.shaderSource(shader[id], g_shaders[ids[id]].data);
 					gl.compileShader(shader[id]);
-					cached_shaders[ids[id]] = shader[id];
+					this.cached_shaders[ids[id]] = shader[id];
             	}
         	}
         		
@@ -686,8 +689,8 @@ x3dom.gfx_webgl = (function () {
 			if (msg) {
 		        x3dom.debug.logError(msg);
 			}
-            cached_shader_programs[ids[0]+ids[1]] = wrapShaderProgram(gl, prog);
-    			prog = cached_shader_programs[ids[0]+ids[1]];
+            this.cached_shader_programs[ids[0]+ids[1]] = wrapShaderProgram(gl, prog);
+    		prog = this.cached_shader_programs[ids[0]+ids[1]];
 		}
 		
         return prog;
@@ -1426,7 +1429,7 @@ x3dom.gfx_webgl = (function () {
             shape._webgl.primType = gl.TRIANGLES;
 			var vsID = this.generateVS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
 			var fsID = this.generateFS(viewarea, false, true, shape._webgl.lightsAndShadow);
-			shape._webgl.shader = getShaderProgram(gl, [vsID, fsID]);
+			shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 			//shape._webgl.shader = getShaderProgram(gl, ['vs-x3d-textured', 'fs-x3d-textured-txt']);
 		}
 		else 
@@ -1598,12 +1601,12 @@ x3dom.gfx_webgl = (function () {
                 
                 //TODO; remove these hacky thousands of shaders!!!
                 if (shape._webgl.colors.length) {
-                    shape._webgl.shader = getShaderProgram(gl, 
+                    shape._webgl.shader = this.getShaderProgram(gl, 
                                           ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
 					
                 }
                 else {
-                    shape._webgl.shader = getShaderProgram(gl, 
+                    shape._webgl.shader = this.getShaderProgram(gl, 
                                           ['vs-x3d-default', 'fs-x3d-default']);
                 }
             }
@@ -1611,11 +1614,11 @@ x3dom.gfx_webgl = (function () {
                 shape._webgl.primType = gl.LINES;
                 
                 if (shape._webgl.colors.length) {
-                    shape._webgl.shader = getShaderProgram(gl, 
+                    shape._webgl.shader = this.getShaderProgram(gl, 
                                           ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
                 }
                 else {
-                    shape._webgl.shader = getShaderProgram(gl, 
+                    shape._webgl.shader = this.getShaderProgram(gl, 
                                           ['vs-x3d-default', 'fs-x3d-default']);
                 }
             }
@@ -1628,7 +1631,7 @@ x3dom.gfx_webgl = (function () {
 					if(x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)){
 						var vsID = this.generateVS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
 						var fsID = this.generateFS(viewarea, false, false, shape._webgl.lightsAndShadow);
-						shape._webgl.shader = getShaderProgram(gl, [vsID, fsID]);
+						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 					}else{
 						//FIXME; HACK
 						g_shaders['vs-x3d-HACK'] = {};
@@ -1649,23 +1652,23 @@ x3dom.gfx_webgl = (function () {
                     if (shape._cf.appearance.node._cf.textureTransform.node === null) {
 						var vsID = this.generateVS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
 						var fsID = this.generateFS(viewarea, false, true, shape._webgl.lightsAndShadow);
-						shape._webgl.shader = getShaderProgram(gl, [vsID, fsID]);
+						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 					}
                     else {
                         var vsID = this.generateVS(viewarea, false, true, true, shape._webgl.lightsAndShadow);
 						var fsID = this.generateFS(viewarea, false, true, shape._webgl.lightsAndShadow);
-						shape._webgl.shader = getShaderProgram(gl, [vsID, fsID]);
+						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 					}
                 }
                 else if (shape._cf.geometry.node._mesh._colors.length > 0) {
 					var vsID = this.generateVS(viewarea, true, false, false, shape._webgl.lightsAndShadow);
 					var fsID = this.generateFS(viewarea, true, false, shape._webgl.lightsAndShadow);
-					shape._webgl.shader = getShaderProgram(gl, [vsID, fsID]);
+					shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 				}
                 else {
 					var vsID = this.generateVS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
 					var fsID = this.generateFS(viewarea, false, false, shape._webgl.lightsAndShadow);
-					shape._webgl.shader = getShaderProgram(gl, [vsID, fsID]);
+					shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 				}
                 /** END STANDARD MATERIAL */
                 }
@@ -1778,6 +1781,8 @@ x3dom.gfx_webgl = (function () {
     // mainly manages rendering of backgrounds and buffer clearing
 	Context.prototype.setupScene = function(gl, viewarea) 
 	{
+		var context = this;
+	
         var scene = viewarea._scene;
         if (scene._webgl !== undefined) {
             return;
@@ -1801,7 +1806,7 @@ x3dom.gfx_webgl = (function () {
                 };
                 
                 scene._webgl.primType = gl.TRIANGLES;
-                scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-textureCube', 'fs-x3d-bg-textureCube']);
+                scene._webgl.shader = this.getShaderProgram(gl, ['vs-x3d-bg-textureCube', 'fs-x3d-bg-textureCube']);
                 
                 scene._webgl.texture = this.loadCubeMap(gl, url, scene._nameSpace.doc, true);
             }
@@ -1837,7 +1842,7 @@ x3dom.gfx_webgl = (function () {
                 };
 
                 scene._webgl.primType = gl.TRIANGLE_STRIP;
-                scene._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+                scene._webgl.shader = this.getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
             }
 		}
 		else 
@@ -1857,7 +1862,7 @@ x3dom.gfx_webgl = (function () {
             };
 
             scene._fgnd._webgl.primType = gl.TRIANGLE_STRIP;
-            scene._fgnd._webgl.shader = getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+            scene._fgnd._webgl.shader = context.getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
             
             var sp = scene._fgnd._webgl.shader;
             
