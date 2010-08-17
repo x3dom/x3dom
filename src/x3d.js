@@ -789,6 +789,11 @@ x3dom.registerNodeType(
                                             _20, _21, _22, _23, 
                                             _30, _31, _32, _33);
         },
+        addField_SFImage: function (ctx, name, def) {
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
+                x3dom.fields.SFImage.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.SFImage(def);
+        },
         
         addField_MFString: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
@@ -1353,6 +1358,21 @@ x3dom.registerNodeType(
                     return [bgCol, bgnd.getTexUrl()];
                 }
             }
+        }
+    )
+);
+
+/* ### PixelTexture ### */
+x3dom.registerNodeType(
+    "PixelTexture",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureNode,
+        function (ctx) {
+            x3dom.nodeTypes.PixelTexture.superClass.call(this, ctx);
+            
+            this.addField_SFImage(ctx, 'image', 0, 0, 0);
+        },
+        {
         }
     )
 );
