@@ -178,7 +178,9 @@ x3dom.X3DCanvas = function(x3dElem) {
     }
     
     this.showStat = x3dElem.getAttribute("showStat");
-    this.statDiv = (this.showStat !== null && this.showStat == "true") ? this.createStatDiv() : null;
+    this.statDiv = this.createStatDiv();
+
+	this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";  
 	
 	if (this.canvas !== null && this.gl !== null && this.hasRuntime)
 	{

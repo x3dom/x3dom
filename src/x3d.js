@@ -5574,6 +5574,12 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     {
         case  32: /* space */
             {
+				var statDiv = this.canvas.parent.statDiv;
+
+				if (statDiv) {	
+					statDiv.style.display = ((statDiv.style.display == 'none') ? 'inline' : 'none');
+				}
+				
                 x3dom.debug.logInfo("a: show all | d: show helper buffers | l: light view | " +
                                     "m: toggle render mode | p: intersect type | r: reset view");
             }
