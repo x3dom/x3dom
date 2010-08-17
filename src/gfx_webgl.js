@@ -800,15 +800,15 @@ x3dom.gfx_webgl = (function () {
 					break;
 				case gl.FLOAT_MAT2:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new WebGLFloatArray(val)); }; })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new Float32Array(val)); }; })(loc));
 					break;
 				case gl.FLOAT_MAT3:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new WebGLFloatArray(val)); }; })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new Float32Array(val)); }; })(loc));
 					break;
 				case gl.FLOAT_MAT4:
 					shader.__defineSetter__(obj.name, 
-						(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new WebGLFloatArray(val)); }; })(loc));
+						(function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new Float32Array(val)); }; })(loc));
 					break;
 				case gl.INT:
 					shader.__defineSetter__(obj.name,
@@ -1273,7 +1273,7 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[1] = positionBuffer;
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
-                    var vertices = new WebGLFloatArray(shape._webgl.positions);
+                    var vertices = new Float32Array(shape._webgl.positions);
                     
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1296,7 +1296,7 @@ x3dom.gfx_webgl = (function () {
                     var colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[4] = colorBuffer;
                     
-                    var colors = new WebGLFloatArray(shape._webgl.colors);
+                    var colors = new Float32Array(shape._webgl.colors);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
@@ -1680,7 +1680,7 @@ x3dom.gfx_webgl = (function () {
             shape._webgl.buffers[1] = positionBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-            var vertices = new WebGLFloatArray(shape._webgl.positions);
+            var vertices = new Float32Array(shape._webgl.positions);
             
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1692,7 +1692,7 @@ x3dom.gfx_webgl = (function () {
             var indicesBuffer = gl.createBuffer();
             shape._webgl.buffers[0] = indicesBuffer;
             
-            var indexArray = new WebGLUnsignedShortArray(shape._webgl.indexes);
+            var indexArray = new Uint16Array(shape._webgl.indexes);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -1705,7 +1705,7 @@ x3dom.gfx_webgl = (function () {
             var normalBuffer = gl.createBuffer();
             shape._webgl.buffers[2] = normalBuffer;
             
-            var normals = new WebGLFloatArray(shape._webgl.normals);
+            var normals = new Float32Array(shape._webgl.normals);
             
             gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);				
@@ -1720,7 +1720,7 @@ x3dom.gfx_webgl = (function () {
             var texcBuffer = gl.createBuffer();
             shape._webgl.buffers[3] = texcBuffer;
             
-            var texCoords = new WebGLFloatArray(shape._webgl.texcoords);
+            var texCoords = new Float32Array(shape._webgl.texcoords);
             
             gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
@@ -1736,7 +1736,7 @@ x3dom.gfx_webgl = (function () {
             var colorBuffer = gl.createBuffer();
             shape._webgl.buffers[4] = colorBuffer;
             
-            var colors = new WebGLFloatArray(shape._webgl.colors);
+            var colors = new Float32Array(shape._webgl.colors);
             
             gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
@@ -1763,7 +1763,7 @@ x3dom.gfx_webgl = (function () {
                 var attribBuffer = gl.createBuffer();
                 shape._webgl.dynamicFields[currAttribs++].buf = attribBuffer;
                 
-                var attribs = new WebGLFloatArray(attrib.value);
+                var attribs = new Float32Array(attrib.value);
                 
                 gl.bindBuffer(gl.ARRAY_BUFFER, attribBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, attribs, gl.STATIC_DRAW);				
@@ -1865,7 +1865,7 @@ x3dom.gfx_webgl = (function () {
             scene._fgnd._webgl.buffers[1] = positionBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-            var vertices = new WebGLFloatArray(scene._fgnd._webgl.positions);
+            var vertices = new Float32Array(scene._fgnd._webgl.positions);
             
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1875,7 +1875,7 @@ x3dom.gfx_webgl = (function () {
             var indicesBuffer = gl.createBuffer();
             scene._fgnd._webgl.buffers[0] = indicesBuffer;
             
-            var indexArray = new WebGLUnsignedShortArray(scene._fgnd._webgl.indexes);
+            var indexArray = new Uint16Array(scene._fgnd._webgl.indexes);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -1934,7 +1934,7 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.buffers[1] = positionBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-            var vertices = new WebGLFloatArray(scene._webgl.positions);
+            var vertices = new Float32Array(scene._webgl.positions);
             
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1944,7 +1944,7 @@ x3dom.gfx_webgl = (function () {
             var indicesBuffer = gl.createBuffer();
             scene._webgl.buffers[0] = indicesBuffer;
             
-            var indexArray = new WebGLUnsignedShortArray(scene._webgl.indexes);
+            var indexArray = new Uint16Array(scene._webgl.indexes);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -3110,7 +3110,7 @@ x3dom.gfx_webgl = (function () {
                 case gl.LUMINANCE: bytes = 1; break;
                 case gl.LUMINANCE_ALPHA: bytes = 2; break;
             }
-            var pixels = new WebGLUnsignedByteArray(width * height * bytes);
+            var pixels = new Uint8Array(width * height * bytes);
             gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, pixels);
         }
     };
