@@ -5,6 +5,9 @@ body {
 }
 
 .x3dom-canvas {}
+.x3dom-canvas:focus {
+    outline:none; 
+}
 
 .x3dom-canvasdiv {
     position: relative;
