@@ -1083,6 +1083,7 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
     var mc = str.match(/(\w+)/g);
     var n = mc.length;
     var c2 = 0;
+    var hex = "0123456789ABCDEF";
     
     this.array = [];
     
@@ -1100,7 +1101,27 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
     }
     
     for (var i=3; i<n; i++) {
-    	if (mc[i].substr && mc[i].substr(1,1).toLowerCase() === "x") {
+        if (!mc[i].substr) {
+            continue;
+        }
+        
+        if (mc[i].substr(1,1).toLowerCase() !== "x") {
+            // TODO; optimize by directly parsing value!
+            var out = "";
+            var inp = parseInt(mc[i]);
+            
+            while (inp !== 0) {
+              out = hex.charAt(inp%16) + out;
+              inp = inp >> 4;
+            }
+            len = out.length;
+            while (out.length < c2) {
+                out = "0" + out;
+            }
+            mc[i] = "0x" + out;
+        }
+        
+    	if (mc[i].substr(1,1).toLowerCase() === "x") {
             mc[i] = mc[i].substr(2);
             var len = mc[i].length;
             var r, g, b, a;
@@ -1128,14 +1149,6 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
                     a = parseInt("0x"+mc[i].substr(6,2));
                     this.array.push( r, g, b, a );
                 }
-            }
-        }
-        else {
-            if (this.comp === 1) {
-                this.array.push( +mc[i] );
-            }
-            else {
-                // TODO; handle other cases!
             }
         }
     }
