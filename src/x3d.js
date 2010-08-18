@@ -4695,6 +4695,21 @@ x3dom.registerNodeType(
     )
 );
 
+// ### StaticGroup ###
+x3dom.registerNodeType(
+    "StaticGroup",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.StaticGroup.superClass.call(this, ctx);
+            
+            // FIXME; implement optimizations; no need to maintain the children's 
+            // X3D representations, as they cannot be accessed after creation time
+            x3dom.debug.logInfo("StaticGroup NYI");
+        }
+    )
+);
+
 // ### Collision ###
 x3dom.registerNodeType(
     "Collision",
@@ -4802,7 +4817,6 @@ x3dom.registerNodeType(
         }
     )
 );
-
 
 // ### OrientationInterpolator ###
 x3dom.registerNodeType(
@@ -4972,7 +4986,7 @@ x3dom.registerNodeType(
 			this._lights = [];
         },
         {
-			/* bindable getter (e.g. getViewpoint) are added autmatically */
+			/* bindable getter (e.g. getViewpoint) are added automatically */
         }
     )
 );
@@ -5019,10 +5033,15 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'load', true);
         },
         {
-            fieldChanged: function (fieldName) {
-                // FIXME: Add 'url' update code
+            fieldChanged: function (fieldName)
+            {
+                if (fieldName == "url") {
+                    this.nodeChanged();
+                }
             },
-			nodeChanged: function () {
+            
+			nodeChanged: function ()
+            {
 				var that = this;
 
 				var xhr = new XMLHttpRequest();
@@ -5053,7 +5072,6 @@ x3dom.registerNodeType(
 
 					//TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
 					var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
-					//var inlScene = x3dom.findScene(xml);              // sceneDoc is the X3D element here...
 
 					if (inlScene) {
 						var nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
@@ -5069,11 +5087,6 @@ x3dom.registerNodeType(
 						that.removeChild(that._childNodes[0]);
 					}
 					that.addChild(newScene);
-					/*
-					for (var i=0, n=newScene._childNodes.length; i<n; i++) {
-					that.addChild(newScene._childNodes[i]);
-					}
-					*/
 
 					that._nameSpace.doc.downloadCount -= 1;
 					that._nameSpace.doc.needRender = true;
@@ -5082,12 +5095,10 @@ x3dom.registerNodeType(
 
            		xhr.open('GET', this._nameSpace.getURL(this._vf.url[0]), true);
            		xhr.send(null);
-				// to be overwritten by concrete classes
 			}
         }
     )
 );
-
 
 /* ### END OF NODES ###*/
 
