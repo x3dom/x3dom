@@ -1805,16 +1805,29 @@ x3dom.gfx_webgl = (function () {
 	};
     
     // mainly manages rendering of backgrounds and buffer clearing
-	Context.prototype.setupScene = function(gl, viewarea) 
+	Context.prototype.setupScene = function(gl, bgnd) 
 	{
-		var context = this;
-	
-        var scene = viewarea._scene;
-        if (scene._webgl !== undefined) {
-            return;
+        if (bgnd._webgl !== undefined)
+        {
+            if (!bgnd._dirty) {
+                return;
+            }
+            
+            if (bgnd._webgl.texture !== undefined && bgnd._webgl.texture)
+            {
+                gl.deleteTexture(bgnd._webgl.texture);
+            }
+            if (bgnd._webgl.shader.position !== undefined) 
+            {
+                gl.deleteBuffer(bgnd._webgl.buffers[1]);
+                gl.deleteBuffer(bgnd._webgl.buffers[0]);
+            }
+            bgnd._webgl = {};
         }
         
-        var url = viewarea.getSkyColor()[1];
+        bgnd._dirty = false;
+        
+        var url = bgnd.getTexUrl();
         var i = 0;
         var w = 1, h = 1;
         
@@ -1825,16 +1838,16 @@ x3dom.gfx_webgl = (function () {
             {
                 var sphere = new x3dom.nodeTypes.Sphere();
                 
-                scene._webgl = {
+                bgnd._webgl = {
                     positions: sphere._mesh._positions,
                     indexes: sphere._mesh._indices,
                     buffers: [{}, {}]
                 };
                 
-                scene._webgl.primType = gl.TRIANGLES;
-                scene._webgl.shader = this.getShaderProgram(gl, ['vs-x3d-bg-textureCube', 'fs-x3d-bg-textureCube']);
+                bgnd._webgl.primType = gl.TRIANGLES;
+                bgnd._webgl.shader = this.getShaderProgram(gl, ['vs-x3d-bg-textureCube', 'fs-x3d-bg-textureCube']);
                 
-                scene._webgl.texture = this.loadCubeMap(gl, url, scene._nameSpace.doc, true);
+                bgnd._webgl.texture = this.loadCubeMap(gl, url, bgnd._nameSpace.doc, true);
             }
             else
             {
@@ -1842,14 +1855,14 @@ x3dom.gfx_webgl = (function () {
                 
                 var image = new Image();
                 image.src = url[0];
-                scene._nameSpace.doc.downloadCount += 1;
+                bgnd._nameSpace.doc.downloadCount += 1;
                 
                 image.onload = function()
                 {
-					scene._nameSpace.doc.needRender = true;
-					scene._nameSpace.doc.downloadCount -= 1;
+					bgnd._nameSpace.doc.needRender = true;
+					bgnd._nameSpace.doc.downloadCount -= 1;
                     
-                    scene._webgl.texture = texture;
+                    bgnd._webgl.texture = texture;
                     //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
                     
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -1861,111 +1874,31 @@ x3dom.gfx_webgl = (function () {
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
                 };
                 
-                scene._webgl = {
+                bgnd._webgl = {
                     positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
                     indexes: [0, 1, 2, 3],
                     buffers: [{}, {}]
                 };
 
-                scene._webgl.primType = gl.TRIANGLE_STRIP;
-                scene._webgl.shader = this.getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+                bgnd._webgl.primType = gl.TRIANGLE_STRIP;
+                bgnd._webgl.shader = this.getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
             }
 		}
 		else 
 		{
             // TODO; impl. gradient bg etc., e.g. via canvas 2d?
-            scene._webgl = {};
+            bgnd._webgl = {};
         }
         
-        // setup dbg fgnds
-        (function () {
-            scene._fgnd = {};
-            
-            scene._fgnd._webgl = {
-                positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
-                indexes: [0, 1, 2, 3],
-                buffers: [{}, {}]
-            };
-
-            scene._fgnd._webgl.primType = gl.TRIANGLE_STRIP;
-            scene._fgnd._webgl.shader = context.getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
-            
-            var sp = scene._fgnd._webgl.shader;
-            
-            var positionBuffer = gl.createBuffer();
-            scene._fgnd._webgl.buffers[1] = positionBuffer;
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-            
-            var vertices = new Float32Array(scene._fgnd._webgl.positions);
-            
-            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
-            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-            
-            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-            
-            var indicesBuffer = gl.createBuffer();
-            scene._fgnd._webgl.buffers[0] = indicesBuffer;
-            
-            var indexArray = new Uint16Array(scene._fgnd._webgl.indexes);
-            
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
-            
-            delete vertices;
-            delete indexArray;
-            
-            scene._fgnd._webgl.render = function(gl, tex)
-            {
-                scene._fgnd._webgl.texture = tex;
-                
-                gl.frontFace(gl.CCW);
-                gl.disable(gl.CULL_FACE);
-                gl.disable(gl.DEPTH_TEST);
-                
-                sp.bind();
-                if (!sp.tex) {
-                    sp.tex = 0;
-                }
-                
-                //gl.enable(gl.TEXTURE_2D);
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, scene._fgnd._webgl.texture);
-                
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[0]);
-                gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[1]);
-                gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-                gl.enableVertexAttribArray(sp.position);
-                
-                try {
-                    gl.drawElements(scene._fgnd._webgl.primType, 
-                                    scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-                }
-                catch(e) {
-                    x3dom.debug.logException("render background: " + e);
-                }
-                
-                gl.disableVertexAttribArray(sp.position);
-                
-                gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, null);
-                //gl.disable(gl.TEXTURE_2D);
-            };
-        })();
-        
-        if (scene._webgl.shader)
+        if (bgnd._webgl.shader)
 		{
-            var sp = scene._webgl.shader;
+            var sp = bgnd._webgl.shader;
             
             var positionBuffer = gl.createBuffer();
-            scene._webgl.buffers[1] = positionBuffer;
+            bgnd._webgl.buffers[1] = positionBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-            var vertices = new Float32Array(scene._webgl.positions);
+            var vertices = new Float32Array(bgnd._webgl.positions);
             
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1973,9 +1906,9 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
             
             var indicesBuffer = gl.createBuffer();
-            scene._webgl.buffers[0] = indicesBuffer;
+            bgnd._webgl.buffers[0] = indicesBuffer;
             
-            var indexArray = new Uint16Array(scene._webgl.indexes);
+            var indexArray = new Uint16Array(bgnd._webgl.indexes);
             
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -1984,13 +1917,16 @@ x3dom.gfx_webgl = (function () {
             delete indexArray;
         }
         
-        scene._webgl.render = function(gl, mat_scene)
+        bgnd._webgl.render = function(gl, mat_scene)
         {
-            if (!scene._webgl.texture || 
-                (scene._webgl.texture.textureCubeReady !== undefined && 
-                 scene._webgl.texture.textureCubeReady !== true))
+            var sp = bgnd._webgl.shader;
+            
+            if (!bgnd._webgl.texture || !sp ||
+                (bgnd._webgl.texture.textureCubeReady !== undefined && 
+                 bgnd._webgl.texture.textureCubeReady !== true))
             {
-                var bgCol = viewarea.getSkyColor()[0];
+            	var bgCol = bgnd.getSkyColor().toGL();
+                bgCol[3] = 1.0 - bgnd.getTransparency();
                 
                 gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
                 gl.clearDepth(1.0);
@@ -2011,12 +1947,11 @@ x3dom.gfx_webgl = (function () {
                     sp.tex = 0;
                 }
                 
-                if (scene._webgl.texture.textureCubeReady) {
+                if (bgnd._webgl.texture.textureCubeReady) {
                     sp.modelViewProjectionMatrix = mat_scene.toGL();
                     
-                    //gl.enable(gl.TEXTURE_CUBE_MAP);
                     gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, scene._webgl.texture);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, bgnd._webgl.texture);
                     
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -2024,9 +1959,8 @@ x3dom.gfx_webgl = (function () {
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 }
                 else {
-                    //gl.enable(gl.TEXTURE_2D);
                     gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, scene._webgl.texture);
+                    gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
                     
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
@@ -2034,29 +1968,27 @@ x3dom.gfx_webgl = (function () {
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 }
                 
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._webgl.buffers[0]);
-				gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.buffers[1]);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bgnd._webgl.buffers[0]);
+				gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[1]);
 				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
 				gl.enableVertexAttribArray(sp.position);
                 
                 try {
-                    gl.drawElements(scene._webgl.primType, scene._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                    gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
                 }
                 catch(e) {
-                    x3dom.debug.logException("render background: " + e);
+                    x3dom.debug.logException("Render background: " + e);
                 }
                 
                 gl.disableVertexAttribArray(sp.position);
                 
-                if (scene._webgl.texture.textureCubeReady) {
+                if (bgnd._webgl.texture.textureCubeReady) {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    //gl.disable(gl.TEXTURE_CUBE_MAP);
                 }
                 else {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_2D, null);
-                    //gl.disable(gl.TEXTURE_2D);
                 }
                 
                 gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -2064,6 +1996,91 @@ x3dom.gfx_webgl = (function () {
         };
 	};
     
+    // setup dbg fgnds
+    Context.prototype.setupFgnds = function (gl, scene)
+    {
+        if (scene._fgnd !== undefined) {
+            return;
+        }
+        
+        var w = 1, h = 1;
+        scene._fgnd = {};
+        
+        scene._fgnd._webgl = {
+            positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
+            indexes: [0, 1, 2, 3],
+            buffers: [{}, {}]
+        };
+
+        scene._fgnd._webgl.primType = gl.TRIANGLE_STRIP;
+        scene._fgnd._webgl.shader = this.getShaderProgram(gl, ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+        
+        var sp = scene._fgnd._webgl.shader;
+        
+        var positionBuffer = gl.createBuffer();
+        scene._fgnd._webgl.buffers[1] = positionBuffer;
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        
+        var vertices = new Float32Array(scene._fgnd._webgl.positions);
+        
+        gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        
+        gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+        
+        var indicesBuffer = gl.createBuffer();
+        scene._fgnd._webgl.buffers[0] = indicesBuffer;
+        
+        var indexArray = new Uint16Array(scene._fgnd._webgl.indexes);
+        
+        gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+        gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+        
+        delete vertices;
+        delete indexArray;
+        
+        scene._fgnd._webgl.render = function(gl, tex)
+        {
+            scene._fgnd._webgl.texture = tex;
+            
+            gl.frontFace(gl.CCW);
+            gl.disable(gl.CULL_FACE);
+            gl.disable(gl.DEPTH_TEST);
+            
+            sp.bind();
+            if (!sp.tex) {
+                sp.tex = 0;
+            }
+            
+            //gl.enable(gl.TEXTURE_2D);
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, scene._fgnd._webgl.texture);
+            
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+            gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+            
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, scene._fgnd._webgl.buffers[0]);
+            gl.bindBuffer(gl.ARRAY_BUFFER, scene._fgnd._webgl.buffers[1]);
+            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(sp.position);
+            
+            try {
+                gl.drawElements(scene._fgnd._webgl.primType, 
+                                scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+            }
+            catch(e) {
+                x3dom.debug.logException("render background: " + e);
+            }
+            
+            gl.disableVertexAttribArray(sp.position);
+            
+            gl.activeTexture(gl.TEXTURE0);
+            gl.bindTexture(gl.TEXTURE_2D, null);
+            //gl.disable(gl.TEXTURE_2D);
+        };
+    };
     
     Context.prototype.renderShadowPass = function(gl, scene, mat_light, mat_scene)
     {
@@ -2654,7 +2671,8 @@ x3dom.gfx_webgl = (function () {
         
 		if (!scene._webgl)
         {
-            this.setupScene(gl, viewarea);
+            scene._webgl = {};
+            this.setupFgnds(gl, scene);
             
             // scale factor for mouse coords and width/ height (low res for speed-up)
             scene._webgl.pickScale = 0.5;
@@ -2675,6 +2693,9 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl.fbo = this.initFbo(gl, rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], false);
             }
 		}
+        
+        var bgnd = scene.getBackground();
+        this.setupScene(gl, bgnd);
         
         var t0, t1;
         this.numFaces = 0;
@@ -2838,7 +2859,7 @@ x3dom.gfx_webgl = (function () {
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 		
         // calls gl.clear etc. (bgnd stuff)
-        scene._webgl.render(gl, mat_scene);
+        bgnd._webgl.render(gl, mat_scene);
 		
 		gl.depthFunc(gl.LEQUAL);
 		gl.enable(gl.DEPTH_TEST);
@@ -2910,6 +2931,7 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.renderRTPass = function(gl, viewarea, rt)
 	{
 		var scene = viewarea._scene;
+        var bgnd = null; 
         
         var mat_view = rt.getViewMatrix();
         var mat_scene = rt.getWCtoCCMatrix();
@@ -2938,19 +2960,22 @@ x3dom.gfx_webgl = (function () {
         
         gl.viewport(0, 0, rt._webgl.fbo.width, rt._webgl.fbo.height);
 		
-        // FIXME; impl. workarounf correctly...
-        if (rt._cf.background.node === null || 
-            rt._cf.background.node === scene.getBackground())
+        if (rt._cf.background.node === null) 
         {
-            scene._webgl.render(gl, mat_scene);
+            gl.clearColor(0, 0, 0, 1);
+            gl.clearDepth(1.0);
+            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+        }
+        else if (rt._cf.background.node === scene.getBackground())
+        {
+            bgnd = scene.getBackground();
+            bgnd._webgl.render(gl, mat_scene);
         }
         else 
         {
-            var bgCol = rt.getSkyColor()[0];
-            
-            gl.clearColor(bgCol[0], bgCol[1], bgCol[2], bgCol[3]);
-            gl.clearDepth(1.0);
-            gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            bgnd = rt._cf.background.node;
+            this.setupScene(gl, bgnd);
+            bgnd._webgl.render(gl, mat_scene);
         }
 		
 		gl.depthFunc(gl.LEQUAL);
@@ -3010,14 +3035,15 @@ x3dom.gfx_webgl = (function () {
 		// TODO; optimize traversal, matrices are not needed for cleanup
 		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
         
-        if (scene._webgl.texture !== undefined && scene._webgl.texture)
+        var bgnd = scene.getBackground();
+        if (bgnd._webgl.texture !== undefined && bgnd._webgl.texture)
         {
-            gl.deleteTexture(scene._webgl.texture);
+            gl.deleteTexture(bgnd._webgl.texture);
         }
-        if (scene._webgl.shader.position !== undefined) 
+        if (bgnd._webgl.shader.position !== undefined) 
         {
-            gl.deleteBuffer(scene._webgl.buffers[1]);
-            gl.deleteBuffer(scene._webgl.buffers[0]);
+            gl.deleteBuffer(bgnd._webgl.buffers[1]);
+            gl.deleteBuffer(bgnd._webgl.buffers[0]);
         }
 		
 		for (var i=0, n=scene.drawableObjects.length; i<n; i++)

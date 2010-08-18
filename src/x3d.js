@@ -1339,24 +1339,6 @@ x3dom.registerNodeType(
                 var proj = this.getProjectionMatrix();
                 
                 return proj.mult(view);
-            },
-            
-            getSkyColor: function()
-            {
-            	var bbP = this._nameSpace.doc._scene.getBackground();
-                var bgnd = this._cf.background.node;
-                
-                if (bgnd === null || bgnd === bbP) {
-                    return this._nameSpace.doc._viewarea.getSkyColor();
-                }
-                else {
-                    var bgCol = bgnd.getSkyColor().toGL();
-                    //workaround; impl. skyTransparency etc.
-                    if (bgCol.length > 2)
-                        bgCol[3] = 1.0 - bgnd.getTransparency();
-
-                    return [bgCol, bgnd.getTexUrl()];
-                }
             }
         }
     )
@@ -3875,6 +3857,8 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DBindableNode,
         function (ctx) {
             x3dom.nodeTypes.X3DBackgroundNode.superClass.call(this, ctx);
+            
+            this._dirty = true;
         },
 		{
         	getSkyColor: function() {
@@ -4075,6 +4059,12 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'topUrl', []);
         },
         {
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName.indexOf("Url") > 0) {
+                    this._dirty = true;
+                }
+            },
 			getSkyColor: function() {
 				return this._vf.skyColor;
 			},
@@ -5113,18 +5103,6 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
     }
     
     return proj.mult(view);
-};
-
-x3dom.Viewarea.prototype.getSkyColor = function() 
-{
-	var bgnd = this._scene.getBackground();
-
-	var bgCol = bgnd.getSkyColor().toGL();
-	//workaround; impl. skyTransparency etc.
-	if (bgCol.length > 2)
-		bgCol[3] = 1.0 - bgnd.getTransparency();
-
-	return [bgCol, bgnd.getTexUrl()];
 };
 
 x3dom.Viewarea.prototype.getProjectionMatrix = function() 
