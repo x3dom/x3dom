@@ -432,6 +432,8 @@ x3dom.registerNodeType(
         
 		// FIXME; should be removed and handled by _cf methods
         this._childNodes = [];
+        
+        this.addField_SFNode('metadata', x3dom.nodeTypes.X3DMetadataObject);
     },
     {
 		type: function () {
@@ -741,6 +743,10 @@ x3dom.registerNodeType(
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
         },
+        addField_SFDouble: function (ctx, name, n) {    // is double anyway
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
+                +ctx.xmlNode.getAttribute(name) : n;
+        },
         addField_SFTime: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 +ctx.xmlNode.getAttribute(name) : n;
@@ -810,6 +816,11 @@ x3dom.registerNodeType(
                 x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : 
                 new x3dom.fields.MFFloat(def);
         },
+        addField_MFDouble: function (ctx, name, def) {  // is double anyway
+            this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
+                x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) : 
+                new x3dom.fields.MFFloat(def);
+        },
         addField_MFColor: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ? 
                 x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) : 
@@ -844,6 +855,85 @@ x3dom.registerNodeType(
 		}
     }
 ));
+
+/* ### X3DMetadataObject ### */
+x3dom.registerNodeType(
+    "X3DMetadataObject", 
+    "Core", 
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DMetadataObject.superClass.call(this, ctx);
+            
+            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString(ctx, 'reference', "");
+        }
+    )
+);
+
+/* ### MetadataDouble ### */
+x3dom.registerNodeType(
+    "MetadataDouble",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        function (ctx) {
+            x3dom.nodeTypes.MetadataDouble.superClass.call(this, ctx);
+			
+            this.addField_MFDouble(ctx, 'value', []);
+        }
+    )
+);
+
+/* ### MetadataFloat ### */
+x3dom.registerNodeType(
+    "MetadataFloat",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        function (ctx) {
+            x3dom.nodeTypes.MetadataFloat.superClass.call(this, ctx);
+			
+            this.addField_MFFloat(ctx, 'value', []);
+        }
+    )
+);
+
+/* ### MetadataInteger ### */
+x3dom.registerNodeType(
+    "MetadataInteger",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        function (ctx) {
+            x3dom.nodeTypes.MetadataInteger.superClass.call(this, ctx);
+			
+            this.addField_MFInt32(ctx, 'value', []);
+        }
+    )
+);
+
+/* ### MetadataSet ### */
+x3dom.registerNodeType(
+    "MetadataSet",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        function (ctx) {
+            x3dom.nodeTypes.MetadataSet.superClass.call(this, ctx);
+			
+            this.addField_MFNode('value', x3dom.nodeTypes.X3DMetadataObject);
+        }
+    )
+);
+
+/* ### MetadataString ### */
+x3dom.registerNodeType(
+    "MetadataString",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DMetadataObject,
+        function (ctx) {
+            x3dom.nodeTypes.MetadataString.superClass.call(this, ctx);
+			
+            this.addField_MFString(ctx, 'value', []);
+        }
+    )
+);
 
 /* ### Field ### */
 x3dom.registerNodeType( 
