@@ -1,0 +1,31 @@
+<!DOCTYPE html >
+<html >
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>Hello World</title>
+        <link rel="stylesheet" type="text/css" href="x3dom.css" />
+	</head>
+       
+<body>
+
+    <h1>Non PowerOfTwo Texture</h1>
+		<p>
+		Simple box which has a non-powerOfTwoTexture
+		</p>
+	
+		<x3d showStat="false" showLog="false" x="0px" y="0px" width="400px" height="400px" altImg="helloX3D-alt.png">
+          <scene>
+            <viewpoint position='0 0 5' ></viewpoint>
+              <shape>
+                <appearance>
+                	<texture url='texture/basic/nonPO2Texture.png'>
+				</appearance>
+                <box DEF='box' ></box>
+             </shape>
+          </scene>
+        </x3d>
+	
+	<script type="text/javascript" src="x3dom.js"></script>
+
+</body>
+</html>
