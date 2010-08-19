@@ -1,0 +1,154 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+	<head>
+		<title>jQuery lightbox clone - prettyPhoto - by Stephane Caron</title>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+		<script src="http://www.google.com/jsapi" type="text/javascript"></script>
+		<script type="text/javascript" charset="utf-8">
+			google.load("jquery", "1.3");
+		</script>
+		<link rel="stylesheet" href="css/prettyPhoto.css" type="text/css" media="screen" title="prettyPhoto main stylesheet" charset="utf-8" />
+		<script src="js/jquery.prettyPhoto.js" type="text/javascript" charset="utf-8"></script>
+		
+		<style type="text/css" media="screen">
+			* { margin: 0; padding: 0; }
+			
+			body {
+				font: 62.5%/1.2 Arial, Verdana, Sans-Serif;
+				padding: 0 20px;
+			}
+			
+			h4 { margin: 15px 0 5px 0; }
+			
+			h4, p { font-size: 1.2em; }
+			
+			ul li { display: inline; }
+			
+			.wide {
+				border-bottom: 1px #000 solid;
+				width: 4000px;
+			}
+		</style>
+	</head>
+	<body>
+		<object width="425" height="344"><param name="movie" value="http://www.youtube.com/v/zrdEHvREfdI&hl=en&fs=1&"></param><param name="allowFullScreen" value="true"></param><param name="allowscriptaccess" value="always"></param><embed src="http://www.youtube.com/v/zrdEHvREfdI&hl=en&fs=1&" type="application/x-shockwave-flash" allowscriptaccess="always" allowfullscreen="true" width="425" height="344"></embed></object>
+		
+		<h4>API calls</h4>
+		<p><a href="#" onclick="$.prettyPhoto.open('images/fullscreen/1.jpg');">No title, no description</a></p>
+		
+		<h4>Gallery</h4>
+		<ul class="gallery clearfix">
+			<li><a href="images/fullscreen/1.jpg" rel="prettyPhoto[gallery1]" title="You can add caption to pictures. You can add caption to pictures. You can add caption to pictures."><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="Red round shape" /></a></li>
+			<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Nice building" /></a></li>
+			<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="Fire!" /></a></li>
+			<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="Rock climbing" /></a></li>
+			<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[gallery1]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="Fly kite, fly!" /></a></li>
+		</ul>
+
+		<h4>Gallery 2</h4>
+		<ul class="gallery clearfix">
+			<li><a href="images/fullscreen/3.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_3.jpg" width="60" height="60" alt="Lol" /></a></li>
+			<li><a href="images/fullscreen/4.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_4.jpg" width="60" height="60" alt="" /></a></li>
+			<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
+			<li><a href="images/fullscreen/1.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_1.jpg" width="60" height="60" alt="" /></a></li>
+			<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto[gallery2]"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="" /></a></li>
+		</ul>
+
+		<h4>Picture alone</h4>
+		<ul class="gallery clearfix">
+			<li><a href="images/fullscreen/2.jpg" rel="prettyPhoto" title="&lt;a href=&#x27;http://www.google.ca&#x27; target=&#x27;_blank&#x27; &gt;This will open Google.com in a new window&lt;/a&gt;"><img src="images/thumbnails/t_2.jpg" width="60" height="60" alt="Picture alone 1" /></a></li>
+		</ul>
+		
+		<h4>Flash</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[flash]" title="Flash 10 demo"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Flash 10 demo" /></a></li>
+			<li><a href="http://vimeo.com/moogaloop.swf?width=580&amp;height=326&amp;flashvars=clip_id=4321799&amp;server=vimeo.com&amp;show_title=1&amp;show_byline=1&amp;show_portrait=0&amp;color=&amp;fullscreen=1" rel="prettyPhoto[flash]" title="Vimeo Movie"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Vimeo movie" /></a></li>
+		</ul>
+		
+		<h4>Flash alone</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto" title="Flash 10 demo"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Flash 10 demo" /></a></li>
+		</ul>
+		
+		<h4>Youtube video</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://www.youtube.com/watch?v=qqXi8WmQ_WM" rel="prettyPhoto" title="Flash 10 demo"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Flash 10 demo" /></a></li>
+		</ul>
+		
+		<h4>Vimeo video</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://vimeo.com/7874398&width=700" rel="prettyPhoto" title="Vimeo video">Vimeo</a></li>
+		</ul>
+		
+		<h4>Movies (.mov)</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov?width=480&amp;height=204" rel="prettyPhoto[movies]" title="Terminator!"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Terminator Salvation" /></a></li>
+			<li><a href="http://movies.apple.com/movies/sony_pictures/angelsanddemons/angelsanddemons-video_h.480.mov?width=480&amp;height=260" rel="prettyPhoto[movies]" title="Angels &amp; Demons"><img src="http://images.apple.com/trailers/sony_pictures/images/angelsdemons_200903261218.jpg" alt="Angels &amp; Demons" /></a></li>
+			<li><a href="http://imigri.com/site2/video/gtg_trailer.mov?width=700&height=393" rel="prettyPhoto[movies]" title="Food, Inc."><img src="http://images.apple.com/trailers/magnolia/images/foodinc_200904171457.jpg" alt="Food, Inc." /></a></li>
+		</ul>
+		
+		<h4>Movies (.mov) alone</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://movies.apple.com/movies/wb/terminatorsalvation/terminatorsalvation-tlr3_h.480.mov?width=480&amp;height=204" rel="prettyPhoto" title="Terminator!"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Terminator Salvation" /></a></li>
+		</ul>
+		
+		<h4>Unusual sizes</h4>
+		<ul class="gallery clearfix">
+			<li><a href="images/fullscreen/wide.gif" rel="prettyPhoto[unusual]">Wide image (3000 x 1500)</a></li>
+			<li><a href="images/fullscreen/high.gif" rel="prettyPhoto[unusual]">High image (1500 x 3000)</a></li>
+			<li><a href="images/fullscreen/huge.gif" rel="prettyPhoto[unusual]">Huge image (3000 x 3000)</a></li>
+		</ul>
+		
+		<h4>Iframe</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://www.google.com/search?ie=UTF-8&amp;oe=UTF-8&amp;q=prettyphoto&amp;iframe=true&amp;width=100%&amp;height=100%" rel="prettyPhoto[iframe]">Google.ca</a></li>
+			<li><a href="http://www.facebook.com?iframe=true&amp;width=600&amp;height=300" rel="prettyPhoto[iframe]">Facebook</a></li>
+			<li><a href="http://www.twitter.com?iframe=true&amp;width=300&amp;height=200" rel="prettyPhoto[iframe]">Twitter</a></li>
+		</ul>
+		
+		<h4>Mixed gallery</h4>
+		<ul class="gallery clearfix">
+			<li><a href="http://www.google.ca?iframe=true&amp;width=1000&amp;height=500" rel="prettyPhoto[mixed]">Google.ca</a></li>
+			<li><a href="http://movies.apple.com/movies/sony_pictures/angelsanddemons/angelsanddemons-video_h.480.mov?width=480&amp;height=260" rel="prettyPhoto[mixed]" title="Angels &amp; Demons sdg sdag sdagsdag sadg sadg sda gasg sdg asdgsdag sadgsdagsadg sdag sdgasdgsda"><img src="http://images.apple.com/trailers/sony_pictures/images/angelsdemons_200903261218.jpg" alt="Angels &amp; Demons" /></a></li>
+			<li><a href="images/fullscreen/5.jpg" rel="prettyPhoto[mixed]"><img src="images/thumbnails/t_5.jpg" width="60" height="60" alt="" /></a></li>
+			<li><a href="http://www.adobe.com/products/flashplayer/include/marquee/design.swf?width=792&amp;height=294" rel="prettyPhoto[mixed]" title="Flash 10 demo"><img src="http://images.apple.com/trailers/wb/images/terminatorsalvation_200903131052.jpg" alt="Flash 10 demo" /></a></li>
+		</ul>
+		
+		<h4>Inline content</h4>
+		<ul class="gallery clearfix">
+			<li><a href="#inline_demo" rel="prettyPhoto[inline]">Inline content 1</a></li>
+			<li><a href="#inline_demo2" rel="prettyPhoto[inline]">Inline content 2</a></li>
+			<li><a href="#inline_demo3" rel="prettyPhoto[inline]">Inline content 3</a></li>
+		</ul>
+		<div id="inline_demo" style="display:none;">
+			<p><a href="http://www.google.ca?iframe=true&amp;width=1000&amp;height=500">Google.ca</a></p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		</div>
+		<div id="inline_demo2" style="display:none;">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		</div>
+		<div id="inline_demo3" style="display:none;">
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+			<p><a href="http://movies.apple.com/movies/sony_pictures/angelsanddemons/angelsanddemons-video_h.480.mov?width=480&amp;height=260" title="Angels &amp; Demons sdg sdag sdagsdag sadg sadg sda gasg sdg asdgsdag sadgsdagsadg sdag sdgasdgsda"><img src="http://images.apple.com/trailers/sony_pictures/images/angelsdemons_200903261218.jpg" alt="Angels &amp; Demons" /></a></p>
+			<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+		</div>
+		
+		<!-- <h4 class="wide">Horizontal scroll</h4> -->
+		
+		<h4>Another prettyPhoto</h4>
+		<div class="another">
+			<a href="http://www.google.ca?iframe=true&amp;width=1000&amp;height=500" rel="prettyPhoto[mixed]">Google.ca</a>
+		</div>
+		
+		<script type="text/javascript" charset="utf-8">
+		$(document).ready(function(){
+			$(".gallery a[rel^='prettyPhoto']").prettyPhoto({theme:'facebook'});
+		});
+		</script>
+	</body>
+</html>
