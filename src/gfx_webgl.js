@@ -2995,20 +2995,47 @@ x3dom.gfx_webgl = (function () {
         var activeTex = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3,
                          gl.TEXTURE4, gl.TEXTURE5, gl.TEXTURE6, gl.TEXTURE7];
 		
-		n = scene.drawableObjects.length;
+        var transform, shape;
+        var locScene = rt._cf.scene.node;
         
-		for (i=0; i<n; i++)
-		{
-			var transform = scene.drawableObjects[i][0];
-			var shape = scene.drawableObjects[i][1];
-			
-			if (shape._vf.render !== undefined && shape._vf.render === false)
-               continue;
-			
-			this.renderShape(transform, shape, viewarea, slights, numLights, 
-                    mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+        if (!locScene || locScene === scene)
+        {
+            n = scene.drawableObjects.length;
+            
+            for (i=0; i<n; i++)
+            {
+                transform = scene.drawableObjects[i][0];
+                shape = scene.drawableObjects[i][1];
+                
+                if (shape._vf.render !== undefined && shape._vf.render === false)
+                   continue;
+                
+                this.renderShape(transform, shape, viewarea, slights, numLights, 
+                        mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+            }
 		}
-		
+        else
+        {
+            locScene.drawableObjects = [];
+            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableObjects);
+            
+            n = locScene.drawableObjects.length;
+            
+            for (i=0; i<n; i++)
+            {
+                transform = locScene.drawableObjects[i][0];
+                shape = locScene.drawableObjects[i][1];
+                
+                if (shape._vf.render !== undefined && shape._vf.render === false)
+                   continue;
+                
+                this.setupShape(gl, shape, viewarea);
+                
+                this.renderShape(transform, shape, viewarea, slights, numLights, 
+                        mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+            }
+        }
+        
 		gl.disable(gl.BLEND);
 		gl.disable(gl.DEPTH_TEST);
 		
