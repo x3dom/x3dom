@@ -49,6 +49,17 @@
                   <Background USE='back' containerField='background'/>
                   <Viewpoint id='view2' containerField='viewpoint'
                              position="0 0 -20" orientation="0 1 0 3.1415926" />
+                  <Group>
+                     <Shape DEF="sphereShape">
+						<Appearance>
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Sphere />
+				     </Shape>
+                     <Transform DEF='transRT' translation='4 0 0'>
+                        <Shape USE='GEO'/>
+                     </Transform>
+                  </Group>
                 </RenderedTexture>
               </Appearance>
             </Shape>
@@ -61,6 +72,7 @@
         <ROUTE fromNode='oi' fromField='value_changed' toNode='trans3' toField='set_rotation'/>
         <ROUTE fromNode='oi' fromField='value_changed' toNode='trans2' toField='set_rotation'/>
         <ROUTE fromNode='oi' fromField='value_changed' toNode='trans1' toField='set_rotation'/>
+        <ROUTE fromNode='oi' fromField='value_changed' toNode='transRT' toField='set_rotation'/>
       </Scene>
     </X3D>
     
