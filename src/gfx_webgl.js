@@ -43,7 +43,31 @@ x3dom.gfx_webgl = (function () {
             try {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
                 if (ctx) {
-                    return new Context(ctx, canvas, 'moz-webgl');
+                    var newCtx = new Context(ctx, canvas, 'moz-webgl');
+                    
+                    /*
+                    var ext = "";
+                    for (var fName in ctx) {
+                        ext += (fName + " / ");
+                    }
+                    x3dom.debug.logInfo(ext);
+                    */
+                    if (ctx.getString) {
+                        x3dom.debug.logInfo("\nVendor: " + ctx.getString(ctx.VENDOR) + ", " + 
+                                            "Renderer: " + ctx.getString(ctx.RENDERER) + ", " + 
+                                            "Version: " + ctx.getString(ctx.VERSION) + ", " + 
+                                            "ShadingLangV.: " + ctx.getString(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
+                                            "\nExtensions: " + ctx.getString(ctx.EXTENSIONS));
+                    }
+                    else {
+                        x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
+                                            "Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
+                                            "Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
+                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
+                                            "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
+                    }
+                    
+                    return newCtx;
                 }
             }
             catch (e) {}
