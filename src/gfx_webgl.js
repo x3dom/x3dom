@@ -63,9 +63,10 @@ x3dom.gfx_webgl = (function () {
                         x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
                                             "Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
                                             "Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
-                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
-                                            "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
+                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION));// + ", " + 
+                                            //"\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
                     }
+                    //x3dom.debug.logInfo(ctx.getSupportedExtensions());
                     
                     return newCtx;
                 }
@@ -1291,7 +1292,7 @@ x3dom.gfx_webgl = (function () {
             {
                 if (shape._webgl.shader.position !== undefined) 
                 {
-                    shape._webgl.positions = shape._cf.geometry.node._mesh._positions;
+                    shape._webgl.positions = shape._cf.geometry.node._mesh._positions[0];
                     
                     // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
                     gl.deleteBuffer(shape._webgl.buffers[1]);
@@ -1316,7 +1317,7 @@ x3dom.gfx_webgl = (function () {
             {
                 if (shape._webgl.shader.color !== undefined)
                 {
-                    shape._webgl.colors = shape._cf.geometry.node._mesh._colors;
+                    shape._webgl.colors = shape._cf.geometry.node._mesh._colors[0];
                     
                     gl.deleteBuffer(shape._webgl.buffers[4]);
                     
@@ -1430,21 +1431,21 @@ x3dom.gfx_webgl = (function () {
             if (u > 1) { u = 1; }
             //x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
-            shape._cf.geometry.node._mesh._positions = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
-			shape._cf.geometry.node._mesh._normals = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
-			shape._cf.geometry.node._mesh._texCoords = [u0,v, u,v, u,v0, u0,v0];
-			shape._cf.geometry.node._mesh._colors = [];
-			shape._cf.geometry.node._mesh._indices = [0,1,2, 2,3,0];
+            shape._cf.geometry.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
+			shape._cf.geometry.node._mesh._normals[0] = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
+			shape._cf.geometry.node._mesh._texCoords[0] = [u0,v, u,v, u,v0, u0,v0];
+			shape._cf.geometry.node._mesh._colors[0] = [];
+			shape._cf.geometry.node._mesh._indices[0] = [0,1,2, 2,3,0];
             shape._cf.geometry.node._mesh._invalidate = true;
             shape._cf.geometry.node._mesh._numFaces = 2;
             shape._cf.geometry.node._mesh._numCoords = 4;
                 
 			shape._webgl = {
-				positions: shape._cf.geometry.node._mesh._positions,
-				normals: shape._cf.geometry.node._mesh._normals,
-				texcoords: shape._cf.geometry.node._mesh._texCoords,
-                colors: shape._cf.geometry.node._mesh._colors,
-				indexes: shape._cf.geometry.node._mesh._indices,
+				positions: shape._cf.geometry.node._mesh._positions[0],
+				normals: shape._cf.geometry.node._mesh._normals[0],
+				texcoords: shape._cf.geometry.node._mesh._texCoords[0],
+                colors: shape._cf.geometry.node._mesh._colors[0],
+				indexes: shape._cf.geometry.node._mesh._indices[0],
 				texture: [ids],
                 buffers: [{},{},{},{},{}],
 				lightsAndShadow: useLightingFunc(viewarea)
@@ -1631,11 +1632,11 @@ x3dom.gfx_webgl = (function () {
             };
 			
 			shape._webgl = {
-				positions: shape._cf.geometry.node._mesh._positions,
-				normals: shape._cf.geometry.node._mesh._normals,
-				texcoords: shape._cf.geometry.node._mesh._texCoords,
-				colors: shape._cf.geometry.node._mesh._colors,
-				indexes: shape._cf.geometry.node._mesh._indices,
+				positions: shape._cf.geometry.node._mesh._positions[0],
+				normals: shape._cf.geometry.node._mesh._normals[0],
+				texcoords: shape._cf.geometry.node._mesh._texCoords[0],
+				colors: shape._cf.geometry.node._mesh._colors[0],
+				indexes: shape._cf.geometry.node._mesh._indices[0],
 				//indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
 				buffers: [{},{},{},{},{}],
 				lightsAndShadow: useLightingFunc(viewarea)
@@ -1710,7 +1711,7 @@ x3dom.gfx_webgl = (function () {
 						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 					}
                 }
-                else if (shape._cf.geometry.node._mesh._colors.length > 0) {
+                else if (shape._cf.geometry.node._mesh._colors[0].length > 0) {
 					var vsID = this.generateVS(viewarea, true, false, false, shape._webgl.lightsAndShadow);
 					var fsID = this.generateFS(viewarea, true, false, shape._webgl.lightsAndShadow);
 					shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
@@ -1863,8 +1864,8 @@ x3dom.gfx_webgl = (function () {
                 var sphere = new x3dom.nodeTypes.Sphere();
                 
                 bgnd._webgl = {
-                    positions: sphere._mesh._positions,
-                    indexes: sphere._mesh._indices,
+                    positions: sphere._mesh._positions[0],
+                    indexes: sphere._mesh._indices[0],
                     buffers: [{}, {}]
                 };
                 
