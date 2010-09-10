@@ -1774,19 +1774,32 @@ x3dom.registerNodeType(
 x3dom.Mesh = function(parent) 
 {
     this._parent = parent;
+    
 	this._min = new x3dom.fields.SFVec3f(0,0,0);
 	this._max = new x3dom.fields.SFVec3f(0,0,0);
 	this._invalidate = true;
     this._numFaces = 0;
     this._numCoords = 0;
+    
+    this._positions = [];
+    this._normals   = [];
+    this._texCoords = [];
+    this._colors    = [];
+    this._indices   = [];
+    
+    this._positions[0] = [];
+    this._normals[0]   = [];
+    this._texCoords[0] = [];
+    this._colors[0]    = [];
+    this._indices[0]   = [];
 };
 
 x3dom.Mesh.prototype._dynamicFields = {};   // can hold X3DVertexAttributeNodes
-x3dom.Mesh.prototype._positions = [];
+/*x3dom.Mesh.prototype._positions = [];
 x3dom.Mesh.prototype._normals   = [];
 x3dom.Mesh.prototype._texCoords = [];
 x3dom.Mesh.prototype._colors    = [];
-x3dom.Mesh.prototype._indices   = [];
+x3dom.Mesh.prototype._indices   = [];*/
 
 x3dom.Mesh.prototype._numTexComponents = 2;
 x3dom.Mesh.prototype._numColComponents = 3;
@@ -1795,12 +1808,26 @@ x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};
 x3dom.Mesh.prototype._invalidate = true;
 x3dom.Mesh.prototype._numFaces = 0;
+x3dom.Mesh.prototype._numCoords = 0;
+
+x3dom.Mesh.prototype.setMeshData = function(positions, normals, texCoords, colors, indices)
+{
+    this._positions[0] = positions;
+    this._normals[0]   = normals;
+    this._texCoords[0] = texCoords;
+    this._colors[0]    = colors;
+    this._indices[0]   = indices;
+    
+    this._invalidate = true;
+    this._numFaces = this._indices[0].length / 3;
+    this._numCoords = this._positions[0].length / 3;
+};
 
 x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 {
 	if (this._invalidate === true && invalidate === true)	//need both?
 	{
-		var coords = this._positions;
+		var coords = this._positions[0];
 		var n = coords.length;
 		
 		if (n > 3)
@@ -1872,8 +1899,8 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 {
     var i = 0, j = 0, num = 0;
     var multInd = (this._multiIndIndices !== undefined && this._multiIndIndices.length);
-	var coords = this._positions;
-	var idxs = multInd ? this._multiIndIndices : this._indices;
+	var coords = this._positions[0];
+	var idxs = multInd ? this._multiIndIndices : this._indices[0];
 	
 	var vertNormals = [];
 	var vertFaceNormals = [];
@@ -1912,55 +1939,81 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
                     subtract(new x3dom.fields.SFVec3f(
                         coords[(i+2)*3], coords[(i+2)*3+1], coords[(i+2)*3+2]));
         }
-		
+        
 		n = a.cross(b).normalize();
-		vertFaceNormals[idxs[i  ]].push(n);
-		vertFaceNormals[idxs[i+1]].push(n);
-		vertFaceNormals[idxs[i+2]].push(n);
+        
+        if (creaseAngle <= x3dom.fields.Eps) {
+            vertNormals[i*3  ] = vertNormals[(i+1)*3  ] = vertNormals[(i+2)*3  ] = n.x;
+            vertNormals[i*3+1] = vertNormals[(i+1)*3+1] = vertNormals[(i+2)*3+1] = n.y;
+            vertNormals[i*3+2] = vertNormals[(i+1)*3+2] = vertNormals[(i+2)*3+2] = n.z;
+		}
+		else {
+            vertFaceNormals[idxs[i  ]].push(n);
+            vertFaceNormals[idxs[i+1]].push(n);
+            vertFaceNormals[idxs[i+2]].push(n);
+        }
 	}
     
-    for (i = 0; i < coords.length; i += 3) {
-        //TODO: creaseAngle
-		n = new x3dom.fields.SFVec3f(0, 0, 0);
-        
-        if (!multInd) {
-            num = vertFaceNormals[i/3].length;
-            for (j = 0; j < num; ++j) {
-                n = n.add(vertFaceNormals[i/3][j]);
+    if (creaseAngle > x3dom.fields.Eps) 
+    {
+        for (i = 0; i < coords.length; i += 3) {
+            //TODO: generic creaseAngle
+            n = new x3dom.fields.SFVec3f(0, 0, 0);
+            
+            if (!multInd) {
+                num = vertFaceNormals[i/3].length;
+                for (j = 0; j < num; ++j) {
+                    n = n.add(vertFaceNormals[i/3][j]);
+                }
             }
-        }
-        else {
-            num = vertFaceNormals[idxs[i/3]].length;
-            for (j = 0; j < num; ++j) {
-                n = n.add(vertFaceNormals[idxs[i/3]][j]);
+            else {
+                num = vertFaceNormals[idxs[i/3]].length;
+                for (j = 0; j < num; ++j) {
+                    n = n.add(vertFaceNormals[idxs[i/3]][j]);
+                }
             }
-        }
 
-		n = n.normalize();
-		vertNormals[i  ] = n.x;
-		vertNormals[i+1] = n.y;
-		vertNormals[i+2] = n.z;
-	}
+            n = n.normalize();
+            vertNormals[i  ] = n.x;
+            vertNormals[i+1] = n.y;
+            vertNormals[i+2] = n.z;
+        }
+    }
     
     if (multInd) {
         this._multiIndIndices = [];
     }
 	
-	this._normals = vertNormals;
+	this._normals[0] = vertNormals;
+};
+
+x3dom.Mesh.prototype.splitMesh = function()
+{
+    var positions = this._positions[0];
+    var normals = this._normals[0];
+    var texCoords = this._texCoords[0];
+    var colors = this._colors[0];
+    var indices = this._indices[0];
+    
+    var i = 0;
+    while (positions.length >= 65536)
+    {
+        ;
+    }
 };
 
 x3dom.Mesh.prototype.calcTexCoords = function(mode)
 {
-    this._texCoords = [];
+    this._texCoords[0] = [];
     
     // TODO; impl. all modes that aren't handled in shader!
     // FIXME; WebKit requires valid texCoords for texturing
 	if (mode.toLowerCase() === "sphere-local")
     {
-        for (var i=0, j=0, n=this._normals.length; i<n; i+=3)
+        for (var i=0, j=0, n=this._normals[0].length; i<n; i+=3)
         {
-            this._texCoords[j++] = 0.5 + this._normals[i  ] / 2.0;
-            this._texCoords[j++] = 0.5 + this._normals[i+1] / 2.0;
+            this._texCoords[0][j++] = 0.5 + this._normals[0][i  ] / 2.0;
+            this._texCoords[0][j++] = 0.5 + this._normals[0][i+1] / 2.0;
         }
     }
     else    // "plane" is x3d default mapping
@@ -2015,10 +2068,10 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
             case 2: tDenom = dia.z; tMin = min.z; break;
         }
         
-        for (var k=0, l=0, m=this._positions.length; k<m; k+=3)
+        for (var k=0, l=0, m=this._positions[0].length; k<m; k+=3)
         {
-            this._texCoords[l++] = (this._positions[k+S] - sMin) / sDenom;
-            this._texCoords[l++] = (this._positions[k+T] - tMin) / tDenom;
+            this._texCoords[0][l++] = (this._positions[0][k+S] - sMin) / sDenom;
+            this._texCoords[0][l++] = (this._positions[0][k+T] - tMin) / tDenom;
         }
     }
 };
@@ -2089,16 +2142,16 @@ x3dom.registerNodeType(
                     switch (name.toLowerCase())
                     {
                         case "position": 
-                            this._mesh._positions = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                            this._mesh._positions[0] = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
                             break;
                         case "normal":
-                            this._mesh._normals = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                            this._mesh._normals[0] = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
                             break;
                         case "texcoord":
-                            this._mesh._texCoords = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                            this._mesh._texCoords[0] = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
                             break;
                         case "color":
-                            this._mesh._colors = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
+                            this._mesh._colors[0] = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
                             break;
                         default:
                         {
@@ -2112,10 +2165,10 @@ x3dom.registerNodeType(
                     }
                 }
                 
-                this._mesh._indices = this._vf.index.toGL();
+                this._mesh._indices[0] = this._vf.index.toGL();
                 this._mesh._invalidate = true;
-                this._mesh._numFaces = this._mesh._indices.length / 3;
-                this._mesh._numCoords = this._mesh._positions.length / 3;
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
                 
                 //var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -2144,7 +2197,7 @@ x3dom.registerNodeType(
             
             sx /= 2; sy /= 2; sz /= 2;
 			
-            this._mesh._positions = [
+            this._mesh._positions[0] = [
                 -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //hinten 0,0,-1
                 -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //vorne 0,0,1
                 -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //links -1,0,0
@@ -2152,7 +2205,7 @@ x3dom.registerNodeType(
                 -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //oben 0,1,0
                 -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //unten 0,-1,0
             ];
-			this._mesh._normals = [
+			this._mesh._normals[0] = [
                 0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
                 0,0,1,  0,0,1,   0,0,1,   0,0,1,
                 -1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
@@ -2160,7 +2213,7 @@ x3dom.registerNodeType(
                 0,1,0,  0,1,0,   0,1,0,   0,1,0,
                 0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0
             ];
-			this._mesh._texCoords = [
+			this._mesh._texCoords[0] = [
 				1,0, 1,1, 0,1, 0,0, 
 				0,0, 0,1, 1,1, 1,0, 
 				0,0, 1,0, 1,1, 0,1, 
@@ -2168,7 +2221,7 @@ x3dom.registerNodeType(
 				0,1, 0,0, 1,0, 1,1, 
 				0,0, 0,1, 1,1, 1,0
 			];
-            this._mesh._indices = [
+            this._mesh._indices[0] = [
                 0,1,2, 2,3,0,
                 4,7,5, 5,7,6,
                 8,9,10, 10,11,8,
@@ -2195,12 +2248,6 @@ x3dom.registerNodeType(
             if (ctx && ctx.xmlNode.hasAttribute('radius')) {
                 r = +ctx.xmlNode.getAttribute('radius');
             }
-            
-            this._mesh._indices = [];
-            this._mesh._positions = [];
-            this._mesh._normals = [];
-            this._mesh._texCoords = [];
-            this._mesh._colors = [];
             
             var latNumber, longNumber;
             var latitudeBands = 24;
@@ -2229,14 +2276,14 @@ x3dom.registerNodeType(
                     u = 0.25 - ((1.0 * longNumber) / longitudeBands);
                     v = latNumber / latitudeBands;
                     
-                    this._mesh._positions.push(r * x);
-                    this._mesh._positions.push(r * y);
-                    this._mesh._positions.push(r * z);
-                    this._mesh._normals.push(x);
-                    this._mesh._normals.push(y);
-                    this._mesh._normals.push(z);
-                    this._mesh._texCoords.push(u);
-                    this._mesh._texCoords.push(v);
+                    this._mesh._positions[0].push(r * x);
+                    this._mesh._positions[0].push(r * y);
+                    this._mesh._positions[0].push(r * z);
+                    this._mesh._normals[0].push(x);
+                    this._mesh._normals[0].push(y);
+                    this._mesh._normals[0].push(z);
+                    this._mesh._texCoords[0].push(u);
+                    this._mesh._texCoords[0].push(v);
                 }
             }
             
@@ -2249,19 +2296,19 @@ x3dom.registerNodeType(
                     first = (latNumber * (longitudeBands + 1)) + longNumber;
                     second = first + longitudeBands + 1;
                     
-                    this._mesh._indices.push(first);
-                    this._mesh._indices.push(second);
-                    this._mesh._indices.push(first + 1);
+                    this._mesh._indices[0].push(first);
+                    this._mesh._indices[0].push(second);
+                    this._mesh._indices[0].push(first + 1);
 
-                    this._mesh._indices.push(second);
-                    this._mesh._indices.push(second + 1);
-                    this._mesh._indices.push(first + 1);
+                    this._mesh._indices[0].push(second);
+                    this._mesh._indices[0].push(second + 1);
+                    this._mesh._indices[0].push(first + 1);
                 }
             }
             
             this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices.length / 3;
-            this._mesh._numCoords = this._mesh._positions.length / 3;
+            this._mesh._numFaces = this._mesh._indices[0].length / 3;
+            this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
     )
 );
@@ -2282,7 +2329,7 @@ x3dom.registerNodeType(
             if (ctx.xmlNode.hasAttribute('outerRadius')) {
                 outerRadius = +ctx.xmlNode.getAttribute('outerRadius');
             }
-			
+            
 			var rings = 24, sides = 24;
 			var ringDelta = 2.0 * Math.PI / rings;
 			var sideDelta = 2.0 * Math.PI / sides;
@@ -2320,13 +2367,13 @@ x3dom.registerNodeType(
 				}
 			}
 			
-            this._mesh._positions = p;
-			this._mesh._normals = n;
-			this._mesh._texCoords = t;
-            this._mesh._indices = i;
+            this._mesh._positions[0] = p;
+			this._mesh._normals[0] = n;
+			this._mesh._texCoords[0] = t;
+            this._mesh._indices[0] = i;
 			this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices.length / 3;
-            this._mesh._numCoords = this._mesh._positions.length / 3;
+            this._mesh._numFaces = this._mesh._indices[0].length / 3;
+            this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
     )
 );
@@ -2345,7 +2392,7 @@ x3dom.registerNodeType(
 			this.addField_SFBool(ctx, 'side', true);
             
             var bottomRadius = this._vf.bottomRadius, height = this._vf.height;
-			
+            
             var beta, x, z;
 			var sides = 32;
 			var delta = 2.0 * Math.PI / sides;
@@ -2411,13 +2458,13 @@ x3dom.registerNodeType(
 				}
 			}
 			
-			this._mesh._positions = p;
-			this._mesh._normals = n;
-			this._mesh._texCoords = t;
-            this._mesh._indices = i;
+			this._mesh._positions[0] = p;
+			this._mesh._normals[0] = n;
+			this._mesh._texCoords[0] = t;
+            this._mesh._indices[0] = i;
 			this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices.length / 3;
-            this._mesh._numCoords = this._mesh._positions.length / 3;
+            this._mesh._numFaces = this._mesh._indices[0].length / 3;
+            this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
     )
 );
@@ -2429,7 +2476,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
-    
+            
             var radius = 1.0, height = 2.0;
             
             this.addField_SFFloat(ctx, 'radius', 1.0);
@@ -2439,7 +2486,7 @@ x3dom.registerNodeType(
 			this.addField_SFBool(ctx, 'side', true);
             
             var radius = this._vf.radius, height = this._vf.height;
-
+            
             var beta, x, z;
 			var sides = 24;
 			var delta = 2.0 * Math.PI / sides;
@@ -2533,13 +2580,13 @@ x3dom.registerNodeType(
                 }
 			}
 			
-			this._mesh._positions = p;
-			this._mesh._normals = n;
-			this._mesh._texCoords = t;
-            this._mesh._indices = i;
+			this._mesh._positions[0] = p;
+			this._mesh._normals[0] = n;
+			this._mesh._texCoords[0] = t;
+            this._mesh._indices[0] = i;
 			this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices.length / 3;
-            this._mesh._numCoords = this._mesh._positions.length / 3;
+            this._mesh._numFaces = this._mesh._indices[0].length / 3;
+            this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
     )
 );
@@ -2583,14 +2630,14 @@ x3dom.registerNodeType(
                 }
                 
                 this._mesh._numColComponents = numColComponents;
-                this._mesh._indices = [];
-                this._mesh._positions = positions.toGL();
-                this._mesh._colors = colors.toGL();
-                this._mesh._normals = [];
-                this._mesh._texCoords = [];
+                this._mesh._indices[0] = [];
+                this._mesh._positions[0] = positions.toGL();
+                this._mesh._colors[0] = colors.toGL();
+                this._mesh._normals[0] = [];
+                this._mesh._texCoords[0] = [];
                 this._mesh._lit = false;
                 this._mesh._invalidate = true;
-                this._mesh._numCoords = this._mesh._positions.length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -2606,14 +2653,14 @@ x3dom.registerNodeType(
                     pnts = this._cf.coord.node._vf.point;
                     n = pnts.length;
                     
-                    this._mesh._positions = [];
+                    this._mesh._positions[0] = [];
                     
                     // TODO; optimize (is there a memcopy?)
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions.push(pnts[i].x);
-						this._mesh._positions.push(pnts[i].y);
-						this._mesh._positions.push(pnts[i].z);
+						this._mesh._positions[0].push(pnts[i].x);
+						this._mesh._positions[0].push(pnts[i].y);
+						this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -2627,13 +2674,13 @@ x3dom.registerNodeType(
                     pnts = this._cf.color.node._vf.color;
                     n = pnts.length;
                     
-                    this._mesh._colors = [];
+                    this._mesh._colors[0] = [];
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors.push(pnts[i].r);
-						this._mesh._colors.push(pnts[i].g);
-						this._mesh._colors.push(pnts[i].b);
+						this._mesh._colors[0].push(pnts[i].r);
+						this._mesh._colors[0].push(pnts[i].g);
+						this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
@@ -2702,16 +2749,16 @@ x3dom.registerNodeType(
                     switch (name.toLowerCase())
                     {
                         case "position": 
-                            this._mesh._positions = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._positions[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
                             break;
                         case "normal":
-                            this._mesh._normals = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._normals[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
                             break;
                         case "texcoord":
-                            this._mesh._texCoords = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._texCoords[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
                             break;
                         case "color":
-                            this._mesh._colors = this._cf.attrib.nodes[i]._vf.value.toGL();
+                            this._mesh._colors[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
                             break;
                         default:
                         {
@@ -2792,9 +2839,9 @@ x3dom.registerNodeType(
                     hasColor = false;
                 }
 
-                this._mesh._indices = [];
-                this._mesh._positions = [];
-                this._mesh._colors = [];
+                this._mesh._indices[0] = [];
+                this._mesh._positions[0] = [];
+                this._mesh._colors[0] = [];
                 
                 var i, t, cnt, lineCnt;
                 var p0, p1, c0, c1;
@@ -2831,25 +2878,25 @@ x3dom.registerNodeType(
                                 else if (hasColorInd && !colPerVert) { c1 = +colorInd[lineCnt]; }
                                 else { c1 = p1; }
                                 
-                                this._mesh._indices.push(cnt++, cnt++);
+                                this._mesh._indices[0].push(cnt++, cnt++);
                                 
-                                this._mesh._positions.push(positions[p0].x);
-                                this._mesh._positions.push(positions[p0].y);
-                                this._mesh._positions.push(positions[p0].z);
-                                this._mesh._positions.push(positions[p1].x);
-                                this._mesh._positions.push(positions[p1].y);
-                                this._mesh._positions.push(positions[p1].z);
+                                this._mesh._positions[0].push(positions[p0].x);
+                                this._mesh._positions[0].push(positions[p0].y);
+                                this._mesh._positions[0].push(positions[p0].z);
+                                this._mesh._positions[0].push(positions[p1].x);
+                                this._mesh._positions[0].push(positions[p1].y);
+                                this._mesh._positions[0].push(positions[p1].z);
                                 
                                 if (hasColor) {
                                     if (!colPerVert) {
                                         c0 = c1;
                                     }
-                                    this._mesh._colors.push(colors[c0].r);
-                                    this._mesh._colors.push(colors[c0].g);
-                                    this._mesh._colors.push(colors[c0].b);
-                                    this._mesh._colors.push(colors[c1].r);
-                                    this._mesh._colors.push(colors[c1].g);
-                                    this._mesh._colors.push(colors[c1].b);
+                                    this._mesh._colors[0].push(colors[c0].r);
+                                    this._mesh._colors[0].push(colors[c0].g);
+                                    this._mesh._colors[0].push(colors[c0].b);
+                                    this._mesh._colors[0].push(colors[c1].r);
+                                    this._mesh._colors[0].push(colors[c1].g);
+                                    this._mesh._colors[0].push(colors[c1].b);
                                 }
                                 
                                 t = 2;
@@ -2863,25 +2910,25 @@ x3dom.registerNodeType(
                                 else if (hasColorInd && !colPerVert) { c1 = +colorInd[lineCnt]; }
                                 else { c1 = p1; }
                                 
-                                this._mesh._indices.push(cnt++, cnt++);
+                                this._mesh._indices[0].push(cnt++, cnt++);
                                 
-                                this._mesh._positions.push(positions[p0].x);
-                                this._mesh._positions.push(positions[p0].y);
-                                this._mesh._positions.push(positions[p0].z);
-                                this._mesh._positions.push(positions[p1].x);
-                                this._mesh._positions.push(positions[p1].y);
-                                this._mesh._positions.push(positions[p1].z);
+                                this._mesh._positions[0].push(positions[p0].x);
+                                this._mesh._positions[0].push(positions[p0].y);
+                                this._mesh._positions[0].push(positions[p0].z);
+                                this._mesh._positions[0].push(positions[p1].x);
+                                this._mesh._positions[0].push(positions[p1].y);
+                                this._mesh._positions[0].push(positions[p1].z);
                                 
                                 if (hasColor) {
                                     if (!colPerVert) {
                                         c0 = c1;
                                     }
-                                    this._mesh._colors.push(colors[c0].r);
-                                    this._mesh._colors.push(colors[c0].g);
-                                    this._mesh._colors.push(colors[c0].b);
-                                    this._mesh._colors.push(colors[c1].r);
-                                    this._mesh._colors.push(colors[c1].g);
-                                    this._mesh._colors.push(colors[c1].b);
+                                    this._mesh._colors[0].push(colors[c0].r);
+                                    this._mesh._colors[0].push(colors[c0].g);
+                                    this._mesh._colors[0].push(colors[c0].b);
+                                    this._mesh._colors[0].push(colors[c1].r);
+                                    this._mesh._colors[0].push(colors[c1].g);
+                                    this._mesh._colors[0].push(colors[c1].b);
                                 }
                                 
                                 lineCnt++;
@@ -2903,21 +2950,21 @@ x3dom.registerNodeType(
                         
                         switch (t) {
                         case 0: p0 = +indexes[i]; t = 1; break;
-                        case 1: p1 = +indexes[i]; t = 2; this._mesh._indices.push(p0, p1); break;
-                        case 2: p0 = p1; p1 = +indexes[i]; this._mesh._indices.push(p0, p1); break;
+                        case 1: p1 = +indexes[i]; t = 2; this._mesh._indices[0].push(p0, p1); break;
+                        case 2: p0 = p1; p1 = +indexes[i]; this._mesh._indices[0].push(p0, p1); break;
                         }
                     }
                     
-                    this._mesh._positions = positions.toGL();
+                    this._mesh._positions[0] = positions.toGL();
                     
                     if (hasColor) {
-                        this._mesh._colors = colors.toGL();
+                        this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
                     }
                 }
                 
                 this._mesh._invalidate = true;
-                this._mesh._numCoords = this._mesh._positions.length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -2934,13 +2981,13 @@ x3dom.registerNodeType(
                     pnts = this._cf.coord.node._vf.point;
                     n = pnts.length;
                     
-                    this._mesh._positions = [];
+                    this._mesh._positions[0] = [];
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions.push(pnts[i].x);
-						this._mesh._positions.push(pnts[i].y);
-						this._mesh._positions.push(pnts[i].z);
+						this._mesh._positions[0].push(pnts[i].x);
+						this._mesh._positions[0].push(pnts[i].y);
+						this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -2954,13 +3001,13 @@ x3dom.registerNodeType(
                     pnts = this._cf.color.node._vf.color;
                     n = pnts.length;
                     
-                    this._mesh._colors = [];
+                    this._mesh._colors[0] = [];
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors.push(pnts[i].r);
-						this._mesh._colors.push(pnts[i].g);
-						this._mesh._colors.push(pnts[i].b);
+						this._mesh._colors[0].push(pnts[i].r);
+						this._mesh._colors[0].push(pnts[i].g);
+						this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
@@ -3003,7 +3050,6 @@ x3dom.registerNodeType(
                 var hasTexCoord = false, hasTexCoordInd = false;
                 var hasColor = false, hasColorInd = false;
                 
-                // TODO; implement colorPerVertex/normalPerVertex also for single index
                 var colPerVert = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
                 
@@ -3071,16 +3117,17 @@ x3dom.registerNodeType(
                     hasColor = false;
                 }
 
-                this._mesh._indices = [];
-                this._mesh._positions = [];
-                this._mesh._normals = [];
-                this._mesh._texCoords = [];
-                this._mesh._colors = [];
+                this._mesh._indices[0] = [];
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0] = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._colors[0] = [];
                 
                 var i, t, cnt, faceCnt;
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
                 
-                if ( (hasNormal && hasNormalInd) || 
+                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||
+                     (hasNormal && hasNormalInd) || 
                      (hasTexCoord && hasTexCoordInd) || 
                      (hasColor && hasColorInd) )
                 {
@@ -3150,28 +3197,28 @@ x3dom.registerNodeType(
                                 else { c2 = p2; }
                                 t = 3; 
                                 
-                                this._mesh._indices.push(cnt++, cnt++, cnt++);
+                                this._mesh._indices[0].push(cnt++, cnt++, cnt++);
                                 
-                                this._mesh._positions.push(positions[p0].x);
-                                this._mesh._positions.push(positions[p0].y);
-                                this._mesh._positions.push(positions[p0].z);
-                                this._mesh._positions.push(positions[p1].x);
-                                this._mesh._positions.push(positions[p1].y);
-                                this._mesh._positions.push(positions[p1].z);
-                                this._mesh._positions.push(positions[p2].x);
-                                this._mesh._positions.push(positions[p2].y);
-                                this._mesh._positions.push(positions[p2].z);
+                                this._mesh._positions[0].push(positions[p0].x);
+                                this._mesh._positions[0].push(positions[p0].y);
+                                this._mesh._positions[0].push(positions[p0].z);
+                                this._mesh._positions[0].push(positions[p1].x);
+                                this._mesh._positions[0].push(positions[p1].y);
+                                this._mesh._positions[0].push(positions[p1].z);
+                                this._mesh._positions[0].push(positions[p2].x);
+                                this._mesh._positions[0].push(positions[p2].y);
+                                this._mesh._positions[0].push(positions[p2].z);
                                 
                                 if (hasNormal) {
-                                    this._mesh._normals.push(normals[n0].x);
-                                    this._mesh._normals.push(normals[n0].y);
-                                    this._mesh._normals.push(normals[n0].z);
-                                    this._mesh._normals.push(normals[n1].x);
-                                    this._mesh._normals.push(normals[n1].y);
-                                    this._mesh._normals.push(normals[n1].z);
-                                    this._mesh._normals.push(normals[n2].x);
-                                    this._mesh._normals.push(normals[n2].y);
-                                    this._mesh._normals.push(normals[n2].z);
+                                    this._mesh._normals[0].push(normals[n0].x);
+                                    this._mesh._normals[0].push(normals[n0].y);
+                                    this._mesh._normals[0].push(normals[n0].z);
+                                    this._mesh._normals[0].push(normals[n1].x);
+                                    this._mesh._normals[0].push(normals[n1].y);
+                                    this._mesh._normals[0].push(normals[n1].z);
+                                    this._mesh._normals[0].push(normals[n2].x);
+                                    this._mesh._normals[0].push(normals[n2].y);
+                                    this._mesh._normals[0].push(normals[n2].z);
                                 }
                                 else {
                                     this._mesh._multiIndIndices.push(p0, p1, p2);
@@ -3180,25 +3227,25 @@ x3dom.registerNodeType(
                                 
                                 if (hasColor) {
                                     //assume RGB for now...
-                                    this._mesh._colors.push(colors[c0].r);
-                                    this._mesh._colors.push(colors[c0].g);
-                                    this._mesh._colors.push(colors[c0].b);
-                                    this._mesh._colors.push(colors[c1].r);
-                                    this._mesh._colors.push(colors[c1].g);
-                                    this._mesh._colors.push(colors[c1].b);
-                                    this._mesh._colors.push(colors[c2].r);
-                                    this._mesh._colors.push(colors[c2].g);
-                                    this._mesh._colors.push(colors[c2].b);
+                                    this._mesh._colors[0].push(colors[c0].r);
+                                    this._mesh._colors[0].push(colors[c0].g);
+                                    this._mesh._colors[0].push(colors[c0].b);
+                                    this._mesh._colors[0].push(colors[c1].r);
+                                    this._mesh._colors[0].push(colors[c1].g);
+                                    this._mesh._colors[0].push(colors[c1].b);
+                                    this._mesh._colors[0].push(colors[c2].r);
+                                    this._mesh._colors[0].push(colors[c2].g);
+                                    this._mesh._colors[0].push(colors[c2].b);
                                 }
                                 
                                 if (hasTexCoord) {
                                     //assume 2d texCoords for now...
-                                    this._mesh._texCoords.push(texCoords[t0].x);
-                                    this._mesh._texCoords.push(texCoords[t0].y);
-                                    this._mesh._texCoords.push(texCoords[t1].x);
-                                    this._mesh._texCoords.push(texCoords[t1].y);
-                                    this._mesh._texCoords.push(texCoords[t2].x);
-                                    this._mesh._texCoords.push(texCoords[t2].y);
+                                    this._mesh._texCoords[0].push(texCoords[t0].x);
+                                    this._mesh._texCoords[0].push(texCoords[t0].y);
+                                    this._mesh._texCoords[0].push(texCoords[t1].x);
+                                    this._mesh._texCoords[0].push(texCoords[t1].y);
+                                    this._mesh._texCoords[0].push(texCoords[t2].x);
+                                    this._mesh._texCoords[0].push(texCoords[t2].y);
                                 }
                                 
                                 //faceCnt++;
@@ -3218,28 +3265,28 @@ x3dom.registerNodeType(
                                 else if (hasColorInd && !colPerVert) { /*c2 = +colorInd[faceCnt];*/ }
                                 else { c2 = p2; }
                                 
-                                this._mesh._indices.push(cnt++, cnt++, cnt++);
+                                this._mesh._indices[0].push(cnt++, cnt++, cnt++);
                                 
-                                this._mesh._positions.push(positions[p0].x);
-                                this._mesh._positions.push(positions[p0].y);
-                                this._mesh._positions.push(positions[p0].z);
-                                this._mesh._positions.push(positions[p1].x);
-                                this._mesh._positions.push(positions[p1].y);
-                                this._mesh._positions.push(positions[p1].z);
-                                this._mesh._positions.push(positions[p2].x);
-                                this._mesh._positions.push(positions[p2].y);
-                                this._mesh._positions.push(positions[p2].z);
+                                this._mesh._positions[0].push(positions[p0].x);
+                                this._mesh._positions[0].push(positions[p0].y);
+                                this._mesh._positions[0].push(positions[p0].z);
+                                this._mesh._positions[0].push(positions[p1].x);
+                                this._mesh._positions[0].push(positions[p1].y);
+                                this._mesh._positions[0].push(positions[p1].z);
+                                this._mesh._positions[0].push(positions[p2].x);
+                                this._mesh._positions[0].push(positions[p2].y);
+                                this._mesh._positions[0].push(positions[p2].z);
                                 
                                 if (hasNormal) {
-                                    this._mesh._normals.push(normals[n0].x);
-                                    this._mesh._normals.push(normals[n0].y);
-                                    this._mesh._normals.push(normals[n0].z);
-                                    this._mesh._normals.push(normals[n1].x);
-                                    this._mesh._normals.push(normals[n1].y);
-                                    this._mesh._normals.push(normals[n1].z);
-                                    this._mesh._normals.push(normals[n2].x);
-                                    this._mesh._normals.push(normals[n2].y);
-                                    this._mesh._normals.push(normals[n2].z);
+                                    this._mesh._normals[0].push(normals[n0].x);
+                                    this._mesh._normals[0].push(normals[n0].y);
+                                    this._mesh._normals[0].push(normals[n0].z);
+                                    this._mesh._normals[0].push(normals[n1].x);
+                                    this._mesh._normals[0].push(normals[n1].y);
+                                    this._mesh._normals[0].push(normals[n1].z);
+                                    this._mesh._normals[0].push(normals[n2].x);
+                                    this._mesh._normals[0].push(normals[n2].y);
+                                    this._mesh._normals[0].push(normals[n2].z);
                                 }
                                 else {
                                     this._mesh._multiIndIndices.push(p0, p1, p2);
@@ -3248,25 +3295,25 @@ x3dom.registerNodeType(
                                 
                                 if (hasColor) {
                                     //assume RGB for now...
-                                    this._mesh._colors.push(colors[c0].r);
-                                    this._mesh._colors.push(colors[c0].g);
-                                    this._mesh._colors.push(colors[c0].b);
-                                    this._mesh._colors.push(colors[c1].r);
-                                    this._mesh._colors.push(colors[c1].g);
-                                    this._mesh._colors.push(colors[c1].b);
-                                    this._mesh._colors.push(colors[c2].r);
-                                    this._mesh._colors.push(colors[c2].g);
-                                    this._mesh._colors.push(colors[c2].b);
+                                    this._mesh._colors[0].push(colors[c0].r);
+                                    this._mesh._colors[0].push(colors[c0].g);
+                                    this._mesh._colors[0].push(colors[c0].b);
+                                    this._mesh._colors[0].push(colors[c1].r);
+                                    this._mesh._colors[0].push(colors[c1].g);
+                                    this._mesh._colors[0].push(colors[c1].b);
+                                    this._mesh._colors[0].push(colors[c2].r);
+                                    this._mesh._colors[0].push(colors[c2].g);
+                                    this._mesh._colors[0].push(colors[c2].b);
                                 }
                                 
                                 if (hasTexCoord) {
                                     //assume 2d texCoords for now...
-                                    this._mesh._texCoords.push(texCoords[t0].x);
-                                    this._mesh._texCoords.push(texCoords[t0].y);
-                                    this._mesh._texCoords.push(texCoords[t1].x);
-                                    this._mesh._texCoords.push(texCoords[t1].y);
-                                    this._mesh._texCoords.push(texCoords[t2].x);
-                                    this._mesh._texCoords.push(texCoords[t2].y);
+                                    this._mesh._texCoords[0].push(texCoords[t0].x);
+                                    this._mesh._texCoords[0].push(texCoords[t0].y);
+                                    this._mesh._texCoords[0].push(texCoords[t1].x);
+                                    this._mesh._texCoords[0].push(texCoords[t1].y);
+                                    this._mesh._texCoords[0].push(texCoords[t2].x);
+                                    this._mesh._texCoords[0].push(texCoords[t2].y);
                                 }
                                 
                                 //faceCnt++;
@@ -3281,6 +3328,8 @@ x3dom.registerNodeType(
                     if (!hasTexCoord) {
                         this._mesh.calcTexCoords(texMode);
                     }
+                    
+                    //x3dom.debug.logInfo(this._mesh._indices[0].length);
                 } // if isMulti
                 else
                 {
@@ -3298,35 +3347,35 @@ x3dom.registerNodeType(
                         switch (t) {
                         case 0: n0 = +indexes[i]; t = 1; break;
                         case 1: n1 = +indexes[i]; t = 2; break;
-                        case 2: n2 = +indexes[i]; t = 3; this._mesh._indices.push(n0, n1, n2); break;
-                        case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices.push(n0, n1, n2); break;
+                        case 2: n2 = +indexes[i]; t = 3; this._mesh._indices[0].push(n0, n1, n2); break;
+                        case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices[0].push(n0, n1, n2); break;
                         }
                     }
                     
-                    this._mesh._positions = positions.toGL();
+                    this._mesh._positions[0] = positions.toGL();
                     
                     if (hasNormal) {
-                        this._mesh._normals = normals.toGL();
+                        this._mesh._normals[0] = normals.toGL();
                     }
                     else {
                         this._mesh.calcNormals(this._vf.creaseAngle);
                     }
                     if (hasTexCoord) {
-                        this._mesh._texCoords = texCoords.toGL();
+                        this._mesh._texCoords[0] = texCoords.toGL();
                         this._mesh._numTexComponents = numTexComponents;
                     }
                     else {
                         this._mesh.calcTexCoords(texMode);
                     }
                     if (hasColor) {
-                        this._mesh._colors = colors.toGL();
+                        this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
                     }
                 }
                 
                 this._mesh._invalidate = true;
-                this._mesh._numFaces = this._mesh._indices.length / 3;
-                this._mesh._numCoords = this._mesh._positions.length / 3;
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -3343,14 +3392,14 @@ x3dom.registerNodeType(
                     pnts = this._cf.coord.node._vf.point;
                     n = pnts.length;
                     
-                    this._mesh._positions = [];
+                    this._mesh._positions[0] = [];
                     
                     // TODO; optimize (is there a memcopy?)
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions.push(pnts[i].x);
-						this._mesh._positions.push(pnts[i].y);
-						this._mesh._positions.push(pnts[i].z);
+						this._mesh._positions[0].push(pnts[i].x);
+						this._mesh._positions[0].push(pnts[i].y);
+						this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -3364,13 +3413,13 @@ x3dom.registerNodeType(
                     pnts = this._cf.color.node._vf.color;
                     n = pnts.length;
                     
-                    this._mesh._colors = [];
+                    this._mesh._colors[0] = [];
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors.push(pnts[i].r);
-						this._mesh._colors.push(pnts[i].g);
-						this._mesh._colors.push(pnts[i].b);
+						this._mesh._colors[0].push(pnts[i].r);
+						this._mesh._colors[0].push(pnts[i].g);
+						this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
@@ -3454,30 +3503,30 @@ x3dom.registerNodeType(
                     hasColor = false;
                 }
 
-                this._mesh._indices = indexes.toGL();
-                this._mesh._positions = positions.toGL();
+                this._mesh._indices[0] = indexes.toGL();
+                this._mesh._positions[0] = positions.toGL();
                 
                 if (hasNormal) {
-                    this._mesh._normals = normals.toGL();
+                    this._mesh._normals[0] = normals.toGL();
                 }
                 else {
                     this._mesh.calcNormals(this._vf.creaseAngle);
                 }
                 if (hasTexCoord) {
-                    this._mesh._texCoords = texCoords.toGL();
+                    this._mesh._texCoords[0] = texCoords.toGL();
                     this._mesh._numTexComponents = numTexComponents;
                 }
                 else {
                     this._mesh.calcTexCoords(texMode);
                 }
                 if (hasColor) {
-                    this._mesh._colors = colors.toGL();
+                    this._mesh._colors[0] = colors.toGL();
                     this._mesh._numColComponents = numColComponents;
                 }
                 
                 this._mesh._invalidate = true;
-                this._mesh._numFaces = this._mesh._indices.length / 3;
-                this._mesh._numCoords = this._mesh._positions.length / 3;
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -3494,14 +3543,14 @@ x3dom.registerNodeType(
                     pnts = this._cf.coord.node._vf.point;
                     n = pnts.length;
                     
-                    this._mesh._positions = [];
+                    this._mesh._positions[0] = [];
                     
                     // TODO; optimize (is there a memcopy?)
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions.push(pnts[i].x);
-						this._mesh._positions.push(pnts[i].y);
-						this._mesh._positions.push(pnts[i].z);
+						this._mesh._positions[0].push(pnts[i].x);
+						this._mesh._positions[0].push(pnts[i].y);
+						this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -3515,13 +3564,13 @@ x3dom.registerNodeType(
                     pnts = this._cf.color.node._vf.color;
                     n = pnts.length;
                     
-                    this._mesh._colors = [];
+                    this._mesh._colors[0] = [];
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors.push(pnts[i].r);
-						this._mesh._colors.push(pnts[i].g);
-						this._mesh._colors.push(pnts[i].b);
+						this._mesh._colors[0].push(pnts[i].r);
+						this._mesh._colors[0].push(pnts[i].g);
+						this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
