@@ -1994,12 +1994,48 @@ x3dom.Mesh.prototype.splitMesh = function()
     var texCoords = this._texCoords[0];
     var colors = this._colors[0];
     var indices = this._indices[0];
+    var MAX = 65535;
+    var i = 0, k;
     
-    var i = 0;
-    while (positions.length >= 65536)
+    do
     {
-        ;
+        this._positions[i] = [];
+        this._normals[i]   = [];
+        this._texCoords[i] = [];
+        this._colors[i]    = [];
+        this._indices[i]   = [];
+        
+        k = ((indices.length - ((i + 1) * MAX) < 0) ? false : true);
+        
+        if (k) this._indices[i] = indices.slice(i * MAX, MAX);
+        else   this._indices[i] = indices.slice(i * MAX);
+        
+        if (i) {
+            var m = i * MAX;
+            for (var j=0, l=this._indices[i].length; j<l; j++) {
+                this._indices[i][j] -= m;
+            }
+        }
+        
+        if (k) this._positions[i] = positions.slice(i * MAX * 3, 3 * MAX);
+        else   this._positions[i] = positions.slice(i * MAX * 3);
+        
+        if (normals.length) {
+            if (k) this._normals[i] = normals.slice(i * MAX * 3, 3 * MAX);
+            else   this._normals[i] = normals.slice(i * MAX * 3);
+        }
+        if (texCoords.length) {
+            if (k) this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents, 
+                                                        this._numTexComponents * MAX);
+            else   this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents);
+        }
+        if (colors.length) {
+            if (k) this._colors[i] = colors.slice(i * MAX * this._numColComponents, 
+                                                  this._numColComponents * MAX);
+            else   this._colors[i] = colors.slice(i * MAX * this._numColComponents);
+        }
     }
+    while (positions.length > ++i * MAX * 3);
 };
 
 x3dom.Mesh.prototype.calcTexCoords = function(mode)
@@ -3101,6 +3137,7 @@ x3dom.registerNodeType(
                 else {
                     hasTexCoord = false;
                 }
+                this._mesh._numTexComponents = numTexComponents;
 
                 var numColComponents = 3;
                 var colorNode = this._cf.color.node;
@@ -3116,6 +3153,7 @@ x3dom.registerNodeType(
                 else {
                     hasColor = false;
                 }
+                this._mesh._numColComponents = numColComponents;
 
                 this._mesh._indices[0] = [];
                 this._mesh._positions[0] = [];
@@ -3126,7 +3164,8 @@ x3dom.registerNodeType(
                 var i, t, cnt, faceCnt;
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
                 
-                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||
+                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
+                     //(positions.length / 3 > 65535) || 
                      (hasNormal && hasNormalInd) || 
                      (hasTexCoord && hasTexCoordInd) || 
                      (hasColor && hasColorInd) )
@@ -3226,26 +3265,36 @@ x3dom.registerNodeType(
                                 }
                                 
                                 if (hasColor) {
-                                    //assume RGB for now...
                                     this._mesh._colors[0].push(colors[c0].r);
                                     this._mesh._colors[0].push(colors[c0].g);
                                     this._mesh._colors[0].push(colors[c0].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c0].a);
                                     this._mesh._colors[0].push(colors[c1].r);
                                     this._mesh._colors[0].push(colors[c1].g);
                                     this._mesh._colors[0].push(colors[c1].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c1].a);
                                     this._mesh._colors[0].push(colors[c2].r);
                                     this._mesh._colors[0].push(colors[c2].g);
                                     this._mesh._colors[0].push(colors[c2].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c2].a);
                                 }
                                 
                                 if (hasTexCoord) {
-                                    //assume 2d texCoords for now...
                                     this._mesh._texCoords[0].push(texCoords[t0].x);
                                     this._mesh._texCoords[0].push(texCoords[t0].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t0].z);
                                     this._mesh._texCoords[0].push(texCoords[t1].x);
                                     this._mesh._texCoords[0].push(texCoords[t1].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t1].z);
                                     this._mesh._texCoords[0].push(texCoords[t2].x);
                                     this._mesh._texCoords[0].push(texCoords[t2].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t2].z);
                                 }
                                 
                                 //faceCnt++;
@@ -3294,26 +3343,36 @@ x3dom.registerNodeType(
                                 }
                                 
                                 if (hasColor) {
-                                    //assume RGB for now...
                                     this._mesh._colors[0].push(colors[c0].r);
                                     this._mesh._colors[0].push(colors[c0].g);
                                     this._mesh._colors[0].push(colors[c0].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c0].a);
                                     this._mesh._colors[0].push(colors[c1].r);
                                     this._mesh._colors[0].push(colors[c1].g);
                                     this._mesh._colors[0].push(colors[c1].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c1].a);
                                     this._mesh._colors[0].push(colors[c2].r);
                                     this._mesh._colors[0].push(colors[c2].g);
                                     this._mesh._colors[0].push(colors[c2].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c2].a);
                                 }
                                 
                                 if (hasTexCoord) {
-                                    //assume 2d texCoords for now...
                                     this._mesh._texCoords[0].push(texCoords[t0].x);
                                     this._mesh._texCoords[0].push(texCoords[t0].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t0].z);
                                     this._mesh._texCoords[0].push(texCoords[t1].x);
                                     this._mesh._texCoords[0].push(texCoords[t1].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t1].z);
                                     this._mesh._texCoords[0].push(texCoords[t2].x);
                                     this._mesh._texCoords[0].push(texCoords[t2].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t2].z);
                                 }
                                 
                                 //faceCnt++;
@@ -3328,6 +3387,8 @@ x3dom.registerNodeType(
                     if (!hasTexCoord) {
                         this._mesh.calcTexCoords(texMode);
                     }
+                    
+                    //this._mesh.splitMesh();   //TODO: activate!
                     
                     //x3dom.debug.logInfo(this._mesh._indices[0].length);
                 } // if isMulti
