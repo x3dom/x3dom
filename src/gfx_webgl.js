@@ -1221,10 +1221,10 @@ x3dom.gfx_webgl = (function () {
     /** setup gl objects for shape */
 	Context.prototype.setupShape = function (gl, shape, viewarea) 
 	{
+        var q = 0;
+        
         if (shape._webgl !== undefined)
         {
-            // TODO; also update buffers >= 5 (split mesh case)!
-        
 			var oldLightsAndShadow = shape._webgl.lightsAndShadow
 			shape._webgl.lightsAndShadow = useLightingFunc(viewarea);
 			
@@ -1258,26 +1258,28 @@ x3dom.gfx_webgl = (function () {
                         }
                     }
                     
-                    //TODO; care for split mesh case!
-                    if (spOld.position !== undefined) 
+                    for (var q=0; q<shape._webgl.positions.length; q++)
                     {
-                        gl.deleteBuffer(shape._webgl.buffers[1]);
-                        gl.deleteBuffer(shape._webgl.buffers[0]);
-                    }
-                    
-                    if (spOld.normal !== undefined) 
-                    {
-                        gl.deleteBuffer(shape._webgl.buffers[2]);
-                    }
-                    
-                    if (spOld.texcoord !== undefined) 
-                    {
-                        gl.deleteBuffer(shape._webgl.buffers[3]);
-                    }
-                    
-                    if (spOld.color !== undefined)
-                    {
-                        gl.deleteBuffer(shape._webgl.buffers[4]);
+                        if (spOld.position !== undefined) 
+                        {
+                            gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
+                            gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
+                        }
+                        
+                        if (spOld.normal !== undefined) 
+                        {
+                            gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
+                        }
+                        
+                        if (spOld.texcoord !== undefined) 
+                        {
+                            gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
+                        }
+                        
+                        if (spOld.color !== undefined)
+                        {
+                            gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
+                        }
                     }
                     
                     for (inc=0; inc<shape._webgl.dynamicFields.length; inc++)
@@ -1291,17 +1293,20 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
-            if (!needFullReInit && shape._dirty.positions === true)
+            
+            for (q=0; q<shape._webgl.positions.length; q++)
             {
+              if (!needFullReInit && shape._dirty.positions === true)
+              {
                 if (shape._webgl.shader.position !== undefined) 
                 {
-                    shape._webgl.positions = shape._cf.geometry.node._mesh._positions[0];   //TODO
+                    shape._webgl.positions = shape._cf.geometry.node._mesh._positions[q];
                     
                     // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
-                    gl.deleteBuffer(shape._webgl.buffers[1]);
+                    gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
                     
                     var positionBuffer = gl.createBuffer();
-                    shape._webgl.buffers[1] = positionBuffer;
+                    shape._webgl.buffers[5*q+1] = positionBuffer;
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
                     var vertices = new Float32Array(shape._webgl.positions);
@@ -1315,17 +1320,17 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 shape._dirty.positions = false;
-            }
-            if (!needFullReInit && shape._dirty.colors === true)
-            {
+              }
+              if (!needFullReInit && shape._dirty.colors === true)
+              {
                 if (shape._webgl.shader.color !== undefined)
                 {
-                    shape._webgl.colors = shape._cf.geometry.node._mesh._colors[0]; //TODO
+                    shape._webgl.colors = shape._cf.geometry.node._mesh._colors[q];
                     
-                    gl.deleteBuffer(shape._webgl.buffers[4]);
+                    gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
                     
                     var colorBuffer = gl.createBuffer();
-                    shape._webgl.buffers[4] = colorBuffer;
+                    shape._webgl.buffers[5*q+4] = colorBuffer;
                     
                     var colors = new Float32Array(shape._webgl.colors);
                     
@@ -1338,8 +1343,9 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 shape._dirty.colors = false;
+              }
+              //TODO; check all other cases, too!
             }
-            //TODO; check all other cases, too!
             
             if (!needFullReInit)
                 return;
@@ -1728,7 +1734,7 @@ x3dom.gfx_webgl = (function () {
             }
         }
 		
-        var q, sp = shape._webgl.shader;
+        var sp = shape._webgl.shader;
         
         shape._webgl.buffers = [];
             
