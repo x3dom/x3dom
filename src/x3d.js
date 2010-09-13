@@ -1989,13 +1989,16 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 
 x3dom.Mesh.prototype.splitMesh = function()
 {
+    var MAX = 65535;
+    if (this._positions[0].length / 3 <= MAX)
+        return;
+    
     var positions = this._positions[0];
     var normals = this._normals[0];
     var texCoords = this._texCoords[0];
     var colors = this._colors[0];
     var indices = this._indices[0];
-    var MAX = 65535;
-    var i = 0, k;
+    var i = 0;
     
     do
     {
@@ -2005,9 +2008,9 @@ x3dom.Mesh.prototype.splitMesh = function()
         this._colors[i]    = [];
         this._indices[i]   = [];
         
-        k = ((indices.length - ((i + 1) * MAX) < 0) ? false : true);
+        var k = ((indices.length - ((i + 1) * MAX) < 0) ? false : true);
         
-        if (k) this._indices[i] = indices.slice(i * MAX, MAX);
+        if (k) this._indices[i] = indices.slice(i * MAX, (i + 1) * MAX);
         else   this._indices[i] = indices.slice(i * MAX);
         
         if (i) {
@@ -2017,21 +2020,21 @@ x3dom.Mesh.prototype.splitMesh = function()
             }
         }
         
-        if (k) this._positions[i] = positions.slice(i * MAX * 3, 3 * MAX);
+        if (k) this._positions[i] = positions.slice(i * MAX * 3, 3 * (i + 1) * MAX);
         else   this._positions[i] = positions.slice(i * MAX * 3);
         
         if (normals.length) {
-            if (k) this._normals[i] = normals.slice(i * MAX * 3, 3 * MAX);
+            if (k) this._normals[i] = normals.slice(i * MAX * 3, 3 * (i + 1) * MAX);
             else   this._normals[i] = normals.slice(i * MAX * 3);
         }
         if (texCoords.length) {
             if (k) this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents, 
-                                                        this._numTexComponents * MAX);
+                                                        this._numTexComponents * (i + 1) * MAX);
             else   this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents);
         }
         if (colors.length) {
             if (k) this._colors[i] = colors.slice(i * MAX * this._numColComponents, 
-                                                  this._numColComponents * MAX);
+                                                  this._numColComponents * (i + 1) * MAX);
             else   this._colors[i] = colors.slice(i * MAX * this._numColComponents);
         }
     }
@@ -3164,8 +3167,8 @@ x3dom.registerNodeType(
                 var i, t, cnt, faceCnt;
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
                 
-                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
-                     //(positions.length / 3 > 65535) || 
+                if ( (this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
+                     (positions.length / 3 > 65535) || 
                      (hasNormal && hasNormalInd) || 
                      (hasTexCoord && hasTexCoordInd) || 
                      (hasColor && hasColorInd) )
@@ -3388,9 +3391,9 @@ x3dom.registerNodeType(
                         this._mesh.calcTexCoords(texMode);
                     }
                     
-                    //this._mesh.splitMesh();   //TODO: activate!
+                    this._mesh.splitMesh();
                     
-                    //x3dom.debug.logInfo(this._mesh._indices[0].length);
+                    //x3dom.debug.logInfo(this._mesh._indices.length);
                 } // if isMulti
                 else
                 {
@@ -3435,8 +3438,12 @@ x3dom.registerNodeType(
                 }
                 
                 this._mesh._invalidate = true;
-                this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                this._mesh._numFaces = 0;
+                this._mesh._numCoords = 0;
+                for (i=0; i<this._mesh._indices.length; i++) {
+                    this._mesh._numFaces += this._mesh._indices[i].length / 3;
+                    this._mesh._numCoords += this._mesh._positions[i].length / 3;
+                }
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -3444,8 +3451,29 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
-                var pnts;
-                var i, n;
+                var pnts = this._cf.coord.node._vf.point;
+                var i, n = pnts.length;
+                
+                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) ||
+                    (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
+					(this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
+					(this._vf.colorIndex.length > 0 && this._cf.color.node))
+                {
+                    // TODO; FIXME
+                    x3dom.debug.logWarning("Ipol with creaseAngle == 0, too many coords, or multi-index!");
+                    
+                    /** HACK */
+                    this.nodeChanged();
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                    });
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
+                    });
+                    
+                    return;
+                }
                 
                 if (fieldName == "coord")
                 {
@@ -5812,6 +5840,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 				else {
 					this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
                 }
+                
+                x3dom.debug.logContainer.style.visibility = 
+                        (this._viewarea._visDbgBuf === true) ? "visible" : "hidden";
             }
             break;
         case 108: /* l, light view */ 

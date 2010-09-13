@@ -517,9 +517,7 @@ x3dom.userAgentFeature = {
 		
 		// Activate debugging/logging for x3dom. Logging will only work for
         // all log calls after this line!
-		if (activateLog) {
-			x3dom.debug.activate();
-		}
+		x3dom.debug.activate(activateLog);
         
         if (x3dom.versionInfo !== undefined) {
             x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + 
