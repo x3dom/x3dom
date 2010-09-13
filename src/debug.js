@@ -62,12 +62,14 @@ x3dom.debug = {
         x3dom.debug.isSetup = true;
     },
 	
-	activate: function() {
+	activate: function(visible) {
 		x3dom.debug.isActive = true;
 		
         var aDiv = document.createElement("div");
         aDiv.style.clear = "both";
         aDiv.appendChild(document.createTextNode("\r\n"));
+        aDiv.style.visibility = (visible) ? "visible" : "hidden";
+        x3dom.debug.logContainer.style.visibility = (visible) ? "visible" : "hidden";
         document.body.appendChild(aDiv);
 		document.body.appendChild(x3dom.debug.logContainer);
 	},
