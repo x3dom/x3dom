@@ -66,6 +66,15 @@ x3dom.fields.SFMatrix4f.identity = function () {
     );
 };
 
+x3dom.fields.SFMatrix4f.zeroMatrix = function () {
+    return new x3dom.fields.SFMatrix4f(
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0,
+        0, 0, 0, 0
+    );
+};
+
 x3dom.fields.SFMatrix4f.translation = function (vec) {
     return new x3dom.fields.SFMatrix4f(
         1, 0, 0, vec.x,
@@ -247,6 +256,49 @@ x3dom.fields.SFMatrix4f.prototype.transpose = function () {
     );
 };
 
+x3dom.fields.SFMatrix4f.prototype.negate = function () {
+    return new x3dom.fields.SFMatrix4f(
+        -this._00, -this._01, -this._02, -this._03,
+        -this._10, -this._11, -this._12, -this._13,
+        -this._20, -this._21, -this._22, -this._23,
+        -this._30, -this._31, -this._32, -this._33
+    );
+};
+
+x3dom.fields.SFMatrix4f.prototype.multiply = function (s) { // scale() is kinda ctor
+    return new x3dom.fields.SFMatrix4f(
+        s*this._00, s*this._01, s*this._02, s*this._03,
+        s*this._10, s*this._11, s*this._12, s*this._13,
+        s*this._20, s*this._21, s*this._22, s*this._23,
+        s*this._30, s*this._31, s*this._32, s*this._33
+    );
+};
+
+x3dom.fields.SFMatrix4f.prototype.add = function (that) {
+    return new x3dom.fields.SFMatrix4f(
+        this._00+that._00, this._01+that._01, this._02+that._02, this._03+that._03,
+        this._10+that._10, this._11+that._11, this._12+that._12, this._13+that._13,
+        this._20+that._20, this._21+that._21, this._22+that._22, this._23+that._23,
+        this._30+that._30, this._31+that._31, this._32+that._32, this._33+that._33
+    );
+};
+
+x3dom.fields.SFMatrix4f.prototype.addScaled = function (that, s) {
+    return new x3dom.fields.SFMatrix4f(
+        this._00+s*that._00, this._01+s*that._01, this._02+s*that._02, this._03+s*that._03,
+        this._10+s*that._10, this._11+s*that._11, this._12+s*that._12, this._13+s*that._13,
+        this._20+s*that._20, this._21+s*that._21, this._22+s*that._22, this._23+s*that._23,
+        this._30+s*that._30, this._31+s*that._31, this._32+s*that._32, this._33+s*that._33
+    );
+};
+
+x3dom.fields.SFMatrix4f.prototype.setValues = function (that) {
+    this._00 = that._00; this._01 = that._01; this._02 = that._02; this._03 = that._03;
+    this._10 = that._10; this._11 = that._11; this._12 = that._12; this._13 = that._13;
+    this._20 = that._20; this._21 = that._21; this._22 = that._22; this._23 = that._23;
+    this._30 = that._30; this._31 = that._31; this._32 = that._32; this._33 = that._33;
+};
+
 x3dom.fields.SFMatrix4f.prototype.toGL = function () {
     return [
         this._00, this._10, this._20, this._30,
@@ -254,6 +306,86 @@ x3dom.fields.SFMatrix4f.prototype.toGL = function () {
         this._02, this._12, this._22, this._32,
         this._03, this._13, this._23, this._33
     ];
+};
+
+x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
+    var iX = x3dom.fields.SFMatrix4f.identity(), 
+         Y = x3dom.fields.SFMatrix4f.identity(), 
+        iY = x3dom.fields.SFMatrix4f.identity(), 
+        result = x3dom.fields.SFMatrix4f.identity();
+    var i, g, ig;
+    
+    result.setValues(this);
+    
+    for (i=0; i<6; i++)
+    {
+        iX = result.inverse();
+        iY = Y.inverse();
+        
+        g = Math.abs( Math.pow(result.det() * Y.det(), -0.125) );
+        ig = 1.0 / g;
+        
+        result = result.multiply(g);
+        result = result.addScaled(iY, ig);
+        result = result.multiply(0.5);
+        
+        Y = Y.multiply(g);
+        Y = Y.addScaled(iX, ig);
+        Y = Y.multiply(0.5);
+    }
+    
+    return result;
+};
+
+x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
+    var t, m = 0;
+
+    if((t = Math.abs(this._00)) > m)
+        m = t;
+    if((t = Math.abs(this._01)) > m)
+        m = t;
+    if((t = Math.abs(this._02)) > m)
+        m = t;
+    if((t = Math.abs(this._03)) > m)
+        m = t;
+    if((t = Math.abs(this._10)) > m)
+        m = t;
+    if((t = Math.abs(this._11)) > m)
+        m = t;
+    if((t = Math.abs(this._12)) > m)
+        m = t;
+    if((t = Math.abs(this._13)) > m)
+        m = t;
+    if((t = Math.abs(this._20)) > m)
+        m = t;
+    if((t = Math.abs(this._21)) > m)
+        m = t;
+    if((t = Math.abs(this._22)) > m)
+        m = t;
+    if((t = Math.abs(this._23)) > m)
+        m = t;
+    if((t = Math.abs(this._30)) > m)
+        m = t;
+    if((t = Math.abs(this._31)) > m)
+        m = t;
+    if((t = Math.abs(this._32)) > m)
+        m = t;
+    if((t = Math.abs(this._33)) > m)
+        m = t;
+
+    return m;
+};
+
+x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
+    var eps = x3dom.fields.Eps;
+    return Math.abs(this._00-that._00) < eps && Math.abs(this._01-that._01) < eps && 
+           Math.abs(this._02-that._02) < eps && Math.abs(this._03-that._03) < eps &&
+           Math.abs(this._10-that._10) < eps && Math.abs(this._11-that._11) < eps && 
+           Math.abs(this._12-that._12) < eps && Math.abs(this._13-that._13) < eps &&
+           Math.abs(this._20-that._20) < eps && Math.abs(this._21-that._21) < eps && 
+           Math.abs(this._22-that._22) < eps && Math.abs(this._23-that._23) < eps &&
+           Math.abs(this._30-that._30) < eps && Math.abs(this._31-that._31) < eps && 
+           Math.abs(this._32-that._32) < eps && Math.abs(this._33-that._33) < eps;
 };
 
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scale) {
@@ -301,6 +433,106 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation,
     scale.y = S.y;
     scale.z = S.z;
     //return [ T, S, angle_x, angle_y, angle_z ];
+};
+
+x3dom.fields.SFMatrix4f.prototype.log = function () {
+    var maxiter = 12;
+    var k = 0, i = 0;
+    var eps = 0.000000000001;
+    var A = x3dom.fields.SFMatrix4f.identity(), 
+        Z = x3dom.fields.SFMatrix4f.identity(), 
+        result = x3dom.fields.SFMatrix4f.identity();
+
+    // Take repeated square roots to reduce spectral radius
+    A.setValues(this)
+    Z.setValues(this);
+
+    Z._00 -= 1;
+    Z._11 -= 1;
+    Z._22 -= 1;
+    Z._33 -= 1;
+
+    while (Z.normInfinity() > 0.5)
+    {
+        A = A.sqrt( );
+        Z.setValues(A);
+
+        Z._00 -= 1;
+        Z._11 -= 1;
+        Z._22 -= 1;
+        Z._33 -= 1;
+
+        k++;
+    }
+
+    A._00 -= 1;
+    A._11 -= 1;
+    A._22 -= 1;
+    A._33 -= 1;
+
+    A = A.negate();
+    result.setValues(A);
+    Z.setValues(A);
+
+    i = 1;
+
+    while (Z.normInfinity() > eps && i < maxiter)
+    {
+        Z = Z.mult(A);
+
+        i++;
+
+        result = result.addScaled(Z, (1.0 / i));
+    }
+
+    result = result.multiply(-1.0 * (1 << k));
+
+    return result;
+};
+
+x3dom.fields.SFMatrix4f.prototype.exp = function () {
+    var q = 6;
+    var A = x3dom.fields.SFMatrix4f.identity(), 
+        D = x3dom.fields.SFMatrix4f.identity(), 
+        N = x3dom.fields.SFMatrix4f.identity(), 
+        result = x3dom.fields.SFMatrix4f.identity();
+    var j = 1, k, c = 1.0;
+    
+    A.setValues(this);
+
+    j += Math.log(A.normInfinity() / 0.693);
+    
+    if (j < 0) 
+        j = 0;
+
+    A = A.multiply(1.0 / (1 << j));
+
+    for (k = 1; k <= q; k++)
+    {
+        c *= (q - k + 1) / (k * (2 * q - k + 1));
+
+        result = A.mult(result);
+
+        N = N.addScaled(result, c);
+
+        if (k % 2) 
+        {
+            D = D.addScaled(result, -c);
+        }
+        else
+        {
+            D = D.addScaled(result, c);
+        }
+    }
+    
+    result = D.inverse().mult(N);
+
+    for (k = 0; k < j; k++)
+    {
+        result = result.mult(result);
+    }
+    
+    return result;
 };
 
 x3dom.fields.SFMatrix4f.prototype.det3 = function (
