@@ -392,20 +392,18 @@ x3dom.MatrixMixer.prototype.calcFraction = function(time) {
 
 x3dom.MatrixMixer.prototype.setBeginMatrix = function(mat) {
  	this._beginMat.setValues(mat);
-	this._beginInvMat = this._beginMat.inverse();
+	this._beginInvMat = mat.inverse();
 	this._beginLogMat = x3dom.fields.SFMatrix4f.zeroMatrix();
 };
 
 x3dom.MatrixMixer.prototype.setEndMatrix = function(mat) {
     this._endMat.setValues(mat);
-	var tmp = mat.mult(this._beginInvMat);
-	this._endLogMat = tmp.log();
+	this._endLogMat = mat.mult(this._beginInvMat).log();
 };
 
 x3dom.MatrixMixer.prototype.mix = function(time) {
-    var mat;
-    var fraction = 0;
-
+    var mat = x3dom.fields.SFMatrix4f.zeroMatrix();
+    
     if (time <= this._beginTime)
     {
         mat.setValues(this._beginLogMat);
@@ -418,16 +416,15 @@ x3dom.MatrixMixer.prototype.mix = function(time) {
         }
         else
         {
-            fraction = this.calcFraction(time);
+            var fraction = this.calcFraction(time);
             mat = this._endLogMat.addScaled(this._beginLogMat, -1);
-            mat = mat.multiply(fraction);
-            mat = mat.add(this._beginLogMat);
+            mat = mat.multiply(fraction).add(this._beginLogMat);
         }
     }
     
-    result = mat.exp().mult(this._beginMat);
+    mat = mat.exp().mult(this._beginMat);
     
-    return result;
+    return mat;
 };
 
 
@@ -5495,36 +5492,34 @@ x3dom.Viewarea.prototype.showAll = function()
         dia = min.add(dia.multiply(0.5));
         dia.z += (dist1 > dist2 ? dist1 : dist2);
         
+        // EXPERIMENTAL (TODO: parent trafo of vp)
+        this._mixer._beginTime = this._lastTS;
+        this._mixer._endTime = this._lastTS + this._transitionTime;
+        //this._mixer.setBeginMatrix(this._scene.getViewpoint()._viewMatrix);
+        this._mixer.setBeginMatrix(this.getViewMatrix());
+        this._mixer.setEndMatrix(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
+        
         this._rotMat = x3dom.fields.SFMatrix4f.identity();
         this._transMat = x3dom.fields.SFMatrix4f.identity();
         this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-        viewpoint.setView(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
-        
-        // EXPERIMENTAL
-        /*
-        this._mixer._beginTime = this._lastTS;
-        this._mixer._endTime = this._lastTS + this._transitionTime;
-        this._mixer.setBeginMatrix(this._scene.getViewpoint()._viewMatrix);
-        this._mixer.setEndMatrix(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
-        */
+        //viewpoint.setView(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
     }
 };
 
 x3dom.Viewarea.prototype.resetView = function()
 {
+    // EXPERIMENTAL (TODO: parent trafo of vp)
+    this._mixer._beginTime = this._lastTS;
+    this._mixer._endTime = this._lastTS + this._transitionTime;
+    //this._mixer.setBeginMatrix(this._scene.getViewpoint()._viewMatrix);
+    this._mixer.setBeginMatrix(this.getViewMatrix());
+    this._scene.getViewpoint().resetView()
+    this._mixer.setEndMatrix(this._scene.getViewpoint()._viewMatrix);
+    
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-    this._scene.getViewpoint().resetView();
-    
-    // EXPERIMENTAL
-    /*
-    this._mixer._beginTime = this._lastTS;
-    this._mixer._endTime = this._lastTS + this._transitionTime;
-    this._mixer.setBeginMatrix(this._scene.getViewpoint()._viewMatrix);
-    this._scene.getViewpoint().resetView()
-    this._mixer.setEndMatrix(this._scene.getViewpoint()._viewMatrix);
-    */
+    //this._scene.getViewpoint().resetView();
 };
 
 x3dom.Viewarea.prototype.checkEvents = function (obj)
