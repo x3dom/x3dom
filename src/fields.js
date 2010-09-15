@@ -338,46 +338,49 @@ x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
 };
 
 x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
-    var t, m = 0;
+    var t = 0, m = 0;
 
-    if((t = Math.abs(this._00)) > m)
+    if ((t = Math.abs(this._00)) > m)
         m = t;
-    if((t = Math.abs(this._01)) > m)
+    if ((t = Math.abs(this._01)) > m)
         m = t;
-    if((t = Math.abs(this._02)) > m)
+    if ((t = Math.abs(this._02)) > m)
         m = t;
-    if((t = Math.abs(this._03)) > m)
+    if ((t = Math.abs(this._03)) > m)
         m = t;
-    if((t = Math.abs(this._10)) > m)
+        
+    if ((t = Math.abs(this._10)) > m)
         m = t;
-    if((t = Math.abs(this._11)) > m)
+    if ((t = Math.abs(this._11)) > m)
         m = t;
-    if((t = Math.abs(this._12)) > m)
+    if ((t = Math.abs(this._12)) > m)
         m = t;
-    if((t = Math.abs(this._13)) > m)
+    if ((t = Math.abs(this._13)) > m)
         m = t;
-    if((t = Math.abs(this._20)) > m)
+        
+    if ((t = Math.abs(this._20)) > m)
         m = t;
-    if((t = Math.abs(this._21)) > m)
+    if ((t = Math.abs(this._21)) > m)
         m = t;
-    if((t = Math.abs(this._22)) > m)
+    if ((t = Math.abs(this._22)) > m)
         m = t;
-    if((t = Math.abs(this._23)) > m)
+    if ((t = Math.abs(this._23)) > m)
         m = t;
-    if((t = Math.abs(this._30)) > m)
+        
+    if ((t = Math.abs(this._30)) > m)
         m = t;
-    if((t = Math.abs(this._31)) > m)
+    if ((t = Math.abs(this._31)) > m)
         m = t;
-    if((t = Math.abs(this._32)) > m)
+    if ((t = Math.abs(this._32)) > m)
         m = t;
-    if((t = Math.abs(this._33)) > m)
+    if ((t = Math.abs(this._33)) > m)
         m = t;
 
     return m;
 };
 
 x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
-    var eps = x3dom.fields.Eps;
+    var eps = 0.000000000001;
     return Math.abs(this._00-that._00) < eps && Math.abs(this._01-that._01) < eps && 
            Math.abs(this._02-that._02) < eps && Math.abs(this._03-that._03) < eps &&
            Math.abs(this._10-that._10) < eps && Math.abs(this._11-that._11) < eps && 
@@ -485,8 +488,8 @@ x3dom.fields.SFMatrix4f.prototype.log = function () {
         result = result.addScaled(Z, (1.0 / i));
     }
 
-    result = result.multiply(-1.0 * (1 << k));
-
+    result = result.multiply((-1.0) * (1 << k));
+    
     return result;
 };
 
@@ -496,11 +499,11 @@ x3dom.fields.SFMatrix4f.prototype.exp = function () {
         D = x3dom.fields.SFMatrix4f.identity(), 
         N = x3dom.fields.SFMatrix4f.identity(), 
         result = x3dom.fields.SFMatrix4f.identity();
-    var j = 1, k, c = 1.0;
+    var j = 1, k = 0, c = 1.0;
     
     A.setValues(this);
 
-    j += Math.log(A.normInfinity() / 0.693);
+    j += Math.floor(Math.log(A.normInfinity() / 0.693));
     
     if (j < 0) 
         j = 0;
