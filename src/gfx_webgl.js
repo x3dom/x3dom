@@ -666,6 +666,42 @@ x3dom.gfx_webgl = (function () {
 		return wrapShaderProgram(gl, prog);
 	}
 	
+	function scaleImage(image)
+	{
+		if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
+			var canvas = document.createElement("canvas");
+			canvas.width = nextHighestPowerOfTwo(image.height);
+			canvas.height = nextHighestPowerOfTwo(image.height);
+			var ctx = canvas.getContext("2d");
+			ctx.drawImage(image,
+						  0, 0, image.width, image.height,
+                          0, 0, canvas.width, canvas.height);
+			image = canvas;
+		}
+		return image
+	}
+	
+	function isPowerOfTwo(x) 
+	{
+		return (x & (x - 1)) == 0;
+	}
+	
+	function nextHighestPowerOfTwo(x) 
+	{
+		--x;
+		for (var i = 1; i < 32; i <<= 1) {
+			x = x | x >> i;
+		}
+		return x + 1;
+	}
+	
+	function nextBestPowerOfTwo(x)
+	{
+		log2x = Math.log(x) / Math.log(2)
+		return Math.pow(2, Math.round(log2x) );
+	}
+
+	
 	//function getShaderProgram(gl, ids) 
 	Context.prototype.getShaderProgram = function(gl, ids) 
 	{
@@ -1622,7 +1658,11 @@ x3dom.gfx_webgl = (function () {
                     that._nameSpace.doc.downloadCount += 1;
 
                     image.onload = function()
-                    {
+                    {			
+						if(tex._vf.scale){
+							image = scaleImage(image);
+						}
+						
 						that._nameSpace.doc.needRender = true;
 						that._nameSpace.doc.downloadCount -= 1;
 						
@@ -1899,6 +1939,9 @@ x3dom.gfx_webgl = (function () {
                 
                 image.onload = function()
                 {
+					if(tex._vf.scale){
+						image = scaleImage(image);
+					}
 					bgnd._nameSpace.doc.needRender = true;
 					bgnd._nameSpace.doc.downloadCount -= 1;
                     
