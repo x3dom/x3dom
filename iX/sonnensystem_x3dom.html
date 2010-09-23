@@ -1,0 +1,84 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+		<title>X3Dom example</title>
+        <link rel="stylesheet" type="text/css" 
+              href="http://www.x3dom.org/x3dom/release/x3dom.css">
+        </link>
+        <script type="text/javascript" 
+                src="http://www.x3dom.org/x3dom/release/x3dom.js">
+        </script>
+	</head>
+       
+<body>
+	<p>
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="vrml" width="400px" height="300px">
+			<Scene>
+				<Transform scale="4.5 4.5 4.5" translation="0 -3 -5">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5"></Material>
+						</Appearance>
+						<Sphere></Sphere>
+					</Shape>
+				</Transform>
+				<Transform scale="1.1 1.1 1.1" translation="-2.5 -1 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5"></Material>
+						</Appearance>
+						<Sphere></Sphere>
+					</Shape>
+				</Transform>
+				<Transform scale="0.5 0.5 0.5" translation="1 -1 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5"></Material>
+						</Appearance>
+						<Sphere></Sphere>
+					</Shape>
+				</Transform>
+				<Transform scale="0.2 0.2 0.2" translation="4 -2 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
+						</Appearance>
+						<Sphere></Sphere>
+					</Shape>
+				</Transform>
+                <Background></Background>
+                <DirectionalLight direction='0 -1 0' intensity="0.3"></DirectionalLight>
+			</Scene>
+        </X3D>
+        
+        <br/>
+        
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="webgl" width="400px" height="300px">
+			<Scene>
+				<Transform scale="2 2 2" translation="-2 0 0">
+					<Shape>
+						<Appearance>
+                            <Material diffuseColor="1 1 1" specularColor=".2 .2 .2"></Material>
+							<ImageTexture url="earth.jpg"></ImageTexture>
+						</Appearance>
+						<Sphere></Sphere>
+					</Shape>
+				</Transform>
+				<Transform scale="1.2 1.2 1.2" translation="2 0 0">
+					<Shape>
+						<Appearance>
+                            <Material diffuseColor="1 1 1" specularColor=".2 .2 .2"></Material>
+							<ImageTexture url="mars.jpg"></ImageTexture>
+						</Appearance>
+						<Sphere></Sphere>
+					</Shape>
+				</Transform>
+                <Background></Background>
+                <DirectionalLight direction='0 -1 0' intensity="0.3"></DirectionalLight>
+			</Scene>
+		</X3D>
+	</p>
+</body>
+</html>

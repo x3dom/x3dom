@@ -1,0 +1,27 @@
+<html>
+	<head>
+		<title>My first X3DOM page</title>
+		<link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/release/x3dom.css"></link>
+		<script type="text/javascript" src="http://www.x3dom.org/x3dom/release/x3dom.js"></script>
+	</head>
+	<body>
+		<h1>My X3DOM world</h1>
+		<p>
+			This is my first html page with some 3d objects.
+		</p>
+		<x3d width="500px" height="400px">
+			<scene>
+                <background skyColor="0 0 1"></background>
+				<transform translation="0 0 0">
+					<shape>
+						<appearance>
+                            <imageTexture url="iX_logo.png"></imageTexture>
+							<material diffuseColor='.7 .7 .7' specularColor=".1 .1 .1"></material>	
+						</appearance>
+						<box></box>
+					</shape>
+				</transform>
+			</scene>
+		</x3d>
+	</body>
+</html>
