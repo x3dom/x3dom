@@ -2684,11 +2684,8 @@ x3dom.gfx_webgl = (function () {
                     //x3dom.debug.logInfo("indexLength: " + shape._webgl.indexes[q].length);
                     if (shape._webgl.indexes && shape._webgl.indexes[q])
                     gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
-                    
-                    this.numFaces += shape._cf.geometry.node._mesh._numFaces;
                 }
               }
-              this.numCoords += shape._cf.geometry.node._mesh._numCoords;
             }
             catch (e) {
                 x3dom.debug.logException(shape._DEF + " renderScene(): " + e);
@@ -2707,6 +2704,10 @@ x3dom.gfx_webgl = (function () {
                 gl.disableVertexAttribArray(sp.color);
             }
         }
+        
+        if (shape._webgl.indexes && shape._webgl.indexes[0])
+            this.numFaces += shape._cf.geometry.node._mesh._numFaces;
+        this.numCoords += shape._cf.geometry.node._mesh._numCoords;
 		
 		for (cnt=0; shape._webgl.texture !== undefined && 
 					cnt < shape._webgl.texture.length; cnt++)
