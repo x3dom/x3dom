@@ -697,7 +697,7 @@ x3dom.gfx_webgl = (function () {
 	
 	function nextBestPowerOfTwo(x)
 	{
-		log2x = Math.log(x) / Math.log(2)
+		var log2x = Math.log(x) / Math.log(2)
 		return Math.pow(2, Math.round(log2x) );
 	}
 
@@ -1939,9 +1939,6 @@ x3dom.gfx_webgl = (function () {
                 
                 image.onload = function()
                 {
-					if(tex._vf.scale){
-						image = scaleImage(image);
-					}
 					bgnd._nameSpace.doc.needRender = true;
 					bgnd._nameSpace.doc.downloadCount -= 1;
                     
