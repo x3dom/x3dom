@@ -1,0 +1,68 @@
+<html>
+	<head>
+		<title>X3Dom example</title>
+        <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/release/x3dom.css">
+        <script type="text/javascript" src="http://www.x3dom.org/x3dom/release/x3dom.js"></script>
+	</head>
+    
+<body>
+    <h1>Mond und Erde (animiert mit Standard-X3D-Interpolatoren)</h1>
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
+             id="Solsystem" width="500px" height="400px">
+			<Scene>
+                <Background backUrl="realsky_BK.jpg" bottomUrl="realsky_DN.jpg" 
+                            frontUrl="realsky_FR.jpg" leftUrl="realsky_LF.jpg" 
+                            rightUrl="realsky_RT.jpg" topUrl="realsky_UP.jpg">
+                </Background>
+				<Transform DEF="earth" translation="0 0 0" scale="1.25 1.25 1.25">
+					<Shape>
+						<Appearance>
+                            <!-- set specularColor to have some shiny specular highlights -->
+                            <Material DEF="mat" diffuseColor="1 1 1" specularColor=".2 .2 .2">
+                            </Material>
+							<ImageTexture url="earth.jpg"></ImageTexture>
+						</Appearance>
+						<Sphere DEF="geo"></Sphere>
+					</Shape>
+				</Transform>
+				<Transform DEF="moon" translation="11 0 0" center="-11 0 0" scale="0.35 0.35 0.35">
+					<Shape>
+						<Appearance>
+                            <Material USE="mat"></Material>
+							<ImageTexture url="moon.jpg"></ImageTexture>
+						</Appearance>
+                        <!-- using geometry has the advantage that internally the 
+                             whole 3d data only exists once instead of n-times
+                          -->
+						<Sphere USE="geo"></Sphere>
+					</Shape>
+				</Transform>
+                <!-- an additional light to brighten up the scene -->
+                <DirectionalLight direction='0 -1 0' intensity="0.3"></DirectionalLight>
+                
+                <!-- Timer and interpolators for animation of earth and moon -->
+                <TimeSensor DEF='TS_erde' cycleInterval='1' loop='true'></TimeSensor>
+                <OrientationInterpolator DEF='OI_erde' key='0, 0.5, 1' 
+                                         keyValue='0 1 0 0, 0 1 0 3.14, 0 1 0 6.28'>
+                </OrientationInterpolator>
+                <ROUTE fromNode='TS_erde' fromField='fraction_changed' 
+                       toNode='OI_erde' toField='set_fraction'>
+                </ROUTE>
+                <ROUTE fromNode='OI_erde' fromField='value_changed' 
+                       toNode='earth' toField='set_rotation'>
+                </ROUTE>
+                
+                <TimeSensor DEF='TS_mond' cycleInterval='27' loop='true'></TimeSensor>
+                <OrientationInterpolator DEF='OI_mond' key='0, 0.5, 1' 
+                                         keyValue='0 1 0 0, 0 1 0 3.14, 0 1 0 6.28'>
+                </OrientationInterpolator>
+                <ROUTE fromNode='TS_mond' fromField='fraction_changed' 
+                       toNode='OI_mond' toField='set_fraction'>
+                </ROUTE>
+                <ROUTE fromNode='OI_mond' fromField='value_changed' 
+                       toNode='moon' toField='set_rotation'>
+                </ROUTE>
+			</Scene>
+		</X3D>
+</body>
+</html>
