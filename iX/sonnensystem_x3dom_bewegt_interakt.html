@@ -19,10 +19,26 @@
                 to   { -webkit-transform: rotateY(360deg) translate3d(4px,0px,0px); }
             }
         </style>
+        <script type="text/javascript">
+            function info(str)
+            {
+                var frame = document.getElementById("meinInfoFrame");
+                
+                if (str == "Erde") {
+                    frame.src = "http://de.wikipedia.org/wiki/Erde";
+                }
+                else if (str == "Mond") {
+                    frame.src = "http://de.wikipedia.org/wiki/Mond";
+                }
+                else {
+                    // hier koennte man noch den Mars usw. ergaenzen
+                }
+            }
+        </script>
 	</head>
     
 <body>
-    <h1>Mond und Erde (animiert mit CSS-Transforms)</h1>
+    <h1>Informationen zum Sonnensystem</h1>
         <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
              id="Solsystem" width="500px" height="400px">
 			<Scene>
@@ -30,7 +46,7 @@
                             frontUrl="realsky_FR.jpg" leftUrl="realsky_LF.jpg" 
                             rightUrl="realsky_RT.jpg" topUrl="realsky_UP.jpg">
                 </Background>
-				<Transform id="earth">
+				<Transform id="earth" onclick="info('Erde');">
 					<Shape>
 						<Appearance>
                             <!-- set specularColor to have some shiny specular highlights -->
@@ -41,7 +57,7 @@
 						<Sphere radius="1.25"></Sphere>
 					</Shape>
 				</Transform>
-				<Transform id="moon">
+				<Transform id="moon" onclick="info('Mond');">
 					<Shape>
 						<Appearance>
                             <Material USE="mat"></Material>
@@ -54,5 +70,10 @@
                 <DirectionalLight direction='0 -1 0' intensity="0.3"></DirectionalLight>
 			</Scene>
 		</X3D>
+        
+    <h2>Himmelsk&ouml;rper anklicken, um mehr dar&uuml;ber zu erfahren (s.u. Wikipedia-Artikel)</h2>
+        <iframe id="meinInfoFrame" width="800" height="350" marginheight="5" marginwidth="5" 
+            frameborder="0" src="http://de.wikipedia.org/wiki/Sonnensystem"> 
+        </iframe>
 </body>
 </html>

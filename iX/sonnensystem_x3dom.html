@@ -2,17 +2,19 @@
 	<head>
 		<title>X3Dom example</title>
         <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/release/x3dom.css">
-        </link>
-        <script type="text/javascript" src="http://www.x3dom.org/x3dom/release/x3dom.js">
-        </script>
+        <script type="text/javascript" src="http://www.x3dom.org/x3dom/release/x3dom.js"></script>
 	</head>
     
 <body>
-	<p>
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="Solsystem" width="500px" height="500px">
+    <h1>Mond und Erde</h1>
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
+             id="Solsystem" width="500px" height="500px">
 			<Scene>
-                <Background backUrl="realsky_BK.jpg" bottomUrl="realsky_DN.jpg" frontUrl="realsky_FR.jpg" leftUrl="realsky_LF.jpg" rightUrl="realsky_RT.jpg" topUrl="realsky_UP.jpg"></Background>
-				<Transform translation="0 0 0">
+                <Background backUrl="realsky_BK.jpg" bottomUrl="realsky_DN.jpg" 
+                            frontUrl="realsky_FR.jpg" leftUrl="realsky_LF.jpg" 
+                            rightUrl="realsky_RT.jpg" topUrl="realsky_UP.jpg">
+                </Background>
+				<Transform>
 					<Shape>
 						<Appearance>
                             <Material diffuseColor="1 1 1" specularColor=".2 .2 .2"></Material>
@@ -21,17 +23,16 @@
 						<Sphere radius="1.25"></Sphere>
 					</Shape>
 				</Transform>
-				<Transform translation="3 0 0">
+				<Transform translation="3.5 0 0">
 					<Shape>
 						<Appearance>
                             <Material diffuseColor="1 1 1" specularColor=".2 .2 .2"></Material>
 							<ImageTexture url="moon.jpg"></ImageTexture>
 						</Appearance>
-						<Sphere radius="0.5"></Sphere>
+						<Sphere radius="0.35"></Sphere>
 					</Shape>
 				</Transform>
 			</Scene>
 		</X3D>
-	</p>
 </body>
 </html>
