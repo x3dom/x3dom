@@ -1,14 +1,9 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<title>X3Dom example</title>
-        <link rel="stylesheet" type="text/css" 
-              href="http://www.x3dom.org/x3dom/release/x3dom.css">
+        <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/release/x3dom.css">
         </link>
-        <script type="text/javascript" 
-                src="http://www.x3dom.org/x3dom/release/x3dom.js">
+        <script type="text/javascript" src="http://www.x3dom.org/x3dom/release/x3dom.js">
         </script>
     	<style type="text/css">
             #erde {
@@ -18,45 +13,37 @@
                 from { -webkit-transform: translate3d(-3px,0px,0px) rotateY(0) scale3d(2,2,2); }
                 to   { -webkit-transform: translate3d(-3px,0px,0px) rotateY(360deg) scale3d(2,2,2); }
             }
-            #mars {
-                -webkit-animation: spinMars 8s infinite linear;
+            #moon {
+                -webkit-animation: spinMoon 8s infinite linear;
             }
-            @-webkit-keyframes spinMars {
+            @-webkit-keyframes spinMoon {
                 from { -webkit-transform: translate3d(4px,0px,0px) rotateY(0) scale3d(1.1,1.1,1.1); }
                 to   { -webkit-transform: translate3d(4px,0px,0px) rotateY(360deg) scale3d(1.1,1.1,1.1); }
-            }
-            #box {
-                font-family: Helvetica, sans-serif;
-                font-size: 14px;
-                background-color: #eb7a7a;
-                padding: 1em;
-                width: 200px;
-                height: 50px;
             }
         </style>
         <script type="text/javascript">
             function info(str)
             {
-            /*
-                var elem = document.getElementById('box');
-                elem.style.visibility = "visible";
-                elem.innerHTML = str;
-            */
-                alert(str);
+                var frame = document.getElementById("meinInfoFrame");
+                
+                if (str == "Erde") {
+                    frame.src = "http://de.wikipedia.org/wiki/Erde";
+                }
+                else if (str == "Mond") {
+                    frame.src = "http://de.wikipedia.org/wiki/Mond";
+                }
+                else {
+                }
             }
-            /*
-            document.addEventListener('mousemove', function (evt) {
-			window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
-            this.mouse_drag_x = evt.layerX;
-			this.mouse_drag_y = evt.layerY;
-		}, false);*/
         </script>
 	</head>
+    
 <body>
+    <h1>Informationen zum Sonnensystem</h1>
 	<p>
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="webgl" width="400px" height="300px">
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="Solsystem" width="500px" height="400px">
 			<Scene>
-                <Background backUrl='"realsky_BK.jpg"' bottomUrl='"realsky_DN.jpg"' frontUrl='"realsky_FR.jpg"' leftUrl='"realsky_LF.jpg"' rightUrl='"realsky_RT.jpg"' topUrl='"realsky_UP.jpg"'></Background>
+                <Background backUrl="realsky_BK.jpg" bottomUrl="realsky_DN.jpg" frontUrl="realsky_FR.jpg" leftUrl="realsky_LF.jpg" rightUrl="realsky_RT.jpg" topUrl="realsky_UP.jpg"></Background>
 				<Transform id="erde" onclick="info('Erde');">
 					<Shape>
 						<Appearance>
@@ -66,11 +53,11 @@
 						<Sphere id="geo"></Sphere>
 					</Shape>
 				</Transform>
-				<Transform id="mars" onclick="info('Mars');">
+				<Transform id="moon" onclick="info('Mond');">
 					<Shape>
 						<Appearance>
                             <Material USE="mat"></Material>
-							<Texture><img src="mars.jpg"></Texture>
+							<Texture><img src="moon.jpg"></Texture>
 						</Appearance>
 						<Sphere USE="geo"></Sphere>
 					</Shape>
@@ -78,9 +65,13 @@
                 <DirectionalLight direction='0 -1 0' intensity="0.3"></DirectionalLight>
 			</Scene>
 		</X3D>
-        <div id="box" style="visibility: hidden;">
-        </div>
 	</p>
+        
+        <h2>3D-Objekt anklicken, um mehr dar&uuml;ber zu erfahren (s.u. Wikipedia-Artikel)!</h2>
+        <iframe id="meinInfoFrame" width="800" height="350" 
+            marginheight="5" marginwidth="5" frameborder="0"
+            src="http://de.wikipedia.org/wiki/Sonnensystem"> 
+        </iframe> 
 </body>
 </html>
 
