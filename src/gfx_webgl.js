@@ -1386,9 +1386,9 @@ x3dom.gfx_webgl = (function () {
             if (!needFullReInit)
                 return;
         }
-        else if (// !x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
+        else if (!x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
                 (shape._cf.geometry.node._mesh._positions[0].length < 1)) {
-            x3dom.debug.logInfo("*#+*! SHIT");
+            x3dom.debug.logInfo("MINEFIELD BUG IN EXTENDING ARRAY: NO VALID POSITIONS SET!");
             return;
         }
         
