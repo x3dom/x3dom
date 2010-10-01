@@ -19,17 +19,17 @@
         <script type="text/javascript" >            
         window.onload = function() {
 
-            var SFVec2 = x3dom.fields.SFVec2;
-            test("SFVec2", function() {
+            var SFVec2f = x3dom.fields.SFVec2f;
+            test("SFVec2f", function() {
                 // expect(1);
                 // ok(true);
-                var v1 = new SFVec2();
-                equals(v1.x, 0, "new SFVec2().x");
-                equals(v1.y, 0, "new SFVec2().y");
+                var v1 = new SFVec2f();
+                equals(v1.x, 0, "new SFVec2f().x");
+                equals(v1.y, 0, "new SFVec2f().y");
                 
-                var v2 = new SFVec2(5,8);
-                equals(v2.x, 5, "new SFVec2(5,8).x");
-                equals(v2.y, 8, "new SFVec2(5,8).y");
+                var v2 = new SFVec2f(5,8);
+                equals(v2.x, 5, "new SFVec2f(5,8).x");
+                equals(v2.y, 8, "new SFVec2f(5,8).y");
                 
                 var v1_add_v2 = v1.add(v2);
                 equals(v1_add_v2.x, 5, "v1.add(v2).x");
@@ -43,13 +43,13 @@
                 equals(v2_neg.x, -5, "v2.negate().x");
                 equals(v2_neg.y, -8, "v2.negate().y");
                                 
-                var v3 = new SFVec2(1,0);
-                var v3_norm = v3.normalised();                
-                equals(v3_norm.x, 1, "v3.normalised().x");
-                equals(v3_norm.y, 0, "v3.normalised().y");
+                var v3 = new SFVec2f(1,0);
+                var v3_norm = v3.normalize();                
+                equals(v3_norm.x, 1, "v3.normalize().x");
+                equals(v3_norm.y, 0, "v3.normalize().y");
                 v3.setValueByStr("3 2");
-                v3_norm = v3.normalised();
-                equals(v3_norm.x, 0.8320502943378437, "v(3,2).normalised().x");
+                v3_norm = v3.normalize();
+                equals(v3_norm.x, 0.8320502943378437, "v(3,2).normalize().x");
                 equals(v3_norm.y, 0.5547001962252291, "v(3,2).normalise().y");
                 
                 v3.setValueByStr("2 4");
@@ -77,9 +77,9 @@
                 
                 equals(v2_mult.length(), 28.46049894151541399, "v2_mult.length()");
                 
-                var v4 = SFVec2.parse("5.5 7.7777");
-                equals(v4.x, 5.5, "Construct via SFVec2.parse()");
-                equals(v4.y, 7.7777, "Construct via SFVec2.parse()");
+                var v4 = SFVec2f.parse("5.5 7.7777");
+                equals(v4.x, 5.5, "Construct via SFVec2f.parse()");
+                equals(v4.y, 7.7777, "Construct via SFVec2f.parse()");
                 
                 same([5.5, 7.7777], v4.toGL(), "v4.toGL()");
             });
@@ -130,37 +130,37 @@
                 same(mc2.toGL(), [0.5, 0, 0, 0.1, 0.2, 0.3, 1, 1, 1]);
             });
 
-            test("MFVec2", function() {
-                var c1 = new x3dom.fields.SFVec2(1,0);
-                var mc1 = new x3dom.fields.MFVec2([c1, new x3dom.fields.SFVec2()]);
+            test("MFVec2f", function() {
+                var c1 = new x3dom.fields.SFVec2f(1,0);
+                var mc1 = new x3dom.fields.MFVec2f([c1, new x3dom.fields.SFVec2f()]);
                 equals(c1, mc1[0], "mc1[0]=c1"); 
                 // console.dir(mc1);
                 // console.dir(Array);
                 equals(mc1.length, 2, "mc1.length");
                 
-                var mc2 = x3dom.fields.MFVec2.parse("0.5 0, 0.1 0.2, 1 1");
+                var mc2 = x3dom.fields.MFVec2f.parse("0.5 0, 0.1 0.2, 1 1");
                 equals(mc2.length, 3, "mc2.length");
-                same(mc2[0], new x3dom.fields.SFVec2(0.5, 0));
-                same(mc2[1], new x3dom.fields.SFVec2(0.1, 0.2));
-                same(mc2[2], new x3dom.fields.SFVec2(1, 1));
+                same(mc2[0], new x3dom.fields.SFVec2f(0.5, 0));
+                same(mc2[1], new x3dom.fields.SFVec2f(0.1, 0.2));
+                same(mc2[2], new x3dom.fields.SFVec2f(1, 1));
 
                 same(mc1.toGL(), [1, 0, 0, 0]);
                 same(mc2.toGL(), [0.5, 0, 0.1, 0.2, 1, 1]);
             });
     
-            test("MFVec3", function() {
-                var c1 = new x3dom.fields.SFVec3(1,0,0);
-                var mc1 = new x3dom.fields.MFVec3([c1, new x3dom.fields.SFVec3()]);
+            test("MFVec3f", function() {
+                var c1 = new x3dom.fields.SFVec3f(1,0,0);
+                var mc1 = new x3dom.fields.MFVec3f([c1, new x3dom.fields.SFVec3f()]);
                 equals(c1, mc1[0], "mc1[0]=c1"); 
                 // console.dir(mc1);
                 // console.dir(Array);
                 equals(mc1.length, 2, "mc1.length");
                 
-                var mc2 = x3dom.fields.MFVec3.parse("0.5 0 0, 0.1 0.2 0.3, 1 1 1");
+                var mc2 = x3dom.fields.MFVec3f.parse("0.5 0 0, 0.1 0.2 0.3, 1 1 1");
                 equals(mc2.length, 3, "mc2.length");
-                same(mc2[0], new x3dom.fields.SFVec3(0.5, 0, 0));
-                same(mc2[1], new x3dom.fields.SFVec3(0.1, 0.2, 0.3));
-                same(mc2[2], new x3dom.fields.SFVec3(1, 1, 1));
+                same(mc2[0], new x3dom.fields.SFVec3f(0.5, 0, 0));
+                same(mc2[1], new x3dom.fields.SFVec3f(0.1, 0.2, 0.3));
+                same(mc2[2], new x3dom.fields.SFVec3f(1, 1, 1));
 
                 same(mc1.toGL(), [1, 0, 0, 0, 0, 0]);
                 same(mc2.toGL(), [0.5, 0, 0, 0.1, 0.2, 0.3, 1, 1, 1]);
