@@ -1386,6 +1386,11 @@ x3dom.gfx_webgl = (function () {
             if (!needFullReInit)
                 return;
         }
+        else if (// !x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
+                (shape._cf.geometry.node._mesh._positions[0].length < 1)) {
+            x3dom.debug.logInfo("*#+*! SHIT");
+            return;
+        }
         
         // we're on init, thus reset all dirty flags
         shape._dirty.positions = false;
@@ -1679,7 +1684,7 @@ x3dom.gfx_webgl = (function () {
                     };
                 }
             };
-			
+            
 			shape._webgl = {
 				positions: shape._cf.geometry.node._mesh._positions,
 				normals: shape._cf.geometry.node._mesh._normals,
@@ -2251,7 +2256,7 @@ x3dom.gfx_webgl = (function () {
 			var trafo = scene.drawableObjects[i][0];
 			var shape = scene.drawableObjects[i][1];
             
-            if (shape._objectID < 1)
+            if (shape._objectID < 1 || shape._webgl === undefined)
                 continue;
             
             sp.modelMatrix = trafo.toGL();
@@ -2348,6 +2353,10 @@ x3dom.gfx_webgl = (function () {
                                               mat_view, mat_scene, mat_light, 
                                               gl, activeTex, oneShadowExistsAlready)
 	{
+        if (shape._webgl === undefined) {
+            return;
+        }
+        
         var scene = viewarea._scene;
         
 		var sp = shape._webgl.shader;
