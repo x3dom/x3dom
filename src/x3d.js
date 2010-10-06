@@ -3665,9 +3665,8 @@ x3dom.registerNodeType(
                     positions.push(positions.length-1);
                 }
                 posMax = positions.length;
-                x3dom.debug.logInfo("+++ " + posMax + " +++");
                 
-                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
+                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||
                      (positions.length > 65535) )
                 {
                     t = 0;
@@ -3789,37 +3788,6 @@ x3dom.registerNodeType(
                 } // if isMulti
                 else
                 {
-                    /*
-                    i = 0;
-                    while (i < indexes.length) {
-                        var ind = (+indexes[i]);
-                        if (ind >= posMax) {
-                            switch ( (i % 3) ) {
-                                case 0:
-                                    indexes[i] = 0;
-                                    indexes[i+1] = 0;
-                                    indexes[i+2] = 0;
-                                    i += 3;
-                                    break;
-                                case 1:
-                                    indexes[i-1] = 0;
-                                    indexes[i] = 0;
-                                    indexes[i+1] = 0;
-                                    i += 2;
-                                    break;
-                                case 2:
-                                    indexes[i-2] = 0;
-                                    indexes[i-1] = 0;
-                                    indexes[i] = 0;
-                                    i++;
-                                    break;
-                                default:
-                                    i++;
-                                    break;
-                            }
-                        }
-                    }
-                    */
                     this._mesh._indices[0] = indexes.toGL();
                     this._mesh._positions[0] = positions.toGL();
                     
@@ -3843,8 +3811,12 @@ x3dom.registerNodeType(
                 }
                 
                 this._mesh._invalidate = true;
-                this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                this._mesh._numFaces = 0;
+                this._mesh._numCoords = 0;
+                for (i=0; i<this._mesh._indices.length; i++) {
+                    this._mesh._numFaces += this._mesh._indices[i].length / 3;
+                    this._mesh._numCoords += this._mesh._positions[i].length / 3;
+                }
                 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
