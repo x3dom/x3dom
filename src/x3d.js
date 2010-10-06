@@ -3598,8 +3598,7 @@ x3dom.registerNodeType(
                 
                 this.handleAttribs();
                 
-                // TODO; implement colorPerVertex/normalPerVertex
-                var colPerVert = this._vf.colorPerVertex;
+                // TODO; implement normalPerVertex
                 var normPerVert = this._vf.normalPerVertex;
                 
                 var indexes = this._vf.index;
@@ -3653,25 +3652,175 @@ x3dom.registerNodeType(
                     hasColor = false;
                 }
 
-                this._mesh._indices[0] = indexes.toGL();
-                this._mesh._positions[0] = positions.toGL();
+                this._mesh._indices[0] = [];
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0] = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._colors[0] = [];
                 
-                if (hasNormal) {
-                    this._mesh._normals[0] = normals.toGL();
+                var i, t, cnt, faceCnt, posMax;
+                var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
+                
+                while ( positions.length % 3 > 0) {
+                    positions.push(positions.length-1);
                 }
-                else {
-                    this._mesh.calcNormals(this._vf.creaseAngle);
-                }
-                if (hasTexCoord) {
-                    this._mesh._texCoords[0] = texCoords.toGL();
-                    this._mesh._numTexComponents = numTexComponents;
-                }
-                else {
-                    this._mesh.calcTexCoords(texMode);
-                }
-                if (hasColor) {
-                    this._mesh._colors[0] = colors.toGL();
-                    this._mesh._numColComponents = numColComponents;
+                posMax = positions.length / 3;
+                
+                x3dom.debug.logInfo("+++ " + posMax + " +++");
+                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
+                     //(positions.length / 3 > 65535) )
+                     true)
+                {
+                x3dom.debug.logInfo("######################## " + posMax);
+                    t = 0;
+                    cnt = 0;
+                    faceCnt = 0;
+                    this._mesh._multiIndIndices = [];
+                    this._mesh._posSize = positions.length;
+                    
+                    for (i=0; i < indexes.length; ++i)
+                    {
+                        // Convert non-triangular polygons to a triangle fan
+                        // (TODO: this assumes polygons are convex)
+                        if ((i > 0) && !(i % 3)) {
+                            t = 0;
+                            faceCnt++;
+                        }
+                        
+                        var test = +indexes[i];
+                        if (test >= posMax) {
+                            if (t) {
+                                indexes[i] = indexes[i-1];
+                            }
+                            else {
+                                indexes[i] = 0;
+                            }                            
+                        }
+
+                        //TODO: OPTIMIZE but think about cache coherence regarding arrays!!!
+                        switch (t) 
+                        {
+                            case 0: 
+                                p0 = +indexes[i];
+                                n0 = p0;
+                                t0 = p0;
+                                c0 = p0;
+                                t = 1; 
+                            break;
+                            case 1: 
+                                p1 = +indexes[i];
+                                n1 = p1;
+                                t1 = p1;
+                                c1 = p1;
+                                t = 2; 
+                            break;
+                            case 2: 
+                                p2 = +indexes[i];
+                                n2 = p2;
+                                t2 = p2;
+                                c2 = p2;
+                                t = 3; 
+                                
+                                this._mesh._indices[0].push(cnt++, cnt++, cnt++);
+                                
+                                this._mesh._positions[0].push(positions[p0].x);
+                                this._mesh._positions[0].push(positions[p0].y);
+                                this._mesh._positions[0].push(positions[p0].z);
+                                this._mesh._positions[0].push(positions[p1].x);
+                                this._mesh._positions[0].push(positions[p1].y);
+                                this._mesh._positions[0].push(positions[p1].z);
+                                this._mesh._positions[0].push(positions[p2].x);
+                                this._mesh._positions[0].push(positions[p2].y);
+                                this._mesh._positions[0].push(positions[p2].z);
+                                
+                                if (hasNormal) {
+                                    this._mesh._normals[0].push(normals[n0].x);
+                                    this._mesh._normals[0].push(normals[n0].y);
+                                    this._mesh._normals[0].push(normals[n0].z);
+                                    this._mesh._normals[0].push(normals[n1].x);
+                                    this._mesh._normals[0].push(normals[n1].y);
+                                    this._mesh._normals[0].push(normals[n1].z);
+                                    this._mesh._normals[0].push(normals[n2].x);
+                                    this._mesh._normals[0].push(normals[n2].y);
+                                    this._mesh._normals[0].push(normals[n2].z);
+                                }
+                                else {
+                                    this._mesh._multiIndIndices.push(p0, p1, p2);
+                                    //this._mesh._multiIndIndices.push(cnt-3, cnt-2, cnt-1);
+                                }
+                                
+                                if (hasColor) {
+                                    this._mesh._colors[0].push(colors[c0].r);
+                                    this._mesh._colors[0].push(colors[c0].g);
+                                    this._mesh._colors[0].push(colors[c0].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c0].a);
+                                    this._mesh._colors[0].push(colors[c1].r);
+                                    this._mesh._colors[0].push(colors[c1].g);
+                                    this._mesh._colors[0].push(colors[c1].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c1].a);
+                                    this._mesh._colors[0].push(colors[c2].r);
+                                    this._mesh._colors[0].push(colors[c2].g);
+                                    this._mesh._colors[0].push(colors[c2].b);
+                                    if (numColComponents === 4)
+                                        this._mesh._colors[0].push(colors[c2].a);
+                                }
+                                
+                                if (hasTexCoord) {
+                                    this._mesh._texCoords[0].push(texCoords[t0].x);
+                                    this._mesh._texCoords[0].push(texCoords[t0].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t0].z);
+                                    this._mesh._texCoords[0].push(texCoords[t1].x);
+                                    this._mesh._texCoords[0].push(texCoords[t1].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t1].z);
+                                    this._mesh._texCoords[0].push(texCoords[t2].x);
+                                    this._mesh._texCoords[0].push(texCoords[t2].y);
+                                    if (numTexComponents === 3)
+                                        this._mesh._texCoords[0].push(texCoords[t2].z);
+                                }
+                                
+                                //faceCnt++;
+                            break;
+                            default:
+                        }
+                    }
+                    
+                    if (!hasNormal) {
+                        this._mesh.calcNormals(this._vf.creaseAngle);
+                    }
+                    if (!hasTexCoord) {
+                        this._mesh.calcTexCoords(texMode);
+                    }
+                    
+                    this._mesh.splitMesh();
+                    
+                    //x3dom.debug.logInfo(this._mesh._indices.length);
+                } // if isMulti
+                else
+                {
+                    this._mesh._indices[0] = indexes.toGL();
+                    this._mesh._positions[0] = positions.toGL();
+                    
+                    if (hasNormal) {
+                        this._mesh._normals[0] = normals.toGL();
+                    }
+                    else {
+                        this._mesh.calcNormals(this._vf.creaseAngle);
+                    }
+                    if (hasTexCoord) {
+                        this._mesh._texCoords[0] = texCoords.toGL();
+                        this._mesh._numTexComponents = numTexComponents;
+                    }
+                    else {
+                        this._mesh.calcTexCoords(texMode);
+                    }
+                    if (hasColor) {
+                        this._mesh._colors[0] = colors.toGL();
+                        this._mesh._numColComponents = numColComponents;
+                    }
                 }
                 
                 this._mesh._invalidate = true;
