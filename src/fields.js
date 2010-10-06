@@ -1405,10 +1405,10 @@ x3dom.fields.SFImage.prototype.toGL = function() {
   */
 x3dom.fields.MFColor = function(colorArray) {
     if (arguments.length == 0) {
-        
     }
     else {
-        colorArray.map( function(c) { this.push(c); }, this );
+        var that = this;
+        colorArray.map( function(c) { that.push(c); }, this );
     }
 };
 
@@ -1522,10 +1522,10 @@ x3dom.fields.SFColorRGBA.prototype.setValueByStr = function(str) {
   */
 x3dom.fields.MFColorRGBA = function(colorArray) {
     if (arguments.length == 0) {
-        
     }
     else {
-        colorArray.map( function(c) { this.push(c); }, this );
+        var that = this;
+        colorArray.map( function(c) { that.push(c); }, this );
     }
 };
 
@@ -1570,10 +1570,10 @@ x3dom.fields.MFColorRGBA.prototype.toGL = function() {
   */
 x3dom.fields.MFRotation = function(rotArray) {
     if (arguments.length == 0) {        
-        
     }
     else {
-        rotArray.map( function(v) { this.push(v); }, this );
+        var that = this;
+        rotArray.map( function(v) { that.push(v); }, this );
     }
 };
 
@@ -1618,10 +1618,10 @@ x3dom.fields.MFRotation.prototype.toGL = function() {
   */
 x3dom.fields.MFVec3f = function(vec3Array) {
     if (arguments.length == 0) {        
-        
     }
     else {
-        vec3Array.map( function(v) { this.push(v); }, this );
+        var that = this;
+        vec3Array.map( function(v) { that.push(v); }, this );
     }
 };
 
@@ -1670,10 +1670,10 @@ x3dom.fields.MFVec3f.prototype.toGL = function() {
   */
 x3dom.fields.MFVec2f = function(vec2Array) {
     if (arguments.length == 0) {        
-        
     }
     else {
-        vec2Array.map( function(v) { this.push(v); }, this );
+        var that = this;
+        vec2Array.map( function(v) { that.push(v); }, this );
     }
 };
 
@@ -1720,10 +1720,10 @@ x3dom.fields.MFVec2f.prototype.toGL = function() {
   */
 x3dom.fields.MFInt32 = function(array) {
     if (arguments.length == 0) {
-        
     }
     else {
-        array.map( function(v) { this.push(v); }, this );
+        var that = this;
+        array.map( function(v) { that.push(v); }, this );
     }
 };
 
@@ -1765,10 +1765,10 @@ x3dom.fields.MFInt32.prototype.toGL = function() {
   */
 x3dom.fields.MFFloat = function(array) {
     if (arguments.length == 0) {
-        
     }
     else {
-        array.map( function(v) { this.push(v); }, this );
+        var that = this;
+        array.map( function(v) { that.push(v); }, this );
     }
 };
 
@@ -1816,7 +1816,8 @@ x3dom.fields.MFString = function(strArray) {
     if (arguments.length == 0) {
     }
     else {
-        strArray.map( function(v) { this.push(v); }, this );
+        var that = this;
+        strArray.map( function(v) { that.push(v); }, this );
     }
 };
 
