@@ -3664,14 +3664,12 @@ x3dom.registerNodeType(
                 while ( positions.length % 3 > 0) {
                     positions.push(positions.length-1);
                 }
-                posMax = positions.length / 3;
-                
+                posMax = positions.length;
                 x3dom.debug.logInfo("+++ " + posMax + " +++");
+                
                 if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
-                     //(positions.length / 3 > 65535) )
-                     true)
+                     (positions.length > 65535) )
                 {
-                x3dom.debug.logInfo("######################## " + posMax);
                     t = 0;
                     cnt = 0;
                     faceCnt = 0;
@@ -3687,16 +3685,6 @@ x3dom.registerNodeType(
                             faceCnt++;
                         }
                         
-                        var test = +indexes[i];
-                        if (test >= posMax) {
-                            if (t) {
-                                indexes[i] = indexes[i-1];
-                            }
-                            else {
-                                indexes[i] = 0;
-                            }                            
-                        }
-
                         //TODO: OPTIMIZE but think about cache coherence regarding arrays!!!
                         switch (t) 
                         {
@@ -3801,6 +3789,37 @@ x3dom.registerNodeType(
                 } // if isMulti
                 else
                 {
+                    /*
+                    i = 0;
+                    while (i < indexes.length) {
+                        var ind = (+indexes[i]);
+                        if (ind >= posMax) {
+                            switch ( (i % 3) ) {
+                                case 0:
+                                    indexes[i] = 0;
+                                    indexes[i+1] = 0;
+                                    indexes[i+2] = 0;
+                                    i += 3;
+                                    break;
+                                case 1:
+                                    indexes[i-1] = 0;
+                                    indexes[i] = 0;
+                                    indexes[i+1] = 0;
+                                    i += 2;
+                                    break;
+                                case 2:
+                                    indexes[i-2] = 0;
+                                    indexes[i-1] = 0;
+                                    indexes[i] = 0;
+                                    i++;
+                                    break;
+                                default:
+                                    i++;
+                                    break;
+                            }
+                        }
+                    }
+                    */
                     this._mesh._indices[0] = indexes.toGL();
                     this._mesh._positions[0] = positions.toGL();
                     
