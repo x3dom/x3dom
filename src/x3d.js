@@ -1777,11 +1777,34 @@ x3dom.registerNodeType(
                 
                 for (i=0; i<n; i++)
                 {
-                    var name = this._cf.fields.nodes[i]._vf.name;
+                    var field = this._cf.fields.nodes[i]._vf.name;
                     
-                    if (name === fieldName)
+                    if (field === fieldName)
                     {
-                        this._vf[name].setValueByStr(this._cf.fields.nodes[i]._vf.value);
+                        var msg = this._cf.fields.nodes[i]._vf.value;
+                        
+                        try {
+                            this._vf[field].setValueByStr(msg);
+                        }
+                        catch (exc1) {
+                            try {
+                                switch ((typeof(this._vf[field])).toString()) {
+                                    case "number":
+                                        this._vf[field] = +msg;
+                                        break;
+                                    case "boolean":
+                                        this._vf[field] = (msg.toLowerCase() === "true");
+                                        break;
+                                    case "string":
+                                        this._vf[field] = msg;
+                                        break;
+                                };
+                            }
+                            catch (exc2) {
+                                x3dom.debug.logInfo("setValueByStr() NYI for " + typeof(f));
+                            }
+                        }
+                        
                         break;
                     }
                 }
