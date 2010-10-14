@@ -1,0 +1,118 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+   "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<title>X3DOM 1.0 - IX Special</title>
+	
+	<link rel="icon" type="image/vnd.microsoft.icon" href="media/images/instantreality.ico" />
+	
+    <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/src/x3dom.css" />
+	<link rel="stylesheet" type="text/css" href="http://www.x3dom.org/wp-content/themes/x3dom/instantreality.css" />
+	<!--[if lte IE 6]><link rel="stylesheet" type="text/css" href="http://instantreality.org/media/css/ie-fixes.css" /><![endif]-->
+        <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/wp-content/themes/x3dom/tables.css" media="screen, projection" />
+
+
+	<!-- X3DOM -->
+    <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
+
+</head>
+<body>
+	<!-- Container -->
+	<div id="container">
+		
+		<!-- Header -->
+		<h1>instantreality 1.0</h1>
+		<div id="branding">        
+			<a href="http://www.x3dom.org/" title="Home"></a>
+		</div>
+		<!-- END Header -->
+
+		<!-- Navigation -->
+		<div id="navigation">        
+			<div id="menu_main">&nbsp;</div>
+		</div>  
+	
+		<!-- Content -->
+		<div id="content">            
+		
+			<div id="content_right_column" style="margin-left:20px;">
+				
+			<div class="post type-post hentry category-uncategorized" id="post-1007">
+				<div class="entry">
+
+
+   <h2>Mond und Erde (animiert mit Standard-X3D-Interpolatoren)</h2>
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
+             id="Solsystem" width="500px" height="400px">
+			<Scene>
+                <Background backUrl="realsky_BK.jpg" bottomUrl="realsky_DN.jpg" 
+                            frontUrl="realsky_FR.jpg" leftUrl="realsky_LF.jpg" 
+                            rightUrl="realsky_RT.jpg" topUrl="realsky_UP.jpg">
+                </Background>
+				<Transform DEF="earth" translation="0 0 0" scale="1.25 1.25 1.25">
+					<Shape>
+						<Appearance>
+                            <!-- set specularColor to have some shiny specular highlights -->
+                            <Material DEF="mat" diffuseColor="1 1 1" specularColor=".2 .2 .2">
+                            </Material>
+							<ImageTexture url="earth.jpg"></ImageTexture>
+						</Appearance>
+						<Sphere DEF="geo"></Sphere>
+					</Shape>
+				</Transform>
+                <!-- when translating, the center of rotation needs to be set accordingly -->
+				<Transform DEF="moon" translation="11 0 0" center="-11 0 0" scale="0.35 0.35 0.35">
+					<Shape>
+						<Appearance>
+                            <Material USE="mat"></Material>
+							<ImageTexture url="moon.jpg"></ImageTexture>
+						</Appearance>
+                        <!-- using geometry has the advantage that internally the 
+                             whole 3d data only exists once instead of n-times
+                          -->
+						<Sphere USE="geo"></Sphere>
+					</Shape>
+				</Transform>
+                <!-- an additional light to brighten up the scene -->
+                <DirectionalLight direction='0 -1 0' intensity="0.3"></DirectionalLight>
+                
+                <!-- Timer and interpolators for animation of earth and moon -->
+                <TimeSensor DEF='TS_erde' cycleInterval='1' loop='true'></TimeSensor>
+                <OrientationInterpolator DEF='OI_erde' key='0, 0.5, 1' 
+                                         keyValue='0 1 0 0, 0 1 0 3.14, 0 1 0 6.28'>
+                </OrientationInterpolator>
+                <ROUTE fromNode='TS_erde' fromField='fraction_changed' 
+                       toNode='OI_erde' toField='set_fraction'>
+                </ROUTE>
+                <ROUTE fromNode='OI_erde' fromField='value_changed' 
+                       toNode='earth' toField='set_rotation'>
+                </ROUTE>
+                
+                <TimeSensor DEF='TS_mond' cycleInterval='27' loop='true'></TimeSensor>
+                <OrientationInterpolator DEF='OI_mond' key='0, 0.5, 1' 
+                                         keyValue='0 1 0 0, 0 1 0 3.14, 0 1 0 6.28'>
+                </OrientationInterpolator>
+                <ROUTE fromNode='TS_mond' fromField='fraction_changed' 
+                       toNode='OI_mond' toField='set_fraction'>
+                </ROUTE>
+                <ROUTE fromNode='OI_mond' fromField='value_changed' 
+                       toNode='moon' toField='set_rotation'>
+                </ROUTE>
+			</Scene>
+		</X3D>
+
+
+
+
+				</div>
+         	</div>
+        </div>
+		<!-- END Content -->
+
+		<div id="footer" class="clearfix"></div>
+	</div>
+	<!-- END Container -->
+
+</body>
+</html>
