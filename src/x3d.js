@@ -1801,7 +1801,7 @@ x3dom.registerNodeType(
                                 };
                             }
                             catch (exc2) {
-                                x3dom.debug.logInfo("setValueByStr() NYI for " + typeof(f));
+                                x3dom.debug.logInfo("setValueByStr() NYI for " + typeof(this._vf[field]));
                             }
                         }
                         

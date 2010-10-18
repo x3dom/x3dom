@@ -12,7 +12,7 @@
 // Add some JS1.6 Array functions:
 // (This only includes the non-prototype versions, because otherwise it messes up 'for in' loops)
 
-if (!Array.forEach) {
+if (! Array.forEach) {
     Array.forEach = function (array, fun, thisp) {
         var len = array.length;
         for (var i = 0; i < len; i++) {
