@@ -583,6 +583,32 @@ x3dom.gfx_webgl = (function () {
 		"    gl_FragColor = vec4(material.emissiveColor, 1.0);" +
 		"}"
 		};
+        
+    // TEST SHADER FOR PICKING TEXTURE COORDINATES INSTEAD OF COLORS
+    g_shaders['vs-x3d-texcoordUnlit'] = { type: "vertex", data:
+        "attribute vec3 position;" +
+        "attribute vec2 texcoord;" +
+        "varying vec3 fragColor;" +
+        "uniform mat4 modelViewProjectionMatrix;" +
+        "" +
+        "void main(void) {" +
+        "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+        "    fragColor = vec3(abs(texcoord.x), abs(texcoord.y), 0.0);" +
+        "}"
+        };
+    
+    g_shaders['fs-x3d-texcoordUnlit'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
+        "uniform float alpha;" +
+        "varying vec3 fragColor;" +
+        "" +
+        "void main(void) {" +
+        "    gl_FragColor = vec4(fragColor, alpha);" +
+        "}"
+        };
     
     g_shaders['vs-x3d-pick'] = { type: "vertex", data:
 		"attribute vec3 position;" +
@@ -2229,7 +2255,7 @@ x3dom.gfx_webgl = (function () {
     
     
     Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, 
-                                                   min, max, pickColor, lastX, lastY)
+                                                   min, max, pickMode, lastX, lastY)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         
@@ -2245,8 +2271,12 @@ x3dom.gfx_webgl = (function () {
         gl.disable(gl.BLEND);
         
         var sp;
-        if (!pickColor) { sp = scene._webgl.pickShader; }
-        else { sp = scene._webgl.pickColorShader; }
+        if (pickMode === 0)
+            { sp = scene._webgl.pickShader; }
+        else if (pickMode === 1)
+            { sp = scene._webgl.pickColorShader; }
+        else if (pickMode === 2)
+            { sp = scene._webgl.pickTexCoordShader; }
         sp.bind();
         
         var i, n = scene.drawableObjects.length;
@@ -2266,7 +2296,7 @@ x3dom.gfx_webgl = (function () {
             sp.wcMin = min.toGL();
             sp.wcMax = max.toGL();
             //FIXME; allow more than 255 objects!
-            if (!pickColor) {
+            if (pickMode === 0) {
                 sp.id = 1.0 - shape._objectID / 255.0;
             }
             else {
@@ -2291,6 +2321,14 @@ x3dom.gfx_webgl = (function () {
                     
                     gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
                     gl.enableVertexAttribArray(sp.color);
+                }
+                if (sp.texcoord !== undefined)
+                {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
+
+                    gl.vertexAttribPointer(sp.texcoord, 
+                        shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
+                    gl.enableVertexAttribArray(sp.texcoord);
                 }
                 
                 if (shape.isSolid()) {
@@ -2321,6 +2359,9 @@ x3dom.gfx_webgl = (function () {
                 //  **********************
                 if (sp.color !== undefined) {
                     gl.disableVertexAttribArray(sp.color);
+                }
+                if (sp.texcoord !== undefined) {
+                    gl.disableVertexAttribArray(sp.texcoord);
                 }
             }
         }
@@ -2785,6 +2826,7 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.fboPick.pixelData = null;
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
+            scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
             scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false);
             scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
@@ -2875,21 +2917,22 @@ x3dom.gfx_webgl = (function () {
         // render color-buf pass for picking
         if (pick)
         {
-            var pickColor = (scene._vf.pickMode.toLowerCase() === "color");
+            var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
+                            ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
             //t0 = new Date().getTime();
             
             // TODO; optimize call by reusing calculated volume!
             var min = x3dom.fields.SFVec3f.MAX();
             var max = x3dom.fields.SFVec3f.MIN();
             
-            if (!pickColor) {
+            if (pickMode === 0) {
                 scene.getVolume(min, max, true);
             }
             
             t0 = new Date().getTime();
             
             this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max, 
-                                   pickColor, viewarea._lastX, viewarea._lastY);
+                                   pickMode, viewarea._lastX, viewarea._lastY);
 								   
             
             viewarea._updatePicking = false;
@@ -2899,13 +2942,13 @@ x3dom.gfx_webgl = (function () {
             var index = 0;
             if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
                 var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
-                var charMax = pickColor ? 1 : 255;
+                var charMax = (pickMode > 0) ? 1 : 255;
                 
                 pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / charMax;
                 pickPos.y = scene._webgl.fboPick.pixelData[index + 1] / charMax;
                 pickPos.z = scene._webgl.fboPick.pixelData[index + 2] / charMax;
                 
-                if (!pickColor) {
+                if (pickMode === 0) {
                     pickPos = pickPos.multComponents(max.subtract(min)).add(min);
                 }
                 var objId = 255 - scene._webgl.fboPick.pixelData[index + 3];
@@ -3003,7 +3046,8 @@ x3dom.gfx_webgl = (function () {
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
             if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
-                scene._vf.pickMode.toLowerCase() === "color") {
+                scene._vf.pickMode.toLowerCase() === "color" ||
+                scene._vf.pickMode.toLowerCase() === "texcoord") {
                 gl.viewport(0, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);

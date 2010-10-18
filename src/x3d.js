@@ -5339,7 +5339,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
             
-            // define the experimental picking mode: box, exact (NYI), idBuf, color
+            // define the experimental picking mode: box, exact (NYI), idBuf, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             
 			this._cam = null;
@@ -5733,7 +5733,8 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     this._lastY = y;
     
     var avoidTraversal = (this._scene._vf.pickMode.toLowerCase() === "idbuf" ||
-                          this._scene._vf.pickMode.toLowerCase() === "color");
+                          this._scene._vf.pickMode.toLowerCase() === "color" ||
+                          this._scene._vf.pickMode.toLowerCase() === "texcoord");
     var isect = false;
     var obj = null;
 	
