@@ -85,6 +85,21 @@ x3dom.BindableStack.prototype.push = function (bindable) {
 	bindable.activate();
 };
 
+x3dom.BindableStack.prototype.replaceTop = function (bindable) {
+	var top = this.top();
+	
+	if (top === bindable) {
+		return;
+	}
+
+	if (top) {
+		top.deactivate();
+	
+		this._bindStack[this._bindStack.length - 1] = bindable;
+		bindable.activate();
+	}
+};
+
 x3dom.BindableStack.prototype.pop = function (bindable) {
 	var top;
 	
@@ -102,6 +117,54 @@ x3dom.BindableStack.prototype.pop = function (bindable) {
 	}
 	
 	return top;
+};
+
+x3dom.BindableStack.prototype.switchTo = function (target) {	
+	var last = this.getActive();
+	var n = this._bindBag.length;
+	var toBind = 0;
+	var i = 0, lastIndex = -1;
+			
+	if (n <= 1)
+		return;
+		
+	switch (target) 
+	{
+		case 'first':
+			x3dom.debug.logInfo ('first');
+			toBind = this._bindBag[0];
+			break;
+		case 'last':
+			x3dom.debug.logInfo ('last');
+			toBind = this._bindBag[bN-1];
+			break;
+		default:
+			for (i = 0; i < n; i++) {
+				if (this._bindBag[i] == last) {
+					lastIndex = i;
+					break;
+				}
+			}
+			if (lastIndex >= 0) {
+				i = lastIndex;
+				while (!toBind) {
+					if (target == 'next') // next
+						i = (i < (n-1)) ? (i+1) : 0;
+					else // prev
+						i = (i>0) ? (i-1) : (n-1);
+					if (i == lastIndex)
+						break;					
+					if (this._bindBag[i]._vf.description.length >= 0)
+					  toBind = this._bindBag[i];
+				}
+			}
+			break;
+	}
+	
+	if (toBind)
+		this.replaceTop(toBind);
+	else 
+		x3dom.debug.logInfo ('Can not swith bindable; no other bindable with desciption found');
 };
 
 x3dom.BindableStack.prototype.getActive = function () {
@@ -4241,7 +4304,7 @@ x3dom.registerNodeType(
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 		  
 		  this.addField_SFBool(ctx, 'set_bind', false);
-        
+          this.addField_SFString(ctx, 'description', "");
 		  this._autoGen = (ctx.autoGen ? true : false);
         
 		  if (ctx && ctx.doc._bindableBag) {
@@ -6241,6 +6304,30 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode, keyCode)
                 }
             }
             break;
+		case 91: /* [ */
+			{ 
+				var stack = this._scene.getViewpoint()._stack;
+				
+				if (stack) {
+					stack.switchTo('prev');
+				}
+				else {
+					x3dom.debug.logError ('No valid View-Bindable stack');
+				}
+			}
+			break;
+		case 93: /* ] */
+			{ 				
+				var stack = this._scene.getViewpoint()._stack;
+
+				if (stack) {
+					stack.switchTo('next');
+				}
+				else {
+					x3dom.debug.logError ('No valid View-Bindable stack');
+				}
+			}
+			break;
         case  32: /* space */
             {
 				var statDiv = this.canvas.parent.statDiv;
