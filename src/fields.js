@@ -1535,7 +1535,7 @@ x3dom.fields.MFColorRGBA.parse = function(str) {
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var colors = [];
     for (var i=0, n=mc.length; i<n; i+=4) {
-        colors.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
+        colors.push( new x3dom.fields.SFColorRGBA(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
     }
     
     return new x3dom.fields.MFColorRGBA( colors );
