@@ -4718,6 +4718,62 @@ x3dom.registerNodeType(
                 }
 			},
             
+            // TODO: what if complete subtree is removed at once?
+            parentRemoved: function(parent)
+            {
+                if (this._parentNodes.length === 0 && this._webgl)
+                {
+                    var doc = this.findX3DDoc();
+                    var gl = doc.ctx.ctx3d;
+                    var sp = this._webgl.shader;
+                    
+                    for (var cnt=0; this._webgl.texture !== undefined && 
+                                    cnt < this._webgl.texture.length; cnt++)
+                    {
+                        if (this._webgl.texture[cnt])
+                        {
+                            gl.deleteTexture(this._webgl.texture[cnt]);
+                        }
+                    }
+                    
+                    for (var q=0; q<this._webgl.positions.length; q++)
+                    {
+                        if (sp.position !== undefined) 
+                        {
+                            gl.deleteBuffer(this._webgl.buffers[5*q+1]);
+                            gl.deleteBuffer(this._webgl.buffers[5*q+0]);
+                        }
+                        
+                        if (sp.normal !== undefined) 
+                        {
+                            gl.deleteBuffer(this._webgl.buffers[5*q+2]);
+                        }
+                        
+                        if (sp.texcoord !== undefined) 
+                        {
+                            gl.deleteBuffer(this._webgl.buffers[5*q+3]);
+                        }
+                        
+                        if (sp.color !== undefined)
+                        {
+                            gl.deleteBuffer(this._webgl.buffers[5*q+4]);
+                        }
+                    }
+                    
+                    for (var df=0; df<this._webgl.dynamicFields.length; df++)
+                    {
+                        var attrib = this._webgl.dynamicFields[df];
+                        
+                        if (sp[attrib.name] !== undefined)
+                        {
+                            gl.deleteBuffer(attrib.buf);
+                        }
+                    }
+                    
+                    this._webgl = null;
+                }
+            },
+            
             collectDrawableObjects: function (transform, out) {
                 // TODO: culling etc
                 if (out !== null) 
