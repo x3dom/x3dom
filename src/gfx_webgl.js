@@ -43,7 +43,7 @@ x3dom.gfx_webgl = (function () {
             try {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
                 if (ctx) {
-                    var newCtx = new Context(ctx, canvas, 'moz-webgl');
+                    var newCtx = new Context(ctx, canvas, 'webgl');
                     
                     /*
                     var ext = "";
@@ -63,8 +63,8 @@ x3dom.gfx_webgl = (function () {
                         x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
                                             "Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
                                             "Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
-                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION));// + ", " + 
-                                            //"\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
+                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
+                                            "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
                     }
                     //x3dom.debug.logInfo(ctx.getSupportedExtensions());
                     
@@ -2000,7 +2000,7 @@ x3dom.gfx_webgl = (function () {
 		if (numLights > 0)
 		{
 			if(numLights > 8){
-				x3dom.debug.logInfo("To0 many lights! Only 8 lights supported!");
+				x3dom.debug.logInfo("Too many lights! Only 8 lights supported!");
 				numLights = 8;
 			}
 			
