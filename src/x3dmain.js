@@ -315,7 +315,17 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.canvas.addEventListener('keypress', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
             if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
-                this.parent.doc.onKeyPress(evt.charCode, evt.keyCode);
+                this.parent.doc.onKeyPress(evt.charCode);
+            }
+			this.parent.doc.needRender = true;
+			evt.returnValue = true;
+		}, true);
+        
+        // in webkit special keys are only handled on key-up
+        this.canvas.addEventListener('keyup', function (evt) {
+            var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
+            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+                this.parent.doc.onKeyUp(evt.keyCode);
             }
 			this.parent.doc.needRender = true;
 			evt.returnValue = true;

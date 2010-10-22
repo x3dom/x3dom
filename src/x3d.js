@@ -136,7 +136,7 @@ x3dom.BindableStack.prototype.switchTo = function (target) {
 			break;
 		case 'last':
 			x3dom.debug.logInfo ('last');
-			toBind = this._bindBag[bN-1];
+			toBind = this._bindBag[n-1];
 			break;
 		default:
 			for (i = 0; i < n; i++) {
@@ -6265,69 +6265,60 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
     }
 };
 
-x3dom.X3DDocument.prototype.onKeyPress = function(charCode, keyCode) 
+x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 {
-    //x3dom.debug.logInfo("pressed key " + charCode + " / " + keyCode);
-    switch (charCode)
+    //x3dom.debug.logInfo("released key " + keyCode);
+    switch (keyCode)
     {
-        case 0:
+        case 33: /* page up */
             {
-                switch (keyCode)
-                {
-                    case 33: /* page up */
-                        {
-                            // set_bind
-                        }
-                        break;
-                    case 34: /* page down */
-                        {
-                            // set_bind
-                        }
-                        break;
-                    case 37: /* left */
-                        {
-                        }
-                        break;
-                    case 38: /* up */
-                        {
-                        }
-                        break;
-                    case 39: /* right */
-                        {
-                        }
-                        break;
-                    case 40: /* down */
-                        {
-                        }
-                        break;
-                    default:
-                }
-            }
-            break;
-		case 91: /* [ */
-			{ 
-				var stack = this._scene.getViewpoint()._stack;
-				
-				if (stack) {
-					stack.switchTo('prev');
-				}
-				else {
-					x3dom.debug.logError ('No valid View-Bindable stack');
-				}
-			}
-			break;
-		case 93: /* ] */
-			{ 				
 				var stack = this._scene.getViewpoint()._stack;
 
 				if (stack) {
 					stack.switchTo('next');
 				}
 				else {
-					x3dom.debug.logError ('No valid View-Bindable stack');
+					x3dom.debug.logError ('No valid View-Bindable stack.');
 				}
-			}
-			break;
+            }
+            break;
+        case 34: /* page down */
+            {
+				var stack = this._scene.getViewpoint()._stack;
+				
+				if (stack) {
+					stack.switchTo('prev');
+				}
+				else {
+					x3dom.debug.logError ('No valid View-Bindable stack.');
+				}
+            }
+            break;
+        case 37: /* left */
+            {
+            }
+            break;
+        case 38: /* up */
+            {
+            }
+            break;
+        case 39: /* right */
+            {
+            }
+            break;
+        case 40: /* down */
+            {
+            }
+            break;
+        default:
+    }
+}
+
+x3dom.X3DDocument.prototype.onKeyPress = function(charCode) 
+{
+    //x3dom.debug.logInfo("pressed key " + charCode);
+    switch (charCode)
+    {
         case  32: /* space */
             {
 				var statDiv = this.canvas.parent.statDiv;
@@ -6385,6 +6376,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode, keyCode)
                     this._scene._vf.pickMode = "color";
                 }
                 else if (this._scene._vf.pickMode.toLowerCase() === "color") {
+                    this._scene._vf.pickMode = "texCoord";
+                }
+                else if (this._scene._vf.pickMode.toLowerCase() === "texcoord") {
                     this._scene._vf.pickMode = "box";
                 }
                 else {
