@@ -131,11 +131,11 @@ x3dom.BindableStack.prototype.switchTo = function (target) {
 	switch (target) 
 	{
 		case 'first':
-			x3dom.debug.logInfo ('first');
+			//x3dom.debug.logInfo ('first');
 			toBind = this._bindBag[0];
 			break;
 		case 'last':
-			x3dom.debug.logInfo ('last');
+			//x3dom.debug.logInfo ('last');
 			toBind = this._bindBag[n-1];
 			break;
 		default:
@@ -164,7 +164,7 @@ x3dom.BindableStack.prototype.switchTo = function (target) {
 	if (toBind)
 		this.replaceTop(toBind);
 	else 
-		x3dom.debug.logInfo ('Can not swith bindable; no other bindable with desciption found');
+		x3dom.debug.logInfo ('Cannot switch bindable; no other bindable with description found.');
 };
 
 x3dom.BindableStack.prototype.getActive = function () {
@@ -622,7 +622,12 @@ x3dom.registerNodeType(
         },
         
         parentRemoved: function(parent) {
-            // to be overwritten by concrete classes 
+            // attention: overwritten by concrete classes
+			for (var i=0, n=this._childNodes.length; i<n; i++) {
+				if (this._childNodes[i]) {
+                    this._childNodes[i].parentRemoved(this);
+                }
+            }
         },
         
         getCurrentTransform: function () {
@@ -1565,6 +1570,10 @@ x3dom.registerNodeType(
                             doc._nodeBag.renderTextures.splice(i, 1);
                         }
                     }
+                }
+                
+                if (this._cf.scene.node) {
+                    this._cf.scene.node.parentRemoved(this);
                 }
             }
         }
@@ -5138,6 +5147,12 @@ x3dom.registerNodeType(
                         if (doc._nodeBag.trans[i] === this) {
                             doc._nodeBag.trans.splice(i, 1);
                         }
+                    }
+                }
+                
+                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                    if (this._childNodes[i]) {
+                        this._childNodes[i].parentRemoved(this);
                     }
                 }
             }
