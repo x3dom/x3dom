@@ -33,6 +33,19 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName) {},
             
+            parentRemoved: function(parent)
+            {
+                if (this._parentNodes.length === 0) {
+                    var doc = this.findX3DDoc();
+                    
+                    for (var i=0, n=doc._nodeBag.followers.length; i<n; i++) {
+                        if (doc._nodeBag.followers[i] === this) {
+                            doc._nodeBag.followers.splice(i, 1);
+                        }
+                    }
+                }
+            },
+            
             tick: function(t) {
                 return false;
             },

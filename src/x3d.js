@@ -559,7 +559,7 @@ x3dom.registerNodeType(
         },
         
         parentRemoved: function(parent) {
-            // to be overwritten by concrete classes
+            // to be overwritten by concrete classes 
         },
         
         getCurrentTransform: function () {
@@ -1490,6 +1490,19 @@ x3dom.registerNodeType(
                 var proj = this.getProjectionMatrix();
                 
                 return proj.mult(view);
+            },
+            
+            parentRemoved: function(parent)
+            {
+                if (this._parentNodes.length === 0) {
+                    var doc = this.findX3DDoc();
+                    
+                    for (var i=0, n=doc._nodeBag.renderTextures.length; i<n; i++) {
+                        if (doc._nodeBag.renderTextures[i] === this) {
+                            doc._nodeBag.renderTextures.splice(i, 1);
+                        }
+                    }
+                }
             }
         }
     )
@@ -4565,6 +4578,19 @@ x3dom.registerNodeType(
         {
 			getViewMatrix: function(vec) {
                 return x3dom.fields.SFMatrix4f.identity;
+            },
+            
+            parentRemoved: function(parent)
+            {
+                if (this._parentNodes.length === 0) {
+                    var doc = this.findX3DDoc();
+                    
+                    for (var i=0, n=doc._nodeBag.lights.length; i<n; i++) {
+                        if (doc._nodeBag.lights[i] === this) {
+                            doc._nodeBag.lights.splice(i, 1);
+                        }
+                    }
+                }
             }
         }
     )
@@ -4887,7 +4913,7 @@ x3dom.registerNodeType(
 			// holds the current matrix
             this._trafo = null;
         },
-        {   
+        {
 			// temporary per frame update method for CSS-Transform
 			tick: function(t) {
 				var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform");
@@ -4982,6 +5008,19 @@ x3dom.registerNodeType(
                 }
                 
                 return isect;
+            },
+            
+            parentRemoved: function(parent)
+            {
+                if (this._parentNodes.length === 0) {
+                    var doc = this.findX3DDoc();
+                    
+                    for (var i=0, n=doc._nodeBag.trans.length; i<n; i++) {
+                        if (doc._nodeBag.trans[i] === this) {
+                            doc._nodeBag.trans.splice(i, 1);
+                        }
+                    }
+                }
             }
         }
     )
@@ -5322,6 +5361,19 @@ x3dom.registerNodeType(
             	}
      
      			this.postMessage('fraction_changed', fraction);
+            },
+            
+            parentRemoved: function(parent)
+            {
+                if (this._parentNodes.length === 0) {
+                    var doc = this.findX3DDoc();
+                    
+                    for (var i=0, n=doc._nodeBag.timer.length; i<n; i++) {
+                        if (doc._nodeBag.timer[i] === this) {
+                            doc._nodeBag.timer.splice(i, 1);
+                        }
+                    }
+                }
             }
         }
     )
@@ -5738,8 +5790,6 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     var isect = false;
     var obj = null;
 	
-	
-    
     if (avoidTraversal) {
         if (!this._pickingInfo.updated) {
             this._updatePicking = true;
@@ -5894,7 +5944,15 @@ x3dom.X3DDocument = function(canvas, ctx) {
 	this.needRender = true;
 	this._scene = null;
 	this._viewarea = null;
-	this._nodeBag = { timer: [], lights: [], clipPlanes: [], followers: [], trans: [], renderTextures: [], viewarea: [] };
+	this._nodeBag = {
+        timer: [], 
+        lights: [], 
+        clipPlanes: [], 
+        followers: [], 
+        trans: [], 
+        renderTextures: [], 
+        viewarea: []
+    };
 	//this.animNode = [];
 	this.downloadCount = 0;
     this.onload = function () {};
