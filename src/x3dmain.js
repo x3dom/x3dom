@@ -315,7 +315,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.canvas.addEventListener('keypress', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
             if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
-                this.parent.doc.onKeyPress(evt.charCode);
+                this.parent.doc.onKeyPress(evt.charCode, evt.keyCode);
             }
 			this.parent.doc.needRender = true;
 			evt.returnValue = true;
@@ -669,17 +669,6 @@ x3dom.userAgentFeature = {
         window.attachEvent('onunload', onunload);
         window.attachEvent('onreload', onunload);
     }
-    /*
-    document.onkeypress = function(evt) {
-        for (var i=0; i<x3dom.canvases.length; i++) {
-            if (x3dom.canvases[i].hasRuntime) {
-                x3dom.canvases[i].doc.onKeyPress(evt.charCode);
-				x3dom.canvases[i].doc.needRender = true;
-            }
-        }
-        return true;
-    };
-    */
     
     if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
