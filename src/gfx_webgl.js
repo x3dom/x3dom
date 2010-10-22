@@ -2820,6 +2820,8 @@ x3dom.gfx_webgl = (function () {
                     gl.deleteBuffer(attrib.buf);
                 }
             }
+            
+            shape._webgl = null;
 		}
 	};
     
