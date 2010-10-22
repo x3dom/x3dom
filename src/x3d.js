@@ -344,6 +344,12 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 	
     if (x3dom.isX3DElement(domNode)) {
 	
+		// return if it is already initialized
+		if (domNode._x3domNode) {
+			x3dom.debug.logWarning ('Tree is already initialized');
+			return;
+		}
+			
 		//active workaground for missing DOMAttrModified support
         if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
              (domNode.tagName !== undefined) && (!domNode.__setAttribute) ) {
@@ -5625,7 +5631,6 @@ x3dom.registerNodeType(
 						var nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
 						nameSpace.setBaseURL (that._vf.url[0]);      
 						var newScene = nameSpace.setupTree(inlScene);
-						that.addChild(newScene);
 					}
 					else {
 						x3dom.debug.logInfo('no Scene in ' + xml.localName);
@@ -5635,7 +5640,9 @@ x3dom.registerNodeType(
 						that.removeChild(that._childNodes[0]);
 					}
 					that.addChild(newScene);
-
+					//x3dom.debug.logInfo('XXXXXXX' + that._xmlNode);						
+					//that._xmlNode.appendChild (inlScene);
+						
 					that._nameSpace.doc.downloadCount -= 1;
 					that._nameSpace.doc.needRender = true;
 					x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
@@ -6174,7 +6181,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         onNodeInserted: function(e) {
             var parent = e.target.parentNode._x3domNode;
             var child = e.target;
-            //x3dom.debug.logInfo("MUTATION: " + e + ", " + e.type + ", inserted node=" + child.tagName);
+            
+			x3dom.debug.logInfo("CHILD INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName);
             //x3dom.debug.logInfo("MUTATION: " + child.translation + ", " + child.parentNode.tagName);
 
 			if (parent._nameSpace) {
