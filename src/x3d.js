@@ -6088,11 +6088,45 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
     }
 };
 
-x3dom.X3DDocument.prototype.onKeyPress = function(charCode) 
+x3dom.X3DDocument.prototype.onKeyPress = function(charCode, keyCode) 
 {
-    //x3dom.debug.logInfo("pressed key " + charCode);
+    //x3dom.debug.logInfo("pressed key " + charCode + " / " + keyCode);
     switch (charCode)
     {
+        case 0:
+            {
+                switch (keyCode)
+                {
+                    case 33: /* page up */
+                        {
+                            // set_bind
+                        }
+                        break;
+                    case 34: /* page down */
+                        {
+                            // set_bind
+                        }
+                        break;
+                    case 37: /* left */
+                        {
+                        }
+                        break;
+                    case 38: /* up */
+                        {
+                        }
+                        break;
+                    case 39: /* right */
+                        {
+                        }
+                        break;
+                    case 40: /* down */
+                        {
+                        }
+                        break;
+                    default:
+                }
+            }
+            break;
         case  32: /* space */
             {
 				var statDiv = this.canvas.parent.statDiv;
@@ -6173,4 +6207,3 @@ x3dom.X3DDocument.prototype.shutdown = function(ctx)
         return;
 	ctx.shutdown(this._viewarea);
 };
-
