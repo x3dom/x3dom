@@ -548,8 +548,13 @@ x3dom.gfx_webgl = (function () {
 			shader += "varying vec3 fragNormal;";
 
 			if(vertexColor){
-				shader += "attribute vec3 color;";
-				shader += "varying vec3 fragColor;";
+				if(vertexColor == 3){
+					shader += "attribute vec3 color;";
+					shader += "varying vec3 fragColor;";
+				}else{
+					shader += "attribute vec4 color;";
+					shader += "varying vec4 fragColor;";
+				}
 			}
 			if(texture){
 				shader += "attribute vec2 texcoord;";
@@ -730,7 +735,11 @@ x3dom.gfx_webgl = (function () {
 			//Set Uniforms + Varyings
 			shader += material;
 			if(vertexColor){
-				shader += "varying vec3 fragColor;";
+				if(vertexColor == 3){
+					shader += "varying vec3 fragColor;";
+				}else{
+					shader += "varying vec4 fragColor;";
+				}
 			}
 			if(texture){
 				shader += "uniform sampler2D tex;";
@@ -794,7 +803,9 @@ x3dom.gfx_webgl = (function () {
 					shader += "rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);";
 					shader += "}";
 				}else if(vertexColor){
-					shader += "rgb = diffuse*fragColor;";
+					shader += "rgb = diffuse*fragColor.rgb;";
+					if(vertexColor == 4)
+						shader += "alpha = fragColor.a;";
 				}else{
 					shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);";
 				}
@@ -808,7 +819,9 @@ x3dom.gfx_webgl = (function () {
 					shader += "rgb = texColor.rgb;";
 					shader += "alpha *= texColor.a;";
 				}else if(vertexColor){
-					shader += "rgb = fragColor;";
+					shader += "rgb = fragColor.rgb;";
+					if(vertexColor == 4)
+						shader += "alpha = fragColor.a;";
 				}else{
 					shader += "rgb = material.diffuseColor + material.emissiveColor;";
 				}
@@ -1340,8 +1353,11 @@ x3dom.gfx_webgl = (function () {
 					}
                 }
                 else if (shape._cf.geometry.node._mesh._colors[0].length > 0) {
-					var vsID = this.generateVS(viewarea, true, false, false, shape._webgl.lightsAndShadow);
-					var fsID = this.generateFS(viewarea, true, false, shape._webgl.lightsAndShadow);
+					
+					var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
+				
+					var vsID = this.generateVS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
+					var fsID = this.generateFS(viewarea, numColComponents, false, shape._webgl.lightsAndShadow);
 					shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 				}
                 else {
