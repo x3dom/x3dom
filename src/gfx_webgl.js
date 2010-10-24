@@ -2353,15 +2353,80 @@ x3dom.gfx_webgl = (function () {
 		}
 	};
     
-	Context.prototype.renderScene = function (viewarea, pick) 
+    /** render color-buf pass for picking */
+    Context.prototype.pickValue = function (viewarea, x, y)
+    {
+		var gl = this.ctx3d;
+        var scene = viewarea._scene;
+        
+        // method requires that scene has already been rendered at least once
+        if (gl === null || scene === null || !scene._webgl ||
+            scene.drawableObjects === undefined || !scene.drawableObjects ||
+            scene._vf.pickMode.toLowerCase() === "box")
+        {
+            return false;
+        }
+        
+        //t0 = new Date().getTime();
+        
+        var mat_view = viewarea._last_mat_view;
+        var mat_scene = viewarea._last_mat_scene;
+        
+        var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
+                        ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
+        
+        var min = scene._lastMin;
+        var max = scene._lastMax;
+        
+        // render to texture for reading pixel values
+        this.renderPickingPass(gl, scene, 
+                               mat_view, mat_scene, 
+                               min, max, 
+                               pickMode, x, y);
+        
+        //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
+        //               scene._webgl.fboPick.width + scene._lastX ) * 4;
+        var index = 0;
+        if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
+            var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
+            var charMax = (pickMode > 0) ? 1 : 255;
+            
+            pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / charMax;
+            pickPos.y = scene._webgl.fboPick.pixelData[index + 1] / charMax;
+            pickPos.z = scene._webgl.fboPick.pixelData[index + 2] / charMax;
+            
+            if (pickMode === 0) {
+                pickPos = pickPos.multComponents(max.subtract(min)).add(min);
+            }
+            var objId = 255 - scene._webgl.fboPick.pixelData[index + 3];
+            //x3dom.debug.logInfo(pickPos + " / " + objId);
+            
+            if (objId > 0) {
+                //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
+                //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
+                viewarea._pickingInfo.pickPos = pickPos;
+                viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
+            }
+            else {
+                viewarea._pickingInfo.pickObj = null;
+            }
+        }
+        
+        //t1 = new Date().getTime() - t0;
+        //x3dom.debug.logInfo("Picking time (idBuf): " + t1 + "ms");
+        
+        return true;
+    }
+    
+	Context.prototype.renderScene = function (viewarea) 
 	{
 		var gl = this.ctx3d;
+        var scene = viewarea._scene;
         
         if (gl === null || scene === null)
         {
             return;
         }
-        var scene = viewarea._scene;
         
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
@@ -2391,6 +2456,15 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl, rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], false);
             }
+            
+            // init scene volume to improve picking speed
+            var min = x3dom.fields.SFVec3f.MAX();
+            var max = x3dom.fields.SFVec3f.MIN();
+            
+            scene.getVolume(min, max, true);
+            
+            scene._lastMin = min;
+            scene._lastMax = max;
 		}
         
         var bgnd = scene.getBackground();
@@ -2401,7 +2475,8 @@ x3dom.gfx_webgl = (function () {
         this.numCoords = 0;
 		
 		// render traversal
-		if (scene.drawableObjects === undefined || !scene.drawableObjects)
+        scene.drawableObjects = null;
+		//if (scene.drawableObjects === undefined || !scene.drawableObjects)
         {
 			scene.drawableObjects = [];
             scene.drawableObjects.LODs = [];
@@ -2419,7 +2494,9 @@ x3dom.gfx_webgl = (function () {
 		}
         
         var mat_view = viewarea.getViewMatrix();
+        viewarea._last_mat_view = mat_view;
         var mat_scene = viewarea.getWCtoCCMatrix();
+        viewarea._last_mat_scene = mat_scene;
         
 		// sorting and stuff
 		t0 = new Date().getTime();
@@ -2468,62 +2545,9 @@ x3dom.gfx_webgl = (function () {
 			this.canvas.parent.statDiv.appendChild(document.createTextNode("sort: " + t1));
 		}
         
-        // render color-buf pass for picking
-        if (pick)
-        {
-            var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
-                            ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
-            //t0 = new Date().getTime();
-            
-            // TODO; optimize call by reusing calculated volume!
-            var min = x3dom.fields.SFVec3f.MAX();
-            var max = x3dom.fields.SFVec3f.MIN();
-            
-            if (pickMode === 0) {
-                scene.getVolume(min, max, true);
-            }
-            
-            t0 = new Date().getTime();
-            
-            this.renderPickingPass(gl, scene, mat_view, mat_scene, min, max, 
-                                   pickMode, viewarea._lastX, viewarea._lastY);
-								   
-            viewarea._updatePicking = false;
-            
-            //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
-            //               scene._webgl.fboPick.width + scene._lastX ) * 4;
-            var index = 0;
-            if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
-                var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
-                var charMax = (pickMode > 0) ? 1 : 255;
-                
-                pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / charMax;
-                pickPos.y = scene._webgl.fboPick.pixelData[index + 1] / charMax;
-                pickPos.z = scene._webgl.fboPick.pixelData[index + 2] / charMax;
-                
-                if (pickMode === 0) {
-                    pickPos = pickPos.multComponents(max.subtract(min)).add(min);
-                }
-                var objId = 255 - scene._webgl.fboPick.pixelData[index + 3];
-                //x3dom.debug.logInfo(pickPos + " / " + objId);
-                
-                if (objId > 0) {
-                    //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
-                    //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
-                    viewarea._pickingInfo.pickPos = pickPos;
-                    viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
-                }
-                viewarea._pickingInfo.updated = true;               
-            }
-            
-            t1 = new Date().getTime() - t0;
-            x3dom.debug.logInfo("Picking time (idBuf): " + t1 + "ms");
-        }
-		
 		//===========================================================================
 		// Render Shadow Pass
 		//===========================================================================
-		
 		var slights = viewarea.getLights();	
 		var numLights = slights.length;
 		var oneShadowExistsAlready = false;
@@ -2625,7 +2649,7 @@ x3dom.gfx_webgl = (function () {
             this.canvas.parent.statDiv.appendChild(document.createTextNode("#Pnts: " + this.numCoords));
 		}
 		
-		scene.drawableObjects = null;
+		//scene.drawableObjects = null;
 	};
     
     Context.prototype.renderRTPass = function(gl, viewarea, rt)

@@ -184,6 +184,8 @@ x3dom.X3DCanvas = function(x3dElem) {
     
 	if (this.canvas !== null && this.gl !== null && this.hasRuntime)
 	{
+        var that = this;
+        
 		// event handler for mouse interaction
 		this.canvas.mouse_dragging = false;
 		this.canvas.mouse_button = 0;
@@ -214,7 +216,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			if (evt.ctrlKey)  { this.mouse_button = 4; }
 			if (evt.altKey)   { this.mouse_button = 2; }
 			
-			this.parent.doc.onMousePress(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' DOWN: '+evt.layerX+", "+evt.layerY;
@@ -228,7 +230,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_button = 0;
 			this.mouse_dragging = false;
 			
-			this.parent.doc.onMouseRelease(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
@@ -237,11 +239,24 @@ x3dom.X3DCanvas = function(x3dElem) {
 			evt.returnValue = false;
 		}, false);
 		
+		this.canvas.addEventListener('mouseover', function (evt) {
+			this.mouse_button = 0;
+			this.mouse_dragging = false;
+			
+			this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.needRender = true;
+			
+			//window.status=this.id+' IN: '+evt.screenX+", "+evt.screenY;
+			evt.preventDefault();
+			evt.stopPropagation();
+			evt.returnValue = false;
+		}, false);
+        
 		this.canvas.addEventListener('mouseout', function (evt) {
 			this.mouse_button = 0;
 			this.mouse_dragging = false;
 			
-			this.parent.doc.onMouseOut(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+			this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
@@ -256,7 +271,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.mouse_drag_y = evt.layerY;
 			this.mouse_dragging = false;
 			
-			this.parent.doc.onDoubleClick(this.mouse_drag_x, this.mouse_drag_y);
+			this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
 			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' DBL: '+evt.layerX+", "+evt.layerY;
@@ -267,11 +282,12 @@ x3dom.X3DCanvas = function(x3dElem) {
 		
 		this.canvas.addEventListener('mousemove', function (evt) {
 			window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
-			
+            /*
 			if (!this.mouse_dragging) {
 				return;
             }
-			
+			*/
+            
             this.mouse_drag_x = evt.layerX;
 			this.mouse_drag_y = evt.layerY;
 			
@@ -279,7 +295,12 @@ x3dom.X3DCanvas = function(x3dElem) {
 			if (evt.ctrlKey)  { this.mouse_button = 4; }
 			if (evt.altKey)   { this.mouse_button = 2; }
 			
-			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            if (this.mouse_dragging) {
+                this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            }
+            else {
+                this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+            }
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' MOVE: '+dx+", "+dy;
@@ -291,7 +312,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 		this.canvas.addEventListener('DOMMouseScroll', function (evt) {
 			this.mouse_drag_y += 2 * evt.detail;
             
-			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, 2);
+			this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' SCROLL: '+evt.detail;
@@ -303,7 +324,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.canvas.addEventListener('mousewheel', function (evt) {
             this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
             
-			this.parent.doc.onDrag(this.mouse_drag_x, this.mouse_drag_y, 2);
+			this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' SCROLL: '+evt.detail;

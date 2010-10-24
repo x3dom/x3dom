@@ -5664,12 +5664,9 @@ x3dom.Viewarea = function (document, scene) {
     
     document._nodeBag.viewarea.push(this);
 	
-	// if (pickMode = idBuf && mouse event) then set to true
-    this._updatePicking = false;
     this._pickingInfo = {
         pickPos: {},
-        pickObj: null,
-        updated: false
+        pickObj: null
     };
     
 	this._rotMat = x3dom.fields.SFMatrix4f.identity();
@@ -5880,15 +5877,15 @@ x3dom.Viewarea.prototype.resetView = function()
     //this._scene.getViewpoint().resetView();
 };
 
-x3dom.Viewarea.prototype.checkEvents = function (obj)
+x3dom.Viewarea.prototype.checkEvents = function (obj, eventType)
 {
     var that = this;
     
     try {
         var anObj = obj;
-        if ( anObj._xmlNode.hasAttribute('onclick') ||
-            (anObj = anObj._cf.geometry.node)._xmlNode.hasAttribute('onclick') ) {
-            var funcStr = anObj._xmlNode.getAttribute('onclick');
+        if ( anObj._xmlNode.hasAttribute(eventType) ||
+            (anObj = anObj._cf.geometry.node)._xmlNode.hasAttribute(eventType) ) {
+            var funcStr = anObj._xmlNode.getAttribute(eventType);
             var func = new Function('hitPnt', funcStr);
             func.call(anObj, that._pick.toGL());
         }
@@ -5897,12 +5894,12 @@ x3dom.Viewarea.prototype.checkEvents = function (obj)
     
     var recurse = function(obj) {
         Array.forEach(obj._parentNodes, function (node) {
-            if (node._xmlNode && node._xmlNode.hasAttribute('onclick')) {
-                var funcStr = node._xmlNode.getAttribute('onclick');
+            if (node._xmlNode && node._xmlNode.hasAttribute(eventType)) {
+                var funcStr = node._xmlNode.getAttribute(eventType);
                 var func = new Function('hitPnt', funcStr);
                 func.call(node, that._pick.toGL());
             }
-            if (x3dom.isa(node, x3dom.nodeTypes.Anchor)) {
+            if (x3dom.isa(node, x3dom.nodeTypes.Anchor) && eventType === 'onclick') {
                 node.handleTouch();
             }
             else {
@@ -5916,6 +5913,8 @@ x3dom.Viewarea.prototype.checkEvents = function (obj)
 
 x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 {
+    this.prepareEvents(x, y, buttonState, "onmousedown");
+    
 	this._lastX = x;
 	this._lastY = y;
 };
@@ -5925,58 +5924,33 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     this._lastX = x;
     this._lastY = y;
     
-    var avoidTraversal = (this._scene._vf.pickMode.toLowerCase() === "idbuf" ||
-                          this._scene._vf.pickMode.toLowerCase() === "color" ||
-                          this._scene._vf.pickMode.toLowerCase() === "texcoord");
+    if (this._scene._vf.pickMode.toLowerCase() !== "box") {
+        this.prepareEvents(x, y, buttonState, "onmouseup");
+        // FIXME; click means that mousedown _and_ mouseup detected on this element
+        this.prepareEvents(x, y, buttonState, "onclick");
+        return;
+    }
+    
+    var t0 = new Date().getTime();
     var isect = false;
     var obj = null;
-	
-    if (avoidTraversal) {
-        if (!this._pickingInfo.updated) {
-            this._updatePicking = true;
-            return;
-        }
-        else {
-			
-            this._pickingInfo.updated = false;
-            
-            if ( (obj = this._pickingInfo.pickObj) )
-            {
-                this._pick.setValues(this._pickingInfo.pickPos);
-                this._pickingInfo.pickObj = null;
-                
-                this.checkEvents(obj);
-                
-                x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
-                                    obj._DEF + "\"");
-                x3dom.debug.logInfo("Ray hit at position " + this._pick);
-                
-                return;
-            }
-        }
-    }
-    
     var line = this.calcViewRay(x, y);
     
-    if (!avoidTraversal) {
-        var t0 = new Date().getTime();
+    isect = this._scene.doIntersect(line);
+    
+    if ( isect && (obj = line.hitObject) )
+    {
+        this._pick.setValues(line.hitPoint);
         
-        isect = this._scene.doIntersect(line);
+        this.checkEvents(obj);
         
-        if ( isect && (obj = line.hitObject) )
-        {
-            this._pick.setValues(line.hitPoint);
-            
-            this.checkEvents(obj);
-            
-            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
-                                obj._DEF + "\ at dist=" + line.dist.toFixed(4));
-            x3dom.debug.logInfo("Ray hit at position " + this._pick);
-        }
-        
-        var t1 = new Date().getTime() - t0;
-        x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
+        x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
+                            obj._DEF + "\ at dist=" + line.dist.toFixed(4));
+        x3dom.debug.logInfo("Ray hit at position " + this._pick);
     }
+    
+    var t1 = new Date().getTime() - t0;
+    x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
     
     if (!isect) 
     {
@@ -5987,8 +5961,18 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     }
 };
 
+x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
+{
+    this.prepareEvents(x, y, buttonState, "onmouseover");
+    
+	this._lastX = x;
+    this._lastY = y;
+};
+
 x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 {
+    this.prepareEvents(x, y, buttonState, "onmouseout");
+    
 	this._lastX = x;
     this._lastY = y;
 };
@@ -5999,14 +5983,28 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
     if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
         return;
     
+    if ((this._scene._vf.pickMode.toLowerCase() === "color" ||
+         this._scene._vf.pickMode.toLowerCase() === "texcoord"))
+         return;
+    
     var viewpoint = this._scene.getViewpoint();
     
     viewpoint._vf.centerOfRotation.setValues(this._pick);
     x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
 };
 
+x3dom.Viewarea.prototype.onMove = function (x, y, buttonState) 
+{
+    this.prepareEvents(x, y, buttonState, "onmousemove");
+    
+    this._lastX = x;
+    this._lastY = y;
+};
+
 x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState) 
 {
+    this.prepareEvents(x, y, buttonState, "onmousemove");
+    
     var navi = this._scene.getNavigationInfo();
     if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
         return;
@@ -6073,9 +6071,29 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
         mult(viewpoint.getViewMatrix());
     }
-
+    
     this._lastX = x;
     this._lastY = y;
+};
+   
+x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
+{
+    var avoidTraversal = (this._scene._vf.pickMode.toLowerCase() === "idbuf" ||
+                          this._scene._vf.pickMode.toLowerCase() === "color" ||
+                          this._scene._vf.pickMode.toLowerCase() === "texcoord");
+	
+    if (avoidTraversal) {
+        var obj = this._pickingInfo.pickObj;
+        
+        if (obj) {
+            this._pick.setValues(this._pickingInfo.pickPos);
+            
+            this.checkEvents(obj, eventType);
+            
+            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
+            x3dom.debug.logInfo("Ray hit at position " + this._pick);
+        }
+    }
 };
 
 // ### X3DDocument ###
@@ -6203,7 +6221,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 		sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
 	}
 	
-    var sceneElem = x3dom.findScene(sceneDoc);              // sceneDoc is the X3D element here...
+    // sceneDoc is the X3D element here...
+    var sceneElem = x3dom.findScene(sceneDoc);
 	
 	// create and add BindableBag
 	this._bindableBag = new x3dom.BindableBag(this);
@@ -6249,40 +6268,60 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
     if (!ctx || !this._viewarea)
         return;
     
-    ctx.renderScene(this._viewarea, this._viewarea._updatePicking);
-    
-    if (this._viewarea._pickingInfo.updated) {
-        // mouse release handling only possible after rendering has finished
-        this._viewarea.onMouseRelease(this._viewarea._lastX, this._viewarea._lastY, 0);
-        this.needRender = true;
+    ctx.renderScene(this._viewarea);
+};
+
+x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
+    if (this._viewarea) {
+        ctx.pickValue(this._viewarea, x, y);
+        this._viewarea.onMove(x, y, buttonState);
     }
 };
 
-x3dom.X3DDocument.prototype.onDrag = function (x, y, buttonState) {
+x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
     if (this._viewarea) {
+        ctx.pickValue(this._viewarea, x, y);
         this._viewarea.onDrag(x, y, buttonState);
     }
 };
 
-x3dom.X3DDocument.prototype.onMousePress = function (x, y, buttonState) {
+x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
     if (this._viewarea) {
+        // update volume only on click since expensive!
+        var min = x3dom.fields.SFVec3f.MAX();
+        var max = x3dom.fields.SFVec3f.MIN();
+        
+        this._viewarea._scene.getVolume(min, max, true);
+        this._viewarea._scene._lastMin = min;
+        this._viewarea._scene._lastMax = max;
+        
+        ctx.pickValue(this._viewarea, x, y);
         this._viewarea.onMousePress(x, y, buttonState);
     }
 };
 
-x3dom.X3DDocument.prototype.onMouseRelease = function (x, y, buttonState) {
+x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState) {
     if (this._viewarea) {
+        ctx.pickValue(this._viewarea, x, y);
         this._viewarea.onMouseRelease(x, y, buttonState);
     }
 };
 
-x3dom.X3DDocument.prototype.onMouseOut = function (x, y, buttonState) {
+x3dom.X3DDocument.prototype.onMouseOver = function (ctx, x, y, buttonState) {
     if (this._viewarea) {
+        ctx.pickValue(this._viewarea, x, y);
+        this._viewarea.onMouseOver(x, y, buttonState);
+    }
+};
+
+x3dom.X3DDocument.prototype.onMouseOut = function (ctx, x, y, buttonState) {
+    if (this._viewarea) {
+        ctx.pickValue(this._viewarea, x, y);
         this._viewarea.onMouseOut(x, y, buttonState);
     }
 };
 
-x3dom.X3DDocument.prototype.onDoubleClick = function (x, y) {
+x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
     if (this._viewarea) {
         this._viewarea.onDoubleClick(x, y);
     }
@@ -6301,7 +6340,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 					stack.switchTo('next');
 				}
 				else {
-					x3dom.debug.logError ('No valid View-Bindable stack.');
+					x3dom.debug.logError ('No valid ViewBindable stack.');
 				}
             }
             break;
@@ -6313,7 +6352,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 					stack.switchTo('prev');
 				}
 				else {
-					x3dom.debug.logError ('No valid View-Bindable stack.');
+					x3dom.debug.logError ('No valid ViewBindable stack.');
 				}
             }
             break;
@@ -6335,7 +6374,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
             break;
         default:
     }
-}
+};
 
 x3dom.X3DDocument.prototype.onKeyPress = function(charCode) 
 {
