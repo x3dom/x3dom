@@ -5926,7 +5926,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     
     if (this._scene._vf.pickMode.toLowerCase() !== "box") {
         this.prepareEvents(x, y, buttonState, "onmouseup");
-        // FIXME; click means that mousedown _and_ mouseup detected on this element
+        // FIXME; click means that mousedown _and_ mouseup detected on same 3D element!
         this.prepareEvents(x, y, buttonState, "onclick");
         return;
     }
@@ -5963,6 +5963,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
 {
+    // FIXME; track event per 3D object but not for canvas!
     this.prepareEvents(x, y, buttonState, "onmouseover");
     
 	this._lastX = x;
@@ -5971,6 +5972,7 @@ x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 {
+    // FIXME; track event per 3D object but not for canvas!
     this.prepareEvents(x, y, buttonState, "onmouseout");
     
 	this._lastX = x;
@@ -6272,59 +6274,66 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
 };
 
 x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
-    if (this._viewarea) {
-        ctx.pickValue(this._viewarea, x, y);
-        this._viewarea.onMove(x, y, buttonState);
-    }
+    if (!ctx || !this._viewarea)
+        return;
+    
+    ctx.pickValue(this._viewarea, x, y);
+    this._viewarea.onMove(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
-    if (this._viewarea) {
-        ctx.pickValue(this._viewarea, x, y);
-        this._viewarea.onDrag(x, y, buttonState);
-    }
+    if (!ctx || !this._viewarea)
+        return;
+    
+    ctx.pickValue(this._viewarea, x, y);
+    this._viewarea.onDrag(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
-    if (this._viewarea) {
-        // update volume only on click since expensive!
-        var min = x3dom.fields.SFVec3f.MAX();
-        var max = x3dom.fields.SFVec3f.MIN();
-        
-        this._viewarea._scene.getVolume(min, max, true);
-        this._viewarea._scene._lastMin = min;
-        this._viewarea._scene._lastMax = max;
-        
-        ctx.pickValue(this._viewarea, x, y);
-        this._viewarea.onMousePress(x, y, buttonState);
-    }
+    if (!ctx || !this._viewarea)
+        return;
+    
+    // update volume only on click since expensive!
+    var min = x3dom.fields.SFVec3f.MAX();
+    var max = x3dom.fields.SFVec3f.MIN();
+    
+    this._viewarea._scene.getVolume(min, max, true);
+    this._viewarea._scene._lastMin = min;
+    this._viewarea._scene._lastMax = max;
+    
+    ctx.pickValue(this._viewarea, x, y);
+    this._viewarea.onMousePress(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState) {
-    if (this._viewarea) {
-        ctx.pickValue(this._viewarea, x, y);
-        this._viewarea.onMouseRelease(x, y, buttonState);
-    }
+    if (!ctx || !this._viewarea)
+        return;
+    
+    ctx.pickValue(this._viewarea, x, y);
+    this._viewarea.onMouseRelease(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onMouseOver = function (ctx, x, y, buttonState) {
-    if (this._viewarea) {
-        ctx.pickValue(this._viewarea, x, y);
-        this._viewarea.onMouseOver(x, y, buttonState);
-    }
+    if (!ctx || !this._viewarea)
+        return;
+    
+    ctx.pickValue(this._viewarea, x, y);
+    this._viewarea.onMouseOver(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onMouseOut = function (ctx, x, y, buttonState) {
-    if (this._viewarea) {
-        ctx.pickValue(this._viewarea, x, y);
-        this._viewarea.onMouseOut(x, y, buttonState);
-    }
+    if (!ctx || !this._viewarea)
+        return;
+    
+    ctx.pickValue(this._viewarea, x, y);
+    this._viewarea.onMouseOut(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
-    if (this._viewarea) {
-        this._viewarea.onDoubleClick(x, y);
-    }
+    if (!ctx || !this._viewarea)
+        return;
+    
+    this._viewarea.onDoubleClick(x, y);
 };
 
 x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
