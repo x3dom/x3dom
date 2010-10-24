@@ -5666,7 +5666,9 @@ x3dom.Viewarea = function (document, scene) {
 	
     this._pickingInfo = {
         pickPos: {},
-        pickObj: null
+        pickObj: null,
+        lastObj: null,
+        lastClickObj: null
     };
     
 	this._rotMat = x3dom.fields.SFMatrix4f.identity();
@@ -5914,6 +5916,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, eventType)
 x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 {
     this.prepareEvents(x, y, buttonState, "onmousedown");
+    this._pickingInfo.lastClickObj = this._pickingInfo.pickObj;
     
 	this._lastX = x;
 	this._lastY = y;
@@ -5926,23 +5929,25 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     
     if (this._scene._vf.pickMode.toLowerCase() !== "box") {
         this.prepareEvents(x, y, buttonState, "onmouseup");
-        // FIXME; click means that mousedown _and_ mouseup detected on same 3D element!
-        this.prepareEvents(x, y, buttonState, "onclick");
+        
+        // click means that mousedown _and_ mouseup were detected on same element
+        if (this._pickingInfo.pickObj &&
+            this._pickingInfo.pickObj === this._pickingInfo.lastClickObj) {
+            this.prepareEvents(x, y, buttonState, "onclick");
+        }
         return;
     }
     
     var t0 = new Date().getTime();
-    var isect = false;
-    var obj = null;
     var line = this.calcViewRay(x, y);
+    var isect = this._scene.doIntersect(line);
+    var obj = line.hitObject;
     
-    isect = this._scene.doIntersect(line);
-    
-    if ( isect && (obj = line.hitObject) )
+    if (isect && obj)
     {
         this._pick.setValues(line.hitPoint);
         
-        this.checkEvents(obj);
+        this.checkEvents(obj, "onclick");
         
         x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
                             obj._DEF + "\ at dist=" + line.dist.toFixed(4));
@@ -5963,18 +5968,12 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
 {
-    // FIXME; track event per 3D object but not for canvas!
-    this.prepareEvents(x, y, buttonState, "onmouseover");
-    
 	this._lastX = x;
     this._lastY = y;
 };
 
 x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 {
-    // FIXME; track event per 3D object but not for canvas!
-    this.prepareEvents(x, y, buttonState, "onmouseout");
-    
 	this._lastX = x;
     this._lastY = y;
 };
@@ -5995,9 +5994,33 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
     x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
 };
 
-x3dom.Viewarea.prototype.onMove = function (x, y, buttonState) 
+x3dom.Viewarea.prototype.handleMoveEvt = function (x, y, buttonState)
 {
     this.prepareEvents(x, y, buttonState, "onmousemove");
+    
+    if (this._pickingInfo.pickObj !== this._pickingInfo.lastObj)
+    {
+        if (this._pickingInfo.lastObj) {
+            var obj = this._pickingInfo.pickObj;
+            this._pickingInfo.pickObj = this._pickingInfo.lastObj;
+            
+            // call event for lastObj
+            this.prepareEvents(x, y, buttonState, "onmouseout");
+            this._pickingInfo.pickObj = obj;
+        }
+        
+        if (this._pickingInfo.pickObj) {
+            // call event for pickObj
+            this.prepareEvents(x, y, buttonState, "onmouseover");
+        }
+        
+        this._pickingInfo.lastObj = this._pickingInfo.pickObj;
+    }
+};
+
+x3dom.Viewarea.prototype.onMove = function (x, y, buttonState) 
+{
+    this.handleMoveEvt(x, y, buttonState);
     
     this._lastX = x;
     this._lastY = y;
@@ -6005,7 +6028,8 @@ x3dom.Viewarea.prototype.onMove = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState) 
 {
-    this.prepareEvents(x, y, buttonState, "onmousemove");
+    // should onmouseover/-out be handled on drag?
+    this.handleMoveEvt(x, y, buttonState);
     
     var navi = this._scene.getNavigationInfo();
     if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
@@ -6092,8 +6116,10 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
             
             this.checkEvents(obj, eventType);
             
-            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
-            x3dom.debug.logInfo("Ray hit at position " + this._pick);
+            if (eventType === "onclick") {  // debug
+                x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
+                x3dom.debug.logInfo("Ray hit at position " + this._pick);
+            }
         }
     }
 };

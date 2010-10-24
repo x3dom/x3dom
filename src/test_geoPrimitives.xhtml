@@ -22,9 +22,11 @@
                 <Group onmousemove="document.getElementById('bar').setAttribute('translation', hitPnt);
                                 document.getElementById('pc').setAttribute('set_destination', hitPnt);"
                        onclick="document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
-                                document.getElementById('cc').setAttribute('set_destination', '0 1 0');
-                               ">
-				<Transform DEF="coneTrafo" translation="-4.5 0 0">
+                                document.getElementById('cc').setAttribute('set_destination', '0 1 0');">
+                                
+				<Transform DEF="coneTrafo" translation="-4.5 0 0"
+                    onmouseover="document.getElementById('ausgabe').innerHTML='cone.isOver=TRUE';"
+                    onmouseout="document.getElementById('ausgabe').innerHTML='cone.isOver=FALSE';">
 					<Shape DEF="coneShape">
 						<Appearance DEF="coneApp">
 							<Material DEF="coneMat" diffuseColor="0 1 0" specularColor=".5 .5 .5" />
@@ -33,7 +35,9 @@
 					</Shape>
 				</Transform>
 				
-				<Transform DEF="boxTrafo" translation='-1.5 0 0'>
+				<Transform DEF="boxTrafo" translation='-1.5 0 0'
+                    onmouseover="document.getElementById('ausgabe').innerHTML='box.isOver=TRUE';"
+                    onmouseout="document.getElementById('ausgabe').innerHTML='box.isOver=FALSE';">
 					<Shape DEF="boxShape">
 						<Appearance DEF="boxApp"> 
 							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
@@ -43,7 +47,9 @@
 				</Transform>
                 
                 <Anchor url="http://www.igd.fraunhofer.de/igd-a4/">
-				<Transform DEF="sphereTrafo" translation="1.5 0 0">
+				<Transform DEF="sphereTrafo" translation="1.5 0 0"
+                    onmouseover="document.getElementById('ausgabe').innerHTML='sphere.isOver=TRUE';"
+                    onmouseout="document.getElementById('ausgabe').innerHTML='sphere.isOver=FALSE';">
 					<Shape DEF="sphereShape">
 						<Appearance DEF="sphereApp">
 							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
@@ -63,7 +69,9 @@
 				</Transform>
                 </Anchor>
 				
-				<Transform DEF="cylinderTrafo" translation="4.5 0 0">
+				<Transform DEF="cylinderTrafo" translation="4.5 0 0"
+                    onmouseover="document.getElementById('ausgabe').innerHTML='cylinder.isOver=TRUE';"
+                    onmouseout="document.getElementById('ausgabe').innerHTML='cylinder.isOver=FALSE';">
 					<Shape DEF="cylinderShape">
 						<Appearance DEF="cylinderApp">
 							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
@@ -71,6 +79,7 @@
 						<Cylinder DEF="cylinder" radius="1.0" height="2.0" solid="false" bottom="false" top="false" side="true" />
 					</Shape>
 				</Transform>
+                
                 </Group>
                 
                 <Transform id="bar" DEF="foo" scale=".15 .15 .15">
@@ -100,7 +109,7 @@
         </X3D>
 	</p>
 	
-	<p class="case"> &nbsp; </p>
+	<p id="ausgabe" class="case"> &nbsp; </p>
 	
 	<script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
