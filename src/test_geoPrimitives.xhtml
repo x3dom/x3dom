@@ -19,9 +19,9 @@
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
-                <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);
-                                document.getElementById('pc').setAttribute('set_destination', hitPnt);
-                                document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
+                <Group onmousemove="document.getElementById('bar').setAttribute('translation', hitPnt);
+                                document.getElementById('pc').setAttribute('set_destination', hitPnt);"
+                       onclick="document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
                                 document.getElementById('cc').setAttribute('set_destination', '0 1 0');
                                ">
 				<Transform DEF="coneTrafo" translation="-4.5 0 0">
