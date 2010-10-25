@@ -4475,7 +4475,9 @@ x3dom.registerNodeType(
             },
             
 			activate: function (prev) {
-				this._nameSpace.doc._viewarea.animateTo(this, prev);
+				if (prev) {
+					this._nameSpace.doc._viewarea.animateTo(this, prev);
+				}
 				
 				x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
 				x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
@@ -5744,12 +5746,11 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
 x3dom.Viewarea.prototype.animateTo = function(target, prev)
 {	
-	if (prev) {
-		prev = prev._viewMatrix;
+	if (prev && x3dom.isa(prev, x3dom.nodeTypes.Viewpoint)) {
+		prev = prev._viewMatrix.mult(this._transMat).mult(this._rotMat);
 	}
 	else {
-		return;
-		//prev = x3dom.fields.SFMatrix4f.identity();
+		prev = x3dom.fields.SFMatrix4f.identity();
 	}
 	
 	if (x3dom.isa(target, x3dom.nodeTypes.Viewpoint)) {
