@@ -82,7 +82,7 @@ x3dom.BindableStack.prototype.push = function (bindable) {
 	}
 	
 	this._bindStack.push (bindable);
-	bindable.activate();
+	bindable.activate(top);
 };
 
 x3dom.BindableStack.prototype.replaceTop = function (bindable) {
@@ -96,7 +96,7 @@ x3dom.BindableStack.prototype.replaceTop = function (bindable) {
 		top.deactivate();
 	
 		this._bindStack[this._bindStack.length - 1] = bindable;
-		bindable.activate();
+		bindable.activate(top);
 	}
 };
 
@@ -190,8 +190,8 @@ x3dom.BindableStack.prototype.getActive = function () {
                                  ' for ' + this._type._typeName + '-stack');
 		}
 		
-		this._bindBag[0].activate();
 		this._bindStack.push(this._bindBag[0]);
+		this._bindBag[0].activate();		
 	}
 		
 	return this._bindStack[this._bindStack.length - 1];
@@ -4351,12 +4351,12 @@ x3dom.registerNodeType(
 				}
 			},
             
-			activate: function () {
+			activate: function (prev) {
 				x3dom.debug.logInfo ('activate Bindable ' + this._DEF);
 				this.postMessage('isActive', true);
 			},
             
-			deactivate: function () {
+			deactivate: function (prev) {
 				x3dom.debug.logInfo ('deactivate Bindable ' + this._DEF);
 				this.postMessage('isActive', false);
 			},
@@ -4474,13 +4474,16 @@ x3dom.registerNodeType(
                 }
             },
             
-			activate: function () {
-                x3dom.nodeTypes.X3DBindableNode.prototype.activate.call(this);
+			activate: function (prev) {
+				this._nameSpace.doc._viewarea.animateTo(this, prev);
+				
+				x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
 				x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
 			},
             
-			deactivate: function () {
-                x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call(this);
+			deactivate: function (prev) {
+				// XXX FIXME; call parent.activate
+                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
 				x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
 			},
             
@@ -5739,6 +5742,33 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
     return true;
 };
 
+x3dom.Viewarea.prototype.animateTo = function(target, prev)
+{	
+	if (prev) {
+		prev = prev._viewMatrix;
+	}
+	else {
+		return;
+		//prev = x3dom.fields.SFMatrix4f.identity();
+	}
+	
+	if (x3dom.isa(target, x3dom.nodeTypes.Viewpoint)) {
+		target = target._viewMatrix;
+	}
+	
+	x3dom.debug.logInfo ('target: ' + target );
+	
+	this._mixer._beginTime = this._lastTS;
+    this._mixer._endTime = this._lastTS + this._transitionTime;
+            
+    this._mixer.setBeginMatrix (prev);
+	this._mixer.setEndMatrix (target);
+            
+    this._rotMat = x3dom.fields.SFMatrix4f.identity();
+    this._transMat = x3dom.fields.SFMatrix4f.identity();
+    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+}
+
 x3dom.Viewarea.prototype.getLights = function () 
 { 
     return this._doc._nodeBag.lights;
@@ -6394,17 +6424,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 				var stack = this._scene.getViewpoint()._stack;
 
 				if (stack) {
-                    // TODO; experimental!!!
-                    this._viewarea._mixer._beginTime = this._viewarea._lastTS;
-                    this._viewarea._mixer._endTime = this._viewarea._lastTS + this._viewarea._transitionTime;
-                    
-                    this._viewarea._mixer.setBeginMatrix(this._viewarea.getViewMatrix());
                     stack.switchTo('next');
-                    this._viewarea._mixer.setEndMatrix(this._scene.getViewpoint()._viewMatrix);
-                    
-                    this._viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
-                    this._viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
-                    this._viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
 				}
 				else {
 					x3dom.debug.logError ('No valid ViewBindable stack.');
@@ -6416,17 +6436,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 				var stack = this._scene.getViewpoint()._stack;
 				
 				if (stack) {
-                    // TODO; experimental!!!
-                    this._viewarea._mixer._beginTime = this._viewarea._lastTS;
-                    this._viewarea._mixer._endTime = this._viewarea._lastTS + this._viewarea._transitionTime;
-                    
-                    this._viewarea._mixer.setBeginMatrix(this._viewarea.getViewMatrix());
 					stack.switchTo('prev');
-                    this._viewarea._mixer.setEndMatrix(this._scene.getViewpoint()._viewMatrix);
-                    
-                    this._viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
-                    this._viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
-                    this._viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
 				}
 				else {
 					x3dom.debug.logError ('No valid ViewBindable stack.');
