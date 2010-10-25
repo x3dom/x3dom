@@ -523,12 +523,15 @@ function defineClass(parent, ctor, methods) {
 }
 
 x3dom.isa = function(object, clazz) {
-    if (object.constructor == clazz) {
+    if (object.constructor === clazz) {
         return true;
+    }
+    if (object.constructor.superClass === undefined) {
+        return false;
     }
 
     function f(c) {
-        if (c == clazz) {
+        if (c === clazz) {
             return true;
         }
         if (c.prototype && c.prototype.constructor && c.prototype.constructor.superClass) {
@@ -4478,15 +4481,13 @@ x3dom.registerNodeType(
 				if (prev) {
 					this._nameSpace.doc._viewarea.animateTo(this, prev);
 				}
-				
 				x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
-				x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
+				//x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
 			},
             
 			deactivate: function (prev) {
-				// XXX FIXME; call parent.activate
                 x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
-				x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
+				//x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
 			},
             
 			getCenterOfRotation: function() {
@@ -5745,19 +5746,19 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 };
 
 x3dom.Viewarea.prototype.animateTo = function(target, prev)
-{	
+{
 	if (prev && x3dom.isa(prev, x3dom.nodeTypes.Viewpoint)) {
-		prev = prev._viewMatrix.mult(this._transMat).mult(this._rotMat);
+		prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
+                     mult(this._transMat).mult(this._rotMat);
 	}
 	else {
-		prev = x3dom.fields.SFMatrix4f.identity();
+		//prev = x3dom.fields.SFMatrix4f.identity();
+        return;
 	}
 	
-	if (x3dom.isa(target, x3dom.nodeTypes.Viewpoint)) {
-		target = target._viewMatrix;
-	}
-	
-	x3dom.debug.logInfo ('target: ' + target );
+    if (x3dom.isa(target, x3dom.nodeTypes.Viewpoint)) {
+        target = target._viewMatrix;
+    }
 	
 	this._mixer._beginTime = this._lastTS;
     this._mixer._endTime = this._lastTS + this._transitionTime;
@@ -5904,17 +5905,7 @@ x3dom.Viewarea.prototype.showAll = function()
         dia = min.add(dia.multiply(0.5));
         dia.z += (dist1 > dist2 ? dist1 : dist2);
         
-        // EXPERIMENTAL (TODO: parent trafo of vp)
-        this._mixer._beginTime = this._lastTS;
-        this._mixer._endTime = this._lastTS + this._transitionTime;
-        //this._mixer.setBeginMatrix(this._scene.getViewpoint()._viewMatrix);
-        this._mixer.setBeginMatrix(this.getViewMatrix());
-        this._mixer.setEndMatrix(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
-        
-        this._rotMat = x3dom.fields.SFMatrix4f.identity();
-        this._transMat = x3dom.fields.SFMatrix4f.identity();
-        this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-        //viewpoint.setView(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
+        this.animateTo(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)), viewpoint);
     }
 };
 
@@ -5923,7 +5914,7 @@ x3dom.Viewarea.prototype.resetView = function()
     // EXPERIMENTAL (TODO: parent trafo of vp)
     this._mixer._beginTime = this._lastTS;
     this._mixer._endTime = this._lastTS + this._transitionTime;
-    //this._mixer.setBeginMatrix(this._scene.getViewpoint()._viewMatrix);
+    
     this._mixer.setBeginMatrix(this.getViewMatrix());
     this._scene.getViewpoint().resetView();
     this._mixer.setEndMatrix(this._scene.getViewpoint()._viewMatrix);
@@ -5931,7 +5922,6 @@ x3dom.Viewarea.prototype.resetView = function()
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-    //this._scene.getViewpoint().resetView();
 };
 
 x3dom.Viewarea.prototype.checkEvents = function (obj, eventType)
