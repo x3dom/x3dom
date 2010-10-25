@@ -257,15 +257,14 @@ x3dom.gfx_webgl = (function () {
         "varying vec4 projCoord;" +
 		"void main(void) {" +
         "    vec3 proj = (projCoord.xyz / projCoord.w);" +
-		"    float dist = proj.z * 4294967296.0;" +
-        "    float alpha = float(int(dist / 16777216.0));" +
-		"    dist = dist - float(int(alpha)) * 16777216.0;" +
-		"    float red = float(int(dist / 65536.0));" +
-		"    dist = dist - float(int(red)) * 65536.0;" +
-		"    float green = float(int(dist / 256.0));" +
-        "    dist = dist - float(int(green)) * 256.0;" +
-		"    float blue = float(int(dist / 256.0));" +
-		"    gl_FragColor = vec4(red/256.0, green/256.0, blue/256.0, alpha/256.0);" +
+        //   http://www.gamedev.net/community/forums/topic.asp?topic_id=486847
+        "    vec4 outVal = vec4(0.0);" +
+		"    float toFixed = 255.0 / 256.0;" +
+        "    outVal.r = fract(proj.z * toFixed);" +
+		"    outVal.g = fract(proj.z * toFixed * 255.0);" +
+		"    outVal.b = fract(proj.z * toFixed * 255.0 * 255.0);" +
+		"    outVal.a = fract(proj.z * toFixed * 255.0 * 255.0 * 255.0);" +
+		"    gl_FragColor = outVal;" +
 		"}"
 		};
 		
@@ -705,8 +704,12 @@ x3dom.gfx_webgl = (function () {
 							"        {" +
 							"            projectiveBiased.x += (j*stepSize);" +
 							"            projectiveBiased.y += (i*stepSize);" +
-							"            vec4 shCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
-							"            float z = (shCol.a * 16777216.0 + shCol.r * 65536.0 + shCol.g * 256.0 + shCol.b) / 16777216.0;" +
+							"            vec4 zCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
+                            "            float fromFixed = 256.0 / 255.0;" +
+                            "            float z = zCol.r * fromFixed;" +
+                            "            z += zCol.g * fromFixed / (255.0);" +
+                            "            z += zCol.b * fromFixed / (255.0 * 255.0);" +
+                            "            z += zCol.a * fromFixed / (255.0 * 255.0 * 255.0);" +
 							"            if (z < projectiveBiased.z) blockerCount += 1.0;" +
 							"            projectiveBiased.x -= (j*stepSize);" +
 							"            projectiveBiased.y -= (i*stepSize);" +
