@@ -186,7 +186,8 @@ x3dom.BindableStack.prototype.getActive = function () {
 			}
 		}
 		else {
-			x3dom.debug.logInfo ( 'activate first ' + this._defaultType._typeName + ' for ' + this._type._typeName + '-stack');
+			x3dom.debug.logInfo ('activate first ' + this._defaultType._typeName + 
+                                 ' for ' + this._type._typeName + '-stack');
 		}
 		
 		this._bindBag[0].activate();
@@ -4472,6 +4473,16 @@ x3dom.registerNodeType(
                     this.bind(this._vf.set_bind);
                 }
             },
+            
+			activate: function () {
+                x3dom.nodeTypes.X3DBindableNode.prototype.activate.call(this);
+				x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
+			},
+            
+			deactivate: function () {
+                x3dom.nodeTypes.X3DBindableNode.prototype.deactivate.call(this);
+				x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
+			},
             
 			getCenterOfRotation: function() {
                 return this._vf.centerOfRotation;
