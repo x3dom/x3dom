@@ -5712,7 +5712,6 @@ x3dom.Viewarea = function (document, scene) {
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
     
     this._lastTS = 0;
-    this._transitionTime = 1;
     this._mixer = new x3dom.MatrixMixer();
 };
 
@@ -5747,25 +5746,34 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
 x3dom.Viewarea.prototype.animateTo = function(target, prev)
 {
-	if (prev && x3dom.isa(prev, x3dom.nodeTypes.Viewpoint)) {
-		prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
-                     mult(this._transMat).mult(this._rotMat);
-	}
-	else {
-		//prev = x3dom.fields.SFMatrix4f.identity();
-        return;
-	}
-	
+    var navi = this._scene.getNavigationInfo();
+    
     if (x3dom.isa(target, x3dom.nodeTypes.Viewpoint)) {
         target = target._viewMatrix;
     }
-	
-	this._mixer._beginTime = this._lastTS;
-    this._mixer._endTime = this._lastTS + this._transitionTime;
-            
-    this._mixer.setBeginMatrix (prev);
-	this._mixer.setEndMatrix (target);
-            
+    
+    if (navi._vf.transitionType[0].toLowerCase() !== "teleport")
+    {
+        if (prev && x3dom.isa(prev, x3dom.nodeTypes.Viewpoint)) {
+            prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
+                         mult(this._transMat).mult(this._rotMat);
+        }
+        else {
+            //prev = x3dom.fields.SFMatrix4f.identity();
+            return;
+        }
+        
+        this._mixer._beginTime = this._lastTS;
+        this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+        
+        this._mixer.setBeginMatrix (prev);
+        this._mixer.setEndMatrix (target);
+    }
+    else 
+    {
+        this._scene.getViewpoint().setView(target);
+    }
+    
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -5911,13 +5919,22 @@ x3dom.Viewarea.prototype.showAll = function()
 
 x3dom.Viewarea.prototype.resetView = function()
 {
-    // EXPERIMENTAL (TODO: parent trafo of vp)
-    this._mixer._beginTime = this._lastTS;
-    this._mixer._endTime = this._lastTS + this._transitionTime;
+    var navi = this._scene.getNavigationInfo();
     
-    this._mixer.setBeginMatrix(this.getViewMatrix());
-    this._scene.getViewpoint().resetView();
-    this._mixer.setEndMatrix(this._scene.getViewpoint()._viewMatrix);
+    if (navi._vf.transitionType[0].toLowerCase() !== "teleport")
+    {
+        // EXPERIMENTAL (TODO: parent trafo of vp)
+        this._mixer._beginTime = this._lastTS;
+        this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+        
+        this._mixer.setBeginMatrix(this.getViewMatrix());
+        this._scene.getViewpoint().resetView();
+        this._mixer.setEndMatrix(this._scene.getViewpoint()._viewMatrix);
+    }
+    else 
+    {
+        this._scene.getViewpoint().resetView();
+    }
     
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
@@ -6493,10 +6510,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			{
                 if (this._nodeBag.lights.length > 0)
                 {
-                    this._scene.getViewpoint().setView(this._viewarea.getLightMatrix()[0]);
-                    this._viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
-                    this._viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
-                    this._viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+                    this._viewarea.animateTo(this._viewarea.getLightMatrix()[0], this._scene.getViewpoint());
                 }
 			}
 			break;
