@@ -3,7 +3,8 @@
 <html xmlns='http://www.w3.org/1999/xhtml'>
 	<head>
 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-		<link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'/>
+		<link rel='stylesheet' type='text/css' href='x3dom.css'/>
+		<script type='text/javascript' src='x3dom.js'/>
 	</head>
 	<body>
 		<h1>Multiple animated Lights</h1>
@@ -13,6 +14,7 @@
 		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='600px' height='600px'>
 			<Scene DEF='scene'>
 				<NavigationInfo headlight='false'/>
+                <DirectionalLight direction="0 -0.8 -0.2" intensity="0.5" shadowIntensity="0.5"/>
 				<Background skyColor='1.000 1.000 1.000'/>
 				<Transform DEF='Fan-StandBase' translation='-20.832 -26.094 -53.789' rotation='-0.000 -1.000 -0.000 -3.142' >
 					<Shape>
@@ -25,7 +27,7 @@
 						</IndexedFaceSet>
 					</Shape>
 				</Transform>
-				<Viewpoint DEF='Camera01' description='Camera01' orientation='0.2878 -0.9420 -0.1729 -1.0611' position='184.5020 72.5703 89.7307' zNear='0.1000' zFar='10000.0000' fieldOfView='0.7854' jump='TRUE' />
+				<Viewpoint DEF='Camera01' description='Camera01' orientation='0.2878 -0.9420 -0.1729 -1.0611' position='184.5020 72.5703 89.7307' zNear='5' zFar='5000' fieldOfView='0.7854' />
 				<Transform DEF='Room' translation='201.4145 -146.8126 -132.0494' rotation='-0.0000 -1.0000 -0.0000 -3.1416' >
 					<Shape>
 						<Appearance DEF='_7_-_Default' >
@@ -416,6 +418,5 @@
 				<ROUTE fromNode='Spot02-DIR-INTERP' fromField='value_changed' toNode='Spot02' toField='set_direction' />
 			</Scene>
 		</X3D>
-		<script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'/>
 	</body>
 </html>
