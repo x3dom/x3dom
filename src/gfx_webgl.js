@@ -63,8 +63,8 @@ x3dom.gfx_webgl = (function () {
                         x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
                                             "Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
                                             "Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
-                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
-                                            "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
+                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION));
+                                            //+ ", " + "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
                     }
                     //x3dom.debug.logInfo(ctx.getSupportedExtensions());
                     
@@ -930,16 +930,18 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.position !== undefined) 
                 {
-                    shape._webgl.positions = shape._cf.geometry.node._mesh._positions[q];
+                    shape._webgl.positions[q] = shape._cf.geometry.node._mesh._positions[q];
                     
                     // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
                     gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
                     
                     var positionBuffer = gl.createBuffer();
                     shape._webgl.buffers[5*q+1] = positionBuffer;
-                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
-                    var vertices = new Float32Array(shape._webgl.positions);
+                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
+                    
+                    var vertices = new Float32Array(shape._webgl.positions[q]);
                     
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -955,14 +957,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.color !== undefined)
                 {
-                    shape._webgl.colors = shape._cf.geometry.node._mesh._colors[q];
+                    shape._webgl.colors[q] = shape._cf.geometry.node._mesh._colors[q];
                     
                     gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
                     
                     var colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[5*q+4] = colorBuffer;
                     
-                    var colors = new Float32Array(shape._webgl.colors);
+                    var colors = new Float32Array(shape._webgl.colors[q]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
