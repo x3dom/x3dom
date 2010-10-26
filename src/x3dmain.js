@@ -166,6 +166,50 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.gl = this.initContext(this.canvas);
     this.doc = null;
     
+    var that = this;
+    
+    // allow listening for size changes
+    x3dElem.__setAttribute = x3dElem.setAttribute;
+    x3dElem.setAttribute = function(attrName, newVal) {
+        //var prevVal = this.getAttribute(attrName);
+        this.__setAttribute(attrName, newVal);
+        
+        switch(attrName) {
+            case "x":
+            {
+                that.canvas.style.left = newVal;
+            }
+            break;
+            case "y":
+            {
+                that.canvas.style.top = newVal;
+            }
+            break;
+            case "width":
+            {
+                that.canvas.style.width = that.canvasDiv.style.width = newVal;
+                that.canvas.setAttribute("width", that.canvas.style.width);
+                if (that.doc._viewarea) {
+                    that.doc._viewarea.width = that.canvas.width;
+                }
+            }
+            break;
+            case "height":
+            {
+                that.canvas.style.height = that.canvasDiv.style.height = newVal;
+                that.canvas.setAttribute("height", that.canvas.style.height);
+                if (that.doc._viewarea) {
+                    that.doc._viewarea.height = that.canvas.height;
+                }
+            }
+            break;
+            default:
+        }
+        
+        //TODO; update scene._webgl.fboPick
+        that.doc.needRender = true;
+    };
+    
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
     if (runtimeEnabled !== null) {
         this.hasRuntime = (runtimeEnabled.toLowerCase() == "true");
@@ -184,8 +228,6 @@ x3dom.X3DCanvas = function(x3dElem) {
     
 	if (this.canvas !== null && this.gl !== null && this.hasRuntime)
 	{
-        var that = this;
-        
 		// event handler for mouse interaction
 		this.canvas.mouse_dragging = false;
 		this.canvas.mouse_button = 0;
