@@ -3,17 +3,18 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
     <title>WoWModelViewer X3D export</title>
-    <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/src/x3dom.css" />
+    <link rel="stylesheet" type="text/css" href="x3dom.css" />
+    <script type='text/javascript' src='x3dom.js'></script>
 </head>
 <body>
 	<h1>WoWModelViewer X3DOM export</h1>
     <p> 
-    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="someUniqueId" showStat="false" showLog="false" x="0px" y="0px" width="600px" height="600px">
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="someUniqueId" showStat="false" showLog="false" width="600px" height="600px">
 <!-- Exported with WoWModelViewer -->
 	<Scene>
 		<Background skyColor='0.273438 0.367188 0.472656 '/>
-		<Viewpoint position='0 0 14.753095' />
-        <DirectionalLight direction='-0.8 -0.9 0.3' shadowIntensity='0.7' /> 
+		<Viewpoint position='0 0 14.753095' zNear="1" zFar="3000"/>
+        <DirectionalLight direction='-0.7 -0.9 0.3' shadowIntensity='0.5' /> 
         
         <Transform translation='-0.392361 -5.058005 0.006138'>
             <Shape>
@@ -73001,10 +73002,7 @@
 			</Transform>
 		</Transform>
 	</Scene>
-
-
       </X3D>
     </p>
-    <script type='text/javascript' src='x3dom.js'></script>
 </body>
 </html>
