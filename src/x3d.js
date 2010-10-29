@@ -358,6 +358,21 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
         	domNode.__setAttribute = domNode.setAttribute;
             domNode.setAttribute = x3dom.setElementAttribute;
 		}
+        
+        // workaround since one cannot find out which handlers are registered
+        if ( (domNode.tagName !== undefined) && (!domNode.__addEventListener) ) 
+        {
+        	domNode.__addEventListener = domNode.addEventListener;
+            // helper to track an element's listeners
+            domNode.addEventListener = function(type, func, phase) {
+                if (!this._x3domNode._listeners[type])
+                    this._x3domNode._listeners[type] = [];
+                this._x3domNode._listeners[type].push(func);
+                
+                x3dom.debug.logInfo('addEventListener for ' + this.tagName + ".on" + type);
+                this.__addEventListener(type, func, phase);
+            };
+        }
 		
         // x3dom.debug.logInfo("=== node=" + domNode.localName);
 	    if (domNode.hasAttribute('USE')) {
@@ -562,6 +577,8 @@ x3dom.registerNodeType(
 		
         this._fieldWatchers = {};
         this._parentNodes = [];
+        
+        this._listeners = {};
         
 		// FIXME; should be removed and handled by _cf methods
         this._childNodes = [];
@@ -5955,6 +5972,13 @@ x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
         func.call(node._xmlNode, this._pick.toGL(), event);
     }
     
+    var list = node._listeners[event.type];
+    if (list) {
+        for (var it=0; it<list.length; it++) {
+            list[it].call(node._xmlNode, event);
+        }
+    }
+    
     return event.cancelBubble;
 };
 
@@ -5983,7 +6007,8 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         var anObj = obj;
         
         if ( !anObj._xmlNode[eventType] && 
-             !anObj._xmlNode.hasAttribute(eventType) ) {
+             !anObj._xmlNode.hasAttribute(eventType) &&
+             !anObj._listeners[event.type]) {
             anObj = anObj._cf.geometry.node;
         }
         
@@ -5998,7 +6023,8 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     var recurse = function(obj) {
         Array.forEach(obj._parentNodes, function (node) {
             if ( node._xmlNode && (node._xmlNode[eventType] ||
-                 node._xmlNode.hasAttribute(eventType)) )
+                 node._xmlNode.hasAttribute(eventType) ||
+                 node._listeners[event.type]) )
             {
                 if (that.callEvtHandler(node, eventType, event) === true) {
                     needRecurse = false;
