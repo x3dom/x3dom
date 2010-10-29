@@ -729,19 +729,6 @@ x3dom.userAgentFeature = {
             x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
         }
     };
-
-    if (window.addEventListener)
-    {
-        window.addEventListener('load', onload, false);
-        window.addEventListener('unload', onunload, false);
-        window.addEventListener('reload', onunload, false);
-    }
-    else if (window.attachEvent)
-    {
-        window.attachEvent('onload', onload);
-        window.attachEvent('onunload', onunload);
-        window.attachEvent('onreload', onunload);
-    }
     
     if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
@@ -759,6 +746,19 @@ x3dom.userAgentFeature = {
             }
             return obj;
         };
+    }
+    
+    if (window.addEventListener)
+    {
+        window.addEventListener('load', onload, false);
+        window.addEventListener('unload', onunload, false);
+        window.addEventListener('reload', onunload, false);
+    }
+    else if (window.attachEvent)
+    {
+        window.attachEvent('onload', onload);
+        window.attachEvent('onunload', onunload);
+        window.attachEvent('onreload', onunload);
     }
 
 })();

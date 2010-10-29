@@ -110,6 +110,7 @@
 	</p>
 	
 	<p id="ausgabe" class="case"> &nbsp; </p>
+    <!--<p><input type="button" value="addEventListener" onclick="addIt();"/></p>-->
 	
 	<script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
@@ -119,7 +120,8 @@
     <script type="text/javascript" src="x3d_follower.js"></script>
     
 	<script type="text/javascript" ><![CDATA[
-        document.getElementById('ausgabe').innerHTML = "test";
+        //document.getElementById('ausgabe').innerHTML = "test";
+        /*
         document.getElementById('blubb').onclick = function(event) {
             document.getElementById('ausgabe').innerHTML = event.type + " (" + 
                                                 event.button + "): " + 
@@ -128,6 +130,21 @@
                                                 event.worldZ.toFixed(2);
             document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
         };
+        */
+        function addIt() {
+            document.getElementById('ausgabe').innerHTML = "test";
+            
+            document.getElementById('blubb').addEventListener('click', function (event) {
+                document.getElementById('ausgabe').innerHTML = event.type + " (" + 
+                                                    event.button + "): " + 
+                                                    event.worldX.toFixed(2) + ", " + 
+                                                    event.worldY.toFixed(2) + ", " + 
+                                                    event.worldZ.toFixed(2);
+                document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
+            }, false);
+        }
+        
+        document.onload = addIt;
 	]]></script>
 </body>
 </html>
