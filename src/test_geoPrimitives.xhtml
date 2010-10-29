@@ -69,12 +69,12 @@
 				</Transform>
                 </Anchor>
 				
-				<Transform DEF="cylinderTrafo" translation="4.5 0 0"
+				<Transform id="blubb" DEF="cylinderTrafo" translation="4.5 0 0"
                     onmouseover="document.getElementById('ausgabe').innerHTML='cylinder.isOver=TRUE';"
                     onmouseout="document.getElementById('ausgabe').innerHTML='cylinder.isOver=FALSE';">
 					<Shape DEF="cylinderShape">
 						<Appearance DEF="cylinderApp">
-							<Material diffuseColor="1 1 0" specularColor=".5 .5 .5" />
+							<Material id="blubbMat" diffuseColor="1 1 0" specularColor=".5 .5 .5" />
 						</Appearance>
 						<Cylinder DEF="cylinder" radius="1.0" height="2.0" solid="false" bottom="false" top="false" side="true" />
 					</Shape>
@@ -117,5 +117,17 @@
 	<script type="text/javascript" src="x3d.js"></script>
 	<script type="text/javascript" src="fields.js"></script>
     <script type="text/javascript" src="x3d_follower.js"></script>
+    
+	<script type="text/javascript" ><![CDATA[
+        document.getElementById('ausgabe').innerHTML = "test";
+        document.getElementById('blubb').onclick = function(event) {
+            document.getElementById('ausgabe').innerHTML = event.type + " (" + 
+                                                event.button + "): " + 
+                                                event.worldX.toFixed(2) + ", " + 
+                                                event.worldY.toFixed(2) + ", " + 
+                                                event.worldZ.toFixed(2);
+            document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
+        };
+	]]></script>
 </body>
 </html>
