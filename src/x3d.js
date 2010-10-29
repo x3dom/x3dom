@@ -5941,6 +5941,23 @@ x3dom.Viewarea.prototype.resetView = function()
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
 };
 
+x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
+{
+    event.target = node._xmlNode;
+    var attrib = node._xmlNode[eventType];
+    
+    if (typeof(attrib) === "function") {
+        attrib.call(node._xmlNode, event);
+    }
+    else {
+        var funcStr = node._xmlNode.getAttribute(eventType);
+        var func = new Function('hitPnt', 'event', funcStr);
+        func.call(node._xmlNode, this._pick.toGL(), event);
+    }
+    
+    return event.cancelBubble;
+};
+
 x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventType)
 {
     var that = this;
@@ -5956,7 +5973,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         worldY: that._pick.y,
         worldZ: that._pick.z,
         hitPnt: that._pick.toGL(), // for convenience
-        cancelBubble: true,
+        cancelBubble: false,
         stopPropagation: function() { this.cancelBubble = true; }
     };
     //x3dom.debug.logInfo(event.type + ", " + event.worldX.toFixed(2) + ", " + 
@@ -5964,27 +5981,26 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     
     try {
         var anObj = obj;
-        if ( anObj._xmlNode.hasAttribute(eventType) ||
-            (anObj = anObj._cf.geometry.node)._xmlNode.hasAttribute(eventType) ) {
-            event.target = anObj._xmlNode;
-            var funcStr = anObj._xmlNode.getAttribute(eventType);
-            var func = new Function('hitPnt', 'event', funcStr);
-            func.call(anObj, that._pick.toGL(), event);
-            if (event.cancelBubble) {
-                needRecurse = false;
-            }
+        
+        if ( !anObj._xmlNode[eventType] && 
+             !anObj._xmlNode.hasAttribute(eventType) ) {
+            anObj = anObj._cf.geometry.node;
+        }
+        
+        if (that.callEvtHandler(anObj, eventType, event) === true) {
+            needRecurse = false;
         }
     }
-    catch(e) {}
+    catch(e) {
+        x3dom.debug.logException(e);
+    }
     
     var recurse = function(obj) {
         Array.forEach(obj._parentNodes, function (node) {
-            if (node._xmlNode && node._xmlNode.hasAttribute(eventType)) {
-                event.target = node._xmlNode;
-                var funcStr = node._xmlNode.getAttribute(eventType);
-                var func = new Function('hitPnt', 'event', funcStr);
-                func.call(node, that._pick.toGL(), event);
-                if (event.cancelBubble) {
+            if ( node._xmlNode && (node._xmlNode[eventType] ||
+                 node._xmlNode.hasAttribute(eventType)) )
+            {
+                if (that.callEvtHandler(node, eventType, event) === true) {
                     needRecurse = false;
                 }
             }
