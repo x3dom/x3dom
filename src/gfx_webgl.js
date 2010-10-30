@@ -52,21 +52,28 @@ x3dom.gfx_webgl = (function () {
                     }
                     x3dom.debug.logInfo(ext);
                     */
-                    if (ctx.getString) {
+                    try {
+                      if (ctx.getString) {
                         x3dom.debug.logInfo("\nVendor: " + ctx.getString(ctx.VENDOR) + ", " + 
                                             "Renderer: " + ctx.getString(ctx.RENDERER) + ", " + 
                                             "Version: " + ctx.getString(ctx.VERSION) + ", " + 
                                             "ShadingLangV.: " + ctx.getString(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
                                             "\nExtensions: " + ctx.getString(ctx.EXTENSIONS));
-                    }
-                    else {
+                      }
+                      else {
                         x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
                                             "Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
                                             "Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
                                             "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION));
                                             //+ ", " + "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
+                      }
+                      //x3dom.debug.logInfo(ctx.getSupportedExtensions());
                     }
-                    //x3dom.debug.logInfo(ctx.getSupportedExtensions());
+                    catch (ex) {
+                        x3dom.debug.logInfo("Your browser probably supports an older WebGL version." +
+                                            " Please try the mobile runtime instead:\n" +
+                                            "http://www.x3dom.org/x3dom/src_mobile/x3dom.js");
+                    }
                     
                     return newCtx;
                 }
