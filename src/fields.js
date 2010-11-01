@@ -606,7 +606,8 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
 
     var rDet = this.det();
 
-    if (Math.abs(rDet) < x3dom.fields.Eps)
+    //if (Math.abs(rDet) < x3dom.fields.Eps)
+    if (Math.abs(rDet) === 0)
     {
         x3dom.debug.logInfo("Invert matrix: singular matrix, no inverse!");
         return x3dom.fields.SFMatrix4f.identity();
