@@ -5578,13 +5578,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
             
-            // define the experimental picking mode: box, exact (NYI), idBuf, color, texCoord
+            // define the experimental picking mode: 
+            // box, exact (NYI), idBuf, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
-            
-			this._cam = null;
-            this._bgnd = null;
-            this._navi = null;
-			this._lights = [];
         },
         {
 			/* bindable getter (e.g. getViewpoint) are added automatically */
@@ -5686,8 +5682,7 @@ x3dom.registerNodeType(
 					while (that._childNodes.length !== 0) {
 						that.removeChild(that._childNodes[0]);
 					}
-					that.addChild(newScene);
-					//x3dom.debug.logInfo('XXXXXXX' + that._xmlNode);						
+					that.addChild(newScene);			
 					//that._xmlNode.appendChild (inlScene);
 						
 					that._nameSpace.doc.downloadCount -= 1;
@@ -5721,11 +5716,15 @@ x3dom.Viewarea = function (document, scene) {
 	this._rotMat = x3dom.fields.SFMatrix4f.identity();
 	this._transMat = x3dom.fields.SFMatrix4f.identity();
 	this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._flyMat = x3dom.fields.SFMatrix4f.identity();
     
 	this._width = 400;
 	this._height = 300;
+    this._dx = 0;
+    this._dy = 0;
     this._lastX = -1;
     this._lastY = -1;
+    this._lastButton = 0;
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
     
     this._lastTS = 0;
@@ -5734,31 +5733,83 @@ x3dom.Viewarea = function (document, scene) {
 
 x3dom.Viewarea.prototype.tick = function(timeStamp)
 {
+    var needMixAnim = false;
+    
     this._lastTS = timeStamp;
     
-    if (this._mixer._beginTime <= 0)
-        return false;
-    
-    if (timeStamp >= this._mixer._beginTime) 
+    if (this._mixer._beginTime > 0)
     {
-        if (timeStamp <= this._mixer._endTime) 
+        needMixAnim = true;
+        
+        if (timeStamp >= this._mixer._beginTime) 
         {
-            var mat = this._mixer.mix(timeStamp);
-            
-            this._scene.getViewpoint().setView(mat);
+            if (timeStamp <= this._mixer._endTime) 
+            {
+                var mat = this._mixer.mix(timeStamp);
+                
+                this._scene.getViewpoint().setView(mat);
+            }
+            else {
+                this._mixer._beginTime = 0;
+                this._mixer._endTime = 0;
+                
+                this._scene.getViewpoint().setView(this._mixer._endMat);
+            }
         }
         else {
-            this._mixer._beginTime = 0;
-            this._mixer._endTime = 0;
-            
-            this._scene.getViewpoint().setView(this._mixer._endMat);
+            this._scene.getViewpoint().setView(this._mixer._beginMat);
         }
     }
-    else {
-        this._scene.getViewpoint().setView(this._mixer._beginMat);
+    
+    var needNavAnim = this.navigateTo();
+    
+    return (needMixAnim || needNavAnim);
+};
+
+x3dom.Viewarea.prototype.navigateTo = function()
+{
+    var navi = this._scene.getNavigationInfo();
+    var needNavAnim = ( this._lastButton > 0 && 
+                        (navi._vf.type[0].toLowerCase() === "fly" ||
+                         navi._vf.type[0].toLowerCase() === "walk") );
+    
+    // TODO; this freakin' code does not work and is absolute crap!!!
+    // directly act on camera matrix instead (that defines coordSys).
+    // FIXME; this currently only tests different navigation modes...
+    if (needNavAnim)
+    {
+        var viewpoint = this._scene.getViewpoint();
+        var min = x3dom.fields.SFVec3f.MAX();
+        var max = x3dom.fields.SFVec3f.MIN();
+        var ok = this._scene.getVolume(min, max, true);
+        
+        var speed = navi._vf.speed / 2;
+        var d = ok ? (max.subtract(min)).length() : 5;
+        d = ((d < x3dom.fields.Eps) ? 1 : d) * speed;
+        var sign = (this._lastButton & 2) ? -1 : 1;
+        
+        if (Math.abs(this._dx) > 1 || Math.abs(this._dy > 1))
+        {
+            var alpha = (this._dy * speed * Math.PI) / this._width;
+            var beta = (this._dx * speed * Math.PI) / this._height;
+            
+            var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
+            var my = x3dom.fields.SFMatrix4f.rotationY(beta);
+            
+            this._flyMat = this._flyMat.mult(mx).mult(my);
+        }
+        else
+        {
+            var vec = new x3dom.fields.SFVec3f(0, 0, d*sign/this._height);
+            this._movement = this._movement.add(vec);
+            
+            this._transMat = viewpoint.getViewMatrix().inverse().
+                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                mult(viewpoint.getViewMatrix());
+        }
     }
     
-    return true;
+    return needNavAnim;
 };
 
 x3dom.Viewarea.prototype.animateTo = function(target, prev)
@@ -5794,6 +5845,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev)
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._flyMat = x3dom.fields.SFMatrix4f.identity();
 }
 
 x3dom.Viewarea.prototype.getLights = function () 
@@ -5806,7 +5858,7 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function ()
 	var viewpoint = this._scene.getViewpoint();
  	var mat_viewpoint = viewpoint.getCurrentTransform();
  
-	return mat_viewpoint.mult(viewpoint.getViewMatrix());
+	return mat_viewpoint.mult(this._flyMat.mult(viewpoint.getViewMatrix()));
 };
 
 x3dom.Viewarea.prototype.getViewMatrix = function () 
@@ -5956,6 +6008,7 @@ x3dom.Viewarea.prototype.resetView = function()
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._flyMat = x3dom.fields.SFMatrix4f.identity();
 };
 
 x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
@@ -6050,14 +6103,20 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this.prepareEvents(x, y, buttonState, "onmousedown");
     this._pickingInfo.lastClickObj = this._pickingInfo.pickObj;
     
+    this._dx = 0;
+    this._dy = 0;
 	this._lastX = x;
 	this._lastY = y;
+    this._lastButton = buttonState;
 };
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
 {
+    this._dx = 0;
+    this._dy = 0;
     this._lastX = x;
     this._lastY = y;
+    this._lastButton = buttonState;
     
     if (this._scene._vf.pickMode.toLowerCase() !== "box") {
         this.prepareEvents(x, y, buttonState, "onmouseup");
@@ -6100,12 +6159,18 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
 {
+    this._dx = 0;
+    this._dy = 0;
+    this._lastButton = 0;
 	this._lastX = x;
     this._lastY = y;
 };
 
 x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 {
+    this._dx = 0;
+    this._dy = 0;
+    this._lastButton = 0;
 	this._lastX = x;
     this._lastY = y;
 };
@@ -6164,71 +6229,77 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     this.handleMoveEvt(x, y, buttonState);
     
     var navi = this._scene.getNavigationInfo();
-    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
+    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() === "none")
         return;
 
     var dx = x - this._lastX;
     var dy = y - this._lastY;
     var min, max, ok, d, vec;
     var viewpoint = this._scene.getViewpoint();
-
-    if (buttonState & 1) 
+    
+    if (navi._vf.type[0].toLowerCase() === "examine")
     {
-        var alpha = (dy * 2 * Math.PI) / this._width;
-        var beta = (dx * 2 * Math.PI) / this._height;
-        var mat = this.getViewMatrix();
+        if (buttonState & 1) 
+        {
+            var alpha = (dy * 2 * Math.PI) / this._width;
+            var beta = (dx * 2 * Math.PI) / this._height;
+            var mat = this.getViewMatrix();
 
-        var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
-        var my = x3dom.fields.SFMatrix4f.rotationY(beta);
+            var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
+            var my = x3dom.fields.SFMatrix4f.rotationY(beta);
 
-        var center = viewpoint.getCenterOfRotation();
-        mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
+            var center = viewpoint.getCenterOfRotation();
+            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
 
-        this._rotMat = this._rotMat.
-        mult(x3dom.fields.SFMatrix4f.translation(center)).
-        mult(mat.inverse()).
-        mult(mx).mult(my).
-        mult(mat).
-        mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
+            this._rotMat = this._rotMat.
+                mult(x3dom.fields.SFMatrix4f.translation(center)).
+                mult(mat.inverse()).
+                mult(mx).mult(my).
+                mult(mat).
+                mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
+        }
+        if (buttonState & 4) 
+        {
+            min = x3dom.fields.SFVec3f.MAX();
+            max = x3dom.fields.SFVec3f.MIN();
+            ok = this._scene.getVolume(min, max, true);
+
+            d = ok ? (max.subtract(min)).length() : 10;
+            d = (d < x3dom.fields.Eps) ? 1 : d;
+            //x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
+            //x3dom.debug.logInfo("w="+this._width+", h="+this._height);
+
+            vec = new x3dom.fields.SFVec3f(d*dx/this._width,d*(-dy)/this._height,0);
+            this._movement = this._movement.add(vec);
+
+            //TODO; move real distance along viewing plane
+            this._transMat = viewpoint.getViewMatrix().inverse().
+                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                mult(viewpoint.getViewMatrix());
+        }
+        if (buttonState & 2) 
+        {
+            min = x3dom.fields.SFVec3f.MAX();
+            max = x3dom.fields.SFVec3f.MIN();
+            ok = this._scene.getVolume(min, max, true);
+
+            d = ok ? (max.subtract(min)).length() : 10;
+            d = (d < x3dom.fields.Eps) ? 1 : d;
+            //x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
+            //x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
+
+            vec = new x3dom.fields.SFVec3f(0,0,d*(dx+dy)/this._height);
+            this._movement = this._movement.add(vec);
+
+            //TODO; move real distance along viewing ray
+            this._transMat = viewpoint.getViewMatrix().inverse().
+                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+                mult(viewpoint.getViewMatrix());
+        }
     }
-    if (buttonState & 4) 
-    {
-        min = x3dom.fields.SFVec3f.MAX();
-        max = x3dom.fields.SFVec3f.MIN();
-        ok = this._scene.getVolume(min, max, true);
-
-        d = ok ? (max.subtract(min)).length() : 10;
-        d = (d < x3dom.fields.Eps) ? 1 : d;
-        //x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
-        //x3dom.debug.logInfo("w="+this._width+", h="+this._height);
-
-        vec = new x3dom.fields.SFVec3f(d*dx/this._width,d*(-dy)/this._height,0);
-        this._movement = this._movement.add(vec);
-
-        //TODO; move real distance along viewing plane
-        this._transMat = viewpoint.getViewMatrix().inverse().
-        mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-        mult(viewpoint.getViewMatrix());
-    }
-    if (buttonState & 2) 
-    {
-        min = x3dom.fields.SFVec3f.MAX();
-        max = x3dom.fields.SFVec3f.MIN();
-        ok = this._scene.getVolume(min, max, true);
-
-        d = ok ? (max.subtract(min)).length() : 10;
-        d = (d < x3dom.fields.Eps) ? 1 : d;
-        //x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
-        //x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
-
-        vec = new x3dom.fields.SFVec3f(0,0,d*(dx+dy)/this._height);
-        this._movement = this._movement.add(vec);
-
-        //TODO; move real distance along viewing ray
-        this._transMat = viewpoint.getViewMatrix().inverse().
-        mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-        mult(viewpoint.getViewMatrix());
-    }
+    
+    this._dx = dx;
+    this._dy = dy;
     
     this._lastX = x;
     this._lastY = y;
@@ -6576,6 +6647,18 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                         (this._viewarea._visDbgBuf === true) ? "visible" : "hidden";
             }
             break;
+        case 101: /* e, examine mode */
+            {
+                this._scene.getNavigationInfo()._vf.type[0] = "examine";
+                x3dom.debug.logInfo("Switch to examine mode.");
+            }
+            break;
+        case 102: /* f, fly mode */
+            {
+                this._scene.getNavigationInfo()._vf.type[0] = "fly";
+                x3dom.debug.logInfo("Switch to fly mode.");
+            }
+            break;
         case 108: /* l, light view */ 
 			{
                 if (this._nodeBag.lights.length > 0)
@@ -6614,6 +6697,12 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 114: /* r, reset view */
             {
                 this._viewarea.resetView();
+            }
+            break;
+        case 119: /* w, walk mode */
+            {
+                this._scene.getNavigationInfo()._vf.type[0] = "walk";
+                x3dom.debug.logInfo("Switch to walk mode (NYI, default to fly).");
             }
             break;
         default:
