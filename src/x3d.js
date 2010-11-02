@@ -5298,6 +5298,26 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### Billboard ### */
+x3dom.registerNodeType(
+    "Billboard",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.Billboard.superClass.call(this, ctx);
+            
+            // When the axisOfRotation field is set to (0, 0, 0), 
+            // the special case of viewer-alignment is indicated.
+            this.addField_SFVec3f(ctx, 'axisOfRotation', 0, 1, 0);
+            
+            // FIXME; implement node according to X3D spec!
+            x3dom.debug.logInfo("Billboard NYI");
+        },
+        {
+        }
+    )
+);
+
 // ### Collision ###
 x3dom.registerNodeType(
     "Collision",
