@@ -756,6 +756,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform float sphereMapping;";
 				shader += "varying vec2 fragTexcoord;";
 				shader += "uniform float useText;";
+				shader += "uniform float origChannelCount;";
 			}
 			
 			if(useLighting[0] >= 1){
@@ -807,7 +808,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);";
 					shader += "vec4 texColor = texture2D(tex, texCoord);";
 					shader += "alpha *= texColor.a;";
-					shader += "if(sphereMapping == 1.0 || useText == 1.0){";
+					shader += "if(sphereMapping == 1.0 || useText == 1.0 || origChannelCount == 1.0 || origChannelCount == 2.0){";
 					shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor)*texColor.rgb;";
 					shader += "}else{";
 					shader += "rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);";
@@ -2139,6 +2140,7 @@ x3dom.gfx_webgl = (function () {
 			var tex = null;
 			if (shape._cf.appearance.node._cf.texture.node) {
 				tex = shape._cf.appearance.node._cf.texture.node.getTexture(cnt);
+				sp.origChannelCount = tex._vf.origChannelCount;
 			}
 			var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
 			if (tex && tex._vf.repeatS === false) {
