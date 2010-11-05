@@ -1401,17 +1401,6 @@ x3dom.fields.SFImage.prototype.toGL = function() {
 };
 
 
-// wrapper to workaround bug in Minefield
-// where overriding prototypes doesn't work
-// taken from http://javascript.crockford.com/prototypal.html
-// Suggestion: leaving Array and other builtin types alone and
-// create our own to prevent implementation bugs
-function _wrap(o) {
-  function F() {};
-  F.prototype = o;
-  return new F();
-}
-
 /** MFColor constructor.
     @class Represents a MFColor
   */
@@ -1424,7 +1413,7 @@ x3dom.fields.MFColor = function(colorArray) {
     }
 };
 
-x3dom.fields.MFColor.prototype = _wrap(new Array);
+x3dom.fields.MFColor.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFColor.parse = function(str) {
     //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){3},?\s*/g);
@@ -1541,7 +1530,7 @@ x3dom.fields.MFColorRGBA = function(colorArray) {
     }
 };
 
-x3dom.fields.MFColorRGBA.prototype = _wrap(new Array);
+x3dom.fields.MFColorRGBA.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFColorRGBA.parse = function(str) {
     var mc = str.match(/([+\-0-9eE\.]+)/g);
@@ -1589,7 +1578,7 @@ x3dom.fields.MFRotation = function(rotArray) {
     }
 };
 
-x3dom.fields.MFRotation.prototype = _wrap(new Array);
+x3dom.fields.MFRotation.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFRotation.parse = function(str) {
     //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){4},?\s*/g);
@@ -1638,7 +1627,7 @@ x3dom.fields.MFVec3f = function(vec3Array) {
 };
 
 
-x3dom.fields.MFVec3f.prototype = _wrap(new Array);
+x3dom.fields.MFVec3f.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFVec3f.parse = function(str) {
     //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){3},?\s*/g);
@@ -1690,7 +1679,7 @@ x3dom.fields.MFVec2f = function(vec2Array) {
     }
 };
 
-x3dom.fields.MFVec2f.prototype = _wrap(new Array);
+x3dom.fields.MFVec2f.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFVec2f.parse = function(str) {
     //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){2},?\s*/g);
@@ -1740,7 +1729,7 @@ x3dom.fields.MFInt32 = function(array) {
     }
 };
 
-x3dom.fields.MFInt32.prototype = _wrap(new Array);
+x3dom.fields.MFInt32.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFInt32.parse = function(str) {
     var mc = str.match(/([+-]?\d+\s*){1},?\s*/g);
@@ -1785,7 +1774,7 @@ x3dom.fields.MFFloat = function(array) {
     }
 };
 
-x3dom.fields.MFFloat.prototype = _wrap(new Array);
+x3dom.fields.MFFloat.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFFloat.parse = function(str) {
     //var mc = str.match(/([+-]?\d*\.*\d*[eE]?[+-]?\d*?\s*){1},?\s*/g);
@@ -1852,7 +1841,7 @@ x3dom.fields.MFString.parse = function(str) {
     return new x3dom.fields.MFString( arr );
 };
 
-x3dom.fields.MFString.prototype = _wrap(new Array);
+x3dom.fields.MFString.prototype = x3dom.extend(new Array);
 
 x3dom.fields.MFString.prototype.setValueByStr = function(str) {
     var arr = this;
