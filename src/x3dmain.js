@@ -57,6 +57,31 @@ var x3dom = {
     canvases: []
 };
 
+/**
+ * @private Returns a prototype object suitable for extending the given class
+ * <tt>f</tt>. Rather than constructing a new instance of <tt>f</tt> to serve as
+ * the prototype (which unnecessarily runs the constructor on the created
+ * prototype object, potentially polluting it), an anonymous function is
+ * generated internally that shares the same prototype:
+ *
+ * <pre>function g() {}
+ * g.prototype = f.prototype;
+ * return new g();</pre>
+ *
+ * For more details, see Douglas Crockford's essay on prototypal inheritance.
+ *
+ * @param {function} f a constructor.
+ * @returns a suitable prototype object.
+ * @see Douglas Crockford's essay on <a
+ * href="http://javascript.crockford.com/prototypal.html">prototypal
+ * inheritance</a>.
+ */
+x3dom.extend = function(f) {
+  function g() {}
+  g.prototype = f.prototype || f;
+  return new g();
+};
+
 x3dom.x3dNS = 'http://www.web3d.org/specifications/x3d-namespace'; // non-standard, but sort of supported by Xj3D
 x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
 x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
