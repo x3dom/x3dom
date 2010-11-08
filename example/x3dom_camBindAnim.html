@@ -11,14 +11,18 @@
 	<p>
     <x3d id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='400px' height='400px'>
 	      <scene DEF='scene'>
+			<sound>
+				<audioClip url='sound/spita.wav' loop='true'></audioClip>
+			</sound>
+			<background groundAngle='1.57079' groundColor='1 0.8 0.6 0.6 0.4 0.2' skyAngle='0.2 1.57079' skyColor='1 1 0 1 1 1 0.2 0.2 1' backUrl='"texture/sky/BK.png"' bottomUrl='"texture/sky/DN.png"' frontUrl='"texture/sky/FR.png"' leftUrl='"texture/sky/LF.png"' rightUrl='"texture/sky/RT.png"' topUrl='"texture/sky/UP.png"' ></background>
 	        <worldInfo info='"VRML2.0 created with Version 1.3, from Alias Maya 2011 x64"' title='geebee'></worldInfo>
 	        <navigationInfo type='"EXAMINE" "ANY"'></navigationInfo>
-	        <group>
-	          <viewpoint id='persp' description='persp' orientation='0.105124 0.94807 0.300188 3.78271' position='-268.414 332.496 -350.739' fieldOfView='0.950022'></viewpoint>
+			 <viewpoint id='persp' description='persp' orientation='0.105124 0.94807 0.300188 3.78271' position='-268.414 332.496 -350.739' fieldOfView='0.950022'></viewpoint>
 	          <viewpoint id='default_cam' description='default_cam' orientation='0.070061 0.977275 0.200062 3.80108' position='-220.745 192.926 -299.071' fieldOfView='0.950022'></viewpoint>
 	          <viewpoint id='back_cam' description='back_cam' orientation='0.996843 -0.079223 -0.00522 6.15119' position='4.43222 99.5907 503.808' fieldOfView='0.950022'></viewpoint>
 	          <viewpoint id='front_cam' description='front_cam' orientation='0.000296 0.985499 0.169683 3.14503' position='-3.73474 307.945 -796.642' fieldOfView='0.950022'></viewpoint>
 	          <viewpoint id='top_cam' description='top_cam' orientation='0.999996 0.00201 0.001745 4.85308' position='-1.42666 875.72 103.895' fieldOfView='0.950022'></viewpoint>
+	        <transform DEF='plane'>
 	          <transform DEF='beegee' rotation='1 0 0 0.241044' scale='11.8008 11.8008 11.8008' translation='0 54.9721 0'>
 	            <transform DEF='motor' translation='0 0.669765 7.75416'>
 	              <transform DEF='group25'>
@@ -722,19 +726,22 @@
 	              </shape>
 	            </transform>
 	          </transform>
-	          <touchSensor DEF='TOUCH'></touchSensor>
-	          <timeSensor DEF='TimeSource' cycleInterval='0.8' loop='true'></timeSensor>
+	          <timeSensor DEF='TimeSource' cycleInterval='0.4' loop='true'></timeSensor>
 	          <positionInterpolator DEF='propeller_groupPosAnim' key='0 0.043478 0.086957 0.130435 0.173913 0.217391 0.26087 0.304348 0.347826 0.391304 0.434783 0.478261 0.521739 0.565217 0.608696 0.652174 0.695652 0.73913 0.782609 0.826087 0.869565 0.913043 0.956522 1' keyValue='0 0 0 0.208373 0.044789 0 0.394942 0.1556 0 0.537266 0.322586 0 0.617831 0.527706 0 0.627133 0.747402 0 0.565268 0.956399 0 0.441662 1.1318 0 0.273061 1.25658 0 0.080295 1.32169 0 -0.115368 1.32658 0 -0.295483 1.27811 0 -0.44772 1.18755 0 -0.565982 1.06642 0 -0.647276 0.925647 0 -0.691152 0.77496 0 -0.698865 0.622703 0 -0.672736 0.475929 0 -0.615728 0.340613 0 -0.531218 0.221915 0 -0.422923 0.124428 0 -0.294984 0.052372 0 -0.152144 0.009688 0 -0 0 0'></positionInterpolator>
 	          <orientationInterpolator DEF='propeller_groupRotAnim' key='0 0.043478 0.086957 0.130435 0.173913 0.217391 0.26087 0.304348 0.347826 0.391304 0.434783 0.478261 0.521739 0.565217 0.608696 0.652174 0.695652 0.73913 0.782609 0.826087 0.869565 0.913043 0.956522 1' keyValue='0 0 0 0 0 0 1 0.321294 0 0 1 0.648463 0 0 1 0.979306 0 0 1 1.31162 0 0 1 1.6432 0 0 1 1.97183 0 0 1 2.29533 0 0 1 2.61148 0 0 1 2.91809 0 0 1 3.21294 0 0 1 3.49383 0 0 1 3.76051 0 0 1 4.0153 0 0 -1 2.02327 0 0 -1 1.78715 0 0 -1 1.55782 0 0 -1 1.33357 0 0 -1 1.11273 0 0 -1 0.893575 0 0 -1 0.674425 0 0 -1 0.453577 0 0 -1 0.229335 0 0 -1 0'></orientationInterpolator>
 	          <positionInterpolator DEF='propeller_groupSclAnim' key='0 0.043478 0.086957 0.130435 0.173913 0.217391 0.26087 0.304348 0.347826 0.391304 0.434783 0.478261 0.521739 0.565217 0.608696 0.652174 0.695652 0.73913 0.782609 0.826087 0.869565 0.913043 0.956522 1' keyValue='1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1 1'></positionInterpolator>
-	        </group>
-	        <ROUTE fromNode='TOUCH' fromField='touchTime' toNode='TimeSource' toField='set_startTime'></ROUTE>
+	          <timeSensor DEF='ts2' cycleInterval='0.1' loop='true'></timeSensor>
+			  <positionInterpolator DEF='plane_pos' key='0 0.5 1' keyValue='0 0 0, 0 1 0, 0 0 0'>
+			  </positionInterpolator> 
+	        </transform>
 	        <ROUTE fromNode='TimeSource' fromField='fraction_changed' toNode='propeller_groupPosAnim' toField='set_fraction'></ROUTE>
 	        <ROUTE fromNode='propeller_groupPosAnim' fromField='value_changed' toNode='propeller_group' toField='set_translation'></ROUTE>
 	        <ROUTE fromNode='TimeSource' fromField='fraction_changed' toNode='propeller_groupRotAnim' toField='set_fraction'></ROUTE>
 	        <ROUTE fromNode='propeller_groupRotAnim' fromField='value_changed' toNode='propeller_group' toField='set_rotation'></ROUTE>
 	        <ROUTE fromNode='TimeSource' fromField='fraction_changed' toNode='propeller_groupSclAnim' toField='set_fraction'></ROUTE>
 	        <ROUTE fromNode='propeller_groupSclAnim' fromField='value_changed' toNode='propeller_group' toField='set_scale'></ROUTE>
+	    	<ROUTE fromNode='ts2' fromField='fraction_changed' toNode='plane_pos' toField='set_fraction'></ROUTE>
+	    	<ROUTE fromNode='plane_pos' fromField='value_changed' toNode='plane' toField='translation'></ROUTE>
 	      </scene>
 	    </x3d>
 	</p>
