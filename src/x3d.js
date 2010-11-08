@@ -4837,7 +4837,10 @@ x3dom.registerNodeType(
 				if (!this._cf.appearance.node) {
 					this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
 				}
-                if (!this._objectID && this._cf.geometry.node._pickable) {
+                if (!this._cf.geometry.node) {
+                    x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
+                }
+                else if (!this._objectID && this._cf.geometry.node._pickable) {
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;
                     x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
                 }
