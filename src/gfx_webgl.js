@@ -2124,7 +2124,6 @@ x3dom.gfx_webgl = (function () {
 		//var normalMatrix = mat_view.mult(transform);
 		//normalMatrix = normalMatrix.inverse().transpose();
 		//sp.normalMatrix = normalMatrix.toGL();
-        
 		var model_view = mat_view.mult(transform);
 		sp.modelViewMatrix = model_view.toGL();
 		if (userShader) {
@@ -2451,7 +2450,6 @@ x3dom.gfx_webgl = (function () {
         {
             scene._webgl = {};
             this.setupFgnds(gl, scene);
-            
             // scale factor for mouse coords and width/ height (low res for speed-up)
             scene._webgl.pickScale = 0.5;
             scene._webgl.fboPick = this.initFbo(gl, 

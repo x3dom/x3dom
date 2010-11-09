@@ -98,11 +98,24 @@ x3dom.xhtmlNS = 'http://www.w3.org/1999/xhtml';
 // };
 
 
+/**
+ * @private Computes the value of the specified CSS property <tt>p</tt> on the
+ * specified element <tt>e</tt>.
+ *
+ * @param {string} p the name of the CSS property.
+ * @param e the element on which to compute the CSS property.
+ */
+x3dom.css = function(e, p) {
+  return window.getComputedStyle
+      ? window.getComputedStyle(e, null).getPropertyValue(p)
+      : e.currentStyle[p];
+};
+
 /** @class x3dom.X3DCanvas
 */
 x3dom.X3DCanvas = function(x3dElem) {
     
-    this.initContext = function(canvas) {
+    this.initContext = function(canvas) {        
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
         var gl = x3dom.gfx_webgl(canvas);
         if (!gl) {
@@ -124,28 +137,31 @@ x3dom.X3DCanvas = function(x3dElem) {
         var userStyle = x3dElem.getAttribute("style");
         if (userStyle) {
             this.canvasDiv.setAttribute("style", userStyle);
-            //canvas.setAttribute("style", userStyle);
+//            canvas.setAttribute("style", userStyle);
         }
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
-        
+
+
+
         // Apply the width and height of the X3D element to the canvas 
         var x, y, w, h;
-        if ((x = x3dElem.getAttribute("x")) !== null) {
-            canvas.style.left = x.toString();
-        }
-        if ((y = x3dElem.getAttribute("y")) !== null) {
-            canvas.style.top = y.toString();
-        }
+        // if ((x = x3dElem.getAttribute("x")) !== null) {
+        //     canvas.style.left = x.toString();
+        // }
+        // if ((y = x3dElem.getAttribute("y")) !== null) {
+        //     canvas.style.top = y.toString();
+        // }
         if ((w = x3dElem.getAttribute("width")) !== null) {
             canvas.style.width = this.canvasDiv.style.width = w.toString();
-			//Attention: pbuffer dim is _not_ derived from style attribs!
-			canvas.setAttribute("width",canvas.style.width);
+            //Attention: pbuffer dim is _not_ derived from style attribs!
+            canvas.setAttribute("width", canvas.style.width);
         }
         if ((h = x3dElem.getAttribute("height")) !== null) {
             canvas.style.height = this.canvasDiv.style.height = h.toString();
-			//Attention: pbuffer dim is _not_ derived from style attribs!
-			canvas.setAttribute("height",canvas.style.height);
+            //Attention: pbuffer dim is _not_ derived from style attribs!
+            canvas.setAttribute("height", canvas.style.height);
         }
+
         
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
@@ -162,9 +178,11 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.id = "x3dom-" + index + "-canvas";
         }
         
+        canvas.setAttribute("height", x3dom.css(this.canvasDiv, "width"));
+        canvas.setAttribute("width", x3dom.css(this.canvasDiv, "height"));
+
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
-		
         return canvas;
     };
 
@@ -188,6 +206,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.canvas = this.createHTMLCanvas(x3dElem);
 	this.canvas.parent = this;
     this.fps_t0 = new Date().getTime();
+    
     this.gl = this.initContext(this.canvas);
     this.doc = null;
     
