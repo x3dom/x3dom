@@ -4252,6 +4252,68 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Sound.superClass.call(this, ctx);
             
             this.addField_SFNode('source', x3dom.nodeTypes.X3DSoundSourceNode);
+        },
+        {
+            nodeChanged: function()
+            {
+                if (this._cf.source.node || !this._xmlNode) {
+                    return;
+                }
+                
+                x3dom.debug.logInfo("No AudioClip child node given, searching for &lt;audio&gt; elements...");
+                /** USAGE e.g.:
+                    <sound>
+                        <audio src='sound/spita.wav' loop='loop'></audio>
+                    </sound>
+                */
+                var that = this;
+                try {
+                    Array.forEach( this._xmlNode.childNodes, function (childDomNode) {
+                        if (childDomNode.nodeType === 1)
+                        {
+                            // For testing: look for <audio> element if no child
+                            x3dom.debug.logInfo("### Found &lt;"+childDomNode.nodeName+"&gt; tag.");
+                            
+                            if (childDomNode.localName.toLowerCase() === "audio")
+                            {
+                                var loop = childDomNode.getAttribute("loop");
+                                loop = loop ? (loop.toLowerCase() === "loop") : false;
+                                
+                                // work around strange crash in Chrome
+                                // by creating new audio element here
+                                
+                                /*
+                                var src = childDomNode.getAttribute("src");
+                                var newNode = document.createElement('audio');
+                                newNode.setAttribute('autobuffer', 'true');
+                                newNode.setAttribute('src', src);
+                                */
+                                var newNode = childDomNode.cloneNode(false);
+                                
+                                childDomNode.parentNode.removeChild(childDomNode);
+                                childDomNode = null;
+                                
+                                var p = document.getElementsByTagName('body')[0];
+                                p.appendChild(newNode);
+                                
+                                var startAudio = function() {
+                                    newNode.play();
+                                };
+                                
+                                var audioDone = function() {
+                                    if (loop) {
+                                        newNode.play();
+                                    }
+                                };
+                                
+                                newNode.addEventListener("canplaythrough", startAudio, true);
+                                newNode.addEventListener("ended", audioDone, true);
+                            }
+                        }
+                    } );
+                }
+                catch(e) {}
+            }
         }
     )
 );
