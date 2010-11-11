@@ -168,7 +168,72 @@ x3dom.debug = {
 		if (!c) {
 			x3dom.debug.doLog("Assertion failed in " + x3dom.debug.assert.caller.name + ': ' + msg, x3dom.debug.WARNING);
 		}
+	},
+	
+	/**
+	 Introspects an object.
+	 http://www.syger.it/Tutorials/JavaScriptIntrospector.html
+	
+	 @param name the object name.
+	 @param obj the object to introspect.
+	 @param indent the indentation (optional, defaults to "").
+	 @param levels the introspection nesting level (defaults to 1).
+	 @returns a plain text analysis of the object.
+	*/
+	introspect: function (name, obj, indent, levels) {
+		indent = indent || "";
+		if (this.typeOf(levels) !== "number") levels = 1;
+		var objType = this.typeOf(obj);
+		var result = [indent, name, " ", objType, " :"].join('');
+		if (objType === "object") {
+		    if (levels > 0) {
+			    indent = [indent, "  "].join('');
+			    for (prop in obj) {
+				    var prop = this.introspect(prop, obj[prop], indent, levels - 1);
+				    result = [result, "\n", prop].join('');
+			    }
+			    return result;
+		    }
+		    else {
+	            return [result, " ..."].join('');
+	        }
+		}
+		else if (objType === "null") {
+			return [result, " null"].join('');
+		}
+		msg = [result, " ", obj].join('');
+		x3dom.debug.logInfo(msg)
+		return msg
+	},
+	
+	/**
+	 Checks the type of a given object.
+	 
+	 @param obj the object to check.
+	 @returns one of; "boolean", "number", "string", "object",
+	  "function", or "null".
+	*/
+	
+	typeOf: function (obj) {
+		type = typeof obj;
+		return type === "object" && !obj ? "null" : type;
+	},
+
+	/**
+	 Checks if a property of a specified object has the given type.
+	 
+	 @param obj the object to check.
+	 @param name the property name.
+	 @param type the property type (optional, default is "function").
+	 @returns true if the property exists and has the specified type,
+	  otherwise false.
+	*/
+	
+	exists: function (obj, name, type) {
+		type = type || "function";
+		return (obj ? this.typeOf(obj[name]) : "null") === type;
 	}
+	
 };
 
 // Call the setup function to... umm, well, setup x3dom.debug

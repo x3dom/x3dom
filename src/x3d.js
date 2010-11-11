@@ -6389,6 +6389,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     this._lastX = x;
     this._lastY = y;
 };
+  
    
 x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 {
