@@ -141,30 +141,6 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
 
-
-
-//         // Apply the width and height of the X3D element to the canvas 
-//         var x, y, w, h;
-//         // if ((x = x3dElem.getAttribute("x")) !== null) {
-//         //     canvas.style.left = x.toString();
-//         // }
-//         // if ((y = x3dElem.getAttribute("y")) !== null) {
-//         //     canvas.style.top = y.toString();
-//         // }
-// 
-//         if ((w = x3dElem.getAttribute("width")) !== null) {
-// //            canvas.style.width = this.canvasDiv.style.width = w.toString();
-//             //Attention: pbuffer dim is _not_ derived from style attribs!
-//             //canvas.setAttribute("width", canvas.style.width);
-//             canvas.setAttribute("width", w);
-//         }
-//         if ((h = x3dElem.getAttribute("height")) !== null) {
-// //            canvas.style.height = this.canvasDiv.style.height = h.toString();
-//             //Attention: pbuffer dim is _not_ derived from style attribs!
-// //            canvas.style.height
-//             canvas.setAttribute("height", h);
-//         }
-// 
         
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
@@ -184,6 +160,19 @@ x3dom.X3DCanvas = function(x3dElem) {
         // style property overrides height/width property
         canvas.setAttribute("height", x3dom.css(this.canvasDiv, "height"));
         canvas.setAttribute("width", x3dom.css(this.canvasDiv, "width"));
+
+        // Apply the width and height of the X3D element to the canvas 
+        var w, h;
+        if ((w = x3dElem.getAttribute("width")) !== null) {
+            canvas.style.width = this.canvasDiv.style.width = w.toString();
+            //Attention: pbuffer dim is _not_ derived from style attribs!
+            canvas.setAttribute("width", w);
+        }
+        if ((h = x3dElem.getAttribute("height")) !== null) {
+            canvas.style.height = this.canvasDiv.style.height = h.toString();
+            //Attention: pbuffer dim is _not_ derived from style attribs!
+            canvas.setAttribute("height", h);
+        }
 
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
