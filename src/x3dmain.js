@@ -211,16 +211,14 @@ x3dom.X3DCanvas = function(x3dElem) {
     x3dElem.setAttribute = function(attrName, newVal) {
         //var prevVal = this.getAttribute(attrName);
         this.__setAttribute(attrName, newVal);
-        
+
         switch(attrName) {
             case "width":
             {
                 // that.canvas.style.width = that.canvasDiv.style.width = newVal;
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
-                    // that.doc._viewarea.width = that.canvas.getAttribute("width");
-//                    that.doc._viewarea._width = that.canvas.getAttribute("width");
-
+                    that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"));
                 }
             }
             break;
@@ -229,18 +227,16 @@ x3dom.X3DCanvas = function(x3dElem) {
                 // that.canvas.style.height = that.canvasDiv.style.height = newVal;
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
-                    // that.doc._viewarea.height = that.canvas.getAttribute("height");
-//                    that.doc._viewarea._height = that.canvas.getAttribute("height");
+                    that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"));
                 }
             }
             break;
             default:
         }
-        
+                
         //TODO; update scene._webgl.fboPick
         that.doc.needRender = true;
         
-//        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     };
     
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
