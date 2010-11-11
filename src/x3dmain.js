@@ -139,6 +139,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             this.canvasDiv.setAttribute("style", userStyle);
 //            canvas.setAttribute("style", userStyle);
         }
+
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
 
         
@@ -212,33 +213,24 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.__setAttribute(attrName, newVal);
         
         switch(attrName) {
-            // case "x":
-            // {
-            //     that.canvas.style.left = newVal;
-            // }
-            // break;
-            // case "y":
-            // {
-            //     that.canvas.style.top = newVal;
-            // }
-            // break;
             case "width":
             {
                 // that.canvas.style.width = that.canvasDiv.style.width = newVal;
-                that.canvas.style = null
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
-                    that.doc._viewarea.width = that.canvas.getAttribute("width");
+                    // that.doc._viewarea.width = that.canvas.getAttribute("width");
+//                    that.doc._viewarea._width = that.canvas.getAttribute("width");
+
                 }
             }
             break;
             case "height":
             {
                 // that.canvas.style.height = that.canvasDiv.style.height = newVal;
-                that.canvas.style = null
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
-                    that.doc._viewarea.height = that.canvas.getAttribute("height");
+                    // that.doc._viewarea.height = that.canvas.getAttribute("height");
+//                    that.doc._viewarea._height = that.canvas.getAttribute("height");
                 }
             }
             break;
@@ -247,6 +239,8 @@ x3dom.X3DCanvas = function(x3dElem) {
         
         //TODO; update scene._webgl.fboPick
         that.doc.needRender = true;
+        
+//        this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
     };
     
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
@@ -432,6 +426,11 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			evt.returnValue = true;
 		}, true);
+
+		this.canvas.addEventListener('resize', function (evt) {
+		    alert("Hello from canvas resize listener");
+		}, false);
+
 	}
 };
 
@@ -793,7 +792,6 @@ x3dom.userAgentFeature = {
             
             element.setAttribute("width", new_width);
             element.setAttribute("height", new_height);
-
 //            element.render()
         }
     };
