@@ -4,7 +4,12 @@ body {
 	font-size: 12px;
 }
 
-.x3dom-canvas {}
+.x3dom-canvas {
+  border:none;
+	width:100%;
+	height:100%;
+}
+
 .x3dom-canvas:focus {
     outline:none; 
 }

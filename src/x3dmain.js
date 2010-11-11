@@ -143,25 +143,28 @@ x3dom.X3DCanvas = function(x3dElem) {
 
 
 
-        // Apply the width and height of the X3D element to the canvas 
-        var x, y, w, h;
-        // if ((x = x3dElem.getAttribute("x")) !== null) {
-        //     canvas.style.left = x.toString();
-        // }
-        // if ((y = x3dElem.getAttribute("y")) !== null) {
-        //     canvas.style.top = y.toString();
-        // }
-        if ((w = x3dElem.getAttribute("width")) !== null) {
-            canvas.style.width = this.canvasDiv.style.width = w.toString();
-            //Attention: pbuffer dim is _not_ derived from style attribs!
-            canvas.setAttribute("width", canvas.style.width);
-        }
-        if ((h = x3dElem.getAttribute("height")) !== null) {
-            canvas.style.height = this.canvasDiv.style.height = h.toString();
-            //Attention: pbuffer dim is _not_ derived from style attribs!
-            canvas.setAttribute("height", canvas.style.height);
-        }
-
+//         // Apply the width and height of the X3D element to the canvas 
+//         var x, y, w, h;
+//         // if ((x = x3dElem.getAttribute("x")) !== null) {
+//         //     canvas.style.left = x.toString();
+//         // }
+//         // if ((y = x3dElem.getAttribute("y")) !== null) {
+//         //     canvas.style.top = y.toString();
+//         // }
+// 
+//         if ((w = x3dElem.getAttribute("width")) !== null) {
+// //            canvas.style.width = this.canvasDiv.style.width = w.toString();
+//             //Attention: pbuffer dim is _not_ derived from style attribs!
+//             //canvas.setAttribute("width", canvas.style.width);
+//             canvas.setAttribute("width", w);
+//         }
+//         if ((h = x3dElem.getAttribute("height")) !== null) {
+// //            canvas.style.height = this.canvasDiv.style.height = h.toString();
+//             //Attention: pbuffer dim is _not_ derived from style attribs!
+// //            canvas.style.height
+//             canvas.setAttribute("height", h);
+//         }
+// 
         
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
@@ -178,8 +181,9 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.id = "x3dom-" + index + "-canvas";
         }
         
-        canvas.setAttribute("height", x3dom.css(this.canvasDiv, "width"));
-        canvas.setAttribute("width", x3dom.css(this.canvasDiv, "height"));
+        // style property overrides height/width property
+        canvas.setAttribute("height", x3dom.css(this.canvasDiv, "height"));
+        canvas.setAttribute("width", x3dom.css(this.canvasDiv, "width"));
 
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
@@ -211,7 +215,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.doc = null;
     
     var that = this;
-    
+
     // allow listening for size changes
     x3dElem.__setAttribute = x3dElem.setAttribute;
     x3dElem.setAttribute = function(attrName, newVal) {
@@ -219,31 +223,33 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.__setAttribute(attrName, newVal);
         
         switch(attrName) {
-            case "x":
-            {
-                that.canvas.style.left = newVal;
-            }
-            break;
-            case "y":
-            {
-                that.canvas.style.top = newVal;
-            }
-            break;
+            // case "x":
+            // {
+            //     that.canvas.style.left = newVal;
+            // }
+            // break;
+            // case "y":
+            // {
+            //     that.canvas.style.top = newVal;
+            // }
+            // break;
             case "width":
             {
-                that.canvas.style.width = that.canvasDiv.style.width = newVal;
-                that.canvas.setAttribute("width", that.canvas.style.width);
+                // that.canvas.style.width = that.canvasDiv.style.width = newVal;
+                that.canvas.style = null
+                that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
-                    that.doc._viewarea.width = that.canvas.width;
+                    that.doc._viewarea.width = that.canvas.getAttribute("width");
                 }
             }
             break;
             case "height":
             {
-                that.canvas.style.height = that.canvasDiv.style.height = newVal;
-                that.canvas.setAttribute("height", that.canvas.style.height);
+                // that.canvas.style.height = that.canvasDiv.style.height = newVal;
+                that.canvas.style = null
+                that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
-                    that.doc._viewarea.height = that.canvas.height;
+                    that.doc._viewarea.height = that.canvas.getAttribute("height");
                 }
             }
             break;
@@ -774,6 +780,35 @@ x3dom.userAgentFeature = {
         }
     };
     
+    // Update canvases on resize of browser window
+    var onresize = function() {
+		x3dom.debug.logInfo("Resize event triggered");
+
+        len = x3dom.canvases.length;
+		x3dom.debug.logInfo("Working on " + len + " canvas instances");
+        
+        for (var i=0; i<len; i++) {
+            
+            element = x3dom.canvases[i].x3dElem
+            canvasDiv = x3dom.canvases[i].canvasDiv
+
+			x3dom.debug.logInfo("X3D height was: " + element.getAttribute("height"));
+			x3dom.debug.logInfo("X3D width was : " + element.getAttribute("width"));
+			            
+            // get new height and width from the enclosing div
+            new_width = x3dom.css(x3dom.canvases[i].canvasDiv, "width")
+            new_height = x3dom.css(x3dom.canvases[i].canvasDiv, "height")
+
+			x3dom.debug.logInfo("New canvasDiv width: " + new_width);
+			x3dom.debug.logInfo("New canvasDiv height: " + new_height);
+            
+            element.setAttribute("width", new_width);
+            element.setAttribute("height", new_height);
+
+//            element.render()
+        }
+    };
+
     if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
         
@@ -792,17 +827,19 @@ x3dom.userAgentFeature = {
         };
     }
     
-    if (window.addEventListener)
+    if (window.addEventListener) 
     {
         window.addEventListener('load', onload, false);
         window.addEventListener('unload', onunload, false);
         window.addEventListener('reload', onunload, false);
-    }
-    else if (window.attachEvent)
+        window.addEventListener('resize', onresize, false);
+    } 
+    else if (window.attachEvent) 
     {
         window.attachEvent('onload', onload);
         window.attachEvent('onunload', onunload);
         window.attachEvent('onreload', onunload);
+        window.attachEvent('onresize', onresize);
     }
 
 })();

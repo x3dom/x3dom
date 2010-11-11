@@ -1,0 +1,36 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+	<head>
+		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+		<title>Hello World</title>
+        <link rel="stylesheet" type="text/css" href="x3dom.css" />
+		<script type="text/javascript" src="x3dmain.js"></script>
+		<script type="text/javascript" src="debug.js"></script>
+		<script type="text/javascript" src="gfx_webgl.js"></script>
+		<script type="text/javascript" src="x3d.js"></script>
+		<script type="text/javascript" src="fields.js"></script>
+		<style>
+		body {
+			margin:0;
+			padding:0;
+			width:100%;
+			height:100%;
+			overflow:hidden;
+		}
+		</style>
+	</head>
+<body>
+	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" altImg="helloX3D-alt.png" style="border:none">
+	    	<Scene>
+	        	<Viewpoint position='0 0 10' />
+				<Shape>
+	            	<Appearance>
+	                	<Material diffuseColor='0.603 0.894 0.909' />	
+	              	</Appearance>
+					<Box DEF='box'/>
+	            </Shape>
+	        </Scene>
+	    </X3D>
+</body>
+</html>
