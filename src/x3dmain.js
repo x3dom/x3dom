@@ -68,12 +68,12 @@ var x3dom = {
  * g.prototype = f.prototype;
  * return new g();</pre>
  *
- * For more details, see Douglas Crockford's essay on prototypal inheritance.
+ * For more details, see Douglas Crockford's essay on prototypical inheritance.
  *
- * @param {function} f a constructor.
+ * @param {method} f a constructor.
  * @returns a suitable prototype object.
  * @see Douglas Crockford's essay on <a
- * href="http://javascript.crockford.com/prototypal.html">prototypal
+ * href="http://javascript.crockford.com/prototypal.html">prototypical
  * inheritance</a>.
  */
 x3dom.extend = function(f) {
@@ -126,7 +126,8 @@ x3dom.X3DCanvas = function(x3dElem) {
         return gl;
     };
 
-    this.createHTMLCanvas = function(x3dElem) {
+    this.createHTMLCanvas = function(x3dElem)
+    {
         x3dom.debug.logInfo("Creating canvas for (X)3D element...");
         var canvas = document.createElement('canvas');
         canvas.setAttribute("class", "x3dom-canvas");
@@ -139,9 +140,52 @@ x3dom.X3DCanvas = function(x3dElem) {
             this.canvasDiv.setAttribute("style", userStyle);
 //            canvas.setAttribute("style", userStyle);
         }
+        
+        // check if user wants to attach events to the X3D element
+        var evtArr = new Array(
+            "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
+            "click", "dblclick", "keydown", "keypress", "keyup" );
+        
+        for (var i=0; i<evtArr.length; i++)
+        {
+            var evtName = "on" + evtArr[i];
+            var userEvt = x3dElem.getAttribute(evtName);
+            if (userEvt)
+            {
+                x3dom.debug.logInfo(evtName +", "+ userEvt);
+                this.canvasDiv.setAttribute(evtName, userEvt);
+            }
+        }
+        
+        // workaround since one cannot find out which handlers are registered
+        if ( !x3dElem.__addEventListener )
+        {
+            var that = this;
+            x3dElem.__addEventListener = x3dElem.addEventListener;
+            
+            // helper to propagate the element's listeners
+            // TODO; handle removal of listener
+            x3dElem.addEventListener = function(type, func, phase)
+            {
+                var j, found = false;
+                for (j=0; j<evtArr.length && !found; j++) {
+                    if (evtArr[j] === type) {
+                        found = true;
+                    }
+                }
+                
+                if (found) {
+                    x3dom.debug.logInfo('addEventListener for div.on' + type);
+                    that.canvasDiv.addEventListener(type, func, phase);
+                }
+                else {
+                    x3dom.debug.logInfo('addEventListener for X3D.on' + type);
+                    this.__addEventListener(type, func, phase);
+                }
+            };
+        }
 
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
-
         
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
@@ -177,6 +221,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
+        
         return canvas;
     };
 
@@ -292,9 +337,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			
 			window.status=this.id+' DOWN: '+evt.layerX+", "+evt.layerY;
 			//window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
 		
 		this.canvas.addEventListener('mouseup', function (evt) {
@@ -305,9 +351,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' UP: '+evt.screenX+", "+evt.screenY;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
 		
 		this.canvas.addEventListener('mouseover', function (evt) {
@@ -318,9 +365,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' IN: '+evt.screenX+", "+evt.screenY;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
         
 		this.canvas.addEventListener('mouseout', function (evt) {
@@ -331,9 +379,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' OUT: '+evt.screenX+", "+evt.screenY;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
 		
 		this.canvas.addEventListener('dblclick', function (evt) {
@@ -346,9 +395,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' DBL: '+evt.layerX+", "+evt.layerY;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
 		
 		this.canvas.addEventListener('mousemove', function (evt) {
@@ -375,9 +425,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' MOVE: '+dx+", "+dy;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
 		
 		this.canvas.addEventListener('DOMMouseScroll', function (evt) {
@@ -387,9 +438,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' SCROLL: '+evt.detail;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
         
         this.canvas.addEventListener('mousewheel', function (evt) {
@@ -399,9 +451,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			this.parent.doc.needRender = true;
 			
 			window.status=this.id+' SCROLL: '+evt.detail;
-			evt.preventDefault();
-			evt.stopPropagation();
-			evt.returnValue = false;
+			//evt.preventDefault();
+			//evt.stopPropagation();
+			//evt.returnValue = false;
+			evt.returnValue = true;
 		}, false);
         
         this.canvas.addEventListener('keypress', function (evt) {
@@ -423,10 +476,11 @@ x3dom.X3DCanvas = function(x3dElem) {
 			evt.returnValue = true;
 		}, true);
 
+        /*
 		this.canvas.addEventListener('resize', function (evt) {
 		    alert("Hello from canvas resize listener");
 		}, false);
-
+        */
 	}
 };
 
@@ -768,23 +822,23 @@ x3dom.userAgentFeature = {
     var onresize = function() {
 		x3dom.debug.logInfo("Resize event triggered");
 
-        len = x3dom.canvases.length;
+        var len = x3dom.canvases.length;
 		x3dom.debug.logInfo("Working on " + len + " canvas instances");
         
         for (var i=0; i<len; i++) {
             
-            element = x3dom.canvases[i].x3dElem
-            canvasDiv = x3dom.canvases[i].canvasDiv
+            var element = x3dom.canvases[i].x3dElem
+            var canvasDiv = x3dom.canvases[i].canvasDiv
 
-			x3dom.debug.logInfo("X3D height was: " + element.getAttribute("height"));
-			x3dom.debug.logInfo("X3D width was : " + element.getAttribute("width"));
+			//x3dom.debug.logInfo("X3D height was: " + element.getAttribute("height"));
+			//x3dom.debug.logInfo("X3D width was : " + element.getAttribute("width"));
 			            
             // get new height and width from the enclosing div
-            new_width = x3dom.css(x3dom.canvases[i].canvasDiv, "width")
-            new_height = x3dom.css(x3dom.canvases[i].canvasDiv, "height")
+            var new_width = x3dom.css(x3dom.canvases[i].canvasDiv, "width")
+            var new_height = x3dom.css(x3dom.canvases[i].canvasDiv, "height")
 
-			x3dom.debug.logInfo("New canvasDiv width: " + new_width);
-			x3dom.debug.logInfo("New canvasDiv height: " + new_height);
+			//x3dom.debug.logInfo("New canvasDiv width: " + new_width);
+			//x3dom.debug.logInfo("New canvasDiv height: " + new_height);
             
             element.setAttribute("width", new_width);
             element.setAttribute("height", new_height);
