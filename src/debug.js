@@ -201,7 +201,7 @@ x3dom.debug = {
 		else if (objType === "null") {
 			return [result, " null"].join('');
 		}
-		msg = [result, " ", obj].join('');
+		var msg = [result, " ", obj].join('');
 		x3dom.debug.logInfo(msg)
 		return msg
 	},
@@ -215,7 +215,7 @@ x3dom.debug = {
 	*/
 	
 	typeOf: function (obj) {
-		type = typeof obj;
+		var type = typeof obj;
 		return type === "object" && !obj ? "null" : type;
 	},
 
