@@ -29,6 +29,9 @@
 		</X3D>
         
             <span id="ausgabe" style="color:red; position:absolute;"> &nbsp; </span>
+            <span id="ausgabeButton" onclick="doIt();"
+                  style="background-color: blue; color:yellow; position:absolute; border: yellow solid 1px;">
+                  &nbsp; </span>
         </p>
         
         <script type="text/javascript" src="x3dmain.js"></script>
@@ -43,6 +46,7 @@
             
             var myEvent = function (event) {
                 var p = document.getElementById('ausgabe');
+                var s = document.getElementById('ausgabeButton');
                 
                 if (arguments.length === 0) {
                     p.innerHTML = "onclick was called";
@@ -52,11 +56,47 @@
                     // add little offset, otherwise elem prevents navigation since on top
                     p.style.left = (30+event.layerX) + "px";
                     p.style.top = (30+event.layerY) + "px";
+                    
+                    if (event.type === "mouseup" && event.button === 2) {
+                        s.isMenu = true;
+                        s.innerHTML = "<p>CLICK ME!</p>";
+                        s.style.visibility = "visible";
+                        s.style.left = (event.layerX) + "px";
+                        s.style.top = (event.layerY) + "px";
+                    }
+                    else if (event.type === "mousemove" && s.isMenu === true) {
+                        s.style.left = (event.layerX) + "px";
+                        s.style.top = (event.layerY) + "px";
+                    }
                 }
             };
             
+            function doIt() {
+                var s = document.getElementById('ausgabeButton');
+                s.innerHTML = "";
+                s.style.visibility = "hidden";
+                s.style.left = "0px";
+                s.style.top = "0px";
+                s.isMenu = false;
+                alert("Thanx for clicking me!");
+            }
+            
             function addIt() {
                 document.getElementById('ausgabe').innerHTML = "test";
+                var s = document.getElementById('ausgabeButton');
+                
+                s.style.visibility = "hidden";
+                s.isMenu = false;
+                s.oncontextmenu = function(evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    evt.returnValue = false;
+                    return false;
+                };
+                s.onmouseout = function(evt) {
+                    s.style.visibility = "hidden";
+                    return false;
+                };
                 
                 var evts = new Array(
                     "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
