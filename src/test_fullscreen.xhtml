@@ -11,17 +11,60 @@
 		<script type="text/javascript" src="x3d.js"></script>
 		<script type="text/javascript" src="fields.js"></script>
 		<style>
-		body {
+		body{
 			margin:0;
 			padding:0;
-			width:100%;
-			height:100%;
-			overflow:hidden;
+			width:500px;
+			height:500px;
+			border:1px solid red;
+		}
+		#toggler {
+			position:absolute;
+			top:0;
+			left:0;
 		}
 		</style>
+
+		<script type="text/javascript">
+
+			var big = false;
+			
+			function toggle(elm) {
+				
+				element = document.getElementById('test');
+				b = document.getElementById('main');
+
+				var new_width_css, new_width, new_height_css, new_height;
+
+				if (big) {
+					new_width_css = "500px"
+					new_width = 500;
+					new_height_css = new_width_css;
+					new_height = new_width;
+				} else {
+					new_width_css = "1024px"
+					new_width = 1024;
+					new_height_css = new_width_css;
+					new_height = new_width;
+				}
+
+				big = !big
+
+				b.style.width = new_width_css;
+				b.style.height = new_height_css;
+
+				element.setAttribute("width", new_width_css)
+				element.setAttribute("height", new_height_css)
+
+				document.onresize();
+				document.window.resize();
+			}
+		</script>
+
 	</head>
-<body>
-	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" altImg="helloX3D-alt.png" style="border:none">
+<body id="main">
+	<!-- <div id="container"> -->
+	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" style="background-color:#000">
 	    	<Scene>
 	        	<Viewpoint position='0 0 10' />
 				<Shape>
@@ -32,5 +75,10 @@
 	            </Shape>
 	        </Scene>
 	    </X3D>
+	<!-- </div> -->
+	
+		<div id="toggler"><button onclick="toggle('container');">Resize</button></div>
+
+	
 </body>
 </html>
