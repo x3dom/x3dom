@@ -6,8 +6,8 @@ body {
 
 .x3dom-canvas {
   border:none;
-	width:100%;
-	height:100%;
+  width:100%;
+  height:100%;
 }
 
 .x3dom-canvas:focus {
