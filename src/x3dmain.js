@@ -111,9 +111,27 @@ x3dom.css = function(e, p) {
       : e.currentStyle[p];
 };
 
+/**
+ * @private Translates <tt>some-prop-erty</tt> to: <tt>somePropErty</tt>
+ *
+ * @param {string} p the name of the CSS property.
+ * @param e the element on which to compute the CSS property.
+ */
+
+x3dom.stringToMethod = function(str) {
+    mod = str.replace(/\w+/g, function(a) {
+        return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
+    });
+    return mod.charAt(0).toLowerCase() + mod.substr(1);
+};
+
+
 /** @class x3dom.X3DCanvas
 */
 x3dom.X3DCanvas = function(x3dElem) {
+    
+    var that = this;
+    
     
     this.initContext = function(canvas) {        
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
@@ -133,6 +151,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         canvas.setAttribute("class", "x3dom-canvas");
         this.canvasDiv.appendChild(canvas);
         this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
+                
         
         // check if user wants to style the X3D element
         var userStyle = x3dElem.getAttribute("style");
@@ -202,11 +221,90 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.id = "x3dom-" + index + "-canvas";
         }
         
+        css_properties = [
+            "background",
+            "background-attachment",
+            "background-color",
+            "background-image",
+            "background-position",
+            "background-repeat",
+            "border",
+            "border-color",
+            "border-style",
+            "border-top",
+            "border-right",
+            "border-bottom",
+            "border-left",
+            "border-top-color",
+            "border-right-color",
+            "border-bottom-color",
+            "border-left-color",
+            "border-top-style",
+            "border-right-style",
+            "border-bottom-style",
+            "border-left-style",
+            "border-top-width",
+            "border-right-width",
+            "border-bottom-width",
+            "border-left-width",
+            "border-width",
+            "clip",
+            "display",
+            "float",
+            "left",
+            "margin",
+            "margin-top",
+            "margin-right",
+            "margin-bottom",
+            "margin-left",
+            "marker-offset",
+            "max-height",
+            "max-width",
+            "min-height",
+            "min-width",
+            "overflow",
+            "padding",
+            "padding-top",
+            "padding-right",
+            "padding-bottom",
+            "padding-left",
+            "position",
+            "right",
+            "size",
+            "stress",
+            "top",
+            "visibility",
+            "z-index",
+            // "width",
+            // "height",
+        ];
+        
+        css_properties.forEach(function(str){
+            // if there is a style
+            style_value = x3dom.css(x3dElem, str);
+
+            if (style_value) {
+                // copy it over
+                str = str.replace(/-/g, ' ');
+                str = x3dom.stringToMethod(str);
+                str = str.replace(/ /g, '');
+                meth = "canvas.style." + str + " = '" + style_value.toString() + "';";
+                x3dom.debug.logInfo("Dynamically calling method:" + meth);
+                eval(meth);
+
+                // if (str == 'height') { canvas.setAttribute("height", style_value); }
+                // if (str == 'width') { canvas.setAttribute("width", style_value); }
+
+            }
+        });
+        
+
         // style property overrides height/width property
         canvas.setAttribute("height", x3dom.css(this.canvasDiv, "height"));
         canvas.setAttribute("width", x3dom.css(this.canvasDiv, "width"));
 
         // Apply the width and height of the X3D element to the canvas 
+        // for backwards compatibility with examples
         var w, h;
         if ((w = x3dElem.getAttribute("width")) !== null) {
             canvas.style.width = this.canvasDiv.style.width = w.toString();
@@ -221,7 +319,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
-        
+                
         return canvas;
     };
 
@@ -249,7 +347,6 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.gl = this.initContext(this.canvas);
     this.doc = null;
     
-    var that = this;
 
     // allow listening for size changes
     x3dElem.__setAttribute = x3dElem.setAttribute;
