@@ -1,0 +1,60 @@
+<!DOCTYPE html >
+<html>
+	<head>
+		<meta charset="utf-8">
+		<title>Simple WebGL example</title>
+        <link rel="stylesheet" type="text/css" href="x3dom.css">
+		<style>
+		#container {
+			width:100%;
+			height:100%;
+			border:1px solid red;
+			float:left;
+			margin:0 auto;
+		}
+		
+		#test {
+			background:#000;
+			border:1px solid magenta;
+		}
+		</style>
+		<script type="text/javascript" src="x3dmain.js"></script>
+		<script type="text/javascript" src="debug.js"></script>
+		<script type="text/javascript" src="gfx_webgl.js"></script>
+		<script type="text/javascript" src="x3d.js"></script>
+		<script type="text/javascript" src="fields.js"></script>
+		
+	</head>
+<body>
+
+	
+    <h1>CSS Styles on X3D root element</h1>
+
+	<!-- width="100%" height="100%" -->
+	<p><span style="color:red">container</span>, <span style="color:cyan">canvas</span>, <span style="color:magenta">canvasdiv</span></p>
+
+	<!-- Outer element -->
+	<div id="outer">
+
+	<!-- Container element -->
+	<div id="container">
+
+		<x3d id="test" showStat="false" showLog="true">
+	    	<scene>
+	        	<viewpoint position='0 0 10'></viewpoint>
+				<shape>
+	            	<appearance>
+	                	<material diffuseColor='0.603 0.894 0.909'></material>	
+	              	</appearance>
+					<box DEF='box'></box>
+	            </shape>
+	        </scene>
+	    </x3d>
+
+	</div> <!-- /container -->
+	</div> <!-- /outer -->
+
+
+	
+</body>
+</html>
