@@ -110,7 +110,7 @@
 	</p>
 	
 	<p id="ausgabe" class="case"> &nbsp; </p>
-    <!--<p><input type="button" value="addEventListener" onclick="addIt();"/></p>-->
+    <p><input type="button" value="removeEventListener" onclick="delIt();"/></p>
 	
 	<script type="text/javascript" src="x3dmain.js"></script>
     <script type="text/javascript" src="debug.js"></script>
@@ -131,17 +131,24 @@
             document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
         };
         */
+        
+        var funcPtr = function (event) {
+            document.getElementById('ausgabe').innerHTML = event.type + " (" + 
+                                                event.button + "): " + 
+                                                event.worldX.toFixed(2) + ", " + 
+                                                event.worldY.toFixed(2) + ", " + 
+                                                event.worldZ.toFixed(2);
+            document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
+        };
+        
+        function delIt() {
+            document.getElementById('blubbMat').setAttribute('diffuseColor', '1 1 0');
+            document.getElementById('blubb').removeEventListener('click', funcPtr, false);
+        };
+        
         function addIt() {
             document.getElementById('ausgabe').innerHTML = "test";
-            
-            document.getElementById('blubb').addEventListener('click', function (event) {
-                document.getElementById('ausgabe').innerHTML = event.type + " (" + 
-                                                    event.button + "): " + 
-                                                    event.worldX.toFixed(2) + ", " + 
-                                                    event.worldY.toFixed(2) + ", " + 
-                                                    event.worldZ.toFixed(2);
-                document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
-            }, false);
+            document.getElementById('blubb').addEventListener('click', funcPtr, false);
         }
         
         document.onload = addIt;

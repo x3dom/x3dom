@@ -33,6 +33,8 @@
                   style="background-color: blue; color:yellow; position:absolute; border: yellow solid 1px;">
                   &nbsp; </span>
         </p>
+        <p><input type="button" value="addEventListener" onclick="addIt();"/>
+        <input type="button" value="removeEventListener" onclick="delIt();"/></p>
         
         <script type="text/javascript" src="x3dmain.js"></script>
         <script type="text/javascript" src="debug.js"></script>
@@ -43,6 +45,10 @@
         
         <script type="text/javascript" ><![CDATA[
             //onclick="myEvent();"
+            
+            var evts = new Array(
+                "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
+                "click", "dblclick", "keydown", "keypress", "keyup" );
             
             var myEvent = function (event) {
                 var p = document.getElementById('ausgabe');
@@ -99,12 +105,14 @@
                     return false;
                 };
                 
-                var evts = new Array(
-                    "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
-                    "click", "dblclick", "keydown", "keypress", "keyup" );
-                
                 for (var i=0; i<evts.length; i++) {
                     document.getElementById('someUniqueId').addEventListener(evts[i], myEvent, true);
+                }
+            }
+            
+            function delIt() {
+                for (var i=0; i<evts.length; i++) {
+                    document.getElementById('someUniqueId').removeEventListener(evts[i], myEvent, true);
                 }
             }
             
