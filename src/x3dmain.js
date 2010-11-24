@@ -119,7 +119,7 @@ x3dom.css = function(e, p) {
  */
 
 x3dom.stringToMethod = function(str) {
-    mod = str.replace(/\w+/g, function(a) {
+    var mod = str.replace(/\w+/g, function(a) {
         return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
     });
     return mod.charAt(0).toLowerCase() + mod.substr(1);
@@ -221,7 +221,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.id = "x3dom-" + index + "-canvas";
         }
         
-        css_properties = [
+        var css_properties = [
             "background",
             "background-attachment",
             "background-color",
@@ -274,27 +274,26 @@ x3dom.X3DCanvas = function(x3dElem) {
             "stress",
             "top",
             "visibility",
-            "z-index",
+            "z-index"
             // "width",
             // "height",
         ];
         
         css_properties.forEach(function(str){
             // if there is a style
-            style_value = x3dom.css(x3dElem, str);
+            var style_value = x3dom.css(x3dElem, str);
 
             if (style_value) {
                 // copy it over
                 str = str.replace(/-/g, ' ');
                 str = x3dom.stringToMethod(str);
                 str = str.replace(/ /g, '');
-                meth = "canvas.style." + str + " = '" + style_value.toString() + "';";
-                x3dom.debug.logInfo("Dynamically calling method:" + meth);
+                var meth = "canvas.style." + str + " = '" + style_value.toString() + "';";
+                //x3dom.debug.logInfo("Dynamically calling method:" + meth);
                 eval(meth);
 
                 // if (str == 'height') { canvas.setAttribute("height", style_value); }
                 // if (str == 'width') { canvas.setAttribute("width", style_value); }
-
             }
         });
         
