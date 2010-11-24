@@ -11,7 +11,7 @@
             showStat='false' showLog='true' width='600px' height='400px' onmousemove="myEvent();">
 			<Scene DEF='scene'>
 				<Background skyColor='0.500 0.500 0.500'/>
-				<Transform DEF='Box01' >
+				<Transform DEF='Box01' onclick="x3dom.debug.logInfo('Box clicked');">
 					<Shape>
 						<Appearance DEF='_01_-_Default' >
 							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' />
@@ -68,6 +68,7 @@
                         s.style.left = (event.layerX) + "px";
                         s.style.top = (event.layerY) + "px";
                     }
+                    event.cancelBubble = true;
                 }
             };
             
@@ -103,7 +104,7 @@
                     "click", "dblclick", "keydown", "keypress", "keyup" );
                 
                 for (var i=0; i<evts.length; i++) {
-                    document.getElementById('someUniqueId').addEventListener(evts[i], myEvent, false);
+                    document.getElementById('someUniqueId').addEventListener(evts[i], myEvent, true);
                 }
             }
             
