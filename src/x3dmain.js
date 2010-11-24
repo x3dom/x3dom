@@ -165,6 +165,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
             "click", "dblclick", "keydown", "keypress", "keyup" );
         
+        // TODO; handle attribute event handlers dynamically during runtime
         for (var i=0; i<evtArr.length; i++)
         {
             var evtName = "on" + evtArr[i];
@@ -177,13 +178,13 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
         
         // workaround since one cannot find out which handlers are registered
-        if ( !x3dElem.__addEventListener )
+        if ( !x3dElem.__addEventListener && !x3dElem.__removeEventListener )
         {
             var that = this;
             x3dElem.__addEventListener = x3dElem.addEventListener;
+            x3dElem.__removeEventListener = x3dElem.removeEventListener;
             
-            // helper to propagate the element's listeners
-            // TODO; handle removal of listener
+            // helpers to propagate the element's listeners
             x3dElem.addEventListener = function(type, func, phase)
             {
                 var j, found = false;
@@ -202,6 +203,25 @@ x3dom.X3DCanvas = function(x3dElem) {
                     this.__addEventListener(type, func, phase);
                 }
             };
+            
+            x3dElem.removeEventListener = function(type, func, phase)
+            {
+                var j, found = false;
+                for (j=0; j<evtArr.length && !found; j++) {
+                    if (evtArr[j] === type) {
+                        found = true;
+                    }
+                }
+                
+                if (found) {
+                    x3dom.debug.logInfo('removeEventListener for div.on' + type);
+                    that.canvasDiv.removeEventListener(type, func, phase);
+                }
+                else {
+                    x3dom.debug.logInfo('removeEventListener for X3D.on' + type);
+                    this.__removeEventListener(type, func, phase);
+                }
+            }
         }
 
         x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
@@ -938,7 +958,6 @@ x3dom.userAgentFeature = {
             
             element.setAttribute("width", new_width);
             element.setAttribute("height", new_height);
-//            element.render()
         }
     };
 

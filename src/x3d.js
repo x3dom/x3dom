@@ -360,10 +360,11 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 		}
         
         // workaround since one cannot find out which handlers are registered
-        if ( (domNode.tagName !== undefined) && (!domNode.__addEventListener) ) 
+        if ( (domNode.tagName !== undefined) && 
+            (!domNode.__addEventListener) && (!domNode.__removeEventListener) ) 
         {
-        	domNode.__addEventListener = domNode.addEventListener;
             // helper to track an element's listeners
+        	domNode.__addEventListener = domNode.addEventListener;
             domNode.addEventListener = function(type, func, phase) {
                 if (!this._x3domNode._listeners[type])
                     this._x3domNode._listeners[type] = [];
@@ -371,6 +372,21 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 
                 x3dom.debug.logInfo('addEventListener for ' + this.tagName + ".on" + type);
                 this.__addEventListener(type, func, phase);
+            };
+            
+            domNode.__removeEventListener = domNode.removeEventListener;
+            domNode.removeEventListener = function(type, func, phase) {
+                var list = this._x3domNode._listeners[type];
+                if (list) {
+                    for (var it=0; it<list.length; it++) {
+                        if (list[it] == func) {
+                            list.splice(it, 1);
+                            x3dom.debug.logInfo('removeEventListener for ' + 
+                                                this.tagName + ".on" + type);
+                        }
+                    }
+                }
+                this.__removeEventListener(type, func, phase);
             };
         }
 		
@@ -5892,6 +5908,11 @@ x3dom.Viewarea.prototype.navigateTo = function()
                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
                 mult(viewpoint.getViewMatrix());
         }
+        
+        //
+        //var mat = this.getCurrentTransform();
+        //mat.inverse();
+        //this._viewMatrix = mat.mult(newView);
     }
     
     return needNavAnim;
