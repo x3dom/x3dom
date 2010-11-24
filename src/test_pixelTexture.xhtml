@@ -11,13 +11,15 @@
         <Transform DEF='trans'>
           <Shape>
             <Appearance>
-              <PixelTexture DEF='testImage' image='2 2 3 0xff0000 0x00ff00 0x0000ff 0xffffff'/>
+              <!--<PixelTexture DEF='testImage' image='2 2 3 0xff0000 0x00ff00 0x0000ff 0xffffff'/>-->
               <!--<PixelTexture DEF='testImage' image='2 2 3 16711680 65280 255 16777215'/>-->
+              <PixelTexture DEF='testImage' image='2 2 4 -16776961 16711935 65535 -1'/>
+              <!--<PixelTexture DEF='testImage' image='2 2 4 0xff0000ff 0x00ff00ff 0x0000ffff 0xffffffff'/>-->
             </Appearance>
             <Box size='3 3 3'/>
           </Shape>
         </Transform>
-        <TimeSensor DEF='ts' cycleInterval='10' loop='true' startTime='1'/>
+        <TimeSensor DEF='ts' cycleInterval='10' loop='true' startTime='1' enabled="false"/>
         <OrientationInterpolator DEF='oi' key='0 0.25 0.5 0.75 1' keyValue='0 1 1 0 0 1 1 1.57 0 1 1 3.14 0 1 1 4.71 0 1 1 6.28'/>
         <ROUTE fromNode='ts' fromField='fraction_changed' toNode='oi' toField='set_fraction'/>
         <ROUTE fromNode='oi' fromField='value_changed' toNode='trans' toField='set_rotation'/>
