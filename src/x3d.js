@@ -4597,7 +4597,7 @@ x3dom.registerNodeType(
             
             setView: function(newView) {
                 var mat = this.getCurrentTransform();
-                mat.inverse();
+                mat = mat.inverse();
                 this._viewMatrix = mat.mult(newView);
             },
             resetView: function() {
@@ -5391,10 +5391,35 @@ x3dom.registerNodeType(
             // the special case of viewer-alignment is indicated.
             this.addField_SFVec3f(ctx, 'axisOfRotation', 0, 1, 0);
             
+            this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._viewAlignedMat = x3dom.fields.SFMatrix4f.identity();
+            
             // FIXME; implement node according to X3D spec!
             x3dom.debug.logInfo("Billboard NYI");
         },
         {
+            collectDrawableObjects: function (transform, out)
+            {
+                if (!this._vf.render) {
+                    return;
+                }
+                
+                // rotate the billboard to face the viewer
+                //transform = transform.inverse();
+                //this._viewAlignedMat = mat.mult(newView);
+                
+                for (var i=0; i<this._childNodes.length; i++) {
+                    if (this._childNodes[i]) {
+                        var childTransform = this._childNodes[i].transformMatrix(transform);
+                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                    }
+                }
+                
+                if (out !== null) {
+                    //optimization, exploit coherence and do it for next frame (see LOD)
+                    out.Billboards.push( [transform, this] );
+                }
+            }
         }
     )
 );
@@ -5908,11 +5933,6 @@ x3dom.Viewarea.prototype.navigateTo = function()
                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
                 mult(viewpoint.getViewMatrix());
         }
-        
-        //
-        //var mat = this.getCurrentTransform();
-        //mat.inverse();
-        //this._viewMatrix = mat.mult(newView);
     }
     
     return needNavAnim;

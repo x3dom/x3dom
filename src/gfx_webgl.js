@@ -2494,6 +2494,7 @@ x3dom.gfx_webgl = (function () {
         {
 			scene.drawableObjects = [];
             scene.drawableObjects.LODs = [];
+            scene.drawableObjects.Billboards = [];
 			
 			t0 = new Date().getTime();
 			
@@ -2517,7 +2518,7 @@ x3dom.gfx_webgl = (function () {
 		
 		// do z-sorting for transparency (currently no separate transparency list)
 		var zPos = [];
-        var i, n = scene.drawableObjects.length;
+        var i, m, n = scene.drawableObjects.length;
         var center, trafo, obj3d;
         
 		for (i=0; i<n; i++)
@@ -2536,8 +2537,9 @@ x3dom.gfx_webgl = (function () {
 		}
 		zPos.sort(function(a, b) { return a[1] - b[1]; });
         
+        m = scene.drawableObjects.Billboards.length;
         n = scene.drawableObjects.LODs.length;
-        if (n) {
+        if (m || n) {
             center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
             center = mat_view.inverse().multMatrixPnt(center);
         }
@@ -2546,6 +2548,16 @@ x3dom.gfx_webgl = (function () {
 		{
 			trafo = scene.drawableObjects.LODs[i][0];
 			obj3d = scene.drawableObjects.LODs[i][1];
+            
+            if (obj3d) {
+                obj3d._eye = trafo.inverse().multMatrixPnt(center);
+            }
+		}
+        
+        for (i=0; i<m; i++)
+		{
+			trafo = scene.drawableObjects.Billboards[i][0];
+			obj3d = scene.drawableObjects.Billboards[i][1];
             
             if (obj3d) {
                 obj3d._eye = trafo.inverse().multMatrixPnt(center);

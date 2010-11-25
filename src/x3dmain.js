@@ -333,7 +333,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     var _old_dim  = [0,0];
     this.watchForResize = function() {
-        new_dim = [
+        var new_dim = [
             x3dom.getStyle(that.canvasDiv, "width"),
             x3dom.getStyle(that.canvasDiv, "height")
         ];

@@ -16,36 +16,48 @@
 			<Scene>
                 <Transform id='trafo'>
                     <Transform id='tr1' translation="0 0 3" onclick="showValue('yellow');">
+                        <Billboard>
                         <Shape>
                             <Appearance>
+                                <ImageTexture url="texture/generic/w3c_256.jpg" />
                                 <Material id='yellow' diffuseColor="1 1 0" specularColor=".2 .2 .2" />
                             </Appearance>
-                            <Sphere />
+                            <Box size="2 2 0.1" />
                         </Shape>
+                        </Billboard>
                     </Transform>
                     <Transform id='tr2' translation="0 0 -3" onclick="showValue('red');">
+                        <Billboard>
                         <Shape>
                             <Appearance>
+                                <ImageTexture url="texture/generic/web3d_256.jpg" />
                                 <Material id='red' diffuseColor="1 0 0" specularColor=".2 .2 .2" />
                             </Appearance>
-                            <Sphere />
+                            <Box size="2 2 0.1" />
                         </Shape>
+                        </Billboard>
                     </Transform>
                     <Transform id='tr3' translation="3 0 0" onclick="showValue('green');">
+                        <Billboard>
                         <Shape>
                             <Appearance>
+                                <ImageTexture url="texture/generic/webgl_256.jpg" />
                                 <Material id='green' diffuseColor="0 1 0" specularColor=".2 .2 .2" />
                             </Appearance>
-                            <Sphere />
+                            <Box size="2 2 0.1" />
                         </Shape>
+                        </Billboard>
                     </Transform>
                     <Transform id='tr4' translation="-3 0 0" onclick="showValue('blue');">
+                        <Billboard>
                         <Shape>
                             <Appearance>
+                                <ImageTexture url="texture/generic/x3d_256.jpg" />
                                 <Material id='blue' diffuseColor="0 0 1" specularColor=".2 .2 .2" />
                             </Appearance>
-                            <Sphere />
+                            <Box size="2 2 0.1" />
                         </Shape>
+                        </Billboard>
                     </Transform>
                 </Transform>
 				<Background skyColor='0 0 0' />
