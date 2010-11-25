@@ -11,61 +11,65 @@
 		<script type="text/javascript" src="x3d.js"></script>
 		<script type="text/javascript" src="fields.js"></script>
 		<style>
-		body{
-			margin:0;
-			padding:0;
-			width:500px;
-			height:500px;
-			border:1px solid red;
+		body {
+			margin: 0;
+			padding: 0;
+			width: 100%;
+			height: 100%;
 		}
 		#toggler {
-			position:absolute;
-			top:0;
-			left:0;
+			position: fixed;
+			z-index:100;
+			top: 0;
+			left: 0;
+			width: 10em;
+			height: 2em;
+			border:1px solid #666;
+			background-color:#202021;
+			color:#ccc;
+		}
+		#container {
+			width: 50%;
+			height: 50%;
 		}
 		</style>
 
 		<script type="text/javascript">
 
-			var big = false;
+			var zoomed = false;
 			
 			function toggle(elm) {
+
+				element = document.getElementById('test')
+				container = document.getElementById('container')
+				button = document.getElementById('toggler')
 				
-				element = document.getElementById('test');
-				b = document.getElementById('main');
 
-				var new_width_css, new_width, new_height_css, new_height;
+				var new_width_css;
 
-				if (big) {
-					new_width_css = "500px"
-					new_width = 500;
-					new_height_css = new_width_css;
-					new_height = new_width;
+				if (zoomed) {
+					new_width_css = "50%"
+//					button.innerHTML = "Fullscreen (off)"
+					button.style.backgroundColor = "#202021"
+					document.getElementById('x3dom_logdiv').style.display = 'block'
 				} else {
-					new_width_css = "1024px"
-					new_width = 1024;
-					new_height_css = new_width_css;
-					new_height = new_width;
+					new_width_css = "100%"
+//					button.innerHTML = "Fullscreen (on)"
+					button.style.backgroundColor = "#c23621"
+					document.getElementById('x3dom_logdiv').style.display = 'none'
 				}
 
-				big = !big
+				zoomed = !zoomed
 
-				b.style.width = new_width_css;
-				b.style.height = new_height_css;
-
-				element.setAttribute("width", new_width_css)
-				element.setAttribute("height", new_height_css)
-
-				// Error: methods are undefined
-				//document.onresize();
-				//document.window.resize();
+				container.style.width = new_width_css
+				container.style.height = new_width_css
 			}
 		</script>
 
 	</head>
 <body id="main">
-	<!-- <div id="container"> -->
-	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" style="background-color:#000">
+	<div id="container">
+	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="true" style="background-color:#000">
 	    	<Scene>
 	        	<Viewpoint position='0 0 10' />
 				<Shape>
@@ -76,10 +80,7 @@
 	            </Shape>
 	        </Scene>
 	    </X3D>
-	<!-- </div> -->
-	
-		<div id="toggler"><button onclick="toggle('container');">Resize</button></div>
-
-	
+	</div>
+	<button id="toggler" onclick="toggle('container');return false;">Fullscreen</button>
 </body>
 </html>

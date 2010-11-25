@@ -99,19 +99,6 @@ x3dom.xhtmlNS = 'http://www.w3.org/1999/xhtml';
 
 
 /**
- * @private Computes the value of the specified CSS property <tt>p</tt> on the
- * specified element <tt>e</tt>.
- *
- * @param {string} p the name of the CSS property.
- * @param e the element on which to compute the CSS property.
- */
-x3dom.css = function(e, p) {
-  return window.getComputedStyle
-      ? window.getComputedStyle(e, null).getPropertyValue(p)
-      : e.currentStyle[p];
-};
-
-/**
  * @private Translates <tt>some-prop-erty</tt> to: <tt>somePropErty</tt>
  *
  * @param {string} p the name of the CSS property.
@@ -241,6 +228,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.id = "x3dom-" + index + "-canvas";
         }
         
+        // props to be propagated to the canvas
         var css_properties = [
             "background",
             "background-attachment",
@@ -301,7 +289,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         
         css_properties.forEach(function(str){
             // if there is a style
-            var style_value = x3dom.css(x3dElem, str);
+            var style_value = x3dom.getStyle(x3dElem, str);
 
             if (style_value) {
                 // copy it over
@@ -319,8 +307,8 @@ x3dom.X3DCanvas = function(x3dElem) {
         
 
         // style property overrides height/width property
-        canvas.setAttribute("height", x3dom.css(this.canvasDiv, "height"));
-        canvas.setAttribute("width", x3dom.css(this.canvasDiv, "width"));
+        canvas.setAttribute("height", x3dom.getStyle(this.canvasDiv, "height"));
+        canvas.setAttribute("width", x3dom.getStyle(this.canvasDiv, "width"));
 
         // Apply the width and height of the X3D element to the canvas 
         // for backwards compatibility with examples
@@ -335,7 +323,26 @@ x3dom.X3DCanvas = function(x3dElem) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
             canvas.setAttribute("height", h);
         }
+        
+        
+        // {{{ Setting a timer to watch for size changes of canvasDiv
+        var _old_dim  = [ x3dom.getStyle(this.canvasDiv, "width"), x3dom.getStyle(this.canvasDiv, "height") ]
+        setInterval(function() {
 
+            new_dim = [
+                x3dom.getStyle(that.canvasDiv, "width"),
+                x3dom.getStyle(that.canvasDiv, "height")
+            ];
+
+            if ((_old_dim[0] != new_dim[0]) && (_old_dim[1] != new_dim[1])) {
+                x3dom.debug.logInfo("Resize detected w/h: " + _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
+                x3dElem.setAttribute("width", new_dim[0]);
+                x3dElem.setAttribute("height", new_dim[1]);
+                _old_dim = new_dim;
+            }
+        }, 500);
+        /// }}}
+        
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
                 
@@ -592,11 +599,6 @@ x3dom.X3DCanvas = function(x3dElem) {
 			evt.returnValue = true;
 		}, true);
 
-        /*
-		this.canvas.addEventListener('resize', function (evt) {
-		    alert("Hello from canvas resize listener");
-		}, false);
-        */
 	}
 };
 
@@ -935,6 +937,8 @@ x3dom.userAgentFeature = {
     };
     
     // Update canvases on resize of browser window
+    // this is not used right now since the update
+    // is done with a timer
     var onresize = function() {
 		x3dom.debug.logInfo("Resize event triggered");
 
@@ -950,8 +954,8 @@ x3dom.userAgentFeature = {
 			//x3dom.debug.logInfo("X3D width was : " + element.getAttribute("width"));
 			            
             // get new height and width from the enclosing div
-            var new_width = x3dom.css(x3dom.canvases[i].canvasDiv, "width")
-            var new_height = x3dom.css(x3dom.canvases[i].canvasDiv, "height")
+            var new_width = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "width")
+            var new_height = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "height")
 
 			//x3dom.debug.logInfo("New canvasDiv width: " + new_width);
 			//x3dom.debug.logInfo("New canvasDiv height: " + new_height);
@@ -984,14 +988,14 @@ x3dom.userAgentFeature = {
         window.addEventListener('load', onload, false);
         window.addEventListener('unload', onunload, false);
         window.addEventListener('reload', onunload, false);
-        window.addEventListener('resize', onresize, false);
+//        window.addEventListener('resize', onresize, false);
     } 
     else if (window.attachEvent) 
     {
         window.attachEvent('onload', onload);
         window.attachEvent('onunload', onunload);
         window.attachEvent('onreload', onunload);
-        window.attachEvent('onresize', onresize);
+//        window.attachEvent('onresize', onresize);
     }
 
 })();
