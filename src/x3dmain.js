@@ -324,29 +324,26 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.setAttribute("height", h);
         }
         
-        
-        // {{{ Setting a timer to watch for size changes of canvasDiv
-        var _old_dim  = [ x3dom.getStyle(this.canvasDiv, "width"), x3dom.getStyle(this.canvasDiv, "height") ]
-        setInterval(function() {
-
-            new_dim = [
-                x3dom.getStyle(that.canvasDiv, "width"),
-                x3dom.getStyle(that.canvasDiv, "height")
-            ];
-
-            if ((_old_dim[0] != new_dim[0]) && (_old_dim[1] != new_dim[1])) {
-                x3dom.debug.logInfo("Resize detected w/h: " + _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
-                x3dElem.setAttribute("width", new_dim[0]);
-                x3dElem.setAttribute("height", new_dim[1]);
-                _old_dim = new_dim;
-            }
-        }, 500);
-        /// }}}
-        
+                
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
                 
         return canvas;
+    };
+
+    var _old_dim  = [0,0];
+    this.watchForResize = function() {
+        new_dim = [
+            x3dom.getStyle(that.canvasDiv, "width"),
+            x3dom.getStyle(that.canvasDiv, "height")
+        ];
+
+        if ((_old_dim[0] != new_dim[0]) && (_old_dim[1] != new_dim[1])) {
+            x3dom.debug.logInfo("Resize detected w/h: " + _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
+            that.x3dElem.setAttribute("width", new_dim[0]);
+            that.x3dElem.setAttribute("height", new_dim[1]);
+            _old_dim = new_dim;
+        }
     };
 
     this.createStatDiv = function() {
@@ -651,6 +648,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         if (x3dCanvas.hasRuntime)
         {
             setInterval( function() {
+                    x3dCanvas.watchForResize();
                     x3dCanvas.tick();
                 }, 
                 16	// use typical monitor frequency as bound

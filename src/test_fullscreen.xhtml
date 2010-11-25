@@ -44,6 +44,8 @@
 			
 			function toggle(elm) {
 
+				b = document.getElementById('main')
+				title = document.getElementById('title')
 				element = document.getElementById('test')
 				container = document.getElementById('container')
 				button = document.getElementById('toggler')
@@ -53,9 +55,13 @@
 				if (zoomed) {
 					new_width_css = "50%"
 					button.style.backgroundColor = "#202021"
+					b.style.padding = "10px"
+					title.style.display = "block"
 					document.getElementById('x3dom_logdiv').style.display = 'block'
 				} else {
-					new_width_css = "90%"
+					b.style.padding = "0px"
+					title.style.display = "none"
+					new_width_css = "100%"
 					button.style.backgroundColor = "#c23621"
 					document.getElementById('x3dom_logdiv').style.display = 'none'
 				}
@@ -69,7 +75,7 @@
 
 	</head>
 <body id="main">
-	<h1>Fullscreen example</h1>
+	<h1 id="title">Fullscreen example</h1>
 	<div id="container">
 	<button id="toggler" onclick="toggle('container');return false;">Zoom</button>
 	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="true" style="background-color:#000">
