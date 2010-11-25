@@ -3,7 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>
 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-		<title>Hello World</title>
+		<title>Fullscreen test</title>
         <link rel="stylesheet" type="text/css" href="x3dom.css" />
 		<script type="text/javascript" src="x3dmain.js"></script>
 		<script type="text/javascript" src="debug.js"></script>
@@ -13,12 +13,13 @@
 		<style>
 		body {
 			margin: 0;
-			padding: 0;
+			padding: 10px;
 			width: 100%;
 			height: 100%;
 		}
 		#toggler {
-			position: fixed;
+			position: relative;
+			float:left;
 			z-index:100;
 			top: 0;
 			left: 0;
@@ -27,6 +28,9 @@
 			border:1px solid #666;
 			background-color:#202021;
 			color:#ccc;
+		}
+		#toggler:hover {
+			background-color:blue;
 		}
 		#container {
 			width: 50%;
@@ -44,17 +48,14 @@
 				container = document.getElementById('container')
 				button = document.getElementById('toggler')
 				
-
 				var new_width_css;
 
 				if (zoomed) {
 					new_width_css = "50%"
-//					button.innerHTML = "Fullscreen (off)"
 					button.style.backgroundColor = "#202021"
 					document.getElementById('x3dom_logdiv').style.display = 'block'
 				} else {
-					new_width_css = "100%"
-//					button.innerHTML = "Fullscreen (on)"
+					new_width_css = "90%"
 					button.style.backgroundColor = "#c23621"
 					document.getElementById('x3dom_logdiv').style.display = 'none'
 				}
@@ -68,7 +69,9 @@
 
 	</head>
 <body id="main">
+	<h1>Fullscreen example</h1>
 	<div id="container">
+	<button id="toggler" onclick="toggle('container');return false;">Zoom</button>
 	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="true" style="background-color:#000">
 	    	<Scene>
 	        	<Viewpoint position='0 0 10' />
@@ -81,6 +84,5 @@
 	        </Scene>
 	    </X3D>
 	</div>
-	<button id="toggler" onclick="toggle('container');return false;">Fullscreen</button>
 </body>
 </html>
