@@ -1954,7 +1954,7 @@ x3dom.gfx_webgl = (function () {
         }
         catch(se) {
             scene._webgl.fboPick.pixelData = [];
-            // I AM HERE
+            x3dom.debug.logException(se);
         }
         
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
