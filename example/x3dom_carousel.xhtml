@@ -12,23 +12,26 @@
     <h1>Carousel menu showing some information about the planets of the solar system</h1>
 	<p> 
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
-             id="elem" showStat="true" showLog="false" width="500px" height="400px">
+             id="elem" showStat="false" showLog="false" width="500px" height="400px">
 			<Scene>
                 <Transform id='trafo'>
                 </Transform>
-				<Background skyColor='0 0 0' />
+				<Background skyColor='0 0 0' backUrl="texture/solarSystem/Sun.jpg" />
                 <NavigationInfo type='none' />
 				<Viewpoint position="0 2 12" orientation="1 0 0 -0.2" />
 			</Scene>
 		</X3D>
 	</p>
     
-    <iframe id="meinInfoFrame" width="800" height="350" marginheight="5" marginwidth="5" 
-        frameborder="0" src="http://de.wikipedia.org/wiki/Sonnensystem"> 
+    <p>
+    <iframe id="meinInfoFrame" width="800" height="400" marginheight="5" marginwidth="5" 
+        frameborder="0" src="http://en.wikipedia.org/wiki/Solar_System"> 
     </iframe>
-    
+    <!--
     <div id="ausgabe" style="background-color: grey; color:yellow; border: black solid 1px; padding: 2px; font-size:14pt;"> Click the planets to get some more information </div>
-	
+	-->
+    </p>
+    
 	<script type="text/javascript"><![CDATA[
     var pos = 0;
     var inc = 0;
@@ -43,13 +46,13 @@
     
     function tick() {
         var d = document.getElementById("trafo");
-        inc += (pos / 25);  // scale down a bit
+        inc += (pos / 50);  // scale down a bit
         d.setAttribute('rotation', '0 1 0 ' + 3.14159265*inc);
     }
     
     function showValue(val, link) {
         //document.getElementById('ausgabe').style.color = val;
-        document.getElementById('ausgabe').innerHTML = val;
+        //document.getElementById('ausgabe').innerHTML = val;
         
         var frame = document.getElementById("meinInfoFrame");
         frame.src = link;
@@ -67,14 +70,14 @@
                         "texture/solarSystem/Uranus.jpg",
                         "texture/solarSystem/Neptune.jpg"];
         
-        var planets = ["http://de.wikipedia.org/wiki/Merkur_(Planet)",
-                       "http://de.wikipedia.org/wiki/Venus_(Planet)",
-                       "http://de.wikipedia.org/wiki/Erde_(Planet)",
-                       "http://de.wikipedia.org/wiki/Mars_(Planet)",
-                       "http://de.wikipedia.org/wiki/Jupiter_(Planet)",
-                       "http://de.wikipedia.org/wiki/Saturn_(Planet)",
-                       "http://de.wikipedia.org/wiki/Uranus_(Planet)",
-                       "http://de.wikipedia.org/wiki/Neptun_(Planet)"];
+        var planets = ["http://en.wikipedia.org/wiki/Mercury_(planet)",
+                       "http://en.wikipedia.org/wiki/Venus_(planet)",
+                       "http://en.wikipedia.org/wiki/Earth",
+                       "http://en.wikipedia.org/wiki/Mars_(planet)",
+                       "http://en.wikipedia.org/wiki/Jupiter_(planet)",
+                       "http://en.wikipedia.org/wiki/Saturn_(planet)",
+                       "http://en.wikipedia.org/wiki/Uranus_(planet)",
+                       "http://en.wikipedia.org/wiki/Neptune_(planet)"];
         
         for (var i=0; i<N; i++) {
             var phi = i * (2 * Math.PI / N);

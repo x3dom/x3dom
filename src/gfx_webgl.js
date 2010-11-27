@@ -1544,8 +1544,6 @@ x3dom.gfx_webgl = (function () {
                 var texture = gl.createTexture();
                 
                 var image = new Image();
-                image.src = url[0];
-                bgnd._nameSpace.doc.downloadCount += 1;
                 
                 image.onload = function()
                 {
@@ -1563,6 +1561,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bindTexture(gl.TEXTURE_2D, null);
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
                 };
+                
+                image.src = bgnd._nameSpace.getURL(url[0]);
+                bgnd._nameSpace.doc.downloadCount += 1;
                 
                 bgnd._webgl = {
                     positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
