@@ -17,7 +17,7 @@
                 <Transform id='trafo'>
                 </Transform>
 				<Background skyColor='0 0 0' />
-                <NavigationInfo type='none' />
+                <!--<NavigationInfo type='none' />-->
 				<Viewpoint position="0 2 12" orientation="1 0 0 -0.2" />
 			</Scene>
 		</X3D>
@@ -34,22 +34,31 @@
     var inc = 0;
     
     function handleOrientation(event) {
+                /*
+                    var ext = "";
+                    for (var fName in event) {
+                        ext += (event[fName] + ": ");
+                        ext += (fName + " / ");
+                    }
+                    x3dom.debug.logInfo(ext);
+                */
         var x3d = document.getElementById('elem');
         var w = parseInt(x3d.getAttribute("width"));
         pos = (event.layerX - (w / 2)) / (w / 2);
         pos = (pos < -1) ? -1 : ( (pos > 1) ? 1 : pos);
         event.cancelBubble = true;
+        event.stopPropagation();
     }
     
     function tick() {
         var d = document.getElementById("trafo");
-        inc += (pos / 25);  // scale down a bit
+        inc += (pos / 50);  // scale down a bit
         d.setAttribute('rotation', '0 1 0 ' + 3.14159265*inc);
     }
     
     function showValue(val, link) {
         //document.getElementById('ausgabe').style.color = val;
-        document.getElementById('ausgabe').innerHTML = val;
+        document.getElementById('ausgabe').innerHTML = val + " | " + link;
         
         var frame = document.getElementById("meinInfoFrame");
         frame.src = link;
@@ -58,18 +67,18 @@
     function createScene() {
         var N = 8, radius = 4;
         
-        var textures = ["texture/generic/x3d_256.jpg",
-                        "texture/generic/x3d_256.jpg",
-                        "texture/generic/x3d_256.jpg",
-                        "texture/generic/x3d_256.jpg",
-                        "texture/generic/x3d_256.jpg",
-                        "texture/generic/x3d_256.jpg",
-                        "texture/generic/x3d_256.jpg",
-                        "texture/generic/x3d_256.jpg"];
+        var textures = ["../example/texture/solarSystem/Mercury.jpg",
+                        "../example/texture/solarSystem/Venus.jpg",
+                        "../example/texture/solarSystem/Earth.jpg",
+                        "../example/texture/solarSystem/Mars.jpg",
+                        "../example/texture/solarSystem/Jupiter.jpg",
+                        "../example/texture/solarSystem/Saturn.jpg",
+                        "../example/texture/solarSystem/Uranus.jpg",
+                        "../example/texture/solarSystem/Neptune.jpg"];
         
         var planets = ["http://de.wikipedia.org/wiki/Merkur_(Planet)",
                        "http://de.wikipedia.org/wiki/Venus_(Planet)",
-                       "http://de.wikipedia.org/wiki/Erde_(Planet)",
+                       "http://de.wikipedia.org/wiki/Erde",
                        "http://de.wikipedia.org/wiki/Mars_(Planet)",
                        "http://de.wikipedia.org/wiki/Jupiter_(Planet)",
                        "http://de.wikipedia.org/wiki/Saturn_(Planet)",

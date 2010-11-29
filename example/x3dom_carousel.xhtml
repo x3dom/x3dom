@@ -42,6 +42,7 @@
         pos = (event.layerX - (w / 2)) / (w / 2);
         pos = (pos < -1) ? -1 : ( (pos > 1) ? 1 : pos);
         event.cancelBubble = true;
+        event.stopPropagation();
     }
     
     function tick() {
