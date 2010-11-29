@@ -1,0 +1,34 @@
+<html>
+    <head>
+        <title>Meine 3D-Seite</title>
+        <link rel="stylesheet" type="text/css" 
+              href="http://www.x3dom.org/x3dom/release/x3dom.css">
+        </link>
+        <script type="text/javascript" 
+                src="http://www.x3dom.org/x3dom/release/x3dom.js">
+        </script>
+    </head>
+    <body>
+        <h1>Hallo X3DOM Welt</h1>
+        <x3d width="400" height="300">
+            <scene>
+              <transform translation="-2 0 0">
+                <shape>
+                  <appearance>
+                    <material diffuseColor='red'></material>  
+                  </appearance>
+                  <box></box>
+                </shape>
+              </transform>
+              <transform translation="2 0 0">
+                <shape>
+                  <appearance>
+                    <material diffuseColor='blue'></material>  
+                  </appearance>
+                  <sphere></sphere>
+                </shape>
+              </transform>
+            </scene>
+        </x3d>
+    </body>
+</html>

@@ -3,9 +3,8 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 	<head>        
         <link rel="stylesheet" href="qunit/qunit.css" type="text/css" media="screen">
-        <script type="text/javascript" src="qunit/qunit.js"></script>        
+        <script type="text/javascript" src="qunit/qunit.js"></script>
         <script type="text/javascript" src="../src/x3dom.js"></script>  
-        <script type="text/javascript" src="../src/fields.js"></script>  
     </head>
 
 <body>
@@ -165,7 +164,15 @@
                 same(mc1.toGL(), [1, 0, 0, 0, 0, 0]);
                 same(mc2.toGL(), [0.5, 0, 0, 0.1, 0.2, 0.3, 1, 1, 1]);
             });
-
+            
+            test("MFInt32", function() {
+                var c1 = 4711;
+                var mc1 = new x3dom.fields.MFInt32([c1, 4812]);
+                equals(c1, mc1[0], "mc1[0]=c1");
+                equals(mc1.length, 2, "mc1.length");
+                
+                same(mc1.toGL(), [4711, 4812]);
+            });
         }
         </script>
 </body>
