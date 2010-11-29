@@ -34,7 +34,11 @@ runServer:
 
 count:
 	wc -l $(SRC)
+	
+cat:
+	cat x3dmain.js debug.js fields.js gfx_webgl.js x3d.js > out.js
 
 $(BUNDLE): $(SRC)
 	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
-	#cp x3dom.js ../example
+	cp x3dom.js ../example
+	cp x3dom.js ../A2_VW
