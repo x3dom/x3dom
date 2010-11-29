@@ -5404,13 +5404,41 @@ x3dom.registerNodeType(
                     return;
                 }
                 
+				var min = x3dom.fields.SFVec3f.MAX();
+                var max = x3dom.fields.SFVec3f.MIN();
+                var ok = this.getVolume(min, max, true);
+				var rotMat = x3dom.fields.SFMatrix4f.identity();
+                
+                var mid = (max.add(min).multiply(0.5)).add(new x3dom.fields.SFVec3f(0, 0, 0));
+                var billboard_to_viewer = mid.subtract(this._eye);
+				
+				if(this._vf.axisOfRotation.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
+					var rot1 = x3dom.fields.Quaternion.rotateFromTo(billboard_to_viewer, new x3dom.fields.SFVec3f(0, 0, -1));
+					rotMat = rot1.toMatrix().transpose();
+				}
+				else{
+					var normalPlane = this._vf.axisOfRotation.cross(billboard_to_viewer);
+					normalPlane = normalPlane.normalize();
+					
+					if(this._eye.z < 0)
+						normalPlane = normalPlane.multiply(-1);
+					
+					var degreesToRotate = Math.asin(normalPlane.dot(new x3dom.fields.SFVec3f(0, 0, 1)));
+					
+					if(this._eye.z < 0)
+						degreesToRotate += Math.PI;
+					
+						rotMat = x3dom.fields.SFMatrix4f.parseRotation(this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y
+							+ ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate);
+				}
+				
                 // rotate the billboard to face the viewer
                 //transform = transform.inverse();
                 //this._viewAlignedMat = mat.mult(newView);
-                
+				
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
-                        var childTransform = this._childNodes[i].transformMatrix(transform);
+                        var childTransform = this._childNodes[i].transformMatrix(transform.mult(rotMat));
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
