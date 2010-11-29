@@ -5393,9 +5393,6 @@ x3dom.registerNodeType(
             
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
             this._viewAlignedMat = x3dom.fields.SFMatrix4f.identity();
-            
-            // FIXME; implement node according to X3D spec!
-            x3dom.debug.logInfo("Billboard NYI");
         },
         {
             collectDrawableObjects: function (transform, out)
@@ -5431,10 +5428,6 @@ x3dom.registerNodeType(
 						rotMat = x3dom.fields.SFMatrix4f.parseRotation(this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y
 							+ ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate);
 				}
-				
-                // rotate the billboard to face the viewer
-                //transform = transform.inverse();
-                //this._viewAlignedMat = mat.mult(newView);
 				
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {

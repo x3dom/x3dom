@@ -1955,6 +1955,9 @@ x3dom.gfx_webgl = (function () {
         }
         catch(se) {
             scene._webgl.fboPick.pixelData = [];
+            //No Exception on file:// when starting with additional flags:
+            //chrome.exe --enable-webgl --use-gl=desktop --log-level=0 
+            //           --allow-file-access-from-files --allow-file-access
             x3dom.debug.logException(se);
         }
         
