@@ -5392,6 +5392,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'axisOfRotation', 0, 1, 0);
             
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
+			this._eyeViewUp = new x3dom.fields.SFVec3f(0, 0, 0);
             this._viewAlignedMat = x3dom.fields.SFMatrix4f.identity();
         },
         {
@@ -5407,11 +5408,19 @@ x3dom.registerNodeType(
 				var rotMat = x3dom.fields.SFMatrix4f.identity();
                 
                 var mid = (max.add(min).multiply(0.5)).add(new x3dom.fields.SFVec3f(0, 0, 0));
-                var billboard_to_viewer = mid.subtract(this._eye);
+                var billboard_to_viewer = this._eye.subtract(mid);
 				
 				if(this._vf.axisOfRotation.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
-					var rot1 = x3dom.fields.Quaternion.rotateFromTo(billboard_to_viewer, new x3dom.fields.SFVec3f(0, 0, -1));
+					var rot1 = x3dom.fields.Quaternion.rotateFromTo(billboard_to_viewer, new x3dom.fields.SFVec3f(0, 0, 1));
 					rotMat = rot1.toMatrix().transpose();
+					
+					yAxis = rotMat.multMatrixPnt(new x3dom.fields.SFVec3f(0, 1, 0)).normalize();
+					
+					if(!this._eyeViewUp.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
+						var rot2 = x3dom.fields.Quaternion.rotateFromTo(this._eyeViewUp, yAxis);
+						rotMat = rot2.toMatrix().transpose().mult(rotMat);
+					}
+					
 				}
 				else{
 					var normalPlane = this._vf.axisOfRotation.cross(billboard_to_viewer);
@@ -5426,8 +5435,12 @@ x3dom.registerNodeType(
 						degreesToRotate += Math.PI;
 					
 						rotMat = x3dom.fields.SFMatrix4f.parseRotation(this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y
-							+ ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate);
+							+ ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
 				}
+				
+                // rotate the billboard to face the viewer
+                //transform = transform.inverse();
+                //this._viewAlignedMat = mat.mult(newView);
 				
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
