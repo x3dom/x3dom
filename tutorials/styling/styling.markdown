@@ -31,7 +31,7 @@ We are going to use the box example scene established in the [getting started][g
       </body>
     </html>
 
-Rendering this document in a WebGL compatible browser, results in a look similar to this:
+Rendering this document in a WebGL [compatible browser][browser_support], results in a look similar to this:
 
 ![Initial scene](media/styling1.png "Initial scene")
 
@@ -62,9 +62,9 @@ Note that the dimensions are relative now and adapted when resizing the browser 
 
 Adding interaction
 ------------------
-The dynamic resizing showed in the last chapter is fine for changing browser size and positioning elements. We can also use JavaScript to change the dimensions of the `x3d` element. In order to achieve this we are going to build a piece of functionality that mimics the "fullscreen" behavior of the ubiquitous video player.
+The dynamic resizing showed in the last chapter is fine for changing browser size and positioning elements. We can also use JavaScript to change the dimensions of the `x3d` element. In order to achieve this we are going to build a piece of functionality that mimics the "fullscreen" behavior of the ubiquitous video player. In this case we are going to resize the scene to 90% if the browser window (or more precisely to the 90% of the parent html element).
 
-First we need to add a button to our HTML document which floats over the `x3d` element. Fortunately, HTML already provides a `button` tag we can use exactly for this purpose. Since we want to the button to float over the x3d element, we need to put both of them into another `div`:
+First we need to add a button to our HTML document which floats over the `x3d` element. Fortunately, HTML already provides a `button` tag we can use exactly for this purpose. Since we want to the button to float over the `x3d` element, we need to put both of them into another `div`:
 
     <div id="container">
         <button id="toggler">Zoom</button>
@@ -83,12 +83,12 @@ In the `head` section of the document we add some `style` definitions to make it
     	left: 0;
     	width: 10em;
     	height: 2em;
-    	border:1px solid #666;
+    	border:none;
     	background-color:#202021;
     	color:#ccc;
     }
 
-We are also going to make the styling more flexible by setting the actual height and width of the x3d element indirectly. By taking advantage of the default CSS rule for the x3d element, which sets height and width to 100%, we can remove the inline styling and use the container to set the dimensions like so:
+We are also going to make the styling more flexible by setting the actual height and width of the `x3d` element indirectly. By taking advantage of the default CSS rule for the `x3d` element, which sets height and width to 100%, we can remove the inline styling and use the container to set the dimensions like so:
 
 	#container {
 		width: 50%;
@@ -138,7 +138,7 @@ Next, we need to implement the `toggle` function. Within the `head` element, and
     			new_size = "50%";
     			button.innerHTML = "Zoom";
     		} else {
-    			new_size = "80%";
+    			new_size = "90%";
     			button.innerHTML = "Unzoom";
     		}
 
@@ -148,18 +148,17 @@ Next, we need to implement the `toggle` function. Within the `head` element, and
     		container.style.height = new_size
     	}
     </script>
-    
 
-
+This code implements a simple toggle function. The boolean variable `zoomed` tracks the state of the resize. Depending wether the `x3d` element is sized to 90% or not, the new size is set and applied to the container element. Additionally, the text of the button is changed to show the action performed when the user is clicking it.
 
 Conclusion
-------------------
-todo
+----------
+See how it works in this [demo][demo_resize_final].
 
 
 
-
-
-
+[browser_support]: http://www.x3dom.org/?page_id=9 "X3DOM browser support"
 [demo_resize]: media/styling2.mov "Demo resizing"
+[demo_resize_final]: media/styling4.mov "Demo resizing"
+
 [getting_started]: http://www.x3dom.org/?page_id=627 "X3DOM Getting Started")
