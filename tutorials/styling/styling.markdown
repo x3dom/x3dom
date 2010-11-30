@@ -38,7 +38,9 @@ Rendering this document in a WebGL compatible browser, results in a look similar
 First styling steps
 -------------------
 
-In the initial example above, we created the scene using the `x3d` tag initializing it with a width and height as attributes. In order to take advantage of CSS, we can use a CSS rule to set height and with. Or goal is to create a resizable scene. The following CSS rules, added to the `x3d` element will resize the scene to 50% hight and with of the parent `body` element:
+In the initial example above, we created the scene using the `x3d` tag initializing it with `width` and `height` attributes. In order to take advantage of CSS, we can use a style rule to set height and with dynamically. 
+
+The following CSS rules, added to the `x3d` element will resize the scene to 50% hight and with of the parent element - in this case the `body`:
 
     ...
     <x3d style="width:50%; height:50%;">
@@ -51,11 +53,15 @@ You need to remove the `width/height` attributes as well because they take prece
     ...
 
 The result looks something like this:
-
  
 ![Scene with bg and h/w](media/styling2.png "Background and relative dimensions")
 
-Note that the dimensions are relative now and adapted when resizing the browser window. Check out a [demo here][demo_resize]
+Note that the dimensions are relative now and adapted when resizing the browser window ([demo][demo_resize]).
+
+
+
+
+
 
 
 
