@@ -68,8 +68,8 @@ x3dom.debug = {
         var aDiv = document.createElement("div");
         aDiv.style.clear = "both";
         aDiv.appendChild(document.createTextNode("\r\n"));
-        aDiv.style.visibility = (visible) ? "visible" : "hidden";
-        x3dom.debug.logContainer.style.visibility = (visible) ? "visible" : "hidden";
+        aDiv.style.display = (visible) ? "block" : "none";
+        x3dom.debug.logContainer.style.display = (visible) ? "block" : "none";
         document.body.appendChild(aDiv);
 		document.body.appendChild(x3dom.debug.logContainer);
 	},
