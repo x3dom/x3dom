@@ -62,6 +62,7 @@ Note that the dimensions are relative now and adapted when resizing the browser 
 
 Adding interaction
 ------------------
+
 The dynamic resizing showed in the last chapter is fine for changing browser size and positioning elements. We can also use JavaScript to change the dimensions of the `x3d` element. In order to achieve this we are going to build a piece of functionality that mimics the "fullscreen" behavior of the ubiquitous video player. In this case we are going to resize the scene to 90% if the browser window (or more precisely to the 90% of the parent html element).
 
 First we need to add a button to our HTML document which floats over the `x3d` element. Fortunately, HTML already provides a `button` tag we can use exactly for this purpose. Since we want to the button to float over the `x3d` element, we need to put both of them into another `div`:
@@ -151,8 +152,10 @@ Next, we need to implement the `toggle` function. Within the `head` element, and
 
 This code implements a simple toggle function. The boolean variable `zoomed` tracks the state of the resize. Depending wether the `x3d` element is sized to 90% or not, the new size is set and applied to the container element. Additionally, the text of the button is changed to show the action performed when the user is clicking it.
 
+
 Conclusion
 ----------
+
 See how it works in this [demo][demo_resize_final].
 
 You will also find another example [here][css_resize_example].
