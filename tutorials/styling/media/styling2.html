@@ -2,24 +2,12 @@
 <html>
   <head>
     <title>X3DOM styling tutorial</title>
-    <link rel="stylesheet"href="http://x3dom.org/x3dom/example/x3dom.css">
-    <script src="http://x3dom.org/x3dom/example/x3dom.js"></script>
-    <style>
-        body {
-            width: 100%;
-            height: 100%;
-        }
-
-        .my_scene {
-            width:50%;
-            height:50%;
-        }
-    </style>
+    <link rel="stylesheet" href="../../../src/x3dom.css">
+    <script src="../../../src/x3dom.js"></script>
   </head>
   <body>
     <h1>Styling tutorial</h1>
-	<div id="my_scene">
-    <x3d claa="my_scene">
+    <x3d style="width:50%; height:50%; background-color:black">
       <scene>
         <shape>
           <appearance>
@@ -29,6 +17,5 @@
         </shape>
       </scene>
     </x3d>
-	</div>
   </body>
 </html>
