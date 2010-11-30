@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>X3DOM styling tutorial 3</title>
+    <link rel="stylesheet" href="../../../src/x3dom.css">
+    <script src="../../../src/x3dom.js"></script>
+	<style>
+	#toggler {
+		position: relative;
+		float:left;
+		z-index:100;
+		top: 0;
+		left: 0;
+		width: 10em;
+		height: 2em;
+		border:1px solid #666;
+		background-color:#202021;
+		color:#ccc;
+	}
+	#toggler:hover {
+		background-color:blue;
+	}
+	#container {
+		width: 50%;
+		height: 50%;
+	}
+	</style>
+
+  </head>
+  <body>
+    <h1>Styling tutorial 3</h1>
+	<div id="container">
+        <button id="toggler">Zoom</button>
+	    <x3d style="background-color:black">
+	      <scene>
+	        <shape>
+	          <appearance>
+	            <material diffuseColor='red'></material>  
+	          </appearance>
+	          <box></box>
+	        </shape>
+	      </scene>
+	    </x3d>
+	</div>
+
+  </body>
+</html>
