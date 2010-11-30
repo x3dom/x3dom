@@ -338,7 +338,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             x3dom.getStyle(that.canvasDiv, "height")
         ];
 
-        if ((_old_dim[0] != new_dim[0]) && (_old_dim[1] != new_dim[1])) {
+        if ((_old_dim[0] != new_dim[0]) || (_old_dim[1] != new_dim[1])) {
             x3dom.debug.logInfo("Resize detected w/h: " + _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
             that.x3dElem.setAttribute("width", new_dim[0]);
             that.x3dElem.setAttribute("height", new_dim[1]);
