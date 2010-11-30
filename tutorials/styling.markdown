@@ -155,10 +155,13 @@ Conclusion
 ----------
 See how it works in this [demo][demo_resize_final].
 
+You will also find another example [here][css_resize_example].
+
+
 
 
 [browser_support]: http://www.x3dom.org/?page_id=9 "X3DOM browser support"
 [demo_resize]: media/styling2.mov "Demo resizing"
 [demo_resize_final]: media/styling4.mov "Demo resizing"
-
-[getting_started]: http://www.x3dom.org/?page_id=627 "X3DOM Getting Started")
+[getting_started]: http://www.x3dom.org/?page_id=627 "X3DOM Getting Started"
+[css_resize_example]: http://www.x3dom.org/?p=1479 "X3DOM resize example"
