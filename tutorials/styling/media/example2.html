@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>X3DOM styling tutorial</title>
+    <link rel="stylesheet"href="http://x3dom.org/x3dom/example/x3dom.css">
+    <script src="http://x3dom.org/x3dom/example/x3dom.js"></script>
+    <style>
+        body {
+            width: 100%;
+            height: 100%;
+        }
+
+        .my_scene {
+            width:50%;
+            height:50%;
+        }
+    </style>
+  </head>
+  <body>
+    <h1>Styling tutorial</h1>
+	<div id="my_scene">
+    <x3d claa="my_scene">
+      <scene>
+        <shape>
+          <appearance>
+            <material diffuseColor='red'></material>  
+          </appearance>
+          <box></box>
+        </shape>
+      </scene>
+    </x3d>
+	</div>
+  </body>
+</html>
