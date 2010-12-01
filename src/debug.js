@@ -89,6 +89,7 @@ x3dom.debug = {
         x3dom.debug.logContainer.style.color = "#00ff00";
         x3dom.debug.logContainer.style.backgroundColor = "black";
         x3dom.debug.logContainer.style.clear = "both";
+		x3dom.debug.logContainer.style.marginRight = "10px";
         
 		//document.body.appendChild(x3dom.debug.logContainer);
 	},

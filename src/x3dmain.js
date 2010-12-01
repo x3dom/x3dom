@@ -119,7 +119,6 @@ x3dom.X3DCanvas = function(x3dElem) {
     
     var that = this;
     
-    
     this.initContext = function(canvas) {        
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
         var gl = x3dom.gfx_webgl(canvas);
@@ -138,7 +137,6 @@ x3dom.X3DCanvas = function(x3dElem) {
         canvas.setAttribute("class", "x3dom-canvas");
         this.canvasDiv.appendChild(canvas);
         this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
-                
         
         // check if user wants to style the X3D element
         var userStyle = x3dElem.getAttribute("style");
@@ -167,7 +165,6 @@ x3dom.X3DCanvas = function(x3dElem) {
         // workaround since one cannot find out which handlers are registered
         if ( !x3dElem.__addEventListener && !x3dElem.__removeEventListener )
         {
-            var that = this;
             x3dElem.__addEventListener = x3dElem.addEventListener;
             x3dElem.__removeEventListener = x3dElem.removeEventListener;
             
@@ -331,18 +328,19 @@ x3dom.X3DCanvas = function(x3dElem) {
         return canvas;
     };
 
-    var _old_dim  = [0,0];
+    var _old_dim = [0,0];
     this.watchForResize = function() {
         var new_dim = [
-            x3dom.getStyle(that.canvasDiv, "width"),
-            x3dom.getStyle(that.canvasDiv, "height")
+            x3dom.getStyle(that.canvas, "width"),
+            x3dom.getStyle(that.canvas, "height")
         ];
-
+        
         if ((_old_dim[0] != new_dim[0]) || (_old_dim[1] != new_dim[1])) {
-            x3dom.debug.logInfo("Resize detected w/h: " + _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
+            //x3dom.debug.logInfo("Resize detected w/h: " + 
+            //    _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
+            _old_dim = new_dim;
             that.x3dElem.setAttribute("width", new_dim[0]);
             that.x3dElem.setAttribute("height", new_dim[1]);
-            _old_dim = new_dim;
         }
     };
 
@@ -380,7 +378,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         switch(attrName) {
             case "width":
             {
-                // that.canvas.style.width = that.canvasDiv.style.width = newVal;
+                //that.canvas.style.width = that.canvasDiv.style.width = newVal;
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"));
@@ -389,7 +387,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             break;
             case "height":
             {
-                // that.canvas.style.height = that.canvasDiv.style.height = newVal;
+                //that.canvas.style.height = that.canvasDiv.style.height = newVal;
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"));
@@ -401,7 +399,6 @@ x3dom.X3DCanvas = function(x3dElem) {
                 
         //TODO; update scene._webgl.fboPick
         that.doc.needRender = true;
-        
     };
     
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
