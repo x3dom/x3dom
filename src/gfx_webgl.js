@@ -530,7 +530,7 @@ x3dom.gfx_webgl = (function () {
 			return 0;
 	}
 	
-	Context.prototype.generateVS = function (viewarea, vertexColor, texture, textureTransform, useLighting)
+	Context.prototype.generateVS = function (viewarea, vertexColor, texture, textureTransform, cssMode, useLighting)
 	{
 	
 		var useFog = useFogFunc(viewarea);
@@ -539,7 +539,8 @@ x3dom.gfx_webgl = (function () {
 										   ( (textureTransform) ? 1 : 0 ) +
 										   ( (useFog) ? 1 : 0 ) +
 										   ( useLighting[0] ) +
-										   ( (useLighting[1]) ? 1 : 0 );
+										   ( (useLighting[1]) ? 1 : 0 ) +
+										   ( (cssMode) );
 		
 		if(!g_shaders[shaderIdentifier]){
 			//x3dom.debug.logInfo("generate new Vertex Shader: " + shaderIdentifier);
@@ -568,6 +569,12 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform float sphereMapping;";
 				if(textureTransform){
 					shader += "uniform mat4 texTrafoMatrix;";
+				}
+				if(cssMode & 2){
+					shader += "attribute vec3 tangent;";
+					shader += "attribute vec3 binormal;";
+					shader += "varying vec3 fragTangent;";
+					shader += "varying vec3 fragBinormal;";
 				}
 			}
 			
@@ -609,6 +616,10 @@ x3dom.gfx_webgl = (function () {
 				}else{
 					shader += "	fragTexcoord = texcoord;";
 				}
+				if(cssMode & 2){
+					shader += " fragTangent  = tangent;";
+					shader += " fragBinormal = binormal;";
+				}
 				shader += "}";
 			
 			}
@@ -625,14 +636,15 @@ x3dom.gfx_webgl = (function () {
 		return shaderIdentifier;
 	}
 	
-	Context.prototype.generateFS = function (viewarea, vertexColor, texture, useLighting)
+	Context.prototype.generateFS = function (viewarea, vertexColor, texture, cssMode, useLighting)
 	{
 		var useFog = useFogFunc(viewarea);
 		var shaderIdentifier = "fs-x3d-" + ( (vertexColor) ? 1 : 0 ) + 
 										   ( (texture) ? 1 : 0 ) +
 										   ( (useFog) ? 1 : 0 ) +
 										   ( useLighting[0] ) +
-										   ( (useLighting[1]) ? 1 : 0 );
+										   ( (useLighting[1]) ? 1 : 0 ) +
+										   ( (cssMode) );
 		
 		if(!g_shaders[shaderIdentifier]){
 			//x3dom.debug.logInfo("generate new FragmentShader: " + shaderIdentifier);
@@ -757,6 +769,11 @@ x3dom.gfx_webgl = (function () {
 				shader += "varying vec2 fragTexcoord;";
 				shader += "uniform float useText;";
 				shader += "uniform float origChannelCount;";
+				if(cssMode & 2){
+					shader += "uniform sampler2D bump;";
+					shader += "varying vec3 fragTangent;";
+					shader += "varying vec3 fragBinormal;";
+				}
 			}
 			
 			if(useLighting[0] >= 1){
@@ -791,6 +808,15 @@ x3dom.gfx_webgl = (function () {
 				}
 				shader += "vec3 eye = normalize(fragEyePosition);";
 				shader += "vec3 normal = normalize(fragNormal);";
+				if(cssMode & 2){
+					shader += "vec3 tangent  = normalize(fragTangent);";
+					shader += "vec3 binormal = normalize(fragBinormal);";
+				
+					shader += "vec3 bumpCol = texture2D( bump, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;";        
+                    shader += "vec3 tsn = 2.0 * (normalize(bumpCol) - 0.5);";
+                    shader += "tsn = tsn.z * normal + tsn.y * tangent + tsn.x * binormal;";
+                    shader += "normal = -normalize(tsn);";
+				}
 				shader += "if (solid == 0.0 && dot(normal, eye) < 0.0) {";
 				shader += "	normal *= -1.0;";
 				shader += "}";
@@ -804,7 +830,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "	}";
 				}
 				shader += "}";
-				if(texture){
+				if(texture || cssMode && (cssMode & 1)){
 					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);";
 					shader += "vec4 texColor = texture2D(tex, texCoord);";
 					shader += "alpha *= texColor.a;";
@@ -1105,8 +1131,8 @@ x3dom.gfx_webgl = (function () {
 			};
 
             shape._webgl.primType = gl.TRIANGLES;
-			var vsID = this.generateVS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
-			var fsID = this.generateFS(viewarea, false, true, shape._webgl.lightsAndShadow);
+			var vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow);
+			var fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
 			shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 		}
 		else 
@@ -1274,7 +1300,7 @@ x3dom.gfx_webgl = (function () {
 						that._nameSpace.doc.downloadCount -= 1;
 						
                         that._webgl.texture[unit] = texture;
-                        //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url);
+                        //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url + "at unit: " + unit);
                         
                         gl.bindTexture(gl.TEXTURE_2D, texture);
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -1301,6 +1327,7 @@ x3dom.gfx_webgl = (function () {
             if (tex) {
                 shape.updateTexture(tex, 0);
 			}
+			
             
             if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
                 shape._webgl.primType = gl.POINTS;
@@ -1335,9 +1362,29 @@ x3dom.gfx_webgl = (function () {
                 /** SHADER HACK (TODO: MAKE BETTER!) */
                 if (shape._cf.appearance.node._shader !== null) {
 					if(x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)){
-						var vsID = this.generateVS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
-						var fsID = this.generateFS(viewarea, false, false, shape._webgl.lightsAndShadow);
+						
+						
+						var texCnt = 0;
+						var cssMode = 0; //Bit coded CSS Modes - 1.Bit > Diffuse, 2.Bit > Normal, 3.Bit > Specular
+						var cssShader = shape._cf.appearance.node._shader;
+						
+						var diffuseTex = cssShader.getDiffuseMap();
+						var normalTex  = cssShader.getNormalMap(); 
+						
+						if(diffuseTex != null){
+							shape.updateTexture(diffuseTex, texCnt++);
+							cssMode += 1;
+						}
+						if(normalTex  != null){
+							shape.updateTexture(normalTex, texCnt++);
+							cssMode += 2;
+						}
+						
+						var vsID = this.generateVS(viewarea, false, cssMode, false, cssMode, shape._webgl.lightsAndShadow);
+						var fsID = this.generateFS(viewarea, false, cssMode, cssMode, shape._webgl.lightsAndShadow);
+						
 						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
+						
 					}else{
 						//FIXME; HACK
 						g_shaders['vs-x3d-HACK'] = {};
@@ -1355,13 +1402,13 @@ x3dom.gfx_webgl = (function () {
                 /** BEGIN STANDARD MATERIAL */
                 if (tex) {
                     if (shape._cf.appearance.node._cf.textureTransform.node === null) {
-						var vsID = this.generateVS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
-						var fsID = this.generateFS(viewarea, false, true, shape._webgl.lightsAndShadow);
+						var vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow);
+						var fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
 						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 					}
                     else {
-                        var vsID = this.generateVS(viewarea, false, true, true, shape._webgl.lightsAndShadow);
-						var fsID = this.generateFS(viewarea, false, true, shape._webgl.lightsAndShadow);
+                        var vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow);
+						var fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
 						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 					}
                 }
@@ -1369,13 +1416,13 @@ x3dom.gfx_webgl = (function () {
 					
 					var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
 				
-					var vsID = this.generateVS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
-					var fsID = this.generateFS(viewarea, numColComponents, false, shape._webgl.lightsAndShadow);
+					var vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow);
+					var fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
 					shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 				}
                 else {
-					var vsID = this.generateVS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
-					var fsID = this.generateFS(viewarea, false, false, shape._webgl.lightsAndShadow);
+					var vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow);
+					var fsID = this.generateFS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
 					shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 				}
                 /** END STANDARD MATERIAL */
@@ -2139,6 +2186,7 @@ x3dom.gfx_webgl = (function () {
 		for (var cnt=0; shape._webgl.texture !== undefined && 
 						cnt < shape._webgl.texture.length; cnt++)
 		{
+			
 		  if (shape._webgl.texture[cnt])
 		  {
 			var tex = null;
@@ -2202,9 +2250,17 @@ x3dom.gfx_webgl = (function () {
 			else {
 				sp.sphereMapping = 0.0;
 			}
-			if (!sp.tex) {
-				sp.tex = 0;     // FIXME; only 1st tex known in shader
+			
+			if(shaderCSS){
+				var texUnit = 0;
+				if(shaderCSS.getDiffuseMap()) if(!sp.tex) sp.tex = texUnit++;
+				if(shaderCSS.getNormalMap()) if(!sp.bump) sp.bump = texUnit++;
+			}else{
+				if (!sp.tex) {
+					sp.tex = 0;     // FIXME; only 1st tex known in shader
+				}
 			}
+			
 		  }
 		}
 		
