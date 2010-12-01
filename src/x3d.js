@@ -1830,6 +1830,7 @@ x3dom.registerNodeType(
             this._dirty = {
                 // TODO; cp. Shape, allow for dynamic texture updates in gfx
             };
+			
         },
         {
             nodeChanged: function()
@@ -1838,7 +1839,55 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName)
             {
-            }
+            },
+			
+			getDiffuseMap: function() 
+			{
+				if(this._cf.diffuseTexture.node)
+					return this._cf.diffuseTexture.node._cf.texture.node;
+				else
+					return null;
+			},
+			
+			getNormalMap: function() 
+			{
+				if(this._cf.normalTexture.node)
+					return this._cf.normalTexture.node._cf.texture.node;
+				else
+					return null;
+			},
+			
+			getAmbientMap: function() 
+			{
+				if(this._cf.ambientTexture.node)
+					return this._cf.ambientTexture.node._cf.texture.node;
+				else
+					return null;
+			},
+			
+			getSpecularMap: function() 
+			{
+				if(this._cf.specularTexture.node)
+					return this._cf.specularTexture.node._cf.texture.node;
+				else
+					return null;
+			},
+			
+			getShininessMap: function() 
+			{
+				if(this._cf.shininessTexture.node)
+					return this._cf.shininessTexture.node._cf.texture.node;
+				else
+					return null;
+			},
+			
+			getAlphaMap: function() 
+			{
+				if(this._cf.alphaTexture.node)
+					return this._cf.alphaTexture.node._cf.texture.node;
+				else
+					return null;
+			},
         }
     )
 );
