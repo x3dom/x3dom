@@ -4,8 +4,8 @@
 	<head>
 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
 		<title>Fullscreen test</title>
-        <link rel="stylesheet" type="text/css" href="x3dom.css" />
-		<script type="text/javascript" src="x3dom.js"></script>
+        <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/release/x3dom.css" />
+		<script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
 		<style>
 		body {
 			margin: 0;
@@ -77,10 +77,11 @@
 	</p>
 	</div>
 	<div id="container">
-	<button id="toggler" onclick="toggle('container');return false;">50%/100%</button>
+	<button id="toggler" onclick="toggle('container');return false;">Fullscreen</button>
 	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" style="background-color:#000">
 	    	<Scene>
 	        	<Viewpoint position='0 0 10' />
+				<Background skyColor='0.8 0.8 0.8'  backUrl="http://ocebackgrounds.files.wordpress.com/2008/06/picture-3.png" />                
 				<Shape>
 	            	<Appearance>
 	                	<Material diffuseColor='0.603 0.894 0.909' />	
