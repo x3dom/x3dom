@@ -1887,7 +1887,7 @@ x3dom.registerNodeType(
 					return this._cf.alphaTexture.node._cf.texture.node;
 				else
 					return null;
-			},
+			}
         }
     )
 );
