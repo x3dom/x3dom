@@ -70,15 +70,18 @@
 			-moz-border-radius: 0.5em;
 			-webkit-border-radius: 0.5em;
 			border-radius: 0.5em;
-			box-shadow:4px 4px 4px 4px #666;
+			-moz-box-shadow:2px 2px 2px 2px #666;
+			-webkit-box-shadow:2px 2px 2px 2px #666;
+			box-shadow:2px 2px 2px 2px #666;
 			padding:10px;
 			background-color:#FFF;
-			opacity:0.8;
-			filter: alpha(opacity=80);
 			width:450px;
 			height:500px;
 			padding:20px;
-		}
+            overflow:hidden;
+			opacity:0.8;
+			filter: alpha(opacity=80);	
+        }
 		
 		#meinInfoFrame {
 			position:relative;
@@ -122,8 +125,8 @@
 				<p>Clicking on a planet reveals additional information. Likewise, JavaScript's click event applied upon a planet's geometry is used as a trigger.</p>
                 
             </div>
-            <div style="overflow:hidden;">
-			<iframe id="meinInfoFrame" 
+            <div style="overflow:hidden; height:90%;">
+			<iframe id="meinInfoFrame"
             	frameborder="0" src=""> 
 	        </iframe>
             </div>
