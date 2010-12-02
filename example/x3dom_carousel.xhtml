@@ -76,7 +76,7 @@
 			background-color:#FFF;
 			opacity:0.8;
 			filter: alpha(opacity=80);
-			width:500px;
+			width:450px;
 			height:500px;
 			padding:20px;
 			
@@ -85,17 +85,10 @@
 		#meinInfoFrame {
 			position:relative;
 			width:100%;
-			height:100%;
-		    zoom: 0.95;
-	   		-moz-transform: scale(0.95);
-	   	 	-moz-transform-origin: 0 0;
-	   	 	-webkit-transform: scale(0.95);
-		    -webkit-transform-origin: 0 0;
+			height:90%;
 		}
 		
 		</style>
-
-	
 
 	</head>
        
@@ -124,23 +117,14 @@
     		<div id="info">
             	<h3>Carrousel menu: the virtual planetarium</h3>
                 <p>A simple effect, driven by a powerful engine: With X3DOM an JavaScript you can
-                run an develop beautiful effects and a strong integration of 2D and 3D elements.</p>
+                run and develop beautiful effects with strong integration of 2D and 3D elements.</p>
                 <p>&nbsp;</p>
                 <h4>3D Navigation through 2D "mousemove" event</h4>
-                <p>Moving the mouse over the scene causes the system to rotate. A standard mousemove event on the x3d element is used to get the mouse pointer position values to calculate the planet's rotation.</p>
+                <p>Moving the mouse over the scene causes the system to rotate. A standard mousemove event on the x3d element is used to get the mouse pointer's position values to calculate the planet's rotation.</p>
+	<p>&nbsp;</p>
+				<h4>Pick 3D objects using a standard "click" event</h4>
+				<p>Clicking on a planet reveals additional information. Likewise, JavaScript's click event applied upon a planet's geometry is used as a trigger.</p>
 	
-				<h4>Pick 3D-objects using a standard "click" event</h4>
-				<p>Choose one of the planets and click on it for additional information.</p>
-				
-                <p>&nbsp;</p>
-                <h4>Use JavaScript events</h4>
-                <p>
-                <pre><![CDATA[
-addEventListener("mousemove", doSometingonMouseMove, true); 
-addEventListener("mouseout", doSometingonMouseOut, true); 
-                ]]>
-                </pre>
-                Neither HTML nor X3DOM declaration, the event and listener model of JavaScript works on both likewise.</p>
                 
             </div>
             <div style="overflow:hidden;">
@@ -148,6 +132,7 @@ addEventListener("mouseout", doSometingonMouseOut, true);
             	frameborder="0" src=""> 
 	        </iframe>
             </div>
+            <p>&nbsp;</p>
             <a id="outlink" href=""></a>
 
     </div>
@@ -181,7 +166,7 @@ addEventListener("mouseout", doSometingonMouseOut, true);
 	    d.setAttribute('rotation', '0 1 0 ' + 3.14159265*inc);
     }
     
-    function showValue(val, link) {
+    function showValue(val, link, full_link) {
 		var outlink = document.getElementById('outlink');
         //document.getElementById('ausgabe').style.color = val;
         //document.getElementById('ausgabe').innerHTML = val;
@@ -191,8 +176,8 @@ addEventListener("mouseout", doSometingonMouseOut, true);
 		document.getElementById('info').style.display = "none";
 		
 
-		outlink.href = link;
-		outlink.innerHTML = link.slice(0, link.length-4);
+		outlink.href = full_link;
+		outlink.innerHTML = full_link.slice(0, full_link.length-4);
 		
         frame.src = link;
     }
@@ -209,7 +194,16 @@ addEventListener("mouseout", doSometingonMouseOut, true);
                         "texture/solarSystem/Uranus.jpg",
                         "texture/solarSystem/Neptune.jpg"];
         
-        var planets = ["http://en.wikipedia.org/wiki/Mercury_(planet)#top",
+        var planets = ["http://en.m.wikipedia.org/wiki/Mercury_(planet)#top",
+                       "http://en.m.wikipedia.org/wiki/Venus_(planet)#top",
+                       "http://en.m.wikipedia.org/wiki/Earth#top",
+                       "http://en.m.wikipedia.org/wiki/Mars_(planet)#top",
+                       "http://en.m.wikipedia.org/wiki/Jupiter_(planet)#top",
+                       "http://en.m.wikipedia.org/wiki/Saturn_(planet)#top",
+                       "http://en.m.wikipedia.org/wiki/Uranus_(planet)#top",
+                       "http://en.m.wikipedia.org/wiki/Neptune_(planet)#top"];
+
+        var urlz = ["http://en.wikipedia.org/wiki/Mercury_(planet)#top",
                        "http://en.wikipedia.org/wiki/Venus_(planet)#top",
                        "http://en.wikipedia.org/wiki/Earth#top",
                        "http://en.wikipedia.org/wiki/Mars_(planet)#top",
@@ -227,7 +221,7 @@ addEventListener("mouseout", doSometingonMouseOut, true);
             var t = document.createElement('Transform');
             t.setAttribute("translation", x + " " + y + " " + z);
             t.setAttribute("scale", ".75 .75 .75");
-            t.setAttribute("onclick", "showValue(" + i + ", '" + planets[i] + "')");
+            t.setAttribute("onclick", "showValue(" + i + ", '" + planets[i] + "', '" + urlz[i] +"')");
 			
 			
 		
