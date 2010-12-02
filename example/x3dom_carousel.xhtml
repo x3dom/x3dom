@@ -122,12 +122,16 @@
 
     <div id="iframe_container">
     		<div id="info">
-            	<h3>Carousell menu: the virtual planetarium</h3>
+            	<h3>Carrousel menu: the virtual planetarium</h3>
                 <p>A simple effect, driven by a powerful engine: With X3DOM an JavaScript you can
-                run an develop beautyful effects and a strong integration of 2D and 3D elements.</p>
+                run an develop beautiful effects and a strong integration of 2D and 3D elements.</p>
                 <p>&nbsp;</p>
-                <h4>Navigation through mouse over</h4>
-                <p>Moving the mouse over the planets causes the system to rotate. Choose one of the plantes and click on it for additional information.</p>
+                <h4>3D Navigation through 2D "mousemove" event</h4>
+                <p>Moving the mouse over the scene causes the system to rotate. A standard mousemove event on the x3d element is used to get the mouse pointer position values to calculate the planet's rotation.</p>
+	
+				<h4>Pick 3D-objects using a standard "click" event</h4>
+				<p>Choose one of the planets and click on it for additional information.</p>
+				
                 <p>&nbsp;</p>
                 <h4>Use JavaScript events</h4>
                 <p>
