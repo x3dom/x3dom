@@ -100,12 +100,9 @@
   <div id="wrapper">
 	<div id="container">
     
-	<X3D id="solarsys_scene" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" width="600px" height="400px" style="background-color:#000">
+	<X3D id="solarsys_scene" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" width="600px" height="400px">
 			<Scene>
-                <Transform id='trafo'>
-                </Transform>
-				<Background skyColor='0 0 0' backUrl="texture/solarSystem/skyBackground.png" />
-                <NavigationInfo type='none' />
+                <Transform id='trafo' />
 				<Viewpoint position="0 1 10" orientation="0 0 1 -0.2" />
 			</Scene>
 		</X3D>
@@ -164,8 +161,6 @@
     
     function showValue(val, link, full_link) {
 		var outlink = document.getElementById('outlink');
-        //document.getElementById('ausgabe').style.color = val;
-        //document.getElementById('ausgabe').innerHTML = val;
         
         var frame = document.getElementById("meinInfoFrame");
 		
