@@ -4,9 +4,8 @@
 	<head>
 		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 		<title>X3DOM example</title>
-        <link rel="stylesheet" type="text/css" href="http://www.x3dom.org/x3dom/release/x3dom.css" />
-		<script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
-        <script type='text/javascript' src="http://code.jquery.com/jquery-latest.min.js"></script>
+        <link rel="stylesheet" type="text/css" href="x3dom.css" />
+		<script type='text/javascript' src='x3dom.js'></script>
 
 		<style>
 		body {
@@ -79,7 +78,6 @@
 			width:450px;
 			height:500px;
 			padding:20px;
-			
 		}
 		
 		#meinInfoFrame {
@@ -96,8 +94,6 @@
 
     <h1>Planets <br/>of the solar system</h1>
     
-    
-    
   <div id="wrapper">
 	<div id="container">
     
@@ -105,7 +101,7 @@
 			<Scene>
                 <Transform id='trafo'>
                 </Transform>
-				<Background skyColor='0 0 0' backUrl="http://ocebackgrounds.files.wordpress.com/2008/06/picture-3.png" />
+				<Background skyColor='0 0 0' backUrl="texture/solarSystem/skyBackground.png" />
                 <NavigationInfo type='none' />
 				<Viewpoint position="0 1 10" orientation="0 0 1 -0.2" />
 			</Scene>
@@ -115,7 +111,7 @@
 
     <div id="iframe_container">
     		<div id="info">
-            	<h3>Carrousel menu: the virtual planetarium</h3>
+            	<h3>Carousel menu: the virtual planetarium</h3>
                 <p>A simple effect, driven by a powerful engine: With X3DOM an JavaScript you can
                 run and develop beautiful effects with strong integration of 2D and 3D elements.</p>
                 <p>&nbsp;</p>
@@ -124,7 +120,6 @@
 	<p>&nbsp;</p>
 				<h4>Pick 3D objects using a standard "click" event</h4>
 				<p>Clicking on a planet reveals additional information. Likewise, JavaScript's click event applied upon a planet's geometry is used as a trigger.</p>
-	
                 
             </div>
             <div style="overflow:hidden;">
@@ -134,7 +129,6 @@
             </div>
             <p>&nbsp;</p>
             <a id="outlink" href=""></a>
-
     </div>
 
     
@@ -158,11 +152,10 @@
 	}
     
     function tick() {
+	    var d = document.getElementById("trafo");
 		if (state) {
-	        var d = document.getElementById("trafo");
 	        inc += (pos / 50);  // scale down a bit
 		}
-    
 	    d.setAttribute('rotation', '0 1 0 ' + 3.14159265*inc);
     }
     
@@ -175,7 +168,6 @@
 		
 		document.getElementById('info').style.display = "none";
 		
-
 		outlink.href = full_link;
 		outlink.innerHTML = full_link.slice(0, full_link.length-4);
 		
@@ -223,9 +215,6 @@
             t.setAttribute("scale", ".75 .75 .75");
             t.setAttribute("onclick", "showValue(" + i + ", '" + planets[i] + "', '" + urlz[i] +"')");
 			
-			
-		
-            
             var s = document.createElement('Shape');
             t.appendChild(s);
             
