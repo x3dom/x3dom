@@ -555,7 +555,7 @@ x3dom.gfx_webgl = (function () {
 			shader += "varying vec3 fragNormal;";
 
 			if(vertexColor){
-				if(vertexColor == 3){
+				if(vertexColor == 3.0){
 					shader += "attribute vec3 color;";
 					shader += "varying vec3 fragColor;";
 				}else{
@@ -578,7 +578,7 @@ x3dom.gfx_webgl = (function () {
 				}
 			}
 			
-			if(useLighting[0] >= 1 || useFog){
+			if(useLighting[0] >= 1.0 || useFog){
 				//shader += "uniform mat4 normalMatrix;";
 				
 				shader += "uniform vec3 eyePosition;";
@@ -600,7 +600,7 @@ x3dom.gfx_webgl = (function () {
 			shader += "fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;";
 			//shader += "fragNormal = (normalMatrix * vec4(normal, 1.0)).xyz;";
 			
-			if(useLighting[0] >= 1 || useFog){	
+			if(useLighting[0] >= 1.0 || useFog){	
 				shader += "fragPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;";
 				shader += "fragEyePosition = eyePosition - fragPosition;";
 				if(useLighting[1]){
@@ -644,7 +644,8 @@ x3dom.gfx_webgl = (function () {
 										   ( (useFog) ? 1 : 0 ) +
 										   ( useLighting[0] ) +
 										   ( (useLighting[1]) ? 1 : 0 ) +
-										   ( (cssMode) );
+										   ( (cssMode)  );
+										   
 		
 		if(!g_shaders[shaderIdentifier]){
 			//x3dom.debug.logInfo("generate new FragmentShader: " + shaderIdentifier);
@@ -670,27 +671,27 @@ x3dom.gfx_webgl = (function () {
 						"	return f0;" +
 						"}";
 						
-			var light = "struct Light {" +
-						"   float on;" +
-						"	float type;" +
-						"	vec3  location;" +
-						"	vec3  direction;" +
-						"	vec3  color;" +
-						"	vec3  attenuation;" +
-						"	float intensity;" +
-						"	float ambientIntensity;" +
-						"	float beamWidth;" +
-						"	float cutOffAngle;" +
-						"	float shadowIntensity;" +
-						"};" +
-						"const int NUMLIGHTS = " + useLighting[0] + ";" +
-						"uniform Light light[NUMLIGHTS];" +
+			var light = "struct Light {\n" +
+						"   float on;\n" +
+						"	float type;\n" +
+						"	vec3  location;\n" +
+						"	vec3  direction;\n" +
+						"	vec3  color;\n" +
+						"	vec3  attenuation;\n" +
+						"	float intensity;\n" +
+						"	float ambientIntensity;\n" +
+						"	float beamWidth;\n" +
+						"	float cutOffAngle;\n" +
+						"	float shadowIntensity;\n" +
+						"};\n" +
+						"const int NUMLIGHTS = " + useLighting[0] + ";\n" +
+						"uniform Light light[9];\n" +
 						"void lighting(in Light light, in vec3 normal, in vec3 eye, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){" +
-						"	vec3 lightDirection;" +
-						"	float spot = 1.0, attentuation = 1.0;" +
-						"	if(light.type == 0.0) {" +
-						"		lightDirection = normalize(-light.direction);" +
-						"	}else{" +
+						"	vec3 lightDirection;\n" +
+						"	float spot = 1.0, attentuation = 1.0;\n" +
+						"	if(light.type == 0.0) {\n" +
+						"		lightDirection = normalize(-light.direction);\n" +
+						"	}else{\n" +
 						"		float distance = length(light.location - fragPosition.xyz);" +
 						"		attentuation = 1.0 / max(light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * pow(distance,2.0), 1.0);" +
 						"		lightDirection = normalize(light.location - fragPosition.xyz);" +
@@ -738,15 +739,15 @@ x3dom.gfx_webgl = (function () {
 							"    return result;" +
 							"}";
 			
-			var material =	"struct Material {" +
-							"	vec3  diffuseColor;" +
-							"	vec3  specularColor;" +
-							"	vec3  emissiveColor;" +
-							"	float shininess;" +
-							"	float transparency;" +
-							"	float ambientIntensity;" +
-							"};" +
-							"uniform Material material;";
+			var material =	"struct Material {			\n" +
+							"	vec3  diffuseColor;		\n" +
+							"	vec3  specularColor;	\n" +
+							"	vec3  emissiveColor;	\n" +
+							"	float shininess;		\n" +
+							"	float transparency;		\n" +
+							"	float ambientIntensity;	\n" +
+							"};							\n" +
+							"uniform Material material;	\n";
 					
 			var shader = "";
 			shader += "#ifdef GL_ES             \n";
@@ -758,29 +759,29 @@ x3dom.gfx_webgl = (function () {
 			shader += material;
 			if(vertexColor){
 				if(vertexColor == 3){
-					shader += "varying vec3 fragColor;";
+					shader += "varying vec3 fragColor;	\n";
 				}else{
-					shader += "varying vec4 fragColor;";
+					shader += "varying vec4 fragColor;	\n";
 				}
 			}
 			if(texture){
-				shader += "uniform sampler2D tex;";
-				shader += "uniform float sphereMapping;";
-				shader += "varying vec2 fragTexcoord;";
-				shader += "uniform float useText;";
-				shader += "uniform float origChannelCount;";
+				shader += "uniform sampler2D tex;			\n";
+				shader += "uniform float sphereMapping;		\n";
+				shader += "varying vec2 fragTexcoord;		\n";
+				shader += "uniform float useText;			\n";
+				shader += "uniform float origChannelCount;	\n";
 				if(cssMode & 2){
-					shader += "uniform sampler2D bump;";
-					shader += "varying vec3 fragTangent;";
-					shader += "varying vec3 fragBinormal;";
+					shader += "uniform sampler2D bump;		\n";
+					shader += "varying vec3 fragTangent;	\n";
+					shader += "varying vec3 fragBinormal;	\n";
 				}
 			}
 			
-			if(useLighting[0] >= 1){
-				shader += "uniform float solid;";
-				shader += "varying vec3 fragNormal;";
-				shader += "varying vec3 fragPosition;";
-				shader += "varying vec3 fragEyePosition;";
+			if(useLighting[0] >= 1.0){
+				shader += "uniform float solid;				\n";
+				shader += "varying vec3 fragNormal;			\n";
+				shader += "varying vec3 fragPosition;		\n";
+				shader += "varying vec3 fragEyePosition;	\n";
 				shader += light;
 				if(useLighting[1])
 					shader += shadow;
@@ -788,89 +789,89 @@ x3dom.gfx_webgl = (function () {
 			if(useFog){
 				shader += fog;
 				if(!useLighting[0]){
-					shader += "varying vec3 fragEyePosition;";
+					shader += "varying vec3 fragEyePosition;	\n";
 				}
 			}
 			
 			//Set Main
-			shader += "void main(void) {";
+			shader += "void main(void) {	\n";
 				
-			shader += "vec3 rgb 	 = vec3(0.0);";
-			shader += "float alpha = 1.0 - material.transparency;";
+			shader += "vec3 rgb 	 = vec3(0.0, 0.0, 0.0);	\n";
+			shader += "float alpha = 1.0 - material.transparency;\n";
 			
-			if(useLighting[0] >= 1){
-				shader += "vec3 ambient   = vec3(0.0);";
-				shader += "vec3 diffuse   = vec3(0.0);";
-				shader += "vec3 specular  = vec3(0.0);";
+			if(useLighting[0] >= 1.0){
+				shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
+				shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
+				shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 				if(useLighting[1]){
-					shader += "float shadowed = 1.0;";
-					shader += "float oneShadowAlreadyExists = 0.0;";
+					shader += "float shadowed = 1.0;\n";
+					shader += "float oneShadowAlreadyExists = 0.0;\n";
 				}
-				shader += "vec3 eye = normalize(fragEyePosition);";
-				shader += "vec3 normal = normalize(fragNormal);";
+				shader += "vec3 eye = normalize(fragEyePosition);\n";
+				shader += "vec3 normal = normalize(fragNormal);\n";
 				if(cssMode & 2){
-					shader += "vec3 tangent  = normalize(fragTangent);";
-					shader += "vec3 binormal = normalize(fragBinormal);";
+					shader += "vec3 tangent  = normalize(fragTangent);\n";
+					shader += "vec3 binormal = normalize(fragBinormal);\n";
 				
-					shader += "vec3 bumpCol = texture2D( bump, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;";        
-                    shader += "vec3 tsn = 2.0 * (normalize(bumpCol) - 0.5);";
-                    shader += "tsn = tsn.z * normal + tsn.y * tangent + tsn.x * binormal;";
-                    shader += "normal = -normalize(tsn);";
+					shader += "vec3 bumpCol = texture2D( bump, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";        
+                    shader += "vec3 tsn = 2.0 * (normalize(bumpCol) - 0.5);\n";
+                    shader += "tsn = tsn.z * normal + tsn.y * tangent + tsn.x * binormal;\n";
+                    shader += "normal = -normalize(tsn);\n";
 				}
-				shader += "if (solid == 0.0 && dot(normal, eye) < 0.0) {";
-				shader += "	normal *= -1.0;";
-				shader += "}";
-				shader += "for(int i=0; i<NUMLIGHTS; i++) {";
-				shader += "	lighting(light[i], normal, eye, ambient, diffuse, specular);";
+				shader += "if (solid == 0.0 && dot(normal, eye) < 0.0) {\n";
+				shader += "	normal *= -1.0;\n";
+				shader += "}\n";
+				shader += "for(int i=0; i<NUMLIGHTS; i++) {\n";
+				shader += "	lighting(light[i], normal, eye, ambient, diffuse, specular);\n";
 				if(useLighting[1]){
-					shader += "	if(light[i].shadowIntensity > 0.0 && oneShadowAlreadyExists == 0.0){";
-					shader += "		vec3 projectiveBiased = projCoord.xyz / projCoord.w;";
-					shader += "		shadowed = PCF_Filter(light[i], projectiveBiased, 0.002);";
-					shader += "		oneShadowAlreadyExists = 1.0;";
-					shader += "	}";
+					shader += "	if(light[i].shadowIntensity > 0.0 && oneShadowAlreadyExists == 0.0){\n";
+					shader += "		vec3 projectiveBiased = projCoord.xyz / projCoord.w;\n";
+					shader += "		shadowed = PCF_Filter(light[i], projectiveBiased, 0.002);\n";
+					shader += "		oneShadowAlreadyExists = 1.0;\n";
+					shader += "	}\n";
 				}
-				shader += "}";
+				shader += "}\n";
 				if(texture || cssMode && (cssMode & 1)){
-					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);";
-					shader += "vec4 texColor = texture2D(tex, texCoord);";
-					shader += "alpha *= texColor.a;";
-					shader += "if(sphereMapping == 1.0 || useText == 1.0 || origChannelCount == 1.0 || origChannelCount == 2.0){";
-					shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor)*texColor.rgb;";
-					shader += "}else{";
-					shader += "rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);";
-					shader += "}";
+					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+					shader += "vec4 texColor = texture2D(tex, texCoord);\n";
+					shader += "alpha *= texColor.a;\n";
+					shader += "if(sphereMapping == 1.0 || useText == 1.0 || origChannelCount == 1.0 || origChannelCount == 2.0){\n";
+					shader += "   rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor)*texColor.rgb;\n";
+					shader += "}else{\n";
+					shader += "   rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);\n";
+					shader += "}\n";
 				}else if(vertexColor){
-					shader += "rgb = diffuse*fragColor.rgb;";
+					shader += "rgb = diffuse*fragColor.rgb;\n";
 					if(vertexColor == 4)
-						shader += "alpha = fragColor.a;";
+						shader += "alpha = fragColor.a;\n";
 				}else{
-					shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);";
+					shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);\n";
 				}
 				if(useLighting[1])
-					shader += "rgb *= shadowed;";
+					shader += "rgb *= shadowed;\n";
 				
 			}else{
 				if(texture){
-					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);";
-					shader += "vec4 texColor = texture2D(tex, texCoord);";
-					shader += "rgb = texColor.rgb;";
-					shader += "alpha *= texColor.a;";
+					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+					shader += "vec4 texColor = texture2D(tex, texCoord);\n";
+					shader += "rgb = texColor.rgb;\n";
+					shader += "alpha *= texColor.a;\n";
 				}else if(vertexColor){
-					shader += "rgb = fragColor.rgb;";
+					shader += "rgb = fragColor.rgb;\n";
 					if(vertexColor == 4)
-						shader += "alpha = fragColor.a;";
+						shader += "alpha = fragColor.a;\n";
 				}else{
-					shader += "rgb = material.diffuseColor + material.emissiveColor;";
+					shader += "rgb = material.diffuseColor + material.emissiveColor;\n";
 				}
 			}
 			if(useFog){
-				shader += "float f0 = calcFog();";
-				shader += "rgb = fog.color * (1.0-f0) + f0 * (rgb);";
+				shader += "float f0 = calcFog();\n";
+				shader += "rgb = fog.color * (1.0-f0) + f0 * (rgb);\n";
 			}
-			shader += "rgb = clamp(rgb, 0.0, 1.0);";
-			shader += "if (alpha <= 0.1) discard;";
-			shader += "else gl_FragColor = vec4(rgb, alpha);";
-			shader += "}";
+			shader += "rgb = clamp(rgb, 0.0, 1.0);\n";
+			shader += "if (alpha <= 0.1) discard;\n";
+			shader += "else gl_FragColor = vec4(rgb, alpha);\n";
+			shader += "}\n";
 			
 			g_shaders[shaderIdentifier] = {};
 			g_shaders[shaderIdentifier].type = "fragment";
