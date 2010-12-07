@@ -126,6 +126,31 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
     );
 };
 
+x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
+{
+    var result = x3dom.fields.SFMatrix4f.identity();
+    
+    var view = from.subtract(at).normalize();
+
+    var right = up.cross(view);
+
+    if (right.dot(right) < x3dom.fields.Eps) {
+        return result;
+    }
+    
+    right.normalize();
+
+    var newup = view.cross(right);
+    
+    result.setTranslate(from);
+    
+    var tmp = x3dom.fields.SFMatrix4f.identity();
+
+    tmp.setValue(right, newup, view);
+
+    return result.mult(tmp);
+}
+
 x3dom.fields.SFMatrix4f.prototype.setTranslate = function (vec) {
 	this._03 = vec.x;
 	this._13 = vec.y;
@@ -297,6 +322,20 @@ x3dom.fields.SFMatrix4f.prototype.setValues = function (that) {
     this._10 = that._10; this._11 = that._11; this._12 = that._12; this._13 = that._13;
     this._20 = that._20; this._21 = that._21; this._22 = that._22; this._23 = that._23;
     this._30 = that._30; this._31 = that._31; this._32 = that._32; this._33 = that._33;
+};
+
+x3dom.fields.SFMatrix4f.prototype.setValue = function (v1, v2, v3, v4) {
+    this._00 = v1.x; this._01 = v2.x; this._02 = v3.x;
+    this._10 = v1.y; this._11 = v2.y; this._12 = v3.y;
+    this._20 = v1.z; this._21 = v2.z; this._22 = v3.z;
+    this._30 = 0;    this._31 = 0;    this._32 = 0;
+    
+    if (arguments.length > 3) {
+        this._03 = v4.x;
+        this._13 = v4.y;
+        this._23 = v4.z;
+        this._33 = 1;
+    }
 };
 
 x3dom.fields.SFMatrix4f.prototype.toGL = function () {
