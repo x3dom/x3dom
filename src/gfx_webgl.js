@@ -530,6 +530,174 @@ x3dom.gfx_webgl = (function () {
 			return 0;
 	}
 	
+	Context.prototype.generateVS2 = function (viewarea, vertexColor, texture, textureTransform, cssMode, useLighting)
+	{
+	
+		var useFog = useFogFunc(viewarea);
+		var shaderIdentifier = "vs-x3d-" + ( (vertexColor) ? 1 : 0 ) + 
+										   ( (texture) ? 1 : 0 ) +
+										   ( (textureTransform) ? 1 : 0 ) +
+										   ( (useFog) ? 1 : 0 ) +
+										   ( useLighting[0] ) +
+										   ( (useLighting[1]) ? 1 : 0 ) +
+										   ( (cssMode) );
+		
+		if(!g_shaders[shaderIdentifier]){
+			//x3dom.debug.logInfo("generate new Vertex Shader: " + shaderIdentifier);
+			
+			var shader = "";
+			
+			shader += "attribute vec3 position;";
+			shader += "attribute vec2 texcoord;";
+			shader += "attribute vec3 tangent;";
+			shader += "attribute vec3 binormal;";
+			shader += "attribute vec3 normal;";
+			
+			shader += "uniform mat4 modelViewMatrix;";
+			shader += "uniform mat4 modelMatrix;";
+			shader += "uniform mat4 normalMatrix;";
+			shader += "uniform mat4 modelViewProjectionMatrix;";
+			
+			shader += "varying vec3 fragNormal;";
+			shader += "varying vec2 fragTexcoord;";
+			shader += "varying vec3 fragTangent;";
+			shader += "varying vec3 fragBinormal;";
+			shader += "varying vec3 fragPosition;";
+			shader += "varying vec3 fragEyePosition;";
+
+			shader += "void main(void) {";	
+			shader += "   fragPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;";
+			shader += "	  fragTexcoord = texcoord;";
+			shader += "   fragTangent  = (normalMatrix * vec4(tangent, 1.0)).xyz;";
+			shader += "   fragBinormal = (normalMatrix * vec4(binormal, 1.0)).xyz;";
+			shader += "   fragNormal   = (normalMatrix * vec4(normal, 1.0)).xyz;";
+			shader += "   gl_Position  = modelViewProjectionMatrix * vec4(position, 1.0);";
+			shader += "}";
+			
+			g_shaders[shaderIdentifier] = {};
+			g_shaders[shaderIdentifier].type = "vertex";
+			g_shaders[shaderIdentifier].data = shader;
+		}else{
+			//x3dom.debug.logInfo("using existend Vertex Shader: " + shaderIdentifier);
+		}
+		
+		return shaderIdentifier;
+	}
+	
+	Context.prototype.generateFS2 = function (viewarea, vertexColor, texture, cssMode, useLighting)
+	{
+		var useFog = useFogFunc(viewarea);
+		var shaderIdentifier = "fs-x3d-" + ( (vertexColor) ? 1 : 0 ) + 
+										   ( (texture) ? 1 : 0 ) +
+										   ( (useFog) ? 1 : 0 ) +
+										   ( useLighting[0] ) +
+										   ( (useLighting[1]) ? 1 : 0 ) +
+										   ( (cssMode)  );
+										   
+		
+		if(!g_shaders[shaderIdentifier]){
+			//x3dom.debug.logInfo("generate new FragmentShader: " + shaderIdentifier);
+							
+			var shader = "";
+			shader += "#ifdef GL_ES             \n";
+			shader += "  precision highp float; \n";
+			shader += "#endif                   \n";
+			shader += "\n";
+			
+			shader += "const int NUMLIGHTS = 1;";
+			
+			//Set Uniforms + Varyings
+			shader += "struct Material {";
+			shader += "	vec3  diffuseColor;";
+			shader += "	vec3  specularColor;";
+			shader += "	vec3  emissiveColor;";
+			shader += "	float shininess;";
+			shader += "	float transparency;";
+			shader += "	float ambientIntensity;";
+			shader += "};";
+			
+			shader += "struct Light {";
+			shader += "   float on;";
+			shader += "	  float type;";
+			shader += "	  vec3  location;";
+			shader += "	  vec3  direction;";
+			shader += "	  vec3  color;";
+			shader += "	  vec3  attenuation;";
+			shader += "	  float intensity;";
+			shader += "	  float ambientIntensity;";
+			shader += "	  float beamWidth;";
+			shader += "	  float cutOffAngle;";
+			shader += "	  float shadowIntensity;";
+			shader += "};";
+			
+			shader += "uniform Light light[9];";
+			shader += "uniform Material material;";
+			shader += "uniform mat4 modelMatrix;";
+			shader += "uniform mat4 modelViewMatrix;";
+			shader += "uniform mat4 viewMatrix;";
+
+			shader += "uniform sampler2D tex;";
+			shader += "uniform sampler2D bump;";
+
+			shader += "varying vec2 fragTexcoord;";		
+			shader += "varying vec3 fragTangent;";
+			shader += "varying vec3 fragBinormal;";
+			shader += "varying vec3 fragNormal;";
+			shader += "varying vec3 fragPosition;";
+			shader += "varying vec3 fragEyePosition;";
+			
+			shader +="void lighting(in Light light, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){";
+			shader += "	  vec3  L = -normalize(light.direction);";
+			shader += "	  vec3  H = normalize( L + V );";
+			shader += "	  float NdotL = max(0.0, dot(N, L));";
+			shader += "	  float NdotH = max(0.0, dot(N, H));";
+			shader += "	  float ambientFactor  = light.ambientIntensity * material.ambientIntensity;";
+			shader += "	  float diffuseFactor  = light.intensity * NdotL;";
+			shader += "   float specularFactor = light.intensity * NdotL * pow(NdotH, material.shininess*128.0);";
+			shader += "	  ambient  += light.color * ambientFactor;";
+			shader += "	  diffuse  += light.color * diffuseFactor;";
+			shader += "	  specular += light.color * specularFactor;";	
+			shader += "}";
+
+			shader += "void main(void) {";
+			shader += "   vec3 rgb 	     = vec3(0.0);";
+			shader += "   vec3 ambient   = vec3(0.0);";
+			shader += "   vec3 diffuse   = vec3(0.0);";
+			shader += "   vec3 specular  = vec3(0.0);";
+			
+			shader += "   vec3 eye = normalize(-fragPosition);";
+				
+			shader += "   vec3 t = normalize( fragTangent );";
+			shader += "   vec3 b = normalize( fragBinormal );";
+			shader += "   vec3 n = normalize( fragNormal );";
+				
+			shader += "   mat3 tangentToWorld = mat3(t, b, n);";
+			
+			shader += "   vec3 normal = texture2D( bump, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;";
+			shader += "   normal = 2.0 * normal - 1.0;";
+			shader += "	  normal.y = -normal.y;";
+			shader += "   normal = normalize( normal * tangentToWorld );";
+			
+			shader += "   for(int i=0; i<NUMLIGHTS; i++) {";
+			shader += "      lighting(light[i], normal, eye, ambient, diffuse, specular);";
+			shader += "   }";
+			
+			shader += "   rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);";
+
+			shader += "   rgb = clamp(rgb, 0.0, 1.0);";
+			shader += "   gl_FragColor = vec4(rgb, 1.0);";
+			shader += "}";
+			
+			g_shaders[shaderIdentifier] = {};
+			g_shaders[shaderIdentifier].type = "fragment";
+			g_shaders[shaderIdentifier].data = shader;
+		}else{
+			//x3dom.debug.logInfo("using existing Fragment Shader: " + shaderIdentifier);
+		}
+		
+		return shaderIdentifier;
+	}
+	
 	Context.prototype.generateVS = function (viewarea, vertexColor, texture, textureTransform, cssMode, useLighting)
 	{
 	
@@ -551,6 +719,7 @@ x3dom.gfx_webgl = (function () {
 			shader += "attribute vec3 position;";
 			shader += "attribute vec3 normal;";
 			shader += "uniform mat4 modelViewMatrix;";
+			shader += "uniform mat4 normalMatrix;";
 			shader += "uniform mat4 modelViewProjectionMatrix;";
 			shader += "varying vec3 fragNormal;";
 
@@ -563,7 +732,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "varying vec4 fragColor;";
 				}
 			}
-			if(texture){
+			if(texture || cssMode){
 				shader += "attribute vec2 texcoord;";
 				shader += "varying vec2 fragTexcoord;";
 				shader += "uniform float sphereMapping;";
@@ -597,8 +766,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "fragColor = color;";
 			}
 			
-			shader += "fragNormal = (modelViewMatrix * vec4(normal, 0.0)).xyz;";
-			//shader += "fragNormal = (normalMatrix * vec4(normal, 1.0)).xyz;";
+			shader += "fragNormal = (normalMatrix * vec4(normal, 0.0)).xyz;";
 			
 			if(useLighting[0] >= 1.0 || useFog){	
 				shader += "fragPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;";
@@ -607,7 +775,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "projCoord = matPV * vec4(position+0.5*normalize(normal), 1.0);";
 				}
 			}
-			if(texture){
+			if(texture || cssMode){
 				shader += "if (sphereMapping == 1.0) {";
 				shader += "	fragTexcoord = 0.5 + fragNormal.xy / 2.0;";
 				shader += "}else{";
@@ -617,8 +785,8 @@ x3dom.gfx_webgl = (function () {
 					shader += "	fragTexcoord = texcoord;";
 				}
 				if(cssMode & 2){
-					shader += " fragTangent  = tangent;";
-					shader += " fragBinormal = binormal;";
+					shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;";
+					shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;";
 				}
 				shader += "}";
 			
@@ -686,27 +854,34 @@ x3dom.gfx_webgl = (function () {
 						"};\n" +
 						"const int NUMLIGHTS = " + useLighting[0] + ";\n" +
 						"uniform Light light[9];\n" +
-						"void lighting(in Light light, in vec3 normal, in vec3 eye, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){" +
-						"	vec3 lightDirection;\n" +
+						"void lighting(in Light light, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular){" +
+						"	vec3 L;\n" +
 						"	float spot = 1.0, attentuation = 1.0;\n" +
 						"	if(light.type == 0.0) {\n" +
-						"		lightDirection = normalize(-light.direction);\n" +
+						"		L = -normalize(light.direction);\n" +
 						"	}else{\n" +
-						"		float distance = length(light.location - fragPosition.xyz);" +
-						"		attentuation = 1.0 / max(light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * pow(distance,2.0), 1.0);" +
-						"		lightDirection = normalize(light.location - fragPosition.xyz);" +
+						"		L = normalize(light.location - fragPosition);" +
+						"		float distance = length(L);" +
+						"		L /= distance;\n" +
+						"		attentuation = 1.0 / (light.attenuation.x + light.attenuation.y * distance + light.attenuation.z * distance * distance);" +
+						"		attentuation *= max(0.0, dot(N, L));" +
 						"		if(light.type == 2.0) {" +
-						"			float spotAngle = acos(max(0.0, dot(-lightDirection, normalize(light.direction))));" +
+						"			float spotAngle = acos(max(0.0, dot(-L, normalize(light.direction))));" +
 						"			if(spotAngle >= light.cutOffAngle) spot = 0.0;" +
 						"			else if(spotAngle <= light.beamWidth) spot = 1.0;" +
 						"			else spot = (spotAngle - light.cutOffAngle ) / (light.beamWidth - light.cutOffAngle);" +
 						"		}" +
 						"	}" +
+						
+						"	vec3  H = normalize( L + V );\n" +
+						"	float NdotL = max(0.0, dot(N, L));\n" +
+						"	float NdotH = max(0.0, dot(N, H));\n" +
+						
 						"	float ambientFactor  = light.ambientIntensity * material.ambientIntensity;" +
-						"	float diffuseFactor  = light.intensity * max(0.0, dot(normal, lightDirection));" +
-						"   float specularFactor = light.intensity * abs(pow(max(0.0, dot(normal, normalize(lightDirection+eye))), material.shininess*128.0));" +
-						"	ambient += light.color * ambientFactor * attentuation * spot;" +
-						"	diffuse += light.color * diffuseFactor * attentuation * spot;" +
+						"	float diffuseFactor  = light.intensity * NdotL;" +
+						"   float specularFactor = light.intensity * NdotL * pow(NdotH, material.shininess*128.0);" +
+						"	ambient  += light.color * ambientFactor * attentuation * spot;" +
+						"	diffuse  += light.color * diffuseFactor * attentuation * spot;" +
 						"	specular += light.color * specularFactor * attentuation * spot;" +	
 						"}";
 						
@@ -757,6 +932,8 @@ x3dom.gfx_webgl = (function () {
 			
 			//Set Uniforms + Varyings
 			shader += material;
+			shader += "uniform mat4 modelMatrix;";
+			shader += "uniform mat4 modelViewMatrix;";
 			if(vertexColor){
 				if(vertexColor == 3){
 					shader += "varying vec3 fragColor;	\n";
@@ -764,7 +941,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "varying vec4 fragColor;	\n";
 				}
 			}
-			if(texture){
+			if(texture || cssMode){
 				shader += "uniform sampler2D tex;			\n";
 				shader += "uniform float sphereMapping;		\n";
 				shader += "varying vec2 fragTexcoord;		\n";
@@ -774,6 +951,9 @@ x3dom.gfx_webgl = (function () {
 					shader += "uniform sampler2D bump;		\n";
 					shader += "varying vec3 fragTangent;	\n";
 					shader += "varying vec3 fragBinormal;	\n";
+				}
+				if(cssMode & 4){
+					shader += "uniform sampler2D spec;		\n";
 				}
 			}
 			
@@ -799,25 +979,32 @@ x3dom.gfx_webgl = (function () {
 			shader += "vec3 rgb 	 = vec3(0.0, 0.0, 0.0);	\n";
 			shader += "float alpha = 1.0 - material.transparency;\n";
 			
+			
 			if(useLighting[0] >= 1.0){
-				shader += "vec3 ambient   = vec3(0.0, 0.0, 0.0);\n";
+				shader += "vec3 ambient   = vec3(0.07, 0.07, 0.07);\n";
 				shader += "vec3 diffuse   = vec3(0.0, 0.0, 0.0);\n";
 				shader += "vec3 specular  = vec3(0.0, 0.0, 0.0);\n";
 				if(useLighting[1]){
 					shader += "float shadowed = 1.0;\n";
 					shader += "float oneShadowAlreadyExists = 0.0;\n";
 				}
-				shader += "vec3 eye = normalize(fragEyePosition);\n";
+				shader += "vec3 eye = normalize(-fragPosition);\n";
 				shader += "vec3 normal = normalize(fragNormal);\n";
-				if(cssMode & 2){
-					shader += "vec3 tangent  = normalize(fragTangent);\n";
-					shader += "vec3 binormal = normalize(fragBinormal);\n";
+				if(cssMode & 2){				
+					shader += "vec3 t = normalize( fragTangent );\n";
+					shader += "vec3 b = normalize( fragBinormal );\n";
+					shader += "vec3 n = normalize( fragNormal );\n";
 				
-					shader += "vec3 bumpCol = texture2D( bump, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";        
-                    shader += "vec3 tsn = 2.0 * (normalize(bumpCol) - 0.5);\n";
-                    shader += "tsn = tsn.z * normal + tsn.y * tangent + tsn.x * binormal;\n";
-                    shader += "normal = -normalize(tsn);\n";
+					shader += "mat3 tangentToWorld = mat3(t, b, n);\n";
+				
+					shader += "normal = texture2D( bump, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
+					shader += "normal = 2.0 * normal - 1.0;\n";
+					shader += "normal = normalize( normal * tangentToWorld );\n";
+					
+					shader += "normal.y = -normal.y;";
+					shader += "normal.x = -normal.x;";
 				}
+				
 				shader += "if (solid == 0.0 && dot(normal, eye) < 0.0) {\n";
 				shader += "	normal *= -1.0;\n";
 				shader += "}\n";
@@ -831,7 +1018,11 @@ x3dom.gfx_webgl = (function () {
 					shader += "	}\n";
 				}
 				shader += "}\n";
-				if(texture || cssMode && (cssMode & 1)){
+				if(cssMode & 4){
+					x3dom.debug.logInfo("SPEC");
+					shader += "specular *= texture2D( spec, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
+				}
+				if(texture || (cssMode & 1)){
 					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
 					shader += "vec4 texColor = texture2D(tex, texCoord);\n";
 					shader += "alpha *= texColor.a;\n";
@@ -868,7 +1059,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "float f0 = calcFog();\n";
 				shader += "rgb = fog.color * (1.0-f0) + f0 * (rgb);\n";
 			}
-			shader += "rgb = clamp(rgb, 0.0, 1.0);\n";
+			//shader += "rgb = clamp(rgb, 0.0, 1.0);\n";
 			shader += "if (alpha <= 0.1) discard;\n";
 			shader += "else gl_FragColor = vec4(rgb, alpha);\n";
 			shader += "}\n";
@@ -1369,20 +1560,25 @@ x3dom.gfx_webgl = (function () {
 						var cssMode = 0; //Bit coded CSS Modes - 1.Bit > Diffuse, 2.Bit > Normal, 3.Bit > Specular
 						var cssShader = shape._cf.appearance.node._shader;
 						
-						var diffuseTex = cssShader.getDiffuseMap();
-						var normalTex  = cssShader.getNormalMap(); 
+						var diffuseTex   = cssShader.getDiffuseMap();
+						var normalTex    = cssShader.getNormalMap(); 
+						var specularTex  = cssShader.getSpecularMap(); 
 						
 						if(diffuseTex != null){
 							shape.updateTexture(diffuseTex, texCnt++);
 							cssMode += 1;
 						}
-						if(normalTex  != null){
+						if(normalTex != null){
 							shape.updateTexture(normalTex, texCnt++);
 							cssMode += 2;
 						}
+						if(specularTex != null){
+							shape.updateTexture(specularTex, texCnt++);
+							cssMode += 4;
+						}
 						
-						var vsID = this.generateVS(viewarea, false, cssMode, false, cssMode, shape._webgl.lightsAndShadow);
-						var fsID = this.generateFS(viewarea, false, cssMode, cssMode, shape._webgl.lightsAndShadow);
+						var vsID = this.generateVS(viewarea, false, false, false, cssMode, shape._webgl.lightsAndShadow);
+						var fsID = this.generateFS(viewarea, false, false, cssMode, shape._webgl.lightsAndShadow);
 						
 						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
 						
@@ -2102,6 +2298,9 @@ x3dom.gfx_webgl = (function () {
 					sp['light[' + p + '].beamWidth']		= 0.0;
 					sp['light[' + p + '].cutOffAngle']		= 0.0;
 					sp['light[' + p + '].shadowIntensity']	= slights[p]._vf.shadowIntensity;
+					
+					x3dom.debug.logInfo(slights[p]._vf.direction.toGL());
+					x3dom.debug.logInfo(mat_view.multMatrixVec(slights[p]._vf.direction).toGL());
 				}
 				else if(x3dom.isa(slights[p], x3dom.nodeTypes.PointLight))
 				{
@@ -2174,11 +2373,14 @@ x3dom.gfx_webgl = (function () {
 		// transformation matrices
 		// Calculate and Set Normalmatrix
         // For rigid motions the inverse-transpose is not necessary
-		//var normalMatrix = mat_view.mult(transform);
-		//normalMatrix = normalMatrix.inverse().transpose();
-		//sp.normalMatrix = normalMatrix.toGL();
+		/*var normalMatrix = mat_view.mult(transform);
+		normalMatrix = mat_view.inverse().transpose();*/
+		
 		var model_view = mat_view.mult(transform);
+		
 		sp.modelViewMatrix = model_view.toGL();
+		sp.normalMatrix    = model_view.inverse().transpose().toGL();
+		
 		if (userShader) {
 			sp.modelViewMatrixInverse = model_view.inverse().toGL();
 		}
@@ -2254,8 +2456,9 @@ x3dom.gfx_webgl = (function () {
 			
 			if(shaderCSS){
 				var texUnit = 0;
-				if(shaderCSS.getDiffuseMap()) if(!sp.tex) sp.tex = texUnit++;
-				if(shaderCSS.getNormalMap()) if(!sp.bump) sp.bump = texUnit++;
+				if(shaderCSS.getDiffuseMap())  if(!sp.tex)  sp.tex  = texUnit++;
+				if(shaderCSS.getNormalMap())   if(!sp.bump) sp.bump = texUnit++;
+				if(shaderCSS.getSpecularMap()) if(!sp.spec) sp.spec = texUnit++;
 			}else{
 				if (!sp.tex) {
 					sp.tex = 0;     // FIXME; only 1st tex known in shader
