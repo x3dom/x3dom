@@ -72,14 +72,15 @@
 				container.style.height = new_width_css
 			}
 		</script>
-
 	</head>
+    
 <body id="main">
 	<h1 id="title">Fullscreen example</h1>
 	<div id="container">
 	<button id="toggler" onclick="toggle('container');return false;">Zoom</button>
-	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="true" style="background-color:#000">
+	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="true" style="background-color:#00F">
 	    	<Scene>
+                <Background skyColor="1 0 0" />
 	        	<Viewpoint position='0 0 10' />
 				<Shape>
 	            	<Appearance>

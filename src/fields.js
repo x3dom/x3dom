@@ -129,9 +129,9 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
 x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
 {
     var result = x3dom.fields.SFMatrix4f.identity();
+    result.setTranslate(from);
     
     var view = from.subtract(at).normalize();
-
     var right = up.cross(view);
 
     if (right.dot(right) < x3dom.fields.Eps) {
@@ -139,13 +139,9 @@ x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
     }
     
     right.normalize();
-
-    var newup = view.cross(right);
-    
-    result.setTranslate(from);
+    var newup = view.cross(right).normalize();
     
     var tmp = x3dom.fields.SFMatrix4f.identity();
-
     tmp.setValue(right, newup, view);
 
     return result.mult(tmp);
