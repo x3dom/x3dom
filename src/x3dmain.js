@@ -293,16 +293,15 @@ x3dom.X3DCanvas = function(x3dElem) {
                 str = str.replace(/-/g, ' ');
                 str = x3dom.stringToMethod(str);
                 str = str.replace(/ /g, '');
+                
+                // TODO: wollten wir das nicht fuer das canvasDiv setzen?
                 var meth = "canvas.style." + str + " = '" + style_value.toString() + "';";
                 //x3dom.debug.logInfo("Dynamically calling method:" + meth);
-                eval(meth);
-
-                // if (str == 'height') { canvas.setAttribute("height", style_value); }
-                // if (str == 'width') { canvas.setAttribute("width", style_value); }
+                // FIXME: wenn das nicht aufgerufen wird, scheint resize zu gehen...
+                //eval(meth);
             }
         });
         
-
         // style property overrides height/width property
         canvas.setAttribute("height", x3dom.getStyle(this.canvasDiv, "height"));
         canvas.setAttribute("width", x3dom.getStyle(this.canvasDiv, "width"));
@@ -321,7 +320,6 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.setAttribute("height", h);
         }
         
-                
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
                 
@@ -382,6 +380,7 @@ x3dom.X3DCanvas = function(x3dElem) {
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"));
+                    x3dom.debug.logInfo("width: " + that.doc._viewarea._width);
                 }
             }
             break;
@@ -391,6 +390,7 @@ x3dom.X3DCanvas = function(x3dElem) {
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"));
+                    x3dom.debug.logInfo("height: " + that.doc._viewarea._height);
                 }
             }
             break;
@@ -942,15 +942,15 @@ x3dom.userAgentFeature = {
         
         for (var i=0; i<len; i++) {
             
-            var element = x3dom.canvases[i].x3dElem
-            var canvasDiv = x3dom.canvases[i].canvasDiv
+            var element = x3dom.canvases[i].x3dElem;
+            var canvasDiv = x3dom.canvases[i].canvasDiv;
 
 			//x3dom.debug.logInfo("X3D height was: " + element.getAttribute("height"));
 			//x3dom.debug.logInfo("X3D width was : " + element.getAttribute("width"));
 			            
             // get new height and width from the enclosing div
-            var new_width = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "width")
-            var new_height = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "height")
+            var new_width = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "width");
+            var new_height = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "height");
 
 			//x3dom.debug.logInfo("New canvasDiv width: " + new_width);
 			//x3dom.debug.logInfo("New canvasDiv height: " + new_height);
