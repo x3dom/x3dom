@@ -846,6 +846,10 @@ x3dom.fields.SFVec3f.prototype.add = function (that) {
     return new x3dom.fields.SFVec3f(this.x + that.x, this.y + that.y, this.z + that.z);
 };
 
+x3dom.fields.SFVec3f.prototype.addScaled = function (that, s) {
+    return new x3dom.fields.SFVec3f(this.x + s*that.x, this.y + s*that.y, this.z + s*that.z);
+};
+
 x3dom.fields.SFVec3f.prototype.subtract = function (that) {
     return new x3dom.fields.SFVec3f(this.x - that.x, this.y - that.y, this.z - that.z);
 };

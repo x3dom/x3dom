@@ -5944,8 +5944,6 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 {
     var needMixAnim = false;
     
-    this._lastTS = timeStamp;
-    
     if (this._mixer._beginTime > 0)
     {
         needMixAnim = true;
@@ -5970,33 +5968,30 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
         }
     }
     
-    var needNavAnim = this.navigateTo();
+    var needNavAnim = this.navigateTo(timeStamp);
+    
+    this._lastTS = timeStamp;
     
     return (needMixAnim || needNavAnim);
 };
 
-x3dom.Viewarea.prototype.navigateTo = function()
+x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 {
     var navi = this._scene.getNavigationInfo();
     var needNavAnim = ( this._lastButton > 0 && 
                         (navi._vf.type[0].toLowerCase() === "fly" ||
                          navi._vf.type[0].toLowerCase() === "walk") );
     
-    // TODO; this freakin' code does not work and is absolute crap!!!
-    // directly act on camera matrix instead (that defines coordSys).
-    // FIXME; this currently only tests different navigation modes...
     if (needNavAnim)
     {
-        var viewpoint = this._scene.getViewpoint();
-        var min = x3dom.fields.SFVec3f.MAX();
-        var max = x3dom.fields.SFVec3f.MIN();
-        var ok = this._scene.getVolume(min, max, true);
+        var deltaT = timeStamp - this._lastTS;
         
-        var speed = navi._vf.speed;
-        var scale = 4;
-        var d = ok ? (max.subtract(min)).length() : 1;
-        d = ((d < x3dom.fields.Eps) ? 1 : d) * speed / scale;
-        var sign = (this._lastButton & 2) ? 1 : -1;
+        // check if forwards or backwards (on right button)
+        var step = (this._lastButton & 2) ? 1 : -1;
+        step *= (deltaT * navi._vf.speed);
+        
+        var phi = -Math.PI * this._dx / this._width;
+        var theta = -Math.PI * this._dy / this._height;
         
         if (this._needNavigationMatrixUpdate == true)
         {
@@ -6011,8 +6006,7 @@ x3dom.Viewarea.prototype.navigateTo = function()
             this._transMat = x3dom.fields.SFMatrix4f.identity();
             this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
             
-            // this is evil and leads to shear/perspective distortions
-            // but the view matrix is inverted throughout the system
+            // too many inversions here can lead to distortions
             this._flyMat = this._flyMat.inverse();
             this._flyMat._30 = 0; this._flyMat._31 = 0;
             this._flyMat._32 = 0; this._flyMat._33 = 1;
@@ -6024,7 +6018,7 @@ x3dom.Viewarea.prototype.navigateTo = function()
         }
         
         //rotate around the up vector
-        var q = x3dom.fields.Quaternion.axisAngle(this._up, -scale*this._dx/this._width);
+        var q = x3dom.fields.Quaternion.axisAngle(this._up, phi);
         var temp = q.toMatrix();
         
         var fin = x3dom.fields.SFMatrix4f.translation(this._from);
@@ -6038,7 +6032,9 @@ x3dom.Viewarea.prototype.navigateTo = function()
         // rotate around the side vector
         var lv = this._at.subtract(this._from).normalize();
         var sv = lv.cross(this._up).normalize();
-        q = x3dom.fields.Quaternion.axisAngle(sv, -scale*this._dy/this._height);
+        this._up = sv.cross(lv).normalize();
+        
+        q = x3dom.fields.Quaternion.axisAngle(sv, theta);
         temp = q.toMatrix();
 
         fin = x3dom.fields.SFMatrix4f.translation(this._from);
@@ -6049,7 +6045,16 @@ x3dom.Viewarea.prototype.navigateTo = function()
         this._at = fin.multMatrixPnt(this._at);
         
         // forward along view vector
-        lv = this._from.subtract(this._at).normalize().multiply(sign*d/this._height);
+        if (this._pickingInfo.pickObj)
+        {
+            var dist = this._pickingInfo.pickPos.subtract(this._from).length();
+            
+            if (step < 0 && dist <= 0.5) {
+                step = 0;
+            }
+        }
+        
+        lv = this._from.subtract(this._at).normalize().multiply(step);
         temp = x3dom.fields.SFMatrix4f.translation(lv);
         
         this._at = temp.multMatrixPnt(this._at);
@@ -6062,7 +6067,7 @@ x3dom.Viewarea.prototype.navigateTo = function()
         temp._32 = 0; temp._33 = 1;
         //x3dom.debug.logInfo(temp);
         
-        viewpoint.setView(temp);
+        this._scene.getViewpoint().setView(temp);
     }
     
     return needNavAnim;
@@ -6263,6 +6268,30 @@ x3dom.Viewarea.prototype.resetView = function()
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+};
+
+x3dom.Viewarea.prototype.uprightView = function()
+{
+    var mat = new x3dom.fields.SFMatrix4f();
+    mat.setValues(this.getViewMatrix());
+    mat = mat.inverse();
+    
+    var from = mat.e3();
+    var at = from.subtract(mat.e2());
+    var up = new x3dom.fields.SFVec3f(0, 1, 0);
+    
+    var v = from.subtract(at);
+    var len = v.length();
+    v = v.divide(len);
+    
+    var s = v.cross(up).normalize();
+    v = s.cross(up).normalize();
+    at = from.addScaled(v, len);
+    
+    mat = x3dom.fields.SFMatrix4f.lookAt(from, at, up);
+    mat = mat.inverse();
+    
+    this.animateTo(mat, this._scene.getViewpoint());
 };
 
 x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
@@ -6888,7 +6917,24 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 				}
 				
                 x3dom.debug.logInfo("a: show all | d: show helper buffers | l: light view | " +
-                                    "m: toggle render mode | p: intersect type | r: reset view");
+                                    "m: toggle render mode | p: intersect type | r: reset view" +
+                                    "e: examine mode | f: fly mode | w: walk | u: upright pos.");
+            }
+            break;
+        case  43: /* + (incr. speed) */
+            {
+                this._scene.getNavigationInfo()._vf.speed = 
+                    2 * this._scene.getNavigationInfo()._vf.speed;
+                x3dom.debug.logInfo("Changed navigation speed to " + 
+                    this._scene.getNavigationInfo()._vf.speed);
+            }
+            break;
+        case  45: /* - (decr. speed) */
+            {
+                this._scene.getNavigationInfo()._vf.speed = 
+                    0.5 * this._scene.getNavigationInfo()._vf.speed;
+                x3dom.debug.logInfo("Changed navigation speed to " + 
+                    this._scene.getNavigationInfo()._vf.speed);
             }
             break;
         case  97: /* a, view all */ 
@@ -6925,7 +6971,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			{
                 if (this._nodeBag.lights.length > 0)
                 {
-                    this._viewarea.animateTo(this._viewarea.getLightMatrix()[0], this._scene.getViewpoint());
+                    this._viewarea.animateTo(this._viewarea.getLightMatrix()[0], 
+                                             this._scene.getViewpoint());
                 }
 			}
 			break;
@@ -6961,6 +7008,11 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 this._viewarea.resetView();
             }
             break;
+        case 117: /* u, upright position */ 
+			{
+                this._viewarea.uprightView();
+			}
+			break;
         case 119: /* w, walk mode */
             {
                 this._scene.getNavigationInfo()._vf.type[0] = "walk";
