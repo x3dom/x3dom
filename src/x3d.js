@@ -5452,6 +5452,7 @@ x3dom.registerNodeType(
                     return;
                 }
                 
+                // TODO; optimize getting volume
 				var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
                 var ok = this.getVolume(min, max, true);
@@ -5471,7 +5472,6 @@ x3dom.registerNodeType(
 						var rot2 = x3dom.fields.Quaternion.rotateFromTo(this._eyeViewUp, yAxis);
 						rotMat = rot2.toMatrix().transpose().mult(rotMat);
 					}
-					
 				}
 				else{
 					var normalPlane = this._vf.axisOfRotation.cross(billboard_to_viewer);

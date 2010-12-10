@@ -1019,7 +1019,7 @@ x3dom.gfx_webgl = (function () {
 				}
 				shader += "}\n";
 				if(cssMode & 4){
-					x3dom.debug.logInfo("SPEC");
+					//x3dom.debug.logInfo("SPEC");
 					shader += "specular *= texture2D( spec, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
 				}
 				if(texture || (cssMode & 1)){
@@ -1210,7 +1210,7 @@ x3dom.gfx_webgl = (function () {
         }
         else if (!x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
                 (shape._cf.geometry.node._mesh._positions[0].length < 1)) {
-            x3dom.debug.logInfo("MINEFIELD BUG IN EXTENDING ARRAY: NO VALID POSITIONS SET!");
+            x3dom.debug.logInfo("NO VALID VERTEX POSITIONS SET!");
             return;
         }
         
@@ -2299,8 +2299,8 @@ x3dom.gfx_webgl = (function () {
 					sp['light[' + p + '].cutOffAngle']		= 0.0;
 					sp['light[' + p + '].shadowIntensity']	= slights[p]._vf.shadowIntensity;
 					
-					x3dom.debug.logInfo(slights[p]._vf.direction.toGL());
-					x3dom.debug.logInfo(mat_view.multMatrixVec(slights[p]._vf.direction).toGL());
+					//x3dom.debug.logInfo(slights[p]._vf.direction.toGL());
+					//x3dom.debug.logInfo(mat_view.multMatrixVec(slights[p]._vf.direction).toGL());
 				}
 				else if(x3dom.isa(slights[p], x3dom.nodeTypes.PointLight))
 				{
