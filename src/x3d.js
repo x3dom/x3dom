@@ -5933,6 +5933,8 @@ x3dom.Viewarea = function (document, scene) {
     this._dy = 0;
     this._lastX = -1;
     this._lastY = -1;
+    this._pressX = -1;
+    this._pressY = -1;
     this._lastButton = 0;
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
     
@@ -5990,8 +5992,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         var step = (this._lastButton & 2) ? 1 : -1;
         step *= (deltaT * navi._vf.speed);
         
-        var phi = -Math.PI * this._dx / this._width;
-        var theta = -Math.PI * this._dy / this._height;
+        //var phi = -Math.PI * this._dx / this._width;
+        //var theta = -Math.PI * this._dy / this._height;
+        var phi = Math.PI * deltaT * (this._pressX - this._lastX) / this._width;
+        var theta = Math.PI * deltaT * (this._pressY - this._lastY) / this._height;
         
         if (this._needNavigationMatrixUpdate == true)
         {
@@ -6032,7 +6036,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         // rotate around the side vector
         var lv = this._at.subtract(this._from).normalize();
         var sv = lv.cross(this._up).normalize();
-        this._up = sv.cross(lv).normalize();
+        var up = sv.cross(lv).normalize();
         
         q = x3dom.fields.Quaternion.axisAngle(sv, theta);
         temp = q.toMatrix();
@@ -6060,7 +6064,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._at = temp.multMatrixPnt(this._at);
         this._from = temp.multMatrixPnt(this._from);
         
-        this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
+        this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, up);
         
         temp = this._flyMat.inverse();
         temp._30 = 0; temp._31 = 0;
@@ -6392,6 +6396,8 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this._dy = 0;
 	this._lastX = x;
 	this._lastY = y;
+    this._pressX = x;
+    this._pressY = y;
     this._lastButton = buttonState;
 };
 
