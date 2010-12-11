@@ -5986,6 +5986,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
     
     if (needNavAnim)
     {
+        var currViewMat = this.getViewMatrix();
         var deltaT = timeStamp - this._lastTS;
         
         // check if forwards or backwards (on right button)
@@ -6003,7 +6004,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             
             // get current view matrix
             this._flyMat = new x3dom.fields.SFMatrix4f();
-            this._flyMat.setValues(this.getViewMatrix());
+            this._flyMat.setValues(currViewMat);
             
             // FIXME; just to be sure...
             this._rotMat = x3dom.fields.SFMatrix4f.identity();
@@ -6049,6 +6050,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._at = fin.multMatrixPnt(this._at);
         
         // forward along view vector
+        this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
+        
         if (this._pickingInfo.pickObj)
         {
             var dist = this._pickingInfo.pickPos.subtract(this._from).length();
@@ -6063,6 +6066,30 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         
         this._at = temp.multMatrixPnt(this._at);
         this._from = temp.multMatrixPnt(this._from);
+        
+        if (navi._vf.type[0].toLowerCase() === "walk")
+        {
+            var tmpAt = this._from.addScaled(up, -1.0);
+            var tmpUp = sv.cross(up.negate()).normalize();
+            var tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
+            tmpMat = tmpMat.inverse();
+            
+            this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, 
+                        tmpMat, this.getProjectionMatrix().mult(tmpMat));
+            
+            if (this._pickingInfo.pickObj)
+            {
+                var dist = this._pickingInfo.pickPos.subtract(this._from).length();
+                
+                var height = 1.6;
+                if (navi._vf.avatarSize.length > 2) {
+                    height = navi._vf.avatarSize[1];
+                }
+                
+                this._at = this._at.add(up.multiply(height - dist));
+                this._from = this._from.add(up.multiply(height - dist));
+            }
+        }
         
         this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, up);
         
@@ -7022,7 +7049,6 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 119: /* w, walk mode */
             {
                 this._scene.getNavigationInfo()._vf.type[0] = "walk";
-                x3dom.debug.logInfo("Switch to walk mode (NYI, default to fly).");
             }
             break;
         default:

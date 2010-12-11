@@ -2638,7 +2638,7 @@ x3dom.gfx_webgl = (function () {
 	};
     
     /** render color-buf pass for picking */
-    Context.prototype.pickValue = function (viewarea, x, y)
+    Context.prototype.pickValue = function (viewarea, x, y, viewMat, sceneMat)
     {
 		var gl = this.ctx3d;
         var scene = viewarea._scene;
@@ -2653,8 +2653,16 @@ x3dom.gfx_webgl = (function () {
         
         //t0 = new Date().getTime();
         
-        var mat_view = viewarea._last_mat_view;
-        var mat_scene = viewarea._last_mat_scene;
+        var mat_view, mat_scene;
+        
+        if (arguments.length > 4) {
+            mat_view = viewMat;
+            mat_scene = sceneMat;
+        }
+        else {
+            mat_view = viewarea._last_mat_view;
+            mat_scene = viewarea._last_mat_scene;
+        }
         
         var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
                         ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
