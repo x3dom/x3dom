@@ -2252,15 +2252,20 @@ x3dom.gfx_webgl = (function () {
 		var shaderCSS = shape._cf.appearance.node._shader;
 		
 		if (shaderCSS !== null) {
-			if(x3dom.isa(shaderCSS, x3dom.nodeTypes.CommonSurfaceShader)){
+			if(x3dom.isa(shaderCSS, x3dom.nodeTypes.CommonSurfaceShader)) {
 				sp['material.diffuseColor'] 	= shaderCSS._vf.diffuseFactor.toGL();
 				sp['material.specularColor'] 	= shaderCSS._vf.specularFactor.toGL();
 				sp['material.emissiveColor'] 	= shaderCSS._vf.emissiveFactor.toGL();
 				sp['material.shininess'] 		= shaderCSS._vf.shininessFactor;
-				sp['material.ambientIntensity'] = (shaderCSS._vf.ambientFactor.x + shaderCSS._vf.ambientFactor.y + shaderCSS._vf.ambientFactor.z)/3;
+				sp['material.ambientIntensity'] = (shaderCSS._vf.ambientFactor.x + 
+                    shaderCSS._vf.ambientFactor.y + shaderCSS._vf.ambientFactor.z)/3;
 				sp['material.transparency'] 	= 1.0 - shaderCSS._vf.alphaFactor;
 			}
-		}else{
+            else {
+                shaderCSS = null;
+            }
+		}
+        else{
 			sp['material.diffuseColor'] 		= mat._vf.diffuseColor.toGL();
 			sp['material.specularColor'] 		= mat._vf.specularColor.toGL();
 			sp['material.emissiveColor'] 		= mat._vf.emissiveColor.toGL();
@@ -2459,7 +2464,8 @@ x3dom.gfx_webgl = (function () {
 				if(shaderCSS.getDiffuseMap())  if(!sp.tex)  sp.tex  = texUnit++;
 				if(shaderCSS.getNormalMap())   if(!sp.bump) sp.bump = texUnit++;
 				if(shaderCSS.getSpecularMap()) if(!sp.spec) sp.spec = texUnit++;
-			}else{
+			}
+            else{
 				if (!sp.tex) {
 					sp.tex = 0;     // FIXME; only 1st tex known in shader
 				}
@@ -2715,13 +2721,17 @@ x3dom.gfx_webgl = (function () {
         {
             scene._webgl = {};
             this.setupFgnds(gl, scene);
+            
             // scale factor for mouse coords and width/ height (low res for speed-up)
             scene._webgl.pickScale = 0.5;
+            
+            scene._webgl._currFboWidth = Math.round(this.canvas.width * scene._webgl.pickScale);
+            scene._webgl._currFboHeight = Math.round(this.canvas.height * scene._webgl.pickScale);
+            
             scene._webgl.fboPick = this.initFbo(gl, 
-                        this.canvas.width  * scene._webgl.pickScale, 
-                        this.canvas.height * scene._webgl.pickScale, true);
-                        
+                         scene._webgl._currFboWidth, scene._webgl._currFboHeight, true);
             scene._webgl.fboPick.pixelData = null;
+            
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
@@ -2733,7 +2743,9 @@ x3dom.gfx_webgl = (function () {
             for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
                 rt_tex._webgl = {};
-                rt_tex._webgl.fbo = this.initFbo(gl, rt_tex._vf.dimensions[0], rt_tex._vf.dimensions[1], false);
+                rt_tex._webgl.fbo = this.initFbo(gl, 
+                            rt_tex._vf.dimensions[0], 
+                            rt_tex._vf.dimensions[1], false);
             }
             
             // init scene volume to improve picking speed
@@ -2745,6 +2757,25 @@ x3dom.gfx_webgl = (function () {
             scene._lastMin = min;
             scene._lastMax = max;
 		}
+        else 
+        {
+            var fboWidth = Math.round(this.canvas.width * scene._webgl.pickScale);
+            var fboHeight = Math.round(this.canvas.height * scene._webgl.pickScale);
+            
+            if (scene._webgl._currFboWidth !== fboWidth ||
+                scene._webgl._currFboHeight !== fboHeight)
+            {
+                scene._webgl._currFboWidth = fboWidth;
+                scene._webgl._currFboHeight = fboHeight;
+                
+                scene._webgl.fboPick = this.initFbo(gl, 
+                             fboWidth, fboHeight, true);
+                scene._webgl.fboPick.pixelData = null;
+                
+                x3dom.debug.logInfo("Refreshed picking FBO to size (" + 
+                                    (fboWidth) + ", " + (fboHeight) + ")");
+            }
+        }
         
         var bgnd = scene.getBackground();
         this.setupScene(gl, bgnd);

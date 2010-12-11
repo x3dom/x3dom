@@ -142,7 +142,6 @@ x3dom.X3DCanvas = function(x3dElem) {
         var userStyle = x3dElem.getAttribute("style");
         if (userStyle) {
             this.canvasDiv.setAttribute("style", userStyle);
-//            canvas.setAttribute("style", userStyle);
         }
         
         // check if user wants to attach events to the X3D element
@@ -225,99 +224,25 @@ x3dom.X3DCanvas = function(x3dElem) {
             canvas.id = "x3dom-" + index + "-canvas";
         }
         
-        // props to be propagated to the canvas
-        var css_properties = [
-            "background",
-            "background-attachment",
-            "background-color",
-            "background-image",
-            "background-position",
-            "background-repeat",
-            "border",
-            "border-color",
-            "border-style",
-            "border-top",
-            "border-right",
-            "border-bottom",
-            "border-left",
-            "border-top-color",
-            "border-right-color",
-            "border-bottom-color",
-            "border-left-color",
-            "border-top-style",
-            "border-right-style",
-            "border-bottom-style",
-            "border-left-style",
-            "border-top-width",
-            "border-right-width",
-            "border-bottom-width",
-            "border-left-width",
-            "border-width",
-            "clip",
-            "display",
-            "float",
-            "left",
-            "margin",
-            "margin-top",
-            "margin-right",
-            "margin-bottom",
-            "margin-left",
-            "marker-offset",
-            "max-height",
-            "max-width",
-            "min-height",
-            "min-width",
-            "overflow",
-            "padding",
-            "padding-top",
-            "padding-right",
-            "padding-bottom",
-            "padding-left",
-            "position",
-            "right",
-            "size",
-            "stress",
-            "top",
-            "visibility",
-            "z-index"
-            // "width",
-            // "height",
-        ];
+        // Apply the width and height of the X3D element to the canvas
+        var w = 2, h = 2;
         
-        css_properties.forEach(function(str){
-            // if there is a style
-            var style_value = x3dom.getStyle(x3dElem, str);
-
-            if (style_value) {
-                // copy it over
-                str = str.replace(/-/g, ' ');
-                str = x3dom.stringToMethod(str);
-                str = str.replace(/ /g, '');
-                
-                // TODO: wollten wir das nicht fuer das canvasDiv setzen?
-                var meth = "canvas.style." + str + " = '" + style_value.toString() + "';";
-                //x3dom.debug.logInfo("Dynamically calling method:" + meth);
-                // FIXME: wenn das nicht aufgerufen wird, scheint resize zu gehen...
-                //eval(meth);
-            }
-        });
-        
-        // style property overrides height/width property
-        canvas.setAttribute("height", x3dom.getStyle(this.canvasDiv, "height"));
-        canvas.setAttribute("width", x3dom.getStyle(this.canvasDiv, "width"));
-
-        // Apply the width and height of the X3D element to the canvas 
-        // for backwards compatibility with examples
-        var w, h;
         if ((w = x3dElem.getAttribute("width")) !== null) {
-            canvas.style.width = this.canvasDiv.style.width = w.toString();
+            this.canvasDiv.style.width = w.toString();
             //Attention: pbuffer dim is _not_ derived from style attribs!
             canvas.setAttribute("width", w);
         }
+        else {
+            canvas.setAttribute("height", x3dom.getStyle(this.canvasDiv, "height"));
+        }
+        
         if ((h = x3dElem.getAttribute("height")) !== null) {
-            canvas.style.height = this.canvasDiv.style.height = h.toString();
+            this.canvasDiv.style.height = h.toString();
             //Attention: pbuffer dim is _not_ derived from style attribs!
             canvas.setAttribute("height", h);
+        }
+        else {
+            canvas.setAttribute("width", x3dom.getStyle(this.canvasDiv, "width"));
         }
         
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
@@ -327,7 +252,8 @@ x3dom.X3DCanvas = function(x3dElem) {
     };
 
     var _old_dim = [0,0];
-    this.watchForResize = function() {
+    this.watchForResize = function()
+    {
         var new_dim = [
             x3dom.getStyle(that.canvas, "width"),
             x3dom.getStyle(that.canvas, "height")
@@ -340,6 +266,8 @@ x3dom.X3DCanvas = function(x3dElem) {
             that.x3dElem.setAttribute("width", new_dim[0]);
             that.x3dElem.setAttribute("height", new_dim[1]);
         }
+        
+        //that.x3dElem.checkStyleChanges();
     };
 
     this.createStatDiv = function() {
@@ -366,8 +294,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     this.gl = this.initContext(this.canvas);
     this.doc = null;
     
-
-    // allow listening for size changes
+    // allow listening for (size) changes
     x3dElem.__setAttribute = x3dElem.setAttribute;
     x3dElem.setAttribute = function(attrName, newVal) {
         //var prevVal = this.getAttribute(attrName);
@@ -376,30 +303,114 @@ x3dom.X3DCanvas = function(x3dElem) {
         switch(attrName) {
             case "width":
             {
-                //that.canvas.style.width = that.canvasDiv.style.width = newVal;
+                //that.canvasDiv.style.width = newVal;
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"));
-                    x3dom.debug.logInfo("width: " + that.doc._viewarea._width);
+                    //x3dom.debug.logInfo("width: " + that.doc._viewarea._width);
                 }
             }
             break;
             case "height":
             {
-                //that.canvas.style.height = that.canvasDiv.style.height = newVal;
+                //that.canvasDiv.style.height = newVal;
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"));
-                    x3dom.debug.logInfo("height: " + that.doc._viewarea._height);
+                    //x3dom.debug.logInfo("height: " + that.doc._viewarea._height);
                 }
             }
             break;
             default:
         }
-                
-        //TODO; update scene._webgl.fboPick
+        
         that.doc.needRender = true;
     };
+    
+    ////
+    // FIXME; ALLOW DYNAMICALLY SETTING STYLE (ALL POSSIBILITIES) OF X3D ELEMENT!
+    /*
+    // props to be propagated to the canvas div on change of x3d elem
+    var css_properties = [
+        "background",
+        "background-attachment",
+        "background-color",
+        "background-image",
+        "background-position",
+        "background-repeat",
+        "border",
+        "border-color",
+        "border-style",
+        "border-top",
+        "border-right",
+        "border-bottom",
+        "border-left",
+        "border-top-color",
+        "border-right-color",
+        "border-bottom-color",
+        "border-left-color",
+        "border-top-style",
+        "border-right-style",
+        "border-bottom-style",
+        "border-left-style",
+        "border-top-width",
+        "border-right-width",
+        "border-bottom-width",
+        "border-left-width",
+        "border-width",
+        "clip",
+        "display",
+        "float",
+        "left",
+        "margin",
+        "margin-top",
+        "margin-right",
+        "margin-bottom",
+        "margin-left",
+        "marker-offset",
+        "max-height",
+        "max-width",
+        "min-height",
+        "min-width",
+        "overflow",
+        "padding",
+        "padding-top",
+        "padding-right",
+        "padding-bottom",
+        "padding-left",
+        "position",
+        "right",
+        "size",
+        "stress",
+        "top",
+        "visibility",
+        "z-index",
+        "width",
+        "height"
+    ];
+    
+    x3dElem.checkStyleChanges = function()
+    {
+        css_properties.forEach( function(str) {
+            // if there is a style
+            var style_value = x3dom.getStyle(x3dElem, str);
+
+            if (style_value) {
+                // copy it over
+                str = str.replace(/-/g, ' ');
+                str = x3dom.stringToMethod(str);
+                str = str.replace(/ /g, '');
+                
+                // TODO: wollten wir das nicht fuer das canvasDiv setzen?
+                var meth = "that.canvasDiv.style." + str + " = '" + style_value.toString() + "';";
+                //x3dom.debug.logInfo("Dynamically calling method: " + meth);
+                // FIXME: wenn das nicht aufgerufen wird, scheint resize zu gehen...
+                //eval(meth);
+            }
+        } );
+    };
+    */
+    ////
     
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
     if (runtimeEnabled !== null) {

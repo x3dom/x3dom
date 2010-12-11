@@ -42,54 +42,72 @@
 
 			var zoomed = false;
 			
-			function toggle(elm) {
+			function toggle() {
 
-				b = document.getElementById('main')
-				title = document.getElementById('title')
-				element = document.getElementById('test')
-				container = document.getElementById('container')
-				button = document.getElementById('toggler')
+				var b = document.getElementById('main');
+				var title = document.getElementById('title');
+				var test = document.getElementById('test');
+				var container = document.getElementById('container');
+				var button = document.getElementById('toggler');
 				
-				var new_width_css;
+				var new_width_css = "100%";
 
 				if (zoomed) {
-					new_width_css = "50%"
-					button.style.backgroundColor = "#202021"
-					b.style.padding = "10px"
-					title.style.display = "block"
-					document.getElementById('x3dom_logdiv').style.display = 'block'
-				} else {
-					b.style.padding = "0px"
-					title.style.display = "none"
-					new_width_css = "100%"
-					button.style.backgroundColor = "#c23621"
-					document.getElementById('x3dom_logdiv').style.display = 'none'
+					new_width_css = "50%";
+					button.style.backgroundColor = "#202021";
+					b.style.padding = "10px";
+					title.style.display = "block";
+					document.getElementById('x3dom_logdiv').style.display = 'block';
+				}
+                else {
+					b.style.padding = "0px";
+					title.style.display = "none";
+					new_width_css = "100%";
+					button.style.backgroundColor = "#c23621";
+					document.getElementById('x3dom_logdiv').style.display = 'none';
 				}
 
-				zoomed = !zoomed
-
-				container.style.width = new_width_css
-				container.style.height = new_width_css
+				zoomed = !zoomed;
+                
+                container.style.width = new_width_css;
+				container.style.height = new_width_css;
+                
+                return false;
 			}
+            
+            function updateOverState(over)
+            {
+                var elem = document.getElementById('output');
+                if (over)
+                    elem.innerHTML = " isOver TRUE ";
+                else
+                    elem.innerHTML = " isOver FALSE ";
+            }
 		</script>
 	</head>
     
 <body id="main">
 	<h1 id="title">Fullscreen example</h1>
-	<div id="container">
-	<button id="toggler" onclick="toggle('container');return false;">Zoom</button>
-	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="true" style="background-color:#00F">
-	    	<Scene>
-                <Background skyColor="1 0 0" />
-	        	<Viewpoint position='0 0 10' />
-				<Shape>
-	            	<Appearance>
-	                	<Material diffuseColor='0.603 0.894 0.909' />	
-	              	</Appearance>
-					<Box DEF='box'/>
-	            </Shape>
-	        </Scene>
-	    </X3D>
-	</div>
+    
+	<button id="toggler" onclick="toggle();">Zoom</button>
+    <br/>
+    
+    <div id="container">
+	<X3D id="test" xmlns="http://www.web3d.org/specifications/x3d-namespace" 
+        showStat="false" showLog="true" style="background-color:#00F">
+        <Scene>
+            <Background skyColor="1 0 0" />
+            <Viewpoint position='0 0 10' />
+            <Shape onmouseover="updateOverState(1);" onmouseout="updateOverState(0);">
+                <Appearance>
+                    <Material diffuseColor='0.603 0.894 0.909' />	
+                </Appearance>
+                <Box DEF='box'/>
+            </Shape>
+        </Scene>
+    </X3D>
+    </div>
+    
+    <div id='output'>&nbsp;</div>
 </body>
 </html>
