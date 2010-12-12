@@ -216,7 +216,7 @@ x3dom.fields.SFMatrix4f.parse = function (str) {
         );
     }
     else {
-        x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
+        x3dom.debug.logWarning("SFMatrix4f - can't parse string: " + str);
         return x3dom.fields.SFMatrix4f.identity();
     }
 };
@@ -644,7 +644,7 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
     //if (Math.abs(rDet) < x3dom.fields.Eps)
     if (Math.abs(rDet) === 0)
     {
-        x3dom.debug.logInfo("Invert matrix: singular matrix, no inverse!");
+        x3dom.debug.logWarning("Invert matrix: singular matrix, no inverse!");
         return x3dom.fields.SFMatrix4f.identity();
     }
 
@@ -708,7 +708,7 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
         this._30 = 0; this._31 = 0; this._32 = 0; this._33 = 1;
     }
     else {
-        x3dom.debug.logInfo("SFMatrix4f - can't parse string: " + str);
+        x3dom.debug.logWarning("SFMatrix4f - can't parse string: " + str);
     }
     return this;
 };
@@ -1195,12 +1195,12 @@ x3dom.fields.SFColor.parse = function(str) {
 };
 
 x3dom.fields.SFColor.prototype.setHSV = function (h, s, v) {
-    x3dom.debug.logInfo("SFColor.setHSV() NYI");
+    x3dom.debug.logWarning("SFColor.setHSV() NYI");
 };
 
 x3dom.fields.SFColor.prototype.getHSV = function () {
     var h = 0, s = 0, v = 0;
-    x3dom.debug.logInfo("SFColor.getHSV() NYI");
+    x3dom.debug.logWarning("SFColor.getHSV() NYI");
     return [ h, s, v ];
 };
 

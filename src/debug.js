@@ -119,6 +119,23 @@ x3dom.debug = {
 		// Output a log line to the HTML page
 		var node = document.createElement("p");
 		node.style.margin = 0;
+        switch (logType) {
+            case x3dom.debug.INFO:
+                node.style.color = "#00ff00";
+                break;
+            case x3dom.debug.WARNING:
+                node.style.color = "#cd853f";
+                break;
+            case x3dom.debug.ERROR:
+                node.style.color = "#ff4500";
+                break;
+            case x3dom.debug.EXCEPTION:
+                node.style.color = "#ffff00";
+                break;
+            default: 
+                node.style.color = "#00ff00";
+                break;
+        }
 		node.innerHTML = logType + ": " + msg;
 		x3dom.debug.logContainer.insertBefore(node, x3dom.debug.logContainer.firstChild);
         
@@ -167,7 +184,9 @@ x3dom.debug = {
 
 	assert: function(c, msg) {
 		if (!c) {
-			x3dom.debug.doLog("Assertion failed in " + x3dom.debug.assert.caller.name + ': ' + msg, x3dom.debug.WARNING);
+			x3dom.debug.doLog("Assertion failed in " + 
+                    x3dom.debug.assert.caller.name + ': ' + 
+                    msg, x3dom.debug.ERROR);
 		}
 	},
 	
