@@ -70,9 +70,10 @@ x3dom.gfx_webgl = (function () {
                       //x3dom.debug.logInfo(ctx.getSupportedExtensions());
                     }
                     catch (ex) {
-                        x3dom.debug.logInfo("Your browser probably supports an older WebGL version." +
-                                            " Please try the mobile runtime instead:\n" +
-                                            "http://www.x3dom.org/x3dom/src_mobile/x3dom.js");
+                        x3dom.debug.logWarning(
+                                "Your browser probably supports an older WebGL version. " +
+                                "Please try the mobile runtime instead:\n" +
+                                "http://www.x3dom.org/x3dom/src_mobile/x3dom.js");
                     }
                     
                     return newCtx;
@@ -413,7 +414,7 @@ x3dom.gfx_webgl = (function () {
             
 			if (glErr !== 0) {
 				//x3dom.debug.logInfo("GetProgramiv(ACTIVE_UNIFORMS) not implemented, loop until error");
-                x3dom.debug.logInfo("GL-Error: " + glErr);
+                x3dom.debug.logError("GL-Error: " + glErr);
 				//break;
 			}
 
@@ -465,7 +466,7 @@ x3dom.gfx_webgl = (function () {
 						(function (loc) { return function (val) { gl.uniform1i(loc, val); }; }) (loc));
 					break;
 				default:
-					x3dom.debug.logInfo('GLSL program variable '+obj.name+' has unknown type '+obj.type);
+					x3dom.debug.logWarning('GLSL program variable '+obj.name+' has unknown type '+obj.type);
 			}
 		}
 		
@@ -482,7 +483,7 @@ x3dom.gfx_webgl = (function () {
             
 			if (glErr !== 0) {
 				//x3dom.debug.logInfo("GetProgramiv(ACTIVE_ATTRIBUTES) not implemented, loop until error");
-                x3dom.debug.logInfo("GL-Error: " + glErr);
+                x3dom.debug.logError("GL-Error: " + glErr);
 				//break;	
 			}
 
@@ -1018,8 +1019,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "	}\n";
 				}
 				shader += "}\n";
-				if(cssMode & 4){
-					//x3dom.debug.logInfo("SPEC");
+				if(cssMode & 4) {
 					shader += "specular *= texture2D( spec, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
 				}
 				if(texture || (cssMode & 1)){
@@ -1210,7 +1210,7 @@ x3dom.gfx_webgl = (function () {
         }
         else if (!x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
                 (shape._cf.geometry.node._mesh._positions[0].length < 1)) {
-            x3dom.debug.logInfo("NO VALID VERTEX POSITIONS SET!");
+            x3dom.debug.logError("NO VALID VERTEX POSITIONS SET!");
             return;
         }
         
@@ -2008,7 +2008,7 @@ x3dom.gfx_webgl = (function () {
                                 scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
             }
             catch(e) {
-                x3dom.debug.logException("render background: " + e);
+                x3dom.debug.logException("Render background: " + e);
             }
             
             gl.disableVertexAttribArray(sp.position);
@@ -2135,7 +2135,6 @@ x3dom.gfx_webgl = (function () {
                     gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
                     gl.enableVertexAttribArray(sp.position);
                 }
-                //  **********************
                 if (sp.color !== undefined)
                 {
                     gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
@@ -2168,7 +2167,8 @@ x3dom.gfx_webgl = (function () {
                 
                 try {
                     if (shape._webgl.indexes && shape._webgl.indexes[q])
-                    gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    gl.drawElements(shape._webgl.primType, 
+                                    shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                 }
                 catch (e) {
                     x3dom.debug.logException(shape._DEF + " renderPickingPass(): " + e);
@@ -2177,7 +2177,6 @@ x3dom.gfx_webgl = (function () {
                 if (sp.position !== undefined) {
                     gl.disableVertexAttribArray(sp.position);
                 }
-                //  **********************
                 if (sp.color !== undefined) {
                     gl.disableVertexAttribArray(sp.color);
                 }
@@ -2202,7 +2201,7 @@ x3dom.gfx_webgl = (function () {
             //No Exception on file:// when starting with additional flags:
             //chrome.exe --enable-webgl --use-gl=desktop --log-level=0 
             //           --allow-file-access-from-files --allow-file-access
-            x3dom.debug.logException(se);
+            x3dom.debug.logException(se + " (cannot pick)");
         }
         
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
@@ -2283,7 +2282,7 @@ x3dom.gfx_webgl = (function () {
 		if (numLights > 0)
 		{
 			if(numLights > 8){
-				x3dom.debug.logInfo("Too many lights! Only 8 lights supported!");
+				x3dom.debug.logWarning("Too many lights! Only 8 lights supported!");
 				numLights = 8;
 			}
 			

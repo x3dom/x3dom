@@ -164,7 +164,7 @@ x3dom.BindableStack.prototype.switchTo = function (target) {
 	if (toBind)
 		this.replaceTop(toBind);
 	else 
-		x3dom.debug.logInfo ('Cannot switch bindable; no other bindable with description found.');
+		x3dom.debug.logWarning ('Cannot switch bindable; no other bindable with description found.');
 };
 
 x3dom.BindableStack.prototype.getActive = function () {
@@ -217,7 +217,7 @@ x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,d
 		this._stacks.push(stack);
 	}
 	else {
-	    x3dom.debug.logInfo ('Invalid Bindable type/defaultType:' + typeName + '/' + defaultType);
+	    x3dom.debug.logWarning('Invalid Bindable type/defaultType:' + typeName + '/' + defaultType);
 	}
 };
 
@@ -394,7 +394,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 	    if (domNode.hasAttribute('USE')) {
 	      n = this.defMap[domNode.getAttribute('USE')];
 	      if (n === null) 
-	        x3dom.debug.logInfo ('Could not USE: ' + domNode.getAttribute('USE'));
+	        x3dom.debug.logWarning('Could not USE: ' + domNode.getAttribute('USE'));
 	      return n;
 	    }
 	    else {
@@ -405,7 +405,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 var toNode = this.defMap[route.getAttribute('toNode')];
                 //x3dom.debug.logInfo("ROUTE: from=" + fromNode._DEF + ", to=" + toNode._DEF);
                 if (! (fromNode && toNode)) {
-                    x3dom.debug.logInfo("Broken route - can't find all DEFs for " + 
+                    x3dom.debug.logWarning("Broken route - can't find all DEFs for " + 
                                 route.getAttribute('fromNode')+" -> "+ route.getAttribute('toNode'));
                     return null;
                 }
@@ -418,7 +418,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             // find the NodeType for the given dom-node          
             var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
             if (nodeType === undefined) {
-                x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
+                x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
                 var ctx = { doc: this.doc, xmlNode: domNode };
@@ -463,7 +463,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     }
     else if (domNode.localName) {
         // be nice to users who use nodes not (yet) known to the system
-        x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
+        x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
 		n = null;
     }
 
@@ -825,7 +825,7 @@ x3dom.registerNodeType(
                         };
                     }
                     catch (exc2) {
-                        x3dom.debug.logInfo("updateField: setValueByStr() NYI for " + typeof(f));
+                        x3dom.debug.logError("updateField: setValueByStr() NYI for " + typeof(f));
                     }
                 }
                 
@@ -1325,7 +1325,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'texturePriority', 0);
             this.addField_SFBool(ctx, 'generateMipMaps', false);
             
-            x3dom.debug.logInfo("TextureProperties NYI");   // TODO; impl. in gfx
+            x3dom.debug.logWarning("TextureProperties NYI");   // TODO; impl. in gfx
         }
     )
 );
@@ -1736,7 +1736,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'size', 128);
             this.addField_SFString(ctx, 'update', 'NONE');  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
             
-            x3dom.debug.logInfo("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx
+            x3dom.debug.logWarning("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx
         },
         {
             getTexSize: function() {
@@ -1979,7 +1979,7 @@ x3dom.registerNodeType(
                                 };
                             }
                             catch (exc2) {
-                                x3dom.debug.logInfo("setValueByStr() NYI for " + typeof(this._vf[field]));
+                                x3dom.debug.logError("setValueByStr() NYI for " + typeof(this._vf[field]));
                             }
                         }
                         
@@ -4478,7 +4478,7 @@ x3dom.registerNodeType(
 		  }
 		  else {
 			this._stack = null;
-		    x3dom.debug.logError( 'Could not find bindableBag for registration ' + this.typeName());
+		    x3dom.debug.logError('Could not find bindableBag for registration ' + this.typeName());
 		  }
         },
 		{
@@ -5424,7 +5424,7 @@ x3dom.registerNodeType(
             
             // FIXME; implement optimizations; no need to maintain the children's 
             // X3D representations, as they cannot be accessed after creation time
-            x3dom.debug.logInfo("StaticGroup NYI");
+            x3dom.debug.logWarning("StaticGroup NYI");
         }
     )
 );
@@ -5856,7 +5856,7 @@ x3dom.registerNodeType(
 				xhr.onreadystatechange = function () {
 					if (xhr.readyState == 4) {
 						if (xhr.responseXML.documentElement.localName == 'parsererror') {
-							x3dom.debug.logInfo('XML parser failed on ' + this._vf.url + 
+							x3dom.debug.logError('XML parser failed on ' + this._vf.url + 
                                         ':\n' + xhr.responseXML.documentElement.textContent);
 							return;
 						}
@@ -5884,7 +5884,7 @@ x3dom.registerNodeType(
 						var newScene = nameSpace.setupTree(inlScene);
 					}
 					else {
-						x3dom.debug.logInfo('no Scene in ' + xml.localName);
+						x3dom.debug.logWarning('no Scene in ' + xml.localName);
 					}
 
 					while (that._childNodes.length !== 0) {
@@ -6816,7 +6816,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 doc.needRender = true;
 			}
             else {
-				x3dom.debug.logInfo("No _nameSpace in onNodeInserted");
+				x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
 			}
          }
     };
@@ -7098,7 +7098,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 this._viewarea.resetView();
             }
             break;
-        case 115: /* l, light view */ 
+        case 115: /* s, light view */
 			{
                 if (this._nodeBag.lights.length > 0)
                 {
