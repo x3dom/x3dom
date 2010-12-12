@@ -5986,6 +5986,16 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
     
     if (needNavAnim)
     {
+        var avatarRadius = 0.25;
+        var avatarHeight = 1.6;
+        var avatarKnee = 0.75;  // TODO; check max. step size
+        
+        if (navi._vf.avatarSize.length > 2) {
+            avatarRadius = navi._vf.avatarSize[0];
+            avatarHeight = navi._vf.avatarSize[1];
+            avatarKnee = navi._vf.avatarSize[2];
+        }
+        
         var currViewMat = this.getViewMatrix();
         var deltaT = timeStamp - this._lastTS;
         
@@ -5993,8 +6003,6 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         var step = (this._lastButton & 2) ? 1 : -1;
         step *= (deltaT * navi._vf.speed);
         
-        //var phi = -Math.PI * this._dx / this._width;
-        //var theta = -Math.PI * this._dy / this._height;
         var phi = Math.PI * deltaT * (this._pressX - this._lastX) / this._width;
         var theta = Math.PI * deltaT * (this._pressY - this._lastY) / this._height;
         
@@ -6006,7 +6014,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             this._flyMat = new x3dom.fields.SFMatrix4f();
             this._flyMat.setValues(currViewMat);
             
-            // FIXME; just to be sure...
+            // reset examine matrices to identity
             this._rotMat = x3dom.fields.SFMatrix4f.identity();
             this._transMat = x3dom.fields.SFMatrix4f.identity();
             this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -6022,7 +6030,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             this._up = new x3dom.fields.SFVec3f(0, 1, 0);
         }
         
-        //rotate around the up vector
+        // rotate around the up vector
         var q = x3dom.fields.Quaternion.axisAngle(this._up, phi);
         var temp = q.toMatrix();
         
@@ -6056,7 +6064,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         {
             var dist = this._pickingInfo.pickPos.subtract(this._from).length();
             
-            if (step < 0 && dist <= 0.5) {
+            if (step < 0 && dist <= avatarRadius) {
                 step = 0;
             }
         }
@@ -6067,6 +6075,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._at = temp.multMatrixPnt(this._at);
         this._from = temp.multMatrixPnt(this._from);
         
+        // finally attach to ground when walking
         if (navi._vf.type[0].toLowerCase() === "walk")
         {
             var tmpAt = this._from.addScaled(up, -1.0);
@@ -6081,15 +6090,11 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             {
                 var dist = this._pickingInfo.pickPos.subtract(this._from).length();
                 
-                var height = 1.6;
-                if (navi._vf.avatarSize.length > 2) {
-                    height = navi._vf.avatarSize[1];
-                }
-                
-                this._at = this._at.add(up.multiply(height - dist));
-                this._from = this._from.add(up.multiply(height - dist));
+                this._at = this._at.add(up.multiply(avatarHeight - dist));
+                this._from = this._from.add(up.multiply(avatarHeight - dist));
             }
         }
+        this._pickingInfo.pickObj = null;
         
         this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, up);
         
@@ -6104,7 +6109,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
     return needNavAnim;
 };
 
-x3dom.Viewarea.prototype.animateTo = function(target, prev)
+x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
 {
     var navi = this._scene.getNavigationInfo();
     
@@ -6124,7 +6129,14 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev)
         }
         
         this._mixer._beginTime = this._lastTS;
-        this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+        
+        if (arguments.length >= 3) {
+            // for lookAt to assure travel speed of 1 m/s
+            this._mixer._endTime = this._lastTS + dur;
+        }
+        else {
+            this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+        }
         
         this._mixer.setBeginMatrix (prev);
         this._mixer.setEndMatrix (target);
@@ -6430,13 +6442,8 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
 {
-    this._dx = 0;
-    this._dy = 0;
-    this._lastX = x;
-    this._lastY = y;
-    this._lastButton = buttonState;
-    
-    if (this._scene._vf.pickMode.toLowerCase() !== "box") {
+    if (this._scene._vf.pickMode.toLowerCase() !== "box")
+    {
         this.prepareEvents(x, y, buttonState, "onmouseup");
         
         // click means that mousedown _and_ mouseup were detected on same element
@@ -6444,35 +6451,87 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
             this._pickingInfo.pickObj === this._pickingInfo.lastClickObj) {
             this.prepareEvents(x, y, buttonState, "onclick");
         }
-        return;
     }
-    
-    var t0 = new Date().getTime();
-    var line = this.calcViewRay(x, y);
-    var isect = this._scene.doIntersect(line);
-    var obj = line.hitObject;
-    
-    if (isect && obj)
+    else
     {
-        this._pick.setValues(line.hitPoint);
+        var t0 = new Date().getTime();
+        var line = this.calcViewRay(x, y);
+        var isect = this._scene.doIntersect(line);
+        var obj = line.hitObject;
         
-        this.checkEvents(obj, x, y, buttonState, "onclick");
+        if (isect && obj)
+        {
+            this._pick.setValues(line.hitPoint);
+            
+            this.checkEvents(obj, x, y, buttonState, "onclick");
+            
+            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
+                                obj._DEF + "\ at dist=" + line.dist.toFixed(4));
+            x3dom.debug.logInfo("Ray hit at position " + this._pick);
+        }
         
-        x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
-                            obj._DEF + "\ at dist=" + line.dist.toFixed(4));
-        x3dom.debug.logInfo("Ray hit at position " + this._pick);
+        var t1 = new Date().getTime() - t0;
+        x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
+        
+        if (!isect) 
+        {
+            var dir = this.getViewMatrix().e2().negate();
+            var u = dir.dot(line.pos.negate()) / dir.dot(line.dir);
+            this._pick = line.pos.add(line.dir.multiply(u));
+            //x3dom.debug.logInfo("No hit at position " + this._pick);
+        }
     }
     
-    var t1 = new Date().getTime() - t0;
-    x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
+    var navi = this._scene.getNavigationInfo();
     
-    if (!isect) 
+    if (this._pickingInfo.pickObj &&
+        navi._vf.type[0].toLowerCase() === "lookat")
     {
-        var dir = this.getViewMatrix().e2().negate();
-        var u = dir.dot(line.pos.negate()) / dir.dot(line.dir);
-        this._pick = line.pos.add(line.dir.multiply(u));
-        //x3dom.debug.logInfo("No hit at position " + this._pick);
+        var step = (this._lastButton & 2) ? -1 : 1;
+        var dist = 0.25;
+        
+        if (navi._vf.avatarSize.length >= 1) {
+            dist = navi._vf.avatarSize[0];
+        }
+        dist *= 2;
+        
+        var laMat = new x3dom.fields.SFMatrix4f();
+        laMat.setValues(this.getViewMatrix());
+        laMat = laMat.inverse();
+        
+        var from = laMat.e3();
+        var at = from.subtract(laMat.e2());
+        var up = laMat.e1();
+        
+        var dir = this._pickingInfo.pickPos.subtract(from);
+        var len = dir.length();
+        dir = dir.normalize();
+        
+        var newUp = new x3dom.fields.SFVec3f(0, 1, 0);
+        var newAt = from.addScaled(dir, len);
+        
+        var s = dir.cross(newUp).normalize();
+        dir = s.cross(newUp).normalize();
+        
+        if (step < 0) {
+            dist = (0.5 + len + dist) * 2;
+        }
+        var newFrom = newAt.addScaled(dir, dist);
+        
+        laMat = x3dom.fields.SFMatrix4f.lookAt(newFrom, newAt, newUp);
+        laMat = laMat.inverse();
+        
+        dist = newFrom.subtract(from).length();
+        var dur = Math.log(dist / navi._vf.speed);
+        
+        this.animateTo(laMat, this._scene.getViewpoint(), dur);
     }
+    
+    this._dx = 0;
+    this._dy = 0;
+    this._lastX = x;
+    this._lastY = y;
+    this._lastButton = buttonState;
 };
 
 x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
@@ -6949,9 +7008,10 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 					statDiv.style.display = ((statDiv.style.display == 'none') ? 'inline' : 'none');
 				}
 				
-                x3dom.debug.logInfo("a: show all | d: show helper buffers | l: light view | " +
+                x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
                                     "m: toggle render mode | p: intersect type | r: reset view" +
-                                    "e: examine mode | f: fly mode | w: walk | u: upright pos.");
+                                    "e: examine mode | f: fly mode | w: walk mode | " +
+                                    "l: lookAt mode | u: upright position");
             }
             break;
         case  43: /* + (incr. speed) */
@@ -6984,8 +7044,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 					this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
                 }
                 
-                x3dom.debug.logContainer.style.visibility = 
-                        (this._viewarea._visDbgBuf === true) ? "visible" : "hidden";
+                x3dom.debug.logContainer.style.display = 
+                        (this._viewarea._visDbgBuf === true) ? "block" : "none";
             }
             break;
         case 101: /* e, examine mode */
@@ -7000,13 +7060,10 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 x3dom.debug.logInfo("Switch to fly mode.");
             }
             break;
-        case 108: /* l, light view */ 
+        case 108: /* l, lookAt mode */ 
 			{
-                if (this._nodeBag.lights.length > 0)
-                {
-                    this._viewarea.animateTo(this._viewarea.getLightMatrix()[0], 
-                                             this._scene.getViewpoint());
-                }
+                this._scene.getNavigationInfo()._vf.type[0] = "lookat";
+                x3dom.debug.logInfo("Switch to lookat mode.");
 			}
 			break;
         case 109: /* m, toggle "points" attribute */ 
@@ -7041,6 +7098,15 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 this._viewarea.resetView();
             }
             break;
+        case 115: /* l, light view */ 
+			{
+                if (this._nodeBag.lights.length > 0)
+                {
+                    this._viewarea.animateTo(this._viewarea.getLightMatrix()[0], 
+                                             this._scene.getViewpoint());
+                }
+			}
+			break;
         case 117: /* u, upright position */ 
 			{
                 this._viewarea.uprightView();
@@ -7049,6 +7115,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 119: /* w, walk mode */
             {
                 this._scene.getNavigationInfo()._vf.type[0] = "walk";
+                x3dom.debug.logInfo("Switch to walk mode.");
             }
             break;
         default:
