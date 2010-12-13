@@ -1756,6 +1756,10 @@ x3dom.gfx_webgl = (function () {
                 gl.deleteBuffer(bgnd._webgl.buffers[1]);
                 gl.deleteBuffer(bgnd._webgl.buffers[0]);
             }
+            if (bgnd._webgl.shader.color !== undefined) 
+            {
+                gl.deleteBuffer(bgnd._webgl.buffers[2]);
+            }
             bgnd._webgl = {};
         }
         
@@ -1822,9 +1826,29 @@ x3dom.gfx_webgl = (function () {
             }
 		}
 		else 
-		{
-            // TODO; impl. gradient bg etc., e.g. via canvas 2d?
-            bgnd._webgl = {};
+		{          
+            if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length)
+            {
+                var sphere = new x3dom.nodeTypes.Sphere();
+                sphere.genSkyColors(bgnd.getSkyColor(), bgnd._vf.skyAngle, 
+                                    bgnd.getGroundColor(), bgnd._vf.groundAngle);
+                
+                bgnd._webgl = {
+                    positions: sphere._mesh._positions[0],
+                    indexes: sphere._mesh._indices[0],
+                    colors: sphere._mesh._colors[0],
+                    buffers: [{}, {}, {}]
+                };
+                
+                bgnd._webgl.primType = gl.TRIANGLES;
+                bgnd._webgl.shader = this.getShaderProgram(gl, 
+                        ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
+            }
+            else 
+            {
+                // TODO; impl. gradient bg etc., e.g. via canvas 2d?
+                bgnd._webgl = {};
+            }
         }
         
         if (bgnd._webgl.shader)
@@ -1841,6 +1865,7 @@ x3dom.gfx_webgl = (function () {
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(sp.position);
             
             var indicesBuffer = gl.createBuffer();
             bgnd._webgl.buffers[0] = indicesBuffer;
@@ -1852,13 +1877,66 @@ x3dom.gfx_webgl = (function () {
             
             delete vertices;
             delete indexArray;
+            
+            if (sp.color !== undefined)
+            {
+                var colorBuffer = gl.createBuffer();
+                bgnd._webgl.buffers[2] = colorBuffer;
+                
+                var colors = new Float32Array(bgnd._webgl.colors);
+                
+                gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
+                
+                gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp.color);
+                
+                delete colors;
+            }
         }
         
         bgnd._webgl.render = function(gl, mat_scene)
         {
             var sp = bgnd._webgl.shader;
             
-            if (!bgnd._webgl.texture || !sp ||
+            if (sp && sp.color)
+            {
+                gl.clearDepth(1.0);
+                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+                
+                gl.frontFace(gl.CCW);
+                gl.disable(gl.CULL_FACE);
+                gl.disable(gl.DEPTH_TEST);
+                gl.disable(gl.BLEND);
+                
+                sp.bind();
+                
+                sp.alpha = 1.0;
+                sp.modelViewProjectionMatrix = mat_scene.toGL();
+                
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bgnd._webgl.buffers[0]);
+                
+				gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[1]);
+				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+				gl.enableVertexAttribArray(sp.position);
+                
+                gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[2]);
+                gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+                gl.enableVertexAttribArray(sp.color);
+                
+                try {
+                    gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                }
+                catch(e) {
+                    x3dom.debug.logException("Render background: " + e);
+                }
+                
+                gl.disableVertexAttribArray(sp.position);
+                gl.disableVertexAttribArray(sp.color);
+                
+                gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
+            }
+            else if (!sp || !bgnd._webgl.texture ||
                 (bgnd._webgl.texture.textureCubeReady !== undefined && 
                  bgnd._webgl.texture.textureCubeReady !== true))
             {
@@ -2140,7 +2218,8 @@ x3dom.gfx_webgl = (function () {
                 {
                     gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
                     
-                    gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+                    gl.vertexAttribPointer(sp.color, 
+                        shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
                     gl.enableVertexAttribArray(sp.color);
                 }
                 if (sp.texcoord !== undefined)
