@@ -1,8 +1,7 @@
-<!DOCTYPE html>
 <html>
   <head>
-    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
     <link rel='stylesheet' type='text/css' href='x3dom.css'></link>
+    <script type='text/javascript' src='x3dom.js'></script>
   </head>
   <body>
     <h1>X3D Follower Example</h1>
@@ -12,6 +11,7 @@
     <x3d id='someUniqueId' showStat='true' showLog='false' width='400px' height='400px'>
       <scene DEF='scene'>
 		<viewpoint position='0 0 5'></viewpoint>
+        
 		<transform DEF='marker' scale='0.2 0.2 0.2' center='0 0 0'>
 			<shape>
 				<appearance >
@@ -20,19 +20,22 @@
 				<cone></cone>
 			</shape>
 		</transform>
+        
 		<positionChaser id='pc' duration="1.5" initialDestination="0 -1 0" initialValue="0 0 0" >
 		</positionChaser>
 		<orientationChaser id='oc' duration="1.5" initialDestination="0 0 1 0" initialValue="0 0 1 0.75" >
 		</orientationChaser>
 		<colorChaser id='cc' duration="1.5" initialDestination="1 1 0" initialValue="1 1 0" >
 		</colorChaser>
+        
 		<route fromNode='pc' fromField='value_changed' toNode='marker' toField='translation'></route>
 		<route fromNode='oc' fromField='value_changed' toNode='marker' toField='rotation'></route>
 		<route fromNode='cc' fromField='value_changed' toNode='mat' toField='diffuseColor'></route>
-        <transform onmousemove="document.getElementById('pc').setAttribute('set_destination', hitPnt);
-							   document.getElementById('oc').setAttribute('set_destination', '0.86 0.36 -0.36 1.71');
-							   document.getElementById('cc').setAttribute('set_destination', '1 0 0');" 
-							rotation='0 1 0 0.785' translation='-1 0 0'>
+        
+        <transform onmousemove="document.getElementById('pc').setAttribute('set_destination', event.hitPnt);
+                   document.getElementById('oc').setAttribute('set_destination', '0.86 0.36 -0.36 1.71');
+				   document.getElementById('cc').setAttribute('set_destination', '1 0 0');" 
+                   rotation='0 1 0 0.785' translation='-1 0 0'>
           <shape >
             <appearance >
               <material diffuseColor='red' ></material>
@@ -43,10 +46,11 @@
             </indexedFaceSet>
           </shape>
         </transform>
-	   <transform onmousemove="document.getElementById('pc').setAttribute('set_destination', hitPnt); 		  		
-							document.getElementById('oc').setAttribute('set_destination', '0.86 -0.36 0.36 1.71');
-							document.getElementById('cc').setAttribute('set_destination', '0 1 0');"
-							rotation='0 1 0 -0.785' translation='1 0 0'>
+        
+	   <transform onmousemove="document.getElementById('pc').setAttribute('set_destination', event.hitPnt);
+				  document.getElementById('oc').setAttribute('set_destination', '0.86 -0.36 0.36 1.71');
+				  document.getElementById('cc').setAttribute('set_destination', '0 1 0');"
+				  rotation='0 1 0 -0.785' translation='1 0 0'>
           <shape >
             <appearance >
               <material diffuseColor='green' ></material>
@@ -55,8 +59,8 @@
 	        </indexedFaceSet>
           </shape>
         </transform>
+        
       </scene>
     </x3d>
-    <script type='text/javascript' src='x3dom.js'></script>
   </body>
 </html>

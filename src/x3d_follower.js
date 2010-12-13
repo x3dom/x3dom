@@ -1844,7 +1844,7 @@ x3dom.registerNodeType(
             this.addField_MFVec3f(ctx, 'set_value', []);
             this.addField_MFVec3f(ctx, 'set_destination', []);
             
-            x3dom.debug.logInfo("CoordinateDamper NYI");
+            x3dom.debug.logWarning("CoordinateDamper NYI");
         },
         {
             nodeChanged: function() {},
@@ -1867,7 +1867,7 @@ x3dom.registerNodeType(
             this.addField_MFVec2f(ctx, 'set_value', []);
             this.addField_MFVec2f(ctx, 'set_destination', []);
             
-            x3dom.debug.logInfo("TexCoordDamper2D NYI");
+            x3dom.debug.logWarning("TexCoordDamper2D NYI");
         },
         {
             nodeChanged: function() {},

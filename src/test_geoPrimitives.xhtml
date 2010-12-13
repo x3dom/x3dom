@@ -19,8 +19,8 @@
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
-                <Group onmousemove="document.getElementById('bar').setAttribute('translation', hitPnt);
-                                document.getElementById('pc').setAttribute('set_destination', hitPnt);"
+                <Group onmousemove="document.getElementById('bar').setAttribute('translation', event.hitPnt);
+                                document.getElementById('pc').setAttribute('set_destination', event.hitPnt);"
                        onclick="document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
                                 document.getElementById('cc').setAttribute('set_destination', '0 1 0');">
                                 
@@ -42,7 +42,7 @@
 						<Appearance DEF="boxApp"> 
 							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Box DEF="box" onclick="alert('Hi, I am a little red box and was picked at position\n' + hitPnt);" />
+						<Box DEF="box" onclick="alert('Hi, I am a little red box and was picked at position\n' + event.hitPnt);" />
 					</Shape>
 				</Transform>
                 

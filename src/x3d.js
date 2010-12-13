@@ -418,7 +418,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             // find the NodeType for the given dom-node          
             var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
             if (nodeType === undefined) {
-                x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
+                x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
                 var ctx = { doc: this.doc, xmlNode: domNode };
@@ -463,7 +463,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     }
     else if (domNode.localName) {
         // be nice to users who use nodes not (yet) known to the system
-        x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
+        x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
 		n = null;
     }
 
@@ -6342,20 +6342,25 @@ x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
     event.target = node._xmlNode;
     var attrib = node._xmlNode[eventType];
     
-    if (typeof(attrib) === "function") {
-        attrib.call(node._xmlNode, event);
-    }
-    else {
-        var funcStr = node._xmlNode.getAttribute(eventType);
-        var func = new Function('hitPnt', 'event', funcStr);
-        func.call(node._xmlNode, this._pick.toGL(), event);
-    }
-    
-    var list = node._listeners[event.type];
-    if (list) {
-        for (var it=0; it<list.length; it++) {
-            list[it].call(node._xmlNode, event);
+    try {
+        if (typeof(attrib) === "function") {
+            attrib.call(node._xmlNode, event);
         }
+        else {
+            var funcStr = node._xmlNode.getAttribute(eventType);
+            var func = new Function('event', funcStr);
+            func.call(node._xmlNode, event);
+        }
+        
+        var list = node._listeners[event.type];
+        if (list) {
+            for (var it=0; it<list.length; it++) {
+                list[it].call(node._xmlNode, event);
+            }
+        }
+    }
+    catch(ex) {
+        x3dom.debug.logException(ex);
     }
     
     return event.cancelBubble;
