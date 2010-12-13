@@ -19,7 +19,7 @@
 				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
 				<Background skyColor='.95 .95 .95' />
 				
-                <Group onclick="document.getElementById('bar').setAttribute('translation', hitPnt);">
+                <Group onclick="document.getElementById('bar').setAttribute('translation', event.hitPnt);">
                 
 				<Transform DEF="coneTrafo" translation="-4.5 0 0">
 					<Shape DEF="coneShape">
@@ -35,7 +35,7 @@
 						<Appearance DEF="boxApp"> 
 							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Box DEF="box" onclick="alert('Red Box picked at position\n' + hitPnt);" />
+						<Box DEF="box" onclick="alert('Red Box picked at position\n' + event.hitPnt);" />
 					</Shape>
 				</Transform>
                 
@@ -44,7 +44,7 @@
 						<Appearance DEF="sphereApp">
 							<Material diffuseColor="0 0 1" specularColor=".5 .5 .5" />
 						</Appearance>
-						<Sphere DEF="sphere" onclick="alert('Blue Sphere picked at position\n' + hitPnt);" />
+						<Sphere DEF="sphere" onclick="alert('Blue Sphere picked at position\n' + event.hitPnt);" />
 					</Shape>
 				</Transform>
 				
