@@ -2610,6 +2610,50 @@ x3dom.registerNodeType(
             this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
+        },
+        {
+            genSkyColors: function(skyColor, skyAngle, groundColor, groundAngle)
+            {
+                // TODO; the following three values are the same as above:
+                // make them const or dynamically configurable (for skyBox)
+                var r = 10000;
+                var latitudeBands = 24;
+                var longitudeBands = 24;
+                
+                var latNumber, longNumber;
+                var theta, sinTheta, cosTheta;
+                var phi, sinPhi, cosPhi;
+                var x, y, z;
+                
+                this._mesh._colors[0] = [];
+                
+                // TODO; impl.!!!
+                var skySize = skyAngle.length;
+                var groundSize = groundAngle.length;
+                
+                for (latNumber = 0; latNumber <= latitudeBands; latNumber++)
+                {
+                    theta = (latNumber * Math.PI) / latitudeBands;
+                    sinTheta = Math.sin(theta);
+                    cosTheta = Math.cos(theta);
+
+                    for (longNumber = 0; longNumber <= longitudeBands; longNumber++)
+                    {
+                        phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
+                        sinPhi = Math.sin(phi);
+                        cosPhi = Math.cos(phi);
+
+                        x = -cosPhi * sinTheta;
+                        y = -cosTheta;
+                        z = -sinPhi * sinTheta;
+                        
+                        // TODO; implement color interpolation according to spec
+                        this._mesh._colors[0].push( skyColor[0].r );
+                        this._mesh._colors[0].push( skyColor[0].g );
+                        this._mesh._colors[0].push( skyColor[0].b );
+                    }
+                }
+            }
         }
     )
 );
@@ -4783,6 +4827,10 @@ x3dom.registerNodeType(
             
 			getSkyColor: function() {
 				return this._vf.skyColor;
+			},
+            
+			getGroundColor: function() {
+				return this._vf.groundColor;
 			},
             
 			getTransparency: function() {
