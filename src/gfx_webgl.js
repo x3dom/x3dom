@@ -145,6 +145,7 @@ x3dom.gfx_webgl = (function () {
         "" +
         "void main(void) {" +
         "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+        "    gl_PointSize = 2.0;" + 
         "    fragColor = color;" +
         "}"
         };
@@ -2564,7 +2565,10 @@ x3dom.gfx_webgl = (function () {
               else {
                 // fixme; this differentiation isn't nice, but otherwise WebGL seems to run out of mem
                 if (shape._webgl.primType == gl.POINTS) {
+                    gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
+                    //gl.enable(gl.POINT_SMOOTH);
                     gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
+                    gl.disable(gl.VERTEX_PROGRAM_POINT_SIZE);
                 }
                 else {
                     //x3dom.debug.logInfo("indexLength: " + shape._webgl.indexes[q].length);
