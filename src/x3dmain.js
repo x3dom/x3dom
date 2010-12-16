@@ -267,7 +267,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             that.x3dElem.setAttribute("height", new_dim[1]);
         }
         
-        //that.x3dElem.checkStyleChanges();
+        that.x3dElem.checkStyleChanges();
     };
 
     this.createStatDiv = function() {
@@ -329,67 +329,70 @@ x3dom.X3DCanvas = function(x3dElem) {
     
     ////
     // FIXME; ALLOW DYNAMICALLY SETTING STYLE (ALL POSSIBILITIES) OF X3D ELEMENT!
-    /*
     // props to be propagated to the canvas div on change of x3d elem
-    var css_properties = [
-        "background",
-        "background-attachment",
-        "background-color",
-        "background-image",
-        "background-position",
-        "background-repeat",
-        "border",
-        "border-color",
-        "border-style",
-        "border-top",
-        "border-right",
-        "border-bottom",
-        "border-left",
-        "border-top-color",
-        "border-right-color",
-        "border-bottom-color",
-        "border-left-color",
-        "border-top-style",
-        "border-right-style",
-        "border-bottom-style",
-        "border-left-style",
-        "border-top-width",
-        "border-right-width",
-        "border-bottom-width",
-        "border-left-width",
-        "border-width",
-        "clip",
-        "display",
-        "float",
-        "left",
-        "margin",
-        "margin-top",
-        "margin-right",
-        "margin-bottom",
-        "margin-left",
-        "marker-offset",
-        "max-height",
-        "max-width",
-        "min-height",
-        "min-width",
-        "overflow",
-        "padding",
-        "padding-top",
-        "padding-right",
-        "padding-bottom",
-        "padding-left",
-        "position",
-        "right",
-        "size",
-        "stress",
-        "top",
-        "visibility",
-        "z-index",
-        "width",
-        "height"
-    ];
-    */
-    
+    // var css_properties = [
+    //     "background",
+    //     "background-attachment",
+    //     "background-color",
+    //     "background-image",
+    //     "background-position",
+    //     "background-repeat",
+    //     "border",
+    //     "border-color",
+    //     "border-style",
+    //     "border-top",
+    //     "border-right",
+    //     "border-bottom",
+    //     "border-left",
+    //     "border-top-color",
+    //     "border-right-color",
+    //     "border-bottom-color",
+    //     "border-left-color",
+    //     "border-top-style",
+    //     "border-right-style",
+    //     "border-bottom-style",
+    //     "border-left-style",
+    //     "border-top-width",
+    //     "border-right-width",
+    //     "border-bottom-width",
+    //     "border-left-width",
+    //     "border-width",
+    //     "clip",
+    //     "display",
+    //     "float",
+    //     "left",
+    //     "margin",
+    //     "margin-top",
+    //     "margin-right",
+    //     "margin-bottom",
+    //     "margin-left",
+    //     "marker-offset",
+    //     "max-height",
+    //     "max-width",
+    //     "min-height",
+    //     "min-width",
+    //     "overflow",
+    //     "padding",
+    //     "padding-top",
+    //     "padding-right",
+    //     "padding-bottom",
+    //     "padding-left",
+    //     "position",
+    //     "right",
+    //     "size",
+    //     "stress",
+    //     "top",
+    //     "visibility",
+    //     "z-index",
+    //     "width",
+    //     "height"
+    // ];
+
+    var css_cache = {
+        background: x3dom.getStyle(x3dElem, "background"),
+        backgroundColor: x3dom.getStyle(x3dElem, "background-color")
+    };
+
     /**
      * @private Reads the style values of X3D element and
      * propagates them to the canvasDiv element. This should
@@ -406,28 +409,44 @@ x3dom.X3DCanvas = function(x3dElem) {
      *    i.e. "padding-bottom" => canvasDiv.paddingBottom(value_from_x3d_element);
      *         "width"          => canvasDiv.width(value_from_x3d_element);
      */
-    /*
     x3dElem.checkStyleChanges = function()
     {
-        css_properties.forEach( function(str) {
-            // if there is a style
-            var style_value = x3dom.getStyle(x3dElem, str);
-
-            if (style_value) {
-                // copy it over
-                str = str.replace(/-/g, ' ');
-                str = x3dom.stringToMethod(str);
-                str = str.replace(/ /g, '');
+        for (var property_name in css_cache) {
+            if (css_cache[property_name]) {
+//                x3dom.debug.logInfo("-- K: " + property_name + " V: " + css_cache[property_name]);
+                var current_value = x3dom.getStyle(x3dElem, property_name);
                 
-                // TODO: wollten wir das nicht fuer das canvasDiv setzen?
-                var meth = "that.canvasDiv.style." + str + " = '" + style_value.toString() + "';";
-                //x3dom.debug.logInfo("Dynamically calling method: " + meth);
-                // FIXME: wenn das nicht aufgerufen wird, scheint resize zu gehen...
-                //eval(meth);
+                if (current_value != css_cache[property_name]) {
+                    x3dom.debug.logInfo("x3d element changed style '" + property_name + "' is now '" + current_value + "'");
+
+                    // copy style change to canvas div
+//                    var meth = "that.canvasDiv.style." + property_name + " = '" + current_value.toString() + "';";
+//                    x3dom.debug.logInfo("Dynamically calling method: " + meth);
+                    eval("that.canvasDiv.style." + property_name + " = '" + current_value.toString() + "';");
+                    css_cache[property_name] = current_value;
+                }
             }
-        } );
+            
+        }
+        
+        // css_properties.forEach( function(str) {
+        //     // if there is a style
+        //     var style_value = x3dom.getStyle(x3dElem, str);
+        //     
+        //     if (style_value) {
+        //         // copy it over
+        //         str = str.replace(/-/g, ' ');
+        //         str = x3dom.stringToMethod(str);
+        //         str = str.replace(/ /g, '');
+        //     
+        //         // TODO: wollten wir das nicht fuer das canvasDiv setzen?
+        //         var meth = "that.canvasDiv.style." + str + " = '" + style_value.toString() + "';";
+        //         //x3dom.debug.logInfo("Dynamically calling method: " + meth);
+        //         // FIXME: wenn das nicht aufgerufen wird, scheint resize zu gehen...
+        //         //eval(meth);
+        //     }
+        // });
     };
-    */
     ////
     
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
