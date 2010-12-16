@@ -393,22 +393,6 @@ x3dom.X3DCanvas = function(x3dElem) {
         backgroundColor: x3dom.getStyle(x3dElem, "background-color")
     };
 
-    /**
-     * @private Reads the style values of X3D element and
-     * propagates them to the canvasDiv element. This should
-     * be called in a timer in order to allow dynamic styling
-     * of the X3D element (aka canvasDIV).
-     *
-     * The algorithm works as follows:
-     * 
-     *  - iterate the array of CSS properties that should be propagated 
-     *    (css_properties) and yield each property as string
-     *  - for each property read its value from the X3D element
-     *  - if the value is present, set it on the canvasDiv by 
-     *    dynamically calling the appropriate method.
-     *    i.e. "padding-bottom" => canvasDiv.paddingBottom(value_from_x3d_element);
-     *         "width"          => canvasDiv.width(value_from_x3d_element);
-     */
     x3dElem.checkStyleChanges = function()
     {
         for (var property_name in css_cache) {
@@ -418,7 +402,6 @@ x3dom.X3DCanvas = function(x3dElem) {
                 
                 if (current_value != css_cache[property_name]) {
                     x3dom.debug.logInfo("x3d element changed style '" + property_name + "' is now '" + current_value + "'");
-
                     // copy style change to canvas div
 //                    var meth = "that.canvasDiv.style." + property_name + " = '" + current_value.toString() + "';";
 //                    x3dom.debug.logInfo("Dynamically calling method: " + meth);
@@ -426,9 +409,28 @@ x3dom.X3DCanvas = function(x3dElem) {
                     css_cache[property_name] = current_value;
                 }
             }
-            
         }
-        
+    };
+
+
+        /**
+         * @private Reads the style values of X3D element and
+         * propagates them to the canvasDiv element. This should
+         * be called in a timer in order to allow dynamic styling
+         * of the X3D element (aka canvasDIV).
+         *
+         * The algorithm works as follows:
+         * 
+         *  - iterate the array of CSS properties that should be propagated 
+         *    (css_properties) and yield each property as string
+         *  - for each property read its value from the X3D element
+         *  - if the value is present, set it on the canvasDiv by 
+         *    dynamically calling the appropriate method.
+         *    i.e. "padding-bottom" => canvasDiv.paddingBottom(value_from_x3d_element);
+         *         "width"          => canvasDiv.width(value_from_x3d_element);
+         */
+         // x3dElem.checkStyleChanges = function()
+         // {
         // css_properties.forEach( function(str) {
         //     // if there is a style
         //     var style_value = x3dom.getStyle(x3dElem, str);
@@ -446,7 +448,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         //         //eval(meth);
         //     }
         // });
-    };
+    // };
     ////
     
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
