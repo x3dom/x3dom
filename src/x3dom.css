@@ -1,11 +1,12 @@
 body {
-	background-color: white;
-	font-family: Helvetica, sans-serif;
-	font-size: 12px;
+  background-color: white;
+  font-family: Helvetica, sans-serif;
+  font-size: 12px;
 }
 
 .x3dom-canvas {
   border:none;
+  cursor:pointer;
   width:100%;
   height:100%;
 }
@@ -15,6 +16,7 @@ body {
 }
 
 .x3dom-canvasdiv {
+    border:none;
     position: relative;
     border: 1px solid #000;
     margin: 0;
