@@ -207,7 +207,8 @@ x3dom.X3DCanvas = function(x3dElem) {
             }
         }
 
-        x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
+//        x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
+        x3dElem.appendChild(canvas);
         
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
@@ -230,6 +231,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         if ((w = x3dElem.getAttribute("width")) !== null) {
             this.canvasDiv.style.width = w.toString();
             //Attention: pbuffer dim is _not_ derived from style attribs!
+            canvas.style.width = w;
             canvas.setAttribute("width", w);
         }
         else {
@@ -239,6 +241,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         if ((h = x3dElem.getAttribute("height")) !== null) {
             this.canvasDiv.style.height = h.toString();
             //Attention: pbuffer dim is _not_ derived from style attribs!
+            canvas.style.height = h;
             canvas.setAttribute("height", h);
         }
         else {
@@ -266,7 +269,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             that.x3dElem.setAttribute("width", new_dim[0]);
             that.x3dElem.setAttribute("height", new_dim[1]);
         }
-        that.x3dElem.checkStyleChanges();
+//        that.x3dElem.checkStyleChanges();
         
     };
 

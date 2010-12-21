@@ -23,7 +23,6 @@
 			position: relative;
 			z-index:100;
 			display:inline;
-			top:2em;
 		}
 
 		#tools li {
@@ -54,17 +53,24 @@
 		#container {
 			width: 100%;
 			height: 100%;
-/*          border:1px solid green;
-*/            display:block;
+			line-height:0px;
+			float:left;
+
 		}
-		
+
 		#the-element {
             display:block;
+			line-height:0px;
+			padding:0;
+			margin:0;
+/*			border:1px solid cyan;
+*/			display:block;
+			background-color:#00F;
+			width:50%;
+			height:50%
+			
 		}
-		
-		#the-element:after {
-		}
-		
+
 		.style_1 {
 			background-color:#00f;
 		}
@@ -172,17 +178,20 @@
     
     <div id="container">
 
-	<ul id="tools">
-		<li><button id="change_size" onclick="toggle_size();">Zoom</button></li>
-		<li><button id="change_bg_js" onclick="toggle_background();">Background (via style)</button></li>
-		<li class="last"><button id="change_bg_class" onclick="toggle_class('style_1', 'style_2');">Background (via class)</button></li>
-	</ul>
 
-	<x3d id="the-element" showStat="false" showLog="true" style="background-color:#00F;width:50%;height:50%">
+	<x3d id="the-element" showStat="false" showLog="true">
+
+		<ul id="tools">
+			<li><button id="change_size" onclick="toggle_size();">Zoom</button></li>
+			<li><button id="change_bg_js" onclick="toggle_background();">Background (via style)</button></li>
+			<li class="last"><button id="change_bg_class" onclick="toggle_class('style_1', 'style_2');">Background (via class)</button></li>
+		</ul>
+
         <scene>
             <background skyColor="1 0 0"></background>
             <viewpoint position='0 0 10'></viewpoint>
-            <shape onmouseover="updateOverState(1);" onmouseout="updateOverState(0);">
+            <!-- <shape onmouseover="updateOverState(1);" onmouseout="updateOverState(0);"> -->
+            <shape>
                 <appearance>
                     <material diffuseColor='0.603 0.894 0.909'></material>
                 </appearance>
@@ -191,6 +200,7 @@
         </scene>
     </x3d>
 
-    <!-- <div id='output'>&nbsp;</div> -->
 </body>
+<!-- <div id='output'>&nbsp;</div> -->
+
 </html>
