@@ -40,6 +40,7 @@
 		}
 		
 		#the-element {
+		    
 		    display:block;
 		}
 		
@@ -86,8 +87,7 @@
 					b.style.padding = "10px";
 					title.style.display = "block";
 					document.getElementById('x3dom_logdiv').style.display = 'block';
-				}
-                else {
+				} else {
 					b.style.padding = "0px";
 					title.style.display = "none";
 					new_width_css = "100%";
@@ -101,7 +101,6 @@
                 test.style.height = new_width_css
                 // container.style.width = new_width_css;
                 // container.style.height = new_width_css;
-                
                 return true;
 			}
 
@@ -111,9 +110,11 @@
 			function toggle_background() {
 				var x3delement = document.getElementById('the-element');
 				if (bg_styled) {
-					x3delement.style.backgroundColor = '#00f'
+                    x3delement.style.backgroundColor = '#00f'
+					x3delement.style.backgroundImage = "none"
 				} else {
-					x3delement.style.backgroundColor = '#0f0'
+                    x3delement.style.backgroundColor = '#0f0'
+					x3delement.style.backgroundImage = "url('pfeil.gif')"
 				}
 				bg_styled = !bg_styled
 				return true;

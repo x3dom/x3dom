@@ -391,6 +391,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     var css_cache = {
         "background": x3dom.getStyle(x3dElem, "background"),
         "backgroundColor": x3dom.getStyle(x3dElem, "background-color"),
+        "backgroundImage": x3dom.getStyle(x3dElem, "background-image"),
         "display": x3dom.getStyle(x3dElem, "background-color"),
         "width": x3dom.getStyle(x3dElem, "width"),
         "height": x3dom.getStyle(x3dElem, "height")
@@ -400,9 +401,10 @@ x3dom.X3DCanvas = function(x3dElem) {
     {
         for (var property_name in css_cache) {
 //            x3dom.debug.logInfo("-- K: " + property_name + " V: " + css_cache[property_name]);
-            if (css_cache[property_name]) {
+            var current_value = x3dom.getStyle(x3dElem, property_name);
+            if (current_value) {
 //                x3dom.debug.logInfo("-- K: " + property_name + " V: " + css_cache[property_name]);
-                var current_value = x3dom.getStyle(x3dElem, property_name);
+//                var current_value = x3dom.getStyle(x3dElem, property_name);
                 
                 
                 if (current_value != css_cache[property_name]) {
@@ -420,7 +422,7 @@ x3dom.X3DCanvas = function(x3dElem) {
                     // }
                     css_cache[property_name] = current_value;
                 }
-            }
+           }
         }
     };
 
