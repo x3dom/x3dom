@@ -247,13 +247,13 @@ x3dom.X3DCanvas = function(x3dElem) {
         
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
-                
         return canvas;
     };
 
     var _old_dim = [0,0];
     this.watchForResize = function()
     {
+
         var new_dim = [
             x3dom.getStyle(that.canvas, "width"),
             x3dom.getStyle(that.canvas, "height")
@@ -266,8 +266,8 @@ x3dom.X3DCanvas = function(x3dElem) {
             that.x3dElem.setAttribute("width", new_dim[0]);
             that.x3dElem.setAttribute("height", new_dim[1]);
         }
-        
         that.x3dElem.checkStyleChanges();
+        
     };
 
     this.createStatDiv = function() {
@@ -389,16 +389,21 @@ x3dom.X3DCanvas = function(x3dElem) {
     // ];
 
     var css_cache = {
-        background: x3dom.getStyle(x3dElem, "background"),
-        backgroundColor: x3dom.getStyle(x3dElem, "background-color")
+        "background": x3dom.getStyle(x3dElem, "background"),
+        "backgroundColor": x3dom.getStyle(x3dElem, "background-color"),
+        "display": x3dom.getStyle(x3dElem, "background-color"),
+        "width": x3dom.getStyle(x3dElem, "width"),
+        "height": x3dom.getStyle(x3dElem, "height")
     };
 
     x3dElem.checkStyleChanges = function()
     {
         for (var property_name in css_cache) {
+//            x3dom.debug.logInfo("-- K: " + property_name + " V: " + css_cache[property_name]);
             if (css_cache[property_name]) {
 //                x3dom.debug.logInfo("-- K: " + property_name + " V: " + css_cache[property_name]);
                 var current_value = x3dom.getStyle(x3dElem, property_name);
+                
                 
                 if (current_value != css_cache[property_name]) {
                     x3dom.debug.logInfo("x3d element changed style '" + property_name + "' is now '" + current_value + "'");
@@ -406,6 +411,13 @@ x3dom.X3DCanvas = function(x3dElem) {
 //                    var meth = "that.canvasDiv.style." + property_name + " = '" + current_value.toString() + "';";
 //                    x3dom.debug.logInfo("Dynamically calling method: " + meth);
                     eval("that.canvasDiv.style." + property_name + " = '" + current_value.toString() + "';");
+                    // if (property_name == "width") {
+                    //     that.canvas.width = current_value.toString();
+                    // } 
+                    // 
+                    // if (property_name == "height") {
+                    //     that.canvas.height = current_value.toString();
+                    // }
                     css_cache[property_name] = current_value;
                 }
             }

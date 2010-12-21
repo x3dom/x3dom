@@ -33,8 +33,14 @@
 		}
 		
 		#container {
-			width: 50%;
-			height: 50%;
+			width: 100%;
+			height: 100%;
+			border:1px solid green;
+			display:block;
+		}
+		
+		#the-element {
+		    display:block;
 		}
 		
 		.style_1 {
@@ -91,26 +97,26 @@
 
 				zoomed = !zoomed;
                 
-				// test.style.width = new_width_css
-				// test.style.height = new_width_css
-                container.style.width = new_width_css;
-				container.style.height = new_width_css;
+                test.style.width  = new_width_css
+                test.style.height = new_width_css
+                // container.style.width = new_width_css;
+                // container.style.height = new_width_css;
                 
-                return false;
+                return true;
 			}
 
 
 			// Change a style via elm.style accessor
-			var bg_styled = false
+			var bg_styled = false;
 			function toggle_background() {
-				var x3delement = document.getElementById('the-element')
-
+				var x3delement = document.getElementById('the-element');
 				if (bg_styled) {
 					x3delement.style.backgroundColor = '#00f'
 				} else {
 					x3delement.style.backgroundColor = '#0f0'
 				}
 				bg_styled = !bg_styled
+				return true;
 			}
 
 
@@ -125,6 +131,7 @@
 					addClass(x3delement, class_one)
 				}
 				alert(x3delement.className)
+				return true;
 			}
             
             function updateOverState(over)
@@ -148,7 +155,7 @@
     <div id="container">
 
 
-	<x3d id="the-element" showStat="false" showLog="true" style="background-color:#00F">
+	<x3d id="the-element" showStat="false" showLog="true" style="background-color:#00F;width:50%;height:50%">
         <scene>
             <background skyColor="1 0 0"></background>
             <viewpoint position='0 0 10'></viewpoint>
@@ -161,7 +168,6 @@
         </scene>
     </x3d>
 
-    </div>
 
     <div id='output'>&nbsp;</div>
 </body>
