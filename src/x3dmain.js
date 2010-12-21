@@ -179,7 +179,7 @@ x3dom.X3DCanvas = function(x3dElem) {
                 
                 if (found) {
                     x3dom.debug.logInfo('addEventListener for div.on' + type);
-                    that.canvasDiv.addEventListener(type, func, phase);
+                    that.canvas.addEventListener(type, func, phase);
                 }
                 else {
                     x3dom.debug.logInfo('addEventListener for X3D.on' + type);
@@ -198,7 +198,7 @@ x3dom.X3DCanvas = function(x3dElem) {
                 
                 if (found) {
                     x3dom.debug.logInfo('removeEventListener for div.on' + type);
-                    that.canvasDiv.removeEventListener(type, func, phase);
+                    that.canvas.removeEventListener(type, func, phase);
                 }
                 else {
                     x3dom.debug.logInfo('removeEventListener for X3D.on' + type);
