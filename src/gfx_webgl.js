@@ -96,7 +96,19 @@ x3dom.gfx_webgl = (function () {
         "    fragTexCoord = texCoord;" +
 		"}"
 		};
-        
+		
+	g_shaders['vs-x3d-bg-texture-bgnd'] = { type: "vertex", data:
+		"attribute vec3 position;" +
+		"attribute vec2 texcoord;" +
+		"uniform mat4 modelViewProjectionMatrix;" +
+		"varying vec2 fragTexCoord;" +
+		"" +
+		"void main(void) {" +
+        "    fragTexCoord = texcoord.xy;" +
+		"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"}"
+		};
+    
     g_shaders['fs-x3d-bg-texture'] = { type: "fragment", data:
         "#ifdef GL_ES             \n" +
         "  precision highp float; \n" +
@@ -1556,7 +1568,6 @@ x3dom.gfx_webgl = (function () {
                 if (shape._cf.appearance.node._shader !== null) {
 					if(x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)){
 						
-						
 						var texCnt = 0;
 						var cssMode = 0; //Bit coded CSS Modes - 1.Bit > Diffuse, 2.Bit > Normal, 3.Bit > Specular
 						var cssShader = shape._cf.appearance.node._shader;
@@ -1756,7 +1767,7 @@ x3dom.gfx_webgl = (function () {
                 gl.deleteBuffer(bgnd._webgl.buffers[1]);
                 gl.deleteBuffer(bgnd._webgl.buffers[0]);
             }
-            if (bgnd._webgl.shader.color !== undefined) 
+            if (bgnd._webgl.shader.texcoord !== undefined) 
             {
                 gl.deleteBuffer(bgnd._webgl.buffers[2]);
             }
@@ -1830,19 +1841,96 @@ x3dom.gfx_webgl = (function () {
             if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length)
             {
                 var sphere = new x3dom.nodeTypes.Sphere();
-                sphere.genSkyColors(bgnd.getSkyColor(), bgnd._vf.skyAngle, 
-                                    bgnd.getGroundColor(), bgnd._vf.groundAngle);
                 
                 bgnd._webgl = {
                     positions: sphere._mesh._positions[0],
+                    texcoords: sphere._mesh._texCoords[0],
                     indexes: sphere._mesh._indices[0],
-                    colors: sphere._mesh._colors[0],
-                    buffers: [{}, {}, {}]
+                    buffers: [{}, {}, {}],
+					texture: {}
                 };
                 
                 bgnd._webgl.primType = gl.TRIANGLES;
                 bgnd._webgl.shader = this.getShaderProgram(gl, 
-                        ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
+                        ['vs-x3d-bg-texture-bgnd', 'fs-x3d-bg-texture']);
+				
+				var i = 0, N = nextHighestPowerOfTwo(
+					bgnd.getSkyColor().length + bgnd.getGroundColor().length + 2);
+				var tmp = [], arr = [];
+				
+				for (i=0; i<N; i++) 
+				{
+					var theta = i * Math.PI / N;
+					
+					var color = function(theta) 
+					{
+						var sky = [0.0];
+						for (var k=0; k<bgnd._vf.skyAngle.length; k++) {
+							sky.push(bgnd._vf.skyAngle[k]);
+						}
+						
+						for (var j=0, n=sky.length; j<n; j++)
+						{
+							if (theta <= sky[j]) {
+								return bgnd._vf.skyColor[j];
+							}
+						}
+						
+						var grnd = [0.0];
+						for (k=0; k<bgnd._vf.groundAngle.length; k++) {
+							grnd.push(bgnd._vf.groundAngle[k]);
+						}
+						
+						if (grnd.length > 1)
+						{
+							if (sky[n-1] < Math.PI/2 && theta <= Math.PI/2) {
+								return bgnd._vf.skyColor[n-1];
+							}
+							
+							n = grnd.length;
+							
+							for (j=n-1; j>=0; j--)
+							{
+								if (theta <= Math.PI - grnd[j]) {
+									return bgnd._vf.groundColor[j];
+								}
+							}
+						}
+						else
+						{
+							if (sky[n-1] < Math.PI && theta <= Math.PI) {
+								return bgnd._vf.skyColor[n-1];
+							}
+						}
+					}(theta);
+					
+					tmp.push(color);
+				}
+				
+				tmp.reverse();
+				
+				for (i=0; i<tmp.length; i++) {
+					arr[3 * i + 0] = Math.floor(tmp[i].r * 255);
+					arr[3 * i + 1] = Math.floor(tmp[i].g * 255);
+					arr[3 * i + 2] = Math.floor(tmp[i].b * 255);
+				}
+				
+				var pixels = new Uint8Array(arr);
+				var format = gl.RGB;
+				
+				N = (pixels.length) / 3;
+				
+				texture = gl.createTexture();
+				bgnd._webgl.texture = texture;
+				gl.bindTexture(gl.TEXTURE_2D, texture);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				
+				gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+				gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 
+							  0, format, gl.UNSIGNED_BYTE, pixels);
             }
             else 
             {
@@ -1878,20 +1966,20 @@ x3dom.gfx_webgl = (function () {
             delete vertices;
             delete indexArray;
             
-            if (sp.color !== undefined)
+            if (sp.texcoord !== undefined)
             {
-                var colorBuffer = gl.createBuffer();
-                bgnd._webgl.buffers[2] = colorBuffer;
+                var texcBuffer = gl.createBuffer();
+                bgnd._webgl.buffers[2] = texcBuffer;
                 
-                var colors = new Float32Array(bgnd._webgl.colors);
+                var texcoords = new Float32Array(bgnd._webgl.texcoords);
                 
-                gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-                gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);				
+                gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
+                gl.bufferData(gl.ARRAY_BUFFER, texcoords, gl.STATIC_DRAW);				
                 
-                gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0);
-                gl.enableVertexAttribArray(sp.color);
+                gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp.texcoord);
                 
-                delete colors;
+                delete texcoords;
             }
         }
         
@@ -1899,7 +1987,7 @@ x3dom.gfx_webgl = (function () {
         {
             var sp = bgnd._webgl.shader;
             
-            if (sp && sp.color)
+            if (sp && sp.texcoord && bgnd._webgl.texture)
             {
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -1910,9 +1998,20 @@ x3dom.gfx_webgl = (function () {
                 gl.disable(gl.BLEND);
                 
                 sp.bind();
-                
+				
+                if (!sp.tex) {
+                    sp.tex = 0;
+                }
                 sp.alpha = 1.0;
                 sp.modelViewProjectionMatrix = mat_scene.toGL();
+				
+				gl.activeTexture(gl.TEXTURE0);
+				gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
+				
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bgnd._webgl.buffers[0]);
                 
@@ -1921,8 +2020,8 @@ x3dom.gfx_webgl = (function () {
 				gl.enableVertexAttribArray(sp.position);
                 
                 gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[2]);
-                gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
-                gl.enableVertexAttribArray(sp.color);
+                gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
+                gl.enableVertexAttribArray(sp.texcoord);
                 
                 try {
                     gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
@@ -1931,8 +2030,11 @@ x3dom.gfx_webgl = (function () {
                     x3dom.debug.logException("Render background: " + e);
                 }
                 
+				gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, null);
+				
                 gl.disableVertexAttribArray(sp.position);
-                gl.disableVertexAttribArray(sp.color);
+                gl.disableVertexAttribArray(sp.texcoord);
                 
                 gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
