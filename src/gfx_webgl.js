@@ -1854,59 +1854,61 @@ x3dom.gfx_webgl = (function () {
                 bgnd._webgl.shader = this.getShaderProgram(gl, 
                         ['vs-x3d-bg-texture-bgnd', 'fs-x3d-bg-texture']);
 				
-				var i = 0, N = nextHighestPowerOfTwo(
-					bgnd.getSkyColor().length + bgnd.getGroundColor().length + 2);
+				var N = nextHighestPowerOfTwo(
+                            bgnd.getSkyColor().length + bgnd.getGroundColor().length + 2);
+                N = (N < 512) ? 512 : N;
+                
+                var n = bgnd._vf.groundAngle.length;
 				var tmp = [], arr = [];
+                var colors = [], sky = [0];
+                
+                for (i=0; i<bgnd._vf.skyColor.length; i++)
+                    colors[i] = bgnd._vf.skyColor[i];
+                
+                for (i=0; i<bgnd._vf.skyAngle.length; i++)
+                    sky[i+1] = bgnd._vf.skyAngle[i];
 				
-				for (i=0; i<N; i++) 
-				{
-					var theta = i * Math.PI / N;
-					
-					var color = function(theta) 
-					{
-						var sky = [0.0];
-						for (var k=0; k<bgnd._vf.skyAngle.length; k++) {
-							sky.push(bgnd._vf.skyAngle[k]);
-						}
-						
-						for (var j=0, n=sky.length; j<n; j++)
-						{
-							if (theta <= sky[j]) {
-								return bgnd._vf.skyColor[j];
-							}
-						}
-						
-						var grnd = [0.0];
-						for (k=0; k<bgnd._vf.groundAngle.length; k++) {
-							grnd.push(bgnd._vf.groundAngle[k]);
-						}
-						
-						if (grnd.length > 1)
-						{
-							if (sky[n-1] < Math.PI/2 && theta <= Math.PI/2) {
-								return bgnd._vf.skyColor[n-1];
-							}
-							
-							n = grnd.length;
-							
-							for (j=n-1; j>=0; j--)
-							{
-								if (theta <= Math.PI - grnd[j]) {
-									return bgnd._vf.groundColor[j];
-								}
-							}
-						}
-						else
-						{
-							if (sky[n-1] < Math.PI && theta <= Math.PI) {
-								return bgnd._vf.skyColor[n-1];
-							}
-						}
-					}(theta);
-					
-					tmp.push(color);
-				}
-				
+                if (n > 0) {
+                    if (sky[sky.length-1] < Math.PI / 2) {
+                        sky[sky.length] = Math.PI / 2 - x3dom.fields.Eps;
+                        colors[colors.length] = colors[colors.length - 1];
+                    }
+                    
+                    for (i=n-1; i>=0; i--) {
+                        if ((i == n - 1) && (Math.PI - bgnd._vf.groundAngle[i] <= Math.PI / 2)) {
+                            sky[sky.length] = Math.PI / 2;
+                            colors[colors.length] = bgnd._vf.groundColor[bgnd._vf.groundColor.length-1];
+                        }
+                        sky[sky.length] = Math.PI - bgnd._vf.groundAngle[i];
+                        colors[colors.length] = bgnd._vf.groundColor[i + 1];
+                    }
+                    
+                    sky[sky.length] = Math.PI;
+                    colors[colors.length] = bgnd._vf.groundColor[0];
+                }
+                else {
+                    if (sky[sky.length-1] < Math.PI) {
+                        sky[sky.length] = Math.PI;
+                        colors[colors.length] = colors[colors.length - 1];
+                    }
+                }
+                
+                for (i=0; i<sky.length; i++)
+                    sky[i] /= Math.PI;
+                
+                x3dom.debug.assert(sky.length == colors.length);
+                
+                var interp = new x3dom.nodeTypes.ColorInterpolator();
+                
+                interp._vf.key = new x3dom.fields.MFFloat(sky);
+                interp._vf.keyValue = new x3dom.fields.MFColor(colors);
+                
+                for (i=0; i<N; i++) {
+                    var fract = i / (N - 1.0);
+                    interp._fieldWatchers.set_fraction[0].call(interp, fract);
+                    tmp[i] = interp._vf.value_changed;
+                }
+                
 				tmp.reverse();
 				
 				for (i=0; i<tmp.length; i++) {
@@ -1917,7 +1919,7 @@ x3dom.gfx_webgl = (function () {
 				
 				var pixels = new Uint8Array(arr);
 				var format = gl.RGB;
-				
+                
 				N = (pixels.length) / 3;
 				
 				texture = gl.createTexture();
@@ -1925,8 +1927,8 @@ x3dom.gfx_webgl = (function () {
 				gl.bindTexture(gl.TEXTURE_2D, texture);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
 				
 				gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
 				gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 
@@ -2008,8 +2010,8 @@ x3dom.gfx_webgl = (function () {
 				gl.activeTexture(gl.TEXTURE0);
 				gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
 				
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 				gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                 
