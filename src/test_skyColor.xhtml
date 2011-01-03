@@ -16,15 +16,18 @@
       <Scene DEF='scene'>
         <Viewpoint DEF='view1' position='0 0 12'/>
         <Background DEF='back' groundAngle='0.9 1.5 1.57' groundColor='0.6 0.7 0.1 0.4 0.7 0.2 0.1 0.6 0.1 0 0.3 0.1' skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82'/>
-		<!-- 0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82 
-		1 0 0 1 1 0 0 1 0 0 1 1-->
         <Transform DEF='trans1' translation='0 0 0'>
           <Shape>
             <Appearance>
+                <Material DEF="mat"/>
             </Appearance>
             <Box DEF='GEO'/>
           </Shape>
         </Transform>
+        <ColorInterpolator DEF="CI" key="0 0.5 1" keyValue="1 1 0, 1 0 0, 1 1 0"/>
+        <TimeSensor DEF="TS" cycleInterval="3"/>
+        <ROUTE fromNode="TS" fromField="fraction_changed" toNode="CI" toField="set_fraction"/>
+        <ROUTE fromNode="CI" fromField="value_changed" toNode="mat" toField="diffuseColor"/>
       </Scene>
     </X3D>
   </body>
