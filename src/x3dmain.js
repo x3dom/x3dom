@@ -135,13 +135,13 @@ x3dom.X3DCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for (X)3D element...");
         var canvas = document.createElement('canvas');
         canvas.setAttribute("class", "x3dom-canvas");
-        this.canvasDiv.appendChild(canvas);
+//        this.canvasDiv.appendChild(canvas);
         this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
         
         // check if user wants to style the X3D element
         var userStyle = x3dElem.getAttribute("style");
         if (userStyle) {
-            this.canvasDiv.setAttribute("style", userStyle);
+//            this.canvasDiv.setAttribute("style", userStyle);
         }
         
         // check if user wants to attach events to the X3D element
@@ -157,7 +157,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             if (userEvt)
             {
                 x3dom.debug.logInfo(evtName +", "+ userEvt);
-                this.canvasDiv.setAttribute(evtName, userEvt);
+                this.canvas.setAttribute(evtName, userEvt);
             }
         }
         
@@ -277,7 +277,9 @@ x3dom.X3DCanvas = function(x3dElem) {
         var statDiv = document.createElement('div');
         statDiv.setAttribute("class", "x3dom-statdiv");
         statDiv.innerHTML = "0 fps";		
-        this.canvasDiv.appendChild(statDiv);
+        this.x3dElem.appendChild(statDiv);
+
+//        this.canvasDiv.appendChild(statDiv);
         
         statDiv.oncontextmenu = statDiv.onmousedown = function(evt) {
             evt.preventDefault();
@@ -998,35 +1000,6 @@ x3dom.userAgentFeature = {
         }
     };
     
-    // Update canvases on resize of browser window
-    // this is not used right now since the update
-    // is done with a timer
-    var onresize = function() {
-		x3dom.debug.logInfo("Resize event triggered");
-
-        var len = x3dom.canvases.length;
-		x3dom.debug.logInfo("Working on " + len + " canvas instances");
-        
-        for (var i=0; i<len; i++) {
-            
-            var element = x3dom.canvases[i].x3dElem;
-            var canvasDiv = x3dom.canvases[i].canvasDiv;
-
-			//x3dom.debug.logInfo("X3D height was: " + element.getAttribute("height"));
-			//x3dom.debug.logInfo("X3D width was : " + element.getAttribute("width"));
-			            
-            // get new height and width from the enclosing div
-            var new_width = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "width");
-            var new_height = x3dom.getStyle(x3dom.canvases[i].canvasDiv, "height");
-
-			//x3dom.debug.logInfo("New canvasDiv width: " + new_width);
-			//x3dom.debug.logInfo("New canvasDiv height: " + new_height);
-            
-            element.setAttribute("width", new_width);
-            element.setAttribute("height", new_height);
-        }
-    };
-
     if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
         
@@ -1050,14 +1023,12 @@ x3dom.userAgentFeature = {
         window.addEventListener('load', onload, false);
         window.addEventListener('unload', onunload, false);
         window.addEventListener('reload', onunload, false);
-//        window.addEventListener('resize', onresize, false);
     } 
     else if (window.attachEvent) 
     {
         window.attachEvent('onload', onload);
         window.attachEvent('onunload', onunload);
         window.attachEvent('onreload', onunload);
-//        window.attachEvent('onresize', onresize);
     }
 
 })();
