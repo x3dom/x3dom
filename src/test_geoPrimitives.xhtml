@@ -8,14 +8,15 @@
 		p.case { clear: both; border-top: 1px solid #888; }
 		</style>
         <link rel="stylesheet" type="text/css" href="x3dom.css" />
+        
 	</head>
        
 <body style="background-color:#E0E0E0;">
 
     <h1>x3dom simple example</h1>
 	
-	<p class="case">Geometric primitive types with picking
-		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="500px" height="500px">
+	<p class="case">Geometric primitive types with picking</p>
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" width="500px" height="500px">
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
@@ -107,7 +108,7 @@
                 <ROUTE fromNode='sdamper' fromField='value_changed' toNode='coneMat' toField='transparency'/>
 			</Scene>
         </X3D>
-	</p>
+
 	
 	<p id="ausgabe" class="case"> &nbsp; </p>
     <p><input type="button" value="removeEventListener" onclick="delIt();"/></p>
