@@ -2,6 +2,17 @@
   <head>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
     <link rel='stylesheet' type='text/css' href='x3dom.css'/>
+    <style>
+        X3D {
+            border: 0px; 
+            position:fixed; 
+            top:0px; 
+            left:0px; 
+            z-index:1;
+            width:1000px;
+            height:600px;
+    }
+    </style>
   </head>
   <body style="font-size: 14px;">
     <h1>X3D</h1>
@@ -26,7 +37,7 @@ The development of real-time communication of 3D data across all applications an
 A component-based architecture supports creation of different "profiles" which can be individually supported. Components can be individually extended or modified through adding new "levels", or new components can be added to introduce new features, such as streaming. Through this mechanism, advancements of the specification can move quickly because development in one area doesn't slow the specification as a whole. Importantly, the conformance requirements for a particular piece of content are unambiguosly defined by indicating the profiles, components and levels required by that content.
     </p>
 
-    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='false' showLog='false' x='0px' y='0px' width='1000px' height='600px' style='border: 0px; position:fixed; top:0px; left:0px; z-index:1;'>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='false' showLog='false' x='0px' y='0px' width='1000px' height='600px'>
       <Scene DEF='scene'>
 		<Transform DEF='Teapot01' translation='0 -1 1' rotation='0 1 0 3.1415926' scale='1.5 1.5 1.5' >
 			<Shape>
