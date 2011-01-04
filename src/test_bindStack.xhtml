@@ -9,7 +9,8 @@
        
 <body style="background-color:#E0E0E0;">
     <h1>x3dom minimal example</h1>
-	
+
+    <div class="group">
     <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
          showStat="true" showLog="true" width="320px" height="240px">
         <Scene>
@@ -28,6 +29,7 @@
             <Route fromNode='cam02' fromField='isActive' toNode='bg02' toField='set_bind'/>
         </Scene>
     </X3D>
+    </div>
     
 	<input type="button" value="01.set_bind true"
            onclick="document.getElementById('cam01').setAttribute('set_bind','true');"/>
