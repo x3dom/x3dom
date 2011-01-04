@@ -5,25 +5,26 @@ body {
 }
 
 X3D, x3d {
-  position: relative;   /* in order to be able to position stat-div within X3D */
-  display:block;        /* layou the X3D as block so it has the same size like the canvas */
+  position:relative;    /* in order to be able to position stat-div within X3D */
+  float:left;           /* float the element so it has the same size like the canvas */
   cursor:pointer;
-  border:1px solid red;
   margin:0;
+  border:1px solid #000;
 }
 
 .x3dom-canvas {
   border:none;
   cursor:pointer;
-  display:block;
   width:100%;
   height:100%;
+  float:left;
 }
 
 .x3dom-canvas:focus {
     outline:none; 
 }
 
+/* REMOVE ME >>>>>>>> */
 .x3dom-canvasdiv {
     border:none;
     position: relative;
@@ -31,6 +32,7 @@ X3D, x3d {
     margin: 0;
     cursor: pointer;
 }
+/* <<<<<<<<<<<< */
 
 .x3dom-statdiv {
     margin: 0;
