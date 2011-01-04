@@ -6,7 +6,7 @@
 		<link rel='stylesheet' type='text/css' href='x3dom.css'/>
 	</head>
 	<body>
-        <p>
+        <div class="group">
 		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' 
             showStat='false' showLog='true' width='600px' height='400px' onmousemove="myEvent();">
 			<Scene DEF='scene'>
@@ -32,7 +32,7 @@
             <span id="ausgabeButton" onclick="doIt();"
                   style="background-color: blue; color:yellow; position:absolute; border: yellow solid 1px;">
                   &nbsp; </span>
-        </p>
+        </div>
         <p><input type="button" value="addEventListener" onclick="addIt();"/>
         <input type="button" value="removeEventListener" onclick="delIt();"/></p>
         
