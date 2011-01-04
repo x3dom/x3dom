@@ -157,7 +157,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             if (userEvt)
             {
                 x3dom.debug.logInfo(evtName +", "+ userEvt);
-                this.canvas.setAttribute(evtName, userEvt);
+                canvas.setAttribute(evtName, userEvt);
             }
         }
         
