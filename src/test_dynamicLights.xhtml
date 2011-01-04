@@ -6,6 +6,7 @@
 		<link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'/>
 	</head>
 	<body>
+	    <div class="group">
 		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='false' showLog='true' x='0px' y='0px' width='400px' height='400px'>
 			<Scene DEF='scene' id='sceneID'>
 				<NavigationInfo headlight='false'/>
@@ -38,6 +39,7 @@
 				<ROUTE fromNode='Box01-ROT-INTERP' fromField='value_changed' toNode='Box01' toField='set_rotation' />
 			</Scene>
 		</X3D>
+		</div>
 		<script type="text/javascript"><![CDATA[
 			
 			var numLights = 0;
