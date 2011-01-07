@@ -19,7 +19,7 @@
             <Box size='3 3 3'/>
           </Shape>
         </Transform>
-        <TimeSensor DEF='ts' cycleInterval='10' loop='true' startTime='1' enabled="false"/>
+        <TimeSensor DEF='ts' cycleInterval='10' loop='true' startTime='1' enabled="true"/>
         <OrientationInterpolator DEF='oi' key='0 0.25 0.5 0.75 1' keyValue='0 1 1 0 0 1 1 1.57 0 1 1 3.14 0 1 1 4.71 0 1 1 6.28'/>
         <ROUTE fromNode='ts' fromField='fraction_changed' toNode='oi' toField='set_fraction'/>
         <ROUTE fromNode='oi' fromField='value_changed' toNode='trans' toField='set_rotation'/>
