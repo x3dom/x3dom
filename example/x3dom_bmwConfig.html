@@ -27,8 +27,8 @@
 	</code>
   </p>
    
-  <div>
-    <x3d id='x3d' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px'>
+  <div style='position:fixed;'>
+    <x3d id='x3d' showStat='false' showLog='false' width='800px' height='500px' style="display:inline;">
       <scene DEF='scene'>
         <viewpoint orientation='-0.600069 0.799493 -0.0269947 0.77042' position='3.05702 2.90676 4.27241'></viewpoint>
         <background skyColor='1 1 1'></background>
@@ -501,7 +501,7 @@
     </x3d>
     
     <!--<h2 style="text-indent:1em;">Colors</h2>-->
-    <div style='position:relative; top:-502px; left:0px; z-index:1;'>
+    <div style='position:absolute; top:0px; left:0px; z-index:1;'>
     <img src="texture/car/weiss_64.gif"   border="1" onclick="changeColor('white');" style="cursor:pointer;">
     <img src="texture/car/beige_64.gif"   border="1" onclick="changeColor('#efebe0');" style="cursor:pointer;">
     <img src="texture/car/orange_64.gif"  border="1" onclick="changeColor('#ff9900');" style="cursor:pointer;">
@@ -513,7 +513,7 @@
     </div>
     
     <!--<h2 style="text-indent:1em;">Rims</h2>-->
-    <div style='position:relative; top:-502px; left:0px; z-index:1;'>
+    <div style='position:absolute; top:70px; left:0px; z-index:1;'>
     <img src="texture/car/felge1_64.jpg" border="1" onclick="changeTexture('texture/car/felge1.jpg');" style="cursor:pointer;">
     <img src="texture/car/felge2_64.jpg" border="1" onclick="changeTexture('texture/car/felge2.jpg');" style="cursor:pointer;">
     <img src="texture/car/felge3_64.jpg" border="1" onclick="changeTexture('texture/car/felge3.jpg');" style="cursor:pointer;">
