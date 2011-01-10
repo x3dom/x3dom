@@ -2610,50 +2610,6 @@ x3dom.registerNodeType(
             this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
-        },
-        {
-            genSkyColors: function(skyColor, skyAngle, groundColor, groundAngle)
-            {
-                // TODO; the following three values are the same as above:
-                // make them const or dynamically configurable (for skyBox)
-                var r = 10000;
-                var latitudeBands = 24;
-                var longitudeBands = 24;
-                
-                var latNumber, longNumber;
-                var theta, sinTheta, cosTheta;
-                var phi, sinPhi, cosPhi;
-                var x, y, z;
-                
-                this._mesh._colors[0] = [];
-                
-                // TODO; impl.!!!
-                var skySize = skyAngle.length;
-                var groundSize = groundAngle.length;
-                
-                for (latNumber = 0; latNumber <= latitudeBands; latNumber++)
-                {
-                    theta = (latNumber * Math.PI) / latitudeBands;
-                    sinTheta = Math.sin(theta);
-                    cosTheta = Math.cos(theta);
-
-                    for (longNumber = 0; longNumber <= longitudeBands; longNumber++)
-                    {
-                        phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
-                        sinPhi = Math.sin(phi);
-                        cosPhi = Math.cos(phi);
-
-                        x = -cosPhi * sinTheta;
-                        y = -cosTheta;
-                        z = -sinPhi * sinTheta;
-                        
-                        // TODO; implement color interpolation according to spec
-                        this._mesh._colors[0].push( skyColor[0].r );
-                        this._mesh._colors[0].push( skyColor[0].g );
-                        this._mesh._colors[0].push( skyColor[0].b );
-                    }
-                }
-            }
         }
     )
 );
@@ -5827,31 +5783,66 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DSensorNode,
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
-            
-			ctx.doc._nodeBag.timer.push(this);
-			
-			this.addField_SFBool(ctx, 'enabled', true);
+
+            ctx.doc._nodeBag.timer.push(this);
+
             this.addField_SFTime(ctx, 'cycleInterval', 1);
+            this.addField_SFBool(ctx, 'enabled', true);
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFTime(ctx, 'startTime', 0);
-    
-            this._fraction = 0;
+            this.addField_SFTime(ctx, 'stopTime', 0);
+
+            this.addField_SFTime(ctx, 'cycleTime', 0);
+            this.addField_SFFloat(ctx, 'fraction_changed', 0);
+            this.addField_SFBool(ctx, 'isActive', false);
+            this.addField_SFTime(ctx, 'time', 0);
+
+            this._prevCycle = -1;
         },
         {
-            onframe: function (ts) {
+            onframe: function (ts)
+            {
 				if (!this._vf.enabled)
 					return;
 				
             	var isActive = (ts >= this._vf.startTime);
             	var cycleFrac, cycle, fraction;
             	
-            	if (this._vf.cycleInterval > 0) {
+            	if (isActive && this._vf.cycleInterval > 0) {
                     cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
                     cycle = Math.floor(cycleFrac);
                     fraction = cycleFrac - cycle;
+                    
+                    if (fraction < x3dom.fields.Eps) {
+                        if (ts > this._vf.startTime)
+                            fraction = 1.0;
+                    }
             	}
-     
-     			this.postMessage('fraction_changed', fraction);
+                
+                if (isActive) {
+                    if (!this._vf.isActive)
+                        this.postMessage('isActive', true);
+                    
+                    this.postMessage('fraction_changed', fraction);
+                    this.postMessage('time', ts);
+                    
+                    if (this._prevCycle != cycle) {
+                        this._prevCycle = cycle;
+                        
+                        this.postMessage('cycleTime', ts);
+                        
+                        // TODO: this._vf.loop
+                    }
+                }
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "enabled") {
+                    // TODO; eval relevant outputs
+                    if (!this._vf.enabled && this._vf.isActive)
+                        this.postMessage('isActive', false);
+                }
             },
             
             parentRemoved: function(parent)
