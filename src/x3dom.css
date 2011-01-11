@@ -25,16 +25,6 @@ X3D, x3d {
     outline:none; 
 }
 
-/* REMOVE ME >>>>>>>> */
-.x3dom-canvasdiv {
-    border:none;
-    position: relative;
-    border: 1px solid #000;
-    margin: 0;
-    cursor: pointer;
-}
-/* <<<<<<<<<<<< */
-
 .x3dom-statdiv {
     margin: 0;
     padding: 0;
@@ -43,6 +33,7 @@ X3D, x3d {
     position: absolute;
     color: #0f0;
     font-family: Helvetica, sans-serif;
+    line-height:10px;
     font-size: 10px;
     width: 75px;
     height: 70px;
