@@ -760,7 +760,7 @@ x3dom.userAgentFeature = {
                 altDiv.appendChild(altP);
 				altDiv.appendChild(aLnk);
 				
-				x3dcanvas.x3dElem.insertBefore(altDiv);
+				x3dcanvas.x3dElem.appendChild(altDiv);
 
                 // remove the stats div (it's not needed when WebGL doesnt work)
                 if (x3dcanvas.statDiv) { 
