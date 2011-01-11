@@ -114,7 +114,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         // check if user wants to style the X3D element
         var userStyle = x3dElem.getAttribute("style");
         if (userStyle) {
-            x3dom.debug.logInfo("Inline <x3d> styles detected");
+            x3dom.debug.logInfo("Inline X3D styles detected");
         }
         
         // check if user wants to attach events to the X3D element
