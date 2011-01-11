@@ -5,34 +5,35 @@
     <link rel="stylesheet" href="../../../src/x3dom.css">
     <script src="../../../src/x3dom.js"></script>
 	<style>
-	#toggler {
-		position: relative;
-		float:left;
-		z-index:100;
-		top: 0;
-		left: 0;
-		width: 10em;
-		height: 2em;
-		border:1px solid #666;
-		background-color:#202021;
-		color:#ccc;
-	}
-	#toggler:hover {
-		background-color:blue;
-	}
-	#container {
-		width: 50%;
-		height: 50%;
-	}
+
+    #the_element {
+        width: 50%;
+        height: 50%;
+        border: none;
+        background:#000 url(http://www.x3dom.org/x3dom/example/texture/solarSystem/starsbg.png);
+    }
+
+    #toggler {
+    	position: absolute;
+    	float: left;
+    	z-index: 1;
+    	top: 0px;
+    	left: 0px;
+    	width: 10em;
+    	height: 2em;
+    	border: none;
+    	background-color: #202021;
+    	color: #ccc;
+    }
+
 	</style>
 
   </head>
   <body>
     <h1>Styling tutorial 3</h1>
-	<div id="container">
+    <x3d id="the_element">
         <button id="toggler">Zoom</button>
-	    <x3d style="background-color:black">
-	      <scene>
+	    <scene>
 	        <shape>
 	          <appearance>
 	            <material diffuseColor='red'></material>  
