@@ -12,7 +12,7 @@
 // Add some JS1.6 Array functions:
 // (This only includes the non-prototype versions, because otherwise it messes up 'for in' loops)
 
-if (! Array.forEach) {
+if (!Array.forEach) {
     Array.forEach = function (array, fun, thisp) {
         var len = array.length;
         for (var i = 0; i < len; i++) {
@@ -23,7 +23,7 @@ if (! Array.forEach) {
     };
 }
 
-if (! Array.map) {
+if (!Array.map) {
     Array.map = function(array, fun, thisp) {
         var len = array.length;
         var res = [];
@@ -36,7 +36,7 @@ if (! Array.map) {
     };
 }
 
-if (! Array.filter) {
+if (!Array.filter) {
     Array.filter = function(array, fun, thisp) {
         var len = array.length;
         var res = [];
@@ -87,34 +87,9 @@ x3dom.x3dextNS = 'http://philip.html5.org/x3d/ext';
 x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 x3dom.xhtmlNS = 'http://www.w3.org/1999/xhtml';
 
-/** Wraps the given @p canvas with an X3DCanvas object.
-
-    All wrapped canvases are stored in the x3dom.canvases array.
-*/
-// x3dom.wrap = function(canvas) {
-//     var x3dCanvas = new x3dom.X3DCanvas(canvas);
-//     x3dom.canvases.push(x3dCanvas);
-//     return x3dCanvas;
-// };
-
-
-/**
- * @private Translates <tt>some-prop-erty</tt> to: <tt>somePropErty</tt>
- *
- * @param {string} p the name of the CSS property.
- * @param e the element on which to compute the CSS property.
+/** 
+ * @class x3dom.X3DCanvas
  */
-
-x3dom.stringToMethod = function(str) {
-    var mod = str.replace(/\w+/g, function(a) {
-        return a.charAt(0).toUpperCase() + a.substr(1).toLowerCase();
-    });
-    return mod.charAt(0).toLowerCase() + mod.substr(1);
-};
-
-
-/** @class x3dom.X3DCanvas
-*/
 x3dom.X3DCanvas = function(x3dElem) {
     
     var that = this;
@@ -135,22 +110,29 @@ x3dom.X3DCanvas = function(x3dElem) {
         x3dom.debug.logInfo("Creating canvas for (X)3D element...");
         var canvas = document.createElement('canvas');
         canvas.setAttribute("class", "x3dom-canvas");
-//        this.canvasDiv.appendChild(canvas);
-//        this.canvasDiv.setAttribute("class", "x3dom-canvasdiv");
         
         // check if user wants to style the X3D element
         var userStyle = x3dElem.getAttribute("style");
         if (userStyle) {
-//            this.canvasDiv.setAttribute("style", userStyle);
+            x3dom.debug.logInfo("Inline <x3d> styles detected");
         }
         
         // check if user wants to attach events to the X3D element
         var evtArr = new Array(
-            "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
-            "click", "dblclick", "keydown", "keypress", "keyup" );
+            "mousedown", 
+            "mousemove", 
+            "mouseout", 
+            "mouseover", 
+            "mouseup", 
+            "click", 
+            "dblclick", 
+            "keydown", 
+            "keypress", 
+            "keyup"
+        );
         
         // TODO; handle attribute event handlers dynamically during runtime
-        for (var i=0; i<evtArr.length; i++)
+        for (var i=0; i < evtArr.length; i++) 
         {
             var evtName = "on" + evtArr[i];
             var userEvt = x3dElem.getAttribute(evtName);
@@ -162,16 +144,15 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
         
         // workaround since one cannot find out which handlers are registered
-        if ( !x3dElem.__addEventListener && !x3dElem.__removeEventListener )
+        if (!x3dElem.__addEventListener && !x3dElem.__removeEventListener)
         {
             x3dElem.__addEventListener = x3dElem.addEventListener;
             x3dElem.__removeEventListener = x3dElem.removeEventListener;
             
             // helpers to propagate the element's listeners
-            x3dElem.addEventListener = function(type, func, phase)
-            {
+            x3dElem.addEventListener = function(type, func, phase) {
                 var j, found = false;
-                for (j=0; j<evtArr.length && !found; j++) {
+                for (j=0; j < evtArr.length && !found; j++) {
                     if (evtArr[j] === type) {
                         found = true;
                     }
@@ -180,15 +161,13 @@ x3dom.X3DCanvas = function(x3dElem) {
                 if (found) {
                     x3dom.debug.logInfo('addEventListener for div.on' + type);
                     that.canvas.addEventListener(type, func, phase);
-                }
-                else {
+                } else {
                     x3dom.debug.logInfo('addEventListener for X3D.on' + type);
                     this.__addEventListener(type, func, phase);
                 }
             };
             
-            x3dElem.removeEventListener = function(type, func, phase)
-            {
+            x3dElem.removeEventListener = function(type, func, phase) {
                 var j, found = false;
                 for (j=0; j<evtArr.length && !found; j++) {
                     if (evtArr[j] === type) {
@@ -199,53 +178,41 @@ x3dom.X3DCanvas = function(x3dElem) {
                 if (found) {
                     x3dom.debug.logInfo('removeEventListener for div.on' + type);
                     that.canvas.removeEventListener(type, func, phase);
-                }
-                else {
+                } else {
                     x3dom.debug.logInfo('removeEventListener for X3D.on' + type);
                     this.__removeEventListener(type, func, phase);
                 }
             }
         }
 
-//        x3dElem.parentNode.insertBefore(this.canvasDiv, x3dElem);
         x3dElem.appendChild(canvas);
-        
+
         // If the X3D element has an id attribute, append "_canvas"
         // to it and and use that as the id for the canvas
         var id = x3dElem.getAttribute("id");
         if (id !== null) {
-            this.canvasDiv.id = "x3dom-" + id + "-canvasdiv";
             canvas.id = "x3dom-" + id + "-canvas";
-        }
-        else {
+        } else {
             // If the X3D element does not have an id... do what?
             // For now check the date for creating a (hopefully) unique id
             var index = new Date().getTime();
-            this.canvasDiv.id = "x3dom-" + index + "-canvasdiv";
             canvas.id = "x3dom-" + index + "-canvas";
         }
         
         // Apply the width and height of the X3D element to the canvas
-        var w = 2, h = 2;
-        
+        var w = 2;
+        var h = 2;
+
         if ((w = x3dElem.getAttribute("width")) !== null) {
-            this.canvasDiv.style.width = w.toString();
             //Attention: pbuffer dim is _not_ derived from style attribs!
             canvas.style.width = w;
             canvas.setAttribute("width", w);
         }
-        else {
-            canvas.setAttribute("height", x3dom.getStyle(this.canvasDiv, "height"));
-        }
         
         if ((h = x3dElem.getAttribute("height")) !== null) {
-            this.canvasDiv.style.height = h.toString();
             //Attention: pbuffer dim is _not_ derived from style attribs!
             canvas.style.height = h;
             canvas.setAttribute("height", h);
-        }
-        else {
-            canvas.setAttribute("width", x3dom.getStyle(this.canvasDiv, "width"));
         }
         
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
@@ -254,8 +221,7 @@ x3dom.X3DCanvas = function(x3dElem) {
     };
 
     var _old_dim = [0,0];
-    this.watchForResize = function()
-    {
+    this.watchForResize = function() {
 
         var new_dim = [
             x3dom.getStyle(that.canvas, "width"),
@@ -287,7 +253,6 @@ x3dom.X3DCanvas = function(x3dElem) {
     };
 
     this.x3dElem = x3dElem;
-    this.canvasDiv = document.createElement('div');
     this.canvas = this.createHTMLCanvas(x3dElem);
 	this.canvas.parent = this;
     this.fps_t0 = new Date().getTime();
@@ -302,26 +267,26 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.__setAttribute(attrName, newVal);
 
         switch(attrName) {
-            case "width":
-            {
-                //that.canvasDiv.style.width = newVal;
+
+            case "width": {
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"));
                     //x3dom.debug.logInfo("width: " + that.doc._viewarea._width);
                 }
             }
-            break;
-            case "height":
-            {
-                //that.canvasDiv.style.height = newVal;
+            break;  // ???
+
+            case "height": {
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"));
                     //x3dom.debug.logInfo("height: " + that.doc._viewarea._height);
                 }
             }
-            break;
+            
+            break; // ???
+
             default:
         }
         
@@ -329,12 +294,13 @@ x3dom.X3DCanvas = function(x3dElem) {
     };
     
     var runtimeEnabled = x3dElem.getAttribute("runtimeEnabled");
+    
     if (runtimeEnabled !== null) {
         this.hasRuntime = (runtimeEnabled.toLowerCase() == "true");
-    }
-    else {
+    } else {
         this.hasRuntime = x3dElem.hasRuntime;
     }
+    
     if (this.gl === null) {
         this.hasRuntime = false;
     }
@@ -344,8 +310,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 
 	this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
     
-	if (this.canvas !== null && this.gl !== null && this.hasRuntime)
-	{
+	if (this.canvas !== null && this.gl !== null && this.hasRuntime) {
 		// event handler for mouse interaction
 		this.canvas.mouse_dragging = false;
 		this.canvas.mouse_button = 0;
@@ -368,6 +333,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 				case 2:  this.mouse_button = 2; break;	//right
 				default: this.mouse_button = 0; break;
 			}
+
 			this.mouse_drag_x = evt.layerX;
 			this.mouse_drag_y = evt.layerY;
 			this.mouse_dragging = true;
@@ -446,7 +412,9 @@ x3dom.X3DCanvas = function(x3dElem) {
 		}, false);
 		
 		this.canvas.addEventListener('mousemove', function (evt) {
+
 			window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
+
             /*
 			if (!this.mouse_dragging) {
 				return;
@@ -462,10 +430,10 @@ x3dom.X3DCanvas = function(x3dElem) {
 			
             if (this.mouse_dragging) {
                 this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-            }
-            else {
+            } else {
                 this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
             }
+
 			this.parent.doc.needRender = true;
 			
 			//window.status=this.id+' MOVE: '+dx+", "+dy;
@@ -543,17 +511,15 @@ x3dom.X3DCanvas.prototype.tick = function()
             
 			this.doc.needRender = false;    // picking might require another pass
 			this.doc.render(this.gl);
-		}
-		else {
-			if (this.statDiv) {
+		} else {
+		    if (this.statDiv) {
                 if (this.doc.lastDownloadCount !== this.doc.downloadCount) {
                     this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
                 }
                 this.doc.lastDownloadCount = this.doc.downloadCount;
 			}
 		}
-	}
-	catch (e) {
+	} catch (e) {
 		x3dom.debug.logException(e);
 		throw e;
 	}
@@ -569,76 +535,70 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
     this.doc.onload = function () {
         x3dom.debug.logInfo("loaded '" + uri + "'");
         
-        if (x3dCanvas.hasRuntime)
-        {
+        if (x3dCanvas.hasRuntime) {
             setInterval( function() {
                     x3dCanvas.watchForResize();
                     x3dCanvas.tick();
                 }, 
                 16	// use typical monitor frequency as bound
             );
-        }
-        else
-        {
+        } else {
             x3dCanvas.tick();
         }
     };
     
     this.x3dElem.render = function() {
-        if (x3dCanvas.hasRuntime)
+        if (x3dCanvas.hasRuntime) {
             x3dCanvas.doc.needRender = true;
-        else
+        } else {
             x3dCanvas.doc.render(x3dCanvas.gl);
+        }
     };
+
     this.x3dElem.context = x3dCanvas.gl.ctx3d;
     
-    this.doc.onerror = function () { alert('Failed to load X3D document'); };
+    this.doc.onerror = function () { 
+        alert('Failed to load X3D document'); 
+    };
+    
     this.doc.load(uri, sceneElemPos);
 };
 
-x3dom.detectActiveX = function()
-{
+x3dom.detectActiveX = function() {
     var isInstalled = false;  
     
-    if (window.ActiveXObject) 
-    {  
+    if (window.ActiveXObject)  {  
         var control = null;  
-        
-        try 
-        {  
+
+        try  {  
             control = new ActiveXObject('AVALONATX.InstantPluginATXCtrl.1');  
-        } 
-        catch (e) 
-        {
+        } catch (e) {
         }  
         
-        if (control)
+        if (control) {
             isInstalled = true;  
+        }
     }
     
     return isInstalled;
 }
 
-x3dom.rerouteSetAttribute = function(node)
-{
+x3dom.rerouteSetAttribute = function(node) {
     // save old setAttribute method
     node._setAttribute = node.setAttribute;
-    node.setAttribute = function(name, value)
-    {
+    node.setAttribute = function(name, value) {
         return node._x3domNode.parseField(name, value);
     }
 
-    for(var i=0; i < node.childNodes.length; i++)
-    {
+    for(var i=0; i < node.childNodes.length; i++) {
         var child = node.childNodes[i];
         x3dom.rerouteSetAttribute(child);
     }
 }
 
-x3dom.insertActiveX = function(x3d)
-{
-    if (typeof x3dom.atxCtrlCounter == 'undefined')
-    {
+x3dom.insertActiveX = function(x3d) {
+    
+    if (typeof x3dom.atxCtrlCounter == 'undefined') {
         x3dom.atxCtrlCounter = 0;
     }
  
@@ -670,8 +630,7 @@ x3dom.insertActiveX = function(x3d)
     browser.replaceWorld(scene);
         
     // add backtrack method to get browser from x3d node instead of the ctrl
-    x3d.getBrowser = function()
-    {
+    x3d.getBrowser = function() {
         return atxctrl.getBrowser();
     }
     
@@ -692,7 +651,7 @@ x3dom.userAgentFeature = {
         var w3sg = document.getElementsByTagName('webSG');
 
 		// active hacky DOMAttrModified workaround to webkit 
-		if ( window.navigator.userAgent.match(/webkit/i)) {
+		if (window.navigator.userAgent.match(/webkit/i)) {
 			x3dom.debug.logInfo ("Active DOMAttrModifiedEvent workaround for webkit ");
 			x3dom.userAgentFeature.supportsDOMAttrModified = false;
 		}
@@ -701,37 +660,36 @@ x3dom.userAgentFeature = {
         x3ds = Array.map(x3ds, function (n) { n.hasRuntime = true;  return n; });
         w3sg = Array.map(w3sg, function (n) { n.hasRuntime = false; return n; });
         
-        var i=0;
+        var i=0; // re-usable counter
+
         for (i=0; i<w3sg.length; i++) {
             x3ds.push(w3sg[i]);
         }
 		
 		var activateLog = false;
-		for (i=0; i<x3ds.length; i++) {
+		for (i=0; i < x3ds.length; i++) {
 			var showLog = x3ds[i].getAttribute("showLog");
-			if (showLog !== null && showLog.toLowerCase() == "true")
-			{
+			if (showLog !== null && showLog.toLowerCase() == "true") {
 				activateLog = true;
 				break;
 			}
 		}
-		
+
 		// Activate debugging/logging for x3dom. Logging will only work for
         // all log calls after this line!
 		x3dom.debug.activate(activateLog);
         
         if (x3dom.versionInfo !== undefined) {
-            x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + 
-                                " Rev. " + x3dom.versionInfo.svnrevision);
+            x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + " Rev. " + x3dom.versionInfo.svnrevision);
         }
         
-		x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + 
-                " X3D and " + w3sg.length + " (experimental) WebSG nodes...");
+		x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + " X3D and " + w3sg.length + " (experimental) WebSG nodes...");
         
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
-        for (i=0; i<x3ds.length; i++)
+        for (i=0; i < x3ds.length; i++)
         {
+            x3d_element = x3ds[i];
         /*
             // http://de.selfhtml.org/javascript/objekte/mimetypes.htm
             if (navigator.mimeTypes["model/vrml"] &&
@@ -762,16 +720,15 @@ x3dom.userAgentFeature = {
         */
         
             // http://www.howtocreate.co.uk/wrongWithIE/?chapter=navigator.plugins
-            if (x3dom.detectActiveX())
-            {
-                x3dom.insertActiveX(x3ds[i]);
+            if (x3dom.detectActiveX()) {
+                x3dom.insertActiveX(x3d_element);
                 continue;
             }
         
-            var x3dcanvas = new x3dom.X3DCanvas(x3ds[i]);
+            var x3dcanvas = new x3dom.X3DCanvas(x3d_element);
             
-			if (x3dcanvas.gl === null)
-			{
+			if (x3dcanvas.gl === null) {
+
             /*
                 var domString, embed;
                 //var dom = (new DOMParser()).parseFromString(xmlstring, "text/xml");
@@ -802,25 +759,21 @@ x3dom.userAgentFeature = {
                 
                 altDiv.appendChild(altP);
 				altDiv.appendChild(aLnk);
-                x3dcanvas.canvasDiv.appendChild(altDiv);
+				
+				x3dcanvas.x3dElem.insertBefore(altDiv);
 
                 // remove the stats div (it's not needed when WebGL doesnt work)
                 if (x3dcanvas.statDiv) { 
-                    x3dcanvas.canvasDiv.removeChild(x3dcanvas.statDiv);
+                    x3d_element.removeChild(x3dcanvas.statDiv)
                 }
-                
-                // check if "altImg" is specified and if so use it as background
+
+                // check if "altImg" is specified on x3d element and if so use it as background
                 var altImg = x3ds[i].getAttribute("altImg") || null;
                 if (altImg) {
                     var altImgObj = new Image();                
                     altImgObj.src = altImg;                    
-                    x3dcanvas.canvasDiv.style.backgroundImage = "url("+altImg+")";                    
-                    // PE: Don't resize the canvasDiv to match the alt image here cause the image
-                    //     might not be loaded yet and the size would be (0,0). Just do it with CSS..
-                    //x3dcanvas.canvasDiv.style.width = altImgObj.width + "px";
-                    //x3dcanvas.canvasDiv.style.height = altImgObj.height + "px";   
+                    x3d_element.style.backgroundImage = "url("+altImg+")";                    
                 }
-                
 				continue;
 			}
 			
@@ -833,18 +786,15 @@ x3dom.userAgentFeature = {
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
         }
         
-        var ready = (function(eventType)
-        {
+        var ready = (function(eventType) {
             var evt = null;
             
-            if (document.createEvent)
-            {
+            if (document.createEvent) {
                 evt = document.createEvent("Events");    
                 evt.initEvent(eventType, true, true);     
                 document.dispatchEvent(evt);              
             }
-            else if (document.createEventObject)   
-            {
+            else if (document.createEventObject) {
                 evt = document.createEventObject();
                 // http://stackoverflow.com/questions/1874866/how-to-fire-onload-event-on-document-in-ie
                 document.body.fireEvent('on' + eventType, evt);   
@@ -860,7 +810,7 @@ x3dom.userAgentFeature = {
     
     if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
-        
+
         document.getElementById = function(id) {
             var obj = this.__getElementById(id);
             
@@ -876,17 +826,14 @@ x3dom.userAgentFeature = {
         };
     }
     
-    if (window.addEventListener) 
-    {
+    if (window.addEventListener)  {
         window.addEventListener('load', onload, false);
         window.addEventListener('unload', onunload, false);
         window.addEventListener('reload', onunload, false);
-    } 
-    else if (window.attachEvent) 
-    {
+    } else if (window.attachEvent) {
         window.attachEvent('onload', onload);
         window.attachEvent('onunload', onunload);
         window.attachEvent('onreload', onunload);
     }
-
+    
 })();
