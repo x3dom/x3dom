@@ -34,7 +34,7 @@ We are going to use the box example scene established in the [getting started][g
 
 Rendering this document in a WebGL [compatible browser][browser_support], results in a look similar to this:
 
-![Initial scene](media/styling/styling1.png "Initial scene")
+![Initial scene](http://www.x3dom.org/x3dom/tutorials/media/styling/styling1.png "Initial scene")
 
 
 Basic styling
@@ -68,7 +68,7 @@ We need to remove the `width/height` attributes as well because they take preced
 
 The result looks something like this:
  
-![Scene with bg and h/w](media/styling/styling2.png "Background and relative dimensions")
+![Scene with bg and h/w](http://www.x3dom.org/x3dom/tutorials/media/styling/styling2.png "Background and relative dimensions")
 
 Note that the dimensions are relative now and adapted when resizing the browser window.
 
@@ -114,7 +114,7 @@ Semantically we are fine, but now we need to style the button so it floats over 
 
 Looking at our example in a browser reveals that there is a "Zoom" button floating over the x3d element in the top left corner.
 
-![Scene with Zoom button](media/styling/styling3.png "Scene with Zoom button")
+![Scene with Zoom button](http://www.x3dom.org/x3dom/tutorials/media/styling/styling3.png "Scene with Zoom button")
 
 
 ### A button alone isn’t interaction
@@ -185,7 +185,7 @@ The last bit in the puzzle is another style rule which resets margin and padding
 
 Finally the fully zoomed result looks like this: 
 
-![Scened with zoomed button](media/styling/styling4.png "Scene with zoomed button")
+![Scened with zoomed button](http://www.x3dom.org/x3dom/tutorials/media/styling/styling4.png "Scene with zoomed button")
 
 
 * [See how it works (video)][resize_final_video]
@@ -196,9 +196,9 @@ You will also find another example which also styles other properties [here][css
 
 
 [browser_support]:    http://www.x3dom.org/?page_id=9 "X3DOM browser support"
-[styling2_video]:     media/styling/styling2.mov "Demo resizing (video)"
-[styling2_html]:      media/styling/styling2.html "Live resizing (html)"
-[resize_final_video]:  media/styling4.mov "Demo resizing"
-[resize_final_html]:  media/styling/styling4.html "Live resizing final (html)"
+[styling2_video]:     http://www.x3dom.org/x3dom/tutorials/media/styling/styling2.mov "Demo resizing (video)"
+[styling2_html]:      http://www.x3dom.org/x3dom/tutorials/media/styling/styling2.html "Live resizing (html)"
+[resize_final_video]: http://www.x3dom.org/x3dom/tutorials/media/styling/styling4.mov "Demo resizing"
+[resize_final_html]:  http://www.x3dom.org/x3dom/tutorials/media/styling/styling4.html "Live resizing final (html)"
 [getting_started]:    http://www.x3dom.org/?page_id=627 "X3DOM Getting Started"
 [css_resize_example]: http://www.x3dom.org/x3dom/example/x3dom_x3dElementCSSIntegration.html "X3DOM resize example"
