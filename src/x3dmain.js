@@ -680,16 +680,18 @@ x3dom.userAgentFeature = {
 		x3dom.debug.activate(activateLog);
         
         if (x3dom.versionInfo !== undefined) {
-            x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + " Rev. " + x3dom.versionInfo.svnrevision);
+            x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + 
+								" Rev. " + x3dom.versionInfo.svnrevision);
         }
         
-		x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + " X3D and " + w3sg.length + " (experimental) WebSG nodes...");
+		x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + " X3D and " + 
+							w3sg.length + " (experimental) WebSG nodes...");
         
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
         for (i=0; i < x3ds.length; i++)
         {
-            x3d_element = x3ds[i];
+            var x3d_element = x3ds[i];
         /*
             // http://de.selfhtml.org/javascript/objekte/mimetypes.htm
             if (navigator.mimeTypes["model/vrml"] &&

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+    <link rel='stylesheet' type='text/css' href='x3dom.css'/>
+  </head>
+  <body>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' x='0px' y='0px' width='500px' height='400px'>
+      <Scene DEF='scene'>
+        <Shape>
+          <Appearance>
+            <Material diffuseColor='1 0 0' specularColor='.2 .2 .2'/>
+          </Appearance>
+          <IndexedFaceSet coordIndex='0 1 2 3 -1 0 3 4 5 -1 0 5 6 7 -1 0 7 8 1 -1 9 10 11 12 -1 9 12 13 14 -1 9 14 15 16 -1 9 16 17 10 -1 18 14 13 19 -1 18 19 8 7 -1 18 7 6 20 -1 18 20 15 14 -1 21 22 11 10 -1 21 10 17 23 -1 21 23 4 3 -1 21 3 2 22 -1 24 22 2 1 -1 24 1 8 19 -1 24 19 13 12 -1 24 12 11 22 -1 25 20 6 5 -1 25 5 4 23 -1 25 23 17 16 -1 25 16 15 20 -1'>
+            <Coordinate point='0 1 0 0 0.1 0.1 0.05 0.05 0.05 0.1 0.1 0 0.05 0.05 -0.05 0 0.1 -0.1 -0.05 0.05 -0.05 -0.1 0.1 0 -0.05 0.05 0.05 0 -1 0 0.1 -0.1 0 0.05 -0.05 0.05 0 -0.1 0.1 -0.05 -0.05 0.05 -0.1 -0.1 0 -0.05 -0.05 -0.05 0 -0.1 -0.1 0.05 -0.05 -0.05 -1 0 0 -0.1 0 0.1 -0.1 0 -0.1 1 0 0 0.1 0 0.1 0.1 0 -0.1 0 0 1 0 0 -1'/>
+          </IndexedFaceSet>
+        </Shape>
+      </Scene>
+    </X3D>
+    <script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+    <script type="text/javascript" src="gfx_webgl.js"></script>
+    <script type="text/javascript" src="x3d.js"></script>
+    <script type="text/javascript" src="fields.js"></script>
+    <script type="text/javascript" src="x3d_follower.js"></script>
+  </body>
+</html>
