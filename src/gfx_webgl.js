@@ -1253,10 +1253,12 @@ x3dom.gfx_webgl = (function () {
             if (fontStyle !== null) {
 
                 var fonts = fontStyle._vf.family.toString().trim().split(" ")
-                font_family = Array.map(fonts, function (s) {
-                    if (s == 'SANS') { return 'sans-serif'; }
-                    else if (s == 'SERIF') { return 'serif'; }
-                    else if (s == 'TYPEWRITER') { return 'monospace'; }
+
+                font_family = Array.map(fonts, function(s) {
+                    alert(s)
+                    if (s == 'SANS' || s == "'SANS'") { return 'sans-serif'; }
+                    else if (s == 'SERIF' || s == "'SERIF'") { return 'serif'; }
+                    else if (s == 'TYPEWRITER' || s == "'TYPEWRITER'") { return 'monospace'; }
                     else { return ''+s+''; }  //'Verdana' 
                 }).join(",");
                 
@@ -1279,7 +1281,6 @@ x3dom.gfx_webgl = (function () {
 
             }
             
-            
 			/*text_ctx.mozTextStyle = '48px '+font_family;*/
 			var string = shape._cf.geometry.node._vf.string;
 			/*
@@ -1298,10 +1299,10 @@ x3dom.gfx_webgl = (function () {
             text_ctx.lineWidth = 2.5;
             text_ctx.strokeStyle = 'grey';
             text_ctx.save();
-            
+            alert(font_family)
             // calculate font size in px
             text_ctx.font = font_style + " " + font_size + " " + font_family;  //bold 
-
+            alert(text_ctx.font)
             var txtW = text_ctx.measureText(string).width;
             var txtH = text_ctx.measureText(string).height || 60;
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
