@@ -1238,49 +1238,48 @@ x3dom.gfx_webgl = (function () {
         // TODO; finish text!
 		if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) 
         {
+			var fontStyleNode = shape._cf.geometry.node._cf.fontStyle.node;
 
-            var text_canvas = document.createElement('canvas');
-            text_canvas.width = 512;
-            text_canvas.height = 128;
-            //document.body.appendChild(text_canvas);	//dbg
-            
-			var text_ctx = text_canvas.getContext('2d');
-			var fontStyle = shape._cf.geometry.node._cf.fontStyle.node;
-			var font_family = ['SANS'];
-			var font_size = 1;
-			var font_style = "PLAIN"
+            // defaults
+			var font_family = ['SERIF'];
+			var font_size = 32;
+			var font_style = "PLAIN";
+
+			var font_spacing = 1.0;
+			var font_horizontal = true;
+			var font_justify = 'BEGIN';
+			var font_language = "";
+			var font_leftToRight = true;
+			var font_topToBottom = true;
 			
-            if (fontStyle !== null) {
+            if (fontStyleNode !== null) {
 
-                var fonts = fontStyle._vf.family.toString().trim().split(" ")
+                var fonts = fontStyleNode._vf.family.toString();
 
+                // clean attribute values and split in array
+                fonts = fonts.trim().replace(/\'/g,'').replace(/\,/, ' ');
+                fonts = fonts.split(" ");
+                
                 font_family = Array.map(fonts, function(s) {
-                    if (s == 'SANS' || s == "'SANS'") { return 'sans-serif'; }
-                    else if (s == 'SERIF' || s == "'SERIF'") { return 'serif'; }
-                    else if (s == 'TYPEWRITER' || s == "'TYPEWRITER'") { return 'monospace'; }
+                    if (s == 'SANS') { return 'sans-serif'; }
+                    else if (s == 'SERIF') { return 'serif'; }
+                    else if (s == 'TYPEWRITER') { return 'monospace'; }
                     else { return ''+s+''; }  //'Verdana' 
                 }).join(",");
                 
-                font_style = fontStyle._vf.style.toString();
-
+                font_style = fontStyleNode._vf.style.toString().replace(/\'/g,'');
                 switch (font_style.toUpperCase()) {
-                    case "PLAIN": font_style = 'normal'; break;
-                    case "BOLD": font_style = 'bold'; break;
-                    case "ITALIC": font_style = 'italic'; break;
-                    case "BOLDITALIC": font_style = 'italic bold'; break;
+                    case 'PLAIN': font_style = 'normal'; break;
+                    case 'BOLD': font_style = 'bold'; break;
+                    case 'ITALIC': font_style = 'italic'; break;
+                    case 'BOLDITALIC': font_style = 'italic bold'; break;
                     default: font_style = 'normal';
-                  }
-
-                font_size = fontStyle._vf.size.toString();
-                if (font_size == "1") {
-                    font_size = "32px"
-                } else {
-                    font_size = font_size + 'px'
                 }
 
+                font_size = fontStyleNode._vf.size;
             }
             
-			/*text_ctx.mozTextStyle = '48px '+font_family;*/
+			/* text_ctx.mozTextStyle = '48px '+font_family; */
 			var string = shape._cf.geometry.node._vf.string;
 			/*
 			var text_w = 0;
@@ -1289,23 +1288,35 @@ x3dom.gfx_webgl = (function () {
 				text_w = Math.max(text_w, text_ctx.mozMeasureText(string[i]));
             }
             */
+
+            var text_canvas = document.createElement('canvas');
+            text_canvas.width  = viewarea._width;
+            text_canvas.height = font_size * 4;
+            text_canvas.display = 'none';
+//            document.body.appendChild(text_canvas);	//dbg
+			var text_ctx = text_canvas.getContext('2d');
             
             text_ctx.fillStyle = 'rgba(0,0,0,0)';
             text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
-             
+            
             // write white text with black border
             text_ctx.fillStyle = 'white';
             text_ctx.lineWidth = 2.5;
             text_ctx.strokeStyle = 'grey';
             text_ctx.save();
+
             // calculate font size in px
-            text_ctx.font = font_style + " " + font_size + " " + font_family;  //bold 
+            text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+
             var txtW = text_ctx.measureText(string).width;
             var txtH = text_ctx.measureText(string).height || 60;
+            
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
-            var topOffset = (text_ctx.canvas.height - 32) / 2.0;
+            var topOffset  = (text_ctx.canvas.height - font_size) / 2.0;
+
             //text_ctx.strokeText(string, leftOffset, topOffset);
             text_ctx.fillText(string, leftOffset, topOffset);
+            
             text_ctx.restore();
             
             /*
@@ -1339,6 +1350,7 @@ x3dom.gfx_webgl = (function () {
             var v0 = topOffset / text_canvas.height + v;
             if (u0 < 0) { u0 = 0; }
             if (u > 1) { u = 1; }
+            
             //x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
             shape._cf.geometry.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
