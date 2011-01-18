@@ -76,7 +76,7 @@
  <xsl:param name="linelen" select="75" />
 
  <!-- whether entries should be grouped by day -->
- <xsl:param name="groupbyday" select="'no'" />
+ <xsl:param name="groupbyday" select="'yes'" />
 
  <!-- whether to seperate log messages by empty lines -->
  <xsl:param name="separate-daylogs" select="'no'" />
@@ -220,9 +220,9 @@
   <!-- set up the text to wrap -->
   <xsl:variable name="txt">
    <xsl:value-of select="$rev" />
-   <xsl:if test="$paths!=''">
+   <!-- <xsl:if test="$paths!=''">
     <xsl:value-of select="concat($paths,':&#32;')" />
-   </xsl:if>
+   </xsl:if> -->
    <xsl:value-of select="$msg" />
   </xsl:variable>
   <!-- print the paths and message nicely wrapped -->
