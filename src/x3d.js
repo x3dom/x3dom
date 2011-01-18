@@ -6878,39 +6878,47 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     // Test capturing DOM mutation events on the X3D subscene
     var domEventListener = {
         onAttrModified: function(e) {
-            var attrToString = {
-                1: "MODIFICATION",
-                2: "ADDITION",
-                3: "REMOVAL"
-            };
-            //x3dom.debug.logInfo("MUTATION: " + e.attrName + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
-            e.target._x3domNode.updateField(e.attrName, e.newValue);
-			doc.needRender = true;			
+            if ('_x3domNode' in e.target) {
+                var attrToString = {
+                    1: "MODIFICATION",
+                    2: "ADDITION",
+                    3: "REMOVAL"
+                };
+                //x3dom.debug.logInfo("MUTATION: " + e.attrName + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
+                e.target._x3domNode.updateField(e.attrName, e.newValue);
+    			doc.needRender = true;			
+            }
         },
         onNodeRemoved: function(e) {
-            var parent = e.target.parentNode._x3domNode;
-            var child = e.target._x3domNode;
+            if ('_x3domNode' in e.target.parentNode && '_x3domNode' in e.target) {
+                var parent = e.target.parentNode._x3domNode;
+                var child = e.target._x3domNode;
 			
-            //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
-            if (parent) {
-                parent.removeChild(child);
-                doc.needRender = true;			
+                //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
+                if (parent) {
+                    parent.removeChild(child);
+                    doc.needRender = true;			
+                }
             }
         },
         onNodeInserted: function(e) {
-            var parent = e.target.parentNode._x3domNode;
-            var child = e.target;
+            // only act on x3dom nodes, ignore regular HTML
+            if ('_x3domNode' in e.target.parentNode) {
+                var parent = e.target.parentNode._x3domNode;
+                var child = e.target;
             
-			//x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
-			if (parent._nameSpace) {
-                var newNode = parent._nameSpace.setupTree(child);
-                parent.addChild(newNode, child.getAttribute("containerField"));
-                doc.needRender = true;
-			}
-            else {
-				x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
-			}
-         }
+    			//x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
+            
+    			if (parent._nameSpace) {
+                    var newNode = parent._nameSpace.setupTree(child);
+                    parent.addChild(newNode, child.getAttribute("containerField"));
+                    doc.needRender = true;
+    			}
+                else {
+    				x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
+    			}
+            }
+        }
     };
     
     //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);    
