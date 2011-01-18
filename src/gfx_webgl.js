@@ -1255,7 +1255,6 @@ x3dom.gfx_webgl = (function () {
                 var fonts = fontStyle._vf.family.toString().trim().split(" ")
 
                 font_family = Array.map(fonts, function(s) {
-                    alert(s)
                     if (s == 'SANS' || s == "'SANS'") { return 'sans-serif'; }
                     else if (s == 'SERIF' || s == "'SERIF'") { return 'serif'; }
                     else if (s == 'TYPEWRITER' || s == "'TYPEWRITER'") { return 'monospace'; }
@@ -1299,10 +1298,8 @@ x3dom.gfx_webgl = (function () {
             text_ctx.lineWidth = 2.5;
             text_ctx.strokeStyle = 'grey';
             text_ctx.save();
-            alert(font_family)
             // calculate font size in px
             text_ctx.font = font_style + " " + font_size + " " + font_family;  //bold 
-            alert(text_ctx.font)
             var txtW = text_ctx.measureText(string).width;
             var txtH = text_ctx.measureText(string).height || 60;
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
