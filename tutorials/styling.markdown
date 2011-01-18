@@ -40,9 +40,9 @@ Rendering this document in a WebGL [compatible browser][browser_support], result
 Basic styling
 -------------
 
-In the initial example above, we created the scene using the `x3d` tag initializing it with `width` and `height` attributes. In order to take advantage of CSS, we can use a CSS rule to set height and with in the visual layer.
+In the initial example above, we created the scene using the `x3d` tag initializing it with `width` and `height` attributes. In order to take advantage of CSS, we can use a CSS rule to set height and width in the visual layer.
 
-The following CSS rules, added to the `head` of the HTML document element will resize the scene to 50% hight and with of the parent element - in this case the `body` element. In order to make this work with IDs, we need to add the `id` attribute to the `x3d`:
+The following CSS rules, added to the `head` of the HTML document element will resize the scene to 50% height and with of the parent element - in this case the `body` element. In order to make this work with IDs, we need to add the `id` attribute to the `x3d`:
 
     <head>
       <style>
