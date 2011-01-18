@@ -4,10 +4,35 @@
     <meta charset="utf-8">
     <title>X3DOM text example</title>
     <link rel="stylesheet" type="text/css" href="x3dom.css">
+    <style>
+    @font-face {
+      font-family: 'Orbitron';
+      font-style: normal;
+      font-weight: 400;
+      src: local('Orbitron-Light'), local('Orbitron-Regular'), url('font/Orbitron-Regular.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Orbitron';
+      font-style: normal;
+      font-weight: 700;
+      src: local('Orbitron-Bold'), url('Orbitron-Bold.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Orbitron';
+      font-style: normal;
+      font-weight: 500;
+      src: local('Orbitron-Medium'), url('Orbitron-Medium.ttf') format('truetype');
+    }
+    @font-face {
+      font-family: 'Orbitron';
+      font-style: normal;
+      font-weight: 900;
+      src: local('Orbitron-Black'), url('Orbitron-Black.ttf') format('truetype');
+    }
+    </style>
 </head>
 <body>
     <h1>X3DOM text example</h1>
-
     <x3d showStat="true" showLog="true" width="512px" height="512px">
     <scene>
       <viewpoint position='0 0 11'></viewpoint>
@@ -16,7 +41,10 @@
         <appearance>
           <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
         </appearance>
-        <text string='"Some X3D Text within WebGL..."' solid='false'>
+        <text string='Hello World' solid='false'>
+            
+            <fontstyle family="'Orbitron' 'TYPEWRITER'" style="BOLDITALIC" justify="MIDDLE"></fontstyle>
+            
         </text>
       </shape>
       <transform translation='0 0 -2'>
