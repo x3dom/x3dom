@@ -1238,6 +1238,7 @@ x3dom.gfx_webgl = (function () {
         // TODO; finish text!
 		if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) 
         {
+
             var text_canvas = document.createElement('canvas');
             text_canvas.width = 512;
             text_canvas.height = 128;
@@ -1270,8 +1271,10 @@ x3dom.gfx_webgl = (function () {
                   }
 
                 font_size = fontStyle._vf.size.toString();
-                if (font_size == 1) {
+                if (font_size == "1") {
                     font_size = "32px"
+                } else {
+                    font_size = font_size + 'px'
                 }
 
             }
