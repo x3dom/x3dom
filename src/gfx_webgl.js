@@ -1275,6 +1275,20 @@ x3dom.gfx_webgl = (function () {
                     case 'BOLDITALIC': font_style = 'italic bold'; break;
                     default: font_style = 'normal';
                 }
+                
+                font_leftToRight = fontStyleNode._vf.leftToRight;
+                font_topToBottom = fontStyleNode._vf.topToBottom;
+                
+                // TODO: make it possible to use mutiple values
+                font_justify = fontStyleNode._vf.justify.toString().replace(/\'/g,'');
+                switch (font_justify.toUpperCase()) {
+                    case 'BEGIN': font_justify = 'left'; break;
+                    case 'END': font_justify = 'right'; break;
+                    case 'FIRST': font_justify = 'left'; break; // not clear what to do with this one
+                    case 'MIDDLE': font_justify = 'center'; break;
+                    default: font_justify = 'FIRST';
+                }
+                
 
                 font_size = fontStyleNode._vf.size;
             }
@@ -1307,6 +1321,7 @@ x3dom.gfx_webgl = (function () {
 
             // calculate font size in px
             text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+            text_ctx.textAlign = font_justify;
 
             var txtW = text_ctx.measureText(string).width;
             var txtH = text_ctx.measureText(string).height || 60;
