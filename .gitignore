@@ -1,0 +1,6 @@
+_site
+.DS_Store
+./src/x3dom.js
+./src/version.js
+*.tmproj
+*.bak
