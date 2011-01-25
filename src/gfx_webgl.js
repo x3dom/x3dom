@@ -1236,6 +1236,7 @@ x3dom.gfx_webgl = (function () {
 		shape._dirty.texture = false;
  
         // TODO; finish text!
+        // CANVAS only supports: font, textAlign, textBaseline, fillText, strokeText, measureText, width
 		if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) 
         {
 			var fontStyleNode = shape._cf.geometry.node._cf.fontStyle.node;
@@ -1276,7 +1277,7 @@ x3dom.gfx_webgl = (function () {
                     default: font_style = 'normal';
                 }
                 
-                font_leftToRight = fontStyleNode._vf.leftToRight;
+                font_leftToRight = fontStyleNode._vf.leftToRight ? 'ltr' : 'rtl';
                 font_topToBottom = fontStyleNode._vf.topToBottom;
                 
                 // TODO: make it possible to use mutiple values
@@ -1307,6 +1308,7 @@ x3dom.gfx_webgl = (function () {
             */
 
             var text_canvas = document.createElement('canvas');
+            text_canvas.dir = font_leftToRight;
             text_canvas.width  = viewarea._width;
             text_canvas.height = font_size * 4;
             text_canvas.display = 'none';
