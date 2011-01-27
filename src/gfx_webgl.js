@@ -957,7 +957,7 @@ x3dom.gfx_webgl = (function () {
 			}
 			if(texture || cssMode){
 				shader += "uniform sampler2D tex;			\n";
-				shader += "uniform float sphereMapping;		\n";
+				//shader += "uniform float sphereMapping;		\n";
 				shader += "varying vec2 fragTexcoord;		\n";
 				shader += "uniform float useText;			\n";
 				shader += "uniform float origChannelCount;	\n";
@@ -1039,7 +1039,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
 					shader += "vec4 texColor = texture2D(tex, texCoord);\n";
 					shader += "alpha *= texColor.a;\n";
-					shader += "if(sphereMapping == 1.0 || useText == 1.0 || origChannelCount == 1.0 || origChannelCount == 2.0){\n";
+					shader += "if(useText == 1.0 || origChannelCount == 1.0 || origChannelCount == 2.0){\n";
 					shader += "   rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor)*texColor.rgb;\n";
 					shader += "}else{\n";
 					shader += "   rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);\n";
