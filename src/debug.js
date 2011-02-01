@@ -136,7 +136,7 @@ x3dom.debug = {
                 node.style.color = "#00ff00";
                 break;
         }
-		node.innerHTML = logType + ": " + msg;
+		node.innerText = logType + ": " + msg;
 		x3dom.debug.logContainer.insertBefore(node, x3dom.debug.logContainer.firstChild);
         
 		// Use firebug's console if available
