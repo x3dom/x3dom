@@ -1,8 +1,49 @@
+2011-02-01  thyrell
+
+	* [r906] Added AUTHORS file to credit contributors
+	* [r905] Changed innerHTML to innerText in logging
+	* [r904] Some HTML cleanup
+
+2011-01-27  akustikkoppler
+
+	* [r903] - remove sphereMapping/origChannelCount Hack
+	* [r902] - add origChannelCount in x3dom_bmwConfig.html and
+	  x3dom_bmwConfig.xhtml
+
+2011-01-25  thyrell
+
+	* [r901] Adding directionality to text, though noop working yet
+	* [r900] Todos
+	* [r899] Fixed bug appearning in in FF with textAlign value of text
+	  canvas (NS_ERROR_ILLEGAL_VALUE).
+
+2011-01-20  thyrell
+
+	* [r898] Added plain TODO file
+
 2011-01-18  thyrell
 
-	 [r887] File cleanup
-	 [r886] Started work on Text implementation
-	 [r885] Fixing parent._nameSpace undefined bug. When appending a
+	* [r897] Work on Text implementation: Added more FontStyle
+	  attributes processing
+	* [r896] More work on Text integration
+
+2011-01-18  akustikkoppler
+
+	* [r895]
+	* [r894]
+
+2011-01-18  thyrell
+
+	* [r893] Switched font test to TYPEWRITER font. Webfonts not yet
+	  working in FF and Chrome
+	* [r892] Whoops forgot to remove alerts for debugging
+	* [r891] Text stuff
+	* [r890] Using a webfont
+	* [r889] Fixed path in Text test
+	* [r888] Better changelog
+	* [r887] File cleanup
+	* [r886] Started work on Text implementation
+	* [r885] Fixing parent._nameSpace undefined bug. When appending a
 	  non X3D node to the X3D element (like the statDiv) the
 	  onNodeInserted handler fired and the code expected the inserted
 	  not a X3D node. With the statDiv this is not the case. Now only
@@ -10,41 +51,41 @@
 
 2011-01-13  yjung
 
-	 [r884]
+	* [r884]
 
 2011-01-11  thyrell
 
-	 [r883] Fixing error in URL
-	 [r882] Fix no support message
-	 [r881] Fixing links in tutorials files
-	 [r880] Added final movie for tutorial
-	 [r879] Tutorial changes
-	 [r878] Updated CSS styling tutorial
-	 [r877] Using local copy of stars background
-	 [r876] Slicht re-org of styling tutorial
-	 [r875] Refactoring test dir according to bp
-	 [r874] Cleanup: Renaming unit test dir to test/ according to best
+	* [r883] Fixing error in URL
+	* [r882] Fix no support message
+	* [r881] Fixing links in tutorials files
+	* [r880] Added final movie for tutorial
+	* [r879] Tutorial changes
+	* [r878] Updated CSS styling tutorial
+	* [r877] Using local copy of stars background
+	* [r876] Slicht re-org of styling tutorial
+	* [r875] Refactoring test dir according to bp
+	* [r874] Cleanup: Renaming unit test dir to test/ according to best
 	  practices.
-	 [r873] Ignoring x3dom.css/x3dom.js since its built automatically
-	 [r872] Added css example
-	 [r871] Adding LICENSE file. This is very important in order to
+	* [r873] Ignoring x3dom.css/x3dom.js since its built automatically
+	* [r872] Added css example
+	* [r871] Adding LICENSE file. This is very important in order to
 	  allow the open source community to use X3DOM.
-	 [r870] Adding a better CHANGELOG file
-	 [r869] * added detailed info about how example works
-	 [r868] rename example
-	 [r867] HTML5 cleanup
-	 [r866] Style fixes
-	 [r865] Keep log hidden in css example
-	 [r864] Disable log in example
-	 [r863] Layout fixes for FF
-	 [r862] Added CSS Integration example 
-	 [r861] Added CSS Integration Example
-	 [r860] Fixed problem in log string (does not escape <>)
-	 [r859] * Removing canvasDiv style
+	* [r870] Adding a better CHANGELOG file
+	* [r869] * added detailed info about how example works
+	* [r868] rename example
+	* [r867] HTML5 cleanup
+	* [r866] Style fixes
+	* [r865] Keep log hidden in css example
+	* [r864] Disable log in example
+	* [r863] Layout fixes for FF
+	* [r862] Added CSS Integration example 
+	* [r861] Added CSS Integration Example
+	* [r860] Fixed problem in log string (does not escape <>)
+	* [r859] * Removing canvasDiv style
 	  * Adding line-height to statDiv
-	 [r858] Added altImg to css demo (image shown as X3D background in
+	* [r858] Added altImg to css demo (image shown as X3D background in
 	  case of no-context)
-	 [r857] Big cleanup:
+	* [r857] Big cleanup:
 	  * removed old canvasDiv stuff
 	  * unified code style
 	  * removed unused code
@@ -52,61 +93,61 @@
 
 2011-01-10  yjung
 
-	 [r856] minor cleanup
+	* [r856] minor cleanup
 
 2011-01-08  yjung
 
-	 [r855] fixed styling issues
+	* [r855] fixed styling issues
 
 2011-01-07  yjung
 
-	 [r854]
+	* [r854]
 
 2011-01-06  jbehr
 
-	 [r853] initial checkin
-	 [r852] initial checkin
-	 [r851] initial checkin
+	* [r853] initial checkin
+	* [r852] initial checkin
+	* [r851] initial checkin
 
 2011-01-04  thyrell
 
-	 [r850] Started to clean-up canvasDiv references in source
-	 [r849] Fixing styles for teapot example
-	 [r848] Updated some examples to use self-cleraing floats for a
+	* [r850] Started to clean-up canvasDiv references in source
+	* [r849] Fixing styles for teapot example
+	* [r848] Updated some examples to use self-cleraing floats for a
 	  div which contains the X3d element
-	 [r847] Updated some examples to use self-cleraing floats for a
+	* [r847] Updated some examples to use self-cleraing floats for a
 	  div which contains the X3d element
-	 [r846] * added self-clearing float class to x3dom.css
+	* [r846] * added self-clearing float class to x3dom.css
 	  * updated some examples to use self-cleraing floats for a div
 	  which contains the X3d element
-	 [r845] Fix dynamic event handler routing to canvas
-	 [r844] removed old styles test and added test_cssIntegration.html
+	* [r845] Fix dynamic event handler routing to canvas
+	* [r844] removed old styles test and added test_cssIntegration.html
 	  to the index
-	 [r843] Updated teapot css to account for changes in x3dom.css due
+	* [r843] Updated teapot css to account for changes in x3dom.css due
 	  to removing canvas-div
-	 [r842] Fixed HTML. X3D was nested into p.
-	 [r841] Fix for picking in FF (layout problem)
+	* [r842] Fixed HTML. X3D was nested into p.
+	* [r841] Fix for picking in FF (layout problem)
 
 2011-01-03  yjung
 
-	 [r840] example
-	 [r839] impl. skyColor field in Bgnd. and ColorInterpolator
+	* [r840] example
+	* [r839] impl. skyColor field in Bgnd. and ColorInterpolator
 	  nodetest_skyColor.xhtml
 
 2010-12-23  jbehr
 
-	 [r838] initial checkin
+	* [r838] initial checkin
 
 2010-12-22  yjung
 
-	 [r837]
-	 [r836]
+	* [r837]
+	* [r836]
 
 2010-12-21  thyrell
 
-	 [r835] Adding event listeners to canvas element instead of the
+	* [r835] Adding event listeners to canvas element instead of the
 	  (experimentally) defunct canvasDiv.
-	 [r834] WARNING
+	* [r834] WARNING
 	  This is an highly experimental change. I completely removed the
 	  canvasDiv and nested the canvas tag beneath the x3d element. This
 	  solved almost all our styling problems and makes x3d tag behave
@@ -115,9 +156,9 @@
 	  
 	  Sorry for pushing to HEAD but there are no easy branches in svn
 	  :(
-	 [r833] More work on syles
-	 [r832] Fixed FF not getting style changes (now working)
-	 [r831] More work on style integration. Strange problem:
+	* [r833] More work on syles
+	* [r832] Fixed FF not getting style changes (now working)
+	* [r831] More work on style integration. Strange problem:
 	  
 	  * Webkit does not get height syle change (always returns 0px)
 	  * Firefox does not get background style change
@@ -125,8 +166,8 @@
 
 2010-12-16  thyrell
 
-	 [r830] A few renames and cleanup
-	 [r829] Started to work on revised CSS integration stuff. At the
+	* [r830] A few renames and cleanup
+	* [r829] Started to work on revised CSS integration stuff. At the
 	  moment 'background' and 'backgroundColor' changes to the X3D
 	  element are propagated to the canvasDiv as proof-of-conept.
 	  
@@ -139,189 +180,189 @@
 	  elements are not recognized (need further research why
 	  x3dom.getStyle() does give new values in that case)
 	  - Only testest on WebKit right now
-	 [r828] Added test for CSS integration
-	 [r827] Documentation for subroutine: x3dElm.checkStyleChanges
+	* [r828] Added test for CSS integration
+	* [r827] Documentation for subroutine: x3dElm.checkStyleChanges
 
 2010-12-14  jbehr
 
-	 [r826] initial checkin
+	* [r826] initial checkin
 
 2010-12-13  yjung
 
-	 [r825] started working on bgnd.
-	 [r824] scaled points a bit bigger that one can see them better
-	 [r823] added barcelona model
-	 [r822] fixes
+	* [r825] started working on bgnd.
+	* [r824] scaled points a bit bigger that one can see them better
+	* [r823] added barcelona model
+	* [r822] fixes
 
 2010-12-12  yjung
 
-	 [r821]
-	 [r820] lookAt mode
+	* [r821]
+	* [r820] lookAt mode
 
 2010-12-11  yjung
 
-	 [r819] walk
-	 [r818] fixes
+	* [r819] walk
+	* [r818] fixes
 
 2010-12-10  yjung
 
-	 [r817] added simple billboard test
-	 [r816] impl. fly mode
+	* [r817] added simple billboard test
+	* [r816] impl. fly mode
 
 2010-12-08  yjung
 
-	 [r815]
+	* [r815]
 
 2010-12-07  akustikkoppler
 
-	 [r814] - add Common Surface Shader Normal Mapping (Beta 2.0)
+	* [r814] - add Common Surface Shader Normal Mapping (Beta 2.0)
 	  - add Common Surface Shader Specular Mapping
 	  - add test_commonSurfaceShader01.xhtml
 	  - add test_commonSurfaceShader02.xhtml
 
 2010-12-07  yjung
 
-	 [r813] removed unnecessary matrix
+	* [r813] removed unnecessary matrix
 
 2010-12-06  akustikkoppler
 
-	 [r812] - fix shader for ANGLE support
+	* [r812] - fix shader for ANGLE support
 
 2010-12-02  yjung
 
-	 [r811]
-	 [r810] fixes
-	 [r809]
+	* [r811]
+	* [r810] fixes
+	* [r809]
 
 2010-12-02  jbehr
 
-	 [r808] small/tiny version added
+	* [r808] small/tiny version added
 
 2010-12-02  akustikkoppler
 
-	 [r807] - Add forgotten test_cssNormalMapping.xhtml
+	* [r807] - Add forgotten test_cssNormalMapping.xhtml
 
 2010-12-02  jbehr
 
-	 [r806] texture url update
-	 [r805] initial checkin
+	* [r806] texture url update
+	* [r805] initial checkin
 
 2010-12-02  keijen
 
-	 [r804]
+	* [r804]
 
 2010-12-02  jbehr
 
-	 [r803] some text update
+	* [r803] some text update
 
 2010-12-02  keijen
 
-	 [r802] stars bg
-	 [r801] Pimp up of carousel example
+	* [r802] stars bg
+	* [r801] Pimp up of carousel example
 
 2010-12-02  yjung
 
-	 [r800] removed wrong comma
+	* [r800] removed wrong comma
 
 2010-12-01  akustikkoppler
 
-	 [r799] - Add CommonSurfaceShader Normal Mapping (beta)
+	* [r799] - Add CommonSurfaceShader Normal Mapping (beta)
 	  - Add test_cssNormalMapping.xhtml
 	  - Update test_commonSurface.xhtml
 
 2010-12-01  yjung
 
-	 [r798]
+	* [r798]
 
 2010-11-30  juangabreil
 
-	 [r797] Billboard node implemented
+	* [r797] Billboard node implemented
 
 2010-11-30  yjung
 
-	 [r796]
+	* [r796]
 
 2010-11-30  thyrell
 
-	 [r795] Adding basic text example (HTML5)
-	 [r794] Tutorial fix
-	 [r793] Tutorial fix
-	 [r792] tutorials/ folder reorg
-	 [r791] Removing empty folders
-	 [r790] First (rough) draft of styling tutorial
-	 [r789] more work on styling tutorial
-	 [r788] Fixing some copy in tutorial
-	 [r787] * more work on tutorial for styling
-	 [r786] * Fixed bug with resizing
-	 [r785] Rename tutorial files
-	 [r784] Started working on tutorial for styling x3d element
+	* [r795] Adding basic text example (HTML5)
+	* [r794] Tutorial fix
+	* [r793] Tutorial fix
+	* [r792] tutorials/ folder reorg
+	* [r791] Removing empty folders
+	* [r790] First (rough) draft of styling tutorial
+	* [r789] more work on styling tutorial
+	* [r788] Fixing some copy in tutorial
+	* [r787] * more work on tutorial for styling
+	* [r786] * Fixed bug with resizing
+	* [r785] Rename tutorial files
+	* [r784] Started working on tutorial for styling x3d element
 
 2010-11-30  jbehr
 
-	 [r783] button text fixed
+	* [r783] button text fixed
 
 2010-11-30  thyrell
 
-	 [r782] Changed debug output log_div to use "display:none" instead
+	* [r782] Changed debug output log_div to use "display:none" instead
 	  of "visibility:hidden"
 
 2010-11-30  jbehr
 
-	 [r781] initial checkin
+	* [r781] initial checkin
 
 2010-11-29  yjung
 
-	 [r780]
-	 [r779]
+	* [r780]
+	* [r779]
 
 2010-11-29  juangabreil
 
-	 [r778] Billboard partially implemented
+	* [r778] Billboard partially implemented
 
 2010-11-29  yjung
 
-	 [r777] undo
-	 [r776] initial check-in
+	* [r777] undo
+	* [r776] initial check-in
 
 2010-11-29  juangabreil
 
-	 [r775] In line 1100, changed Math.Pi to Math.PI
+	* [r775] In line 1100, changed Math.Pi to Math.PI
 
 2010-11-27  yjung
 
-	 [r774]
+	* [r774]
 
 2010-11-27  jbehr
 
-	 [r773] texture link fixed
+	* [r773] texture link fixed
 
 2010-11-26  jbehr
 
-	 [r772] initial checkin
+	* [r772] initial checkin
 
 2010-11-26  yjung
 
-	 [r771]
-	 [r770]
+	* [r771]
+	* [r770]
 
 2010-11-25  thyrell
 
-	 [r769] Added outline for spec (roughly mirrors SVG spec)
-	 [r768] Set svn:ignore property
-	 [r767] Set svn:ignore property
-	 [r766] Set svn:ignore property
+	* [r769] Added outline for spec (roughly mirrors SVG spec)
+	* [r768] Set svn:ignore property
+	* [r767] Set svn:ignore property
+	* [r766] Set svn:ignore property
 
 2010-11-25  yjung
 
-	 [r765]
+	* [r765]
 
 2010-11-25  thyrell
 
-	 [r764] * fullscreen example updated
+	* [r764] * fullscreen example updated
 	  * refactor: using global 16ms timer to watch for CSS changes
-	 [r763] Updated fullscreen example to support floating button
+	* [r763] Updated fullscreen example to support floating button
 	  (floats over x3d element)
-	 [r762] * added watching of CSS change events to implement
+	* [r762] * added watching of CSS change events to implement
 	  fullsize stuff.
 	  * removed x3dom.css() and refactored to use x3dom.getStyle()
 	  (hidden in x3d.js)
@@ -329,73 +370,73 @@
 
 2010-11-24  yjung
 
-	 [r761] simple cover flow test
-	 [r760] impl. removeEventListener
-	 [r759] example for preventing bubbling
-	 [r758] removed warnings
+	* [r761] simple cover flow test
+	* [r760] impl. removeEventListener
+	* [r759] example for preventing bubbling
+	* [r758] removed warnings
 
 2010-11-23  thyrell
 
-	 [r757] Test styles change w/h to 50% (css)
-	 [r756] Added test to resize X3D element
-	 [r755] Testcase for HTML5 styles
-	 [r754] Styling, some properties work.
+	* [r757] Test styles change w/h to 50% (css)
+	* [r756] Added test to resize X3D element
+	* [r755] Testcase for HTML5 styles
+	* [r754] Styling, some properties work.
 
 2010-11-19  yjung
 
-	 [r753] example for simple self-made context menu
+	* [r753] example for simple self-made context menu
 
 2010-11-17  yjung
 
-	 [r752] UI event handler for X3D element
+	* [r752] UI event handler for X3D element
 
 2010-11-15  akustikkoppler
 
-	 [r751] - Add test_FromMaxExportedCoordIntp.xhtml
+	* [r751] - Add test_FromMaxExportedCoordIntp.xhtml
 
 2010-11-11  thyrell
 
-	 [r750] Styles test
-	 [r749] Aspect ratios working now
-	 [r748] Styles integration. At the moment the viewarea is not
+	* [r750] Styles test
+	* [r749] Aspect ratios working now
+	* [r748] Styles integration. At the moment the viewarea is not
 	  properly updated: elements get stretched when canvas is of
 	  dynamic size (i.e. 45%) and browser window is being resized.
-	 [r747] Added test file to check audio capabilities
-	 [r746] Added test for CSS styles (styling of X3D element via
+	* [r747] Added test file to check audio capabilities
+	* [r746] Added test for CSS styles (styling of X3D element via
 	  styles property)
-	 [r745] height and width of x3d tag take precedence over
+	* [r745] height and width of x3d tag take precedence over
 	  hight/width given in styles
-	 [r744] Work commit styles
+	* [r744] Work commit styles
 
 2010-11-09  yjung
 
-	 [r743] added audio code that hangs in Chrome...
+	* [r743] added audio code that hangs in Chrome...
 
 2010-11-09  thyrell
 
-	 [r742] Started to work on styles
+	* [r742] Started to work on styles
 
 2010-11-09  akustikkoppler
 
-	 [r741] - fix texture Bug
+	* [r741] - fix texture Bug
 
 2010-11-08  jbehr
 
-	 [r740] sound added
-	 [r739] initial checkin
-	 [r738] switched plane model
+	* [r740] sound added
+	* [r739] initial checkin
+	* [r738] switched plane model
 
 2010-11-08  yjung
 
-	 [r737] check for null
+	* [r737] check for null
 
 2010-11-05  jbehr
 
-	 [r736] title added
+	* [r736] title added
 
 2010-11-05  thyrell
 
-	 [r735] * Added a method to enable proper prototypical inheritance
+	* [r735] * Added a method to enable proper prototypical inheritance
 	  (x3dom.extend()).
 	  If inheritance is desired, I should now be done like so:
 	  
@@ -406,1425 +447,1425 @@
 
 2010-11-03  akustikkoppler
 
-	 [r734] - fix originalChannelCount
+	* [r734] - fix originalChannelCount
 	  - add test_originalChannelCount.xhtml
 
 2010-11-02  yjung
 
-	 [r733]
+	* [r733]
 
 2010-11-01  yjung
 
-	 [r732] check for 0 instead of eps to fix precision error in
+	* [r732] check for 0 instead of eps to fix precision error in
 	  matrix inversion
-	 [r731]
-	 [r730]
-	 [r729] whitepaper for documentation purposes
+	* [r731]
+	* [r730]
+	* [r729] whitepaper for documentation purposes
 
 2010-10-31  yjung
 
-	 [r728] patch from Andreas to workaround Minefield Array bug
-	 [r727] removed doubled file with wrong suffix
+	* [r728] patch from Andreas to workaround Minefield Array bug
+	* [r727] removed doubled file with wrong suffix
 
 2010-10-30  jbehr
 
-	 [r726] fixed suffix
-	 [r725] add bind to better name the example
-	 [r724] font changed
-	 [r723] initial checkin
+	* [r726] fixed suffix
+	* [r725] add bind to better name the example
+	* [r724] font changed
+	* [r723] initial checkin
 
 2010-10-30  yjung
 
-	 [r722] added debug info for older WebGL version
+	* [r722] added debug info for older WebGL version
 
 2010-10-29  yjung
 
-	 [r721] addEventListener
-	 [r720] events as function
+	* [r721] addEventListener
+	* [r720] events as function
 
 2010-10-27  yjung
 
-	 [r719] experiment with event object
+	* [r719] experiment with event object
 
 2010-10-26  yjung
 
-	 [r718]
-	 [r717] typo
-	 [r716]
-	 [r715]
-	 [r714] bugfix
-	 [r713] transitionType/-Time
+	* [r718]
+	* [r717] typo
+	* [r716]
+	* [r715]
+	* [r714] bugfix
+	* [r713] transitionType/-Time
 
 2010-10-25  yjung
 
-	 [r712]
+	* [r712]
 
 2010-10-25  jbehr
 
-	 [r711] fixed prev transform for all/reset-anim
+	* [r711] fixed prev transform for all/reset-anim
 
 2010-10-25  yjung
 
-	 [r710]
+	* [r710]
 
 2010-10-25  jbehr
 
-	 [r709] viewpoint-bind anim added
+	* [r709] viewpoint-bind anim added
 
 2010-10-25  yjung
 
-	 [r708]
+	* [r708]
 
 2010-10-24  yjung
 
-	 [r707]
-	 [r706]
-	 [r705]
-	 [r704] improved mouse event handling
+	* [r707]
+	* [r706]
+	* [r705]
+	* [r704] improved mouse event handling
 
 2010-10-22  jbehr
 
-	 [r703] cleanups to handle includes more flexible
+	* [r703] cleanups to handle includes more flexible
 
 2010-10-22  yjung
 
-	 [r702] gl cleanup on node removal
-	 [r701]
+	* [r702] gl cleanup on node removal
+	* [r701]
 
 2010-10-22  jbehr
 
-	 [r700] viewpoint next/prev switching added to key [ and ]
+	* [r700] viewpoint next/prev switching added to key [ and ]
 
 2010-10-22  yjung
 
-	 [r699]
-	 [r698] _nodeBag clean-up
+	* [r699]
+	* [r698] _nodeBag clean-up
 
 2010-10-22  jbehr
 
-	 [r697] changed version to 1.2-alpha
-	 [r696] initial checkin
+	* [r697] changed version to 1.2-alpha
+	* [r696] initial checkin
 
 2010-10-22  akustikkoppler
 
-	 [r695] - fixed #32 Add support for ColorRGBA
+	* [r695] - fixed #32 Add support for ColorRGBA
 
 2010-10-22  yjung
 
-	 [r694] typo fixed
-	 [r693]
+	* [r694] typo fixed
+	* [r693]
 
 2010-10-22  jbehr
 
-	 [r692] initial checkin
-	 [r691] initial checkin
-	 [r690] w3c link added
-	 [r689] initial checkin
-	 [r688] changed version to 1.1
+	* [r692] initial checkin
+	* [r691] initial checkin
+	* [r690] w3c link added
+	* [r689] initial checkin
+	* [r688] changed version to 1.1
 
 2010-10-21  akustikkoppler
 
-	 [r687] - rename Iphone_Video from .ogm to .ogv for Firefox Beta
-	 [r686] - add IPhone Example
+	* [r687] - rename Iphone_Video from .ogm to .ogv for Firefox Beta
+	* [r686] - add IPhone Example
 
 2010-10-20  keijen
 
-	 [r685] index with backlink to x3dom.org
+	* [r685] index with backlink to x3dom.org
 
 2010-10-20  jbehr
 
-	 [r684] fixed chrome link
-	 [r683] typo fixed
+	* [r684] fixed chrome link
+	* [r683] typo fixed
 
 2010-10-19  yjung
 
-	 [r682] movies are NPOT: repeatS='false' repeatT='false'
+	* [r682] movies are NPOT: repeatS='false' repeatT='false'
 
 2010-10-19  jbehr
 
-	 [r681] initial checkin
+	* [r681] initial checkin
 
 2010-10-18  jbehr
 
-	 [r680] added Abb 2 link
+	* [r680] added Abb 2 link
 
 2010-10-18  keijen
 
-	 [r679] added x3dom.css again and integrated sculpture example
+	* [r679] added x3dom.css again and integrated sculpture example
 
 2010-10-18  yjung
 
-	 [r678]
-	 [r677] started with texcoord pickMode
+	* [r678]
+	* [r677] started with texcoord pickMode
 
 2010-10-18  jbehr
 
-	 [r676] skulptur added
-	 [r675] cleanup
+	* [r676] skulptur added
+	* [r675] cleanup
 
 2010-10-15  jbehr
 
-	 [r674] fixed texture node
-	 [r673] initial checkin
-	 [r672] initial checkin
+	* [r674] fixed texture node
+	* [r673] initial checkin
+	* [r672] initial checkin
 
 2010-10-14  keijen
 
-	 [r671]
+	* [r671]
 
 2010-10-14  yjung
 
-	 [r670]
+	* [r670]
 
 2010-10-14  keijen
 
-	 [r669] Styling der IX Seiten: Alle neuen haben hinten ein
+	* [r669] Styling der IX Seiten: Alle neuen haben hinten ein
 	  name_2_.html am Ende
 
 2010-10-12  jbehr
 
-	 [r668] initial checkin
+	* [r668] initial checkin
 
 2010-10-06  yjung
 
-	 [r667]
-	 [r666]
-	 [r665]
-	 [r664]
+	* [r667]
+	* [r666]
+	* [r665]
+	* [r664]
 
 2010-10-01  yjung
 
-	 [r663]
-	 [r662]
-	 [r661] field test update
+	* [r663]
+	* [r662]
+	* [r661] field test update
 
 2010-09-24  yjung
 
-	 [r660]
-	 [r659]
-	 [r658]
+	* [r660]
+	* [r659]
+	* [r658]
 
 2010-09-24  jbehr
 
-	 [r657] creaseAngle fixes
-	 [r656] initial checkin
+	* [r657] creaseAngle fixes
+	* [r656] initial checkin
 
 2010-09-24  yjung
 
-	 [r655]
-	 [r654] Timms iX-Modell
+	* [r655]
+	* [r654] Timms iX-Modell
 
 2010-09-23  yjung
 
-	 [r653] iX examples
+	* [r653] iX examples
 
 2010-09-23  jbehr
 
-	 [r652] initial checkin
+	* [r652] initial checkin
 
 2010-09-23  yjung
 
-	 [r651]
-	 [r650] fix
+	* [r651]
+	* [r650] fix
 
 2010-09-22  akustikkoppler
 
-	 [r649] - add NPOT Texture Scaling
+	* [r649] - add NPOT Texture Scaling
 
 2010-09-15  yjung
 
-	 [r648]
-	 [r647] fixed matrix mixer
+	* [r648]
+	* [r647] fixed matrix mixer
 
 2010-09-14  yjung
 
-	 [r646] matrix log/exp
-	 [r645] 2 high-poly models - EG dragon
+	* [r646] matrix log/exp
+	* [r645] 2 high-poly models - EG dragon
 
 2010-09-13  yjung
 
-	 [r644]
-	 [r643]
+	* [r644]
+	* [r643]
 
 2010-09-12  yjung
 
-	 [r642]
+	* [r642]
 
 2010-09-10  yjung
 
-	 [r641]
+	* [r641]
 
 2010-08-24  yjung
 
-	 [r640] some extra version info
+	* [r640] some extra version info
 
 2010-08-24  jbehr
 
-	 [r639] two tests added
+	* [r639] two tests added
 
 2010-08-20  yjung
 
-	 [r638] impl. scene field in RT
+	* [r638] impl. scene field in RT
 
 2010-08-19  jbehr
 
-	 [r637] initial checkin
-	 [r636] moved script to head
-	 [r635] switch off log
-	 [r634] initial checkin
-	 [r633] initial checkin
+	* [r637] initial checkin
+	* [r636] moved script to head
+	* [r635] switch off log
+	* [r634] initial checkin
+	* [r633] initial checkin
 
 2010-08-18  yjung
 
-	 [r632]
-	 [r631] implemented Metadata node
-	 [r630] fix for ticket #44
+	* [r632]
+	* [r631] implemented Metadata node
+	* [r630] fix for ticket #44
 
 2010-08-17  yjung
 
-	 [r629]
-	 [r628] first version of PixelTexture
-	 [r627] initial checkin
+	* [r629]
+	* [r628] first version of PixelTexture
+	* [r627] initial checkin
 
 2010-08-17  akustikkoppler
 
-	 [r626] - fix Shader-Cache (per-Context)
+	* [r626] - fix Shader-Cache (per-Context)
 
 2010-08-17  yjung
 
-	 [r625] added keysEnabled field to x3d elem
-	 [r624] remove focus border
+	* [r625] added keysEnabled field to x3d elem
+	* [r624] remove focus border
 
 2010-08-17  jbehr
 
-	 [r623] moved src- timo do arch/timo-shaderComposer
-	 [r622] added code to activate/deactivate stat-view with space-key
+	* [r623] moved src- timo do arch/timo-shaderComposer
+	* [r622] added code to activate/deactivate stat-view with space-key
 
 2010-08-17  yjung
 
-	 [r621] using Typed Arrays instead WebGLxxx
+	* [r621] using Typed Arrays instead WebGLxxx
 
 2010-08-16  yjung
 
-	 [r620] fix for ticket #38
+	* [r620] fix for ticket #38
 
 2010-08-12  akustikkoppler
 
-	 [r619] - integrate Shader-Cache
+	* [r619] - integrate Shader-Cache
 
 2010-08-12  yjung
 
-	 [r618] updated readPixels stuff
+	* [r618] updated readPixels stuff
 
 2010-08-09  jbehr
 
-	 [r617] initial checkin
-	 [r616] fixed log output
+	* [r617] initial checkin
+	* [r616] fixed log output
 
 2010-08-04  jbehr
 
-	 [r615] initial checkin
-	 [r614] changed size of canvas
-	 [r613] initial checkin
+	* [r615] initial checkin
+	* [r614] changed size of canvas
+	* [r613] initial checkin
 
 2010-08-04  yjung
 
-	 [r612] modified code to work with shader validation
+	* [r612] modified code to work with shader validation
 
 2010-08-03  yjung
 
-	 [r611] removed obsolete texture code
+	* [r611] removed obsolete texture code
 
 2010-07-22  akustikkoppler
 
-	 [r610] - change Headlight calculation for testing
-	 [r609]
+	* [r610] - change Headlight calculation for testing
+	* [r609]
 
 2010-07-22  jbehr
 
-	 [r608] title added
-	 [r607] initial checkin
-	 [r606] initial checkin
-	 [r605] local ar links added
+	* [r608] title added
+	* [r607] initial checkin
+	* [r606] initial checkin
+	* [r605] local ar links added
 
 2010-07-22  tobold
 
-	 [r604] Added batch file to create x3dom.js from all .js files.
+	* [r604] Added batch file to create x3dom.js from all .js files.
 
 2010-07-22  akustikkoppler
 
-	 [r603] - fix Shader for disabled Lighting
+	* [r603] - fix Shader for disabled Lighting
 
 2010-07-22  tobold
 
-	 [r602] Fixed color values.
-	 [r601] Added one more example.
-	 [r600]
+	* [r602] Fixed color values.
+	* [r601] Added one more example.
+	* [r600]
 
 2010-07-22  yjung
 
-	 [r599] older gfx code that still works on n900
+	* [r599] older gfx code that still works on n900
 
 2010-07-22  jbehr
 
-	 [r598] initial checkin
-	 [r597] initial checkin
-	 [r596] initial checkin
-	 [r595] references local copy of jQuery
-	 [r594] initial checkin
+	* [r598] initial checkin
+	* [r597] initial checkin
+	* [r596] initial checkin
+	* [r595] references local copy of jQuery
+	* [r594] initial checkin
 
 2010-07-22  tobold
 
-	 [r593] Added backtrack method from x3d node to SAIBrowser object.
+	* [r593] Added backtrack method from x3d node to SAIBrowser object.
 
 2010-07-22  jbehr
 
-	 [r592] initial checkin
+	* [r592] initial checkin
 
 2010-07-22  akustikkoppler
 
-	 [r591] - add test_blinkingLight.xhtml Scene
+	* [r591] - add test_blinkingLight.xhtml Scene
 
 2010-07-21  jbehr
 
-	 [r590] initial checkin
-	 [r589] replaced gif with png
-	 [r588] initial checkin
+	* [r590] initial checkin
+	* [r589] replaced gif with png
+	* [r588] initial checkin
 
 2010-07-21  akustikkoppler
 
-	 [r587] - add test_animatedLights.xhtml
+	* [r587] - add test_animatedLights.xhtml
 
 2010-07-21  yjung
 
-	 [r586] local links
+	* [r586] local links
 
 2010-07-21  tobold
 
-	 [r585] Added multiple container instantiation.
-	 [r584] Added _x3domNode SAI object forwarding.
+	* [r585] Added multiple container instantiation.
+	* [r584] Added _x3domNode SAI object forwarding.
 
 2010-07-20  akustikkoppler
 
-	 [r583] - add ViewPoint to test_dynamicLights.xhtml
-	 [r582] - add rebuilding Shader on Light changes
+	* [r583] - add ViewPoint to test_dynamicLights.xhtml
+	* [r582] - add rebuilding Shader on Light changes
 	  - add test_dynamicLights.xhtml
 	  - delete normalMatrix
 
 2010-07-20  jbehr
 
-	 [r581] make numFaces and numCoords a property per context
+	* [r581] make numFaces and numCoords a property per context
 
 2010-07-20  yjung
 
-	 [r580] fixed missing fields in primive geo
+	* [r580] fixed missing fields in primive geo
 
 2010-07-20  akustikkoppler
 
-	 [r579] - add experimental Ventilator Scene
+	* [r579] - add experimental Ventilator Scene
 
 2010-07-19  yjung
 
-	 [r578]
+	* [r578]
 
 2010-07-19  akustikkoppler
 
-	 [r577] - add renderShape Function
+	* [r577] - add renderShape Function
 
 2010-07-19  jbehr
 
-	 [r576] used addField_MFFLoat for interpolator to make parser more
+	* [r576] used addField_MFFLoat for interpolator to make parser more
 	  robust
 
 2010-07-19  akustikkoppler
 
-	 [r575]
+	* [r575]
 
 2010-07-17  yjung
 
-	 [r574]
-	 [r573]
+	* [r574]
+	* [r573]
 
 2010-07-16  jbehr
 
-	 [r572] version info readded
-	 [r571] fixed js order
-	 [r570] version.js added
-	 [r569] version removed from header
+	* [r572] version info readded
+	* [r571] fixed js order
+	* [r570] version.js added
+	* [r569] version removed from header
 
 2010-07-15  jbehr
 
-	 [r568] invalidateGLObject added
-	 [r567] invalidateGLObject added
+	* [r568] invalidateGLObject added
+	* [r567] invalidateGLObject added
 
 2010-07-15  yjung
 
-	 [r566]
-	 [r565]
+	* [r566]
+	* [r565]
 
 2010-07-15  akustikkoppler
 
-	 [r564] -start implement commonSurfaceShader
+	* [r564] -start implement commonSurfaceShader
 
 2010-07-15  yjung
 
-	 [r563]
-	 [r562]
-	 [r561]
+	* [r563]
+	* [r562]
+	* [r561]
 
 2010-07-15  akustikkoppler
 
-	 [r560] - fix alpha discard
+	* [r560] - fix alpha discard
 
 2010-07-15  yjung
 
-	 [r559]
+	* [r559]
 
 2010-07-15  akustikkoppler
 
-	 [r558] - scale streetLamp-Example textures to nearest power of 2
-	 [r557]
-	 [r556] - some Shader changes
+	* [r558] - scale streetLamp-Example textures to nearest power of 2
+	* [r557]
+	* [r556] - some Shader changes
 
 2010-07-14  akustikkoppler
 
-	 [r555]
-	 [r554]
-	 [r553] - change all shader booleans/integer to floats
+	* [r555]
+	* [r554]
+	* [r553] - change all shader booleans/integer to floats
 	  - clamp values after every light calculation
 
 2010-07-14  yjung
 
-	 [r552] 'nicefied' canvas example
-	 [r551]
+	* [r552] 'nicefied' canvas example
+	* [r551]
 
 2010-07-14  jbehr
 
-	 [r550] inserted canvas code again
+	* [r550] inserted canvas code again
 
 2010-07-13  akustikkoppler
 
-	 [r549] - add Shader-Generator-function
+	* [r549] - add Shader-Generator-function
 
 2010-07-13  jbehr
 
-	 [r548] test route added
-	 [r547] isActive message added
-	 [r546] set_bind working
-	 [r545] initial checkin
+	* [r548] test route added
+	* [r547] isActive message added
+	* [r546] set_bind working
+	* [r545] initial checkin
 
 2010-07-13  yjung
 
-	 [r544] painter example (TODO: replace non-working jquery stuff)
-	 [r543]
-	 [r542]
-	 [r541] basic support for canvas as texture
+	* [r544] painter example (TODO: replace non-working jquery stuff)
+	* [r543]
+	* [r542]
+	* [r541] basic support for canvas as texture
 
 2010-07-13  akustikkoppler
 
-	 [r540] - fix color picking
+	* [r540] - fix color picking
 	  - fix shininess
 
 2010-07-12  jbehr
 
-	 [r539] changed initial color to yellow
-	 [r538] initial checkin
+	* [r539] changed initial color to yellow
+	* [r538] initial checkin
 
 2010-07-12  tobold
 
-	 [r537] Added Internet Explorer ActiveX object instantiation.
+	* [r537] Added Internet Explorer ActiveX object instantiation.
 
 2010-07-12  akustikkoppler
 
-	 [r536] - Merged new Rendercode
+	* [r536] - Merged new Rendercode
 
 2010-07-08  yjung
 
-	 [r535] video Texture child added - but only proof-of-concept yet
+	* [r535] video Texture child added - but only proof-of-concept yet
 	  as there are still some problems
 
 2010-07-08  jbehr
 
-	 [r534] SFInt32 origChannelCount added, '0' is default ans means
+	* [r534] SFInt32 origChannelCount added, '0' is default ans means
 	  the system should figure out the chanel count
 
 2010-07-07  yjung
 
-	 [r533]
-	 [r532]
-	 [r531] yet another multi-index bug-fix
+	* [r533]
+	* [r532]
+	* [r531] yet another multi-index bug-fix
 
 2010-07-07  jbehr
 
-	 [r530] log removed
-	 [r529] moved style to head
-	 [r528] translation added
+	* [r530] log removed
+	* [r529] moved style to head
+	* [r528] translation added
 
 2010-07-07  yjung
 
-	 [r527] transponed matrix
-	 [r526]
+	* [r527] transponed matrix
+	* [r526]
 
 2010-07-07  jbehr
 
-	 [r525] initial checkin
-	 [r524] addition output added
-	 [r523] render false removed
-	 [r522] 3d matrix support
-	 [r521] anim stat added
-	 [r520] text update
-	 [r519] css trans added
+	* [r525] initial checkin
+	* [r524] addition output added
+	* [r523] render false removed
+	* [r522] 3d matrix support
+	* [r521] anim stat added
+	* [r520] text update
+	* [r519] css trans added
 
 2010-07-07  yjung
 
-	 [r518] support for matrixX
+	* [r518] support for matrixX
 
 2010-07-06  jbehr
 
-	 [r517] autoGen stored
+	* [r517] autoGen stored
 
 2010-07-04  yjung
 
-	 [r516] fixed memleak on node remove and implemented dynamic
+	* [r516] fixed memleak on node remove and implemented dynamic
 	  Texture node add/removal
 
 2010-07-01  yjung
 
-	 [r515]
-	 [r514]
+	* [r515]
+	* [r514]
 
 2010-06-30  yjung
 
-	 [r513] SField follower impl. (except isActive)
-	 [r512]
-	 [r511] some dampers
-	 [r510]
-	 [r509]
+	* [r513] SField follower impl. (except isActive)
+	* [r512]
+	* [r511] some dampers
+	* [r510]
+	* [r509]
 
 2010-06-29  yjung
 
-	 [r508]
-	 [r507]
-	 [r506]
+	* [r508]
+	* [r507]
+	* [r506]
 
 2010-06-28  jbehr
 
-	 [r505] title added
-	 [r504] title added
-	 [r503] initial checkin
-	 [r502] added missing namespace-link to default bindable
-	 [r501] navigation fixed
-	 [r500] working bindable stack
-	 [r499] working bindable stack
+	* [r505] title added
+	* [r504] title added
+	* [r503] initial checkin
+	* [r502] added missing namespace-link to default bindable
+	* [r501] navigation fixed
+	* [r500] working bindable stack
+	* [r499] working bindable stack
 
 2010-06-28  yjung
 
-	 [r498]
+	* [r498]
 
 2010-06-28  jbehr
 
-	 [r497] bindable registration works
-	 [r496] doc._bindableBag added
+	* [r497] bindable registration works
+	* [r496] doc._bindableBag added
 
 2010-06-28  yjung
 
-	 [r495] corrected node hierarchy
-	 [r494] added node skeleton
+	* [r495] corrected node hierarchy
+	* [r494] added node skeleton
 
 2010-06-25  yjung
 
-	 [r493] minor fixes
-	 [r492] ColorRGBA added
-	 [r491] fixed box pick mode
-	 [r490] text works with webkit again
-	 [r489] final fixes
-	 [r488] code working again
-	 [r487] fog fix
+	* [r493] minor fixes
+	* [r492] ColorRGBA added
+	* [r491] fixed box pick mode
+	* [r490] text works with webkit again
+	* [r489] final fixes
+	* [r488] code working again
+	* [r487] fog fix
 
 2010-06-25  akustikkoppler
 
-	 [r486]
+	* [r486]
 
 2010-06-24  yjung
 
-	 [r485] accelerometer example (tested on N900)
-	 [r484] partial undu
-	 [r483] partially working
+	* [r485] accelerometer example (tested on N900)
+	* [r484] partial undu
+	* [r483] partially working
 
 2010-06-24  jbehr
 
-	 [r482] scene to viewarea split
+	* [r482] scene to viewarea split
 
 2010-06-21  yjung
 
-	 [r481] added interface (only)
-	 [r480] fix for ticket #31
+	* [r481] added interface (only)
+	* [r480] fix for ticket #31
 
 2010-06-18  yjung
 
-	 [r479]
+	* [r479]
 
 2010-06-18  jbehr
 
-	 [r478] doc._nodeBag added
+	* [r478] doc._nodeBag added
 
 2010-06-18  yjung
 
-	 [r477]
-	 [r476]
+	* [r477]
+	* [r476]
 
 2010-06-10  yjung
 
-	 [r475] update due to changes in readPixels method
+	* [r475] update due to changes in readPixels method
 
 2010-06-09  yjung
 
-	 [r474] paraview example update
-	 [r473]
-	 [r472]
+	* [r474] paraview example update
+	* [r473]
+	* [r472]
 
 2010-06-08  yjung
 
-	 [r471]
-	 [r470] pickMode 'color' added
-	 [r469] example
-	 [r468] added face and vertex count
+	* [r471]
+	* [r470] pickMode 'color' added
+	* [r469] example
+	* [r468] added face and vertex count
 
 2010-05-27  jbehr
 
-	 [r467] disc update
+	* [r467] disc update
 
 2010-05-19  jbehr
 
-	 [r466] initial checkin
+	* [r466] initial checkin
 
 2010-05-19  yjung
 
-	 [r465] fixed wrong indexing for face normals
+	* [r465] fixed wrong indexing for face normals
 
 2010-05-11  yjung
 
-	 [r464] fixed FBO issues on webkit
+	* [r464] fixed FBO issues on webkit
 
 2010-05-06  jbehr
 
-	 [r463] TimeSensor removed
+	* [r463] TimeSensor removed
 
 2010-04-29  yjung
 
-	 [r462]
+	* [r462]
 
 2010-04-28  yjung
 
-	 [r461] restricted picking to tri-based geo
+	* [r461] restricted picking to tri-based geo
 
 2010-04-27  yjung
 
-	 [r460] mimetype check
+	* [r460] mimetype check
 
 2010-04-26  yjung
 
-	 [r459] impl. IndexedLineSet
+	* [r459] impl. IndexedLineSet
 
 2010-04-19  jbehr
 
-	 [r458] render stuff
+	* [r458] render stuff
 
 2010-04-09  jbehr
 
-	 [r457] changed to 1.1-alpha
+	* [r457] changed to 1.1-alpha
 
 2010-03-25  jbehr
 
-	 [r456] final 1.0 version
+	* [r456] final 1.0 version
 
 2010-03-25  yjung
 
-	 [r455] no runtime if no GL
+	* [r455] no runtime if no GL
 
 2010-03-25  keijen
 
-	 [r454] removed solid and lt attributes in sphere nodes
+	* [r454] removed solid and lt attributes in sphere nodes
 
 2010-03-24  yjung
 
-	 [r453] corrected log msg
+	* [r453] corrected log msg
 
 2010-03-24  keijen
 
-	 [r452] added on_maker_loss function in flash tracker
-	 [r451] updates
-	 [r450] adding demo-sources-zip
-	 [r449] cleaned up. Using getElementByID function now
+	* [r452] added on_maker_loss function in flash tracker
+	* [r451] updates
+	* [r450] adding demo-sources-zip
+	* [r449] cleaned up. Using getElementByID function now
 
 2010-03-23  yjung
 
-	 [r448] initial checkin
-	 [r447] clean-up on exit
-	 [r446] added normal map
-	 [r445] implemented VertexAttribute
+	* [r448] initial checkin
+	* [r447] clean-up on exit
+	* [r446] added normal map
+	* [r445] implemented VertexAttribute
 
 2010-03-22  keijen
 
-	 [r444] update of the flash sources zip file
+	* [r444] update of the flash sources zip file
 
 2010-03-22  yjung
 
-	 [r443] clean-ups
-	 [r442] impl. MultiTexture (currently only for use in shaders)
-	 [r441] sorted components
+	* [r443] clean-ups
+	* [r442] impl. MultiTexture (currently only for use in shaders)
+	* [r441] sorted components
 
 2010-03-22  keijen
 
-	 [r440] cleaned up. Modified function name
+	* [r440] cleaned up. Modified function name
 
 2010-03-22  yjung
 
-	 [r439] fixed cube tex
+	* [r439] fixed cube tex
 
 2010-03-21  yjung
 
-	 [r438] initial check-in
+	* [r438] initial check-in
 
 2010-03-19  keijen
 
-	 [r437] cleaned up. renamed function from get to set. Canvas
+	* [r437] cleaned up. renamed function from get to set. Canvas
 	  toggle is completly done in JS now, not as before in flash
 
 2010-03-19  michaelzoellner
 
-	 [r436] x3dom_flar cleaned up. Still functions to rename within
+	* [r436] x3dom_flar cleaned up. Still functions to rename within
 	  Flash.
 
 2010-03-19  yjung
 
-	 [r435] updated version
+	* [r435] updated version
 
 2010-03-19  keijen
 
-	 [r434]
-	 [r433]
-	 [r432]
-	 [r431]
-	 [r430]
+	* [r434]
+	* [r433]
+	* [r432]
+	* [r431]
+	* [r430]
 
 2010-03-19  yjung
 
-	 [r429] renamed example
-	 [r428] finished CubeTexture
+	* [r429] renamed example
+	* [r428] finished CubeTexture
 
 2010-03-19  keijen
 
-	 [r427] update of files names and folder structure
+	* [r427] update of files names and folder structure
 
 2010-03-19  yjung
 
-	 [r426] fixed text, picking etc.
+	* [r426] fixed text, picking etc.
 
 2010-03-19  keijen
 
-	 [r425]
-	 [r424]
-	 [r423] rotated earth 180 degrees and removed red border around
+	* [r425]
+	* [r424]
+	* [r423] rotated earth 180 degrees and removed red border around
 	  canvas
-	 [r422]
-	 [r421] Updating Demo. Added source files for FLARToolkit and new
+	* [r422]
+	* [r421] Updating Demo. Added source files for FLARToolkit and new
 	  marker of fhg logo
 
 2010-03-18  jbehr
 
-	 [r420] generic download count
-	 [r419] only render on request
+	* [r420] generic download count
+	* [r419] only render on request
 
 2010-03-18  yjung
 
-	 [r418] added example
+	* [r418] added example
 
 2010-03-17  yjung
 
-	 [r417] implemented CubeMapTexture
-	 [r416] implemented IndexedTriangleSet and fixed styling issues
-	 [r415] removed outdated tests
+	* [r417] implemented CubeMapTexture
+	* [r416] implemented IndexedTriangleSet and fixed styling issues
+	* [r415] removed outdated tests
 
 2010-03-15  yjung
 
-	 [r414] added experimental purely DOM-driven render update
+	* [r414] added experimental purely DOM-driven render update
 
 2010-03-15  michaelzoellner
 
-	 [r413] X3DOMFLAR Example structure
-	 [r412] X3DOMFLAR Example corrected -> Array.toString() was the
+	* [r413] X3DOMFLAR Example structure
+	* [r412] X3DOMFLAR Example corrected -> Array.toString() was the
 	  answer. Something changed in MatrixTransform
-	 [r411] X3DOMFLAR Example
+	* [r411] X3DOMFLAR Example
 
 2010-03-13  yjung
 
-	 [r410] renamed field tag to uniform in webSG example
+	* [r410] renamed field tag to uniform in webSG example
 
 2010-03-12  yjung
 
-	 [r409] some fixes
-	 [r408] improved picking and a fix
+	* [r409] some fixes
+	* [r408] improved picking and a fix
 
 2010-03-12  jbehr
 
-	 [r407] Node::getX3DDoc() added
+	* [r407] Node::getX3DDoc() added
 
 2010-03-12  yjung
 
-	 [r406] got the toon shader working in the ComposedShader node
+	* [r406] got the toon shader working in the ComposedShader node
 
 2010-03-11  yjung
 
-	 [r405] oops
-	 [r404] dynamic fields for shader
-	 [r403] fix
-	 [r402] changes in styling
+	* [r405] oops
+	* [r404] dynamic fields for shader
+	* [r403] fix
+	* [r402] changes in styling
 
 2010-03-10  yjung
 
-	 [r401] websg has no runtime anymore
-	 [r400] very first prototype of webSG proposal
+	* [r401] websg has no runtime anymore
+	* [r400] very first prototype of webSG proposal
 
 2010-03-09  jbehr
 
-	 [r399] typo fixed
-	 [r398] color changed
-	 [r397] text added
-	 [r396] initial checkin
+	* [r399] typo fixed
+	* [r398] color changed
+	* [r397] text added
+	* [r396] initial checkin
 
 2010-03-09  yjung
 
-	 [r395] idBuf now default for picking
-	 [r394] fix
+	* [r395] idBuf now default for picking
+	* [r394] fix
 
 2010-03-08  yjung
 
-	 [r393] Anchor and click working again (state as before)
-	 [r392] worked on picking
-	 [r391] added debug foregrounds
+	* [r393] Anchor and click working again (state as before)
+	* [r392] worked on picking
+	* [r391] added debug foregrounds
 
 2010-03-07  yjung
 
-	 [r390] first version of idBuffer for speeding-up picking
+	* [r390] first version of idBuffer for speeding-up picking
 
 2010-03-07  jbehr
 
-	 [r389] initial checkin
+	* [r389] initial checkin
 
 2010-03-07  yjung
 
-	 [r388] even more HTML-like...
-	 [r387] made car config example even more HTML-like
-	 [r386] added support for HTML/CSS colors to SFColor
+	* [r388] even more HTML-like...
+	* [r387] made car config example even more HTML-like
+	* [r386] added support for HTML/CSS colors to SFColor
 
 2010-03-06  yjung
 
-	 [r385] HTML img element as Texture child
-	 [r384] context params added
-	 [r383] minor fixes
-	 [r382] fixed broken python packer script
+	* [r385] HTML img element as Texture child
+	* [r384] context params added
+	* [r383] minor fixes
+	* [r382] fixed broken python packer script
 
 2010-03-05  jbehr
 
-	 [r381] fixed attribute updates
-	 [r380] fixed updates
+	* [r381] fixed attribute updates
+	* [r380] fixed updates
 
 2010-03-05  yjung
 
-	 [r379] added LOD
-	 [r378] doesn't work on minefield
-	 [r377] onload speedup and setValueByStr for all MFields
+	* [r379] added LOD
+	* [r378] doesn't work on minefield
+	* [r377] onload speedup and setValueByStr for all MFields
 
 2010-03-05  keijen
 
-	 [r376] adding Data folder
-	 [r375] adding FLARToolkit tracker version to demo
+	* [r376] adding Data folder
+	* [r375] adding FLARToolkit tracker version to demo
 
 2010-03-05  yjung
 
-	 [r374]
+	* [r374]
 
 2010-03-04  yjung
 
-	 [r373] now also colors can be changed
+	* [r373] now also colors can be changed
 
 2010-03-02  jbehr
 
-	 [r372] dull texture fixed
-	 [r371] inital checkin
+	* [r372] dull texture fixed
+	* [r371] inital checkin
 
 2010-03-01  michaelzoellner
 
-	 [r370] x3dom flartoolkit ar example corrected
+	* [r370] x3dom flartoolkit ar example corrected
 
 2010-02-25  jbehr
 
-	 [r369] flashAR created
+	* [r369] flashAR created
 
 2010-02-25  michaelzoellner
 
-	 [r368] x3dom flartoolkit ar example corrected
-	 [r367] x3dom flartoolkit ar example corrected
-	 [r366] x3dom flartoolkit ar example corrected
-	 [r365] x3dom flartoolkit ar example added
-	 [r364] x3dom flartoolkit ar example added
+	* [r368] x3dom flartoolkit ar example corrected
+	* [r367] x3dom flartoolkit ar example corrected
+	* [r366] x3dom flartoolkit ar example corrected
+	* [r365] x3dom flartoolkit ar example added
+	* [r364] x3dom flartoolkit ar example added
 
 2010-02-24  yjung
 
-	 [r363] shadows now much faster
-	 [r362] fixed some stupid bugs
+	* [r363] shadows now much faster
+	* [r362] fixed some stupid bugs
 
 2010-02-24  jbehr
 
-	 [r361] mime-type fixed
-	 [r360] initial checkin
+	* [r361] mime-type fixed
+	* [r360] initial checkin
 
 2010-02-24  yjung
 
-	 [r359] toggle button for shadows in fanOut test
+	* [r359] toggle button for shadows in fanOut test
 
 2010-02-23  yjung
 
-	 [r358] removed non-working demo
+	* [r358] removed non-working demo
 
 2010-02-23  michaelzoellner
 
-	 [r357] FLARToolkit example
+	* [r357] FLARToolkit example
 
 2010-02-23  yjung
 
-	 [r356] major performance optimizations
+	* [r356] major performance optimizations
 
 2010-02-22  yjung
 
-	 [r355] fixed typo
-	 [r354] added explanation
+	* [r355] fixed typo
+	* [r354] added explanation
 
 2010-02-22  jbehr
 
-	 [r353] case fixed
-	 [r352] initial checkin
-	 [r351] image channes test added
+	* [r353] case fixed
+	* [r352] initial checkin
+	* [r351] image channes test added
 
 2010-02-22  yjung
 
-	 [r350] plane mapping as default case
-	 [r349] online config
+	* [r350] plane mapping as default case
+	* [r349] online config
 
 2010-02-22  jbehr
 
-	 [r348] initial checkin
-	 [r347] changed texture to dullChrome-rgb
-	 [r346] rgb version for testing
+	* [r348] initial checkin
+	* [r347] changed texture to dullChrome-rgb
+	* [r346] rgb version for testing
 
 2010-02-22  yjung
 
-	 [r345]
-	 [r344] yet another webkit workaround
+	* [r345]
+	* [r344] yet another webkit workaround
 
 2010-02-22  jbehr
 
-	 [r343] added ogv and mp4 examples
-	 [r342] log output removed
+	* [r343] added ogv and mp4 examples
+	* [r342] log output removed
 
 2010-02-21  yjung
 
-	 [r341] fixed broken link in jQuery example
+	* [r341] fixed broken link in jQuery example
 
 2010-02-20  yjung
 
-	 [r340] updated model
+	* [r340] updated model
 
 2010-02-20  jbehr
 
-	 [r339] initial checkin
+	* [r339] initial checkin
 
 2010-02-20  yjung
 
-	 [r338] fix for ticket #23
-	 [r337] inital check-in of car demo
-	 [r336] impl. TextureCoordinateGenerator (only sphere mode)
-	 [r335] dynamic texture update
+	* [r338] fix for ticket #23
+	* [r337] inital check-in of car demo
+	* [r336] impl. TextureCoordinateGenerator (only sphere mode)
+	* [r335] dynamic texture update
 
 2010-02-17  jbehr
 
-	 [r334] render-layer updates
-	 [r333] render layer added
+	* [r334] render-layer updates
+	* [r333] render layer added
 
 2010-02-15  yjung
 
-	 [r332] tree now also links to spec
+	* [r332] tree now also links to spec
 
 2010-02-13  yjung
 
-	 [r331] added links to spec to nodetypetree
+	* [r331] added links to spec to nodetypetree
 
 2010-02-13  jbehr
 
-	 [r330] 2010 update elems added
+	* [r330] 2010 update elems added
 
 2010-02-13  yjung
 
-	 [r329] cleanup of components
-	 [r328] some fixes and improvements
+	* [r329] cleanup of components
+	* [r328] some fixes and improvements
 
 2010-02-12  jbehr
 
-	 [r327] initial checkin
+	* [r327] initial checkin
 
 2010-02-12  yjung
 
-	 [r326] removed useless method, fixed a bug, and added support for
+	* [r326] removed useless method, fixed a bug, and added support for
 	  alternative sound files
 
 2010-02-12  jbehr
 
-	 [r325] support for absolut/relative urls added
+	* [r325] support for absolut/relative urls added
 
 2010-02-12  peschler
 
-	 [r324] Now extracting svn revision info and version and writing
+	* [r324] Now extracting svn revision info and version and writing
 	  it to version.js.
 
 2010-02-12  jbehr
 
-	 [r323] removed extra texture
-	 [r322] initial checkin
-	 [r321] initial checkin
+	* [r323] removed extra texture
+	* [r322] initial checkin
+	* [r321] initial checkin
 
 2010-02-12  yjung
 
-	 [r320] fixed hierarchy
+	* [r320] fixed hierarchy
 
 2010-02-12  jbehr
 
-	 [r319] removed extra traversal for setAttribute workaround, fixes
+	* [r319] removed extra traversal for setAttribute workaround, fixes
 	  #17
 
 2010-02-11  jbehr
 
-	 [r318] support for containerField added
+	* [r318] support for containerField added
 
 2010-02-10  jbehr
 
-	 [r317] initial checkin
+	* [r317] initial checkin
 
 2010-02-10  peschler
 
-	 [r316] Additionally dump the nodetypes by component.
+	* [r316] Additionally dump the nodetypes by component.
 
 2010-02-10  yjung
 
-	 [r315] partial impl. of collision node
+	* [r315] partial impl. of collision node
 
 2010-02-10  jbehr
 
-	 [r314] Collision node added
+	* [r314] Collision node added
 
 2010-02-09  yjung
 
-	 [r313] sound test -- webkit seems to support only ogg, no wav
+	* [r313] sound test -- webkit seems to support only ogg, no wav
 
 2010-02-06  yjung
 
-	 [r312] added sound file for comic example
+	* [r312] added sound file for comic example
 
 2010-02-06  jbehr
 
-	 [r311] initial checkin
+	* [r311] initial checkin
 
 2010-02-05  yjung
 
-	 [r310] impl. sound
-	 [r309] fix
+	* [r310] impl. sound
+	* [r309] fix
 
 2010-02-05  jbehr
 
-	 [r308] initial checkin
-	 [r307] BindableBag and BindableStack added
-	 [r306] inline fixed
+	* [r308] initial checkin
+	* [r307] BindableBag and BindableStack added
+	* [r306] inline fixed
 
 2010-02-04  jbehr
 
-	 [r305] ctx leftover removed
-	 [r304] namespaces added
+	* [r305] ctx leftover removed
+	* [r304] namespaces added
 
 2010-02-04  yjung
 
-	 [r303] higher shadow value precision
-	 [r302] forgot to clean up color buffer
+	* [r303] higher shadow value precision
+	* [r302] forgot to clean up color buffer
 
 2010-02-03  peschler
 
-	 [r301] Minor fixes to make jslint happy.
-	 [r300] Cleanup. Removed unused variables and debugging messages.
-	 [r299] Minor fixes to make jslint happy.
+	* [r301] Minor fixes to make jslint happy.
+	* [r300] Cleanup. Removed unused variables and debugging messages.
+	* [r299] Minor fixes to make jslint happy.
 
 2010-02-03  yjung
 
-	 [r298] very primitive and basic integration of x3d shader nodes
-	 [r297] fixed wrong cube face assignment
+	* [r298] very primitive and basic integration of x3d shader nodes
+	* [r297] fixed wrong cube face assignment
 
 2010-02-02  yjung
 
-	 [r296] sky box background via cube texture
-	 [r295] added error msg
+	* [r296] sky box background via cube texture
+	* [r295] added error msg
 
 2010-02-01  jbehr
 
-	 [r294] renamed _attribute_ to addField
-	 [r293] ctx clenup
-	 [r292] example back-port
+	* [r294] renamed _attribute_ to addField
+	* [r293] ctx clenup
+	* [r292] example back-port
 
 2010-02-01  yjung
 
-	 [r291] removed old comments
+	* [r291] removed old comments
 
 2010-01-31  yjung
 
-	 [r290] implemented primitive background texture support
-	 [r289] fixed ccw flag and smooth normal calculation for multi
+	* [r290] implemented primitive background texture support
+	* [r289] fixed ccw flag and smooth normal calculation for multi
 	  index meshes, thereby made silhouette example work
-	 [r288] removed matrix hack
+	* [r288] removed matrix hack
 
 2010-01-30  yjung
 
-	 [r287] moved mesh creation from ctor to nodeChanged for allowing
+	* [r287] moved mesh creation from ctor to nodeChanged for allowing
 	  to USE Coordinate nodes etc
-	 [r286] removed tmp file
+	* [r286] removed tmp file
 
 2010-01-30  jbehr
 
-	 [r285] initial checkin
-	 [r284] _compName to node constructor added
+	* [r285] initial checkin
+	* [r284] _compName to node constructor added
 
 2010-01-30  yjung
 
-	 [r283] moved dirty flag back to Shape
-	 [r282] implemented Switch node
-	 [r281] continued working on code clean-up
+	* [r283] moved dirty flag back to Shape
+	* [r282] implemented Switch node
+	* [r281] continued working on code clean-up
 
 2010-01-29  jbehr
 
-	 [r280] changed link to _typeName
+	* [r280] changed link to _typeName
 
 2010-01-24  jbehr
 
-	 [r279] now in wp CMS
+	* [r279] now in wp CMS
 
 2010-01-23  yjung
 
-	 [r278] worked on clean-up of internal structure
+	* [r278] worked on clean-up of internal structure
 
 2010-01-21  jbehr
 
-	 [r277] Node/Elem relation added
+	* [r277] Node/Elem relation added
 
 2010-01-21  yjung
 
-	 [r276] removed more syntax errors
+	* [r276] removed more syntax errors
 
 2010-01-20  jbehr
 
-	 [r275] jslint fixes x3d.js
-	 [r274] MatrixTransform added
-	 [r273] missing semicolons added
+	* [r275] jslint fixes x3d.js
+	* [r274] MatrixTransform added
+	* [r273] missing semicolons added
 
 2010-01-19  jbehr
 
-	 [r272] initial checkin
+	* [r272] initial checkin
 
 2010-01-19  peschler
 
-	 [r271] Added a debug webpage for displaying the nodetype tree.
+	* [r271] Added a debug webpage for displaying the nodetype tree.
 	  The entries of the x3dom.nodeType map now store the nodetype
 	  name.
 
 2010-01-19  yjung
 
-	 [r270] first version of MovieTexture
-	 [r269] re-added special matrix hack for AR demo
+	* [r270] first version of MovieTexture
+	* [r269] re-added special matrix hack for AR demo
 
 2010-01-18  jbehr
 
-	 [r268] added _childNodes hander to generic addChild/removeChild
-	 [r267] added handler for SFNode/MFNode
-	 [r266] SFNode/MFNode added
+	* [r268] added _childNodes hander to generic addChild/removeChild
+	* [r267] added handler for SFNode/MFNode
+	* [r266] SFNode/MFNode added
 
 2010-01-18  yjung
 
-	 [r265] Matrix getTransform instead of old decompose
-	 [r264] field update now works for all single fields, provided
+	* [r265] Matrix getTransform instead of old decompose
+	* [r264] field update now works for all single fields, provided
 	  that there is a fieldChanged handler
-	 [r263] started to rename field methods more spec conformant and
+	* [r263] started to rename field methods more spec conformant and
 	  improved field update mechanism
-	 [r262] removed some more syntax errors
+	* [r262] removed some more syntax errors
 
 2010-01-17  yjung
 
-	 [r261] removed syntax errors
+	* [r261] removed syntax errors
 
 2010-01-15  yjung
 
-	 [r260] typo
-	 [r259] improved regexp
-	 [r258] matrix parse method added
+	* [r260] typo
+	* [r259] improved regexp
+	* [r258] matrix parse method added
 
 2010-01-14  yjung
 
-	 [r257] test
+	* [r257] test
 
 2010-01-14  jbehr
 
-	 [r256] removed code to compy MFVec3f data
+	* [r256] removed code to compy MFVec3f data
 
 2010-01-14  yjung
 
-	 [r255] added shadow example
-	 [r254] added check for set
+	* [r255] added shadow example
+	* [r254] added check for set
 
 2010-01-13  jbehr
 
-	 [r253] color fixed
-	 [r252] initial checkin
+	* [r253] color fixed
+	* [r252] initial checkin
 
 2010-01-13  yjung
 
-	 [r251] Der Flipper flippert...
+	* [r251] Der Flipper flippert...
 
 2010-01-13  jbehr
 
-	 [r250] initial checkin
-	 [r249] initial checkin
-	 [r248] first DOMNodeRemoved impl.
+	* [r250] initial checkin
+	* [r249] initial checkin
+	* [r248] first DOMNodeRemoved impl.
 
 2010-01-13  yjung
 
-	 [r247] uhh, I should think before checking in :(
-	 [r246]
-	 [r245]
-	 [r244] fix of evil copy paste bug
+	* [r247] uhh, I should think before checking in :(
+	* [r246]
+	* [r245]
+	* [r244] fix of evil copy paste bug
 
 2010-01-12  yjung
 
-	 [r243]
+	* [r243]
 
 2010-01-12  jbehr
 
-	 [r242] some text fixes
-	 [r241] initial checkin
+	* [r242] some text fixes
+	* [r241] initial checkin
 
 2010-01-12  yjung
 
-	 [r240] shadowing
+	* [r240] shadowing
 
 2010-01-11  yjung
 
-	 [r239] fix in rotFromTo
-	 [r238] fbo code added
-	 [r237] quat negate fix
-	 [r236] minor fix
+	* [r239] fix in rotFromTo
+	* [r238] fbo code added
+	* [r237] quat negate fix
+	* [r236] minor fix
 
 2010-01-10  yjung
 
-	 [r235] pointset without color node now also possible
+	* [r235] pointset without color node now also possible
 
 2010-01-09  yjung
 
-	 [r234] show all
-	 [r233] minor improvements of text
+	* [r234] show all
+	* [r233] minor improvements of text
 
 2010-01-08  yjung
 
-	 [r232] basic text support
-	 [r231] got text working
+	* [r232] basic text support
+	* [r231] got text working
 
 2010-01-07  jbehr
 
-	 [r230] added comment about self-closing tags
-	 [r229] html/xhtml updates
+	* [r230] added comment about self-closing tags
+	* [r229] html/xhtml updates
 
 2010-01-07  yjung
 
-	 [r228] rescaled texture
-	 [r227] workaround dom mutation for webkit
+	* [r228] rescaled texture
+	* [r227] workaround dom mutation for webkit
 
 2010-01-06  yjung
 
-	 [r226] fixed primitive render bug for webkit
+	* [r226] fixed primitive render bug for webkit
 
 2010-01-05  yjung
 
-	 [r225] oops, removed dbg output
-	 [r224] fix: added also dummy nodes for TextureCoordinate and
+	* [r225] oops, removed dbg output
+	* [r224] fix: added also dummy nodes for TextureCoordinate and
 	  Normal
 
 2010-01-05  peschler
 
-	 [r223] Added HTML5 compatibility (new test test_betaGear.html).
+	* [r223] Added HTML5 compatibility (new test test_betaGear.html).
 	  test_lowercaseElements.xhtml will no longer work because XHTML5
 	  is handled strict now (in XHTML5 nodetype names must be camel
 	  case).
 
 2009-12-24  yjung
 
-	 [r222] finished pointset
+	* [r222] finished pointset
 
 2009-12-23  yjung
 
-	 [r221] PointSet added
+	* [r221] PointSet added
 
 2009-12-22  yjung
 
-	 [r220] todos
+	* [r220] todos
 
 2009-12-19  yjung
 
-	 [r219] implementented texture coords also for sphere
+	* [r219] implementented texture coords also for sphere
 
 2009-12-18  peschler
 
-	 [r218] Added support for new webgl contexts named
+	* [r218] Added support for new webgl contexts named
 	  "experimental-webgl" and "webgl".
 
 2009-12-18  jbehr
 
-	 [r217] experimental-webgl comment added
+	* [r217] experimental-webgl comment added
 
 2009-12-17  yjung
 
-	 [r216] check for numUniforms/Attribs now works
+	* [r216] check for numUniforms/Attribs now works
 
 2009-12-13  yjung
 
-	 [r215] removed dbg alert
+	* [r215] removed dbg alert
 
 2009-12-11  yjung
 
-	 [r214] workaround for blending bug in webkit and chrome
-	 [r213] check for null
+	* [r214] workaround for blending bug in webkit and chrome
+	* [r213] check for null
 
 2009-12-09  peschler
 
-	 [r212] Replaced all xpath calls - Scene is now searched as a
+	* [r212] Replaced all xpath calls - Scene is now searched as a
 	  direct child of the X3D element.
 	  Routes are now searched and registered during initial DOM
 	  traversal.
-	 [r211] Fixed Inline nodes after addition of mixed case node
+	* [r211] Fixed Inline nodes after addition of mixed case node
 	  names.
 
 2009-11-24  jbehr
 
-	 [r210] initial checkin
+	* [r210] initial checkin
 
 2009-11-19  yjung
 
-	 [r209] test lower case attrib
+	* [r209] test lower case attrib
 
 2009-11-18  peschler
 
-	 [r208] Added support for lowercase X3D elements. You can now mix
+	* [r208] Added support for lowercase X3D elements. You can now mix
 	  lower/uppercase element names.
 	  Attribute names must still be camel cased for now - discussion
 	  needed on this topic.
@@ -1833,573 +1874,573 @@
 
 2009-11-17  michaelzoellner
 
-	 [r207] TwittARound with location debug messages
+	* [r207] TwittARound with location debug messages
 
 2009-11-15  jbehr
 
-	 [r206] WebGL Array prefix and Firefox/Minefield compatibility
+	* [r206] WebGL Array prefix and Firefox/Minefield compatibility
 	  code added
-	 [r205] runServer and count added
+	* [r205] runServer and count added
 
 2009-11-06  michaelzoellner
 
-	 [r204] Twittaround update
-	 [r203] TwittARound Example Update
-	 [r202] TwittARound Example
+	* [r204] Twittaround update
+	* [r203] TwittARound Example Update
+	* [r202] TwittARound Example
 
 2009-11-05  jbehr
 
-	 [r201] initial checkin
+	* [r201] initial checkin
 
 2009-11-04  yjung
 
-	 [r200] some more lint conformant changes
-	 [r199] started making lint conformant
+	* [r200] some more lint conformant changes
+	* [r199] started making lint conformant
 
 2009-11-03  yjung
 
-	 [r198] fixed ugly copy paste error in multi-index texCoords
-	 [r197] fix
-	 [r196] raising onload event after scene setup
+	* [r198] fixed ugly copy paste error in multi-index texCoords
+	* [r197] fix
+	* [r196] raising onload event after scene setup
 
 2009-11-03  jbehr
 
-	 [r195] initial checkin
+	* [r195] initial checkin
 
 2009-11-03  yjung
 
-	 [r194] test for node insertions during runtime
+	* [r194] test for node insertions during runtime
 
 2009-11-03  jbehr
 
-	 [r193] copyright comment changed
+	* [r193] copyright comment changed
 
 2009-11-03  yjung
 
-	 [r192] impl. none navType and texture repeat
+	* [r192] impl. none navType and texture repeat
 
 2009-11-02  yjung
 
-	 [r191] forgot img for example
-	 [r190] impl TextureTransform
+	* [r191] forgot img for example
+	* [r190] impl TextureTransform
 
 2009-11-02  peschler
 
-	 [r189] x3dom-nox3d container (which is used when WebGL is not
+	* [r189] x3dom-nox3d container (which is used when WebGL is not
 	  supported) is no longer resized to match the image size because
 	  this will fail when the image is not loaded yet. Now simply using
 	  CSS to style the x3dom-nox3d container.
 
 2009-11-02  jbehr
 
-	 [r188] initial checkin
-	 [r187] reposition model
-	 [r186] initial checkin
+	* [r188] initial checkin
+	* [r187] reposition model
+	* [r186] initial checkin
 
 2009-11-01  jbehr
 
-	 [r185] backgroup update
+	* [r185] backgroup update
 
 2009-11-01  yjung
 
-	 [r184] yet another try
+	* [r184] yet another try
 
 2009-11-01  jbehr
 
-	 [r183] typo fixed
+	* [r183] typo fixed
 
 2009-11-01  yjung
 
-	 [r182] some more log messages
+	* [r182] some more log messages
 
 2009-11-01  jbehr
 
-	 [r181] added redBox.x3d to inline test
+	* [r181] added redBox.x3d to inline test
 
 2009-11-01  yjung
 
-	 [r180] added log msg and fix
-	 [r179] check for light intensity
-	 [r178] forgot handling non-ready state
+	* [r180] added log msg and fix
+	* [r179] check for light intensity
+	* [r178] forgot handling non-ready state
 
 2009-10-31  yjung
 
-	 [r177] impl Anchor
-	 [r176] got Inline running :-)
+	* [r177] impl Anchor
+	* [r176] got Inline running :-)
 
 2009-10-31  jbehr
 
-	 [r175] debug output removed
-	 [r174] moved dots and lines to texture generic
-	 [r173] onclick removed
-	 [r172] initial checkin
+	* [r175] debug output removed
+	* [r174] moved dots and lines to texture generic
+	* [r173] onclick removed
+	* [r172] initial checkin
 
 2009-10-31  yjung
 
-	 [r171] usage of directional light only if node defined and on
+	* [r171] usage of directional light only if node defined and on
 	  true, also creation of viewpoint/ background node on first
 	  request if not present for simplifying code
-	 [r170] fixed testserver for windows
+	* [r170] fixed testserver for windows
 
 2009-10-31  michaelzoellner
 
-	 [r169] Examples Update
-	 [r168] First Examples Update
-	 [r167] Example CSS
+	* [r169] Examples Update
+	* [r168] First Examples Update
+	* [r167] Example CSS
 
 2009-10-30  yjung
 
-	 [r166] little fixes
+	* [r166] little fixes
 
 2009-10-30  peschler
 
-	 [r165] More code cleanup and rewriting as recommended by jslint.
-	 [r164] Changed some code to make jslint and the packer happy.
+	* [r165] More code cleanup and rewriting as recommended by jslint.
+	* [r164] Changed some code to make jslint and the packer happy.
 	  Those errors prevented the bundle from being used on the live
 	  webpage. Not all jslint complaints are fixed, yet.
 
 2009-10-30  yjung
 
-	 [r163] example
-	 [r162] example
+	* [r163] example
+	* [r162] example
 
 2009-10-30  peschler
 
-	 [r161] Changed for loops from for/in to indexing due to errors
+	* [r161] Changed for loops from for/in to indexing due to errors
 	  with minifier.
 
 2009-10-30  jbehr
 
-	 [r160] debug output removed
-	 [r159] normals removed
-	 [r158] id example added
-	 [r157] id example added
-	 [r156] not needed anymore
-	 [r155] initial checkin
-	 [r154] added source dependence
+	* [r160] debug output removed
+	* [r159] normals removed
+	* [r158] id example added
+	* [r157] id example added
+	* [r156] not needed anymore
+	* [r155] initial checkin
+	* [r154] added source dependence
 
 2009-10-29  jbehr
 
-	 [r153] initial checkin
-	 [r152] initial checkin
+	* [r153] initial checkin
+	* [r152] initial checkin
 
 2009-10-29  peschler
 
-	 [r151] Makefile now using x3dom_packer to generate bundled
+	* [r151] Makefile now using x3dom_packer to generate bundled
 	  source.
 
 2009-10-29  jbehr
 
-	 [r150] replaced x3dom.js with x3dmain.js
+	* [r150] replaced x3dom.js with x3dmain.js
 
 2009-10-29  peschler
 
-	 [r149] Cleanup.
+	* [r149] Cleanup.
 	  Canvas div element now gets assigned the correct class (i.e.
 	  "x3dom-canvas").
-	 [r148] Added Dean Edwards js packer.
+	* [r148] Added Dean Edwards js packer.
 	  Added packing script for X3DOM which concatenates sources and
 	  minifies or packs them.
 
 2009-10-29  jbehr
 
-	 [r147] move
+	* [r147] move
 
 2009-10-29  peschler
 
-	 [r146] HTML canvas now gets the correct "class" attribute
+	* [r146] HTML canvas now gets the correct "class" attribute
 	  (x3dom-canvas).
 
 2009-10-29  yjung
 
-	 [r145] hups
-	 [r144] added vertex colors and some fixes
+	* [r145] hups
+	* [r144] added vertex colors and some fixes
 
 2009-10-29  peschler
 
-	 [r143] Updated x3d canvas css. All aspects of x3dom should no be
+	* [r143] Updated x3d canvas css. All aspects of x3dom should no be
 	  styleable via CSS (except x,y,width and height of the canvas).
-	 [r142] Added alternate image for helloX3D example. Image is used
+	* [r142] Added alternate image for helloX3D example. Image is used
 	  when WebGL is not available/supported.
-	 [r141] Updated x3dom canvas and div css.
-	 [r140] Added basic x3dom css and updated test cases to use it.
+	* [r141] Updated x3dom canvas and div css.
+	* [r140] Added basic x3dom css and updated test cases to use it.
 	  The goal is to make every aspect of x3dom (canvas, canvas div, no
 	  x3d div, etc) CSS stylable.
 
 2009-10-29  yjung
 
-	 [r139] fixed find, needed for scalar interpolator
+	* [r139] fixed find, needed for scalar interpolator
 
 2009-10-28  michaelzoellner
 
-	 [r138] Beta Gear example added
+	* [r138] Beta Gear example added
 
 2009-10-28  peschler
 
-	 [r137] Removed the now obsolete nodeTypeMap.
+	* [r137] Removed the now obsolete nodeTypeMap.
 	  The autoChild mechanism was added to the X3DGroupingNode base
 	  class.
-	 [r136] Fixed js warnings reported by jslint
+	* [r136] Fixed js warnings reported by jslint
 	  (http://www.jslint.com/)
 
 2009-10-28  yjung
 
-	 [r135] intermediate checkin...
+	* [r135] intermediate checkin...
 
 2009-10-28  peschler
 
-	 [r134] Added new tools dir and a Python based JavaScript
+	* [r134] Added new tools dir and a Python based JavaScript
 	  minifier.
-	 [r133] Statistics div is now invisible when WebGL is not
+	* [r133] Statistics div is now invisible when WebGL is not
 	  available.
-	 [r132] Fixed info div when WebGL is not available.
+	* [r132] Fixed info div when WebGL is not available.
 	  Corrected link for supported browsers.
-	 [r131] CSS adjustments on canvas and canvasDiv. Need to rethink
+	* [r131] CSS adjustments on canvas and canvasDiv. Need to rethink
 	  styling for auto-generated elements to make it possible to fully
 	  style them using CSS. Resolving this issue is a little bit tricky
 	  without firebug.
 
 2009-10-27  peschler
 
-	 [r130] Added jQuery manipulation example.
+	* [r130] Added jQuery manipulation example.
 
 2009-10-27  yjung
 
-	 [r129] removed inefficient search for lights
+	* [r129] removed inefficient search for lights
 
 2009-10-27  peschler
 
-	 [r128] More UML documentation.
+	* [r128] More UML documentation.
 
 2009-10-27  yjung
 
-	 [r127] changed fps to stat and added attrib for showLog
+	* [r127] changed fps to stat and added attrib for showLog
 
 2009-10-27  peschler
 
-	 [r126] Adopted unit test for SFVec2 to new modified function name
+	* [r126] Adopted unit test for SFVec2 to new modified function name
 	  "normalised".
-	 [r125] Initial import for ArgoUML UML diagrams (class and
+	* [r125] Initial import for ArgoUML UML diagrams (class and
 	  sequence diagrams).
 
 2009-10-27  jbehr
 
-	 [r124] moved tmp to arch
+	* [r124] moved tmp to arch
 
 2009-10-27  yjung
 
-	 [r123] started adding a light
-	 [r122] better handling if no gl
-	 [r121] added simple callback
+	* [r123] started adding a light
+	* [r122] better handling if no gl
+	* [r121] added simple callback
 
 2009-10-27  peschler
 
-	 [r120] Initial import of Python based standalone WSGI webserver
+	* [r120] Initial import of Python based standalone WSGI webserver
 	  for debugging (e.g. INLINE).
 	  See README.testserver on how to use it.
 
 2009-10-27  yjung
 
-	 [r119] impl solid
-	 [r118] fixed typos
+	* [r119] impl solid
+	* [r118] fixed typos
 
 2009-10-26  jbehr
 
-	 [r117] removed second comment about speed
-	 [r116] addad comment about webkit speed
-	 [r115] inline test added
-	 [r114] showFPS comment added
+	* [r117] removed second comment about speed
+	* [r116] addad comment about webkit speed
+	* [r115] inline test added
+	* [r114] showFPS comment added
 
 2009-10-26  yjung
 
-	 [r113] added method for _really_ activating console (otherwise
+	* [r113] added method for _really_ activating console (otherwise
 	  without)
-	 [r112] first version of multi-index handling
-	 [r111] point toggle
-	 [r110] new test
-	 [r109] code cleanups
+	* [r112] first version of multi-index handling
+	* [r111] point toggle
+	* [r110] new test
+	* [r109] code cleanups
 
 2009-10-25  yjung
 
-	 [r108] 'r' for reset view and some fixes
-	 [r107] started with picking for fixing pan
+	* [r108] 'r' for reset view and some fixes
+	* [r107] started with picking for fixing pan
 
 2009-10-24  yjung
 
-	 [r106] oops, fixed scroll
-	 [r105] moved projection calc to viewpoint and disabled context
+	* [r106] oops, fixed scroll
+	* [r105] moved projection calc to viewpoint and disabled context
 	  menu for canvas
-	 [r104] implemented PositionInterpolator, improved
+	* [r104] implemented PositionInterpolator, improved
 	  OrientationInterpolator, and added some more Node interfaces for
 	  DirectionalLight etc (not yet eval.)
 
 2009-10-23  yjung
 
-	 [r103] check for keys on mouse evt
-	 [r102] hups, removed setting font style twice
-	 [r101] num objects in statistics
+	* [r103] check for keys on mouse evt
+	* [r102] hups, removed setting font style twice
+	* [r101] num objects in statistics
 
 2009-10-23  jbehr
 
-	 [r100] test_helloX3DWorld.xhtml added
-	 [r99] initial checkin
-	 [r98] initial checkin
+	* [r100] test_helloX3DWorld.xhtml added
+	* [r99] initial checkin
+	* [r98] initial checkin
 
 2009-10-23  yjung
 
-	 [r97] sorting time added to statistics
+	* [r97] sorting time added to statistics
 
 2009-10-23  jbehr
 
-	 [r96] inital checkin
-	 [r95] torus removed form the xhtml page (code is still there)
+	* [r96] inital checkin
+	* [r95] torus removed form the xhtml page (code is still there)
 
 2009-10-23  yjung
 
-	 [r94] fixed lighting in test
+	* [r94] fixed lighting in test
 
 2009-10-23  jbehr
 
-	 [r93] camera update
+	* [r93] camera update
 
 2009-10-23  michaelzoellner
 
-	 [r92] Logo textures added. Rotating boxes exmple whitened.
+	* [r92] Logo textures added. Rotating boxes exmple whitened.
 
 2009-10-23  yjung
 
-	 [r91] finished primitives
+	* [r91] finished primitives
 
 2009-10-23  jbehr
 
-	 [r90] timer-handler cleanup and better TimeSensor impl.
+	* [r90] timer-handler cleanup and better TimeSensor impl.
 
 2009-10-23  yjung
 
-	 [r89] added cylinder
+	* [r89] added cylinder
 
 2009-10-23  jbehr
 
-	 [r88] readded 4 objects
+	* [r88] readded 4 objects
 
 2009-10-23  yjung
 
-	 [r87] fixed typos
+	* [r87] fixed typos
 
 2009-10-23  jbehr
 
-	 [r86] fanOut comment added
-	 [r85] added fanOut to index.html
+	* [r86] fanOut comment added
+	* [r85] added fanOut to index.html
 
 2009-10-23  yjung
 
-	 [r84] added Torus primitive
-	 [r83] changed set_rotation to rotation for making route working
+	* [r84] added Torus primitive
+	* [r83] changed set_rotation to rotation for making route working
 	  (and some minor other fixes)
 
 2009-10-22  jbehr
 
-	 [r82] initial checkin
-	 [r81] minor changes to the nav-text
-	 [r80] debug output removed
-	 [r79] def/use fixes
+	* [r82] initial checkin
+	* [r81] minor changes to the nav-text
+	* [r80] debug output removed
+	* [r79] def/use fixes
 
 2009-10-22  yjung
 
-	 [r78] render time
-	 [r77] styles internally set
+	* [r78] render time
+	* [r77] styles internally set
 
 2009-10-22  jbehr
 
-	 [r76] initial checkin
+	* [r76] initial checkin
 
 2009-10-22  yjung
 
-	 [r75] speed improvements
+	* [r75] speed improvements
 
 2009-10-22  jbehr
 
-	 [r74] perect result added
+	* [r74] perect result added
 
 2009-10-22  yjung
 
-	 [r73] some docu
+	* [r73] some docu
 
 2009-10-22  jbehr
 
-	 [r72] test_imageFormats added
+	* [r72] test_imageFormats added
 
 2009-10-22  yjung
 
-	 [r71] name change
-	 [r70] fixed texCoords
-	 [r69]
+	* [r71] name change
+	* [r70] fixed texCoords
+	* [r69]
 
 2009-10-21  yjung
 
-	 [r68] creation of attribute buffers only once on init
-	 [r67] now all textures are loaded
+	* [r68] creation of attribute buffers only once on init
+	* [r67] now all textures are loaded
 
 2009-10-21  jbehr
 
-	 [r66] draw method added
-	 [r65] removed clearDepthf() workaround for firefox
+	* [r66] draw method added
+	* [r65] removed clearDepthf() workaround for firefox
 
 2009-10-21  yjung
 
-	 [r64] fixed typos
+	* [r64] fixed typos
 
 2009-10-20  jbehr
 
-	 [r63] webkit links added
+	* [r63] webkit links added
 
 2009-10-20  yjung
 
-	 [r62] removed nested callbacks
+	* [r62] removed nested callbacks
 
 2009-10-20  jbehr
 
-	 [r61] extra webgl/moz code for clearDepth()
-	 [r60] changed super to superClass
+	* [r61] extra webgl/moz code for clearDepth()
+	* [r60] changed super to superClass
 
 2009-10-20  yjung
 
-	 [r59]
+	* [r59]
 
 2009-10-20  jbehr
 
-	 [r58] initial checkin
-	 [r57] tests renamed
-	 [r56] initial checkin
-	 [r55] TimeSensor removed
+	* [r58] initial checkin
+	* [r57] tests renamed
+	* [r56] initial checkin
+	* [r55] TimeSensor removed
 
 2009-10-20  yjung
 
-	 [r54] added Group node
+	* [r54] added Group node
 
 2009-10-20  jbehr
 
-	 [r53] initial checkin
+	* [r53] initial checkin
 
 2009-10-20  yjung
 
-	 [r52] CoR added
+	* [r52] CoR added
 
 2009-10-20  jbehr
 
-	 [r51] changed to centered object
-	 [r50] texture added
+	* [r51] changed to centered object
+	* [r50] texture added
 
 2009-10-19  peschler
 
-	 [r49] Added new types and unit tests.
+	* [r49] Added new types and unit tests.
 
 2009-10-19  jbehr
 
-	 [r48] shader code removed
+	* [r48] shader code removed
 
 2009-10-19  yjung
 
-	 [r47] initial check in of more complex example
-	 [r46] lots of fixes
+	* [r47] initial check in of more complex example
+	* [r46] lots of fixes
 
 2009-10-19  michaelzoellner
 
-	 [r45] Cleaned up templates
-	 [r44] Added website template
-	 [r43] Added website template
+	* [r45] Cleaned up templates
+	* [r44] Added website template
+	* [r43] Added website template
 
 2009-10-18  yjung
 
-	 [r42] minor fixes
-	 [r41] finally fixed navigation by calculating bboxes
+	* [r42] minor fixes
+	* [r41] finally fixed navigation by calculating bboxes
 
 2009-10-17  yjung
 
-	 [r40] fixed trackball navigation
+	* [r40] fixed trackball navigation
 
 2009-10-16  yjung
 
-	 [r39] fixed texCoord upload
+	* [r39] fixed texCoord upload
 
 2009-10-15  yjung
 
-	 [r38] improved rendering and finally managed to really transfer
+	* [r38] improved rendering and finally managed to really transfer
 	  vertex attribs to GPU
 
 2009-10-15  peschler
 
-	 [r37] Added SFColor and initial MFColor implementation.
+	* [r37] Added SFColor and initial MFColor implementation.
 	  Also added unit tests for the new types.
 	  Adopted Background node implementation to use new MFColor field.
 
 2009-10-14  peschler
 
-	 [r36] Updated field unit tests.
-	 [r35] Updated field types.
-	 [r34] Added SFVec2.
-	 [r33] Initial import of unit test framework.
+	* [r36] Updated field unit tests.
+	* [r35] Updated field types.
+	* [r34] Added SFVec2.
+	* [r33] Initial import of unit test framework.
 	  Initial field tests in fieldTests.html (only SFVec2 test for
 	  now).
 
 2009-10-13  yjung
 
-	 [r32] started impl texCoords
-	 [r31] impl ImageTexture
-	 [r30] fix
+	* [r32] started impl texCoords
+	* [r31] impl ImageTexture
+	* [r30] fix
 
 2009-10-12  peschler
 
-	 [r29] Added an initial implementation of syncing DOM attributes
+	* [r29] Added an initial implementation of syncing DOM attributes
 	  to X3D fields using DOM mutation events.
 	  Added two examples of scripting the DOM to animate scale and
 	  diffuseColor.
-	 [r28] Now using event listeners for window.onload to avoid
+	* [r28] Now using event listeners for window.onload to avoid
 	  replacement by a user script.
 	  Some minor optimisation in the tick() function.
 
 2009-10-12  yjung
 
-	 [r27] code for texturing - not yet integrated
-	 [r26] fixed indices and started impl. Background
-	 [r25] fixed wrong resolution
+	* [r27] code for texturing - not yet integrated
+	* [r26] fixed indices and started impl. Background
+	* [r25] fixed wrong resolution
 
 2009-10-11  yjung
 
-	 [r24] implemented basic navigation functionality and added
+	* [r24] implemented basic navigation functionality and added
 	  workaround for missing index fields
 
 2009-10-10  yjung
 
-	 [r23] basic shader integration and xpath fix
+	* [r23] basic shader integration and xpath fix
 
 2009-10-09  yjung
 
-	 [r22] started moving shaders
+	* [r22] started moving shaders
 
 2009-10-08  peschler
 
-	 [r21] Added fps display which can be positioned and styled via
+	* [r21] Added fps display which can be positioned and styled via
 	  CSS (e.g. as an overlay for the canvas).
-	 [r20] Added a first test of DOM mutation events to monitor DOM
+	* [r20] Added a first test of DOM mutation events to monitor DOM
 	  changes. Insert, remove and modification events work just fine ;)
 	  Updating the render graph when changes in the DOM graph occur
 	  should be possible :))
-	 [r19] Now doing inplace rendering, i.e. a <canvas> element is
+	* [r19] Now doing inplace rendering, i.e. a <canvas> element is
 	  created automatically for every X3D scene in the page. x, y,
 	  width and height attributes from the X3D element are passed to
 	  the created canvas element.
-	 [r18] Fixed validation erros reported by jslint.
-	 [r17] Started documentation.
+	* [r18] Fixed validation erros reported by jslint.
+	* [r17] Started documentation.
 	  Cleanup.
-	 [r16] Added basic documentation files (based on jsdoc_toolkit).
-	 [r15] Cleanup.
-	 [r14] Moved all nodetypes into the x3dom.nodeTypes namespace.
-	 [r13] Moved SFQuaternion into x3dom.fields namespace.
+	* [r16] Added basic documentation files (based on jsdoc_toolkit).
+	* [r15] Cleanup.
+	* [r14] Moved all nodetypes into the x3dom.nodeTypes namespace.
+	* [r13] Moved SFQuaternion into x3dom.fields namespace.
 
 2009-10-06  peschler
 
-	 [r12] Moved fields into new field.js and into x3dom.fields
+	* [r12] Moved fields into new field.js and into x3dom.fields
 	  namespace.
 	  Nodes are currently direct attributes of the x3dom namespace but
 	  should be moved to x3dom.nodes.
@@ -2407,23 +2448,23 @@
 
 2009-10-05  peschler
 
-	 [r11] Adopted to x3dom namespace refactoring. Now using the
+	* [r11] Adopted to x3dom namespace refactoring. Now using the
 	  x3dom.wrap() function to create an X3DCanvas from a HTML canvas.
-	 [r10] Adoptions to new x3dom.debug logging framework.
-	 [r9] Finally fixed things to see some geometry. Not perfect yet,
+	* [r10] Adoptions to new x3dom.debug logging framework.
+	* [r9] Finally fixed things to see some geometry. Not perfect yet,
 	  but it's a start.
-	 [r8] Refactoring. x3dom is now a namespace.
+	* [r8] Refactoring. x3dom is now a namespace.
 	  Added a X3DCanvas class which wraps the HTMLCanvas.
-	 [r7] Some cleanup and initial test of debugging code.
-	 [r6] Added debugging code.
+	* [r7] Some cleanup and initial test of debugging code.
+	* [r6] Added debugging code.
 
 2009-10-04  peschler
 
-	 [r5] Initial import of reworked taylor codebase. Still work in
+	* [r5] Initial import of reworked taylor codebase. Still work in
 	  progress. Only background color works, no geometry visible yet.
 
 2009-09-30  peschler
 
-	 [r4] Moved the existing code to trunk.
-	 [r3] Added basic repository layout.
+	* [r4] Moved the existing code to trunk.
+	* [r3] Added basic repository layout.
 
