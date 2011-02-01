@@ -4,3 +4,4 @@ _site
 ./src/version.js
 *.tmproj
 *.bak
+*.pyc
