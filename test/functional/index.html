@@ -1,6 +1,6 @@
 <html>
 <head>
-	<title>X3DOM-WebGL Examples</title>
+	<title>X3DOM-WebGL Tests</title>
 	<style>
 	    html { 
 	        background-color:#aaa;
@@ -20,11 +20,32 @@
 		p.case { 
 		    clear: both; 
 		}
+		.logo {
+		    float:right;
+		}
+		h1 {
+		    font-weight:normal;
+		    float:left;
+		}
+		.header {
+		 margin-bottom:3em;   
+		}
+        /* self-clearing floats */
+        .group:after {
+          content: "."; 
+          display: block; 
+          height: 0; 
+          clear: both; 
+          visibility: hidden;
+        }		
 	</style>
 </head>
 
 <body>
-<h1 style>WebGL Examples</h1>
+<div class="header group">
+    <img class="logo" src="media/img/x3dom-logo.png" width="100px" alt="X3DOM">
+    <h1 style>WebGL Tests</h1>
+</div>
 
 <p class="case">
 Below you'll find some more (development) tests for the X3DOM on WebGL implementation. For viewing them, you need a recent browser that supports WebGL.
@@ -35,7 +56,6 @@ For more information on browser support, please have a look at <a href="http://w
 
 <p class="case">
 <ul>
-<li><a href="http://localhost:8070/index.html">Testserver for Inline:</a> If you are working with a local version of the source, start the test server with <i>python testserver.py</i></li>
 <li><a href="dumpNodeTypeTree.html">Node Types:</a> On the fly generated node type tree</li>
 <li><a href="test_helloX3DWorld.xhtml">Hello World:</a> Minimal X3DOM example</li>
 <li><a href="test_geoPrimitives.xhtml">Primitives:</a> Box, Cone, Cylinder, Sphere with a picking demo</li>
@@ -105,7 +125,7 @@ For more information on browser support, please have a look at <a href="http://w
 Right now only a simple EXAMINE-mode is implemented. Use the left mouse button to rotate, the middle mouse button for pan and the right for zoom. WALK, FLY and LOOKAT will come later. 
 If the web page has scroll bars and autoscrolling is enabled, pan currently does not work yet. As a workaround, you can disable autoscrolling by unchecking the <i>Use autoscrolling</i> checkbox in the browser options, as is shown in the screenshot below (for the Firefox case). Alternatively, use the Shift (rotate)/ Ctrl (Pan)/ Alt (Zoom) key in combination with a mouse button to switch between the three modes.
 <br/><br/>
-<img src="texture/navi.jpg" width="469" height="437" />
+<img src="media/img/browser_autoscrolling.jpg" width="469" height="437" />
 </p>
 
 </body>
