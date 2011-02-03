@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM text example</title>
+    <link rel="stylesheet" type="text/css" href="media/css/examples.css">
+    <link rel="stylesheet" type="text/css" href="x3dom.css">
+</head>
+<body>
+    <div id="nav">
+        <p><a href="index.html">Example index</a></p>
+    </div>
+
+<div class="content">
+    
+    <h1>X3DOM Text Example</h1>
+    
+    <p>The following scenes demonstrate the use of the <tt>text</tt> and <tt>fontsyle</tt> nodes.</p>
+    
+    
+    <x3d width="512px" height="512px">
+    <scene>
+      <viewpoint position='0 0 11'></viewpoint>
+      <background skyColor='0.5 0.5 0.5'></background>
+      <shape>
+        <appearance>
+          <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
+        </appearance>
+        <text string='Times 32px' solid='false'>
+            <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
+            <fontstyle family="'Times' 'Orbitron'" size="32"></fontstyle>
+        </text>
+      </shape>
+      <transform translation='0 0 -2'>
+        <shape>
+            <appearance> 
+                <material diffuseColor="1 0 0" specularColor="0.5 0.5 0.5"></material>
+            </appearance>
+            <box></box>
+        </shape>
+      </transform>
+    </scene>
+    </x3d>
+
+    <x3d width="512px" height="512px">
+    <scene>
+      <viewpoint position='0 0 11'></viewpoint>
+      <background skyColor='0.5 0.5 0.5'></background>
+      <shape>
+        <appearance>
+          <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
+        </appearance>
+        <text string='Mono bolditalic 32px' solid='false'>
+            <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
+            <fontstyle family="TYPEWRITER" style="BOLDITALIC" size="32"></fontstyle>
+        </text>
+      </shape>
+      <transform translation='0 0 -2'>
+        <shape>
+            <appearance> 
+                <material diffuseColor="1 0 0" specularColor="0.5 0.5 0.5"></material>
+            </appearance>
+            <box></box>
+        </shape>
+      </transform>
+    </scene>
+    </x3d>
+
+
+</div>
+
+	<script type="text/javascript" src="../src/x3dmain.js"></script>
+    <script type="text/javascript" src="../src/debug.js"></script>
+	<script type="text/javascript" src="../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../src/x3d.js"></script>
+	<script type="text/javascript" src="../src/fields.js"></script>
+</body>
+</html>
