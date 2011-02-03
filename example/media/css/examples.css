@@ -89,17 +89,14 @@ a:hover, a:active, a:focus {
 #nav {
 	margin:0;
 	padding:0 0 0 3em;
-	line-height:0;
+	line-height:1em;
 	height:30px;
-	position:absolute;
-	top:0;
-	width:100%;
 	border-bottom:1px dotted #ccc;
 }
 
 #nav a {
 	position:relative;
-	top:-1px;
+	top:7px;
 	color:rgba(0,0,0,0.5);
 	background-color:transparent;
 	font-family:"Gill Sans", Helvetica, sans-serif;
@@ -107,6 +104,7 @@ a:hover, a:active, a:focus {
 	text-transform:uppercase;
 	border-radius:0;
 	text-shadow:1px 1px 1px rgba(255,255,255,0.5);
+	height:30px;
 }
 
 #nav a:before {
