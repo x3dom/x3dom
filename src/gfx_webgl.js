@@ -1294,7 +1294,6 @@ x3dom.gfx_webgl = (function () {
                 font_spacing = fontStyleNode._vf.spacing;
                 font_horizontal = fontStyleNode._vf.horizontal;
                 font_language = fontStyleNode._vf.language;
-
             }
             
 			/* text_ctx.mozTextStyle = '48px '+font_family; */
@@ -1310,9 +1309,9 @@ x3dom.gfx_webgl = (function () {
             var text_canvas = document.createElement('canvas');
             text_canvas.dir = font_leftToRight;
             text_canvas.width  = viewarea._width;
-            text_canvas.height = font_size * 4;
+            text_canvas.height = font_size;
             text_canvas.display = 'none';
-//            document.body.appendChild(text_canvas);	//dbg
+//           	document.body.appendChild(text_canvas);	//dbg
 			var text_ctx = text_canvas.getContext('2d');
             
             text_ctx.fillStyle = 'rgba(0,0,0,0)';
@@ -1325,14 +1324,14 @@ x3dom.gfx_webgl = (function () {
             text_ctx.save();
 
             // calculate font size in px
-            text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+            text_ctx.font = font_style + " " + font_size + "px " + font_family;
             text_ctx.textAlign = font_justify;
 
             var txtW = text_ctx.measureText(string).width;
-            var txtH = text_ctx.measureText(string).height || 60;
+			var txtH = text_ctx.measureText(string).height || text_canvas.height;
             
-            var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
-            var topOffset  = (text_ctx.canvas.height - font_size) / 2.0;
+			var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
+			var topOffset  = text_ctx.canvas.height - 1 ;    // the -1 is to get rid of a fine 1px line on top of canvas (roudning problem?)
 
             //text_ctx.strokeText(string, leftOffset, topOffset);
             text_ctx.fillText(string, leftOffset, topOffset);
@@ -1362,16 +1361,16 @@ x3dom.gfx_webgl = (function () {
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
             gl.bindTexture(gl.TEXTURE_2D, null);
 			
-			var w = txtW/100.0; //txtW/txtH;
-			var h = txtH/100.0;
+			var w = txtW / 100.0; //txtW/txtH;
+			var h = txtH / 100.0;
             var u0 = leftOffset / text_canvas.width;
 			var u = u0 + txtW / text_canvas.width;
-			var v = 1 - txtH / text_canvas.height;
+			var v = 1 - txtH / text_canvas.height  + 1;
             var v0 = topOffset / text_canvas.height + v;
             if (u0 < 0) { u0 = 0; }
             if (u > 1) { u = 1; }
             
-            //x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
+//            x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
             
             shape._cf.geometry.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
 			shape._cf.geometry.node._mesh._normals[0] = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
