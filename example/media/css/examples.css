@@ -92,6 +92,7 @@ a:hover, a:active, a:focus {
 	line-height:1em;
 	height:30px;
 	border-bottom:1px dotted #ccc;
+	background-color:#f1f1f1;
 }
 
 #nav a {
