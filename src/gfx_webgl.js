@@ -1339,7 +1339,7 @@ x3dom.gfx_webgl = (function () {
 			text_ctx.textAlign = font_justify;
 			
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
-            var topOffset  = (text_ctx.canvas.height - font_size) / 2.0;
+            var topOffset  = (text_ctx.canvas.height - font_size) / 1.0;
 
             //text_ctx.strokeText(string, leftOffset, topOffset);
             text_ctx.fillText(string, leftOffset, topOffset);
