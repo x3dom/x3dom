@@ -136,9 +136,17 @@ x3dom.debug = {
                 node.style.color = "#00ff00";
                 break;
         }
-
-		node.innerHTML = logType + ": " + msg;
-		x3dom.debug.logContainer.insertBefore(node, x3dom.debug.logContainer.firstChild);
+		
+		// not sure if try/catch solves problem http://sourceforge.net/apps/trac/x3dom/ticket/52
+		// but due to no avail of ATI gfxcard can't test
+        try {
+			node.innerHTML = logType + ": " + msg;
+			x3dom.debug.logContainer.insertBefore(node, x3dom.debug.logContainer.firstChild);
+        } catch (err) {
+			if (console) {
+				console.warn(msg);
+			}
+        }
         
 		// Use firebug's console if available
         if (x3dom.debug.isFirebugAvailable) {
