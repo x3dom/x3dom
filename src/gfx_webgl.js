@@ -1310,7 +1310,7 @@ x3dom.gfx_webgl = (function () {
             var text_canvas = document.createElement('canvas');
             text_canvas.dir = font_leftToRight;
             text_canvas.width  = viewarea._width;
-            text_canvas.height = font_size * 4;
+            text_canvas.height = font_size;
             text_canvas.display = 'none';
 //            document.body.appendChild(text_canvas);	//dbg
 
@@ -1332,13 +1332,14 @@ x3dom.gfx_webgl = (function () {
             text_ctx.fillStyle = 'white';
             text_ctx.lineWidth = 2.5;
             text_ctx.strokeStyle = 'grey';
+			text_ctx.textBaseline = 'top';
 //            text_ctx.save();
 
 			text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
 			text_ctx.textAlign = font_justify;
 			
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
-            var topOffset  = (text_ctx.canvas.height - font_size) / 1.0;
+            var topOffset  = (text_ctx.canvas.height - font_size) / 2.0;
 
             //text_ctx.strokeText(string, leftOffset, topOffset);
             text_ctx.fillText(string, leftOffset, topOffset);
@@ -1369,15 +1370,22 @@ x3dom.gfx_webgl = (function () {
 			
 			var w = txtW/100.0; //txtW/txtH;
 			var h = txtH/100.0;
-            var u0 = leftOffset / text_canvas.width;
-			var u = u0 + txtW / text_canvas.width;
-			var v = 1 - txtH / text_canvas.height;
-            var v0 = topOffset / text_canvas.height + v;
-            if (u0 < 0) { u0 = 0; }
-            if (u > 1) { u = 1; }
-            
-            //x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
-            
+			
+			// var u0 = leftOffset / text_canvas.width;
+			// var u = u0 + txtW / text_canvas.width;
+			// var v = 1 - txtH / text_canvas.height;
+			// var v0 = topOffset / text_canvas.height + v;
+			// if (u0 < 0) { u0 = 0; }
+			// if (u > 1) { u = 1; }
+			
+			// prevent distortion
+			v0 = 1;
+			u0 = 0;
+			u = 1;
+			v = 0;
+
+//            x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
+
             shape._cf.geometry.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
 			shape._cf.geometry.node._mesh._normals[0] = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
 			shape._cf.geometry.node._mesh._texCoords[0] = [u0,v, u,v, u,v0, u0,v0];
