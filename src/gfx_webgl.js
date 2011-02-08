@@ -1313,8 +1313,18 @@ x3dom.gfx_webgl = (function () {
             text_canvas.height = font_size * 4;
             text_canvas.display = 'none';
 //            document.body.appendChild(text_canvas);	//dbg
+
 			var text_ctx = text_canvas.getContext('2d');
-            
+
+            // calculate font size in px
+            text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+
+            var txtW = text_ctx.measureText(string).width;
+            var txtH = text_ctx.measureText(string).height || text_canvas.height;
+
+			text_canvas.width = Math.pow(2, Math.ceil(Math.log(txtW)/Math.log(2)));
+			text_canvas.height = Math.pow(2, Math.ceil(Math.log(txtH)/Math.log(2)));
+
             text_ctx.fillStyle = 'rgba(0,0,0,0)';
             text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
             
@@ -1322,22 +1332,17 @@ x3dom.gfx_webgl = (function () {
             text_ctx.fillStyle = 'white';
             text_ctx.lineWidth = 2.5;
             text_ctx.strokeStyle = 'grey';
-            text_ctx.save();
+//            text_ctx.save();
 
-            // calculate font size in px
-            text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
-            text_ctx.textAlign = font_justify;
-
-            var txtW = text_ctx.measureText(string).width;
-            var txtH = text_ctx.measureText(string).height || 60;
-            
+			text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+			text_ctx.textAlign = font_justify;
+			
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
-            var topOffset  = (text_ctx.canvas.height - font_size) / 2.0;
+            var topOffset  = (text_ctx.canvas.height - font_size) / 1.0;
 
             //text_ctx.strokeText(string, leftOffset, topOffset);
             text_ctx.fillText(string, leftOffset, topOffset);
-            
-            text_ctx.restore();
+//            text_ctx.restore();
             
             /*
 			var line_h = 1.2 * text_ctx.mozMeasureText('M'); // XXX: this is a hacky guess
@@ -1351,7 +1356,7 @@ x3dom.gfx_webgl = (function () {
 				text_ctx.translate(0, line_h);
 			}
             */
-			
+
 			var ids = gl.createTexture();
 			gl.bindTexture(gl.TEXTURE_2D, ids);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, text_canvas);
