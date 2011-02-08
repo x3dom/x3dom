@@ -100,7 +100,8 @@ a:hover, a:active, a:focus {
 	top:7px;
 	color:rgba(0,0,0,0.5);
 	background-color:transparent;
-	font-family:"Gill Sans", Helvetica, sans-serif;
+	font-family:Helvetica, Arial, sans-serif;
+	font-weight:normal;
 	font-size:10px;
 	text-transform:uppercase;
 	border-radius:0;
