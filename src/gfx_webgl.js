@@ -1312,9 +1312,9 @@ x3dom.gfx_webgl = (function () {
             text_canvas.width  = viewarea._width;
             text_canvas.height = font_size;
             text_canvas.display = 'none';
-			
+
 			// needed to make webfonts work
-			document.body.removeChild(document.body.appendChild(text_canvas));
+			document.body.appendChild(text_canvas);
 
 			var text_ctx = text_canvas.getContext('2d');
 
