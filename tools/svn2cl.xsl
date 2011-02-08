@@ -82,7 +82,7 @@
  <xsl:param name="separate-daylogs" select="'no'" />
 
  <!-- whether a revision number should be included -->
- <xsl:param name="include-rev" select="'no'" />
+ <xsl:param name="include-rev" select="'yes'" />
 
  <!-- whether aaction labels should be added to files -->
  <xsl:param name="include-actions" select="'no'" />
@@ -216,7 +216,7 @@
   <!-- add newline here if separate-daylogs is in effect -->
   <xsl:if test="$groupbyday='yes' and $separate-daylogs='yes'"><xsl:text>&#10;</xsl:text></xsl:if>
   <!-- first line is indented (other indents are done in wrap template) -->
-  <xsl:text>&#9;*&#32;</xsl:text>
+  <xsl:text>&#9;&#32;</xsl:text>
   <!-- set up the text to wrap -->
   <xsl:variable name="txt">
    <xsl:value-of select="$rev" />

@@ -5,3 +5,4 @@ _site
 *.tmproj
 *.bak
 *.pyc
+dist
