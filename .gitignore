@@ -6,3 +6,4 @@ _site
 *.bak
 *.pyc
 dist
+test/qunit
