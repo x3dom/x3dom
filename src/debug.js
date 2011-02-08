@@ -200,42 +200,6 @@ x3dom.debug = {
 	},
 	
 	/**
-	 Introspects an object.
-	 http://www.syger.it/Tutorials/JavaScriptIntrospector.html
-	
-	 @param name the object name.
-	 @param obj the object to introspect.
-	 @param indent the indentation (optional, defaults to "").
-	 @param levels the introspection nesting level (defaults to 1).
-	 @returns a plain text analysis of the object.
-	*/
-	introspect: function (name, obj, indent, levels) {
-		indent = indent || "";
-		if (this.typeOf(levels) !== "number") levels = 1;
-		var objType = this.typeOf(obj);
-		var result = [indent, name, " ", objType, " :"].join('');
-		if (objType === "object") {
-		    if (levels > 0) {
-			    indent = [indent, "  "].join('');
-			    for (prop in obj) {
-				    var prop = this.introspect(prop, obj[prop], indent, levels - 1);
-				    result = [result, "\n", prop].join('');
-			    }
-			    return result;
-		    }
-		    else {
-	            return [result, " ..."].join('');
-	        }
-		}
-		else if (objType === "null") {
-			return [result, " null"].join('');
-		}
-		var msg = [result, " ", obj].join('');
-		x3dom.debug.logInfo(msg)
-		return msg
-	},
-	
-	/**
 	 Checks the type of a given object.
 	 
 	 @param obj the object to check.
