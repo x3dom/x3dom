@@ -51,9 +51,12 @@ if __name__ == '__main__':
     # Add the version.js to the list of input files
     args.append("version.js")
     # Extract the svn revision 
-    svn_info = Popen(["svn", "info"], stdout=PIPE).communicate()[0]
-    re_match = re.search("Revision: (\d*)", svn_info)
-    svn_revision = re_match.group(1)
+    try:
+        svn_info = Popen(["svn", "info"], stdout=PIPE).communicate()[0]
+        re_match = re.search("Revision: (\d*)", svn_info)
+        svn_revision = re_match.group(1)
+    except:
+        svn_revision = 0
     print "Revision '", svn_revision, "'"
     # Write the version and revision to file
     version_file = open("version.js", "w")
