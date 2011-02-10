@@ -1,6 +1,6 @@
 @echo off
 
-python ../tools/x3dom_packer.py debug.js fields.js gfx_webgl.js x3d.js x3dmain.js x3d_follower.js -o x3dom.js
+python ../tools/x3dom_packer.py x3dmain.js debug.js gfx_webgl.js x3d.js x3d_follower.js fields.js -o x3dom.js
 
 copy x3dom.js ..\example
 copy x3dom.css ..\example
