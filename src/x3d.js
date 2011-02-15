@@ -5552,17 +5552,18 @@ x3dom.registerNodeType(
                     var normalPlane = this._vf.axisOfRotation.cross(billboard_to_viewer);
                     normalPlane = normalPlane.normalize();
                     
-                    if(this._eye.z < 0)
+                    if(this._eye.z < 0) {
                         normalPlane = normalPlane.multiply(-1);
+                    }
                     
                     var degreesToRotate = Math.asin(normalPlane.dot(new x3dom.fields.SFVec3f(0, 0, 1)));
                     
-                    if(this._eye.z < 0)
+                    if(this._eye.z < 0) {
                         degreesToRotate += Math.PI;
+                    }
                     
                         rotMat = x3dom.fields.SFMatrix4f.parseRotation(
-                            this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y
-                            + ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
+                            this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y + ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
                 }
                 
                 for (var i=0; i<this._childNodes.length; i++) {
@@ -5880,8 +5881,9 @@ x3dom.registerNodeType(
         {
             onframe: function (ts)
             {
-                if (!this._vf.enabled)
+                if (!this._vf.enabled) {
                     return;
+                }
                 
                 var isActive = (ts >= this._vf.startTime);
                 var cycleFrac, cycle, fraction;
@@ -5892,8 +5894,9 @@ x3dom.registerNodeType(
                     fraction = cycleFrac - cycle;
                     
                     if (fraction < x3dom.fields.Eps) {
-                        if (ts > this._vf.startTime)
+                        if (ts > this._vf.startTime) {
                             fraction = 1.0;
+                        }
                     }
                 }
                 
@@ -6173,7 +6176,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         var phi = Math.PI * deltaT * (this._pressX - this._lastX) / this._width;
         var theta = Math.PI * deltaT * (this._pressY - this._lastY) / this._height;
         
-        if (this._needNavigationMatrixUpdate == true)
+        if (this._needNavigationMatrixUpdate === true)
         {
             this._needNavigationMatrixUpdate = false;
             
@@ -6637,8 +6640,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
             
             this.checkEvents(obj, x, y, buttonState, "onclick");
             
-            x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + 
-                                obj._DEF + "\ at dist=" + line.dist.toFixed(4));
+            x3dom.debug.logInfo("Hit '" + obj._xmlNode.localName + "/ " + obj._DEF + "' at dist=" + line.dist.toFixed(4));
             x3dom.debug.logInfo("Ray hit at position " + this._pick);
         }
         
@@ -6727,12 +6729,14 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 {
     var navi = this._scene.getNavigationInfo();
-    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none")
+    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none") {
         return;
+    }
     
     if ((this._scene._vf.pickMode.toLowerCase() === "color" ||
-         this._scene._vf.pickMode.toLowerCase() === "texcoord"))
+         this._scene._vf.pickMode.toLowerCase() === "texcoord")) {
          return;
+     }
     
     var viewpoint = this._scene.getViewpoint();
     
@@ -6778,8 +6782,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     this.handleMoveEvt(x, y, buttonState);
     
     var navi = this._scene.getNavigationInfo();
-    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() === "none")
+    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() === "none") {
         return;
+    }
 
     var dx = x - this._lastX;
     var dy = y - this._lastY;
@@ -6911,7 +6916,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
         // TODO: detect circular inclusions
         // TODO: download in parallel where possible
 
-        if (queued_uris.length == 0) {
+        if (queued_uris.length === 0) {
             // All done
             doc._setup(uri_docs[uri], uri_docs, sceneElemPos);
             doc.onload();

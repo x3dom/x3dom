@@ -52,11 +52,13 @@ x3dom.registerNodeType(
             
             stepResponse: function(t)
             {
-                if (t <= 0)
+                if (t <= 0) {
                     return 0;
+                }
 
-                if (t >= this._vf.duration)
+                if (t >= this._vf.duration) {
                     return 1;
+                }
 
                 // When optimizing for speed, the above two if(.) cases can be omitted,
                 // as this funciton will not be called for values outside of 0..duration.
@@ -162,21 +164,24 @@ x3dom.registerNodeType(
                     this.initialize();
                     this.updateBuffer(this._currTime);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
                     this.initialize();
                     
                     this._previousValue.setValues(this._vf.set_value);
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C].setValues(this._vf.set_value);
+                    }
                     
                     this.postMessage('value_changed', this._vf.set_value);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -271,8 +276,9 @@ x3dom.registerNodeType(
                     { 
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--)
+                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
+                        }
 
                         for (var C=0; C<NumToShift; C++)
                         {
@@ -285,8 +291,9 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++)
+                        for (var C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
+                        }
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -369,8 +376,9 @@ x3dom.registerNodeType(
                 this._lastTick = 0;
                 
                 var active = !this._value0.equals(this._value1, this._eps);
-                if (this._vf.isActive !== active)
+                if (this._vf.isActive !== active) {
                     this.postMessage('isActive', active);
+                }
             },
             
             distance: function(a, b)
@@ -421,22 +429,22 @@ x3dom.registerNodeType(
                 if (this._vf.order > 1)
                 {
                     var dist2 = this.distance(this._value2, this._value1);
-                    if (dist2 > dist) dist = dist2;
+                    if (dist2 > dist) { dist = dist2; }
                 }
                 if (this._vf.order > 2)
                 {
                     var dist3 = this.distance(this._value3, this._value2);
-                    if (dist3 > dist) dist = dist3;
+                    if (dist3 > dist) { dist = dist3; }
                 }
                 if (this._vf.order > 3)
                 {
                     var dist4 = this.distance(this._value4, this._value3);
-                    if (dist4 > dist) dist = dist4;
+                    if (dist4 > dist) { dist = dist4; }
                 }
                 if (this._vf.order > 4)
                 {
                     var dist5 = this.distance(this._value5, this._value4);
-                    if (dist5 > dist) dist = dist5;
+                    if (dist5 > dist) { dist = dist5; }
                 }
                 
                 if (dist < this._eps)
@@ -498,21 +506,24 @@ x3dom.registerNodeType(
                     this.initialize();
                     this.updateBuffer(this._currTime);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
                     this.initialize();
                     
                     this._previousValue.setValues(this._vf.set_value);
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C].setValues(this._vf.set_value);
+                    }
                     
                     this.postMessage('value_changed', this._vf.set_value);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -530,16 +541,18 @@ x3dom.registerNodeType(
                     this._buffer.length = this._numSupports;
 
                     this._buffer[0] = this._vf.initialDestination;
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C] = this._vf.initialValue;
+                    }
 
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
                     var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
-                    if (this._vf.isActive !== active)
+                    if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
+                    }
                 }
             },
 
@@ -620,8 +633,9 @@ x3dom.registerNodeType(
                         // normal case
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--)
+                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
+                        }
 
                         for (var C=0; C<NumToShift; C++)
                         {
@@ -647,8 +661,9 @@ x3dom.registerNodeType(
 
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++)
+                        for (var C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
+                        }
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -731,8 +746,9 @@ x3dom.registerNodeType(
                 this._lastTick = 0;
                 
                 var active = !this._value0.equals(this._value1, this._eps);
-                if (this._vf.isActive !== active)
+                if (this._vf.isActive !== active) {
                     this.postMessage('isActive', active);
+                }
             },
             
             tick: function(now)
@@ -754,7 +770,7 @@ x3dom.registerNodeType(
                 ? this._value0.slerp(this._value1, alpha)
                 : new x3dom.fields.Quaternion(
                       this._value0.x, this._value0.y, this._value0.z, this._value0.w);
-
+                
                 this._value2 = this._vf.order > 1 && this._vf.tau
                 ? this._value1.slerp(this._value2, alpha)
                 : new x3dom.fields.Quaternion(
@@ -780,22 +796,22 @@ x3dom.registerNodeType(
                 if(this._vf.order > 1)
                 {
                     var dist2 = Math.abs(this._value2.inverse().multiply(this._value1).angle());
-                    if (dist2 > dist)  dist = dist2;
+                    if (dist2 > dist)  { dist = dist2; }
                 }
                 if(this._vf.order > 2)
                 {
                     var dist3 = Math.abs(this._value3.inverse().multiply(this._value2).angle());
-                    if (dist3 > dist)  dist = dist3;
+                    if (dist3 > dist) { dist = dist3; }
                 }
                 if(this._vf.order > 3)
                 {
                     var dist4 = Math.abs(this._value4.inverse().multiply(this._value3).angle());
-                    if (dist4 > dist)  dist = dist4;
+                    if (dist4 > dist)  { dist = dist4; }
                 }
                 if(this._vf.order > 4)
                 {
                     var dist5 = Math.abs(this._value5.inverse().multiply(this._value4).angle());
-                    if (dist5 > dist)  dist = dist5;
+                    if (dist5 > dist)  { dist = dist5; }
                 }
 
                 if (dist < this._eps)
@@ -860,21 +876,24 @@ x3dom.registerNodeType(
                     this.initialize();
                     this.updateBuffer(this._currTime);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
                     this.initialize();
                     
                     this._previousValue.setValues(this._vf.set_value);
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C].setValues(this._vf.set_value);
+                    }
                     
                     this.postMessage('value_changed', this._vf.set_value);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -892,16 +911,18 @@ x3dom.registerNodeType(
                     this._buffer.length = this._numSupports;
 
                     this._buffer[0] = this._vf.initialDestination;
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C] = this._vf.initialValue;
+                    }
 
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
                     var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
-                    if (this._vf.isActive !== active)
+                    if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
+                    }
                 }
             },
 
@@ -985,8 +1006,9 @@ x3dom.registerNodeType(
                         // normal case
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--)
+                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
+                        }
 
                         for (var C=0; C<NumToShift; C++)
                         {
@@ -1012,8 +1034,9 @@ x3dom.registerNodeType(
 
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++)
+                        for (var C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
+                        }
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -1057,21 +1080,24 @@ x3dom.registerNodeType(
                     this.initialize();
                     this.updateBuffer(this._currTime);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
                     this.initialize();
                     
                     this._previousValue.setValues(this._vf.set_value);
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C].setValues(this._vf.set_value);
+                    }
                     
                     this.postMessage('value_changed', this._vf.set_value);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -1088,16 +1114,18 @@ x3dom.registerNodeType(
                     this._buffer.length = this._numSupports;
 
                     this._buffer[0] = this._vf.initialDestination;
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C] = this._vf.initialValue;
+                    }
 
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
                     var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
-                    if (this._vf.isActive !== active)
+                    if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
+                    }
                 }
             },
 
@@ -1164,8 +1192,9 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--)
+                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C]= this._buffer[C - NumToShift];
+                        }
 
                         for (var C=0; C<NumToShift; C++)
                         {
@@ -1178,8 +1207,9 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++)
+                        for (var C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
+                        }
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -1262,8 +1292,9 @@ x3dom.registerNodeType(
                 this._lastTick = 0;
                 
                 var active = !this._value0.equals(this._value1, this._eps);
-                if (this._vf.isActive !== active)
+                if (this._vf.isActive !== active) {
                     this.postMessage('isActive', active);
+                }
             },
             
             tick: function(now)
@@ -1306,22 +1337,22 @@ x3dom.registerNodeType(
                 if (this._vf.order > 1)
                 {
                     var dist2 = this._value2.subtract(this._value1).length();
-                    if (dist2 > dist) dist = dist2;
+                    if (dist2 > dist) {dist = dist2;}
                 }
                 if (this._vf.order > 2)
                 {
                     var dist3 = this._value3.subtract(this._value2).length();
-                    if (dist3 > dist) dist = dist3;
+                    if (dist3 > dist) {dist = dist3;}
                 }
                 if (this._vf.order > 3)
                 {
                     var dist4 = this._value4.subtract(this._value3).length();
-                    if (dist4 > dist) dist = dist4;
+                    if (dist4 > dist) {dist = dist4;}
                 }
                 if (this._vf.order > 4)
                 {
                     var dist5 = this._value5.subtract(this._value4).length();
-                    if (dist5 > dist) dist = dist5;
+                    if (dist5 > dist) {dist = dist5;}
                 }
 
                 if (dist < this._eps)
@@ -1421,8 +1452,9 @@ x3dom.registerNodeType(
                 this._lastTick = 0;
                 
                 var active = !this._value0.equals(this._value1, this._eps);
-                if (this._vf.isActive !== active)
+                if (this._vf.isActive !== active) {
                     this.postMessage('isActive', active);
+                }
             },
             
             tick: function(now)
@@ -1465,22 +1497,22 @@ x3dom.registerNodeType(
                 if (this._vf.order > 1)
                 {
                     var dist2 = this._value2.subtract(this._value1).length();
-                    if (dist2 > dist) dist = dist2;
+                    if (dist2 > dist) {dist = dist2;}
                 }
                 if (this._vf.order > 2)
                 {
                     var dist3 = this._value3.subtract(this._value2).length();
-                    if (dist3 > dist) dist = dist3;
+                    if (dist3 > dist) {dist = dist3;}
                 }
                 if (this._vf.order > 3)
                 {
                     var dist4 = this._value4.subtract(this._value3).length();
-                    if (dist4 > dist) dist = dist4;
+                    if (dist4 > dist) {dist = dist4;}
                 }
                 if (this._vf.order > 4)
                 {
                     var dist5 = this._value5.subtract(this._value4).length();
-                    if (dist5 > dist) dist = dist5;
+                    if (dist5 > dist) {dist = dist5;}
                 }
 
                 if (dist < this._eps)
@@ -1541,21 +1573,24 @@ x3dom.registerNodeType(
                     this.initialize();
                     this.updateBuffer(this._currTime);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
                 else if (fieldName.indexOf("set_value") >= 0)
                 {
                     this.initialize();
                     
                     this._previousValue = this._vf.set_value;
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C] = this._vf.set_value;
+                    }
                     
                     this.postMessage('value_changed', this._vf.set_value);
                     
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                 }
             },
             
@@ -1570,16 +1605,18 @@ x3dom.registerNodeType(
                     this._buffer.length = this._numSupports;
 
                     this._buffer[0] = this._vf.initialDestination;
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C] = this._vf.initialValue;
+                    }
 
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
                     var active = (Math.abs(this._buffer[0] - this._buffer[1]) >= x3dom.fields.Eps);
-                    if (this._vf.isActive !== active)
+                    if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
+                    }
                 }
             },
 
@@ -1646,8 +1683,9 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--)
+                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
+                        }
 
                         for (var C=0; C<NumToShift; C++)
                         {
@@ -1660,8 +1698,9 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C = 0; C<this._buffer.length; C++)
+                        for (var C = 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
+                        }
                     }
 
                     this._bufferEndTime += NumToShift * this._stepTime;
@@ -1744,8 +1783,9 @@ x3dom.registerNodeType(
                 this._lastTick = 0;
                 
                 var active = (Math.abs(this._value0 - this._value1) >= this._eps);
-                if (this._vf.isActive !== active)
+                if (this._vf.isActive !== active) {
                     this.postMessage('isActive', active);
+                }
             },
             
             tick: function(now)
@@ -1788,22 +1828,22 @@ x3dom.registerNodeType(
                 if (this._vf.order > 1)
                 {
                     var dist2 = Math.abs(this._value2 - this._value1);
-                    if (dist2 > dist) dist = dist2;
+                    if (dist2 > dist) {dist = dist2;}
                 }
                 if (this._vf.order > 2)
                 {
                     var dist3 = Math.abs(this._value3 - this._value2);
-                    if (dist3 > dist) dist = dist3;
+                    if (dist3 > dist) {dist = dist3;}
                 }
                 if (this._vf.order > 3)
                 {
                     var dist4 = Math.abs(this._value4 - this._value3);
-                    if (dist4 > dist) dist = dist4;
+                    if (dist4 > dist) {dist = dist4;}
                 }
                 if (this._vf.order > 4)
                 {
                     var dist5 = Math.abs(this._value5 - this._value4);
-                    if (dist5 > dist) dist = dist5;
+                    if (dist5 > dist) {dist = dist5;}
                 }
 
                 if (dist < this._eps)
