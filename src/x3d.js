@@ -37,9 +37,9 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
     }
     else {
         x3dom.debug.logInfo("Using component [" + componentName + "]");
-	}
-	nodeDef._typeName = nodeTypeName;
-	nodeDef._compName = componentName;
+    }
+    nodeDef._typeName = nodeTypeName;
+    nodeDef._compName = componentName;
     x3dom.components[componentName][nodeTypeName] = nodeDef;
     x3dom.nodeTypes[nodeTypeName] = nodeDef;
     x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
@@ -55,238 +55,243 @@ x3dom.isX3DElement = function(node) {
 
 // BindableStack constructor
 x3dom.BindableStack = function (doc, type, defaultType, getter) {
-	this._doc = doc; 
-	this._type = type;
-	this._defaultType = defaultType;
-	this._defaultRoot = 0;
-	this._getter = getter;
-	this._bindBag = [];
-	this._bindStack = [];
-	
-	// x3dom.debug.logInfo ('Create BindableStack ' + this._type._typeName + ', ' + this._getter);
+    this._doc = doc; 
+    this._type = type;
+    this._defaultType = defaultType;
+    this._defaultRoot = 0;
+    this._getter = getter;
+    this._bindBag = [];
+    this._bindStack = [];
+    
+    // x3dom.debug.logInfo ('Create BindableStack ' + this._type._typeName + ', ' + this._getter);
 };
 
 x3dom.BindableStack.prototype.top = function () {
-	return ( (this._bindStack.length >= 0) ? this._bindStack[this._bindStack.length - 1] : null );
+    return ( (this._bindStack.length >= 0) ? this._bindStack[this._bindStack.length - 1] : null );
 };
 
 x3dom.BindableStack.prototype.push = function (bindable) {
-	var top = this.top();
+    var top = this.top();
 
-	if (top === bindable) {
-		return;
-	}
+    if (top === bindable) {
+        return;
+    }
 
-	if (top) {
-		top.deactivate();
-	}
-	
-	this._bindStack.push (bindable);
-	bindable.activate(top);
+    if (top) {
+        top.deactivate();
+    }
+    
+    this._bindStack.push (bindable);
+    bindable.activate(top);
 };
 
 x3dom.BindableStack.prototype.replaceTop = function (bindable) {
-	var top = this.top();
-	
-	if (top === bindable) {
-		return;
-	}
+    var top = this.top();
+    
+    if (top === bindable) {
+        return;
+    }
 
-	if (top) {
-		top.deactivate();
-	
-		this._bindStack[this._bindStack.length - 1] = bindable;
-		bindable.activate(top);
-	}
+    if (top) {
+        top.deactivate();
+    
+        this._bindStack[this._bindStack.length - 1] = bindable;
+        bindable.activate(top);
+    }
 };
 
 x3dom.BindableStack.prototype.pop = function (bindable) {
-	var top;
-	
-	if (bindable) {
-		top = this.top();
-		if (bindable !== top) {
-			return null;
-		} 
-	}
-	
-	top = this._bindStack.pop();
-	
-	if (top) {
-		top.deactivate();
-	}
-	
-	return top;
+    var top;
+    
+    if (bindable) {
+        top = this.top();
+        if (bindable !== top) {
+            return null;
+        } 
+    }
+    
+    top = this._bindStack.pop();
+    
+    if (top) {
+        top.deactivate();
+    }
+    
+    return top;
 };
 
-x3dom.BindableStack.prototype.switchTo = function (target) {	
-	var last = this.getActive();
-	var n = this._bindBag.length;
-	var toBind = 0;
-	var i = 0, lastIndex = -1;
-			
-	if (n <= 1)
-		return;
-		
-	switch (target) 
-	{
-		case 'first':
-			//x3dom.debug.logInfo ('first');
-			toBind = this._bindBag[0];
-			break;
-		case 'last':
-			//x3dom.debug.logInfo ('last');
-			toBind = this._bindBag[n-1];
-			break;
-		default:
-			for (i = 0; i < n; i++) {
-				if (this._bindBag[i] == last) {
-					lastIndex = i;
-					break;
-				}
-			}
-			if (lastIndex >= 0) {
-				i = lastIndex;
-				while (!toBind) {
-					if (target == 'next') // next
-						i = (i < (n-1)) ? (i+1) : 0;
-					else // prev
-						i = (i>0) ? (i-1) : (n-1);
-					if (i == lastIndex)
-						break;					
-					if (this._bindBag[i]._vf.description.length >= 0)
-					  toBind = this._bindBag[i];
-				}
-			}
-			break;
-	}
-	
-	if (toBind)
-		this.replaceTop(toBind);
-	else 
-		x3dom.debug.logWarning ('Cannot switch bindable; no other bindable with description found.');
+x3dom.BindableStack.prototype.switchTo = function (target) {    
+    var last = this.getActive();
+    var n = this._bindBag.length;
+    var toBind = 0;
+    var i = 0, lastIndex = -1;
+            
+    if (n <= 1) {
+        return;
+    }
+        
+    switch (target) 
+    {
+        case 'first':
+            //x3dom.debug.logInfo ('first');
+            toBind = this._bindBag[0];
+            break;
+        case 'last':
+            //x3dom.debug.logInfo ('last');
+            toBind = this._bindBag[n-1];
+            break;
+        default:
+            for (i = 0; i < n; i++) {
+                if (this._bindBag[i] == last) {
+                    lastIndex = i;
+                    break;
+                }
+            }
+            if (lastIndex >= 0) {
+                i = lastIndex;
+                while (!toBind) {
+                    if (target == 'next') {// next
+                        i = (i < (n-1)) ? (i+1) : 0;
+                    } else {// prev
+                        i = (i>0) ? (i-1) : (n-1);
+                    }
+                    if (i == lastIndex) {
+                        break;
+                    }       
+                    if (this._bindBag[i]._vf.description.length >= 0) {
+                      toBind = this._bindBag[i];
+                    }
+                }
+            }
+            break;
+    }
+    
+    if (toBind) {
+        this.replaceTop(toBind);
+    } else {
+        x3dom.debug.logWarning ('Cannot switch bindable; no other bindable with description found.');
+    }
 };
 
 x3dom.BindableStack.prototype.getActive = function () {
-	if (this._bindStack.length === 0) {		
-		if (this._bindBag.length === 0) {
-			x3dom.debug.logInfo ('create new ' + this._defaultType._typeName + 
+    if (this._bindStack.length === 0) {     
+        if (this._bindBag.length === 0) {
+            x3dom.debug.logInfo ('create new ' + this._defaultType._typeName + 
                                  ' for ' + this._type._typeName + '-stack');            
-			var obj = new this._defaultType( { doc: this._doc, autoGen: true } );
-			if (obj) {
-				if (this._defaultRoot) {
-					this._defaultRoot.addChild(obj);
-					obj._nameSpace = this._defaultRoot._nameSpace;
-				}
-				else {
-					x3dom.debug.logError ('stack without defaultRoot');
-				}
-				obj.initDefault();
-				this._bindBag.push(obj);
-			}
-		}
-		else {
-			x3dom.debug.logInfo ('activate first ' + this._defaultType._typeName + 
+            var obj = new this._defaultType( { doc: this._doc, autoGen: true } );
+            if (obj) {
+                if (this._defaultRoot) {
+                    this._defaultRoot.addChild(obj);
+                    obj._nameSpace = this._defaultRoot._nameSpace;
+                }
+                else {
+                    x3dom.debug.logError ('stack without defaultRoot');
+                }
+                obj.initDefault();
+                this._bindBag.push(obj);
+            }
+        }
+        else {
+            x3dom.debug.logInfo ('activate first ' + this._defaultType._typeName + 
                                  ' for ' + this._type._typeName + '-stack');
-		}
-		
-		this._bindStack.push(this._bindBag[0]);
-		this._bindBag[0].activate();		
-	}
-		
-	return this._bindStack[this._bindStack.length - 1];
+        }
+        
+        this._bindStack.push(this._bindBag[0]);
+        this._bindBag[0].activate();        
+    }
+        
+    return this._bindStack[this._bindStack.length - 1];
 };
 
 x3dom.BindableBag = function (doc) {
-	this._stacks = [];
-	
-	this.addType ("X3DViewpointNode", "Viewpoint", "getViewpoint", doc);
-	this.addType ("X3DNavigationInfoNode", "NavigationInfo", "getNavigationInfo", doc);
-	this.addType ("X3DBackgroundNode", "Background", "getBackground", doc);
-	this.addType ("X3DFogNode", "Fog", "getFog", doc);
+    this._stacks = [];
+    
+    this.addType ("X3DViewpointNode", "Viewpoint", "getViewpoint", doc);
+    this.addType ("X3DNavigationInfoNode", "NavigationInfo", "getNavigationInfo", doc);
+    this.addType ("X3DBackgroundNode", "Background", "getBackground", doc);
+    this.addType ("X3DFogNode", "Fog", "getFog", doc);
 };
 
 x3dom.BindableBag.prototype.addType = function(typeName,defaultTypeName,getter,doc) {
-	var type = x3dom.nodeTypes[typeName];
-	var defaultType = x3dom.nodeTypes[defaultTypeName];
-	var stack;
-	
-	if (type && defaultType) {
-		//x3dom.debug.logInfo ('Create new BindableStack for ' + typeName);
-		stack = new x3dom.BindableStack (doc, type, defaultType, getter);
-		this._stacks.push(stack);
-	}
-	else {
-	    x3dom.debug.logWarning('Invalid Bindable type/defaultType:' + typeName + '/' + defaultType);
-	}
+    var type = x3dom.nodeTypes[typeName];
+    var defaultType = x3dom.nodeTypes[defaultTypeName];
+    var stack;
+    
+    if (type && defaultType) {
+        //x3dom.debug.logInfo ('Create new BindableStack for ' + typeName);
+        stack = new x3dom.BindableStack (doc, type, defaultType, getter);
+        this._stacks.push(stack);
+    }
+    else {
+        x3dom.debug.logWarning('Invalid Bindable type/defaultType:' + typeName + '/' + defaultType);
+    }
 };
 
 x3dom.BindableBag.prototype.setRefNode = function (node) {
-	Array.forEach ( this._stacks, function (stack) {
-		stack._defaultRoot = node;
-		node[stack._getter] = function () { return stack.getActive(); };
-	} );
+    Array.forEach ( this._stacks, function (stack) {
+        stack._defaultRoot = node;
+        node[stack._getter] = function () { return stack.getActive(); };
+    } );
 };
 
 x3dom.BindableBag.prototype.addBindable = function(node) {
-	for (var i = 0, n = this._stacks.length; i < n; i++) {
-		if ( x3dom.isa (node, this._stacks[i]._defaultType) ) {
-			x3dom.debug.logInfo ('register bindable ' + node.typeName());
-			this._stacks[i]._bindBag.push(node);
-			return this._stacks[i];
-		}
-	}
-	x3dom.debug.logError (node.typeName() + ' is not a valid bindable');
-	return null;
+    for (var i = 0, n = this._stacks.length; i < n; i++) {
+        if ( x3dom.isa (node, this._stacks[i]._defaultType) ) {
+            x3dom.debug.logInfo ('register bindable ' + node.typeName());
+            this._stacks[i]._bindBag.push(node);
+            return this._stacks[i];
+        }
+    }
+    x3dom.debug.logError (node.typeName() + ' is not a valid bindable');
+    return null;
 };
 
 // NodeNameSpace constructor
 x3dom.NodeNameSpace = function (name, document) {
-	this.name = name;
-	this.doc = document;
-	this.baseURL = "";
-	this.defMap = {};
-	this.parent = null;
-	this.childSpaces = [];
+    this.name = name;
+    this.doc = document;
+    this.baseURL = "";
+    this.defMap = {};
+    this.parent = null;
+    this.childSpaces = [];
 };
 
 x3dom.NodeNameSpace.prototype.addNode = function (node, name) {
-	this.defMap[name] = node;
-	node._nameSpace = this;
+    this.defMap[name] = node;
+    node._nameSpace = this;
 };
 
 x3dom.NodeNameSpace.prototype.removeNode = function (name) {
-	var node = this.defMap.name;
-	delete this.defMap.name;
-	if (node) {
-		node._nameSpace = null;
-	}
+    var node = this.defMap.name;
+    delete this.defMap.name;
+    if (node) {
+        node._nameSpace = null;
+    }
 };
 
 x3dom.NodeNameSpace.prototype.getNamedNode = function (name) {
-	return this.defMap[name];
+    return this.defMap[name];
 };
 
 x3dom.NodeNameSpace.prototype.getNamedElement = function (name) {
-	var node = this.defMap[name];
-	return (node ? node._xmlNode : null);
+    var node = this.defMap[name];
+    return (node ? node._xmlNode : null);
 };
 
 x3dom.NodeNameSpace.prototype.addSpace = function (space) {
-	this.childSpaces.push(space);
-	space.parent = this;
+    this.childSpaces.push(space);
+    space.parent = this;
 };
 
 x3dom.NodeNameSpace.prototype.removeSpace = function (space) {
-	this.childSpaces.push(space);
-	space.parent = null;
+    this.childSpaces.push(space);
+    space.parent = null;
 };
 
 x3dom.NodeNameSpace.prototype.setBaseURL = function (url) {
-	var i = url.lastIndexOf ("/");
-	this.baseURL = (i >= 0) ? url.substr(0,i+1) : "";
-		
-	x3dom.debug.logInfo("setBaseURL: " + this.baseURL);
+    var i = url.lastIndexOf ("/");
+    this.baseURL = (i >= 0) ? url.substr(0,i+1) : "";
+        
+    x3dom.debug.logInfo("setBaseURL: " + this.baseURL);
 };
 
 x3dom.NodeNameSpace.prototype.getURL = function (url) {
@@ -300,33 +305,33 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
 
 // helper to get a style
 x3dom.getStyle = function(oElm, strCssRule) {
-	var strValue;
-	if(window && window.getComputedStyle){
-		//strValue = window.getComputedStyle(oElm).webkitTransform;
-		//strValue = window.getComputedStyle(oElm, "").getPropertyValue(strCssRule);
-		strValue = window.getComputedStyle(oElm, "")[strCssRule];
-	}
-	else if(oElm.currentStyle){
-		strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
-		strValue = oElm.currentStyle[strCssRule];
-	}
-	return strValue;
+    var strValue;
+    if(window && window.getComputedStyle){
+        //strValue = window.getComputedStyle(oElm).webkitTransform;
+        //strValue = window.getComputedStyle(oElm, "").getPropertyValue(strCssRule);
+        strValue = window.getComputedStyle(oElm, "")[strCssRule];
+    }
+    else if(oElm.currentStyle){
+        strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
+        strValue = oElm.currentStyle[strCssRule];
+    }
+    return strValue;
 };
 
 // helper to set an element's attribute
 x3dom.setElementAttribute = function(attrName, newVal)
 {
-	var prevVal = this.getAttribute(attrName);
+    var prevVal = this.getAttribute(attrName);
     this.__setAttribute(attrName, newVal);
-	//newVal = this.getAttribute(attrName);
-	
-	this._x3domNode.updateField(attrName, newVal);
+    //newVal = this.getAttribute(attrName);
+    
+    this._x3domNode.updateField(attrName, newVal);
     this._x3domNode._nameSpace.doc.needRender = true;
-	
-	/* construct and fire an event
+    
+    /* construct and fire an event
     if (newVal != prevVal) {
-		var evt = document.createEvent("MutationEvent");
-     	evt.initMutationEvent(
+        var evt = document.createEvent("MutationEvent");
+        evt.initMutationEvent(
               "DOMAttrModified",
               true,
               false,
@@ -338,36 +343,37 @@ x3dom.setElementAttribute = function(attrName, newVal)
         );
         this.dispatchEvent(evt);
      }
-	*/
+    */
 };
 
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
-    var n, t;	
-	
+    var n, t;   
+    
     if (x3dom.isX3DElement(domNode)) {
-	
-		// return if it is already initialized
-		if (domNode._x3domNode) {
-			x3dom.debug.logWarning ('Tree is already initialized');
-			return;
-		}
-			
-		//active workaground for missing DOMAttrModified support
+    
+        // return if it is already initialized
+        if (domNode._x3domNode) {
+            x3dom.debug.logWarning ('Tree is already initialized');
+            return;
+        }
+            
+        //active workaground for missing DOMAttrModified support
         if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
              (domNode.tagName !== undefined) && (!domNode.__setAttribute) ) {
-        	domNode.__setAttribute = domNode.setAttribute;
+            domNode.__setAttribute = domNode.setAttribute;
             domNode.setAttribute = x3dom.setElementAttribute;
-		}
+        }
         
         // workaround since one cannot find out which handlers are registered
         if ( (domNode.tagName !== undefined) && 
             (!domNode.__addEventListener) && (!domNode.__removeEventListener) ) 
         {
             // helper to track an element's listeners
-        	domNode.__addEventListener = domNode.addEventListener;
+            domNode.__addEventListener = domNode.addEventListener;
             domNode.addEventListener = function(type, func, phase) {
-                if (!this._x3domNode._listeners[type])
+                if (!this._x3domNode._listeners[type]) {
                     this._x3domNode._listeners[type] = [];
+                }
                 this._x3domNode._listeners[type].push(func);
                 
                 x3dom.debug.logInfo('addEventListener for ' + this.tagName + ".on" + type);
@@ -389,17 +395,18 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 this.__removeEventListener(type, func, phase);
             };
         }
-		
+        
         // x3dom.debug.logInfo("=== node=" + domNode.localName);
-	    if (domNode.hasAttribute('USE')) {
-	      n = this.defMap[domNode.getAttribute('USE')];
-	      if (n === null) 
-	        x3dom.debug.logWarning('Could not USE: ' + domNode.getAttribute('USE'));
-	      return n;
-	    }
-	    else {
-	 		// check and create ROUTEs
-	    	if (domNode.localName.toLowerCase() === 'route') {
+        if (domNode.hasAttribute('USE')) {
+            n = this.defMap[domNode.getAttribute('USE')];
+            if (n === null) {
+                x3dom.debug.logWarning('Could not USE: ' + domNode.getAttribute('USE'));
+            }
+            return n;
+        }
+        else {
+            // check and create ROUTEs
+            if (domNode.localName.toLowerCase() === 'route') {
                 var route = domNode;
                 var fromNode = this.defMap[route.getAttribute('fromNode')];
                 var toNode = this.defMap[route.getAttribute('toNode')];
@@ -412,7 +419,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
 //                 TODO: Store the routes of the scene - where should we store them?
 //                 scene._routes = Array.map(sceneRoutes, setupRoute);
-	    		return null;
+                return null;
             }
             
             // find the NodeType for the given dom-node          
@@ -423,40 +430,42 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             else {
                 var ctx = { doc: this.doc, xmlNode: domNode };
                 n = new nodeType(ctx);
-				n._nameSpace = this;
-				
-                // x3dom.debug.logInfo("new node type: " + domNode.localName);
-				
-				// find and store/link _DEF name
-			    if (domNode.hasAttribute('DEF')) {
-			       n._DEF = domNode.getAttribute('DEF');
-				   this.defMap[n._DEF] = n;
-				}
-				else {
-				  if (domNode.hasAttribute('id')) {
-					n._DEF = domNode.getAttribute('id');
-					this.defMap[n._DEF] = n;
-				  }
-				}
-
-				// link both DOM-Node and Scene-graph-Node
-				n._xmlNode = domNode;
-		        domNode._x3domNode = n;
+                n._nameSpace = this;
                 
-				// call children
-				/*
+                // x3dom.debug.logInfo("new node type: " + domNode.localName);
+                
+                // find and store/link _DEF name
+                if (domNode.hasAttribute('DEF')) {
+                   n._DEF = domNode.getAttribute('DEF');
+                   this.defMap[n._DEF] = n;
+                }
+                else {
+                  if (domNode.hasAttribute('id')) {
+                    n._DEF = domNode.getAttribute('id');
+                    this.defMap[n._DEF] = n;
+                  }
+                }
+
+                // link both DOM-Node and Scene-graph-Node
+                n._xmlNode = domNode;
+                domNode._x3domNode = n;
+                
+                // call children
+                /*
                 Array.forEach( Array.map(domNode.childNodes, 
                                 function (n) { return this.setupTree(n); }, this), 
-                        		function (c) { if (c) n.addChild(c); });
+                                function (c) { if (c) n.addChild(c); });
                 */
-				var that = this;
+                var that = this;
                 Array.forEach ( domNode.childNodes, function (childDomNode) { 
-					var c = that.setupTree(childDomNode); 
-					if (c) n.addChild(c, childDomNode.getAttribute("containerField")); 
-				} );
-				
-				// FIXME: remove
-				n.nodeChanged();
+                    var c = that.setupTree(childDomNode); 
+                    if (c) { 
+                        n.addChild(c, childDomNode.getAttribute("containerField")); 
+                    }
+                } );
+                
+                // FIXME: remove
+                n.nodeChanged();
                 return n;
             }
         }
@@ -464,10 +473,10 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     else if (domNode.localName) {
         // be nice to users who use nodes not (yet) known to the system
         x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
-		n = null;
+        n = null;
     }
 
-	return n;
+    return n;
 };
 
 x3dom.MatrixMixer = function(beginTime, endTime) {
@@ -493,14 +502,14 @@ x3dom.MatrixMixer.prototype.calcFraction = function(time) {
 };
 
 x3dom.MatrixMixer.prototype.setBeginMatrix = function(mat) {
- 	this._beginMat.setValues(mat);
-	this._beginInvMat = mat.inverse();
-	this._beginLogMat = x3dom.fields.SFMatrix4f.zeroMatrix();
+    this._beginMat.setValues(mat);
+    this._beginInvMat = mat.inverse();
+    this._beginLogMat = x3dom.fields.SFMatrix4f.zeroMatrix();
 };
 
 x3dom.MatrixMixer.prototype.setEndMatrix = function(mat) {
     this._endMat.setValues(mat);
-	this._endLogMat = mat.mult(this._beginInvMat).log();
+    this._endLogMat = mat.mult(this._beginInvMat).log();
 };
 
 x3dom.MatrixMixer.prototype.mix = function(time) {
@@ -532,14 +541,15 @@ x3dom.MatrixMixer.prototype.mix = function(time) {
 
 /** Utility function for defining a new class.
 
-	@param parent the parent class of the new class
-	@param ctor the constructor of the new class
-	@param methods an object literal containing the methods of the new class
-	@return the constructor function of the new class
+    @param parent the parent class of the new class
+    @param ctor the constructor of the new class
+    @param methods an object literal containing the methods of the new class
+    @return the constructor function of the new class
   */
 function defineClass(parent, ctor, methods) {
+    function inheritance() {}
+
     if (parent) {
-        function inheritance() {}
         inheritance.prototype = parent.prototype;
         ctor.prototype = new inheritance();
         ctor.prototype.constructor = ctor;
@@ -579,81 +589,81 @@ x3dom.registerNodeType(
     "X3DNode", 
     "Core", 
     defineClass(null, function (ctx) {
-		
-		// holds a link to the node name
-		this._DEF = null;
-		
-		// links the nameSpace
-		this._nameSpace = null;
-		
-		// holds all value fields (e.g. SFFloat, MFVec3f, ...)
-		this._vf = {};
-		// holds all child fields ( SFNode and MFNode )
-		this._cf = {};
-		
+        
+        // holds a link to the node name
+        this._DEF = null;
+        
+        // links the nameSpace
+        this._nameSpace = null;
+        
+        // holds all value fields (e.g. SFFloat, MFVec3f, ...)
+        this._vf = {};
+        // holds all child fields ( SFNode and MFNode )
+        this._cf = {};
+        
         this._fieldWatchers = {};
         this._parentNodes = [];
         
         this._listeners = {};
         
-		// FIXME; should be removed and handled by _cf methods
+        // FIXME; should be removed and handled by _cf methods
         this._childNodes = [];
         
         this.addField_SFNode('metadata', x3dom.nodeTypes.X3DMetadataObject);
     },
     {
-		type: function () {
-			return this.constructor;
-		},
-		typeName: function () {
-			return this.constructor._typeName;
-		},
+        type: function () {
+            return this.constructor;
+        },
+        typeName: function () {
+            return this.constructor._typeName;
+        },
         
         addChild: function (node, containerFieldName) {
-			if (node) {
-				var field = null;
-				if (containerFieldName) {
-					field = this._cf[containerFieldName];
-				}
-				else {
-		    		for (var fieldName in this._cf) {
-                		if (this._cf.hasOwnProperty(fieldName)) {
-                    		var testField = this._cf[fieldName];
-                    		if (x3dom.isa(node,testField.type)) {
-								field = testField;
-								break;
-							}
-						}
-					}
-				}
-				if (field && field.addLink(node)) {
+            if (node) {
+                var field = null;
+                if (containerFieldName) {
+                    field = this._cf[containerFieldName];
+                }
+                else {
+                    for (var fieldName in this._cf) {
+                        if (this._cf.hasOwnProperty(fieldName)) {
+                            var testField = this._cf[fieldName];
+                            if (x3dom.isa(node,testField.type)) {
+                                field = testField;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (field && field.addLink(node)) {
                     node._parentNodes.push(this);
                     this._childNodes.push(node);
                     node.parentAdded(this);
-                	return true;
-            	}
-			}
+                    return true;
+                }
+            }
             return false;
         },
         
         removeChild: function (node) {
-			if (node) {
-	        	for (var fieldName in this._cf) {
-                	if (this._cf.hasOwnProperty(fieldName)) {
-                    	var field = this._cf[fieldName];
-                    	if (field.rmLink(node)) {
-                        	for (var i = 0, n = node._parentNodes.length; i < n; i++) {
-                            	if (node._parentNodes[i] === this) {
-                                	node._parentNodes.splice(i,1);
+            if (node) {
+                for (var fieldName in this._cf) {
+                    if (this._cf.hasOwnProperty(fieldName)) {
+                        var field = this._cf[fieldName];
+                        if (field.rmLink(node)) {
+                            for (var i = 0, n = node._parentNodes.length; i < n; i++) {
+                                if (node._parentNodes[i] === this) {
+                                    node._parentNodes.splice(i,1);
                                     node.parentRemoved(this);
-                            	}
-                        	}
-							for (var j = 0, m = this._childNodes.length; j < m; j++) {
-                        		if (this._childNodes[j] === node) {
-                             		this._childNodes.splice(j,1);
-                                	return true;
-								}
-                         	}
+                                }
+                            }
+                            for (var j = 0, m = this._childNodes.length; j < m; j++) {
+                                if (this._childNodes[j] === node) {
+                                    this._childNodes.splice(j,1);
+                                    return true;
+                                }
+                            }
                         }
                     }
                 }
@@ -667,8 +677,8 @@ x3dom.registerNodeType(
         
         parentRemoved: function(parent) {
             // attention: overwritten by concrete classes
-			for (var i=0, n=this._childNodes.length; i<n; i++) {
-				if (this._childNodes[i]) {
+            for (var i=0, n=this._childNodes.length; i<n; i++) {
+                if (this._childNodes[i]) {
                     this._childNodes[i].parentRemoved(this);
                 }
             }
@@ -686,14 +696,14 @@ x3dom.registerNodeType(
         transformMatrix: function (transform) {
             return transform;
         },
-		
-		getVolume: function (min, max, invalidate) 
+        
+        getVolume: function (min, max, invalidate) 
         {
             var valid = false;
-			for (var i=0, n=this._childNodes.length; i<n; i++)
-			{
-				if (this._childNodes[i])
-				{
+            for (var i=0, n=this._childNodes.length; i<n; i++)
+            {
+                if (this._childNodes[i])
+                {
                     var childMin = x3dom.fields.SFVec3f.MAX();
                     var childMax = x3dom.fields.SFVec3f.MIN();
                     
@@ -702,18 +712,18 @@ x3dom.registerNodeType(
                     
                     if (valid)  // values only set by Mesh.BBox()
                     {
-                        if (min.x > childMin.x) min.x = childMin.x;
-                        if (min.y > childMin.y) min.y = childMin.y;
-                        if (min.z > childMin.z) min.z = childMin.z;
+                        if (min.x > childMin.x) { min.x = childMin.x; }
+                        if (min.y > childMin.y) { min.y = childMin.y; }
+                        if (min.z > childMin.z) { min.z = childMin.z; }
                         
-                        if (max.x < childMax.x) max.x = childMax.x;
-                        if (max.y < childMax.y) max.y = childMax.y;
-                        if (max.z < childMax.z) max.z = childMax.z;
+                        if (max.x < childMax.x) { max.x = childMax.x; }
+                        if (max.y < childMax.y) { max.y = childMax.y; }
+                        if (max.z < childMax.z) { max.z = childMax.z; }
                     }
-				}
-			}
+                }
+            }
             return valid;
-		},
+        },
 
         find: function (type) {
             for (var i=0; i<this._childNodes.length; i++) {
@@ -744,26 +754,26 @@ x3dom.registerNodeType(
             return found;
         },
 
-		findParentProperty: function (propertyName, checkDOMNode) {
-			var value = this[propertyName];
-						
-			if (!value && checkDOMNode && this._xmlNode) {
-				value = this._xmlNode[propertyName];
-			}
-			
-			if (!value) {
-				for (var i = 0, n = this._parentNodes.length; i < n; i++) {
-					if ((value = this._parentNodes[i].findParentProperty(propertyName, checkDOMNode ))) {
-						break;
-					}
-				}
-			}
-			
-			return value;
-		},
+        findParentProperty: function (propertyName, checkDOMNode) {
+            var value = this[propertyName];
+                        
+            if (!value && checkDOMNode && this._xmlNode) {
+                value = this._xmlNode[propertyName];
+            }
+            
+            if (!value) {
+                for (var i = 0, n = this._parentNodes.length; i < n; i++) {
+                    if ((value = this._parentNodes[i].findParentProperty(propertyName, checkDOMNode ))) {
+                        break;
+                    }
+                }
+            }
+            
+            return value;
+        },
 
-	    findX3DDoc: function () {
-			return this._nameSpace.doc;
+        findX3DDoc: function () {
+            return this._nameSpace.doc;
         },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
@@ -798,14 +808,14 @@ x3dom.registerNodeType(
         },
 
         // method for handling field updates
-        updateField: function (field, msg) {			
-			var f = this._vf[field];
-			
-			if (f === undefined) {
-				f = {};
-				this._vf[field] = f;
-			}
-			
+        updateField: function (field, msg) {            
+            var f = this._vf[field];
+            
+            if (f === undefined) {
+                f = {};
+                this._vf[field] = f;
+            }
+            
             if (f !== null) {
                 try {
                     this._vf[field].setValueByStr(msg);
@@ -822,7 +832,7 @@ x3dom.registerNodeType(
                             case "string":
                                 this._vf[field] = msg;
                                 break;
-                        };
+                        }
                     }
                     catch (exc2) {
                         x3dom.debug.logError("updateField: setValueByStr() NYI for " + typeof(f));
@@ -835,45 +845,48 @@ x3dom.registerNodeType(
         },
 
         setupRoute: function (fromField, toNode, toField) {
-			var pos;
-			var fieldName;
-			var pre = "set_", post = "_changed";
+            var pos;
+            var fieldName;
+            var pre = "set_", post = "_changed";
             
-			// build correct fromField
-			if (!this._vf[fromField]) {
-				pos = fromField.indexOf(pre);
-				if (pos === 0) {
-					fieldName = fromField.substr(pre.length, fromField.length - 1);
-					if (this._vf[fieldName]) 
-						fromField = fieldName;
-				}
+            // build correct fromField
+            if (!this._vf[fromField]) {
+                pos = fromField.indexOf(pre);
+                if (pos === 0) {
+                    fieldName = fromField.substr(pre.length, fromField.length - 1);
+                    if (this._vf[fieldName]) {
+                        fromField = fieldName;
+                    }
+                } else {
+                    pos = fromField.indexOf(post);
+                    if (pos > 0) {
+                        fieldName = fromField.substr(0, fromField.length - post.length);
+                        if (this._vf[fieldName]) {
+                            fromField = fieldName;
+                        }
+                    }
+                }
+            }
+            
+            // build correct toField
+            if (!toNode._vf[toField]) {
+                pos = toField.indexOf(pre);
+                if (pos === 0) {
+                    fieldName = toField.substr(pre.length, toField.length - 1);
+                    if (toNode._vf[fieldName]) {
+                        toField = fieldName;
+                    }
+                }
                 else {
-					pos = fromField.indexOf(post);
-					if (pos > 0) {
-						fieldName = fromField.substr(0, fromField.length - post.length);
-						if (this._vf[fieldName]) 
-							fromField = fieldName;
-					}
-				}
-			}
-			
-			// build correct toField
-			if (!toNode._vf[toField]) {
-				pos = toField.indexOf(pre);
-				if (pos === 0) {
-					fieldName = toField.substr(pre.length, toField.length - 1);
-					if (toNode._vf[fieldName]) 
-						toField = fieldName;
-				}
-                else {
-					pos = toField.indexOf(post);
-					if (pos > 0) {
-						fieldName = toField.substr(0, toField.length - post.length);
-						if (toNode._vf[fieldName]) 
-							toField = fieldName;
-					}
-				}
-			}
+                    pos = toField.indexOf(post);
+                    if (pos > 0) {
+                        fieldName = toField.substr(0, toField.length - post.length);
+                        if (toNode._vf[fieldName]) {
+                            toField = fieldName;
+                        }
+                    }
+                }
+            }
             
          
             if (! this._fieldWatchers[fromField]) {
@@ -886,8 +899,8 @@ x3dom.registerNodeType(
             );
             
             if (! toNode._fieldWatchers[toField]) {
-               	toNode._fieldWatchers[toField] = [];
-           	}
+                toNode._fieldWatchers[toField] = [];
+            }
             toNode._fieldWatchers[toField].push(
                 function (msg) {
                     // FIXME: THIS DOESN'T WORK FOR NODE (_cf) FIELDS
@@ -902,11 +915,11 @@ x3dom.registerNodeType(
             // to be overwritten by concrete classes
         },
         
-		nodeChanged: function () {
-			// to be overwritten by concrete classes
-		},
+        nodeChanged: function () {
+            // to be overwritten by concrete classes
+        },
         
-		addField_SFInt32: function (ctx, name, n) {
+        addField_SFInt32: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ? 
                 parseInt(ctx.xmlNode.getAttribute(name),10) : n;
         },
@@ -1018,12 +1031,12 @@ x3dom.registerNodeType(
                 new x3dom.fields.MFRotation(def);
         },
         
-		addField_SFNode: function (name, type) {
-			this._cf[name] = new x3dom.fields.SFNode(type);
-		},
-		addField_MFNode: function (name, type) {
-			this._cf[name] = new x3dom.fields.MFNode(type);
-		}
+        addField_SFNode: function (name, type) {
+            this._cf[name] = new x3dom.fields.SFNode(type);
+        },
+        addField_MFNode: function (name, type) {
+            this._cf[name] = new x3dom.fields.MFNode(type);
+        }
     }
 ));
 
@@ -1048,7 +1061,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DMetadataObject,
         function (ctx) {
             x3dom.nodeTypes.MetadataDouble.superClass.call(this, ctx);
-			
+            
             this.addField_MFDouble(ctx, 'value', []);
         }
     )
@@ -1061,7 +1074,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DMetadataObject,
         function (ctx) {
             x3dom.nodeTypes.MetadataFloat.superClass.call(this, ctx);
-			
+            
             this.addField_MFFloat(ctx, 'value', []);
         }
     )
@@ -1074,7 +1087,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DMetadataObject,
         function (ctx) {
             x3dom.nodeTypes.MetadataInteger.superClass.call(this, ctx);
-			
+            
             this.addField_MFInt32(ctx, 'value', []);
         }
     )
@@ -1087,7 +1100,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DMetadataObject,
         function (ctx) {
             x3dom.nodeTypes.MetadataSet.superClass.call(this, ctx);
-			
+            
             this.addField_MFNode('value', x3dom.nodeTypes.X3DMetadataObject);
         }
     )
@@ -1100,7 +1113,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DMetadataObject,
         function (ctx) {
             x3dom.nodeTypes.MetadataString.superClass.call(this, ctx);
-			
+            
             this.addField_MFString(ctx, 'value', []);
         }
     )
@@ -1116,10 +1129,10 @@ x3dom.registerNodeType(
             
             this.addField_SFString(ctx, 'name', "");
             this.addField_SFString(ctx, 'type', "");
-			this.addField_SFString(ctx, 'value', "");
+            this.addField_SFString(ctx, 'value', "");
         },
-		{
-			fieldChanged: function(fieldName) {
+        {
+            fieldChanged: function(fieldName) {
                 var that = this;
                 if (fieldName === 'value') {
                     Array.forEach(this._parentNodes, function (node) {
@@ -1154,7 +1167,7 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### Appearance ### */	
+/* ### Appearance ### */    
 x3dom.registerNodeType(
     "Appearance", 
     "Shape", 
@@ -1163,23 +1176,23 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Appearance.superClass.call(this, ctx);
             
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
-            this.addField_SFNode('texture',  x3dom.nodeTypes.X3DTextureNode);	
+            this.addField_SFNode('texture',  x3dom.nodeTypes.X3DTextureNode);   
             this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
             this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
             
             // shortcut to shader program
             this._shader = null;
-		},
-		{
-			nodeChanged: function() { 		
-				if (!this._cf.material.node) {					
-					this.addChild(x3dom.nodeTypes.Material.defaultNode());
-				}
+        },
+        {
+            nodeChanged: function() {       
+                if (!this._cf.material.node) {                  
+                    this.addChild(x3dom.nodeTypes.Material.defaultNode());
+                }
                 
                 if (this._cf.shaders.nodes.length) {
                     this._shader = this._cf.shaders.nodes[0];
                 }
-        	},
+            },
             
             texTransformMatrix: function() {
                 if (this._cf.textureTransform.node === null) {
@@ -1189,16 +1202,16 @@ x3dom.registerNodeType(
                     return this._cf.textureTransform.node.texTransformMatrix();
                 }
             }
-		}
+        }
     )
 );
 
 x3dom.nodeTypes.Appearance.defaultNode = function() {
-	if (!x3dom.nodeTypes.Appearance._defaultNode) {
-		x3dom.nodeTypes.Appearance._defaultNode = new x3dom.nodeTypes.Appearance();
+    if (!x3dom.nodeTypes.Appearance._defaultNode) {
+        x3dom.nodeTypes.Appearance._defaultNode = new x3dom.nodeTypes.Appearance();
         x3dom.nodeTypes.Appearance._defaultNode.nodeChanged();
-	}
-	return x3dom.nodeTypes.Appearance._defaultNode;
+    }
+    return x3dom.nodeTypes.Appearance._defaultNode;
 };
 
 /* ### X3DAppearanceChildNode ### */
@@ -1242,11 +1255,11 @@ x3dom.registerNodeType(
 );
 
 x3dom.nodeTypes.Material.defaultNode = function() {
-	if (!x3dom.nodeTypes.Material._defaultNode) {
-		x3dom.nodeTypes.Material._defaultNode = new x3dom.nodeTypes.Material();
+    if (!x3dom.nodeTypes.Material._defaultNode) {
+        x3dom.nodeTypes.Material._defaultNode = new x3dom.nodeTypes.Material();
         x3dom.nodeTypes.Material._defaultNode.nodeChanged();
-	}
-	return x3dom.nodeTypes.Material._defaultNode;
+    }
+    return x3dom.nodeTypes.Material._defaultNode;
 };
 
 /* ### X3DTextureTransformNode ### */
@@ -1267,8 +1280,8 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DTextureTransformNode,
         function (ctx) {
             x3dom.nodeTypes.TextureTransform.superClass.call(this, ctx);
-			
-			this.addField_SFVec2f(ctx, 'center', 0, 0);
+            
+            this.addField_SFVec2f(ctx, 'center', 0, 0);
             this.addField_SFFloat(ctx, 'rotation', 0);
             this.addField_SFVec2f(ctx, 'scale', 1, 1);
             this.addField_SFVec2f(ctx, 'translation', 0, 0);
@@ -1286,7 +1299,7 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-	            //Tc' = -C * S * R * C * T * Tc
+                //Tc' = -C * S * R * C * T * Tc
                 var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
                 var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
                 var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
@@ -1338,29 +1351,29 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTextureNode.superClass.call(this, ctx);
             
-			this.addField_SFInt32(ctx, 'origChannelCount', 0); // 0 means the system should figure out the count
+            this.addField_SFInt32(ctx, 'origChannelCount', 0); // 0 means the system should figure out the count
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
-			this.addField_SFBool(ctx, 'scale', false);
-			//this.addField_SFString(ctx, 'scale', "NONE");
+            this.addField_SFBool(ctx, 'scale', false);
+            //this.addField_SFString(ctx, 'scale', "NONE");
             
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
         },
         {
-			invalidateGLObject: function ()
-			{
-				  Array.forEach(this._parentNodes, function (app) {
+            invalidateGLObject: function ()
+            {
+                  Array.forEach(this._parentNodes, function (app) {
                         Array.forEach(app._parentNodes, function (shape) {
                             shape._dirty.texture = true;
                         });
                     });
 
-				this._nameSpace.doc.needRender = true;
-			},
-			
+                this._nameSpace.doc.needRender = true;
+            },
+            
             parentAdded: function(parent)
             {
                 Array.forEach(parent._parentNodes, function (shape) {
@@ -1397,7 +1410,7 @@ x3dom.registerNodeType(
                     return this;
                 }
                 return null;
-        	},
+            },
             
             size: function() {
                 return 1;
@@ -1422,7 +1435,7 @@ x3dom.registerNodeType(
                     return this._cf.texture.nodes[pos];
                 }
                 return null;
-        	},
+            },
             
             size: function() {
                 return this._cf.texture.nodes.length;
@@ -1665,7 +1678,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.Texture,
         function (ctx) {
             x3dom.nodeTypes.MovieTexture.superClass.call(this, ctx);
-			
+            
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             // TODO; implement startTime, stopTime,...
@@ -1830,7 +1843,7 @@ x3dom.registerNodeType(
             this._dirty = {
                 // TODO; cp. Shape, allow for dynamic texture updates in gfx
             };
-			
+            
         },
         {
             nodeChanged: function()
@@ -1840,54 +1853,60 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
             },
-			
-			getDiffuseMap: function() 
-			{
-				if(this._cf.diffuseTexture.node)
-					return this._cf.diffuseTexture.node._cf.texture.node;
-				else
-					return null;
-			},
-			
-			getNormalMap: function() 
-			{
-				if(this._cf.normalTexture.node)
-					return this._cf.normalTexture.node._cf.texture.node;
-				else
-					return null;
-			},
-			
-			getAmbientMap: function() 
-			{
-				if(this._cf.ambientTexture.node)
-					return this._cf.ambientTexture.node._cf.texture.node;
-				else
-					return null;
-			},
-			
-			getSpecularMap: function() 
-			{
-				if(this._cf.specularTexture.node)
-					return this._cf.specularTexture.node._cf.texture.node;
-				else
-					return null;
-			},
-			
-			getShininessMap: function() 
-			{
-				if(this._cf.shininessTexture.node)
-					return this._cf.shininessTexture.node._cf.texture.node;
-				else
-					return null;
-			},
-			
-			getAlphaMap: function() 
-			{
-				if(this._cf.alphaTexture.node)
-					return this._cf.alphaTexture.node._cf.texture.node;
-				else
-					return null;
-			}
+            
+            getDiffuseMap: function() 
+            {
+                if(this._cf.diffuseTexture.node) {
+                    return this._cf.diffuseTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
+            
+            getNormalMap: function() 
+            {
+                if(this._cf.normalTexture.node) {
+                    return this._cf.normalTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
+            
+            getAmbientMap: function() 
+            {
+                if(this._cf.ambientTexture.node) {
+                    return this._cf.ambientTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
+            
+            getSpecularMap: function() 
+            {
+                if(this._cf.specularTexture.node) {
+                    return this._cf.specularTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
+            
+            getShininessMap: function() 
+            {
+                if(this._cf.shininessTexture.node) {
+                    return this._cf.shininessTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
+            
+            getAlphaMap: function() 
+            {
+                if(this._cf.alphaTexture.node) {
+                    return this._cf.alphaTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            }
         }
     )
 );
@@ -1949,7 +1968,7 @@ x3dom.registerNodeType(
                 }
             },
             
-			fieldChanged: function(fieldName)
+            fieldChanged: function(fieldName)
             {
                 var i, n = this._cf.fields.nodes.length;
                 
@@ -1976,7 +1995,7 @@ x3dom.registerNodeType(
                                     case "string":
                                         this._vf[field] = msg;
                                         break;
-                                };
+                                }
                             }
                             catch (exc2) {
                                 x3dom.debug.logError("setValueByStr() NYI for " + typeof(this._vf[field]));
@@ -2037,9 +2056,9 @@ x3dom.Mesh = function(parent)
 {
     this._parent = parent;
     
-	this._min = new x3dom.fields.SFVec3f(0,0,0);
-	this._max = new x3dom.fields.SFVec3f(0,0,0);
-	this._invalidate = true;
+    this._min = new x3dom.fields.SFVec3f(0,0,0);
+    this._max = new x3dom.fields.SFVec3f(0,0,0);
+    this._invalidate = true;
     this._numFaces = 0;
     this._numCoords = 0;
     
@@ -2087,59 +2106,59 @@ x3dom.Mesh.prototype.setMeshData = function(positions, normals, texCoords, color
 
 x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
 {
-	if (this._invalidate === true && invalidate === true)	//need both?
-	{
-		var coords = this._positions[0];
-		var n = coords.length;
-		
-		if (n > 3)
-		{
-			this._min = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
-			this._max = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
-		}
-		else
-		{
-			this._min = new x3dom.fields.SFVec3f(0,0,0);
-			this._max = new x3dom.fields.SFVec3f(0,0,0);
-		}
-		
-		for (var i=3; i<n; i+=3)
-		{
-			if (this._min.x > coords[i+0]) { this._min.x = coords[i+0]; }
-			if (this._min.y > coords[i+1]) { this._min.y = coords[i+1]; }
-			if (this._min.z > coords[i+2]) { this._min.z = coords[i+2]; }
-			
-			if (this._max.x < coords[i+0]) { this._max.x = coords[i+0]; }
-			if (this._max.y < coords[i+1]) { this._max.y = coords[i+1]; }
-			if (this._max.z < coords[i+2]) { this._max.z = coords[i+2]; }
-		}
-		
-		this._invalidate = false;
-	}
-	
+    if (this._invalidate === true && invalidate === true)   //need both?
+    {
+        var coords = this._positions[0];
+        var n = coords.length;
+        
+        if (n > 3)
+        {
+            this._min = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
+            this._max = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
+        }
+        else
+        {
+            this._min = new x3dom.fields.SFVec3f(0,0,0);
+            this._max = new x3dom.fields.SFVec3f(0,0,0);
+        }
+        
+        for (var i=3; i<n; i+=3)
+        {
+            if (this._min.x > coords[i+0]) { this._min.x = coords[i+0]; }
+            if (this._min.y > coords[i+1]) { this._min.y = coords[i+1]; }
+            if (this._min.z > coords[i+2]) { this._min.z = coords[i+2]; }
+            
+            if (this._max.x < coords[i+0]) { this._max.x = coords[i+0]; }
+            if (this._max.y < coords[i+1]) { this._max.y = coords[i+1]; }
+            if (this._max.z < coords[i+2]) { this._max.z = coords[i+2]; }
+        }
+        
+        this._invalidate = false;
+    }
+    
     min.setValues(this._min);
     max.setValues(this._max);
 };
 
 x3dom.Mesh.prototype.getCenter = function() 
 {
-	var min = new x3dom.fields.SFVec3f(0,0,0);
-	var max = new x3dom.fields.SFVec3f(0,0,0);
-	
-	this.getBBox(min, max, true);
-	
-	var center = min.add(max).multiply(0.5);
-	//x3dom.debug.logInfo("getCenter: " + min + " | " + max + " --> " + center);
-	
-	return center;
+    var min = new x3dom.fields.SFVec3f(0,0,0);
+    var max = new x3dom.fields.SFVec3f(0,0,0);
+    
+    this.getBBox(min, max, true);
+    
+    var center = min.add(max).multiply(0.5);
+    //x3dom.debug.logInfo("getCenter: " + min + " | " + max + " --> " + center);
+    
+    return center;
 };
 
 x3dom.Mesh.prototype.doIntersect = function(line)
 {
-	var min = new x3dom.fields.SFVec3f(0,0,0);
-	var max = new x3dom.fields.SFVec3f(0,0,0);
-	
-	this.getBBox(min, max, true);
+    var min = new x3dom.fields.SFVec3f(0,0,0);
+    var max = new x3dom.fields.SFVec3f(0,0,0);
+    
+    this.getBBox(min, max, true);
     
     var isect = line.intersect(min, max);
     
@@ -2161,11 +2180,11 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
 {
     var i = 0, j = 0, num = 0;
     var multInd = (this._multiIndIndices !== undefined && this._multiIndIndices.length);
-	var coords = this._positions[0];
-	var idxs = multInd ? this._multiIndIndices : this._indices[0];
-	
-	var vertNormals = [];
-	var vertFaceNormals = [];
+    var coords = this._positions[0];
+    var idxs = multInd ? this._multiIndIndices : this._indices[0];
+    
+    var vertNormals = [];
+    var vertFaceNormals = [];
 
     var a, b, n = null;
     
@@ -2173,14 +2192,14 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
     num = (this._posSize !== undefined && this._posSize > coords.length) ? 
            this._posSize / 3 : coords.length / 3;
     num = 3 * ((num - Math.floor(num) > 0) ? Math.floor(num + 1) : num);
-	
-	for (i = 0; i < num; ++i) {
-		vertFaceNormals[i] = [];
+    
+    for (i = 0; i < num; ++i) {
+        vertFaceNormals[i] = [];
     }
     
     num = idxs.length;
 
-	for (i = 0; i < num; i += 3) {
+    for (i = 0; i < num; i += 3) {
         if (!multInd) {
             a = new x3dom.fields.SFVec3f(
                     coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
@@ -2202,19 +2221,19 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
                         coords[(i+2)*3], coords[(i+2)*3+1], coords[(i+2)*3+2]));
         }
         
-		n = a.cross(b).normalize();
+        n = a.cross(b).normalize();
         
         if (creaseAngle <= x3dom.fields.Eps) {
             vertNormals[i*3  ] = vertNormals[(i+1)*3  ] = vertNormals[(i+2)*3  ] = n.x;
             vertNormals[i*3+1] = vertNormals[(i+1)*3+1] = vertNormals[(i+2)*3+1] = n.y;
             vertNormals[i*3+2] = vertNormals[(i+1)*3+2] = vertNormals[(i+2)*3+2] = n.z;
-		}
-		else {
+        }
+        else {
             vertFaceNormals[idxs[i  ]].push(n);
             vertFaceNormals[idxs[i+1]].push(n);
             vertFaceNormals[idxs[i+2]].push(n);
         }
-	}
+    }
     
     if (creaseAngle > x3dom.fields.Eps) 
     {
@@ -2245,15 +2264,16 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
     if (multInd) {
         this._multiIndIndices = [];
     }
-	
-	this._normals[0] = vertNormals;
+    
+    this._normals[0] = vertNormals;
 };
 
 x3dom.Mesh.prototype.splitMesh = function()
 {
     var MAX = 65535;
-    if (this._positions[0].length / 3 <= MAX)
+    if (this._positions[0].length / 3 <= MAX) {
         return;
+    }
     
     var positions = this._positions[0];
     var normals = this._normals[0];
@@ -2272,8 +2292,11 @@ x3dom.Mesh.prototype.splitMesh = function()
         
         var k = ((indices.length - ((i + 1) * MAX) < 0) ? false : true);
         
-        if (k) this._indices[i] = indices.slice(i * MAX, (i + 1) * MAX);
-        else   this._indices[i] = indices.slice(i * MAX);
+        if (k) {
+            this._indices[i] = indices.slice(i * MAX, (i + 1) * MAX);
+        } else { 
+            this._indices[i] = indices.slice(i * MAX);
+        }
         
         if (i) {
             var m = i * MAX;
@@ -2282,22 +2305,34 @@ x3dom.Mesh.prototype.splitMesh = function()
             }
         }
         
-        if (k) this._positions[i] = positions.slice(i * MAX * 3, 3 * (i + 1) * MAX);
-        else   this._positions[i] = positions.slice(i * MAX * 3);
+        if (k) { 
+            this._positions[i] = positions.slice(i * MAX * 3, 3 * (i + 1) * MAX);
+        } else { 
+            this._positions[i] = positions.slice(i * MAX * 3);
+        }
         
         if (normals.length) {
-            if (k) this._normals[i] = normals.slice(i * MAX * 3, 3 * (i + 1) * MAX);
-            else   this._normals[i] = normals.slice(i * MAX * 3);
+            if (k) { 
+                this._normals[i] = normals.slice(i * MAX * 3, 3 * (i + 1) * MAX);
+            } else { 
+                this._normals[i] = normals.slice(i * MAX * 3);
+            }
         }
         if (texCoords.length) {
-            if (k) this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents, 
+            if (k) { 
+                this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents, 
                                                         this._numTexComponents * (i + 1) * MAX);
-            else   this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents);
+            } else {
+                this._texCoords[i] = texCoords.slice(i * MAX * this._numTexComponents);
+            }
         }
         if (colors.length) {
-            if (k) this._colors[i] = colors.slice(i * MAX * this._numColComponents, 
+            if (k) { 
+                this._colors[i] = colors.slice(i * MAX * this._numColComponents, 
                                                   this._numColComponents * (i + 1) * MAX);
-            else   this._colors[i] = colors.slice(i * MAX * this._numColComponents);
+            } else { 
+                this._colors[i] = colors.slice(i * MAX * this._numColComponents);
+            }
         }
     }
     while (positions.length > ++i * MAX * 3);
@@ -2309,7 +2344,7 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
     
     // TODO; impl. all modes that aren't handled in shader!
     // FIXME; WebKit requires valid texCoords for texturing
-	if (mode.toLowerCase() === "sphere-local")
+    if (mode.toLowerCase() === "sphere-local")
     {
         for (var i=0, j=0, n=this._normals[0].length; i<n; i+=3)
         {
@@ -2385,22 +2420,22 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DGeometryNode.superClass.call(this, ctx);
-			
-			this.addField_SFBool(ctx, 'solid', true);
+            
+            this.addField_SFBool(ctx, 'solid', true);
             this.addField_SFBool(ctx, 'ccw', true);
-			
-			this._mesh = new x3dom.Mesh(this);
+            
+            this._mesh = new x3dom.Mesh(this);
             this._pickable = true;
         },
-		{
-			getVolume: function(min, max, invalidate) {
-				this._mesh.getBBox(min, max, invalidate);
+        {
+            getVolume: function(min, max, invalidate) {
+                this._mesh.getBBox(min, max, invalidate);
                 return true;
-			},
-			
-			getCenter: function() {
-				return this._mesh.getCenter();
-			},
+            },
+            
+            getCenter: function() {
+                return this._mesh.getCenter();
+            },
             
             doIntersect: function(line) {
                 if (this._pickable) {
@@ -2410,7 +2445,7 @@ x3dom.registerNodeType(
                     return false;
                 }
             }
-		}
+        }
     )
 );
 
@@ -2421,13 +2456,13 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Mesh.superClass.call(this, ctx);
-			
-			this.addField_SFString(ctx, 'primType', "triangle");
+            
+            this.addField_SFString(ctx, 'primType', "triangle");
             this.addField_MFInt32(ctx, 'index', []);
             
             this.addField_MFNode('vertexAttributes', x3dom.nodeTypes.X3DVertexAttributeNode);
-			
-			this._mesh = new x3dom.Mesh(this);
+            
+            this._mesh = new x3dom.Mesh(this);
         },
         {
             nodeChanged: function()
@@ -2455,13 +2490,11 @@ x3dom.registerNodeType(
                             this._mesh._colors[0] = this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
                             break;
                         default:
-                        {
                             this._mesh._dynamicFields[name] = {};
                             this._mesh._dynamicFields[name].numComponents =
                                        this._cf.vertexAttributes.nodes[i]._vf.numComponents;
                             this._mesh._dynamicFields[name].value =
                                        this._cf.vertexAttributes.nodes[i]._vf.value.toGL();
-                        }
                         break;
                     }
                 }
@@ -2497,7 +2530,7 @@ x3dom.registerNodeType(
             }
             
             sx /= 2; sy /= 2; sz /= 2;
-			
+            
             this._mesh._positions[0] = [
                 -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //hinten 0,0,-1
                 -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //vorne 0,0,1
@@ -2506,7 +2539,7 @@ x3dom.registerNodeType(
                 -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //oben 0,1,0
                 -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //unten 0,-1,0
             ];
-			this._mesh._normals[0] = [
+            this._mesh._normals[0] = [
                 0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
                 0,0,1,  0,0,1,   0,0,1,   0,0,1,
                 -1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
@@ -2514,14 +2547,14 @@ x3dom.registerNodeType(
                 0,1,0,  0,1,0,   0,1,0,   0,1,0,
                 0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0
             ];
-			this._mesh._texCoords[0] = [
-				1,0, 1,1, 0,1, 0,0, 
-				0,0, 0,1, 1,1, 1,0, 
-				0,0, 1,0, 1,1, 0,1, 
-				1,0, 0,0, 0,1, 1,1, 
-				0,1, 0,0, 1,0, 1,1, 
-				0,0, 0,1, 1,1, 1,0
-			];
+            this._mesh._texCoords[0] = [
+                1,0, 1,1, 0,1, 0,0, 
+                0,0, 0,1, 1,1, 1,0, 
+                0,0, 1,0, 1,1, 0,1, 
+                1,0, 0,0, 0,1, 1,1, 
+                0,1, 0,0, 1,0, 1,1, 
+                0,0, 0,1, 1,1, 1,0
+            ];
             this._mesh._indices[0] = [
                 0,1,2, 2,3,0,
                 4,7,5, 5,7,6,
@@ -2530,7 +2563,7 @@ x3dom.registerNodeType(
                 16,17,18, 18,19,16,
                 20,22,21, 22,20,23
             ];
-			this._mesh._invalidate = true;
+            this._mesh._invalidate = true;
             this._mesh._numFaces = 12;
             this._mesh._numCoords = 24;
         }
@@ -2623,7 +2656,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Torus.superClass.call(this, ctx);
     
             var innerRadius = 0.5, outerRadius = 1.0;
-			
+            
             if (ctx.xmlNode.hasAttribute('innerRadius')) {
                 innerRadius = +ctx.xmlNode.getAttribute('innerRadius');
             }
@@ -2631,48 +2664,48 @@ x3dom.registerNodeType(
                 outerRadius = +ctx.xmlNode.getAttribute('outerRadius');
             }
             
-			var rings = 24, sides = 24;
-			var ringDelta = 2.0 * Math.PI / rings;
-			var sideDelta = 2.0 * Math.PI / sides;
-			var p = [], n = [], t = [], i = [];
+            var rings = 24, sides = 24;
+            var ringDelta = 2.0 * Math.PI / rings;
+            var sideDelta = 2.0 * Math.PI / sides;
+            var p = [], n = [], t = [], i = [];
             var a, b, theta, phi;
 
-			for (a=0, theta=0; a <= rings; a++, theta+=ringDelta) 
-			{
-				var cosTheta = Math.cos(theta);
-				var sinTheta = Math.sin(theta);
+            for (a=0, theta=0; a <= rings; a++, theta+=ringDelta) 
+            {
+                var cosTheta = Math.cos(theta);
+                var sinTheta = Math.sin(theta);
 
-				for (b=0, phi=0; b<=sides; b++, phi+=sideDelta) 
-				{
-					var cosPhi = Math.cos(phi);
-					var sinPhi = Math.sin(phi);
-					var dist = outerRadius + innerRadius * cosPhi;
+                for (b=0, phi=0; b<=sides; b++, phi+=sideDelta) 
+                {
+                    var cosPhi = Math.cos(phi);
+                    var sinPhi = Math.sin(phi);
+                    var dist = outerRadius + innerRadius * cosPhi;
 
-					n.push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
-					p.push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
-					t.push(-a / rings, b / sides);
-				}
-			}
-			
-			for (a=0; a<sides; a++) 
-			{
-				for (b=0; b<rings; b++)
-				{
-					i.push(b * (sides+1) + a);
-					i.push(b * (sides+1) + a + 1);
-					i.push((b + 1) * (sides+1) + a);
-					
-					i.push(b * (sides+1) + a + 1);
-					i.push((b + 1) * (sides+1) + a + 1);
-					i.push((b + 1) * (sides+1) + a);
-				}
-			}
-			
+                    n.push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
+                    p.push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
+                    t.push(-a / rings, b / sides);
+                }
+            }
+            
+            for (a=0; a<sides; a++) 
+            {
+                for (b=0; b<rings; b++)
+                {
+                    i.push(b * (sides+1) + a);
+                    i.push(b * (sides+1) + a + 1);
+                    i.push((b + 1) * (sides+1) + a);
+                    
+                    i.push(b * (sides+1) + a + 1);
+                    i.push((b + 1) * (sides+1) + a + 1);
+                    i.push((b + 1) * (sides+1) + a);
+                }
+            }
+            
             this._mesh._positions[0] = p;
-			this._mesh._normals[0] = n;
-			this._mesh._texCoords[0] = t;
+            this._mesh._normals[0] = n;
+            this._mesh._texCoords[0] = t;
             this._mesh._indices[0] = i;
-			this._mesh._invalidate = true;
+            this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
@@ -2689,81 +2722,83 @@ x3dom.registerNodeType(
             
             this.addField_SFFloat(ctx, 'bottomRadius', 1.0);
             this.addField_SFFloat(ctx, 'height', 2.0);
-			this.addField_SFBool(ctx, 'bottom', true);
-			this.addField_SFBool(ctx, 'side', true);
+            this.addField_SFBool(ctx, 'bottom', true);
+            this.addField_SFBool(ctx, 'side', true);
             
             var bottomRadius = this._vf.bottomRadius, height = this._vf.height;
             
             var beta, x, z;
-			var sides = 32;
-			var delta = 2.0 * Math.PI / sides;
-			var incl = bottomRadius / height;
-			var nlen = 1.0 / Math.sqrt(1.0 + incl * incl);
-			var p = [], n = [], t = [], i = [];
-			
+            var sides = 32;
+            var delta = 2.0 * Math.PI / sides;
+            var incl = bottomRadius / height;
+            var nlen = 1.0 / Math.sqrt(1.0 + incl * incl);
+            var p = [], n = [], t = [], i = [];
+
+            var j = 0;
+            
             if (this._vf.side)
             {
-			  for (var j=0, k=0; j<=sides; j++)
-			  {
-				beta = j * delta;
-				x = Math.sin(beta);
-				z = -Math.cos(beta);         
+              for (j=0, k=0; j<=sides; j++)
+              {
+                beta = j * delta;
+                x = Math.sin(beta);
+                z = -Math.cos(beta);         
 
-				p.push(0, height/2, 0);
-				n.push(x/nlen, incl/nlen, z/nlen);
-				t.push(1.0 - j / sides, 1);
+                p.push(0, height/2, 0);
+                n.push(x/nlen, incl/nlen, z/nlen);
+                t.push(1.0 - j / sides, 1);
 
-				p.push(x * bottomRadius, -height/2, z * bottomRadius);
-				n.push(x/nlen, incl/nlen, z/nlen);
-				t.push(1.0 - j / sides, 0);
-				
-				if (j > 0)
-				{
-					i.push(k + 0);
-					i.push(k + 2);
-					i.push(k + 1);
-					
-					i.push(k + 1);
-					i.push(k + 2);
-					i.push(k + 3);
-					
-					k += 2;
-				}
-			  }
-			}
+                p.push(x * bottomRadius, -height/2, z * bottomRadius);
+                n.push(x/nlen, incl/nlen, z/nlen);
+                t.push(1.0 - j / sides, 0);
+                
+                if (j > 0)
+                {
+                    i.push(k + 0);
+                    i.push(k + 2);
+                    i.push(k + 1);
+                    
+                    i.push(k + 1);
+                    i.push(k + 2);
+                    i.push(k + 3);
+                    
+                    k += 2;
+                }
+              }
+            }
             
-			if (this._vf.bottom && bottomRadius > 0)
-			{
-				var base = p.length / 3;
-				
-				for (j=sides-1; j>=0; j--)
-				{
-					beta = j * delta;
-					x = bottomRadius * Math.sin(beta);
-					z = -bottomRadius * Math.cos(beta); 
+            if (this._vf.bottom && bottomRadius > 0)
+            {
+                var base = p.length / 3;
+                
+                for (j=sides-1; j>=0; j--)
+                {
+                    beta = j * delta;
+                    x = bottomRadius * Math.sin(beta);
+                    z = -bottomRadius * Math.cos(beta); 
 
-					p.push(x, -height/2, z);
-					n.push(0, -1, 0);
-					t.push(x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5);
-				}
-				
-				var h = base + 1;
-				
-				for (j=2; j<sides; j++) 
-				{
-					i.push(h);
-					i.push(base);
-					
-					h = base + j;
-					i.push(h);
-				}
-			}
-			
-			this._mesh._positions[0] = p;
-			this._mesh._normals[0] = n;
-			this._mesh._texCoords[0] = t;
+                    p.push(x, -height/2, z);
+                    n.push(0, -1, 0);
+                    t.push(x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5);
+                }
+                
+                var h = base + 1;
+                
+                for (j=2; j<sides; j++) 
+                {
+                    i.push(h);
+                    i.push(base);
+                    
+                    h = base + j;
+                    i.push(h);
+                }
+            }
+            
+            this._mesh._positions[0] = p;
+            this._mesh._normals[0] = n;
+            this._mesh._texCoords[0] = t;
             this._mesh._indices[0] = i;
-			this._mesh._invalidate = true;
+            this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
@@ -2782,110 +2817,111 @@ x3dom.registerNodeType(
             
             this.addField_SFFloat(ctx, 'radius', 1.0);
             this.addField_SFFloat(ctx, 'height', 2.0);
-			this.addField_SFBool(ctx, 'bottom', true);
-			this.addField_SFBool(ctx, 'top', true);
-			this.addField_SFBool(ctx, 'side', true);
+            this.addField_SFBool(ctx, 'bottom', true);
+            this.addField_SFBool(ctx, 'top', true);
+            this.addField_SFBool(ctx, 'side', true);
             
             var radius = this._vf.radius, height = this._vf.height;
             
             var beta, x, z;
-			var sides = 24;
-			var delta = 2.0 * Math.PI / sides;
-			var p = [], n = [], t = [], i = [];
-			
+            var sides = 24;
+            var delta = 2.0 * Math.PI / sides;
+            var p = [], n = [], t = [], i = [];
+            
+            var j = 0;
             if (this._vf.side)
             {
-			  for (var j=0, k=0; j<=sides; j++)
-			  {
-				beta = j * delta;
-				x = Math.sin(beta);
-				z = -Math.cos(beta);         
+              for (j=0, k=0; j<=sides; j++)
+              {
+                beta = j * delta;
+                x = Math.sin(beta);
+                z = -Math.cos(beta);         
 
-				p.push(x * radius, -height/2, z * radius);
-				n.push(x, 0, z);
-				t.push(1.0 - j / sides, 0);
+                p.push(x * radius, -height/2, z * radius);
+                n.push(x, 0, z);
+                t.push(1.0 - j / sides, 0);
 
-				p.push(x * radius, height/2, z * radius);
-				n.push(x, 0, z);
-				t.push(1.0 - j / sides, 1);
-				
-				if (j > 0)
-				{
-					i.push(k + 0);
-					i.push(k + 1);
-					i.push(k + 2);
-					
-					i.push(k + 2);
-					i.push(k + 1);
-					i.push(k + 3);
-					
-					k += 2;
-				}
-			  }
+                p.push(x * radius, height/2, z * radius);
+                n.push(x, 0, z);
+                t.push(1.0 - j / sides, 1);
+                
+                if (j > 0)
+                {
+                    i.push(k + 0);
+                    i.push(k + 1);
+                    i.push(k + 2);
+                    
+                    i.push(k + 2);
+                    i.push(k + 1);
+                    i.push(k + 3);
+                    
+                    k += 2;
+                }
+              }
             }
-			
-			if (radius > 0)
-			{
-				var h, base = p.length / 3;
-				
+            
+            if (radius > 0)
+            {
+                var h, base = p.length / 3;
+                
                 if (this._vf.top)
                 {
-				  for (j=sides-1; j>=0; j--)
-				  {
-					beta = j * delta;
-					x = radius * Math.sin(beta);
-					z = -radius * Math.cos(beta);  
+                  for (j=sides-1; j>=0; j--)
+                  {
+                    beta = j * delta;
+                    x = radius * Math.sin(beta);
+                    z = -radius * Math.cos(beta);  
 
-					p.push(x, height/2, z);
-					n.push(0, 1, 0);
-					t.push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
-				  }
-				
-				  h = base + 1;
-				
-				  for (j=2; j<sides; j++) 
-				  {
-					i.push(base);
-					i.push(h);
-					
-					h = base + j;
-					i.push(h);
-				  }
-				
-				  base = p.length / 3;
+                    p.push(x, height/2, z);
+                    n.push(0, 1, 0);
+                    t.push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
+                  }
+                
+                  h = base + 1;
+                
+                  for (j=2; j<sides; j++) 
+                  {
+                    i.push(base);
+                    i.push(h);
+                    
+                    h = base + j;
+                    i.push(h);
+                  }
+                
+                  base = p.length / 3;
                 }
-				
+                
                 if (this._vf.bottom)
                 {
-				  for (j=sides-1; j>=0; j--)
-				  {
-					beta = j * delta;
-					x = radius * Math.sin(beta);
-					z = -radius * Math.cos(beta); 
+                  for (j=sides-1; j>=0; j--)
+                  {
+                    beta = j * delta;
+                    x = radius * Math.sin(beta);
+                    z = -radius * Math.cos(beta); 
 
-					p.push(x, -height/2, z);
-					n.push(0, -1, 0);
-					t.push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
-				  }
-				
-				  h = base + 1;
-				
-				  for (j=2; j<sides; j++) 
-				  {
-					i.push(h);
-					i.push(base);
-					
-					h = base + j;
-					i.push(h);
-				  }
+                    p.push(x, -height/2, z);
+                    n.push(0, -1, 0);
+                    t.push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
+                  }
+                
+                  h = base + 1;
+                
+                  for (j=2; j<sides; j++) 
+                  {
+                    i.push(h);
+                    i.push(base);
+                    
+                    h = base + j;
+                    i.push(h);
+                  }
                 }
-			}
-			
-			this._mesh._positions[0] = p;
-			this._mesh._normals[0] = n;
-			this._mesh._texCoords[0] = t;
+            }
+            
+            this._mesh._positions[0] = p;
+            this._mesh._normals[0] = n;
+            this._mesh._texCoords[0] = t;
             this._mesh._indices[0] = i;
-			this._mesh._invalidate = true;
+            this._mesh._invalidate = true;
             this._mesh._numFaces = this._mesh._indices[0].length / 3;
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
@@ -2926,8 +2962,9 @@ x3dom.registerNodeType(
                     }
                 }
                 else {
-                    for (var i=0, n=positions.length; i<n; i++)
+                    for (var i=0, n=positions.length; i<n; i++) {
                         colors.push(1.0);
+                    }
                 }
                 
                 this._mesh._numColComponents = numColComponents;
@@ -2959,9 +2996,9 @@ x3dom.registerNodeType(
                     // TODO; optimize (is there a memcopy?)
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions[0].push(pnts[i].x);
-						this._mesh._positions[0].push(pnts[i].y);
-						this._mesh._positions[0].push(pnts[i].z);
+                        this._mesh._positions[0].push(pnts[i].x);
+                        this._mesh._positions[0].push(pnts[i].y);
+                        this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -2979,9 +3016,9 @@ x3dom.registerNodeType(
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors[0].push(pnts[i].r);
-						this._mesh._colors[0].push(pnts[i].g);
-						this._mesh._colors[0].push(pnts[i].b);
+                        this._mesh._colors[0].push(pnts[i].r);
+                        this._mesh._colors[0].push(pnts[i].g);
+                        this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
@@ -3003,18 +3040,18 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Text.superClass.call(this, ctx);
     
             this.addField_MFString(ctx, 'string', []);
-			this.addField_MFFloat(ctx, 'length', []);
-	        this.addField_SFFloat(ctx, 'maxExtent', 0.0);
-    		
-            this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);	
+            this.addField_MFFloat(ctx, 'length', []);
+            this.addField_SFFloat(ctx, 'maxExtent', 0.0);
+            
+            this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);   
         },
-		{
-			nodeChanged: function() {	
-				if (!this._cf.fontStyle.node) {
-					this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
-				}
-			}			
-	    }
+        {
+            nodeChanged: function() {   
+                if (!this._cf.fontStyle.node) {
+                    this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
+                }
+            }           
+        }
     )
 );
 
@@ -3062,13 +3099,11 @@ x3dom.registerNodeType(
                             this._mesh._colors[0] = this._cf.attrib.nodes[i]._vf.value.toGL();
                             break;
                         default:
-                        {
                             this._mesh._dynamicFields[name] = {};
                             this._mesh._dynamicFields[name].numComponents =
                                        this._cf.attrib.nodes[i]._vf.numComponents;
                             this._mesh._dynamicFields[name].value =
                                        this._cf.attrib.nodes[i]._vf.value.toGL();
-                        }
                         break;
                     }
                 }
@@ -3286,9 +3321,9 @@ x3dom.registerNodeType(
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions[0].push(pnts[i].x);
-						this._mesh._positions[0].push(pnts[i].y);
-						this._mesh._positions[0].push(pnts[i].z);
+                        this._mesh._positions[0].push(pnts[i].x);
+                        this._mesh._positions[0].push(pnts[i].y);
+                        this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -3306,9 +3341,9 @@ x3dom.registerNodeType(
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors[0].push(pnts[i].r);
-						this._mesh._colors[0].push(pnts[i].g);
-						this._mesh._colors[0].push(pnts[i].b);
+                        this._mesh._colors[0].push(pnts[i].r);
+                        this._mesh._colors[0].push(pnts[i].g);
+                        this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
@@ -3328,7 +3363,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.IndexedFaceSet.superClass.call(this, ctx);
             
-			this.addField_SFFloat(ctx, 'creaseAngle', 0);	// TODO
+            this.addField_SFFloat(ctx, 'creaseAngle', 0);   // TODO
             
             this.addField_MFInt32(ctx, 'coordIndex', []);
             this.addField_MFInt32(ctx, 'normalIndex', []);
@@ -3533,33 +3568,39 @@ x3dom.registerNodeType(
                                     this._mesh._colors[0].push(colors[c0].r);
                                     this._mesh._colors[0].push(colors[c0].g);
                                     this._mesh._colors[0].push(colors[c0].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c0].a);
+                                    }
                                     this._mesh._colors[0].push(colors[c1].r);
                                     this._mesh._colors[0].push(colors[c1].g);
                                     this._mesh._colors[0].push(colors[c1].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c1].a);
+                                    }
                                     this._mesh._colors[0].push(colors[c2].r);
                                     this._mesh._colors[0].push(colors[c2].g);
                                     this._mesh._colors[0].push(colors[c2].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c2].a);
+                                    }
                                 }
                                 
                                 if (hasTexCoord) {
                                     this._mesh._texCoords[0].push(texCoords[t0].x);
                                     this._mesh._texCoords[0].push(texCoords[t0].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t0].z);
+                                    }
                                     this._mesh._texCoords[0].push(texCoords[t1].x);
                                     this._mesh._texCoords[0].push(texCoords[t1].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t1].z);
+                                    }
                                     this._mesh._texCoords[0].push(texCoords[t2].x);
                                     this._mesh._texCoords[0].push(texCoords[t2].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t2].z);
+                                    }
                                 }
                                 
                                 //faceCnt++;
@@ -3567,17 +3608,35 @@ x3dom.registerNodeType(
                             case 3: 
                                 p1 = p2; 
                                 t1 = t2;
-                                if (normPerVert) { n1 = n2; }
-                                if (colPerVert) {c1 = c2; }
+                                if (normPerVert) { 
+                                    n1 = n2; 
+                                }
+                                if (colPerVert) {
+                                    c1 = c2;
+                                }
                                 p2 = +indexes[i];
-                                if (hasNormalInd && normPerVert) { n2 = +normalInd[i]; }
-                                else if (hasNormalInd && !normPerVert) { /*n2 = +normalInd[faceCnt];*/ }
-                                else { n2 = p2; }
-                                if (hasTexCoordInd) { t2 = +texCoordInd[i]; }
-                                else { t2 = p2; }
-                                if (hasColorInd && colPerVert) { c2 = +colorInd[i]; }
-                                else if (hasColorInd && !colPerVert) { /*c2 = +colorInd[faceCnt];*/ }
-                                else { c2 = p2; }
+
+                                if (hasNormalInd && normPerVert) { 
+                                    n2 = +normalInd[i]; 
+                                } else if (hasNormalInd && !normPerVert) { 
+                                    /*n2 = +normalInd[faceCnt];*/ 
+                                } else { 
+                                    n2 = p2; 
+                                }
+                                
+                                if (hasTexCoordInd) { 
+                                    t2 = +texCoordInd[i]; 
+                                } else { 
+                                    t2 = p2; 
+                                }
+
+                                if (hasColorInd && colPerVert) { 
+                                    c2 = +colorInd[i]; 
+                                } else if (hasColorInd && !colPerVert) { 
+                                    /*c2 = +colorInd[faceCnt];*/ 
+                                } else { 
+                                    c2 = p2; 
+                                }
                                 
                                 this._mesh._indices[0].push(cnt++, cnt++, cnt++);
                                 
@@ -3611,33 +3670,39 @@ x3dom.registerNodeType(
                                     this._mesh._colors[0].push(colors[c0].r);
                                     this._mesh._colors[0].push(colors[c0].g);
                                     this._mesh._colors[0].push(colors[c0].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c0].a);
+                                    }
                                     this._mesh._colors[0].push(colors[c1].r);
                                     this._mesh._colors[0].push(colors[c1].g);
                                     this._mesh._colors[0].push(colors[c1].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c1].a);
+                                    }
                                     this._mesh._colors[0].push(colors[c2].r);
                                     this._mesh._colors[0].push(colors[c2].g);
                                     this._mesh._colors[0].push(colors[c2].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c2].a);
+                                    }
                                 }
                                 
                                 if (hasTexCoord) {
                                     this._mesh._texCoords[0].push(texCoords[t0].x);
                                     this._mesh._texCoords[0].push(texCoords[t0].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t0].z);
+                                    }
                                     this._mesh._texCoords[0].push(texCoords[t1].x);
                                     this._mesh._texCoords[0].push(texCoords[t1].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t1].z);
+                                    }
                                     this._mesh._texCoords[0].push(texCoords[t2].x);
                                     this._mesh._texCoords[0].push(texCoords[t2].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t2].z);
+                                    }
                                 }
                                 
                                 //faceCnt++;
@@ -3718,8 +3783,8 @@ x3dom.registerNodeType(
                 
                 if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) ||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
-					(this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
-					(this._vf.colorIndex.length > 0 && this._cf.color.node))
+                    (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
+                    (this._vf.colorIndex.length > 0 && this._cf.color.node))
                 {
                     // TODO; FIXME
                     x3dom.debug.logWarning("Ipol with creaseAngle == 0, too many coords, or multi-index!");
@@ -3748,9 +3813,9 @@ x3dom.registerNodeType(
                     // TODO; optimize (is there a memcopy?)
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions[0].push(pnts[i].x);
-						this._mesh._positions[0].push(pnts[i].y);
-						this._mesh._positions[0].push(pnts[i].z);
+                        this._mesh._positions[0].push(pnts[i].x);
+                        this._mesh._positions[0].push(pnts[i].y);
+                        this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -3768,9 +3833,9 @@ x3dom.registerNodeType(
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors[0].push(pnts[i].r);
-						this._mesh._colors[0].push(pnts[i].g);
-						this._mesh._colors[0].push(pnts[i].b);
+                        this._mesh._colors[0].push(pnts[i].r);
+                        this._mesh._colors[0].push(pnts[i].g);
+                        this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
@@ -3941,33 +4006,39 @@ x3dom.registerNodeType(
                                     this._mesh._colors[0].push(colors[c0].r);
                                     this._mesh._colors[0].push(colors[c0].g);
                                     this._mesh._colors[0].push(colors[c0].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c0].a);
+                                    }
                                     this._mesh._colors[0].push(colors[c1].r);
                                     this._mesh._colors[0].push(colors[c1].g);
                                     this._mesh._colors[0].push(colors[c1].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c1].a);
+                                    }
                                     this._mesh._colors[0].push(colors[c2].r);
                                     this._mesh._colors[0].push(colors[c2].g);
                                     this._mesh._colors[0].push(colors[c2].b);
-                                    if (numColComponents === 4)
+                                    if (numColComponents === 4) {
                                         this._mesh._colors[0].push(colors[c2].a);
+                                    }
                                 }
                                 
                                 if (hasTexCoord) {
                                     this._mesh._texCoords[0].push(texCoords[t0].x);
                                     this._mesh._texCoords[0].push(texCoords[t0].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t0].z);
+                                    }
                                     this._mesh._texCoords[0].push(texCoords[t1].x);
                                     this._mesh._texCoords[0].push(texCoords[t1].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t1].z);
+                                    }
                                     this._mesh._texCoords[0].push(texCoords[t2].x);
                                     this._mesh._texCoords[0].push(texCoords[t2].y);
-                                    if (numTexComponents === 3)
+                                    if (numTexComponents === 3) {
                                         this._mesh._texCoords[0].push(texCoords[t2].z);
+                                    }
                                 }
                                 
                                 //faceCnt++;
@@ -4039,9 +4110,9 @@ x3dom.registerNodeType(
                     // TODO; optimize (is there a memcopy?)
                     for (i=0; i<n; i++)
                     {
-						this._mesh._positions[0].push(pnts[i].x);
-						this._mesh._positions[0].push(pnts[i].y);
-						this._mesh._positions[0].push(pnts[i].z);
+                        this._mesh._positions[0].push(pnts[i].x);
+                        this._mesh._positions[0].push(pnts[i].y);
+                        this._mesh._positions[0].push(pnts[i].z);
                     }
                     
                     this._mesh._invalidate = true;
@@ -4059,9 +4130,9 @@ x3dom.registerNodeType(
                     
                     for (i=0; i<n; i++)
                     {
-						this._mesh._colors[0].push(pnts[i].r);
-						this._mesh._colors[0].push(pnts[i].g);
-						this._mesh._colors[0].push(pnts[i].b);
+                        this._mesh._colors[0].push(pnts[i].r);
+                        this._mesh._colors[0].push(pnts[i].g);
+                        this._mesh._colors[0].push(pnts[i].b);
                     }
                     
                     Array.forEach(this._parentNodes, function (node) {
@@ -4097,10 +4168,10 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-	            Array.forEach(this._parentNodes, function (node) {
-		            node.fieldChanged("coord");
-            	});
-			}
+                Array.forEach(this._parentNodes, function (node) {
+                    node.fieldChanged("coord");
+                });
+            }
         }
     )
 );
@@ -4179,10 +4250,10 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-	            Array.forEach(this._parentNodes, function (node) {
-		            node.fieldChanged("color");
-            	});
-			}
+                Array.forEach(this._parentNodes, function (node) {
+                    node.fieldChanged("color");
+                });
+            }
         }
     )
 );
@@ -4239,8 +4310,8 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-	            //TODO
-			}
+                //TODO
+            }
         }
     )
 );
@@ -4268,22 +4339,22 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'family', ['SERIF']);
             this.addField_SFBool(ctx, 'horizontal', true);
             this.addField_MFString(ctx, 'justify', ['BEGIN']);
-			this.addField_SFString(ctx, 'language', "");
+            this.addField_SFString(ctx, 'language', "");
             this.addField_SFBool(ctx, 'leftToRight', true);
             this.addField_SFFloat(ctx, 'size', 1.0);
             this.addField_SFFloat(ctx, 'spacing', 1.0);
-			this.addField_SFString(ctx, 'style', "PLAIN");
+            this.addField_SFString(ctx, 'style', "PLAIN");
             this.addField_SFBool(ctx, 'topToBottom', true);
         }
     )
 );
 
 x3dom.nodeTypes.FontStyle.defaultNode = function() {
-	if (!x3dom.nodeTypes.FontStyle._defaultNode) {
-		x3dom.nodeTypes.FontStyle._defaultNode = new x3dom.nodeTypes.FontStyle();
+    if (!x3dom.nodeTypes.FontStyle._defaultNode) {
+        x3dom.nodeTypes.FontStyle._defaultNode = new x3dom.nodeTypes.FontStyle();
         x3dom.nodeTypes.FontStyle._defaultNode.nodeChanged();
-	}
-	return x3dom.nodeTypes.FontStyle._defaultNode;
+    }
+    return x3dom.nodeTypes.FontStyle._defaultNode;
 };
 
 /* ### X3DChildNode ### */
@@ -4466,56 +4537,56 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
-		  
-		  this.addField_SFBool(ctx, 'set_bind', false);
+          
+          this.addField_SFBool(ctx, 'set_bind', false);
           this.addField_SFString(ctx, 'description', "");
           this.addField_SFBool(ctx, 'isActive', false);
           
-		  this._autoGen = (ctx.autoGen ? true : false);
+          this._autoGen = (ctx.autoGen ? true : false);
         
-		  if (ctx && ctx.doc._bindableBag) {
-			this._stack = ctx.doc._bindableBag.addBindable(this);
-		  }
-		  else {
-			this._stack = null;
-		    x3dom.debug.logError('Could not find bindableBag for registration ' + this.typeName());
-		  }
+          if (ctx && ctx.doc._bindableBag) {
+            this._stack = ctx.doc._bindableBag.addBindable(this);
+          }
+          else {
+            this._stack = null;
+            x3dom.debug.logError('Could not find bindableBag for registration ' + this.typeName());
+          }
         },
-		{
-			initDefault: function() {},
+        {
+            initDefault: function() {},
             
-			bind: function (value) {
-				if (this._stack) {
-					if (value) {
-						this._stack.push (this);
-					}
-					else {
-						this._stack.pop  (this);
-					}
-				}
-				else {
-					x3dom.debug.logError ('No BindStack in Bindable\n');
-				}
-			},
+            bind: function (value) {
+                if (this._stack) {
+                    if (value) {
+                        this._stack.push (this);
+                    }
+                    else {
+                        this._stack.pop  (this);
+                    }
+                }
+                else {
+                    x3dom.debug.logError ('No BindStack in Bindable\n');
+                }
+            },
             
-			activate: function (prev) {
-				x3dom.debug.logInfo ('activate Bindable ' + this._DEF);
-				this.postMessage('isActive', true);
-			},
+            activate: function (prev) {
+                x3dom.debug.logInfo ('activate Bindable ' + this._DEF);
+                this.postMessage('isActive', true);
+            },
             
-			deactivate: function (prev) {
-				x3dom.debug.logInfo ('deactivate Bindable ' + this._DEF);
-				this.postMessage('isActive', false);
-			},
+            deactivate: function (prev) {
+                x3dom.debug.logInfo ('deactivate Bindable ' + this._DEF);
+                this.postMessage('isActive', false);
+            },
             
-			fieldChanged: function(fieldName) {
-				if (fieldName === "set_bind") {
-					this.bind(this._vf.set_bind);
-				}
-			},
+            fieldChanged: function(fieldName) {
+                if (fieldName === "set_bind") {
+                    this.bind(this._vf.set_bind);
+                }
+            },
             
-			nodeChanged: function() {}
-		}
+            nodeChanged: function() {}
+        }
     )
 );
 
@@ -4527,8 +4598,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DViewpointNode.superClass.call(this, ctx);
         },
-		{
-		}
+        {
+        }
     )
 );
 
@@ -4542,7 +4613,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DNavigationInfoNode.superClass.call(this, ctx);
         },
-		{
+        {
         }
     )
 );
@@ -4557,13 +4628,13 @@ x3dom.registerNodeType(
             
             this._dirty = true;
         },
-		{
-        	getSkyColor: function() {
-				return new x3dom.fields.SFColor(0,0,0);
-			},
-			getTransparency: function() {
-				return 0;
-			},
+        {
+            getSkyColor: function() {
+                return new x3dom.fields.SFColor(0,0,0);
+            },
+            getTransparency: function() {
+                return 0;
+            },
             getTexUrl: function() {
                 return [];
             }
@@ -4579,7 +4650,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DFogNode.superClass.call(this, ctx);
         },
-		{
+        {
         }
     )
 );
@@ -4593,15 +4664,15 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Viewpoint.superClass.call(this, ctx);
             
-			this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
+            this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
-			this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
             this.addField_SFFloat(ctx, 'zNear', 0.1);
             this.addField_SFFloat(ctx, 'zFar', 100000);
             
             this._viewMatrix = this._vf.orientation.toMatrix().transpose().
-				mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
+                mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
             this._projMatrix = null;
             this._lastAspect = 1.0;
         },
@@ -4621,29 +4692,29 @@ x3dom.registerNodeType(
                 }
             },
             
-			activate: function (prev) {
-				if (prev) {
-					this._nameSpace.doc._viewarea.animateTo(this, prev);
-				}
-				x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
+            activate: function (prev) {
+                if (prev) {
+                    this._nameSpace.doc._viewarea.animateTo(this, prev);
+                }
+                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
                 this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
-				//x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
-			},
+                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
+            },
             
-			deactivate: function (prev) {
+            deactivate: function (prev) {
                 x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
-				//x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
-			},
+                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
+            },
             
-			getCenterOfRotation: function() {
+            getCenterOfRotation: function() {
                 return this._vf.centerOfRotation;
-			},
-			getViewMatrix: function() {
+            },
+            getViewMatrix: function() {
                 return this._viewMatrix;
-			},
-			getFieldOfView: function() {
-				return this._vf.fieldOfView;
-			},
+            },
+            getFieldOfView: function() {
+                return this._vf.fieldOfView;
+            },
             
             setView: function(newView) {
                 var mat = this.getCurrentTransform();
@@ -4693,12 +4764,12 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Fog.superClass.call(this, ctx);
             
-			this.addField_SFColor(ctx, 'color', 1, 1, 1);
+            this.addField_SFColor(ctx, 'color', 1, 1, 1);
             this.addField_SFString(ctx, 'fogType', "LINEAR");
-			this.addField_SFFloat(ctx, 'visibilityRange', 0);
+            this.addField_SFFloat(ctx, 'visibilityRange', 0);
         },
         {
-			// methods
+            // methods
         }
     )
 );
@@ -4711,7 +4782,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.NavigationInfo.superClass.call(this, ctx);
             
-			this.addField_SFBool(ctx, 'headlight', true);
+            this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
             this.addField_MFFloat(ctx, 'avatarSize', [0.25,1.6,0.75]);
             this.addField_SFFloat(ctx, 'speed', 1.0);
@@ -4723,7 +4794,7 @@ x3dom.registerNodeType(
             x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
         },
         {
-			// methods
+            // methods
         }
     )
 );
@@ -4737,13 +4808,13 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.WorldInfo.superClass.call(this, ctx);
             
             this.addField_MFString(ctx, 'info', []);
-			this.addField_SFString(ctx, 'title', "");
+            this.addField_SFString(ctx, 'title', "");
             
             x3dom.debug.logInfo(this._vf.info);
             x3dom.debug.logInfo(this._vf.title);
         },
         {
-			// methods
+            // methods
         }
     )
 );
@@ -4757,7 +4828,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
             
             var trans = ctx.autoGen ? 1 : 0;
-			
+            
             this.addField_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
             this.addField_MFFloat(ctx, 'skyAngle', []);
             this.addField_MFColor(ctx, 'groundColor', []);
@@ -4776,22 +4847,22 @@ x3dom.registerNodeType(
                 if (fieldName.indexOf("Url") > 0) {
                     this._dirty = true;
                 }
-				else if (fieldName === "set_bind") {
-					this.bind(this._vf.set_bind);
-				}
+                else if (fieldName === "set_bind") {
+                    this.bind(this._vf.set_bind);
+                }
             },
             
-			getSkyColor: function() {
-				return this._vf.skyColor;
-			},
+            getSkyColor: function() {
+                return this._vf.skyColor;
+            },
             
-			getGroundColor: function() {
-				return this._vf.groundColor;
-			},
+            getGroundColor: function() {
+                return this._vf.groundColor;
+            },
             
-			getTransparency: function() {
-				return this._vf.transparency;
-			},
+            getTransparency: function() {
+                return this._vf.transparency;
+            },
             
             getTexUrl: function() {
                 return [
@@ -4823,17 +4894,17 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
             
-			ctx.doc._nodeBag.lights.push(this);
+            ctx.doc._nodeBag.lights.push(this);
 
-			this.addField_SFFloat(ctx, 'ambientIntensity', 0);
+            this.addField_SFFloat(ctx, 'ambientIntensity', 0);
             this.addField_SFColor(ctx, 'color', 1, 1, 1);
-			this.addField_SFFloat(ctx, 'intensity', 1);
+            this.addField_SFFloat(ctx, 'intensity', 1);
             this.addField_SFBool(ctx, 'global', false);
             this.addField_SFBool(ctx, 'on', true);
             this.addField_SFFloat(ctx, 'shadowIntensity', 0);
         },
         {
-			getViewMatrix: function(vec) {
+            getViewMatrix: function(vec) {
                 return x3dom.fields.SFMatrix4f.identity;
             },
             
@@ -4956,19 +5027,19 @@ x3dom.registerNodeType(
             this._objectID = 0;
             
             this._dirty = {
-				positions: true,
-				normals: true,
-				texcoords: true,
+                positions: true,
+                normals: true,
+                texcoords: true,
                 colors: true,
-				indexes: true,
-				texture: true
-			};
+                indexes: true,
+                texture: true
+            };
         },
         {
-			nodeChanged: function () {
-				if (!this._cf.appearance.node) {
-					this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
-				}
+            nodeChanged: function () {
+                if (!this._cf.appearance.node) {
+                    this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
+                }
                 if (!this._cf.geometry.node) {
                     x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
                 }
@@ -4976,7 +5047,7 @@ x3dom.registerNodeType(
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;
                     x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
                 }
-			},
+            },
             
             // TODO: what if complete subtree is removed at once?
             parentRemoved: function(parent)
@@ -5041,22 +5112,22 @@ x3dom.registerNodeType(
                     out.push( [transform, this] );
                 }
             },
-			
-			getVolume: function(min, max, invalidate) {
-				return this._cf.geometry.node.getVolume(min, max, invalidate);
-			},
-			
-			getCenter: function() {
-				return this._cf.geometry.node.getCenter();
-			},
+            
+            getVolume: function(min, max, invalidate) {
+                return this._cf.geometry.node.getVolume(min, max, invalidate);
+            },
+            
+            getCenter: function() {
+                return this._cf.geometry.node.getCenter();
+            },
             
             doIntersect: function(line) {
                 return this._cf.geometry.node.doIntersect(line);
             },
-			
-			isSolid: function() {
-				return this._cf.geometry.node._vf.solid;
-			},
+            
+            isSolid: function() {
+                return this._cf.geometry.node._vf.solid;
+            },
             
             isCCW: function() {
                 return this._cf.geometry.node._vf.ccw;
@@ -5097,7 +5168,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
             
             this.addField_SFBool(ctx, 'render', true);
-			this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
+            this.addField_MFNode('children', x3dom.nodeTypes.X3DChildNode);
             // FIXME; add addChild and removeChild slots ?
         },
         {
@@ -5126,8 +5197,8 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Switch.superClass.call(this, ctx);
-			
-			this.addField_SFInt32(ctx, 'whichChoice', -1);
+            
+            this.addField_SFInt32(ctx, 'whichChoice', -1);
         },
         {
             getVolume: function (min, max, invalidate) 
@@ -5226,56 +5297,56 @@ x3dom.registerNodeType(
            
             ctx.doc._nodeBag.trans.push(this);
 
-			// holds the current matrix
+            // holds the current matrix
             this._trafo = null;
         },
         {
-			// temporary per frame update method for CSS-Transform
-			tick: function(t) {
-				var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform");
-				//x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);				
-				if (trans && (trans != 'none')) {
-					this._trafo.setValueByStr(trans);		
-					//x3dom.debug.logInfo(' valid set:' + this._trafo);			
-					return true;
-				}
-						
-	        	return false;
-	        },
-	
+            // temporary per frame update method for CSS-Transform
+            tick: function(t) {
+                var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform");
+                //x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);              
+                if (trans && (trans != 'none')) {
+                    this._trafo.setValueByStr(trans);       
+                    //x3dom.debug.logInfo(' valid set:' + this._trafo);         
+                    return true;
+                }
+                        
+                return false;
+            },
+    
             transformMatrix: function(transform) {
                 return transform.mult(this._trafo);
             },
-			
-			getVolume: function(min, max, invalidate) 
+            
+            getVolume: function(min, max, invalidate) 
             {
-				var nMin = x3dom.fields.SFVec3f.MAX();
-				var nMax = x3dom.fields.SFVec3f.MIN();
+                var nMin = x3dom.fields.SFVec3f.MAX();
+                var nMax = x3dom.fields.SFVec3f.MIN();
                 var valid = false;
                 
-				for (var i=0, n=this._childNodes.length; i<n; i++)
-				{
-					if (this._childNodes[i])
-					{
-						var childMin = x3dom.fields.SFVec3f.MAX();
-						var childMax = x3dom.fields.SFVec3f.MIN();
-						
-						valid = this._childNodes[i].getVolume(
+                for (var i=0, n=this._childNodes.length; i<n; i++)
+                {
+                    if (this._childNodes[i])
+                    {
+                        var childMin = x3dom.fields.SFVec3f.MAX();
+                        var childMax = x3dom.fields.SFVec3f.MIN();
+                        
+                        valid = this._childNodes[i].getVolume(
                                         childMin, childMax, invalidate) || valid;
-						
+                        
                         if (valid)  // values only set by Mesh.BBox()
                         {
-                            if (nMin.x > childMin.x) nMin.x = childMin.x;
-                            if (nMin.y > childMin.y) nMin.y = childMin.y;
-                            if (nMin.z > childMin.z) nMin.z = childMin.z;
+                            if (nMin.x > childMin.x) {nMin.x = childMin.x;}
+                            if (nMin.y > childMin.y) {nMin.y = childMin.y;}
+                            if (nMin.z > childMin.z) {nMin.z = childMin.z;}
                                 
-                            if (nMax.x < childMax.x) nMax.x = childMax.x;
-                            if (nMax.y < childMax.y) nMax.y = childMax.y;
-                            if (nMax.z < childMax.z) nMax.z = childMax.z;
+                            if (nMax.x < childMax.x) {nMax.x = childMax.x;}
+                            if (nMax.y < childMax.y) {nMax.y = childMax.y;}
+                            if (nMax.z < childMax.z) {nMax.z = childMax.z;}
                         }
-					}
-				}
-				
+                    }
+                }
+                
                 if (valid)
                 {
                     nMin = this._trafo.multMatrixPnt(nMin);
@@ -5290,7 +5361,7 @@ x3dom.registerNodeType(
                     max.z = nMax.z > nMin.z ? nMax.z : nMin.z;
                 }
                 return valid;
-			},
+            },
             
             doIntersect: function(line) 
             {
@@ -5356,11 +5427,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Transform.superClass.call(this, ctx);
             
-			this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
             this.addField_SFRotation(ctx, 'rotation', 0, 0, 1, 0);
             this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
-			this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
+            this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
             
             // P' = T * C * R * SR * S * -SR * -C * P
             this._trafo = x3dom.fields.SFMatrix4f.translation(
@@ -5446,7 +5517,7 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'axisOfRotation', 0, 1, 0);
             
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
-			this._eyeViewUp = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._eyeViewUp = new x3dom.fields.SFVec3f(0, 0, 0);
             this._viewAlignedMat = x3dom.fields.SFMatrix4f.identity();
         },
         {
@@ -5457,43 +5528,43 @@ x3dom.registerNodeType(
                 }
                 
                 // TODO; optimize getting volume
-				var min = x3dom.fields.SFVec3f.MAX();
+                var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
                 var ok = this.getVolume(min, max, true);
-				var rotMat = x3dom.fields.SFMatrix4f.identity();
+                var rotMat = x3dom.fields.SFMatrix4f.identity();
                 
                 var mid = (max.add(min).multiply(0.5)).add(new x3dom.fields.SFVec3f(0, 0, 0));
                 var billboard_to_viewer = this._eye.subtract(mid);
-				
-				if(this._vf.axisOfRotation.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
-					var rot1 = x3dom.fields.Quaternion.rotateFromTo(
+                
+                if(this._vf.axisOfRotation.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
+                    var rot1 = x3dom.fields.Quaternion.rotateFromTo(
                                 billboard_to_viewer, new x3dom.fields.SFVec3f(0, 0, 1));
-					rotMat = rot1.toMatrix().transpose();
-					
-					var yAxis = rotMat.multMatrixPnt(new x3dom.fields.SFVec3f(0, 1, 0)).normalize();
-					
-					if(!this._eyeViewUp.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
-						var rot2 = x3dom.fields.Quaternion.rotateFromTo(this._eyeViewUp, yAxis);
-						rotMat = rot2.toMatrix().transpose().mult(rotMat);
-					}
-				}
-				else{
-					var normalPlane = this._vf.axisOfRotation.cross(billboard_to_viewer);
-					normalPlane = normalPlane.normalize();
-					
-					if(this._eye.z < 0)
-						normalPlane = normalPlane.multiply(-1);
-					
-					var degreesToRotate = Math.asin(normalPlane.dot(new x3dom.fields.SFVec3f(0, 0, 1)));
-					
-					if(this._eye.z < 0)
-						degreesToRotate += Math.PI;
-					
-						rotMat = x3dom.fields.SFMatrix4f.parseRotation(
+                    rotMat = rot1.toMatrix().transpose();
+                    
+                    var yAxis = rotMat.multMatrixPnt(new x3dom.fields.SFVec3f(0, 1, 0)).normalize();
+                    
+                    if(!this._eyeViewUp.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
+                        var rot2 = x3dom.fields.Quaternion.rotateFromTo(this._eyeViewUp, yAxis);
+                        rotMat = rot2.toMatrix().transpose().mult(rotMat);
+                    }
+                }
+                else{
+                    var normalPlane = this._vf.axisOfRotation.cross(billboard_to_viewer);
+                    normalPlane = normalPlane.normalize();
+                    
+                    if(this._eye.z < 0)
+                        normalPlane = normalPlane.multiply(-1);
+                    
+                    var degreesToRotate = Math.asin(normalPlane.dot(new x3dom.fields.SFVec3f(0, 0, 1)));
+                    
+                    if(this._eye.z < 0)
+                        degreesToRotate += Math.PI;
+                    
+                        rotMat = x3dom.fields.SFMatrix4f.parseRotation(
                             this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y
-							+ ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
-				}
-				
+                            + ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
+                }
+                
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
                         var childTransform = this._childNodes[i].transformMatrix(transform.mult(rotMat));
@@ -5518,10 +5589,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Collision.superClass.call(this, ctx);
 
-			this.addField_SFBool (ctx, "enabled", true);
-			this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode);
-			
-			// TODO; add Slots: collideTime, isActive 
+            this.addField_SFBool (ctx, "enabled", true);
+            this.addField_SFNode ("proxy", x3dom.nodeTypes.X3DGroupingNode);
+            
+            // TODO; add Slots: collideTime, isActive 
         },
         {
             collectDrawableObjects: function (transform, out)
@@ -5547,9 +5618,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.LOD.superClass.call(this, ctx);
 
-			this.addField_SFBool (ctx, "forceTransitions", false);
+            this.addField_SFBool (ctx, "forceTransitions", false);
             this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
-			this.addField_MFFloat(ctx, "range", []);
+            this.addField_MFFloat(ctx, "range", []);
             
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
         },
@@ -5598,22 +5669,24 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DInterpolatorNode.superClass.call(this, ctx);
             
-			this.addField_MFFloat(ctx, 'key', []);
+            this.addField_MFFloat(ctx, 'key', []);
             this.addField_SFFloat(ctx, 'set_fraction', 0);
         },
         {
             linearInterp: function (t, interp) {
-                if (t <= this._vf.key[0])
+                if (t <= this._vf.key[0]) {
                     return this._vf.keyValue[0];
-                if (t >= this._vf.key[this._vf.key.length-1])
+                }
+                if (t >= this._vf.key[this._vf.key.length-1]) {
                     return this._vf.keyValue[this._vf.key.length-1];
+                }
                 for (var i = 0; i < this._vf.key.length-1; ++i) {
                     if ((this._vf.key[i] < t) && (t <= this._vf.key[i+1])) {
                         return interp( this._vf.keyValue[i], this._vf.keyValue[i+1], 
                                 (t - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
-					}
-				}
-			    return this._vf.keyValue[0];
+                    }
+                }
+                return this._vf.keyValue[0];
             }
         }
     )
@@ -5627,11 +5700,12 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.OrientationInterpolator.superClass.call(this, ctx);
             
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue'))
+            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
                 this._vf.keyValue = x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute('keyValue'));
-            else
+            } else {
                 this._vf.keyValue = new x3dom.fields.MFRotation();
-            
+            }
+
             this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this.linearInterp(msg, function (a, b, t) { return a.slerp(b, t); });
                 this.postMessage('value_changed', value);
@@ -5648,10 +5722,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.PositionInterpolator.superClass.call(this, ctx);
             
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue'))
+            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
                 this._vf.keyValue = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
-            else
+            } else {
                 this._vf.keyValue = new x3dom.fields.MFVec3f();
+            }
             
             this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this.linearInterp(msg, function (a, b, t) {
@@ -5670,10 +5745,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.NormalInterpolator.superClass.call(this, ctx);
             
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue'))
+            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
                 this._vf.keyValue = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
-            else
+            } else {
                 this._vf.keyValue = new x3dom.fields.MFVec3f();
+            }
             
             this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this.linearInterp(msg, function (a, b, t) {
@@ -5692,10 +5768,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.ColorInterpolator.superClass.call(this, ctx);
             
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue'))
+            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
                 this._vf.keyValue = x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute('keyValue'));
-            else
+            } else {
                 this._vf.keyValue = new x3dom.fields.MFColor();
+            }
             
             this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this.linearInterp(msg, function (a, b, t) {
@@ -5715,12 +5792,13 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.ScalarInterpolator.superClass.call(this, ctx);
             
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue'))
+            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
                 this._vf.keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s+/), 
                                                                     function (n) { return +n; });
-            else
+            } else {
                 this._vf.keyValue = new x3dom.fields.MFFloat();
-			
+            }
+            
             this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
                 var value = this.linearInterp(msg, function (a, b, t) { return (1.0-t)*a + t*b; });
                 this.postMessage('value_changed', value);
@@ -5802,13 +5880,13 @@ x3dom.registerNodeType(
         {
             onframe: function (ts)
             {
-				if (!this._vf.enabled)
-					return;
-				
-            	var isActive = (ts >= this._vf.startTime);
-            	var cycleFrac, cycle, fraction;
-            	
-            	if (isActive && this._vf.cycleInterval > 0) {
+                if (!this._vf.enabled)
+                    return;
+                
+                var isActive = (ts >= this._vf.startTime);
+                var cycleFrac, cycle, fraction;
+                
+                if (isActive && this._vf.cycleInterval > 0) {
                     cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
                     cycle = Math.floor(cycleFrac);
                     fraction = cycleFrac - cycle;
@@ -5817,11 +5895,12 @@ x3dom.registerNodeType(
                         if (ts > this._vf.startTime)
                             fraction = 1.0;
                     }
-            	}
+                }
                 
                 if (isActive) {
-                    if (!this._vf.isActive)
+                    if (!this._vf.isActive) {
                         this.postMessage('isActive', true);
+                    }
                     
                     this.postMessage('fraction_changed', fraction);
                     this.postMessage('time', ts);
@@ -5840,8 +5919,9 @@ x3dom.registerNodeType(
             {
                 if (fieldName == "enabled") {
                     // TODO; eval relevant outputs
-                    if (!this._vf.enabled && this._vf.isActive)
+                    if (!this._vf.enabled && this._vf.isActive) {
                         this.postMessage('isActive', false);
+                    }
                 }
             },
             
@@ -5878,7 +5958,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'pickMode', "idBuf");
         },
         {
-			/* bindable getter (e.g. getViewpoint) are added automatically */
+            /* bindable getter (e.g. getViewpoint) are added automatically */
         }
     )
 );
@@ -5932,62 +6012,62 @@ x3dom.registerNodeType(
                 }
             },
             
-			nodeChanged: function ()
+            nodeChanged: function ()
             {
-				var that = this;
+                var that = this;
 
-				var xhr = new XMLHttpRequest();
-				xhr.overrideMimeType('text/xml');   //application/xhtml+xml
-				this._nameSpace.doc.downloadCount += 1;
-				
-				xhr.onreadystatechange = function () {
-					if (xhr.readyState == 4) {
-						if (xhr.responseXML.documentElement.localName == 'parsererror') {
-							x3dom.debug.logError('XML parser failed on ' + this._vf.url + 
+                var xhr = new XMLHttpRequest();
+                xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+                this._nameSpace.doc.downloadCount += 1;
+                
+                xhr.onreadystatechange = function () {
+                    if (xhr.readyState == 4) {
+                        if (xhr.responseXML.documentElement.localName == 'parsererror') {
+                            x3dom.debug.logError('XML parser failed on ' + this._vf.url + 
                                         ':\n' + xhr.responseXML.documentElement.textContent);
-							return;
-						}
-					}
-					else {
-						//x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-						//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
-						return;
-					}
-					if (xhr.status !== 200) {
-						x3dom.debug.logError('XMLHttpRequest requires a web server running!');
-						return;
-					}
+                            return;
+                        }
+                    }
+                    else {
+                        //x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+                        //if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
+                        return;
+                    }
+                    if (xhr.status !== 200) {
+                        x3dom.debug.logError('XMLHttpRequest requires a web server running!');
+                        return;
+                    }
 
-					x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
+                    x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
 
-					var xml = xhr.responseXML;
+                    var xml = xhr.responseXML;
 
-					//TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
-					var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
+                    //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
+                    var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
 
-					if (inlScene) {
-						var nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
-						nameSpace.setBaseURL (that._vf.url[0]);      
-						var newScene = nameSpace.setupTree(inlScene);
-					}
-					else {
-						x3dom.debug.logWarning('no Scene in ' + xml.localName);
-					}
+                    if (inlScene) {
+                        var nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
+                        nameSpace.setBaseURL (that._vf.url[0]);      
+                        var newScene = nameSpace.setupTree(inlScene);
+                    }
+                    else {
+                        x3dom.debug.logWarning('no Scene in ' + xml.localName);
+                    }
 
-					while (that._childNodes.length !== 0) {
-						that.removeChild(that._childNodes[0]);
-					}
-					that.addChild(newScene);			
-					//that._xmlNode.appendChild (inlScene);
-						
-					that._nameSpace.doc.downloadCount -= 1;
-					that._nameSpace.doc.needRender = true;
-					x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
-				};
+                    while (that._childNodes.length !== 0) {
+                        that.removeChild(that._childNodes[0]);
+                    }
+                    that.addChild(newScene);            
+                    //that._xmlNode.appendChild (inlScene);
+                        
+                    that._nameSpace.doc.downloadCount -= 1;
+                    that._nameSpace.doc.needRender = true;
+                    x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
+                };
 
-           		xhr.open('GET', this._nameSpace.getURL(this._vf.url[0]), true);
-           		xhr.send(null);
-			}
+                xhr.open('GET', this._nameSpace.getURL(this._vf.url[0]), true);
+                xhr.send(null);
+            }
         }
     )
 );
@@ -5996,11 +6076,11 @@ x3dom.registerNodeType(
 
 // ### Viewarea ###
 x3dom.Viewarea = function (document, scene) {
-	this._doc = document; // x3ddocument
-	this._scene = scene; // FIXME: updates ?!
+    this._doc = document; // x3ddocument
+    this._scene = scene; // FIXME: updates ?!
     
     document._nodeBag.viewarea.push(this);
-	
+    
     this._pickingInfo = {
         pickPos: {},
         pickObj: null,
@@ -6008,14 +6088,14 @@ x3dom.Viewarea = function (document, scene) {
         lastClickObj: null
     };
     
-	this._rotMat = x3dom.fields.SFMatrix4f.identity();
-	this._transMat = x3dom.fields.SFMatrix4f.identity();
-	this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._rotMat = x3dom.fields.SFMatrix4f.identity();
+    this._transMat = x3dom.fields.SFMatrix4f.identity();
+    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
     
     this._needNavigationMatrixUpdate = true;
     
-	this._width = 400;
-	this._height = 300;
+    this._width = 400;
+    this._height = 300;
     this._dx = 0;
     this._dy = 0;
     this._lastX = -1;
@@ -6245,25 +6325,25 @@ x3dom.Viewarea.prototype.getLights = function ()
 
 x3dom.Viewarea.prototype.getViewpointMatrix = function () 
 {
-	var viewpoint = this._scene.getViewpoint();
- 	var mat_viewpoint = viewpoint.getCurrentTransform();
+    var viewpoint = this._scene.getViewpoint();
+    var mat_viewpoint = viewpoint.getCurrentTransform();
     
     return mat_viewpoint.mult(viewpoint.getViewMatrix());
 };
 
 x3dom.Viewarea.prototype.getViewMatrix = function () 
 {
-	return this.getViewpointMatrix().
-			mult(this._transMat).
-			mult(this._rotMat);
+    return this.getViewpointMatrix().
+            mult(this._transMat).
+            mult(this._rotMat);
 };
         
 x3dom.Viewarea.prototype.getLightMatrix = function () 
 {
-	var lights = this._doc._nodeBag.lights;
+    var lights = this._doc._nodeBag.lights;
     var i, n = lights.length;
-	
-	if (n > 0)
+    
+    if (n > 0)
     {
         var min = x3dom.fields.SFVec3f.MAX();
         var max = x3dom.fields.SFVec3f.MIN();
@@ -6322,7 +6402,7 @@ x3dom.Viewarea.prototype.getProjectionMatrix = function()
 {
     var viewpoint = this._scene.getViewpoint();
     
-	return viewpoint.getProjectionMatrix(this._width/this._height);
+    return viewpoint.getProjectionMatrix(this._width/this._height);
 };
 
 x3dom.Viewarea.prototype.getWCtoCCMatrix = function()
@@ -6356,8 +6436,8 @@ x3dom.Viewarea.prototype.calcViewRay = function(x, y)
 
 x3dom.Viewarea.prototype.showAll = function()
 {
-	var min = x3dom.fields.SFVec3f.MAX();
-	var max = x3dom.fields.SFVec3f.MIN();
+    var min = x3dom.fields.SFVec3f.MAX();
+    var max = x3dom.fields.SFVec3f.MIN();
     var ok = this._scene.getVolume(min, max, true);
     
     if (ok)
@@ -6525,8 +6605,8 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     
     this._dx = 0;
     this._dy = 0;
-	this._lastX = x;
-	this._lastY = y;
+    this._lastX = x;
+    this._lastY = y;
     this._pressX = x;
     this._pressY = y;
     this._lastButton = buttonState;
@@ -6631,7 +6711,7 @@ x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
     this._dx = 0;
     this._dy = 0;
     this._lastButton = 0;
-	this._lastX = x;
+    this._lastX = x;
     this._lastY = y;
 };
 
@@ -6640,7 +6720,7 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
     this._dx = 0;
     this._dy = 0;
     this._lastButton = 0;
-	this._lastX = x;
+    this._lastX = x;
     this._lastY = y;
 };
 
@@ -6780,7 +6860,7 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
     var avoidTraversal = (this._scene._vf.pickMode.toLowerCase() === "idbuf" ||
                           this._scene._vf.pickMode.toLowerCase() === "color" ||
                           this._scene._vf.pickMode.toLowerCase() === "texcoord");
-	
+    
     if (avoidTraversal) {
         var obj = this._pickingInfo.pickObj;
         
@@ -6801,10 +6881,10 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 x3dom.X3DDocument = function(canvas, ctx) {
     this.canvas = canvas;
     this.ctx = ctx;
-	this.needRender = true;
-	this._scene = null;
-	this._viewarea = null;
-	this._nodeBag = {
+    this.needRender = true;
+    this._scene = null;
+    this._viewarea = null;
+    this._nodeBag = {
         timer: [], 
         lights: [], 
         clipPlanes: [], 
@@ -6813,8 +6893,8 @@ x3dom.X3DDocument = function(canvas, ctx) {
         renderTextures: [], 
         viewarea: []
     };
-	//this.animNode = [];
-	this.downloadCount = 0;
+    //this.animNode = [];
+    this.downloadCount = 0;
     this.onload = function () {};
     this.onerror = function () {};
 };
@@ -6839,7 +6919,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
         }
         var next_uri = queued_uris.shift();
         
-		//x3dom.debug.logInfo("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
+        //x3dom.debug.logInfo("loading... next_uri=" + next_uri + ", " + x3dom.isX3DElement(next_uri) + ", " + next_uri.namespaceURI);
         if ( x3dom.isX3DElement(next_uri) && 
             (next_uri.localName.toLowerCase() === 'x3d' || next_uri.localName.toLowerCase() === 'websg') )
         {
@@ -6848,7 +6928,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
             next_step();
         }
     }
-	
+    
     next_step();
 };
 
@@ -6886,18 +6966,18 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 };
                 //x3dom.debug.logInfo("MUTATION: " + e.attrName + ", " + e.type + ", attrChange=" + attrToString[e.attrChange]);
                 e.target._x3domNode.updateField(e.attrName, e.newValue);
-    			doc.needRender = true;			
+                doc.needRender = true;          
             }
         },
         onNodeRemoved: function(e) {
             if ('_x3domNode' in e.target.parentNode && '_x3domNode' in e.target) {
                 var parent = e.target.parentNode._x3domNode;
                 var child = e.target._x3domNode;
-			
+            
                 //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
                 if (parent) {
                     parent.removeChild(child);
-                    doc.needRender = true;			
+                    doc.needRender = true;          
                 }
             }
         },
@@ -6907,16 +6987,16 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 var parent = e.target.parentNode._x3domNode;
                 var child = e.target;
             
-    			//x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
+                //x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
             
-    			if (parent._nameSpace) {
+                if (parent._nameSpace) {
                     var newNode = parent._nameSpace.setupTree(child);
                     parent.addChild(newNode, child.getAttribute("containerField"));
                     doc.needRender = true;
-    			}
+                }
                 else {
-    				x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
-    			}
+                    x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
+                }
             }
         }
     };
@@ -6924,79 +7004,83 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     //sceneDoc.addEventListener('DOMCharacterDataModified', domEventListener.onAttrModified, true);    
     sceneDoc.addEventListener('DOMNodeRemoved', domEventListener.onNodeRemoved, true);
     sceneDoc.addEventListener('DOMNodeInserted', domEventListener.onNodeInserted, true);
-	if ( (x3dom.userAgentFeature.supportsDOMAttrModified === true ) ) {
-		sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
-	}
-	
+    if ( (x3dom.userAgentFeature.supportsDOMAttrModified === true ) ) {
+        sceneDoc.addEventListener('DOMAttrModified', domEventListener.onAttrModified, true);
+    }
+    
     // sceneDoc is the X3D element here...
     var sceneElem = x3dom.findScene(sceneDoc);
-	
-	// create and add BindableBag
-	this._bindableBag = new x3dom.BindableBag(this);
-	
-	// create and add the NodeNameSpace 
-	var nameSpace = new x3dom.NodeNameSpace("scene", doc);
+    
+    // create and add BindableBag
+    this._bindableBag = new x3dom.BindableBag(this);
+    
+    // create and add the NodeNameSpace 
+    var nameSpace = new x3dom.NodeNameSpace("scene", doc);
     var scene = nameSpace.setupTree(sceneElem);
     
-	// link scene
+    // link scene
     this._scene = scene;
-	this._bindableBag.setRefNode(scene);
-	
-	// create view 
-	this._viewarea = new x3dom.Viewarea (this, scene);
-	
-	this._viewarea._width = this.canvas.width;
-	this._viewarea._height = this.canvas.height;
+    this._bindableBag.setRefNode(scene);
+    
+    // create view 
+    this._viewarea = new x3dom.Viewarea (this, scene);
+    
+    this._viewarea._width = this.canvas.width;
+    this._viewarea._height = this.canvas.height;
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
-	var that;
-	
+    var that;
+    
     if (this._nodeBag.timer.length) {
-		this.needRender = true;
+        this.needRender = true;
         Array.forEach( this._nodeBag.timer, function (node) { node.onframe(t); } );
     }
     if (this._nodeBag.followers.length) {
-		that = this;
+        that = this;
         Array.forEach( this._nodeBag.followers, function (node) { that.needRender |= node.tick(t); } );
     }
-	// just a temporary tricker solution to update the CSS-trans
- 	if (this._nodeBag.trans.length) {
-		that = this;
+    // just a temporary tricker solution to update the CSS-trans
+    if (this._nodeBag.trans.length) {
+        that = this;
         Array.forEach( this._nodeBag.trans, function (node) { that.needRender |= node.tick(t); } );
     }
     if (this._nodeBag.viewarea.length) {
-		that = this;
+        that = this;
         Array.forEach( this._nodeBag.viewarea, function (node) { that.needRender |= node.tick(t); } );
     }
 };
 
 x3dom.X3DDocument.prototype.render = function (ctx) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     ctx.renderScene(this._viewarea);
 };
 
 x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMove(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onDrag(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     // update volume only on click since expensive!
     var min = x3dom.fields.SFVec3f.MAX();
@@ -7011,32 +7095,36 @@ x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
 };
 
 x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMouseRelease(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onMouseOver = function (ctx, x, y, buttonState) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMouseOver(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onMouseOut = function (ctx, x, y, buttonState) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMouseOut(x, y, buttonState);
 };
 
 x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
-    if (!ctx || !this._viewarea)
+    if (!ctx || !this._viewarea) {
         return;
+    }
     
     this._viewarea.onDoubleClick(x, y);
 };
@@ -7047,49 +7135,34 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
     switch (keyCode)
     {
         case 27: /* ESC */
-            {
-                history.back(); // emulate good old ESC key
-            }
+            history.back(); // emulate good old ESC key
             break;
         case 33: /* page up */
-            {
-				var stack = this._scene.getViewpoint()._stack;
+                var stack = this._scene.getViewpoint()._stack;
 
-				if (stack) {
+                if (stack) {
                     stack.switchTo('next');
-				}
-				else {
-					x3dom.debug.logError ('No valid ViewBindable stack.');
-				}
-            }
+                } else {
+                    x3dom.debug.logError ('No valid ViewBindable stack.');
+                }
             break;
         case 34: /* page down */
-            {
-				var stack = this._scene.getViewpoint()._stack;
-				
-				if (stack) {
-					stack.switchTo('prev');
-				}
-				else {
-					x3dom.debug.logError ('No valid ViewBindable stack.');
-				}
-            }
+                var stack = this._scene.getViewpoint()._stack;
+                
+                if (stack) {
+                    stack.switchTo('prev');
+                }
+                else {
+                    x3dom.debug.logError ('No valid ViewBindable stack.');
+                }
             break;
         case 37: /* left */
-            {
-            }
             break;
         case 38: /* up */
-            {
-            }
             break;
         case 39: /* right */
-            {
-            }
             break;
         case 40: /* down */
-            {
-            }
             break;
         default:
     }
@@ -7101,83 +7174,64 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     switch (charCode)
     {
         case  32: /* space */
-            {
-				var statDiv = this.canvas.parent.statDiv;
+                var statDiv = this.canvas.parent.statDiv;
 
-				if (statDiv) {	
-					statDiv.style.display = ((statDiv.style.display == 'none') ? 'inline' : 'none');
-				}
-				
+                if (statDiv) {  
+                    statDiv.style.display = ((statDiv.style.display == 'none') ? 'inline' : 'none');
+                }
+                
                 x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
                                     "m: toggle render mode | p: intersect type | r: reset view" +
                                     "e: examine mode | f: fly mode | w: walk mode | " +
                                     "l: lookAt mode | u: upright position");
-            }
             break;
         case  43: /* + (incr. speed) */
-            {
                 this._scene.getNavigationInfo()._vf.speed = 
                     2 * this._scene.getNavigationInfo()._vf.speed;
                 x3dom.debug.logInfo("Changed navigation speed to " + 
                     this._scene.getNavigationInfo()._vf.speed);
-            }
             break;
         case  45: /* - (decr. speed) */
-            {
                 this._scene.getNavigationInfo()._vf.speed = 
                     0.5 * this._scene.getNavigationInfo()._vf.speed;
                 x3dom.debug.logInfo("Changed navigation speed to " + 
                     this._scene.getNavigationInfo()._vf.speed);
-            }
             break;
         case  97: /* a, view all */ 
-            {
-                this._viewarea.showAll();
-            }
+            this._viewarea.showAll();
             break;
         case  100: /* d, switch on/off buffer view for dbg */ 
-            {
-				if (this._viewarea._visDbgBuf === undefined) {
-					this._viewarea._visDbgBuf = true;
+                if (this._viewarea._visDbgBuf === undefined) {
+                    this._viewarea._visDbgBuf = true;
                 }
-				else {
-					this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
+                else {
+                    this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
                 }
                 
                 x3dom.debug.logContainer.style.display = 
                         (this._viewarea._visDbgBuf === true) ? "block" : "none";
-            }
             break;
         case 101: /* e, examine mode */
-            {
                 this._scene.getNavigationInfo()._vf.type[0] = "examine";
                 x3dom.debug.logInfo("Switch to examine mode.");
-            }
             break;
         case 102: /* f, fly mode */
-            {
                 this._scene.getNavigationInfo()._vf.type[0] = "fly";
                 x3dom.debug.logInfo("Switch to fly mode.");
-            }
             break;
         case 108: /* l, lookAt mode */ 
-			{
                 this._scene.getNavigationInfo()._vf.type[0] = "lookat";
                 x3dom.debug.logInfo("Switch to lookat mode.");
-			}
-			break;
+            break;
         case 109: /* m, toggle "points" attribute */ 
-			{
-				if (this._viewarea._points === undefined) {
-					this._viewarea._points = true;
+                if (this._viewarea._points === undefined) {
+                    this._viewarea._points = true;
                 }
-				else {
-					this._viewarea._points = !this._viewarea._points;
+                else {
+                    this._viewarea._points = !this._viewarea._points;
                 }
-			}
-			break;
+            break;
         case 112: /* p, switch intersect type */
-            {
                 if (this._scene._vf.pickMode.toLowerCase() === "idbuf") {
                     this._scene._vf.pickMode = "color";
                 }
@@ -7191,32 +7245,23 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                     this._scene._vf.pickMode = "idBuf";
                 }
                 x3dom.debug.logInfo("Switch pickMode to '" + this._scene._vf.pickMode + "'.");
-            }
             break;
         case 114: /* r, reset view */
-            {
                 this._viewarea.resetView();
-            }
             break;
         case 115: /* s, light view */
-			{
                 if (this._nodeBag.lights.length > 0)
                 {
                     this._viewarea.animateTo(this._viewarea.getLightMatrix()[0], 
                                              this._scene.getViewpoint());
                 }
-			}
-			break;
+            break;
         case 117: /* u, upright position */ 
-			{
                 this._viewarea.uprightView();
-			}
-			break;
+            break;
         case 119: /* w, walk mode */
-            {
                 this._scene.getNavigationInfo()._vf.type[0] = "walk";
                 x3dom.debug.logInfo("Switch to walk mode.");
-            }
             break;
         default:
     }
@@ -7224,7 +7269,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 
 x3dom.X3DDocument.prototype.shutdown = function(ctx)
 {
-    if (!ctx)
+    if (!ctx) {
         return;
-	ctx.shutdown(this._viewarea);
+    }
+    ctx.shutdown(this._viewarea);
 };

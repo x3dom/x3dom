@@ -1098,6 +1098,7 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.setupShape = function (gl, shape, viewarea) 
     {
         var q = 0;
+        var tex = null;
         
         if (shape._webgl !== undefined)
         {
@@ -1109,7 +1110,7 @@ x3dom.gfx_webgl = (function () {
                     
             if (shape._dirty.texture === true || needFullReInit)
             {   
-                var tex = shape._cf.appearance.node._cf.texture.node;
+                tex = shape._cf.appearance.node._cf.texture.node;
                 
                 if ((shape._webgl.texture !== undefined && tex) && !needFullReInit)
                 {
@@ -1491,8 +1492,9 @@ x3dom.gfx_webgl = (function () {
                     for (var cnt=0; cnt<tex.size(); cnt++)
                     {
                         var singleTex = tex.getTexture(cnt);
-                        if (!singleTex)
+                        if (!singleTex) {
                             break;
+                        }
                         that.updateTexture(singleTex, cnt);
                     }
                 }
@@ -1824,7 +1826,7 @@ x3dom.gfx_webgl = (function () {
                 
                 gl.vertexAttribPointer(sp[df], attrib.numComponents, gl.FLOAT, false, 0, 0); 
                 
-                delete attribs;
+                delete attribs; // what should this accomplish?
             }
         }
     };
@@ -1942,11 +1944,13 @@ x3dom.gfx_webgl = (function () {
                 var tmp = [], arr = [];
                 var colors = [], sky = [0];
                 
-                for (i=0; i<bgnd._vf.skyColor.length; i++)
+                for (i=0; i<bgnd._vf.skyColor.length; i++) {
                     colors[i] = bgnd._vf.skyColor[i];
+                }
                 
-                for (i=0; i<bgnd._vf.skyAngle.length; i++)
+                for (i=0; i<bgnd._vf.skyAngle.length; i++) {
                     sky[i+1] = bgnd._vf.skyAngle[i];
+                }
                 
                 if (n > 0) {
                     if (sky[sky.length-1] < Math.PI / 2) {
@@ -1973,8 +1977,9 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
                 
-                for (i=0; i<sky.length; i++)
+                for (i=0; i<sky.length; i++) {
                     sky[i] /= Math.PI;
+                }
                 
                 x3dom.debug.assert(sky.length == colors.length);
                 
@@ -2325,8 +2330,9 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 try {
-                    if (shape._webgl.indexes && shape._webgl.indexes[q])
-                    gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    if (shape._webgl.indexes && shape._webgl.indexes[q]) {
+                        gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    }
                 }
                 catch (e) {
                     x3dom.debug.logException(shape._DEF + " renderShadowPass(): " + e);
@@ -2375,8 +2381,9 @@ x3dom.gfx_webgl = (function () {
             var trafo = scene.drawableObjects[i][0];
             var shape = scene.drawableObjects[i][1];
             
-            if (shape._objectID < 1 || shape._webgl === undefined)
+            if (shape._objectID < 1 || shape._webgl === undefined) {
                 continue;
+            }
             
             sp.modelMatrix = trafo.toGL();
             //sp.modelMatrix = mat_view.mult(trafo).toGL();
@@ -2430,9 +2437,9 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 try {
-                    if (shape._webgl.indexes && shape._webgl.indexes[q])
-                    gl.drawElements(shape._webgl.primType, 
-                                    shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    if (shape._webgl.indexes && shape._webgl.indexes[q]) {
+                        gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    }
                 }
                 catch (e) {
                     x3dom.debug.logException(shape._DEF + " renderPickingPass(): " + e);
@@ -2481,9 +2488,10 @@ x3dom.gfx_webgl = (function () {
             return;
         }
         
+        var tex = null;
         var scene = viewarea._scene;
-        
         var sp = shape._webgl.shader;
+
         if (!sp) {
             shape._webgl.shader = getDefaultShaderProgram(gl, 'default');
             sp = shape._webgl.shader;
@@ -2503,8 +2511,11 @@ x3dom.gfx_webgl = (function () {
         if(fog){
             sp['fog.color']             = fog._vf.color.toGL();
             sp['fog.visibilityRange']   = fog._vf.visibilityRange;
-            if(fog._vf.fogType == "LINEAR") sp['fog.fogType'] = 0.0; 
-            else sp['fog.fogType'] = 1.0;
+            if(fog._vf.fogType == "LINEAR") {
+                sp['fog.fogType'] = 0.0;
+            } else {
+                sp['fog.fogType'] = 1.0;
+            }
         }
         
         //===========================================================================
@@ -2660,7 +2671,6 @@ x3dom.gfx_webgl = (function () {
             
           if (shape._webgl.texture[cnt])
           {
-            var tex = null;
             if (shape._cf.appearance.node._cf.texture.node) {
                 tex = shape._cf.appearance.node._cf.texture.node.getTexture(cnt);
                 sp.origChannelCount = tex._vf.origChannelCount;
@@ -2722,18 +2732,28 @@ x3dom.gfx_webgl = (function () {
                 sp.sphereMapping = 0.0;
             }
             
-            if(shaderCSS){
+            if(shaderCSS) {
                 var texUnit = 0;
-                if(shaderCSS.getDiffuseMap())  if(!sp.tex)  sp.tex  = texUnit++;
-                if(shaderCSS.getNormalMap())   if(!sp.bump) sp.bump = texUnit++;
-                if(shaderCSS.getSpecularMap()) if(!sp.spec) sp.spec = texUnit++;
-            }
-            else{
+                if(shaderCSS.getDiffuseMap()) {
+                    if(!sp.tex) {
+                        sp.tex  = texUnit++;
+                    }
+                }
+                if(shaderCSS.getNormalMap()) {
+                    if(!sp.bump) { 
+                        sp.bump = texUnit++;
+                    }
+                }
+                if(shaderCSS.getSpecularMap()) { 
+                    if(!sp.spec) { 
+                        sp.spec = texUnit++;
+                    }
+                }
+            } else {
                 if (!sp.tex) {
                     sp.tex = 0;     // FIXME; only 1st tex known in shader
                 }
             }
-            
           }
         }
         
@@ -2835,8 +2855,9 @@ x3dom.gfx_webgl = (function () {
                 }
                 else {
                     //x3dom.debug.logInfo("indexLength: " + shape._webgl.indexes[q].length);
-                    if (shape._webgl.indexes && shape._webgl.indexes[q])
-                    gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    if (shape._webgl.indexes && shape._webgl.indexes[q]) {
+                        gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    }
                 }
               }
             }
@@ -2858,8 +2879,9 @@ x3dom.gfx_webgl = (function () {
             }
         }
         
-        if (shape._webgl.indexes && shape._webgl.indexes[0])
+        if (shape._webgl.indexes && shape._webgl.indexes[0]) {
             this.numFaces += shape._cf.geometry.node._mesh._numFaces;
+        }
         this.numCoords += shape._cf.geometry.node._mesh._numCoords;
         
         for (cnt=0; shape._webgl.texture !== undefined && 
@@ -2976,7 +2998,7 @@ x3dom.gfx_webgl = (function () {
         //x3dom.debug.logInfo("Picking time (idBuf): " + t1 + "ms");
         
         return true;
-    }
+    };
     
     Context.prototype.renderScene = function (viewarea) 
     {
@@ -3061,7 +3083,7 @@ x3dom.gfx_webgl = (function () {
         // render traversal
         scene.drawableObjects = null;
         //if (scene.drawableObjects === undefined || !scene.drawableObjects)
-        {
+        //{
             scene.drawableObjects = [];
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
@@ -3076,7 +3098,7 @@ x3dom.gfx_webgl = (function () {
                 this.canvas.parent.statDiv.appendChild(document.createElement("br"));
                 this.canvas.parent.statDiv.appendChild(document.createTextNode("traverse: " + t1));
             }
-        }
+        //}
         
         var mat_view = viewarea.getViewMatrix();
         viewarea._last_mat_view = mat_view;
@@ -3269,10 +3291,11 @@ x3dom.gfx_webgl = (function () {
                 arr[i] = -1;
             }
             else {
-                if (render === true)
+                if (render === true) {
                     arr[i] = 1;
-                else 
+                } else {
                     arr[i] = 0;
+                }
             }
             rt._cf.excludeNodes.nodes[i]._vf.render = false;
         }
@@ -3328,8 +3351,9 @@ x3dom.gfx_webgl = (function () {
                 transform = scene.drawableObjects[i][0];
                 shape = scene.drawableObjects[i][1];
                 
-                if (shape._vf.render !== undefined && shape._vf.render === false)
+                if (shape._vf.render !== undefined && shape._vf.render === false) {
                    continue;
+                }
                 
                 this.renderShape(transform, shape, viewarea, slights, numLights, 
                         mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
@@ -3347,8 +3371,9 @@ x3dom.gfx_webgl = (function () {
                 transform = locScene.drawableObjects[i][0];
                 shape = locScene.drawableObjects[i][1];
                 
-                if (shape._vf.render !== undefined && shape._vf.render === false)
+                if (shape._vf.render !== undefined && shape._vf.render === false) {
                    continue;
+                }
                 
                 this.setupShape(gl, shape, viewarea);
                 
