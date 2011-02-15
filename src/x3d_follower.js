@@ -193,16 +193,18 @@ x3dom.registerNodeType(
                     this._buffer.length = this._numSupports;
 
                     this._buffer[0] = this._vf.initialDestination;
-                    for (var C=1; C<this._buffer.length; C++)
+                    for (var C=1; C<this._buffer.length; C++) {
                         this._buffer[C] = this._vf.initialValue;
+                    }
 
                     this._previousValue = this._vf.initialValue;
 
                     this._stepTime = this._vf.duration / this._numSupports;
                     
                     var active = !this._buffer[0].equals(this._buffer[1], x3dom.fields.Eps);
-                    if (this._vf.isActive !== active)
+                    if (this._vf.isActive !== active) {
                         this.postMessage('isActive', active);
+                    }
                 }
             },
 
