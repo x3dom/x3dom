@@ -1,5 +1,23 @@
+2011-02-15  thyrell
+
+	 [r936] Down to 52 liniting errors
+	 [r935] Lint error cleanup installment 2
+	 [r934] Fixed a whole slew of Lint errors
+	 [r933] Making the Flipper test case work as HTML variant
+	 [r932] Using src/VERSION instead of version.txt
+
+2011-02-11  thyrell
+
+	 [r931] Renaming the python module marker (.py not ,py)
+
+2011-02-10  yjung
+
+	 [r930] batch for make
+	 [r929] try catch around python svn call
+
 2011-02-08  thyrell
 
+	 [r928] Regenerated ChangeLog
 	 [r927] Layout fixes in tests index file
 	 [r926] Merge branch 'buildsystem'
 	  

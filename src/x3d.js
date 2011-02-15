@@ -3947,7 +3947,9 @@ x3dom.registerNodeType(
                     {
                         // Convert non-triangular polygons to a triangle fan
                         // (TODO: this assumes polygons are convex)
-                        if ((i > 0) && !(i % 3)) {
+
+//                        if ((i > 0) && !(i % 3)) { 
+                        if ((i > 0) && (i % 3 === 0 )) { 
                             t = 0;
                             faceCnt++;
                         }
