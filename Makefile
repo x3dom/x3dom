@@ -25,7 +25,7 @@ X3DOM_MIN = ${DIST_DIR}/x3dom.min.js
 
 QUNIT_DIR = ${TEST_DIR}/qunit
 
-X3DOM_VER = $(shell cat version.txt)
+X3DOM_VER = $(shell cat src/VERSION)
 VER = sed "s/@VERSION/${X3DOM_VER}/"
 
 DATE=$(shell git log -1 --pretty=format:%ad)
