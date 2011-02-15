@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html>
-  <head>
-    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
-    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'></link>
-  </head>
-  <body>
+<head>
+    <meta charset='utf-8'>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'>
+    <link rel='stylesheet' type='text/css' href='media/css/examples.css'>
+</head>
+<body>
+    <div id="nav">
+        <a href="http://www.x3dom.org/?page_id=5">Examples index</a>
+    </div>
+    <div class="content">      
+      
 	<h1>Camera activating example</h1>
-	<p>
-	Simple example which shows how to bind (activate) a camera. Notice the smooth animation which is automatically calculated.
-	<p>
-    <x3d id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='400px' height='400px'>
+	<p>Simple example which shows how to bind (activate) a camera. Notice the smooth animation which is automatically calculated.</p>
+    <div class="group">
+        <x3d id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='400px' height='400px'>
 	      <scene DEF='scene'>
 			<sound>
 				<audioClip url='sound/spita.wav' loop='true'></audioClip>
@@ -744,17 +749,17 @@
 	    	<ROUTE fromNode='plane_pos' fromField='value_changed' toNode='plane' toField='translation'></ROUTE>
 	      </scene>
 	    </x3d>
-	</p>
-	<input type="button" value="persp_cam"
-           onclick="document.getElementById('persp').setAttribute('set_bind','true');"/>
-	<input type="button" value="default_cam"
-           onclick="document.getElementById('default_cam').setAttribute('set_bind','true');"/>
-	<input type="button" value="back_cam"
-	           onclick="document.getElementById('back_cam').setAttribute('set_bind','true');"/>
-	<input type="button" value="front_cam"
-		           onclick="document.getElementById('front_cam').setAttribute('set_bind','true');"/>
-	<input type="button" value="top_cam"
-	      onclick="document.getElementById('top_cam').setAttribute('set_bind','true');"/>
+	</div>
+
+    <div class="buttons group">
+        <input type="button" value="persp_cam" onclick="document.getElementById('persp').setAttribute('set_bind','true');"/>
+	    <input type="button" value="default_cam" onclick="document.getElementById('default_cam').setAttribute('set_bind','true');"/>
+	    <input type="button" value="back_cam" onclick="document.getElementById('back_cam').setAttribute('set_bind','true');"/>
+	    <input type="button" value="front_cam" onclick="document.getElementById('front_cam').setAttribute('set_bind','true');"/>
+	    <input type="button" value="top_cam" onclick="document.getElementById('top_cam').setAttribute('set_bind','true');"/>
+    </div>
+    </div> <!-- /content -->
+
     <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
   </body>
 </html>
