@@ -13,7 +13,6 @@ var ok = {
 	"Use '!==' to compare with 'null'.": true,
 	"Expected an assignment or function call and instead saw an expression.": true,
 	"Expected a 'break' statement before 'case'.": true,
-	"'e' is already defined.": true
 };
 
 var e = JSLINT.errors, found = 0, w;

@@ -266,23 +266,26 @@ x3dom.registerNodeType(
             updateBuffer: function(now)
             {
                 var Frac = (now - this._bufferEndTime) / this._stepTime;
+                var C;
+                var NumToShift;
+                var Alpha;
                 
                 if (Frac >= 1)
                 {
-                    var NumToShift = Math.floor(Frac);
+                    NumToShift = Math.floor(Frac);
                     Frac -= NumToShift;
 
                     if( NumToShift < this._buffer.length)
                     { 
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
+                        for (C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
                         }
 
-                        for (var C=0; C<NumToShift; C++)
+                        for (C=0; C<NumToShift; C++)
                         {
-                            var Alpha = C / NumToShift;
+                            Alpha = C / NumToShift;
 
                             this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
                         }
@@ -291,14 +294,12 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++) {
+                        for (C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
                         }
                     }
-
                     this._bufferEndTime += NumToShift * this._stepTime;
                 }
-
                 return Frac;
             }
         }
@@ -618,6 +619,9 @@ x3dom.registerNodeType(
             updateBuffer: function(now)
             {
                 var Frac = (now - this._bufferEndTime) / this._stepTime;
+                var C;
+                var NumToShift;
+                var Alpha;
                 // is normally < 1. When it has grown to be larger than 1, we have to shift the array because the step response
                 // of the oldest entry has already reached its destination, and it's time for a newer entry.
                 // has already reached it
@@ -625,7 +629,7 @@ x3dom.registerNodeType(
 
                 if (Frac >= 1)
                 {
-                    var NumToShift = Math.floor(Frac);
+                    NumToShift = Math.floor(Frac);
                     Frac -= NumToShift;
 
                     if( NumToShift < this._buffer.length)
@@ -633,16 +637,16 @@ x3dom.registerNodeType(
                         // normal case
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
+                        for (C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
                         }
 
-                        for (var C=0; C<NumToShift; C++)
+                        for (C=0; C<NumToShift; C++)
                         {
                             // Hmm, we have a destination value, but don't know how it has
                             // reached the current state.
                             // Therefore we do a linear interpolation from the latest value in the buffer to destination.
-                            var Alpha = C / NumToShift;
+                            Alpha = C / NumToShift;
 
                             this._buffer[C] = this._vf.set_destination.slerp(this._buffer[NumToShift], Alpha);
                         }
@@ -661,7 +665,7 @@ x3dom.registerNodeType(
 
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++) {
+                        for (C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
                         }
                     }
@@ -991,6 +995,9 @@ x3dom.registerNodeType(
             updateBuffer: function(now)
             {
                 var Frac = (now - this._bufferEndTime) / this._stepTime;
+                var C;
+                var NumToShift;
+                var Alpha;
                 // is normally < 1. When it has grown to be larger than 1, we have to shift the array because the step response
                 // of the oldest entry has already reached its destination, and it's time for a newer entry.
                 // has already reached it
@@ -998,7 +1005,7 @@ x3dom.registerNodeType(
 
                 if (Frac >= 1)
                 {
-                    var NumToShift = Math.floor(Frac);
+                    NumToShift = Math.floor(Frac);
                     Frac -= NumToShift;
 
                     if( NumToShift < this._buffer.length)
@@ -1006,16 +1013,16 @@ x3dom.registerNodeType(
                         // normal case
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
+                        for (C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
                         }
 
-                        for (var C=0; C<NumToShift; C++)
+                        for (C=0; C<NumToShift; C++)
                         {
                             // Hmm, we have a destination value, but don't know how it has
                             // reached the current state.
                             // Therefore we do a linear interpolation from the latest value in the buffer to destination.
-                            var Alpha = C / NumToShift;
+                            Alpha = C / NumToShift;
 
                             this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
                         }
@@ -1034,7 +1041,7 @@ x3dom.registerNodeType(
 
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++) {
+                        for (C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
                         }
                     }
@@ -1182,23 +1189,26 @@ x3dom.registerNodeType(
             updateBuffer: function(now)
             {
                 var Frac = (now - this._bufferEndTime) / this._stepTime;
+                var C;
+                var NumToShift;
+                var Alpha;
                 
                 if (Frac >= 1)
                 {
-                    var NumToShift = Math.floor(Frac);
+                    NumToShift = Math.floor(Frac);
                     Frac -= NumToShift;
 
                     if( NumToShift < this._buffer.length)
                     {
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
+                        for (C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C]= this._buffer[C - NumToShift];
                         }
 
-                        for (var C=0; C<NumToShift; C++)
+                        for (C=0; C<NumToShift; C++)
                         {
-                            var Alpha = C / NumToShift;
+                            Alpha = C / NumToShift;
 
                             this._buffer[C] = this._buffer[NumToShift].multiply(Alpha).add(this._vf.set_destination.multiply((1 - Alpha)));
                         }
@@ -1207,7 +1217,7 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C= 0; C<this._buffer.length; C++) {
+                        for (C= 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
                         }
                     }
@@ -1673,23 +1683,26 @@ x3dom.registerNodeType(
             updateBuffer: function(now)
             {
                 var Frac = (now - this._bufferEndTime) / this._stepTime;
+                var C;
+                var NumToShift;
+                var Alpha;
                 
                 if (Frac >= 1)
                 {
-                    var NumToShift = Math.floor(Frac);
+                    NumToShift = Math.floor(Frac);
                     Frac -= NumToShift;
 
                     if (NumToShift < this._buffer.length)
                     {
                         this._previousValue = this._buffer[this._buffer.length - NumToShift];
 
-                        for (var C=this._buffer.length - 1; C>=NumToShift; C--) {
+                        for (C=this._buffer.length - 1; C>=NumToShift; C--) {
                             this._buffer[C] = this._buffer[C - NumToShift];
                         }
 
-                        for (var C=0; C<NumToShift; C++)
+                        for (C=0; C<NumToShift; C++)
                         {
-                            var Alpha = C / NumToShift;
+                            Alpha = C / NumToShift;
 
                             this._buffer[C] = this._buffer[NumToShift] * Alpha + this._vf.set_destination * (1 - Alpha);
                         }
@@ -1698,7 +1711,7 @@ x3dom.registerNodeType(
                     {
                         this._previousValue = (NumToShift == this._buffer.length) ? this._buffer[0] : this._vf.set_destination;
 
-                        for (var C = 0; C<this._buffer.length; C++) {
+                        for (C = 0; C<this._buffer.length; C++) {
                             this._buffer[C] = this._vf.set_destination;
                         }
                     }

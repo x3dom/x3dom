@@ -1099,6 +1099,10 @@ x3dom.gfx_webgl = (function () {
     {
         var q = 0;
         var tex = null;
+        var colorBuffer;
+        var vertices;
+        var colors;
+        var positionBuffer;
         
         if (shape._webgl !== undefined)
         {
@@ -1182,13 +1186,13 @@ x3dom.gfx_webgl = (function () {
                     // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
                     gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
                     
-                    var positionBuffer = gl.createBuffer();
+                    positionBuffer = gl.createBuffer();
                     shape._webgl.buffers[5*q+1] = positionBuffer;
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
                     
-                    var vertices = new Float32Array(shape._webgl.positions[q]);
+                    vertices = new Float32Array(shape._webgl.positions[q]);
                     
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1208,10 +1212,10 @@ x3dom.gfx_webgl = (function () {
                     
                     gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
                     
-                    var colorBuffer = gl.createBuffer();
+                    colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[5*q+4] = colorBuffer;
                     
-                    var colors = new Float32Array(shape._webgl.colors[q]);
+                    colors = new Float32Array(shape._webgl.colors[q]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
@@ -1243,7 +1247,10 @@ x3dom.gfx_webgl = (function () {
         shape._dirty.colors = false;
         shape._dirty.indexes = false;
         shape._dirty.texture = false;
- 
+    
+        var vsID;
+        var fsID;
+        
         // TODO; finish text!
         // CANVAS only supports: font, textAlign, textBaseline, fillText, strokeText, measureText, width
         if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) 
@@ -1417,8 +1424,8 @@ x3dom.gfx_webgl = (function () {
             };
 
             shape._webgl.primType = gl.TRIANGLES;
-            var vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow);
-            var fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
+            vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow);
+            fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
             shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
         }
         else 
@@ -1671,8 +1678,8 @@ x3dom.gfx_webgl = (function () {
                             cssMode += 4;
                         }
                         
-                        var vsID = this.generateVS(viewarea, false, false, false, cssMode, shape._webgl.lightsAndShadow);
-                        var fsID = this.generateFS(viewarea, false, false, cssMode, shape._webgl.lightsAndShadow);
+                        vsID = this.generateVS(viewarea, false, false, false, cssMode, shape._webgl.lightsAndShadow);
+                        fsID = this.generateFS(viewarea, false, false, cssMode, shape._webgl.lightsAndShadow);
                         
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                         
@@ -1693,27 +1700,24 @@ x3dom.gfx_webgl = (function () {
                 /** BEGIN STANDARD MATERIAL */
                 if (tex) {
                     if (shape._cf.appearance.node._cf.textureTransform.node === null) {
-                        var vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow);
-                        var fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
+                        vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow);
+                        fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
+                        shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
+                    } else {
+                        vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow);
+                        fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                     }
-                    else {
-                        var vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow);
-                        var fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
-                        shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
-                    }
-                }
-                else if (shape._cf.geometry.node._mesh._colors[0].length > 0) {
+                } else if (shape._cf.geometry.node._mesh._colors[0].length > 0) {
                     
                     var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
                 
-                    var vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow);
-                    var fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
+                    vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow);
+                    fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
                     shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
-                }
-                else {
-                    var vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow);
-                    var fsID = this.generateFS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
+                } else {
+                    vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow);
+                    fsID = this.generateFS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
                     shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                 }
                 /** END STANDARD MATERIAL */
@@ -1740,11 +1744,11 @@ x3dom.gfx_webgl = (function () {
             
             delete indexArray;
             
-            var positionBuffer = gl.createBuffer();
+            positionBuffer = gl.createBuffer();
             shape._webgl.buffers[5*q+1] = positionBuffer;
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-            var vertices = new Float32Array(shape._webgl.positions[q]);
+            vertices = new Float32Array(shape._webgl.positions[q]);
             
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1787,11 +1791,11 @@ x3dom.gfx_webgl = (function () {
           }
           if (sp.color !== undefined)
           {
-            var colorBuffer = gl.createBuffer();
+            colorBuffer = gl.createBuffer();
             shape._webgl.buffers[5*q+4] = colorBuffer;
             
-            var colors = new Float32Array(shape._webgl.colors[q]);
-            
+            colors = new Float32Array(shape._webgl.colors[q]);
+
             gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
             gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
             
@@ -1832,8 +1836,10 @@ x3dom.gfx_webgl = (function () {
     };
     
     // mainly manages rendering of backgrounds and buffer clearing
-    Context.prototype.setupScene = function(gl, bgnd) 
-    {
+    Context.prototype.setupScene = function(gl, bgnd) {
+        var sphere;
+        var texture;
+        
         if (bgnd._webgl !== undefined)
         {
             if (!bgnd._dirty) {
@@ -1867,7 +1873,7 @@ x3dom.gfx_webgl = (function () {
             if (url.length >= 6 && url[1].length > 0 && url[2].length > 0 && 
                 url[3].length > 0 && url[4].length > 0 && url[5].length > 0)
             {
-                var sphere = new x3dom.nodeTypes.Sphere();
+                sphere = new x3dom.nodeTypes.Sphere();
                 
                 bgnd._webgl = {
                     positions: sphere._mesh._positions[0],
@@ -1881,14 +1887,12 @@ x3dom.gfx_webgl = (function () {
                 
                 bgnd._webgl.texture = this.loadCubeMap(gl, url, bgnd._nameSpace.doc, true);
             }
-            else
-            {
-                var texture = gl.createTexture();
+            else {
+                texture = gl.createTexture();
                 
                 var image = new Image();
                 
-                image.onload = function()
-                {
+                image.onload = function() {
                     bgnd._nameSpace.doc.needRender = true;
                     bgnd._nameSpace.doc.downloadCount -= 1;
                     
@@ -1917,12 +1921,11 @@ x3dom.gfx_webgl = (function () {
                 bgnd._webgl.shader = this.getShaderProgram(gl, 
                         ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
             }
-        }
-        else 
-        {          
-            if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length)
-            {
-                var sphere = new x3dom.nodeTypes.Sphere();
+        } else {          
+
+            if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length) {
+
+                sphere = new x3dom.nodeTypes.Sphere();
                 
                 bgnd._webgl = {
                     positions: sphere._mesh._positions[0],
@@ -2774,11 +2777,12 @@ x3dom.gfx_webgl = (function () {
             
             sp.matPV = mat_light.mult(transform).toGL();
         }
-        
+
+        var attrib;
         // TODO; FIXME; what if geometry with split mesh has dynamic fields?
         for (var df=0; df<shape._webgl.dynamicFields.length; df++)
         {
-            var attrib = shape._webgl.dynamicFields[df];
+            attrib = shape._webgl.dynamicFields[df];
             
             if (sp[attrib.name] !== undefined)
             {
@@ -2895,28 +2899,24 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 if (shape._webgl.texture[cnt].textureCubeReady && tex && 
-                    x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
+                    x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
                 {
                     gl.activeTexture(activeTex[cnt]);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                     //gl.disable(gl.TEXTURE_CUBE_MAP);
-                }
-                else
-                {
+                } else {
                     gl.activeTexture(activeTex[cnt]);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 }
             }
         }
-        if (oneShadowExistsAlready) 
-        {
+        if (oneShadowExistsAlready) {
             gl.activeTexture(activeTex[cnt]);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
         //gl.disable(gl.TEXTURE_2D);
         
-        for (df=0; df<shape._webgl.dynamicFields.length; df++)
-        {
+        for (df=0; df<shape._webgl.dynamicFields.length; df++) {
             attrib = shape._webgl.dynamicFields[df];
             
             if (sp[attrib.name] !== undefined) {
@@ -3170,6 +3170,7 @@ x3dom.gfx_webgl = (function () {
         var slights = viewarea.getLights(); 
         var numLights = slights.length;
         var oneShadowExistsAlready = false;
+        var mat_light;
         
         for(var p=0; p<numLights; p++){
             //FIXME!!! Shadowing for only one Light
@@ -3179,7 +3180,7 @@ x3dom.gfx_webgl = (function () {
 
                 // FIXME; iterate over all lights
                 var lightMatrix = viewarea.getLightMatrix()[0];
-                var mat_light = viewarea.getWCtoLCMatrix(lightMatrix);
+                mat_light = viewarea.getWCtoLCMatrix(lightMatrix);
                 
                 this.renderShadowPass(gl, scene, lightMatrix, mat_light);
                 t1 = new Date().getTime() - t0;
@@ -3398,12 +3399,13 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.shutdown = function(viewarea)
     {
         var gl = this.ctx3d;
+        var attrib;
+        var scene;
         
-        if (gl === null || scene === null || !scene || scene.drawableObjects === null)
-        {
+        if (gl === null || scene === null || !scene || scene.drawableObjects === null) {
             return;
         }
-        var scene = viewarea._scene;
+        scene = viewarea._scene;
         
         // TODO; optimize traversal, matrices are not needed for cleanup
         scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
@@ -3456,10 +3458,10 @@ x3dom.gfx_webgl = (function () {
                     gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
                 }
             }
-            
+
             for (var df=0; df<shape._webgl.dynamicFields.length; df++)
             {
-                var attrib = shape._webgl.dynamicFields[df];
+                attrib = shape._webgl.dynamicFields[df];
                 
                 if (sp[attrib.name] !== undefined)
                 {
