@@ -2813,7 +2813,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
             
-            var radius = 1.0, height = 2.0;
+            var radius = 1.0;
+            var height = 2.0;
             
             this.addField_SFFloat(ctx, 'radius', 1.0);
             this.addField_SFFloat(ctx, 'height', 2.0);
@@ -2821,7 +2822,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'top', true);
             this.addField_SFBool(ctx, 'side', true);
             
-            var radius = this._vf.radius, height = this._vf.height;
+            radius = this._vf.radius;
+            height = this._vf.height;
             
             var beta, x, z;
             var sides = 24;
@@ -5399,17 +5401,19 @@ x3dom.registerNodeType(
             
             parentRemoved: function(parent)
             {
+                var i;
+                var n;
                 if (this._parentNodes.length === 0) {
                     var doc = this.findX3DDoc();
                     
-                    for (var i=0, n=doc._nodeBag.trans.length; i<n; i++) {
+                    for (i=0, n=doc._nodeBag.trans.length; i<n; i++) {
                         if (doc._nodeBag.trans[i] === this) {
                             doc._nodeBag.trans.splice(i, 1);
                         }
                     }
                 }
                 
-                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                for (i=0, n=this._childNodes.length; i<n; i++) {
                     if (this._childNodes[i]) {
                         this._childNodes[i].parentRemoved(this);
                     }
@@ -6047,20 +6051,21 @@ x3dom.registerNodeType(
 
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                     var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
-
+                    var newScene;
+                    var nameSpace;
+                    
                     if (inlScene) {
-                        var nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
+                        nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
                         nameSpace.setBaseURL (that._vf.url[0]);      
-                        var newScene = nameSpace.setupTree(inlScene);
-                    }
-                    else {
+                        newScene = nameSpace.setupTree(inlScene);
+                    } else {
                         x3dom.debug.logWarning('no Scene in ' + xml.localName);
                     }
 
                     while (that._childNodes.length !== 0) {
                         that.removeChild(that._childNodes[0]);
                     }
-                    that.addChild(newScene);            
+                    that.addChild(newScene);
                     //that._xmlNode.appendChild (inlScene);
                         
                     that._nameSpace.doc.downloadCount -= 1;
@@ -6153,6 +6158,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
     var needNavAnim = ( this._lastButton > 0 && 
                         (navi._vf.type[0].toLowerCase() === "fly" ||
                          navi._vf.type[0].toLowerCase() === "walk") );
+    var dist;
     
     if (needNavAnim)
     {
@@ -6232,7 +6238,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         
         if (this._pickingInfo.pickObj)
         {
-            var dist = this._pickingInfo.pickPos.subtract(this._from).length();
+            dist = this._pickingInfo.pickPos.subtract(this._from).length();
             
             if (step < 0 && dist <= avatarRadius) {
                 step = 0;
@@ -6258,7 +6264,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             
             if (this._pickingInfo.pickObj)
             {
-                var dist = this._pickingInfo.pickPos.subtract(this._from).length();
+                dist = this._pickingInfo.pickPos.subtract(this._from).length();
                 
                 this._at = this._at.add(up.multiply(avatarHeight - dist));
                 this._from = this._from.add(up.multiply(avatarHeight - dist));
@@ -6319,23 +6325,20 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-}
+};
 
-x3dom.Viewarea.prototype.getLights = function () 
-{ 
+x3dom.Viewarea.prototype.getLights = function () { 
     return this._doc._nodeBag.lights;
 };
 
-x3dom.Viewarea.prototype.getViewpointMatrix = function () 
-{
+x3dom.Viewarea.prototype.getViewpointMatrix = function () {
     var viewpoint = this._scene.getViewpoint();
     var mat_viewpoint = viewpoint.getCurrentTransform();
     
     return mat_viewpoint.mult(viewpoint.getViewMatrix());
 };
 
-x3dom.Viewarea.prototype.getViewMatrix = function () 
-{
+x3dom.Viewarea.prototype.getViewMatrix = function () {
     return this.getViewpointMatrix().
             mult(this._transMat).
             mult(this._rotMat);
@@ -6615,10 +6618,11 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this._lastButton = buttonState;
 };
 
-x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
-{
-    if (this._scene._vf.pickMode.toLowerCase() !== "box")
-    {
+x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState) {
+    
+    var dir;
+    
+    if (this._scene._vf.pickMode.toLowerCase() !== "box") {
         this.prepareEvents(x, y, buttonState, "onmouseup");
         
         // click means that mousedown _and_ mouseup were detected on same element
@@ -6626,9 +6630,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
             this._pickingInfo.pickObj === this._pickingInfo.lastClickObj) {
             this.prepareEvents(x, y, buttonState, "onclick");
         }
-    }
-    else
-    {
+    } else {
         var t0 = new Date().getTime();
         var line = this.calcViewRay(x, y);
         var isect = this._scene.doIntersect(line);
@@ -6647,9 +6649,8 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
         var t1 = new Date().getTime() - t0;
         x3dom.debug.logInfo("Picking time (box): " + t1 + "ms");
         
-        if (!isect) 
-        {
-            var dir = this.getViewMatrix().e2().negate();
+        if (!isect) {
+            dir = this.getViewMatrix().e2().negate();
             var u = dir.dot(line.pos.negate()) / dir.dot(line.dir);
             this._pick = line.pos.add(line.dir.multiply(u));
             //x3dom.debug.logInfo("No hit at position " + this._pick);
@@ -6658,9 +6659,8 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     
     var navi = this._scene.getNavigationInfo();
     
-    if (this._pickingInfo.pickObj &&
-        navi._vf.type[0].toLowerCase() === "lookat")
-    {
+    if (this._pickingInfo.pickObj && navi._vf.type[0].toLowerCase() === "lookat") {
+
         var step = (this._lastButton & 2) ? -1 : 1;
         var dist = 0.25;
         
@@ -6677,7 +6677,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
         var at = from.subtract(laMat.e2());
         var up = laMat.e1();
         
-        var dir = this._pickingInfo.pickPos.subtract(from);
+        dir = this._pickingInfo.pickPos.subtract(from);
         var len = dir.length();
         dir = dir.normalize();
         
@@ -7137,14 +7137,14 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
 x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 {
     //x3dom.debug.logInfo("released key " + keyCode);
-    switch (keyCode)
-    {
+    var stack;
+
+    switch (keyCode) {
         case 27: /* ESC */
             history.back(); // emulate good old ESC key
             break;
         case 33: /* page up */
-                var stack = this._scene.getViewpoint()._stack;
-
+                stack = this._scene.getViewpoint()._stack;
                 if (stack) {
                     stack.switchTo('next');
                 } else {
@@ -7152,7 +7152,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
                 }
             break;
         case 34: /* page down */
-                var stack = this._scene.getViewpoint()._stack;
+                stack = this._scene.getViewpoint()._stack;
                 
                 if (stack) {
                     stack.switchTo('prev');
