@@ -1198,8 +1198,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
                     gl.vertexAttribPointer(shape._webgl.shader.position, 3, gl.FLOAT, false, 0, 0);
-                    
-                    delete vertices;
+
+                    vertices = null;
+                    // delete vertices; // delete does not work on varibles, only properties
                 }
                 
                 shape._dirty.positions = false;
@@ -1222,7 +1223,8 @@ x3dom.gfx_webgl = (function () {
                     
                     gl.vertexAttribPointer(shape._webgl.shader.color, 3, gl.FLOAT, false, 0, 0); 
                     
-                    delete colors;
+                    colors = null;
+                    //delete colors; // delete does not work on varibles, only properties
                 }
                 
                 shape._dirty.colors = false;
@@ -1742,7 +1744,8 @@ x3dom.gfx_webgl = (function () {
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
             
-            delete indexArray;
+            indexArray = null;
+            //delete indexArray; // delete does not work on variables created with var
             
             positionBuffer = gl.createBuffer();
             shape._webgl.buffers[5*q+1] = positionBuffer;
@@ -1756,7 +1759,7 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(sp.position);
             
-            delete vertices;
+            // delete vertices; // delete does not work on varibles, only properties
           }
           if (sp.normal !== undefined) 
           {
@@ -1770,8 +1773,9 @@ x3dom.gfx_webgl = (function () {
             
             gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
             gl.enableVertexAttribArray(sp.normal);
-            
-            delete normals;
+
+            normals = null;
+            // delete normals; // delete does not work on varibles, only properties
           }
           if (sp.texcoord !== undefined)
           {
@@ -1786,8 +1790,9 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.texcoord, 
                 shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
             gl.enableVertexAttribArray(sp.texcoord);
-            
-            delete texCoords;
+                
+            texCoords = null;
+            //delete texCoords; // delete does not work on varibles, only properties
           }
           if (sp.color !== undefined)
           {
@@ -1802,8 +1807,9 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.color, 
                 shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
             gl.enableVertexAttribArray(sp.color);
-            
-            delete colors;
+                
+            colors = null;
+            // delete colors; // delete does not work on varibles, only properties
           }
         }
         
@@ -1829,8 +1835,9 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, attribs, gl.STATIC_DRAW);                
                 
                 gl.vertexAttribPointer(sp[df], attrib.numComponents, gl.FLOAT, false, 0, 0); 
-                
-                delete attribs; // what should this accomplish?
+
+                attribs = null;
+                //delete attribs; // what should this accomplish?
             }
         }
     };
@@ -2053,8 +2060,10 @@ x3dom.gfx_webgl = (function () {
             gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
             
-            delete vertices;
-            delete indexArray;
+            vertices = null;
+            indexArray = null;
+            //delete vertices; // delete does not work on varibles, only properties
+            //delete indexArray; // delete does not work on varibles, only properties
             
             if (sp.texcoord !== undefined)
             {
@@ -2069,14 +2078,14 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
                 
-                delete texcoords;
+                texcoords = null;
+                //delete texcoords; // delete does not work on varibles, only properties
             }
         }
         
         bgnd._webgl.render = function(gl, mat_scene)
         {
             var sp = bgnd._webgl.shader;
-            
             if (sp && sp.texcoord && bgnd._webgl.texture)
             {
                 gl.clearDepth(1.0);
@@ -2244,8 +2253,10 @@ x3dom.gfx_webgl = (function () {
         gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
         gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
         
-        delete vertices;
-        delete indexArray;
+        vertices = null;
+        indexArray = null;
+        // delete vertices; // delete does not work on varibles, only properties
+        // delete indexArray; // delete does not work on varibles, only properties
         
         scene._fgnd._webgl.render = function(gl, tex)
         {

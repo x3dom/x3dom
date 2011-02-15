@@ -405,25 +405,25 @@ x3dom.registerNodeType(
 
                 var alpha = Math.exp(-delta / this._vf.tau);
 
-                this._value1 = this._vf.order > 0 && this._vf.tau
-                ? this._value0.add(this._value1.subtract(this._value0).multiply(alpha))
-                : new x3dom.fields.SFColor(this._value0.r, this._value0.g, this._value0.b);
+                this._value1 = this._vf.order > 0 && this._vf.tau ? 
+                    this._value0.add(this._value1.subtract(this._value0).multiply(alpha)) : 
+                    new x3dom.fields.SFColor(this._value0.r, this._value0.g, this._value0.b);
 
-                this._value2 = this._vf.order > 1 && this._vf.tau
-                ? this._value1.add(this._value2.subtract(this._value1).multiply(alpha))
-                : new x3dom.fields.SFColor(this._value1.r, this._value1.g, this._value1.b);
+                this._value2 = this._vf.order > 1 && this._vf.tau ? 
+                    this._value1.add(this._value2.subtract(this._value1).multiply(alpha)) : 
+                    new x3dom.fields.SFColor(this._value1.r, this._value1.g, this._value1.b);
 
-                this._value3 = this._vf.order > 2 && this._vf.tau
-                ? this._value2.add(this._value3.subtract(this._value2).multiply(alpha))
-                : new x3dom.fields.SFColor(this._value2.r, this._value2.g, this._value2.b);
+                this._value3 = this._vf.order > 2 && this._vf.tau ? 
+                    this._value2.add(this._value3.subtract(this._value2).multiply(alpha)) : 
+                    new x3dom.fields.SFColor(this._value2.r, this._value2.g, this._value2.b);
 
-                this._value4 = this._vf.order > 3 && this._vf.tau
-                ? this._value3.add(this._value4.subtract(this._value3).multiply(alpha))
-                : new x3dom.fields.SFColor(this._value3.r, this._value3.g, this._value3.b);
+                this._value4 = this._vf.order > 3 && this._vf.tau ?
+                    this._value3.add(this._value4.subtract(this._value3).multiply(alpha)) :
+                    new x3dom.fields.SFColor(this._value3.r, this._value3.g, this._value3.b);
 
-                this._value5 = this._vf.order > 4 && this._vf.tau
-                ? this._value4.add(this._value5.subtract(this._value4).multiply(alpha))
-                : new x3dom.fields.SFColor(this._value4.r, this._value4.g, this._value4.b);
+                this._value5 = this._vf.order > 4 && this._vf.tau ?
+                    this._value4.add(this._value5.subtract(this._value4).multiply(alpha)) :
+                    new x3dom.fields.SFColor(this._value4.r, this._value4.g, this._value4.b);
 
                 var dist = this.distance(this._value1, this._value0);
                 
@@ -770,30 +770,25 @@ x3dom.registerNodeType(
 
                 var alpha = Math.exp(-delta / this._vf.tau);
 
-                this._value1 = this._vf.order > 0 && this._vf.tau
-                ? this._value0.slerp(this._value1, alpha)
-                : new x3dom.fields.Quaternion(
-                      this._value0.x, this._value0.y, this._value0.z, this._value0.w);
+                this._value1 = this._vf.order > 0 && this._vf.tau ? 
+                    this._value0.slerp(this._value1, alpha) :
+                    new x3dom.fields.Quaternion(this._value0.x, this._value0.y, this._value0.z, this._value0.w);
                 
-                this._value2 = this._vf.order > 1 && this._vf.tau
-                ? this._value1.slerp(this._value2, alpha)
-                : new x3dom.fields.Quaternion(
-                      this._value1.x, this._value1.y, this._value1.z, this._value1.w);
+                this._value2 = this._vf.order > 1 && this._vf.tau ? 
+                this._value1.slerp(this._value2, alpha) : 
+                new x3dom.fields.Quaternion(this._value1.x, this._value1.y, this._value1.z, this._value1.w);
 
-                this._value3 = this._vf.order > 2 && this._vf.tau
-                ? this._value2.slerp(this._value3, alpha)
-                : new x3dom.fields.Quaternion(
-                      this._value2.x, this._value2.y, this._value2.z, this._value2.w);
+                this._value3 = this._vf.order > 2 && this._vf.tau ?
+                    this._value2.slerp(this._value3, alpha) :
+                    new x3dom.fields.Quaternion(this._value2.x, this._value2.y, this._value2.z, this._value2.w);
 
-                this._value4 = this._vf.order > 3 && this._vf.tau
-                ? this._value3.slerp(this._value4, alpha)
-                : new x3dom.fields.Quaternion(
-                      this._value3.x, this._value3.y, this._value3.z, this._value3.w);
+                this._value4 = this._vf.order > 3 && this._vf.tau ?
+                    this._value3.slerp(this._value4, alpha) :
+                    new x3dom.fields.Quaternion(this._value3.x, this._value3.y, this._value3.z, this._value3.w);
 
-                this._value5 = this._vf.order > 4 && this._vf.tau
-                ? this._value4.slerp(this._value5, alpha)
-                : new x3dom.fields.Quaternion(
-                      this._value4.x, this._value4.y, this._value4.z, this._value4.w);
+                this._value5 = this._vf.order > 4 && this._vf.tau ?
+                    this._value4.slerp(this._value5, alpha) :
+                    new x3dom.fields.Quaternion(this._value4.x, this._value4.y, this._value4.z, this._value4.w);
 
                 var dist = Math.abs(this._value1.inverse().multiply(this._value0).angle());
                 
@@ -1322,25 +1317,25 @@ x3dom.registerNodeType(
 
                 var alpha = Math.exp(-delta / this._vf.tau);
 
-                this._value1 = this._vf.order > 0 && this._vf.tau
-                ? this._value0.add(this._value1.subtract(this._value0).multiply(alpha))
-                : new x3dom.fields.SFVec3f(this._value0.x, this._value0.y, this._value0.z);
+                this._value1 = this._vf.order > 0 && this._vf.tau ? 
+                    this._value0.add(this._value1.subtract(this._value0).multiply(alpha)) :
+                        new x3dom.fields.SFVec3f(this._value0.x, this._value0.y, this._value0.z);
 
-                this._value2 = this._vf.order > 1 && this._vf.tau
-                ? this._value1.add(this._value2.subtract(this._value1).multiply(alpha))
-                : new x3dom.fields.SFVec3f(this._value1.x, this._value1.y, this._value1.z);
+                this._value2 = this._vf.order > 1 && this._vf.tau ?
+                    this._value1.add(this._value2.subtract(this._value1).multiply(alpha)) :
+                        new x3dom.fields.SFVec3f(this._value1.x, this._value1.y, this._value1.z);
 
-                this._value3 = this._vf.order > 2 && this._vf.tau
-                ? this._value2.add(this._value3.subtract(this._value2).multiply(alpha))
-                : new x3dom.fields.SFVec3f(this._value2.x, this._value2.y, this._value2.z);
+                this._value3 = this._vf.order > 2 && this._vf.tau ?
+                    this._value2.add(this._value3.subtract(this._value2).multiply(alpha)) :
+                        new x3dom.fields.SFVec3f(this._value2.x, this._value2.y, this._value2.z);
 
-                this._value4 = this._vf.order > 3 && this._vf.tau
-                ? this._value3.add(this._value4.subtract(this._value3).multiply(alpha))
-                : new x3dom.fields.SFVec3f(this._value3.x, this._value3.y, this._value3.z);
+                this._value4 = this._vf.order > 3 && this._vf.tau ?
+                    this._value3.add(this._value4.subtract(this._value3).multiply(alpha)) :
+                        new x3dom.fields.SFVec3f(this._value3.x, this._value3.y, this._value3.z);
 
-                this._value5 = this._vf.order > 4 && this._vf.tau
-                ? this._value4.add(this._value5.subtract(this._value4).multiply(alpha))
-                : new x3dom.fields.SFVec3f(this._value4.x, this._value4.y, this._value4.z);
+                this._value5 = this._vf.order > 4 && this._vf.tau ?
+                    this._value4.add(this._value5.subtract(this._value4).multiply(alpha)) :
+                        new x3dom.fields.SFVec3f(this._value4.x, this._value4.y, this._value4.z);
 
                 var dist = this._value1.subtract(this._value0).length();
                 
@@ -1482,25 +1477,25 @@ x3dom.registerNodeType(
 
                 var alpha = Math.exp(-delta / this._vf.tau);
 
-                this._value1 = this._vf.order > 0 && this._vf.tau
-                ? this._value0.add(this._value1.subtract(this._value0).multiply(alpha))
-                : new x3dom.fields.SFVec2f(this._value0.x, this._value0.y, this._value0.z);
+                this._value1 = this._vf.order > 0 && this._vf.tau ? 
+                    this._value0.add(this._value1.subtract(this._value0).multiply(alpha)) :
+                        new x3dom.fields.SFVec2f(this._value0.x, this._value0.y, this._value0.z);
 
-                this._value2 = this._vf.order > 1 && this._vf.tau
-                ? this._value1.add(this._value2.subtract(this._value1).multiply(alpha))
-                : new x3dom.fields.SFVec2f(this._value1.x, this._value1.y, this._value1.z);
+                this._value2 = this._vf.order > 1 && this._vf.tau ?
+                    this._value1.add(this._value2.subtract(this._value1).multiply(alpha)) :
+                        new x3dom.fields.SFVec2f(this._value1.x, this._value1.y, this._value1.z);
 
-                this._value3 = this._vf.order > 2 && this._vf.tau
-                ? this._value2.add(this._value3.subtract(this._value2).multiply(alpha))
-                : new x3dom.fields.SFVec2f(this._value2.x, this._value2.y, this._value2.z);
+                this._value3 = this._vf.order > 2 && this._vf.tau ?
+                    this._value2.add(this._value3.subtract(this._value2).multiply(alpha)) : 
+                        new x3dom.fields.SFVec2f(this._value2.x, this._value2.y, this._value2.z);
 
-                this._value4 = this._vf.order > 3 && this._vf.tau
-                ? this._value3.add(this._value4.subtract(this._value3).multiply(alpha))
-                : new x3dom.fields.SFVec2f(this._value3.x, this._value3.y, this._value3.z);
+                this._value4 = this._vf.order > 3 && this._vf.tau ? 
+                    this._value3.add(this._value4.subtract(this._value3).multiply(alpha)) : 
+                        new x3dom.fields.SFVec2f(this._value3.x, this._value3.y, this._value3.z);
 
-                this._value5 = this._vf.order > 4 && this._vf.tau
-                ? this._value4.add(this._value5.subtract(this._value4).multiply(alpha))
-                : new x3dom.fields.SFVec2f(this._value4.x, this._value4.y, this._value4.z);
+                this._value5 = this._vf.order > 4 && this._vf.tau ? 
+                    this._value4.add(this._value5.subtract(this._value4).multiply(alpha)) : 
+                        new x3dom.fields.SFVec2f(this._value4.x, this._value4.y, this._value4.z);
 
                 var dist = this._value1.subtract(this._value0).length();
                 
@@ -1816,25 +1811,20 @@ x3dom.registerNodeType(
 
                 var alpha = Math.exp(-delta / this._vf.tau);
 
-                this._value1 = this._vf.order > 0 && this._vf.tau
-                ? this._value0 + alpha * (this._value1 - this._value0)
-                : this._value0;
+                this._value1 = this._vf.order > 0 && this._vf.tau ? 
+                    this._value0 + alpha * (this._value1 - this._value0) : this._value0;
 
-                this._value2 = this._vf.order > 1 && this._vf.tau
-                ? this._value1 + alpha * (this._value2 - this._value1)
-                : this._value1;
+                this._value2 = this._vf.order > 1 && this._vf.tau ? 
+                    this._value1 + alpha * (this._value2 - this._value1) : this._value1;
 
-                this._value3 = this._vf.order > 2 && this._vf.tau
-                ? this._value2 + alpha * (this._value3 - this._value2)
-                : this._value2;
+                this._value3 = this._vf.order > 2 && this._vf.tau ? 
+                    this._value2 + alpha * (this._value3 - this._value2) : this._value2;
 
-                this._value4 = this._vf.order > 3 && this._vf.tau
-                ? this._value3 + alpha * (this._value4 - this._value3)
-                : this._value3;
+                this._value4 = this._vf.order > 3 && this._vf.tau ? 
+                    this._value3 + alpha * (this._value4 - this._value3) : this._value3;
 
-                this._value5 = this._vf.order > 4 && this._vf.tau
-                ? this._value4 + alpha * (this._value5 - this._value4)
-                : this._value4;
+                this._value5 = this._vf.order > 4 && this._vf.tau ? 
+                    this._value4 + alpha * (this._value5 - this._value4) : this._value4;
 
                 var dist = Math.abs(this._value1 - this._value0);
                 
