@@ -98,9 +98,11 @@ clean:
 	@@echo "Removing cloned directories"
 	@@rm -rf test/qunit
 
+runserver:
+	@@echo "Running development server..."
 
 changelog:
 	@@echo "Generating changelog this may take a while ..."
 	@svn log --verbose --xml https://x3dom.svn.sourceforge.net/svnroot/x3dom/trunk | xsltproc --nowrite --nomkdir --nonet tools/svn2cl.xsl - > ChangeLog
 
-.PHONY: all x3dom lint min init changelog
+.PHONY: all x3dom lint min init changelog runserver
