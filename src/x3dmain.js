@@ -514,7 +514,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             }
 
             this.parent.doc.needRender = true;
-        }
+        };
 
         var touchMoveHandler = function(event) {
             //var touch = event.touches[0];
@@ -535,27 +535,27 @@ x3dom.X3DCanvas = function(x3dElem) {
             }
 
             this.parent.doc.needRender = true;
-        }
+        };
 
         var touchCancelHandler = function(event) {
             x3dom.debug.logInfo("[TOUCH] cancel");
-        }
+        };
 
         var gestureStartHandler = function(event) {
             x3dom.debug.logInfo("[GESTURE] start");
             this.parent.doc.needRender = true;
-        }
+        };
 
         var gestureChangeHandler = function(event) {
             event.preventDefault();
             x3dom.debug.logInfo("[GESTURE] change Scale: " + event.scale + ", Rotation: " + event.rotation);
             this.parent.doc.needRender = true;
-        }
+        };
 
         var gestureEndHandler = function(event) {
             x3dom.debug.logInfo("[GESTURE] end detected");
             this.parent.doc.needRender = true;
-        }
+        };
         
         this.canvas.addEventListener('touchstart', touchStartHandler, true);
         this.canvas.addEventListener('touchmove', touchMoveHandler, true);
