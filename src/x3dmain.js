@@ -508,28 +508,30 @@ x3dom.X3DCanvas = function(x3dElem) {
             var touches = event.touches || [];
 
             if (event.streamId) { // mozilla
-                x3dom.debug.logInfo("[TOUCH] Touching object detected ID: " + event.streamId + "detected");
+                x3dom.debug.logInfo("[TOUCH] start Finger ID: " + event.streamId + " put");
             } else { // apple
-                x3dom.debug.logInfo("[TOUCH] touches: " + touches.length + "detected ( x/y:" + touch.pageX + "/" + touch.pageY +")");
+                x3dom.debug.logInfo("[TOUCH] " + touches.length + " touches detected ( x/y:" + touch.pageX + "/" + touch.pageY +")");
             }
 
             this.parent.doc.needRender = true;
         }
 
         var touchMoveHandler = function(event) {
-            var touch = event.touches[0];
-
-            event.preventDefault();
-            x3dom.debug.logInfo("[TOUCH] move  x:" + touch.pageX + ", y:" + touch.pageY);
+            //var touch = event.touches[0];
+            //event.preventDefault();
+			
+			if (event.streamId) { // mozilla			
+	            x3dom.debug.logInfo("[TOUCH] start Finger ID:" + event.streamId + " x:" + event.pageX + " y:" + event.pageY);
+			}
+			
             this.parent.doc.needRender = true;
-        }
+        };
 
         var touchEndHandler = function(event) {
-            x3dom.debug.logInfo("[TOUCH] end");
 
             // mozilla
             if (event.streamId) {
-                x3dom.debug.logInfo("[TOUCH] Object not touching anymore ID: " + event.streamId);
+                x3dom.debug.logInfo("[TOUCH] move Finger ID: " + event.streamId + " lifted");
             }
 
             this.parent.doc.needRender = true;
@@ -540,13 +542,13 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
 
         var gestureStartHandler = function(event) {
-            x3dom.debug.logInfo("[GESTURE] start detected");
+            x3dom.debug.logInfo("[GESTURE] start");
             this.parent.doc.needRender = true;
         }
 
         var gestureChangeHandler = function(event) {
             event.preventDefault();
-            x3dom.debug.logInfo("[GESTURE] Change Scale: " + event.scale + ", Rotation: " + event.rotation);
+            x3dom.debug.logInfo("[GESTURE] change Scale: " + event.scale + ", Rotation: " + event.rotation);
             this.parent.doc.needRender = true;
         }
 
