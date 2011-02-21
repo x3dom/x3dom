@@ -119,25 +119,39 @@ x3dom.X3DCanvas = function(x3dElem) {
         
         // check if user wants to attach events to the X3D element
         var evtArr = [
-            "mousedown", 
-            "mousemove", 
-            "mouseout", 
-            "mouseover", 
-            "mouseup", 
-            "click", 
-            "dblclick", 
-            "keydown", 
-            "keypress", 
-            "keyup"
+            "onmousedown", 
+            "onmousemove", 
+            "onmouseout", 
+            "onmouseover", 
+            "onmouseup", 
+            "onclick", 
+            "ondblclick", 
+            "onkeydown", 
+            "onkeypress", 
+            "onkeyup",
+
+            // touch
+            "ontouchstart",
+            "ontouchmove",
+            "ontouchend",
+            "ontouchcancel",
+            "ongesturestart",
+            "ongesturechange",
+            "ongestureend",
+
+            // mozilla touch
+            "MozTouchDown",
+            "MozTouchMove",
+            "MozTouchUp"
         ];
         
         // TODO; handle attribute event handlers dynamically during runtime
         for (var i=0; i < evtArr.length; i++) 
         {
-            var evtName = "on" + evtArr[i];
+//            var evtName = "on" + evtArr[i];
+            var evtName = evtArr[i];
             var userEvt = x3dElem.getAttribute(evtName);
-            if (userEvt)
-            {
+            if (userEvt) {
                 x3dom.debug.logInfo(evtName +", "+ userEvt);
                 canvas.setAttribute(evtName, userEvt);
             }
@@ -485,6 +499,78 @@ x3dom.X3DCanvas = function(x3dElem) {
             evt.returnValue = true;
         }, true);
 
+
+        // http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
+        // http://backtothecode.blogspot.com/2009/10/javascript-touch-and-gesture-events.html        
+        // http://www.sitepen.com/blog/2008/07/10/touching-and-gesturing-on-the-iphone/
+
+        var touchStartHandler = function(event) {
+            var touches = event.touches || [];
+
+            if (event.streamId) { // mozilla
+                x3dom.debug.logInfo("[TOUCH] Touching object detected ID: " + event.streamId + "detected");
+            } else { // apple
+                x3dom.debug.logInfo("[TOUCH] touches: " + touches.length + "detected ( x/y:" + touch.pageX + "/" + touch.pageY +")");
+            }
+
+            this.parent.doc.needRender = true;
+        }
+
+        var touchMoveHandler = function(event) {
+            var touch = event.touches[0];
+
+            event.preventDefault();
+            x3dom.debug.logInfo("[TOUCH] move  x:" + touch.pageX + ", y:" + touch.pageY);
+            this.parent.doc.needRender = true;
+        }
+
+        var touchEndHandler = function(event) {
+            x3dom.debug.logInfo("[TOUCH] end");
+
+            // mozilla
+            if (event.streamId) {
+                x3dom.debug.logInfo("[TOUCH] Object not touching anymore ID: " + event.streamId);
+            }
+
+            this.parent.doc.needRender = true;
+        }
+
+        var touchCancelHandler = function(event) {
+            x3dom.debug.logInfo("[TOUCH] cancel");
+        }
+
+        var gestureStartHandler = function(event) {
+            x3dom.debug.logInfo("[GESTURE] start detected");
+            this.parent.doc.needRender = true;
+        }
+
+        var gestureChangeHandler = function(event) {
+            event.preventDefault();
+            x3dom.debug.logInfo("[GESTURE] Change Scale: " + event.scale + ", Rotation: " + event.rotation);
+            this.parent.doc.needRender = true;
+        }
+
+        var gestureEndHandler = function(event) {
+            x3dom.debug.logInfo("[GESTURE] end detected");
+            this.parent.doc.needRender = true;
+        }
+        
+        this.canvas.addEventListener('touchstart', touchStartHandler, true);
+        this.canvas.addEventListener('touchmove', touchMoveHandler, true);
+        this.canvas.addEventListener('touchend', touchEndHandler, true);
+        this.canvas.addEventListener('touchcancel', touchCancelHandler, true);
+        
+        // mozilla flavour of event naming
+        this.canvas.addEventListener('MozTouchDown', touchStartHandler, true);
+        this.canvas.addEventListener('MozTouchMove', touchMoveHandler, true);
+        this.canvas.addEventListener('MozTouchUp', touchEndHandler, true);
+        
+        // gesture events, for now only supported by apple
+        this.canvas.addEventListener('gesturestart', gestureStartHandler, true);
+        this.canvas.addEventListener('gesturechange', gestureChangeHandler, true);
+        this.canvas.addEventListener('gestureend', gestureEndHandler, true);
+        
+        
     }
 };
 
