@@ -7136,6 +7136,18 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
     this._viewarea.onDoubleClick(x, y);
 };
 
+
+// touch events
+x3dom.X3DDocument.prototype.onTouchStart = function (ctx, info) {
+
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+
+    x3dom.debug.logWarning("Implement me");
+};
+
+
 x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 {
     //x3dom.debug.logInfo("released key " + keyCode);
