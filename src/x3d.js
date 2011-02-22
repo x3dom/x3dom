@@ -7138,13 +7138,13 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
 
 
 // touch events
-x3dom.X3DDocument.prototype.onTouchStart = function (ctx, info) {
+x3dom.X3DDocument.prototype.onTouchMove = function (ctx, touch) {
 
     if (!ctx || !this._viewarea) {
         return;
     }
 
-    x3dom.debug.logWarning("Implement me");
+    x3dom.debug.logWarning("onTouchMove not implemented");
 };
 
 

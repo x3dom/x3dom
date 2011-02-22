@@ -46,6 +46,20 @@ x3d:hover,
     border: 0px;
 }
 
+.x3dom-touch-marker {
+	display:inline;
+	top:0;
+	right:0;
+    padding: 5px;
+	border-radius: 10px;
+    position: absolute;
+    font-family: Helvetica, sans-serif;
+    line-height:10px;
+    font-size: 10px;
+    border: 1px solid green;
+	z-index:100;
+}
+
 .x3dom-nox3d {
     font-family: Helvetica, sans-serif;
     font-size: 14px;
