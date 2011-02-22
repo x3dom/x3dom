@@ -1,0 +1,79 @@
+<!DOCTYPE html >
+<html >
+<head>
+    <meta charset="utf-8">
+	<title>Multitouch test</title>
+    <link rel="stylesheet" type="text/css" href="x3dom.css">
+    <style>
+    ul.toolbar  {
+        margin:0;
+        padding:1em 0;
+    }
+    ul.toolbar li {
+        list-style:none;
+        margin:0;
+        padding:0;
+        display:inline;
+    }
+    </style>
+
+    <script>
+        
+        document.addEventListener('load', function() {
+
+            var putFingerButton = document.getElementById('put_finger_button');
+            var liftFingerButton = document.getElementById('lift_finger_button');
+            var x3d = document.getElementById('scene');
+            
+            var putFingerSimulator = function() {
+                var evObj = x3d.createEvent('MouseEvents');
+                alert(evObj)
+                evObj.initMouseEvent('touchstart', true);
+                x3d.dispatchEvent(evObj);
+            };
+
+
+            var liftFingerSimulator = function() {
+                alert("Lift a finger");
+            };
+
+
+            putFingerButton.addEventListener('click', putFingerSimulator, false);
+            liftFingerButton.addEventListener('click', liftFingerSimulator, false);
+            
+            
+            
+        }, false);
+        
+        
+        
+    </script>
+</head>
+<body>
+    <h1>Multitouch integration test</h1>
+    <p>Simulate some multitouch behavior</p>
+    <div class="group">
+    <x3d id="scen" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="400px" >
+        <scene id="scene" ontouchstart="alert('Hello')">
+            <viewpoint position='0 0 10' ></viewpoint>
+            <shape>
+                <appearance>
+                    <material diffuseColor='1 0 0' ></material>	
+                </appearance>
+                <box DEF='box' ></box>
+            </shape>
+        </scene>
+    </x3d>
+    </div>
+    <ul class="group toolbar">
+        <li><button id="put_finger_button">Put a finger down</button></li>
+        <li><button id="lift_finger_button">Lift a finger</button></li>
+        <li>more actions todo</li>
+    </ul>
+    <script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+    <script type="text/javascript" src="gfx_webgl.js"></script>
+    <script type="text/javascript" src="x3d.js"></script>
+    <script type="text/javascript" src="fields.js"></script>
+</body>
+</html>
