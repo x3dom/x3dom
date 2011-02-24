@@ -48,8 +48,6 @@ x3d:hover,
 
 .x3dom-touch-marker {
 	display:inline;
-	top:0;
-	right:0;
     padding: 5px;
 	border-radius: 10px;
     position: absolute;
@@ -58,6 +56,7 @@ x3d:hover,
     font-size: 10px;
     border: 1px solid green;
 	z-index:100;
+	width:60px;
 }
 
 .x3dom-nox3d {
