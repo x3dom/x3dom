@@ -329,6 +329,8 @@ x3dom.X3DCanvas = function(x3dElem) {
         this.canvas.mouse_drag_y = 0;
 
 		this.canvas.fingers = [];
+		this.canvas.wasMulti = false;
+		this.canvas.isMulti = false;
 		
 		// this should go into a gestures collection
 		this.canvas.pinch_distance = 0;
@@ -444,11 +446,15 @@ x3dom.X3DCanvas = function(x3dElem) {
             if (evt.ctrlKey)  { this.mouse_button = 4; }
             if (evt.altKey)   { this.mouse_button = 2; }
             
-            if (this.mouse_dragging) {
-                this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-            } else {
-                this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-            }
+			if (!this.isMulti)
+			{
+				if (this.mouse_dragging) {
+					this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				}
+				else {
+					this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				}
+			}
 
             this.parent.doc.needRender = true;
             
@@ -509,18 +515,21 @@ x3dom.X3DCanvas = function(x3dElem) {
         // http://backtothecode.blogspot.com/2009/10/javascript-touch-and-gesture-events.html        
         // http://www.sitepen.com/blog/2008/07/10/touching-and-gesturing-on-the-iphone/
 		
-		var touchStartHandler = function(evt) {
-
-			x3dom.debug.logInfo("[TOUCH] Number of fingers active:" + this.fingers.length);
-			x3dom.debug.logInfo("[TOUCH] New finger ID: " + evt.streamId + " detected");
+		var debugMarker = true;
+		//var debugMarker = false;
+		
+		var touchStartHandler = function(evt)
+		{
+			x3dom.debug.logInfo("[TOUCH START] New finger ID: " + evt.streamId + " detected");
 			
-			// set a mark in HTML so we can track the position of the finger visually
-			var marker = document.createElement("div");
-			marker.appendChild(document.createTextNode("Finger: " + evt.streamId));
-			marker.id = evt.streamId;
-			marker.className = "x3dom-touch-marker";
-			document.body.appendChild(marker);
-													  
+			if (debugMarker) {
+				// set a mark in HTML so we can track the position of the finger visually
+				var marker = document.createElement("div");
+				marker.appendChild(document.createTextNode("Finger: " + evt.streamId));
+				marker.id = evt.streamId;
+				marker.className = "x3dom-touch-marker";
+				document.body.appendChild(marker);
+			}
 			
 			// touch object containing info about the detected touch
 			var touch = { 
@@ -530,45 +539,24 @@ x3dom.X3DCanvas = function(x3dElem) {
 				dx: 0, 
 				dy: 0,
 				initialx: evt.layerX,
-				initialy: evt.layerY,
-				gesture: false // a quick flag to mark this touch part of a gesture
-			}
-			
-			// assume gesture with 2 fingers (quick hack)
-			if (this.fingers.length < 2) {
-				touch.gesture = true;
-			}
+				initialy: evt.layerY
+			};
 			
 			this.fingers.push(touch);
+			
+			if (this.fingers.length > 1) {
+				this.wasMulti = this.isMulti;
+				this.isMulti = true;
+			}
+			
+			x3dom.debug.logInfo("[TOUCH START] Number of fingers active:" + this.fingers.length);
+			
 			evt.preventDefault();
-
-// old stuff, started this before I knew it had to  be ready today ;)
-//           var touches = event.touches || [];
-//
-//            if (event.streamId) { // mozilla
-//				touches[event.streamId] = { 
-//					x: event.pageX, 
-//					y: event.pageY,
-//					identifier: event.streamId
-//				}
-//                x3dom.debug.logInfo("[TOUCH] start Finger ID: " + event.streamId + " put");
-//            } else { // apple
-//                x3dom.debug.logInfo("[TOUCH] " + touches.length + " touches detected ( x/y:" + touch.pageX + "/" + touch.pageY +")");
-//            }
-//			
-//			this.parent.doc.onTouchStart(that.gl, touches);
-//            this.parent.doc.needRender = true;
-			//event.preventDefault();
         };
 		
-		
-        var touchMoveHandler = function(evt) {
-			
-			var pinching = [];
-			var i;
-			var marker;
-			
-			for (i=0; i < this.fingers.length; i++) {
+        var touchMoveHandler = function(evt)
+		{
+			for (var i=0; i < this.fingers.length; i++) {
 				
 				// tracking the coordinates of the fingers
 				if (this.fingers[i].identifier === evt.streamId) {
@@ -579,111 +567,79 @@ x3dom.X3DCanvas = function(x3dElem) {
 					this.fingers[i].x = evt.layerX;
 					this.fingers[i].y = evt.layerY;
 					
-					marker = document.getElementById(evt.streamId);
-					// does not seem to work, don't know no time left today to track this one
-					marker.style.top = evt.pageX+10;
-					marker.style.left = evt.pageY+10;
-					
-					
-					
+					if (debugMarker) {
+						var marker = document.getElementById(evt.streamId);
+						marker.style.left = (evt.pageX+10)+"px";
+						marker.style.top = (evt.pageY+10)+"px";
+					}
 				}
-				
-				// if finger belongs to a gesture (pinch) put it into the other array
-				// quick hack
-				if (this.fingers[i].gesture == true) {
-					pinching.push(this.fingers[i]);
-				}
-				
 			}
 			
 			// if two fingers are ready, hard core pinching action
-			if (pinching.length == 2) {
+			if (this.fingers.length > 1)
+			{
+				// calc hypothenuse, distance between two fingers
+				var x1 = this.fingers[0].x;
+				var y1 = this.fingers[0].y;
+	  			var x2 = this.fingers[1].x;
+				var y2 = this.fingers[1].y;
+				var c = Math.sqrt( Math.pow((x1-x2),2) + Math.pow((y1-y2),2) );
+				//x3dom.debug.logInfo("[TOUCH] Distance of fingers: " + c);
+
+				// changes in distance since last triggering of event
+				var cdelta = Math.abs(this.pinch_distance - c) / this.height;
+				//x3dom.debug.logInfo("[TOUCH] Distance of fingers: " + c + " delta: " + cdelta);
 				
-				//x3dom.debug.logInfo("[TOUCH] F0:" + pinching[0].dx + "/" + pinching[0].dy + " F1:" + pinching[1].dx + "/" + pinching[1].dy);
-	        	 // calc hypothenuse, distance between two fingers
-				 var x1 = pinching[0].x;
-				 var y1 = pinching[0].y;
-	  			 var x2 = pinching[1].x;
-				 var y2 = pinching[1].y;
-				 
-				 var c = Math.sqrt( Math.pow((x1-x2),2) + Math.pow((y1-y2),2));
-                
-				 // changes in distance since last triggering of event
-				 var cdelta = Math.abs(this.pinch_distance - c);
-				 
-			 	 //x3dom.debug.logInfo("[TOUCH] Distance of fingers: " + c + " delta: " + cdelta);
-				 
-			      // only do the pinc if the difference is large enough
-				  var threshold = 0.9;
-				  
-				  if (cdelta != c  && cdelta > 0.9) {
-				 
-				  	if (this.pinch_distance > c) {
-					 //zooming in
-			//		 	this.mouse_drag_x += pinching[0].dx;
-					 	this.mouse_drag_y -= 1.5 * cdelta
-				 	} 
-				 
-				  	if (this.pinch_distance < c) {
-	 	//				this.mouse_drag_x -= pinching[0].dx;
-						this.mouse_drag_y += 1.5 * cdelta;
-			     	}
+				if (this.pinch_distance > 0) {
+					if (this.pinch_distance > c) {
+						this.mouse_drag_y -= 4.0 * cdelta;
+					}
+					else {
+						this.mouse_drag_y += 4.0 * cdelta;
+					}
 				}
 				this.pinch_distance = c; // save distance for next run
+				
+				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
+				this.parent.doc.needRender = true;
 			}
-			
-
-			this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
-            this.parent.doc.needRender = true;
-            			
+            
             window.status=this.id+' PINCH: '+evt.detail;
             evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
             evt.returnValue = true;
-
-// old code before deadline
-//         	var touch = {};
-//			
-//			event.preventDefault();
-//			
-//			if (event.streamId) { // mozilla
-//				
-//				touch.x = event.pageX;
-//				touch.y = event.pageY;
-//				touch.identifier = event.streamId;
-//			} else {
-//			  if (event.touches[0]) {
-//			      touch = event.touches[0];
-//			  }	
-//			}
-//			
-//            x3dom.debug.logInfo("[TOUCH] move Finger ID:" + touch.identifier + " x:" + touch.x + " y:" + touch.y);
-//			this.parent.doc.onTouchMove(that.gl, touch);
-//            this.parent.doc.needRender = true;
         };
 
-
-		var touchEndHandler = function(evt) {
+		var touchEndHandler = function(evt)
+		{
             // mozilla
+			var found = false;
             if (evt.streamId) {
-                x3dom.debug.logInfo("[TOUCH] Finger ID: " + evt.streamId + " lifted");
+                x3dom.debug.logInfo("[TOUCH STOP] Finger ID: " + evt.streamId + " lifted");
+				
 				for (var i=0; i < this.fingers.length; i++) {
 					if (this.fingers[i].identifier == evt.streamId) {
-						 
-						 x3dom.debug.logInfo("[TOUCH] Removed tracking for finger ID: " + this.fingers[i].identifier);
-						 this.fingers.splice(i,1);
-						 	
-							// marker
-						  document.body.removeChild(document.getElementById(evt.streamId));		 
-						 
-						 if (this.fingers == 0) { 
-						 	x3dom.debug.logInfo("[TOUCH] no fingers present"); 
-							this.pinch_distance = 0;
-						  }
+						
+						x3dom.debug.logInfo("[TOUCH STOP] Removed tracking for finger ID: " + 
+											this.fingers[i].identifier);
+						this.fingers.splice(i,1);
+						
+						if (debugMarker) {
+							document.body.removeChild(document.getElementById(evt.streamId));
+						}
+						found = true;
 					}
 				}
             }
+			if (!found && this.fingers.length) {
+				this.fingers = [];
+			}
+			if (this.fingers.length === 0) {
+				x3dom.debug.logInfo("[TOUCH STOP] no fingers present"); 
+				this.pinch_distance = 0;
+				
+				this.wasMulti = this.isMulti;
+				this.isMulti = false;
+			}
 
 			// this.parent.doc.needRender = true;
 		   	evt.preventDefault();
