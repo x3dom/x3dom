@@ -352,8 +352,8 @@ x3dom.X3DCanvas = function(x3dElem) {
                 default: this.mouse_button = 0; break;
             }
 
-            this.mouse_drag_x = evt.layerX;
-            this.mouse_drag_y = evt.layerY;
+            this.mouse_drag_x = (evt.layerX || evt.x);
+            this.mouse_drag_y = (evt.layerY || evt.y);
             this.mouse_dragging = true;
             
             if (evt.shiftKey) { this.mouse_button = 1; }
@@ -363,7 +363,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
             this.parent.doc.needRender = true;
             
-            window.status=this.id+' DOWN: '+evt.layerX+", "+evt.layerY;
+            window.status=this.id+' DOWN: '+(evt.layerX || evt.x)+", "+(evt.layerY || evt.y);
             //window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
             //evt.preventDefault();
             //evt.stopPropagation();
@@ -415,14 +415,14 @@ x3dom.X3DCanvas = function(x3dElem) {
         
         this.canvas.addEventListener('dblclick', function (evt) {
             this.mouse_button = 0;
-            this.mouse_drag_x = evt.layerX;
-            this.mouse_drag_y = evt.layerY;
+            this.mouse_drag_x = (evt.layerX || evt.x);
+            this.mouse_drag_y = (evt.layerY || evt.y);
             this.mouse_dragging = false;
             
             this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
             this.parent.doc.needRender = true;
             
-            window.status=this.id+' DBL: '+evt.layerX+", "+evt.layerY;
+            window.status=this.id+' DBL: '+(evt.layerX || evt.x)+", "+(evt.layerY || evt.y);
             //evt.preventDefault();
             //evt.stopPropagation();
             //evt.returnValue = false;
@@ -431,7 +431,7 @@ x3dom.X3DCanvas = function(x3dElem) {
         
         this.canvas.addEventListener('mousemove', function (evt) {
 
-            window.status=this.id+' MOVE: '+evt.layerX+", "+evt.layerY;
+            window.status=this.id+' MOVE: '+(evt.layerX || evt.x)+", "+(evt.layerY || evt.y);
 
             /*
             if (!this.mouse_dragging) {
@@ -439,8 +439,8 @@ x3dom.X3DCanvas = function(x3dElem) {
             }
             */
             
-            this.mouse_drag_x = evt.layerX;
-            this.mouse_drag_y = evt.layerY;
+            this.mouse_drag_x = (evt.layerX || evt.x);
+            this.mouse_drag_y = (evt.layerY || evt.y);
             
             if (evt.shiftKey) { this.mouse_button = 1; }
             if (evt.ctrlKey)  { this.mouse_button = 4; }
@@ -534,12 +534,12 @@ x3dom.X3DCanvas = function(x3dElem) {
 			// touch object containing info about the detected touch
 			var touch = { 
 				identifier: evt.streamId,
-				x: evt.layerX, 
-				y: evt.layerY, 
+				x: (evt.layerX || evt.x), 
+				y: (evt.layerY || evt.y), 
 				dx: 0, 
 				dy: 0,
-				initialx: evt.layerX,
-				initialy: evt.layerY
+				initialx: (evt.layerX || evt.x),
+				initialy: (evt.layerY || evt.y)
 			};
 			
 			this.fingers.push(touch);
@@ -561,11 +561,11 @@ x3dom.X3DCanvas = function(x3dElem) {
 				// tracking the coordinates of the fingers
 				if (this.fingers[i].identifier === evt.streamId) {
 					
-					this.fingers[i].dx = this.fingers[i].x - evt.layerX;	
-					this.fingers[i].dy = this.fingers[i].y - evt.layerY;	
+					this.fingers[i].dx = this.fingers[i].x - (evt.layerX || evt.x);	
+					this.fingers[i].dy = this.fingers[i].y - (evt.layerY || evt.y);	
 					
-					this.fingers[i].x = evt.layerX;
-					this.fingers[i].y = evt.layerY;
+					this.fingers[i].x = (evt.layerX || evt.x);
+					this.fingers[i].y = (evt.layerY || evt.y);
 					
 					if (debugMarker) {
 						var marker = document.getElementById(evt.streamId);
