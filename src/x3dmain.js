@@ -439,8 +439,7 @@ x3dom.X3DCanvas = function(x3dElem) {
             }
             */
             
-            this.mouse_drag_x = (evt.layerX || evt.x);
-            this.mouse_drag_y = (evt.layerY || evt.y);
+            
             
             if (evt.shiftKey) { this.mouse_button = 1; }
             if (evt.ctrlKey)  { this.mouse_button = 4; }
@@ -448,6 +447,9 @@ x3dom.X3DCanvas = function(x3dElem) {
             
 			if (!this.isMulti)
 			{
+                this.mouse_drag_x = (evt.layerX || evt.x);
+                this.mouse_drag_y = (evt.layerY || evt.y);
+            
 				if (this.mouse_dragging) {
 					this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				}
@@ -587,7 +589,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 				//x3dom.debug.logInfo("[TOUCH] Distance of fingers: " + c);
 
 				// changes in distance since last triggering of event
-				var cdelta = Math.abs(this.pinch_distance - c) / this.height;
+				var cdelta = Math.abs(this.pinch_distance - c);
 				//x3dom.debug.logInfo("[TOUCH] Distance of fingers: " + c + " delta: " + cdelta);
 				
 				if (this.pinch_distance > 0) {
