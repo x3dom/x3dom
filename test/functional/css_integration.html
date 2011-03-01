@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+	<head>
+		<meta charset="UTF-8">
+		<title>CSS Integration Test</title>
+        <link rel="stylesheet" type="text/css" href="../../src/x3dom.css">
+		<script type="text/javascript" src="../../src/x3dmain.js"></script>
+		<script type="text/javascript" src="../../src/debug.js"></script>
+		<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+		<script type="text/javascript" src="../../src/x3d.js"></script>
+		<script type="text/javascript" src="../../src/fields.js"></script>
+	
+    	<script type="text/javascript" src="media/js/tests.js"></script>
+		<style>
+		
+		#tools {
+			margin:0;
+			padding:0;
+			position: relative;
+			z-index:100;
+			display:inline;
+		}
+
+		#tools li {
+			list-style-type:none;
+			display:inline;
+			padding:0;
+			margin:0 -4px 0 0;
+		}
+
+		#tools li button {
+			border:1px solid #666;
+			border-right:none;
+			background-color:#202021;
+			color:#ccc;
+			padding:4px;
+			margin:0;
+			display:inline;
+		}
+		#tools li button:hover {
+			background-color:blue;
+		}
+		
+		#tools li.last button {
+			border-right:1px solid #666;
+		}
+
+		
+		#container {
+			width: 100%;
+			height: 100%;
+			line-height:0px;
+			float:left;
+
+		}
+
+		#the-element {
+            display:block;
+			line-height:0px;
+			padding:0;
+			margin:0;
+/*			border:1px solid cyan;
+*/			display:block;
+			background-color:#00F;
+			width:50%;
+			height:50%
+			
+		}
+
+		.style_1 {
+			background-color:#00f;
+		}
+		.style_2 {
+			background-color:#f0f;
+		}
+		
+		</style>
+
+		<script>
+			// utils
+			function hasClass(ele, cls) {
+				return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
+			}
+			function addClass(ele,cls) {
+				if (!hasClass(ele,cls)) ele.className += " "+cls;
+			}
+			function removeClass(ele,cls) {
+				if (hasClass(ele,cls)) {
+					var reg = new RegExp('(\\s|^)'+cls+'(\\s|$)');
+					ele.className=ele.className.replace(reg,' ');
+				}
+			}
+
+
+			var zoomed = false;
+			
+			function toggle_size() {
+
+				var b = document.getElementById('main');
+				var title = document.getElementById('title');
+				var element = document.getElementById('the-element');
+				var container = document.getElementById('container');
+				var button = document.getElementById('change_size');
+				
+				var new_width_css = "100%";
+				
+				if (zoomed) {
+					new_width_css = "50%";
+					button.style.backgroundColor = "#202021";
+					b.style.padding = "1em 3em 0 3em";
+					title.style.display = "block";
+					document.getElementById('x3dom_logdiv').style.display = 'block';
+					document.getElementsByTagName("nav")[0].style.display = 'block';
+				} else {
+					b.style.padding = "0px";
+					title.style.display = "none";
+					new_width_css = "100%";
+					button.style.backgroundColor = "#c23621";
+					document.getElementById('x3dom_logdiv').style.display = 'none';
+					document.getElementsByTagName("nav")[0].style.display = 'none';
+				}
+
+				zoomed = !zoomed;
+                
+                element.style.width  = new_width_css
+                element.style.height = new_width_css
+                // container.style.width = new_width_css;
+                // container.style.height = new_width_css;
+                return true;
+			}
+
+
+			// Change a style via elm.style accessor
+			var bg_styled = false;
+			function toggle_background() {
+				var x3delement = document.getElementById('the-element');
+				if (bg_styled) {
+                    x3delement.style.backgroundColor = '#00f'
+					x3delement.style.backgroundImage = "none"
+				} else {
+                    x3delement.style.backgroundColor = '#0f0'
+					x3delement.style.backgroundImage = "url('pfeil.gif')"
+				}
+				bg_styled = !bg_styled
+				return true;
+			}
+
+
+			// Change styles by switching classes
+			function toggle_class(class_one, class_two) {
+				var x3delement = document.getElementById('the-element');
+				if (hasClass(x3delement, class_one)) {
+					removeClass(x3delement, class_one)
+					addClass(x3delement, class_two)
+				} else {
+					removeClass(x3delement, class_two)
+					addClass(x3delement, class_one)
+				}
+				alert(x3delement.className)
+				return true;
+			}
+            
+            function updateOverState(over)
+            {
+                var elem = document.getElementById('output');
+                if (over)
+                    elem.innerHTML = " isOver TRUE ";
+                else
+                    elem.innerHTML = " isOver FALSE ";
+            }
+		</script>
+	</head>
+    
+<body id="main">
+	<h1 id="title">CSS Integration test</h1>
+    
+    <div id="container" class="group">
+		<x3d id="the-element" showStat="false" showLog="true" altImg="pfeil.gif">
+
+		<ul id="tools">
+			<li><button id="change_size" onClick="toggle_size();">Zoom</button></li>
+			<li><button id="change_bg_js" onClick="toggle_background();">Background (via style)</button></li>
+			<li class="last"><button id="change_bg_class" onClick="toggle_class('style_1', 'style_2');">Background (via class)</button></li>
+		</ul>
+
+        <scene>
+            <!-- <background skyColor="1 0 0"></background> -->
+            <viewpoint position='0 0 10'></viewpoint>
+            <!-- <shape onmouseover="updateOverState(1);" onmouseout="updateOverState(0);"> -->
+            <shape>
+                <appearance>
+                    <material diffuseColor='0.603 0.894 0.909'></material>
+                </appearance>
+                <box></box>
+            </shape>
+        </scene>
+    </x3d>
+    </div>
+
+</body>
+</html>

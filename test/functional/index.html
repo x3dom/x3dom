@@ -1,8 +1,10 @@
 <html>
 <head>
+	<meta charset="UTF-8">
 	<title>X3DOM-WebGL Tests</title>
-	<style>
-	    html { 
+    <link rel="stylesheet" href="media/css/tests.css">
+    <style>
+ 	    html { 
 	        background-color:#aaa;
 	    }
         body {
@@ -38,7 +40,7 @@
           clear: both; 
           visibility: hidden;
         }		
-	</style>
+    </style>
 </head>
 
 <body>
@@ -54,7 +56,6 @@ For more information on browser support, please have a look at <a href="http://w
 
 <h2>Tests</h2>
 
-<p class="case">
 <ul>
 <li><a href="dumpNodeTypeTree.html">Node Types:</a> On the fly generated node type tree</li>
 <li><a href="test_helloX3DWorld.xhtml">Hello World:</a> Minimal X3DOM example</li>
@@ -76,12 +77,12 @@ For more information on browser support, please have a look at <a href="http://w
 <li><a href="test_changeMatSimple.xhtml">Material change simple:</a> Simple material update</li>
 <li><a href="test_changeMat.xhtml">Material change:</a> Material and texture update (via DOM events) with animated background opacity</li>
 <li><a href="test_domMutation.xhtml">Dom mutation events:</a> Additional node insert</li>
-<li><a href="test_addRemoveNode.html">More Dom mutation events:</a> Insertion and removal of nodes</li>
+<li><a href="dom_add_remove_node.html">More Dom mutation events:</a> Insertion and removal of nodes</li>
 <li><a href="test_jQueryManip.xhtml">jQuery:</a> Pure DOM-/jQuery-driven material update</li>
 <li><a href="test_pointSet.xhtml">PointSet:</a> Very simplistic test with six points</li>
 <li><a href="test_indLineSet.xhtml">IndexedLineSet:</a> A simple grid</li>
 <li><a href="test_NormalGenerationIndexedFaceSet.xhtml">Normal generation</a></li>
-<li><a href="test_text.xhtml">Text:</a> Dynamic X3D text</li>
+<li><a href="text.html">Text:</a> Dynamic X3D text</li>
 <li><a href="test_flipper.xhtml">The famous Flipper:</a> A model with a CoordinateInterpolator</li>
 <li><a href="test_FromMaxExportedCoordIntp.xhtml">Another CoordinateInterpolator test</a></li>
 <li><a href="test_video.xhtml">Movie Texture:</a> Video as texture</li>
@@ -111,14 +112,14 @@ For more information on browser support, please have a look at <a href="http://w
 <li><a href="test_originalChannelCount.xhtml">Texture channels</a> test origChannelCount and ...event listeners on X3D element</li>
 <li><a href="test_coverDings.xhtml">Simple cover flow</a></li>
 <li><a href="test_fullscreen.xhtml">Resize of canvas/x3d</a></li>
-<li><a href="test_cssIntegration.html">CSS Integration</a> (includes fullscreen)</li>
+<li><a href="css_integration.html">CSS Integration</a> (includes fullscreen)</li>
 <li><a href="test_commonSurfaceShader01.xhtml">CommonSurfaceShader</a> Test 1</li>
 <li><a href="test_commonSurfaceShader02.xhtml">CommonSurfaceShader</a> Test 2</li>
 <li><a href="test_walkThrough.html">Barcelona</a> - a walk-through example</li>
 <li><a href="test_activeX.html">ActiveX</a></li>
 <a style="color:black;" href="test_unicorn.xhtml">_</a>
 </ul>
-</p>
+
 
 <h2>Usage</h2>
 <p class="case">
