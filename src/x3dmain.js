@@ -731,6 +731,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         x3dom.debug.logInfo("loaded '" + uri + "'");
         
         if (x3dCanvas.hasRuntime) {
+			// TODO: use requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
             setInterval( function() {
                     x3dCanvas.watchForResize();
                     x3dCanvas.tick();
