@@ -52,6 +52,21 @@ if (!Array.filter) {
     };
 }
 
+/**
+ * Provides requestAnimationFrame in a cross browser way.
+ * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
+ */
+window.requestAnimFrame = (function() {
+  return window.requestAnimationFrame ||
+         window.webkitRequestAnimationFrame ||
+         window.mozRequestAnimationFrame ||
+         window.oRequestAnimationFrame ||
+         window.msRequestAnimationFrame ||
+         function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+           window.setTimeout(callback, 1000/60);
+         };
+})();
+
 /** @namespace The global x3dom namespace. */
 var x3dom = {
     canvases: []
@@ -696,7 +711,6 @@ x3dom.X3DCanvas.prototype.tick = function()
     try {
         this.doc.advanceTime(d / 1000); 
         var animD = new Date().getTime() - d;
-        
         if (this.doc.needRender) {
             if (this.statDiv) {
                 this.statDiv.textContent = fps.toFixed(2) + ' fps';
@@ -706,7 +720,8 @@ x3dom.X3DCanvas.prototype.tick = function()
             
             this.doc.needRender = false;    // picking might require another pass
             this.doc.render(this.gl);
-        } else {
+			
+			} else {
             if (this.statDiv) {
                 if (this.doc.lastDownloadCount !== this.doc.downloadCount) {
                     this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
@@ -731,13 +746,19 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         x3dom.debug.logInfo("loaded '" + uri + "'");
         
         if (x3dCanvas.hasRuntime) {
-			// TODO: use requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
-            setInterval( function() {
-                    x3dCanvas.watchForResize();
-                    x3dCanvas.tick();
-                }, 
-                16  // use typical monitor frequency as bound
-            );
+			// requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
+			(function __loop(){
+                x3dCanvas.watchForResize();
+        		x3dCanvas.tick();
+			    window.requestAnimFrame(__loop, x3dCanvas);
+		    })();
+			
+//            setInterval( function() {
+//                    x3dCanvas.watchForResize();
+//                   x3dCanvas.tick();
+//                }, 
+//             16  // use typical monitor frequency as bound
+//           );
         } else {
             x3dCanvas.tick();
         }
@@ -1035,3 +1056,4 @@ x3dom.userAgentFeature = {
     }
     
 })();
+
