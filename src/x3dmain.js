@@ -52,25 +52,25 @@ if (!Array.filter) {
     };
 }
 
+/** @namespace The global x3dom namespace. */
+var x3dom = {
+    canvases: []
+};
+
 /**
  * Provides requestAnimationFrame in a cross browser way.
  * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
  */
 window.requestAnimFrame = (function() {
-  return window.requestAnimationFrame ||
-         window.webkitRequestAnimationFrame ||
-         window.mozRequestAnimationFrame ||
-         window.oRequestAnimationFrame ||
-         window.msRequestAnimationFrame ||
-         function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
-           window.setTimeout(callback, 1000/60);
-         };
+	return window.requestAnimationFrame ||
+    	   window.webkitRequestAnimationFrame ||
+           window.mozRequestAnimationFrame ||
+           window.oRequestAnimationFrame ||
+           window.msRequestAnimationFrame ||
+           function(/* function FrameRequestCallback */ callback, /* DOMElement Element */ element) {
+             window.setTimeout(callback, 1000/60);
+           };
 })();
-
-/** @namespace The global x3dom namespace. */
-var x3dom = {
-    canvases: []
-};
 
 /**
  * @private Returns a prototype object suitable for extending the given class
@@ -747,10 +747,10 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         
         if (x3dCanvas.hasRuntime) {
 			// requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
-			(function __loop(){
+			(function mainloop(){
                 x3dCanvas.watchForResize();
         		x3dCanvas.tick();
-			    window.requestAnimFrame(__loop, x3dCanvas);
+			    window.requestAnimFrame(mainloop, x3dCanvas);
 		    })();
 			
 //            setInterval( function() {
