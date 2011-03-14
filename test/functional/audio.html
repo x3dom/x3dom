@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<!-- HTML5 -->
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Test: Audio</title>
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css">
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+    <script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+
+	<script type="text/javascript" src="media/js/tests.js"></script>
+	<style>
+ 	body { background-color:#E0E0E0; }
+	.warning { color:orange;}
+	</style>
+</head>
+<body>
+	<h1>Audio example</h1>
+	<p class="warning">Note: this test only plays audio file. No visuals.</p>
+
+	<x3d showStat="true" showLog="true" width="100px" height="100px">
+    <Scene>
+		<sound>
+			<audioClip url="../example/sound/spita.wav" loop="true"></audioClip>
+		</sound>
+    </Scene>
+    </x3d>
+
+</body>
+</html>
