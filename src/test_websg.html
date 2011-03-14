@@ -35,6 +35,10 @@
                   }
             </shaderPart>
             <shaderPart type='fragment'>
+                  #ifdef GL_ES
+                     precision highp float;
+                  #endif
+                  
                   uniform sampler2D tex;
                   uniform vec3 diffuseColor;
 	              varying vec3 fragNormal;
@@ -195,7 +199,7 @@
         // Create a buffer for the vertices
         var verticeBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, verticeBuffer);
-        gl.bufferData(gl.ARRAY_BUFFER, new WebGLFloatArray(vertices), gl.STATIC_DRAW);
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
 
         // Load the vertex data
         gl.vertexAttribPointer(0, 3, gl.FLOAT, false, 0, 0);    
