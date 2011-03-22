@@ -17,6 +17,8 @@ if (!Array.forEach) {
 	 *	Function: Array.forEach
 	 *
 	 *	Javascript array forEach() method calls a function for each element in the array.
+	 * 
+	 *  Parameters:
 	 *
 	 *   	array - The array
 	 *		fun   - Function to test each element of the array
@@ -99,6 +101,7 @@ window.requestAnimFrame = (function() {
  *	the prototype (which unnecessarily runs the constructor on the created
  *	prototype object, potentially polluting it), an anonymous function is
  *	generated internally that shares the same prototype:
+ *
  *	Parameters:
  *
  *   	f - Method f a constructor
@@ -879,42 +882,62 @@ x3dom.userAgentFeature = {
     supportsDOMAttrModified: false
 };
 
+
+
 /**
- * Runtime object to get and set system 
- * environment parameters. 
+ * Class: x3dom._runtime
+ *
+ * Runtime proxy object to get and set runtime parameters. This object 
+ * is attached to each X3D element and can be used in the following manner:
+ *
+ * > var e = doucment.getElementById('the_x3delement');
+ * > e.runtime.getFrameRate();
+ * > e.runtime.setFrameRate(60);
+ * > ...
  */
-x3dom.runtime = {
+x3dom._runtime = {
 	/**
-	 * Documentation here. 
-	 * Options:
-	 * http://www.naturaldocs.org/
-	 * http://code.google.com/p/jsdoc-toolkit/
+	 * Function: getFrameRate
+	 *
+	 * This method returns the current frame rate.
+	 * 
+	 * Returns:
+	 *
+	 * 		The current frame rate
 	 */
 	getFrameRate: function() {
 		alert("Called x3dom.runtime.getFrameRate");
 	},
 
 	/**
+	 * Function: setFrameRate
+	 *
 	 * Set frame rate.
 	 * 
-	 * @param   integer   New framrate to use
-	 * @return  nothing
+	 * Parameters:
+	 * 
+	 *		rate - The new integer value for the frame rate
 	 */
 	setFrameRate: function(rate) {
 		alert("Called x3dom.runtime.setFrameRate("+ rate + ")");
 	},
 
 	/**
+	 * Function: getActiveBindable
+     *	 
 	 * Returns the currently active bindable DOM element of the given typ. 
 	 * typeName must be a valid Bindable node (e.g. Viewpoint, NavigationInfo)
 	 * 
-	 * @param   string 	bindable type name
-	 * @return  DOM element
+	 * Parameters:
+	 *
+	 * 		typeName - bindable type name
+	 *
+	 * Returns:
+	 * 		DOM element
 	 */
 	getActiveBindable: function(typeName) {
 		alert("Called x3dom.runtime.getActiveBindable("+ typeName + ")");
 	}
-	
 };
 
 
@@ -969,6 +992,9 @@ x3dom.runtime = {
         for (i=0; i < x3ds.length; i++)
         {
             var x3d_element = x3ds[i];
+			
+			x3d_element.runtime = x3dom._runtime;
+			
         /*
             // http://de.selfhtml.org/javascript/objekte/mimetypes.htm
             if (navigator.mimeTypes["model/vrml"] &&
