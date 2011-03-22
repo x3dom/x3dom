@@ -7,3 +7,5 @@ _site
 *.pyc
 dist
 test/qunit
+tools/config/Data
+doc/api

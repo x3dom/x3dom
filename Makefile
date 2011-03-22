@@ -3,6 +3,7 @@ V ?= 0
 SRC_DIR = src
 TEST_DIR = test
 TOOL_DIR = tools
+DOC_DIR = doc
 
 PREFIX = .
 DIST_DIR = ${PREFIX}/dist
@@ -98,6 +99,9 @@ clean:
 	@@echo "Removing cloned directories"
 	@@rm -rf test/qunit
 
+	@@echo "Removing generated API documentation"
+	@@rm -rf ${DOC_DIR}/api
+	
 runserver:
 	@@echo "Running development server..."
 
@@ -105,4 +109,11 @@ changelog:
 	@@echo "Generating changelog this may take a while ..."
 	@svn log --verbose --xml https://x3dom.svn.sourceforge.net/svnroot/x3dom/trunk | xsltproc --nowrite --nomkdir --nonet tools/svn2cl.xsl - > ChangeLog
 
-.PHONY: all x3dom lint min init changelog runserver
+docs:
+	@@echo "Generating API documentation"
+	@@if test ! -d "${DOC_DIR}/api"; then \
+		mkdir ${DOC_DIR}/api; \
+	fi
+	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/config
+	
+.PHONY: all x3dom lint min init changelog runserver docs

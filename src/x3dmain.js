@@ -72,24 +72,25 @@ window.requestAnimFrame = (function() {
            };
 })();
 
-/**
- * @private Returns a prototype object suitable for extending the given class
- * <tt>f</tt>. Rather than constructing a new instance of <tt>f</tt> to serve as
- * the prototype (which unnecessarily runs the constructor on the created
- * prototype object, potentially polluting it), an anonymous function is
- * generated internally that shares the same prototype:
+/*
+ *	Function: x3dom.extend
  *
- * <pre>function g() {}
- * g.prototype = f.prototype;
- * return new g();</pre>
+ *	Returns a prototype object suitable for extending the given class
+ *	_f_. Rather than constructing a new instance of _f_ to serve as
+ *	the prototype (which unnecessarily runs the constructor on the created
+ *	prototype object, potentially polluting it), an anonymous function is
+ *	generated internally that shares the same prototype:
+ *	Parameters:
  *
- * For more details, see Douglas Crockford's essay on prototypical inheritance.
+ *   	f - Method f a constructor
  *
- * @param {method} f a constructor.
- * @returns a suitable prototype object.
- * @see Douglas Crockford's essay on <a
- * href="http://javascript.crockford.com/prototypal.html">prototypical
- * inheritance</a>.
+ *	Returns:
+ *
+ * 		A suitable prototype object
+ *
+ *	See Also:
+ *
+ *		Douglas Crockford's essay on <prototypical inheritance at http://javascript.crockford.com/prototypal.html>.
  */
 x3dom.extend = function(f) {
   function g() {}
