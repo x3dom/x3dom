@@ -46,11 +46,13 @@ Format: 1.51
 # --------------------------------------------------------------------------
 
 
-File: extend  (x3dmain.js)
+File: x3dmain.js  (x3dmain.js)
 
 Group: Index  {
 
    Index: Everything
+   Class Index: Classes
+   File Index: Files
    Function Index: Functions
    }  # Group: Index
 
