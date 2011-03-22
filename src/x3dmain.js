@@ -12,21 +12,21 @@
 // Add some JS1.6 Array functions:
 // (This only includes the non-prototype versions, because otherwise it messes up 'for in' loops)
 
-/*
- *	Function: Array.forEach
- *
- *	Javascript array forEach() method calls a function for each element in the array.
- *
- *   	array - The array
- *		fun   - Function to test each element of the array
- *      thisp - Object to use as __this__ when executing callback
- *
- *	Returns:
- *
- * 		The created array
- */
 if (!Array.forEach) {
-    Array.forEach = function (array, fun, thisp) {
+	/*
+	 *	Function: Array.forEach
+	 *
+	 *	Javascript array forEach() method calls a function for each element in the array.
+	 *
+	 *   	array - The array
+	 *		fun   - Function to test each element of the array
+	 *      thisp - Object to use as __this__ when executing callback
+	 *
+	 *	Returns:
+	 *
+	 * 		The created array
+	 */
+	Array.forEach = function (array, fun, thisp) {
         var len = array.length;
         for (var i = 0; i < len; i++) {
             if (i in array) {
