@@ -902,7 +902,19 @@ x3dom.runtime = {
 	 */
 	setFrameRate: function(rate) {
 		alert("Called x3dom.runtime.setFrameRate("+ rate + ")");
+	},
+
+	/**
+	 * Returns the currently active bindable DOM element of the given typ. 
+	 * typeName must be a valid Bindable node (e.g. Viewpoint, NavigationInfo)
+	 * 
+	 * @param   string 	bindable type name
+	 * @return  DOM element
+	 */
+	getActiveBindable: function(typeName) {
+		alert("Called x3dom.runtime.getActiveBindable("+ typeName + ")");
 	}
+	
 };
 
 
