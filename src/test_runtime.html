@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>X3DOM text example</title>
+    <link rel="stylesheet" type="text/css" href="x3dom.css">
+</head>
+<body>
+    <h1>X3DOM environment example</h1>
+    <x3d showStat="true" showLog="true" width="512px" height="512px">
+    <scene>
+           <viewpoint position='0 0 10' ></viewpoint>
+           <shape>
+                <appearance>
+                    <material diffuseColor='1 0 0' ></material>	
+                </appearance>
+                <box DEF='box' ></box>
+            </shape>
+    </scene>
+    </x3d>
+	<script type="text/javascript" src="x3dmain.js"></script>
+    <script type="text/javascript" src="debug.js"></script>
+	<script type="text/javascript" src="gfx_webgl.js"></script>
+	<script type="text/javascript" src="x3d.js"></script>
+	<script type="text/javascript" src="fields.js"></script>
+    <script>
+		x3dom.runtime.getFrameRate();
+		x3dom.runtime.setFrameRate(60);
+	</script>
+</body>
+</html>
