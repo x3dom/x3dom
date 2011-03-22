@@ -859,6 +859,34 @@ x3dom.userAgentFeature = {
     supportsDOMAttrModified: false
 };
 
+/**
+ * Runtime object to get and set system 
+ * environment parameters. 
+ */
+x3dom.runtime = {
+	/**
+	 * Documentation here. 
+	 * Options:
+	 * http://www.naturaldocs.org/
+	 * http://code.google.com/p/jsdoc-toolkit/
+	 */
+	getFrameRate: function() {
+		alert("Called x3dom.runtime.getFrameRate");
+	},
+
+	/**
+	 * Set frame rate.
+	 * 
+	 * @param   integer   New framrate to use
+	 * @return  nothing
+	 */
+	setFrameRate: function(rate) {
+		alert("Called x3dom.runtime.setFrameRate("+ rate + ")");
+	}
+};
+
+
+
 (function () {
 
     var onload = function() {
