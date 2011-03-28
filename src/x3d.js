@@ -303,20 +303,6 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
     }
 };
 
-// helper to get a style
-x3dom.getStyle = function(oElm, strCssRule) {
-    var strValue;
-    if(window && window.getComputedStyle){
-        //strValue = window.getComputedStyle(oElm).webkitTransform;
-        //strValue = window.getComputedStyle(oElm, "").getPropertyValue(strCssRule);
-        strValue = window.getComputedStyle(oElm, "")[strCssRule];
-    }
-    else if(oElm.currentStyle){
-        strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
-        strValue = oElm.currentStyle[strCssRule];
-    }
-    return strValue;
-};
 
 // helper to set an element's attribute
 x3dom.setElementAttribute = function(attrName, newVal)
