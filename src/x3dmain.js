@@ -896,6 +896,12 @@ x3dom.userAgentFeature = {
  * > ...
  */
 x3dom._runtime = {
+	
+	initialize: function(doc, canvas) {
+		this.doc = doc;
+		this.canvas = canvas
+	},
+
 	/**
 	 * Function: getFrameRate
 	 *
@@ -906,7 +912,7 @@ x3dom._runtime = {
 	 * 		The current frame rate
 	 */
 	getFrameRate: function() {
-		alert("Called x3dom.runtime.getFrameRate");
+		return "Not implemented x3dom._runtime.getFrameRate";
 	},
 
 	/**
@@ -919,14 +925,15 @@ x3dom._runtime = {
 	 *		rate - The new integer value for the frame rate
 	 */
 	setFrameRate: function(rate) {
-		alert("Called x3dom.runtime.setFrameRate("+ rate + ")");
+		return "Not implemented x3dom._runtime.setFrameRate("+ rate + ")";
 	},
 
 	/**
 	 * Function: getActiveBindable
      *	 
 	 * Returns the currently active bindable DOM element of the given typ. 
-	 * typeName must be a valid Bindable node (e.g. Viewpoint, NavigationInfo)
+	 * typeName must be a valid Bindable node (e.g. X3DViewpointNode, 
+	 * X3DNavigationInfoNode)
 	 * 
 	 * Parameters:
 	 *
@@ -936,7 +943,20 @@ x3dom._runtime = {
 	 * 		DOM element
 	 */
 	getActiveBindable: function(typeName) {
-		alert("Called x3dom.runtime.getActiveBindable("+ typeName + ")");
+		var stacks;
+		var i, current, result;
+		
+		stacks = this.canvas.doc._bindableBag._stacks;
+		result = []
+		for (i=0; i < stacks.length; i++) {
+			current = stacks[i];
+			if (current._type._typeName == typeName) {
+				result.push(current.getActive());
+			}
+		}
+
+		return result[0];
+//		alert("Called x3dom.runtime.getActiveBindable("+ typeName + ")");
 	}
 };
 
@@ -992,9 +1012,7 @@ x3dom._runtime = {
         for (i=0; i < x3ds.length; i++)
         {
             var x3d_element = x3ds[i];
-			
-			x3d_element.runtime = x3dom._runtime;
-			
+		
         /*
             // http://de.selfhtml.org/javascript/objekte/mimetypes.htm
             if (navigator.mimeTypes["model/vrml"] &&
@@ -1087,7 +1105,11 @@ x3dom._runtime = {
             x3dcanvas.load(x3ds[i], i);
             x3dom.canvases.push(x3dcanvas);
             
-            var t1 = new Date().getTime() - t0;
+
+			x3ds[i].runtime = x3dom._runtime;
+			x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
+
+			var t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
         }
         

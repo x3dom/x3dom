@@ -28,9 +28,18 @@
     <script>
 	function init() {
 		var e = document.getElementById('the_element');
-		e.runtime.getFrameRate();
-		e.runtime.setFrameRate(60);
-		e.runtime.getActiveBindable();
+		var result;
+
+		result = e.runtime.getFrameRate();
+		x3dom.debug.logInfo("test_runtime.html: Called e.runtime.getFrameRate() and got: " + result);
+
+		result = e.runtime.setFrameRate(60);
+		x3dom.debug.logInfo("test_runtime.html: Called e.runtime.setFrameRate(60) and got: " + result);
+
+		result = e.runtime.getActiveBindable("X3DFogNode");
+		x3dom.debug.logInfo("test_runtime.html: Requested X3DFogNode and got; " + result);
+		result = e.runtime.getActiveBindable("X3DNavigationInfoNode");
+		x3dom.debug.logInfo("test_runtime.html: Requested X3DNavigationInfoNode and got: " + result);
 	}
 	</script>
 </body>
