@@ -3,13 +3,16 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>CSS Integration Test</title>
-        <link rel="stylesheet" type="text/css" href="../../src/x3dom.css">
+	    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+        <!-- BEGIN:X3DOM -->
+		<script type="text/javascript" src="../../src/lang/Array.js"></script>
+		<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
 		<script type="text/javascript" src="../../src/x3dmain.js"></script>
-		<script type="text/javascript" src="../../src/debug.js"></script>
+	    <script type="text/javascript" src="../../src/debug.js"></script>
 		<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 		<script type="text/javascript" src="../../src/x3d.js"></script>
 		<script type="text/javascript" src="../../src/fields.js"></script>
-	
+        <!-- END:X3DOM -->
     	<script type="text/javascript" src="media/js/tests.js"></script>
 		<style>
 		
@@ -77,6 +80,7 @@
 		</style>
 
 		<script>
+
 			// utils
 			function hasClass(ele, cls) {
 				return ele.className.match(new RegExp('(\\s|^)'+cls+'(\\s|$)'));
@@ -168,10 +172,11 @@
                 else
                     elem.innerHTML = " isOver FALSE ";
             }
+
 		</script>
 	</head>
     
-<body id="main">
+<body id="main" >
 	<h1 id="title">CSS Integration test</h1>
     
     <div id="container" class="group">
