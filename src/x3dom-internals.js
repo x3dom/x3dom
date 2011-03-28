@@ -54,6 +54,36 @@ x3dom.extend = function(f) {
   return new g();
 };
 
+
+
+/**
+ * Function x3dom.getStyle
+ * 
+ * Computes the value of the specified CSS property <tt>p</tt> on the
+ * specified element <tt>e</tt>.
+ *
+ * Parameters:
+ *     oElm       - The element on wich to compute the CSS property
+ *     strCssRule - The name of the CSS property
+ *
+ *	Returns:
+ *
+ * 		The computed value of the CSS property
+ */
+x3dom.getStyle = function(oElm, strCssRule) {
+    var strValue;
+    if(window && window.getComputedStyle){
+        //strValue = window.getComputedStyle(oElm).webkitTransform;
+        //strValue = window.getComputedStyle(oElm, "").getPropertyValue(strCssRule);
+        strValue = window.getComputedStyle(oElm, "")[strCssRule];
+    }
+    else if(oElm.currentStyle){
+        strCssRule = strCssRule.replace(/\-(\w)/g, function (strMatch, p1){ return p1.toUpperCase(); });
+        strValue = oElm.currentStyle[strCssRule];
+    }
+    return strValue;
+};
+
 /**
  * Provides requestAnimationFrame in a cross browser way.
  * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
