@@ -11,7 +11,10 @@ DIST_DIR = ${PREFIX}/dist
 JS_ENGINE ?= `which node nodejs`
 COMPILER = ${JS_ENGINE} ${TOOL_DIR}/uglify.js --unsafe
 
-BASE_FILES = ${SRC_DIR}/x3dmain.js\
+BASE_FILES = \
+	${SRC_DIR}/lang/Array.js\
+	${SRC_DIR}/x3dom-internals.js\
+    ${SRC_DIR}/x3dmain.js\
 	${SRC_DIR}/meta.js\
 	${SRC_DIR}/debug.js\
 	${SRC_DIR}/gfx_webgl.js\
