@@ -84,6 +84,54 @@ x3dom.getStyle = function(oElm, strCssRule) {
     return strValue;
 };
 
+
+/** Utility function for defining a new class.
+
+    @param parent the parent class of the new class
+    @param ctor the constructor of the new class
+    @param methods an object literal containing the methods of the new class
+    @return the constructor function of the new class
+  */
+function defineClass(parent, ctor, methods) {
+    function inheritance() {}
+
+    if (parent) {
+        inheritance.prototype = parent.prototype;
+        ctor.prototype = new inheritance();
+        ctor.prototype.constructor = ctor;
+        ctor.superClass = parent;
+    }
+    if (methods) {
+        for (var m in methods) {
+            ctor.prototype[m] = methods[m];
+        }
+    }
+    return ctor;
+}
+
+x3dom.isa = function(object, clazz) {
+    if (object.constructor === clazz) {
+        return true;
+    }
+    if (object.constructor.superClass === undefined) {
+        return false;
+    }
+
+    function f(c) {
+        if (c === clazz) {
+            return true;
+        }
+        if (c.prototype && c.prototype.constructor && c.prototype.constructor.superClass) {
+            return f(c.prototype.constructor.superClass);
+        }
+        return false;
+    }
+    return f(object.constructor.superClass);
+};
+
+
+
+
 /**
  * Provides requestAnimationFrame in a cross browser way.
  * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
