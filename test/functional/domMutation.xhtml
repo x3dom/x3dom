@@ -1,0 +1,95 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>DOM Mutation test</title>
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css"/>
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+</head>
+       
+<body>
+    <h1>DOM Mutation test</h1>
+	<div class="group"> 
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="300px">
+			<Scene>
+				<Background DEF='bgnd' transparency='0' skyColor='0.2 0.7 0.4' />
+				<Transform DEF="trafo" translation="0 0 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" transparency="0" />
+						</Appearance>
+						<Sphere />
+					</Shape>
+				</Transform>
+			</Scene>
+		</X3D>
+	</div>
+	
+	<script type="text/javascript"><![CDATA[
+	
+	var solid = true;
+	
+	function toggleRendering()
+	{
+		var button = document.getElementById("col");
+		
+		solid = !solid;
+		
+		if (solid)
+			button.value = "Blue";
+		else
+			button.value = "Red";
+		
+		var mat = document.getElementsByTagName("Material");
+		var n = mat.length;
+		
+		var aMat = mat[0];
+		aMat.setAttribute("diffuseColor", (!solid ? "0 0 1" : "1 0 0"));
+		
+		return false;
+	}
+    
+    var pos = -4;
+    
+    function addChild()
+    {
+        var t = document.createElement('Transform');
+        t.setAttribute("translation", pos+" 0 0");
+        pos += 2;
+        var s = document.createElement('Shape');
+        t.appendChild(s);
+        var b = document.createElement('Cone');
+        s.appendChild(b);
+        var ot = document.getElementsByTagName("Transform")[0];
+        ot.appendChild(t);
+        
+        return false;
+    }
+    
+    document.onload = function(evt) {
+        alert("Finished loading X3D scene.\nStart rendering...");
+    };
+	
+	]]></script>
+	
+	<div class="group">
+	Dynamic material update
+	<input type="button" id="col" value="Change Color" onclick="toggleRendering();" />
+    <br /> 
+	Dynamic childtree update
+	<input type="button" id="child" value="Add Child" onclick="addChild();" />
+	</div>
+
+</body>
+</html>
