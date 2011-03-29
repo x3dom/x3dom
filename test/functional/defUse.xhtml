@@ -1,0 +1,57 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>DEF/USE test</title>
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css"/>
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+</head>
+       
+<body>
+    <h1>DEF/USE test</h1>
+	
+	<div class="group">
+	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
+             Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" showLog="true" x="0px" y="10px" width="512px" height="512px">
+ <Scene DEF='scene'>
+ 	<Viewpoint DEF='view0' position='0 0 10' orientation="0 0 0 1"/>
+    <Background skyColor='0.05 0.12 0.23'/>
+    <Transform translation='-2 0 0'>
+      <Shape DEF='obj'>
+        <Appearance>
+		  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
+          <!--<ImageTexture url='"texture/generic/x3d_256.jpg"'/>-->
+          <Texture><img src="media/texture/generic/x3d_256.jpg" /></Texture>
+        </Appearance>
+        <Box/>
+      </Shape>
+    </Transform>
+    <Transform translation='2 0 0'>
+      <Shape USE='obj'/>
+    </Transform>
+    <Transform translation='0 2 0'>
+      <Shape DEF='obj1'>
+        <Appearance>
+		  <Material diffuseColor='1 0 0' specularColor='.2 .2 .2' />
+          <Texture repeatS="false" repeatT="false"><video src="../../example/video/big_buck_bunny.ogv" autobuffer="true" /></Texture>
+        </Appearance>
+        <Box/>
+      </Shape>
+    </Transform>
+  </Scene>
+        </X3D>
+	</div>
+    <!--<video src='../example/video/big_buck_bunny.ogv'  autobuffer='true' />-->
+</body>
+</html>
