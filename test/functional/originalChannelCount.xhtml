@@ -1,0 +1,135 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+<head>
+	<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+	<title>Original Channel Count Test</title>
+
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+
+
+</head>
+
+<body>
+	<h1>Original Channel Count Test</h1>
+	<div class="group">
+		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' 
+            showStat='false' showLog='true' width='600px' height='400px' onmousemove="myEvent();">
+			<Scene DEF='scene'>
+				<Background skyColor='0.500 0.500 0.500'/>
+				<Transform DEF='Box01' onclick="x3dom.debug.logInfo('Box clicked');">
+					<Shape>
+						<Appearance DEF='_01_-_Default' >
+							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' />
+							<ImageTexture url='media/texture/generic/crate.gif' origChannelCount='1.0' />
+						</Appearance>
+						<IndexedFaceSet DEF='Box01-GEOMETRY' solid='false' coordIndex='0 2 3 -1   3 1 0 -1   4 5 7 -1   7 6 4 -1   0 1 5 -1   5 4 0 -1   1 3 7 -1   7 5 1 -1   3 2 6 -1   6 7 3 -1   2 0 4 -1   4 6 2 -1   ' normalIndex='4 4 4 -1   4 4 4 -1   2 2 2 -1   2 2 2 -1   3 3 3 -1   3 3 3 -1   0 0 0 -1   0 0 0 -1   5 5 5 -1   5 5 5 -1   1 1 1 -1   1 1 1 -1   ' texCoordIndex='9, 11, 10, -1,   10, 8, 9, -1,   8, 9, 11, -1,   11, 10, 8, -1,   4, 5, 7, -1,   7, 6, 4, -1,   0, 1, 3, -1,   3, 2, 0, -1,   4, 5, 7, -1,   7, 6, 4, -1,   0, 1, 3, -1,   3, 2, 0, -1,   ' >
+							<Coordinate point='-25.0000 -25.0000 25.0000, 25.0000 -25.0000 25.0000, -25.0000 -25.0000 -25.0000, 25.0000 -25.0000 -25.0000, -25.0000 25.0000 25.0000, 25.0000 25.0000 25.0000, -25.0000 25.0000 -25.0000, 25.0000 25.0000 -25.0000, '/>
+							<Normal vector='1.0000 0.0000 0.0000, -1.0000 0.0000 0.0000, 0.0000 1.0000 0.0000, 0.0000 0.0000 1.0000, 0.0000 -1.0000 0.0000, 0.0000 0.0000 -1.0000, '/>
+							<TextureCoordinate point='0.000 0.000, 1.000 0.000, 0.000 1.000, 1.000 1.000, 0.000 0.000, 1.000 0.000, 0.000 1.000, 1.000 1.000, 0.000 0.000, 1.000 0.000, 0.000 1.000, 1.000 1.000, ' />
+						</IndexedFaceSet>
+					</Shape>
+				</Transform>
+				<Viewpoint DEF='Camera01' description='Camera01' orientation='0.604 0.777 0.177 -0.722' position='-144.597 129.832 225.854' zNear='1.000' zFar='1000.000' fieldOfView='0.785' />
+			</Scene>
+		</X3D>
+        
+            <span id="ausgabe" style="color:red; position:absolute;"> &nbsp; </span>
+            <span id="ausgabeButton" onclick="doIt();"
+                  style="background-color: blue; color:yellow; position:absolute; border: yellow solid 1px;">
+                  &nbsp; </span>
+        </div>
+        <p><input type="button" value="addEventListener" onclick="addIt();"/>
+        <input type="button" value="removeEventListener" onclick="delIt();"/></p>
+        
+        <script type="text/javascript" ><![CDATA[
+            //onclick="myEvent();"
+            
+            var evts = new Array(
+                "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
+                "click", "dblclick", "keydown", "keypress", "keyup" );
+            
+            var myEvent = function (event) {
+                var p = document.getElementById('ausgabe');
+                var s = document.getElementById('ausgabeButton');
+                
+                if (arguments.length === 0) {
+                    p.innerHTML = "onclick was called";
+                }
+                else {
+                    p.innerHTML = event.type + ": " + event.layerX + ", " + event.layerY;
+                    // add little offset, otherwise elem prevents navigation since on top
+                    p.style.left = (30+event.layerX) + "px";
+                    p.style.top = (30+event.layerY) + "px";
+                    
+                    if (event.type === "mouseup" && event.button === 2) {
+                        s.isMenu = true;
+                        s.innerHTML = "<p>CLICK ME!</p>";
+                        s.style.visibility = "visible";
+                        s.style.left = (event.layerX) + "px";
+                        s.style.top = (event.layerY) + "px";
+                    }
+                    else if (event.type === "mousemove" && s.isMenu === true) {
+                        s.style.left = (event.layerX) + "px";
+                        s.style.top = (event.layerY) + "px";
+                    }
+                    event.cancelBubble = true;
+                }
+            };
+            
+            function doIt() {
+                var s = document.getElementById('ausgabeButton');
+                s.innerHTML = "";
+                s.style.visibility = "hidden";
+                s.style.left = "0px";
+                s.style.top = "0px";
+                s.isMenu = false;
+                alert("Thanx for clicking me!");
+            }
+            
+            function addIt() {
+                document.getElementById('ausgabe').innerHTML = "test";
+                var s = document.getElementById('ausgabeButton');
+                
+                s.style.visibility = "hidden";
+                s.isMenu = false;
+                s.oncontextmenu = function(evt) {
+                    evt.preventDefault();
+                    evt.stopPropagation();
+                    evt.returnValue = false;
+                    return false;
+                };
+                s.onmouseout = function(evt) {
+                    s.style.visibility = "hidden";
+                    return false;
+                };
+                
+                for (var i=0; i<evts.length; i++) {
+                    document.getElementById('someUniqueId').addEventListener(evts[i], myEvent, true);
+                }
+            }
+            
+            function delIt() {
+                for (var i=0; i<evts.length; i++) {
+                    document.getElementById('someUniqueId').removeEventListener(evts[i], myEvent, true);
+                }
+            }
+            
+            document.onload = addIt;
+        ]]></script>
+	</body>
+</html>
