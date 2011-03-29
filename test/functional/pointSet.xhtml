@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>PointSet test</title>
+
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+
+</head>
+<body>
+    <h1>Point set test</h1>
+    <div class="group"> 
+	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="someUniqueId" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="400px" style="border: 1px solid #000; background-color: darkslategray;">
+        <Scene>
+            <Shape>
+                <PointSet>
+                    <Coordinate point='0 0 0 2 2 2 3 3 3'/>
+                    <Color color='1 0 0 1 0 0 1 0 0'/>
+                </PointSet>
+            </Shape>
+            <Transform translation='2 0 0'>
+                <Shape>
+                    <PointSet>
+                        <Coordinate point='0 0 0 2 2 2 3 3 3'/>
+                        <Color color='1 1 0 1 1 0 1 1 0'/>
+                    </PointSet>
+                </Shape>
+            </Transform>
+            <Viewpoint position='2.5 1.5 9.03553' orientation='0 0 1 0' />
+        </Scene>
+      </X3D>
+    </div>
+
+
+    <script type="text/javascript"><![CDATA[
+    function setCol()
+	{
+		var mat = document.getElementsByTagName("Color");
+		
+		mat[0].setAttribute("color", '0 1 0 1 1 1 0 1 0');
+        
+        var pnt = document.getElementsByTagName("Coordinate");
+        
+        pnt[0].setAttribute("point", '0 1 1 2 2 2 3 2 2');
+		
+		return false;
+	}
+    ]]></script>
+    <p> &nbsp; 
+	<input type="button" id="col" value="Change" onclick="setCol();" />
+	</p>
+</body>
+</html>

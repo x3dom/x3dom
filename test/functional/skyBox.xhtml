@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+	<title>Sky Box</title>
+
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+
+ </head>
+  <body>
+	<h1>Sky box</h1>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' x='0px' y='0px' width='500px' height='500px'>
+      <Scene>
+        <Background backUrl='"media/texture/generic/CubeBack.png"' bottomUrl='"media/texture/generic/CubeDown.png"' frontUrl='"media/texture/generic/CubeFront.png"' leftUrl='"media/texture/generic/CubeLeft.png"' rightUrl='"media/texture/generic/CubeRight.png"' topUrl='"media/texture/generic/CubeUp.png"' />
+        <Viewpoint position='0 0 0' />
+      </Scene>
+    </X3D>
+  </body>
+</html>

@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+
+
+  </head>
+  <body>
+	<h1>Sky color</h1>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='sc' showStat='true' showLog='true' width='500px' height='400px'>
+      <Scene DEF='scene'>
+        <Viewpoint DEF='view1' position='0 0 12'/>
+        <Background DEF='back' groundAngle='0.9 1.5 1.57' groundColor='0.6 0.7 0.1 0.4 0.7 0.2 0.1 0.6 0.1 0 0.3 0.1' skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82'/>
+        <Transform DEF='trans1' translation='0 0 0'>
+          <Shape>
+            <Appearance>
+                <Material DEF="mat"/>
+            </Appearance>
+            <Box DEF='GEO'/>
+          </Shape>
+        </Transform>
+        <ColorInterpolator DEF="CI" key="0 0.5 1" keyValue="1 1 0, 1 0 0, 1 1 0"/>
+        <TimeSensor DEF="TS" cycleInterval="3"/>
+        <ROUTE fromNode="TS" fromField="fraction_changed" toNode="CI" toField="set_fraction"/>
+        <ROUTE fromNode="CI" fromField="value_changed" toNode="mat" toField="diffuseColor"/>
+      </Scene>
+    </X3D>
+  </body>
+</html>
