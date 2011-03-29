@@ -1,0 +1,61 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>Orientation Event test</title>
+
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+
+</head>
+       
+<body>
+
+    <h1>Orientation Event test</h1>
+	<div class="group"> 
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" 
+             id="a_box" showStat="true" showLog="true" 
+             x="0px" y="0px" width="400px" height="300px">
+			<Scene>
+				<Background skyColor='0.8 0.8 0.8' />
+				<Transform id='tr' translation="0 0 0">
+					<Shape>
+						<Appearance>
+							<Material id='mat' diffuseColor=".5 .5 .5" specularColor=".2 .2 .2" />
+						</Appearance>
+						<Box />
+					</Shape>
+				</Transform>
+				<Viewpoint position="0 0 8" orientation="0 1 0 0" />
+			</Scene>
+		</X3D>
+	</div>
+	
+	<script type="text/javascript"><![CDATA[
+    function handleOrientation(o) {
+      var d=document.getElementById('tr');
+      d.setAttribute('rotation',o.x+' '+o.y+' '+o.z+' 3.14159265');
+      d.setAttribute('translation',(4*o.x)+' '+(4*o.y)+' '+(4*o.z));
+      var m=document.getElementById('mat');
+      m.setAttribute('diffuseColor',(2*o.x+1)+' '+(2*o.y+1)+' '+(2*o.z+1));
+    }
+    
+    window.addEventListener("MozOrientation", handleOrientation, true);
+	]]></script>
+
+</body>
+</html>

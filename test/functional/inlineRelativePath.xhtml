@@ -1,0 +1,49 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>Inline Relative Path</title>
+
+    <!-- BEGIN:X3DOM -->
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+	<script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+	<script type="text/javascript" src="../../src/x3dmain.js"></script>
+	<script type="text/javascript" src="../../src/debug.js"></script>
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+	<script type="text/javascript" src="../../src/x3d.js"></script>
+	<script type="text/javascript" src="../../src/fields.js"></script>
+	<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+    <!-- END:X3DOM -->
+
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+
+</head>
+       
+<body style="background-color:#E0E0E0;">
+
+    <h1>Inline Relative Path</h1>
+	
+	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
+             Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
+<div class="group">	
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="inline" showStat="true" showLog="true" x="0px" y="0px" width="320px" height="240px">
+	  <Scene DEF='scene'>
+		<Viewpoint position='0 0 50' orientation='0 0 0 1' />
+		<Background skyColor='0.05 0.12 0.23'/>
+	    <Transform DEF="box">
+			<Inline DEF="inline1" url="box.x3d" />
+			<Transform scale="3 3 3" translation="0 0 -10">
+				<Inline DEF="inline1" url="scene/texBox.x3d" />
+			</Transform>
+		</Transform>
+	  </Scene>
+    </X3D>
+</div>	
+
+
+</body>
+</html>
