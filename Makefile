@@ -8,7 +8,7 @@ DOC_DIR = doc
 PREFIX = .
 DIST_DIR = ${PREFIX}/dist
 
-JS_ENGINE ?= `which node nodejs`
+JS_ENGINE ?= `which node`
 COMPILER = ${JS_ENGINE} ${TOOL_DIR}/uglify.js --unsafe
 
 BASE_FILES = \

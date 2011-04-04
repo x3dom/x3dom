@@ -1,5 +1,126 @@
+2011-04-04  thyrell
+
+	 [r984] Refactored x3dom.Mesh code to src/mesh.js. Also added
+	  script and Makefileupdate to search and replace the
+	  script-includes in test/functioncal. However tools/sedml.sh not
+	  working yet due to what seems to be encoding problems. Need to
+	  crosscheck on a native unix machine
+	 [r983] More cleaning of src/ folder
+
+2011-03-29  thyrell
+
+	 [r982] Removed old tests from src/
+	 [r981] Removed old tests from src
+	 [r980] Moved rest of the tests to test/functional
+	 [r979] Moving textures for blinkingLight test
+	 [r978] Moved a good deal more of tests from src/ to dedicated
+	  test/functional
+	 [r977] Moved a good deal more of tests from src/ to dedicated
+	  test/functional
+	 [r976] Moved some tests to test/functional
+	 [r975] More tests moved to test/functional
+	 [r974] Adding index.html to test/ directory
+	 [r973] Converted two more tests to test/functional
+	 [r972] Updated canvas painting test (adapted to test/functional)
+
+2011-03-28  thyrell
+
+	 [r971] Moved x3dom.isa() and defineClass() methods from x3d.js to
+	  x3dom-internals.js
+	 [r970] Added blinkingLight test to test/functional/
+	 [r969] Additional function test in test/
+	 [r968] Refactored static x3dom.getStyle() function to
+	  x3dom-internals.js and added documentation
+	 [r967] Starting re-org of src/ tree. Tests in src/ will most
+	  likely break the next couple of weeks. Tests in test/functional
+	  still work.
+	 [r966] Starting re-org of src/ tree. Tests in src/ will most
+	  likely break the next couple of weeks. Tests in test/functional
+	  still work.
+	 [r965] Using camel case convetion with tests
+	 [r964] Implemented x3dom._runtime.getActiveBindable(typeName).
+	  Please review
+
+2011-03-22  thyrell
+
+	 [r963] Added the runtime object to each X3D element instead of
+	  using a system wide object.
+
+2011-03-22  jbehr
+
+	 [r962] getActiveBindable() func added
+
+2011-03-22  thyrell
+
+	 [r961] API documentation
+	 [r960] API documentation
+	 [r959] Added support for generating API documentation using lean
+	  and mean NaturalDocs.org system
+	 [r958] Added x3dom.runtime stub
+
+2011-03-14  thyrell
+
+	 [r957] More test cleanup
+	 [r956] Renaming __loop() to mainloop() for requestAnimFrame
+	  callback
+	 [r955] Added requestAnimationFrame feature for browsers that
+	  support it
+
+2011-03-14  yjung
+
+	 [r954] fixed example
+
+2011-03-08  thyrell
+
+	 [r953] Added comment in code to switch to requestAnimationFrame.
+	  Not yet implemented though
+
+2011-03-07  thyrell
+
+	 [r952] More cleaning up of tests
+
+2011-03-01  thyrell
+
+	 [r951] Started work on putting acceptance tests in seperate
+	  directory
+
+2011-02-28  tobold
+
+	 [r950] Fixed multitouch zooming.
+
+2011-02-25  jbehr
+
+	 [r949] fixed for extra browser support
+
+2011-02-24  yjung
+
+	 [r948] oops
+	 [r947] worked on mt
+
+2011-02-23  jbehr
+
+	 [r946] namespace added
+
+2011-02-22  thyrell
+
+	 [r945] More work on multitouch. For now only FF is supported, and
+	  only partially. Added a pinch-gesture to zoom scene. Partially
+	  working with FF only
+	 [r944] Merge branch 'mt'
+	 [r943] Adding multitouch examples (mock)
+
+2011-02-21  thyrell
+
+	 [r942] I found a bug and fixed it, fortunately it does not bug us
+	  anymore (semi-colon warning)
+	 [r941] Fixed log output for touch events
+	 [r940] Started target for running a local server
+	 [r939] Started to working on touch support
+
 2011-02-15  thyrell
 
+	 [r938] Fixing CSS of camera animation example
+	 [r937] Lint errors down to 'Dont make functions within a loop.'
 	 [r936] Down to 52 liniting errors
 	 [r935] Lint error cleanup installment 2
 	 [r934] Fixed a whole slew of Lint errors
