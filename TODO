@@ -8,3 +8,19 @@ TODO
 
 - Time sensor implementation
 - Text implementation
+
+
+== Generic
+- jslint
+
+== X3D basics
+- global context per namespace
+- include Node.f Node.fc and node.nodeChanged()
+- remove _getNodeByDEF
+- addChild/removeChild in all nodes
+
+== Rendering
+- IndexedTriangleStripSet
+- Coordinate
+- ColorRGBA
+- ParticleSet
