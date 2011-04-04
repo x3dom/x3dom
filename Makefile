@@ -19,10 +19,20 @@ BASE_FILES = \
 	${SRC_DIR}/debug.js\
 	${SRC_DIR}/gfx_webgl.js\
 	${SRC_DIR}/x3d.js\
+    ${SRC_DIR}/mesh.js\
 	${SRC_DIR}/x3d_follower.js\
 	${SRC_DIR}/fields.js
 
 MODULES = ${BASE_FILES}
+
+HTML_INCLUDES = \
+	<script type="text/javascript" src="../../src/lang/Array.js"></script> \
+	<script type="text/javascript" src="../../src/x3dom-internals.js"></script> \
+	<script type="text/javascript" src="../../src/x3dmain.js"></script> \
+    <script type="text/javascript" src="../../src/debug.js"></script> \
+	<script type="text/javascript" src="../../src/gfx_webgl.js"></script> \
+	<script type="text/javascript" src="../../src/x3d.js"></script> \
+	<script type="text/javascript" src="../../src/fields.js"></script> \
 
 X3DOM = ${DIST_DIR}/x3dom.js
 X3DOM_MIN = ${DIST_DIR}/x3dom.min.js
@@ -107,6 +117,8 @@ clean:
 	
 runserver:
 	@@echo "Running development server..."
+	@@echo "Open your browser and visit http://localhost:8070/"
+	python ${TOOL_DIR}/testserver.py
 
 changelog:
 	@@echo "Generating changelog this may take a while ..."
@@ -119,4 +131,9 @@ docs:
 	fi
 	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/config
 	
-.PHONY: all x3dom lint min init changelog runserver docs
+testrefresh:
+	@@echo "Refreshing test cases header files."
+	grep -rl '<!-- BEGIN:X3DOM -->' test/* | while read i; do ${TOOL_DIR}/sedml.sh $i "s/<!-- BEGIN:X3DOM -->.*<!-- END:X3DOM -->/<!-- BEGIN:X3DOM -->${HTML_INCLUDES}<!-- END:X3DOM -->/g" $i.tmp; done;
+	
+	
+.PHONY: all x3dom lint min init changelog runserver docs refreshtests

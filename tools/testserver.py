@@ -4,13 +4,13 @@ import wsgiserver
 import os
 import mimetypes
 
-TESTSCENE_DIR = os.getcwd() + "../test/functional/"
+TESTSCENE_DIR = os.path.join(os.getcwd(), "test")
 
 def testScenes(environ, start_response):
     
     # Strip the leading slash from the URI
     path = environ["REQUEST_URI"][1:]
-    if path == "":
+    if path == "" or path == "/":
         path = "index.html"
     fullpath = os.path.join(TESTSCENE_DIR, path)
     print "Requesting:", fullpath
@@ -42,7 +42,7 @@ print "Starting x3dom development testserver"
 mimetypes.init()
 
 server = wsgiserver.CherryPyWSGIServer(
-            ('0.0.0.0', 8070), testScenes,
+            ('0.0.0.0', 8080), testScenes,
             server_name='www.x3dom.org')
 
 if __name__ == '__main__':
