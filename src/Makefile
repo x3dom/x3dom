@@ -29,7 +29,7 @@ ccVerbose:
 	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE  --js=lang/Array.js --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=x3d.js --js=x3d_follower.js --js=fields.js
 
 runServer:
-	python testserver.py &
+	python ../tools/testserver.py &
 	open http://localhost:8070/index.html
 
 count:
