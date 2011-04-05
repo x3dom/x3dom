@@ -1,10 +1,11 @@
 /** 
  * @class x3dom.X3DCanvas
  */
-x3dom.X3DCanvas = function(x3dElem) {
+x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     
     var that = this;
     
+	this.canvasIdx = canvasIdx;
     this.initContext = function(canvas) {        
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
         var gl = x3dom.gfx_webgl(canvas);
@@ -15,6 +16,80 @@ x3dom.X3DCanvas = function(x3dElem) {
         }
         return gl;
     };
+	
+	this.initFlashContext = function(object) {        
+        x3dom.debug.logInfo("Initializing X3DObject for [" + object.id + "]");
+        var gl = x3dom.gfx_flash(object);
+        return gl;
+    };
+	
+	this.appendParam = function(node, name, value) {
+		var param = document.createElement('param');
+		param.setAttribute(name, value);
+		node.appendChild( param );
+	};
+	
+	this.createFlashObject = function(x3dElem) {
+		x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
+		
+		var id = x3dElem.getAttribute("id");
+		if (id !== null) {
+            id = "x3dom-" + id + "-object";
+        } else {
+            var index = new Date().getTime();
+            id = "x3dom-" + index + "-object";
+        }
+		
+		//Add Alternative Content
+		var link = document.createElement('a');
+		link.setAttribute('id', id);
+		link.setAttribute('href', 'http://www.adobe.com/go/getflash');
+		
+		var img = document.createElement('img');
+		img.setAttribute('src', 'http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif');
+		img.setAttribute('alt', 'Get Adobe Flash Player');
+		
+		link.appendChild(img);
+		x3dElem.appendChild(link);
+		
+		//Get width from x3d-Element or set default
+		var width = x3dElem.getAttribute("width");
+		if( width == null ) {
+			width = 550;
+		}else{
+			var idx = width.indexOf("px");
+			if( idx != -1 ) {
+				width = width.substr(0, idx);
+			}
+		}
+		//Get height from x3d-Element or set default
+		var height = x3dElem.getAttribute("height")
+		if( height == null ) {
+			height = 400;
+		}else{
+			var idx = height.indexOf("px");
+			if( idx != -1 ) {
+				height = height.substr(0, idx);
+			}
+		}
+		
+		var flashvars = { 
+			width: width, 
+			height: height,
+			canvasIdx: this.canvasIdx
+		};
+		
+		var params = { 
+			menu: "false", 
+			quality: "high", 
+			wmode: "direct", 
+			allowScriptAccess: "always" 
+		};
+		
+		swfobject.embedSWF("x3dom.swf", id, width, height, "11.0.0", "", flashvars, params);
+		
+		return document.getElementById(id);
+	};
 
     this.createHTMLCanvas = function(x3dElem)
     {
@@ -176,13 +251,33 @@ x3dom.X3DCanvas = function(x3dElem) {
         };        
         return statDiv;
     };
+	
+	//Need for WebKit Browser
+	this.isFlashReady = false;
 
     this.x3dElem = x3dElem;
-    this.canvas = this.createHTMLCanvas(x3dElem);
-    this.canvas.parent = this;
-    this.fps_t0 = new Date().getTime();
-    
-    this.gl = this.initContext(this.canvas);
+	
+    if(this.x3dElem.getAttribute('renderer') == 'flash') {
+		this.renderer = 'flash';
+		this.canvas = this.createFlashObject(x3dElem);
+		this.canvas.parent = this;
+		this.gl = this.initFlashContext(this.canvas);
+	}else{
+		this.renderer = 'webgl';
+		this.canvas = this.createHTMLCanvas(x3dElem);
+		this.canvas.parent = this;
+		this.gl = this.initContext(this.canvas);
+		if(this.gl == null)
+		{
+			x3dom.debug.logInfo("Fallback to Flash Renderer");
+			this.renderer = 'flash';
+			this.canvas = this.createFlashObject(x3dElem);
+			this.canvas.parent = this;
+			this.gl = this.initFlashContext(this.canvas);
+		}
+	}
+	
+	this.fps_t0 = new Date().getTime();
     this.doc = null;
     
     // allow listening for (size) changes
@@ -232,7 +327,7 @@ x3dom.X3DCanvas = function(x3dElem) {
 
     this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
     
-    if (this.canvas !== null && this.gl !== null && this.hasRuntime) {
+    if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.renderer !== "flash") {
         // event handler for mouse interaction
         this.canvas.mouse_dragging = false;
         this.canvas.mouse_button = 0;
@@ -614,8 +709,15 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.statDiv.appendChild(document.createTextNode("anim: " + animD));
             }
             
-            this.doc.needRender = false;    // picking might require another pass
-            this.doc.render(this.gl);
+            if(this.renderer == 'flash') {
+				if(this.isFlashReady) {
+					this.doc.needRender = false;    // picking might require another pass
+					this.doc.render(this.gl);
+				}
+			}else{
+				this.doc.needRender = false;    // picking might require another pass
+				this.doc.render(this.gl);
+			}
 			
 			} else {
             if (this.statDiv) {
@@ -921,7 +1023,7 @@ x3dom._runtime = {
                 continue;
             }
         
-            var x3dcanvas = new x3dom.X3DCanvas(x3d_element);
+            var x3dcanvas = new x3dom.X3DCanvas(x3d_element, i);
             
             if (x3dcanvas.gl === null) {
 
