@@ -46,19 +46,21 @@
     </x3d>
 
     	<ul class="plain">
-	    	<li><a href="#" onClick="document.getElementById('the_element').runtime.lightView();return false;">Light View</a></li> 
+	    	<li><a href="#" onClick="$element.runtime.lightView();return false;">Light View</a></li> 
 		    <li><a href="#" onClick="$element.runtime.resetView();return false;">Reset View</a></li>
-		    <li><a href="#" onClick="document.getElementById('the_element').runtime.uprightView();return false;">Upright View</a></li>
-		    <li><a href="#" onClick="document.getElementById('the_element').runtime.showAll();return false;">Show all</a></li>
-		    <li><a href="#" onClick="document.getElementById('the_element').runtime.showDebug();return false;">Show debug</a></li>
-		    <li><a href="#" onClick="document.getElementById('the_element').runtime.hideDebug();return false;">Hide debug</a></li>
+		    <li><a href="#" onClick="$element.runtime.uprightView();return false;">Upright View</a></li>
+		    <li><a href="#" onClick="$element.runtime.showAll();return false;">Show all</a></li>
+		    <li><a href="#" onClick="$element.runtime.showDebug();return false;">Show debug</a></li>
+		    <li><a href="#" onClick="$element.runtime.hideDebug();return false;">Hide debug</a></li>
 	    </ul>
 
     <script>
-	var $element = document.getElementById('the_element');
+	// simplify access to the X3D element
+	var $element;
 
 	function init() {
-		var e = document.getElementById('the_element');
+		$element = document.getElementById('the_element');
+		var e = $element;
 		var result;
 
 		result = e.runtime.getFrameRate();
