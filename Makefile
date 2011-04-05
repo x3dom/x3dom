@@ -25,15 +25,6 @@ BASE_FILES = \
 
 MODULES = ${BASE_FILES}
 
-HTML_INCLUDES = \
-	<script type="text/javascript" src="../../src/lang/Array.js"></script> \
-	<script type="text/javascript" src="../../src/x3dom-internals.js"></script> \
-	<script type="text/javascript" src="../../src/x3dmain.js"></script> \
-    <script type="text/javascript" src="../../src/debug.js"></script> \
-	<script type="text/javascript" src="../../src/gfx_webgl.js"></script> \
-	<script type="text/javascript" src="../../src/x3d.js"></script> \
-	<script type="text/javascript" src="../../src/fields.js"></script> \
-
 X3DOM = ${DIST_DIR}/x3dom.js
 X3DOM_MIN = ${DIST_DIR}/x3dom.min.js
 
@@ -131,9 +122,8 @@ docs:
 	fi
 	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/config
 	
-testrefresh:
+refreshtests:
 	@@echo "Refreshing test cases header files."
-	grep -rl '<!-- BEGIN:X3DOM -->' test/* | while read i; do ${TOOL_DIR}/sedml.sh $i "s/<!-- BEGIN:X3DOM -->.*<!-- END:X3DOM -->/<!-- BEGIN:X3DOM -->${HTML_INCLUDES}<!-- END:X3DOM -->/g" $i.tmp; done;
-	
+	python tools/update_headers.py test/functional
 	
 .PHONY: all x3dom lint min init changelog runserver docs refreshtests
