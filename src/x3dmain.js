@@ -32,12 +32,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	this.createFlashObject = function(x3dElem) {
 		x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
 		
+		//Get X3D-Element ID
 		var id = x3dElem.getAttribute("id");
 		if (id !== null) {
             id = "x3dom-" + id + "-object";
         } else {
             var index = new Date().getTime();
             id = "x3dom-" + index + "-object";
+        }
+		
+		//Get SWFPath
+		var swf_path = x3dElem.getAttribute("swfpath");
+		if (id === null) {
+            swf_path = "x3dom.swf";
         }
 		
 		//Add Alternative Content
@@ -86,7 +93,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			allowScriptAccess: "always" 
 		};
 		
-		swfobject.embedSWF("x3dom.swf", id, width, height, "11.0.0", "", flashvars, params);
+		swfobject.embedSWF(swf_path, id, width, height, "11.0.0", "", flashvars, params);
 		
 		return document.getElementById(id);
 	};
@@ -257,20 +264,20 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     this.x3dElem = x3dElem;
 	
-    if(this.x3dElem.getAttribute('renderer') == 'flash') {
-		this.renderer = 'flash';
+    if(this.x3dElem.getAttribute('backend') == 'flash') {
+		this.backend = 'flash';
 		this.canvas = this.createFlashObject(x3dElem);
 		this.canvas.parent = this;
 		this.gl = this.initFlashContext(this.canvas);
 	}else{
-		this.renderer = 'webgl';
+		this.backend = 'webgl';
 		this.canvas = this.createHTMLCanvas(x3dElem);
 		this.canvas.parent = this;
 		this.gl = this.initContext(this.canvas);
 		if(this.gl == null)
 		{
 			x3dom.debug.logInfo("Fallback to Flash Renderer");
-			this.renderer = 'flash';
+			this.backend = 'flash';
 			this.canvas = this.createFlashObject(x3dElem);
 			this.canvas.parent = this;
 			this.gl = this.initFlashContext(this.canvas);
@@ -327,7 +334,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
     
-    if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.renderer !== "flash") {
+    if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
         // event handler for mouse interaction
         this.canvas.mouse_dragging = false;
         this.canvas.mouse_button = 0;
@@ -709,7 +716,7 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.statDiv.appendChild(document.createTextNode("anim: " + animD));
             }
             
-            if(this.renderer == 'flash') {
+            if(this.backend == 'flash') {
 				if(this.isFlashReady) {
 					this.doc.needRender = false;    // picking might require another pass
 					this.doc.render(this.gl);
