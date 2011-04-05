@@ -18,6 +18,7 @@ BASE_FILES = \
 	${SRC_DIR}/meta.js\
 	${SRC_DIR}/debug.js\
 	${SRC_DIR}/gfx_webgl.js\
+	${SRC_DIR}/gfx_flash.js\
 	${SRC_DIR}/x3d.js\
     ${SRC_DIR}/mesh.js\
 	${SRC_DIR}/x3d_follower.js\

@@ -16,6 +16,7 @@ x3dom_includes = '''
 <script type="text/javascript" src="../../src/x3d.js"></script>
 <script type="text/javascript" src="../../src/mesh.js"></script>
 <script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/x3d_follower.js"></script>
 '''
 
 findreplace = [
