@@ -9,3 +9,4 @@ dist
 test/qunit
 tools/config/Data
 doc/api
+*~backup~

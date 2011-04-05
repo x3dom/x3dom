@@ -105,6 +105,9 @@ clean:
 
 	@@echo "Removing generated API documentation"
 	@@rm -rf ${DOC_DIR}/api
+    
+	@@echo "Removing backup files"
+	@@rm -rf ${TEST_DIR}/functional/*html~backup~
 	
 runserver:
 	@@echo "Running development server..."
