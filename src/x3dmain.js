@@ -43,7 +43,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		
 		//Get SWFPath
 		var swf_path = x3dElem.getAttribute("swfpath");
-		if (id === null) {
+		if (swf_path === null) {
             swf_path = "x3dom.swf";
         }
 		
@@ -865,6 +865,7 @@ x3dom.userAgentFeature = {
 };
 
 
+// TODO: move to seperate file: runtime.js
 
 /**
  * Class: x3dom._runtime
@@ -918,7 +919,6 @@ x3dom._runtime = {
 	 * X3DNavigationInfoNode)
 	 * 
 	 * Parameters:
-	 *
 	 * 		typeName - bindable type name
 	 *
 	 * Returns:
@@ -939,7 +939,66 @@ x3dom._runtime = {
 
 		return result[0];
 //		alert("Called x3dom.runtime.getActiveBindable("+ typeName + ")");
+	},
+	
+	
+	/**
+	 * Function: getViewpoint
+     *	 
+	 * Returns the current viewpoint.
+	 * 
+	 * Returns:
+	 * 		The viewpoint
+	 */
+	getViewpoint: function() {
+		this.canvas.doc._scene.getViewpoint();
+	},
+	
+	getProjectionMatrix: function() {
+		this.canvas.doc._viewarea.getProjectionMatrix();
+	},
+
+	getNavigationInfo: function() {
+		this.canvas.doc._scene.getNavigationInfo();
+	},
+	
+	getLightMatrix: function() {
+		this.canvas.doc._viewarea.getLightMatrix();
+	},
+	
+	resetView: function() {
+		this.canvas.doc._viewarea.resetView();
+	},
+	
+	lightView: function() {
+		if (this.canvas.doc._nodeBag.lights.length > 0) {
+			this.canvas.doc._viewarea.animateTo(this.canvas.doc._viewarea.getLightMatrix()[0], this.canvas.doc._scene.getViewpoint());
+			return true;
+		} else {
+			x3dom.debug.logInfo("No lights to navigate to");
+			return false;
+		}
+	},
+	
+	uprightView: function() {
+		this.canvas.doc._viewarea.uprightView();
+	},
+	
+	showAll: function() {
+		this.canvas.doc._viewarea.showAll();
+	},
+	
+	showDebug: function() {
+		this.canvas.doc._viewarea._visDbgBuf = true;
+		x3dom.debug.logContainer.style.display = "block";
+		this.canvas.doc.needRender = true;
+	},
+	hideDebug: function() {
+		this.canvas.doc._viewarea._visDbgBuf = false;
+		x3dom.debug.logContainer.style.display = "none";
+		this.canvas.doc.needRender = true;
 	}
+
 };
 
 
