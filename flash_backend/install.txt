@@ -1,0 +1,14 @@
+ 1. Install Adobe Flash Builder 4
+ 2. Download Flex SDK Hero 4.5.0.19786 from http://opensource.adobe.com/wiki/display/flexsdk/Download+Flex+Hero
+ 3. Extract SDK (for example to "Adobe Flash Builder 4/sdks/4.5.19786")
+ 4. Copy subfolders from x3dom_flex_sdk_patch to your SDK path
+ 5. Open Adobe Flash Builder 4
+ 6. Create new ActionScript Project
+ 7. Give it some name
+ 8. choose "svn"/x3dom/flash_backend as standard folder
+ 9. click config Flex sdk
+10. Add new SDK 4.5.19786
+11. click next
+12. x3dom.as as Mainfile
+13. bin as output folder
+14. finish

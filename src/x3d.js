@@ -1191,7 +1191,23 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'shininess', 0.2);
             this.addField_SFColor(ctx, 'specularColor', 0, 0, 0);
             this.addField_SFFloat(ctx, 'transparency', 0);
-        }
+        },
+		{
+		
+			fieldChanged: function(fieldName) {
+				x3dom.debug.logInfo('Material changed');
+				if (fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
+					fieldName == "emissiveColor" || fieldName == "shininess" ||
+					fieldName == "specularColor" || fieldName == "transparency")
+                {
+                    Array.forEach(this._parentNodes, function (app) {
+                        Array.forEach(app._parentNodes, function (shape) {
+                            shape._dirty.material = true;
+                        });
+                    });
+                }
+			}
+		}
     )
 );
 
@@ -4614,7 +4630,8 @@ x3dom.registerNodeType(
                 texcoords: true,
                 colors: true,
                 indexes: true,
-                texture: true
+                texture: true,
+				material: true
             };
         },
         {
