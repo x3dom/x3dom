@@ -28,7 +28,7 @@ findreplace = [
 
 def replaceStringInFile(filePath):
    "replaces all string by a regex substitution"
-   backupName=filePath+'~re~'
+   backupName=filePath+'~backup~'
 
    print 'reading:', filePath
    input = open(filePath,'rb')

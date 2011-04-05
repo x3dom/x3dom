@@ -1,5 +1,16 @@
+2011-04-05  thyrell
+
+	 [r988] Added python script to update html includes with
+	  test/functional
+
+2011-04-05  akustikkoppler
+
+	 [r987]
+	 [r986] - Add Flash Backend Alpha 0.1
+
 2011-04-04  thyrell
 
+	 [r985] Fixed problem in Makfile
 	 [r984] Refactored x3dom.Mesh code to src/mesh.js. Also added
 	  script and Makefileupdate to search and replace the
 	  script-includes in test/functioncal. However tools/sedml.sh not
