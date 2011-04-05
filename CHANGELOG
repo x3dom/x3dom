@@ -1,5 +1,10 @@
 2011-04-05  thyrell
 
+	 [r993] Added some runtime.* API methods and testcase
+	 [r992] Added some runtime.* API methods and testcase
+	 [r991] Moved slides and paper to doc directory
+	 [r990] Fixes to tests
+	 [r989] Updated tests to include flash backend
 	 [r988] Added python script to update html includes with
 	  test/functional
 
