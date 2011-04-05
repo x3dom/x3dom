@@ -16,6 +16,10 @@ var _init = function() {
 	document.body.insertBefore(nav, document.body.firstChild);
 
 //	<nav><a href="index.html">back to test index</a></nav>
+
+	// TODO set the config for the flash object
+	// x3dom.config.XYZ = ../../src/swfobject/
+
 };
 
 
