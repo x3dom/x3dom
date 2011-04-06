@@ -110,6 +110,9 @@ function defineClass(parent, ctor, methods) {
 }
 
 x3dom.isa = function(object, clazz) {
+	if (!object) {
+		return false;
+	}
     if (object.constructor === clazz) {
         return true;
     }
