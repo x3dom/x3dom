@@ -4713,11 +4713,21 @@ x3dom.registerNodeType(
             },
             
             getVolume: function(min, max, invalidate) {
-                return this._cf.geometry.node.getVolume(min, max, invalidate);
+				if (this._cf.geometry.node) {
+					return this._cf.geometry.node.getVolume(min, max, invalidate);
+				}
+				else {
+					return false;
+				}
             },
             
             getCenter: function() {
-                return this._cf.geometry.node.getCenter();
+				if (this._cf.geometry.node) {
+					return this._cf.geometry.node.getCenter();
+				}
+				else {
+					return new x3dom.fields.SFVec3f(0,0,0);
+				}
             },
             
             doIntersect: function(line) {

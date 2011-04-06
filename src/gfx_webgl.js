@@ -1236,9 +1236,10 @@ x3dom.gfx_webgl = (function () {
                 return;
             }
         }
-        else if (!x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
-                (shape._cf.geometry.node._mesh._positions[0].length < 1)) {
-            x3dom.debug.logError("NO VALID VERTEX POSITIONS SET!");
+        else if ( !x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
+                 (!shape._cf.geometry.node || 
+				   shape._cf.geometry.node._mesh._positions[0].length < 1) ) {
+            x3dom.debug.logError("NO VALID MESH OR NO VERTEX POSITIONS SET!");
             return;
         }
         
