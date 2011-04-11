@@ -874,8 +874,8 @@ x3dom.userAgentFeature = {
  * is attached to each X3D element and can be used in the following manner:
  *
  * > var e = doucment.getElementById('the_x3delement');
- * > e.runtime.getFrameRate();
- * > e.runtime.setFrameRate(60);
+ * > e.runtime.showAll();
+ * > e.runtime.resetView();
  * > ...
  */
 x3dom._runtime = {
@@ -997,8 +997,159 @@ x3dom._runtime = {
 		this.canvas.doc._viewarea._visDbgBuf = false;
 		x3dom.debug.logContainer.style.display = "none";
 		this.canvas.doc.needRender = true;
-	}
+	},
+	
+	examine: function() {
+		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "examine";
+        x3dom.debug.logInfo("Switch to examine mode.");
+	},
 
+	fly: function() {
+		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "fly";
+		x3dom.debug.logInfo("Switch to fly mode.");
+	},
+	
+	lookAt: function() {
+		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "lookat";
+        x3dom.debug.logInfo("Switch to lookat mode.");
+	},
+
+	walk: function() {
+		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "walk";
+        x3dom.debug.logInfo("Switch to walk mode.");
+	},
+	
+	togglePoints: function() {
+		this.canvas.doc._viewarea._points = !this.canvas.doc._viewarea._points;
+	},
+	
+
+
+	/**
+	 * Function: pickMode
+	 *
+	 * Get the current pickmode intersect type
+	 * 
+	 * Parameters:
+	 *		internal - true/false. If given return the internal representation.
+	 *                 Only use for debugging.
+	 *
+	 * Returns:
+	 * 		The current intersect type value suitable to use with changePickMode
+	 *      If parameter is, given, provide with internal representation.
+	 */
+	pickMode: function(internal=false) {
+		if (internal) {
+			return this.canvas.doc._scene._vf.pickMode;
+		}
+		return this.canvas.doc._scene._vf.pickMode.toLowerCase();
+	},
+
+	/**
+	 * Function: changePickMode
+	 *
+	 * Alter the value of intersct type. Can be one of: idbuf, color, textcoord, box.
+	 * Other values are ignored.
+	 * 
+	 * Parameters:
+	 *		type - The new intersect type: idbuf, color, textcoord, or box.
+	 *
+	 * Returns:
+	 * 		true if the type hase been changed, false otherwise
+	 */
+	changePickMode: function(type) {
+		// type one of : idbuf, color, textcoord, box
+
+		type = type.toLowerCase();
+		
+		switch(type) {
+			'idbuf':
+				type = 'idBuf'; 
+				break;
+			'textcoord': 
+				type = 'textCoord'; 
+				break;
+			'color':
+				type = 'color';
+				break;
+			'box':
+				type = 'box';
+				break;
+
+			default:
+				x3dom.debug.logWarning("Switch pickMode to "+ type + 'unknown intersect type');
+				type = undefined;
+		}
+		
+		if (type !== undefined) {
+			this.canvas.doc._scene._vf.pickMode = type;
+			x3dom.debug.logInfo("Switched pickMode to '" + type + "'.");
+			return false;
+		}
+		
+		return true;
+	},
+
+	/**
+	 * Function: speed
+	 *
+	 * Get the current speed value
+	 * 
+	 * Returns:
+	 * 		The current speed value
+	 */
+	speed: function(newSpeed) {
+		return this.canvas.doc._scene.getNavigationInfo()._vf.speed;
+	},
+
+	/**
+	 * Function: changeSpeed
+	 *
+	 * Set the speed. 
+	 * 
+	 * Parameters:
+	 *		newSpeed - The new speed value
+	 *
+	 * Returns:
+	 * 		The current speed value
+	 */
+	changeSpeed: function(newSpeed) {
+		if (newSpeed) {
+			this.canvas.doc._scene.getNavigationInfo()._vf.speed = newSpeed;
+		}
+		return this.canvas.doc._scene.getNavigationInfo()._vf.speed;
+	},
+
+	/**
+	 * Function: statistics
+	 *
+	 * Get or set statistics info. If parameter is omitted, this method
+	 * only returns the the visibility status of the statistics info overlay.
+	 * 
+	 * Parameters:
+	 *		mode - true or false. To enable or disable the statistics info
+	 *
+	 * Returns:
+	 * 		The current visibility of the statistics info (true = visible, false = invisible)
+	 */
+	statistics: function(mode) {
+		var statDiv = this.canvas.parent.statDiv;
+        if (statDiv) {  
+			
+			if (mode === true) {
+				statDiv.style.display = 'inline';
+				return true;
+			}
+			if (mode === false) {
+				statDiv.style.display = 'inline';
+				return false;
+			}
+
+			// if no parameter is given return current status (false = not visible, true = visible)
+			return statDiv.style.display != 'none'
+		}
+	}
+	
 };
 
 
