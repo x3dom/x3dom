@@ -38,38 +38,28 @@
             </shape>
     </scene>
     </x3d>
-
+		
     	<ul class="plain">
+		    <li><em>Active bindable</em></span>
+	           	<ul>
+		    		<li>fd<span id="ab_info"></span></li> 
+        		</ul>    
+            </li>
 		    <li><em>Viewpoint</em>
             	<ul>
-		    		<li><a href="#" onClick="$element.runtime.nextView();return false;">Next view</a> [via <tt>runtime.nextView()</tt>]</li> 
-			    	<li><a href="#" onClick="$element.runtime.getActiveBindable('X3DViewpointNode')._stack.switchTo('next');return false;">Next view</a> [via <tt>runtime.getActiveBindable()</tt>]</li> 
-		    		<li><a href="#" onClick="$element.runtime.prevView();return false;">Prev view</a></li> 
-			    	<li><a href="#" onClick="$element.runtime.resetView();return false;">Reset current view</a></li>
-				    <li><a href="#" onClick="$element.runtime.uprightView();return false;">Upright View</a></li>
-				    <li><a href="#" onClick="$element.runtime.showAll();return false;">Show all</a></li>
-		    		<li><a href="#" onClick="$element.runtime.lightView();return false;">Light View</a></li> 
+		    		<li><a href="#" onClick="$element.runtime.nextView();updateAbInfo();return false;">Next view</a></li> 
+		    		<li><a href="#" onClick="$element.runtime.prevView();updateAbInfo();return false;">Prev view</a></li> 
+			    	<li><a href="#" onClick="$element.runtime.resetView();updateAbInfo();return false;">Reset current view</a></li>
+				    <li><a href="#" onClick="$element.runtime.uprightView();updateAbInfo();return false;">Upright View</a></li>
+				    <li><a href="#" onClick="$element.runtime.showAll();updateAbInfo();return false;">Show all</a></li>
 				</ul>
             </li>
 
-		    <li><em>Pickmodes</em> (current: <span id="pick_mode_info"></span>)
-	            <ul>
-				    <li><a href="#" onClick="$element.runtime.changePickMode('idbuf');updatePickInfo();return false;">idbuf</a></li>
-				    <li><a href="#" onClick="$element.runtime.changePickMode('color');updatePickInfo();return false;">color</a></li>
-				    <li><a href="#" onClick="$element.runtime.changePickMode('textcoord');updatePickInfo();return false;">textcoord</a></li>
-				    <li><a href="#" onClick="$element.runtime.changePickMode('box');updatePickInfo();return false;">box</a></li>
-				</ul>
-            </li>
-
-   		    <li><em>Misc</em>
+   		    <li><em>Navigation manipulation convenience functions</em>
             	<ul>
-	            	<li><a href="#" onClick="$element.runtime.togglePoints();return false;">Toggle points</a></li>
 				    <li><a href="#" onClick="alert('Speed value: ' + $element.runtime.speed());return false;">Show speed</a></li>
 				    <li><a href="#" onClick="$element.runtime.changeSpeed(10.0);return false;">Change speed to 10.0</a></li>
-                </ul>
-			</li>
-   		    <li><em>Modes</em> (current: <span id="nav_mode_info"></span>)
-            	<ul>
+          		    <li>Current mode: <span id="nav_mode_info"></span></li>
 					<li><a href="#" onClick="$element.runtime.examine();updateNavInfo();return false;">examine</a></li>
                     <li><a href="#" onClick="$element.runtime.walk();updateNavInfo();return false;">walk</a></li>
                     <li><a href="#" onClick="$element.runtime.lookAt();updateNavInfo();return false;">look at</a></li>
@@ -92,11 +82,13 @@
 	var debug = false;
 	var pick_mode_info;
 	var nav_mode_info;
+	var ab_info;
 
 	function init() {
 		$element = document.getElementById('the_element');
-		updatePickInfo();
 		updateNavInfo();
+		updatePickInfo();
+		updateAbInfo();
 	}
 	
 	function updatePickInfo() {
@@ -107,6 +99,11 @@
 	function updateNavInfo() {
 		nav_mode_info = document.getElementById('nav_mode_info');
 		nav_mode_info.innerHTML = $element.runtime.navigationInfo()._vf.type[0];
+	}
+
+	function updateAbInfo() {
+		ab_info = document.getElementById('ab_info');
+		ab_info.innerHTML = $element.runtime.getActiveBindable('X3DViewpointNode'); // more info
 	}
 
 	
