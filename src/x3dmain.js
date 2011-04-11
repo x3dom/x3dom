@@ -1038,8 +1038,8 @@ x3dom._runtime = {
 	 * 		The current intersect type value suitable to use with changePickMode
 	 *      If parameter is, given, provide with internal representation.
 	 */
-	pickMode: function(internal=false) {
-		if (internal) {
+	pickMode: function(internal) {
+		if (internal === true) {
 			return this.canvas.doc._scene._vf.pickMode;
 		}
 		return this.canvas.doc._scene._vf.pickMode.toLowerCase();
@@ -1063,16 +1063,16 @@ x3dom._runtime = {
 		type = type.toLowerCase();
 		
 		switch(type) {
-			'idbuf':
+			case 'idbuf':
 				type = 'idBuf'; 
 				break;
-			'textcoord': 
+			case 'textcoord': 
 				type = 'textCoord'; 
 				break;
-			'color':
+			case 'color':
 				type = 'color';
 				break;
-			'box':
+			case 'box':
 				type = 'box';
 				break;
 
@@ -1133,7 +1133,7 @@ x3dom._runtime = {
 	 * 		The current visibility of the statistics info (true = visible, false = invisible)
 	 */
 	statistics: function(mode) {
-		var statDiv = this.canvas.parent.statDiv;
+		var statDiv = this.canvas.statDiv;
         if (statDiv) {  
 			
 			if (mode === true) {
@@ -1141,7 +1141,7 @@ x3dom._runtime = {
 				return true;
 			}
 			if (mode === false) {
-				statDiv.style.display = 'inline';
+				statDiv.style.display = 'none';
 				return false;
 			}
 
