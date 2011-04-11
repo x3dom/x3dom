@@ -880,6 +880,16 @@ x3dom.userAgentFeature = {
  */
 x3dom._runtime = {
 	
+	
+	/**
+	 * Function: initialize
+	 *
+	 * Constructor routine to init runtime object.
+	 * 
+	 * Parameters:
+	 * 		doc - The X3D document
+	 *      canvas - The X3D canvas object
+	 */
 	initialize: function(doc, canvas) {
 		this.doc = doc;
 		this.canvas = canvas
@@ -943,33 +953,71 @@ x3dom._runtime = {
 	
 	
 	/**
-	 * Function: getViewpoint
+	 * Function: viewpoint
      *	 
 	 * Returns the current viewpoint.
 	 * 
 	 * Returns:
 	 * 		The viewpoint
 	 */
-	getViewpoint: function() {
+	viewpoint: function() {
 		this.canvas.doc._scene.getViewpoint();
 	},
 	
-	getProjectionMatrix: function() {
+	/**
+	 * Function: projectionMatrix
+     *	 
+	 * Returns the current projection matrix.
+	 * 
+	 * Returns:
+	 * 		Matrix object
+	 */
+	pojectionMatrix: function() {
 		this.canvas.doc._viewarea.getProjectionMatrix();
 	},
 
-	getNavigationInfo: function() {
+	/**
+	 * Function: navigationInfo
+     *	 
+	 * Returns the current navigation information.
+	 * 
+	 * Returns:
+	 * 		The navigation info node for the scene
+	 */
+	navigationInfo: function() {
 		this.canvas.doc._scene.getNavigationInfo();
 	},
-	
-	getLightMatrix: function() {
+
+	/**
+	 * Function: lightMatrix
+     *	 
+	 * Returns the current light matrix.
+	 * 
+	 * Returns:
+	 * 		The light matrix
+	 */
+	lightMatrix: function() {
 		this.canvas.doc._viewarea.getLightMatrix();
 	},
 	
+	/**
+	 * Function: resetView
+     *	 
+	 * Resets the view to initial.
+	 * 
+	 */
 	resetView: function() {
 		this.canvas.doc._viewarea.resetView();
 	},
 	
+	/**
+	 * Function: lightView
+     *	 
+	 * Navigates to the light, if any.
+	 * 
+	 * Returns:
+	 * 		True if navigation was possible, false otherwise.
+	 */
 	lightView: function() {
 		if (this.canvas.doc._nodeBag.lights.length > 0) {
 			this.canvas.doc._viewarea.animateTo(this.canvas.doc._viewarea.getLightMatrix()[0], this.canvas.doc._scene.getViewpoint());
@@ -980,50 +1028,96 @@ x3dom._runtime = {
 		}
 	},
 	
+	/**
+	 * Function: uprightView
+     *	 
+	 * Navigates to upright view
+	 * 
+	 */
 	uprightView: function() {
 		this.canvas.doc._viewarea.uprightView();
 	},
 	
+	/**
+	 * Function: showAll
+     *	 
+	 * Zooms so that all objects are fully visible.
+	 * 
+	 */
 	showAll: function() {
 		this.canvas.doc._viewarea.showAll();
 	},
 	
+	/**
+	 * Function: showDebug
+     *	 
+	 * Displays the debug window
+	 */
 	showDebug: function() {
 		this.canvas.doc._viewarea._visDbgBuf = true;
 		x3dom.debug.logContainer.style.display = "block";
 		this.canvas.doc.needRender = true;
 	},
+
+	/**
+	 * Function: hideDebug
+     *	 
+	 * Hides the debug window
+	 */
 	hideDebug: function() {
 		this.canvas.doc._viewarea._visDbgBuf = false;
 		x3dom.debug.logContainer.style.display = "none";
 		this.canvas.doc.needRender = true;
 	},
 	
+	/**
+	 * Function: examine
+     *	 
+	 * Switches to examine mode
+	 */
 	examine: function() {
 		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "examine";
         x3dom.debug.logInfo("Switch to examine mode.");
 	},
 
+	/**
+	 * Function: fly
+     *	 
+	 * Switches to fly mode
+	 */
 	fly: function() {
 		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "fly";
 		x3dom.debug.logInfo("Switch to fly mode.");
 	},
 	
+	/**
+	 * Function: lookAt
+     *	 
+	 * Switches to lookAt mode
+	 */
 	lookAt: function() {
 		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "lookat";
         x3dom.debug.logInfo("Switch to lookat mode.");
 	},
 
+	/**
+	 * Function: walk
+     *	 
+	 * Switches to walk mode
+	 */
 	walk: function() {
 		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "walk";
         x3dom.debug.logInfo("Switch to walk mode.");
 	},
 	
+	/**
+	 * Function: togglePoints
+     *	 
+	 * Toggles points attribute
+	 */
 	togglePoints: function() {
 		this.canvas.doc._viewarea._points = !this.canvas.doc._viewarea._points;
 	},
-	
-
 
 	/**
 	 * Function: pickMode
