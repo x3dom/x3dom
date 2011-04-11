@@ -879,8 +879,7 @@ x3dom.userAgentFeature = {
  * > ...
  */
 x3dom._runtime = {
-	
-	
+
 	/**
 	 * Function: initialize
 	 *
@@ -961,9 +960,39 @@ x3dom._runtime = {
 	 * 		The viewpoint
 	 */
 	viewpoint: function() {
-		this.canvas.doc._scene.getViewpoint();
+		return this.canvas.doc._scene.getViewpoint();
+	},
+
+	/**
+	 * Function: nextView
+     *	 
+	 * Navigates tho the next viewpoint
+	 * 
+	 */
+	nextView: function() {
+		var stack = this.canvas.doc._scene.getViewpoint()._stack;
+		if (stack) {
+			stack.switchTo('next');
+		} else {
+			x3dom.debug.logError('No valid ViewBindable stack.');
+		}
 	},
 	
+	/**
+	 * Function: prevView
+     *	 
+	 * Navigates tho the previous viewpoint
+	 * 
+	 */
+	prevView: function() {
+		var stack = this.canvas.doc._scene.getViewpoint()._stack;
+		if (stack) {
+			stack.switchTo('prev');
+		} else {
+			x3dom.debug.logError('No valid ViewBindable stack.');
+		}
+	},
+
 	/**
 	 * Function: projectionMatrix
      *	 
@@ -973,7 +1002,7 @@ x3dom._runtime = {
 	 * 		Matrix object
 	 */
 	pojectionMatrix: function() {
-		this.canvas.doc._viewarea.getProjectionMatrix();
+		return this.canvas.doc._viewarea.getProjectionMatrix();
 	},
 
 	/**
@@ -985,7 +1014,7 @@ x3dom._runtime = {
 	 * 		The navigation info node for the scene
 	 */
 	navigationInfo: function() {
-		this.canvas.doc._scene.getNavigationInfo();
+		return this.canvas.doc._scene.getNavigationInfo();
 	},
 
 	/**
@@ -1067,7 +1096,7 @@ x3dom._runtime = {
 	hideDebug: function() {
 		this.canvas.doc._viewarea._visDbgBuf = false;
 		x3dom.debug.logContainer.style.display = "none";
-		this.canvas.doc.needRender = true;
+        this.canvas.doc.needRender = true;
 	},
 	
 	/**
@@ -1117,6 +1146,7 @@ x3dom._runtime = {
 	 */
 	togglePoints: function() {
 		this.canvas.doc._viewarea._points = !this.canvas.doc._viewarea._points;
+        this.canvas.doc.needRender = true;
 	},
 
 	/**
@@ -1132,8 +1162,8 @@ x3dom._runtime = {
 	 * 		The current intersect type value suitable to use with changePickMode
 	 *      If parameter is, given, provide with internal representation.
 	 */
-	pickMode: function(internal) {
-		if (internal === true) {
+	pickMode: function(options) {
+		if (options && options.internal === true) {
 			return this.canvas.doc._scene._vf.pickMode;
 		}
 		return this.canvas.doc._scene._vf.pickMode.toLowerCase();
@@ -1192,7 +1222,7 @@ x3dom._runtime = {
 	 * Returns:
 	 * 		The current speed value
 	 */
-	speed: function(newSpeed) {
+	speed: function() {
 		return this.canvas.doc._scene.getNavigationInfo()._vf.speed;
 	},
 
@@ -1210,6 +1240,7 @@ x3dom._runtime = {
 	changeSpeed: function(newSpeed) {
 		if (newSpeed) {
 			this.canvas.doc._scene.getNavigationInfo()._vf.speed = newSpeed;
+			x3dom.debug.logInfo("Changed navigation speed to " + this.canvas.doc._scene.getNavigationInfo()._vf.speed);
 		}
 		return this.canvas.doc._scene.getNavigationInfo()._vf.speed;
 	},
@@ -1371,7 +1402,7 @@ x3dom._runtime = {
                 
                 x3dcanvas.x3dElem.appendChild(altDiv);
 
-                // remove the stats div (it's not needed when WebGL doesnt work)
+                // remove the stats div (it's not ed when WebGL doesnt work)
                 if (x3dcanvas.statDiv) { 
                     x3d_element.removeChild(x3dcanvas.statDiv);
                 }
