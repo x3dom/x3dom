@@ -196,7 +196,7 @@ x3dom.gfx_flash = (function() {
 		}
 		
 		if( shape._dirty.material === true ) {
-			var material = shape._cf.appearance.node._cf.material.node
+			var material = shape._cf.appearance.node._cf.material.node;
 			this.object.setMeshMaterial( { id: shape._objectID, 
 										   ambientIntensity: material._vf.ambientIntensity,
 										   diffuseColor: material._vf.diffuseColor.toGL(),
@@ -216,7 +216,7 @@ x3dom.gfx_flash = (function() {
 			shape._dirty.texture = false;
 		}
 	
-	}
+	};
 	
 	/**
 	*
@@ -224,7 +224,7 @@ x3dom.gfx_flash = (function() {
 	Context.prototype.pickValue = function(viewarea, x, y)
 	{
 	
-	}
+	};
 	
 	/**
 	*
@@ -232,7 +232,7 @@ x3dom.gfx_flash = (function() {
 	Context.prototype.shutdown = function(viewarea)
 	{
 	
-	}
+	};
 	
 	//Return the setup context function
 	return setupContext;

@@ -10,3 +10,9 @@ test/qunit
 tools/config/Data
 doc/api
 *~backup~
+example/x3dom.css
+example/x3dom.js
+
+# remove with new build system
+src/version.js
+src/x3dom.js
