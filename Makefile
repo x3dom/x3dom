@@ -125,7 +125,11 @@ docs:
 		mkdir ${DOC_DIR}/api; \
 	fi
 	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/config
-	
+
+deploy:
+	@@echo "Updating x3dom.org... (requires you set up public key auth and a ssh config file)"
+    @@echo ssh x3dom -c "cd ~/web/x3dom/src; make; cd ../; make docs"
+
 refreshtests:
 	@@echo "Refreshing test cases header files."
 	python tools/update_headers.py test/functional

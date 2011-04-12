@@ -1099,6 +1099,20 @@ x3dom._runtime = {
         this.canvas.doc.needRender = true;
 	},
 	
+
+	/**
+	 * Function: navigationType
+	 * 
+     * Readout of the currently active navigation. 
+	 * 
+	 * Returns: 
+	 *     A string representing the active navigation type
+	 */
+	navigationType: function() {
+		return this.canvas.doc._scene.getNavigationInfo()._vf.type[0];
+	},
+
+
 	/**
 	 * Function: examine
      *	 
