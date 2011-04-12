@@ -923,9 +923,15 @@ x3dom._runtime = {
 	/**
 	 * Function: getActiveBindable
      *	 
-	 * Returns the currently active bindable DOM element of the given typ. 
-	 * typeName must be a valid Bindable node (e.g. X3DViewpointNode, 
-	 * X3DNavigationInfoNode)
+	 * Returns the currently active bindable DOM element of the given type. 
+	 * typeName must be a valid Bindable node (e.g. Viewpoint, Background, etc.). 
+	 *
+	 * For example:
+	 * 
+	 *   > var element, bindable;
+	 *   > element = doucment.getElementById('the_x3delement');
+	 *   > bindable = element.runtime.getActiveBindable('background');
+	 *   > bindable.setAttribute('set_bind', 'false');
 	 * 
 	 * Parameters:
 	 * 		typeName - bindable type name
@@ -936,20 +942,28 @@ x3dom._runtime = {
 	getActiveBindable: function(typeName) {
 		var stacks;
 		var i, current, result;
+		var type;
 		
 		stacks = this.canvas.doc._bindableBag._stacks;
-		result = []
-		for (i=0; i < stacks.length; i++) {
-			current = stacks[i];
-			if (current._type._typeName == typeName) {
-				result.push(current.getActive());
-			}
+		result = [];
+		
+		type = x3dom.nodeTypesLC[typeName.toLowerCase()];
+		
+		if (!type) {
+			x3dom.debug.logError('No node of type "' + typeName + '" found');
+			return null;
 		}
-
-		return result[0]._xmlNode;
-//		alert("Called x3dom.runtime.getActiveBindable("+ typeName + ")");
+		
+		for (i=0; i < stacks.length; i++) {
+			current = stacks[i].getActive();
+//			if (x3dom.isa(current, x3dom.nodeTypes.X3DBindableNode)) {
+				if (current._xmlNode !== undefined && x3dom.isa(current, type) ) {
+					result.push(current);
+				}
+//			}
+		}
+		return result[0] ? result[0]._xmlNode : null;
 	},
-	
 	
 	/**
 	 * Function: viewpoint

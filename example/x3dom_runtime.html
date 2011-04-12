@@ -26,10 +26,12 @@
 	
     <x3d id="the_element" width="512px" height="512px">
     <scene>
-           <viewpoint position='0 0 10' description="Camera 1"></viewpoint>
-           <viewpoint position='-2 0 5' description="Camera 2"></viewpoint>
-           <viewpoint position='0 2 5' description="Camera 3"></viewpoint>
-           <viewpoint position='2 0 5' description="Camera 4"></viewpoint>
+           <background id="bg0" skycolor='0.05 0.12 0.23' description="Background 0"></background>
+           <background id="bg1" skycolor='1.00 1.00 1.00' description="Background 1"></background>
+           <viewpoint id="cam1" position='0 0 10' description="Camera 1"></viewpoint>
+           <viewpoint id="cam2" position='-2 0 5' description="Camera 2"></viewpoint>
+           <viewpoint id="cam3" position='0 2 5' description="Camera 3"></viewpoint>
+           <viewpoint id="cam4" position='2 0 5' description="Camera 4"></viewpoint>
            <shape>
                 <appearance>
                     <material diffuseColor='1 0 0' ></material>	
@@ -43,12 +45,14 @@
 		    <li><em>Active bindable</em></span>
 	           	<ul>
 		    		<li><span id="ab_info"></span></li> 
+                    <li><a href="#" onClick="document.getElementById('bg0').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 0</a></li>
+                    <li><a href="#" onClick="document.getElementById('bg1').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 1</a></li>
         		</ul>    
             </li>
 		    <li><em>Viewpoint</em>
             	<ul>
-		    		<li><a href="#" onClick="$element.runtime.nextView();updateAbInfo();return false;">Next view</a></li> 
-		    		<li><a href="#" onClick="$element.runtime.prevView();updateAbInfo();return false;">Prev view</a></li> 
+		    		<li><a href="#" onClick="$element.runtime.nextView();updateAbInfo('Viewpoint');return false;">Next view</a></li> 
+		    		<li><a href="#" onClick="$element.runtime.prevView();updateAbInfo('Viewpoint');return false;">Prev view</a></li> 
 			    	<li><a href="#" onClick="$element.runtime.resetView();return false;">Reset current view</a></li>
 				    <li><a href="#" onClick="$element.runtime.uprightView();return false;">Upright View</a></li>
 				    <li><a href="#" onClick="$element.runtime.showAll();return false;">Show all</a></li>
@@ -86,7 +90,7 @@
 
 	function init() {
 		$element = document.getElementById('the_element');
-		updateAbInfo();
+		updateAbInfo('Viewpoint');
 		updateNavInfo();
 	}
 	
@@ -95,13 +99,11 @@
 		nav_mode_info.innerHTML = $element.runtime.navigationType();
 	}
 
-	function updateAbInfo() {
-		var bindable = $element.runtime.getActiveBindable('X3DViewpointNode');
-
+	function updateAbInfo(typeName) {
+		var bindable = $element.runtime.getActiveBindable(typeName);
 		ab_info = document.getElementById('ab_info');
 		ab_info.innerHTML = bindable.tagName + " / " + bindable.getAttribute('description');
 	}
-
 	
 	function toggleStats(link) {
 		stats = $element.runtime.statistics();
