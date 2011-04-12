@@ -895,32 +895,6 @@ x3dom.runtime = {
 	},
 
 	/**
-	 * Function: getFrameRate
-	 *
-	 * This method returns the current frame rate.
-	 * 
-	 * Returns:
-	 *
-	 * 		The current frame rate
-	 */
-	getFrameRate: function() {
-		return "Not implemented x3dom.runtime.getFrameRate";
-	},
-
-	/**
-	 * Function: setFrameRate
-	 *
-	 * Set frame rate.
-	 * 
-	 * Parameters:
-	 * 
-	 *		rate - The new integer value for the frame rate
-	 */
-	setFrameRate: function(rate) {
-		return "Not implemented x3dom.runtime.setFrameRate("+ rate + ")";
-	},
-
-	/**
 	 * APIFunction: getActiveBindable
      *	 
 	 * Returns the currently active bindable DOM element of the given type. 
@@ -966,18 +940,6 @@ x3dom.runtime = {
 	},
 	
 	/**
-	 * Function: viewpoint
-     *	 
-	 * Returns the current viewpoint.
-	 * 
-	 * Returns:
-	 * 		The viewpoint
-	 */
-	viewpoint: function() {
-		return this.canvas.doc._scene.getViewpoint();
-	},
-
-	/**
 	 * APIFunction: nextView
      *	 
 	 * Navigates tho the next viewpoint
@@ -1008,18 +970,6 @@ x3dom.runtime = {
 	},
 
 	/**
-	 * Function: projectionMatrix
-     *	 
-	 * Returns the current projection matrix.
-	 * 
-	 * Returns:
-	 * 		Matrix object
-	 */
-	pojectionMatrix: function() {
-		return this.canvas.doc._viewarea.getProjectionMatrix();
-	},
-
-	/**
 	 * APIFunction: navigationInfo
      *	 
 	 * Returns the current navigation information.
@@ -1029,6 +979,30 @@ x3dom.runtime = {
 	 */
 	navigationInfo: function() {
 		return this.canvas.doc._scene.getNavigationInfo();
+	},
+
+	/**
+	 * Function: viewpoint
+     *	 
+	 * Returns the current viewpoint.
+	 * 
+	 * Returns:
+	 * 		The viewpoint
+	 */
+	viewpoint: function() {
+		return this.canvas.doc._scene.getViewpoint();
+	},
+
+	/**
+	 * Function: projectionMatrix
+     *	 
+	 * Returns the current projection matrix.
+	 * 
+	 * Returns:
+	 * 		Matrix object
+	 */
+	pojectionMatrix: function() {
+		return this.canvas.doc._viewarea.getProjectionMatrix();
 	},
 
 	/**
@@ -1092,27 +1066,31 @@ x3dom.runtime = {
 	},
 	
 	/**
-	 * APIFunction: showDebug
+	 * APIFunction: debug
      *	 
-	 * Displays the debug window
+	 * Displays or hides the debug window. If parameter is omitted,
+	 * the current visibility status is returned.
+	 *
+	 * Parameter:
+	 *     show - true to show debug window, false to hide
+	 *
+	 * Returns:
+	 *     Current visibility status of debug window (true=visible, false=hidden)
 	 */
-	showDebug: function() {
-		this.canvas.doc._viewarea._visDbgBuf = true;
-		x3dom.debug.logContainer.style.display = "block";
-		this.canvas.doc.needRender = true;
+	debug: function(show) {
+		if (show === true) {
+			this.canvas.doc._viewarea._visDbgBuf = true;
+			x3dom.debug.logContainer.style.display = "block";
+			this.canvas.doc.needRender = true;
+		}
+		if (show === false) {
+			this.canvas.doc._viewarea._visDbgBuf = false;
+			x3dom.debug.logContainer.style.display = "none";
+			this.canvas.doc.needRender = true;
+		}
+		return this.canvas.doc._viewarea._visDbgBuf;
 	},
 
-	/**
-	 * APIFunction: hideDebug
-     *	 
-	 * Hides the debug window
-	 */
-	hideDebug: function() {
-		this.canvas.doc._viewarea._visDbgBuf = false;
-		x3dom.debug.logContainer.style.display = "none";
-        this.canvas.doc.needRender = true;
-	},
-	
 
 	/**
 	 * APIFunction: navigationType
@@ -1209,9 +1187,9 @@ x3dom.runtime = {
 	 * Returns:
 	 * 		true if the type hase been changed, false otherwise
 	 */
-	changePickMode: function(type) {
-		// type one of : idbuf, color, textcoord, box
+	changePickMode: function(type, options) {
 
+		// type one of : idbuf, color, textcoord, box
 		type = type.toLowerCase();
 		
 		switch(type) {
@@ -1245,27 +1223,15 @@ x3dom.runtime = {
 	/**
 	 * APIFunction: speed
 	 *
-	 * Get the current speed value
-	 * 
-	 * Returns:
-	 * 		The current speed value
-	 */
-	speed: function() {
-		return this.canvas.doc._scene.getNavigationInfo()._vf.speed;
-	},
-
-	/**
-	 * APIFunction: changeSpeed
-	 *
-	 * Set the speed. 
+	 *	Get the current speed value. If parameter is given the new speed value is set.
 	 * 
 	 * Parameters:
-	 *		newSpeed - The new speed value
+	 *		newSpeed - The new speed value (optional)
 	 *
 	 * Returns:
 	 * 		The current speed value
 	 */
-	changeSpeed: function(newSpeed) {
+	speed: function(newSpeed) {
 		if (newSpeed) {
 			this.canvas.doc._scene.getNavigationInfo()._vf.speed = newSpeed;
 			x3dom.debug.logInfo("Changed navigation speed to " + this.canvas.doc._scene.getNavigationInfo()._vf.speed);

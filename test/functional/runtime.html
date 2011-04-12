@@ -83,7 +83,7 @@
             	<ul>
 	            	<li><a href="#" onClick="$element.runtime.togglePoints();return false;">Toggle points</a></li>
 				    <li><a href="#" onClick="alert('Speed value: ' + $element.runtime.speed());return false;">Show speed</a></li>
-				    <li><a href="#" onClick="$element.runtime.changeSpeed(10.0);return false;">Change speed to 10.0</a></li>
+				    <li><a href="#" onClick="$element.runtime.speed(10.0);return false;">Change speed to 10.0</a></li>
                 </ul>
 			</li>
    		    <li><em>Modes</em> (current: <span id="nav_mode_info"></span>)
@@ -151,10 +151,10 @@
 	
 	function toggleDebug(link) {
 		if (debug) {
-			$element.runtime.hideDebug();
+			$element.runtime.debug(false);
 			link.innerHTML = 'Show debug';
 		} else {
-			$element.runtime.showDebug();
+			$element.runtime.debug(true);
 			link.innerHTML = 'Hide debug';
 		}
 		debug = !debug
