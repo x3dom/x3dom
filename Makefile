@@ -128,10 +128,10 @@ docs:
 
 deploy:
 	@@echo "Updating x3dom.org... (requires you set up public key auth and a ssh config file)"
-    @@echo ssh x3dom -c "cd ~/web/x3dom/src; make; cd ../; make docs"
-
+	ssh x3dom "cd ~/web/x3dom/; svn update; cd src; make; cd ..; make docs"
+   
 refreshtests:
 	@@echo "Refreshing test cases header files."
 	python tools/update_headers.py test/functional
 	
-.PHONY: all x3dom lint min init changelog runserver docs refreshtests
+.PHONY: all x3dom lint min init changelog runserver docs refreshtests deploy
