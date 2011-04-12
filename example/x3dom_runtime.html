@@ -88,17 +88,11 @@
 		$element = document.getElementById('the_element');
 		updateAbInfo();
 		updateNavInfo();
-		updatePickInfo();
 	}
 	
-	function updatePickInfo() {
-		pick_mode_info = document.getElementById('pick_mode_info');
-		pick_mode_info.innerHTML = $element.runtime.pickMode() + '/' + $element.runtime.pickMode({'internal':true});
-	}
-
 	function updateNavInfo() {
 		nav_mode_info = document.getElementById('nav_mode_info');
-		nav_mode_info.innerHTML = $element.runtime.navigationInfo()._vf.type[0];
+		nav_mode_info.innerHTML = $element.runtime.navigationType();
 	}
 
 	function updateAbInfo() {
