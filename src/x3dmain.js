@@ -931,7 +931,7 @@ x3dom._runtime = {
 	 * 		typeName - bindable type name
 	 *
 	 * Returns:
-	 * 		DOM element
+	 * 		The active DOM element
 	 */
 	getActiveBindable: function(typeName) {
 		var stacks;
@@ -946,7 +946,7 @@ x3dom._runtime = {
 			}
 		}
 
-		return result[0];
+		return result[0]._xmlNode;
 //		alert("Called x3dom.runtime.getActiveBindable("+ typeName + ")");
 	},
 	
