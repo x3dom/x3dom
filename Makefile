@@ -124,7 +124,7 @@ docs:
 	@@if test ! -d "${DOC_DIR}/api"; then \
 		mkdir ${DOC_DIR}/api; \
 	fi
-	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/config
+	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -xi ${SRC_DIR}/flashbackend -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/config
 
 deploy:
 	@@echo "Updating x3dom.org... (requires you set up public key auth and a ssh config file)"

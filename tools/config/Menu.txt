@@ -46,35 +46,13 @@ Format: 1.51
 # --------------------------------------------------------------------------
 
 
-File: Array.forEach  (lang/Array.js)
-
-Group: Flashbackend  {
-
-   File: AGALMiniAssembler  (flashbackend/src/com/adobe/utils/AGALMiniAssembler.as)
-   File: x3dom  (flashbackend/src/x3dom.as)
-
-   Group: X3dom  {
-
-      File: Bridge  (flashbackend/src/x3dom/Bridge.as)
-      File: Debug  (flashbackend/src/x3dom/Debug.as)
-      File: ImageTexture  (flashbackend/src/x3dom/ImageTexture.as)
-      File: Material  (flashbackend/src/x3dom/Material.as)
-      File: Mesh  (flashbackend/src/x3dom/Mesh.as)
-      File: X3DScene  (flashbackend/src/x3dom/X3DScene.as)
-      }  # Group: X3dom
-
-   }  # Group: Flashbackend
-
 File: x3dom  (x3dom-internals.js)
-File: x3dom._runtime  (x3dmain.js)
+File: x3dom.runtime  (x3dmain.js)
 
 Group: Index  {
 
    Index: Everything
    Class Index: Classes
    Function Index: Functions
-   Constant Index: Constants
-   Property Index: Properties
-   Variable Index: Variables
    }  # Group: Index
 

@@ -868,7 +868,7 @@ x3dom.userAgentFeature = {
 // TODO: move to seperate file: runtime.js
 
 /**
- * Class: x3dom._runtime
+ * Class: x3dom.runtime
  *
  * Runtime proxy object to get and set runtime parameters. This object 
  * is attached to each X3D element and can be used in the following manner:
@@ -878,7 +878,7 @@ x3dom.userAgentFeature = {
  * > e.runtime.resetView();
  * > ...
  */
-x3dom._runtime = {
+x3dom.runtime = {
 
 	/**
 	 * Function: initialize
@@ -904,7 +904,7 @@ x3dom._runtime = {
 	 * 		The current frame rate
 	 */
 	getFrameRate: function() {
-		return "Not implemented x3dom._runtime.getFrameRate";
+		return "Not implemented x3dom.runtime.getFrameRate";
 	},
 
 	/**
@@ -917,11 +917,11 @@ x3dom._runtime = {
 	 *		rate - The new integer value for the frame rate
 	 */
 	setFrameRate: function(rate) {
-		return "Not implemented x3dom._runtime.setFrameRate("+ rate + ")";
+		return "Not implemented x3dom.runtime.setFrameRate("+ rate + ")";
 	},
 
 	/**
-	 * Function: getActiveBindable
+	 * APIFunction: getActiveBindable
      *	 
 	 * Returns the currently active bindable DOM element of the given type. 
 	 * typeName must be a valid Bindable node (e.g. Viewpoint, Background, etc.). 
@@ -978,7 +978,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: nextView
+	 * APIFunction: nextView
      *	 
 	 * Navigates tho the next viewpoint
 	 * 
@@ -993,7 +993,7 @@ x3dom._runtime = {
 	},
 	
 	/**
-	 * Function: prevView
+	 * APIFunction: prevView
      *	 
 	 * Navigates tho the previous viewpoint
 	 * 
@@ -1020,7 +1020,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: navigationInfo
+	 * APIFunction: navigationInfo
      *	 
 	 * Returns the current navigation information.
 	 * 
@@ -1044,7 +1044,7 @@ x3dom._runtime = {
 	},
 	
 	/**
-	 * Function: resetView
+	 * APIFunction: resetView
      *	 
 	 * Resets the view to initial.
 	 * 
@@ -1072,7 +1072,7 @@ x3dom._runtime = {
 	},
 	
 	/**
-	 * Function: uprightView
+	 * APIFunction: uprightView
      *	 
 	 * Navigates to upright view
 	 * 
@@ -1082,7 +1082,7 @@ x3dom._runtime = {
 	},
 	
 	/**
-	 * Function: showAll
+	 * APIFunction: showAll
      *	 
 	 * Zooms so that all objects are fully visible.
 	 * 
@@ -1092,7 +1092,7 @@ x3dom._runtime = {
 	},
 	
 	/**
-	 * Function: showDebug
+	 * APIFunction: showDebug
      *	 
 	 * Displays the debug window
 	 */
@@ -1103,7 +1103,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: hideDebug
+	 * APIFunction: hideDebug
      *	 
 	 * Hides the debug window
 	 */
@@ -1115,7 +1115,7 @@ x3dom._runtime = {
 	
 
 	/**
-	 * Function: navigationType
+	 * APIFunction: navigationType
 	 * 
      * Readout of the currently active navigation. 
 	 * 
@@ -1128,7 +1128,7 @@ x3dom._runtime = {
 
 
 	/**
-	 * Function: examine
+	 * APIFunction: examine
      *	 
 	 * Switches to examine mode
 	 */
@@ -1138,7 +1138,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: fly
+	 * APIunction: fly
      *	 
 	 * Switches to fly mode
 	 */
@@ -1148,7 +1148,7 @@ x3dom._runtime = {
 	},
 	
 	/**
-	 * Function: lookAt
+	 * APIFunction: lookAt
      *	 
 	 * Switches to lookAt mode
 	 */
@@ -1158,7 +1158,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: walk
+	 * APIFunction: walk
      *	 
 	 * Switches to walk mode
 	 */
@@ -1243,7 +1243,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: speed
+	 * APIFunction: speed
 	 *
 	 * Get the current speed value
 	 * 
@@ -1255,7 +1255,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: changeSpeed
+	 * APIFunction: changeSpeed
 	 *
 	 * Set the speed. 
 	 * 
@@ -1274,7 +1274,7 @@ x3dom._runtime = {
 	},
 
 	/**
-	 * Function: statistics
+	 * APIFunction: statistics
 	 *
 	 * Get or set statistics info. If parameter is omitted, this method
 	 * only returns the the visibility status of the statistics info overlay.
@@ -1451,7 +1451,7 @@ x3dom._runtime = {
             x3dom.canvases.push(x3dcanvas);
             
 
-			x3ds[i].runtime = x3dom._runtime;
+			x3ds[i].runtime = x3dom.runtime;
 			x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
 
 			var t1 = new Date().getTime() - t0;
