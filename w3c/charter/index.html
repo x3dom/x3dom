@@ -1,0 +1,318 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html
+  PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en-US" lang="en-US">
+<head>
+<base href="http://www.w3.org/" />
+<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+<title>Declarative 3D for the Web Architecture Incubator Group</title>
+<link rel="stylesheet" href="http://www.w3.org/2005/10/w3cdoc.css" type="text/css" media="screen"/>
+<link rel="stylesheet" type="text/css" href="http://www.w3.org/Guide/pubrules-style.css"/>
+<link rel="stylesheet" type="text/css" href="http://www.w3.org/2006/02/charter-style.css"/>
+</head>
+<body>
+<div id="template"><ul id="navbar" style="font-size: small"><li><a href="#scope">Scope</a></li><li><a href="#deliverables">Deliverables</a></li><li><a href="#coordination">Dependencies and Liaisons</a></li><li><a href="#participation">Participation</a></li><li><a href="#communication">Communication</a></li><li><a href="#decisions">Decision Policy</a></li><li><a href="#patentpolicy">Patent 
+       
+      
+       
+      Policy</a></li><li><a href="#additional">Additional Information</a></li><li><a href="#about">About this Charter</a></li></ul>
+    
+
+    <p><a href="http://www.w3.org/" shape="rect"><img alt="W3C" height="48" src="http://www.w3.org/Icons/w3c_home" width="72"/></a> 
+	<a class="domainlogo" href="/2005/Incubator/" shape="rect"><img src="http://www.w3.org/2005/Incubator/images/incubator" alt="Incubator Activity"/></a></p>
+
+<p class="toadd"><em>Please note this is a draft for discussion
+purposes, prior to review by the W3C Advisory Committee.</em></p>
+    <h1 id="title">Declarative 3D for the Web Architecture Incubator Group Charter</h1>
+
+    <p class="mission">The
+    <strong>mission</strong> of the <a href="http://www.w3.org/2005/Incubator/declarative3d/">Declarative 3D for the Web Architecture Incubator Group</a>, part of
+    the <a href="http://www.w3.org/2005/Incubator/">Incubator Activity</a>, is to determine the requirements, options, and use cases for an integration of interactive 3D graphics capabilities into the W3C technology stack. This group is aimed to extract core features out of the requirements as foundation to propose feasible technical solutions. These should cover the majority of 3D use cases for the Web – but not necessarily all of them.</p>
+
+
+<p>There are upcoming open (e.g. WebGL) and proprietary (e.g. Adobe) proposals for imperative graphics APIs in the Web context but we are missing an easy way to add interactive high-level declarative 3D objects to the HTML-DOM to allow anyone to easily create, share, and experience interactive 3D graphics – with possibly wide ranging effects similar to those caused by the broad availability of video on the Web. </p>
+
+<p>The incubator group aims at creating the necessary technical and organizational prerequisites to eventually start a Working Group.</p>
+
+    <div class="noprint">
+    <p class="join">Join the
+    Declarative 3D for the Web Architecture Incubator Group.</p>
+    </div>
+
+    <table class="summary-table"><tr id="Duration"><th rowspan="1" colspan="1">End date</th><td rowspan="1" colspan="1">1 April 2012</td></tr><tr><th rowspan="1" colspan="1">Confidentiality</th><td rowspan="1" colspan="1">Proceedings are <a href="/2005/10/Process-20051014/comm.html#confidentiality-levels" shape="rect">
+        public
+        </a></td></tr><tr><th rowspan="1" colspan="1">Initial Chairs</th><td rowspan="1" colspan="1"><span class="toadd">to be assigned</span></td></tr><tr><th rowspan="1" colspan="1">Initiating Members</th><td rowspan="1" colspan="1">
+          <ul>
+		  <li><a href="http://www.dfki.de/" shape="rect">German Research Center for Artificial Intelligence (DFKI)</a></li>
+		  <li><a href="http://www.fraunhofer.de/EN/institutes/index.jsp" shape="rect">Fraunhofer Gesellschaft</a></li>
+		  <li><a href="http://www.web3d.org/" shape="rect">Web3D Consortium</a></li>
+		  </ul>
+        </td></tr><tr><th rowspan="1" colspan="1">Usual Meeting Schedule</th><td rowspan="1" colspan="1">Teleconferences: 
+        Every two weeks   <br/>
+        Face-to-face: 1-2 per year, including one initial workshop 
+           </td></tr></table>
+
+    <div class="scope">
+      <h2 id="scope">Scope</h2>
+
+     The goal of this Incubator Group (XG) is to evaluate the necessary requirements for a successful standardization of a declarative approach to interactive 3D graphics as part of HTML documents. 
+
+<p/>Activities include:
+<ul>
+<li>Collection of use cases and requirements based an open call for contributions</li>
+<li>Evaluation and rating of use cases to develop suitable requirements</li>
+<li>Extraction of core 3D features from the requirements that enable broad uptake by authors and users of interactive 3D on the Web</li>
+<li>Proposition and classification of new feasible concepts and technical solutions </li>
+<li>Candidate technologies could demonstrate whether a follow-on Working Group is likely to achieve the defined goal</li>
+</ul>
+
+Any new concept should be complementary and compatible with current Web functionality and to each other wherever possible. They should be based on and leverage the W3C Web Architecture and existing W3C technologies (i.e. CSS, DOM, DOM Scripting, and DOM Events) wherever applicable. 
+
+<p/>The scope of this incubator group includes but is not limited to: 
+<ul>
+<li>Integration with existing and future W3C standards, specifically HTML5</li>
+<li>Integration of high-level scene concepts</li>
+<li>Integration into user agents</li>
+<li>Integration with suitable interaction techniques and devices</li>
+<li>Integration of 3D content on the server side</li>
+<li>Integration with client and server side rendering services</li>
+<li>Integration with existing security aspects for content delivery and visualization</li>
+<li>Definition of meaningful and future-proof scene concepts</li>
+<li>Extension to HTML</li>
+<li>Content Portability and Platform Independence</li>
+<li>3D Content Creation, Tool Chains, other 3D File Formats, and Semantics</li>
+<li>Efficiency and Scalability</li>
+<li>Accessibility, both for different types of users and varied types of interface devices</li>
+</ul>
+
+Initially, the XG will not explicitly target high-end games or 
+similar applications. The developers have the knowledge and the resources
+to cope with the typical low-level API-based solutions and typically
+want full control of the graphics engine. Rather It will focus on the
+many other existing and novel applications that seek ways to produce,
+publish, and share interactive 3D assets and to build 3D applications
+based on the W3C technology stack.
+
+      
+<h3>Success Criteria</h3>
+The goal of the incubator group is to illustrate the importance and benefit of a declarative 3D standard for the Web. 
+Thus this incubator group will be considered successful if it documents use cases, derived requirements and a set of features and concepts necessary to cover these requirements.	  
+	  
+
+	<h3>Out of Scope</h3>
+The following topics are not considered part of the charter of this XG:
+<ul>
+<li>Non-declarative approaches. However, how non-declarative APIs (such as Typed Arrays or WebGL) can be connected to declarative approaches is within scope.</li>
+<li>Solutions that are not compatible with W3C Recommendations and related Web or internet standards.</li>
+<li>Production of Recommendation-track specifications are out of scope for this incubator group, though it may produce early drafts of specifications and prototypes that later can lead to recommendation-track specifications within a W3C Working Group.</li>
+</ul>
+	
+    </div>
+
+    <div>
+      <h2 id="deliverables">Deliverables</h2>
+	  <ul>
+<li>As its main result the XG will deliver a report documenting its progress, reporting any conclusions arrived at with respect to potential standardization of “Declarative 3D for the Web Architecture”. If reaching a positive conclusion, it may recommend one or more standardization approaches as a potential basis for a future W3C working group on the same topic.     </li>
+<li>One or more reports that survey and explore possibly different options for adding interactive 3D graphics to HTML, including which use cases and requirements are covered,</li>
+<li>A list of use cases, requirements, features and concepts, and measurable properties as the basis for its report,</li>
+<li>Demonstrators for the use cases to show feasibility and exemplar capabilities</li>
+</ul>
+    </div>
+    
+    <div class="dependencies">
+      <h2 id="coordination">Dependencies and Liaisons</h2>
+	  <h3>W3C Groups</h3>
+
+<dl>
+<dt><a href="http://www.w3.org/html/wg/">HTML Working Group</a></dt><dd>
+Most important dependency, as the tight integration into HTML is a main focus point.</dd>
+<dt><a href="http://www.w3.org/Style/CSS/">Cascading Style Sheets (CSS) Working Group</a></dt><dd >
+As leveraging CSS is a key discussion point of the XG, the demonstrators might have to extend existing CSS functionality.</dd>
+<dt><a href="http://www.w3.org/Graphics/SVG/">Scalable Vector Graphics (SVG) Working Group</a></dt><dd >
+The XG coordinates closely with the SVG WG on common features and concepts of 2D and 3D graphics.</dd>
+<dt><a href="http://www.w3.org/2008/webapps/">Web Applications (WebApps) Working Group</a></dt><dd >
+DOM Events, XBL, and other publications of the WebApps WG could affect the work in this group and vice versa.</dd>
+<dt><a href="http://www.w3.org/2009/dap/">Device APIs and Policy Working Group</a></dt><dd >
+Especially the integration of camera and other sensor data into interactive 3D scenes is interesting for a wide range of 3D applications, particularly user interfaces and augmented reality (AR).</dd>
+<dt><a href="http://www.w3.org/WAI/CG/Group/">Web Accessibility Initiative (WAI) Coordination Group</a></dt><dd >
+The Web Accessibility Initiative (WAI) develops strategies, guidelines, and resources to help make the Web accessible to people with disabilities. WAI products also provide interface improvements that benefit all users.</dd>
+<dt><a href="http://www.w3.org/2010/POI/">Points of Interest (POI) Working Group</a></dt><dd >
+The work of this group is strongly related to topics of the POI WG, notably augmented reality, location-based services, and navigation systems.</dd>
+</dl>	
+      
+
+	<h3>External Groups</h3>
+<dl>
+<dt><a href="http://www.web3d.org/">Web3D Consortium</a></dt>
+<dd>The Web3D Consortium develops X3D, an ISO format for declarative 3D graphics.</dd>
+<dt><a href="http://www.khronos.org/">Khronos Group</a></dt>
+<dd>The Khronos Group develops 3D graphics APIs such as OpenGL and WebGL as well as the 3D graphic format COLLADA.</dd>
+<dt><a href="http://www.iso.org/">International Organization of Standards (ISO)</a></dt>
+<dd>Standards committees for 3D graphics</dd>
+</dl>
+	
+    </div>
+
+    <div class="participation">
+      <h2 id="participation">Participation</h2>
+All relevant stakeholders, e.g. developers, designers, 3D artists, industry professionals, accessibility experts, and user-agent implementers, are encouraged to participate in this Incubator Group. Participants must be willing to actively develop and donate materials towards the group’s deliverables, as well as attend the majority of the group's teleconferences and face-to-face meetings.
+<p/>We expect that a large number of W3C members will be interested in this effort, either to participate directly or to spur the achievement of long-term goals for declarative 3D graphics on the Web.
+
+      
+
+      
+    </div>
+
+    <div class="communication">
+      <h2 id="communication">Communication</h2>
+
+      
+	<p>This group primarily conducts its work on the public
+	mailing list 
+	  public-xg-declarative3d@w3.org
+	  (<a href="http://lists.w3.org/Archives/Public/public-xg-declarative3d/">archive</a>)
+	.
+	
+	  The group's Member-only list is
+	  
+	member-xg-declarative3d@w3.org
+	(<a href="http://lists.w3.org/Archives/Member/member-xg-declarative3d/">archive</a>)
+      
+	
+	
+	</p>
+      
+      
+      
+
+      <p>Information about the group (deliverables, participants,
+      face-to-face
+      meetings, teleconferences, etc.) is
+      available from the <a href="http://www.w3.org/2005/Incubator/declarative3d/">Declarative 3D for the Web Architecture Incubator Group home
+      page</a>.</p>
+    </div>
+
+    <div class="decisions">
+      <h2 id="decisions">Decision Policy</h2>
+
+      <p>As explained in the Process Document (<a href="http://www.w3.org/Consortium/Process/policies#Consensus" shape="rect">section
+      3.3</a>), this group will seek to make decisions when there
+      is consensus. When the Chair puts a question and observes
+      dissent, after due consideration of different opinions, the
+      Chair should record a decision (possibly after a formal vote)
+      and any objections, and move on.</p>
+
+      <p>This charter is written in accordance with <a href="http://www.w3.org/Consortium/Process/policies#Votes" shape="rect">Section
+        3.4, Votes</a> of the W3C Process Document and includes no
+        voting procedures beyond what the Process Document
+        requires.</p>
+    </div>
+
+    <div class="patent">
+      <h2 id="patentpolicy">Patent 
+       
+      
+       
+      Policy</h2>
+
+      
+
+      
+
+      
+
+      
+
+      
+
+      
+        <p>This Incubator Group provides an opportunity to share
+        perspectives on the topic addressed by this charter. W3C
+        reminds Incubator Group participants of their obligation to
+        comply with patent disclosure obligations as set out in
+        <a href="/Consortium/Patent-Policy/#sec-Disclosure" shape="rect">Section
+        6</a> of the W3C Patent Policy. While the Incubator Group
+        does not produce Recommendation-track documents, when
+        Incubator Group participants review Recommendation-track
+        specifications from Working Groups, the patent disclosure
+        obligations do apply.</p>
+
+        <p>Incubator Groups have as a goal to produce work that can
+        be implemented on a Royalty Free basis, as defined in the
+        <a href="/Consortium/Patent-Policy/" shape="rect">W3C
+        Patent Policy</a>.</p>
+
+        
+
+        
+
+	  <p>Participants agree to offer patent licenses according to the W3C
+	  Royalty-Free licensing requirements described in <a href="/Consortium/Patent-Policy-20040205/#sec-Requirements" shape="rect">Section 5 of
+	  the W3C Patent Policy</a> for any portions of the XG Reports produced by
+	  this XG that are subsequently incorporated into a W3C Recommendation
+	  produced by a Working Group which is chartered to take the XG Report as an
+	  input. This licensing commitment may not be revoked but may be modified
+	  through the Exclusion process defined in <a href="/Consortium/Patent-Policy-20040205/#sec-Exclusion" shape="rect">Section 4 of the
+	  Patent Policy</a>. </p>
+
+	
+
+	<p>
+	
+	 Participants in this Incubator Group wishing to exclude <a href="/Consortium/Patent-Policy-20040205/#def-essential" shape="rect">essential
+	 patent claims</a> from the licensing commitment must join the
+	 Working Group created to work on the XG Report and follow the
+	 normal exclusion procedures defined by the Patent Policy.
+	
+
+	
+	
+	The W3C Team is responsible for notifying all Participants in
+	this Incubator Group in the event that a new Working Group is
+	proposed to develop a Recommendation that takes the XG Report
+	as an input.
+	
+	</p>
+      
+
+      
+        <p>For more information about disclosure obligations for
+        this group, please see the <a href="/2004/01/pp-impl/" shape="rect">W3C
+        Patent Policy Implementation</a>.</p>
+      
+    </div>
+
+    
+<div>
+	<h2 id="additional">Additional Information</h2>
+	The XG will start its discussion, demonstrate, and evaluate use cases on the fully working demonstrator platforms and implementations developed by the DFKI (<a href="http://www.xml3d.org/">XML3D</a>) and Fraunhofer IGD (<a href="http://www.x3dom.org/">X3DOM</a>). Other open demonstrator platforms or other input to the evaluation of “Declarative 3D for the Web Architecture” are highly welcome.
+</div>
+    
+
+    <h2 id="about">About this Charter</h2>
+
+    <p>This charter for the Declarative 3D for the Web Architecture Incubator Group has been created according to
+      the <a href="/2005/Incubator/procedures" shape="rect">Incubator
+    Group Procedures documentation</a>. In the event of a
+    conflict between this document or the provisions of any charter
+    and the W3C Process, the W3C Process shall take precedence.</p>
+
+    
+
+    <!-- <p class="toadd">[Replace this text] @@For a revised charter (that is, not
+    simply extended), per <a href="http://www.w3.org/2005/10/Process-20051014/groups.html#CharterReview" shape="rect">process doc 6.2.3</a>, please include a list of the most important changes here, or link to a diff-marked HTML version; see the <a href="http://www.w3.org/2007/10/htmldiff" shape="rect">html diff tool</a>@@</p>-->
+    <hr/>
+
+    <address>
+      <span>Kristian Sons, Philipp Slusallek (DFKI), Johannes Behr, Yvonne Jung (Fraunhofer), Don Brutzman, Leonard Daly, Anita Havele, and Nicholas Polys (Web3D Consortium).</span>
+    </address>
+
+    <p class="copyright"><a rel="Copyright" href="/Consortium/Legal/ipr-notice#Copyright" shape="rect">Copyright</a>©
+    2011 <a href="/" shape="rect"><acronym title="World Wide Web Consortium">W3C</acronym></a>
+    <sup>®</sup> (<a href="http://www.csail.mit.edu/" shape="rect"><acronym title="Massachusetts Institute of Technology">MIT</acronym></a> ,
+    <a href="http://www.ercim.org/" shape="rect"><acronym title="European Research Consortium for Informatics and Mathematics">ERCIM</acronym></a>
+    , <a href="http://www.keio.ac.jp/" shape="rect">Keio</a>), All Rights
+    Reserved.</p>
+
+    <p>$Date: 2010/03/18 $</p>
+  </div></body></html>
