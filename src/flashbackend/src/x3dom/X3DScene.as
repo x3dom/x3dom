@@ -16,6 +16,8 @@
 		private var _context3D:Context3D;
 		private var _shaderProgram:Program3D;
 		
+		private var _background:Background;
+		
 		/**
 		 * Scenes viewing matrix
 		 */
@@ -54,6 +56,8 @@
 			//Set Context3D
 			_context3D = context3D;
 			
+			_background = new Background(_context3D);
+			
 			createShader();
 		}
 		
@@ -63,7 +67,7 @@
 		public function renderScene() : void 
 		{
 			//Clear scene before rendering
-			_context3D.clear(0.0, 0.0, 0.0);
+			_background.render();
 			
 			//Set Shader
 			_context3D.setProgram ( _shaderProgram );
@@ -177,6 +181,14 @@
 		private function zSorting(a:Mesh, b:Mesh) : Number
 		{
 			return _viewMatrix.transformVector(a.center).z - _viewMatrix.transformVector(b.center).z;
+		}
+		
+		/**
+		 * Return scenes background object
+		 */
+		public function get background() : Background
+		{
+			return _background;
 		}
 		
 		/**

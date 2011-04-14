@@ -1,8 +1,10 @@
 ﻿package x3dom {
 	
-	import x3dom.*;
-	import flash.geom.*
+	import flash.display.Scene;
 	import flash.external.ExternalInterface;
+	import flash.geom.*;
+	
+	import x3dom.*;
 	
 	public class Bridge {
 		
@@ -17,6 +19,7 @@
 			ExternalInterface.addCallback("renderScene", renderScene);
 			ExternalInterface.addCallback("setViewMatrix", setViewMatrix);
 			ExternalInterface.addCallback("setProjectionMatrix", setProjectionMatrix);
+			ExternalInterface.addCallback("setBackground", setBackground);
 			ExternalInterface.addCallback("setMeshTransform", setMeshTransform);
 			ExternalInterface.addCallback("setMeshMaterial", setMeshMaterial);
 			ExternalInterface.addCallback("setMeshColors", setMeshColors);
@@ -42,6 +45,24 @@
 		{
 			var projectionMatrix:Array = String(value.projectionMatrix).split(',');
 			_scene.projectionMatrix = new Matrix3D( Vector.<Number>(projectionMatrix) );
+		}
+		
+		private function setBackground(value:Object) : void
+		{
+			_scene.background.skyColor		= String(value.skyColor).split(',');
+			_scene.background.skyAngle		= String(value.skyAngle).split(',');
+			_scene.background.groundColor	= String(value.groundColor).split(',');
+			_scene.background.groundAngle	= String(value.groundAngle).split(',');
+			_scene.background.transparency	= Number(value.transparency);
+			
+			var texURLs:Array = String(value.texURLs).split(',');
+			
+			_scene.background.backURL	= texURLs[0];
+			_scene.background.frontURL	= texURLs[1];
+			_scene.background.bottomURL = texURLs[2];
+			_scene.background.topURL	= texURLs[3];
+			_scene.background.leftURL	= texURLs[4];
+			_scene.background.rightURL	= texURLs[5];
 		}
 		
 		private function setMeshTransform(value:Object) : void
