@@ -1,10 +1,12 @@
 ﻿package x3dom {
 	
-	import x3dom.*;
 	import com.adobe.utils.*;
-	import flash.geom.*;
+	
 	import flash.display3D.*;
 	import flash.external.ExternalInterface;
+	import flash.geom.*;
+	
+	import x3dom.*;
 	
 	/**
 	 * The X3DScene class handles the complete 3D scene managing and rendering
@@ -71,8 +73,10 @@
 			//Pass our EyePosition to the shader program
 			_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  9, Vector.<Number>( [ -_viewMatrix.position.x, -_viewMatrix.position.y, -_viewMatrix.position.z, 1.0 ] ) );
 			
-			//TODO z-Sorting
+			//z-Sorting
+			_meshes.sort(zSorting);
 
+			//Iterate all meshes for rendering
 			for(var i:uint = 0; i<_meshes.length; i++)
 			{
 				//Build ModelView-Matrix
@@ -165,6 +169,14 @@
 			// combine shaders into a program which we then upload to the GPU
 			_shaderProgram = _context3D.createProgram();
 			_shaderProgram.upload( vertexShaderAssembler.agalcode, fragmentShaderAssembler.agalcode);
+		}
+		
+		/**
+		 * Compare function for Mesh z-sorting
+		 */
+		private function zSorting(a:Mesh, b:Mesh) : Number
+		{
+			return _viewMatrix.transformVector(a.center).z - _viewMatrix.transformVector(b.center).z;
 		}
 		
 		/**

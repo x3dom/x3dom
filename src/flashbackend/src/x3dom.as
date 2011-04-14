@@ -7,6 +7,8 @@
 	import flash.geom.Rectangle;
 	import flash.external.ExternalInterface;
 	
+	[SWF(backgroundColor="#000000", width="550", height="400", frameRate="120")]
+	
 	/**
 	* Create Context3D, X3DScene, Bridge and handle the Mouse interaction
 	*/
@@ -64,6 +66,9 @@
 		{
 			//Enable doubleClick feature for the stage
 			stage.doubleClickEnabled = true;
+			
+			//Set stage align to TopLeft
+			stage.align = StageAlign.TOP_LEFT;
 			
 			//Get FlashVars
 			getFlashVars();

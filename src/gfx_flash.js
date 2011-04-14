@@ -80,21 +80,21 @@ x3dom.gfx_flash = (function() {
 	function Context(object, name) {
 		this.object = object;
 		this.name = name;
-	}
+	};
 	
 	/**
 	*
 	*/
 	function setupContext(object) {
 		return new Context(object, 'flash');
-	}
+	};
 	
 	/**
 	*
 	*/
 	Context.prototype.getName = function() {
 		return this.name;
-	}
+	};
 	
 	/**
 	*
@@ -105,6 +105,12 @@ x3dom.gfx_flash = (function() {
 		
 		//Setup the flash scene
 		this.setupScene(viewarea);
+		
+		//Get background node
+		var background = scene.getBackground();
+		
+		//Setup the background
+		this.setupBackground(background);
 		
 		//Collect all drawableObjects
 		scene.drawableObjects = [];
@@ -125,7 +131,7 @@ x3dom.gfx_flash = (function() {
 		
 		//Render the flash scene
 		this.object.renderScene();
-	}
+	};
 	
 	/**
 	*
@@ -138,7 +144,24 @@ x3dom.gfx_flash = (function() {
 		//Set Projection-Matrix
         var mat_proj = viewarea.getProjectionMatrix();
 		this.object.setProjectionMatrix( { projectionMatrix: mat_proj.toGL() });
-	}
+	};
+	
+	/**
+	*
+	*/
+	Context.prototype.setupBackground = function(background) {
+		//If background dirty -> update
+		if(background._dirty)
+		{
+			/*this.object.setBackground( { urls: background.getTexUrl(),
+										 skyAngle: background._vf.skyAngle,
+										 skyColor: background.getSkyColor(),
+										 groundAngle: background._vf.groundAngle,
+										 groundColor: background.getGroundColor(),
+										 transparency: background.getTranspareny() } );*/
+			background._dirty = false;
+		}
+	};
 	
 	/**
 	*

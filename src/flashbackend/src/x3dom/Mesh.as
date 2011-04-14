@@ -1,10 +1,11 @@
 ﻿package x3dom {
 	
-	import x3dom.*;
-	import flash.geom.*;
 	import flash.display3D.*;
 	import flash.display3D.textures.Texture;
 	import flash.events.Event;
+	import flash.geom.*;
+	
+	import x3dom.*;
 	
 	public class Mesh {
 		
@@ -19,6 +20,10 @@
 		private var _texture:ImageTexture	= null;
 		
 		private var _modelMatrix:Matrix3D	= new Matrix3D();
+		
+		private var _min:Vector3D;
+		private var _max:Vector3D;
+		private var _center:Vector3D;
 		
 		private var _colors:Array			= new Array();
 		private var _indices:Array			= new Array();
@@ -78,6 +83,38 @@
 			}
 		}
 		
+		/**
+		 * Calcuates meshs boundingbox (min, max, center)
+		 */
+		private function calculateBoundingBox() :void
+		{
+			//Init min/max values
+			_min = new Vector3D( 999999.0,  999999.0,  999999.0);
+			_max = new Vector3D(-999999.0, -999999.0, -999999.0);
+			
+			//Iterate all vertices and find absolute min/max values
+			for(var i:uint=0; i<_vertices.length; i++)
+			{
+				for(var j:uint=0; j<_vertices[i].length; j+=3)
+				{
+					if (_min.x > _vertices[i][j+0]) { _min.x = _vertices[i][j+0]; }
+					if (_min.y > _vertices[i][j+1]) { _min.y = _vertices[i][j+1]; }
+					if (_min.z > _vertices[i][j+2]) { _min.z = _vertices[i][j+2]; }
+					
+					if (_max.x < _vertices[i][j+0]) { _max.x = _vertices[i][j+0]; }
+					if (_max.y < _vertices[i][j+1]) { _max.y = _vertices[i][j+1]; }
+					if (_max.z < _vertices[i][j+2]) { _max.z = _vertices[i][j+2]; }
+				}
+			}
+			
+			//Calculate center point
+			_center = _min.add(_max);
+			_center.scaleBy(0.5);
+			
+			x3dom.Debug.logInfo("MIN: " + _min.toString() + " MAX: " + _max.toString() + " CENTER: " + _center.toString());
+			x3dom.Debug.logInfo("MIN: " + min.toString() + " MAX: " + max.toString() + " CENTER: " + center.toString());
+		}
+		
 		private function handleTextureLoaded(e:Event) : void
 		{
 			//Remove Complete-Listener from textur
@@ -105,6 +142,21 @@
 		public function get modelMatrix() : Matrix3D
 		{
 			return _modelMatrix;
+		}
+		
+		public function get min() : Vector3D
+		{
+			return _modelMatrix.transformVector(_min);
+		}
+		
+		public function get max() : Vector3D
+		{
+			return _modelMatrix.transformVector(_max);
+		}
+		
+		public function get center() : Vector3D
+		{
+			return _modelMatrix.transformVector(_center);
 		}
 		
 		public function setMaterial(material:Object) : void 
@@ -161,6 +213,8 @@
 			_vertices[ idx ] = vertices;
 			_vertexBuffer[ idx ] = _context3D.createVertexBuffer( vertices.length/3, 3 );
 			_vertexBuffer[ idx ].uploadFromVector( vertices, 0, vertices.length/3 );
+			
+			calculateBoundingBox();
 		}
 
 	}

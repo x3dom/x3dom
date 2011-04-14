@@ -3,23 +3,24 @@
 	<head>
 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
 		<title>Molehill Test Framework</title>
-		<link rel='stylesheet' type='text/css' href='../../src/x3dom.css'/>
-		<script type="text/javascript" src="../../src/swfobject/swfobject.js"></script>
+		<link rel='stylesheet' type='text/css' href='../../x3dom.css'/>
+		<script type="text/javascript" src="../../swfobject/swfobject.js"></script>
 		
 		 <!-- BEGIN:X3DOM -->
-		<script type="text/javascript" src="../../src/lang/Array.js"></script>
-		<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
-		<script type="text/javascript" src="../../src/x3dmain.js"></script>
-	    <script type="text/javascript" src="../../src/debug.js"></script>
-		<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
-		<script type="text/javascript" src="../../src/gfx_flash.js"></script>
-		<script type="text/javascript" src="../../src/x3d.js"></script>
-		<script type="text/javascript" src="../../src/fields.js"></script>
+		<script type="text/javascript" src="../../lang/Array.js"></script>
+		<script type="text/javascript" src="../../x3dom-internals.js"></script>
+		<script type="text/javascript" src="../../x3dmain.js"></script>
+	    <script type="text/javascript" src="../../debug.js"></script>
+		<script type="text/javascript" src="../../gfx_webgl.js"></script>
+		<script type="text/javascript" src="../../gfx_flash.js"></script>
+		<script type="text/javascript" src="../../mesh.js"></script>
+		<script type="text/javascript" src="../../x3d.js"></script>
+		<script type="text/javascript" src="../../fields.js"></script>
         <!-- END:X3DOM -->
 		
 	</head>
 	<body>
-		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='false' showLog='true' x='0px' y='0px' width='550px' height='400px' renderer='flash'>
+		<X3D id='someUniqueId' showStat='false' showLog='true' x='0px' y='0px' width='550px' height='400px' backend='flash'>
 			<Scene>
 				<Background skyColor='0.000 0.000 0.000'></Background>
 				<Transform>
