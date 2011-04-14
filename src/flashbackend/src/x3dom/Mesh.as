@@ -110,9 +110,6 @@
 			//Calculate center point
 			_center = _min.add(_max);
 			_center.scaleBy(0.5);
-			
-			x3dom.Debug.logInfo("MIN: " + _min.toString() + " MAX: " + _max.toString() + " CENTER: " + _center.toString());
-			x3dom.Debug.logInfo("MIN: " + min.toString() + " MAX: " + max.toString() + " CENTER: " + center.toString());
 		}
 		
 		private function handleTextureLoaded(e:Event) : void

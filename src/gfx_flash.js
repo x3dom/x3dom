@@ -153,12 +153,12 @@ x3dom.gfx_flash = (function() {
 		//If background dirty -> update
 		if(background._dirty)
 		{
-			/*this.object.setBackground( { urls: background.getTexUrl(),
+			this.object.setBackground( { texURLs: background.getTexUrl(),
 										 skyAngle: background._vf.skyAngle,
-										 skyColor: background.getSkyColor(),
+										 skyColor: background.getSkyColor().toGL(),
 										 groundAngle: background._vf.groundAngle,
-										 groundColor: background.getGroundColor(),
-										 transparency: background.getTranspareny() } );*/
+										 groundColor: background.getGroundColor().toGL(),
+										 transparency: background.getTransparency() } );
 			background._dirty = false;
 		}
 	};
