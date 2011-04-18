@@ -20,6 +20,7 @@
 </head>
 <body>
     <h1>X3DOM text example</h1>
+    <p><a href="#" onclick="changeText();return false;">Change Text</a></p>
     <x3d xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat="true" showLog="true" width="512px" height="512px">
     <scene>
       <viewpoint position='0 0 11'></viewpoint>
@@ -28,7 +29,7 @@
         <appearance>
           <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
         </appearance>
-        <text string='Hello World' solid='false'>
+        <text id="the_text" string='Hello World' solid='false'>
             <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
             <fontstyle family="'TYPEWRITER' 'Orbitron'" style="BOLDITALIC" justify="MIDDLE" size="32" leftToRight="true"></fontstyle>
         </text>
@@ -43,7 +44,15 @@
       </transform>
     </scene>
     </x3d>
-
+	
+	<script>
+	alert(x3dom.userAgentFeature.supportsDOMAttrModified)
+		function changeText() {
+			var text = document.getElementById('the_text');
+			text.setAttribute('string', 'Ministry of Silly Walks');
+//			alert(text.getAttribute('string'))
+		}
+	</script>
 
 </body>
 </html>
