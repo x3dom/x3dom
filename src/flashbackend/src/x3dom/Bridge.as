@@ -49,20 +49,14 @@
 		
 		private function setBackground(value:Object) : void
 		{
+			_scene.background.texURLs		= String(value.texURLs).split(',');
 			_scene.background.skyColor		= String(value.skyColor).split(',');
 			_scene.background.skyAngle		= String(value.skyAngle).split(',');
 			_scene.background.groundColor	= String(value.groundColor).split(',');
 			_scene.background.groundAngle	= String(value.groundAngle).split(',');
 			_scene.background.transparency	= Number(value.transparency);
 			
-			var texURLs:Array = String(value.texURLs).split(',');
-			
-			_scene.background.backURL	= texURLs[0];
-			_scene.background.frontURL	= texURLs[1];
-			_scene.background.bottomURL = texURLs[2];
-			_scene.background.topURL	= texURLs[3];
-			_scene.background.leftURL	= texURLs[4];
-			_scene.background.rightURL	= texURLs[5];
+			_scene.background.init();
 		}
 		
 		private function setMeshTransform(value:Object) : void
