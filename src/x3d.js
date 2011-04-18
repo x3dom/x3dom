@@ -2640,16 +2640,22 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'maxExtent', 0.0);
             
             this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);   
-        },
-        {
-            nodeChanged: function() {   
-                if (!this._cf.fontStyle.node) {
-                    this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
+        }, 
+		{
+        	nodeChanged: function() {   
+            	if (!this._cf.fontStyle.node) {
+                	this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
                 }
-            }           
+            },
+			fieldChanged: function(fieldName) {
+				if (fieldName == 'string') {
+					// TODO
+				}
+				x3dom.debug.logWarning("Trying to change field '" + fieldName + "' on Text node: not implemented")
+			}
         }
-    )
-);
+    ) // defineClass
+); // registerNodeType
 
 /* ### X3DComposedGeometryNode ### */
 x3dom.registerNodeType(
