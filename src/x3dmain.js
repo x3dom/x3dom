@@ -896,6 +896,7 @@ x3dom.runtime = {
 		// place to hold configuration data, i.e. fash backend path, etc.
 		// format and structure needs to be decided.
 		this.config = { };
+		this.caches = { };
 	},
 
 	/**
@@ -971,18 +972,6 @@ x3dom.runtime = {
 		} else {
 			x3dom.debug.logError('No valid ViewBindable stack.');
 		}
-	},
-
-	/**
-	 * APIFunction: navigationInfo
-     *	 
-	 * Returns the current navigation information.
-	 * 
-	 * Returns:
-	 * 		The navigation info node for the scene
-	 */
-	navigationInfo: function() {
-		return this.canvas.doc._scene.getNavigationInfo();
 	},
 
 	/**
