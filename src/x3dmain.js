@@ -879,7 +879,7 @@ x3dom.userAgentFeature = {
  * > ...
  */
 x3dom.runtime = {
-
+	
 	/**
 	 * Function: initialize
 	 *
@@ -891,7 +891,11 @@ x3dom.runtime = {
 	 */
 	initialize: function(doc, canvas) {
 		this.doc = doc;
-		this.canvas = canvas
+		this.canvas = canvas;
+
+		// place to hold configuration data, i.e. fash backend path, etc.
+		// format and structure needs to be decided.
+		this.config = { };
 	},
 
 	/**

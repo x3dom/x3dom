@@ -20,12 +20,12 @@
 </head>
 <body>
     <h1>X3DOM text example</h1>
-    <p><a href="#" onclick="changeText();return false;">Change Text</a></p>
-    <x3d xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat="true" showLog="true" width="512px" height="512px">
+    <p><a href="#" onClick="changeText();return false;">Change Text</a></p>
+    <x3d id="the_element" xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat="true" showLog="true" width="512px" height="512px">
     <scene>
       <viewpoint position='0 0 11'></viewpoint>
       <background skyColor='0.5 0.5 0.5'></background>
-      <shape>
+      <shape id="the_shape">
         <appearance>
           <material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
         </appearance>
@@ -46,10 +46,24 @@
     </x3d>
 	
 	<script>
-	alert(x3dom.userAgentFeature.supportsDOMAttrModified)
+		
+		
 		function changeText() {
+			var root = document.getElementById('the_scene');
 			var text = document.getElementById('the_text');
+			var x3d = document.getElementById('the_element');
+
+
+//			var t = document.createElement("text");
+//			text.setAttribute('id', 'the_textt');
+//			text.setAttribute('string','blaaaaahh');
+//			text.setAttribute('solid', 'true');
+			
+//			root.appendChild(text);
+			
+//			alert(x3dom.isa(text, x3dom.nodeTypes.TextNode));
 			text.setAttribute('string', 'Ministry of Silly Walks');
+//			x3d.canvas.doc.needRender = true;
 //			alert(text.getAttribute('string'))
 		}
 	</script>
