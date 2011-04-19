@@ -896,8 +896,19 @@ x3dom.runtime = {
 		// place to hold configuration data, i.e. fash backend path, etc.
 		// format and structure needs to be decided.
 		this.config = { };
-		this.caches = { };
 	},
+
+    /**
+     * Function: sweepCache
+     *
+     * Sweeps caches
+     *
+     * Parameters:
+     * 		options - A list of caches to sweep
+     */
+    sweepCache: function(options) {
+        x3dom.debug.logWarning('Cache sweeping not implemented.')
+    },
 
 	/**
 	 * APIFunction: getActiveBindable
