@@ -21,7 +21,7 @@ x3dom.nodeTypesLC = {};
 /** @namespace the x3dom.components namespace. */
 x3dom.components = {};
 
-/** Cache for primitive nodes (Box, Sphere, usw.) */ 
+/** Cache for primitive nodes (Box, Sphere, etc.) */ 
 x3dom.geoCache = [];
 
 /** Registers the node defined by @p nodeDef.
