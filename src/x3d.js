@@ -21,6 +21,9 @@ x3dom.nodeTypesLC = {};
 /** @namespace the x3dom.components namespace. */
 x3dom.components = {};
 
+/** Cache for primitive nodes (Box, Sphere, usw.) */ 
+x3dom.geoCache = [];
+
 /** Registers the node defined by @p nodeDef.
 
     The node is registered with the given @p nodeTypeName and @p componentName.
@@ -2122,44 +2125,56 @@ x3dom.registerNodeType(
             } else {
                 sx = sy = sz = 2;
             }
-            
-            sx /= 2; sy /= 2; sz /= 2;
-            
-            this._mesh._positions[0] = [
-                -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //hinten 0,0,-1
-                -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //vorne 0,0,1
-                -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //links -1,0,0
-                 sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //rechts 1,0,0
-                -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //oben 0,1,0
-                -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //unten 0,-1,0
-            ];
-            this._mesh._normals[0] = [
-                0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
-                0,0,1,  0,0,1,   0,0,1,   0,0,1,
-                -1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
-                1,0,0,   1,0,0,   1,0,0,   1,0,0,
-                0,1,0,  0,1,0,   0,1,0,   0,1,0,
-                0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0
-            ];
-            this._mesh._texCoords[0] = [
-                1,0, 1,1, 0,1, 0,0, 
-                0,0, 0,1, 1,1, 1,0, 
-                0,0, 1,0, 1,1, 0,1, 
-                1,0, 0,0, 0,1, 1,1, 
-                0,1, 0,0, 1,0, 1,1, 
-                0,0, 0,1, 1,1, 1,0
-            ];
-            this._mesh._indices[0] = [
-                0,1,2, 2,3,0,
-                4,7,5, 5,7,6,
-                8,9,10, 10,11,8,
-                12,14,13, 14,12,15,
-                16,17,18, 18,19,16,
-                20,22,21, 22,20,23
-            ];
-            this._mesh._invalidate = true;
-            this._mesh._numFaces = 12;
-            this._mesh._numCoords = 24;
+			
+			var geoCacheID = 'Box_'+sx+'-'+sy+'-'+sz;
+			
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Box from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				sx /= 2; sy /= 2; sz /= 2;
+				
+				this._mesh._positions[0] = [
+					-sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //hinten 0,0,-1
+					-sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //vorne 0,0,1
+					-sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //links -1,0,0
+					 sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //rechts 1,0,0
+					-sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //oben 0,1,0
+					-sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //unten 0,-1,0
+				];
+				this._mesh._normals[0] = [
+					0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
+					0,0,1,  0,0,1,   0,0,1,   0,0,1,
+					-1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
+					1,0,0,   1,0,0,   1,0,0,   1,0,0,
+					0,1,0,  0,1,0,   0,1,0,   0,1,0,
+					0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0
+				];
+				this._mesh._texCoords[0] = [
+					1,0, 1,1, 0,1, 0,0, 
+					0,0, 0,1, 1,1, 1,0, 
+					0,0, 1,0, 1,1, 0,1, 
+					1,0, 0,0, 0,1, 1,1, 
+					0,1, 0,0, 1,0, 1,1, 
+					0,0, 0,1, 1,1, 1,0
+				];
+				this._mesh._indices[0] = [
+					0,1,2, 2,3,0,
+					4,7,5, 5,7,6,
+					8,9,10, 10,11,8,
+					12,14,13, 14,12,15,
+					16,17,18, 18,19,16,
+					20,22,21, 22,20,23
+				];
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = 12;
+				this._mesh._numCoords = 24;
+				
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         }
     )
 );
@@ -2176,67 +2191,79 @@ x3dom.registerNodeType(
             if (ctx && ctx.xmlNode.hasAttribute('radius')) {
                 r = +ctx.xmlNode.getAttribute('radius');
             }
-            
-            var latNumber, longNumber;
-            var latitudeBands = 24;
-            var longitudeBands = 24;
-            
-            var theta, sinTheta, cosTheta;
-            var phi, sinPhi, cosPhi;
-            var x, y, z, u, v;
-            
-            for (latNumber = 0; latNumber <= latitudeBands; latNumber++)
-            {
-                theta = (latNumber * Math.PI) / latitudeBands;
-                sinTheta = Math.sin(theta);
-                cosTheta = Math.cos(theta);
+			
+			var geoCacheID = 'Sphere_'+r;
+			
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Sphere from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				var latNumber, longNumber;
+				var latitudeBands = 24;
+				var longitudeBands = 24;
+				
+				var theta, sinTheta, cosTheta;
+				var phi, sinPhi, cosPhi;
+				var x, y, z, u, v;
+				
+				for (latNumber = 0; latNumber <= latitudeBands; latNumber++)
+				{
+					theta = (latNumber * Math.PI) / latitudeBands;
+					sinTheta = Math.sin(theta);
+					cosTheta = Math.cos(theta);
 
-                for (longNumber = 0; longNumber <= longitudeBands; longNumber++)
-                {
-                    phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
-                    sinPhi = Math.sin(phi);
-                    cosPhi = Math.cos(phi);
+					for (longNumber = 0; longNumber <= longitudeBands; longNumber++)
+					{
+						phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
+						sinPhi = Math.sin(phi);
+						cosPhi = Math.cos(phi);
 
-                    x = -cosPhi * sinTheta;
-                    y = -cosTheta;
-                    z = -sinPhi * sinTheta;
-                    
-                    u = 0.25 - ((1.0 * longNumber) / longitudeBands);
-                    v = latNumber / latitudeBands;
-                    
-                    this._mesh._positions[0].push(r * x);
-                    this._mesh._positions[0].push(r * y);
-                    this._mesh._positions[0].push(r * z);
-                    this._mesh._normals[0].push(x);
-                    this._mesh._normals[0].push(y);
-                    this._mesh._normals[0].push(z);
-                    this._mesh._texCoords[0].push(u);
-                    this._mesh._texCoords[0].push(v);
-                }
-            }
-            
-            var first, second;
-            
-            for (latNumber = 0; latNumber < latitudeBands; latNumber++)
-            {
-                for (longNumber = 0; longNumber < longitudeBands; longNumber++)
-                {
-                    first = (latNumber * (longitudeBands + 1)) + longNumber;
-                    second = first + longitudeBands + 1;
-                    
-                    this._mesh._indices[0].push(first);
-                    this._mesh._indices[0].push(second);
-                    this._mesh._indices[0].push(first + 1);
+						x = -cosPhi * sinTheta;
+						y = -cosTheta;
+						z = -sinPhi * sinTheta;
+						
+						u = 0.25 - ((1.0 * longNumber) / longitudeBands);
+						v = latNumber / latitudeBands;
+						
+						this._mesh._positions[0].push(r * x);
+						this._mesh._positions[0].push(r * y);
+						this._mesh._positions[0].push(r * z);
+						this._mesh._normals[0].push(x);
+						this._mesh._normals[0].push(y);
+						this._mesh._normals[0].push(z);
+						this._mesh._texCoords[0].push(u);
+						this._mesh._texCoords[0].push(v);
+					}
+				}
+				
+				var first, second;
+				
+				for (latNumber = 0; latNumber < latitudeBands; latNumber++)
+				{
+					for (longNumber = 0; longNumber < longitudeBands; longNumber++)
+					{
+						first = (latNumber * (longitudeBands + 1)) + longNumber;
+						second = first + longitudeBands + 1;
+						
+						this._mesh._indices[0].push(first);
+						this._mesh._indices[0].push(second);
+						this._mesh._indices[0].push(first + 1);
 
-                    this._mesh._indices[0].push(second);
-                    this._mesh._indices[0].push(second + 1);
-                    this._mesh._indices[0].push(first + 1);
-                }
-            }
-            
-            this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices[0].length / 3;
-            this._mesh._numCoords = this._mesh._positions[0].length / 3;
+						this._mesh._indices[0].push(second);
+						this._mesh._indices[0].push(second + 1);
+						this._mesh._indices[0].push(first + 1);
+					}
+				}
+				
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         }
     )
 );
@@ -2257,51 +2284,64 @@ x3dom.registerNodeType(
             if (ctx.xmlNode.hasAttribute('outerRadius')) {
                 outerRadius = +ctx.xmlNode.getAttribute('outerRadius');
             }
+			
+			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;
+			
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Torus from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
             
-            var rings = 24, sides = 24;
-            var ringDelta = 2.0 * Math.PI / rings;
-            var sideDelta = 2.0 * Math.PI / sides;
-            var p = [], n = [], t = [], i = [];
-            var a, b, theta, phi;
+				var rings = 24, sides = 24;
+				var ringDelta = 2.0 * Math.PI / rings;
+				var sideDelta = 2.0 * Math.PI / sides;
+				var p = [], n = [], t = [], i = [];
+				var a, b, theta, phi;
 
-            for (a=0, theta=0; a <= rings; a++, theta+=ringDelta) 
-            {
-                var cosTheta = Math.cos(theta);
-                var sinTheta = Math.sin(theta);
+				for (a=0, theta=0; a <= rings; a++, theta+=ringDelta) 
+				{
+					var cosTheta = Math.cos(theta);
+					var sinTheta = Math.sin(theta);
 
-                for (b=0, phi=0; b<=sides; b++, phi+=sideDelta) 
-                {
-                    var cosPhi = Math.cos(phi);
-                    var sinPhi = Math.sin(phi);
-                    var dist = outerRadius + innerRadius * cosPhi;
+					for (b=0, phi=0; b<=sides; b++, phi+=sideDelta) 
+					{
+						var cosPhi = Math.cos(phi);
+						var sinPhi = Math.sin(phi);
+						var dist = outerRadius + innerRadius * cosPhi;
 
-                    n.push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
-                    p.push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
-                    t.push(-a / rings, b / sides);
-                }
-            }
-            
-            for (a=0; a<sides; a++) 
-            {
-                for (b=0; b<rings; b++)
-                {
-                    i.push(b * (sides+1) + a);
-                    i.push(b * (sides+1) + a + 1);
-                    i.push((b + 1) * (sides+1) + a);
-                    
-                    i.push(b * (sides+1) + a + 1);
-                    i.push((b + 1) * (sides+1) + a + 1);
-                    i.push((b + 1) * (sides+1) + a);
-                }
-            }
-            
-            this._mesh._positions[0] = p;
-            this._mesh._normals[0] = n;
-            this._mesh._texCoords[0] = t;
-            this._mesh._indices[0] = i;
-            this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices[0].length / 3;
-            this._mesh._numCoords = this._mesh._positions[0].length / 3;
+						n.push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
+						p.push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
+						t.push(-a / rings, b / sides);
+					}
+				}
+				
+				for (a=0; a<sides; a++) 
+				{
+					for (b=0; b<rings; b++)
+					{
+						i.push(b * (sides+1) + a);
+						i.push(b * (sides+1) + a + 1);
+						i.push((b + 1) * (sides+1) + a);
+						
+						i.push(b * (sides+1) + a + 1);
+						i.push((b + 1) * (sides+1) + a + 1);
+						i.push((b + 1) * (sides+1) + a);
+					}
+				}
+				
+				this._mesh._positions[0] = p;
+				this._mesh._normals[0] = n;
+				this._mesh._texCoords[0] = t;
+				this._mesh._indices[0] = i;
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         }
     )
 );
@@ -2319,82 +2359,94 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'bottom', true);
             this.addField_SFBool(ctx, 'side', true);
             
-            var bottomRadius = this._vf.bottomRadius, height = this._vf.height;
-            
-            var beta, x, z;
-            var sides = 32;
-            var delta = 2.0 * Math.PI / sides;
-            var incl = bottomRadius / height;
-            var nlen = 1.0 / Math.sqrt(1.0 + incl * incl);
-            var p = [], n = [], t = [], i = [];
+			var geoCacheID = 'Cone_'+this._vf.bottomRadius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.side;
+			
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Cone from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				var bottomRadius = this._vf.bottomRadius, height = this._vf.height;
+				
+				var beta, x, z;
+				var sides = 32;
+				var delta = 2.0 * Math.PI / sides;
+				var incl = bottomRadius / height;
+				var nlen = 1.0 / Math.sqrt(1.0 + incl * incl);
+				var p = [], n = [], t = [], i = [];
 
-            var j = 0;
-            
-            if (this._vf.side)
-            {
-              for (j=0, k=0; j<=sides; j++)
-              {
-                beta = j * delta;
-                x = Math.sin(beta);
-                z = -Math.cos(beta);         
+				var j = 0;
+				
+				if (this._vf.side)
+				{
+				  for (j=0, k=0; j<=sides; j++)
+				  {
+					beta = j * delta;
+					x = Math.sin(beta);
+					z = -Math.cos(beta);         
 
-                p.push(0, height/2, 0);
-                n.push(x/nlen, incl/nlen, z/nlen);
-                t.push(1.0 - j / sides, 1);
+					p.push(0, height/2, 0);
+					n.push(x/nlen, incl/nlen, z/nlen);
+					t.push(1.0 - j / sides, 1);
 
-                p.push(x * bottomRadius, -height/2, z * bottomRadius);
-                n.push(x/nlen, incl/nlen, z/nlen);
-                t.push(1.0 - j / sides, 0);
-                
-                if (j > 0)
-                {
-                    i.push(k + 0);
-                    i.push(k + 2);
-                    i.push(k + 1);
-                    
-                    i.push(k + 1);
-                    i.push(k + 2);
-                    i.push(k + 3);
-                    
-                    k += 2;
-                }
-              }
-            }
-            
-            if (this._vf.bottom && bottomRadius > 0)
-            {
-                var base = p.length / 3;
-                
-                for (j=sides-1; j>=0; j--)
-                {
-                    beta = j * delta;
-                    x = bottomRadius * Math.sin(beta);
-                    z = -bottomRadius * Math.cos(beta); 
+					p.push(x * bottomRadius, -height/2, z * bottomRadius);
+					n.push(x/nlen, incl/nlen, z/nlen);
+					t.push(1.0 - j / sides, 0);
+					
+					if (j > 0)
+					{
+						i.push(k + 0);
+						i.push(k + 2);
+						i.push(k + 1);
+						
+						i.push(k + 1);
+						i.push(k + 2);
+						i.push(k + 3);
+						
+						k += 2;
+					}
+				  }
+				}
+				
+				if (this._vf.bottom && bottomRadius > 0)
+				{
+					var base = p.length / 3;
+					
+					for (j=sides-1; j>=0; j--)
+					{
+						beta = j * delta;
+						x = bottomRadius * Math.sin(beta);
+						z = -bottomRadius * Math.cos(beta); 
 
-                    p.push(x, -height/2, z);
-                    n.push(0, -1, 0);
-                    t.push(x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5);
-                }
-                
-                var h = base + 1;
-                
-                for (j=2; j<sides; j++) 
-                {
-                    i.push(h);
-                    i.push(base);
-                    
-                    h = base + j;
-                    i.push(h);
-                }
-            }
-            
-            this._mesh._positions[0] = p;
-            this._mesh._normals[0] = n;
-            this._mesh._texCoords[0] = t;
-            this._mesh._indices[0] = i;
-            this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices[0].length / 3;
-            this._mesh._numCoords = this._mesh._positions[0].length / 3;
+						p.push(x, -height/2, z);
+						n.push(0, -1, 0);
+						t.push(x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5);
+					}
+					
+					var h = base + 1;
+					
+					for (j=2; j<sides; j++) 
+					{
+						i.push(h);
+						i.push(base);
+						
+						h = base + j;
+						i.push(h);
+					}
+				}
+				
+				this._mesh._positions[0] = p;
+				this._mesh._normals[0] = n;
+				this._mesh._texCoords[0] = t;
+				this._mesh._indices[0] = i;
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         }
     )
 );
@@ -2415,111 +2467,124 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'bottom', true);
             this.addField_SFBool(ctx, 'top', true);
             this.addField_SFBool(ctx, 'side', true);
+			
+			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
+			
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Cylinder from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
             
-            radius = this._vf.radius;
-            height = this._vf.height;
-            
-            var beta, x, z;
-            var sides = 24;
-            var delta = 2.0 * Math.PI / sides;
-            var p = [], n = [], t = [], i = [];
-            
-            var j = 0;
-            if (this._vf.side)
-            {
-              for (j=0, k=0; j<=sides; j++)
-              {
-                beta = j * delta;
-                x = Math.sin(beta);
-                z = -Math.cos(beta);         
+				radius = this._vf.radius;
+				height = this._vf.height;
+				
+				var beta, x, z;
+				var sides = 24;
+				var delta = 2.0 * Math.PI / sides;
+				var p = [], n = [], t = [], i = [];
+				
+				var j = 0;
+				if (this._vf.side)
+				{
+				  for (j=0, k=0; j<=sides; j++)
+				  {
+					beta = j * delta;
+					x = Math.sin(beta);
+					z = -Math.cos(beta);         
 
-                p.push(x * radius, -height/2, z * radius);
-                n.push(x, 0, z);
-                t.push(1.0 - j / sides, 0);
+					p.push(x * radius, -height/2, z * radius);
+					n.push(x, 0, z);
+					t.push(1.0 - j / sides, 0);
 
-                p.push(x * radius, height/2, z * radius);
-                n.push(x, 0, z);
-                t.push(1.0 - j / sides, 1);
-                
-                if (j > 0)
-                {
-                    i.push(k + 0);
-                    i.push(k + 1);
-                    i.push(k + 2);
-                    
-                    i.push(k + 2);
-                    i.push(k + 1);
-                    i.push(k + 3);
-                    
-                    k += 2;
-                }
-              }
-            }
-            
-            if (radius > 0)
-            {
-                var h, base = p.length / 3;
-                
-                if (this._vf.top)
-                {
-                  for (j=sides-1; j>=0; j--)
-                  {
-                    beta = j * delta;
-                    x = radius * Math.sin(beta);
-                    z = -radius * Math.cos(beta);  
+					p.push(x * radius, height/2, z * radius);
+					n.push(x, 0, z);
+					t.push(1.0 - j / sides, 1);
+					
+					if (j > 0)
+					{
+						i.push(k + 0);
+						i.push(k + 1);
+						i.push(k + 2);
+						
+						i.push(k + 2);
+						i.push(k + 1);
+						i.push(k + 3);
+						
+						k += 2;
+					}
+				  }
+				}
+				
+				if (radius > 0)
+				{
+					var h, base = p.length / 3;
+					
+					if (this._vf.top)
+					{
+					  for (j=sides-1; j>=0; j--)
+					  {
+						beta = j * delta;
+						x = radius * Math.sin(beta);
+						z = -radius * Math.cos(beta);  
 
-                    p.push(x, height/2, z);
-                    n.push(0, 1, 0);
-                    t.push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
-                  }
-                
-                  h = base + 1;
-                
-                  for (j=2; j<sides; j++) 
-                  {
-                    i.push(base);
-                    i.push(h);
-                    
-                    h = base + j;
-                    i.push(h);
-                  }
-                
-                  base = p.length / 3;
-                }
-                
-                if (this._vf.bottom)
-                {
-                  for (j=sides-1; j>=0; j--)
-                  {
-                    beta = j * delta;
-                    x = radius * Math.sin(beta);
-                    z = -radius * Math.cos(beta); 
+						p.push(x, height/2, z);
+						n.push(0, 1, 0);
+						t.push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
+					  }
+					
+					  h = base + 1;
+					
+					  for (j=2; j<sides; j++) 
+					  {
+						i.push(base);
+						i.push(h);
+						
+						h = base + j;
+						i.push(h);
+					  }
+					
+					  base = p.length / 3;
+					}
+					
+					if (this._vf.bottom)
+					{
+					  for (j=sides-1; j>=0; j--)
+					  {
+						beta = j * delta;
+						x = radius * Math.sin(beta);
+						z = -radius * Math.cos(beta); 
 
-                    p.push(x, -height/2, z);
-                    n.push(0, -1, 0);
-                    t.push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
-                  }
-                
-                  h = base + 1;
-                
-                  for (j=2; j<sides; j++) 
-                  {
-                    i.push(h);
-                    i.push(base);
-                    
-                    h = base + j;
-                    i.push(h);
-                  }
-                }
-            }
-            
-            this._mesh._positions[0] = p;
-            this._mesh._normals[0] = n;
-            this._mesh._texCoords[0] = t;
-            this._mesh._indices[0] = i;
-            this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices[0].length / 3;
-            this._mesh._numCoords = this._mesh._positions[0].length / 3;
+						p.push(x, -height/2, z);
+						n.push(0, -1, 0);
+						t.push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
+					  }
+					
+					  h = base + 1;
+					
+					  for (j=2; j<sides; j++) 
+					  {
+						i.push(h);
+						i.push(base);
+						
+						h = base + j;
+						i.push(h);
+					  }
+					}
+				}
+				
+				this._mesh._positions[0] = p;
+				this._mesh._normals[0] = n;
+				this._mesh._texCoords[0] = t;
+				this._mesh._indices[0] = i;
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         }
     )
 );
@@ -5729,6 +5794,9 @@ x3dom.Viewarea = function (document, scene) {
     
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
+	
+	//Geometrie cache for primitives (Sphere, Box, etc.)
+	this._geoCache = [];
 };
 
 x3dom.Viewarea.prototype.tick = function(timeStamp)
