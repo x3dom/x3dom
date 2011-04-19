@@ -46,25 +46,13 @@
     </x3d>
 	
 	<script>
-		
-		
 		function changeText() {
-			var root = document.getElementById('the_scene');
 			var text = document.getElementById('the_text');
-			var x3d = document.getElementById('the_element');
-
-
-//			var t = document.createElement("text");
-//			text.setAttribute('id', 'the_textt');
-//			text.setAttribute('string','blaaaaahh');
-//			text.setAttribute('solid', 'true');
-			
-//			root.appendChild(text);
-			
-//			alert(x3dom.isa(text, x3dom.nodeTypes.TextNode));
-			text.setAttribute('string', 'Ministry of Silly Walks');
-//			x3d.canvas.doc.needRender = true;
-//			alert(text.getAttribute('string'))
+            if (text.getAttribute('string') == 'Hello World') {
+                text.setAttribute('string', 'Ministry of Silly Walks');
+            } else {
+                text.setAttribute('string', 'Hello World');
+            }
 		}
 	</script>
 

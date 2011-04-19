@@ -2649,9 +2649,10 @@ x3dom.registerNodeType(
             },
 			fieldChanged: function(fieldName) {
 				if (fieldName == 'string') {
-					// TODO
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.texture = true;
+                    });
 				}
-				x3dom.debug.logWarning("Trying to change field '" + fieldName + "' on Text node: not implemented")
 			}
         }
     ) // defineClass
