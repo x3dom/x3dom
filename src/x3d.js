@@ -194,7 +194,7 @@ x3dom.BindableStack.prototype.getActive = function () {
             }
         }
         else {
-            x3dom.debug.logInfo ('activate first ' + this._defaultType._typeName + 
+            x3dom.debug.logInfo ('activate first ' + this._type._typeName + 
                                  ' for ' + this._type._typeName + '-stack');
         }
         
@@ -238,7 +238,7 @@ x3dom.BindableBag.prototype.setRefNode = function (node) {
 
 x3dom.BindableBag.prototype.addBindable = function(node) {
     for (var i = 0, n = this._stacks.length; i < n; i++) {
-        if ( x3dom.isa (node, this._stacks[i]._defaultType) ) {
+        if ( x3dom.isa (node, this._stacks[i]._type) ) {
             x3dom.debug.logInfo ('register bindable ' + node.typeName());
             this._stacks[i]._bindBag.push(node);
             return this._stacks[i];
