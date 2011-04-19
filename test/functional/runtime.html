@@ -28,6 +28,8 @@
 
 	</style>
 
+    <script>
+    </script>
 </head>
 <body onLoad="init()">
     <h1><code>runtime</code> object example</h1>
@@ -111,8 +113,17 @@
 	var nav_mode_info;
 	var ab_info;
 
+    x3dom.runtime.ready = function(x3delement) {
+        alert("Custom runtime.ready alert! About to render the scene for the first time.");
+    };
+
+    x3dom.runtime.enterFrame = function(x3delement) {
+        x3dom.debug.logInfo("Custom rendering frame action");
+    };
+
 	function init() {
 		$element = document.getElementById('the_element');
+
 		var e = $element;
 		var result;
 
@@ -129,7 +140,7 @@
 
 	function updateNavInfo() {
 		nav_mode_info = document.getElementById('nav_mode_info');
-		nav_mode_info.innerHTML = $element.runtime.navigationInfo()._vf.type[0];
+		nav_mode_info.innerHTML = $element.runtime.navigationType();
 	}
 
 	function updateAbInfo(typeName) {
