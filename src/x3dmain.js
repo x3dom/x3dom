@@ -136,6 +136,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             "MozTouchDown",
             "MozTouchMove",
             "MozTouchUp"
+
         ];
         
         // TODO; handle attribute event handlers dynamically during runtime
@@ -710,6 +711,15 @@ x3dom.X3DCanvas.prototype.tick = function()
         this.doc.advanceTime(d / 1000); 
         var animD = new Date().getTime() - d;
         if (this.doc.needRender) {
+
+            if (this.x3dElem.runtime.isReady == true) {
+                this.x3dElem.runtime.enterFrame(this.x3dElem);
+            } else {
+                this.x3dElem.runtime.ready();
+                this.x3dElem.runtime.enterFrame(this.x3dElem);
+                this.x3dElem.runtime.isReady = true;
+            }
+
             if (this.statDiv) {
                 this.statDiv.textContent = fps.toFixed(2) + ' fps';
                 this.statDiv.appendChild(document.createElement("br"));
@@ -751,19 +761,14 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
         x3dom.debug.logInfo("loaded '" + uri + "'");
         
         if (x3dCanvas.hasRuntime) {
+
 			// requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
 			(function mainloop(){
                 x3dCanvas.watchForResize();
         		x3dCanvas.tick();
 			    window.requestAnimFrame(mainloop, x3dCanvas);
 		    })();
-			
-//            setInterval( function() {
-//                    x3dCanvas.watchForResize();
-//                   x3dCanvas.tick();
-//                }, 
-//             16  // use typical monitor frequency as bound
-//           );
+
         } else {
             x3dCanvas.tick();
         }
@@ -879,7 +884,6 @@ x3dom.userAgentFeature = {
  * > ...
  */
 x3dom.runtime = {
-	
 	/**
 	 * Function: initialize
 	 *
@@ -896,7 +900,54 @@ x3dom.runtime = {
 		// place to hold configuration data, i.e. fash backend path, etc.
 		// format and structure needs to be decided.
 		this.config = { };
+        this.isReady = false;
 	},
+
+
+    /**
+     * APIFunction: ready
+     *
+     * This method is called once the system initialized and is ready to render
+     * the first time. It is therefore possible to execute custom
+     * action by overriding this method in your code:
+     *
+     * > x3dom.runtime.ready = function(data) {
+     * >    alert("About to render something the first time");
+     * > }
+     *
+     * It is important to create this override before the document onLoad event has fired.
+     * Therefore putting it directly under the inclusion of x3dom.js is the preferred
+     * way to ensure overloading of this function.
+     * 
+     * Parameters:
+     * 		element - The x3d element this handler is acting upon
+     */
+    ready: function(element) {
+        x3dom.debug.logInfo('System ready.');
+    },
+
+    /**
+     * APIFunction: enterFrame
+     *
+     * This method is called just before the next frame is
+     * rendered. It is therefore possible to execute custom
+     * action by overriding this method in your code:
+     *
+     * > x3dom.runtime.enterFrame = function(data) {
+     * >    alert("About to render next frame");
+     * > }
+     *
+     * It is important to create this override before the document onLoad event has fired.
+     * Therefore putting it directly under the inclusion of x3dom.js is the preferred
+     * way to ensure overloading of this function.
+     *
+     * Parameters:
+     * 		element - The x3d element this handler is acting upon
+     */
+    enterFrame: function(element) {
+        x3dom.debug.logInfo('Render frame imminent');
+        // to be overwritten by user
+    },
 
     /**
      * Function: sweepCache
@@ -1094,7 +1145,6 @@ x3dom.runtime = {
 		}
 		return this.canvas.doc._viewarea._visDbgBuf;
 	},
-
 
 	/**
 	 * APIFunction: navigationType
@@ -1417,20 +1467,21 @@ x3dom.runtime = {
             
             var t0 = new Date().getTime();
             
+            x3ds[i].runtime = x3dom.runtime;
+            x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
+//            x3ds[i].runtime.ready();
+
             x3dcanvas.load(x3ds[i], i);
             x3dom.canvases.push(x3dcanvas);
-            
-
-			x3ds[i].runtime = x3dom.runtime;
-			x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
 
 			var t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
+
         }
         
         var ready = (function(eventType) {
             var evt = null;
-            
+
             if (document.createEvent) {
                 evt = document.createEvent("Events");    
                 evt.initEvent(eventType, true, true);     
