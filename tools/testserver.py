@@ -4,7 +4,7 @@ import wsgiserver
 import os
 import mimetypes
 
-TESTSCENE_DIR = os.path.join(os.getcwd(), "test")
+TESTSCENE_DIR = os.path.join(os.getcwd())
 
 def testScenes(environ, start_response):
     

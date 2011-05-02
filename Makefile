@@ -112,7 +112,7 @@ clean:
 	
 runserver:
 	@@echo "Running development server..."
-	@@echo "Open your browser and visit http://localhost:8070/"
+	@@echo "Open your browser and visit http://localhost:80870/"
 	python ${TOOL_DIR}/testserver.py
 
 changelog:
