@@ -107,25 +107,31 @@
 
     <script>
 	// simplify access to the X3D element
-	var $element;
+	var $element = document.getElementById('the_element');
 	var debug = true;
 	var pick_mode_info;
 	var nav_mode_info;
 	var ab_info;
 
+
     x3dom.runtime.ready = function(x3delement) {
-        alert("Custom runtime.ready alert! About to render the scene for the first time.");
+        alert("Custom runtime.ready() for all x3d elements on page.");
     };
 
     x3dom.runtime.enterFrame = function(x3delement) {
-        x3dom.debug.logInfo("Custom rendering frame action");
+        x3dom.debug.logInfo("Custom enterFrame() for all elements on page (can be overwritten on per element basis)");
     };
 
-	function init() {
-		$element = document.getElementById('the_element');
+	function init(event) {
+//		$element = document.getElementById('the_element');
 
-		var e = $element;
-		var result;
+        $element.runtime.ready = function() {
+            alert('Per element custom .runtime.ready() function.');
+        };
+
+        $element.runtime.enterFrame = function() {
+            x3dom.debug.logInfo('Per element custom .runtime.enterFrame() function');
+        };
 
 		updateAbInfo('Viewpoint');
 		updatePickInfo();
