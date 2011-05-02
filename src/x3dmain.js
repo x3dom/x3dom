@@ -937,9 +937,17 @@ x3dom.runtime = {
      * >    alert("About to render next frame");
      * > }
      *
-     * It is important to create this override before the document onLoad event has fired.
-     * Therefore putting it directly under the inclusion of x3dom.js is the preferred
-     * way to ensure overloading of this function.
+     * It is also possible to override this function on a per x3d element basis:
+     *
+     * > var element = document.getElementById('my_element');
+     * > element.runtime.enterFrame = function() {
+     *     alert('hello custom enter frame');
+     * };
+     *
+     * During initialization, just after ready() executed and before the very first frame
+     * is rendered, only the global override of this method works. If you need to execute
+     * code before the first frame renders, it is therefore best to use the ready()
+     * function instead.
      *
      * Parameters:
      * 		element - The x3d element this handler is acting upon
