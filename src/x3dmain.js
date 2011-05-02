@@ -953,7 +953,7 @@ x3dom.runtime = {
      * 		element - The x3d element this handler is acting upon
      */
     enterFrame: function(element) {
-        x3dom.debug.logInfo('Render frame imminent');
+        //x3dom.debug.logInfo('Render frame imminent');
         // to be overwritten by user
     },
 
