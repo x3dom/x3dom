@@ -716,8 +716,8 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.x3dElem.runtime.enterFrame(this.x3dElem);
             } else {
                 this.x3dElem.runtime.ready();
-                this.x3dElem.runtime.enterFrame(this.x3dElem);
                 this.x3dElem.runtime.isReady = true;
+                this.x3dElem.runtime.enterFrame(this.x3dElem);
             }
 
             if (this.statDiv) {
@@ -1342,7 +1342,11 @@ x3dom.runtime = {
         }
             
         // Convert the collection into a simple array (is this necessary?)
-        x3ds = Array.map(x3ds, function (n) { n.hasRuntime = true;  return n; });
+        x3ds = Array.map(x3ds, function (n) {
+            n.runtime = x3dom.runtime;
+            n.hasRuntime = true;
+            return n;
+        });
         w3sg = Array.map(w3sg, function (n) { n.hasRuntime = false; return n; });
         
         var i=0; // re-usable counter
@@ -1467,7 +1471,7 @@ x3dom.runtime = {
             
             var t0 = new Date().getTime();
             
-            x3ds[i].runtime = x3dom.runtime;
+//            x3ds[i].runtime = x3dom.runtime;
             x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
 //            x3ds[i].runtime.ready();
 
