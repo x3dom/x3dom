@@ -133,6 +133,7 @@ x3dom.isa = function(object, clazz) {
 };
 
 
+x3dom.getGlobal = function() { return (function(){ return this;}).call(null); };
 
 
 /**

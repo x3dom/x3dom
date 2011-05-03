@@ -5694,7 +5694,8 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName)
             {
                 if (fieldName == "url") {
-                    this.nodeChanged();
+                    var xhr = this.nodeChanged();
+                    xhr = null;
                 }
             },
             
@@ -5702,26 +5703,28 @@ x3dom.registerNodeType(
             {
                 var that = this;
 
-                var xhr = new XMLHttpRequest();
+                var xhr = new window.XMLHttpRequest();
                 xhr.overrideMimeType('text/xml');   //application/xhtml+xml
                 this._nameSpace.doc.downloadCount += 1;
                 
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4) {
+                        delete xhr['onreadystatechange'];
                         if (xhr.responseXML.documentElement.localName == 'parsererror') {
-                            x3dom.debug.logError('XML parser failed on ' + this._vf.url + 
+                            x3dom.debug.logError('XML parser failed on ' + that._vf.url +
                                         ':\n' + xhr.responseXML.documentElement.textContent);
-                            return;
+                            return xhr;
                         }
-                    }
-                    else {
+                    } else {
+                        // still loading
                         //x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
                         //if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
-                        return;
+                        return xhr;
                     }
+
                     if (xhr.status !== 200) {
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
-                        return;
+                        return xhr;
                     }
 
                     x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
@@ -5741,10 +5744,13 @@ x3dom.registerNodeType(
                         x3dom.debug.logWarning('no Scene in ' + xml.localName);
                     }
 
-                    _remover = null;
+                    // trick to free memory, assigning a property to global object, then deleting it
+                    var global = x3dom.getGlobal();
                     while (that._childNodes.length !== 0) {
-                        _remover = that.removeChild(that._childNodes[0]);
+                        global['_remover'] = that.removeChild(that._childNodes[0]);
                     }
+                    delete global['_remover'];
+                    
                     that.addChild(newScene);
                     //that._xmlNode.appendChild (inlScene);
                         
@@ -5752,15 +5758,15 @@ x3dom.registerNodeType(
                     that._nameSpace.doc.needRender = true;
                     x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
 
-                    delete _remover;
                     newScene = null;
                     nameSpace = null;
                     xml = null;
                     inlScene = null;
                 };
 
-                xhr.open('GET', this._nameSpace.getURL(this._vf.url[0]), true);
+                xhr.open('GET', encodeURI(this._nameSpace.getURL(this._vf.url[0])), true);
                 xhr.send(null);
+                return xhr;
             }
         }
     )
