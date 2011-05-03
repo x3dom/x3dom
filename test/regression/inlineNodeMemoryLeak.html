@@ -7,10 +7,22 @@
 
 <body>
     <h1>Inline: Scene which references an external bunny model</h1>
+    <p>This test <strong>needs to be run from a server.</strong> Use make runserver from the rootlevel and visist <a href="http://localhost:8080/test/regression/inlineNodeMemoryLeak.html"></a>.</p>
+    <p>This should test cyclic reference problem with the onreadystatechanged closure (<a href="https://github.com/x3dom/x3dom/issues/3">#3</a>). Pressing the FORCE button should not increase memory consumption indefinitely. There are some leaks because of the heavy use of closures, but the GC works in most cases. In Firefox it may take a lot of memory before GC runs. Chrome does a better job keeping the footprint around 18-25MB with this exmaple.</p>
+
+    <p>Also see:</p>
+    <ul>
+        <li><a href="http://javascript.info/tutorial/memory-leaks">http://javascript.info/tutorial/memory-leaks</a></li>
+        <li><a href="https://github.com/x3dom/x3dom/issues/3">https://github.com/x3dom/x3dom/issues/3</a></li>
+        <li><a href="https://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4500885">https://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4500885</a></li>
+        <li><a href="https://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4492032">https://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4492032</a></li>
+    </ul>
+
+    <p>The initial inline is not loaded intentionally.</p>
 
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
-	 <x3d id='ModelingViewport' class=" tiptip applytip" name="ModelingViewport" showStat='false' showLog='false' x='0px' y='0px' width='489px' height='461px' float='left' title='LMB to Rotate Model. CTRL & LMB to Pan. Mouse Wheel to Zoom'>  <!--LMB to Rotate Model. CTRL & LMB to Pan. Mouse Wheel to Zoom-->
+	 <x3d id='ModelingViewport' class=" tiptip applytip" name="ModelingViewport" showStat='false' showLog='true' x='0px' y='0px' width='489px' height='461px' float='left' title='LMB to Rotate Model. CTRL & LMB to Pan. Mouse Wheel to Zoom'>  <!--LMB to Rotate Model. CTRL & LMB to Pan. Mouse Wheel to Zoom-->
      <scene>
                             <Background skyAngle='1.3 1.514 ' skyColor='1 .6 0 1 .7 .3 1 1 1'></Background>
                             <!--<Background skyAngle='1.3 1.514 ' skyColor='255 255 255'></Background>-->
@@ -29,7 +41,7 @@
       		</Shape>
 		</Transform>
         <Transform id="bunny1" translation='100 0 0' >
-			<Inline id="bunny" DEF="redBox" url="bunny.x3d" load="true"></Inline>
+			<Inline id="bunny" DEF="redBox" url="http://localhost:8080/example/scene/bunny.x3" load="true"></Inline>
 		</Transform>
 	  </Scene>
 
@@ -57,7 +69,8 @@
     <script>
         z = null;
         function UpDateNode(x,y) {
-            z = document.getElementById(x).setAttribute('url',y);
+            z = document.getElementById(x)
+            z.setAttribute('url',y);
             delete z;
         }
         <!--Node Update Method 1-->
