@@ -5741,8 +5741,9 @@ x3dom.registerNodeType(
                         x3dom.debug.logWarning('no Scene in ' + xml.localName);
                     }
 
+                    _remover = null;
                     while (that._childNodes.length !== 0) {
-                        that.removeChild(that._childNodes[0]);
+                        _remover = that.removeChild(that._childNodes[0]);
                     }
                     that.addChild(newScene);
                     //that._xmlNode.appendChild (inlScene);
@@ -5750,6 +5751,12 @@ x3dom.registerNodeType(
                     that._nameSpace.doc.downloadCount -= 1;
                     that._nameSpace.doc.needRender = true;
                     x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
+
+                    delete _remover;
+                    newScene = null;
+                    nameSpace = null;
+                    xml = null;
+                    inlScene = null;
                 };
 
                 xhr.open('GET', this._nameSpace.getURL(this._vf.url[0]), true);

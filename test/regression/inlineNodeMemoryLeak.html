@@ -1,0 +1,67 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>Inline: Scene which references an external box model</title>
+</head>
+
+<body>
+    <h1>Inline: Scene which references an external bunny model</h1>
+
+	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
+             Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
+	 <x3d id='ModelingViewport' class=" tiptip applytip" name="ModelingViewport" showStat='false' showLog='false' x='0px' y='0px' width='489px' height='461px' float='left' title='LMB to Rotate Model. CTRL & LMB to Pan. Mouse Wheel to Zoom'>  <!--LMB to Rotate Model. CTRL & LMB to Pan. Mouse Wheel to Zoom-->
+     <scene>
+                            <Background skyAngle='1.3 1.514 ' skyColor='1 .6 0 1 .7 .3 1 1 1'></Background>
+                            <!--<Background skyAngle='1.3 1.514 ' skyColor='255 255 255'></Background>-->
+                            <navigationInfo type='"EXAMINE" "ANY"'></navigationInfo>
+                             <viewpoint id='frontcam' orientation='0 0 0 0' position='0 -7 430' fieldOfView='.5' centerOfRotation='0 0 0' description='Camera 1' ></viewpoint>
+                            <viewpoint id='perspcam' orientation='-.5 2.5 0 .7' position='350 65 330' fieldOfView='.5' centerOfRotation='0 0 0' description='Camera 2'></viewpoint>
+                            <viewpoint id='rightcam' orientation='0 1 0 -5' position='500 -5 50' fieldOfView='.5' centerOfRotation='0 0 0' description='Camera 3'></viewpoint>
+                            <viewpoint id='topcam'  orientation='-.5 0 0 1.3' position='0 500 35' fieldOfView='.5' centerOfRotation='0 0 0' description="Camera 4"></viewpoint>
+                                <Transform id="root" translation='-100 0 0' >
+ 			<Shape id='greenBox' >
+        		<Appearance>
+
+          			<Material diffuseColor="0 1 0"></Material>
+        		</Appearance>
+        		<Box size='100 100 100' ></Box>
+      		</Shape>
+		</Transform>
+        <Transform id="bunny1" translation='100 0 0' >
+			<Inline id="bunny" DEF="redBox" url="bunny.x3d" load="true"></Inline>
+		</Transform>
+	  </Scene>
+
+    </X3D>
+
+    <button onclick="UpDateNode('bunny','http://localhost:8080/test/functional/media/data/flipper.x3d');">FORCE</button>
+
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css">
+
+<!-- BEGIN:X3DOM -->
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/x3dom-internals.js"></script>
+<script type="text/javascript" src="../../src/x3dmain.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/x3d.js"></script>
+<script type="text/javascript" src="../../src/mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/x3d_follower.js"></script>
+<!-- END:X3DOM -->
+<script type="text/javascript" src="../functional/media/js/tests.js"></script>
+
+    <script>
+        z = null;
+        function UpDateNode(x,y) {
+            z = document.getElementById(x).setAttribute('url',y);
+            delete z;
+        }
+        <!--Node Update Method 1-->
+    </script>
+
+</body>
+</html>
