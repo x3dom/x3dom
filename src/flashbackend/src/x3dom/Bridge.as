@@ -28,6 +28,7 @@
 			ExternalInterface.addCallback("setMeshTexCoords", setMeshTexCoords);
 			ExternalInterface.addCallback("setMeshVertices", setMeshVertices);
 			ExternalInterface.addCallback("setMeshTexture", setMeshTexture);
+			ExternalInterface.addCallback("setLights", setLights);
 		}
 		
 		private function renderScene() : void
@@ -57,6 +58,24 @@
 			_scene.background.transparency	= Number(value.transparency);
 			
 			_scene.background.init();
+		}
+		
+		private function setLights(value:Object) : void
+		{
+			var light:Light = new Light();
+			light.on 				= Boolean(value.on);
+			light.type 				= Number(value.type);
+			light.color 			= String(value.color).split(',');
+			light.intensity			= Number(value.intensity);
+			light.ambientIntensity	= Number(value.ambientIntensity);
+			light.direction			= String(value.direction).split(',');
+			light.attenuation		= String(value.attenuation).split(',');
+			light.location			= String(value.location).split(',');
+			light.radius			= Number(value.radius);
+			light.beamWidth			= Number(value.beamWidth);
+			light.cutOffAngle		= Number(value.cutOffAngle);
+			
+			_scene.lights[Number(value.idx)] = light;
 		}
 		
 		private function setMeshTransform(value:Object) : void

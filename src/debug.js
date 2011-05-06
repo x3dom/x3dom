@@ -70,8 +70,13 @@ x3dom.debug = {
         aDiv.appendChild(document.createTextNode("\r\n"));
         aDiv.style.display = (visible) ? "block" : "none";
         x3dom.debug.logContainer.style.display = (visible) ? "block" : "none";
-        document.body.appendChild(aDiv);
-		document.body.appendChild(x3dom.debug.logContainer);
+        if(navigator.appName == "Microsoft Internet Explorer") {
+			document.documentElement.appendChild(aDiv);
+			document.documentElement.appendChild(x3dom.debug.logContainer);
+		}else{
+			document.body.appendChild(aDiv);
+			document.body.appendChild(x3dom.debug.logContainer);
+		}
 	},
 
 	/** @brief Inserts a container div for the logging messages into the HTML page

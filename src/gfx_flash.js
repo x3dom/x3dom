@@ -80,6 +80,7 @@ x3dom.gfx_flash = (function() {
 	function Context(object, name) {
 		this.object = object;
 		this.name = name;
+		this.skySphere = false;
 	};
 	
 	/**
@@ -104,7 +105,7 @@ x3dom.gfx_flash = (function() {
         var scene = viewarea._scene;
 		
 		//Setup the flash scene
-		this.setupScene(viewarea);
+		this.setupScene(scene, viewarea);
 		
 		//Get background node
 		var background = scene.getBackground();
@@ -136,7 +137,7 @@ x3dom.gfx_flash = (function() {
 	/**
 	*
 	*/
-	Context.prototype.setupScene = function(viewarea) {
+	Context.prototype.setupScene = function(scene, viewarea) {
 		//Set View-Matrix
 		var mat_view = viewarea.getViewMatrix();
 		this.object.setViewMatrix( { viewMatrix: mat_view.toGL() });
@@ -144,6 +145,29 @@ x3dom.gfx_flash = (function() {
 		//Set Projection-Matrix
         var mat_proj = viewarea.getProjectionMatrix();
 		this.object.setProjectionMatrix( { projectionMatrix: mat_proj.toGL() });
+		
+		//Set HeadLight
+		var nav = scene.getNavigationInfo();
+        if(nav._vf.headlight){
+			this.object.setLights( { idx: 0,
+									 type: 0,
+									 on: 1.0,
+									 color: [1.0, 1.0, 1.0],
+									 intensity: 1.0,
+									 ambientIntensity: 0.0,
+									 direction: [0.0, 0.0, 1.0],
+									 attenuation: [1.0, 1.0, 1.0],
+									 location: [1.0, 1.0, 1.0],
+									 radius: 0.0,
+									 beamWidth: 0.0,
+									 cutOffAngle: 0.0 } );
+		}
+		
+		//TODO Set Lights
+		/*var lights = viewarea.getLights();
+		for(var i=0; i<lights.length; i++) {
+			this.object.setLights( { } );
+		}*/
 	};
 	
 	/**
@@ -160,6 +184,15 @@ x3dom.gfx_flash = (function() {
 										 groundColor: background.getGroundColor().toGL(),
 										 transparency: background.getTransparency() } );
 			background._dirty = false;
+			
+			if(!this.skySphere)
+			{
+				var sphere = new x3dom.nodeTypes.Sphere();
+				/*this.object.setSkySphere( { vertices: sphere._mesh._positions[0],
+											texCoords: sphere._mesh._texCoords[0],
+											indices: sphere._mesh._indices[0] } );
+				this.skySphere = true;*/
+			}
 		}
 	};
 	
@@ -234,6 +267,9 @@ x3dom.gfx_flash = (function() {
 			var texture = shape._cf.appearance.node._cf.texture.node;
 			if(texture) {
 				this.object.setMeshTexture( { id: shape._objectID,
+											  origChannelCount: texture._vf.origChannelCount,
+											  repeatS: texture._vf.repeatS,
+											  repeatT: texture._vf.repeatT,
 											  url: texture._vf.url[0] } );
 			}
 			shape._dirty.texture = false;

@@ -25,6 +25,9 @@ package x3dom
 		private var _groundAngle:Array  = new Array();
 		private var _transparency:Number = 1.0;
 		
+		private var _skySphere:Mesh;
+		private var _backgroundPlane:Mesh;
+		
 		
 		public function Background(context3D:Context3D)
 		{
@@ -67,11 +70,6 @@ package x3dom
 			{
 				_isBackTexture = true;
 				_isCubeTexture = false;
-			}
-				
-			if( (_skyTexture || _isCubeTexture) && !_isSphereExists )
-			{
-				//Generate sky sphere
 			}
 				
 		}
