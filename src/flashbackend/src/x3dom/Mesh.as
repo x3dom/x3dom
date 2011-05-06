@@ -36,6 +36,7 @@
 		private var _normalBuffer:Array		= new Array();
 		private var _texCoordBuffer:Array	= new Array();
 		private var _vertexBuffer:Array		= new Array();
+		public var _program3D:Program3D 	= null;
 		
 		public function Mesh( id:Number, scene:X3DScene, context3D:Context3D ) 
 		{
@@ -55,9 +56,10 @@
 			else
 			{ 
 				//Associate material propeties
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ _material.diffuseColor[0], _material.diffuseColor[1], _material.diffuseColor[2], _material.transparency ] ) );
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ _material.diffuseColor[0], _material.diffuseColor[1], _material.diffuseColor[2],1.0-_material.transparency ] ) );
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ _material.specularColor[0], _material.specularColor[1], _material.specularColor[2], _material.shininess*128.0 ] ) );
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ _material.emissiveColor[0], _material.emissiveColor[1], _material.emissiveColor[2], 1.0 ] ) );
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.5, 0.5, 0.5, 1.0 ] ) );
 				
 				//Iterate array of Buffers for grater than 64k meshes
 				for(var i:uint=0; i<_vertexBuffer.length; i++)
@@ -65,11 +67,15 @@
 					//Associate vertices
 					_context3D.setVertexBufferAt( 0, _vertexBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
 					
-					//Associate normals
-					_context3D.setVertexBufferAt( 2, _normalBuffer[i], 0, Context3DVertexBufferFormat.FLOAT_3 );
+					if(!hasColor()) {
+						//Associate normals
+						_context3D.setVertexBufferAt( 2, _normalBuffer[i], 0, Context3DVertexBufferFormat.FLOAT_3 );
+					}
 					
-					//Associate colors
-					//_context3D.setVertexBufferAt( 3, _colorBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
+					if(hasColor()) {
+						//Associate colors
+						_context3D.setVertexBufferAt( 3, _colorBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
+					}
 					
 					//Check if a texture exists
 					if(_texture != null) 
@@ -79,12 +85,24 @@
 						
 						//Associate texCoords
 						_context3D.setVertexBufferAt( 1, _texCoordBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_2 );
+						
 					}
 					
 					//Draw the mesh
 					_context3D.drawTriangles( _indexBuffer[i], 0, _indices[i].length/3 );
+					
 				}
+				cleanBuffers();
 			}
+		}
+		
+		private function cleanBuffers() : void
+		{
+			_context3D.setTextureAt(0, null);
+			_context3D.setVertexBufferAt( 0, null );
+			_context3D.setVertexBufferAt( 1, null );
+			_context3D.setVertexBufferAt( 2, null );
+			_context3D.setVertexBufferAt( 3, null );
 		}
 		
 		/**
@@ -168,6 +186,7 @@
 			_material.shininess 		= Number( material.shininess );
 			_material.specularColor		= Vector.<Number>( String(material.specularColor).split(',') );
 			_material.transparency		= Number( material.transparency );
+			
 		}
 		
 		public function setTexture(texture:Object) : void
@@ -181,14 +200,11 @@
 			_texture.load();
 		}
 		
-		public function setColors(idx:uint, colors:Vector.<uint>) : void 
+		public function setColors(idx:uint, colors:Vector.<Number>) : void 
 		{
-			if(colors.length > 0)
-			{
-				_colors[ idx ] = colors;
-				//_colorBuffer[ idx ] = _context3D.createVertexBuffer( colors.length/3, 3 );
-				//_colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length/3 );
-			}
+			_colors[ idx ] = colors;
+			_colorBuffer[ idx ] = _context3D.createVertexBuffer( colors.length/3, 3 );
+			_colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length/3 );
 		}
 		
 		public function setIndices(idx:uint, indices:Vector.<uint>) : void 
@@ -235,7 +251,10 @@
 		
 		public function hasColor() : Boolean
 		{
-			return false
+			if(_colors.length)
+				return true;
+			else
+				return false
 		}
 
 	}

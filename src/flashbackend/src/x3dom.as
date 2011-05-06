@@ -145,6 +145,10 @@
 			//Enable error checking for debugging
 			context3D.enableErrorChecking = true;
 			
+			context3D.setCulling(Context3DTriangleFace.FRONT);
+			
+			context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA );
+			
 			// The back buffer size is in actual pixels
 			context3D.configureBackBuffer( _stageWidth, _stageHeight, 0, true );
 			
