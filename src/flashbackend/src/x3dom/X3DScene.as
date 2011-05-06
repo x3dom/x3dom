@@ -48,7 +48,7 @@
 		 */
 		private var _meshes:Array	= new Array();
 		
-		private var _shaderGenerator:ShaderGenerator;
+		private var _shaderGenerator:ShaderGenerator;	
 
 		/**
 		 * Creates a new X3DScene object
@@ -60,8 +60,7 @@
 			
 			_background = new Background(_context3D);
 			
-			_shaderGenerator = new ShaderGenerator(_context3D);
-			
+			_shaderGenerator = new ShaderGenerator(_context3D);	
 		}
 		
 		/**
@@ -80,6 +79,7 @@
 			{
 				//Set Shader
 				_context3D.setProgram( _shaderGenerator.generate(_meshes[i], _lights) );
+
 				
 				//Build ModelView-Matrix
 				_mvMatrix.identity();
@@ -108,6 +108,7 @@
 				
 				//Render Mesh
 				_meshes[i].render();
+				
 			}
 			
 			//Present/flip back buffer

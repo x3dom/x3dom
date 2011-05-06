@@ -225,28 +225,34 @@ x3dom.gfx_flash = (function() {
 		}
 		
 		if( shape._dirty.normals === true ) {
-			for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
-				this.object.setMeshNormals( { id: shape._objectID, 
-											  idx: i, 
-											  normals: shape._cf.geometry.node._mesh._normals[i] } );
+			if(shape._cf.geometry.node._mesh._normals[0].length) {
+				for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
+					this.object.setMeshNormals( { id: shape._objectID, 
+												  idx: i, 
+												  normals: shape._cf.geometry.node._mesh._normals[i] } );
+				}
 			}
 			shape._dirty.normals = false;
 		}
 		
 		if( shape._dirty.colors === true ) {
-			for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
-				this.object.setMeshColors( { id: shape._objectID, 
-											 idx: i, 
-											 colors: shape._cf.geometry.node._mesh._colors[i] } );
+			if(shape._cf.geometry.node._mesh._colors[0].length) {
+				for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
+					this.object.setMeshColors( { id: shape._objectID, 
+												 idx: i, 
+												 colors: shape._cf.geometry.node._mesh._colors[i] } );
+				}
 			}
 			shape._dirty.colors = false;
 		}
 		
 		if( shape._dirty.texcoords === true ) {
-			for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
-				this.object.setMeshTexCoords( { id: shape._objectID, 
-											    idx: i, 
-											    texCoords: shape._cf.geometry.node._mesh._texCoords[i] } );
+			if(shape._cf.geometry.node._mesh._texCoords[0].length) {
+				for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
+					this.object.setMeshTexCoords( { id: shape._objectID, 
+													idx: i, 
+													texCoords: shape._cf.geometry.node._mesh._texCoords[i] } );
+				}
 			}
 			shape._dirty.texcoords = false;
 		}

@@ -10,6 +10,7 @@ package x3dom
 	{
 		private var _context3D:Context3D;
 		private var _shaderCache:Array = new Array();
+		private var _program3D:Program3D;
 		
 		/**
 		 * 
@@ -30,6 +31,8 @@ package x3dom
 			//Check if shader is in cache
 			if( _shaderCache[identifier] == undefined ) {
 				
+				x3dom.Debug.logInfo("not Found");
+				
 				var vertexShader:AGALMiniAssembler = generateVertexShader(mesh, lights);
 				var fragmentShader:AGALMiniAssembler = generateFragmentShader(mesh, lights);
 				
@@ -44,7 +47,7 @@ package x3dom
 			}
 			
 			//Return Program3D
-			return _shaderCache[identifier]
+			return _shaderCache[identifier];
 		}
 		
 		/**
@@ -55,7 +58,7 @@ package x3dom
 			var shader:String = "";
 			shader += "m44 op, va0, vc0\n";
 			
-			if( lights.length > 0 ) {
+			if( lights.length > 0 && !mesh.hasColor()) {
 				shader += "dp3 vt0.x, va0, vc4\n";
 				shader += "dp3 vt0.y, va0, vc5\n";
 				shader += "dp3 vt0.z, va0, vc6\n";
@@ -71,7 +74,7 @@ package x3dom
 			if( mesh.hasColor() )
 				shader += "mov v1, va3\n";		 	//TexCoord -> Fragment(v0)
 			
-			if( mesh.hasTexture() )
+			if( mesh.hasTexture() == 1 )
 				shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)	
 			
 			//Generate AGALMiniAssembler from generated Shader
@@ -85,13 +88,13 @@ package x3dom
 		private function generateFragmentShader(mesh:Mesh, lights:Array) : AGALMiniAssembler
 		{
 			var shader:String = "";
-			if( mesh.hasTexture() ) {
+			if( mesh.hasTexture() == 1 ) {
 				shader += "mov ft6, v2 \n";
 				shader += "sub ft6.y, fc3.w, ft6.y \n";					//Flip V-Coord
-				shader += "tex ft0, ft6, fs0 <2d, clamp, linear> \n";		//Sample Texture(ft0)
+				shader += "tex ft0, ft6, fs0 <2d, clamp, linear> \n";	//Sample Texture(ft0)
 			}
 			
-			if( lights.length > 0 ) {
+			if( lights.length > 0 && !mesh.hasColor()) {
 				shader += "nrm ft1.xyz, fc0\n";							//Normalize LightDir(ft1)
 				shader += "nrm ft2.xyz, v0 \n";							//Normalize Normal(ft2)
 				shader += "add ft4, ft1.xyz, v3\n";						//L+V
@@ -103,9 +106,13 @@ package x3dom
 				shader += "pow ft5, ft5, fc2.w\n";						//pow(NdotH, shininess)
 				shader += "mul ft5, ft3, ft5\n";							//NdotL * pow(NdotH, shininess);
 				if( mesh.hasTexture() == 1 ) {
-					shader += "mul ft3, ft3, ft0.xyz\n";
+					shader += "mul ft3, ft3, ft0\n";
 				} else {
-					shader += "mul ft3, ft3, fc1.xyz\n";
+					if( mesh.hasColor() ) {
+						shader += "mul ft3, ft3, v1.xyz\n";
+					} else {
+						shader += "mul ft3, ft3, fc1\n";
+					}
 				}
 				shader += "mul ft5, ft5, fc2.xyz\n";
 				shader += "add ft3, ft3, ft5\n";
@@ -114,9 +121,36 @@ package x3dom
 					shader += "mul ft3, ft3, ft0\n";				//rgb *= texColor(ft3)
 				}
 				
+				
+				if( mesh.hasTexture() )
+				{
+					shader += "mul ft3.w, fc1.w, ft0.w\n";
+				} else {
+					shader += "mov ft3.w, fc1.w\n";
+				}
+
 				shader += "sat ft3, ft3\n";								//saturate(NdotL)
-				shader += "mov oc, ft3.xyz \n";							//Output Color
-			} 
+				shader += "kil ft3.w\n";
+				shader += "mov oc, ft3 \n";							//Output Color
+			} else {
+				if( mesh.hasColor() ) {
+					shader += "mov ft1, v1.xyz\n";
+				} else if( mesh.hasTexture() == 1 ) {
+					shader += "mov ft1, ft0.xyz\n";
+				} else {
+					shader += "mov ft1, fc1.xyz\n";
+				}
+				
+				if( mesh.hasTexture() == 2 ) {
+					shader += "mul ft1, ft1, ft0\n";
+				}
+				
+				shader += "mov ft1, fc1.w\n";
+				x3dom.Debug.logInfo("WHOOP");
+				shader += "sat ft1, ft1\n";								//saturate(NdotL)
+				shader += "mov oc, ft1.xyz \n";							//Output Color
+			}
+			
 			
 			var fragmentShaderAssembler:AGALMiniAssembler = new AGALMiniAssembler();
 			fragmentShaderAssembler.assemble( Context3DProgramType.FRAGMENT, shader );

@@ -93,10 +93,9 @@
 		
 		private function setMeshColors(value:Object) : void 
 		{
-			//Transform indices from String to Array
-			var colors:Array = String(value.colors).split(',');
-				
-			_scene.getMesh( Number(value.id) ).setColors( value.idx, Vector.<uint>(colors) );
+			//Transform colors from String to Array
+			var colors:Array = String(value.colors).split(',');	
+			_scene.getMesh( Number(value.id) ).setColors( value.idx, Vector.<Number>(colors) );
 		}
 		
 		private function setMeshIndices(value:Object) : void 
@@ -111,7 +110,6 @@
 		{
 			//Transform vertices from String to Array
 			var normals:Array = String(value.normals).split(',');
-				
 			_scene.getMesh( Number(value.id) ).setNormals( value.idx, Vector.<Number>(normals) );
 		}
 		
