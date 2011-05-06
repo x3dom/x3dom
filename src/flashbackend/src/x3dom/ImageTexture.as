@@ -1,11 +1,13 @@
 ﻿package x3dom {
 	
 	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display.Loader;
 	import flash.display3D.*;
 	import flash.display3D.textures.Texture;
 	import flash.events.Event;
 	import flash.events.EventDispatcher;
+	import flash.geom.Matrix;
 	import flash.net.URLRequest;
 	
 	/**
@@ -90,6 +92,8 @@
 			//Convert Loader to Bitmap
 			var bitmap:Bitmap = Bitmap( e.target.content );
 			
+			bitmap = scaleBitmap(bitmap);
+			
 			//Create Texture
 			_texture = _context3D.createTexture(bitmap.width, bitmap.height, Context3DTextureFormat.BGRA, false);
 			
@@ -101,6 +105,49 @@
 			
 			//Dispatch Complete-Event
 			this.dispatchEvent( new Event( Event.COMPLETE ) );
+		}
+		
+		/**
+		 * Check if value is Power of 2
+		 */
+		private function scaleBitmap(bitmap:Bitmap) : Bitmap
+		{
+			if (!isPowerOfTwo(bitmap.width) || !isPowerOfTwo(bitmap.width)) {
+				var newWidth:Number  = nextHighestPowerOfTwo( bitmap.width );
+				var newHeight:Number = nextHighestPowerOfTwo( bitmap.width );
+				
+				var scaleFactorX:Number = newWidth/bitmap.width;
+				var scaleFactorY:Number = newHeight/bitmap.height;
+				
+				var scaleMatrix:Matrix=new Matrix();
+				scaleMatrix.scale(scaleFactorX, scaleFactorY);
+				
+				var scaledBitmapData:BitmapData = new BitmapData(newWidth, newHeight, true, 0xFFFFFFFF);
+				scaledBitmapData.draw(bitmap, scaleMatrix);
+				
+				bitmap.bitmapData=scaledBitmapData
+			}
+			return bitmap;
+		}
+		
+		/**
+		 * Check if value is Power of 2
+		 */
+		private function isPowerOfTwo(x:Number) : Boolean 
+		{
+			return ((x & (x - 1)) === 0);
+		}
+		
+		/**
+		 * Returns the next Highest Power of 2
+		 */
+		private function nextHighestPowerOfTwo(x:Number) : Number
+		{
+			--x;
+			for (var i:Number = 1; i < 32; i <<= 1) {
+				x = x | x >> i;
+			}
+			return (x + 1);
 		}
 		
 		/**

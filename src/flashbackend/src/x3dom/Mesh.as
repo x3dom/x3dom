@@ -54,18 +54,22 @@
 			}
 			else
 			{ 
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ _material.diffuseColor[0], _material.diffuseColor[1], _material.diffuseColor[2], 128.0 ] ) );
-				//_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ 0.5, 0.5, 0.5, 1.0 ] ) );
-				//_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ 0.0, 0.0, 0.0, 1.0 ] ) );
+				//Associate material propeties
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ _material.diffuseColor[0], _material.diffuseColor[1], _material.diffuseColor[2], _material.transparency ] ) );
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ _material.specularColor[0], _material.specularColor[1], _material.specularColor[2], _material.shininess*128.0 ] ) );
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ _material.emissiveColor[0], _material.emissiveColor[1], _material.emissiveColor[2], 1.0 ] ) );
 				
 				//Iterate array of Buffers for grater than 64k meshes
 				for(var i:uint=0; i<_vertexBuffer.length; i++)
-				{
+				{	
 					//Associate vertices
 					_context3D.setVertexBufferAt( 0, _vertexBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
 					
 					//Associate normals
 					_context3D.setVertexBufferAt( 2, _normalBuffer[i], 0, Context3DVertexBufferFormat.FLOAT_3 );
+					
+					//Associate colors
+					//_context3D.setVertexBufferAt( 3, _colorBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
 					
 					//Check if a texture exists
 					if(_texture != null) 
@@ -172,16 +176,19 @@
 			_texture.origChannelCount 	= Number( texture.origChannelCount );
 			_texture.repeatS			= Boolean( texture.repeatS );
 			_texture.repeatT			= Boolean( texture.repeatT );
-			_texture.url				= texture.url;
+			_texture.url				= texture.url;		
 			
 			_texture.load();
 		}
 		
 		public function setColors(idx:uint, colors:Vector.<uint>) : void 
 		{
-			_colors[ idx ] = colors;
-			_colorBuffer[ idx ] = _context3D.createIndexBuffer( colors.length );
-			_colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length );
+			if(colors.length > 0)
+			{
+				_colors[ idx ] = colors;
+				//_colorBuffer[ idx ] = _context3D.createVertexBuffer( colors.length/3, 3 );
+				//_colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length/3 );
+			}
 		}
 		
 		public function setIndices(idx:uint, indices:Vector.<uint>) : void 
@@ -212,6 +219,23 @@
 			_vertexBuffer[ idx ].uploadFromVector( vertices, 0, vertices.length/3 );
 			
 			calculateBoundingBox();
+		}
+		
+		public function hasTexture() : uint
+		{
+			if(_texture != null) {
+				if(_texture.origChannelCount == 1.0 || _texture.origChannelCount == 2.0) {
+					return 2;
+				}
+				return 1;
+			} else {
+				return 0;
+			}
+		}
+		
+		public function hasColor() : Boolean
+		{
+			return false
 		}
 
 	}
