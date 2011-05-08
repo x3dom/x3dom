@@ -136,6 +136,8 @@ package x3dom
 				}
 
 				shader += "sat ft3, ft3\n";								//saturate(NdotL)
+				shader += "sub ft3, ft3, fc4\n";
+				shader += "kil ft3\n";
 				shader += "mov oc, ft3 \n";							//Output Color
 			} else {
 				if( mesh.hasColor() ) {
@@ -152,6 +154,8 @@ package x3dom
 				
 				shader += "mov ft1.w, fc1.w\n";
 				shader += "sat ft1, ft1\n";								//saturate(NdotL)
+				shader += "sub ft1, ft1, fc4\n";
+				shader += "kil ft1\n";
 				shader += "mov oc, ft1 \n";							//Output Color
 			}
 			
