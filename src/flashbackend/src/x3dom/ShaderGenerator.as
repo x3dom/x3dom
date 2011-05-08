@@ -25,13 +25,11 @@ package x3dom
 		 */
 		public function generate(mesh:Mesh, lights:Array) : Program3D
 		{
-			//Build Shader identifier [light(false|true) / texture(0|1|2) / color(false|true)]
-			var identifier:String = String(lights.length>0) + " / " + String(mesh.hasTexture()) + " / " + String(mesh.hasColor());
+			//Build Shader identifier [light(false|true) / texture(0|1|2) / color(false|true) / sphereMapping(false|true)]
+			var identifier:String = String(lights.length>0) + " / " + String(mesh.hasTexture()) + " / " + String(mesh.hasColor() + " / " + String(mesh.sphereMapping) );
 			
 			//Check if shader is in cache
 			if( _shaderCache[identifier] == undefined ) {
-				
-				x3dom.Debug.logInfo("not Found");
 				
 				var vertexShader:AGALMiniAssembler = generateVertexShader(mesh, lights);
 				var fragmentShader:AGALMiniAssembler = generateFragmentShader(mesh, lights);
@@ -74,8 +72,17 @@ package x3dom
 			if( mesh.hasColor() )
 				shader += "mov v1, va3\n";		 	//TexCoord -> Fragment(v0)
 			
-			if( mesh.hasTexture() == 1 )
-				shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)	
+			if( mesh.hasTexture() ) {
+				if( mesh.sphereMapping )
+				{
+					shader += "mov vt2, va1\n";
+					shader += "div vt2, vt2, vc9.y\n";
+					shader += "add vt2, vt2, vc9.x\n";
+					shader += "mov v2, vt2\n";
+				} else {
+					shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)
+				}
+			}
 			
 			//Generate AGALMiniAssembler from generated Shader
 			var vertexShaderAssembler:AGALMiniAssembler = new AGALMiniAssembler();
@@ -88,7 +95,7 @@ package x3dom
 		private function generateFragmentShader(mesh:Mesh, lights:Array) : AGALMiniAssembler
 		{
 			var shader:String = "";
-			if( mesh.hasTexture() == 1 ) {
+			if( mesh.hasTexture() ) {
 				shader += "mov ft6, v2 \n";
 				shader += "sub ft6.y, fc3.w, ft6.y \n";					//Flip V-Coord
 				shader += "tex ft0, ft6, fs0 <2d, clamp, linear> \n";	//Sample Texture(ft0)
@@ -120,8 +127,7 @@ package x3dom
 				if( mesh.hasTexture() == 2 ) {
 					shader += "mul ft3, ft3, ft0\n";				//rgb *= texColor(ft3)
 				}
-				
-				
+					
 				if( mesh.hasTexture() )
 				{
 					shader += "mul ft3.w, fc1.w, ft0.w\n";

@@ -41,7 +41,18 @@
 						<Box></Box>
 					</Shape>
 				</Transform>
+				<Transform translation="0 0 3">
+					<shape>
+	        			<appearance>
+	          				<material ambientIntensity='0.0933' diffuseColor='0.32 0.54 0.26' shininess='0.51' specularColor='0.46 0.46 0.46'></material>
+	        			</appearance>
+	        			<text id='text' string='Times 32px' solid='false'>
+	            			<fontstyle id='style' family="'Times' 'Orbitron'" size="32" style="BOLDITALIC"></fontstyle>
+					    </text>
+					</shape>
+				</Transform>
 			</Scene>
 		</X3D>
+		<a href="javascript:document.getElementById('text').setAttribute('string', 'Changed the Text');">Text Change</a>
 	</body>
 </html>

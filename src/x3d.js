@@ -2713,9 +2713,11 @@ x3dom.registerNodeType(
                 }
             },
 			fieldChanged: function(fieldName) {
-				if (fieldName == 'string') {
+				if (fieldName == 'string' || fieldName == 'family' || fieldName == 'horizontal' || fieldName == 'justify' || fieldName == 'language' ||
+					fieldName == 'leftToRight' || fieldName == 'size' || fieldName == 'spacing' || fieldName == 'style' || fieldName == 'topToBottom') {
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.texture = true;
+						node._dirty.text = true;
                     });
 				}
 			}
@@ -4015,6 +4017,21 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'spacing', 1.0);
             this.addField_SFString(ctx, 'style', "PLAIN");
             this.addField_SFBool(ctx, 'topToBottom', true);
+        },
+		{
+        	nodeChanged: function() {   
+            	
+            },
+			
+			fieldChanged: function(fieldName) {
+				if (fieldName == 'family' || fieldName == 'horizontal' || fieldName == 'justify' || fieldName == 'language' ||
+					fieldName == 'leftToRight' || fieldName == 'size' || fieldName == 'spacing' || fieldName == 'style' ||
+					fieldName == 'topToBottom') {
+                    Array.forEach(this._parentNodes, function (node) {
+						node.fieldChanged(fieldName);
+                    });
+				}
+			}
         }
     )
 );
@@ -4703,7 +4720,8 @@ x3dom.registerNodeType(
                 colors: true,
                 indexes: true,
                 texture: true,
-				material: true
+				material: true,
+				text: true
             };
         },
         {

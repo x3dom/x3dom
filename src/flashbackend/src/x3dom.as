@@ -153,7 +153,7 @@
 			context3D.configureBackBuffer( _stageWidth, _stageHeight, 0, true );
 			
 			//Create X3DScene for scene managing
-			_scene = new X3DScene(context3D);
+			_scene = new X3DScene(context3D, stage);
 			
 			//Create JSToASBridge for communication
 			_bridge = new Bridge(_scene);

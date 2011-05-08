@@ -4,6 +4,8 @@
 	import flash.external.ExternalInterface;
 	import flash.geom.*;
 	
+	import mx.controls.Text;
+	
 	import x3dom.*;
 	
 	public class Bridge {
@@ -29,6 +31,8 @@
 			ExternalInterface.addCallback("setMeshVertices", setMeshVertices);
 			ExternalInterface.addCallback("setMeshTexture", setMeshTexture);
 			ExternalInterface.addCallback("setLights", setLights);
+			ExternalInterface.addCallback("setText", setText);
+			ExternalInterface.addCallback("setSphereMapping", setSphereMapping);
 		}
 		
 		private function renderScene() : void
@@ -78,12 +82,23 @@
 			_scene.lights[Number(value.idx)] = light;
 		}
 		
+		private function setText(value:Object) : void
+		{
+			_scene.getMesh( Number(value.id), "TEXT" ).setTextProperties( value );
+		}
+		
 		private function setMeshTransform(value:Object) : void
 		{
 			//Transform trafo from String to Array
 			var transform:Array = String(value.transform).split(',');
 			
 			_scene.getMesh( Number(value.id) ).modelMatrix = new Matrix3D( Vector.<Number>( transform ) );
+		}
+		
+		private function setSphereMapping(value:Object) : void
+		{
+			//Transform trafo from String to Array
+			_scene.getMesh( Number(value.id) ).sphereMapping = Boolean(value.sphereMapping);
 		}
 		
 		private function setMeshMaterial(value:Object) : void

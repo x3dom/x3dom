@@ -127,7 +127,7 @@ x3dom.gfx_flash = (function() {
 			var trafo = scene.drawableObjects[i][0];
 			var obj3d = scene.drawableObjects[i][1];
 			
-			this.setupShape(obj3d, trafo, viewarea);
+			this.setupShape(obj3d, trafo);
 		}
 		
 		//Render the flash scene
@@ -199,62 +199,150 @@ x3dom.gfx_flash = (function() {
 	/**
 	*
 	*/
-	Context.prototype.setupShape = function(shape, trafo, viewarea) {
-	
-		//Set modelMatrix
-		this.object.setMeshTransform( { id: shape._objectID,
-										transform: trafo.toGL() } );
-
+	Context.prototype.setupShape = function(shape, trafo) {
+		
+		//Check shape geometry type
+		if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
+			x3dom.debug.logError("Flash backend don't support PointSets yet");
+			return;
+		} else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) {
+			x3dom.debug.logError("Flash backend don't support LineSets yet");
+			return;
+		} else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) { 
+			this.setupText(shape, trafo);
+		} else {
 		//
-		if( shape._dirty.indexes === true ) {
-			for( var i=0; i<shape._cf.geometry.node._mesh._indices.length; i++ ) {
-				this.object.setMeshIndices( { id: shape._objectID, 
-											  idx: i, 
-											  indices: shape._cf.geometry.node._mesh._indices[i] } ); 
-			}
-			shape._dirty.indexes = false;
-		}
-		
-		if( shape._dirty.positions === true ) {
-			for( var i=0; i<shape._cf.geometry.node._mesh._positions.length; i++ ) {
-				this.object.setMeshVertices( { id: shape._objectID, 
-											   idx: i, 
-											   vertices: shape._cf.geometry.node._mesh._positions[i] } );
-			}
-			shape._dirty.positions = false;
-		}
-		
-		if( shape._dirty.normals === true ) {
-			if(shape._cf.geometry.node._mesh._normals[0].length) {
-				for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
-					this.object.setMeshNormals( { id: shape._objectID, 
+			//Set modelMatrix
+			this.object.setMeshTransform( { id: shape._objectID,
+											transform: trafo.toGL() } );
+											
+			if( shape._dirty.indexes === true ) {
+				for( var i=0; i<shape._cf.geometry.node._mesh._indices.length; i++ ) {
+					this.object.setMeshIndices( { id: shape._objectID, 
 												  idx: i, 
-												  normals: shape._cf.geometry.node._mesh._normals[i] } );
+												  indices: shape._cf.geometry.node._mesh._indices[i] } ); 
 				}
+				shape._dirty.indexes = false;
 			}
-			shape._dirty.normals = false;
+			
+			if( shape._dirty.positions === true ) {
+				for( var i=0; i<shape._cf.geometry.node._mesh._positions.length; i++ ) {
+					this.object.setMeshVertices( { id: shape._objectID, 
+												   idx: i, 
+												   vertices: shape._cf.geometry.node._mesh._positions[i] } );
+				}
+				shape._dirty.positions = false;
+			}
+			
+			if( shape._dirty.normals === true ) {
+				if(shape._cf.geometry.node._mesh._normals[0].length) {
+					for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
+						this.object.setMeshNormals( { id: shape._objectID, 
+													  idx: i, 
+													  normals: shape._cf.geometry.node._mesh._normals[i] } );
+					}
+				}
+				shape._dirty.normals = false;
+			}
+			
+			if( shape._dirty.colors === true ) {
+				if(shape._cf.geometry.node._mesh._colors[0].length) {
+					for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
+						this.object.setMeshColors( { id: shape._objectID, 
+													 idx: i, 
+													 colors: shape._cf.geometry.node._mesh._colors[i] } );
+					}
+				}
+				shape._dirty.colors = false;
+			}
+			
+			if( shape._dirty.texcoords === true ) {
+				if(shape._cf.geometry.node._mesh._texCoords[0].length) {
+					for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
+						this.object.setMeshTexCoords( { id: shape._objectID, 
+														idx: i, 
+														texCoords: shape._cf.geometry.node._mesh._texCoords[i] } );
+					}
+				}
+				shape._dirty.texcoords = false;
+			}
+			
+			if( shape._dirty.material === true ) {
+				var material = shape._cf.appearance.node._cf.material.node;
+				this.object.setMeshMaterial( { id: shape._objectID, 
+											   ambientIntensity: material._vf.ambientIntensity,
+											   diffuseColor: material._vf.diffuseColor.toGL(),
+											   emissiveColor: material._vf.emissiveColor.toGL(),
+											   shininess: material._vf.shininess,
+											   specularColor: material._vf.specularColor.toGL(),
+											   transparency: material._vf.transparency } );
+				shape._dirty.material = false;
+			}
+			
+			if( shape._dirty.texture === true ) {
+				var texture = shape._cf.appearance.node._cf.texture.node;
+				if(texture) {
+					this.object.setMeshTexture( { id: shape._objectID,
+												  origChannelCount: texture._vf.origChannelCount,
+												  repeatS: texture._vf.repeatS,
+												  repeatT: texture._vf.repeatT,
+												  url: texture._vf.url[0] } );
+				}
+				shape._dirty.texture = false;
+			}
+			
+			if (shape._cf.geometry.node._cf.texCoord !== undefined &&
+                shape._cf.geometry.node._cf.texCoord.node !== null &&
+                shape._cf.geometry.node._cf.texCoord.node._vf.mode)
+            {
+                var texMode = shape._cf.geometry.node._cf.texCoord.node._vf.mode;
+                if (texMode.toLowerCase() == "sphere") {
+                    this.object.setSphereMapping( { id: shape._objectID,
+													sphereMapping: 1 } );
+                }
+                else {
+                    this.object.setSphereMapping( { id: shape._objectID,
+													sphereMapping: 0 } );
+                }
+            }
+            else {
+                this.object.setSphereMapping( { id: shape._objectID,
+												sphereMapping: 0 } );
+            }
 		}
-		
-		if( shape._dirty.colors === true ) {
-			if(shape._cf.geometry.node._mesh._colors[0].length) {
-				for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
-					this.object.setMeshColors( { id: shape._objectID, 
-												 idx: i, 
-												 colors: shape._cf.geometry.node._mesh._colors[i] } );
-				}
+	
+	};
+	
+	Context.prototype.setupText = function(shape, trafo) 
+	{
+		if( shape._dirty.text === true ) {
+			var fontStyleNode = shape._cf.geometry.node._cf.fontStyle.node;
+			if (fontStyleNode === null) {
+				this.object.setText( { id: shape._objectID,
+									   text: shape._cf.geometry.node._vf.string,
+									   fontFamily: ['SERIF'],
+									   fontStyle: "PLAIN",
+									   fontAlign: "BEGIN",
+									   fontSize: 32,
+									   fontSpacing: 1.0,
+									   fontHorizontal: true,
+									   fontLanguage: "",
+									   fontLeftToRight: true,
+									   fontTopToBottom: true } );
+			} else {
+				this.object.setText( { id: shape._objectID,
+									   text: shape._cf.geometry.node._vf.string,
+									   fontFamily: fontStyleNode._vf.family.toString(),
+									   fontStyle: fontStyleNode._vf.style.toString(),
+									   fontAlign: fontStyleNode._vf.justify.toString(),
+									   fontSize: fontStyleNode._vf.size,
+									   fontSpacing: fontStyleNode._vf.spacing,
+									   fontHorizontal: fontStyleNode._vf.horizontal,
+									   fontLanguage: fontStyleNode._vf.language,
+									   fontLeftToRight: fontStyleNode._vf.leftToRight,
+									   fontTopToBottom: fontStyleNode._vf.topToBottom } );
 			}
-			shape._dirty.colors = false;
-		}
-		
-		if( shape._dirty.texcoords === true ) {
-			if(shape._cf.geometry.node._mesh._texCoords[0].length) {
-				for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
-					this.object.setMeshTexCoords( { id: shape._objectID, 
-													idx: i, 
-													texCoords: shape._cf.geometry.node._mesh._texCoords[i] } );
-				}
-			}
-			shape._dirty.texcoords = false;
+			shape._dirty.text = false; 
 		}
 		
 		if( shape._dirty.material === true ) {
@@ -269,20 +357,10 @@ x3dom.gfx_flash = (function() {
 			shape._dirty.material = false;
 		}
 		
-		if( shape._dirty.texture === true ) {
-			var texture = shape._cf.appearance.node._cf.texture.node;
-			if(texture) {
-				this.object.setMeshTexture( { id: shape._objectID,
-											  origChannelCount: texture._vf.origChannelCount,
-											  repeatS: texture._vf.repeatS,
-											  repeatT: texture._vf.repeatT,
-											  url: texture._vf.url[0] } );
-			}
-			shape._dirty.texture = false;
-		}
-	
+		//Set modelMatrix
+		this.object.setMeshTransform( { id: shape._objectID,
+										transform: trafo.toGL() } );
 	};
-	
 	/**
 	*
 	*/
