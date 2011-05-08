@@ -25,6 +25,7 @@
 			ExternalInterface.addCallback("setMeshTransform", setMeshTransform);
 			ExternalInterface.addCallback("setMeshMaterial", setMeshMaterial);
 			ExternalInterface.addCallback("setMeshColors", setMeshColors);
+			ExternalInterface.addCallback("setMeshColorsRGBA", setMeshColorsRGBA);
 			ExternalInterface.addCallback("setMeshIndices", setMeshIndices);
 			ExternalInterface.addCallback("setMeshNormals", setMeshNormals);
 			ExternalInterface.addCallback("setMeshTexCoords", setMeshTexCoords);
@@ -117,6 +118,13 @@
 			//Transform colors from String to Array
 			var colors:Array = String(value.colors).split(',');	
 			_scene.getMesh( Number(value.id) ).setColors( value.idx, Vector.<Number>(colors) );
+		}
+		
+		private function setMeshColorsRGBA(value:Object) : void 
+		{
+			//Transform colors from String to Array
+			var colors:Array = String(value.colors).split(',');	
+			_scene.getMesh( Number(value.id) ).setColorsRGBA( value.idx, Vector.<Number>(colors) );
 		}
 		
 		private function setMeshIndices(value:Object) : void 

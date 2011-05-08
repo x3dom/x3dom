@@ -250,10 +250,20 @@ x3dom.gfx_flash = (function() {
 			
 			if( shape._dirty.colors === true ) {
 				if(shape._cf.geometry.node._mesh._colors[0].length) {
-					for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
-						this.object.setMeshColors( { id: shape._objectID, 
-													 idx: i, 
-													 colors: shape._cf.geometry.node._mesh._colors[i] } );
+					var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
+					
+					if(numColComponents == 3) {
+						for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
+							this.object.setMeshColors( { id: shape._objectID, 
+														 idx: i, 
+														 colors: shape._cf.geometry.node._mesh._colors[i] } );
+						}
+					} else if(numColComponents == 4) {
+						for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
+							this.object.setMeshColorsRGBA( { id: shape._objectID, 
+															 idx: i, 
+															 colors: shape._cf.geometry.node._mesh._colors[i] } );
+						}
 					}
 				}
 				shape._dirty.colors = false;
