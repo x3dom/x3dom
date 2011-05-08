@@ -27,6 +27,8 @@
 		
 		private var _solid:Boolean			= true;
 		
+		private var _colorRGBA:Boolean		= false;
+		
 		private var _min:Vector3D;
 		private var _max:Vector3D;
 		private var _center:Vector3D;
@@ -84,7 +86,10 @@
 					
 					if(hasColor()) {
 						//Associate colors
-						_context3D.setVertexBufferAt( 3, _colorBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
+						if(_colorRGBA)
+							_context3D.setVertexBufferAt( 3, _colorBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_4 );
+						else
+							_context3D.setVertexBufferAt( 3, _colorBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
 					}
 					
 					//Check if a texture exists
@@ -245,9 +250,18 @@
 		
 		public function setColors(idx:uint, colors:Vector.<Number>) : void 
 		{
+			_colorRGBA = false;
 			_colors[ idx ] = colors;
 			_colorBuffer[ idx ] = _context3D.createVertexBuffer( colors.length/3, 3 );
 			_colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length/3 );
+		}
+		
+		public function setColorsRGBA(idx:uint, colors:Vector.<Number>) : void 
+		{
+			_colorRGBA = true;
+			_colors[ idx ] = colors;
+			_colorBuffer[ idx ] = _context3D.createVertexBuffer( colors.length/4, 4 );
+			_colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length/4 );
 		}
 		
 		public function setIndices(idx:uint, indices:Vector.<uint>) : void 
