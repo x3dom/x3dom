@@ -84,15 +84,9 @@
 			loader.load( new URLRequest( _url ) );
 		}
 		
-		/**
-		* Handle Texture load Complete-Event
-		*/
-		public function handleComplete(e:Event) : void
+		public function setTextureFromBitmap(bitmap:Bitmap) : void
 		{
-			//Convert Loader to Bitmap
-			var bitmap:Bitmap = Bitmap( e.target.content );
-			
-			bitmap = scaleBitmap(bitmap);
+			bitmap = Utils.scaleBitmap(bitmap);
 			
 			//Create Texture
 			_texture = _context3D.createTexture(bitmap.width, bitmap.height, Context3DTextureFormat.BGRA, false);
@@ -108,46 +102,26 @@
 		}
 		
 		/**
-		 * Check if value is Power of 2
-		 */
-		private function scaleBitmap(bitmap:Bitmap) : Bitmap
+		* Handle Texture load Complete-Event
+		*/
+		public function handleComplete(e:Event) : void
 		{
-			if (!isPowerOfTwo(bitmap.width) || !isPowerOfTwo(bitmap.width)) {
-				var newWidth:Number  = nextHighestPowerOfTwo( bitmap.width );
-				var newHeight:Number = nextHighestPowerOfTwo( bitmap.width );
-				
-				var scaleFactorX:Number = newWidth/bitmap.width;
-				var scaleFactorY:Number = newHeight/bitmap.height;
-				
-				var scaleMatrix:Matrix=new Matrix();
-				scaleMatrix.scale(scaleFactorX, scaleFactorY);
-				
-				var scaledBitmapData:BitmapData = new BitmapData(newWidth, newHeight, true, 0xFFFFFFFF);
-				scaledBitmapData.draw(bitmap, scaleMatrix);
-				
-				bitmap.bitmapData=scaledBitmapData
-			}
-			return bitmap;
-		}
-		
-		/**
-		 * Check if value is Power of 2
-		 */
-		private function isPowerOfTwo(x:Number) : Boolean 
-		{
-			return ((x & (x - 1)) === 0);
-		}
-		
-		/**
-		 * Returns the next Highest Power of 2
-		 */
-		private function nextHighestPowerOfTwo(x:Number) : Number
-		{
-			--x;
-			for (var i:Number = 1; i < 32; i <<= 1) {
-				x = x | x >> i;
-			}
-			return (x + 1);
+			//Convert Loader to Bitmap
+			var bitmap:Bitmap = Bitmap( e.target.content );
+			
+			bitmap = Utils.scaleBitmap(bitmap);
+			
+			//Create Texture
+			_texture = _context3D.createTexture(bitmap.width, bitmap.height, Context3DTextureFormat.BGRA, false);
+			
+			//Upload texture from BitmapData
+			_texture.uploadFromBitmapData(bitmap.bitmapData);
+			
+			//Set loaded to true
+			_loaded = true;
+			
+			//Dispatch Complete-Event
+			this.dispatchEvent( new Event( Event.COMPLETE ) );
 		}
 		
 		/**

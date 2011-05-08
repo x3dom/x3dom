@@ -2,6 +2,7 @@
 	
 	import com.adobe.utils.*;
 	
+	import flash.display.Stage;
 	import flash.display3D.*;
 	import flash.external.ExternalInterface;
 	import flash.geom.*;
@@ -49,14 +50,18 @@
 		private var _meshes:Array	= new Array();
 		
 		private var _shaderGenerator:ShaderGenerator;	
+		
+		public var _stage:Stage;
 
 		/**
 		 * Creates a new X3DScene object
 		 */
-		public function X3DScene(context3D:Context3D) 
+		public function X3DScene(context3D:Context3D, stage:Stage) 
 		{
 			//Set Context3D
 			_context3D = context3D;
+			
+			_stage = stage;
 			
 			_background = new Background(_context3D);
 			
@@ -144,12 +149,16 @@
 		/**
 		 * Return the mesh with the given ID or generates a new one
 		 */
-		public function getMesh(id:Number) : Mesh
+		public function getMesh(id:Number, type:String = "MESH") : Object
 		{
 			for(var i:uint=0; i<_meshes.length; i++)
 				if(_meshes[i].id == id) return _meshes[i];
 			
-			_meshes.push( new Mesh(id, this, _context3D) );
+			if(type == "TEXT") { 
+				_meshes.push( new X3DText(id, this, _context3D) );
+			} else {
+				_meshes.push( new Mesh(id, this, _context3D) );
+			}
 						 
 			return _meshes[_meshes.length-1];
 		}

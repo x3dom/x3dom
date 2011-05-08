@@ -1,5 +1,7 @@
 ﻿package x3dom {
 	
+	import flash.display.Bitmap;
+	import flash.display.BitmapData;
 	import flash.display3D.*;
 	import flash.display3D.textures.Texture;
 	import flash.events.Event;
@@ -21,6 +23,8 @@
 		
 		private var _modelMatrix:Matrix3D	= new Matrix3D();
 		
+		private var _sphereMapping:Boolean  = false;
+		
 		private var _min:Vector3D;
 		private var _max:Vector3D;
 		private var _center:Vector3D;
@@ -36,7 +40,6 @@
 		private var _normalBuffer:Array		= new Array();
 		private var _texCoordBuffer:Array	= new Array();
 		private var _vertexBuffer:Array		= new Array();
-		public var _program3D:Program3D 	= null;
 		
 		public function Mesh( id:Number, scene:X3DScene, context3D:Context3D ) 
 		{
@@ -85,6 +88,10 @@
 						
 						//Associate texCoords
 						_context3D.setVertexBufferAt( 1, _texCoordBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_2 );
+						
+						if(_sphereMapping) {
+							_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  9, Vector.<Number>( [ 0.5, 2.0, 1.0, 1.0 ] ) );
+						}
 						
 					}
 					
@@ -153,6 +160,16 @@
 			return _id;
 		}
 		
+		public function set sphereMapping(sphereMapping:Boolean) : void
+		{
+			_sphereMapping = sphereMapping;
+		}
+		
+		public function get sphereMapping() : Boolean
+		{
+			return _sphereMapping;
+		}
+		
 		public function set modelMatrix(modelMatrix:Matrix3D) : void
 		{
 			_modelMatrix = modelMatrix;
@@ -198,6 +215,15 @@
 			_texture.url				= texture.url;		
 			
 			_texture.load();
+		}
+		
+		public function setTextureFromBitmap(bitmap:Bitmap, origChannelCount:Number = 0.0, repeatS:Boolean = true, repeatT:Boolean = true) : void
+		{
+			_texture = new ImageTexture(_context3D);
+			_texture.origChannelCount = origChannelCount;
+			_texture.repeatS = repeatS;
+			_texture.repeatT = repeatT;
+			_texture.setTextureFromBitmap(bitmap);
 		}
 		
 		public function setColors(idx:uint, colors:Vector.<Number>) : void 
