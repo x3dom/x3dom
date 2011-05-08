@@ -33,6 +33,7 @@
 			ExternalInterface.addCallback("setLights", setLights);
 			ExternalInterface.addCallback("setText", setText);
 			ExternalInterface.addCallback("setSphereMapping", setSphereMapping);
+			ExternalInterface.addCallback("setMeshSolid", setMeshSolid);
 		}
 		
 		private function renderScene() : void
@@ -93,6 +94,11 @@
 			var transform:Array = String(value.transform).split(',');
 			
 			_scene.getMesh( Number(value.id) ).modelMatrix = new Matrix3D( Vector.<Number>( transform ) );
+		}
+		
+		private function setMeshSolid(value:Object) : void
+		{			
+			_scene.getMesh( Number(value.id) ).solid = Boolean( value.solid );
 		}
 		
 		private function setSphereMapping(value:Object) : void

@@ -212,6 +212,9 @@ x3dom.gfx_flash = (function() {
 			this.setupText(shape, trafo);
 		} else {
 		//
+			this.object.setMeshSolid( { id: shape._objectID,
+										solid: shape.isSolid() } );
+		
 			//Set modelMatrix
 			this.object.setMeshTransform( { id: shape._objectID,
 											transform: trafo.toGL() } );
