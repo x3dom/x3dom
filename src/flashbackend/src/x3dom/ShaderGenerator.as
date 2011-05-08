@@ -70,7 +70,7 @@ package x3dom
 			} 
 			
 			if( mesh.hasColor() )
-				shader += "mov v1, va3\n";		 	//TexCoord -> Fragment(v0)
+				shader += "mov v1, va3\n";		 	//color -> Fragment(v1)
 			
 			if( mesh.hasTexture() ) {
 				if( mesh.sphereMapping )
@@ -136,25 +136,23 @@ package x3dom
 				}
 
 				shader += "sat ft3, ft3\n";								//saturate(NdotL)
-				shader += "kil ft3.w\n";
 				shader += "mov oc, ft3 \n";							//Output Color
 			} else {
 				if( mesh.hasColor() ) {
 					shader += "mov ft1, v1.xyz\n";
 				} else if( mesh.hasTexture() == 1 ) {
-					shader += "mov ft1, ft0.xyz\n";
+					shader += "mov ft1, ft0\n";
 				} else {
-					shader += "mov ft1, fc1.xyz\n";
+					shader += "mov ft1, fc1\n";
 				}
 				
 				if( mesh.hasTexture() == 2 ) {
 					shader += "mul ft1, ft1, ft0\n";
 				}
 				
-				shader += "mov ft1, fc1.w\n";
-				x3dom.Debug.logInfo("WHOOP");
+				shader += "mov ft1.w, fc1.w\n";
 				shader += "sat ft1, ft1\n";								//saturate(NdotL)
-				shader += "mov oc, ft1.xyz \n";							//Output Color
+				shader += "mov oc, ft1 \n";							//Output Color
 			}
 			
 			

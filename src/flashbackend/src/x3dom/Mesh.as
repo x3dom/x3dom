@@ -25,6 +25,8 @@
 		
 		private var _sphereMapping:Boolean  = false;
 		
+		private var _solid:Boolean			= true;
+		
 		private var _min:Vector3D;
 		private var _max:Vector3D;
 		private var _center:Vector3D;
@@ -63,6 +65,11 @@
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ _material.specularColor[0], _material.specularColor[1], _material.specularColor[2], _material.shininess*128.0 ] ) );
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ _material.emissiveColor[0], _material.emissiveColor[1], _material.emissiveColor[2], 1.0 ] ) );
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.5, 0.5, 0.5, 1.0 ] ) );
+				
+				if(_solid)
+					_context3D.setCulling(Context3DTriangleFace.FRONT);
+				else
+					_context3D.setCulling(Context3DTriangleFace.NONE);
 				
 				//Iterate array of Buffers for grater than 64k meshes
 				for(var i:uint=0; i<_vertexBuffer.length; i++)
@@ -168,6 +175,16 @@
 		public function get sphereMapping() : Boolean
 		{
 			return _sphereMapping;
+		}
+		
+		public function set solid(solid:Boolean) : void
+		{
+			_solid = solid;
+		}
+		
+		public function get solid() : Boolean
+		{
+			return _solid;
 		}
 		
 		public function set modelMatrix(modelMatrix:Matrix3D) : void
