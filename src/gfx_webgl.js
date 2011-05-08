@@ -1081,8 +1081,8 @@ x3dom.gfx_webgl = (function () {
             }
             //shader += "rgb = clamp(rgb, 0.0, 1.0);\n";
             shader += "if (alpha <= 0.1) discard;\n";
-            shader += "else gl_FragColor = vec4(rgb, alpha);\n";
-            shader += "}\n";
+            shader += "gl_FragColor = vec4(rgb, alpha);\n";
+			shader += "}\n";
             
             g_shaders[shaderIdentifier] = {};
             g_shaders[shaderIdentifier].type = "fragment";
