@@ -1948,7 +1948,7 @@ x3dom.registerNodeType(
     )
 );
 
-// MESH => mesh.js
+// MESH => Mesh.js
 
 
 /* ### X3DGeometryNode ### */

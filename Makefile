@@ -23,7 +23,7 @@ BASE_FILES = \
 	${SRC_DIR}/X3DDocument.js\
 	${SRC_DIR}/MatrixMixer.js\
 	${SRC_DIR}/Viewarea.js\
-    ${SRC_DIR}/mesh.js\
+    ${SRC_DIR}/Mesh.js\
 	${SRC_DIR}/nodes/Followers.js\
 	${SRC_DIR}/fields.js
 
