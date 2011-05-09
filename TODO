@@ -6,21 +6,24 @@
 TODO
 ====
 
-- Time sensor implementation
-- Text implementation
 
+== Project
+   - Move to github
+   - more infrastructure on own server
+   - new website
 
-== Generic
-- jslint
+== Documentation
+   - Well, document everything (markdown or ReST, maybe Sphinx)
 
-== X3D basics
-- global context per namespace
-- include Node.f Node.fc and node.nodeChanged()
-- remove _getNodeByDEF
-- addChild/removeChild in all nodes
+== Build system
+   - get rid of src/Makfile and use toplevel Makefile throughout
 
-== Rendering
-- IndexedTriangleStripSet
-- Coordinate
-- ColorRGBA
-- ParticleSet
+== Arch
+   - move backends code into src/backends/*
+   - seperate nodes in src/nodes/
+
+== QA
+   - Add unit tests
+   - Code audit (coding style, clearer variable declaration, etc.)
+
+== Optimization
