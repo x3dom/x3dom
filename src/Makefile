@@ -24,10 +24,10 @@ clean:
 cc: closureCompiler
 
 closureCompiler:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=swfobject/swfobject.js --js=lang/Array.js  --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js --js=mesh.js --js=x3d.js --js=x3d_document.js --js=MatrixMixer.js --js=x3d_viewarea.js --js=x3d_follower.js --js=fields.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=swfobject/swfobject.js --js=lang/Array.js  --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js --js=mesh.js --js=x3d.js --js=x3d_document.js --js=MatrixMixer.js --js=x3d_viewarea.js --js=nodes/Follower.js --js=fields.js
 	
 ccVerbose:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE  --js=swfobject/swfobject.js --js=lang/Array.js --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js  --js=mesh.js --js=x3d.js  --js=x3d_document.js --js=MatrixMixer.js --js=x3d_viewarea.js --js=x3d_follower.js --js=fields.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE  --js=swfobject/swfobject.js --js=lang/Array.js --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js  --js=mesh.js --js=x3d.js  --js=x3d_document.js --js=MatrixMixer.js --js=x3d_viewarea.js --js=nodes/Follower.js --js=fields.js
 
 runServer:
 	python ../tools/testserver.py &

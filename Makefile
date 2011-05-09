@@ -24,7 +24,7 @@ BASE_FILES = \
 	${SRC_DIR}/MatrixMixer.js\
 	${SRC_DIR}/x3d_viewarea.js\
     ${SRC_DIR}/mesh.js\
-	${SRC_DIR}/x3d_follower.js\
+	${SRC_DIR}/nodes/Followers.js\
 	${SRC_DIR}/fields.js
 
 MODULES = ${BASE_FILES}
