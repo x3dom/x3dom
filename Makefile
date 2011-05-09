@@ -21,6 +21,7 @@ BASE_FILES = \
 	${SRC_DIR}/gfx_flash.js\
 	${SRC_DIR}/x3d.js\
 	${SRC_DIR}/x3d_document.js\
+	${SRC_DIR}/x3d_viewarea.js\
     ${SRC_DIR}/mesh.js\
 	${SRC_DIR}/x3d_follower.js\
 	${SRC_DIR}/fields.js
