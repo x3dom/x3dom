@@ -1,5 +1,142 @@
+2011-05-09  thyrell
+
+	 [r1050] Rename to uppercase
+	 [r1049] Whoops
+	 [r1048] Refactor mesh.js -> Mesh.js
+	 [r1047] Adopted naming convention to use same case in filenames
+	  as in code. i.e. x3dom.Viewarea code goes to Viewarea.js or
+	  x3dom.X3DDocument goes into X3DDocument.js
+	 [r1046] Refactoring: follower nodes now in nodes/Follower.js
+	 [r1045] Refactoring: Moved src/x3d.js:MatrixMixer code into
+	  src/MatrixMixer.js
+	 [r1044] Whoops. Perhaps Makefile should know of the Viewarea
+	  refactoring.
+	 [r1043] Refacoting: Moved x3dom.Viewarea code from src/x3d.js to
+	  src/x3d_viewarea.js
+
+2011-05-08  akustikkoppler
+
+	 [r1042] - Add Flash colorRGBA
+	 [r1041] - Fix Flash low alpha discard
+	 [r1040] - Fix Flash vertex color alpha bug
+	  - Fix Flash solid bug
+	 [r1039] - Add Flash Text Rendering
+	  - Fix some Flash Shader Bugs
+
+2011-05-06  akustikkoppler
+
+	 [r1038]
+	 [r1037] - fix Flash unreleased Buffer and Sampler bug
+	  - fix Flash vertexColor bug
+	  - fix Flash alpha bending bug
+	 [r1036]
+	 [r1035] - Add Flash ShaderGenerator
+	  - Fix Flash non power of two bug
+	  - Fix Flash scaling bug
+	  - Fix Flash texture bug
+
+2011-05-03  thyrell
+
+	 [r1034] Refactoring: Moved X3DDocument from x3d.js into
+	  src/x3d_document.js
+	 [r1033] Refactoring: Moved X3DDocument from x3d.js into
+	  src/x3d_document.js
+	 [r1032] Added test and fix to memory consumption with XHR
+	  requests
+	 [r1031] Added test to check for memeory leaks
+	 [r1030] Relocated jquery for examples to example/media/js instead
+	  of src/jQuery
+
+2011-05-02  thyrell
+
+	 [r1029] Remove log messate on each enter frame
+	 [r1028] Updated local server to use root of project dir instead
+	  of tests to allow loading files from src/
+	 [r1027] runtime.enterFrame can now be overwritten on X3D-element
+	  basis. runtime.ready still is system wide only due to
+	  intititalization sequence. the runtime object is only available
+	  onLoad, not before, because onLoad creates the x3d element itself
+	  to which runtime is attached.
+	 [r1026] runtime.enterFrame can now be overwritten on X3D-element
+	  basis. runtime.ready still is system wide only due to
+	  intititalization sequence. the runtime object is only available
+	  onLoad, not before, because onLoad creates the x3d element itself
+	  to which runtime is attached.
+
+2011-04-19  akustikkoppler
+
+	 [r1025] -Add missing JQuery files
+
+2011-04-19  jbehr
+
+	 [r1024] fixed type-check in addBindable
+
+2011-04-19  thyrell
+
+	 [r1023] Added runtime.enterFrame() and runtime.ready() hooks to
+	  allow user overwrites
+
+2011-04-19  akustikkoppler
+
+	 [r1022]
+	 [r1021] - Add geoCache for primitive nodes (Box, Sphere, etc.)
+
+2011-04-19  thyrell
+
+	 [r1020] Added support to change Text via setAttribute()
+
+2011-04-18  thyrell
+
+	 [r1019] Removed navigatioInfo() API function. Added
+	  runtime.caches object to serve as central cache place.
+	 [r1018] Added warning message of not implemented changeField() on
+	  text node
+	 [r1017] Added textcase for changing text node
+
+2011-04-18  akustikkoppler
+
+	 [r1016]
+	 [r1015]
+
+2011-04-14  akustikkoppler
+
+	 [r1014] - add simple Flash skyColor Background
+	 [r1013]
+
+2011-04-13  jbehr
+
+	 [r1012] initial checkin
+
+2011-04-12  thyrell
+
+	 [r1011] Cleanup runtime api
+	 [r1010] Fixed getBindable thingy
+	 [r1009] Made API docs less verbose.
+	 [r1008] Fixed getBindable thingy
+	 [r1007] Makefile. yuck
+	 [r1006] Makefile. yuck
+	 [r1005] Fixes with exmaple showing runtime
+	 [r1004] Fixed runtime example to show a reduced set of runtime
+	  functionality
+
+2011-04-11  thyrell
+
+	 [r1003] Updated exmaple of runtime API
+	 [r1002] Added runtime exmaple html
+	 [r1001] Added example for runtime functionality. Also some fixes
+	 [r1000] Added inline documentation to the runtime functions
+	 [r999] Added show/hide statistics API test to runtime-tests
+	 [r998] Added more methods to the e.runtime object.
+	 [r997] Added more methods to the e.runtime object.
+
+2011-04-06  yjung
+
+	 [r996] fix
+
 2011-04-05  thyrell
 
+	 [r995] Updated changelog
+	 [r994] Simplified rutime tests shomewhat
 	 [r993] Added some runtime.* API methods and testcase
 	 [r992] Added some runtime.* API methods and testcase
 	 [r991] Moved slides and paper to doc directory
