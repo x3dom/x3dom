@@ -25,6 +25,7 @@ BASE_FILES = \
 	${SRC_DIR}/Viewarea.js\
     ${SRC_DIR}/Mesh.js\
 	${SRC_DIR}/nodes/Followers.js\
+	${SRC_DIR}/nodes/Networking.js\
 	${SRC_DIR}/fields.js
 
 MODULES = ${BASE_FILES}
@@ -111,7 +112,7 @@ clean:
 	@@rm -rf ${DOC_DIR}/api
     
 	@@echo "Removing backup files"
-	@@rm -rf ${TEST_DIR}/functional/*html~backup~
+	@@rm -rf ${TEST_DIR}/functional/*html~backup~*
 	
 runserver:
 	@@echo "Running development server..."
