@@ -7,7 +7,7 @@ SWF := swfobject/swfobject.js
 BASIC := lang/Array.js x3dom-internals.js x3dmain.js version.js
 DEBUG := debug.js 
 GFX := gfx_webgl.js gfx_flash.js
-NODE := mesh.js x3d.js x3d_document.js x3d_follower.js
+NODE := mesh.js x3d.js x3d_document.js x3d_viewarea.js x3d_follower.js
 FIELDS := fields.js
 
 SRC := $(SWF) $(BASIC) $(DEBUG) $(GFX) $(NODE) $(FIELDS) 
