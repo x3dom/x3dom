@@ -21,6 +21,7 @@ BASE_FILES = \
 	${SRC_DIR}/gfx_flash.js\
 	${SRC_DIR}/x3d.js\
 	${SRC_DIR}/x3d_document.js\
+	${SRC_DIR}/MatrixMixer.js\
 	${SRC_DIR}/x3d_viewarea.js\
     ${SRC_DIR}/mesh.js\
 	${SRC_DIR}/x3d_follower.js\
@@ -135,5 +136,6 @@ deploy:
 refreshtests:
 	@@echo "Refreshing test cases header files."
 	python tools/update_headers.py test/functional
-	
+	python tools/update_headers.py test/regression
+
 .PHONY: all x3dom lint min init changelog runserver docs refreshtests deploy
