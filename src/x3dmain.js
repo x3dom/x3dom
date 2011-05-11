@@ -25,7 +25,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	
 	this.appendParam = function(node, name, value) {
 		var param = document.createElement('param');
-		param.setAttribute(name, value);
+		param.setAttribute('name', name);
+		param.setAttribute('value', value);
 		node.appendChild( param );
 	};
 	
@@ -46,18 +47,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		if (swf_path === null) {
             swf_path = "x3dom.swf";
         }
-		
-		//Add Alternative Content
-		var link = document.createElement('a');
-		link.setAttribute('id', id);
-		link.setAttribute('href', 'http://www.adobe.com/go/getflash');
-		
-		var img = document.createElement('img');
-		img.setAttribute('src', 'http://www.adobe.com/images/shared/download_buttons/get_flash_player.gif');
-		img.setAttribute('alt', 'Get Adobe Flash Player');
-		
-		link.appendChild(img);
-		x3dElem.appendChild(link);
 		
 		//Get width from x3d-Element or set default
 		var width = x3dElem.getAttribute("width");
@@ -80,20 +69,22 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
 		}
 		
-		var flashvars = { 
-			width: width, 
-			height: height,
-			canvasIdx: this.canvasIdx
-		};
+		var obj = document.createElement('object');
+		obj.setAttribute('width', width);
+		obj.setAttribute('height', height);
+		obj.setAttribute('id', id);
 		
-		var params = { 
-			menu: "false", 
-			quality: "high", 
-			wmode: "direct", 
-			allowScriptAccess: "always" 
-		};
+		this.appendParam(obj, 'menu', 'false');
+		this.appendParam(obj, 'quality', 'high');
+		this.appendParam(obj, 'wmode', 'direct');
+		this.appendParam(obj, 'allowScriptAccess', 'always');
+		this.appendParam(obj, 'flashvars', 'width=' + width + '&height=' + height + '&canvasIdx=' + this.canvasIdx);
+		this.appendParam(obj, 'movie', swf_path);
 		
-		swfobject.embedSWF(swf_path, id, width, height, "11.0.0", "", flashvars, params);
+		x3dElem.appendChild(obj);
+		
+		if(navigator.appName == "Microsoft Internet Explorer")
+			obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
 		
 		return document.getElementById(id);
 	};
