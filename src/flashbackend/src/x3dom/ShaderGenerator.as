@@ -98,7 +98,7 @@ package x3dom
 			if( mesh.hasTexture() ) {
 				shader += "mov ft6, v2 \n";
 				shader += "sub ft6.y, fc3.w, ft6.y \n";					//Flip V-Coord
-				shader += "tex ft0, ft6, fs0 <2d, clamp, linear> \n";	//Sample Texture(ft0)
+				shader += "tex ft0, ft6, fs0 <2d, wrap, linear> \n";	//Sample Texture(ft0)
 			}
 			
 			if( lights.length > 0 && !mesh.hasColor()) {
@@ -166,6 +166,40 @@ package x3dom
 			return fragmentShaderAssembler;
 		}
 		
-		
+		public function getBackgroundShader() : Program3D
+		{
+			if( _shaderCache['BackgroundShader'] == undefined ) {
+				
+				
+				//Generate Program3D 
+				var program3D:Program3D = _context3D.createProgram();
+				
+				var vertexShader:AGALMiniAssembler = new AGALMiniAssembler();
+				vertexShader.assemble( Context3DProgramType.VERTEX,				
+					"mov op, va0.xy00\n" +			// Position = Position.xy00
+					
+					"mov vt0, va0\n" +				// Position -> vt0
+					"add vt0, vt0.xy, vc0.x\n" +		// Position.xy + 1.0
+					"mul vt0, vt0, vc0.y\n" +			// (Position.xy) * 0.5
+					
+					"mov v0, vt0\n"					//TexCoord -> Fragment(v0)		
+				);
+				
+				var fragmentShader:AGALMiniAssembler = new AGALMiniAssembler();
+				fragmentShader.assemble( Context3DProgramType.FRAGMENT,				
+					"tex ft0, v0, fs0 <2d, clamp, linear> \n" +	//Sample Texture(ft0)
+					"mov oc, ft0.xyz\n" 
+				);		
+				
+				//Upload shader to Program3D
+				program3D.upload( vertexShader.agalcode, fragmentShader.agalcode);
+				
+				//Save Program3D in shaderCache
+				_shaderCache['BackgroundShader'] = program3D;
+			}
+			
+			//Return Program3D
+			return _shaderCache['BackgroundShader'];
+		}
 	}
 }

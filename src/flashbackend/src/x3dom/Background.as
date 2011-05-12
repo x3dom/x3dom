@@ -8,6 +8,7 @@ package x3dom
 
 	public class Background
 	{
+		private var _scene:X3DScene;
 		private var _context3D:Context3D;
 		
 		private var _skyTexture:flash.display3D.textures.Texture;
@@ -29,9 +30,15 @@ package x3dom
 		private var _backgroundPlane:Mesh;
 		
 		
-		public function Background(context3D:Context3D)
+		public function Background(scene:X3DScene, context3D:Context3D)
 		{
+			_scene = scene;
 			_context3D = context3D;
+			
+			//Init backgroundPlane
+			_backgroundPlane = new Mesh(-1, scene, context3D);
+			_backgroundPlane.setVertices( 0, Vector.<Number>( [-100,-100,0, -100,100,0, 100,-100,0, 100,100,0] ) );
+			_backgroundPlane.setIndices( 0, Vector.<uint>( [0, 1, 2, 3] ) );
 		}
 		
 		public function init() : void
@@ -62,13 +69,14 @@ package x3dom
 				}
 				else
 				{
+					_backgroundPlane.setTexture({origChannelCount:0.0, repeatS:true, repeatT:true, url:_texURLs[0]});
 					_isBackTexture = true;
 					_isCubeTexture = false;
 				}
 			}
 			else
 			{
-				_isBackTexture = true;
+				_isBackTexture = false;
 				_isCubeTexture = false;
 			}
 				
@@ -78,6 +86,14 @@ package x3dom
 		{
 			_context3D.clear(_skyColor[0], _skyColor[1], _skyColor[2], _transparency);
 			
+			if(_isBackTexture)
+			{
+				_context3D.setProgram( _scene.shaderGenerator.getBackgroundShader() );
+				
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  0, Vector.<Number>([1.0, 0.5, 0.0, 0.0]));
+				
+				_backgroundPlane.render();
+			}
 			
 		}
 		

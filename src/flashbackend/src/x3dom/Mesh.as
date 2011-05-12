@@ -79,7 +79,7 @@
 					//Associate vertices
 					_context3D.setVertexBufferAt( 0, _vertexBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
 					
-					if(!hasColor()) {
+					if(!hasColor() && _normals.length > 0) {
 						//Associate normals
 						_context3D.setVertexBufferAt( 2, _normalBuffer[i], 0, Context3DVertexBufferFormat.FLOAT_3 );
 					}
