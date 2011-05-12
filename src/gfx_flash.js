@@ -126,7 +126,7 @@ x3dom.gfx_flash = (function() {
 			//Get object and transformation
 			var trafo = scene.drawableObjects[i][0];
 			var obj3d = scene.drawableObjects[i][1];
-			
+
 			this.setupShape(obj3d, trafo);
 		}
 		

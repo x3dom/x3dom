@@ -15,7 +15,7 @@ package x3dom
 		 */
 		public static function scaleBitmap(bitmap:Bitmap) : Bitmap
 		{
-			if (!isPowerOfTwo(bitmap.width) || !isPowerOfTwo(bitmap.width)) {
+			if (!isPowerOfTwo(bitmap.width) || !isPowerOfTwo(bitmap.height)) {
 				var newWidth:Number  = nextBestPowerOfTwo( bitmap.width );
 				var newHeight:Number = nextBestPowerOfTwo( bitmap.height );
 				

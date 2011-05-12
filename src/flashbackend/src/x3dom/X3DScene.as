@@ -15,7 +15,6 @@
 	public class X3DScene {
 		
 		private var _context3D:Context3D;
-		private var _shaderProgram:Program3D;
 		
 		private var _background:Background;
 		
@@ -63,7 +62,7 @@
 			
 			_stage = stage;
 			
-			_background = new Background(_context3D);
+			_background = new Background(this, _context3D);
 			
 			_shaderGenerator = new ShaderGenerator(_context3D);	
 		}
@@ -78,7 +77,7 @@
 			
 			//z-Sorting
 			_meshes.sort(zSorting);
-
+			
 			//Iterate all meshes for rendering
 			for(var i:uint = 0; i<_meshes.length; i++)
 			{
@@ -193,6 +192,11 @@
 		public function set projectionMatrix(projectionMatrix:Matrix3D) : void
 		{
 			_projMatrix = projectionMatrix;
+		}
+		
+		public function get shaderGenerator() : ShaderGenerator
+		{
+			return _shaderGenerator;
 		}
 
 	}

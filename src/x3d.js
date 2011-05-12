@@ -1139,7 +1139,6 @@ x3dom.registerNodeType(
 		{
 		
 			fieldChanged: function(fieldName) {
-				x3dom.debug.logInfo('Material changed');
 				if (fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
 					fieldName == "emissiveColor" || fieldName == "shininess" ||
 					fieldName == "specularColor" || fieldName == "transparency")
