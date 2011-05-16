@@ -86,3 +86,16 @@ x3dom.registerNodeType(
         }
     )
 );
+
+/* ### X3DTimeDependentNode ### */
+x3dom.registerNodeType(
+    "X3DTimeDependentNode",
+    "Time",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DTimeDependentNode.superClass.call(this, ctx);
+
+            this.addField_SFBool(ctx, 'loop', false);
+        }
+    )
+);
