@@ -117,7 +117,8 @@ clean:
     
 	@@echo "Removing backup files"
 	@@rm -rf ${TEST_DIR}/functional/*html~backup~*
-	
+	@@rm -rf ${TEST_DIR}/regression/*html~backup~*
+
 runserver:
 	@@echo "Running development server..."
 	@@echo "Open your browser and visit http://localhost:80870/"
