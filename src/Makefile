@@ -23,10 +23,10 @@ clean:
 cc: closureCompiler
 
 closureCompiler:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=lang/Array.js --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js --js=Mesh.js --js=x3d.js --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=fields.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=lang/Array.js --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js --js=Mesh.js --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=nodes/Core.js --js=nodes/Lighting.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=fields.js
 	
 ccVerbose:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=lang/Array.js --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js  --js=Mesh.js --js=x3d.js  --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=fields.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=lang/Array.js --js=x3dom-internals.js --js=x3dmain.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js  --js=Mesh.js --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=nodes/Core.js  --js=nodes/Lighting.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=fields.js
 
 runServer:
 	python ../tools/testserver.py &
