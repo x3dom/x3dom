@@ -30,6 +30,7 @@ x3dom_includes = '''
 <script type="text/javascript" src="../../src/nodes/Sound.js"></script>
 <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
 '''
 
 findreplace = [

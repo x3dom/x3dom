@@ -35,7 +35,8 @@ BASE_FILES = \
 	${SRC_DIR}/nodes/Text.js\
 	${SRC_DIR}/nodes/Sound.js\
 	${SRC_DIR}/nodes/Texturing.js\
-    ${SRC_DIR}/nodes/Shaders.js
+    ${SRC_DIR}/nodes/Shaders.js\
+    ${SRC_DIR}/nodes/Geometry3D.js
 
 MODULES = ${BASE_FILES}
 
