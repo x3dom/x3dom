@@ -24,13 +24,15 @@ BASE_FILES = \
 	${SRC_DIR}/MatrixMixer.js\
 	${SRC_DIR}/Viewarea.js\
     ${SRC_DIR}/Mesh.js\
+	${SRC_DIR}/fields.js\
 	${SRC_DIR}/nodes/Core.js\
 	${SRC_DIR}/nodes/Lighting.js\
 	${SRC_DIR}/nodes/Followers.js\
 	${SRC_DIR}/nodes/Time.js\
 	${SRC_DIR}/nodes/Interpolation.js\
 	${SRC_DIR}/nodes/Networking.js\
-	${SRC_DIR}/fields.js
+	${SRC_DIR}/nodes/EnvironmentalEffects.js\
+	${SRC_DIR}/nodes/Text.js
 
 MODULES = ${BASE_FILES}
 
