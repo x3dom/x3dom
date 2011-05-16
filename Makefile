@@ -33,7 +33,8 @@ BASE_FILES = \
 	${SRC_DIR}/nodes/Networking.js\
 	${SRC_DIR}/nodes/EnvironmentalEffects.js\
 	${SRC_DIR}/nodes/Text.js\
-	${SRC_DIR}/nodes/Sound.js
+	${SRC_DIR}/nodes/Sound.js\
+	${SRC_DIR}/nodes/Texturing.js
 
 MODULES = ${BASE_FILES}
 
