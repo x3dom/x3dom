@@ -19,6 +19,7 @@
 			
 			//Register JS callback functions
 			ExternalInterface.addCallback("renderScene", renderScene);
+			ExternalInterface.addCallback("pickValue", pickValue);
 			ExternalInterface.addCallback("setViewMatrix", setViewMatrix);
 			ExternalInterface.addCallback("setProjectionMatrix", setProjectionMatrix);
 			ExternalInterface.addCallback("setBackground", setBackground);
@@ -40,6 +41,16 @@
 		private function renderScene() : void
 		{
 			_scene.renderScene();
+		}
+		
+		private function pickValue(value:Object) : Object
+		{			
+			_scene._picking = true;
+			
+			return {objID: _scene._objID,
+					pickPosX: _scene._pickPos.x,
+					pickPosY: _scene._pickPos.y,
+					pickPosZ: _scene._pickPos.z };
 		}
 		
 		private function setViewMatrix(value:Object) : void

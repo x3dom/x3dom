@@ -6,7 +6,7 @@
 		<link rel='stylesheet' type='text/css' href='../../x3dom.css'/>
 		
 		 <!-- BEGIN:X3DOM -->
-		 <script type="text/javascript" src="../../lang/Array.js"></script>
+		<script type="text/javascript" src="../../lang/Array.js"></script>
 		<script type="text/javascript" src="../../x3dom-internals.js"></script>
 		<script type="text/javascript" src="../../x3dmain.js"></script>
 		<script type="text/javascript" src="../../debug.js"></script>
@@ -28,18 +28,17 @@
 	<body>
 		<X3D id='someUniqueId' showStat='false' showLog='true' x='0px' y='0px' width='550px' height='400px' backend='flash'>
 			<Scene>
-				<Background skyColor='0.000 0.300 0.500' backUrl="texture/background.png"></Background>
+				<Background skyColor='0.000 0.300 0.500' backUrl='texture/background.png'></Background>
 				<Transform translation="1 1 1">
 					<Shape>
 						<Appearance>
 							<Material diffuseColor='1.000 0.300 0.500' specularColor='0.5 0.5 0.5' transparency='0.500' shininess='0'></Material>
-							<ImageTexture url='texture/PO2.jpg' origChannelCount='0.0'></ImageTexture>
 						</Appearance>
 						<Box></Box>
 					</Shape>
 				</Transform>
 				<Transform>
-					<Shape >
+					<Shape>
 						<Appearance>
 							<Material diffuseColor='1.000 0.800 0.200' specularColor='0.5 0.5 0.5' transparency='0.000' shininess='1'></Material>
 							<ImageTexture url='texture/AlphaTex.png' origChannelCount='0.0'></ImageTexture>

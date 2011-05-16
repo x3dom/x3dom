@@ -48,9 +48,15 @@ x3dom.bridge = {
 		x3dom.debug.logInfo("dblClick");
 	},
 
-	onMouseMove: function(x, y, button, canvas) {
+	onMouseDrag: function(x, y, button, canvas) {
 		var x3dCanvas = x3dom.canvases[canvas];
 		x3dCanvas.doc.onDrag(x3dCanvas.gl, x, y, button);
+		x3dCanvas.doc.needRender = true;
+	},
+	
+	onMouseMove: function(x, y, button, canvas) {
+		var x3dCanvas = x3dom.canvases[canvas];
+		x3dCanvas.doc.onMove(x3dCanvas.gl, x, y, button);
 		x3dCanvas.doc.needRender = true;
 	},
 
@@ -132,6 +138,7 @@ x3dom.gfx_flash = (function() {
 		
 		//Render the flash scene
 		this.object.renderScene();
+		
 	};
 	
 	/**
@@ -380,9 +387,34 @@ x3dom.gfx_flash = (function() {
 	/**
 	*
 	*/
-	Context.prototype.pickValue = function(viewarea, x, y)
+	Context.prototype.pickValue = function(viewarea, x, y, viewMat, sceneMat)
 	{
+        var scene = viewarea._scene;
 	
+		// method requires that scene has already been rendered at least once
+        if (this.object === null || scene === null || scene.drawableObjects === undefined || 
+		    !scene.drawableObjects || scene._vf.pickMode.toLowerCase() === "box")
+        {
+            return false;
+        }
+        
+        var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
+                       ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
+        
+        var min = scene._lastMin;
+        var max = scene._lastMax;
+		
+		var data = this.object.pickValue( { pickMode: pickMode } );
+								 
+		if(data.objID > 0) {
+			viewarea._pickingInfo.pickPos = new x3dom.fields.SFVec3f(data.pickPosX, data.pickPosY, data.pickPosZ);
+			viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[data.objID];
+		} else {
+			viewarea._pickingInfo.pickObj = null;
+            viewarea._pickingInfo.lastClickObj = null;
+		}
+		
+		return true;
 	};
 	
 	/**

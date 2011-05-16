@@ -176,19 +176,14 @@ package x3dom
 				
 				var vertexShader:AGALMiniAssembler = new AGALMiniAssembler();
 				vertexShader.assemble( Context3DProgramType.VERTEX,				
-					"mov op, va0.xy00\n" +			// Position = Position.xy00
-					
-					"mov vt0, va0\n" +				// Position -> vt0
-					"add vt0, vt0.xy, vc0.x\n" +		// Position.xy + 1.0
-					"mul vt0, vt0, vc0.y\n" +			// (Position.xy) * 0.5
-					
-					"mov v0, vt0\n"					//TexCoord -> Fragment(v0)		
+					"mov op, va0\n" +					//Position						
+					"mov v0, va1\n"						//TexCoord -> Fragment(v0)		
 				);
 				
 				var fragmentShader:AGALMiniAssembler = new AGALMiniAssembler();
 				fragmentShader.assemble( Context3DProgramType.FRAGMENT,				
 					"tex ft0, v0, fs0 <2d, clamp, linear> \n" +	//Sample Texture(ft0)
-					"mov oc, ft0.xyz\n" 
+					"mov oc, ft0\n" 
 				);		
 				
 				//Upload shader to Program3D
@@ -200,6 +195,51 @@ package x3dom
 			
 			//Return Program3D
 			return _shaderCache['BackgroundShader'];
+		}
+		
+		public function getPickingShader() : Program3D
+		{
+			if( _shaderCache['PickingShader'] == undefined ) {
+				
+				//Generate Program3D 
+				var program3D:Program3D = _context3D.createProgram();
+				
+				var vertexShader:AGALMiniAssembler = new AGALMiniAssembler();
+				vertexShader.assemble( Context3DProgramType.VERTEX,				
+					"m44 op, va0, vc0\n" +				//Position*MVP-Matrix
+					//"m43 vt3, va0, vc4\n" +				//Position*M-Matrix
+					
+					"dp4 vt3.x, va0, vc4\n" +				//Position*M-Matrix
+					"dp4 vt3.y, va0, vc5\n" +				//Position*M-Matrix
+					"dp4 vt3.z, va0, vc6\n" +				//Position*M-Matrix
+					
+								
+					"mov vt1, vc8\n" +
+					"mov vt2, vc9\n" +
+					"sub vt0, vt2, vt1\n" +				//Dia = max - min
+					"sub vt3, vt3.xyz0, vt1.xyz0\n" +
+					"div vt4.x, vt3.x, vt0.x\n" +
+					"div vt4.y, vt3.y, vt0.y\n" +
+					"div vt4.z, vt3.z, vt0.z\n" +
+					"mov v0, vt4.xyz0\n"
+				);
+				
+				var fragmentShader:AGALMiniAssembler = new AGALMiniAssembler();
+				fragmentShader.assemble( Context3DProgramType.FRAGMENT,
+					"mov ft0, v0\n" +
+					"mov ft0.w, fc0.x\n" +
+					"mov oc, ft0\n" 
+				);		
+				
+				//Upload shader to Program3D
+				program3D.upload( vertexShader.agalcode, fragmentShader.agalcode);
+				
+				//Save Program3D in shaderCache
+				_shaderCache['PickingShader'] = program3D;
+			}
+			
+			//Return Program3D
+			return _shaderCache['PickingShader'];
 		}
 	}
 }

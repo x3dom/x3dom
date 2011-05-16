@@ -52,7 +52,7 @@
 			_context3D 	= context3D;
 		}
 		
-		public function render() : void
+		public function render(picking:Boolean = false) : void
 		{
 			//If Texture exists and it's not completly loaded -> Render later else -> Render now
 			if( _texture != null && !_texture.loaded )
@@ -63,10 +63,12 @@
 			else
 			{ 
 				//Associate material propeties
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ _material.diffuseColor[0], _material.diffuseColor[1], _material.diffuseColor[2],1.0-_material.transparency ] ) );
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ _material.specularColor[0], _material.specularColor[1], _material.specularColor[2], _material.shininess*128.0 ] ) );
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ _material.emissiveColor[0], _material.emissiveColor[1], _material.emissiveColor[2], 1.0 ] ) );
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.1 ] ) );
+				if(!picking) {
+					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ _material.diffuseColor[0], _material.diffuseColor[1], _material.diffuseColor[2],1.0-_material.transparency ] ) );
+					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ _material.specularColor[0], _material.specularColor[1], _material.specularColor[2], _material.shininess*128.0 ] ) );
+					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ _material.emissiveColor[0], _material.emissiveColor[1], _material.emissiveColor[2], 1.0 ] ) );
+					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.1 ] ) );
+				}
 				
 				if(_solid)
 					_context3D.setCulling(Context3DTriangleFace.FRONT);
@@ -79,12 +81,12 @@
 					//Associate vertices
 					_context3D.setVertexBufferAt( 0, _vertexBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_3 );
 					
-					if(!hasColor() && _normals.length > 0) {
+					if(!hasColor() && _normals.length > 0 && !picking) {
 						//Associate normals
 						_context3D.setVertexBufferAt( 2, _normalBuffer[i], 0, Context3DVertexBufferFormat.FLOAT_3 );
 					}
 					
-					if(hasColor()) {
+					if(hasColor() && !picking) {
 						//Associate colors
 						if(_colorRGBA)
 							_context3D.setVertexBufferAt( 3, _colorBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_4 );
@@ -93,13 +95,15 @@
 					}
 					
 					//Check if a texture exists
-					if(_texture != null) 
+					if(_texture != null && !picking) 
 					{
 						//Associate a texture with a sampler stage 
 						_context3D.setTextureAt(0, _texture.texture);
 						
 						//Associate texCoords
-						_context3D.setVertexBufferAt( 1, _texCoordBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_2 );
+						if(_texCoords.length > 0) {
+							_context3D.setVertexBufferAt( 1, _texCoordBuffer[i],  0, Context3DVertexBufferFormat.FLOAT_2 );
+						}
 						
 						if(_sphereMapping) {
 							_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  9, Vector.<Number>( [ 0.5, 2.0, 1.0, 1.0 ] ) );
