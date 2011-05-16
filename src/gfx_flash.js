@@ -126,14 +126,19 @@ x3dom.gfx_flash = (function() {
 		//Get Number of drawableObjects
 		var numDrawableObjects = scene.drawableObjects.length;
 		
+		var id = 0;
+		var idCount = 0;
+		var idList = [];
+		
 		//Iterate over all Objects for setup
 		for(var i=0; i<numDrawableObjects; i++) 
 		{
 			//Get object and transformation
 			var trafo = scene.drawableObjects[i][0];
 			var obj3d = scene.drawableObjects[i][1];
-
+			
 			this.setupShape(obj3d, trafo);
+		
 		}
 		
 		//Render the flash scene

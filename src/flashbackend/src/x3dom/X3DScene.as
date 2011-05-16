@@ -53,6 +53,8 @@
 		 */
 		private var _meshes:Array	= new Array();
 		
+		private var _drawableObjects:Array	= new Array();
+		
 		private var _shaderGenerator:ShaderGenerator;	
 		
 		public var _stage:Stage;
@@ -170,7 +172,7 @@
 				//Pass our M-Matrix to the shader program
 				_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  4, _meshes[i].modelMatrix, true );
 				
-				//Pass Min
+				//Pass min + max
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX, 8, Vector.<Number>([_min.x, _min.y, _min.z, 0.0]) );
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX, 9, Vector.<Number>([_max.x, _max.y, _max.z, 0.0]) );
 				
@@ -179,7 +181,6 @@
 				
 				//Render Mesh
 				_meshes[i].render(true);
-				
 			}
 			
 			_context3D.drawToBitmapData(_pickingData);
@@ -199,14 +200,8 @@
 			
 			_pickPos = pickPos;
 			
-			
 			pixelValue = _pickingData.getPixel32(_x, _y);
 			_objID = 255.0 - (pixelValue >> 24 & 0xFF);
-
-			//x3dom.Debug.logInfo("X: " + pickPos.x.toString() + " | Y: " + pickPos.y.toString() + " | Z: " + pickPos.z.toString() + " | objID:" + _objID.toString()); 
-			
-			
-			//x3dom.Debug.logInfo("PickingPass [min: " + _min.toString() + " | max: " + _max.toString() + " | x: " + _x.toString() + " | y: " + _y.toString() );
 		}
 		
 		/**
@@ -305,6 +300,9 @@
 			_projMatrix = projectionMatrix;
 		}
 		
+		/**
+		 * Scenes shaderGenerator
+		 */
 		public function get shaderGenerator() : ShaderGenerator
 		{
 			return _shaderGenerator;

@@ -91,7 +91,7 @@ package x3dom
 			{
 				_context3D.setDepthTest(false, Context3DCompareMode.LESS);
 				_context3D.setProgram( _scene.shaderGenerator.getBackgroundShader() );
-				
+	
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  0, Vector.<Number>([1.0, 0.5, 0.0, 0.0]));
 				
 				_backgroundPlane.render();
