@@ -26,6 +26,7 @@ x3dom_includes = '''
 <script type="text/javascript" src="../../src/nodes/Networking.js"></script>
 <script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
 <script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
 '''
 
 findreplace = [
