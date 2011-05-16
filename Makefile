@@ -24,6 +24,8 @@ BASE_FILES = \
 	${SRC_DIR}/MatrixMixer.js\
 	${SRC_DIR}/Viewarea.js\
     ${SRC_DIR}/Mesh.js\
+	${SRC_DIR}/nodes/Core.js\
+	${SRC_DIR}/nodes/Lighting.js\
 	${SRC_DIR}/nodes/Followers.js\
 	${SRC_DIR}/nodes/Time.js\
 	${SRC_DIR}/nodes/Interpolation.js\

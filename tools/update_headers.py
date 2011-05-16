@@ -19,6 +19,8 @@ x3dom_includes = '''
 <script type="text/javascript" src="../../src/Viewarea.js"></script>
 <script type="text/javascript" src="../../src/Mesh.js"></script>
 <script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
 <script type="text/javascript" src="../../src/nodes/Followers.js"></script>
 <script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
 <script type="text/javascript" src="../../src/nodes/Time.js"></script>
