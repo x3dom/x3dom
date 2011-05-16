@@ -14,8 +14,8 @@ COMPILER = ${JS_ENGINE} ${TOOL_DIR}/uglify.js --unsafe
 # order is important
 BASE_FILES = \
 	${SRC_DIR}/lang/Array.js\
-	${SRC_DIR}/x3dom-internals.js\
-    ${SRC_DIR}/x3dmain.js\
+	${SRC_DIR}/Internals.js\
+    ${SRC_DIR}/Main.js\
 	${SRC_DIR}/version.js\
 	${SRC_DIR}/debug.js\
 	${SRC_DIR}/gfx_webgl.js\
@@ -28,6 +28,7 @@ BASE_FILES = \
 	${SRC_DIR}/fields.js\
 	${SRC_DIR}/nodes/Core.js\
     ${SRC_DIR}/nodes/Rendering.js\
+    ${SRC_DIR}/nodes/Shape.js\
 	${SRC_DIR}/nodes/Lighting.js\
 	${SRC_DIR}/nodes/Followers.js\
 	${SRC_DIR}/nodes/Time.js\
