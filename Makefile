@@ -11,6 +11,7 @@ DIST_DIR = ${PREFIX}/dist
 JS_ENGINE ?= `which node`
 COMPILER = ${JS_ENGINE} ${TOOL_DIR}/uglify.js --unsafe
 
+# order is important
 BASE_FILES = \
 	${SRC_DIR}/lang/Array.js\
 	${SRC_DIR}/x3dom-internals.js\
@@ -26,6 +27,7 @@ BASE_FILES = \
     ${SRC_DIR}/Mesh.js\
 	${SRC_DIR}/fields.js\
 	${SRC_DIR}/nodes/Core.js\
+    ${SRC_DIR}/nodes/Rendering.js\
 	${SRC_DIR}/nodes/Lighting.js\
 	${SRC_DIR}/nodes/Followers.js\
 	${SRC_DIR}/nodes/Time.js\
