@@ -17,7 +17,7 @@
 		/**
 		 * Handle 3D Scene managing and rendering
 		 */
-		private var _scene:X3DScene;
+		private var _scene:X3DScene = null;
 		
 		/**
 		 * Contains all AS3 calback functions for JS
@@ -110,6 +110,7 @@
 			stage.addEventListener(MouseEvent.DOUBLE_CLICK, handleDoubleClick);
 			stage.addEventListener(MouseEvent.MOUSE_WHEEL, handleMouseWheel);
 			stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+			stage.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
 		}
 		
 		/**
@@ -178,11 +179,15 @@
 			if (e.ctrlKey)  { _mouseButton = 4; }
 			if (e.altKey)   { _mouseButton = 2; }
 			
+			_scene.getVolume();
+			_scene._x = _mouseDragX;
+			_scene._y = _mouseDragY;
+			
 			//Call JS MouseDown function
 			ExternalInterface.call("x3dom.bridge.onMouseDown", _mouseDragX, _mouseDragY, _mouseButton, _canvasIdx);
 			
 			//Add AS MouseMove listener 
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+			//stage.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
 		}
 		
 		/**
@@ -198,7 +203,7 @@
 			ExternalInterface.call("x3dom.bridge.onMouseUp", _mouseDragX, _mouseDragY, _mouseButton, _canvasIdx);
 			
 			//Remove AS MouseMove listener 
-			stage.removeEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+			//stage.removeEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
 			
 		}
 		
@@ -239,6 +244,11 @@
 			_mouseButton 	= 0;
 			_mouseDragging 	= false;
 			
+			if(_scene != null) {
+				_scene._x = _mouseDragX;
+				_scene._y = _mouseDragY;
+			}
+			
 			//Call JS MouseDown function
 			ExternalInterface.call("x3dom.bridge.onDoubleClick", _mouseDragX, _mouseDragY, _mouseButton, _canvasIdx);
 		}
@@ -257,8 +267,17 @@
 			if (e.ctrlKey)  { _mouseButton = 4; }
 			if (e.altKey)   { _mouseButton = 2; }
 			
+			if(_scene != null) {
+				_scene._x = _mouseDragX;
+				_scene._y = _mouseDragY;
+			}
+			
 			//Call JS MouseMove function
-			ExternalInterface.call("x3dom.bridge.onMouseMove", _mouseDragX, _mouseDragY, _mouseButton, _canvasIdx);
+			if(_mouseDragging) {
+				ExternalInterface.call("x3dom.bridge.onMouseDrag", _mouseDragX, _mouseDragY, _mouseButton, _canvasIdx);
+			} else {
+				ExternalInterface.call("x3dom.bridge.onMouseMove", _mouseDragX, _mouseDragY, _mouseButton, _canvasIdx);
+			}
 		}
 		
 		/**

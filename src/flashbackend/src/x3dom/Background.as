@@ -37,8 +37,9 @@ package x3dom
 			
 			//Init backgroundPlane
 			_backgroundPlane = new Mesh(-1, scene, context3D);
-			_backgroundPlane.setVertices( 0, Vector.<Number>( [-100,-100,0, -100,100,0, 100,-100,0, 100,100,0] ) );
-			_backgroundPlane.setIndices( 0, Vector.<uint>( [0, 1, 2, 3] ) );
+			_backgroundPlane.setVertices( 0, Vector.<Number>( [-1,-1,0, 1,-1,0, 1,1,0, -1,1,0] ) );
+			_backgroundPlane.setTexCoords( 0, Vector.<Number>( [0,1, 1,1, 1,0, 0,0] ) );
+			_backgroundPlane.setIndices( 0, Vector.<uint>( [0,1,2, 2,3,0] ) );
 		}
 		
 		public function init() : void
@@ -88,11 +89,13 @@ package x3dom
 			
 			if(_isBackTexture)
 			{
+				_context3D.setDepthTest(false, Context3DCompareMode.LESS);
 				_context3D.setProgram( _scene.shaderGenerator.getBackgroundShader() );
 				
 				_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  0, Vector.<Number>([1.0, 0.5, 0.0, 0.0]));
 				
 				_backgroundPlane.render();
+				_context3D.setDepthTest(true, Context3DCompareMode.LESS);
 			}
 			
 		}

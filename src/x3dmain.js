@@ -85,6 +85,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		
 		if(navigator.appName == "Microsoft Internet Explorer")
 			obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
+		else {
+			obj.setAttribute('type', 'application/x-shockwave-flash');
+			obj.setAttribute('data', swf_path);
+		}
 		
 		return document.getElementById(id);
 	};
