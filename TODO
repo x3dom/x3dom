@@ -17,6 +17,8 @@ TODO
 
 == Build system
    - get rid of src/Makfile and use toplevel Makefile throughout
+   - use python for building stuff, we need it anyways, building
+     needs are simple and it kills other dependencies (make, node).
 
 == Arch
    - move backends code into src/backends/*
