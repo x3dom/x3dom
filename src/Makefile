@@ -3,7 +3,7 @@ default: bundle
 #--- FILES ----
 BUNDLE := x3dom.js
 
-BASIC := lang/Array.js Internals.js Main.js version.js
+BASIC := lang/Array.js Internals.js X3DCanvas.js Runtime.js Main.js version.js
 DEBUG := debug.js 
 GFX := gfx_webgl.js gfx_flash.js
 NODE := Mesh.js X3DDocument.js MatrixMixer.js Viewarea.js node/Core.js node/Rendering.js node/Shape.js node/Interpolation.js node/Followers.js node/Time.js node/Networking.js node/EnvironmentalEffects.js node/Navigation.js node/Text.js node/Sound.js node/Texturing.js node/Shaders.js node/Geoemtry3D.js
@@ -23,10 +23,10 @@ clean:
 cc: closureCompiler
 
 closureCompiler:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=lang/Array.js --js=Internals.js --js=Main.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js --js=Mesh.js --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=fields.js  --js=nodes/Core.js --js=nodes/Rendering.js --js=nodes/Shape.js --js=nodes/Lighting.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=nodes/EnvironmentalEffects.js --js=nodes/Text.js --js=nodes/Sound.js --js=nodes/Texturing.js --js=nodes/Shaders.js --js=nodes/Geoemtry3D.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --js=lang/Array.js --js=Internals.js --js=X3DCanvas.js --js=Runtime.js --js=Main.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js --js=Mesh.js --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=fields.js  --js=nodes/Core.js --js=nodes/Rendering.js --js=nodes/Shape.js --js=nodes/Lighting.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=nodes/EnvironmentalEffects.js --js=nodes/Text.js --js=nodes/Sound.js --js=nodes/Texturing.js --js=nodes/Shaders.js --js=nodes/Geoemtry3D.js
 	
 ccVerbose:  
-	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=lang/Array.js --js=Internals.js --js=Main.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js  --js=Mesh.js --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=fields.js  --js=nodes/Core.js  --js=nodes/Rendering.js --js=nodes/Shape.js  --js=nodes/Lighting.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=nodes/EnvironmentalEffects.js --js=nodes/Text.js  --js=nodes/Sound.js  --js=nodes/Texturing.js --js=nodes/Shaders.js --js=nodes/Geoemtry3D.js
+	java -jar ../tools/compiler.jar --js_output_file=x3dom.js --summary_detail_level=3 --warning_level=VERBOSE --js=lang/Array.js --js=Internals.js  --js=X3DCanvas.js --js=Runtime.js --js=Main.js --js=debug.js --js=gfx_webgl.js --js=gfx_flash.js  --js=Mesh.js --js=X3DDocument.js --js=MatrixMixer.js --js=Viewarea.js --js=fields.js  --js=nodes/Core.js  --js=nodes/Rendering.js --js=nodes/Shape.js  --js=nodes/Lighting.js --js=nodes/Followers.js --js=nodes/Time.js --js=nodes/Interpolation.js --js=nodes/Networking.js --js=nodes/EnvironmentalEffects.js --js=nodes/Text.js  --js=nodes/Sound.js  --js=nodes/Texturing.js --js=nodes/Shaders.js --js=nodes/Geoemtry3D.js
 
 runServer:
 	python ../tools/testserver.py &
