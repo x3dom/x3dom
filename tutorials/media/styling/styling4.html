@@ -6,15 +6,15 @@
     <script src="http://www.x3dom.org/x3dom/example/x3dom.js"></script>
 	<style>
 
-    body {
-        margin:0;
-        padding:10px;
-    }
+    html {width:100%;height:100%;margin:0;padding:0;}
+    body {margin:0;padding:10px;width:100%;height:100%;}
 
     #the_element {
         width: 50%;
         height: 50%;
         border: none;
+        display: block;
+        position:relative;
         background:#000 url(http://www.x3dom.org/x3dom/example/texture/solarSystem/starsbg.png);
     }
 
@@ -72,7 +72,7 @@
   </head>
   <body id="body">
     <h1 id="title">Styling tutorial 4</h1>
-    <x3d id="the_element">
+    <x3d id="the_element" showlog="false" showstat="false">
       <button id="toggler" onclick="toggle(this); return false;">Zoom</button>
       <scene>
       <shape>
