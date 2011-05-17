@@ -1,12 +1,11 @@
-/*!
-* x3dom javascript library 0.1
-* http://www.x3dom.org/
-*
-* Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
-*     based on code originally provided by Philip Taylor:
-*     http://philip.html5.org
-* Dual licensed under the MIT and GPL licenses.
-*
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org/
+ *
+ * Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
+ *     based on code originally provided by Philip Taylor:
+ *     http://philip.html5.org
+ * Dual licensed under the MIT and GPL licenses.
 */
 
 // the x3dom.nodes namespace
@@ -618,15 +617,6 @@ x3dom.registerNodeType(
 );
 
 
-
-
-
-
-// MESH => Mesh.js
-
-
-
-
 /* ### X3DChildNode ### */
 x3dom.registerNodeType(
     "X3DChildNode",
@@ -637,7 +627,6 @@ x3dom.registerNodeType(
         }
     )
 );
-
 
 /* ### X3DBindableNode ### */
 x3dom.registerNodeType(
@@ -1082,7 +1071,6 @@ x3dom.registerNodeType(
     )
 );
 
-
 // Not a real X3D node type
 // TODO; refactor to Scene + Viewarea node --> via Layering component?
 
@@ -1103,7 +1091,5 @@ x3dom.registerNodeType(
         }
     )
 );
-
-
 /* ### END OF NODES ###*/
 
