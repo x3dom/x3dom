@@ -22,6 +22,7 @@ x3dom_includes = '''
 <script type="text/javascript" src="../../src/fields.js"></script>
 <script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
 <script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
 <script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
 <script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shape.js"></script>
