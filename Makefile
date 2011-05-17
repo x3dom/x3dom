@@ -31,6 +31,7 @@ BASE_FILES = \
 	${SRC_DIR}/MatrixMixer.js\
 	${SRC_DIR}/Viewarea.js\
 	${SRC_DIR}/fields.js\
+	${SRC_DIR}/nodes/NodeNameSpace.js\
 	${SRC_DIR}/nodes/Core.js\
 	${SRC_DIR}/nodes/Bindable.js\
     ${SRC_DIR}/nodes/Rendering.js\
