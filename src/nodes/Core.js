@@ -8,54 +8,6 @@
  * Dual licensed under the MIT and GPL licenses.
 */
 
-// the x3dom.nodes namespace
-// x3dom.nodes = {};
-
-/** @namespace the x3dom.nodeTypes namespace. */
-x3dom.nodeTypes = {};
-
-/** @namespace the x3dom.nodeTypesLC namespace. Stores nodetypes in lowercase */
-x3dom.nodeTypesLC = {};
-
-/** @namespace the x3dom.components namespace. */
-x3dom.components = {};
-
-/** Cache for primitive nodes (Box, Sphere, etc.) */
-x3dom.geoCache = [];
-
-/** Registers the node defined by @p nodeDef.
-
-    The node is registered with the given @p nodeTypeName and @p componentName.
-
-    @param nodeTypeName the name of the nodetype (e.g. Material, Shape, ...)
-    @param componentName the name of the component the nodetype belongs to
-    @param nodeDef the definition of the nodetype
- */
-x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
-    x3dom.debug.logInfo("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
-    if (x3dom.components[componentName] === undefined) {
-        x3dom.debug.logInfo("Adding new component [" + componentName + "]");
-        x3dom.components[componentName] = {};
-    }
-    else {
-        x3dom.debug.logInfo("Using component [" + componentName + "]");
-    }
-    nodeDef._typeName = nodeTypeName;
-    nodeDef._compName = componentName;
-    x3dom.components[componentName][nodeTypeName] = nodeDef;
-    x3dom.nodeTypes[nodeTypeName] = nodeDef;
-    x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
-};
-
-x3dom.isX3DElement = function(node) {
-    // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
-    return (node.nodeType === Node.ELEMENT_NODE && node.localName &&
-        (x3dom.nodeTypes[node.localName] || x3dom.nodeTypesLC[node.localName.toLowerCase()] ||
-         node.localName.toLowerCase() === "x3d" || node.localName.toLowerCase() === "websg" ||
-         node.localName.toLowerCase() === "scene" || node.localName.toLowerCase() === "route" ));
-};
-
-
 // ### X3DNode ###
 x3dom.registerNodeType(
     "X3DNode",
