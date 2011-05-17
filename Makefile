@@ -29,6 +29,7 @@ BASE_FILES = \
     ${SRC_DIR}/Mesh.js\
 	${SRC_DIR}/fields.js\
 	${SRC_DIR}/nodes/Core.js\
+	${SRC_DIR}/nodes/Bindable.js\
     ${SRC_DIR}/nodes/Rendering.js\
     ${SRC_DIR}/nodes/Shape.js\
 	${SRC_DIR}/nodes/Lighting.js\
