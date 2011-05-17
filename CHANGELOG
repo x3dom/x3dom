@@ -1,5 +1,66 @@
+2011-05-17  thyrell
+
+	 [r1087] Removed old comments
+	 [r1086] Refactoring: NodeNameSpace to nodes/NodeNameSpace.js
+	 [r1085] Makefile update
+	 [r1084] Makefile fixes
+	 [r1083] Moved build_x3dom.bat to toplevel/build.bat
+	 [r1082] Refactoring: BindableBag/Stack to node/Bindable.js
+
+2011-05-16  akustikkoppler
+
+	 [r1081] - Add DrawableObject.as
+	 [r1080] - Start Flash Def/Use implementation
+
+2011-05-16  thyrell
+
+	 [r1079] Fixed build file to include refactored stuff
+	 [r1078] Fixed typos in makefile
+	 [r1077] Refactor: X3DCanvas and Runtime get their own files
+	 [r1076] DRYing: x3dom-internals.js to Internals.js and x3dmain.js
+	  to Main.js
+	 [r1075] Refactor: Shape nodes code -> node/Shape.js
+	 [r1074] Refacored Rendering nodes to node/Rendering.js
+	 [r1073] Refactor Geometry3D nodes to node/Geometry3D.js
+	 [r1072] Refactor Geometry3D nodes to node/Geometry3D.js
+	 [r1071] Refactor Shadres Node to node/Shaders.js
+	 [r1070] Added placeholder for Shader nodes
+	 [r1069] Refactored Texturing nodes to node/Texturing.js
+	 [r1068] Refactored Sound nodes to nodes/Sound.js
+	 [r1067] Refactor Text node to nodes/Text.js
+	 [r1066] Refactored Navigation node to nodes/Navigation.js
+	 [r1065] Refresh tests to reflect refactoring changes
+	 [r1064] Refactor Environmental Effects to
+	  nodes/EnvironmentalEffects.js
+	 [r1063] Refactored: x3d.js -> nodes/Core.js (needs more cleanup
+	  and seperating of components); Lighting code to nodes/Lighting.js
+
+2011-05-16  akustikkoppler
+
+	 [r1062] - Add Flash Color Picking
+
+2011-05-16  thyrell
+
+	 [r1061] todo
+	 [r1060] Fixed styling tutorial HTML (zoom)
+
+2011-05-12  akustikkoppler
+
+	 [r1059]
+
+2011-05-11  akustikkoppler
+
+	 [r1058] - fix Flash/XHTML/IE9 embeding
+
 2011-05-09  thyrell
 
+	 [r1057] Refactor: Time nodes to src/Time.js
+	 [r1056] Interpolator to nodes/Interpolator.js
+	 [r1055] Interpolator to nodes/Interpolator.js
+	 [r1054] Refactored: Networking nodes to nodes/Networking.js
+	 [r1053] Rename of tools/config to natural-docs-config
+	 [r1052] Cleanup: meta.js -> version.js
+	 [r1051] Regnerated ChangeLog
 	 [r1050] Rename to uppercase
 	 [r1049] Whoops
 	 [r1048] Refactor mesh.js -> Mesh.js
