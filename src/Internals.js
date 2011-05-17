@@ -1,16 +1,13 @@
-/*!
-* x3dom javascript library 0.1
-* http://x3dom.org/
-*
-* Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
-*     based on code originally provided by Philip Taylor:
-*     http://philip.html5.org
-* Dual licensed under the MIT and GPL licenses.
-*/
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org/
+ *
+ * Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
+ *     based on code originally provided by Philip Taylor:
+ *     http://philip.html5.org
+ * Dual licensed under the MIT and GPL licenses.
+ */
 
-
-
-////// THIS SHOULD GO TO src/x3dom.js, but current buildsystem overwrites it, so it's palced here >>>>>>>>>>>>>
 /*
  * Namespace: x3dom
  *

@@ -6,7 +6,7 @@
  *     based on code originally provided by Philip Taylor:
  *     http://philip.html5.org
  * Dual licensed under the MIT and GPL licenses.
-*/
+ */
 
 // ### X3DNode ###
 x3dom.registerNodeType(
