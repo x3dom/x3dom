@@ -42,7 +42,13 @@ if __name__ == '__main__':
     
     # Create the version.js and fill in the svn revision    
     # Read the version from the VERSION file
-    version_file = open("VERSION", "r")
+    in_src = False;
+    if os.path.isfile("VERSION"):
+        version_file = open("VERSION", "r")
+    else:
+        version_file = open("src/VERSION", "r")
+        in_src = True;
+        
     version = version_file.read()
     # Make sure to only use the version string without '\n' etc. 
     version = version.split()[0]
@@ -58,8 +64,12 @@ if __name__ == '__main__':
     except:
         svn_revision = 0
     print "Revision '", svn_revision, "'"
+
     # Write the version and revision to file
-    version_file = open("version.js", "w")
+    version_file_name = 'version.js'
+    if in_src:
+        version_file_name = 'src/version.js'
+    version_file = open(version_file_name, "w")
     version_file.write(VERSION_TEMPLATE % (version, svn_revision))
     version_file.close()            
     
