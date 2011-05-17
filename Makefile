@@ -9,6 +9,10 @@ PREFIX = .
 DIST_DIR = ${PREFIX}/dist
 
 JS_ENGINE ?= `which node`
+
+# Self contained Node.js binaries for Windows can be found here http://node-js.prcn.co.cc/
+#JS_ENGINE ='dist/node/bin/node.exe'
+
 COMPILER = ${JS_ENGINE} ${TOOL_DIR}/uglify.js --unsafe
 
 # order is important
