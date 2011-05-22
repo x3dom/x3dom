@@ -207,20 +207,20 @@ package x3dom
 				var vertexShader:AGALMiniAssembler = new AGALMiniAssembler();
 				vertexShader.assemble( Context3DProgramType.VERTEX,				
 					"m44 op, va0, vc0\n" +				//Position*MVP-Matrix
-					//"m43 vt3, va0, vc4\n" +				//Position*M-Matrix
+					"m44 vt3, va0, vc4\n" +				//Position*M-Matrix
 					
-					"dp4 vt3.x, va0, vc4\n" +				//Position*M-Matrix
+					/*"dp4 vt3.x, va0, vc4\n" +				//Position*M-Matrix
 					"dp4 vt3.y, va0, vc5\n" +				//Position*M-Matrix
-					"dp4 vt3.z, va0, vc6\n" +				//Position*M-Matrix
+					"dp4 vt3.z, va0, vc6\n" +				//Position*M-Matrix*/
 					
 								
 					"mov vt1, vc8\n" +
 					"mov vt2, vc9\n" +
 					"sub vt0, vt2, vt1\n" +				//Dia = max - min
 					"sub vt3, vt3.xyz0, vt1.xyz0\n" +
-					"div vt4.x, vt3.x, vt0.x\n" +
-					"div vt4.y, vt3.y, vt0.y\n" +
-					"div vt4.z, vt3.z, vt0.z\n" +
+					"div vt4, vt3, vt0\n" +
+					//"div vt4.y, vt3.y, vt0.y\n" +
+					//"div vt4.z, vt3.z, vt0.z\n" +
 					"mov v0, vt4.xyz0\n"
 				);
 				

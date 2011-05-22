@@ -32,7 +32,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 	this.createFlashObject = function(x3dElem) {
 		x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
-
+		
 		//Get X3D-Element ID
 		var id = x3dElem.getAttribute("id");
 		if (id !== null) {
@@ -45,7 +45,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		//Get SWFPath
 		var swf_path = x3dElem.getAttribute("swfpath");
 		if (swf_path === null) {
-            swf_path = "x3dom.swf";
+            swf_path = "FlashBackend.swf";
         }
 
 		//Get width from x3d-Element or set default
@@ -59,7 +59,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
 		}
 		//Get height from x3d-Element or set default
-		var height = x3dElem.getAttribute("height")
+		var height = x3dElem.getAttribute("height");
 		if( height == null ) {
 			height = 400;
 		}else{
@@ -76,7 +76,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 		this.appendParam(obj, 'menu', 'false');
 		this.appendParam(obj, 'quality', 'high');
-		this.appendParam(obj, 'wmode', 'direct');
+		this.appendParam(obj, 'wmode', 'gpu');
 		this.appendParam(obj, 'allowScriptAccess', 'always');
 		this.appendParam(obj, 'flashvars', 'width=' + width + '&height=' + height + '&canvasIdx=' + this.canvasIdx);
 		this.appendParam(obj, 'movie', swf_path);
@@ -90,7 +90,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			obj.setAttribute('data', swf_path);
 		}
 
-		return document.getElementById(id);
+		return obj;
 	};
 
     this.createHTMLCanvas = function(x3dElem)
@@ -754,7 +754,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
 
     this.doc.onload = function () {
         x3dom.debug.logInfo("loaded '" + uri + "'");
-
+		
         if (x3dCanvas.hasRuntime) {
 
 			// requestAnimationFrame https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js

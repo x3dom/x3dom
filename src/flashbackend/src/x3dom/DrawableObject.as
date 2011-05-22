@@ -1,31 +1,42 @@
+/**
+ * x3dom actionscript library 0.1
+ * http://x3dom.org/
+ *
+ * Copyright (c) 2011 Johannes Behr, Yvonne Jung, Timo Sturm
+ * Dual licensed under the MIT and GPL licenses.
+ */
+
 package x3dom
 {
 	import flash.display3D.Context3D;
 	import flash.geom.Matrix3D;
+	import flash.geom.Vector3D;
 
 	public class DrawableObject
 	{
-		private var _scene:X3DScene;
 		private var _context3D:Context3D;
 		
 		private var _id:uint;
-		private var _mesh:Mesh;
+		private var _refID:uint;
+		private var _shape:Shape;
 		private var _transform:Matrix3D;
+		private var _updated:Boolean;
 		
-		public function DrawableObject(id:uint, scene:X3DScene, context3D:Context3D)
+		public function DrawableObject(id:uint, refID:uint)
 		{
 			_id			= id;
-			_scene		= scene;
-			_context3D	= context3D;
+			_refID		= refID;
+			_context3D	= FlashBackend.getContext();
 			
-			_mesh		= null;
+			_shape		= null;
 			_transform	= new Matrix3D();
+			_updated	= true;
 		}
 		
 		/**
 		 * 
 		 */
-		public function set id(id:Number) : void
+		public function set id(id:uint) : void
 		{
 			_id = id;
 		}
@@ -33,7 +44,7 @@ package x3dom
 		/**
 		 * @private
 		 */
-		public function get id() : Number
+		public function get id() : uint
 		{
 			return _id;
 		}
@@ -41,20 +52,52 @@ package x3dom
 		/**
 		 * 
 		 */
-		public function set mesh(mesh:Mesh) : void
+		public function set refID(refID:uint) : void
 		{
-			_mesh = mesh;
+			_refID = refID;
 		}
 		
 		/**
 		 * @private
 		 */
-		public function get mesh() : Mesh
+		public function get refID() : uint
 		{
-			if(_mesh = null)
-				_mesh = new Mesh(_id, _scene, _context3D);
+			return _refID;
+		}
+		
+		/**
+		 * 
+		 */
+		public function set updated(updated:Boolean) : void
+		{
+			_updated = updated;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get updated() : Boolean
+		{
+			return _updated;
+		}
+			
+		/**
+		 * 
+		 */
+		public function set shape(shape:Shape) : void
+		{
+			_shape = shape;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get shape() : Shape
+		{
+			if(_shape == null)
+				_shape = new Shape();
 
-			return _mesh;
+			return _shape;
 		}
 		
 		/**
@@ -62,6 +105,7 @@ package x3dom
 		 */
 		public function set transform(transform:Matrix3D) : void
 		{
+			_updated = true;
 			_transform = transform;
 		}
 		
@@ -71,6 +115,30 @@ package x3dom
 		public function get transform() : Matrix3D
 		{
 			return _transform;
+		}
+		
+		/**
+		 * 
+		 */
+		public function get min() : Vector3D
+		{
+			return _transform.transformVector(_shape.boundingBox.min);
+		}
+		
+		/**
+		 * 
+		 */
+		public function get max() : Vector3D
+		{
+			return _transform.transformVector(_shape.boundingBox.max);
+		}
+		
+		/**
+		 * 
+		 */
+		public function get center() : Vector3D
+		{
+			return _transform.transformVector(_shape.boundingBox.center);
 		}
 	}
 }

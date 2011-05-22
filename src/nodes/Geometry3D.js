@@ -147,7 +147,7 @@ x3dom.registerNodeType(
 						this._mesh._indices[0].push(first + 1);
 					}
 				}
-
+				
 				this._mesh._invalidate = true;
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;

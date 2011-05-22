@@ -10,15 +10,15 @@ package x3dom
 	import flash.text.TextFormat;
 	import flash.text.TextFormatAlign;
 	
-	public class X3DText extends Mesh
+	import x3dom.texturing.BitmapTexture;
+	
+	public class X3DText extends Shape
 	{
 		private var _textField:TextField;
 		private var _textFormat:TextFormat;
 		
-		public function X3DText( id:Number, scene:X3DScene, context3D:Context3D )
-		{
-			super(id, scene, context3D);
-			
+		public function X3DText()
+		{		
 			_textField = new TextField();
 			_textField.autoSize = TextFieldAutoSize.LEFT;
 			_textField.antiAliasType = AntiAliasType.ADVANCED;
@@ -70,7 +70,7 @@ package x3dom
 			bitmapData.draw(_textField);
 			
 			//Set bitmap as texture
-			setTextureFromBitmap( new Bitmap(bitmapData), 1.0 );
+			this.texture = new BitmapTexture(new Bitmap(bitmapData));
 			
 			//Create Plane
 			var width:Number  = Utils.nextBestPowerOfTwo(_textField.width)/100.0;
