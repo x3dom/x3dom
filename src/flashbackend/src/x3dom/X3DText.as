@@ -70,7 +70,7 @@ package x3dom
 			bitmapData.draw(_textField);
 			
 			//Set bitmap as texture
-			this.texture = new BitmapTexture(new Bitmap(bitmapData));
+			this.texture = new BitmapTexture(new Bitmap(bitmapData), true);
 			
 			//Create Plane
 			var width:Number  = Utils.nextBestPowerOfTwo(_textField.width)/100.0;
