@@ -1,21 +1,33 @@
-﻿package x3dom {
+﻿/**
+ * x3dom actionscript library 0.1
+ * http://x3dom.org/
+ *
+ * Copyright (c) 2011 Johannes Behr, Yvonne Jung, Timo Sturm
+ * Dual licensed under the MIT and GPL licenses.
+ */
+
+package x3dom {
 	
+	import flash.display.BitmapData;
 	import flash.display.Scene;
 	import flash.external.ExternalInterface;
 	import flash.geom.*;
 	
-	import mx.controls.Text;
-	
 	import x3dom.*;
+	import x3dom.texturing.*;
 	
 	public class Bridge {
 		
 		private var _scene:X3DScene;
+		
+		private var _renderer:Renderer;
 
-		public function Bridge(scene:X3DScene) 
+		public function Bridge(scene:X3DScene, renderer:Renderer) 
 		{
 			//Set scene
 			_scene = scene;
+			
+			_renderer = renderer;
 			
 			//Register JS callback functions
 			ExternalInterface.addCallback("renderScene", renderScene);
@@ -26,12 +38,13 @@
 			ExternalInterface.addCallback("setMeshTransform", setMeshTransform);
 			ExternalInterface.addCallback("setMeshMaterial", setMeshMaterial);
 			ExternalInterface.addCallback("setMeshColors", setMeshColors);
-			ExternalInterface.addCallback("setMeshColorsRGBA", setMeshColorsRGBA);
 			ExternalInterface.addCallback("setMeshIndices", setMeshIndices);
 			ExternalInterface.addCallback("setMeshNormals", setMeshNormals);
 			ExternalInterface.addCallback("setMeshTexCoords", setMeshTexCoords);
 			ExternalInterface.addCallback("setMeshVertices", setMeshVertices);
 			ExternalInterface.addCallback("setMeshTexture", setMeshTexture);
+			ExternalInterface.addCallback("setPixelTexture", setPixelTexture);
+			ExternalInterface.addCallback("setCanvasTexture", setCanvasTexture);
 			ExternalInterface.addCallback("setLights", setLights);
 			ExternalInterface.addCallback("setText", setText);
 			ExternalInterface.addCallback("setSphereMapping", setSphereMapping);
@@ -40,17 +53,17 @@
 		
 		private function renderScene() : void
 		{
-			_scene.renderScene();
+			FlashBackend.getLoadingScreen().visible = false;
+			_scene.checkForRemovedNodes();
+			_renderer.render();
 		}
 		
 		private function pickValue(value:Object) : Object
-		{			
-			_scene._picking = true;
-			
-			return {objID: _scene._objID,
-					pickPosX: _scene._pickPos.x,
-					pickPosY: _scene._pickPos.y,
-					pickPosZ: _scene._pickPos.z };
+		{						
+			return {objID: _scene.pickedObj,
+					pickPosX: _scene.pickedPos.x,
+					pickPosY: _scene.pickedPos.y,
+					pickPosZ: _scene.pickedPos.z };
 		}
 		
 		private function setViewMatrix(value:Object) : void
@@ -96,85 +109,99 @@
 		}
 		
 		private function setText(value:Object) : void
-		{
-			_scene.getMesh( Number(value.id), "TEXT" ).setTextProperties( value );
+		{		
+			var text:X3DText = new X3DText();
+			text.setTextProperties(value);
+			_scene.getDrawableObject( uint(value.id) ).shape = text;
 		}
 		
 		private function setMeshTransform(value:Object) : void
 		{
-			//Transform trafo from String to Array
 			var transform:Array = String(value.transform).split(',');
 			
-			_scene.getMesh( Number(value.id) ).modelMatrix = new Matrix3D( Vector.<Number>( transform ) );
+			_scene.getDrawableObject( uint(value.id), uint(value.refID) ).transform = new Matrix3D( Vector.<Number>( transform ) );
 		}
 		
 		private function setMeshSolid(value:Object) : void
 		{			
-			_scene.getMesh( Number(value.id) ).solid = Boolean( value.solid );
+			_scene.getDrawableObject( uint(value.id) ).shape.solid = Boolean( value.solid );
 		}
 		
 		private function setSphereMapping(value:Object) : void
 		{
 			//Transform trafo from String to Array
-			_scene.getMesh( Number(value.id) ).sphereMapping = Boolean(value.sphereMapping);
+			_scene.getDrawableObject( uint(value.id) ).shape.sphereMapping = Boolean(value.sphereMapping);
 		}
 		
 		private function setMeshMaterial(value:Object) : void
-		{
-			_scene.getMesh( Number(value.id) ).setMaterial( value );
+		{	
+			var material:Material = new Material();
+			material.ambientIntensity 	= Number( value.ambientIntensity );
+			material.diffuseColor 		= Vector.<Number>( String(value.diffuseColor).split(',') );
+			material.emissiveColor 		= Vector.<Number>( String(value.emissiveColor).split(',') );
+			material.shininess 			= Number( value.shininess );
+			material.specularColor		= Vector.<Number>( String(value.specularColor).split(',') );
+			material.transparency		= Number( value.transparency );
+			
+			_scene.getDrawableObject( uint(value.id) ).shape.material = material;
 		}
 		
 		private function setMeshColors(value:Object) : void 
 		{
 			//Transform colors from String to Array
 			var colors:Array = String(value.colors).split(',');	
-			_scene.getMesh( Number(value.id) ).setColors( value.idx, Vector.<Number>(colors) );
-		}
-		
-		private function setMeshColorsRGBA(value:Object) : void 
-		{
-			//Transform colors from String to Array
-			var colors:Array = String(value.colors).split(',');	
-			_scene.getMesh( Number(value.id) ).setColorsRGBA( value.idx, Vector.<Number>(colors) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(colors), uint(value.components) );
 		}
 		
 		private function setMeshIndices(value:Object) : void 
 		{
 			//Transform indices from String to Array
 			var indices:Array = String(value.indices).split(',');
-				
-			_scene.getMesh( Number(value.id) ).setIndices( value.idx, Vector.<uint>(indices) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(indices) );
 		}
 		
 		private function setMeshNormals(value:Object) : void 
 		{
 			//Transform vertices from String to Array
 			var normals:Array = String(value.normals).split(',');
-			_scene.getMesh( Number(value.id) ).setNormals( value.idx, Vector.<Number>(normals) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(normals) );
 		}
 		
 		private function setMeshTexCoords(value:Object) : void 
 		{
 			//Transform vertices from String to Array
 			var texCoords:Array = String(value.texCoords).split(',');
-				
-			_scene.getMesh( Number(value.id) ).setTexCoords( value.idx, Vector.<Number>(texCoords) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(texCoords) );
 		}
 		
 		private function setMeshVertices(value:Object) : void 
 		{
 			//Transform vertices from String to Array
 			var vertices:Array = String(value.vertices).split(',');
-
-			_scene.getMesh( Number(value.id) ).setVertices( value.idx, Vector.<Number>(vertices) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(vertices) );
 		}
 		
 		private function setMeshTexture(value:Object) : void 
 		{
-			//Transform vertices from String to Array
-			var vertices:Array = String(value.vertices).split(',');
+			var texture:ImageTexture = new ImageTexture( String(value.url),
+														 Boolean(Number(value.origChannelCount) == 1.0 || Number(value.origChannelCount) == 2.0),
+														 Boolean(value.repeatS),
+														 Boolean(value.repeatT) );
 
-			_scene.getMesh( Number(value.id) ).setTexture( value );
+			_scene.getDrawableObject( uint(value.id) ).shape.texture = texture;
+		}
+		
+		private function setPixelTexture(value:Object) : void 
+		{	
+			_scene.getDrawableObject( uint(value.id) ).shape.texture = new PixelTexture( Number(value.width),
+																						 Number(value.height),
+																						 Number(value.comp),
+																						 String(value.pixels).split(',') );;
+		}
+		
+		private function setCanvasTexture(value:Object) : void 
+		{	
+
 		}
 
 	}

@@ -10,6 +10,10 @@ package x3dom
 			return (Math.round(r*255) << 16) | (Math.round(g*255) << 8) | Math.round(b*255);
 		}
 		
+		public static function rgba2Hex(r:Number, g:Number, b:Number, a:Number) : uint {
+			return (Math.round(a) << 24) | (Math.round(r) << 16) | (Math.round(g) << 8) | Math.round(b);
+		}
+		
 		/**
 		 * Check if value is Power of 2
 		 */

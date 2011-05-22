@@ -17,6 +17,7 @@ object {
 	margin: 0;
 	padding: 0;
 	border: none;
+	z-index: 0;
 }
 
 X3D:hover, 
@@ -94,4 +95,3 @@ x3d:hover,
   clear: both; 
   visibility: hidden;
 }
-
