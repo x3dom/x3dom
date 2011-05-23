@@ -31,8 +31,8 @@ x3dom.registerNodeType(
             //        please change manually until fixed.
             //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
-            this.addField_SFVec3d(ctx, 'geoGridOrigin', 0 0 0);
-            this.addField_MFDouble(ctx, 'height', 0 0);
+            this.addField_SFVec3d(ctx, 'geoGridOrigin', 0, 0, 0);
+            this.addField_MFDouble(ctx, 'height', 0, 0);
             this.addField_SFBool(ctx, 'ccw', TRUE);
             this.addField_SFBool(ctx, 'colorPerVertex', TRUE);
             this.addField_SFDouble(ctx, 'creaseAngle', 0);
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'child2Url', []);
             this.addField_MFString(ctx, 'child3Url', []);
             this.addField_MFString(ctx, 'child4Url', []);
-            this.addField_SFVec3d(ctx, 'center', 0 0 0);
+            this.addField_SFVec3d(ctx, 'center', 0, 0, 0);
             this.addField_SFFloat(ctx, 'range', 10);
             this.addField_SFString(ctx, 'referenceBindableDescription', []);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ChildGroup);
@@ -104,7 +104,7 @@ x3dom.registerNodeType(
             //        please change manually until fixed.
             //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
-            this.addField_SFVec3d(ctx, 'geoCoords', 0 0 0);
+            this.addField_SFVec3d(ctx, 'geoCoords', 0,0,0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ChildGroup);
         },
         {
@@ -148,7 +148,7 @@ x3dom.registerNodeType(
             //        please change manually until fixed.
             //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
-            this.addField_SFVec3d(ctx, 'geoCoords', 0 0 0);
+            this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
             this.addField_SFBool(ctx, 'rotateYUp', FALSE);
         },
         {
@@ -191,7 +191,7 @@ x3dom.registerNodeType(
             // FIXME; default values must be comma separated, 
             //        please change manually until fixed.
             //        Also (base) class names may differ.
-            this.addField_SFVec3d(ctx, 'geoCenter', 0 0 0);
+            this.addField_SFVec3d(ctx, 'geoCenter', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.EnvironmentSensor);
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
         },
@@ -234,11 +234,11 @@ x3dom.registerNodeType(
             // FIXME; default values must be comma separated, 
             //        please change manually until fixed.
             //        Also (base) class names may differ.
-            this.addField_SFVec3d(ctx, 'geoCenter', 0 0 0);
-            this.addField_SFRotation(ctx, 'rotation', 0 0 1 0);
-            this.addField_SFVec3f(ctx, 'scale', 1 1 1);
-            this.addField_SFRotation(ctx, 'scaleOrientation', 0 0 1 0);
-            this.addField_SFVec3f(ctx, 'translation', 0 0 0);
+            this.addField_SFVec3d(ctx, 'geoCenter', 0, 0, 0);
+            this.addField_SFRotation(ctx, 'rotation', 0, 0, 1, 0);
+            this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
+            this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
+            this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.Transform);
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
         },
@@ -262,8 +262,8 @@ x3dom.registerNodeType(
             //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
             this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
-            this.addField_SFRotation(ctx, 'orientation', 0 0 1 0);
-            this.addField_SFVec3d(ctx, 'position', 0 0 100000);
+            this.addField_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
+            this.addField_SFVec3d(ctx, 'position', 0, 0, 100000);
             this.addField_SFBool(ctx, 'headlight', TRUE);
             this.addField_MFString(ctx, 'navType', EXAMINE);
             this.addField_SFFloat(ctx, 'speedFactor', 1.0);
