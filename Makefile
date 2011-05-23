@@ -48,7 +48,8 @@ BASE_FILES = \
 	${SRC_DIR}/nodes/Sound.js\
 	${SRC_DIR}/nodes/Texturing.js\
     ${SRC_DIR}/nodes/Shaders.js\
-    ${SRC_DIR}/nodes/Geometry3D.js
+    ${SRC_DIR}/nodes/Geometry3D.js\
+    ${SRC_DIR}/nodes/Geospatial.js
 
 MODULES = ${BASE_FILES}
 
