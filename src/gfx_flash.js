@@ -146,10 +146,12 @@ x3dom.gfx_flash = (function() {
 				
 				this.setupShape(obj3d, trafo, RefList[obj3d._objectID]);
 			}
+		
+		}		
 			
-			//Render the flash scene
-			this.object.renderScene();
-		}
+		//Render the flash scene
+		this.object.renderScene();
+		
 		
 	};
 	

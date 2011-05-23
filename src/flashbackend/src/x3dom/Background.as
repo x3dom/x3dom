@@ -62,22 +62,25 @@ package x3dom
 				if( _texURLs[0] != "" && _texURLs[1] != "" && _texURLs[2] != "" &&
 					_texURLs[3] != "" && _texURLs[4] != "" && _texURLs[5] != "" )
 				{
-					_sphere.texture = new CubeTexture(_texURLs[0], _texURLs[1], _texURLs[2],
-													  _texURLs[3], _texURLs[4], _texURLs[5]);
+					_sphere.texture = new CubeMapTexture(_texURLs[0], _texURLs[1], _texURLs[2],
+													     _texURLs[3], _texURLs[4], _texURLs[5]);
 					_hasCubeTexture = true;
 					_hasBackTexture = false;
+					_hasSkyTexture = false;
 				}
 				else
 				{
 					_plane.texture = new ImageTexture(_texURLs[0]);
 					_hasBackTexture = true;
 					_hasCubeTexture = false;
+					_hasSkyTexture = false;
 				}
 			}
 			else
 			{
 				_hasBackTexture = false;
 				_hasCubeTexture = false;
+				_hasSkyTexture = false;
 			}
 				
 		}
@@ -92,7 +95,7 @@ package x3dom
 		
 		private function createSphere() :void
 		{
-			var radius:Number = 5;
+			var radius:Number = 10000;
 			var latNumber:Number, longNumber:Number;
 			var latitudeBands:Number = 24;
 			var longitudeBands:Number = 24;
