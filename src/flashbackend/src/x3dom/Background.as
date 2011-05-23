@@ -80,7 +80,6 @@ package x3dom
 			{
 				_hasBackTexture = false;
 				_hasCubeTexture = false;
-				_hasSkyTexture = false;
 			}
 				
 		}
