@@ -387,6 +387,12 @@ x3dom.registerNodeType(
                 x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.SFVec3f(x, y, z);
         },
+
+        addField_SFVec3d: function(ctx, name, x, y, z) {
+            // JS always float precision, no double
+            this.addField_SFVec3f(ctx, name, x, y, z);
+        },
+
         addField_SFRotation: function (ctx, name, x, y, z, a) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) :
