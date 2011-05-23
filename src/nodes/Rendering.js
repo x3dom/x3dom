@@ -810,11 +810,23 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### X3DCoordinateNode ### */
+x3dom.registerNodeType(
+    "X3DCoordinateNode",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DCoordinateNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+
 /* ### Coordinate ### */
 x3dom.registerNodeType(
     "Coordinate",
     "Rendering",
-    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+    defineClass(x3dom.nodeTypes.X3DCoordinateNode,
         function (ctx) {
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
 

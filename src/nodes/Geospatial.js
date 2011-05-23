@@ -2,14 +2,11 @@
 x3dom.registerNodeType(
     "GeoCoordinate",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.Coordinate3DD,
+    defineClass(x3dom.nodeTypes.X3DCoordinateNode,
         function (ctx) {
             x3dom.nodeTypes.GeoCoordinate.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.Coordinate3DD);
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DCoordinateNode);
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
         },
         {
@@ -23,13 +20,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoElevationGrid",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.PropertySetGeometry,
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.GeoElevationGrid.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
             this.addField_SFVec3d(ctx, 'geoGridOrigin', 0, 0, 0);
             this.addField_MFDouble(ctx, 'height', 0, 0);
@@ -60,13 +54,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoLOD",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.ChildGroup,
+    defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.GeoLOD.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
             this.addField_MFString(ctx, 'rootUrl', []);
             this.addField_MFString(ctx, 'child1Url', []);
@@ -96,15 +87,12 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoLocation",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.ChildGroup,
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.GeoLocation.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
-            this.addField_SFVec3d(ctx, 'geoCoords', 0,0,0);
+            this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ChildGroup);
         },
         {
@@ -118,13 +106,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoMetadata",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.InfoNode,
+    defineClass(x3dom.nodeTypes.X3DInfoNode,
         function (ctx) {
             x3dom.nodeTypes.GeoMetadata.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'url', []);
             this.addField_MFNode('data', x3dom.nodeTypes.InfoNode);
             this.addField_MFString(ctx, 'summary', []);
@@ -140,13 +125,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoOrigin",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.SceneBaseNode,
+    defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.GeoOrigin.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
             this.addField_SFBool(ctx, 'rotateYUp', FALSE);
@@ -162,13 +144,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoPositionInterpolator",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.LinearInterpolator,
+    defineClass(x3dom.nodeTypes.X3DInterpolatorNode,
         function (ctx) {
             x3dom.nodeTypes.GeoPositionInterpolator.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
             this.addField_MFVec3d(ctx, 'keyValue', []);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.LinearInterpolator);
@@ -184,13 +163,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoProximitySensor",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.EnvironmentSensor,
+    defineClass(x3dom.nodeTypes.X3DEnvironmentalSensorNode,
         function (ctx) {
             x3dom.nodeTypes.GeoProximitySensor.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_SFVec3d(ctx, 'geoCenter', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.EnvironmentSensor);
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
@@ -206,13 +182,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoTouchSensor",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.TouchSensor,
+    defineClass(x3dom.nodeTypes.X3DTouchSensorNode,
         function (ctx) {
             x3dom.nodeTypes.GeoTouchSensor.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.TouchSensor);
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
         },
@@ -227,13 +200,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoTransform",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.Transform,
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.GeoTransform.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_SFVec3d(ctx, 'geoCenter', 0, 0, 0);
             this.addField_SFRotation(ctx, 'rotation', 0, 0, 1, 0);
             this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
@@ -253,13 +223,10 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoViewpoint",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.ViewBindable,
+    defineClass(x3dom.nodeTypes.X3DViewpointNode,
         function (ctx) {
             x3dom.nodeTypes.GeoViewpoint.superClass.call(this, ctx);
 
-            // FIXME; default values must be comma separated, 
-            //        please change manually until fixed.
-            //        Also (base) class names may differ.
             this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
             this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
