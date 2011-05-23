@@ -258,16 +258,15 @@ package x3dom
 					if(background.hasSkyTexture()) {
 						//Set BackgroundSkyTexture shader
 						_context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.BACKGROUNDSKYTEXTURE) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 0.5, 2.0, 0.0]) );
 					} else {
 						//Set BackgroundSkyTexture shader
 						_context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.BACKGROUNDCUBETEXTURE) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([0.0, 0.0, 1.0, 0.0]) );
 					}
-					
 					
 					//Associate MVP-Matrix
 					_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  0, _mvpMatrix, true );
-					
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 0.5, 2.0, 0.0]) );
 				}
 				
 				//Check if shape is ready to render
@@ -286,8 +285,10 @@ package x3dom
 				//Associate vertices
 				_context3D.setVertexBufferAt( 0, shape.vertexBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_3 );
 				
-				//Associate texture coordinates
-				_context3D.setVertexBufferAt( 1, shape.texCoordBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_2 );
+				if(!background.hasCubeTexture()) {
+					//Associate texture coordinates
+					_context3D.setVertexBufferAt( 1, shape.texCoordBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_2 );
+				}
 				
 				//Associate texture
 				_context3D.setTextureAt(0, shape.texture.texture);

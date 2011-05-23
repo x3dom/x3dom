@@ -58,9 +58,12 @@ x3dom.registerNodeType(
 
                                 childDomNode.parentNode.removeChild(childDomNode);
                                 childDomNode = null;
-
-                                var p = document.getElementsByTagName('body')[0];
-                                p.appendChild(newNode);
+								
+								if(navigator.appName != "Microsoft Internet Explorer") {
+									document.body.appendChild(newNode);
+								}
+								
+                               
 
                                 var startAudio = function() {
                                     newNode.play();
@@ -114,8 +117,9 @@ x3dom.registerNodeType(
                 this._audio = document.createElement('audio');
                 this._audio.setAttribute('autobuffer', 'true');
                 //this._audio.setAttribute('autoplay', 'true');
-                var p = document.getElementsByTagName('body')[0];
-                p.appendChild(this._audio);
+				if(navigator.appName != "Microsoft Internet Explorer") {
+					document.body.appendChild(this._audio);
+				}
 
                 for (var i=0; i<this._vf.url.length; i++)
                 {
