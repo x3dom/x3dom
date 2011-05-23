@@ -455,6 +455,11 @@ x3dom.registerNodeType(
                 x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFVec3f(def);
         },
+
+        addField_MFVec3d: function (ctx, name, def) {
+            this.addField_MFVec3f(ctx, name, def);
+        },
+
         addField_MFRotation: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) :
