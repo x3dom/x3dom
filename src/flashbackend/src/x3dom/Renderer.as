@@ -233,7 +233,7 @@ package x3dom
 			_context3D.clear(background.skyColor[0], background.skyColor[1], background.skyColor[2], background.transparency);
 			
 			//Check if there is a background texture
-			if(background.hasBackTexture() || background.hasSkyTexture())
+			if(background.hasBackTexture() || background.hasSkyTexture() || background.hasCubeTexture())
 			{
 				//var for hoding geometry
 				var shape:Shape;
@@ -242,6 +242,10 @@ package x3dom
 				if(background.hasBackTexture()) {
 					//Get the background Plane
 					shape = background.plane;
+					
+					//Set BackgroundTexture shader
+					_context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.BACKGROUNDTEXTURE) );
+					
 				} else {
 					//Get the background Sphere
 					shape = background.sphere;
@@ -251,10 +255,19 @@ package x3dom
 					_mvpMatrix.append(_scene.viewMatrix);
 					_mvpMatrix.append(_scene.projectionMatrix);
 					
+					if(background.hasSkyTexture()) {
+						//Set BackgroundSkyTexture shader
+						_context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.BACKGROUNDSKYTEXTURE) );
+					} else {
+						//Set BackgroundSkyTexture shader
+						_context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.BACKGROUNDCUBETEXTURE) );
+					}
+					
+					
 					//Associate MVP-Matrix
 					_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  0, _mvpMatrix, true );
 					
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 0.0, 0.0, 0.0]) );
+					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 0.5, 2.0, 0.0]) );
 				}
 				
 				//Check if shape is ready to render
@@ -269,9 +282,6 @@ package x3dom
 				
 				//Disable backface culling
 				_context3D.setCulling(Context3DTriangleFace.NONE);
-				
-				//Set BackgroundTexture shader
-				_context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.BACKGROUNDSKYTEXTURE) );
 				
 				//Associate vertices
 				_context3D.setVertexBufferAt( 0, shape.vertexBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_3 );

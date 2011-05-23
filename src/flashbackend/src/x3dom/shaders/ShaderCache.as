@@ -65,6 +65,10 @@ package x3dom.shaders
 						_cache[shaderIdentifier] = new BackgroundSkyTextureShader().program3D;
 						break;
 					
+					case ShaderIdentifier.BACKGROUNDCUBETEXTURE:
+						_cache[shaderIdentifier] = new BackgroundCubeTextureShader().program3D;
+						break;
+					
 					case ShaderIdentifier.SHADOW:
 						//_cache[shaderIdentifier] = new ShadowShader(_context3D).program3D;
 						break;

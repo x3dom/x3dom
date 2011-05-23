@@ -15,7 +15,7 @@ package x3dom
 		private var _context3D:Context3D;
 		
 		private var _hasSkyTexture:Boolean  = false;
-		private var _isCubeTexture:Boolean = false;
+		private var _hasCubeTexture:Boolean = false;
 		private var _hasBackTexture:Boolean = false;
 		private var _isSphereExists:Boolean = false;
 		
@@ -62,22 +62,22 @@ package x3dom
 				if( _texURLs[0] != "" && _texURLs[1] != "" && _texURLs[2] != "" &&
 					_texURLs[3] != "" && _texURLs[4] != "" && _texURLs[5] != "" )
 				{
-					//Generate cube texture
-					//loadTextures();
-					//generateCubeTexture();
-					_isCubeTexture = true;
+					_sphere.texture = new CubeTexture(_texURLs[0], _texURLs[1], _texURLs[2],
+													  _texURLs[3], _texURLs[4], _texURLs[5]);
+					_hasCubeTexture = true;
+					_hasBackTexture = false;
 				}
 				else
 				{
 					_plane.texture = new ImageTexture(_texURLs[0]);
 					_hasBackTexture = true;
-					_isCubeTexture = false;
+					_hasCubeTexture = false;
 				}
 			}
 			else
 			{
 				_hasBackTexture = false;
-				_isCubeTexture = false;
+				_hasCubeTexture = false;
 			}
 				
 		}
@@ -92,7 +92,7 @@ package x3dom
 		
 		private function createSphere() :void
 		{
-			var radius:Number = 10000;
+			var radius:Number = 5;
 			var latNumber:Number, longNumber:Number;
 			var latitudeBands:Number = 24;
 			var longitudeBands:Number = 24;
@@ -281,6 +281,11 @@ package x3dom
 		public function hasSkyTexture() : Boolean
 		{
 			return _hasSkyTexture;
+		}
+		
+		public function hasCubeTexture() : Boolean
+		{
+			return _hasCubeTexture;
 		}
 		
 		public function get plane() : Shape
