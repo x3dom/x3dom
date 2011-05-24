@@ -49,6 +49,7 @@ package x3dom {
 			ExternalInterface.addCallback("setText", setText);
 			ExternalInterface.addCallback("setSphereMapping", setSphereMapping);
 			ExternalInterface.addCallback("setMeshSolid", setMeshSolid);
+			ExternalInterface.addCallback("setFPS", setFPS);
 		}
 		
 		private function renderScene() : void
@@ -64,6 +65,11 @@ package x3dom {
 					pickPosX: _scene.pickedPos.x,
 					pickPosY: _scene.pickedPos.y,
 					pickPosZ: _scene.pickedPos.z };
+		}
+		
+		private function setFPS(value:Object) : void
+		{						
+			FlashBackend.setFPS( Number(value.fps) );
 		}
 		
 		private function setViewMatrix(value:Object) : void
