@@ -19,11 +19,12 @@ COMPILER = ${JS_ENGINE} ${TOOL_DIR}/uglify.js --unsafe
 BASE_FILES = \
 	${SRC_DIR}/lang/Array.js\
 	${SRC_DIR}/Internals.js\
+	${SRC_DIR}/debug.js\
+	${SRC_DIR}/lang/Properties.js\
     ${SRC_DIR}/X3DCanvas.js\
     ${SRC_DIR}/Runtime.js\
     ${SRC_DIR}/Main.js\
 	${SRC_DIR}/version.js\
-	${SRC_DIR}/debug.js\
 	${SRC_DIR}/gfx_webgl.js\
 	${SRC_DIR}/gfx_flash.js\
     ${SRC_DIR}/Mesh.js\
