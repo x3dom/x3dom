@@ -164,4 +164,8 @@ refreshtests:
 	python tools/update_headers.py test/functional
 	python tools/update_headers.py test/regression
 
-.PHONY: all x3dom lint min init changelog runserver docs refreshtests deploy
+stats:
+	@@echo "Statistics for X3DOM"
+	wc -l $(BASE_FILES)
+
+.PHONY: all x3dom lint min init changelog runserver docs refreshtests deploy stats
