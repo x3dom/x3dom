@@ -95,10 +95,10 @@ x3dom.registerNodeType(
                 if (!x3dom.isNumber(qfactor)) {
                     switch (qfactor.toLowerCase()) {
                         case "low":
-                            qfactor = 0.5;
+                            qfactor = 0.3;
                             break;
                         case "medium":
-                            qfactor = 0.7;
+                            qfactor = 0.5;
                             break;
                         case "high":
                             qfactor = 1.0;
