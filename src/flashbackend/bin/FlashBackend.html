@@ -40,13 +40,18 @@
 		<script type="text/javascript" src="../../nodes/Geometry3D.js"></script>
         <!-- END:X3DOM -->
 		
+		<style>
+			body { background-color: #918376; }
+			X3D, x3d { border: none; }
+		</style>
+		
 	</head>
 	<body>
-		<X3D id='someUniqueId' showStat='false' showLog='true' x='0px' y='0px' width='550px' height='400px' backend='flash'>
+		<X3D id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='600px' height='375px' backend='flash'>
 			<Scene>
-				<!--<Background skyColor='0.000 0.300 0.500' backUrl='texture/background.png'></Background>-->
-				<Background groundAngle='0.9 1.5 1.57' groundColor='0.6 0.7 0.1 0.4 0.7 0.2 0.1 0.6 0.1 0 0.3 0.1' skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82'></Background>
-        
+				<!--<Background skyColor='0.000 0.300 0.500' backUrl='texture/background.png'></Background>
+				<Background groundAngle='0.9 1.5 1.57' groundColor='0.6 0.7 0.1 0.4 0.7 0.2 0.1 0.6 0.1 0 0.3 0.1' skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.77 0.8 0.82'></Background>-->
+        		<background backUrl='"texture/BK.png"' bottomUrl='"texture/BT.png"' frontUrl='"texture/FR.png"' leftUrl='"texture/LF.png"' rightUrl='"texture/RT.png"' topUrl='"texture/TP.png"'></background>
 				<Transform translation="2 0 0">
 					<Shape>
 						<Appearance>

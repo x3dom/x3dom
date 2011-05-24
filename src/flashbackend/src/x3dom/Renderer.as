@@ -43,11 +43,18 @@ package x3dom
 			//Get scenes list of lights
 			var lights:Array = _scene.lights;
 			
+			var numTriangles:Number = 0;
+			
 			//Get scenes list of sorted drawableObjects
 			var drawableObjects:Array = _scene.drawableObjects;
 			
+			//Get number of drawable objects
+			var numDrawableObjects:Number = drawableObjects.length;
+			
+			FlashBackend.setObjs(numDrawableObjects);
+			
 			//Iterate all objects for rendering
-			for(var i:uint; i<drawableObjects.length; i++)
+			for(var i:uint; i<numDrawableObjects; i++)
 			{
 				var shape:Shape = drawableObjects[i].shape;
 				var trafo:Matrix3D = drawableObjects[i].transform;
@@ -137,7 +144,11 @@ package x3dom
 					
 					//Draw the mesh
 					_context3D.drawTriangles( shape.indexBuffer[j], 0, shape.numTriangles[j] );
+					
+					numTriangles += shape.numTriangles[j];
 				}
+				
+				FlashBackend.setTris(numTriangles);
 				
 				cleanBuffers();
 			}
@@ -155,8 +166,11 @@ package x3dom
 			//Get scenes list of sorted drawableObjects
 			var drawableObjects:Array = _scene.drawableObjects;
 			
+			//Get number of drawable objects
+			var numDrawableObjects:Number = drawableObjects.length;
+			
 			//Iterate all objects for rendering
-			for(var i:uint; i<drawableObjects.length; i++)
+			for(var i:uint; i<numDrawableObjects; i++)
 			{
 				var id:uint = drawableObjects[i].id;
 				var shape:Shape = drawableObjects[i].shape;

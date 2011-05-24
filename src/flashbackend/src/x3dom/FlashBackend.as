@@ -11,8 +11,11 @@ package x3dom
 	public class FlashBackend extends MovieClip
 	{	
 		
-		[Embed(source="../res/Loading.swf", symbol="LoadingText")]
+		[Embed(source="../res/Library.swf", symbol="LoadingText")]
 		private var LoadingScreen:Class;
+		
+		[Embed(source="../res/Library.swf", symbol="InfoField")]
+		private static var InfoField:Class;
 		
 		private static var _stage:Stage;
 		
@@ -77,6 +80,11 @@ package x3dom
 		private static var _loadingScreen:Sprite;
 		
 		/**
+		 * 
+		 */
+		private static var _infoField:Sprite;
+		
+		/**
 		 * Main entry point of the x3dom flash renderer
 		 */
 		public function FlashBackend()
@@ -94,7 +102,10 @@ package x3dom
 			getFlashVars();
 			
 			//Init LoadingScreen
-			initLoadingScreen()
+			initLoadingScreen();
+			
+			//Init EventListener for Mouse interaction
+			initInfoField();
 			
 			//Init EventListener for Mouse interaction
 			initEventListener();
@@ -109,6 +120,15 @@ package x3dom
 			_loadingScreen.x = _stageWidth/2;
 			_loadingScreen.y = _stageHeight/2;
 			addChild(_loadingScreen);
+		}
+		
+		private function initInfoField() : void
+		{
+			_infoField = new InfoField();
+			_infoField.x = _stageWidth - _infoField.width - 10;
+			_infoField.y = 10;
+			_infoField.visible = false;
+			addChild(_infoField);
 		}
 		
 		
@@ -135,6 +155,22 @@ package x3dom
 		public static function getMouseY() : Number 
 		{
 			return _mousePosY;
+		}
+		
+		public static function setFPS(fps:Number) : void 
+		{
+			fps = Math.round(fps);
+			InfoField(_infoField).txt_FPS.text = fps.toString();
+		}
+		
+		public static function setObjs(objs:Number) : void 
+		{
+			InfoField(_infoField).txt_Objs.text = objs.toString();
+		}
+		
+		public static function setTris(tris:Number) : void 
+		{
+			InfoField(_infoField).txt_Tris.text = tris.toString();
 		}
 		
 		public static function stage() : Stage 
@@ -344,6 +380,15 @@ package x3dom
 		{
 			//Call JS KeyDown function
 			ExternalInterface.call("x3dom.bridge.onKeyDown", e.charCode, _canvasIdx);
+			
+			//Show/Hide InfoFied
+			if(e.charCode == 32) {
+				if(FlashBackend._infoField.visible) {
+					FlashBackend._infoField.visible = false;
+				} else {
+					FlashBackend._infoField.visible = true;
+				}
+			}
 		}
 		
 	}

@@ -723,6 +723,7 @@ x3dom.X3DCanvas.prototype.tick = function()
 
             if(this.backend == 'flash') {
 				if(this.isFlashReady) {
+					this.canvas.setFPS( { fps: fps } );
 					this.doc.needRender = false;    // picking might require another pass
 					this.doc.render(this.gl);
 				}
