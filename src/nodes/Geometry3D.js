@@ -77,36 +77,54 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
 
+            var qfactor = 1.0;
+
             var r = ctx ? 1 : 10000;
+            
             if (ctx && ctx.xmlNode.hasAttribute('radius')) {
                 r = +ctx.xmlNode.getAttribute('radius');
             }
 
 			var geoCacheID = 'Sphere_'+r;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
-			{
+			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using Sphere from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
-			}
-			else
-			{
+			} else {
+                qfactor = ctx.doc.properties.getProperty("PrimitiveQuality", "Medium");
+                if (!x3dom.isNumber(qfactor)) {
+                    switch (qfactor.toLowerCase()) {
+                        case "low":
+                            qfactor = 0.5;
+                            break;
+                        case "medium":
+                            qfactor = 0.7;
+                            break;
+                        case "high":
+                            qfactor = 1.0;
+                            break;
+                    }
+                } else {
+                    qfactor = parseFloat(qfactor);
+                }
+
 				var latNumber, longNumber;
-				var latitudeBands = 24;
-				var longitudeBands = 24;
+				var latitudeBands = Math.floor(24 * qfactor);
+				var longitudeBands = Math.floor(24 * qfactor);
+
+                //x3dom.debug.logInfo("Latitude bands:  "+ latitudeBands);
+                //x3dom.debug.logInfo("Longitude bands: "+ longitudeBands);
 
 				var theta, sinTheta, cosTheta;
 				var phi, sinPhi, cosPhi;
 				var x, y, z, u, v;
 
-				for (latNumber = 0; latNumber <= latitudeBands; latNumber++)
-				{
+				for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
 					theta = (latNumber * Math.PI) / latitudeBands;
 					sinTheta = Math.sin(theta);
 					cosTheta = Math.cos(theta);
 
-					for (longNumber = 0; longNumber <= longitudeBands; longNumber++)
-					{
+					for (longNumber = 0; longNumber <= longitudeBands; longNumber++) {
 						phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
 						sinPhi = Math.sin(phi);
 						cosPhi = Math.cos(phi);
@@ -131,10 +149,8 @@ x3dom.registerNodeType(
 
 				var first, second;
 
-				for (latNumber = 0; latNumber < latitudeBands; latNumber++)
-				{
-					for (longNumber = 0; longNumber < longitudeBands; longNumber++)
-					{
+				for (latNumber = 0; latNumber < latitudeBands; latNumber++) {
+					for (longNumber = 0; longNumber < longitudeBands; longNumber++) {
 						first = (latNumber * (longitudeBands + 1)) + longNumber;
 						second = first + longitudeBands + 1;
 
