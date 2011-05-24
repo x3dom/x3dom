@@ -44,6 +44,7 @@ x3dom.registerNodeType(
         },
 
         addChild: function (node, containerFieldName) {
+
             if (node) {
                 var field = null;
                 if (containerFieldName) {
@@ -681,6 +682,29 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DSensorNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+
+x3dom.registerNodeType(
+    "Param",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DNode,
+        function (ctx) {
+            x3dom.nodeTypes.Param.superClass.call(this, ctx);
+            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFString(ctx, 'value', "");
+        },{
+            nodeChanged: function() {
+                var that = this;
+                if (that._nameSpace.doc && that._nameSpace.doc.properties) {
+                    that._nameSpace.doc.properties.setProperty(that._vf.name, that._vf.value);
+                } else {
+                  x3dom.debug.logError('Could not find properties object for registration ' + that.typeName());
+                }
+
+            }
         }
     )
 );

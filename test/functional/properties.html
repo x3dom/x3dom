@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Param node test</title>
+
+    <!-- BEGIN:X3DOM -->
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/lang/Properties.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<!-- END:X3DOM -->
+
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+
+	<style>
+		ul.plain { float:left ; margin-left:1em; margin-bottom:2em; font-size:.9em;}
+		ul.plain li { list-style:none;  margin-left:1em; white-space:nowrap}
+
+	</style>
+
+    <script>
+    </script>
+</head>
+<body onload="init()">
+    <h1><code>param</code> usage example</h1>
+    <p>Demo of how to use the <tt>param</tt> tag for modifying runtime behavior.</p>
+
+    <x3d id="the_element" showStat="true" showLog="true" width="512px" height="512px">
+    <scene>
+        <param name="test" value="me"></param>
+        <param name="test2" value="me2"></param>
+        <background id="bg0" skycolor='0.05 0.12 0.23' description="Background 0"></background>
+        <background id="bg1" skycolor='1.00 1.00 1.00' description="Background 1"></background>
+        <viewpoint position='0 0 10' description="Camera 0"></viewpoint>
+        <viewpoint position='-2 0 5' description="Camera 1"></viewpoint>
+        <viewpoint position='0 2 5'  description="Camera 2"></viewpoint>
+         <viewpoint position='2 0 5'  description="Camera 3"></viewpoint>
+         <shape>
+             <appearance>
+                 <material diffuseColor='1 0 0' ></material>
+             </appearance>
+             <box DEF='box' ></box>
+         </shape>
+    </scene>
+    </x3d>
+
+    <script>
+	// simplify access to the X3D element
+	var $element = document.getElementById('the_element');
+    function init() {
+        alert($element.runtime.properties().toString());
+    }
+
+</script>
+</body>
+</html>
