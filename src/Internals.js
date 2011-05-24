@@ -173,6 +173,14 @@ x3dom.isa = function(object, clazz) {
 
 x3dom.getGlobal = function() { return (function(){ return this;}).call(null); };
 
+// move to Util.isNumber or something
+x3dom.isNumber = function(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
+};
+
+
+
+
 
 /**
  * Provides requestAnimationFrame in a cross browser way.
