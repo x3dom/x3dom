@@ -457,7 +457,10 @@ x3dom.runtime = {
 			// if no parameter is given return current status (false = not visible, true = visible)
 			return statDiv.style.display != 'none'
 		}
-	}
+	},
 
+    properties: function() {
+        return this.canvas.doc.properties;
+    }
 };
 

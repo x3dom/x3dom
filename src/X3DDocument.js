@@ -1,5 +1,6 @@
 // ### X3DDocument ###
 x3dom.X3DDocument = function(canvas, ctx) {
+    this.properties = x3dom.Properties;
     this.canvas = canvas;
     this.ctx = ctx;
     this.needRender = true;
@@ -55,8 +56,10 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
 
 x3dom.findScene = function(x3dElem) {
     var sceneElems = [];
+
     for (var i=0; i<x3dElem.childNodes.length; i++) {
         var sceneElem = x3dElem.childNodes[i];
+
         if (sceneElem && sceneElem.localName && sceneElem.localName.toLowerCase() === "scene") {
             sceneElems.push(sceneElem);
         }
@@ -71,6 +74,8 @@ x3dom.findScene = function(x3dElem) {
     }
     return null;
 };
+
+
 
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
