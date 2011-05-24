@@ -12,7 +12,7 @@ var _init = function() {
 	head.appendChild(css);
 
 	var nav = document.createElement("nav");
-	nav.innerHTML = '<a href="index.html">back to test index</a>';
+	nav.innerHTML = '<a href="index.html" class="back">back to test index</a> <a href="javascript:window.location=\'view-source:\'+window.location.href;">View Source</a>';
 	document.body.insertBefore(nav, document.body.firstChild);
 
 //	<nav><a href="index.html">back to test index</a></nav>

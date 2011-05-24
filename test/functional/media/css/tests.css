@@ -114,8 +114,10 @@ nav a {
 	text-shadow:1px 1px 1px rgba(255,255,255,0.5);
 	height:30px;
 }
-
-nav a:before {
+nav a.back {
+    margin-right:2em;
+}
+.back:before {
 	content:"↩ ";
 }
 
