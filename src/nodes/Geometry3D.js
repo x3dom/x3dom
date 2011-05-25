@@ -84,14 +84,16 @@ x3dom.registerNodeType(
             if (ctx && ctx.xmlNode.hasAttribute('radius')) {
                 r = +ctx.xmlNode.getAttribute('radius');
             }
-
+			
 			var geoCacheID = 'Sphere_'+r;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using Sphere from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
-                qfactor = ctx.doc.properties.getProperty("PrimitiveQuality", "Medium");
+				if(ctx) {
+					qfactor = ctx.doc.properties.getProperty("PrimitiveQuality", "Medium");
+				}
                 if (!x3dom.isNumber(qfactor)) {
                     switch (qfactor.toLowerCase()) {
                         case "low":

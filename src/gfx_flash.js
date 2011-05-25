@@ -309,8 +309,14 @@ x3dom.gfx_flash = (function() {
 			//Set Texture
 			if( shape._dirty.texture === true ) {
 				var texture = shape._cf.appearance.node._cf.texture.node;
+				
 				if(texture) {
 				
+					var childTex = (texture._video !== undefined && 
+                                texture._video !== null && 
+                                texture._needPerFrameUpdate !== undefined && 
+                                texture._needPerFrameUpdate === true);
+								
 					if (x3dom.isa(texture, x3dom.nodeTypes.PixelTexture))
 					{
 						this.object.setPixelTexture( { id: shape._objectID,
@@ -322,10 +328,17 @@ x3dom.gfx_flash = (function() {
 						/*var context = texture._canvas.getContext("2d");
 						var img = context.getImageData(0,0,256,256);
 						this.object.setCanvasTexture( { id: shape._objectID,
-													   width: 256,
-													   height: 256,
-													   comp: 4,
-													   pixels: img.data } );*/
+													    width: 256,
+													    height: 256,
+													    comp: 4,
+													    pixels: img.data } );*/
+					} else if (x3dom.isa(texture, x3dom.nodeTypes.ComposedCubeMapTexture)) {
+						this.object.setCubeTexture( { id: shape._objectID,
+													  texURLs: texture.getTexUrl() } );
+					} else if (x3dom.isa(texture, x3dom.nodeTypes.MultiTexture)) {
+						x3dom.debug.logError("Flash backend don't support MultiTextures yet");
+					} else if (x3dom.isa(texture, x3dom.nodeTypes.MovieTexture) || childTex) { 
+						x3dom.debug.logError("Flash backend don't support MovieTextures yet");
 					} else {
 						this.object.setMeshTexture( { id: shape._objectID,
 													  origChannelCount: texture._vf.origChannelCount,

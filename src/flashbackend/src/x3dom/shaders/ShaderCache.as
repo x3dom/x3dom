@@ -11,7 +11,9 @@ package x3dom.shaders
 	import flash.display3D.Context3D;
 	import flash.display3D.Program3D;
 	
+	import x3dom.Debug;
 	import x3dom.Shape;
+	import x3dom.texturing.CubeMapTexture;
 	
 	public class ShaderCache
 	{
@@ -87,14 +89,15 @@ package x3dom.shaders
 		 */
 		public function getDynamicShader(shape:Shape, lights:Array) : Program3D
 		{
-			//Build Shader identifier [light(false|true) / texture(false|true) / blend(false|true) / color(false|true) / sphereMapping(false|true)  / solid(false|true)]
+			//Build Shader identifier [light(false|true) / texture(false|true) / blend(false|true) / cubeMap(false|true) / color(false|true) / sphereMapping(false|true)  / solid(false|true)]
 			var shaderIdentifier:String = String(lights.length>0) + " / " + 
 										  String(Boolean(shape.texture)) + " / " + 
 										  String(shape.texture && shape.texture.blending) + " / " + 
+										  String(shape.texture && shape.texture is CubeMapTexture) + " / " +
 										  String(Boolean(shape.colorBuffer)) + " / " + 
 										  String(shape.sphereMapping) + " / " +
 										  String(shape.solid);
-			
+
 			//Check if shader is in cache
 			if( _cache[shaderIdentifier] == undefined ) 
 			{

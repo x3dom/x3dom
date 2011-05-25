@@ -7,6 +7,7 @@ package x3dom
 	import flash.geom.Vector3D;
 	
 	import x3dom.shaders.*;
+	import x3dom.texturing.CubeMapTexture;
 
 	public class Renderer
 	{
@@ -115,6 +116,10 @@ package x3dom
 				//Associate texture
 				if(shape.texture) {
 					_context3D.setTextureAt(0, shape.texture.texture);
+					if(shape.texture is CubeMapTexture) {
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  6, Vector.<Number>( [ -_scene.viewMatrix.position.x, -_scene.viewMatrix.position.y, -_scene.viewMatrix.position.z, 1.0 ] ) );
+						
+					}
 				}
 				
 				for(var j:uint = 0; j<shape.vertexBuffer.length; j++) {
