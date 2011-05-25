@@ -104,13 +104,16 @@ package x3dom.shaders
 			if( shape.texture ) {
 				if(shape.texture is CubeMapTexture) {
 					shader += "nrm ft1.xyz, v0\n";							//Normalize Normal(ft2)
-					shader += "mov ft7.xyz, fc6\n";
+					shader += "nrm ft7.xyz, v3\n";
 					
 					shader += "dp3 ft0.w, ft7.xyz, ft1.xyz\n";
 					shader += "add ft0.w, ft0.w, ft0.w\n";
 					shader += "mul ft0.xyz, ft1.xyz, ft0.w\n";
 					shader += "sub ft0.xyz, ft7.xyz, ft0.xyz\n";
 					shader += "neg ft0.xyz, ft0.xyz\n";
+					
+					shader += "m33 ft0.xyz, ft0, fc6\n";
+					
 					shader += "tex ft0, ft0, fs0 <3d, cube, linear> \n";	//Sample Texture(ft0)
 				} else {
 					shader += "mov ft6, v2 \n";
@@ -153,7 +156,11 @@ package x3dom.shaders
 				shader += "add ft3, ft3, ft5\n";
 				
 				if( shape.texture && shape.texture.blending) {
-					shader += "mul ft3, ft3, ft0\n";				//rgb *= texColor(ft3)
+					if(shape.texture is CubeMapTexture) {
+						shader += "mul ft3, ft3, ft0\n";				//rgb += texColor(ft3) ???
+					} else {
+						shader += "mul ft3, ft3, ft0\n";				//rgb *= texColor(ft3)
+					}
 				}
 				
 				if( shape.texture )

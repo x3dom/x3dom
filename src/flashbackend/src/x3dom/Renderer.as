@@ -18,6 +18,7 @@ package x3dom
 		private var _bitmapBuffer:BitmapData;
 		
 		private var _mvMatrix:Matrix3D = new Matrix3D();
+		private var _mvInvMatrix:Matrix3D = new Matrix3D();
 		private var _mvpMatrix:Matrix3D = new Matrix3D();
 		
 		public function Renderer(scene:X3DScene)
@@ -74,6 +75,11 @@ package x3dom
 				_mvMatrix.append(trafo);
 				_mvMatrix.append(_scene.viewMatrix);
 				
+				_mvInvMatrix.identity();
+				_mvInvMatrix.append(trafo);
+				_mvInvMatrix.append(_scene.viewMatrix);
+				_mvInvMatrix.invert();
+				
 				//Build ModelViewProjection-Matrix
 				_mvpMatrix.identity();
 				_mvpMatrix.append(trafo);
@@ -117,7 +123,7 @@ package x3dom
 				if(shape.texture) {
 					_context3D.setTextureAt(0, shape.texture.texture);
 					if(shape.texture is CubeMapTexture) {
-						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  6, Vector.<Number>( [ -_scene.viewMatrix.position.x, -_scene.viewMatrix.position.y, -_scene.viewMatrix.position.z, 1.0 ] ) );
+						_context3D.setProgramConstantsFromMatrix( Context3DProgramType.FRAGMENT,  6, _mvInvMatrix, true );
 						
 					}
 				}
