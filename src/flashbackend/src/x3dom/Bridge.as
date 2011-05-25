@@ -44,6 +44,7 @@ package x3dom {
 			ExternalInterface.addCallback("setMeshVertices", setMeshVertices);
 			ExternalInterface.addCallback("setMeshTexture", setMeshTexture);
 			ExternalInterface.addCallback("setPixelTexture", setPixelTexture);
+			ExternalInterface.addCallback("setCubeTexture", setCubeTexture);
 			ExternalInterface.addCallback("setCanvasTexture", setCanvasTexture);
 			ExternalInterface.addCallback("setLights", setLights);
 			ExternalInterface.addCallback("setText", setText);
@@ -202,7 +203,13 @@ package x3dom {
 			_scene.getDrawableObject( uint(value.id) ).shape.texture = new PixelTexture( Number(value.width),
 																						 Number(value.height),
 																						 Number(value.comp),
-																						 String(value.pixels).split(',') );;
+																						 String(value.pixels).split(',') );
+		}
+		
+		private function setCubeTexture(value:Object) : void 
+		{	
+			_scene.getDrawableObject( uint(value.id) ).shape.texture = new CubeMapTexture( value.texURLs[0], value.texURLs[1], value.texURLs[2],
+																						   value.texURLs[3], value.texURLs[4], value.texURLs[5], true );
 		}
 		
 		private function setCanvasTexture(value:Object) : void 

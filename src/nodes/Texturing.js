@@ -440,12 +440,21 @@ x3dom.registerNodeType(
         {
             getTexUrl: function() {
                 return [
-                    this._nameSpace.getURL(this._cf.right.node._vf.url[0]),
+					this._nameSpace.getURL(this._cf.back.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.front.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.bottom.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.left.node._vf.url[0]),
+                    this._nameSpace.getURL(this._cf.right.node._vf.url[0])
+					
+                    /*
+					this._nameSpace.getURL(this._cf.right.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.left.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.bottom.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.front.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.back.node._vf.url[0])
+					*/
                 ];
             }
         }

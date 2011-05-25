@@ -11,12 +11,22 @@ package x3dom
 	public class FlashBackend extends MovieClip
 	{	
 		
+<<<<<<< .mine
+		[Embed(source="res/Library.swf", symbol="LoadingText")]
+=======
 		[Embed(source="../res/Library.swf", symbol="LoadingText")]
+>>>>>>> .r1124
 		private var LoadingScreen:Class;
 		
+<<<<<<< .mine
+		[Embed(source="res/Library.swf", symbol="InfoField")]
+		private static var InfoField:Class;
+		
+=======
 		[Embed(source="../res/Library.swf", symbol="InfoField")]
 		private static var InfoField:Class;
 		
+>>>>>>> .r1124
 		private static var _stage:Stage;
 		
 		/**
@@ -102,7 +112,12 @@ package x3dom
 			getFlashVars();
 			
 			//Init LoadingScreen
+<<<<<<< .mine
 			initLoadingScreen();
+
+=======
+			initLoadingScreen();
+>>>>>>> .r1124
 			
 			//Init EventListener for Mouse interaction
 			initInfoField();

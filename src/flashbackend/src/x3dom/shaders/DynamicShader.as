@@ -7,6 +7,7 @@ package x3dom.shaders
 	import flash.display3D.Program3D;
 	
 	import x3dom.*;
+	import x3dom.texturing.CubeMapTexture;
 	
 	public class DynamicShader
 	{
@@ -63,6 +64,8 @@ package x3dom.shaders
 				shader += "dp3 vt1.y, va2, vc5\n";
 				shader += "dp3 vt1.z, va2, vc6\n";
 				shader += "mov v0, vt1.xyz\n";
+				
+				shader += "mov v4, va2\n";
 			} 
 			
 			if( shape.colorBuffer )
@@ -73,8 +76,8 @@ package x3dom.shaders
 				{
 					//fragTexcoord = 0.5 + fragNormal.xy / 2.0;";
 					shader += "mov vt2, va1\n";
-					shader += "div vt2, vt1.xy, vc9.y\n";
-					shader += "add vt2, vt2.xy, vc9.x\n";
+					shader += "div vt2, vt1.xyz, vc9.y\n";
+					shader += "add vt2, vt2.xyz, vc9.x\n";
 					shader += "mov v2, vt2\n";
 				} else {
 					shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)
@@ -99,9 +102,21 @@ package x3dom.shaders
 			
 			//Build shader
 			if( shape.texture ) {
-				shader += "mov ft6, v2 \n";
-				shader += "sub ft6.y, fc5.z, ft6.y \n";					//Flip V-Coord
-				shader += "tex ft0, ft6, fs0 <2d, wrap, linear> \n";	//Sample Texture(ft0)
+				if(shape.texture is CubeMapTexture) {
+					shader += "nrm ft1.xyz, v0\n";							//Normalize Normal(ft2)
+					shader += "mov ft7.xyz, fc6\n";
+					
+					shader += "dp3 ft0.w, ft7.xyz, ft1.xyz\n";
+					shader += "add ft0.w, ft0.w, ft0.w\n";
+					shader += "mul ft0.xyz, ft1.xyz, ft0.w\n";
+					shader += "sub ft0.xyz, ft7.xyz, ft0.xyz\n";
+					shader += "neg ft0.xyz, ft0.xyz\n";
+					shader += "tex ft0, ft0, fs0 <3d, cube, linear> \n";	//Sample Texture(ft0)
+				} else {
+					shader += "mov ft6, v2 \n";
+					shader += "sub ft6.y, fc5.z, ft6.y \n";					//Flip V-Coord
+					shader += "tex ft0, ft6, fs0 <2d, wrap, linear> \n";	//Sample Texture(ft0)
+				}
 			}
 			
 			if( lights.length > 0 && !shape.colorBuffer) {
