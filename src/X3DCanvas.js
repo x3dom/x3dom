@@ -45,7 +45,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		//Get SWFPath
 		var swf_path = x3dElem.getAttribute("swfpath");
 		if (swf_path === null) {
-            swf_path = "FlashBackend.swf";
+            swf_path = "x3dom.swf";
         }
 
 		//Get width from x3d-Element or set default
