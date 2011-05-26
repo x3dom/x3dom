@@ -29,68 +29,129 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		param.setAttribute('value', value);
 		node.appendChild( param );
 	};
+	
+	this.detectFlash = function(required, max)
+	{
+		var required_version = required;
+		var max_version = max;
+		var available_version = 0;
+
+		/* dieser Abschnitt ist für NS, Mozilla, Firefox und ähnliche Browser */
+		if(typeof(navigator.plugins["Shockwave Flash"]) == "object")
+		{
+			var description = navigator.plugins["Shockwave Flash"].description;
+			available_version = description.substr(16, (description.indexOf(".", 16) - 16));
+		}
+		else if(typeof(ActiveXObject) == "function") {
+			for(var i = 10; i < (max_version + 1); i ++) {
+				try {
+					if(typeof(new ActiveXObject("ShockwaveFlash.ShockwaveFlash." + i)) == "object") {
+						available_version = i;
+					}
+			   }
+			   catch(error){}
+			}
+		}
+	
+		return [available_version, required_version];
+	};
+	
+	this.createInitFailedDiv = function(x3dElem) {
+		var div = document.createElement('div');
+		div.style.width = x3dElem.getAttribute("width");;
+		div.style.height = x3dElem.getAttribute("height");;
+		div.style.backgroundColor = "#C00";
+		div.style.color = "#FFF";
+		div.style.fontSize = "20px";
+		div.style.fontWidth = "bold";
+		div.style.padding = "10px 10px 10px 10px";
+		div.style.display = "inline-block";
+		div.style.fontFamily = "Arial";
+		div.style.textAlign = "center";
+		
+		div.appendChild(document.createTextNode('Your Browser don\'t support X3DOM'));
+		div.appendChild(document.createElement('br'));
+		div.appendChild(document.createTextNode('Read more about X3DOM Browser support on:'));
+		div.appendChild(document.createElement('br'));
+		
+		var link = document.createElement('a');
+		link.setAttribute('href', 'http://www.x3dom.org/?page_id=9');
+		link.appendChild( document.createTextNode('X3DOM | Browser Support'));
+		div.appendChild(link);
+		x3dElem.appendChild(div);
+		
+		x3dom.denug.logError("Your Browser don't support X3DOM");
+	}
 
 	this.createFlashObject = function(x3dElem) {
-		x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
+	
+		var result = this.detectFlash(11, 11);
 		
-		//Get X3D-Element ID
-		var id = x3dElem.getAttribute("id");
-		if (id !== null) {
-            id = "x3dom-" + id + "-object";
-        } else {
-            var index = new Date().getTime();
-            id = "x3dom-" + index + "-object";
-        }
-
-		//Get SWFPath
-		var swf_path = x3dElem.getAttribute("swfpath");
-		if (swf_path === null) {
-            swf_path = "x3dom.swf";
-        }
-
-		//Get width from x3d-Element or set default
-		var width = x3dElem.getAttribute("width");
-		if( width == null ) {
-			width = 550;
-		}else{
-			var idx = width.indexOf("px");
-			if( idx != -1 ) {
-				width = width.substr(0, idx);
+		if( !result[0] || result[0] < result[1]) {
+			return null;
+		} else {
+		
+			x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
+			
+			//Get X3D-Element ID
+			var id = x3dElem.getAttribute("id");
+			if (id !== null) {
+				id = "x3dom-" + id + "-object";
+			} else {
+				var index = new Date().getTime();
+				id = "x3dom-" + index + "-object";
 			}
-		}
-		//Get height from x3d-Element or set default
-		var height = x3dElem.getAttribute("height");
-		if( height == null ) {
-			height = 400;
-		}else{
-			var idx = height.indexOf("px");
-			if( idx != -1 ) {
-				height = height.substr(0, idx);
+
+			//Get SWFPath
+			var swf_path = x3dElem.getAttribute("swfpath");
+			if (swf_path === null) {
+				swf_path = "x3dom.swf";
 			}
+
+			//Get width from x3d-Element or set default
+			var width = x3dElem.getAttribute("width");
+			if( width == null ) {
+				width = 550;
+			}else{
+				var idx = width.indexOf("px");
+				if( idx != -1 ) {
+					width = width.substr(0, idx);
+				}
+			}
+			//Get height from x3d-Element or set default
+			var height = x3dElem.getAttribute("height");
+			if( height == null ) {
+				height = 400;
+			}else{
+				var idx = height.indexOf("px");
+				if( idx != -1 ) {
+					height = height.substr(0, idx);
+				}
+			}
+
+			var obj = document.createElement('object');
+			obj.setAttribute('width', width);
+			obj.setAttribute('height', height);
+			obj.setAttribute('id', id);
+
+			this.appendParam(obj, 'menu', 'false');
+			this.appendParam(obj, 'quality', 'high');
+			this.appendParam(obj, 'wmode', 'gpu');
+			this.appendParam(obj, 'allowScriptAccess', 'always');
+			this.appendParam(obj, 'flashvars', 'width=' + width + '&height=' + height + '&canvasIdx=' + this.canvasIdx);
+			this.appendParam(obj, 'movie', swf_path);
+
+			x3dElem.appendChild(obj);
+
+			if(navigator.appName == "Microsoft Internet Explorer")
+				obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
+			else {
+				obj.setAttribute('type', 'application/x-shockwave-flash');
+				obj.setAttribute('data', swf_path);
+			}
+
+			return obj;
 		}
-
-		var obj = document.createElement('object');
-		obj.setAttribute('width', width);
-		obj.setAttribute('height', height);
-		obj.setAttribute('id', id);
-
-		this.appendParam(obj, 'menu', 'false');
-		this.appendParam(obj, 'quality', 'high');
-		this.appendParam(obj, 'wmode', 'gpu');
-		this.appendParam(obj, 'allowScriptAccess', 'always');
-		this.appendParam(obj, 'flashvars', 'width=' + width + '&height=' + height + '&canvasIdx=' + this.canvasIdx);
-		this.appendParam(obj, 'movie', swf_path);
-
-		x3dElem.appendChild(obj);
-
-		if(navigator.appName == "Microsoft Internet Explorer")
-			obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
-		else {
-			obj.setAttribute('type', 'application/x-shockwave-flash');
-			obj.setAttribute('data', swf_path);
-		}
-
-		return obj;
 	};
 
     this.createHTMLCanvas = function(x3dElem)
@@ -263,8 +324,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     if(this.x3dElem.getAttribute('backend') == 'flash') {
 		this.backend = 'flash';
 		this.canvas = this.createFlashObject(x3dElem);
-		this.canvas.parent = this;
-		this.gl = this.initFlashContext(this.canvas);
+		if(this.canvas != null) {
+			this.canvas.parent = this;
+			this.gl = this.initFlashContext(this.canvas);
+		} else {
+			this.createInitFailedDiv(x3dElem);
+			return null;
+		}
 	}else{
 		this.backend = 'webgl';
 		this.canvas = this.createHTMLCanvas(x3dElem);
@@ -275,8 +341,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			x3dom.debug.logInfo("Fallback to Flash Renderer");
 			this.backend = 'flash';
 			this.canvas = this.createFlashObject(x3dElem);
-			this.canvas.parent = this;
-			this.gl = this.initFlashContext(this.canvas);
+			if(this.canvas != null) {
+				this.canvas.parent = this;
+				this.gl = this.initFlashContext(this.canvas);
+			} else {
+				this.createInitFailedDiv(x3dElem);
+				return null;
+			}
 		}
 	}
 
