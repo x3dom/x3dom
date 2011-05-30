@@ -105,7 +105,7 @@ x3dom.userAgentFeature = {
         for (i=0; i<w3sg.length; i++) {
             x3ds.push(w3sg[i]);
         }
-        
+
         var activateLog = false;
         for (i=0; i < x3ds.length; i++) {
             var showLog = x3ds[i].getAttribute("showLog");
@@ -118,7 +118,7 @@ x3dom.userAgentFeature = {
         // Activate debugging/logging for x3dom. Logging will only work for
         // all log calls after this line!
         x3dom.debug.activate(activateLog);
-        
+
         if (x3dom.versionInfo !== undefined) {
             x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + 
                                 " Rev. " + x3dom.versionInfo.svnrevision);
@@ -227,6 +227,21 @@ x3dom.userAgentFeature = {
 //            x3ds[i].runtime.ready();
 
             x3dcanvas.load(x3ds[i], i);
+
+            // evaluate a possible <param> setting "showLog" and override x3d attribute
+            // since the doc-object is only avail after .load() this can only be done
+            // here. Redunant log activation code above is required to capture
+            // log message before that :/
+            showLog = x3dcanvas.doc.properties.getProperty("showLog", showLog);
+
+            if (showLog.toLowerCase() === "true") {
+                activateLog = true;
+            } else if (showLog.toLowerCase() === "false") {
+                activateLog = false;
+            }
+            x3dom.debug.activate(activateLog);
+
+
             x3dom.canvases.push(x3dcanvas);
 
 			var t1 = new Date().getTime() - t0;
