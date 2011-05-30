@@ -9,6 +9,7 @@ package x3dom.shaders
 		public static const BACKGROUNDSKYTEXTURE:String = "backgroundSkyTexture";
 		public static const BACKGROUNDCUBETEXTURE:String = "backgroundCubeTexture";
 		public static const SHADOW:String = "shadow";
+		public static const DEPTH:String = "depth";
 		
 		public function ShaderIdentifier()
 		{

@@ -2,6 +2,7 @@ package x3dom
 {
 	import flash.display.BitmapData;
 	import flash.display3D.*;
+	import flash.display3D.textures.Texture;
 	import flash.events.Event;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
@@ -16,6 +17,8 @@ package x3dom
 		private var _shaderCache:ShaderCache;
 		
 		private var _bitmapBuffer:BitmapData;
+		
+		private var _depthTexture:Texture;
 		
 		private var _mvMatrix:Matrix3D = new Matrix3D();
 		private var _mvInvMatrix:Matrix3D = new Matrix3D();
@@ -33,6 +36,7 @@ package x3dom
 		public function render() : void
 		{		
 			pickingPass();
+			//depthPass();
 			//shadowPass();
 			renderDefaultPass();
 		}
@@ -124,6 +128,7 @@ package x3dom
 					_context3D.setTextureAt(0, shape.texture.texture);
 					if(shape.texture is CubeMapTexture) {
 						_context3D.setProgramConstantsFromMatrix( Context3DProgramType.FRAGMENT,  6, _mvInvMatrix, true );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  10, Vector.<Number>( [ 0.75, 0.75, 0.75, 1.0 ] ) );
 						
 					}
 				}
@@ -247,6 +252,56 @@ package x3dom
 		private function shadowPass() : void
 		{
 			
+		}
+		
+		private function depthPass() : void
+		{
+			_context3D.clear();
+			
+			//Get scenes list of sorted drawableObjects
+			var drawableObjects:Array = _scene.drawableObjects;
+			
+			//Get number of drawable objects
+			var numDrawableObjects:Number = drawableObjects.length;
+			
+			_context3D.setCulling(Context3DTriangleFace.FRONT);
+			
+			//Iterate all objects for rendering
+			for(var i:uint; i<numDrawableObjects; i++)
+			{
+				var shape:Shape = drawableObjects[i].shape;
+				var trafo:Matrix3D = drawableObjects[i].transform;
+				
+				//Set Picking Shader
+				_context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.DEPTH) );
+				
+				//Build ModelViewProjection-Matrix
+				_mvpMatrix.identity();
+				_mvpMatrix.append(trafo);
+				_mvpMatrix.append(_scene.viewMatrix);
+				_mvpMatrix.append(_scene.projectionMatrix);
+				
+				//Associate MVP-Matrix
+				_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  0, _mvpMatrix, true );
+				
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 255.0, 65025.0, 16581375.0]) );
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 1, Vector.<Number>([0.00392156886, 0.00392156886, 0.00392156886, 0.0]) );
+				
+				for(var j:uint = 0; j<shape.vertexBuffer.length; j++) {
+					//Associate vertices
+					if(shape.vertexBuffer) {
+						_context3D.setVertexBufferAt( 0, shape.vertexBuffer[j],  0, Context3DVertexBufferFormat.FLOAT_3 );
+					}
+					
+					//Draw the shape
+					_context3D.drawTriangles( shape.indexBuffer[j], 0, shape.numTriangles[j] );
+				}
+				
+				cleanBuffers();
+			}
+			
+			//Swap Back- and Frontbuffer
+			_context3D.present();
 		}
 		
 		private function renderBackground() : void

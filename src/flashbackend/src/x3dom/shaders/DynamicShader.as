@@ -157,7 +157,9 @@ package x3dom.shaders
 				
 				if( shape.texture && shape.texture.blending) {
 					if(shape.texture is CubeMapTexture) {
-						shader += "mul ft3, ft3, ft0\n";				//rgb += texColor(ft3) ???
+						shader += "sub ft6, ft0, ft3)\n";				//lerp(diffColor, refColor, ratio)
+						shader += "mul ft6, ft6, fc10\n";
+						shader += "add ft3, ft6, ft3\n";
 					} else {
 						shader += "mul ft3, ft3, ft0\n";				//rgb *= texColor(ft3)
 					}

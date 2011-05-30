@@ -246,7 +246,7 @@ package x3dom
 			_context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA );
 			
 			// The back buffer size is in actual pixels
-			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 2, true );
+			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 0, true );
 			
 			//Create X3DScene for scene managing
 			_scene = new X3DScene();
