@@ -241,12 +241,17 @@ x3dom.userAgentFeature = {
             }
             x3dom.debug.activate(activateLog);
 
+            var showStats = x3dcanvas.doc.properties.getProperty("showStat");
+            if (showStats.toLowerCase() === "true") {
+                x3ds[i].runtime.statistics(true);
+            } else if (showStats.toLowerCase() === "false") {
+                x3ds[i].runtime.statistics(false);
+            }
 
             x3dom.canvases.push(x3dcanvas);
 
 			var t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
-
         }
         
         var ready = (function(eventType) {
@@ -273,7 +278,6 @@ x3dom.userAgentFeature = {
     
     if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
-
         document.getElementById = function(id) {
             var obj = this.__getElementById(id);
             
