@@ -75,6 +75,10 @@ package x3dom.shaders
 						//_cache[shaderIdentifier] = new ShadowShader(_context3D).program3D;
 						break;
 					
+					case ShaderIdentifier.DEPTH:
+						_cache[shaderIdentifier] = new DepthShader().program3D;
+						break;
+					
 					default:
 						break;
 				}
