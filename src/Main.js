@@ -233,7 +233,7 @@ x3dom.userAgentFeature = {
             // here. Redunant log activation code above is required to capture
             // log message before that :/
 			
-            showLog = x3dcanvas.doc.properties.getProperty("showLog", showLog);
+            showLog = x3dcanvas.doc.properties.getProperty("showLog", "false");
 
 			if (showLog.toLowerCase() === "true") {
 				activateLog = true;
