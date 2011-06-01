@@ -75,23 +75,21 @@ package x3dom {
 		
 		private function setViewMatrix(value:Object) : void
 		{
-			var viewMatrix:Array = String(value.viewMatrix).split(',');
-			_scene.viewMatrix = new Matrix3D( Vector.<Number>(viewMatrix) );
+			_scene.viewMatrix = new Matrix3D( Vector.<Number>(value.viewMatrix) );
 		}
 		
 		private function setProjectionMatrix(value:Object) : void
 		{
-			var projectionMatrix:Array = String(value.projectionMatrix).split(',');
-			_scene.projectionMatrix = new Matrix3D( Vector.<Number>(projectionMatrix) );
+			_scene.projectionMatrix = new Matrix3D( Vector.<Number>(value.projectionMatrix) );
 		}
 		
 		private function setBackground(value:Object) : void
 		{
-			_scene.background.texURLs		= String(value.texURLs).split(',');
-			_scene.background.skyColor		= String(value.skyColor).split(',');
-			_scene.background.skyAngle		= String(value.skyAngle).split(',');
-			_scene.background.groundColor	= String(value.groundColor).split(',');
-			_scene.background.groundAngle	= String(value.groundAngle).split(',');
+			_scene.background.texURLs		= value.texURLs;
+			_scene.background.skyColor		= value.skyColor;
+			_scene.background.skyAngle		= value.skyAngle;
+			_scene.background.groundColor	= value.groundColor;
+			_scene.background.groundAngle	= value.groundAngle;
 			_scene.background.transparency	= Number(value.transparency);
 			
 			_scene.background.init();
@@ -102,12 +100,12 @@ package x3dom {
 			var light:Light = new Light();
 			light.on 				= Boolean(value.on);
 			light.type 				= Number(value.type);
-			light.color 			= String(value.color).split(',');
+			light.color 			= value.color;
 			light.intensity			= Number(value.intensity);
 			light.ambientIntensity	= Number(value.ambientIntensity);
-			light.direction			= String(value.direction).split(',');
-			light.attenuation		= String(value.attenuation).split(',');
-			light.location			= String(value.location).split(',');
+			light.direction			= value.direction;
+			light.attenuation		= value.attenuation;
+			light.location			= value.location;
 			light.radius			= Number(value.radius);
 			light.beamWidth			= Number(value.beamWidth);
 			light.cutOffAngle		= Number(value.cutOffAngle);
@@ -123,10 +121,8 @@ package x3dom {
 		}
 		
 		private function setMeshTransform(value:Object) : void
-		{
-			var transform:Array = String(value.transform).split(',');
-			
-			_scene.getDrawableObject( uint(value.id), uint(value.refID) ).transform = new Matrix3D( Vector.<Number>( transform ) );
+		{			
+			_scene.getDrawableObject( uint(value.id), uint(value.refID) ).transform = new Matrix3D( Vector.<Number>( value.transform ) );
 		}
 		
 		private function setMeshSolid(value:Object) : void
@@ -136,18 +132,17 @@ package x3dom {
 		
 		private function setSphereMapping(value:Object) : void
 		{
-			//Transform trafo from String to Array
-			_scene.getDrawableObject( uint(value.id) ).shape.sphereMapping = Boolean(value.sphereMapping);
+			_scene.getDrawableObject( uint(value.id) ).shape.sphereMapping = Boolean( value.sphereMapping );
 		}
 		
 		private function setMeshMaterial(value:Object) : void
 		{	
 			var material:Material = new Material();
 			material.ambientIntensity 	= Number( value.ambientIntensity );
-			material.diffuseColor 		= Vector.<Number>( String(value.diffuseColor).split(',') );
-			material.emissiveColor 		= Vector.<Number>( String(value.emissiveColor).split(',') );
+			material.diffuseColor 		= Vector.<Number>( value.diffuseColor );
+			material.emissiveColor 		= Vector.<Number>( value.emissiveColor );
 			material.shininess 			= Number( value.shininess );
-			material.specularColor		= Vector.<Number>( String(value.specularColor).split(',') );
+			material.specularColor		= Vector.<Number>( value.specularColor );
 			material.transparency		= Number( value.transparency );
 			
 			_scene.getDrawableObject( uint(value.id) ).shape.material = material;
@@ -155,37 +150,27 @@ package x3dom {
 		
 		private function setMeshColors(value:Object) : void 
 		{
-			//Transform colors from String to Array
-			var colors:Array = String(value.colors).split(',');	
-			_scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(colors), uint(value.components) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(value.colors), uint(value.components) );
 		}
 		
 		private function setMeshIndices(value:Object) : void 
 		{
-			//Transform indices from String to Array
-			var indices:Array = String(value.indices).split(',');
-			_scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(indices) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
 		}
 		
 		private function setMeshNormals(value:Object) : void 
 		{
-			//Transform vertices from String to Array
-			var normals:Array = String(value.normals).split(',');
-			_scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(normals) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(value.normals) );
 		}
 		
 		private function setMeshTexCoords(value:Object) : void 
 		{
-			//Transform vertices from String to Array
-			var texCoords:Array = String(value.texCoords).split(',');
-			_scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(texCoords) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(value.texCoords) );
 		}
 		
 		private function setMeshVertices(value:Object) : void 
 		{
-			//Transform vertices from String to Array
-			var vertices:Array = String(value.vertices).split(',');
-			_scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(vertices) );
+			_scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
 		}
 		
 		private function setMeshTexture(value:Object) : void 
@@ -203,7 +188,7 @@ package x3dom {
 			_scene.getDrawableObject( uint(value.id) ).shape.texture = new PixelTexture( Number(value.width),
 																						 Number(value.height),
 																						 Number(value.comp),
-																						 String(value.pixels).split(',') );
+																						 value.pixels );
 		}
 		
 		private function setCubeTexture(value:Object) : void 
