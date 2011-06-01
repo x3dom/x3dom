@@ -46,7 +46,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			for(var i = 10; i < (max_version + 1); i ++) {
 				try {
 					if(typeof(new ActiveXObject("ShockwaveFlash.ShockwaveFlash." + i)) == "object") {
-						available_version = i;
+						available_version = i+1;
 					}
 			   }
 			   catch(error){}
@@ -69,7 +69,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		div.style.fontFamily = "Arial";
 		div.style.textAlign = "center";
 		
-		div.appendChild(document.createTextNode('Your Browser don\'t support X3DOM'));
+		div.appendChild(document.createTextNode('Your Browser doesn\'t support X3DOM'));
 		div.appendChild(document.createElement('br'));
 		div.appendChild(document.createTextNode('Read more about X3DOM Browser support on:'));
 		div.appendChild(document.createElement('br'));
