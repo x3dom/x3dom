@@ -212,7 +212,7 @@ x3dom.registerNodeType(
 
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
 
-            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
+            this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
             this.addField_SFNode('normal', x3dom.nodeTypes.Normal);
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
             this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
@@ -818,7 +818,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DCoordinateNode.superClass.call(this, ctx);
         }
-    )
+      )
 );
 
 
@@ -838,6 +838,9 @@ x3dom.registerNodeType(
                 Array.forEach(this._parentNodes, function (node) {
                     node.fieldChanged("coord");
                 });
+            },
+            getPoints: function() {
+                return this._vf.point;
             }
         }
     )
