@@ -549,7 +549,7 @@ x3dom.registerNodeType(
 
                 var coordNode = this._cf.coord.node;
                 x3dom.debug.assert(coordNode);
-                positions = coordNode._vf.point;
+                positions = coordNode.getPoints();
 
                 var normalNode = this._cf.normal.node;
                 if (normalNode)
@@ -603,7 +603,7 @@ x3dom.registerNodeType(
                 this._mesh._normals[0] = [];
                 this._mesh._texCoords[0] = [];
                 this._mesh._colors[0] = [];
-
+                
                 var i, t, cnt, faceCnt;
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
@@ -868,7 +868,7 @@ x3dom.registerNodeType(
                 else
                 {
                     t = 0;
-
+                    
                     for (i = 0; i < indexes.length; ++i)
                     {
                         // Convert non-triangular polygons to a triangle fan
