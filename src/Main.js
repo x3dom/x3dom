@@ -18,16 +18,22 @@ x3dom.detectActiveX = function() {
     return isInstalled;
 };
 
-x3dom.rerouteSetAttribute = function(node) {
+x3dom.rerouteSetAttribute = function(node, browser) {
     // save old setAttribute method
     node._setAttribute = node.setAttribute;
     node.setAttribute = function(name, value) {
-        return node._x3domNode.parseField(name, value);
+        var id = node.getAttribute("_x3domNode");
+        var anode = browser.findNode(id);
+        
+        if (anode)
+            return anode.parseField(name, value);
+        else
+            return 0;
     };
 
     for(var i=0; i < node.childNodes.length; i++) {
         var child = node.childNodes[i];
-        x3dom.rerouteSetAttribute(child);
+        x3dom.rerouteSetAttribute(child, browser);
     }
 };
 
@@ -46,6 +52,9 @@ x3dom.insertActiveX = function(x3d) {
     divelem.setAttribute("id", "x3dplaceholder");
 
     var inserted = parent.insertBefore(divelem, x3d);
+    
+    // hide x3d div
+    x3d.style.display = "none";
      
     var atx = document.createElement("object");
     
@@ -69,7 +78,7 @@ x3dom.insertActiveX = function(x3d) {
         return atxctrl.getBrowser();
     };
     
-    x3dom.rerouteSetAttribute(x3d);
+    x3dom.rerouteSetAttribute(x3d, browser);
 };
 
 // holds the UserAgent feature
