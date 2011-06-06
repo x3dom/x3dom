@@ -25,23 +25,11 @@ Options
 -------
 The following table lists the parameters currently supported.
 
-=====  =====  =======
-  A      B    A and B
-=====  =====  =======
-False  False  False
-True   False  False
-False  True   False
-True   True   True
-=====  =====  =======
-
-FIXME: Not sure why this does not work:
-
 =================  =========================  ===========     =================================================
-  Parameter	         Values	                    Default	       Description
+  Parameter          Values                     Default         Description
 =================  =========================  ===========     =================================================
-showLog	           true, false	              false	          Hide or display the logging console
-showStat	       true, false	              false	          Hide or display the statistics overlay
-PrimitiveQuality   High, Medium, Low, float   High/1.0	      Render quality (tesselation level) for Box,
-                                                              Cone, Cylinder, Sphere. Currently only Sphere
-                                                              is supported.
+showLog	           true, false                false           Hide or display the logging console
+showStat           true, false                false           Hide or display the statistics overlay
+PrimitiveQuality   High, Medium, Low, float   High/1.0        Render quality (tesselation level) for Box, Cone,
+                                                              Cylinder, Sphere.
 =================  =========================  ===========     =================================================
