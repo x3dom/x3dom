@@ -14,8 +14,8 @@
 /* -- page layout ----------------------------------------------------------- */
  
 body {
-    font-family: 'Georgia', serif;
-    font-size: 17px;
+    font-family: Verdana, sans-serif;
+    font-size: 13px;
     background-color: white;
     color: #000;
     margin: 0;
@@ -50,7 +50,7 @@ div.body {
     padding: 0 30px 0 30px;
 }
 
-img.floatingflask {
+img.floatinglogo {
     padding: 0 0 10px 10px;
     float: right;
 }
@@ -82,7 +82,8 @@ div.sphinxsidebar a:hover {
 }
  
 div.sphinxsidebar {
-    font-size: 14px;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 12px;
     line-height: 1.5;
 }
 
@@ -93,16 +94,21 @@ div.sphinxsidebarwrapper {
 div.sphinxsidebarwrapper p.logo {
     padding: 0 0 20px 0;
     margin: 0;
-    text-align: center;
+    text-align: left;
 }
- 
+
+div.sphinxsidebarwrapper p.logo img.logo {
+    width: 100px;
+}
+
 div.sphinxsidebar h3,
 div.sphinxsidebar h4 {
-    font-family: 'Garamond', 'Georgia', serif;
+    font-family: Helvetica, Arial, sans-serif;
+    text-transform:uppercase;
     color: #444;
-    font-size: 24px;
-    font-weight: normal;
-    margin: 0 0 5px 0;
+    font-size: 12px;
+    font-weight: bold;
+    margin: 2em 0 .5em 0;
     padding: 0;
 }
 
@@ -156,7 +162,7 @@ div.body h3,
 div.body h4,
 div.body h5,
 div.body h6 {
-    font-family: 'Garamond', 'Georgia', serif;
+    font-family: Helvetica, Arial, sans-serif;
     font-weight: normal;
     margin: 30px 0px 10px 0px;
     padding: 0;
@@ -169,7 +175,7 @@ div.indexwrapper h1 {
     height: {{ theme_index_logo_height }};
 }
 {% endif %}
- 
+
 div.body h1 { margin-top: 0; padding-top: 0; font-size: 240%; }
 div.body h2 { font-size: 180%; }
 div.body h3 { font-size: 150%; }
@@ -210,7 +216,7 @@ dd div.admonition {
 }
 
 div.admonition p.admonition-title {
-    font-family: 'Garamond', 'Georgia', serif;
+    font-family: Verdana, 'Garamond', 'Georgia', serif;
     font-weight: normal;
     font-size: 24px;
     margin: 0 0 10px 0;
