@@ -54,7 +54,11 @@ x3dom.insertActiveX = function(x3d) {
     var inserted = parent.insertBefore(divelem, x3d);
     
     // hide x3d div
-    x3d.style.display = "none";
+    var hiddenx3d = document.createElement("div");
+    hiddenx3d.style.display = "none";
+    parent.appendChild(hiddenx3d);
+    parent.removeChild(x3d);
+    hiddenx3d.appendChild(x3d);
      
     var atx = document.createElement("object");
     
