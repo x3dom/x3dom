@@ -74,16 +74,10 @@ x3dom.debug = {
         //aDiv.style.display = (visible) ? "block" : "none";
         x3dom.debug.logContainer.style.display = (visible) ? "block" : "none";
 		
-		//Need this HACK for IE integration. IE don't have a document.body at this time
 		if(!x3dom.debug.isAppend) {
 			if(document.body) {
-				//document.documentElement.appendChild(aDiv);
-				x3dom.debug.logContainer.style.marginLeft = "8px";
-				document.documentElement.appendChild(x3dom.debug.logContainer);
-			}else{
-				//document.body.appendChild(aDiv);
 				document.body.appendChild(x3dom.debug.logContainer);
-			}
+            }
 		}
 	},
 
