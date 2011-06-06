@@ -155,6 +155,10 @@ docs:
 	fi
 	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -xi ${SRC_DIR}/flashbackend -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/natural-docs-config
 
+guide:
+	@echo "Building guide...."
+	cd doc/guide; make html; cd ../..
+
 deploy:
 	@@echo "Updating x3dom.org... (requires you set up public key auth and a ssh config file)"
 	ssh x3dom "cd ~/web/x3dom/; svn update; cd src; make; cd ..; make docs"
@@ -168,4 +172,4 @@ stats:
 	@@echo "Statistics for X3DOM"
 	wc -l $(BASE_FILES)
 
-.PHONY: all x3dom lint min init changelog runserver docs refreshtests deploy stats
+.PHONY: all x3dom lint min init changelog runserver docs refreshtests deploy stats guide
