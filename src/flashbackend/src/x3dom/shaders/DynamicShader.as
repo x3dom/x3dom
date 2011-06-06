@@ -58,7 +58,8 @@ package x3dom.shaders
 				shader += "dp3 vt0.y, va0, vc5\n";
 				shader += "dp3 vt0.z, va0, vc6\n";
 				
-				shader += "sub v3, vc8, -vt0.xyz\n"; 
+				shader += "sub v3, vc8, -vt0.xyz\n";
+				//shader += "mov v3, -vt0\n";
 				
 				shader += "dp3 vt1.x, va2, vc4\n";
 				shader += "dp3 vt1.y, va2, vc5\n";
