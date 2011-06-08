@@ -76,13 +76,14 @@ x3dom.debug = {
 		
 		//Need this HACK for IE/Flash integration. IE don't have a document.body at this time when starting Flash-Backend
 		if(!x3dom.debug.isAppend) {
-			if(document.body) {
+			alert(navigator.appName);
+			if(navigator.appName == "Microsoft Internet Explorer") {
 				//document.documentElement.appendChild(aDiv);
 				x3dom.debug.logContainer.style.marginLeft = "8px";
 				document.documentElement.appendChild(x3dom.debug.logContainer);
 			}else{
 				//document.body.appendChild(aDiv);
-				document.body.appendChild(x3dom.debug.logContainer);
+				var body = document.body.appendChild(x3dom.debug.logContainer);
 			}
 			x3dom.debug.isAppend = true;
 		}
