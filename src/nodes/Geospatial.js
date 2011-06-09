@@ -43,9 +43,33 @@ x3dom.registerNodeType(
                 });
             },
             
+            GEOtoGC: function(geoSystem, coords)
+            {
+              if(geoSystem[0] == 'GD')
+              {
+                return this.GDtoGC(geoSystem, coords);
+              }
+              
+              // TODO
+              else
+                return coords;
+            },
+            
+            GCtoX3D: function(origin, coords)
+            {
+              var matrix = x3dom.fields.SFMatrix4f.translation(origin);
+              matrix = matrix.inverse();
+              
+              for(var i=0; i<coords.length; ++i)
+              {
+                coords[i] = matrix.multMatrixPnt(coords[i]);
+              }
+            },
+            
             GDtoGC: function(geoSystem, coords) {
             
-              var referenceFrame = 'GD';
+              var output = x3dom.fields.MFVec3f.copy(coords);
+              
               var earthElipsoide = geoSystem[1];
               var longLatOrder   = geoSystem[2];
               
@@ -65,10 +89,10 @@ x3dom.registerNodeType(
               var radiansPerDegree = 0.0174532925199432957692;
 
               // for (current in coords)
-              for (var i=0; i<coords.length; ++i)
+              for (var i=0; i<output.length; ++i)
               {
-                var source_lat = radiansPerDegree * (longitudeFirst == true ? coords[i].y : coords[i].x);
-                var source_lon = radiansPerDegree * (longitudeFirst == true ? coords[i].x : coords[i].y);
+                var source_lat = radiansPerDegree * (longitudeFirst == true ? output[i].y : output[i].x);
+                var source_lon = radiansPerDegree * (longitudeFirst == true ? output[i].x : output[i].y);
 
                 var slat = Math.sin(source_lat);
                 var slat2 = slat*slat;
@@ -77,20 +101,33 @@ x3dom.registerNodeType(
                 /* square root approximation for Rn */
                 var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
 
-                var RnPh = Rn + coords[i].z;
+                var RnPh = Rn + output[i].z;
 
-                coords[i].x = RnPh * clat * Math.cos(source_lon);
-                coords[i].y = RnPh * clat * Math.sin(source_lon);
-                coords[i].z = ((C2 / A2) * Rn + coords[i].z) * slat;
+                output[i].x = RnPh * clat * Math.cos(source_lon);
+                output[i].y = RnPh * clat * Math.sin(source_lon);
+                output[i].z = ((C2 / A2) * Rn + output[i].z) * slat;
               }
+              
+              return output;
             },
             
-            getPoints: function() {
-              var transformed = new x3dom.fields.MFVec3f(this._vf.point);
+            getPoints: function()
+            {
               var geoSystem = this._cf.geoOrigin.node._vf.geoSystem;
               
-              if(geoSystem[0] == 'GD')
-                this.GDtoGC(this._cf.geoOrigin.node._vf.geoSystem, transformed);
+              // transform points
+              var transformed = this.GEOtoGC(geoSystem, this._vf.point);
+              
+              if(this._cf.geoOrigin.node._vf.geoCoords)
+              {
+                var temp = new x3dom.fields.MFVec3f;
+                temp.push(x3dom.fields.SFVec3f.copy(this._cf.geoOrigin.node._vf.geoCoords));
+                
+                var origin = this.GEOtoGC(geoSystem, temp);
+                
+                // transform to x3d coord system
+                this.GCtoX3D(origin[0], transformed);
+              }
               
               return transformed;
             }
