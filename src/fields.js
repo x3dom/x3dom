@@ -832,6 +832,10 @@ x3dom.fields.SFVec3f = function(x, y, z) {
     }
 };
 
+x3dom.fields.SFVec3f.copy = function(v) {
+    return new x3dom.fields.SFVec3f(v.x, v.y, v.z);
+};
+
 x3dom.fields.SFVec3f.MIN = function() {
     return new x3dom.fields.SFVec3f(Number.MIN_VALUE, Number.MIN_VALUE, Number.MIN_VALUE);
 };
@@ -1681,6 +1685,11 @@ x3dom.fields.MFVec3f = function(vec3Array) {
     }
 };
 
+x3dom.fields.MFVec3f.copy = function(vec3Array) {
+    var destination = new x3dom.fields.MFVec3f();
+    vec3Array.map( function(v) { destination.push(x3dom.fields.SFVec3f.copy(v)); }, this );
+    return destination;
+};
 
 x3dom.fields.MFVec3f.prototype = x3dom.extend([]);
 
