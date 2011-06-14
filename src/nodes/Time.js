@@ -13,6 +13,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFTime(ctx, 'startTime', 0);
             this.addField_SFTime(ctx, 'stopTime', 0);
+            this.addField_SFTime(ctx, 'pauseTime', 0);
+            this.addField_SFTime(ctx, 'resumeTime', 0);
 
             this.addField_SFTime(ctx, 'cycleTime', 0);
             this.addField_SFFloat(ctx, 'fraction_changed', 0);
@@ -24,12 +26,23 @@ x3dom.registerNodeType(
         {
             onframe: function (ts)
             {
+                // http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/time.html#Timecycles
+                // (startTime >= stopTime && loop == false): isActive(true) at startTime, isActiveFalse(after 1st cycle)
+                // startTime >= stopTime && loop == True: isActive(true) at startTime, cycle forever
+                // startTime < stopTime && loop == True: isActive(true) at startTime, cycle to stopTime, isActive(false) at stopTime
+                // set_stopTime && loop == True: isActive(true) at startTime, cycle to new stopTime, isActive(false) at new stopTime
+                // loop == True, then setLoop(false): isActive(true) at startTime, cycle, when loop false, isActive(false) at end of current cycle
+
                 if (!this._vf.enabled) {
                     return;
                 }
 
+                var doRun = (ts >= this._vf.startTime);
+                var doPaused = (ts >= this._vf.pauseTime) && (this._vf.pauseTime > this._vf.resumeTime);
+
+                var cycleFrac, cycle, fraction, elapsed;
                 var isActive = (ts >= this._vf.startTime);
-                var cycleFrac, cycle, fraction;
+
 
                 if (isActive && this._vf.cycleInterval > 0) {
                     cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
@@ -41,6 +54,7 @@ x3dom.registerNodeType(
                             fraction = 1.0;
                         }
                     }
+
                 }
 
                 if (isActive) {
@@ -52,11 +66,17 @@ x3dom.registerNodeType(
                     this.postMessage('time', ts);
 
                     if (this._prevCycle != cycle) {
+
                         this._prevCycle = cycle;
 
                         this.postMessage('cycleTime', ts);
 
                         // TODO: this._vf.loop
+                        if (!this._vf.loop) {
+                            this.postMessage('isActive', false);
+                        }
+                        return;
+
                     }
                 }
             },
