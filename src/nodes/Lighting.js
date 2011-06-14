@@ -1,3 +1,5 @@
+
+
 /* ### X3DLightNode ### */
 x3dom.registerNodeType(
     "X3DLightNode",
@@ -8,6 +10,10 @@ x3dom.registerNodeType(
 
             ctx.doc._nodeBag.lights.push(this);
 
+			this._lightID = 0;
+			this._dirty = true;
+			
+			
             this.addField_SFFloat(ctx, 'ambientIntensity', 0);
             this.addField_SFColor(ctx, 'color', 1, 1, 1);
             this.addField_SFFloat(ctx, 'intensity', 1);
@@ -19,6 +25,17 @@ x3dom.registerNodeType(
             getViewMatrix: function(vec) {
                 return x3dom.fields.SFMatrix4f.identity;
             },
+			
+			nodeChanged: function () {
+				if(!this._lightID) {
+					this._lightID = ++x3dom.nodeTypes.X3DLightNode.lightID;
+				}
+			},
+			
+			fieldChanged: function(fieldName)
+            {
+				this._dirty = true;
+			},
 
             parentRemoved: function(parent)
             {
@@ -35,6 +52,9 @@ x3dom.registerNodeType(
         }
     )
 );
+
+/** Static class ID counter (needed for flash performance up) */
+x3dom.nodeTypes.X3DLightNode.lightID = 0;
 
 /* ### DirectionalLight ### */
 x3dom.registerNodeType(

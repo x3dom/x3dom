@@ -185,10 +185,48 @@ x3dom.gfx_flash = (function() {
 		}
 		
 		//TODO Set Lights
-		/*var lights = viewarea.getLights();
+		var lights = viewarea.getLights();
 		for(var i=0; i<lights.length; i++) {
-			this.object.setLights( { } );
-		}*/
+			if(lights[i]._dirty) { 
+				
+				if( x3dom.isa(lights[i], x3dom.nodeTypes.DirectionalLight) ) 
+				{
+					x3dom.debug.logInfo(lights[i]._lightID);
+					/*this.object.setDirectionalLight( { idx: lights[i]._lightID,
+													   on: lights[i]._vf.on,
+													   color: lights[i]._vf.color.toGL(),
+													   intensity: lights[i]._vf.color.toGL(),
+													   ambientIntensity: lights[i]._vf.ambientIntensity,
+													   direction: lights[i]._vf.direction.toGL() } );*/
+				}
+				else if( x3dom.isa(lights[i], x3dom.nodeTypes.PointLight) ) 
+				{
+					/*this.object.setPointLight( { idx: lights[i]._lightID,
+												 on: lights[i]._vf.on,
+												 color: lights[i]._vf.color.toGL(),
+												 intensity: lights[i]._vf.color.toGL(),
+												 ambientIntensity: lights[i]._vf.ambientIntensity,
+												 attenuation: lights[i]._vf.attenuation.toGL(),
+												 location: lights[i]._vf.location.toGL(),
+												 radius: lights[i]._vf.radius } );*/
+				}
+				else if( x3dom.isa(lights[i], x3dom.nodeTypes.SpotLight) ) 
+				{
+					/*this.object.setSpotLight( { idx: lights[i]._lightID,
+												on: lights[i]._vf.on,
+												color: lights[i]._vf.color.toGL(),
+												intensity: lights[i]._vf.color.toGL(),
+												ambientIntensity: lights[i]._vf.ambientIntensity,
+												direction: lights[i]._vf.direction.toGL(),
+												attenuation: lights[i]._vf.attenuation.toGL(),
+												location: lights[i]._vf.location.toGL(),
+												radius: lights[i]._vf.radius,
+												beamWidth: lights[i]._vf.beamWidth,
+												cutOffAngle: lights[i]._vf.cutOffAngle } );*/
+				}
+				lights[i]._dirty = false;
+			}
+		}
 	};
 	
 	/**
