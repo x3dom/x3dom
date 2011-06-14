@@ -1383,7 +1383,7 @@ x3dom.gfx_webgl = (function () {
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, text_canvas);
 			
 			//remove canvas after Texture creation
-            //document.body.removeChild(text_canvas);
+            document.body.removeChild(text_canvas);
             
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
