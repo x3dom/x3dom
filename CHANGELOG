@@ -1,5 +1,177 @@
+2011-06-14  akustikkoppler
+
+	 [r1161] - Little Fix
+	 [r1160] - Fix Webfont-Canvas Bug
+	  - Add unique Light ID's
+	  - Prepare Flash for LightPrePass Rendering
+
+2011-06-14  thyrell
+
+	 [r1159] Started to work on TimeSensor stuff
+
+2011-06-09  timmjd
+
+	 [r1158] Geo: uses geoOrigin to transform geoCoordinate
+
+2011-06-08  akustikkoppler
+
+	 [r1157]
+	 [r1156] - Change debug IE Hack
+
+2011-06-07  thyrell
+
+	 [r1155] Fixed Billboard orientation:
+	  https://github.com/x3dom/x3dom/issues/4, thanks to Nelson Silva
+	  https://github.com/inevo/x3dom/commit/ef84f15a00790a7d62b17751143a729979208326
+
+2011-06-06  akustikkoppler
+
+	 [r1154] - Re-Add IE-Body-Hack. Flash doesn't work without!
+
+2011-06-06  thyrell
+
+	 [r1153] Doc system updates
+
+2011-06-06  tobold
+
+	 [r1152] Removed IE hack for logdiv. IE has document.body.
+	 [r1151] Modified code to hide X3D tree once embedded in a plugin.
+	 [r1150] Added new behavior for IE plugin.
+
+2011-06-06  thyrell
+
+	 [r1149] Added target to make HTML version of guide book from top
+	  level makefile (requires Python and Sphinx package)
+	 [r1148] Added tables of supported api params
+	 [r1147] File rename
+
+2011-06-01  akustikkoppler
+
+	 [r1146]
+
+2011-06-01  timmjd
+
+	 [r1145] inital geo transformation code
+
+2011-06-01  akustikkoppler
+
+	 [r1144]
+	 [r1143]
+	 [r1142]
+
+2011-05-31  thyrell
+
+	 [r1141] Work on the guide
+	 [r1140] Ignoring doc build
+	 [r1139] Whoops
+	 [r1138] Adding Sphinx Documentation System scaffolding
+	 [r1137] More work on UML
+
+2011-05-30  thyrell
+
+	 [r1136] Added showStat option to <param> overrideing the X3D
+	  element attribute
+	 [r1135] Added showLog param to <param> element.
+
+2011-05-30  akustikkoppler
+
+	 [r1134]
+	 [r1133]
+
+2011-05-26  akustikkoppler
+
+	 [r1132] - Add Flash version detection script
+	  - Add Flex 4 ToolBuilder for renaming FlashBackend.swf to
+	  x3dom.swf after build
+	 [r1131]
+	 [r1130]
+
+2011-05-25  akustikkoppler
+
+	 [r1129] - Add cubemap for Flash example
+	 [r1128] - Add Flash ComposedCubeMapTexture rendering
+	 [r1127]
+	 [r1126]
+	 [r1125] - Fix Background Bug
+
+2011-05-24  akustikkoppler
+
+	 [r1124]
+
+2011-05-24  thyrell
+
+	 [r1123] Added example for param thing. Modified default values
+	  ofr PrimitiveQuality setting
+	 [r1122] Removed linecount task and runserver task from
+	  src/Makefile (now in toplevel Makefile
+	 [r1121] Added task to output line count of X3DOM js files
+	 [r1120] back to stone-age typography
+	 [r1119] Added PrimitiveQuality paramter and useage in Sphere
+	  node. Also added test for param tag
+	 [r1118] Updating tests for param stuff
+	 [r1117] Adapted makefiles for param stuff
+	 [r1116] Added <param> node to allow configruation via using a
+	  <param> tag
+
+2011-05-23  akustikkoppler
+
+	 [r1115]
+	 [r1114]
+	 [r1113]
+	 [r1112]
+	 [r1111]
+
+2011-05-23  thyrell
+
+	 [r1110] Adapted Makefiles for Geospatial nodes
+
+2011-05-23  timmjd
+
+	 [r1109] cleanup x3d names
+
+2011-05-23  thyrell
+
+	 [r1108] Fixes to Geospatial nodes and updating tests
+	 [r1107] Fixes to Geospatial-Node implementation
+	 [r1106] UML for x3dom.fields
+	 [r1105] More work on UML
+
+2011-05-23  yjung
+
+	 [r1104] initial checkin of new nodepool
+
+2011-05-23  akustikkoppler
+
+	 [r1103]
+
+2011-05-23  thyrell
+
+	 [r1102] More Work on the Urmel-Diagramm
+	 [r1101] More Work on the Urmel-Diagramm
+	 [r1100] More Work on the Urmel-Diagramm
+	 [r1099] Work on the Urmel-Diagramm
+
+2011-05-23  akustikkoppler
+
+	 [r1098]
+	 [r1097]
+
+2011-05-22  akustikkoppler
+
+	 [r1096]
+	 [r1095]
+	 [r1094]
+
 2011-05-17  thyrell
 
+	 [r1093] Added classes to UML diagram
+	 [r1092] Move pending work to private branch
+	 [r1091] Refacoring: Grouping nodes to nodes/Grouping.js
+	 [r1090] Cleanup
+	 [r1089] Moved node setup stuff (like namespace and helper
+	  functions) to Internals.js. Not sure if this is the right place
+	  to put it, but well.
+	 [r1088] Refreshed changelog and added build.py placeholder file
 	 [r1087] Removed old comments
 	 [r1086] Refactoring: NodeNameSpace to nodes/NodeNameSpace.js
 	 [r1085] Makefile update
