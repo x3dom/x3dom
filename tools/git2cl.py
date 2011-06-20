@@ -74,9 +74,11 @@ for line in fin:
         fileList = re.split(' \| ', line, 2)
         if len(fileList) > 1:
             if len(files) > 0:
-                files = files + ", " + fileList[0].strip()
+                pass
+#                files = files + ", " + fileList[0].strip()
             else:
-                files = fileList[0].strip()
+                pass
+#                files = fileList[0].strip()
     # All of the parts of the commit have been found - write out the entry
     if authorFound & dateFound & messageFound & filesFound:
         # First the author line, only outputted if it is the first for that
