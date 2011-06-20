@@ -146,7 +146,8 @@ runserver:
 
 changelog:
 	@@echo "Generating changelog this may take a while ..."
-	@svn log --verbose --xml https://x3dom.svn.sourceforge.net/svnroot/x3dom/trunk | xsltproc --nowrite --nomkdir --nonet tools/svn2cl.xsl - > ChangeLog
+	@python ${TOOL_DIR}/git2cl.py
+#@svn log --verbose --xml https://x3dom.svn.sourceforge.net/svnroot/x3dom/trunk | xsltproc --nowrite --nomkdir --nonet tools/svn2cl.xsl - > ChangeLog
 
 docs:
 	@@echo "Generating API documentation"
