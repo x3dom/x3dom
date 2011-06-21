@@ -58,17 +58,17 @@ Ubuntu Linux
 In order to enable WebGL for Firefox 4 and above you need to:
 
   1. Install the libosmesa6 package. You can do so by issuing
-     the the following command in a terminal window or one of the consoles.
+     the the following command in a terminal window or one of the consoles::
 
          sudo apt-get install libosmesa6
 
   2. Open the Firefox application and enter *about:config* in the
      location bar and *webgl* in the filter box.
 
-  3. Set the option *webgl.force-enable* and *webgl.prefer-native-gl* to _true_
+  3. Set the option *webgl.force-enable* and *webgl.prefer-native-gl* to *true*
 
   4. Set *webgl.osmesalib* to the the path of the library you installed
-     in step 1, usually thi should be: _/usr/lib/libOSMesa.so.6_
+     in step 1, usually thi should be: /usr/lib/libOSMesa.so.6
 
   5. Restart Firefox
   
