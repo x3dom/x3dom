@@ -42,15 +42,26 @@ be sure to use latest drivers for your graphics card and be sure those drivers
 support the OpenGL standard.
 
 
+Blacklists
+~~~~~~~~~~
+Some GPUs and Driver combinations are blacklisted by browser vendors. In case
+of strange errors, please check the following lists for:
+
+  * `Mozilla <https://wiki.mozilla.org/Blocklisting/Blocked_Graphics_Drivers>`_
+  * `Chrome <http://src.chromium.org/viewvc/chrome/trunk/src/chrome/browser/resources/software_rendering_list.json>`_
+
+
 Windows
 ~~~~~~~
 
 No specific notes yet.
 
+
 Mac OS X
 ~~~~~~~~
 
 Note that Safari is currently not supporing WebGL. You need to use WebKit.
+
 
 Ubuntu Linux
 ~~~~~~~~~~~~
