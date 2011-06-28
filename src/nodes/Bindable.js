@@ -1,3 +1,15 @@
+/*
+ * X3DOM JavaScript Library
+ * http://x3dom.org
+ *
+ * (C)2009 Fraunhofer Insitute for Computer
+ *         Graphics Reseach, Darmstadt
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
+
 // BindableStack constructor
 x3dom.BindableStack = function (doc, type, defaultType, getter) {
     this._doc = doc;

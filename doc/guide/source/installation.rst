@@ -79,7 +79,7 @@ In order to enable WebGL for Firefox 4 and above you need to:
   3. Set the option *webgl.force-enable* and *webgl.prefer-native-gl* to *true*
 
   4. Set *webgl.osmesalib* to the the path of the library you installed
-     in step 1, usually thi should be: /usr/lib/libOSMesa.so.6
+     in step 1, usually thi should be: ``/usr/lib/libOSMesa.so.6``
 
   5. Restart Firefox
   
