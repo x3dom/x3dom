@@ -12,6 +12,7 @@ instructions for web development with X3DOM.
    installation
    quickstart
    tutorial/index
+   troubleshooting
 
 API Reference
 -------------
