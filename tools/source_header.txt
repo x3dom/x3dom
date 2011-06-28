@@ -1,0 +1,10 @@
+/**
+ * X3DOM JavaScript Library
+ * http://x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by 
+ * Philip Taylor: http://philip.html5.org
+ */
