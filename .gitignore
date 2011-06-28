@@ -15,6 +15,7 @@ example/x3dom.css
 example/x3dom.js
 *~
 doc/guide/build
+#*#
 
 # remove with new build system
 src/version.js

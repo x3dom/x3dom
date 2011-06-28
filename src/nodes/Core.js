@@ -1,11 +1,13 @@
 /*
  * X3DOM JavaScript Library
- * http://www.x3dom.org/
+ * http://x3dom.org
  *
- * Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
- *     based on code originally provided by Philip Taylor:
- *     http://philip.html5.org
- * Dual licensed under the MIT and GPL licenses.
+ * (C)2009 Fraunhofer Insitute for Computer
+ *         Graphics Reseach, Darmstadt
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
  */
 
 // ### X3DNode ###

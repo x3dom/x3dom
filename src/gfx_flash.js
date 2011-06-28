@@ -1,13 +1,14 @@
-/*!
-* x3dom javascript library 0.1
-* http://x3dom.org/
-*
-* Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
-*     based on code originally provided by Philip Taylor:
-*     http://philip.html5.org
-* Dual licensed under the MIT and GPL licenses.
-* 
-*/
+/*
+ * X3DOM JavaScript Library
+ * http://x3dom.org
+ *
+ * (C)2009 Fraunhofer Insitute for Computer
+ *         Graphics Reseach, Darmstadt
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
 
 x3dom.bridge = {
 

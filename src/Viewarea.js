@@ -1,3 +1,15 @@
+/*
+ * X3DOM JavaScript Library
+ * http://x3dom.org
+ *
+ * (C)2009 Fraunhofer Insitute for Computer
+ *         Graphics Reseach, Darmstadt
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
+
 // ### Viewarea ###
 x3dom.Viewarea = function (document, scene) {
     this._doc = document; // x3ddocument
