@@ -92,7 +92,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		div.appendChild(link);
 		x3dElem.appendChild(div);
 		
-		x3dom.denug.logError("Your Browser don't support X3DOM");
+		x3dom.debug.logError("Your Browser doesn't support X3DOM!");
 	}
 
 	this.createFlashObject = function(x3dElem) {
