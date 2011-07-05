@@ -2,7 +2,7 @@
 
 Troubleshooting
 ===============
-As with most complex systems, something can go wrong. But fear not. 
+As with most software systems, something can go wrong. But fear not. 
 There are a couple of things you can check and try. You’ll find some 
 hints and tips here.
 
@@ -28,8 +28,9 @@ caused by improperly closed tags (see above).
     otherwise required.
   * Use a HTML ``meta`` to denote the file encoding and make sure your file
     endcoding matches your meta tag.
-  * If you are serving your files from a web server: make sure the server sets
-    proper HTTP headers (especially mimetype and encoding) and middleware
-    does not alter the file encoding (PHP et al. are sources for messing up
-    multi-byte encodings). Again, maintaining UTF-8 throughout is a sensible 
-    choice (also `read this <http://www.joelonsoftware.com/articles/Unicode.html>`_).
+  * In case you are serving your files from a web server: make sure the 
+    server sets proper HTTP headers (especially mimetype and encoding) and 
+    middleware does not alter the file encoding (PHP et al. are sources for 
+    messing up multi-byte encodings). Again, maintaining UTF-8 throughout is 
+    a sensible choice (also 
+    `read this <http://www.joelonsoftware.com/articles/Unicode.html>`_).
