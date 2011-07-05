@@ -1,18 +1,24 @@
+.. _api:
+
 Runtime API
 ===========
 
-Place for the official user API documentation (not the code doc generated automatically).
+Place for the official user API documentation (not the code doc generated 
+automatically).
 
 
 The param element
 =================
 
-The X3D element supports a param tag which allows to set configuration for the runtime.
+The X3D element supports a param tag which allows to set configuration for 
+the runtime.
 
 Usage
 -----
 
-The param element behaves just like any other HTML element. It must be nested below the scene element. For XHTML you can use the self-closing syntax, for HTML a closing tag is mandatory:
+The param element behaves just like any other HTML element. It must be 
+nested below the scene element. For XHTML you can use the self-closing syntax,
+for HTML a closing tag is mandatory:
 
     <x3d>
         <scene>
