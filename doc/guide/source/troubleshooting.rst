@@ -2,15 +2,20 @@
 
 Troubleshooting
 ===============
-As with most complex systems, something can go wrong. But fear not. There are a couple of things you can check and try. You’ll find some hints and tips here.
+As with most complex systems, something can go wrong. But fear not. 
+There are a couple of things you can check and try. You’ll find some 
+hints and tips here.
 
 I am not seeing anything
 ~~~~~~~~~~~~~~~~~~~~~~~~
 Assuming we are not dealing with an electrical or vision problem here:
 
   * Check if your HTML and X3D code is correct
-  * If you are using the HTML5 doctype make sure all X3D tags are properly closed. You can not use “self-closing” syntax. Instead you need to close the tag explicitly: ``<color ...></color>``  NOT ``<color ... />``
-  * For the HTML part, swing by the `W3C validator <http://validator.w3.org/>`_ to check for syntax errors
+  * If you are using the HTML5 doctype make sure all X3D tags are properly 
+    closed. You can not use “self-closing” syntax. Instead you need to close 
+    the tag explicitly: ``<color ...></color>``  NOT ``<color ... />``
+  * For the HTML part, swing by the `W3C validator <http://validator.w3.org/>`_
+    to check for syntax errors
 
 
 There are weird chars or some gobbledygook on my web page
