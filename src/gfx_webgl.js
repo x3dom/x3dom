@@ -1,13 +1,14 @@
-/*!
-* x3dom javascript library 0.1
-* http://x3dom.org/
-*
-* Copyright (c) 2009 Peter Eschler, Johannes Behr, Yvonne Jung
-*     based on code originally provided by Philip Taylor:
-*     http://philip.html5.org
-* Dual licensed under the MIT and GPL licenses.
-* 
-*/
+/*
+ * X3DOM JavaScript Library
+ * http://x3dom.org
+ *
+ * (C)2009 Fraunhofer Insitute for Computer
+ *         Graphics Reseach, Darmstadt
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
 
 
 x3dom.gfx_webgl = (function () {
@@ -1200,7 +1201,6 @@ x3dom.gfx_webgl = (function () {
                     gl.vertexAttribPointer(shape._webgl.shader.position, 3, gl.FLOAT, false, 0, 0);
 
                     vertices = null;
-                    // delete vertices; // delete does not work on varibles, only properties
                 }
                 
                 shape._dirty.positions = false;
@@ -1224,7 +1224,6 @@ x3dom.gfx_webgl = (function () {
                     gl.vertexAttribPointer(shape._webgl.shader.color, 3, gl.FLOAT, false, 0, 0); 
                     
                     colors = null;
-                    //delete colors; // delete does not work on varibles, only properties
                 }
                 
                 shape._dirty.colors = false;
@@ -1749,7 +1748,6 @@ x3dom.gfx_webgl = (function () {
             gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
             
             indexArray = null;
-            //delete indexArray; // delete does not work on variables created with var
             
             positionBuffer = gl.createBuffer();
             shape._webgl.buffers[5*q+1] = positionBuffer;
@@ -1762,8 +1760,8 @@ x3dom.gfx_webgl = (function () {
             
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(sp.position);
-            
-            // delete vertices; // delete does not work on varibles, only properties
+
+            vertices = null;
           }
           if (sp.normal !== undefined) 
           {
@@ -1779,7 +1777,6 @@ x3dom.gfx_webgl = (function () {
             gl.enableVertexAttribArray(sp.normal);
 
             normals = null;
-            // delete normals; // delete does not work on varibles, only properties
           }
           if (sp.texcoord !== undefined)
           {
@@ -1796,7 +1793,6 @@ x3dom.gfx_webgl = (function () {
             gl.enableVertexAttribArray(sp.texcoord);
                 
             texCoords = null;
-            //delete texCoords; // delete does not work on varibles, only properties
           }
           if (sp.color !== undefined)
           {
@@ -1813,7 +1809,6 @@ x3dom.gfx_webgl = (function () {
             gl.enableVertexAttribArray(sp.color);
                 
             colors = null;
-            // delete colors; // delete does not work on varibles, only properties
           }
         }
         
@@ -1841,7 +1836,6 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp[df], attrib.numComponents, gl.FLOAT, false, 0, 0); 
 
                 attribs = null;
-                //delete attribs; // what should this accomplish?
             }
         }
     };
@@ -2066,8 +2060,6 @@ x3dom.gfx_webgl = (function () {
             
             vertices = null;
             indexArray = null;
-            //delete vertices; // delete does not work on varibles, only properties
-            //delete indexArray; // delete does not work on varibles, only properties
             
             if (sp.texcoord !== undefined)
             {
@@ -2083,7 +2075,6 @@ x3dom.gfx_webgl = (function () {
                 gl.enableVertexAttribArray(sp.texcoord);
                 
                 texcoords = null;
-                //delete texcoords; // delete does not work on varibles, only properties
             }
         }
         
@@ -2259,8 +2250,6 @@ x3dom.gfx_webgl = (function () {
         
         vertices = null;
         indexArray = null;
-        // delete vertices; // delete does not work on varibles, only properties
-        // delete indexArray; // delete does not work on varibles, only properties
         
         scene._fgnd._webgl.render = function(gl, tex)
         {

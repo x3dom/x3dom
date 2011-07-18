@@ -1,3 +1,15 @@
+/*
+ * X3DOM JavaScript Library
+ * http://x3dom.org
+ *
+ * (C)2009 Fraunhofer Insitute for Computer
+ *         Graphics Reseach, Darmstadt
+ * Dual licensed under the MIT and GPL.
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
+
 /**
  * @class x3dom.X3DCanvas
  */
@@ -36,7 +48,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		var max_version = max;
 		var available_version = 0;
 
-		/* dieser Abschnitt ist für NS, Mozilla, Firefox und ähnliche Browser */
+		/* dieser Abschnitt ist fï¿½r NS, Mozilla, Firefox und ï¿½hnliche Browser */
 		if(typeof(navigator.plugins["Shockwave Flash"]) == "object")
 		{
 			var description = navigator.plugins["Shockwave Flash"].description;
@@ -80,7 +92,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		div.appendChild(link);
 		x3dElem.appendChild(div);
 		
-		x3dom.denug.logError("Your Browser don't support X3DOM");
+		x3dom.debug.logError("Your Browser doesn't support X3DOM!");
 	}
 
 	this.createFlashObject = function(x3dElem) {
