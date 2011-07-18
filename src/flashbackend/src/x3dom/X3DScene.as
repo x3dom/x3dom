@@ -12,6 +12,7 @@
 	import flash.geom.*;
 	
 	import x3dom.*;
+	import x3dom.lighting.*;
 	
 	/**
 	 * The X3DScene class handles the complete 3D scene managing and rendering
@@ -25,22 +26,22 @@
 		/**
 		 * Scenes viewing matrix
 		 */
-		private var _viewMatrix:Matrix3D	= new Matrix3D();
+		private var _viewMatrix:Matrix3D = new Matrix3D();
 		
 		/**
 		 * Scenes projection matrix
 		 */
-		private var _projMatrix:Matrix3D	= new Matrix3D();
+		private var _projMatrix:Matrix3D = new Matrix3D();
 		
 		/**
 		 * Array of all scene lights
 		 */
-		private var _lights:Array	= new Array();
+		private var _lights:Array = new Array();
 		
 		/**
 		 * Array of all meshes
 		 */
-		private var _drawableObjects:Array	= new Array();
+		private var _drawableObjects:Array = new Array();
 		
 		
 		//For Picking
@@ -104,6 +105,27 @@
 		public function get lights() : Array
 		{
 			return _lights;
+		}
+		
+		/**
+		 * Return a light with the given ID or generates a new one
+		 */
+		public function getLight(id:uint, type:String) : Object
+		{
+			//Search existend Light and return
+			for(var i:uint = 0; i<_lights.length; i++) {
+				if(_lights[i].id == id) return _lights[i];
+			}
+			
+			//If nothing found create new Light
+			switch( type ) {
+				case LightType.DIRECTIONALIGHT: _lights.push( new DirectionalLight(id) ); break;
+				case LightType.POINTLIGHT: 		_lights.push( new PointLight(id) ); break;
+				case LightType.SPOTLIGHT: 		_lights.push( new SpotLight(id) ); break;
+			}
+			
+			//Return new light
+			return _lights[_lights.length-1];
 		}
 		
 		/**

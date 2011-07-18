@@ -11,9 +11,9 @@ package x3dom.lighting
 		/**
 		 * 
 		 */
-		public function DirectionalLight()
+		public function DirectionalLight(id:uint)
 		{
-			super();
+			super(id);
 		}
 		
 		/**

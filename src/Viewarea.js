@@ -363,8 +363,9 @@ x3dom.Viewarea.prototype.showAll = function()
 {
     var min = x3dom.fields.SFVec3f.MAX();
     var max = x3dom.fields.SFVec3f.MIN();
+	
     var ok = this._scene.getVolume(min, max, true);
-
+	
     if (ok)
     {
         var viewpoint = this._scene.getViewpoint();

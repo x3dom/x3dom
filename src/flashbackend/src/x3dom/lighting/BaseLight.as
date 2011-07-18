@@ -3,6 +3,12 @@ package x3dom.lighting
 	public class BaseLight
 	{
 		/**
+		 * Lights unique ID
+		 * @default 0
+		 */
+		protected var _id:uint = 0;
+		
+		/**
 		 * Enables/disables this Light
 		 * @default true
 		 */
@@ -30,8 +36,9 @@ package x3dom.lighting
 		/**
 		 * 
 		 */
-		public function BaseLight()
+		public function BaseLight(id:uint)
 		{
+			_id = id;
 		}
 		
 		/**
@@ -53,7 +60,7 @@ package x3dom.lighting
 		/**
 		 * Color of light, applied to colors of objects.
 		 */
-		public function get color() : Array
+		public function get color() : Vector.<uint>
 		{
 			return _color;
 		}
@@ -61,7 +68,7 @@ package x3dom.lighting
 		/**
 		 * @private
 		 */
-		public function set color(color:Array) : void
+		public function set color(color:Vector.<uint>) : void
 		{
 			_color = color;
 		}

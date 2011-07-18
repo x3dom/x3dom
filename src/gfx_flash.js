@@ -192,7 +192,7 @@ x3dom.gfx_flash = (function() {
 				if( x3dom.isa(lights[i], x3dom.nodeTypes.DirectionalLight) ) 
 				{
 					x3dom.debug.logInfo(lights[i]._lightID);
-					/*this.object.setDirectionalLight( { idx: lights[i]._lightID,
+					/*this.object.setDirectionalLight( { id: lights[i]._lightID,
 													   on: lights[i]._vf.on,
 													   color: lights[i]._vf.color.toGL(),
 													   intensity: lights[i]._vf.color.toGL(),
@@ -201,7 +201,7 @@ x3dom.gfx_flash = (function() {
 				}
 				else if( x3dom.isa(lights[i], x3dom.nodeTypes.PointLight) ) 
 				{
-					/*this.object.setPointLight( { idx: lights[i]._lightID,
+					/*this.object.setPointLight( { id: lights[i]._lightID,
 												 on: lights[i]._vf.on,
 												 color: lights[i]._vf.color.toGL(),
 												 intensity: lights[i]._vf.color.toGL(),
@@ -212,7 +212,7 @@ x3dom.gfx_flash = (function() {
 				}
 				else if( x3dom.isa(lights[i], x3dom.nodeTypes.SpotLight) ) 
 				{
-					/*this.object.setSpotLight( { idx: lights[i]._lightID,
+					/*this.object.setSpotLight( { id: lights[i]._lightID,
 												on: lights[i]._vf.on,
 												color: lights[i]._vf.color.toGL(),
 												intensity: lights[i]._vf.color.toGL(),
@@ -266,6 +266,29 @@ x3dom.gfx_flash = (function() {
 	
 	};
 	
+	Context.prototype.setupGeometryImage = function(shape, trafo, refID)
+	{	
+		//Set modelMatrix
+		this.object.setMeshTransform( { id: shape._objectID,
+										refID: refID,
+										transform: trafo.toGL() } );
+		if(refID == 0)
+		{	
+			if(shape._dirty.positions || shape._dirty.normals || shape._dirty.texcoords)
+			{
+				this.object.setGeometryImage( { id: shape._objectID,
+												bboxCenter: shape._cf.geometry.node._vf.bboxCenter.toGL(),
+												bboxSize: shape._cf.geometry.node._vf.bboxSize.toGL(),
+												numTriangles: shape._cf.geometry.node._vf.numTriangles,
+												coordinateTexture: shape._cf.geometry.node.getCoordinateTexture(),
+												normalTexture: shape._cf.geometry.node.getNormalTexture(),
+												texCoordTexture: shape._cf.geometry.node.getTexCoordTexture() } );
+											
+				shape._dirty.positions = shape._dirty.normals = shape._dirty.texcoords = false;
+			}
+		}
+	};
+	
 	Context.prototype.setupIndexedFaceSet = function(shape, trafo, refID)
 	{
 		//Set modelMatrix
@@ -274,59 +297,89 @@ x3dom.gfx_flash = (function() {
 										transform: trafo.toGL() } );
 		if(refID == 0)
 		{
+			//Check if is GeometryImage-Node
+			var isGeometryImage = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.GeometryImage);
+		
 			//Set indices			
 			if( shape._dirty.indexes === true ) {
-				for( var i=0; i<shape._cf.geometry.node._mesh._indices.length; i++ ) {
-					this.object.setMeshIndices( { id: shape._objectID,
-												  idx: i, 
-												  indices: shape._cf.geometry.node._mesh._indices[i] } ); 
+				if(!isGeometryImage) {
+					for( var i=0; i<shape._cf.geometry.node._mesh._indices.length; i++ ) {
+						this.object.setMeshIndices( { id: shape._objectID,
+													  idx: i, 
+													  indices: shape._cf.geometry.node._mesh._indices[i] } ); 
+					}
 				}
 				shape._dirty.indexes = false;
 			}
 			
 			//Set vertices
 			if( shape._dirty.positions === true ) {
-				for( var i=0; i<shape._cf.geometry.node._mesh._positions.length; i++ ) {
-					this.object.setMeshVertices( { id: shape._objectID,
-												   idx: i, 
-												   vertices: shape._cf.geometry.node._mesh._positions[i] } );
+				if(!isGeometryImage) {
+					for( var i=0; i<shape._cf.geometry.node._mesh._positions.length; i++ ) {
+						this.object.setMeshVertices( { id: shape._objectID,
+													   idx: i, 
+													   vertices: shape._cf.geometry.node._mesh._positions[i] } );
+					}
+				} else {
+					this.object.setMeshVerticesTexture( { id: shape._objectID,
+													      idx: 0,
+														  bboxCenter: shape._cf.geometry.node._vf.bboxCenter.toGL(),
+														  bboxSize: shape._cf.geometry.node._vf.bboxSize.toGL(),
+														  numTriangles: shape._cf.geometry.node._vf.numTriangles,
+													      coordinateTexture: shape._cf.geometry.node.getCoordinateTexture() } );
 				}
 				shape._dirty.positions = false;
 			}
 			
 			//Set normals
 			if( shape._dirty.normals === true ) {
-				if(shape._cf.geometry.node._mesh._normals[0].length) {
-					for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
-						this.object.setMeshNormals( { id: shape._objectID,
-													  idx: i, 
-													  normals: shape._cf.geometry.node._mesh._normals[i] } );
+				if(!isGeometryImage) {
+					if(shape._cf.geometry.node._mesh._normals[0].length) {
+						for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
+							this.object.setMeshNormals( { id: shape._objectID,
+														  idx: i, 
+														  normals: shape._cf.geometry.node._mesh._normals[i] } );
+						}
 					}
+				} else {
+					this.object.setMeshNormalsTexture( { id: shape._objectID,
+														 idx: 0, 
+														 normalTexture: shape._cf.geometry.node.getNormalTexture() } );
 				}
 				shape._dirty.normals = false;
 			}
 			
 			//Set colors
 			if( shape._dirty.colors === true ) {
-				if(shape._cf.geometry.node._mesh._colors[0].length) {
-					for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
-						this.object.setMeshColors( { id: shape._objectID,
-													 idx: i, 
-													 colors: shape._cf.geometry.node._mesh._colors[i],
-													 components: shape._cf.geometry.node._mesh._numColComponents } );
+				if(!isGeometryImage) {
+					if(shape._cf.geometry.node._mesh._colors[0].length) {
+						for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
+							this.object.setMeshColors( { id: shape._objectID,
+														 idx: i, 
+														 colors: shape._cf.geometry.node._mesh._colors[i],
+														 components: shape._cf.geometry.node._mesh._numColComponents } );
+						}
 					}
+				} else {
+					
 				}
 				shape._dirty.colors = false;
 			}
 			
 			//Set texture coordinates
 			if( shape._dirty.texcoords === true ) {
-				if(shape._cf.geometry.node._mesh._texCoords[0].length) {
-					for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
-						this.object.setMeshTexCoords( { id: shape._objectID,					
-														idx: i, 
-														texCoords: shape._cf.geometry.node._mesh._texCoords[i] } );
+				if(!isGeometryImage) {
+					if(shape._cf.geometry.node._mesh._texCoords[0].length) {
+						for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
+							this.object.setMeshTexCoords( { id: shape._objectID,					
+															idx: i, 
+															texCoords: shape._cf.geometry.node._mesh._texCoords[i] } );
+						}
 					}
+				} else {
+					this.object.setMeshTexCoordsTexture( { id: shape._objectID,					
+														   idx: 0, 
+														   texCoordTexture: shape._cf.geometry.node.getTexCoordTexture() } );
 				}
 				shape._dirty.texcoords = false;
 			}

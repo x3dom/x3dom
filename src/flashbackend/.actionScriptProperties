@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="no"?>
-<actionScriptProperties mainApplicationPath="x3dom/FlashBackend.as" projectUUID="ec348343-8bcd-4279-8d21-415ca200ce8c" version="6">
+<actionScriptProperties mainApplicationPath="x3dom/FlashBackend.as" projectUUID="d6beb717-1959-41a2-85fc-8038bd4ec6cc" version="6">
   <compiler additionalCompilerArguments="-locale de_DE -use-network=false" autoRSLOrdering="true" copyDependentFiles="true" fteInMXComponents="false" generateAccessible="true" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="bin" sourceFolderPath="src" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
     <compilerSourcePath/>
     <libraryPath defaultLinkType="0">

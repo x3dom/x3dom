@@ -7,7 +7,7 @@ package x3dom.lighting
 		 * Orientation of light relative to local coordinate system.
 		 * @defaut [0.0, 0.0, -1.0]
 		 */
-		private var _direction:Array = new Array(0.0, 0.0, -1.0);
+		private var _direction:Vector.<Number> = Vector.<Number>([0.0, 0.0, -1.0]);
 		
 		/**
 		 * Constant, linear-distance and squared-distance dropoff factors.
@@ -41,9 +41,9 @@ package x3dom.lighting
 		 */
 		private var _cutOffAngle:Number = 0.785398;
 		
-		public function SpotLight()
+		public function SpotLight(id:uint)
 		{
-			super();
+			super(id);
 		}
 		
 		/**
@@ -82,7 +82,7 @@ package x3dom.lighting
 		/**
 		 * Position of light relative to local coordinate system.
 		 */
-		public function get location() : Array
+		public function get location() : Vector.<Number>
 		{
 			return _location;
 		}

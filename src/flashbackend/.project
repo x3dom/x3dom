@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>flashbackend</name>
+	<name>flashbackendGit</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -12,11 +12,11 @@
 		</buildCommand>
 		<buildCommand>
 			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
-			<triggers>auto,full,incremental,</triggers>
+			<triggers>full,incremental,</triggers>
 			<arguments>
 				<dictionary>
 					<key>LaunchConfigHandle</key>
-					<value>&lt;project&gt;/.externalToolBuilders/RenameOutput.launch</value>
+					<value>&lt;project&gt;/.externalToolBuilders/RenameOutputGit.launch</value>
 				</dictionary>
 			</arguments>
 		</buildCommand>

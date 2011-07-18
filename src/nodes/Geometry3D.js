@@ -496,7 +496,74 @@ x3dom.registerNodeType(
         }
     )
 );
+/* ### IndexedFaceSet ### */
+x3dom.registerNodeType(
+    "GeometryImage",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.GeometryImage.superClass.call(this, ctx);
+			
+			this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
+			this.addField_SFVec3f(ctx, 'bboxSize', 0, 0, 0);
+			this.addField_SFFloat(ctx, 'numTriangles', 0);
+			
+			this.addField_SFNode('coordinateTexture', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_SFNode('normalTexture', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_SFNode('texCoordTexture', x3dom.nodeTypes.X3DTextureNode);
+		},
+		{
+			nodeChanged: function()
+            {
+				Array.forEach(this._parentNodes, function (node) {
+                    node._dirty.positions = true;
+					node._dirty.normals = true;
+					node._dirty.texcoords = true;
+				});
+			},
+			
+			getVolume: function(min, max, invalidate)
+			{
+				min.setValues(this._vf.bboxSize.multiply(-0.5).subtract(this._vf.bboxCenter));
+				max.setValues(this._vf.bboxSize.multiply(0.5).subtract(this._vf.bboxCenter));
+				
+				return true;
+			},
+			
+			getCenter: function()
+			{
+				return this._vf.bboxCenter;
+			},
+			
+			getCoordinateTexture: function()
+            {
+                if(this._cf.coordinateTexture.node) {
+                    return this._cf.coordinateTexture.node._vf.url;
+                } else {
+                    return null;
+                }
+            },
 
+            getNormalTexture: function()
+            {
+                if(this._cf.normalTexture.node) {
+                    return this._cf.normalTexture.node._vf.url;
+                } else {
+                    return null;
+                }
+            },
+
+            getTexCoordTexture: function()
+            {
+                if(this._cf.texCoordTexture.node) {
+                    return this._cf.texCoordTexture.node._vf.url;
+                } else {
+                    return null;
+                }
+            }
+		}
+	)
+);
 
 /* ### IndexedFaceSet ### */
 x3dom.registerNodeType(
