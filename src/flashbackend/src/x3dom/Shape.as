@@ -22,6 +22,8 @@ package x3dom
 		 */
 		private var _context3D:Context3D;
 		
+		public var _ready:Boolean = true;
+		
 		/**
 		 * Specifiying the Material used by geometry.
 		 * @default Default Material
@@ -38,7 +40,7 @@ package x3dom
 		 * Specifiying the geometries BoundingBox.
 		 * @default Default BoundingBox
 		 */
-		private var _boundingBox:BoundingBox = new BoundingBox();
+		protected var _boundingBox:BoundingBox = new BoundingBox();
 		
 		/**
 		 * Specifiying if backface culling is ON or OFF.
@@ -62,7 +64,7 @@ package x3dom
 		 * Specifiying the colors used by the geometry.
 		 * @default null 
 		 */
-		private var _numTriangles:Array = new Array();
+		protected var _numTriangles:Array = new Array();
 		
 		/**
 		 * Hold the colors for rendering.

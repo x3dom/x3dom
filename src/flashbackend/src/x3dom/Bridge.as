@@ -14,6 +14,7 @@ package x3dom {
 	import flash.geom.*;
 	
 	import x3dom.*;
+	import x3dom.lighting.*;
 	import x3dom.texturing.*;
 	
 	public class Bridge {
@@ -37,16 +38,24 @@ package x3dom {
 			ExternalInterface.addCallback("setBackground", setBackground);
 			ExternalInterface.addCallback("setMeshTransform", setMeshTransform);
 			ExternalInterface.addCallback("setMeshMaterial", setMeshMaterial);
+			ExternalInterface.addCallback("setGeometryImage", setGeometryImage);
 			ExternalInterface.addCallback("setMeshColors", setMeshColors);
+			ExternalInterface.addCallback("setMeshColorsTexture", setMeshColorsTexture);
 			ExternalInterface.addCallback("setMeshIndices", setMeshIndices);
 			ExternalInterface.addCallback("setMeshNormals", setMeshNormals);
+			ExternalInterface.addCallback("setMeshNormalsTexture", setMeshNormalsTexture);
 			ExternalInterface.addCallback("setMeshTexCoords", setMeshTexCoords);
+			ExternalInterface.addCallback("setMeshTexCoordsTexture", setMeshTexCoordsTexture);
 			ExternalInterface.addCallback("setMeshVertices", setMeshVertices);
+			ExternalInterface.addCallback("setMeshVerticesTexture", setMeshVerticesTexture);
 			ExternalInterface.addCallback("setMeshTexture", setMeshTexture);
 			ExternalInterface.addCallback("setPixelTexture", setPixelTexture);
 			ExternalInterface.addCallback("setCubeTexture", setCubeTexture);
 			ExternalInterface.addCallback("setCanvasTexture", setCanvasTexture);
 			ExternalInterface.addCallback("setLights", setLights);
+			ExternalInterface.addCallback("setDirectionalLight", setDirectionalLight);
+			ExternalInterface.addCallback("setPointLight", setPointLight);
+			ExternalInterface.addCallback("setSpotLight", setSpotLight);
 			ExternalInterface.addCallback("setText", setText);
 			ExternalInterface.addCallback("setSphereMapping", setSphereMapping);
 			ExternalInterface.addCallback("setMeshSolid", setMeshSolid);
@@ -113,6 +122,43 @@ package x3dom {
 			_scene.lights[Number(value.idx)] = light;
 		}
 		
+		private function setDirectionalLight(value:Object) : void
+		{
+			var light:DirectionalLight 	= DirectionalLight( _scene.getLight( uint(value.id), LightType.DIRECTIONALIGHT ) );
+			light.on 					= Boolean( value.on );
+			light.intensity 			= Number( value.intensity );
+			light.ambientIntensity 		= Number( value.ambientIntensity );
+			light.color 				= Vector.<uint>( value.color );
+			light.direction 			= Vector.<Number>( value.direction );
+		}
+		
+		private function setPointLight(value:Object) : void
+		{
+			var light:PointLight 	= PointLight( _scene.getLight( uint(value.id), LightType.POINTLIGHT ) );
+			light.on 				= Boolean( value.on );
+			light.intensity 		= Number( value.intensity );
+			light.ambientIntensity 	= Number( value.ambientIntensity );
+			light.color 			= Vector.<uint>( value.color );
+			light.location	 		= Vector.<Number>( value.location );
+			light.attenuation 		= Vector.<Number>( value.attenuation );
+			light.radius			= Number( value.radius );
+		}
+		
+		private function setSpotLight(value:Object) : void
+		{
+			var light:SpotLight 	= SpotLight( _scene.getLight( uint(value.id), LightType.SPOTLIGHT ) );
+			light.on 				= Boolean( value.on );
+			light.intensity 		= Number( value.intensity );
+			light.ambientIntensity 	= Number( value.ambientIntensity );
+			light.color 			= Vector.<uint>( value.color );
+			light.direction 		= Vector.<Number>( value.direction );
+			light.location	 		= Vector.<Number>( value.location );
+			light.attenuation 		= Vector.<Number>( value.attenuation );
+			light.beamWidth			= Number( value.beamWidth );
+			light.cutOffAngle		= Number( value.cutOffAnge );
+			light.radius			= Number( value.radius );
+		}
+		
 		private function setText(value:Object) : void
 		{		
 			var text:X3DText = new X3DText();
@@ -148,9 +194,25 @@ package x3dom {
 			_scene.getDrawableObject( uint(value.id) ).shape.material = material;
 		}
 		
+		private function setGeometryImage(value:Object) : void
+		{
+			if(!_scene.getDrawableObject( uint(value.id) ).shape)
+			{
+				var geometryImage:GeometryImage = new GeometryImage();
+				geometryImage.setProperties(value);
+			
+				_scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
+			}
+		}
+		
 		private function setMeshColors(value:Object) : void 
 		{
 			_scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(value.colors), uint(value.components) );
+		}
+		
+		private function setMeshColorsTexture(value:Object) : void 
+		{
+			
 		}
 		
 		private function setMeshIndices(value:Object) : void 
@@ -163,14 +225,33 @@ package x3dom {
 			_scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(value.normals) );
 		}
 		
+		private function setMeshNormalsTexture(value:Object) : void 
+		{
+			_scene.getDrawableObject( uint(value.id) ).shape.setNormalTexture(value);
+		}
+		
 		private function setMeshTexCoords(value:Object) : void 
 		{
 			_scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(value.texCoords) );
 		}
 		
+		private function setMeshTexCoordsTexture(value:Object) : void 
+		{
+			_scene.getDrawableObject( uint(value.id) ).shape.setTexCoordTexture(value);
+		}
+		
 		private function setMeshVertices(value:Object) : void 
 		{
 			_scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
+		}
+		
+		private function setMeshVerticesTexture(value:Object) : void 
+		{
+			var geometryImage:GeometryImage = new GeometryImage();
+			geometryImage.setProperties(value);
+			geometryImage.setCoordinateTexture(value);
+			
+			_scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
 		}
 		
 		private function setMeshTexture(value:Object) : void 

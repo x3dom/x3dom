@@ -38,6 +38,7 @@ package x3dom
 		 * Handle 3D Scene rendering
 		 */
 		private var _renderer:Renderer;
+		//private var _renderer:LPPRenderer;
 		
 		/**
 		 * Index of our SWFObject in the JavaScript x3dom.canvases array
@@ -222,7 +223,9 @@ package x3dom
 			stage.stage3Ds[0].requestContext3D();
 			
 			//Set viewport size and location
-			stage.stage3Ds[0].viewPort = new Rectangle(0, 0, _stageWidth, _stageHeight);
+			//stage.stage3Ds[0].viewPort = new Rectangle(0, 0, _stageWidth, _stageHeight);
+			stage.stage3Ds[0].x = 0;
+			stage.stage3Ds[0].y = 0;
 		}
 		
 		/**
@@ -252,6 +255,7 @@ package x3dom
 			_scene = new X3DScene();
 			
 			_renderer = new Renderer(_scene);
+			//_renderer = new LPPRenderer(_scene);
 			
 			//Create JSToASBridge for communication
 			_bridge = new Bridge(_scene, _renderer);
