@@ -508,7 +508,7 @@ x3dom.registerNodeType(
         }
     )
 );
-/* ### IndexedFaceSet ### */
+/* ### GeometryImage ### */
 x3dom.registerNodeType(
     "GeometryImage",
     "Geometry3D",
