@@ -19,36 +19,37 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.GeoCoordinate.superClass.call(this, ctx);
 
             this.addField_MFVec3f(ctx, 'point', []);
-            this.addField_MFString(ctx, 'geoSystem', 'GD', 'WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
-
-            this.elipsoideParameters = {
-              'AA' : [ 'Airy 1830', '6377563.396', '299.3249646' ],
-              'AM' : [ 'Modified Airy', '6377340.189', '299.3249646' ],
-              'AN' : [ 'Australian National', '6378160', '298.25' ],
-              'BN' : [ 'Bessel 1841 (Namibia)', '6377483.865', '299.1528128' ],
-              'BR' : [ 'Bessel 1841 (Ethiopia Indonesia...)', '6377397.155', '299.1528128' ],
-              'CC' : [ 'Clarke 1866', '6378206.4', '294.9786982' ],
-              'CD' : [ 'Clarke 1880', '6378249.145', '293.465' ],
-              'EA' : [ 'Everest (India 1830)', '6377276.345', '300.8017' ],
-              'EB' : [ 'Everest (Sabah & Sarawak)', '6377298.556', '300.8017' ],
-              'EC' : [ 'Everest (India 1956)', '6377301.243', '300.8017' ],
-              'ED' : [ 'Everest (W. Malaysia 1969)', '6377295.664', '300.8017' ],
-              'EE' : [ 'Everest (W. Malaysia & Singapore 1948)', '6377304.063', '300.8017' ],
-              'EF' : [ 'Everest (Pakistan)', '6377309.613', '300.8017' ],
-              'FA' : [ 'Modified Fischer 1960', '6378155', '298.3' ],
-              'HE' : [ 'Helmert 1906', '6378200', '298.3' ],
-              'HO' : [ 'Hough 1960', '6378270', '297' ],
-              'ID' : [ 'Indonesian 1974', '6378160', '298.247' ],
-              'IN' : [ 'International 1924', '6378388', '297' ],
-              'KA' : [ 'Krassovsky 1940', '6378245', '298.3' ],
-              'RF' : [ 'Geodetic Reference System 1980 (GRS 80)', '6378137', '298.257222101' ],
-              'SA' : [ 'South American 1969', '6378160', '298.25' ],
-              'WD' : [ 'WGS 72', '6378135', '298.26' ],
-              'WE' : [ 'WGS 84', '6378137', '298.257223563' ]
-            };
         },
         {
+            elipsoideParameters:
+            {
+                'AA' : [ 'Airy 1830', '6377563.396', '299.3249646' ],
+                'AM' : [ 'Modified Airy', '6377340.189', '299.3249646' ],
+                'AN' : [ 'Australian National', '6378160', '298.25' ],
+                'BN' : [ 'Bessel 1841 (Namibia)', '6377483.865', '299.1528128' ],
+                'BR' : [ 'Bessel 1841 (Ethiopia Indonesia...)', '6377397.155', '299.1528128' ],
+                'CC' : [ 'Clarke 1866', '6378206.4', '294.9786982' ],
+                'CD' : [ 'Clarke 1880', '6378249.145', '293.465' ],
+                'EA' : [ 'Everest (India 1830)', '6377276.345', '300.8017' ],
+                'EB' : [ 'Everest (Sabah & Sarawak)', '6377298.556', '300.8017' ],
+                'EC' : [ 'Everest (India 1956)', '6377301.243', '300.8017' ],
+                'ED' : [ 'Everest (W. Malaysia 1969)', '6377295.664', '300.8017' ],
+                'EE' : [ 'Everest (W. Malaysia & Singapore 1948)', '6377304.063', '300.8017' ],
+                'EF' : [ 'Everest (Pakistan)', '6377309.613', '300.8017' ],
+                'FA' : [ 'Modified Fischer 1960', '6378155', '298.3' ],
+                'HE' : [ 'Helmert 1906', '6378200', '298.3' ],
+                'HO' : [ 'Hough 1960', '6378270', '297' ],
+                'ID' : [ 'Indonesian 1974', '6378160', '298.247' ],
+                'IN' : [ 'International 1924', '6378388', '297' ],
+                'KA' : [ 'Krassovsky 1940', '6378245', '298.3' ],
+                'RF' : [ 'Geodetic Reference System 1980 (GRS 80)', '6378137', '298.257222101' ],
+                'SA' : [ 'South American 1969', '6378160', '298.25' ],
+                'WD' : [ 'WGS 72', '6378135', '298.26' ],
+                'WE' : [ 'WGS 84', '6378137', '298.257223563' ]
+            },
+          
             nodeChanged: function() {},
             fieldChanged: function(fieldName) {
                 Array.forEach(this._parentNodes, function (node) {
@@ -139,7 +140,7 @@ x3dom.registerNodeType(
               var transformed = this.GEOtoGC(geoSystem, coords);
 
               // transform by origin
-              if(geoOrigin)
+              if(geoOrigin.node)
               {
                 var origin = geoOrigin.node._vf.geoCoords;
                 var temp = new x3dom.fields.MFVec3f;
@@ -175,7 +176,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoElevationGrid.superClass.call(this, ctx);
 
-            //this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFVec3d(ctx, 'geoGridOrigin', 0, 0, 0);
             this.addField_MFDouble(ctx, 'height', 0, 0);
             //this.addField_SFBool(ctx, 'ccw', true);
@@ -241,9 +242,7 @@ x3dom.registerNodeType(
                 }
 
               // convert to x3dom coord system
-              var transformed = x3dom.nodeTypes.GeoCoordinate.GEOtoX3D(this._vf.geoSystem, this._cf.geoOrigin, positions);
-
-              console.log(transformed);
+              var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(this._vf.geoSystem, this._cf.geoOrigin, positions);
 
               // index buffer
               indices.push(0, 1, 2);
