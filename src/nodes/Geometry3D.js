@@ -540,11 +540,12 @@ x3dom.registerNodeType(
 				{
 					for(var x=0; x<256; x++)
 					{
-						this._mesh._positions[0].push(x/255, y/255, 0);
-						this._mesh._indices[0].push(y*255+x);
+						this._mesh._positions[0].push(x/256, y/256, 0);
+						this._mesh._indices[0].push(y*256+x);
 					}
 				}
 				
+				this._mesh._invalidate = true;
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 

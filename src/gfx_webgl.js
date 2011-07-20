@@ -204,6 +204,29 @@ x3dom.gfx_webgl = (function () {
         "    gl_FragColor = vec4(material.emissiveColor, 1.0);" +
         "}"
         };
+		
+	g_shaders['vs-x3d-geoImage'] = { type: "vertex", data:
+        "attribute vec3 position;" +
+		"uniform vec3 GI_bboxMin;" +
+		"uniform vec3 GI_bboxMax;" +
+        "uniform mat4 modelViewProjectionMatrix;" +
+		"uniform sampler2D GI_coordinateTexture;" +
+        "void main(void) {" +
+		"	 vec3 pos = texture2D(GI_coordinateTexture, vec2(position.x+(0.5/256.0), position.y+(0.5/256.0))).rgb;" +
+		"	 pos = (pos * (GI_bboxMax - GI_bboxMin) ) + GI_bboxMin;" +
+        "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
+        "}"
+        };
+
+    g_shaders['fs-x3d-geoImage'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
+        "void main(void) {" +
+        "    gl_FragColor = vec4(1,1,0,1);" +
+        "}"
+        };
         
     // TEST SHADER FOR PICKING TEXTURE COORDINATES INSTEAD OF COLORS
     g_shaders['vs-x3d-texcoordUnlit'] = { type: "vertex", data:
@@ -580,7 +603,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform vec3 GI_bboxCenter;";
 				shader += "uniform sampler2D GI_coordinateTexture;";
 				shader += "uniform sampler2D GI_normalTexture;";
-				shader += "uniform sampler2D GI_texCoordTexture;";
+				//shader += "uniform sampler2D GI_texCoordTexture;";
 			}
 
             if(vertexColor){
@@ -627,7 +650,9 @@ x3dom.gfx_webgl = (function () {
             }
             
 			if(geometryImage) {
-			
+				shader += "vec3 GI_normal = texture2D( GI_normalTexture, vec2(position.x, 1.0-position.y) ).rgb;";
+				shader += "GI_normal = GI_normal * 2.0 - 1.0;";
+				shader += "fragNormal = (normalMatrix * vec4(GI_normal, 0.0)).xyz;";
 			} else {
 				shader += "fragNormal = (normalMatrix * vec4(normal, 0.0)).xyz;";
 			}
@@ -1442,7 +1467,7 @@ x3dom.gfx_webgl = (function () {
                     var image = new Image();
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
                     that._nameSpace.doc.downloadCount += 1;
-
+					
                     image.onload = function()
                     {           
                         if(tex._vf.scale){
@@ -1481,6 +1506,14 @@ x3dom.gfx_webgl = (function () {
             if (tex) {
                 shape.updateTexture(tex, 0);
             }
+			
+			if(shape._webgl.geometryImage) {
+				var coordinateTexture = shape._cf.geometry.node._cf.coordinateTexture.node;
+				shape.updateTexture(coordinateTexture, 0);
+				
+				//var normalTexture = shape._cf.geometry.node._cf.normalTexture.node;
+				//shape.updateTexture(normalTexture, 1);
+			}
             
             
             if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
@@ -1509,6 +1542,11 @@ x3dom.gfx_webgl = (function () {
                                           ['vs-x3d-default', 'fs-x3d-default']);
                 }
             }
+			else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.GeometryImage)) {
+				shape._webgl.primType = gl.TRIANGLES;
+				shape._webgl.shader = this.getShaderProgram(gl, 
+                                          ['vs-x3d-geoImage', 'fs-x3d-geoImage']);
+			}
             else {
                 //TODO; also account for other cases such as LineSet
                 shape._webgl.primType = gl.TRIANGLES;
@@ -2610,21 +2648,12 @@ x3dom.gfx_webgl = (function () {
                 sp.sphereMapping = 0.0;
             }
 			
-			/*if(shape._webgl.geometryImage)
+			if(shape._webgl.geometryImage)
 			{
-				var GI_texUnit = 0
 				if(!sp.GI_coordinateTexture) {
-					sp.GI_coordinateTexture = GI_texUnit++;
+					sp.GI_coordinateTexture = 0;
 				}
-				
-				if(!sp.GI_normalTexture) {
-					sp.GI_normalTexture = GI_texUnit++;
-				}
-				
-				if(!sp.GI_texCoordTexture) {
-					sp.GI_texCoordTexture = GI_texUnit++;
-				}
-			}*/
+			}
             
             if(shaderCSS) {
                 var texUnit = 0;
@@ -2738,7 +2767,11 @@ x3dom.gfx_webgl = (function () {
             try {
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
               if (viewarea._points !== undefined && viewarea._points) {
-                gl.drawElements(gl.POINTS, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+				if(shape._webgl.geometryImage) {
+					gl.drawElements(gl.POINTS, shape._cf.geometry.node._vf.numTriangles*3, gl.UNSIGNED_SHORT, 0);
+				} else {
+					gl.drawElements(gl.POINTS, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+				}
               }
               else {
                 // fixme; this differentiation isn't nice, but otherwise WebGL seems to run out of mem
