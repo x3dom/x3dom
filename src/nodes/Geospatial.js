@@ -19,8 +19,9 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.GeoCoordinate.superClass.call(this, ctx);
 
             this.addField_MFVec3f(ctx, 'point', []);
+            this.addField_MFString(ctx, 'geoSystem', 'GD', 'WE');
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
-            
+
             this.elipsoideParameters = {
               'AA' : [ 'Airy 1830', '6377563.396', '299.3249646' ],
               'AM' : [ 'Modified Airy', '6377340.189', '299.3249646' ],
@@ -55,32 +56,22 @@ x3dom.registerNodeType(
                 });
             },
             
-            GEOtoGC: function(geoSystem, coords)
-            {
-              if(geoSystem[0] == 'GD')
-              {
-                return this.GDtoGC(geoSystem, coords);
-              }
-              
-              // TODO
-              else
-                return coords;
-            },
-            
             GCtoX3D: function(origin, coords)
             {
               var matrix = x3dom.fields.SFMatrix4f.translation(origin);
               matrix = matrix.inverse();
               
               for(var i=0; i<coords.length; ++i)
-              {
                 coords[i] = matrix.multMatrixPnt(coords[i]);
-              }
+            },
+            
+            UTMtoGC: function(geoSystem, coors) {
+              x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
             },
             
             GDtoGC: function(geoSystem, coords) {
             
-              var output = x3dom.fields.MFVec3f.copy(coords);
+              var output = new x3dom.fields.MFVec3f();
               
               var earthElipsoide = geoSystem[1];
               var longLatOrder   = geoSystem[2];
@@ -101,10 +92,12 @@ x3dom.registerNodeType(
               var radiansPerDegree = 0.0174532925199432957692;
 
               // for (current in coords)
-              for (var i=0; i<output.length; ++i)
+              for (var i=0; i<coords.length; ++i)
               {
-                var source_lat = radiansPerDegree * (longitudeFirst == true ? output[i].y : output[i].x);
-                var source_lon = radiansPerDegree * (longitudeFirst == true ? output[i].x : output[i].y);
+                var current = new x3dom.fields.SFVec3f();
+                
+                var source_lat = radiansPerDegree * (longitudeFirst == true ? coords[i].y : coords[i].x);
+                var source_lon = radiansPerDegree * (longitudeFirst == true ? coords[i].x : coords[i].y);
 
                 var slat = Math.sin(source_lat);
                 var slat2 = slat*slat;
@@ -113,35 +106,62 @@ x3dom.registerNodeType(
                 /* square root approximation for Rn */
                 var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
 
-                var RnPh = Rn + output[i].z;
+                var RnPh = Rn + coords[i].z;
+                
+                current.x = RnPh * clat * Math.cos(source_lon);
+                current.y = RnPh * clat * Math.sin(source_lon);
+                current.z = ((C2 / A2) * Rn + coords[i].z) * slat;
 
-                output[i].x = RnPh * clat * Math.cos(source_lon);
-                output[i].y = RnPh * clat * Math.sin(source_lon);
-                output[i].z = ((C2 / A2) * Rn + output[i].z) * slat;
+                output.push(current);
               }
               
               return output;
             },
             
+            GEOtoGC: function(geoSystem, coords)
+            {
+              if(geoSystem[0] == 'GD')
+                return this.GDtoGC(geoSystem, coords);
+              
+              else if(geoSystem[0] == 'UTM')
+                return this.GCtoX3D(geoSystem, coords);
+              
+              else if(geoSystem[0] == 'GC')
+                return coords;
+              
+              else
+                x3dom.debug.logError('Unknown geoSystem: ' + geoSystem[0]);
+            },
+
+            GEOtoX3D: function(geoSystem, geoOrigin, coords)
+            {
+              // transform points to GeoCentric
+              var transformed = this.GEOtoGC(geoSystem, coords);
+
+              // transform by origin
+              if(geoOrigin)
+              {
+                var origin = geoOrigin.node._vf.geoCoords;
+                var temp = new x3dom.fields.MFVec3f;
+
+                var point = new x3dom.fields.SFVec3f;
+                point.x = this._cf.geoOrigin.node._vf.geoCoords.x;
+                point.y = this._cf.geoOrigin.node._vf.geoCoords.y;
+                point.z = this._cf.geoOrigin.node._vf.geoCoords.z;
+                temp.push(point);
+
+                var transformed_origin = this.GEOtoGC(geoSystem, temp);
+
+                // transform points to X3D
+                this.GCtoX3D(transformed_origin[0], transformed);
+              }
+
+              return transformed;
+            },
+            
             getPoints: function()
             {
-              var geoSystem = this._cf.geoOrigin.node._vf.geoSystem;
-              
-              // transform points
-              var transformed = this.GEOtoGC(geoSystem, this._vf.point);
-              
-              if(this._cf.geoOrigin.node._vf.geoCoords)
-              {
-                var temp = new x3dom.fields.MFVec3f;
-                temp.push(x3dom.fields.SFVec3f.copy(this._cf.geoOrigin.node._vf.geoCoords));
-                
-                var origin = this.GEOtoGC(geoSystem, temp);
-                
-                // transform to x3d coord system
-                this.GCtoX3D(origin[0], transformed);
-              }
-              
-              return transformed;
+              return this.GEOtoX3D(this._vf.geoSystem, this._cf.geoOrigin, this._vf.point);
             }
         }
     )
@@ -155,28 +175,86 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoElevationGrid.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            //this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
             this.addField_SFVec3d(ctx, 'geoGridOrigin', 0, 0, 0);
             this.addField_MFDouble(ctx, 'height', 0, 0);
-            this.addField_SFBool(ctx, 'ccw', true);
-            this.addField_SFBool(ctx, 'colorPerVertex', true);
-            this.addField_SFDouble(ctx, 'creaseAngle', 0);
-            this.addField_SFBool(ctx, 'normalPerVertex', true);
-            this.addField_SFBool(ctx, 'solid', true);
+            //this.addField_SFBool(ctx, 'ccw', true);
+            //this.addField_SFBool(ctx, 'colorPerVertex', true);
+            //this.addField_SFDouble(ctx, 'creaseAngle', 0);
+            //this.addField_SFBool(ctx, 'normalPerVertex', true);
+            //this.addField_SFBool(ctx, 'solid', true);
             this.addField_SFInt32(ctx, 'xDimension', 0);
             this.addField_SFDouble(ctx, 'xSpacing', 1.0);
             this.addField_SFFloat(ctx, 'yScale', 1);
             this.addField_SFInt32(ctx, 'zDimension', 0);
             this.addField_SFDouble(ctx, 'zSpacing', 1.0);
-            this.addField_SFNode('color', x3dom.nodeTypes.PropertySetGeometry);
-            this.addField_SFNode('normal', x3dom.nodeTypes.PropertySetGeometry);
-            this.addField_SFNode('texCoord', x3dom.nodeTypes.PropertySetGeometry);
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.PropertySetGeometry);
+            // this.addField_SFNode('color', x3dom.nodeTypes.PropertySetGeometry);
+            // this.addField_SFNode('normal', x3dom.nodeTypes.PropertySetGeometry);
+            // this.addField_SFNode('texCoord', x3dom.nodeTypes.PropertySetGeometry);
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.GeoOrigin);
             this.addField_SFBool(ctx, 'lit', true);
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            nodeChanged: function() {
+
+              var positions = new x3dom.fields.MFVec3f();
+              var indices = new x3dom.fields.MFInt32();
+
+              var geoOrigin;
+              if(this._cf.geoOrigin.node)
+                geoOrigin = this._cf.geoOrigin.node._vf.geoCoords;
+              else
+                geoOrigin = new x3dom.fields.SFVec3f(0,0,0);
+              
+              var height = this._vf.height;
+              
+              var yScale = this._vf.yScale;
+              var xDimension = this._vf.xDimension;
+              var zDimension = this._vf.zDimension;
+              var xSpacing = this._vf.xSpacing;
+              var zSpacing = this._vf.zSpacing;
+              
+              if(height.length !== (xDimension * zDimension))
+                x3dom.debug.logError('GeoElevationGrid: height.length(' + height.length + ') != x/zDimension(' + xDimension + ' * ' + zDimension + ')');
+              
+              var longitude_first = true; // TODO
+              
+              for(var j=0; j<zDimension; ++j)
+                for(var i=0; i<xDimension; ++i)
+                {
+                  var coord = new x3dom.fields.SFVec3f();
+
+                  if(longitude_first)
+                  {
+                    coord.x = i * xSpacing;
+                    coord.y = j * zSpacing;
+                  }
+                  else
+                  {
+                    coord.x = j * zSpacing;
+                    coord.y = i * xSpacing;
+                  }
+                  coord.z = height[j * xDimension + i] * yScale;
+
+                  coord += geoOrigin;
+                  positions.push(coord);
+                }
+
+              // convert to x3dom coord system
+              var transformed = x3dom.nodeTypes.GeoCoordinate.GEOtoX3D(this._vf.geoSystem, this._cf.geoOrigin, positions);
+
+              console.log(transformed);
+
+              // index buffer
+              indices.push(0, 1, 2);
+
+              // push to geometry
+              this._mesh._indices[0] = indices;
+              this._mesh._positions[0] = transformed;
+            },
+            
+            fieldChanged: function(fieldName) {
+            }
         }
     )
 );
