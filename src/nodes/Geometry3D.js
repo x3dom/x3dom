@@ -523,6 +523,34 @@ x3dom.registerNodeType(
 			this.addField_SFNode('coordinateTexture', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('normalTexture', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoordTexture', x3dom.nodeTypes.X3DTextureNode);
+			
+			//TODO check if GPU-Version is supported (Flash, etc.)
+			//Dummy mesh generation only need for GPU-Version
+			
+			var geoCacheID = 'GeometryImage';
+
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using GeometryImage-Mesh from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				for(var y=0; y<256; y++)
+				{
+					for(var x=0; x<256; x++)
+					{
+						this._mesh._positions[0].push(x/256, y/256, 0);
+						this._mesh._indices[0].push(y*256+x);
+					}
+				}
+				
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
 		},
 		{
 			nodeChanged: function()
