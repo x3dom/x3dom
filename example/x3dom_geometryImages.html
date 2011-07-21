@@ -26,11 +26,11 @@
 							<Material diffuseColor="0.588 0.588 0.588" specularColor="0.000 0.000 0.000" transparency="0.000" shininess="0.145"></Material>
 							<ImageTexture url="texture/geometryImages/DiffuseTexture.JPG"></ImageTexture>
 						</Appearance>
-						<GeometryImage solid="false" DEF="Teapot01_0-GEOMETRY" bboxCenter="0.0 0.0 0" bboxSize="32.165772 15.75 20" numTriangles="4096">
-							<ImageTexture containerField="coordinateTexture" url="texture/geometryImages/CoordinateTexture.png"></ImageTexture>
-							<ImageTexture containerField="normalTexture" url="texture/geometryImages/NormalTexture.png"></ImageTexture>
-							<ImageTexture containerField="texCoordTexture" url="texture/geometryImages/TexCoordTexture.png"></ImageTexture>
-						</GeometryImage>
+						<ImageGeometry solid="false" DEF="Teapot01_0-GEOMETRY" position="0.0 0.0 0" size="32.165772 15.75 20" vertexCount="12288">
+							<ImageTexture containerField="coord" url="texture/geometryImages/CoordinateTexture.png"></ImageTexture>
+							<ImageTexture containerField="normal" url="texture/geometryImages/NormalTexture.png"></ImageTexture>
+							<ImageTexture containerField="texCoord" url="texture/geometryImages/TexCoordTexture.png"></ImageTexture>
+						</ImageGeometry>
 			    	</Shape>
 			    </Transform>
 				<Viewpoint position='0 0 50'></Viewpoint>

@@ -520,8 +520,8 @@ x3dom.registerNodeType(
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
 			this.addField_SFFloat(ctx, 'vertexCount', 0);
 			
-			this.addField_SFNode('coord', x3dom.nodeTypes.X3DTextureNode);
-			this.addField_SFNode('normal', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 			
 			//TODO check if GPU-Version is supported (Flash, etc.)
@@ -579,37 +579,37 @@ x3dom.registerNodeType(
 				return this._vf.position;
 			},
 			
-			getCoordinateTexture: function()
+			getCoordinateTexture: function(pos)
             {
-                if(this._cf.coord.node) {
-                    return this._cf.coord.node;
+                if(this._cf.coord.nodes[pos]) {
+                    return this._cf.coord.nodes[pos];
                 } else {
                     return null;
                 }
             },
 			
-			getCoordinateTextureURL: function()
+			getCoordinateTextureURL: function(pos)
             {
-                if(this._cf.coord.node) {
-                    return this._cf.coord.node._vf.url;
+                if(this._cf.coord.nodes[pos]) {
+                    return this._cf.coord.nodes[pos]._vf.url;
                 } else {
                     return null;
                 }
             },
 
-            getNormalTexture: function()
+            getNormalTexture: function(pos)
             {
-                if(this._cf.normal.node) {
-                    return this._cf.normal.node;
+                if(this._cf.normal.nodes[pos]) {
+                    return this._cf.normal.nodes[pos];
                 } else {
                     return null;
                 }
             },
 			
-			getNormalTextureURL: function()
+			getNormalTextureURL: function(pos)
             {
-                if(this._cf.normal.node) {
-                    return this._cf.normal.node._vf.url;
+                if(this._cf.normal.nodes[pos]) {
+                    return this._cf.normal.nodes[pos]._vf.url;
                 } else {
                     return null;
                 }

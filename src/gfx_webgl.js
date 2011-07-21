@@ -1508,9 +1508,9 @@ x3dom.gfx_webgl = (function () {
 			if(shape._webgl.imageGeometry) {
 				var GI_texUnit = 1;
 				
-				var coordinateTexture = shape._cf.geometry.node._cf.coord.node;
-				var normalTexture	  = shape._cf.geometry.node._cf.normal.node;
-				var texCoordTexture   = shape._cf.geometry.node._cf.texCoord.node;
+				var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(0);
+				var normalTexture	  = shape._cf.geometry.node.getNormalTexture(0);
+				var texCoordTexture   = shape._cf.geometry.node.getTexCoordTexture();
 				
 				if(coordinateTexture) {
 					shape.updateTexture(coordinateTexture, GI_texUnit++, true);
@@ -2663,19 +2663,19 @@ x3dom.gfx_webgl = (function () {
 			{
 				var GI_texUnit = 1;
 				
-				if(shape._cf.geometry.node._cf.coord.node) {
+				if(shape._cf.geometry.node.getCoordinateTexture(0)) {
 					if(!sp.GI_coordinateTexture) {
 						sp.GI_coordinateTexture = GI_texUnit++;
 					}
 				}
 				
-				if(shape._cf.geometry.node._cf.normal.node) {
+				if(shape._cf.geometry.node.getNormalTexture(0)) {
 					if(!sp.GI_normalTexture) {
 						sp.GI_normalTexture = GI_texUnit++;
 					}
 				}
 				
-				if(shape._cf.geometry.node._cf.texCoord.node) {
+				if(shape._cf.geometry.node.getTexCoordTexture()) {
 					if(!sp.GI_texCoordTexture) {
 						sp.GI_texCoordTexture = GI_texUnit++;
 					}

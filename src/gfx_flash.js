@@ -304,7 +304,7 @@ x3dom.gfx_flash = (function() {
 														  bboxCenter: shape._cf.geometry.node._vf.position.toGL(),
 														  bboxSize: shape._cf.geometry.node._vf.size.toGL(),
 														  numTriangles: shape._cf.geometry.node._vf.vertexCount/3,
-													      coordinateTexture: shape._cf.geometry.node.getCoordinateTextureURL() } );
+													      coordinateTexture: shape._cf.geometry.node.getCoordinateTextureURL(0) } );
 				}
 				shape._dirty.positions = false;
 			}
@@ -322,7 +322,7 @@ x3dom.gfx_flash = (function() {
 				} else {
 					this.object.setMeshNormalsTexture( { id: shape._objectID,
 														 idx: 0, 
-														 normalTexture: shape._cf.geometry.node.getNormalTextureURL() } );
+														 normalTexture: shape._cf.geometry.node.getNormalTextureURL(0) } );
 				}
 				shape._dirty.normals = false;
 			}
