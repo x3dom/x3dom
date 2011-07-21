@@ -59,10 +59,44 @@ x3dom.registerNodeType(
 
             isLogitudeFirst: function(geoSystem) {
               for(var i=0; i<geoSystem.length; ++i)
-                if(geoSystem[i] === 'longitude_first')
+                if(geoSystem[i] == 'longitude_first')
                   return true;
               
               return false;
+            },
+
+            getElipsoide: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+              {
+                var code = geoSystem[i];
+                if(this.elipsoideParameters[code])
+                  return this.elipsoideParameters[code];
+              }
+
+              // default elipsoide
+              return this.elipsoideParameters['WE'];
+            },
+
+            getReferenceFrame: function(geoSystem)
+            {
+              for(var i=0; i<geoSystem.length; ++i)
+              {
+                var code = geoSystem[i];
+
+                if(code == 'GD' || code == 'GDC')
+                  return 'GD';
+                if(code == 'GC' || code == 'GCC')
+                  return 'GC';
+                if(code == 'UTM')
+                  return 'UTM';
+
+                else
+                  x3dom.debug.logError('Unknown GEO system: [' + geoSystem + ']');
+              }
+
+              // default elipsoide
+              return this.elipsoideParameters['WE'];
             },
 
             UTMtoGC: function(geoSystem, coors) {
@@ -73,9 +107,10 @@ x3dom.registerNodeType(
             
               var output = new x3dom.fields.MFVec3f();
               
-              var earthElipsoide = geoSystem[1];
-              var radius = this.elipsoideParameters[earthElipsoide][1];
-              var eccentricity = this.elipsoideParameters[earthElipsoide][2];
+              var elipsoide = this.getElipsoide(geoSystem);
+              var radius = elipsoide[1];
+              var eccentricity = elipsoide[2];
+
               var longitudeFirst = this.isLogitudeFirst(geoSystem);
 
               // large parts of this code from freeWRL
@@ -115,16 +150,18 @@ x3dom.registerNodeType(
               
               return output;
             },
-            
+
             GEOtoGC: function(geoSystem, geoOrigin, coords)
             {
-              if(geoSystem[0] == 'GD')
+              var referenceFrame = this.getReferenceFrame(geoSystem);
+
+              if(referenceFrame == 'GD')
                 return this.GDtoGC(geoSystem, coords);
               
-              else if(geoSystem[0] == 'UTM')
+              else if(referenceFrame == 'UTM')
                 return this.UTMtoGC(geoSystem, coords);
 
-              else if(geoSystem[0] == 'GC')
+              else if(referenceFrame ==  'GC')
               {
                 // Performance Hack
                 // Normaly GDtoGC & UTMtoGC will create a copy
@@ -410,7 +447,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoOrigin.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'geoSystem', 'GD', 'WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
             this.addField_SFBool(ctx, 'rotateYUp', false);
         },
