@@ -273,6 +273,7 @@ x3dom.registerNodeType(
               var positions = new x3dom.fields.MFVec3f();
               var normals = new x3dom.fields.MFVec3f();
               var indices = new x3dom.fields.MFInt32();
+              var texCoords = new x3dom.fields.MFVec2f();
 
               var geoSystem = this._vf.geoSystem;
               var geoOrigin = this._cf.geoOrigin;
@@ -284,6 +285,7 @@ x3dom.registerNodeType(
               var zDimension = this._vf.zDimension;
               var xSpacing = this._vf.xSpacing;
               var zSpacing = this._vf.zSpacing;
+              var geoGridOrigin = this._vf.geoGridOrigin;
 
               // check for no height == dimensions
               if(height.length !== (xDimension * zDimension))
@@ -292,13 +294,23 @@ x3dom.registerNodeType(
               var longitude_first = x3dom.nodeTypes.GeoCoordinate.prototype.isLogitudeFirst(geoSystem);
               var ccw = this._vf.ccw;
 
-              // heights to coords & normals
+              // coords, normals, texture coords
+              var delta_x = 1 / (xDimension-1);
+              var delta_z = 1 / (zDimension-1);
+
               for(var z=0; z<zDimension; ++z)
                 for(var x=0; x<xDimension; ++x)
                 {
-                  var coord = new x3dom.fields.SFVec3f();
+                  // normal
                   var normal = new x3dom.fields.SFVec3f(0,1,0);
+                  normals.push(normal);
 
+                  // texture coord
+                  var tex_coord = new x3dom.fields.SFVec2f(x*delta_x, z*delta_z);
+                  texCoords.push(tex_coord);
+
+                  // coord
+                  var coord = new x3dom.fields.SFVec3f();
                   if(longitude_first)
                   {
                     coord.x = x * xSpacing;
@@ -310,13 +322,12 @@ x3dom.registerNodeType(
                     coord.y = x * xSpacing;
                   }
                   coord.z = height[z * xDimension + x] * yScale;
+                  coord = coord.add(geoGridOrigin);
 
                   positions.push(coord);
-
-                  normals.push(normal);
                 }
 
-              // create index buffer
+              // indices
               for(var z=0; z<(zDimension-1); z++)
               {
                 for(var x=0; x<(xDimension-1); x++)
@@ -356,6 +367,7 @@ x3dom.registerNodeType(
               this._mesh._normals[0] = normals.toGL();
               this._mesh._indices[0] = indices.toGL();
               this._mesh._positions[0] = transformed.toGL();
+              this._mesh._texCoords[0] = texCoords.toGL();
 
               this._mesh._invalidate = true;
               this._mesh._numFaces = this._mesh._indices[0].length / 3;
