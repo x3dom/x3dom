@@ -1295,11 +1295,11 @@ x3dom.gfx_webgl = (function () {
                 texture: [ids],
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
-				geometryImage: x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.GeometryImage)
+				imageGeometry: x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)
             };
 
             shape._webgl.primType = gl.TRIANGLES;
-            vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.geometryImage);
+            vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
             fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
             shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
         }
@@ -1497,7 +1497,7 @@ x3dom.gfx_webgl = (function () {
                 //indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
-				geometryImage: x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.GeometryImage)
+				imageGeometry: x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)
             };
             
             if (tex) {
@@ -1505,12 +1505,12 @@ x3dom.gfx_webgl = (function () {
             }
 			
 			//If GeometryImage-Node load textures
-			if(shape._webgl.geometryImage) {
+			if(shape._webgl.imageGeometry) {
 				var GI_texUnit = 1;
 				
-				var coordinateTexture = shape._cf.geometry.node._cf.coordinateTexture.node;
-				var normalTexture	  = shape._cf.geometry.node._cf.normalTexture.node;
-				var texCoordTexture   = shape._cf.geometry.node._cf.texCoordTexture.node;
+				var coordinateTexture = shape._cf.geometry.node._cf.coord.node;
+				var normalTexture	  = shape._cf.geometry.node._cf.normal.node;
+				var texCoordTexture   = shape._cf.geometry.node._cf.texCoord.node;
 				
 				if(coordinateTexture) {
 					shape.updateTexture(coordinateTexture, GI_texUnit++, true);
@@ -1581,7 +1581,7 @@ x3dom.gfx_webgl = (function () {
                             cssMode += 4;
                         }
                         
-                        vsID = this.generateVS(viewarea, false, false, false, cssMode, shape._webgl.lightsAndShadow, shape._webgl.geometryImage);
+                        vsID = this.generateVS(viewarea, false, false, false, cssMode, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
                         fsID = this.generateFS(viewarea, false, false, cssMode, shape._webgl.lightsAndShadow);
                         
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
@@ -1603,11 +1603,11 @@ x3dom.gfx_webgl = (function () {
                 /** BEGIN STANDARD MATERIAL */
                 if (tex) {
                     if (shape._cf.appearance.node._cf.textureTransform.node === null) {
-                        vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.geometryImage);
+                        vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
                         fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                     } else {
-                        vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow, shape._webgl.geometryImage);
+                        vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
                         fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                     }
@@ -1615,11 +1615,11 @@ x3dom.gfx_webgl = (function () {
                     
                     var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
                 
-                    vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.geometryImage);
+                    vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
                     fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
                     shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                 } else {
-                    vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.geometryImage);
+                    vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
                     fsID = this.generateFS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
                     shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                 }
@@ -2236,8 +2236,8 @@ x3dom.gfx_webgl = (function () {
                 
                 try {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
-						if(shape._webgl.geometryImage) {
-							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.numTriangles*3, gl.UNSIGNED_SHORT, 0);
+						if(shape._webgl.imageGeometry) {
+							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
@@ -2347,8 +2347,8 @@ x3dom.gfx_webgl = (function () {
                 
                 try {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
-						if(shape._webgl.geometryImage) {
-							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.numTriangles*3, gl.UNSIGNED_SHORT, 0);
+						if(shape._webgl.imageGeometry) {
+							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
@@ -2420,10 +2420,10 @@ x3dom.gfx_webgl = (function () {
 		//===========================================================================
         // Set GeometryImage variables
         //===========================================================================
-		if(shape._webgl.geometryImage) {
-			sp.GI_bboxMin 		= shape._cf.geometry.node._vf.bboxSize.multiply( -0.5 ).subtract( shape._cf.geometry.node._vf.bboxCenter ).toGL();
-			sp.GI_bboxMax		= shape._cf.geometry.node._vf.bboxSize.multiply(  0.5 ).subtract( shape._cf.geometry.node._vf.bboxCenter ).toGL();
-			sp.GI_bboxCenter	= shape._cf.geometry.node._vf.bboxCenter.toGL();
+		if(shape._webgl.imageGeometry) {
+			sp.GI_bboxMin 		= shape._cf.geometry.node._vf.size.multiply( -0.5 ).subtract( shape._cf.geometry.node._vf.position ).toGL();
+			sp.GI_bboxMax		= shape._cf.geometry.node._vf.size.multiply(  0.5 ).subtract( shape._cf.geometry.node._vf.position ).toGL();
+			sp.GI_bboxCenter	= shape._cf.geometry.node._vf.position.toGL();
 			sp.GI_textureWidth	= shape._webgl.textureWidth;
 			sp.GI_textureHeight	= shape._webgl.textureHeight;
 		}
@@ -2659,23 +2659,23 @@ x3dom.gfx_webgl = (function () {
             }
 			
 			//Associate GeometryImage texture units
-			if(shape._webgl.geometryImage)
+			if(shape._webgl.imageGeometry)
 			{
 				var GI_texUnit = 1;
 				
-				if(shape._cf.geometry.node._cf.coordinateTexture.node) {
+				if(shape._cf.geometry.node._cf.coord.node) {
 					if(!sp.GI_coordinateTexture) {
 						sp.GI_coordinateTexture = GI_texUnit++;
 					}
 				}
 				
-				if(shape._cf.geometry.node._cf.normalTexture.node) {
+				if(shape._cf.geometry.node._cf.normal.node) {
 					if(!sp.GI_normalTexture) {
 						sp.GI_normalTexture = GI_texUnit++;
 					}
 				}
 				
-				if(shape._cf.geometry.node._cf.texCoordTexture.node) {
+				if(shape._cf.geometry.node._cf.texCoord.node) {
 					if(!sp.GI_texCoordTexture) {
 						sp.GI_texCoordTexture = GI_texUnit++;
 					}
@@ -2794,8 +2794,8 @@ x3dom.gfx_webgl = (function () {
             try {
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
               if (viewarea._points !== undefined && viewarea._points) {
-				if(shape._webgl.geometryImage) {
-					gl.drawElements(gl.POINTS, shape._cf.geometry.node._vf.numTriangles*3, gl.UNSIGNED_SHORT, 0);
+				if(shape._webgl.imageGeometry) {
+					gl.drawElements(gl.POINTS, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
 				} else {
 					gl.drawElements(gl.POINTS, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 				}
@@ -2811,8 +2811,8 @@ x3dom.gfx_webgl = (function () {
                 else {
                     //x3dom.debug.logInfo("indexLength: " + shape._webgl.indexes[q].length);
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
-						if(shape._webgl.geometryImage) {
-							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.numTriangles*3, gl.UNSIGNED_SHORT, 0);
+						if(shape._webgl.imageGeometry) {
+							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
