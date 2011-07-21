@@ -267,29 +267,6 @@ x3dom.gfx_flash = (function() {
 	
 	};
 	
-	Context.prototype.setupGeometryImage = function(shape, trafo, refID)
-	{	
-		//Set modelMatrix
-		this.object.setMeshTransform( { id: shape._objectID,
-										refID: refID,
-										transform: trafo.toGL() } );
-		if(refID == 0)
-		{	
-			if(shape._dirty.positions || shape._dirty.normals || shape._dirty.texcoords)
-			{
-				this.object.setGeometryImage( { id: shape._objectID,
-												bboxCenter: shape._cf.geometry.node._vf.bboxCenter.toGL(),
-												bboxSize: shape._cf.geometry.node._vf.bboxSize.toGL(),
-												numTriangles: shape._cf.geometry.node._vf.numTriangles,
-												coordinateTexture: shape._cf.geometry.node.getCoordinateTexture(),
-												normalTexture: shape._cf.geometry.node.getNormalTexture(),
-												texCoordTexture: shape._cf.geometry.node.getTexCoordTexture() } );
-											
-				shape._dirty.positions = shape._dirty.normals = shape._dirty.texcoords = false;
-			}
-		}
-	};
-	
 	Context.prototype.setupIndexedFaceSet = function(shape, trafo, refID)
 	{
 		//Set modelMatrix
@@ -299,11 +276,11 @@ x3dom.gfx_flash = (function() {
 		if(refID == 0)
 		{
 			//Check if is GeometryImage-Node
-			var isGeometryImage = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.GeometryImage);
+			var isImageGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry);
 		
 			//Set indices			
 			if( shape._dirty.indexes === true ) {
-				if(!isGeometryImage) {
+				if(!isImageGeometry) {
 					for( var i=0; i<shape._cf.geometry.node._mesh._indices.length; i++ ) {
 						this.object.setMeshIndices( { id: shape._objectID,
 													  idx: i, 
@@ -315,7 +292,7 @@ x3dom.gfx_flash = (function() {
 			
 			//Set vertices
 			if( shape._dirty.positions === true ) {
-				if(!isGeometryImage) {
+				if(!isImageGeometry) {
 					for( var i=0; i<shape._cf.geometry.node._mesh._positions.length; i++ ) {
 						this.object.setMeshVertices( { id: shape._objectID,
 													   idx: i, 
@@ -324,17 +301,17 @@ x3dom.gfx_flash = (function() {
 				} else {
 					this.object.setMeshVerticesTexture( { id: shape._objectID,
 													      idx: 0,
-														  bboxCenter: shape._cf.geometry.node._vf.bboxCenter.toGL(),
-														  bboxSize: shape._cf.geometry.node._vf.bboxSize.toGL(),
-														  numTriangles: shape._cf.geometry.node._vf.numTriangles,
-													      coordinateTexture: shape._cf.geometry.node.getCoordinateTexture() } );
+														  bboxCenter: shape._cf.geometry.node._vf.position.toGL(),
+														  bboxSize: shape._cf.geometry.node._vf.size.toGL(),
+														  numTriangles: shape._cf.geometry.node._vf.vertexCount/3,
+													      coordinateTexture: shape._cf.geometry.node.getCoordinateTextureURL() } );
 				}
 				shape._dirty.positions = false;
 			}
 			
 			//Set normals
 			if( shape._dirty.normals === true ) {
-				if(!isGeometryImage) {
+				if(!isImageGeometry) {
 					if(shape._cf.geometry.node._mesh._normals[0].length) {
 						for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
 							this.object.setMeshNormals( { id: shape._objectID,
@@ -345,14 +322,14 @@ x3dom.gfx_flash = (function() {
 				} else {
 					this.object.setMeshNormalsTexture( { id: shape._objectID,
 														 idx: 0, 
-														 normalTexture: shape._cf.geometry.node.getNormalTexture() } );
+														 normalTexture: shape._cf.geometry.node.getNormalTextureURL() } );
 				}
 				shape._dirty.normals = false;
 			}
 			
 			//Set colors
 			if( shape._dirty.colors === true ) {
-				if(!isGeometryImage) {
+				if(!isImageGeometry) {
 					if(shape._cf.geometry.node._mesh._colors[0].length) {
 						for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
 							this.object.setMeshColors( { id: shape._objectID,
@@ -369,7 +346,7 @@ x3dom.gfx_flash = (function() {
 			
 			//Set texture coordinates
 			if( shape._dirty.texcoords === true ) {
-				if(!isGeometryImage) {
+				if(!isImageGeometry) {
 					if(shape._cf.geometry.node._mesh._texCoords[0].length) {
 						for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
 							this.object.setMeshTexCoords( { id: shape._objectID,					
@@ -380,7 +357,7 @@ x3dom.gfx_flash = (function() {
 				} else {
 					this.object.setMeshTexCoordsTexture( { id: shape._objectID,					
 														   idx: 0, 
-														   texCoordTexture: shape._cf.geometry.node.getTexCoordTexture() } );
+														   texCoordTexture: shape._cf.geometry.node.getTexCoordTextureURL() } );
 				}
 				shape._dirty.texcoords = false;
 			}
