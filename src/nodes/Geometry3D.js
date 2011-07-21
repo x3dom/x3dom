@@ -540,6 +540,10 @@ x3dom.registerNodeType(
 				{
 					for(var x=0; x<256; x++)
 					{
+						var idx = y * 256 + x;
+						
+						if(idx == 65535) break;
+						
 						this._mesh._positions[0].push(x/256, y/256, 0);
 						this._mesh._indices[0].push(y*256+x);
 					}

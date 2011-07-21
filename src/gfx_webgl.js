@@ -204,38 +204,6 @@ x3dom.gfx_webgl = (function () {
         "    gl_FragColor = vec4(material.emissiveColor, 1.0);" +
         "}"
         };
-		
-	g_shaders['vs-x3d-geoImage'] = { type: "vertex", data:
-        "attribute vec3 position;" +
-		"uniform vec3 GI_bboxMin;" +
-		"uniform vec3 GI_bboxMax;" +
-		"uniform float GI_textureWidth;" +
-		"uniform float GI_textureHeight;" +
-        "uniform mat4 modelViewProjectionMatrix;" +
-		"uniform sampler2D GI_coordinateTexture;" +
-		
-		"vec2 calcTexCoords() {" +
-		"	vec2 halfPixel = vec2(0.5/GI_textureWidth,(0.5/GI_textureHeight));" +
-		"	vec2 texCoord = vec2(position.x*(256.0/GI_textureWidth), position.y*(256.0/GI_textureHeight)) + halfPixel;" +
-		"	return texCoord;" +
-		"}" +
-		
-        "void main(void) {" +
-		"	 vec3 pos = texture2D( GI_coordinateTexture, calcTexCoords() ).rgb;" +
-		"	 pos = (pos * (GI_bboxMax - GI_bboxMin) ) + GI_bboxMin;" +
-        "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
-        "}"
-        };
-
-    g_shaders['fs-x3d-geoImage'] = { type: "fragment", data:
-        "#ifdef GL_ES             \n" +
-        "  precision highp float; \n" +
-        "#endif                   \n" +
-        "\n" +
-        "void main(void) {" +
-        "    gl_FragColor = vec4(1,1,0,1);" +
-        "}"
-        };
         
     // TEST SHADER FOR PICKING TEXTURE COORDINATES INSTEAD OF COLORS
     g_shaders['vs-x3d-texcoordUnlit'] = { type: "vertex", data:
@@ -1584,11 +1552,6 @@ x3dom.gfx_webgl = (function () {
                                           ['vs-x3d-default', 'fs-x3d-default']);
                 }
             }
-			/*else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.GeometryImage)) {
-				shape._webgl.primType = gl.TRIANGLES;
-				shape._webgl.shader = this.getShaderProgram(gl, 
-                                          ['vs-x3d-geoImage', 'fs-x3d-geoImage']);
-			}*/
             else {
                 //TODO; also account for other cases such as LineSet
                 shape._webgl.primType = gl.TRIANGLES;
