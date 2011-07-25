@@ -162,7 +162,7 @@ guide:
 
 deploy:
 	@@echo "Updating x3dom.org... (requires you set up public key auth and a ssh config file)"
-	ssh x3dom "cd ~/web/x3dom/; git pull; cd src; make; cd ..; make docs"
+	ssh x3dom "cd ~/web/x3dom/; git pull; cd src; make; cd ..; make docs; make guide"
 
 refreshtests:
 	@@echo "Refreshing test cases header files."
