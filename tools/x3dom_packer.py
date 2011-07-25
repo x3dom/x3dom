@@ -49,8 +49,8 @@ def build(parser, options, args):
     args.append("version.js")
     # Extract the svn revision 
     try:
-        git_revision = Popen(["git", "log -1 --pretty=format:%H"], stdout=PIPE).communicate()[0]
-        git_date = Popen(["git", "log -1 --pretty=format:%ad"], stdout=PIPE).communicate()[0]
+        git_revision = Popen(["git", "log", "-1", "--pretty=format:%H"], stdout=PIPE).communicate()[0]
+        git_date = Popen(["git", "log", "-1", "--pretty=format:%ad"], stdout=PIPE).communicate()[0]
     except:
         git_revision = 0
         git_date = 0
