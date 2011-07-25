@@ -10,7 +10,7 @@ from subprocess import Popen, PIPE
 VERSION_TEMPLATE = """
 x3dom.versionInfo = {
     version:  '%s',
-    revision: '%s'
+    revision: '%s',
     date:     '%s'
 };
 """
