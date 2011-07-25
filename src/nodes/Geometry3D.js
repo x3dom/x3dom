@@ -508,21 +508,53 @@ x3dom.registerNodeType(
         }
     )
 );
-/* ### IndexedFaceSet ### */
+/* ### GeometryImage ### */
 x3dom.registerNodeType(
-    "GeometryImage",
+    "ImageGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.GeometryImage.superClass.call(this, ctx);
+            x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
 			
-			this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
-			this.addField_SFVec3f(ctx, 'bboxSize', 0, 0, 0);
-			this.addField_SFFloat(ctx, 'numTriangles', 0);
+			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
+			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
+			this.addField_SFFloat(ctx, 'vertexCount', 0);
 			
-			this.addField_SFNode('coordinateTexture', x3dom.nodeTypes.X3DTextureNode);
-			this.addField_SFNode('normalTexture', x3dom.nodeTypes.X3DTextureNode);
-			this.addField_SFNode('texCoordTexture', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
+			
+			//TODO check if GPU-Version is supported (Flash, etc.)
+			//Dummy mesh generation only need for GPU-Version
+			
+			var geoCacheID = 'ImageGeometry';
+
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				for(var y=0; y<256; y++)
+				{
+					for(var x=0; x<256; x++)
+					{
+						var idx = y * 256 + x;
+						
+						if(idx == 65535) break;
+						
+						this._mesh._positions[0].push(x/256, y/256, 0);
+						this._mesh._indices[0].push(y*256+x);
+					}
+				}
+				
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
 		},
 		{
 			nodeChanged: function()
@@ -536,30 +568,48 @@ x3dom.registerNodeType(
 			
 			getVolume: function(min, max, invalidate)
 			{
-				min.setValues(this._vf.bboxSize.multiply(-0.5).subtract(this._vf.bboxCenter));
-				max.setValues(this._vf.bboxSize.multiply(0.5).subtract(this._vf.bboxCenter));
+				min.setValues(this._vf.size.multiply(-0.5).subtract(this._vf.position));
+				max.setValues(this._vf.size.multiply(0.5).subtract(this._vf.position));
 				
 				return true;
 			},
 			
 			getCenter: function()
 			{
-				return this._vf.bboxCenter;
+				return this._vf.position;
 			},
 			
-			getCoordinateTexture: function()
+			getCoordinateTexture: function(pos)
             {
-                if(this._cf.coordinateTexture.node) {
-                    return this._cf.coordinateTexture.node._vf.url;
+                if(this._cf.coord.nodes[pos]) {
+                    return this._cf.coord.nodes[pos];
+                } else {
+                    return null;
+                }
+            },
+			
+			getCoordinateTextureURL: function(pos)
+            {
+                if(this._cf.coord.nodes[pos]) {
+                    return this._cf.coord.nodes[pos]._vf.url;
                 } else {
                     return null;
                 }
             },
 
-            getNormalTexture: function()
+            getNormalTexture: function(pos)
             {
-                if(this._cf.normalTexture.node) {
-                    return this._cf.normalTexture.node._vf.url;
+                if(this._cf.normal.nodes[pos]) {
+                    return this._cf.normal.nodes[pos];
+                } else {
+                    return null;
+                }
+            },
+			
+			getNormalTextureURL: function(pos)
+            {
+                if(this._cf.normal.nodes[pos]) {
+                    return this._cf.normal.nodes[pos]._vf.url;
                 } else {
                     return null;
                 }
@@ -567,8 +617,17 @@ x3dom.registerNodeType(
 
             getTexCoordTexture: function()
             {
-                if(this._cf.texCoordTexture.node) {
-                    return this._cf.texCoordTexture.node._vf.url;
+                if(this._cf.texCoord.node) {
+                    return this._cf.texCoord.node;
+                } else {
+                    return null;
+                }
+            },
+			
+			getTexCoordTextureURL: function()
+            {
+                if(this._cf.texCoord.node) {
+                    return this._cf.texCoord.node._vf.url;
                 } else {
                     return null;
                 }
