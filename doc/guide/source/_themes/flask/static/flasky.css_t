@@ -14,7 +14,7 @@
 /* -- page layout ----------------------------------------------------------- */
  
 body {
-    font-family: Verdana, sans-serif;
+    font-family: Georgia, serif;
     font-size: 13px;
     background-color: white;
     color: #000;
