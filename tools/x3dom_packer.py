@@ -9,8 +9,9 @@ from subprocess import Popen, PIPE
 
 VERSION_TEMPLATE = """
 x3dom.versionInfo = {
-    version: '%s',
-    svnrevision: '%s'
+    version:  '%s',
+    revision: '%s'
+    date:     '%s'
 };
 """
 
@@ -48,19 +49,20 @@ def build(parser, options, args):
     args.append("version.js")
     # Extract the svn revision 
     try:
-        svn_info = Popen(["svn", "info"], stdout=PIPE).communicate()[0]
-        re_match = re.search("Revision: (\d*)", svn_info)
-        svn_revision = re_match.group(1)
+        git_revision = Popen(["git", "log -1 --pretty=format:%H"], stdout=PIPE).communicate()[0]
+        git_date = Popen(["git", "log -1 --pretty=format:%ad"], stdout=PIPE).communicate()[0]
     except:
-        svn_revision = 0
-    print "Revision '", svn_revision, "'"
-
+        git_revision = 0
+        git_date = 0
+    print "Revision '", git_revision, "'"
+    print "Date     '", git_date, "'"
+    
     # Write the version and revision to file
     version_file_name = 'version.js'
     if in_src:
         version_file_name = 'src/version.js'
     version_file = open(version_file_name, "w")
-    version_file.write(VERSION_TEMPLATE % (version, svn_revision))
+    version_file.write(VERSION_TEMPLATE % (version, git_revision, git_date))
     version_file.close()            
     
     concatenated_file = ""
@@ -94,9 +96,9 @@ def build(parser, options, args):
         
         # Write the minified output file
         outfile = open(options.outfile, 'w')
-        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ %s - %s */" % (version, svn_revision) )
+        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ %s - %s - %s */" % (version, git_revision, git_date) )
         outfile.write(out_stream.getvalue())
-        outfile.close()        
+        outfile.close()
     elif options.algo == "jspacker":
         p = JavaScriptPacker()
         

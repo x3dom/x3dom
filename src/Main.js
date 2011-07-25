@@ -144,8 +144,9 @@ x3dom.userAgentFeature = {
         x3dom.debug.activate(activateLog);
 
         if (x3dom.versionInfo !== undefined) {
-            x3dom.debug.logInfo("X3Dom version " + x3dom.versionInfo.version + 
-                                " Rev. " + x3dom.versionInfo.svnrevision);
+            x3dom.debug.logInfo("X3Dom Version " + x3dom.versionInfo.version + ", " +
+                                "Revison " + x3dom.versionInfo.revision + ", " +
+                                "Date " + x3dom.versionInfo.date);
         }
         
         x3dom.debug.logInfo("Found " + (x3ds.length - w3sg.length) + " X3D and " + 
