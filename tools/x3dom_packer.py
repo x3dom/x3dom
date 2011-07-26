@@ -9,35 +9,26 @@ from subprocess import Popen, PIPE
 
 VERSION_TEMPLATE = """
 x3dom.versionInfo = {
-    version: '%s',
-    svnrevision: '%s'
+    version:  '%s',
+    revision: '%s',
+    date:     '%s'
 };
 """
 
 usage = \
-"""%prog [options] <files>
+"""
+  %prog [options] <files> """
 
-If no options are given..."""
+def build(parser, options, args):
 
-if __name__ == '__main__':        
-    parser = OptionParser(usage)
-    parser.set_defaults(algo="jsmin")
-    parser.add_option("-a", "--algo", 
-                      type="string",
-                      dest="algo",
-                      help='The algorithm to use. "jsmin" or "jspacker".')
-    parser.add_option("-o", "--outfile", 
-                      type="string",
-                      dest="outfile",
-                      help='The name of the output file.')
-    (options, args) = parser.parse_args()  
-    
     if len(args) == 0:
-        print "No input files specified. Exiting"
+        print parser.print_help()
+        print "- No input files specified. Exiting -"
         sys.exit(0)
     
     if not options.outfile:
-        print "Please specify an output file using the -o options. Exiting."
+        print parser.print_help()
+        print "- Please specify an output file using the -o options. Exiting. -"
         sys.exit(0)
     
     # Create the version.js and fill in the svn revision    
@@ -58,19 +49,20 @@ if __name__ == '__main__':
     args.append("version.js")
     # Extract the svn revision 
     try:
-        svn_info = Popen(["svn", "info"], stdout=PIPE).communicate()[0]
-        re_match = re.search("Revision: (\d*)", svn_info)
-        svn_revision = re_match.group(1)
+        git_revision = Popen(["git", "log", "-1", "--pretty=format:%H"], stdout=PIPE).communicate()[0]
+        git_date = Popen(["git", "log", "-1", "--pretty=format:%ad"], stdout=PIPE).communicate()[0]
     except:
-        svn_revision = 0
-    print "Revision '", svn_revision, "'"
-
+        git_revision = 0
+        git_date = 0
+    print "Revision '", git_revision, "'"
+    print "Date     '", git_date, "'"
+    
     # Write the version and revision to file
     version_file_name = 'version.js'
     if in_src:
         version_file_name = 'src/version.js'
     version_file = open(version_file_name, "w")
-    version_file.write(VERSION_TEMPLATE % (version, svn_revision))
+    version_file.write(VERSION_TEMPLATE % (version, git_revision, git_date))
     version_file.close()            
     
     concatenated_file = ""
@@ -85,8 +77,14 @@ if __name__ == '__main__':
         except:
             print "Could not open input file '%s'. Skipping" % filename    
         concatenated_file += "\n"
+     
+    outpath = os.path.dirname(os.path.abspath(options.outfile))
+    
+    if not os.access(outpath, os.F_OK):
+        print "Create Dir: ", outpath
+        os.mkdir(outpath)
                   
-    print "Using", options.algo                
+    print "Using", options.algo
                   
     if options.algo == "jsmin":
         # Minifiy the concatenated files
@@ -98,10 +96,9 @@ if __name__ == '__main__':
         
         # Write the minified output file
         outfile = open(options.outfile, 'w')
-        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ %s - %s */" 
-      					% (version, svn_revision) )
+        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ %s - %s - %s */" % (version, git_revision, git_date) )
         outfile.write(out_stream.getvalue())
-        outfile.close()        
+        outfile.close()
     elif options.algo == "jspacker":
         p = JavaScriptPacker()
         
@@ -116,4 +113,15 @@ if __name__ == '__main__':
     in_len = len(concatenated_file)    
     ratio = float(out_len) / float(in_len);
     print "packed: %s to %s, ratio is %s" % (in_len, out_len, ratio)
+
     
+if __name__ == '__main__':
+    parser = OptionParser(usage)
+    
+    parser.set_defaults(algo="jsmin")
+    parser.add_option("-a", "--algo",       type="string",  dest="algo",      help='The algorithm to use. "jsmin" or "jspacker".')
+    parser.add_option("-o", "--outfile",    type="string",  dest="outfile",   help='The name of the output file.')
+    
+    (options, args) = parser.parse_args()
+    
+    build(parser, options, args)

@@ -11,7 +11,7 @@ instructions for web development with X3DOM.
    foreword
    installation
    quickstart
-   tutorial/index
+   tutorial
    troubleshooting
 
 API Reference
@@ -33,6 +33,6 @@ Design notes, legal information and changelog are here for the interested.
 .. toctree::
    :maxdepth: 2
 
-   design
+   notes/index
    releasenotes
    license
