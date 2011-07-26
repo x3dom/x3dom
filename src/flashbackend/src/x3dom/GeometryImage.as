@@ -39,15 +39,10 @@ package x3dom
 			_boundingBox.center.setTo(value.bboxCenter[0], value.bboxCenter[1], value.bboxCenter[2]);
 			
 			//Set boundingbox min
-			_boundingBox.min.setTo(value.bboxSize[0], value.bboxSize[1], value.bboxSize[2]);		
-			_boundingBox.min.scaleBy(-0.5);
-			_boundingBox.min.decrementBy(_boundingBox.center);
-			
+			_boundingBox.min.setTo(value.bboxMin[0], value.bboxMin[1], value.bboxMin[2]);		
+	
 			//Set boundingBox max
-			_boundingBox.max.setTo(value.bboxSize[0], value.bboxSize[1], value.bboxSize[2]);
-			_boundingBox.max.scaleBy(0.5);
-			_boundingBox.max.decrementBy(_boundingBox.center);
-			
+			_boundingBox.max.setTo(value.bboxMax[0], value.bboxMax[1], value.bboxMax[2]);	
 		}
 		
 		/**

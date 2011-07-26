@@ -224,8 +224,8 @@ package x3dom
 			
 			//Set viewport size and location
 			//stage.stage3Ds[0].viewPort = new Rectangle(0, 0, _stageWidth, _stageHeight);
-			stage.stage3Ds[0].x = 0;
-			stage.stage3Ds[0].y = 0;
+			//stage.stage3Ds[0].x = 0;
+			//stage.stage3Ds[0].y = 0;
 		}
 		
 		/**

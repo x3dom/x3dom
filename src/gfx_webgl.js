@@ -674,7 +674,7 @@ x3dom.gfx_webgl = (function () {
 			
 			if(geometryImage) {
 				shader += "vec3 GI_coordinate = texture2D( GI_coordinateTexture, calcTexCoords() ).rgb;";
-				shader += "GI_coordinate = ( GI_coordinate * (GI_bboxMax - GI_bboxMin) ) + GI_bboxMin;";
+				shader += "GI_coordinate = GI_coordinate * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(GI_coordinate, 1.0);";
 			} else {
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);";
@@ -2421,8 +2421,8 @@ x3dom.gfx_webgl = (function () {
         // Set GeometryImage variables
         //===========================================================================
 		if(shape._webgl.imageGeometry) {
-			sp.GI_bboxMin 		= shape._cf.geometry.node._vf.size.multiply( -0.5 ).subtract( shape._cf.geometry.node._vf.position ).toGL();
-			sp.GI_bboxMax		= shape._cf.geometry.node._vf.size.multiply(  0.5 ).subtract( shape._cf.geometry.node._vf.position ).toGL();
+			sp.GI_bboxMin 		= shape._cf.geometry.node.getMin().toGL();
+			sp.GI_bboxMax		= shape._cf.geometry.node.getMax().toGL();
 			sp.GI_bboxCenter	= shape._cf.geometry.node._vf.position.toGL();
 			sp.GI_textureWidth	= shape._webgl.textureWidth;
 			sp.GI_textureHeight	= shape._webgl.textureHeight;
