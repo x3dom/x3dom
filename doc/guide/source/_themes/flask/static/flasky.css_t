@@ -14,8 +14,8 @@
 /* -- page layout ----------------------------------------------------------- */
  
 body {
-    font-family: Georgia, serif;
-    font-size: 13px;
+    font-family: Helvetica, Georgia, serif;
+    font-size: 14px;
     background-color: white;
     color: #000;
     margin: 0;

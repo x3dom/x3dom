@@ -7,9 +7,9 @@
 Welcome to X3DOM
 ================
 
-.. image:: _static/x3dom-logo-small.png
-   :alt: X3DOM: Declarative 3D for the Web
-   :class: floatinglogo
+.. .. image:: _static/x3dom-logo-small.png
+..    :alt: X3DOM: Declarative 3D for the Web
+..    :class: floatinglogo
 
 Welcome to X3DOM's documentation. This documentation is divided into
 different parts. We recommend that you get started with
