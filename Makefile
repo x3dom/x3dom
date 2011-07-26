@@ -141,8 +141,9 @@ clean:
 
 runserver:
 	@@echo "Running development server..."
-	@@echo "Open your browser and visit http://localhost:80870/"
-	python ${TOOL_DIR}/testserver.py
+	@@echo "Open your browser and visit http://localhost:8080/"
+	@@echo "Press Ctrl-C to quit."
+	python -m SimpleHTTPServer 8080
 
 changelog:
 	@@echo "Generating changelog this may take a while ..."
