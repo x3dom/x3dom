@@ -301,8 +301,9 @@ x3dom.gfx_flash = (function() {
 				} else {
 					this.object.setMeshVerticesTexture( { id: shape._objectID,
 													      idx: 0,
-														  bboxCenter: shape._cf.geometry.node._vf.position.toGL(),
-														  bboxSize: shape._cf.geometry.node._vf.size.toGL(),
+														  bboxMin: shape._cf.geometry.node.getMin().toGL(),
+														  bboxMax: shape._cf.geometry.node.getMax().toGL(),
+														  bboxCenter: shape._cf.geometry.node.getCenter(),
 														  numTriangles: shape._cf.geometry.node._vf.vertexCount/3,
 													      coordinateTexture: shape._cf.geometry.node.getCoordinateTextureURL(0) } );
 				}

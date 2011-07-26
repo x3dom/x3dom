@@ -566,10 +566,20 @@ x3dom.registerNodeType(
 				});
 			},
 			
+			getMin: function()
+			{
+				return this._vf.position.subtract( this._vf.size.multiply(0.5) );
+			},
+			
+			getMax: function()
+			{
+				return this._vf.position.add( this._vf.size.multiply(0.5) );
+			},
+			
 			getVolume: function(min, max, invalidate)
 			{
-				min.setValues(this._vf.size.multiply(-0.5).subtract(this._vf.position));
-				max.setValues(this._vf.size.multiply(0.5).subtract(this._vf.position));
+				min.setValues(this.getMin());
+				max.setValues(this.getMax());
 				
 				return true;
 			},
