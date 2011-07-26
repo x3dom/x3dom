@@ -141,8 +141,9 @@ clean:
 
 runserver:
 	@@echo "Running development server..."
-	@@echo "Open your browser and visit http://localhost:80870/"
-	python ${TOOL_DIR}/testserver.py
+	@@echo "Open your browser and visit http://localhost:8080/"
+	@@echo "Press Ctrl-C to quit."
+	python -m SimpleHTTPServer 8080
 
 changelog:
 	@@echo "Generating changelog this may take a while ..."
@@ -162,7 +163,7 @@ guide:
 
 deploy:
 	@@echo "Updating x3dom.org... (requires you set up public key auth and a ssh config file)"
-	ssh x3dom "cd ~/web/x3dom/; svn update; cd src; make; cd ..; make docs"
+	ssh x3dom "cd ~/web/x3dom/; git pull; cd src; make; cd ..; make docs; make guide"
 
 refreshtests:
 	@@echo "Refreshing test cases header files."
