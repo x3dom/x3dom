@@ -34,13 +34,13 @@ browser `here <http://www.x3dom.org/?page_id=9>`_.
 Chrome
 ~~~~~~
 Recent releases of Chrome require you to enable WebGL. Please use the following
-command parameters when launching chrome:
+command parameters when launching chrome::
 
-  > --enable-webgl
-  > --use-gl=desktop
-  > --log-level=0
-  > --allow-file-access-from-files
-  > --allow-file-access
+    --enable-webgl
+    --use-gl=desktop
+    --log-level=0
+    --allow-file-access-from-files
+    --allow-file-access
 
 The last two options enable the browser to load textures from disk. You will
 need this if you are developing your site locally.
