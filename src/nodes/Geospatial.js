@@ -117,10 +117,10 @@ x3dom.registerNodeType(
               var A = radius;
               var A2 = radius*radius;
               var F = 1.0/eccentricity;
-              var C = A*(1.0 - F);
+              var C = A*(1.0-F);
               var C2 = C*C;
-              var Eps2 = F*(2.0 - F);
-              var Eps25 = 0.25 * Eps2;
+              var Eps2 = F*(2.0-F);
+              var Eps25 = 0.25*Eps2;
               
               var radiansPerDegree = 0.0174532925199432957692;
 
@@ -268,13 +268,41 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'lit', true);
         },
         {
-            nodeChanged: function() {
-
-              var positions = new x3dom.fields.MFVec3f();
+            generateNormals: function(coords, xDimension, zDimension)
+            {
               var normals = new x3dom.fields.MFVec3f();
-              var indices = new x3dom.fields.MFInt32();
-              var texCoords = new x3dom.fields.MFVec2f();
 
+              for(var z=0; z<zDimension; ++z)
+                for(var x=0; x<xDimension; ++x)
+                {
+                  var current = coords[(z*xDimension)+x];
+                  var normal = new x3dom.fields.SFVec3f(0,0,0);
+
+                  var left   = (x > 0)            ? coords[(((z)*xDimension)+(x-1))].subtract(current) : null;
+                  var right  = (x < xDimension-1) ? coords[(((z)*xDimension)+(x+1))].subtract(current) : null;
+                  var lower  = (z > 0)            ? coords[(((z-1)*xDimension)+(x))].subtract(current) : null;
+                  var upper  = (z < zDimension-1) ? coords[(((z+1)*xDimension)+(x))].subtract(current) : null;
+
+                  if(lower && left)
+                    normal = normal.add(left.cross(lower));
+
+                  if(left && upper)
+                    normal = normal.add(upper.cross(left));
+
+                  if(upper && right)
+                    normal = normal.add(right.cross(upper));
+
+                  if(right && lower)
+                    normal = normal.add(lower.cross(right));
+
+                  normals.push(normal.normalize());
+                }
+
+              return normals;
+            },
+          
+            nodeChanged: function()
+            {
               var geoSystem = this._vf.geoSystem;
               var geoOrigin = this._cf.geoOrigin;
 
@@ -294,17 +322,16 @@ x3dom.registerNodeType(
               var longitude_first = x3dom.nodeTypes.GeoCoordinate.prototype.isLogitudeFirst(geoSystem);
               var ccw = this._vf.ccw;
 
-              // coords, normals, texture coords
+              // coords, texture coords
               var delta_x = 1 / (xDimension-1);
               var delta_z = 1 / (zDimension-1);
 
+              var positions = new x3dom.fields.MFVec3f();
+              var texCoords = new x3dom.fields.MFVec2f();
+              
               for(var z=0; z<zDimension; ++z)
                 for(var x=0; x<xDimension; ++x)
                 {
-                  // normal
-                  var normal = new x3dom.fields.SFVec3f(0,1,0);
-                  normals.push(normal);
-
                   // texture coord
                   var tex_coord = new x3dom.fields.SFVec2f(x*delta_x, z*delta_z);
                   texCoords.push(tex_coord);
@@ -321,13 +348,14 @@ x3dom.registerNodeType(
                     coord.x = z * zSpacing;
                     coord.y = x * xSpacing;
                   }
-                  coord.z = height[z * xDimension + x] * yScale;
+                  coord.z = height[(z*xDimension)+x] * yScale;
                   coord = coord.add(geoGridOrigin);
 
                   positions.push(coord);
                 }
 
               // indices
+              var indices = new x3dom.fields.MFInt32();
               for(var z=0; z<(zDimension-1); z++)
               {
                 for(var x=0; x<(xDimension-1); x++)
@@ -363,6 +391,9 @@ x3dom.registerNodeType(
               // convert to x3dom coord system
               var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(geoSystem, geoOrigin, positions);
 
+              // calc normals
+              var normals = this.generateNormals(transformed, xDimension, zDimension);
+
               // push to geometry
               this._mesh._normals[0] = normals.toGL();
               this._mesh._indices[0] = indices.toGL();
@@ -388,7 +419,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoLOD.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_MFString(ctx, 'rootUrl', []);
             this.addField_MFString(ctx, 'child1Url', []);
             this.addField_MFString(ctx, 'child2Url', []);
@@ -421,7 +452,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoLocation.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ChildGroup);
         },
@@ -461,7 +492,7 @@ x3dom.registerNodeType(
 
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
-            this.addField_SFBool(ctx, 'rotateYUp', false);
+            // this.addField_SFBool(ctx, 'rotateYUp', false);
         },
         {
             nodeChanged: function() {},
@@ -478,7 +509,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoPositionInterpolator.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_MFVec3d(ctx, 'keyValue', []);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.LinearInterpolator);
         },
@@ -499,7 +530,7 @@ x3dom.registerNodeType(
 
             this.addField_SFVec3d(ctx, 'geoCenter', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.EnvironmentSensor);
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
         },
         {
             nodeChanged: function() {},
@@ -517,7 +548,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.GeoTouchSensor.superClass.call(this, ctx);
 
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.TouchSensor);
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
         },
         {
             nodeChanged: function() {},
@@ -540,7 +571,7 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
             this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.Transform);
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
         },
         {
             nodeChanged: function() {},
@@ -557,7 +588,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.GeoViewpoint.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'geoSystem', 'GD','WE');
+            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFFloat(ctx, 'fieldOfView', 0.785398);
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
             this.addField_SFVec3d(ctx, 'position', 0, 0, 100000);
