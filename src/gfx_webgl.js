@@ -618,7 +618,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform vec3 GI_bboxCenter;";
 				shader += "uniform float GI_textureWidth;";
 				shader += "uniform float GI_textureHeight;";
-				shader += "uniform sampler2D GI_coordinateTexture;";
+				shader += "uniform sampler2D GI_coordinateTexture[" + geometryImage + "];";
 				shader += "uniform sampler2D GI_normalTexture;";
 				shader += "uniform sampler2D GI_texCoordTexture;";
 				
@@ -711,8 +711,17 @@ x3dom.gfx_webgl = (function () {
             }
 			
 			if(geometryImage) {
-				shader += "vec3 GI_coordinate = texture2D( GI_coordinateTexture, calcTexCoords() ).rgb;";
-				shader += "GI_coordinate = GI_coordinate * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
+				shader += "vec3 IG_temp;";
+				shader += "vec3 GI_coordinate = vec3(0.0, 0.0, 0.0);";
+				for(var i=0; i<geometryImage; i++)
+				{
+					shader += "IG_temp = texture2D( GI_coordinateTexture[" + i + "], calcTexCoords() ).rgb;";
+					shader += "IG_temp = IG_temp * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
+					if(i) {
+						shader += "IG_temp /= 256.0;";
+					}
+					shader += "GI_coordinate += IG_temp;";
+				}
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(GI_coordinate, 1.0);";
 			} else {
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);";
@@ -1525,6 +1534,11 @@ x3dom.gfx_webgl = (function () {
                     };
                 }
             };
+			
+			var numCoordinateTextures = 0;
+			if( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
+				numCoordinateTextures = shape._cf.geometry.node.numCoordinateTextures();
+			}
             
             shape._webgl = {
                 positions: shape._cf.geometry.node._mesh._positions,
@@ -1535,7 +1549,7 @@ x3dom.gfx_webgl = (function () {
                 //indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
-				imageGeometry: x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)
+				imageGeometry: numCoordinateTextures
             };
             
             if (tex) {
@@ -1546,18 +1560,19 @@ x3dom.gfx_webgl = (function () {
 			if(shape._webgl.imageGeometry) {
 				var GI_texUnit = 1;
 				
-				var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(0);
-				var normalTexture	  = shape._cf.geometry.node.getNormalTexture(0);
-				var texCoordTexture   = shape._cf.geometry.node.getTexCoordTexture();
-				
-				if(coordinateTexture) {
-					shape.updateTexture(coordinateTexture, GI_texUnit++, true);
+				for(var i=0; i<numCoordinateTextures; i++) {
+					var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(i);
+					if(coordinateTexture) {
+						shape.updateTexture(coordinateTexture, GI_texUnit++, true);
+					}
 				}
 				
+				var normalTexture = shape._cf.geometry.node.getNormalTexture(0);
 				if(normalTexture) {
 					shape.updateTexture(normalTexture, GI_texUnit++, false);
 				}
 				
+				var texCoordTexture = shape._cf.geometry.node.getTexCoordTexture();
 				if(texCoordTexture) {
 					shape.updateTexture(texCoordTexture, GI_texUnit++, false);
 				}
@@ -2725,10 +2740,12 @@ x3dom.gfx_webgl = (function () {
 			if(shape._webgl.imageGeometry)
 			{
 				var GI_texUnit = 1;
-				
-				if(shape._cf.geometry.node.getCoordinateTexture(0)) {
-					if(!sp.GI_coordinateTexture) {
-						sp.GI_coordinateTexture = GI_texUnit++;
+
+				for(var i=0; i<shape._webgl.imageGeometry; i++) {
+					if(shape._cf.geometry.node.getCoordinateTexture(i)) {
+						if(!sp['GI_coordinateTexture[' + i + ']']) {
+							sp['GI_coordinateTexture[' + i + ']'] = GI_texUnit++;
+						}
 					}
 				}
 				
