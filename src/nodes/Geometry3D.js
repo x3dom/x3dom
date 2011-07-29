@@ -589,6 +589,11 @@ x3dom.registerNodeType(
 				return this._vf.position;
 			},
 			
+			numCoordinateTextures: function()
+			{
+				return this._cf.coord.nodes.length;
+			},
+			
 			getCoordinateTexture: function(pos)
             {
                 if(this._cf.coord.nodes[pos]) {
