@@ -231,7 +231,7 @@ x3dom.gfx_webgl = (function () {
         "}"
         };
     
-    g_shaders['vs-x3d-pick'] = { type: "vertex", data:
+    /*g_shaders['vs-x3d-pick'] = { type: "vertex", data:
         "attribute vec3 position;" +
         "uniform mat4 modelMatrix;" +
         "uniform mat4 modelViewProjectionMatrix;" +
@@ -246,6 +246,44 @@ x3dom.gfx_webgl = (function () {
         "    worldCoord.y /= dia.y;" +
         "    worldCoord.z /= dia.z;" +
         "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+        "}"
+        };*/
+		
+	g_shaders['vs-x3d-pick'] = { type: "vertex", data:
+        "attribute vec3 position;" +
+        "uniform mat4 modelMatrix;" +
+        "uniform mat4 modelViewProjectionMatrix;" +
+        "uniform vec3 wcMin;" +
+        "uniform vec3 wcMax;" +
+        "varying vec3 worldCoord;" +
+		"uniform float imageGeometry;" +
+		"uniform vec3 GI_bboxMin;" +
+		"uniform vec3 GI_bboxMax;" +
+		"uniform float GI_textureWidth;" +
+		"uniform float GI_textureHeight;" +
+		"uniform sampler2D GI_coordinateTexture;" +
+				
+		"vec2 calcTexCoords() {" +
+		"   vec2 halfPixel = vec2(0.5/GI_textureWidth,(0.5/GI_textureHeight));" +
+		"   vec2 texCoord = vec2(position.x*(256.0/GI_textureWidth), position.y*(256.0/GI_textureHeight)) + halfPixel;" +
+		"   return texCoord;" +
+		"}" +
+		
+        "void main(void) {" +
+		"	 if(imageGeometry == 1.0) { " +
+		"	 	vec3 pos = texture2D( GI_coordinateTexture, calcTexCoords() ).rgb;" +
+		"	 	pos = pos * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;" +
+        "    	worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
+		"		gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
+		"	 } else { " +
+        "    	worldCoord = (modelMatrix * vec4(position, 1.0)).xyz;" +
+		"		gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+		"	 }" +
+        "    vec3 dia = wcMax - wcMin;" +
+        "    worldCoord = worldCoord - wcMin;" +
+        "    worldCoord.x /= dia.x;" +
+        "    worldCoord.y /= dia.y;" +
+        "    worldCoord.z /= dia.z;" +
         "}"
         };
 
@@ -2302,72 +2340,97 @@ x3dom.gfx_webgl = (function () {
             sp.wcMax = max.toGL();
             //FIXME; allow more than 255 objects!
             sp.alpha = 1.0 - shape._objectID / 255.0;
-            
-            for (var q=0; q<shape._webgl.positions.length; q++)
-            {
-                if (sp.position !== undefined) 
-                {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
-                    
-                    gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
-                    
-                    gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-                    gl.enableVertexAttribArray(sp.position);
-                }
-                if (sp.color !== undefined)
-                {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
-                    
-                    gl.vertexAttribPointer(sp.color, 
-                        shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
-                    gl.enableVertexAttribArray(sp.color);
-                }
-                if (sp.texcoord !== undefined)
-                {
-                    gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
+			
+			sp.imageGeometry = 0.0;
+			
+			if(shape._webgl.imageGeometry)
+			{
+				sp.imageGeometry    = 1.0;
+				sp.GI_bboxMin 		= shape._cf.geometry.node.getMin().toGL();
+				sp.GI_bboxMax		= shape._cf.geometry.node.getMax().toGL();
+				sp.GI_textureWidth	= shape._webgl.textureWidth;
+				sp.GI_textureHeight	= shape._webgl.textureHeight;
+				
+				gl.activeTexture(gl.TEXTURE0);
+                gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1]);
+                
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+				
+				if(shape._cf.geometry.node.getCoordinateTexture(0)) {
+					if(!sp.GI_coordinateTexture) {
+						sp.GI_coordinateTexture = 0;
+					}
+				}
+			}
+			
+			for (var q=0; q<shape._webgl.positions.length; q++)
+			{
+				if (sp.position !== undefined) 
+				{
+					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
+					
+					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
+					
+					gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+					gl.enableVertexAttribArray(sp.position);
+				}
+				if (sp.color !== undefined)
+				{
+					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
+					
+					gl.vertexAttribPointer(sp.color, 
+						shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
+					gl.enableVertexAttribArray(sp.color);
+				}
+				if (sp.texcoord !== undefined)
+				{
+					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 
-                    gl.vertexAttribPointer(sp.texcoord, 
-                        shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
-                    gl.enableVertexAttribArray(sp.texcoord);
-                }
-                
-                if (shape.isSolid()) {
-                    gl.enable(gl.CULL_FACE);
-                    
-                    if (shape.isCCW()) {
-                        gl.frontFace(gl.CCW);
-                    }
-                    else {
-                        gl.frontFace(gl.CW);
-                    }
-                }
-                else {
-                    gl.disable(gl.CULL_FACE);
-                }
-                
-                try {
-                    if (shape._webgl.indexes && shape._webgl.indexes[q]) {
+					gl.vertexAttribPointer(sp.texcoord, 
+						shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
+					gl.enableVertexAttribArray(sp.texcoord);
+				}
+				
+				if (shape.isSolid()) {
+					gl.enable(gl.CULL_FACE);
+					
+					if (shape.isCCW()) {
+						gl.frontFace(gl.CCW);
+					}
+					else {
+						gl.frontFace(gl.CW);
+					}
+				}
+				else {
+					gl.disable(gl.CULL_FACE);
+				}
+				
+				try {
+					if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
 							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
-                    }
-                }
-                catch (e) {
-                    x3dom.debug.logException(shape._DEF + " renderPickingPass(): " + e);
-                }
-                
-                if (sp.position !== undefined) {
-                    gl.disableVertexAttribArray(sp.position);
-                }
-                if (sp.color !== undefined) {
-                    gl.disableVertexAttribArray(sp.color);
-                }
-                if (sp.texcoord !== undefined) {
-                    gl.disableVertexAttribArray(sp.texcoord);
-                }
-            }
+					}
+				}
+				catch (e) {
+					x3dom.debug.logException(shape._DEF + " renderPickingPass(): " + e);
+				}
+				
+				if (sp.position !== undefined) {
+					gl.disableVertexAttribArray(sp.position);
+				}
+				if (sp.color !== undefined) {
+					gl.disableVertexAttribArray(sp.color);
+				}
+				if (sp.texcoord !== undefined) {
+					gl.disableVertexAttribArray(sp.texcoord);
+				}
+			}
         }
         gl.flush();
         
