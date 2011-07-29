@@ -618,7 +618,11 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform vec3 GI_bboxCenter;";
 				shader += "uniform float GI_textureWidth;";
 				shader += "uniform float GI_textureHeight;";
-				shader += "uniform sampler2D GI_coordinateTexture[" + geometryImage + "];";
+				
+				for( var i = 0; i < geometryImage; i++ ) {
+					shader += "uniform sampler2D GI_coordinateTexture" + i + ";";
+				}
+				
 				shader += "uniform sampler2D GI_normalTexture;";
 				shader += "uniform sampler2D GI_texCoordTexture;";
 				
@@ -711,23 +715,23 @@ x3dom.gfx_webgl = (function () {
             }
 			
 			if(geometryImage) {
-				shader += "vec3 IG_temp;";
+				shader += "vec3 IG_temp = vec3(0.0, 0.0, 0.0);";
 				shader += "vec3 GI_coordinate = vec3(0.0, 0.0, 0.0);";
+				
 				for(var i=0; i<geometryImage; i++)
 				{
-					shader += "IG_temp = texture2D( GI_coordinateTexture[" + i + "], calcTexCoords() ).rgb;";
-					shader += "IG_temp = IG_temp * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
-					if(i) {
-						shader += "IG_temp /= 256.0;";
-					}
+					shader += "IG_temp = texture2D( GI_coordinateTexture" + i + ", calcTexCoords() ).rgb;";
+					if(i) shader += "IG_temp /= 256.0;";
 					shader += "GI_coordinate += IG_temp;";
 				}
+				
+				shader += "GI_coordinate = GI_coordinate * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(GI_coordinate, 1.0);";
 			} else {
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);";
 			}
             shader += "}";
-            
+
             g_shaders[shaderIdentifier] = {};
             g_shaders[shaderIdentifier].type = "vertex";
             g_shaders[shaderIdentifier].data = shader;
@@ -1566,7 +1570,7 @@ x3dom.gfx_webgl = (function () {
 						shape.updateTexture(coordinateTexture, GI_texUnit++, true);
 					}
 				}
-				
+							
 				var normalTexture = shape._cf.geometry.node.getNormalTexture(0);
 				if(normalTexture) {
 					shape.updateTexture(normalTexture, GI_texUnit++, false);
@@ -2743,8 +2747,8 @@ x3dom.gfx_webgl = (function () {
 
 				for(var i=0; i<shape._webgl.imageGeometry; i++) {
 					if(shape._cf.geometry.node.getCoordinateTexture(i)) {
-						if(!sp['GI_coordinateTexture[' + i + ']']) {
-							sp['GI_coordinateTexture[' + i + ']'] = GI_texUnit++;
+						if(!sp['GI_coordinateTexture' + i]) {
+							sp['GI_coordinateTexture' + i] = GI_texUnit++;
 						}
 					}
 				}
