@@ -697,7 +697,9 @@ x3dom.gfx_webgl = (function () {
                 shader += "}else{";
 				
 				if(geometryImage) {
-					shader += "fragTexcoord = texture2D( GI_texCoordTexture, calcTexCoords() ).rg;";
+					shader += "vec4 IG_doubleTexCoords = texture2D( GI_texCoordTexture, calcTexCoords() );";
+					shader += "fragTexcoord.r = IG_doubleTexCoords.r + (IG_doubleTexCoords.b/256.0);";
+					shader += "fragTexcoord.g = IG_doubleTexCoords.g + (IG_doubleTexCoords.a/256.0);";
 				}else{
 					shader += " fragTexcoord = texcoord;";
 				}
@@ -2923,9 +2925,18 @@ x3dom.gfx_webgl = (function () {
         }
         
         if (shape._webgl.indexes && shape._webgl.indexes[0]) {
-            this.numFaces += shape._cf.geometry.node._mesh._numFaces;
+			if(shape._webgl.imageGeometry) {
+				this.numFaces += shape._cf.geometry.node._vf.vertexCount/3.0;
+			} else {
+				this.numFaces += shape._cf.geometry.node._mesh._numFaces;
+			}
         }
-        this.numCoords += shape._cf.geometry.node._mesh._numCoords;
+		
+		if(shape._webgl.imageGeometry) {
+			this.numCoords += shape._cf.geometry.node._vf.vertexCount;
+		} else {
+			this.numCoords += shape._cf.geometry.node._mesh._numCoords;
+		}
 		
         for (cnt=0; shape._webgl.texture !== undefined && 
                     cnt < shape._webgl.texture.length; cnt++)
@@ -3307,7 +3318,7 @@ x3dom.gfx_webgl = (function () {
             this.canvas.parent.statDiv.appendChild(document.createElement("br"));
             this.canvas.parent.statDiv.appendChild(document.createTextNode("render: " + t1));
             this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Tris: " + this.numFaces));
+			this.canvas.parent.statDiv.appendChild(document.createTextNode("#Tris: " + this.numFaces));
             this.canvas.parent.statDiv.appendChild(document.createElement("br"));
             this.canvas.parent.statDiv.appendChild(document.createTextNode("#Pnts: " + this.numCoords));
         }
