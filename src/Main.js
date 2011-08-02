@@ -287,9 +287,9 @@ x3dom.userAgentFeature = {
             }
 
             if (showProgress.toLowerCase() === "true") {
-                x3ds[i].runtime.progressIndicator(true);
+                x3ds[i].runtime.processIndicator(true);
             } else if (showStats.toLowerCase() === "false") {
-                x3ds[i].runtime.progressIndicator(false);
+                x3ds[i].runtime.processIndicator(false);
             }
 
 //            var showProgress = x3ds[i].getAttribute("showProgress");
