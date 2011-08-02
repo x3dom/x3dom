@@ -698,8 +698,14 @@ x3dom.gfx_webgl = (function () {
 				
 				if(geometryImage) {
 					shader += "vec4 IG_doubleTexCoords = texture2D( GI_texCoordTexture, calcTexCoords() );";
-					shader += "fragTexcoord.r = IG_doubleTexCoords.r + (IG_doubleTexCoords.b/256.0);";
-					shader += "fragTexcoord.g = IG_doubleTexCoords.g + (IG_doubleTexCoords.a/256.0);";
+					
+					//Old Version
+					//shader += "fragTexcoord.r = IG_doubleTexCoords.r + (IG_doubleTexCoords.b/256.0);";
+					//shader += "fragTexcoord.g = IG_doubleTexCoords.g + (IG_doubleTexCoords.a/256.0);";
+					
+					//New optimized Version
+					shader += "fragTexcoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);";
+					shader += "fragTexcoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);";
 				}else{
 					shader += " fragTexcoord = texcoord;";
 				}
