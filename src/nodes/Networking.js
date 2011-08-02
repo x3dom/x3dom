@@ -72,6 +72,7 @@ x3dom.registerNodeType(
                     if (xhr.readyState == 4) {
                         delete xhr['onreadystatechange'];
                         if (xhr.responseXML.documentElement.localName == 'parsererror') {
+                            that._nameSpace.doc.downloadCount -= 1;
                             x3dom.debug.logError('XML parser failed on ' + that._vf.url +
                                         ':\n' + xhr.responseXML.documentElement.textContent);
                             return xhr;
@@ -84,6 +85,7 @@ x3dom.registerNodeType(
                     }
 
                     if (xhr.status !== 200) {
+                        that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
                         return xhr;
                     }
