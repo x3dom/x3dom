@@ -839,28 +839,25 @@ x3dom.X3DCanvas.prototype.tick = function()
 				this.doc.render(this.gl);
 			}
 
-		} else {
-            if (this.statDiv || this.progressDiv) {
-                if (this.doc.lastDownloadCount !== this.doc.downloadCount) {
-                    if (this.statDiv) {
-                        this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
-                    }
-                    if (this.progressDiv) {
-                        this.progressDiv.textContent = 'Loading: ' + this.doc.downloadCount;
-                        if (this.doc.downloadCount > 0) {
-                           this.progressDiv.style.display = 'inline';
-                        } else {
-                            this.progressDiv.style.display = 'none';
-                        }
+		}
+
+        if (this.statDiv || this.progressDiv) {
+            if (this.doc.lastDownloadCount !== this.doc.downloadCount)
+            {
+                if (this.statDiv) {
+                    this.statDiv.appendChild(document.createElement("br"));
+                    this.statDiv.appendChild(document.createTextNode("#Loading: " + this.doc.downloadCount));
+                }
+                if (this.progressDiv) {
+                    this.progressDiv.textContent = 'Loading: ' + this.doc.downloadCount;
+                    if (this.doc.downloadCount > 0) {
+                        this.progressDiv.style.display = 'inline';
+                    } else {
+                        this.progressDiv.style.display = 'none';
                     }
                 }
             }
-            if (this.statDiv && this.doc.downloadCount) {
-                //if (this.doc.lastDownloadCount !== this.doc.downloadCount) /// TODO: wait some time...
-                this.statDiv.appendChild(document.createElement("br"));
-                this.statDiv.appendChild(document.createTextNode("#Loading: " + this.doc.downloadCount));
-                this.doc.lastDownloadCount = this.doc.downloadCount;
-            }
+            this.doc.lastDownloadCount = this.doc.downloadCount;
         }
 
     } catch (e) {
