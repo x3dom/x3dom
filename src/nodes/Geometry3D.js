@@ -519,6 +519,7 @@ x3dom.registerNodeType(
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
 			this.addField_SFFloat(ctx, 'vertexCount', 0);
+			this.addField_SFString(ctx, 'primType', 'TRIANGLES');
 			
 			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);

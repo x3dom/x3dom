@@ -729,17 +729,21 @@ x3dom.gfx_webgl = (function () {
 				for(var i=0; i<geometryImage; i++)
 				{
 					shader += "IG_temp = texture2D( GI_coordinateTexture" + i + ", calcTexCoords() ).rgb;";
-					if(i) shader += "IG_temp /= 256.0;";
+					if(i) shader += "IG_temp /= (" + i + ".0 * 256.0);";
 					shader += "GI_coordinate += IG_temp;";
 				}
-				
+
 				shader += "GI_coordinate = GI_coordinate * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(GI_coordinate, 1.0);";
 			} else {
 				shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);";
+				
 			}
+			
+			shader += "gl_PointSize = 2.0;";
+			
             shader += "}";
-
+			
             g_shaders[shaderIdentifier] = {};
             g_shaders[shaderIdentifier].type = "vertex";
             g_shaders[shaderIdentifier].data = shader;
@@ -1626,7 +1630,15 @@ x3dom.gfx_webgl = (function () {
             }
             else {
                 //TODO; also account for other cases such as LineSet
-                shape._webgl.primType = gl.TRIANGLES;
+				if( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
+					if(shape._cf.geometry.node._vf.primType.toUpperCase() == 'POINTS') {
+						shape._webgl.primType = gl.POINTS;
+					} else {
+						shape._webgl.primType = gl.TRIANGLES;
+					}
+				} else {
+					shape._webgl.primType = gl.TRIANGLES;
+				}
                 
                 /** SHADER HACK (TODO: MAKE BETTER!) */
                 if (shape._cf.appearance.node._shader !== null) {
@@ -2911,7 +2923,11 @@ x3dom.gfx_webgl = (function () {
                 if (shape._webgl.primType == gl.POINTS) {
                     gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
                     //gl.enable(gl.POINT_SMOOTH);
-                    gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
+					if(shape._webgl.imageGeometry) {
+						gl.drawArrays(gl.POINTS, 0, shape._cf.geometry.node._vf.vertexCount);
+					}else{
+						gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
+					}
                     gl.disable(gl.VERTEX_PROGRAM_POINT_SIZE);
                 }
                 else {
