@@ -412,6 +412,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 119: /* w, walk mode */
                 this._scene.getNavigationInfo()._vf.type[0] = "walk";
                 x3dom.debug.logInfo("Switch to walk mode.");
+                x3dom.debug.logInfo("Switch to walk mode.");
             break;
         default:
     }
