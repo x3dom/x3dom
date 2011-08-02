@@ -328,6 +328,22 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         return statDiv;
     };
 
+    this.createProgressDiv = function() {
+        var progressDiv = document.createElement('div');
+        progressDiv.setAttribute("class", "x3dom-progress");
+        progressDiv.innerHTML = "Loading...";
+        this.x3dElem.appendChild(progressDiv);
+
+        progressDiv.oncontextmenu = progressDiv.onmousedown = function(evt) {
+            evt.preventDefault();
+            evt.stopPropagation();
+            evt.returnValue = false;
+            return false;
+        };
+        return progressDiv;
+    };
+
+
 	//Need for WebKit Browser
 	this.isFlashReady = false;
 
@@ -410,8 +426,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = this.createStatDiv();
-
     this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
+
+    this.showProgress = x3dElem.getAttribute("showProgress");
+    this.progressDiv = this.createProgressDiv();
+    this.progressDiv.style.display = 'inline';
+
 
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
         // event handler for mouse interaction
@@ -785,9 +805,12 @@ x3dom.X3DCanvas.prototype.tick = function()
 
     this.fps_t0 = d;
 
+
+
     try {
         this.doc.advanceTime(d / 1000);
         var animD = new Date().getTime() - d;
+
         if (this.doc.needRender) {
 
             if (this.x3dElem.runtime.isReady == true) {
@@ -795,6 +818,7 @@ x3dom.X3DCanvas.prototype.tick = function()
             } else {
                 this.x3dElem.runtime.ready();
                 this.x3dElem.runtime.isReady = true;
+                //this.progressDiv.style.display = 'none';
                 this.x3dElem.runtime.enterFrame(this.x3dElem);
             }
 
@@ -804,9 +828,8 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.statDiv.appendChild(document.createTextNode("anim: " + animD));
             }
 
-            if(this.backend == 'flash') {
-				if(this.isFlashReady) {
-
+            if (this.backend == 'flash') {
+				if (this.isFlashReady) {
 					this.canvas.setFPS({fps: fps});
 					this.doc.needRender = false;    // picking might require another pass
 					this.doc.render(this.gl);
@@ -816,6 +839,22 @@ x3dom.X3DCanvas.prototype.tick = function()
 				this.doc.render(this.gl);
 			}
 
+		} else {
+            if (this.statDiv || this.progressDiv) {
+                if (this.doc.lastDownloadCount !== this.doc.downloadCount) {
+                    if (this.statDiv) {
+                        this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
+                    }
+                    if (this.progressDiv) {
+                        this.progressDiv.textContent = 'Loading: ' + this.doc.downloadCount;
+                        if (this.doc.downloadCount > 0) {
+                           this.progressDiv.style.display = 'inline';
+                        } else {
+                            this.progressDiv.style.display = 'none';
+                        }
+                    }
+                }
+            }
             if (this.statDiv && this.doc.downloadCount) {
                 //if (this.doc.lastDownloadCount !== this.doc.downloadCount) /// TODO: wait some time...
                 this.statDiv.appendChild(document.createElement("br"));
@@ -823,6 +862,7 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.doc.lastDownloadCount = this.doc.downloadCount;
             }
         }
+
     } catch (e) {
         x3dom.debug.logException(e);
         throw e;

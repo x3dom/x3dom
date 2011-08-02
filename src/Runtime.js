@@ -469,6 +469,36 @@ x3dom.runtime = {
 		}
 	},
 
+    /**
+     * Function: processIndicator
+     *
+     * Enable or disable the process indicator. If parameter is omitted, this method
+     * only returns the the visibility status of the statistics info overlay.
+     *
+     * Parameters:
+     *		mode - true or false. To enable or disable the process indicator
+     *
+     * Returns:
+     * 		The current visibility of the process indicator info (true = visible, false = invisible)
+     */
+    processIndicator: function(mode) {
+        var processDiv = this.canvas.processDiv;
+        if (processDiv) {
+
+            if (mode === true) {
+                processDiv.style.display = 'inline';
+                return true;
+            }
+            if (mode === false) {
+                processDiv.style.display = 'none';
+                return false;
+            }
+
+            // if no parameter is given return current status (false = not visible, true = visible)
+            return processDiv.style.display != 'none'
+        }
+    },
+
     properties: function() {
         return this.canvas.doc.properties;
     }
