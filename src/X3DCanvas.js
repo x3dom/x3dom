@@ -331,7 +331,16 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     this.createProgressDiv = function() {
         var progressDiv = document.createElement('div');
         progressDiv.setAttribute("class", "x3dom-progress");
-        progressDiv.innerHTML = "Loading...";
+
+        var _text = document.createElement('strong');
+        _text.appendChild(document.createTextNode('Loading...'));
+        progressDiv.appendChild(_text);
+
+        var _inner = document.createElement('span');
+        _inner.setAttribute('style', "width: 25%;");
+        _inner.appendChild(document.createTextNode(" "));  // this needs to be a protected whitespace
+        progressDiv.appendChild(_inner);
+
         this.x3dElem.appendChild(progressDiv);
 
         progressDiv.oncontextmenu = progressDiv.onmousedown = function(evt) {
@@ -805,8 +814,6 @@ x3dom.X3DCanvas.prototype.tick = function()
 
     this.fps_t0 = d;
 
-
-
     try {
         this.doc.advanceTime(d / 1000);
         var animD = new Date().getTime() - d;
@@ -818,7 +825,6 @@ x3dom.X3DCanvas.prototype.tick = function()
             } else {
                 this.x3dElem.runtime.ready();
                 this.x3dElem.runtime.isReady = true;
-                //this.progressDiv.style.display = 'none';
                 this.x3dElem.runtime.enterFrame(this.x3dElem);
             }
 
@@ -839,27 +845,38 @@ x3dom.X3DCanvas.prototype.tick = function()
 				this.doc.render(this.gl);
 			}
 
-		} else {
-            if (this.statDiv || this.progressDiv) {
-                if (this.doc.lastDownloadCount !== this.doc.downloadCount) {
-                    if (this.statDiv) {
-                        this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
-                    }
-                    if (this.progressDiv) {
-                        this.progressDiv.textContent = 'Loading: ' + this.doc.downloadCount;
-                        if (this.doc.downloadCount > 0) {
-                           this.progressDiv.style.display = 'inline';
-                        } else {
-                            this.progressDiv.style.display = 'none';
-                        }
-                    }
+		}
+
+        if (this.statDiv || this.progressDiv) {
+            if (this.statDiv && this.doc.downloadCount) {
+                if (this.doc.needRender)
+                {
+                    this.statDiv.appendChild(document.createElement("br"));
+                    this.statDiv.appendChild(document.createTextNode("#Loading: " + this.doc.downloadCount));
+                }
+                else {
+                    this.statDiv.textContent = "#Loading: " + this.doc.downloadCount;
                 }
             }
-            if (this.statDiv && this.doc.downloadCount) {
-                //if (this.doc.lastDownloadCount !== this.doc.downloadCount) /// TODO: wait some time...
-                this.statDiv.appendChild(document.createElement("br"));
-                this.statDiv.appendChild(document.createTextNode("#Loading: " + this.doc.downloadCount));
-                this.doc.lastDownloadCount = this.doc.downloadCount;
+
+            if (this.progressDiv) {
+                // TODO: In order to display a bar we need a max value to determine where we are
+                // 100 / total * this.doc.downloadCount
+                // this.progressDiv.childNodes[1].setAttribute("style", "width: " + progressPercent + "%");
+                this.progressDiv.childNodes[0].textContent = 'Loading: ' + this.doc.downloadCount;
+                if (this.doc.downloadCount > 0) {
+                    this.progressDiv.style.display = 'inline';
+                } else {
+                    this.progressDiv.style.display = 'none';
+                }
+
+                // TODO: fix these strange window-bound scope issues!
+                window.myThat = this;
+                window.myStopProgress = function stopProgress() {
+                    window.myThat.doc.downloadCount = 0;
+                    window.myThat.progressDiv.style.display = 'none';
+                };
+                window.setTimeout("window.myStopProgress()", 1500);
             }
         }
 
