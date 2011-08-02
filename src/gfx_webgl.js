@@ -1538,6 +1538,13 @@ x3dom.gfx_webgl = (function () {
                         //gl.generateMipmap(gl.TEXTURE_2D);
                         gl.bindTexture(gl.TEXTURE_2D, null);
                     };
+
+                    image.onerror = function()
+                    {
+                        that._nameSpace.doc.downloadCount -= 1;
+
+                        x3dom.debug.logError("Can't load tex url: " + tex._vf.url + " (at unit " + unit + ").");
+                    };
                 }
             };
 			
@@ -1868,6 +1875,13 @@ x3dom.gfx_webgl = (function () {
                     gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
+                };
+
+                image.onerror = function()
+                {
+                    bgnd._nameSpace.doc.downloadCount -= 1;
+
+                    x3dom.debug.logError("Can't load tex url: " + url[0]);
                 };
                 
                 image.src = bgnd._nameSpace.getURL(url[0]);
@@ -3575,6 +3589,13 @@ x3dom.gfx_webgl = (function () {
                     }
                 };
             }( texture, face, image, (bgnd && (i<=1 || i>=4)) );
+
+            image.onerror = function()
+            {
+                doc.downloadCount -= 1;
+
+                x3dom.debug.logError("Can't load CubeMap!");
+            };
             
             // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
             image.src = url[i];
