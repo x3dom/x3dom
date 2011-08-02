@@ -135,7 +135,8 @@ x3dom.userAgentFeature = {
         for (i=0; i < x3ds.length; i++) {
             // log is for all elements
             var showLog = x3ds[i].getAttribute("showLog");
-            if (showLog !== null && showLog !== false) {
+
+            if (showLog !== null && showLog == "true") {
                 activateLog = true;
                 break;
             }
@@ -265,7 +266,7 @@ x3dom.userAgentFeature = {
 			
             showLog = x3dcanvas.doc.properties.getProperty("showLog", activateLog);
 
-			if (showLog.toLowerCase() === true) {
+			if (showLog === true || showLog.toLowerCase('true')) {
 				activateLog = true;
 			} else if (showLog.toLowerCase() === "false") {
 				activateLog = false;
