@@ -811,16 +811,15 @@ x3dom.X3DCanvas.prototype.tick = function()
 					this.doc.needRender = false;    // picking might require another pass
 					this.doc.render(this.gl);
 				}
-			}else{
+			} else{
 				this.doc.needRender = false;    // picking might require another pass
 				this.doc.render(this.gl);
 			}
 
-			} else {
-            if (this.statDiv) {
-                if (this.doc.lastDownloadCount !== this.doc.downloadCount) {
-                    this.statDiv.textContent = 'dlc: ' + this.doc.downloadCount;
-                }
+            if (this.statDiv && this.doc.downloadCount) {
+                //if (this.doc.lastDownloadCount !== this.doc.downloadCount) /// TODO: wait some time...
+                this.statDiv.appendChild(document.createElement("br"));
+                this.statDiv.appendChild(document.createTextNode("#Loading: " + this.doc.downloadCount));
                 this.doc.lastDownloadCount = this.doc.downloadCount;
             }
         }
