@@ -1446,7 +1446,7 @@ x3dom.gfx_webgl = (function () {
                 else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
                 {
                     texture = gl.createTexture();
-                    
+
                     if (!childTex)
                     {
                         tex._video = document.createElement('video');
@@ -1454,7 +1454,7 @@ x3dom.gfx_webgl = (function () {
                         //tex._video.setAttribute('src', tex._vf.url);
                         var p = document.getElementsByTagName('body')[0];
                         p.appendChild(tex._video);
-                        tex._video.style.display = "none";
+                        //tex._video.style.display = "none";
                     }
                     
                     for (var i=0; i<tex._vf.url.length; i++)
@@ -1465,7 +1465,7 @@ x3dom.gfx_webgl = (function () {
                         src.setAttribute('src', videoUrl);
                         tex._video.appendChild(src);
                     }
-                    
+
                     var updateMovie = function()
                     {
                         that._nameSpace.doc.needRender = true;          
@@ -1484,7 +1484,11 @@ x3dom.gfx_webgl = (function () {
                         that._nameSpace.doc.needRender = true;          
                         
                         that._webgl.texture[unit] = texture;
-                        //x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
+                        if(saveSize) {
+                            that._webgl.textureWidth = tex._video.clientWidth;
+                            that._webgl.textureHeight =tex._video.clientHeight;
+                        }
+                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
                         tex._video.play();
                         tex._intervalID = setInterval(updateMovie, 16);
