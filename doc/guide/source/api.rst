@@ -36,6 +36,9 @@ The following table lists the parameters currently supported.
 =================  =========================  ===========     =================================================
 showLog	           true, false                false           Hide or display the logging console
 showStat           true, false                false           Hide or display the statistics overlay
+showProgress       true, false, bar           true            Hide or show the loading indicator. The default
+                                                              indicator is a spinner. The value 'bar' will
+                                                              use a progress bar.
 PrimitiveQuality   High, Medium, Low, float   High/1.0        Render quality (tesselation level) for Box, Cone,
                                                               Cylinder, Sphere.
 =================  =========================  ===========     =================================================
