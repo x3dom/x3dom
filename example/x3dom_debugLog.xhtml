@@ -1,26 +1,25 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
         "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-		<title>id/USE test example</title>
-		<style>
-		p.case { clear: both; border-top: 1px solid #888; }
-		</style>
-        <link rel="stylesheet" type="text/css" href="x3dom.css" />
-	</head>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>id/USE test example</title>
+    <link rel="stylesheet" type="text/css" href="x3dom.css" />
+    <script type="text/javascript" src="x3dom.js"></script>
+</head>
 
 <body>
 
     <h1>Stat/Log test example</h1>
 	
-	<p class='exampletext'>
+	<p>
 		Example shows how to switch on the debug output and statisic HUD<br />
 		Just use showLog='true' showStat='true' as X3D attribute <br />
 	</p>
-	<p class='case' >
+
 	    <!-- Use the same "x", "y", "width" and "height" attributes as SVG.
              Optionally support the "viewBox" and "preserveAspectRatio" just like SVG -->
+    <div class="group">
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showLog='true' showStat="true" x="0px" y="0px" width="400px" height="400px">
 			 <Scene >
 				<Viewpoint id='view0' position='0 0 10' orientation="0 0 0 1"/>
@@ -34,11 +33,9 @@
 				  </Shape>
 			</Scene>
 		</X3D>
-	</p>
-	
-	<p class="case"> &nbsp; </p>
-	
-	<script type="text/javascript" src="x3dom.js"></script>
+    </div>
+
+
 
 </body>
 </html>

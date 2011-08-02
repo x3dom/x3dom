@@ -106,6 +106,7 @@ x3dom.userAgentFeature = {
 
     var onload = function() {
 
+
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagName('X3D');
         var w3sg = document.getElementsByTagName('webSG');
@@ -132,11 +133,13 @@ x3dom.userAgentFeature = {
 
         var activateLog = false;
         for (i=0; i < x3ds.length; i++) {
+            // log is for all elements
             var showLog = x3ds[i].getAttribute("showLog");
-            if (showLog !== null && showLog.toLowerCase() == "true") {
+            if (showLog !== null && showLog !== false) {
                 activateLog = true;
                 break;
             }
+
         }
 
         // Activate debugging/logging for x3dom. Logging will only work for
@@ -157,7 +160,7 @@ x3dom.userAgentFeature = {
         for (i=0; i < x3ds.length; i++)
         {
             var x3d_element = x3ds[i];
-		
+
         /*
             // http://de.selfhtml.org/javascript/objekte/mimetypes.htm
             if (navigator.mimeTypes["model/vrml"] &&
@@ -194,7 +197,9 @@ x3dom.userAgentFeature = {
             }
         
             var x3dcanvas = new x3dom.X3DCanvas(x3d_element, i);
-            
+
+
+
             if (x3dcanvas.gl === null) {
 
             /*
@@ -258,9 +263,9 @@ x3dom.userAgentFeature = {
             // here. Redunant log activation code above is required to capture
             // log message before that :/
 			
-            showLog = x3dcanvas.doc.properties.getProperty("showLog", "false");
+            showLog = x3dcanvas.doc.properties.getProperty("showLog", activateLog);
 
-			if (showLog.toLowerCase() === "true") {
+			if (showLog.toLowerCase() === true) {
 				activateLog = true;
 			} else if (showLog.toLowerCase() === "false") {
 				activateLog = false;
@@ -268,11 +273,34 @@ x3dom.userAgentFeature = {
             x3dom.debug.activate(activateLog);
 
             var showStats = x3dcanvas.doc.properties.getProperty("showStat", "false");
-            if (showStats.toLowerCase() === "true") {
+            if (showStats === true) {
                 x3ds[i].runtime.statistics(true);
-            } else if (showStats.toLowerCase() === "false") {
+            } else if (showStats === false) {
                 x3ds[i].runtime.statistics(false);
             }
+
+            var showProgress = x3dcanvas.doc.properties.getProperty("showProgress", "true");
+            if (showProgress === true) {
+                x3ds[i].runtime.progressIndicator(true);
+            } else if (showStats === false) {
+                x3ds[i].runtime.progressIndicator(false);
+            }
+
+
+//            var showProgress = x3ds[i].getAttribute("showProgress");
+//            if (showProgress == 'true' || showProgress === true || showProgress == 'bar') {
+//                var spinner = document.createElement("div");
+//                spinner.innerHTML = "Loaded " + " elements"
+//                spinner.id = 'x3dom-progress-1';
+//                spinner.className = 'x3dom-progress';
+//                if (showProgress == 'bar') {
+//                    spinner.className = 'x3dom-progress x3dom-progress-bar';
+//                }
+//                 x3ds[i].appendChild(spinner);
+//            }
+
+
+
 
             x3dom.canvases.push(x3dcanvas);
 
