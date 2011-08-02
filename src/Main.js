@@ -280,13 +280,17 @@ x3dom.userAgentFeature = {
                 x3ds[i].runtime.statistics(false);
             }
 
-            var showProgress = x3dcanvas.doc.properties.getProperty("showProgress", "true");
-            if (showProgress === true) {
-                x3ds[i].runtime.progressIndicator(true);
-            } else if (showStats === false) {
-                x3ds[i].runtime.progressIndicator(false);
+            var showProgress = x3dcanvas.doc.properties.getProperty("showProgress", x3d_element.getAttribute("showProgress") || "true");
+            if (showProgress.toLowerCase() === "bar") {
+                x3dcanvas.progressDiv.setAttribute("class", "x3dom-progress bar");
+                showProgress = "true";
             }
 
+            if (showProgress.toLowerCase() === "true") {
+                x3ds[i].runtime.progressIndicator(true);
+            } else if (showStats.toLowerCase() === "false") {
+                x3ds[i].runtime.progressIndicator(false);
+            }
 
 //            var showProgress = x3ds[i].getAttribute("showProgress");
 //            if (showProgress == 'true' || showProgress === true || showProgress == 'bar') {
