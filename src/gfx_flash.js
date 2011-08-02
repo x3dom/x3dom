@@ -427,6 +427,7 @@ x3dom.gfx_flash = (function() {
 			//Set sphere mapping
 			if (shape._cf.geometry.node._cf.texCoord !== undefined &&
                 shape._cf.geometry.node._cf.texCoord.node !== null &&
+				!x3dom.isa(shape._cf.geometry.node._cf.texCoord.node, x3dom.nodeTypes.X3DTextureNode) &&
                 shape._cf.geometry.node._cf.texCoord.node._vf.mode)
             {
                 var texMode = shape._cf.geometry.node._cf.texCoord.node._vf.mode;
