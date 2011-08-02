@@ -21,7 +21,7 @@ sources <http://github.com/x3dom/x3dom/>`_. The latter approach, building X3DOM
 yourself, is the recommended and more up-to-date way.
 
 
-System Requirements and Browser Support
+System requirements and browser notes
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to be able to work with X3DOM, you need a WebGL enabled web browser.
@@ -31,7 +31,23 @@ sporting a WebGL implementation. You can check the status of supported
 browser `here <http://www.x3dom.org/?page_id=9>`_.
 
 
-Platform Notes (OS/GPU/Drivers)
+Chrome
+~~~~~~
+Recent releases of Chrome require you to enable WebGL. Please use the following
+command parameters when launching chrome::
+
+    --enable-webgl
+    --use-gl=desktop
+    --log-level=0
+    --allow-file-access-from-files
+    --allow-file-access
+
+The last two options enable the browser to load textures from disk. You will
+need this if you are developing your site locally.
+
+
+
+Platform notes (OS/GPU/Drivers)
 -------------------------------
 
 While WebGL is supported in most current browsers, there are various little
@@ -51,6 +67,7 @@ of strange errors, please check the following lists for:
   * `Chrome <http://src.chromium.org/viewvc/chrome/trunk/src/chrome/browser/resources/software_rendering_list.json>`_
 
 
+
 Windows
 ~~~~~~~
 
@@ -60,7 +77,9 @@ No specific notes yet.
 Mac OS X
 ~~~~~~~~
 
-Note that Safari is currently not supporing WebGL. You need to use WebKit.
+Safari 5.1+ is supporting WebGL, however you need to enable it in the Developer menu.
+This menu is invisible by default. Go to "Preferences" (Cmd-,) and select the 
+"Advaned" tab. Enable the option "Show Develop menu in menu bar".
 
 
 Ubuntu Linux
