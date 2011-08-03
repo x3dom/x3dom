@@ -16,7 +16,7 @@
  * Runtime proxy object to get and set runtime parameters. This object
  * is attached to each X3D element and can be used in the following manner:
  *
- * > var e = doucment.getElementById('the_x3delement');
+ * > var e = document.getElementById('the_x3delement');
  * > e.runtime.showAll();
  * > e.runtime.resetView();
  * > ...
@@ -333,6 +333,15 @@ x3dom.runtime = {
 	lookAt: function() {
 		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "lookat";
         x3dom.debug.logInfo("Switch to lookat mode.");
+	},
+/**
+	 * APIFunction: lookAround
+     *
+	 * Switches to lookAround mode
+	 */
+	lookAround: function() {
+		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "lookaround";
+        x3dom.debug.logInfo("Switch to lookAround mode.");
 	},
 
 	/**
