@@ -266,9 +266,9 @@ x3dom.userAgentFeature = {
 			
             showLog = x3dcanvas.doc.properties.getProperty("showLog", activateLog);
 
-			if (showLog === true || showLog.toString().toLowerCase('true')) {
+			if (showLog === true || showLog.toString().toLowerCase() === "true") {
 				activateLog = true;
-			} else if (showLog.toLowerCase() === "false") {
+			} else if (showLog.toString().toLowerCase() === "false") {
 				activateLog = false;
 			}
             x3dom.debug.activate(activateLog);
