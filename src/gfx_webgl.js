@@ -750,9 +750,9 @@ x3dom.gfx_webgl = (function () {
                 shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;";
                 shader += "}else{";
                 if(textureTransform){
-                    shader += " fragTexcoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;";
+                    shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;";
                 }else{
-					shader += " fragTexcoord = texcoord;";
+					shader += " fragTexcoord = vertTexCoord;";
 				}
                 if(cssMode & 2){
                     shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;";
@@ -1582,6 +1582,8 @@ x3dom.gfx_webgl = (function () {
 						
 						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord") {
 							that._webgl.textureFilter[unit] = gl.NEAREST;
+						}else{
+							that._webgl.textureFilter[unit] = gl.LINEAR;
 						}
 						
                         x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url + "at unit: " + unit);
@@ -2865,7 +2867,6 @@ x3dom.gfx_webgl = (function () {
 				
 				if(shape._cf.geometry.node.getIndexTexture()) {
 					if(!sp.GI_indexTexture) {
-						x3dom.debug.logInfo("-----> 01");
 						sp.GI_indexTexture = GI_texUnit++;
 					}
 				}
