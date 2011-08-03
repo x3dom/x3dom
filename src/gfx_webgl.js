@@ -624,7 +624,6 @@ x3dom.gfx_webgl = (function () {
 			if(geometryImage) {
 				shader += "uniform vec3 GI_bboxMin;";
 				shader += "uniform vec3 GI_bboxMax;";
-				shader += "uniform vec3 GI_bboxCenter;";
 				shader += "uniform float GI_coordTextureWidth;";
 				shader += "uniform float GI_coordTextureHeight;";
 				
@@ -639,8 +638,7 @@ x3dom.gfx_webgl = (function () {
 				}
 				
 				shader += "uniform sampler2D GI_normalTexture;";
-				shader += "uniform sampler2D GI_texCoordTexture;";
-				
+				shader += "uniform sampler2D GI_texCoordTexture;";	
 			}
 
             if(vertexColor){
@@ -694,7 +692,7 @@ x3dom.gfx_webgl = (function () {
 					shader += "halfPixel = vec2(0.5/GI_coordTextureWidth,0.5/GI_coordTextureHeight);";
 					shader += "IG_texCoord = IG_index * 0.996108948;";
 				} else {
-					shader += "vec2 halfPixel = vec2(0.5/GI_coordTextureWidth,(0.5/GI_coordTextureHeight));";
+					shader += "vec2 halfPixel = vec2(0.5/GI_coordTextureWidth, 0.5/GI_coordTextureHeight);";
 					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/GI_coordTextureWidth), position.y*(256.0/GI_coordTextureHeight)) + halfPixel;";
 				}
 				
@@ -727,7 +725,9 @@ x3dom.gfx_webgl = (function () {
 				shader += "gl_PointSize = 2.0;";
 			} else {
 				shader += "vec3 vertNormal = normal;";
-				shader += "vec2 vertTexCoord = texCoord;";
+				if(texture || cssMode) {
+					shader += "vec2 vertTexCoord = texcoord;";
+				}
 				shader += "vec3 vertPosition = position;";
 				shader += "gl_PointSize = 2.0;";
 			}
@@ -749,12 +749,11 @@ x3dom.gfx_webgl = (function () {
                 shader += "if (sphereMapping == 1.0) {";
                 shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;";
                 shader += "}else{";
-				shader += " fragTexcoord = vertTexCoord;";
-		
                 if(textureTransform){
-                    shader += " fragTexcoord = (texTrafoMatrix * vec4(fragTexcoord, 1.0, 1.0)).xy;";
-                }
-				
+                    shader += " fragTexcoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;";
+                }else{
+					shader += " fragTexcoord = texcoord;";
+				}
                 if(cssMode & 2){
                     shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;";
                     shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;";
@@ -762,9 +761,7 @@ x3dom.gfx_webgl = (function () {
                 shader += "}";
             
             }
-			
 			shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);";
-			
             shader += "}";
 			
             g_shaders[shaderIdentifier] = {};
@@ -1379,14 +1376,15 @@ x3dom.gfx_webgl = (function () {
                 colors: shape._cf.geometry.node._mesh._colors,
                 indexes: shape._cf.geometry.node._mesh._indices,
                 texture: [ids],
+				textureFilter: [gl.LINEAR], 
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
-				imageGeometry: x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry),
-				indexedImageGeometry: (shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0
+				imageGeometry: 0,
+				indexedImageGeometry: 0
             };
 
             shape._webgl.primType = gl.TRIANGLES;
-            vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
+            vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
             fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
             shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
         }
@@ -1410,6 +1408,7 @@ x3dom.gfx_webgl = (function () {
                 
 				if(this._webgl.textureFilter === undefined) {
 					that._webgl.textureFilter = [];
+					that._webgl.textureFilter[unit] = gl.LINEAR;
 				}
 				
                 if (tex._isCanvas && tex._canvas) {
@@ -1500,9 +1499,7 @@ x3dom.gfx_webgl = (function () {
 
 						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord") {
 							that._webgl.textureFilter[unit] = gl.NEAREST;
-						} else {
-							that._webgl.textureFilter[unit] = gl.LINEAR;
-						}						
+						}					
     
                         gl.bindTexture(gl.TEXTURE_2D, texture);
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex._video);
@@ -1526,7 +1523,7 @@ x3dom.gfx_webgl = (function () {
 							that._webgl.indexTextureWidth  = tex._video.clientWidth;
 							that._webgl.indexTextureHeight = tex._video.clientHeight;
 						}
-                        //x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
+                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
                         tex._video.play();
                         tex._intervalID = setInterval(updateMovie, 16);
@@ -1585,11 +1582,9 @@ x3dom.gfx_webgl = (function () {
 						
 						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord") {
 							that._webgl.textureFilter[unit] = gl.NEAREST;
-						} else {
-							that._webgl.textureFilter[unit] = gl.LINEAR;
 						}
 						
-                        //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url + "at unit: " + unit);
+                        x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url + "at unit: " + unit);
 
                         gl.bindTexture(gl.TEXTURE_2D, texture);
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -1609,9 +1604,11 @@ x3dom.gfx_webgl = (function () {
                 }
             };
 			
+			var indexed = 0;
 			var numCoordinateTextures = 0;
 			if( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
 				numCoordinateTextures = shape._cf.geometry.node.numCoordinateTextures();
+				indexed = (shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0;
 			}
             
             shape._webgl = {
@@ -1624,7 +1621,7 @@ x3dom.gfx_webgl = (function () {
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
 				imageGeometry: numCoordinateTextures,
-				indexedImageGeometry: (shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0
+				indexedImageGeometry: indexed
             };
             
             if (tex) {
@@ -2824,6 +2821,11 @@ x3dom.gfx_webgl = (function () {
                 //gl.enable(gl.TEXTURE_2D);
                 gl.activeTexture(activeTex[cnt]);
                 gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[cnt]);
+				
+				if(shape._webgl.textureFilter == undefined) {
+					shape._webgl.textureFilter = [];
+					shape._webgl.textureFilter[cnt] = gl.LINEAR;
+				}
                 
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
@@ -2863,6 +2865,7 @@ x3dom.gfx_webgl = (function () {
 				
 				if(shape._cf.geometry.node.getIndexTexture()) {
 					if(!sp.GI_indexTexture) {
+						x3dom.debug.logInfo("-----> 01");
 						sp.GI_indexTexture = GI_texUnit++;
 					}
 				}
