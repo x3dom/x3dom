@@ -88,11 +88,13 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
     var navi = this._scene.getNavigationInfo();
     var needNavAnim = ( this._lastButton > 0 &&
                         (navi._vf.type[0].toLowerCase() === "fly" ||
-                         navi._vf.type[0].toLowerCase() === "walk") );
-    var dist;
+                         navi._vf.type[0].toLowerCase() === "walk" ||
+                         navi._vf.type[0].toLowerCase().substr(0, 5) === "looka") );
 
     if (needNavAnim)
     {
+        var dist = 0;
+
         var avatarRadius = 0.25;
         var avatarHeight = 1.6;
         var avatarKnee = 0.75;  // TODO; check max. step size
@@ -165,44 +167,47 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._at = fin.multMatrixPnt(this._at);
 
         // forward along view vector
-        this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
-
-        if (this._pickingInfo.pickObj)
+        if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
         {
-            dist = this._pickingInfo.pickPos.subtract(this._from).length();
-
-            if (step < 0 && dist <= avatarRadius) {
-                step = 0;
-            }
-        }
-
-        lv = this._from.subtract(this._at).normalize().multiply(step);
-        temp = x3dom.fields.SFMatrix4f.translation(lv);
-
-        this._at = temp.multMatrixPnt(this._at);
-        this._from = temp.multMatrixPnt(this._from);
-
-        // finally attach to ground when walking
-        if (navi._vf.type[0].toLowerCase() === "walk")
-        {
-            var tmpAt = this._from.addScaled(up, -1.0);
-            var tmpUp = sv.cross(up.negate()).normalize();
-            var tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
-            tmpMat = tmpMat.inverse();
-
-            this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                        tmpMat, this.getProjectionMatrix().mult(tmpMat));
+            this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
 
             if (this._pickingInfo.pickObj)
             {
                 dist = this._pickingInfo.pickPos.subtract(this._from).length();
 
-                this._at = this._at.add(up.multiply(avatarHeight - dist));
-                this._from = this._from.add(up.multiply(avatarHeight - dist));
+                if (step < 0 && dist <= avatarRadius) {
+                    step = 0;
+                }
             }
-        }
-        this._pickingInfo.pickObj = null;
 
+            lv = this._from.subtract(this._at).normalize().multiply(step);
+            temp = x3dom.fields.SFMatrix4f.translation(lv);
+
+            this._at = temp.multMatrixPnt(this._at);
+            this._from = temp.multMatrixPnt(this._from);
+
+            // finally attach to ground when walking
+            if (navi._vf.type[0].toLowerCase() === "walk")
+            {
+                var tmpAt = this._from.addScaled(up, -1.0);
+                var tmpUp = sv.cross(up.negate()).normalize();
+                var tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
+                tmpMat = tmpMat.inverse();
+
+                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
+                            tmpMat, this.getProjectionMatrix().mult(tmpMat));
+
+                if (this._pickingInfo.pickObj)
+                {
+                    dist = this._pickingInfo.pickPos.subtract(this._from).length();
+
+                    this._at = this._at.add(up.multiply(avatarHeight - dist));
+                    this._from = this._from.add(up.multiply(avatarHeight - dist));
+                }
+            }
+            this._pickingInfo.pickObj = null;
+        }
+        
         this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, up);
 
         temp = this._flyMat.inverse();
@@ -591,15 +596,16 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState) {
 
     var navi = this._scene.getNavigationInfo();
 
-    if (this._pickingInfo.pickObj && navi._vf.type[0].toLowerCase() === "lookat") {
-
+    if (this._pickingInfo.pickObj && navi._vf.type[0].toLowerCase() === "lookat" &&
+        this._pressX === x && this._pressY === y)
+    {
         var step = (this._lastButton & 2) ? -1 : 1;
         var dist = 0.25;
 
         if (navi._vf.avatarSize.length >= 1) {
             dist = navi._vf.avatarSize[0];
         }
-        dist *= 2;
+        dist *= 4;
 
         var laMat = new x3dom.fields.SFMatrix4f();
         laMat.setValues(this.getViewMatrix());

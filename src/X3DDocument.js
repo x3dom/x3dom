@@ -381,6 +381,12 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                     this._viewarea._points = !this._viewarea._points;
                 }
             break;
+        case 111: /* o, look around like in fly, but don't move */
+            {
+                this._scene.getNavigationInfo()._vf.type[0] = "lookaround";
+                x3dom.debug.logInfo("Switch to lookAround mode.");
+            }
+            break;
         case 112: /* p, switch intersect type */
                 if (this._scene._vf.pickMode.toLowerCase() === "idbuf") {
                     this._scene._vf.pickMode = "color";
