@@ -1469,7 +1469,7 @@ x3dom.gfx_webgl = (function () {
                         //tex._video.setAttribute('src', tex._vf.url);
                         var p = document.getElementsByTagName('body')[0];
                         p.appendChild(tex._video);
-                        //tex._video.style.display = "none";
+                        tex._video.style.display = "none";
                     }
                     
                     for (var i=0; i<tex._vf.url.length; i++)
