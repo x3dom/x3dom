@@ -256,25 +256,33 @@ x3dom.gfx_webgl = (function () {
         "uniform vec3 wcMin;" +
         "uniform vec3 wcMax;" +
         "varying vec3 worldCoord;" +
+		"uniform float indexed;" +
 		"uniform float imageGeometry;" +
 		"uniform vec3 GI_bboxMin;" +
 		"uniform vec3 GI_bboxMax;" +
-		"uniform float GI_textureWidth;" +
-		"uniform float GI_textureHeight;" +
+		"uniform float GI_coordTextureWidth;" +
+		"uniform float GI_coordTextureHeight;" +
+		"uniform float GI_indexTextureWidth;" +
+		"uniform float GI_indexTextureHeight;" +
+		"uniform sampler2D GI_indexTexture;" +
 		"uniform sampler2D GI_coordinateTexture;" +
-				
-		"vec2 calcTexCoords() {" +
-		"   vec2 halfPixel = vec2(0.5/GI_textureWidth,(0.5/GI_textureHeight));" +
-		"   vec2 texCoord = vec2(position.x*(256.0/GI_textureWidth), position.y*(256.0/GI_textureHeight)) + halfPixel;" +
-		"   return texCoord;" +
-		"}" +
 		
         "void main(void) {" +
 		"	 if(imageGeometry == 1.0) { " +
-		"	 	vec3 pos = texture2D( GI_coordinateTexture, calcTexCoords() ).rgb;" +
+		"		vec2 IG_texCoord;" +
+		"		if(indexed == 1.0) {" +
+		"			vec2 halfPixel = vec2(0.5/GI_indexTextureWidth,0.5/GI_indexTextureHeight);" +
+		"			IG_texCoord = vec2(position.x*(256.0/GI_indexTextureWidth), position.y*(256.0/GI_indexTextureHeight)) + halfPixel;" +
+		"			vec2 IG_index = texture2D( GI_indexTexture, IG_texCoord ).rg;" + 
+		"			IG_texCoord = IG_index * 0.996108948;" +
+		"		} else { " +
+		"			vec2 halfPixel = vec2(0.5/GI_coordTextureWidth, 0.5/GI_coordTextureHeight);" +
+		"			IG_texCoord = vec2(position.x*(256.0/GI_coordTextureWidth), position.y*(256.0/GI_coordTextureHeight)) + halfPixel;" +
+		"		}" +
+		"		vec3 pos = texture2D( GI_coordinateTexture, IG_texCoord ).rgb;" +
 		"	 	pos = pos * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;" +
         "    	worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
-		"		gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
+		"		gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +		
 		"	 } else { " +
         "    	worldCoord = (modelMatrix * vec4(position, 1.0)).xyz;" +
 		"		gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
@@ -2445,20 +2453,41 @@ x3dom.gfx_webgl = (function () {
 				sp.imageGeometry    = 1.0;
 				sp.GI_bboxMin 		= shape._cf.geometry.node.getMin().toGL();
 				sp.GI_bboxMax		= shape._cf.geometry.node.getMax().toGL();
-				sp.GI_textureWidth	= shape._webgl.textureWidth;
-				sp.GI_textureHeight	= shape._webgl.textureHeight;
+				sp.GI_coordTextureWidth	 = shape._webgl.coordTextureWidth;
+				sp.GI_coordTextureHeight = shape._webgl.coordTextureHeight;
 				
-				gl.activeTexture(gl.TEXTURE0);
-                gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1]);
-                
+				if(shape._webgl.indexedImageGeometry) {
+					sp.indexed = 1.0;
+					sp.GI_indexTextureWidth	 = shape._webgl.indexTextureWidth;
+					sp.GI_indexTextureHeight = shape._webgl.indexTextureHeight;
+					
+					gl.activeTexture(gl.TEXTURE0);
+					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1]);
+					
+					gl.activeTexture(gl.TEXTURE1);
+					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[2]);
+				} else {
+					sp.indexed = 0.0;
+					gl.activeTexture(gl.TEXTURE0);
+					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1]);
+				}
+				
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, shape._webgl.texFilter);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, shape._webgl.texFilter);
+				
+				var texUnit = 0;
+				
+				if(shape._cf.geometry.node.getIndexTexture()) {
+					if(!sp.GI_indexTexture) {
+						sp.GI_indexTexture = texUnit++;
+					}
+				}
 				
 				if(shape._cf.geometry.node.getCoordinateTexture(0)) {
 					if(!sp.GI_coordinateTexture) {
-						sp.GI_coordinateTexture = 0;
+						sp.GI_coordinateTexture = texUnit++;
 					}
 				}
 			}
