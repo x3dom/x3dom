@@ -521,6 +521,7 @@ x3dom.registerNodeType(
 			this.addField_SFFloat(ctx, 'vertexCount', 0);
 			this.addField_SFString(ctx, 'primType', 'TRIANGLES');
 			
+			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
@@ -594,6 +595,24 @@ x3dom.registerNodeType(
 			{
 				return this._cf.coord.nodes.length;
 			},
+			
+			getIndexTexture: function()
+            {
+                if(this._cf.index.node) {
+                    return this._cf.index.node;
+                } else {
+                    return null;
+                }
+            },
+			
+			getIndexTextureURL: function()
+            {
+                if(this._cf.index.node) {
+                    return this._cf.index.node._vf.url;
+                } else {
+                    return null;
+                }
+            },
 			
 			getCoordinateTexture: function(pos)
             {

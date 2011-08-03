@@ -586,7 +586,7 @@ x3dom.gfx_webgl = (function () {
         }
     }
     
-    Context.prototype.generateVS = function (viewarea, vertexColor, texture, textureTransform, cssMode, useLighting, geometryImage)
+    Context.prototype.generateVS = function (viewarea, vertexColor, texture, textureTransform, cssMode, useLighting, geometryImage, indexedIG)
     {
     
         var useFog = useFogFunc(viewarea);
@@ -597,7 +597,8 @@ x3dom.gfx_webgl = (function () {
                                            ( useLighting[0] ) +
                                            ( (useLighting[1]) ? 1 : 0 ) +
                                            ( (cssMode) ) +
-										   ( (geometryImage) );
+										   ( (geometryImage) ) +
+										   ( (indexedIG) );
         
         if(!g_shaders[shaderIdentifier]){
             //x3dom.debug.logInfo("generate new Vertex Shader: " + shaderIdentifier);
@@ -616,8 +617,14 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform vec3 GI_bboxMin;";
 				shader += "uniform vec3 GI_bboxMax;";
 				shader += "uniform vec3 GI_bboxCenter;";
-				shader += "uniform float GI_textureWidth;";
-				shader += "uniform float GI_textureHeight;";
+				shader += "uniform float GI_coordTextureWidth;";
+				shader += "uniform float GI_coordTextureHeight;";
+				
+				if(indexedIG) {
+					shader += "uniform sampler2D GI_indexTexture;";
+					shader += "uniform float GI_indexTextureWidth;";
+					shader += "uniform float GI_indexTextureHeight;";
+				}
 				
 				for( var i = 0; i < geometryImage; i++ ) {
 					shader += "uniform sampler2D GI_coordinateTexture" + i + ";";
@@ -626,11 +633,6 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform sampler2D GI_normalTexture;";
 				shader += "uniform sampler2D GI_texCoordTexture;";
 				
-				shader += "vec2 calcTexCoords() {";
-				shader += "   vec2 halfPixel = vec2(0.5/GI_textureWidth,(0.5/GI_textureHeight));";
-				shader += "   vec2 texCoord = vec2(position.x*(256.0/GI_textureWidth), position.y*(256.0/GI_textureHeight)) + halfPixel;";
-				shader += "   return texCoord;";
-				shader += "}";
 			}
 
             if(vertexColor){
@@ -671,44 +673,75 @@ x3dom.gfx_webgl = (function () {
             }
             
             //Set Main
-            shader += "void main(void) {";  
+            shader += "void main(void) {"; 
+			
+			if(geometryImage) {
+				
+				//Indices
+				if(indexedIG) {
+					shader += "vec2 halfPixel = vec2(0.5/GI_indexTextureWidth,0.5/GI_indexTextureHeight);";
+					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/GI_indexTextureWidth), position.y*(256.0/GI_indexTextureHeight)) + halfPixel;";
+					shader += "vec2 IG_index = texture2D( GI_indexTexture, IG_texCoord ).rg;";
+					
+					shader += "halfPixel = vec2(0.5/GI_coordTextureWidth,0.5/GI_coordTextureHeight);";
+					shader += "IG_texCoord = IG_index * 0.996108948;";
+				} else {
+					shader += "vec2 halfPixel = vec2(0.5/GI_coordTextureWidth,(0.5/GI_coordTextureHeight));";
+					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/GI_coordTextureWidth), position.y*(256.0/GI_coordTextureHeight)) + halfPixel;";
+				}
+				
+				//Coordinates
+				shader += "vec3 temp = vec3(0.0, 0.0, 0.0);";
+				shader += "vec3 vertPosition = vec3(0.0, 0.0, 0.0);";
+				
+				for(var i=0; i<geometryImage; i++)
+				{
+					shader += "temp = texture2D( GI_coordinateTexture" + i + ", IG_texCoord ).rgb;";
+					if(i) shader += "temp /= (" + i + ".0 * 256.0);";
+					shader += "vertPosition += temp;";
+				}
+
+				shader += "vertPosition = vertPosition * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
+				
+				//Normals
+				shader += "vec3 vertNormal = texture2D( GI_normalTexture, IG_texCoord ).rgb;";
+				shader += "vertNormal = vertNormal * 2.0 - 1.0;";
+				
+				//TexCoords
+				if(texture || cssMode) {
+					shader += "vec4 IG_doubleTexCoords = texture2D( GI_texCoordTexture, IG_texCoord );";
+					shader += "vec2 vertTexCoord;";
+					shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);";
+					shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);";
+				}
+				
+				//PointSize
+				shader += "gl_PointSize = 2.0;";
+			} else {
+				shader += "vec3 vertNormal = normal;";
+				shader += "vec2 vertTexCoord = texCoord;";
+				shader += "vec3 vertPosition = position;";
+				shader += "gl_PointSize = 2.0;";
+			}
+			
             if(vertexColor){
                 shader += "fragColor = color;";
             }
             
-			if(geometryImage) {
-				shader += "vec3 GI_normal = texture2D( GI_normalTexture, calcTexCoords() ).rgb;";
-				shader += "GI_normal = GI_normal * 2.0 - 1.0;";
-				shader += "fragNormal = (normalMatrix * vec4(GI_normal, 0.0)).xyz;";
-			} else {
-				shader += "fragNormal = (normalMatrix * vec4(normal, 0.0)).xyz;";
-			}
+			shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;";
             
             if(useLighting[0] >= 1.0 || useFog){    
-                shader += "fragPosition = (modelViewMatrix * vec4(position, 1.0)).xyz;";
+                shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0)).xyz;";
                 shader += "fragEyePosition = eyePosition - fragPosition;";
                 if(useLighting[1]) {
-                    shader += "projCoord = matPV * vec4(position+0.5*normalize(normal), 1.0);";
+                    shader += "projCoord = matPV * vec4(vertPosition+0.5*normalize(vertNormal), 1.0);";
                 }
             }
             if(texture || cssMode){
                 shader += "if (sphereMapping == 1.0) {";
                 shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;";
                 shader += "}else{";
-				
-				if(geometryImage) {
-					shader += "vec4 IG_doubleTexCoords = texture2D( GI_texCoordTexture, calcTexCoords() );";
-					
-					//Old Version
-					//shader += "fragTexcoord.r = IG_doubleTexCoords.r + (IG_doubleTexCoords.b/256.0);";
-					//shader += "fragTexcoord.g = IG_doubleTexCoords.g + (IG_doubleTexCoords.a/256.0);";
-					
-					//New optimized Version
-					shader += "fragTexcoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);";
-					shader += "fragTexcoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);";
-				}else{
-					shader += " fragTexcoord = texcoord;";
-				}
+				shader += " fragTexcoord = vertTexCoord;";
 		
                 if(textureTransform){
                     shader += " fragTexcoord = (texTrafoMatrix * vec4(fragTexcoord, 1.0, 1.0)).xy;";
@@ -722,25 +755,7 @@ x3dom.gfx_webgl = (function () {
             
             }
 			
-			if(geometryImage) {
-				shader += "vec3 IG_temp = vec3(0.0, 0.0, 0.0);";
-				shader += "vec3 GI_coordinate = vec3(0.0, 0.0, 0.0);";
-				
-				for(var i=0; i<geometryImage; i++)
-				{
-					shader += "IG_temp = texture2D( GI_coordinateTexture" + i + ", calcTexCoords() ).rgb;";
-					if(i) shader += "IG_temp /= (" + i + ".0 * 256.0);";
-					shader += "GI_coordinate += IG_temp;";
-				}
-
-				shader += "GI_coordinate = GI_coordinate * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
-				shader += "gl_Position = modelViewProjectionMatrix * vec4(GI_coordinate, 1.0);";
-			} else {
-				shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);";
-				
-			}
-			
-			shader += "gl_PointSize = 2.0;";
+			shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);";
 			
             shader += "}";
 			
@@ -1051,7 +1066,7 @@ x3dom.gfx_webgl = (function () {
                 
                 if ((shape._webgl.texture !== undefined && tex) && !needFullReInit)
                 {
-                    shape.updateTexture(tex, 0, false);
+                    shape.updateTexture(tex, 0, "false");
                     
                     shape._dirty.texture = false;
                 }
@@ -1440,7 +1455,7 @@ x3dom.gfx_webgl = (function () {
                         if (!singleTex) {
                             break;
                         }
-                        that.updateTexture(singleTex, cnt, false);
+                        that.updateTexture(singleTex, cnt, "false");
                     }
                 }
                 else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
@@ -1468,12 +1483,18 @@ x3dom.gfx_webgl = (function () {
 
                     var updateMovie = function()
                     {
-                        that._nameSpace.doc.needRender = true;          
+                        that._nameSpace.doc.needRender = true;
+
+						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord") {
+							that._webgl.texFilter = gl.NEAREST;
+						} else {
+							that._webgl.texFilter = gl.LINEAR;
+						}						
     
                         gl.bindTexture(gl.TEXTURE_2D, texture);
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex._video);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, that._webgl.texFilter);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, that._webgl.texFilter);
                         //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
                         //gl.generateMipmap(gl.TEXTURE_2D);
                         gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1484,11 +1505,15 @@ x3dom.gfx_webgl = (function () {
                         that._nameSpace.doc.needRender = true;          
                         
                         that._webgl.texture[unit] = texture;
-                        if(saveSize) {
-                            that._webgl.textureWidth = tex._video.clientWidth;
-                            that._webgl.textureHeight =tex._video.clientHeight;
-                        }
-                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
+						
+                        if(saveSize == "coord") {
+							that._webgl.coordTextureWidth  = tex._video.clientWidth;
+							that._webgl.coordTextureHeight = tex._video.clientHeight;
+						} else if(saveSize == "index"){
+							that._webgl.indexTextureWidth  = tex._video.clientWidth;
+							that._webgl.indexTextureHeight = tex._video.clientHeight;
+						}
+                        //x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
                         
                         tex._video.play();
                         tex._intervalID = setInterval(updateMovie, 16);
@@ -1537,17 +1562,26 @@ x3dom.gfx_webgl = (function () {
                         
 						that._webgl.texture[unit] = texture;
 						
-						if(saveSize) {
-							that._webgl.textureWidth = image.width;
-							that._webgl.textureHeight = image.height;
+						if(saveSize == "coord") {
+							that._webgl.coordTextureWidth  = image.width;
+							that._webgl.coordTextureHeight = image.height;
+						} else if(saveSize == "index"){
+							that._webgl.indexTextureWidth  = image.width;
+							that._webgl.indexTextureHeight = image.height;
+						}
+						
+						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord") {
+							that._webgl.texFilter = gl.NEAREST;
+						} else {
+							that._webgl.texFilter = gl.LINEAR;
 						}
 						
                         //x3dom.debug.logInfo(texture + " load tex url: " + tex._vf.url + "at unit: " + unit);
 
                         gl.bindTexture(gl.TEXTURE_2D, texture);
                         gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, that._webgl.texFilter);
+                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, that._webgl.texFilter);
                         //gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
                         //gl.generateMipmap(gl.TEXTURE_2D);
                         gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1576,32 +1610,38 @@ x3dom.gfx_webgl = (function () {
                 //indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
-				imageGeometry: numCoordinateTextures
+				imageGeometry: numCoordinateTextures,
+				indexedImageGeometry: (shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0
             };
             
             if (tex) {
-                shape.updateTexture(tex, 0, false);
+                shape.updateTexture(tex, 0, "false");
             }
 			
 			//If GeometryImage-Node load textures
 			if(shape._webgl.imageGeometry) {
 				var GI_texUnit = 1;
 				
+				var indexTexture = shape._cf.geometry.node.getIndexTexture();
+				if(indexTexture) {
+					shape.updateTexture(indexTexture, GI_texUnit++, 'index');
+				}
+				
 				for(var i=0; i<numCoordinateTextures; i++) {
 					var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(i);
 					if(coordinateTexture) {
-						shape.updateTexture(coordinateTexture, GI_texUnit++, true);
+						shape.updateTexture(coordinateTexture, GI_texUnit++, 'coord');
 					}
 				}
 							
 				var normalTexture = shape._cf.geometry.node.getNormalTexture(0);
 				if(normalTexture) {
-					shape.updateTexture(normalTexture, GI_texUnit++, false);
+					shape.updateTexture(normalTexture, GI_texUnit++, "normal");
 				}
 				
 				var texCoordTexture = shape._cf.geometry.node.getTexCoordTexture();
 				if(texCoordTexture) {
-					shape.updateTexture(texCoordTexture, GI_texUnit++, false);
+					shape.updateTexture(texCoordTexture, GI_texUnit++, "texCoord");
 				}
 			}
             
@@ -1657,19 +1697,19 @@ x3dom.gfx_webgl = (function () {
                         var specularTex  = cssShader.getSpecularMap(); 
                         
                         if(diffuseTex != null){
-                            shape.updateTexture(diffuseTex, texCnt++, false);
+                            shape.updateTexture(diffuseTex, texCnt++, "false");
                             cssMode += 1;
                         }
                         if(normalTex != null){
-                            shape.updateTexture(normalTex, texCnt++, false);
+                            shape.updateTexture(normalTex, texCnt++, "false");
                             cssMode += 2;
                         }
                         if(specularTex != null){
-                            shape.updateTexture(specularTex, texCnt++, false);
+                            shape.updateTexture(specularTex, texCnt++, "false");
                             cssMode += 4;
                         }
                         
-                        vsID = this.generateVS(viewarea, false, false, false, cssMode, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
+                        vsID = this.generateVS(viewarea, false, false, false, cssMode, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
                         fsID = this.generateFS(viewarea, false, false, cssMode, shape._webgl.lightsAndShadow);
                         
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
@@ -1691,11 +1731,11 @@ x3dom.gfx_webgl = (function () {
                 /** BEGIN STANDARD MATERIAL */
                 if (tex) {
                     if (shape._cf.appearance.node._cf.textureTransform.node === null) {
-                        vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
+                        vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
                         fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                     } else {
-                        vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
+                        vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
                         fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                     }
@@ -1703,11 +1743,11 @@ x3dom.gfx_webgl = (function () {
                     
                     var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
                 
-                    vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
+                    vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
                     fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
                     shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                 } else {
-                    vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry);
+                    vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
                     fsID = this.generateFS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
                     shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                 }
@@ -2541,11 +2581,15 @@ x3dom.gfx_webgl = (function () {
         // Set GeometryImage variables
         //===========================================================================
 		if(shape._webgl.imageGeometry) {
-			sp.GI_bboxMin 		= shape._cf.geometry.node.getMin().toGL();
-			sp.GI_bboxMax		= shape._cf.geometry.node.getMax().toGL();
-			sp.GI_bboxCenter	= shape._cf.geometry.node._vf.position.toGL();
-			sp.GI_textureWidth	= shape._webgl.textureWidth;
-			sp.GI_textureHeight	= shape._webgl.textureHeight;
+			sp.GI_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
+			sp.GI_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
+			sp.GI_coordTextureWidth	 = shape._webgl.coordTextureWidth;
+			sp.GI_coordTextureHeight = shape._webgl.coordTextureHeight;
+			
+			if(shape._webgl.indexedImageGeometry) {
+				sp.GI_indexTextureWidth	 = shape._webgl.indexTextureWidth;
+				sp.GI_indexTextureHeight = shape._webgl.indexTextureHeight;
+			}
 		}
 
         //===========================================================================
@@ -2749,8 +2793,8 @@ x3dom.gfx_webgl = (function () {
                 
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, shape._webgl.texFilter);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, shape._webgl.texFilter);
                 //gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
                 //gl.generateMipmap(gl.TEXTURE_2D);
             }
@@ -2782,6 +2826,12 @@ x3dom.gfx_webgl = (function () {
 			if(shape._webgl.imageGeometry)
 			{
 				var GI_texUnit = 1;
+				
+				if(shape._cf.geometry.node.getIndexTexture()) {
+					if(!sp.GI_indexTexture) {
+						sp.GI_indexTexture = GI_texUnit++;
+					}
+				}
 
 				for(var i=0; i<shape._webgl.imageGeometry; i++) {
 					if(shape._cf.geometry.node.getCoordinateTexture(i)) {
