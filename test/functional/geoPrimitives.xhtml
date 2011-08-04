@@ -51,7 +51,8 @@
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
-                <Group onmousemove="document.getElementById('bar').setAttribute('translation', event.hitPnt);
+                <Group id='kloppe'
+                       onmousemove="document.getElementById('bar').setAttribute('translation', event.hitPnt);
                                 document.getElementById('pc').setAttribute('set_destination', event.hitPnt);"
                        onclick="document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
                                 document.getElementById('cc').setAttribute('set_destination', '0 1 0');">
@@ -167,6 +168,10 @@
                                                 event.worldZ.toFixed(2);
             document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
         };
+
+        var funcPtr2 = function (event) {
+            document.getElementById('ausgabe').innerHTML = event.hitObject._x3domNode._DEF;
+        };
         
         function delIt() {
             document.getElementById('blubbMat').setAttribute('diffuseColor', '1 1 0');
@@ -176,6 +181,8 @@
         function addIt() {
             document.getElementById('ausgabe').innerHTML = "test";
             document.getElementById('blubb').addEventListener('click', funcPtr, false);
+
+            document.getElementById('kloppe').addEventListener('click', funcPtr2, false);
         }
         
         document.onload = addIt;
