@@ -491,6 +491,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         worldY: that._pick.y,
         worldZ: that._pick.z,
         hitPnt: that._pick.toGL(), // for convenience
+        hitObject: obj._xmlNode ? obj._xmlNode : null,
         cancelBubble: false,
         stopPropagation: function() { this.cancelBubble = true; }
     };
