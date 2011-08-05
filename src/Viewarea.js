@@ -558,6 +558,7 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState) {
 
+    var tDist = 3.0;
     var dir;
 
     if (this._scene._vf.pickMode.toLowerCase() !== "box") {
@@ -603,10 +604,13 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState) {
         var step = (this._lastButton & 2) ? -1 : 1;
         var dist = 0.25;
 
+        /*
         if (navi._vf.avatarSize.length >= 1) {
             dist = navi._vf.avatarSize[0];
         }
         dist *= 4;
+        */
+        dist = this._pickingInfo.pickPos.subtract(this._from).length() / tDist;
 
         var laMat = new x3dom.fields.SFMatrix4f();
         laMat.setValues(this.getViewMatrix());
@@ -675,7 +679,7 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
     if ((this._scene._vf.pickMode.toLowerCase() === "color" ||
          this._scene._vf.pickMode.toLowerCase() === "texcoord")) {
          return;
-     }
+    }
 
     var viewpoint = this._scene.getViewpoint();
 
