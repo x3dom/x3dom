@@ -1481,7 +1481,9 @@ x3dom.gfx_webgl = (function () {
                         //tex._video.setAttribute('src', tex._vf.url);
                         var p = document.getElementsByTagName('body')[0];
                         p.appendChild(tex._video);
-                        tex._video.style.display = "none";
+                        //tex._video.style.display = "none";
+                        //tex._video.style.display = "inline";
+                        tex._video.style.visibility = "hidden";
                     }
                     
                     for (var i=0; i<tex._vf.url.length; i++)
@@ -3013,14 +3015,14 @@ x3dom.gfx_webgl = (function () {
               else {
                 // fixme; this differentiation isn't nice, but otherwise WebGL seems to run out of mem
                 if (shape._webgl.primType == gl.POINTS) {
-                    gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
+                    //gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
                     //gl.enable(gl.POINT_SMOOTH);
 					if(shape._webgl.imageGeometry) {
 						gl.drawArrays(gl.POINTS, 0, shape._cf.geometry.node._vf.vertexCount);
 					}else{
 						gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
 					}
-                    gl.disable(gl.VERTEX_PROGRAM_POINT_SIZE);
+                    //gl.disable(gl.VERTEX_PROGRAM_POINT_SIZE);
                 }
                 else {
                     //x3dom.debug.logInfo("indexLength: " + shape._webgl.indexes[q].length);
