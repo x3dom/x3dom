@@ -1064,6 +1064,14 @@ x3dom.gfx_webgl = (function () {
             
             var needFullReInit = (shape._webgl.lightsAndShadow[0] != oldLightsAndShadow[0] || 
                                   shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1]);
+
+            // TODO; do same for texcoords etc.!
+            if (shape._dirty.colors === true && shape._webgl.shader.color === undefined)
+            {
+                // required since otherwise shape._webgl.shader.color stays undefined
+                // and thus the wrong shader will be chosen
+                needFullReInit = true;
+            }
                     
             if (shape._dirty.texture === true || needFullReInit)
             {   
