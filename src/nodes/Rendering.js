@@ -889,8 +889,11 @@ x3dom.registerNodeType(
 
             // TODO; do same for texcoords etc.!
             parentAdded: function (parent) {
-                parent.fieldChanged("color");
-                //parent.nodeChanged();
+                // FIXME; fix this quickfix that prevents from updating nodes
+                //        that are not yet initialized (assumes coordinates)!
+                if (parent._mesh && parent._cf.coord.node) {
+                    parent.fieldChanged("color");
+                }
             }
         }
     )
