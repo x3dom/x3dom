@@ -885,6 +885,12 @@ x3dom.registerNodeType(
                 Array.forEach(this._parentNodes, function (node) {
                     node.fieldChanged("color");
                 });
+            },
+
+            // TODO; do same for texcoords etc.!
+            parentAdded: function (parent) {
+                parent.fieldChanged("color");
+                //parent.nodeChanged();
             }
         }
     )
