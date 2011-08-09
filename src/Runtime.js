@@ -510,6 +510,11 @@ x3dom.runtime = {
 
     properties: function() {
         return this.canvas.doc.properties;
+    },
+
+    backendName: function() {
+        return this.canvas.backend;
     }
+
 };
 
