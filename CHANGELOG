@@ -1,3 +1,272 @@
+2011-08-09  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Unit test thingy
+
+  * : Added tests
+
+  * : Started building unit testsuite
+
+  * : Added API method to get backend implementation name
+
+2011-08-08  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : quickfix of quickfix
+
+2011-08-08  unknown <yvonne@.ad.igd.fraunhofer.de>
+
+  * : color attrib update fix
+
+2011-08-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : lookat with other dist
+
+  * : fix
+
+2011-08-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : hit event object now contains attribute 'hitObject' that refers to hit
+  shape
+
+2011-08-04  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - some fixes 2.0
+
+2011-08-03  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - some fixes
+
+  * : - Fix texture filter
+
+  * : - Fix showLog
+
+  * : - Add picking for indexed IG
+
+  * : - Add indexed IG
+
+2011-08-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : look around mode
+
+2011-08-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix
+
+2011-08-02  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add IG primType-Field('TRIANGLES', 'POINTS')
+
+2011-08-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added time dependence
+
+2011-08-02  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Update to docs adding showProgress attribute
+
+  * : Ploished progress indicator. Prepared for the 'bar' mode.
+
+2011-08-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix
+
+2011-08-02  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fix showLog type error
+
+  * : Cleanup
+
+2011-08-02  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Fix IG Double-TexCoord Precision Bug
+
+2011-08-02  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added loading indicator
+
+2011-08-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added onerror
+
+2011-08-02  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Committing unfinished work on binary/compresst transport (exploration
+  that should investiage and implement different approaches like gzip, EXI,
+  etc.). Project has been scrubbed.
+
+  * : Removing redundant file
+
+2011-08-01  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Fix IG State Display - Add IG Double-TexCoord Precision
+
+2011-07-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Finish IG Multi-Textures
+
+2011-07-29  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Start IG Multi-Textures
+
+2011-07-29  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add IG Picking
+
+2011-07-28  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : normal generation for GeoElevationGrid
+
+2011-07-27  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Doc formatting fixes
+
+  * : Added note to doc how to enable allow-file-access thingy with chrome
+
+2011-07-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fix line endings
+
+  * : Adding exploration for evaluating possibilities with compressed formats
+
+  * : Typo
+
+  * : Move zip stuff to seperate module
+
+  * : Added deflate/inflate implementations
+
+  * : Documentation format tweaks
+
+2011-07-26  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Fix Min/Max problem
+
+2011-07-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Started with testcaseses for dealing with compressed inline nodes
+
+  * : Using webserver of Python stdlib
+
+2011-07-25  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Do not show author metadata in generated docs
+
+  * : Changed Makefile deploy target to make guide as well
+
+  * : Changed Makefile deploy target to reflect git stuff
+
+  * : Fix missing comma in version template
+
+  * : Fixed Popen parameters for version tag generation
+
+2011-07-25  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : versioning string changed svn > git
+
+2011-07-22  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : new build.py in root create dir (dist/x3dom.js) if not exist
+
+2011-07-21  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Another GeometryImage Update
+
+2011-07-21  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : GeoElevationGrid * texturecoords * missing geoGridOrigin offset
+
+  * : minor fixes
+
+2011-07-21  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Change GeometryImage Interface
+
+2011-07-21  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - GPU GeometryImage implementation v3.1
+
+2011-07-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - GPU GeometryImage implementation v3.0
+
+2011-07-20  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : bugfixes
+
+2011-07-20  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - GPU GeometryImage implementation v2.0
+
+2011-07-20  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : some changes in geo
+
+  * : some geo codes
+
+2011-07-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Start GPU-based GeometryImage implementation
+
+2011-07-19  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added documentation and ideas for dealing with large models
+
+2011-07-19  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : typo
+
+2011-07-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add Flash GeometryImage implementation
+
+2011-07-05  aha <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Improved wording of TS section.
+
+  * : Added more doucmentaion, including release notes and licenses
+
+  * : Fixed line endings
+
+  * : Added troubleshooting text to guide
+
+2011-07-01  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed obsolete comments
+
+2011-07-01  Yvonne Jung <yjung@.ad.igd.fraunhofer.de>
+
+  * : fixed typo
+
+2011-06-28  aha <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added troubleshooting section to users guide
+
+  * : Added copyright and license notice to source files
+
+  * : Fixed spacing in template
+
+  * : Wording
+
+  * : Added source header template
+
+2011-06-27  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added links to GPU blacklists to docs
+
+2011-06-25  Johannes Behr <johannes.behr@gmail.com>
+
+  * : tmp file removed
+
+  * : additional authors added
+
+2011-06-21  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fixes to guide
+
+  * : Added Installation chapter in documentation
+
+2011-06-20  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Updated ChangeLog generation task to use git instead of svn
+
 2011-06-20  thyrell <thyrell@3fb95f9c-b211-4acc-b2b6-5f5c22209b5a>
 
   * : Prep 1.2 
