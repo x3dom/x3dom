@@ -1,44 +1,75 @@
 .. _api:
 
-Runtime API
-===========
+API functions
+=============
 
-Place for the official user API documentation (not the code doc generated 
-automatically).
+The X3DOM runtime API provides proxy object to programmatically read
+and modify runtime parameters. The runtime proxy is attached to each
+X3D element and can be used in the following manner::
+
+    var e = document.getElementById('the_x3delement');
+    e.runtime.showAll();
+    e.runtime.resetView();
+    ...
+
+Some methods, like the ``x3dom.ready()`` function need to be called
+before the proxy object can be initialized. You can still override
+these functions globally. In order to provide you with the means to
+scope your actions to a specific X3D element, the methods receive
+the X3D element they are working on as first parameter::
+
+    x3dom.ready = function(element) {
+        if (element == target_element) {
+            // do something
+        }
+    }
 
 
-The param element
-=================
+Function list
+-------------
 
-The X3D element supports a param tag which allows to set configuration for 
-the runtime.
 
-Usage
------
+..  js:function:: ready(element)
 
-The param element behaves just like any other HTML element. It must be 
-nested below the scene element. For XHTML you can use the self-closing syntax,
-for HTML a closing tag is mandatory::
+    :param element: The X3D element the method is currently operation on.
 
-    <x3d>
-        <scene>
-            <param name="showLog" value="true" ></param>
-            ...
-        </scene>
-    </x3d>
+    This method is called once the system initialized and is ready to
+    render the first time. It is therefore possible to execute custom
+    action by overriding this method in your code::
 
-Options
--------
-The following table lists the parameters currently supported.
+        x3dom.runtime.ready = function(data) {
+            alert("About to render something the first time");
+        }
 
-=================  =========================  ===========     =================================================
-  Parameter          Values                     Default         Description
-=================  =========================  ===========     =================================================
-showLog	           true, false                false           Hide or display the logging console
-showStat           true, false                false           Hide or display the statistics overlay
-showProgress       true, false, bar           true            Hide or show the loading indicator. The default
-                                                              indicator is a spinner. The value 'bar' will
-                                                              use a progress bar.
-PrimitiveQuality   High, Medium, Low, float   High/1.0        Render quality (tesselation level) for Box, Cone,
-                                                              Cylinder, Sphere.
-=================  =========================  ===========     =================================================
+    It is important to create this override before the document onLoad event
+    has fired. Therefore putting it directly under the inclusion of
+    ``x3dom.js`` is the preferred way to ensure overloading of this function.
+
+
+..  js:function:: enterFrame(element)
+
+    :param element: The X3D element the method is currently operation on.
+
+    This method is called just before the next frame is rendered. It is
+    therefore possible to execute custom actions by overriding this
+    method in your code::
+
+        x3dom.runtime.enterFrame = function(data) {
+            alert("About to render next frame");
+        }
+
+    It is also possible to override this function on a per X3D
+    element basis::
+
+        var element = document.getElementById('my_element');
+        element.runtime.enterFrame = function() {
+            alert('hello custom enter frame');
+        };
+
+    During initialization, just after ``ready()`` executed and before the very
+    first frame is rendered, only the global override of this method works.
+
+    If you need to execute code before the first frame renders, it is
+    therefore best to use the ``ready()`` function instead.
+
+
