@@ -6,6 +6,9 @@ As with most software systems, something can go wrong. But fear not.
 There are a couple of things you can check and try. You’ll find some 
 hints and tips here.
 
+Common problems
+---------------
+
 I am not seeing anything
 ~~~~~~~~~~~~~~~~~~~~~~~~
 Assuming we are not dealing with an electrical or vision problem:
