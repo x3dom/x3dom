@@ -33,7 +33,7 @@ div.documentwrapper {
 }
 
 div.bodywrapper {
-    margin: 0 0 0 {{ sidebar_width }};
+    margin: 0 {{ sidebar_width }} 0 0;
 }
 
 div.sphinxsidebar {
@@ -83,13 +83,18 @@ div.sphinxsidebar a:hover {
 }
  
 div.sphinxsidebar {
-    font-family: Helvetica, Arial, sans-serif;
-    font-size: 12px;
+    font-family: Verdana, Helvetica, Arial, sans-serif;
+    font-size: 11px;
     line-height: 1.5;
+    float:right;
 }
 
 div.sphinxsidebarwrapper {
-    padding: 18px 10px;
+    /*padding: 18px 10px; */
+    padding: 0px 10px;
+    border:3px solid transparent;
+    border-radius: 5px;
+    background-color:#eee;
 }
 
 div.sphinxsidebarwrapper p.logo {
