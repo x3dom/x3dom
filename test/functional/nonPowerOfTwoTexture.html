@@ -48,20 +48,22 @@
 </head>
        
 <body>
-    <h1>Non PowerOfTwo Texture</h1>
+    <h1>Non-Power-Of-Two Texture</h1>
     <table><tr>
 	<td><p>Without scaling:</p>
 	<div>
-		<x3d showStat="false" showLog="true" width="400px" height="300px">
+		<x3d showStat="false" showLog="true">
 			<scene>
                 <background skyColor=".4 .5 .6"></background>
 				<viewpoint position='0 0 5' ></viewpoint>
 				<shape>
 					<appearance>
 						<texture url='media/texture/basic/nonPow2Texture.png'>
-                        <textureProperties boundaryModeS='CLAMP_TO_EDGE' boundaryModeT='CLAMP_TO_EDGE'
-                                           magnificationFilter='NEAREST_PIXEL' minificationFilter='NEAREST_PIXEL'>
-                        </textureProperties>
+                            <textureProperties boundaryModeS='REPEAT' boundaryModeT='REPEAT'
+                                               magnificationFilter='LINEAR' minificationFilter='LINEAR'
+                                               generateMipMaps='false' id='texProps'>
+                            </textureProperties>
+                        </texture>
 					</appearance>
 					<box DEF='box'></box>
 				</shape>
@@ -70,13 +72,18 @@
 	</div></td>
 	<td><p>With scaling to nextHighestPowerOfTwo:</p>
 	<div>
-		<x3d showStat="false" showLog="true" width="400px" height="300px">
+		<x3d showStat="false" showLog="true">
 			<scene>
                 <background skyColor=".4 .5 .6"></background>
 				<viewpoint position='0 0 5' ></viewpoint>
 				<shape>
 					<appearance>
 						<texture url='media/texture/basic/nonPow2Texture.png' scale='true'>
+                            <textureProperties boundaryModeS='REPEAT' boundaryModeT='REPEAT'
+                                               magnificationFilter='LINEAR' minificationFilter='LINEAR'
+                                               generateMipMaps='false' id='texProps2'>
+                            </textureProperties>
+                        </texture>
 					</appearance>
 					<box DEF='box'></box>
 				</shape>
@@ -84,6 +91,61 @@
 		</x3d>
 	</div></td>
     </tr></table>
+
+	<script type="text/javascript">
+	var filter = true;
+    var clamp = true;
+    var mipmap = false;
+
+	function toggleFiltering()
+	{
+		var tp = document.getElementById("texProps");
+		filter = !filter;
+        
+		tp.setAttribute("magnificationFilter", (filter ? "LINEAR" : "NEAREST"));
+        tp.setAttribute("minificationFilter", (filter ? "LINEAR" : "NEAREST"));
+
+        x3dom.debug.logInfo("NPOT: " + (filter ? "LINEAR" : "NEAREST"));
+
+		return false;
+	}
+
+    function toggleClamping()
+    {
+		var tp = document.getElementById("texProps");
+		clamp = !clamp;
+
+		tp.setAttribute("boundaryModeS", (clamp ? "REPEAT" : "CLAMP_TO_EDGE"));
+        tp.setAttribute("boundaryModeT", (clamp ? "REPEAT" : "CLAMP_TO_EDGE"));
+
+        x3dom.debug.logInfo("NPOT: " + (clamp ? "REPEAT" : "CLAMP_TO_EDGE"));
+
+		return false;
+    }
+
+    function toggleMipmapping()
+    {
+		var tp = document.getElementById("texProps2");
+		mipmap = !mipmap;
+
+		tp.setAttribute("generateMipMaps", (mipmap ? "true" : "false"));
+
+        x3dom.debug.logInfo("POT: " + (mipmap ? "true" : "false"));
+
+		return false;
+    }
+	</script>
+
+	<div class="group">
+	Toggle clamp mode (npot example): repeat/clamp_to_edge
+	<input type="button" id="rep" value="Switch Clamping" onclick="toggleClamping();">
+    <br>
+	Toggle filter mode (npot example): nearest/linear
+	<input type="button" id="fil" value="Switch Filtering" onclick="toggleFiltering();">
+    <br>
+	Toggle mipmaps (attention: pot example): true/false
+	<input type="button" id="mip" value="Switch Mipmapping" onclick="toggleMipmapping();">
+	</div>
 </body>
 </html>	                
 	                	
