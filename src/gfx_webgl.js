@@ -1886,6 +1886,44 @@ x3dom.gfx_webgl = (function () {
                 attribs = null;
             }
         }
+        
+        shape._webgl._minFilterDic = {
+             NEAREST:                      gl.NEAREST                ,
+             LINEAR:                       gl.LINEAR                 ,
+             NEAREST_MIPMAP_NEAREST:       gl.NEAREST_MIPMAP_NEAREST ,
+             NEAREST_MIPMAP_LINEAR:        gl.NEAREST_MIPMAP_LINEAR  ,
+             LINEAR_MIPMAP_NEAREST:        gl.LINEAR_MIPMAP_NEAREST  ,
+             LINEAR_MIPMAP_LINEAR:         gl.LINEAR_MIPMAP_LINEAR   ,
+             AVG_PIXEL:                    gl.LINEAR                 ,
+             AVG_PIXEL_AVG_MIPMAP:         gl.LINEAR_MIPMAP_LINEAR   ,
+             AVG_PIXEL_NEAREST_MIPMAP:     gl.LINEAR_MIPMAP_NEAREST  ,
+             DEFAULT:                      gl.LINEAR_MIPMAP_LINEAR   ,
+             FASTEST:                      gl.NEAREST                ,
+             NEAREST_PIXEL:                gl.NEAREST                ,
+             NEAREST_PIXEL_AVG_MIPMAP:     gl.NEAREST_MIPMAP_LINEAR  ,
+             NEAREST_PIXEL_NEAREST_MIPMAP: gl.NEAREST_MIPMAP_NEAREST ,
+             NICEST:                       gl.LINEAR_MIPMAP_LINEAR   
+        };
+
+        shape._webgl._magFilterDic = {
+             NEAREST:          gl.NEAREST  ,
+             LINEAR:           gl.LINEAR   ,
+             AVG_PIXEL:        gl.LINEAR   ,
+             DEFAULT:          gl.LINEAR   ,
+             FASTEST:          gl.NEAREST  ,
+             NEAREST_PIXEL:    gl.NEAREST  ,
+             NICEST:           gl.LINEAR   
+        };
+
+       shape._webgl._boundaryModesDic = {
+             //CLAMP:             gl.CLAMP,             // NO PART OF WebGL
+             CLAMP:             gl.CLAMP_TO_EDGE,
+             CLAMP_TO_EDGE:     gl.CLAMP_TO_EDGE,
+             //CLAMP_TO_BOUNDARY: gl.CLAMP_TO_BORDER,
+             CLAMP_TO_BOUNDARY: gl.CLAMP_TO_EDGE,       // NO PART OF WebGL
+             MIRRORED_REPEAT:   gl.MIRRORED_REPEAT,
+             REPEAT:            gl.REPEAT 
+        };
     };
     
     // mainly manages rendering of backgrounds and buffer clearing
@@ -2807,13 +2845,52 @@ x3dom.gfx_webgl = (function () {
 			if(tex) {
 				sp.origChannelCount = tex._vf.origChannelCount;
 			}
-			
+
             var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
-            if (tex && tex._vf.repeatS === false) {
-                wrapS = gl.CLAMP_TO_EDGE;
+            var minFilter = gl.LINEAR, magFilter = gl.LINEAR;
+            var genMipMaps = false;
+
+            if (shape._webgl.textureFilter) {
+                minFilter = shape._webgl.textureFilter[cnt];
+                magFilter = shape._webgl.textureFilter[cnt];
             }
-            if (tex && tex._vf.repeatT === false) {
-                wrapT = gl.CLAMP_TO_EDGE;
+
+            if (tex && tex._cf.textureProperties.node !== null)
+            {
+                var texProp = tex._cf.textureProperties.node;
+
+                wrapS = shape._webgl._boundaryModesDic[texProp._vf.boundaryModeS.toUpperCase()];
+                wrapT = shape._webgl._boundaryModesDic[texProp._vf.boundaryModeT.toUpperCase()];
+
+                minFilter = shape._webgl._minFilterDic[texProp._vf.minificationFilter.toUpperCase()];
+                magFilter = shape._webgl._magFilterDic[texProp._vf.magnificationFilter.toUpperCase()];
+
+                if ( texProp._vf.generateMipMaps === true )
+                {
+                    if (minFilter == gl.NEAREST)
+                        minFilter  = gl.NEAREST_MIPMAP_NEAREST;
+                    if (minFilter == gl.LINEAR)
+                        minFilter  = gl.LINEAR_MIPMAP_LINEAR;
+                    genMipMaps = true;
+                }
+                else
+                {
+                    if ( (minFilter == gl.LINEAR_MIPMAP_LINEAR) ||
+                         (minFilter == gl.LINEAR_MIPMAP_NEAREST) )
+                        minFilter  = gl.LINEAR;
+                    if ( (minFilter == gl.NEAREST_MIPMAP_LINEAR) ||
+                         (minFilter == gl.NEAREST_MIPMAP_NEAREST) )
+                        minFilter  = gl.NEAREST;
+                }
+            }
+            else
+            {
+                if (tex && tex._vf.repeatS === false) {
+                    wrapS = gl.CLAMP_TO_EDGE;
+                }
+                if (tex && tex._vf.repeatT === false) {
+                    wrapT = gl.CLAMP_TO_EDGE;
+                }
             }
             
             if (shape._webgl.texture[cnt].textureCubeReady && tex && 
@@ -2825,26 +2902,25 @@ x3dom.gfx_webgl = (function () {
                 
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrapS);
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrapT);
-                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, magFilter);
+                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, minFilter);
+                if (genMipMaps) {
+                    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
+                }
             }
             else
             {
                 //gl.enable(gl.TEXTURE_2D);
                 gl.activeTexture(activeTex[cnt]);
                 gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[cnt]);
-				
-				if(shape._webgl.textureFilter == undefined) {
-					shape._webgl.textureFilter = [];
-					shape._webgl.textureFilter[cnt] = gl.LINEAR;
-				}
-                
+
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, shape._webgl.textureFilter[cnt]);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, shape._webgl.textureFilter[cnt]);
-                //gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
-                //gl.generateMipmap(gl.TEXTURE_2D);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter);
+                if (genMipMaps) {
+                    gl.generateMipmap(gl.TEXTURE_2D);
+                }
             }
             
             if (shape._cf.appearance.node._cf.textureTransform.node !== null)

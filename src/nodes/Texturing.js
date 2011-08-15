@@ -85,8 +85,6 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureCompression', "FASTEST");
             this.addField_SFFloat(ctx, 'texturePriority', 0);
             this.addField_SFBool(ctx, 'generateMipMaps', false);
-
-            x3dom.debug.logWarning("TextureProperties NYI");   // TODO; impl. in gfx
         }
     )
 );
