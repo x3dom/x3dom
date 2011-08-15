@@ -358,12 +358,12 @@ ul, ol {
 pre {
     background: #eee;
     padding: 7px 30px;
-    margin: 15px -30px;
+    margin: 15px 0px;
     line-height: 1.3em;
 }
 
 dl pre, blockquote pre, li pre {
-    margin-left: -60px;
+/*    margin-left: -60px; */
     padding-left: 60px;
 }
 

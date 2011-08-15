@@ -22,8 +22,11 @@ Non-Interactive movement encompasses the functionality of:
 * Upright view
 
 
+Interactive camera movement
+---------------------------
+
 Examine
--------
+~~~~~~~
 Activate this mode by pressing the ``"e"`` key.
 
 ========================    ==============================
@@ -37,7 +40,7 @@ Set center of rotation      Double-click left
 
 
 Walk
-----
+~~~~
 Activate this mode by pressing the ``"w"`` key.
 
 ========================    ==============================
@@ -48,8 +51,9 @@ Move backward               Right
 ========================    ==============================
 
 
-Fly Mode
-----------
+Fly
+~~~
+
 Activate this mode by pressing the ``"f"`` key.
 
 ========================    ==============================
@@ -61,7 +65,7 @@ Move backward               Right
 
 
 Look at
---------
+~~~~~~~
 Activate this mode by pressing the ``"l"`` key.
 
 ========================    ==============================
