@@ -6,7 +6,6 @@ Getting started
 
 Downloading X3DOM
 -----------------
-
 The recommended way of using X3DOM in your application is downloading a
 released version to your local machine or server. The code of a released
 version should be usable in all modern browsers.
@@ -44,8 +43,8 @@ not thoroughly tested. It is not stable and will probably break things. If in
 doubt, use the current release.
 
 
-Build from version control
---------------------------
+Build from revision control
+---------------------------
 **Note:** The following is for advanced developers. If you wish to use a rather
 recent version of X3DOM and do not want to tinker with Make and friends, just
 use the development build.
@@ -69,7 +68,7 @@ If you want to build your own copy of jQuery from the Git repository, you
 need to build it from the sources.
 
 
-Build Requirements
+Build requirements
 ~~~~~~~~~~~~~~~~~~
 X3DOM currently rquires the following components to be installed on your
 computer:
