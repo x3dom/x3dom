@@ -10,3 +10,4 @@ things move up to the main documentation.
 .. toctree::
 
    complex_models
+   platforms
