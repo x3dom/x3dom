@@ -2,15 +2,17 @@ User's Guide
 ------------
 
 This part of the documentation, which is mostly prose, begins with some
-background information about X3DOM, then focuses on step-by-step
-instructions for web development with X3DOM.
+basic information about X3DOM, then focuses on step-by-step
+instructions for building applications with X3DOM.
 
 .. toctree::
    :maxdepth: 2
 
    gettingstarted
+   navigation
    tutorial
    troubleshooting
+
 
 API Reference
 -------------
@@ -22,6 +24,7 @@ method, this part of the documentation is for you.
    :maxdepth: 2
 
    api
+
 
 Additional Notes
 ----------------
