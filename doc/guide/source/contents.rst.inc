@@ -8,9 +8,7 @@ instructions for web development with X3DOM.
 .. toctree::
    :maxdepth: 2
 
-   foreword
-   installation
-   quickstart
+   gettingstarted
    tutorial
    troubleshooting
 
