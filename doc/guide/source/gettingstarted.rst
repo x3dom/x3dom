@@ -25,7 +25,8 @@ it work are the following files:
 ===================  =====================================================
 
 You can `download the files from the X3DOM server <http://x3dom.org/x3dom/release/>`_
-and put them on your harddisk or your webserver.
+and put them on your harddisk or your webserver. The file naming follows
+the pattern: ``x3dom-vMAIOR.MINOR.js``.
 
 
 Development builds
@@ -73,11 +74,14 @@ Build Requirements
 X3DOM currently rquires the following components to be installed on your
 computer:
 
-* ``make``: Available on most Unix-based systems as well as cygwin
-* Python: The Python programming language is available for all major platforms
-  * ``sphinx``: A documentation tool, you will need this in order to build the
-  documentation (``easy_install sphinx``).
-* Node.js: Optionally for linting and compression
+* `Make <http://www.gnu.org/software/make/>`_: Available on most Unix-based systems as well as cygwin
+* `Python <http://python.org>`_: The Python programming language is
+  available for all major platforms
+* `Sphinx <http://sphinx.pocoo.org/>`_: A documentation tool, you will
+  need this in order to build the documentation. Sphinx is a Python
+  package and can be installed by running ``easy_install sphinx``.
+* `Node.js <http://nodejs.org/>`_: A Javascript engine, optional.
+  You can use this for linting and compressing javascript code.
 
 Once you have all prerequisites installed, you can build X3DOM::
 
@@ -87,11 +91,15 @@ The resulting build will be written to the ``dist/`` directory. Additionally
 you have the following targets::
 
     make lint            Checks for syntax problems
-    make runserver       Runs a local web server for Ajax request
+    make runserver       Runs a local web server for testing inline nodes (Ajax)
     make guide           Builds the documentation (in dist/guide/)
 
- 
+In order to restore your source tree to its original state run::
+
+   make clean
 
 
+Fore more detailed information on working with the source, please see
+the `developer wiki <http://github.com/x3dom/x3dom/wiki>`_.
 
 
