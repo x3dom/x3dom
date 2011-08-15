@@ -49,24 +49,30 @@
        
 <body>
     <h1>Non PowerOfTwo Texture</h1>
-	<p>Without scaling:</p>
-	<div class="group">
-		<x3d showStat="false" showLog="true" x="0px" y="0px" width="400px" height="300px" altImg="helloX3D-alt.png">
+    <table><tr>
+	<td><p>Without scaling:</p>
+	<div>
+		<x3d showStat="false" showLog="true" width="400px" height="300px">
 			<scene>
+                <background skyColor=".4 .5 .6"></background>
 				<viewpoint position='0 0 5' ></viewpoint>
 				<shape>
 					<appearance>
 						<texture url='media/texture/basic/nonPow2Texture.png'>
+                        <textureProperties boundaryModeS='CLAMP_TO_EDGE' boundaryModeT='CLAMP_TO_EDGE'
+                                           magnificationFilter='NEAREST_PIXEL' minificationFilter='NEAREST_PIXEL'>
+                        </textureProperties>
 					</appearance>
 					<box DEF='box'></box>
 				</shape>
 			</scene>
 		</x3d>
-	</div>
-	<p>With scaling to nextHighestPowerOfTwo:</p>
-	<div class="group">
-		<x3d showStat="false" showLog="true" x="0px" y="0px" width="400px" height="300px" altImg="helloX3D-alt.png">
+	</div></td>
+	<td><p>With scaling to nextHighestPowerOfTwo:</p>
+	<div>
+		<x3d showStat="false" showLog="true" width="400px" height="300px">
 			<scene>
+                <background skyColor=".4 .5 .6"></background>
 				<viewpoint position='0 0 5' ></viewpoint>
 				<shape>
 					<appearance>
@@ -76,8 +82,8 @@
 				</shape>
 			</scene>
 		</x3d>
-	</div>
-
+	</div></td>
+    </tr></table>
 </body>
 </html>	                
 	                	
