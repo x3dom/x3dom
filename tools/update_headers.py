@@ -5,6 +5,7 @@ import os, sys,shutil,re
 
 mydir = sys.argv[1]
 
+// DRY: build this from ../build.py:files
 x3dom_includes = '''
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>

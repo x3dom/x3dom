@@ -8,7 +8,7 @@ hints and tips here.
 
 I am not seeing anything
 ~~~~~~~~~~~~~~~~~~~~~~~~
-Assuming we are not dealing with an electrical or vision problem here:
+Assuming we are not dealing with an electrical or vision problem:
 
   * Check if your HTML and X3D code is correct
   * If you are using the HTML5 doctype make sure all X3D tags are properly 

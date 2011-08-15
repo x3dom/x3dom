@@ -3,29 +3,21 @@
                             X  3  D  O  M
 
 
-TODO
-====
-
-
 == Project
-   - Move to github
    - more infrastructure on own server
-   - new website
+   - Website design
 
 == Documentation
-   - Well, document everything (markdown or ReST, maybe Sphinx)
+   - Document everything, tutorials and help for new users
 
 == Build system
-   - get rid of src/Makfile and use toplevel Makefile throughout
    - use python for building stuff, we need it anyways, building
      needs are simple and it kills other dependencies (make, node).
-
-== Arch
-   - move backends code into src/backends/*
-   - seperate nodes in src/nodes/
 
 == QA
    - Add unit tests
    - Code audit (coding style, clearer variable declaration, etc.)
 
 == Optimization
+   - Binary XHR / Array Buffer
+   - EXI
