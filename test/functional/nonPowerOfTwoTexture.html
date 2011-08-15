@@ -46,8 +46,10 @@
     <!-- END:TEST -->
 
     <style>
-        /* Turn floating off so x3d elements
-        work with table and absolute size */
+        /*
+        Turn floating off so x3d elements
+        work with table and absolute size.
+        */
         x3d {
             float:none;
         }
@@ -59,7 +61,7 @@
     <table><tr>
 	<td><p>Without scaling:</p>
 	<div>
-		<x3d showStat="false" showLog="true">
+		<x3d showStat="false" showLog="true" width="400px" height="300px">
 			<scene>
                 <background skyColor=".4 .5 .6"></background>
 				<viewpoint position='0 0 5' ></viewpoint>
@@ -79,7 +81,7 @@
 	</div></td>
 	<td><p>With scaling to nextHighestPowerOfTwo:</p>
 	<div>
-		<x3d showStat="false" showLog="true">
+		<x3d showStat="false" showLog="true" width="400px" height="300px">
 			<scene>
                 <background skyColor=".4 .5 .6"></background>
 				<viewpoint position='0 0 5' ></viewpoint>
