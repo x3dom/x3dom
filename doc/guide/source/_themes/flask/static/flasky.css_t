@@ -406,3 +406,30 @@ a.footnote-reference:hover {
 a:hover tt {
     background: #EEE;
 }
+
+#beta_notice {
+    height: 25px;
+    font-size: 11px;
+    padding:5px 0 3px 0;
+    margin:-10px 0 0 0;
+    text-align:center;
+    background-color: #f00;
+    background-color: rgba(255,0,0, 0.7);
+    color:#fff;
+    line-height:1em;
+}
+
+#beta_notice a,
+#beta_notice a:active,
+#beta_notice a:visited {
+    color:yellow;
+    text-decoration:none;
+}
+
+#beta_notice a:hover {
+    background-color: #fff;
+    background-color: rgba(255,255,255, 0.9);
+    color: #000;
+    color: rgba(0,0,0, 0.9);
+    border-radius: 2px;
+}
