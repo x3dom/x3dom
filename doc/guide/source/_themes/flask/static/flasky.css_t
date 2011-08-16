@@ -408,9 +408,9 @@ a:hover tt {
 }
 
 #beta_notice {
-    height: 25px;
+    height: 35px;
     font-size: 11px;
-    padding:5px 0 3px 0;
+    padding:15px 0 3px 0;
     margin:-10px 0 0 0;
     text-align:center;
     background-color: #4b83c5;
