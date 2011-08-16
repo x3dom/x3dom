@@ -9,5 +9,6 @@ things move up to the main documentation.
 
 .. toctree::
 
+   cors
    complex_models
    platforms
