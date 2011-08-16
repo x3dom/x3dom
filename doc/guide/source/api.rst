@@ -22,7 +22,7 @@ the X3D element they are working on as first parameter::
         if (element == target_element) {
             // do something
         }
-    }
+    };
 
 
 ``x3dom.runtime``
@@ -38,7 +38,7 @@ the X3D element they are working on as first parameter::
 
         x3dom.runtime.ready = function(data) {
             alert("About to render something the first time");
-        }
+        };
 
     It is important to create this override before the document onLoad event
     has fired. Therefore putting it directly under the inclusion of
@@ -55,7 +55,7 @@ the X3D element they are working on as first parameter::
 
         x3dom.runtime.enterFrame = function(data) {
             alert("About to render next frame");
-        }
+        };
 
     It is also possible to override this function on a per X3D
     element basis::
