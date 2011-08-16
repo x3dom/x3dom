@@ -1,6 +1,6 @@
 .. _api:
 
-API functions
+API reference
 =============
 
 The X3DOM runtime API provides proxy object to programmatically read
