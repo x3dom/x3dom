@@ -26,7 +26,7 @@ the X3D element they are working on as first parameter::
 
 
 ``x3dom.runtime``
---------------
+-----------------
 
 ..  js:function:: ready(element)
 
