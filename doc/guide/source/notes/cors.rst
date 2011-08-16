@@ -4,14 +4,13 @@
 Loading resources from external servers
 ========================================
 
-Sometimes it is desirable to load resources like textures
-from other locations than your web server. The most common
-use case being a serving textures from a
-`CDN <http://en.wikipedia.org/wiki/Content_delivery_network>`_.
-While technically not a problem, there are security precautions
+Sometimes it is desirable to load resources, like textures, from other
+locations than your web server. The most common use case being serving
+textures from a `CDN <http://en.wikipedia.org/wiki/Content_delivery_network>`_.
+While technically not a problem, there are security mechanisms
 in place to prevent injection of malicious code into your application.
-Browser vendors started to prevent loading resources from other locations
-unless these resources are not marked safe by the foreign web server.
+Browser vendors started to block loading of resources originating from
+domains unless these resources marked safe by the foreign web server.
 
 The corresponding W3C specification is called
 `Cross-Origin Resource Sharing <http://www.w3.org/TR/cors/>`_
