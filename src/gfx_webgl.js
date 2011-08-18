@@ -638,7 +638,8 @@ x3dom.gfx_webgl = (function () {
 				}
 				
 				shader += "uniform sampler2D GI_normalTexture;";
-				shader += "uniform sampler2D GI_texCoordTexture;";	
+				shader += "uniform sampler2D GI_texCoordTexture;";
+				shader += "uniform sampler2D GI_colorTexture;";	
 			}
 
             if(vertexColor){
@@ -721,6 +722,11 @@ x3dom.gfx_webgl = (function () {
 					shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);";
 				}
 				
+				//Color
+				if(vertexColor) {
+					shader += "vec3 fragColor = texture2D( GI_colorTexture, IG_texCoord ).rgb;";
+				}
+				
 				//PointSize
 				shader += "gl_PointSize = 2.0;";
 			} else {
@@ -730,11 +736,10 @@ x3dom.gfx_webgl = (function () {
 				}
 				shader += "vec3 vertPosition = position;";
 				shader += "gl_PointSize = 2.0;";
+				if(vertexColor){
+					shader += "fragColor = color;";
+				}
 			}
-			
-            if(vertexColor){
-                shader += "fragColor = color;";
-            }
             
 			shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;";
             
@@ -1590,7 +1595,7 @@ x3dom.gfx_webgl = (function () {
 							that._webgl.indexTextureHeight = image.height;
 						}
 						
-						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord") {
+						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord" ||saveSize == "color") {
 							that._webgl.textureFilter[unit] = gl.NEAREST;
 						}else{
 							that._webgl.textureFilter[unit] = gl.LINEAR;
@@ -1665,6 +1670,11 @@ x3dom.gfx_webgl = (function () {
 				if(texCoordTexture) {
 					shape.updateTexture(texCoordTexture, GI_texUnit++, "texCoord");
 				}
+				
+				var colorTexture = shape._cf.geometry.node.getColorTexture();
+				if(colorTexture) {
+					shape.updateTexture(colorTexture, GI_texUnit++, "color");
+				}
 			}
             
             
@@ -1699,6 +1709,8 @@ x3dom.gfx_webgl = (function () {
 				if( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
 					if(shape._cf.geometry.node._vf.primType.toUpperCase() == 'POINTS') {
 						shape._webgl.primType = gl.POINTS;
+					} else if(shape._cf.geometry.node._vf.primType.toUpperCase() == 'TRIANGLESTRIP'){
+						shape._webgl.primType = gl.TRIANGLE_STRIP;
 					} else {
 						shape._webgl.primType = gl.TRIANGLES;
 					}
@@ -1761,7 +1773,7 @@ x3dom.gfx_webgl = (function () {
                         fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
                         shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
                     }
-                } else if (shape._cf.geometry.node._mesh._colors[0].length > 0) {
+                } else if (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture()) {
                     
                     var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
                 
@@ -2974,6 +2986,12 @@ x3dom.gfx_webgl = (function () {
 				if(shape._cf.geometry.node.getTexCoordTexture()) {
 					if(!sp.GI_texCoordTexture) {
 						sp.GI_texCoordTexture = GI_texUnit++;
+					}
+				}
+				
+				if(shape._cf.geometry.node.getColorTexture()) {
+					if(!sp.GI_colorTexture) {
+						sp.GI_colorTexture = GI_texUnit++;
 					}
 				}
 			}
