@@ -520,11 +520,15 @@ x3dom.registerNodeType(
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
 			this.addField_SFFloat(ctx, 'vertexCount', 0);
 			this.addField_SFString(ctx, 'primType', 'TRIANGLES');
+			this.addField_SFFloat(ctx, 'numColorComponents', 3);
 			
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
+			
+			this._mesh._numColComponents = this._vf.numColorComponents;
 			
 			//TODO check if GPU-Version is supported (Flash, etc.)
 			//Dummy mesh generation only need for GPU-Version
@@ -663,6 +667,24 @@ x3dom.registerNodeType(
             {
                 if(this._cf.texCoord.node) {
                     return this._cf.texCoord.node._vf.url;
+                } else {
+                    return null;
+                }
+            },
+			
+			getColorTexture: function()
+            {
+                if(this._cf.color.node) {
+                    return this._cf.color.node;
+                } else {
+                    return null;
+                }
+            },
+			
+			getColorTextureURL: function()
+            {
+                if(this._cf.color.node) {
+                    return this._cf.color.node._vf.url;
                 } else {
                     return null;
                 }
