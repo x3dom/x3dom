@@ -10,6 +10,54 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+/* ### Plane ### */
+x3dom.registerNodeType(
+    "Plane",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.Plane.superClass.call(this, ctx);
+
+            this.addField_SFVec2f(ctx, 'size', 2, 2);
+            this.addField_SFVec2f(ctx, 'subdivision', 1, 1);    // TODO!
+
+            var sx = this._vf.size.x, sy = this._vf.size.y;
+            var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
+
+			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby;
+
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Plane from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				sx /= 2; sy /= 2;
+
+				this._mesh._positions[0] = [
+					-sx,-sy, 0,  sx, -sy, 0,   sx, sy, 0,   -sx,sy, 0
+				];
+				this._mesh._normals[0] = [
+					0,0,1,  0,0,1,   0,0,1,   0,0,1
+				];
+				this._mesh._texCoords[0] = [
+					0,0, 0,1, 1,1, 1,0
+				];
+				this._mesh._indices[0] = [
+					0,1,2, 2,3,0
+				];
+
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
+        }
+    )
+);
+
 /* ### Box ### */
 x3dom.registerNodeType(
     "Box",

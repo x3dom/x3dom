@@ -41,6 +41,14 @@ x3dom.registerNodeType(
                 else {
                     return false;
                 }
+            },
+
+            getColorTexture: function() {
+                return null;
+            },
+
+			getColorTextureURL: function() {
+                return null;
             }
         }
     )
