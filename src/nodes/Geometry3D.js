@@ -33,21 +33,37 @@ x3dom.registerNodeType(
 			}
 			else
 			{
-				sx /= 2; sy /= 2;
+                var x = 0, y = 0;
+                var xstep = sx / subx;
+                var ystep = sy / suby;
 
-				this._mesh._positions[0] = [
-					-sx,-sy, 0,  sx, -sy, 0,   sx, sy, 0,   -sx,sy, 0
-				];
-				this._mesh._normals[0] = [
-					0,0,1,  0,0,1,   0,0,1,   0,0,1
-				];
-				this._mesh._texCoords[0] = [
-					0,0, 0,1, 1,1, 1,0
-				];
-				this._mesh._indices[0] = [
-					0,1,2, 2,3,0
-				];
+                sx /= 2; sy /= 2;
 
+                for (y = 0; y <= suby; y++) {
+                    for (x = 0; x <= subx; x++) {
+                        this._mesh._positions[0].push(x * xstep - sx);
+						this._mesh._positions[0].push(y * ystep - sy);
+						this._mesh._positions[0].push(0);
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(1);
+						this._mesh._texCoords[0].push(x / subx);
+						this._mesh._texCoords[0].push(y / suby);
+                    }
+                }
+
+                for (y = 1; y <= suby; y++) {
+                    for (x = 0; x < subx; x++) {
+                        this._mesh._indices[0].push((y - 1) * (subx + 1) + x);
+                        this._mesh._indices[0].push((y - 1) * (subx + 1) + x + 1);
+                        this._mesh._indices[0].push(y * (subx + 1) + x);
+
+                        this._mesh._indices[0].push(y * (subx + 1) + x);
+                        this._mesh._indices[0].push((y - 1) * (subx + 1) + x + 1);
+                        this._mesh._indices[0].push(y * (subx + 1) + x + 1);
+                    }
+                }
+                
 				this._mesh._invalidate = true;
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
