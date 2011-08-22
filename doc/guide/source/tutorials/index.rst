@@ -1,4 +1,4 @@
-.. _notes:
+.. _tutorials:
 
 Tutorials
 =========
@@ -11,3 +11,4 @@ of different kinds, but they still feature everything you need to get started.
 .. toctree::
 
    firststeps
+   styling
