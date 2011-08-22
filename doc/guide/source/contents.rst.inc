@@ -8,15 +8,18 @@ instructions for building applications with X3DOM.
    :maxdepth: 2
 
    gettingstarted
+   tutorials/index
+
    navigation
-   tutorial
    configuration
    api
+
    troubleshooting
 
 
-Additional Notes
-----------------
+
+Notes & How-Tos
+---------------
 Design notes, legal information and changelog are here for the interested.
 
 .. toctree::
