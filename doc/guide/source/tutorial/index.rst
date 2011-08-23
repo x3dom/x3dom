@@ -34,8 +34,7 @@ of different kinds, but they still feature everything you need to get started.
    :maxdepth: 1
 
    flash_mashup
-   lightbox_historical
-   ui_elements
+   historical_objects
 
 
 **Elsewhere**
