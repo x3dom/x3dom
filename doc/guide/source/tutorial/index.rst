@@ -16,3 +16,4 @@ of different kinds, but they still feature everything you need to get started.
    imagesoundmovie
    dataconversion
    blender_export
+   max_export
