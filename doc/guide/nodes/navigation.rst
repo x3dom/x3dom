@@ -1,4 +1,4 @@
-.. _navigation:
+.. _navigation_node:
 
 Navigation
 ==========
