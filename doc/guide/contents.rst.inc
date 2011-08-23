@@ -1,5 +1,5 @@
-User's Guide
-------------
+Guide
+-----
 This part of the documentation, which is mostly prose, begins with some
 basic information about X3DOM, then focuses on step-by-step
 instructions for building applications with X3DOM.
