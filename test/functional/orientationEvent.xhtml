@@ -69,6 +69,12 @@
 			</Scene>
 		</X3D>
 	</div>
+	<div id="accEvt" class="group">
+		Waiting for raw accelerometer data... (no event was triggered).
+	</div>
+	<div id="accEvt" class="group">
+		&nbsp;
+	</div>
 	
 	<script type="text/javascript"><![CDATA[
     function handleOrientation(o) {
@@ -80,6 +86,25 @@
     }
     
     window.addEventListener("MozOrientation", handleOrientation, true);
+	
+	
+	function showRotationAcc(evt) {
+		var d = document.getElementById('accEvt');
+		
+		var o = evt.accelerationIncludingGravity ? evt.accelerationIncludingGravity : evt. acceleration;
+		
+		d.innerHTML = 'Acc: '+o.x+' '+o.y+' '+o.z;
+	}
+	
+	window.addEventListener("devicemotion", showRotationAcc, true);
+	
+	function showRotationGyr(o) {
+		var d = document.getElementById('accEvt');
+		
+		d.innerHTML = 'Gyr: '+o.alpha+' '+o.beta+' '+o.gamma;
+	}
+	
+	window.addEventListener("deviceorientation", showRotationGyr, true);
 	]]></script>
 
 </body>
