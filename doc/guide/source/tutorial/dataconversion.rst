@@ -1,7 +1,5 @@
 .. _dataconversion:
 
-.. This part of the tutorial appears to be incomplete.
-
 Generic 3D data conversion
 ===========================
 
