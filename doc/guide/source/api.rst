@@ -1,7 +1,7 @@
 .. _api:
 
-API reference
-=============
+API
+===
 
 The X3DOM runtime API provides proxy object to programmatically read
 and modify runtime parameters. The runtime proxy is attached to each
@@ -25,8 +25,8 @@ the X3D element they are working on as first parameter::
     };
 
 
-``x3dom.runtime``
------------------
+Runtime
+-------
 
 ..  js:function:: ready(element)
 

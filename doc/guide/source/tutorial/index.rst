@@ -1,7 +1,7 @@
-.. _tutorials:
+.. _tutorial:
 
-Tutorials
-=========
+Tutorial
+========
 
 You want to develop an application with X3DOM? Here you have the chance to 
 learn that by example. In these tutorials we will create simple applications 
