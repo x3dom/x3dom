@@ -8,13 +8,24 @@ instructions for building applications with X3DOM.
    :maxdepth: 2
 
    gettingstarted
-   tutorials/index
-
+   
+   tutorial/index
+   
    navigation
    configuration
-   api
 
    troubleshooting
+
+
+API Reference
+--------------
+
+If you are looking for information on a specific function, class or method, this part of the documentation is for you.
+
+.. toctree::
+   :maxdepth: 2
+   
+   api
 
 
 
