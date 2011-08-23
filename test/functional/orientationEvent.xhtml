@@ -69,10 +69,10 @@
 			</Scene>
 		</X3D>
 	</div>
-	<div id="accEvt" class="group">
+	<div id="accEvtA" class="group">
 		Waiting for raw accelerometer data... (no event was triggered).
 	</div>
-	<div id="accEvt" class="group">
+	<div id="accEvtG" class="group">
 		&nbsp;
 	</div>
 	
@@ -89,7 +89,7 @@
 	
 	
 	function showRotationAcc(evt) {
-		var d = document.getElementById('accEvt');
+		var d = document.getElementById('accEvtA');
 		
 		var o = evt.accelerationIncludingGravity ? evt.accelerationIncludingGravity : evt. acceleration;
 		
@@ -99,7 +99,7 @@
 	window.addEventListener("devicemotion", showRotationAcc, true);
 	
 	function showRotationGyr(o) {
-		var d = document.getElementById('accEvt');
+		var d = document.getElementById('accEvtG');
 		
 		d.innerHTML = 'Gyr: '+o.alpha+' '+o.beta+' '+o.gamma;
 	}
