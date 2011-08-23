@@ -48,7 +48,7 @@ The result: `<http://x3dom.org/x3dom/example/blenderExport/horse.html>`_
 
 The main difference between the two versions is the handling of Viewpoint nodes (as cameras are called in X3D). If you use the two-file solution, you get a spec-compliant standard camera, while the viewpoints in the included data are not available at the beginning. In the one-file solution you already have the Viewpoint nodes from Blender at the start time. Just copy one of the viewpoints into the main HTML page to correct this behavior if you want.
 
-Here is a `zip archive </_static/tutorial/blender_export/blender-horse.zip>` (272kb) with all files used in this tutorial including blender model, texture, and x3d model.
+Here is a `zip archive <../_static/tutorial/blender_export/blender-horse.zip>`_  (272kb) with all files used in this tutorial including blender model, texture, and x3d model.
 
 
 .. _Blender: http://www.blender.org/
