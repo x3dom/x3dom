@@ -12,3 +12,4 @@ of different kinds, but they still feature everything you need to get started.
 
    firststeps
    styling
+   imagesoundmovie
