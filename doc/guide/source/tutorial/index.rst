@@ -30,11 +30,17 @@ of different kinds, but they still feature everything you need to get started.
    
 **Application prototypes**
 
+.. toctree::
+   :maxdepth: 1
+
+   flash_mashup
+   lightbox_historical
+   ui_elements
 
 
 **Elsewhere**
 
-If you can read german, there is also some german  available on our website:
+If you can read german, there is also some german content available on our website:
 
    * `Beispiele aus dem iX-Tutorial <http://www.x3dom.org/iX/>`_
    * `Überblick und einführende Beispiele <http://www.x3dom.org/school/>`_
