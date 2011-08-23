@@ -17,3 +17,4 @@ of different kinds, but they still feature everything you need to get started.
    dataconversion
    blender_export
    max_export
+   maya_export
