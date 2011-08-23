@@ -8,8 +8,11 @@ learn that by example. In these tutorials we will create simple applications
 of different kinds, but they still feature everything you need to get started.
 
 .. toctree::
+   :maxdepth: 2
+
 
    firststeps
    styling
    imagesoundmovie
    dataconversion
+   blender_export
