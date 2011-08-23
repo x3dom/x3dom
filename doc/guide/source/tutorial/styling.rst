@@ -39,7 +39,7 @@ We are going to use the box example scene established in the :ref:`firststeps` t
 Rendering this document in a `WebGL compatible browser <http://www.x3dom.org/?page_id=9>`_, results in a look similar to this:
 
 
-.. image:: /_static/tutorials/styling/styling1.png
+.. image:: /_static/tutorial/styling/styling1.png
 
 
 Basic styling
@@ -75,12 +75,12 @@ We need to remove the ``width`` and ``height`` attributes as well because they t
 
 The result looks something like this:
  
-.. image:: /_static/tutorials/styling/styling2.png
+.. image:: /_static/tutorial/styling/styling2.png
 
 Note that the dimensions are relative now and adapted when resizing the browser window.
 
-* `View demo video <../_static/tutorials/styling/styling2.mov>`_
-* `View live example <../_static/tutorials/styling/styling2.html>`_
+* `View demo video <../_static/tutorial/styling/styling2.mov>`_
+* `View live example <../_static/tutorial/styling/styling2.html>`_
 
 
 Adding interaction
@@ -125,7 +125,7 @@ Semantically we are fine, but now we need to style the button so it floats over 
 
 Looking at our example in a browser reveals that there is a "Zoom" button floating over the x3d element in the top left corner.
 
-.. image:: /_static/tutorials/styling/styling3.png
+.. image:: /_static/tutorial/styling/styling3.png
 
 
 ### A button alone isn’t interaction
@@ -199,10 +199,10 @@ The last bit in the puzzle is another style rule which resets margin and padding
 
 Finally the fully zoomed result looks like this: 
 
-.. image:: /_static/tutorials/styling/styling4.png
+.. image:: /_static/tutorial/styling/styling4.png
 
-* `See how it works (video) <../_static/tutorials/styling/styling4.mov>`_
-* `Try it for yourself (html) <../_static/tutorials/styling/styling4.html>`_
+* `See how it works (video) <../_static/tutorial/styling/styling4.mov>`_
+* `Try it for yourself (html) <../_static/tutorial/styling/styling4.html>`_
 
 
 You will also find another example which also styles other properties `here <http://www.x3dom.org/x3dom/example/x3dom_x3dElementCSSIntegration.html>`_.
