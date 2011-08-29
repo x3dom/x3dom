@@ -12,3 +12,4 @@ things move up to the main documentation.
    cors
    complex_models
    platforms
+   compatibility_matrix
