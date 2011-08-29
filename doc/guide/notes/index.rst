@@ -13,3 +13,4 @@ things move up to the main documentation.
    complex_models
    platforms
    compatibility_matrix
+   faq
