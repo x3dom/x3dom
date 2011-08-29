@@ -150,16 +150,17 @@ changelog:
 	@python ${TOOL_DIR}/git2cl.py
 #@svn log --verbose --xml https://x3dom.svn.sourceforge.net/svnroot/x3dom/trunk | xsltproc --nowrite --nomkdir --nonet tools/svn2cl.xsl - > ChangeLog
 
-docs:
-	@@echo "Generating API documentation"
-	@@if test ! -d "${DOC_DIR}/api"; then \
-		mkdir ${DOC_DIR}/api; \
-	fi
-	${TOOL_DIR}/natural-docs/NaturalDocs -i ${SRC_DIR} -xi ${SRC_DIR}/flashbackend -o HTML ${DOC_DIR}/api -p ${TOOL_DIR}/natural-docs-config
+docs: ${DIST_DIR} guide
 
 guide:
-	@echo "Building guide...."
+	@echo "Building HTML guide...."
 	cd doc/guide; make html; cd ../..
+
+	@echo "Building SINGLEHTML guide...."
+	cd doc/guide; make singlehtml; cd ../..
+
+# @echo "Building PDF guide...."
+# cd doc/guide; make latexpdf; cd ../..
 
 deploy:
 	@@echo "Updating x3dom.org... (requires you set up public key auth and a ssh config file)"
