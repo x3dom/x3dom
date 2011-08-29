@@ -1,4 +1,4 @@
-.. _api:
+.. _runtime_api:
 
 API
 ===
