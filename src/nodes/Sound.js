@@ -74,8 +74,6 @@ x3dom.registerNodeType(
 								if(navigator.appName != "Microsoft Internet Explorer") {
 									document.body.appendChild(newNode);
 								}
-								
-                               
 
                                 var startAudio = function() {
                                     newNode.play();
@@ -120,6 +118,8 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.AudioClip.superClass.call(this, ctx);
 
             this.addField_MFString(ctx, 'url', []);
+            this.addField_SFBool(ctx, 'enabled', true);
+            this.addField_SFBool(ctx, 'loop', false);
 
             this._audio = null;
         },
@@ -159,6 +159,45 @@ x3dom.registerNodeType(
 
                 this._audio.addEventListener("canplaythrough", startAudio, true);
                 this._audio.addEventListener("ended", audioDone, true);
+            },
+
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName === "enabled")
+                {
+                    if (this._vf.enabled === true)
+                    {
+                        this._audio.play();
+                    }
+                    else
+                    {
+                        this._audio.pause();
+                    }
+                }
+                else if (fieldName === "loop")
+                {
+                    if (this._vf.loop === true)
+                    {
+                        this._audio.play();
+                    }
+                }
+                else if (fieldName === "url")
+                {
+                    this._audio.pause();
+                    while (this._audio.hasChildNodes())
+                    {
+                        this._audio.removeChild(this._audio.firstChild);
+                    }
+                    
+                    for (var i=0; i<this._vf.url.length; i++)
+                    {
+                        var audioUrl = this._nameSpace.getURL(this._vf.url[i]);
+                        x3dom.debug.logInfo('Adding sound file: ' + audioUrl);
+                        var src = document.createElement('source');
+                        src.setAttribute('src', audioUrl);
+                        this._audio.appendChild(src);
+                    }
+                }
             }
         }
     )
