@@ -1692,7 +1692,9 @@ x3dom.gfx_webgl = (function () {
                                           ['vs-x3d-default', 'fs-x3d-default']);
                 }
             }
-            else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) {
+            else if ( (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) ||
+					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D)) )
+			{
                 shape._webgl.primType = gl.LINES;
                 
                 if (shape._webgl.colors[0].length) {
