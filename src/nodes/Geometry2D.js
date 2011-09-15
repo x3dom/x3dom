@@ -448,6 +448,47 @@ x3dom.registerNodeType(
             this.addField_MFVec2f(ctx, 'vertices', []);
             this.addField_SFBool(ctx, 'solid', false);
             this.addField_SFBool(ctx, 'lit', true);
+			
+			this.addField_MFVec2f(ctx, 'lineSegments', []);
+            this.addField_SFBool(ctx, 'lit', false);
+			
+			var x = this._vf.vertices[0].x;
+			var y = this._vf.vertices[0].y;
+         	
+			var geoCacheID = 'TriangleSet2D_'+x+'-'+y;
+
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using TriangleSet2D from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				for (var i = 0; i < this._vf.vertices.length ; i++) {
+					x = this._vf.vertices[i].x;
+					y = this._vf.vertices[i].y;
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+					
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(10);
+					
+					this._mesh._texCoords[0].push(i);
+					this._mesh._texCoords[0].push(i+2);
+				}
+		
+				for (var j = 0; j < this._vf.vertices.length; j++) {
+					this._mesh._indices[0].push(j);	
+				}
+				this._mesh._numTexComponents = 2;
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         },
         {
             nodeChanged: function() {},
