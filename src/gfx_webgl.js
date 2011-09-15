@@ -1693,7 +1693,8 @@ x3dom.gfx_webgl = (function () {
                 }
             }
             else if ( (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) ||
-					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D)) )
+					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D)) ||
+					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Arc2D)))
 			{
                 shape._webgl.primType = gl.LINES;
                 
