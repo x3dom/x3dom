@@ -1684,8 +1684,7 @@ x3dom.gfx_webgl = (function () {
                 //TODO; remove these hacky thousands of shaders!!!
                 if (shape._webgl.colors[0].length) {
                     shape._webgl.shader = this.getShaderProgram(gl, 
-                                          ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
-                    
+                                          ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);    
                 }
                 else {
                     shape._webgl.shader = this.getShaderProgram(gl, 
@@ -1694,7 +1693,8 @@ x3dom.gfx_webgl = (function () {
             }
             else if ( (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) ||
 					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D)) ||
-					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Arc2D)))
+					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Arc2D)) || 
+					  (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polyline2D)))
 			{
                 shape._webgl.primType = gl.LINES;
                 
