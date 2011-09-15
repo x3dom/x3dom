@@ -1678,7 +1678,8 @@ x3dom.gfx_webgl = (function () {
 			}
             
             
-            if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
+            if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet) || 
+				x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polypoint2D)) {
                 shape._webgl.primType = gl.POINTS;
                 
                 //TODO; remove these hacky thousands of shaders!!!
