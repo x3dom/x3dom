@@ -317,10 +317,53 @@ x3dom.registerNodeType(
 
             this.addField_MFVec2f(ctx, 'point', []);
             this.addField_SFBool(ctx, 'lit', false);
+			
+			var x = this._vf.point[0].x;
+			var y = this._vf.point[0].y;
+         	
+			var geoCacheID = 'Polypoint2D_'+x+'-'+y;
+
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Polypoint2D from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				for (var i = 0; i < this._vf.point.length ; i++) {
+					x = this._vf.point[i].x;
+					y = this._vf.point[i].y;
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+				}	
+				
+				this._mesh._invalidate = true;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         },
         {
             nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            fieldChanged: function(fieldName) {
+				this._mesh._positions[0] = [];
+				this._mesh._indices[0] =[];
+				for (var i = 0; i < this._vf.point.length ; i++) {
+					x = this._vf.point[i].x;
+					y = this._vf.point[i].y;
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+				}	
+				
+				this._mesh._invalidate = true;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+				Array.forEach(this._parentNodes, function (node) {
+                   	node._dirty.positions = true;
+                });	
+			}
         }
     )
 );
