@@ -246,10 +246,63 @@ x3dom.registerNodeType(
 
             this.addField_MFVec2f(ctx, 'lineSegments', []);
             this.addField_SFBool(ctx, 'lit', false);
+			
+			var x = this._vf.lineSegments[0].x;
+			var y = this._vf.lineSegments[0].y;
+         	
+			var geoCacheID = 'Polyline2D_'+x+'-'+y;
+
+			if( x3dom.geoCache[geoCacheID] != undefined )
+			{
+				x3dom.debug.logInfo("Using Polyline2D from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			}
+			else
+			{
+				for (var i = 0; i < this._vf.lineSegments.length ; i++) {
+					x = this._vf.lineSegments[i].x;
+					y = this._vf.lineSegments[i].y;
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+				}
+				for (var j = 0; j < this._vf.lineSegments.length-1; j++) {
+					this._mesh._indices[0].push(j);
+					this._mesh._indices[0].push(j + 1);		
+				}
+				
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 2;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         },
         {
             nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            fieldChanged: function(fieldName) {
+				this._mesh._positions[0] = [];
+				this._mesh._indices[0] =[];
+				for (var i = 0; i < this._vf.lineSegments.length ; i++) {
+					x = this._vf.lineSegments[i].x;
+					y = this._vf.lineSegments[i].y;
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+				}
+				for (var j = 0; j < this._vf.lineSegments.length-1; j++) {
+					this._mesh._indices[0].push(j);
+					this._mesh._indices[0].push(j + 1);		
+				}
+				
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 2;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+				Array.forEach(this._parentNodes, function (node) {
+                   	node._dirty.positions = true;
+                });
+			}
         }
     )
 );
