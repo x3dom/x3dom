@@ -38,3 +38,27 @@ caused by improperly closed tags (see above).
     a sensible choice (also
     `read this <http://www.joelonsoftware.com/articles/Unicode.html>`_).
 
+
+
+How to ask Questions
+--------------------    
+In order to analyze and debug your problem, please be more specific about the nature of your problem. Before you sit down and write a mail or forum post, it is helpful to ask yourself these questions and include this info in your question/report:
+
+  * What exactly is not working?
+  * Is it really an error or are you just unhappy with aesthetics?
+  * What errors do you get?
+  * Can you reproduce this behavior in an isolated testcase?
+  * What did you try to solve your problem?
+
+The following info is genuinely helpful in analyzing your problem:
+
+  * OS, Version, Architecture
+  * GPU type, driver versions
+  * Output of about:gpu in Chrome
+  * Browsers and versions you tried and the results
+  * Log output of X3DOM (javascript console)
+  * You can generate some of the information here http://doesmybrowsersupportwebgl.com/
+
+Also note that hot-linking x3dom.css/js should only be used for testing and development. Once you deploy your site, it is best to copy those files over to your server or a CDN. We can not guarantee that those URLs are stable and our network bandwidth is rather limited.
+
+This his also a helpful page and a good read as well: http://catb.org/~esr/faqs/smart-questions.html
