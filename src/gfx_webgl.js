@@ -18,7 +18,8 @@ x3dom.gfx_webgl = (function () {
         this.canvas = canvas;
         this.name = name;
         this.cached_shader_programs = {};
-        this.cached_shaders = {};   
+        this.cached_shaders = {};
+		//this.imageLoadManager = new x3dom.ImageLoadManager();
     }
 
     Context.prototype.getName = function() {
@@ -1575,6 +1576,9 @@ x3dom.gfx_webgl = (function () {
                     var image = new Image();
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
                     that._nameSpace.doc.downloadCount += 1;
+					
+					//TODO
+					//this.imageLoadManager.add(tex._vf.priority, image, tex._nameSpace.getURL(tex._vf.url[0]));
 
                     image.onload = function()
                     {           
@@ -1584,6 +1588,9 @@ x3dom.gfx_webgl = (function () {
                         
                         that._nameSpace.doc.needRender = true;
                         that._nameSpace.doc.downloadCount -= 1;
+						
+						//that.imageLoadManager.activeDownloads--; 
+						//that.imageLoadManager.load();
                         
 						that._webgl.texture[unit] = texture;
 						
