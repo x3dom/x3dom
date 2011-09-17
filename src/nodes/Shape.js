@@ -163,7 +163,8 @@ x3dom.registerNodeType(
                 indexes: true,
                 texture: true,
 				material: true,
-				text: true
+				text: true,
+				shader: true
             };
         },
         {

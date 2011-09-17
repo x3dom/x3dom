@@ -1069,7 +1069,7 @@ x3dom.gfx_webgl = (function () {
             shape._webgl.lightsAndShadow = useLightingFunc(viewarea);
             
             var needFullReInit = (shape._webgl.lightsAndShadow[0] != oldLightsAndShadow[0] || 
-                                  shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1]);
+                                  shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1] || shape._dirty.shader);
 
             // TODO; do same for texcoords etc.!
             if (shape._dirty.colors === true && shape._webgl.shader.color === undefined)
@@ -1767,6 +1767,7 @@ x3dom.gfx_webgl = (function () {
                         g_shaders['fs-x3d-HACK'].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
                     
                         shape._webgl.shader = getDefaultShaderProgram(gl, 'HACK');
+						shape._dirty.shader = false;
                         //END OF HACK
                     }
                 }

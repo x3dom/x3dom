@@ -249,6 +249,12 @@ x3dom.registerNodeType(
 
                     func.call(this, ctx, fieldName);
                 }
+				
+				Array.forEach(this._parentNodes, function (app) {
+					Array.forEach(app._parentNodes, function (shape) {
+						shape._dirty.shader = true;
+					});
+				});	
             },
 
             fieldChanged: function(fieldName)
@@ -288,7 +294,12 @@ x3dom.registerNodeType(
                         break;
                     }
                 }
-            }
+            },
+			
+			parentAdded: function()
+			{
+				this._parentNodes[0].nodeChanged();
+			}
         }
     )
 );
@@ -307,6 +318,7 @@ x3dom.registerNodeType(
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                                this._vf.type.toLowerCase() == 'fragment');
 
+			
             if (!this._vf.url.length && ctx.xmlNode) {
                 var that = this;
                 try {
@@ -316,7 +328,7 @@ x3dom.registerNodeType(
                 }
                 catch(e) {
                     Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
-                        if (childDomNode.nodeType === 3) {
+                        if (childDomNode.nodeType === 4) {
                             that._vf.url.push(childDomNode.data);
                             //x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
                         }
@@ -326,6 +338,20 @@ x3dom.registerNodeType(
             }
         },
         {
+			nodeChanged: function()
+            {
+
+			},
+			
+			fieldChanged: function(fieldName)
+            {
+
+			},
+			
+			parentAdded: function()
+			{	
+				this._parentNodes[0].nodeChanged();
+			}
         }
     )
 );
