@@ -1574,6 +1574,7 @@ x3dom.gfx_webgl = (function () {
                     texture = gl.createTexture();
                     
                     var image = new Image();
+					image.crossOrigin = 'anonymous';
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
                     that._nameSpace.doc.downloadCount += 1;
 					
@@ -1801,7 +1802,7 @@ x3dom.gfx_webgl = (function () {
                 }
             }
         }
-        
+        shape._dirty.shader = false;
         var sp = shape._webgl.shader;
         
         shape._webgl.buffers = [];
