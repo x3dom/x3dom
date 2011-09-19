@@ -5,7 +5,7 @@ import os, sys,shutil,re
 
 mydir = sys.argv[1]
 
-// DRY: build this from ../build.py:files
+# DRY: build this from ../build.py:files
 x3dom_includes = '''
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
@@ -40,6 +40,7 @@ x3dom_includes = '''
 <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 '''
 

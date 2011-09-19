@@ -36,7 +36,7 @@ If you are looking for information on a specific function, class or method, this
    :maxdepth: 2
    
    api
-.. nodes/index
+   nodes/index
 
 
 Notes & How-Tos
