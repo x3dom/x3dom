@@ -3,8 +3,14 @@
 Nodes
 =====
 
-Please visit the `NodeTypeTree Test <http://x3dom.org/x3dom/test/functional/dumpNodeTypeTree.html>`_
-and click on a Node to view the related X3D specification.
+Please visit the `Node Type Tree <http://x3dom.org/x3dom/test/functional/dumpNodeTypeTree.html>`_
+document and click on a Node to view the related X3D specification.
+
+.. warning::
+
+    Not all nodes and fully implemented right now.
+
+
 
 
 .. This section of the X3DOM reference documentation needs work. If you would
