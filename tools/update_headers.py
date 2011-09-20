@@ -11,6 +11,7 @@ x3dom_includes = '''
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
 <script type="text/javascript" src="../../src/lang/Properties.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
