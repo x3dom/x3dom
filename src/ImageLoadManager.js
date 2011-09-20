@@ -46,9 +46,10 @@ x3dom.ImageLoadManager = function() {
 	
 	this.load = function() {
 		var that = this;
-		while(this.activeDownloads <= 10 && this.heap.length()) {
+		while(this.activeDownloads <= 10 && this.heap.length) {
 			this.activeDownloads++;
 			var item = this.heap.pop();
+			item.image.crossOrigin = '';
 			item.image.src = item.url;
 		}
 	};
