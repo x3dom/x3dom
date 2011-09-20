@@ -1574,12 +1574,12 @@ x3dom.gfx_webgl = (function () {
                     texture = gl.createTexture();
                     
                     var image = new Image();
-					image.crossOrigin = 'anonymous';
+					image.crossOrigin = '';
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
                     that._nameSpace.doc.downloadCount += 1;
 					
 					//TODO
-					//this.imageLoadManager.add(tex._vf.priority, image, tex._nameSpace.getURL(tex._vf.url[0]));
+					//context.imageLoadManager.push(tex._vf.priority, image, tex._nameSpace.getURL(tex._vf.url[0]));
 
                     image.onload = function()
                     {           
@@ -1590,8 +1590,8 @@ x3dom.gfx_webgl = (function () {
                         that._nameSpace.doc.needRender = true;
                         that._nameSpace.doc.downloadCount -= 1;
 						
-						//that.imageLoadManager.activeDownloads--; 
-						//that.imageLoadManager.load();
+						//context.imageLoadManager.activeDownloads--; 
+						//context.imageLoadManager.load();
                         
 						that._webgl.texture[unit] = texture;
 						
@@ -1775,34 +1775,39 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
                 else {
-                /** BEGIN STANDARD MATERIAL */
-                if (tex) {
-                    if (shape._cf.appearance.node._cf.textureTransform.node === null) {
-                        vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
-                        fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
-                        shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
-                    } else {
-                        vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
-                        fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
-                        shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
-                    }
-                } else if (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture()) {
-                    
-                    var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
-                
-                    vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
-                    fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
-                    shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
-                } else {
-                    vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
-                    fsID = this.generateFS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
-                    shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
-                }
-                /** END STANDARD MATERIAL */
+					/** BEGIN STANDARD MATERIAL */
+					if (tex) {
+						if (shape._cf.appearance.node._cf.textureTransform.node === null) {
+							vsID = this.generateVS(viewarea, false, true, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
+							fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
+							shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
+						} else {
+							vsID = this.generateVS(viewarea, false, true, true, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
+							fsID = this.generateFS(viewarea, false, true, false, shape._webgl.lightsAndShadow);
+							shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
+						}
+					} else if (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture()) {
+						
+						var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
+					
+						vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
+						fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
+						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
+					} else {
+						vsID = this.generateVS(viewarea, false, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
+						fsID = this.generateFS(viewarea, false, false, false, shape._webgl.lightsAndShadow);
+						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
+					}
+					/** END STANDARD MATERIAL */
                 }
             }
         }
+		
+		
+		//TODO find right place
         shape._dirty.shader = false;
+		
+		
         var sp = shape._webgl.shader;
         
         shape._webgl.buffers = [];
