@@ -431,7 +431,6 @@ x3dom.registerNodeType(
                         node._dirty.positions = true;
                    });
                 }
-               
 			}
         }
     )
@@ -464,6 +463,18 @@ x3dom.registerNodeType(
 			}
 			else
 			{
+				var minx = this._vf.vertices[0].x;
+				var miny = this._vf.vertices[0].y;
+				var maxx = this._vf.vertices[0].x;
+				var maxy = this._vf.vertices[0].y;
+					
+				for (var i = 0; i < this._vf.vertices.length ; i++) {
+					if(this._vf.vertices[i].x < minx) { minx=this._vf.vertices[i].x }
+					if(this._vf.vertices[i].y < miny) { miny=this._vf.vertices[i].y }
+					if(this._vf.vertices[i].x > maxx) { maxx=this._vf.vertices[i].x }
+					if(this._vf.vertices[i].y > maxy) { maxy=this._vf.vertices[i].y }
+				}
+				
 				for (var i = 0; i < this._vf.vertices.length ; i++) {
 					x = this._vf.vertices[i].x;
 					y = this._vf.vertices[i].y;
@@ -473,15 +484,16 @@ x3dom.registerNodeType(
 					
 					this._mesh._normals[0].push(0);
 					this._mesh._normals[0].push(0);
-					this._mesh._normals[0].push(10);
+					this._mesh._normals[0].push(1);
 					
-					this._mesh._texCoords[0].push(i);
-					this._mesh._texCoords[0].push(i+2);
+					this._mesh._texCoords[0].push((x -minx)/(maxx-minx));
+					this._mesh._texCoords[0].push((y -miny)/(maxy-miny));
 				}
 		
 				for (var j = 0; j < this._vf.vertices.length; j++) {
 					this._mesh._indices[0].push(j);	
 				}
+				
 				this._mesh._numTexComponents = 2;
 				this._mesh._invalidate = true;
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
@@ -492,7 +504,51 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            fieldChanged: function(fieldName) {
+				this._mesh._positions[0] = [];
+				this._mesh._indices[0] =[];
+				this._mesh._texCoords[0] =[];
+				
+				var minx = this._vf.vertices[0].x;
+				var miny = this._vf.vertices[0].y;
+				var maxx = this._vf.vertices[0].x;
+				var maxy = this._vf.vertices[0].y;
+					
+				for (var i = 0; i < this._vf.vertices.length ; i++) {
+					if(this._vf.vertices[i].x < minx) { minx=this._vf.vertices[i].x }
+					if(this._vf.vertices[i].y < miny) { miny=this._vf.vertices[i].y }
+					if(this._vf.vertices[i].x > maxx) { maxx=this._vf.vertices[i].x }
+					if(this._vf.vertices[i].y > maxy) { maxy=this._vf.vertices[i].y }
+				}
+				
+				for (var i = 0; i < this._vf.vertices.length ; i++) {
+					x = this._vf.vertices[i].x;
+					y = this._vf.vertices[i].y;
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+					
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(1);
+					
+					this._mesh._texCoords[0].push((x -minx)/(maxx-minx));
+					this._mesh._texCoords[0].push((y -miny)/(maxy-miny));
+				}
+		
+				for (var j = 0; j < this._vf.vertices.length; j++) {
+					this._mesh._indices[0].push(j);	
+				}
+				
+				this._mesh._numTexComponents = 2;
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 3;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+				Array.forEach(this._parentNodes, function (node) {
+                   	node._dirty.positions = true;
+                });	
+			}
         }
     )
 );
