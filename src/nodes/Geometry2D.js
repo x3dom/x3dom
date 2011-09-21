@@ -114,12 +114,210 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'endAngle', 1.570796);
             this.addField_SFFloat(ctx, 'radius', 1);
             this.addField_SFFloat(ctx, 'startAngle', 0);
+			this.addField_SFFloat(ctx, 'subdivision', 32);
             this.addField_SFBool(ctx, 'solid', false);
             this.addField_SFBool(ctx, 'lit', true);
+			
+			var r = this._vf.radius;
+			var start = this._vf.startAngle;
+			var end = this._vf.endAngle;
+			
+			
+			var geoCacheID = 'ArcClose2D_'+r+start;
+
+			if (x3dom.geoCache[geoCacheID] != undefined) {
+				x3dom.debug.logInfo("Using ArcClose2D from Cache");
+				this._mesh = x3dom.geoCache[geoCacheID];
+			} else {
+				var anzahl = this._vf.subdivision;
+				var t = (end - start) / anzahl;
+				var theta = start;
+					
+				if(this._vf.closureType == 'PIE') {
+					
+					this._mesh._positions[0].push(0.0);
+					this._mesh._positions[0].push(0.0);
+					this._mesh._positions[0].push(0.0);
+					
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(1);
+					
+					this._mesh._texCoords[0].push(0.5);
+					this._mesh._texCoords[0].push(0.5);
+					
+					for (var i = 0; i <= anzahl; i++) {
+						var x = Math.cos(theta) * r;
+						var y = Math.sin(theta) * r;
+					
+						this._mesh._positions[0].push(x);
+						this._mesh._positions[0].push(y);
+						this._mesh._positions[0].push(0.0);
+							
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(1);
+							
+						this._mesh._texCoords[0].push((x + r)/(2 * r));
+						this._mesh._texCoords[0].push((y + r)/(2 * r));
+										
+						theta += t;
+					}
+												
+					for (var j = 1; j <= anzahl; j++) {
+						this._mesh._indices[0].push(j);
+						this._mesh._indices[0].push(0);
+						this._mesh._indices[0].push(j + 1);		
+					}
+					
+				} else {
+					for (var i = 0; i <= anzahl; i++) {
+						var x = Math.cos(theta) * r;
+						var y = Math.sin(theta) * r;
+					
+						this._mesh._positions[0].push(x);
+						this._mesh._positions[0].push(y);
+						this._mesh._positions[0].push(0.0);
+							
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(1);
+							
+						this._mesh._texCoords[0].push((x + r)/(2 * r));
+						this._mesh._texCoords[0].push((y + r)/(2 * r));
+						theta += t;
+					}
+					
+					var x = (this._mesh._positions[0][0] + this._mesh._positions[0][ this._mesh._positions[0].length - 3]) /2;
+					var y = (this._mesh._positions[0][1] + this._mesh._positions[0][ this._mesh._positions[0].length - 2]) /2;
+					
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+					
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(1);
+					
+					this._mesh._texCoords[0].push((x + r)/(2 * r));
+					this._mesh._texCoords[0].push((y + r)/(2 * r));
+					
+					for (var j = 0; j < anzahl; j++) {
+						this._mesh._indices[0].push(j);
+						this._mesh._indices[0].push(anzahl + 1);
+						this._mesh._indices[0].push(j + 1);		
+					}	
+				}
+				
+				this._mesh._numTexComponents = 2;
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 2;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+					
+				x3dom.geoCache[geoCacheID] = this._mesh;
+			}
         },
         {
             nodeChanged: function() {},
-            fieldChanged: function(fieldName) {	}
+            fieldChanged: function(fieldName) {
+				this._mesh._positions[0] = [];
+				this._mesh._indices[0] =[];
+				this._mesh._normals[0] = [];
+				this._mesh._texCoords[0] = [];
+					
+                var r = this._vf.radius;
+				var start = this._vf.startAngle;
+				var end = this._vf.endAngle;
+				var anzahl = this._vf.subdivision;
+				var t = (end - start) / anzahl;
+				var theta = start;
+				
+				if(this._vf.closureType == 'PIE') {
+					
+					this._mesh._positions[0].push(0.0);
+					this._mesh._positions[0].push(0.0);
+					this._mesh._positions[0].push(0.0);
+					
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(1);
+					
+					this._mesh._texCoords[0].push(0.5);
+					this._mesh._texCoords[0].push(0.5);
+					
+					for (var i = 0; i <= anzahl; i++) {
+						var x = Math.cos(theta) * r;
+						var y = Math.sin(theta) * r;
+					
+						this._mesh._positions[0].push(x);
+						this._mesh._positions[0].push(y);
+						this._mesh._positions[0].push(0.0);
+							
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(1);
+							
+						this._mesh._texCoords[0].push((x + r)/(2 * r));
+						this._mesh._texCoords[0].push((y + r)/(2 * r));
+										
+						theta += t;
+					}
+												
+					for (var j = 1; j <= anzahl; j++) {
+						this._mesh._indices[0].push(j);
+						this._mesh._indices[0].push(0);
+						this._mesh._indices[0].push(j + 1);		
+					}
+					
+				} else {
+					for (var i = 0; i <= anzahl; i++) {
+						var x = Math.cos(theta) * r;
+						var y = Math.sin(theta) * r;
+					
+						this._mesh._positions[0].push(x);
+						this._mesh._positions[0].push(y);
+						this._mesh._positions[0].push(0.0);
+							
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(0);
+						this._mesh._normals[0].push(1);
+							
+						this._mesh._texCoords[0].push((x + r)/(2 * r));
+						this._mesh._texCoords[0].push((y + r)/(2 * r));
+						theta += t;
+					}
+					
+					var x = (this._mesh._positions[0][0] + this._mesh._positions[0][ this._mesh._positions[0].length - 3]) /2;
+					var y = (this._mesh._positions[0][1] + this._mesh._positions[0][ this._mesh._positions[0].length - 2]) /2;
+					
+					this._mesh._positions[0].push(x);
+					this._mesh._positions[0].push(y);
+					this._mesh._positions[0].push(0.0);
+					
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(0);
+					this._mesh._normals[0].push(1);
+					
+					this._mesh._texCoords[0].push((x + r)/(2 * r));
+					this._mesh._texCoords[0].push((y + r)/(2 * r));
+					
+					for (var j = 0; j < anzahl; j++) {
+						this._mesh._indices[0].push(j);
+						this._mesh._indices[0].push(anzahl + 1);
+						this._mesh._indices[0].push(j + 1);
+					}	
+				}
+				
+				this._mesh._numTexComponents = 2;
+				this._mesh._invalidate = true;
+				this._mesh._numFaces = this._mesh._indices[0].length / 2;
+				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+					   
+				Array.forEach(this._parentNodes, function (node) {
+                   	node._dirty.positions = true;
+					node._dirty.colors = true;
+                });
+			}
         }
     )
 );
@@ -507,6 +705,7 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName) {
 				this._mesh._positions[0] = [];
 				this._mesh._indices[0] =[];
+				this._mesh._normals[0] = [];
 				this._mesh._texCoords[0] =[];
 				
 				var minx = this._vf.vertices[0].x;
@@ -547,6 +746,7 @@ x3dom.registerNodeType(
 				
 				Array.forEach(this._parentNodes, function (node) {
                    	node._dirty.positions = true;
+					node._dirty.colors = true;
                 });	
 			}
         }
