@@ -102,7 +102,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatS', true);
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
-            this.addField_SFBool(ctx, 'scale', false);
+            this.addField_SFBool(ctx, 'scale', true);
 			this.addField_SFInt32(ctx, 'priority', 0);
             //this.addField_SFString(ctx, 'scale', "NONE");
 
