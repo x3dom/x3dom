@@ -305,7 +305,8 @@ x3dom.gfx_flash = (function() {
 														  bboxMax: shape._cf.geometry.node.getMax().toGL(),
 														  bboxCenter: shape._cf.geometry.node.getCenter(),
 														  numTriangles: shape._cf.geometry.node._vf.vertexCount/3,
-													      coordinateTexture: shape._cf.geometry.node.getCoordinateTextureURL(0) } );
+													      coordinateTexture0: shape._cf.geometry.node.getCoordinateTextureURL(0),
+														  coordinateTexture1: shape._cf.geometry.node.getCoordinateTextureURL(1) } );
 				}
 				shape._dirty.positions = false;
 			}
