@@ -1,0 +1,193 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>test</title>
+    
+    <link rel="stylesheet" type="text/css"  href="http://www.x3dom.org/x3dom/release/x3dom.css"></link>
+    <!--script type="text/javascript" src="http://www.x3dom.org/x3dom/release/x3dom.js"></script-->
+    
+    <script type="text/javascript" src="../../src/lang/Array.js"></script>
+	<script type="text/javascript" src="../../src/Internals.js"></script>
+    <script type="text/javascript" src="../../src/debug.js"></script>
+    <script type="text/javascript" src="../../src/lang/Properties.js"></script>
+    <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+    <script type="text/javascript" src="../../src/Runtime.js"></script>
+    <script type="text/javascript" src="../../src/Main.js"></script>
+    <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+    <script type="text/javascript" src="../../src/gfx_flash.js"></script>
+    <script type="text/javascript" src="../../src/X3DDocument.js"></script>
+    <script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+    <script type="text/javascript" src="../../src/Viewarea.js"></script>
+    <script type="text/javascript" src="../../src/Mesh.js"></script>
+    <script type="text/javascript" src="../../src/fields.js"></script>
+    <script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Core.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Time.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+    <script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Text.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+    <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+</head>
+       
+<body>
+	    <X3D id="rotate-box" xmlns="http://www.web3d.org/specifications/x3d-namespace" width='1000px' height='700px'>
+			<scene>
+            	<Background skyColor='0 0 0' />
+             
+                <transform translation="-4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorArc" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Arc2D id="testArc" radius ='1' subdivision='30' startAngle ='0' endAngle='1.57' onmouseover="testArc();"/>
+                  </shape>
+                </transform>
+                
+                 <transform translation="-1 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorArcClosePIE" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <ArcClose2D id="testArcClosePIE" radius ='1' subdivision='20' startAngle ='1.57' endAngle='3.14' closureType='PIE' onmouseover="testArcClosePIE();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="1 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorArcCloseCHORD" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <ArcClose2D id="testArcCloseCHORD" radius ='1' subdivision='20' startAngle ='0' endAngle='1.57' closureType='CHORD' onmouseover="testArcCloseCHORD();"/>
+                  </shape>
+                </transform>
+                
+                  <transform translation="4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorCircle" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Circle2D id="testCircle" radius ='1' subdivision='30' onmouseover="testCircle();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="-4 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorDisk" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <Disk2D id="testDisk" innerRadius='0.5' outerRadius='1' subdivision='30' onmouseover="testDisk();"/>
+                  </shape>
+                </transform>
+                
+                 <transform translation="-2 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorPolyline" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Polyline2D id="testPolyline" lineSegments ='0 0, 1 1, 1 0.5, 0.5 -0.5' onmouseover="testPolyline();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="0 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorPolypoint" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Polypoint2D id="testPolypoint" point ='0 0, 0.5 0.7, -0.5 -0.3, -0.3 0.2, 0.3 -0.3' onmouseover="testPolypoint();" />
+                  </shape>
+                </transform>
+                
+                <transform translation="2 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorRectangle" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <Rectangle2D id="testRectangle" size='1 1' onmouseover="testRectangle();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="4 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorTriangleSet" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <TriangleSet2D id="testTriangleSet" vertices ='0 0, 0.5 0.5, 1 -0.5, 0 0, -0.5 -0.5, -0.5 0.5' onmouseover="testTriangleSet();"/>
+                  </shape>
+                </transform>
+			</scene>
+        </X3D>
+        
+<script type="text/javascript" >
+	<![CDATA[
+	    var testArc = function (event) {
+			document.getElementById('testArc').setAttribute('radius', '0.5');
+			document.getElementById('testArc').setAttribute('startAngle', '1.57');
+			document.getElementById('testArc').setAttribute('endAngle', '3.14');
+			document.getElementById('testArc').setAttribute('subdivision', '3');
+			document.getElementById('colorArc').setAttribute('emissiveColor', '1 0 0');
+        };
+		
+        var testArcClosePIE = function (event) {
+			document.getElementById('testArcClosePIE').setAttribute('radius', '0.5');
+			document.getElementById('testArcClosePIE').setAttribute('startAngle', '0');
+			document.getElementById('testArcClosePIE').setAttribute('endAngle', '1.57');
+			document.getElementById('testArcClosePIE').setAttribute('closureType', 'CHORD');
+			document.getElementById('testArcClosePIE').setAttribute('subdivision', '3');
+			document.getElementById('colorArcClosePIE').setAttribute('emissiveColor', '1 0 0');
+        };
+		var testArcCloseCHORD = function (event) {
+			document.getElementById('testArcCloseCHORD').setAttribute('radius', '0.5');
+			document.getElementById('testArcCloseCHORD').setAttribute('startAngle', '1.57');
+			document.getElementById('testArcCloseCHORD').setAttribute('endAngle', '3.14');
+			document.getElementById('testArcCloseCHORD').setAttribute('closureType', 'PIE');
+			document.getElementById('testArcCloseCHORD').setAttribute('subdivision', '3');
+			document.getElementById('colorArcCloseCHORD').setAttribute('emissiveColor', '1 0 0');
+        };
+		var testCircle = function (event) {
+			document.getElementById('testCircle').setAttribute('radius', '0.5');
+			document.getElementById('testCircle').setAttribute('subdivision', '5');
+			document.getElementById('colorCircle').setAttribute('emissiveColor', '1 0 0');
+        };
+		var testDisk = function (event) {
+			document.getElementById('testDisk').setAttribute('innerRadius', '0.2');
+			document.getElementById('testDisk').setAttribute('outerRadius', '0.7');
+			document.getElementById('testDisk').setAttribute('subdivision', '4');
+			document.getElementById('colorDisk').setAttribute('emissiveColor', '1 0 0');
+        };
+		var testPolyline = function (event) {
+			document.getElementById('testPolyline').setAttribute('lineSegments', '0.5 0.5, -1 0.5, 0.5 -0.3, -0.3 -0.5');
+			document.getElementById('colorPolyline').setAttribute('emissiveColor', '1 0 0');
+			document.getElementById('testPolypoint').setAttribute('point', '0 0.3, -0.5 -0.7, 0.5 0.3, 0.3 -0.2, -0.3 0.3');
+			document.getElementById('colorPolypoint').setAttribute('emissiveColor', '1 0 0');
+        };
+		var testRectangle = function (event) {
+			document.getElementById('testRectangle').setAttribute('size', '0.5 0.5');
+			document.getElementById('colorRectangle').setAttribute('emissiveColor', '1 0 0');
+        };
+		var testTriangleSet = function (event) {
+			document.getElementById('testTriangleSet').setAttribute('vertices', '0 0, -0.5 -0.5, -1 0.5, 0 0, 0.5 0.5, 0.5 -0.5');
+			document.getElementById('colorTriangleSet').setAttribute('emissiveColor', '1 0 0');
+        };
+	]]>
+</script>
+</body>
+</html>
