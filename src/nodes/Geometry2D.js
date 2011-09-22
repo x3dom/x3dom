@@ -755,8 +755,8 @@ x3dom.registerNodeType(
 				if (fieldName == "size")
                 { 
                     var size = this._vf.size;
-                	var sx = size.x;
-               		var sy = size.y;
+                	var sx = size.x / 2;
+               		var sy = size.y / 2;
 
                    this._mesh._positions[0] = [
 						-sx,-sy, 0.0, -sx, sy, 0.0,  sx, sy, 0.0,  sx,-sy, 0.0
