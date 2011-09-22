@@ -19,7 +19,7 @@ x3dom.gfx_webgl = (function () {
         this.name = name;
         this.cached_shader_programs = {};
         this.cached_shaders = {};
-		//this.imageLoadManager = new x3dom.ImageLoadManager();
+		this.imageLoadManager = new x3dom.ImageLoadManager();
     }
 
     Context.prototype.getName = function() {
@@ -1574,12 +1574,13 @@ x3dom.gfx_webgl = (function () {
                     texture = gl.createTexture();
                     
                     var image = new Image();
-					image.crossOrigin = '';
-                    image.src = tex._nameSpace.getURL(tex._vf.url[0]);
-                    that._nameSpace.doc.downloadCount += 1;
+					context.imageLoadManager.push(tex._vf.priority, image, tex._nameSpace.getURL(tex._vf.url[0]));
 					
-					//TODO
-					//context.imageLoadManager.push(tex._vf.priority, image, tex._nameSpace.getURL(tex._vf.url[0]));
+					//Old Loading
+					//image.crossOrigin = '';
+                    //image.src = tex._nameSpace.getURL(tex._vf.url[0]);
+					
+                    that._nameSpace.doc.downloadCount += 1;					
 
                     image.onload = function()
                     {           
@@ -1590,8 +1591,8 @@ x3dom.gfx_webgl = (function () {
                         that._nameSpace.doc.needRender = true;
                         that._nameSpace.doc.downloadCount -= 1;
 						
-						//context.imageLoadManager.activeDownloads--; 
-						//context.imageLoadManager.load();
+						context.imageLoadManager.activeDownloads--; 
+						context.imageLoadManager.load();
                         
 						that._webgl.texture[unit] = texture;
 						
