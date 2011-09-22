@@ -232,7 +232,7 @@ x3dom.gfx_webgl = (function () {
         "}"
         };
     
-    /*g_shaders['vs-x3d-pick'] = { type: "vertex", data:
+    g_shaders['vs-x3d-pick'] = { type: "vertex", data:
         "attribute vec3 position;" +
         "uniform mat4 modelMatrix;" +
         "uniform mat4 modelViewProjectionMatrix;" +
@@ -248,9 +248,9 @@ x3dom.gfx_webgl = (function () {
         "    worldCoord.z /= dia.z;" +
         "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
         "}"
-        };*/
+        };
 		
-	g_shaders['vs-x3d-pick'] = { type: "vertex", data:
+	g_shaders['vs-x3d-pickIG'] = { type: "vertex", data:
         "attribute vec3 position;" +
         "uniform mat4 modelMatrix;" +
         "uniform mat4 modelViewProjectionMatrix;" +
@@ -1636,6 +1636,10 @@ x3dom.gfx_webgl = (function () {
 				numCoordinateTextures = shape._cf.geometry.node.numCoordinateTextures();
 				indexed = (shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0;
 			}
+			
+			
+			//Need for right picking shader
+			viewarea._scene._webgl.imageGeometry = numCoordinateTextures;
             
             shape._webgl = {
                 positions: shape._cf.geometry.node._mesh._positions,
@@ -2502,7 +2506,12 @@ x3dom.gfx_webgl = (function () {
         
         var sp;
         if (pickMode === 0)
-            { sp = scene._webgl.pickShader; }
+		{
+			if(scene._webgl.imageGeometry)
+				{ sp = scene._webgl.pickShaderIG; }
+			else
+				{ sp = scene._webgl.pickShader; }
+		}
         else if (pickMode === 1)
             { sp = scene._webgl.pickColorShader; }
         else if (pickMode === 2)
@@ -3330,6 +3339,7 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.fboPick.pixelData = null;
             
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
+			scene._webgl.pickShaderIG = this.getShaderProgram(gl, ['vs-x3d-pickIG', 'fs-x3d-pick']); 
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
