@@ -138,17 +138,6 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
-        }
-    )
-);
-
-/* ### Shape ### */
-x3dom.registerNodeType(
-    "Shape",
-    "Shape",
-    defineClass(x3dom.nodeTypes.X3DShapeNode,
-        function (ctx) {
-            x3dom.nodeTypes.Shape.superClass.call(this, ctx);
 
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
@@ -166,6 +155,56 @@ x3dom.registerNodeType(
 				text: true,
 				shader: true
             };
+        },
+        {
+            collectDrawableObjects: function (transform, out) {
+                // TODO: culling etc
+                if (out !== null)
+                {
+                    out.push( [transform, this] );
+                }
+            },
+
+            getVolume: function(min, max, invalidate) {
+				if (this._cf.geometry.node) {
+					return this._cf.geometry.node.getVolume(min, max, invalidate);
+				}
+				else {
+					return false;
+				}
+            },
+
+            getCenter: function() {
+				if (this._cf.geometry.node) {
+					return this._cf.geometry.node.getCenter();
+				}
+				else {
+					return new x3dom.fields.SFVec3f(0,0,0);
+				}
+            },
+
+            doIntersect: function(line) {
+                return this._cf.geometry.node.doIntersect(line);
+            },
+
+            isSolid: function() {
+                return this._cf.geometry.node._vf.solid;
+            },
+
+            isCCW: function() {
+                return this._cf.geometry.node._vf.ccw;
+            }
+        }
+    )
+);
+
+/* ### Shape ### */
+x3dom.registerNodeType(
+    "Shape",
+    "Shape",
+    defineClass(x3dom.nodeTypes.X3DShapeNode,
+        function (ctx) {
+            x3dom.nodeTypes.Shape.superClass.call(this, ctx);
         },
         {
             nodeChanged: function () {
@@ -235,44 +274,6 @@ x3dom.registerNodeType(
 
                     this._webgl = null;
                 }
-            },
-
-            collectDrawableObjects: function (transform, out) {
-                // TODO: culling etc
-                if (out !== null)
-                {
-                    out.push( [transform, this] );
-                }
-            },
-
-            getVolume: function(min, max, invalidate) {
-				if (this._cf.geometry.node) {
-					return this._cf.geometry.node.getVolume(min, max, invalidate);
-				}
-				else {
-					return false;
-				}
-            },
-
-            getCenter: function() {
-				if (this._cf.geometry.node) {
-					return this._cf.geometry.node.getCenter();
-				}
-				else {
-					return new x3dom.fields.SFVec3f(0,0,0);
-				}
-            },
-
-            doIntersect: function(line) {
-                return this._cf.geometry.node.doIntersect(line);
-            },
-
-            isSolid: function() {
-                return this._cf.geometry.node._vf.solid;
-            },
-
-            isCCW: function() {
-                return this._cf.geometry.node._vf.ccw;
             }
         }
     )
