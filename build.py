@@ -6,6 +6,7 @@ files = [
   'src/lang/Array.js',
   'src/Internals.js',
   'src/debug.js',
+  'src/ImageLoadManager.js',
   'src/lang/Properties.js',
   'src/X3DCanvas.js',
   'src/Runtime.js',
