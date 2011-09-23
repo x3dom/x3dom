@@ -112,7 +112,7 @@ x3dom.extend = function(f) {
  */
 x3dom.getStyle = function(oElm, strCssRule) {
     var strValue;
-    if(window && window.getComputedStyle){
+    if(window && window.getComputedStyle && window.getComputedStyle(oElm, "")){
         //strValue = window.getComputedStyle(oElm).webkitTransform;
         //strValue = window.getComputedStyle(oElm, "").getPropertyValue(strCssRule);
         strValue = window.getComputedStyle(oElm, "")[strCssRule];
