@@ -1767,14 +1767,15 @@ x3dom.gfx_webgl = (function () {
                         
                     }else{
                         //FIXME; HACK
-                        g_shaders['vs-x3d-HACK'] = {};
-                        g_shaders['vs-x3d-HACK'].type = "vertex";
-                        g_shaders['vs-x3d-HACK'].data = shape._cf.appearance.node._shader._vertex._vf.url[0];
-                        g_shaders['fs-x3d-HACK'] = {};
-                        g_shaders['fs-x3d-HACK'].type = "fragment";
-                        g_shaders['fs-x3d-HACK'].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
+                        var hackID = 'HACK'+shape._objectID;
+                        g_shaders['vs-x3d-'+hackID] = {};
+                        g_shaders['vs-x3d-'+hackID].type = "vertex";
+                        g_shaders['vs-x3d-'+hackID].data = shape._cf.appearance.node._shader._vertex._vf.url[0];
+                        g_shaders['fs-x3d-'+hackID] = {};
+                        g_shaders['fs-x3d-'+hackID].type = "fragment";
+                        g_shaders['fs-x3d-'+hackID].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
                     
-                        shape._webgl.shader = getDefaultShaderProgram(gl, 'HACK');
+                        shape._webgl.shader = getDefaultShaderProgram(gl, hackID);
 						shape._dirty.shader = false;
                         //END OF HACK
                     }
