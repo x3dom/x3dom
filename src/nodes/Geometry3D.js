@@ -19,7 +19,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Plane.superClass.call(this, ctx);
 
             this.addField_SFVec2f(ctx, 'size', 2, 2);
-            this.addField_SFVec2f(ctx, 'subdivision', 1, 1);    // TODO!
+            this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
 
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
@@ -82,15 +82,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Box.superClass.call(this, ctx);
 
-            var sx, sy, sz;
-            if (ctx.xmlNode.hasAttribute('size')) {
-                var size = x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute('size'));
-                sx = size.x;
-                sy = size.y;
-                sz = size.z;
-            } else {
-                sx = sy = sz = 2;
-            }
+            this.addField_SFVec3f(ctx, 'size', 2, 2, 2);
+
+            var sx = this._vf.size.x,
+                sy = this._vf.size.y,
+                sz = this._vf.size.z;
 
 			var geoCacheID = 'Box_'+sx+'-'+sy+'-'+sz;
 
@@ -141,6 +137,28 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
+        },
+        {
+            fieldChanged: function(fieldName) {
+                if (fieldName === "size") {
+                    var sx = this._vf.size.x / 2,
+                        sy = this._vf.size.y / 2,
+                        sz = this._vf.size.z / 2;
+
+                    this._mesh._positions[0] = [
+                        -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //back   0,0,-1
+                        -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //front  0,0,1
+                        -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //left   -1,0,0
+                         sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //right  1,0,0
+                        -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //top    0,1,0
+                        -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //bottom 0,-1,0
+                    ];
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                    });
+                }
+            }
         }
     )
 );
