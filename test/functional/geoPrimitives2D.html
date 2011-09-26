@@ -1,9 +1,10 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE html>
+<html>
 <head>
-	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<title>test</title>
-    <!-- BEGIN:X3DOM -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>test</title>
+
+<!-- BEGIN:X3DOM -->
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
@@ -41,19 +42,24 @@
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <!-- END:X3DOM -->
+
+<!-- BEGIN:TEST -->
+<script type="text/javascript" src="media/js/tests.js"></script>
+<!-- END:TEST -->
+
 </head>
        
 <body>
-	    <X3D id="rotate-box" xmlns="http://www.web3d.org/specifications/x3d-namespace" width='1000px' height='700px'>
+	    <x3d id="rotate-box" width='1000px' height='700px'>
 			<scene>
-            	<Background skyColor='0 0 0' />
+            	<Background skyColor='0 0 0'></Background>
              
                 <transform translation="-4 2 0">
                   <shape>
                     <appearance>
                       <material id="colorArc" emissiveColor='yellow'></material>
                     </appearance>
-                    <Arc2D id="testArc" radius ='1' subdivision='30' startAngle ='0' endAngle='1.57' onmouseover="testArc();"/>
+                    <Arc2D id="testArc" radius ='1' subdivision='30' startAngle ='0' endAngle='1.57' onmouseover="testArc();"></Arc2D>
                   </shape>
                 </transform>
                 
@@ -61,9 +67,9 @@
                   <shape>
                     <appearance>
                       <material id="colorArcClosePIE" diffuseColor='yellow'></material>
-                      <imageTexture url='media/img/igd_main.png' />
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
                     </appearance>
-                    <ArcClose2D id="testArcClosePIE" radius ='1' subdivision='20' startAngle ='1.57' endAngle='3.14' closureType='PIE' onmouseover="testArcClosePIE();"/>
+                    <ArcClose2D id="testArcClosePIE" radius ='1' subdivision='20' startAngle ='1.57' endAngle='3.14' closureType='PIE' onmouseover="testArcClosePIE();"></ArcClose2D>
                   </shape>
                 </transform>
                 
@@ -71,9 +77,9 @@
                   <shape>
                     <appearance>
                       <material id="colorArcCloseCHORD" diffuseColor='yellow'></material>
-                      <imageTexture url='media/img/igd_main.png' />
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
                     </appearance>
-                    <ArcClose2D id="testArcCloseCHORD" radius ='1' subdivision='20' startAngle ='0' endAngle='1.57' closureType='CHORD' onmouseover="testArcCloseCHORD();"/>
+                    <ArcClose2D id="testArcCloseCHORD" radius ='1' subdivision='20' startAngle ='0' endAngle='1.57' closureType='CHORD' onmouseover="testArcCloseCHORD();"></ArcClose2D>
                   </shape>
                 </transform>
                 
@@ -82,7 +88,7 @@
                     <appearance>
                       <material id="colorCircle" emissiveColor='yellow'></material>
                     </appearance>
-                    <Circle2D id="testCircle" radius ='1' subdivision='30' onmouseover="testCircle();"/>
+                    <Circle2D id="testCircle" radius ='1' subdivision='30' onmouseover="testCircle();"></Circle2D>
                   </shape>
                 </transform>
                 
@@ -90,9 +96,9 @@
                   <shape>
                     <appearance>
                       <material id="colorDisk" diffuseColor='yellow'></material>
-                      <imageTexture url='media/img/igd_main.png' />
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
                     </appearance>
-                    <Disk2D id="testDisk" innerRadius='0.5' outerRadius='1' subdivision='30' onmouseover="testDisk();"/>
+                    <Disk2D id="testDisk" innerRadius='0.5' outerRadius='1' subdivision='30' onmouseover="testDisk();"></Disk2D>
                   </shape>
                 </transform>
                 
@@ -101,7 +107,7 @@
                     <appearance>
                       <material id="colorPolyline" emissiveColor='yellow'></material>
                     </appearance>
-                    <Polyline2D id="testPolyline" lineSegments ='0 0, 1 1, 1 0.5, 0.5 -0.5' onmouseover="testPolyline();"/>
+                    <Polyline2D id="testPolyline" lineSegments ='0 0, 1 1, 1 0.5, 0.5 -0.5' onmouseover="testPolyline();"></Polyline2D>
                   </shape>
                 </transform>
                 
@@ -110,7 +116,7 @@
                     <appearance>
                       <material id="colorPolypoint" emissiveColor='yellow'></material>
                     </appearance>
-                    <Polypoint2D id="testPolypoint" point ='0 0, 0.5 0.7, -0.5 -0.3, -0.3 0.2, 0.3 -0.3' onmouseover="testPolypoint();" />
+                    <Polypoint2D id="testPolypoint" point ='0 0, 0.5 0.7, -0.5 -0.3, -0.3 0.2, 0.3 -0.3' onmouseover="testPolypoint();"></Polypoint2D>
                   </shape>
                 </transform>
                 
@@ -118,9 +124,9 @@
                   <shape>
                     <appearance>
                       <material id="colorRectangle" diffuseColor='yellow'></material>
-                      <imageTexture url='media/img/igd_main.png' />
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
                     </appearance>
-                    <Rectangle2D id="testRectangle" size='1 1' onmouseover="testRectangle();"/>
+                    <Rectangle2D id="testRectangle" size='1 1' onmouseover="testRectangle();"></Rectangle2D>
                   </shape>
                 </transform>
                 
@@ -128,16 +134,16 @@
                   <shape>
                     <appearance>
                       <material id="colorTriangleSet" diffuseColor='yellow'></material>
-                      <imageTexture url='media/img/igd_main.png' />
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
                     </appearance>
-                    <TriangleSet2D id="testTriangleSet" vertices ='0 0, 0.5 0.5, 1 -0.5, 0 0, -0.5 -0.5, -0.5 0.5' onmouseover="testTriangleSet();"/>
+                    <TriangleSet2D id="testTriangleSet" vertices ='0 0, 0.5 0.5, 1 -0.5, 0 0, -0.5 -0.5, -0.5 0.5' onmouseover="testTriangleSet();"></TriangleSet2D>
                   </shape>
                 </transform>
 			</scene>
-        </X3D>
+        </x3d>
         
 <script type="text/javascript" >
-	<![CDATA[
+
 	    var testArc = function (event) {
 			document.getElementById('testArc').setAttribute('radius', '0.5');
 			document.getElementById('testArc').setAttribute('startAngle', '1.57');
@@ -187,7 +193,7 @@
 			document.getElementById('testTriangleSet').setAttribute('vertices', '0 0, -0.5 -0.5, -1 0.5, 0 0, 0.5 0.5, 0.5 -0.5');
 			document.getElementById('colorTriangleSet').setAttribute('emissiveColor', '1 0 0');
         };
-	]]>
+
 </script>
 </body>
 </html>

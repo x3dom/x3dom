@@ -106,17 +106,29 @@ x3dom.userAgentFeature = {
 
     var onload = function() {
 
-
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagName('X3D');
         var w3sg = document.getElementsByTagName('webSG');
 
-        // active hacky DOMAttrModified workaround to webkit 
+        for (i=0; i < x3ds.length; i++) {
+            // load components
+            components = x3ds[i].getAttribute("components");
+            if (components) {
+                var prefix = x3ds[i].getAttribute("loadpath");
+                components = components.trim().split(',');
+                for (j=0; j < components.length; j++) {
+                    x3dom.loadJS(components[j] + ".js", prefix);
+//                    alert(components[j]);
+                }
+            }
+        }
+
+        // active hacky DOMAttrModified workaround to webkit
         if (window.navigator.userAgent.match(/webkit/i)) {
             x3dom.debug.logInfo ("Active DOMAttrModifiedEvent workaround for webkit ");
             x3dom.userAgentFeature.supportsDOMAttrModified = false;
         }
-            
+
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) {
             n.runtime = x3dom.runtime;
@@ -135,12 +147,10 @@ x3dom.userAgentFeature = {
         for (i=0; i < x3ds.length; i++) {
             // log is for all elements
             var showLog = x3ds[i].getAttribute("showLog");
-
             if (showLog !== null && showLog == "true") {
                 activateLog = true;
                 break;
             }
-
         }
 
         // Activate debugging/logging for x3dom. Logging will only work for
