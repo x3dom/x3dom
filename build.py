@@ -40,6 +40,11 @@ files = [
   'src/nodes/Geospatial.js'
 ]
 
+components = [
+  'src/nodes/Geometry2D.js',
+  'src/nodes/VolumeRendering.js',
+]
+
 parser = OptionParser
 
 if __name__ == '__main__':
