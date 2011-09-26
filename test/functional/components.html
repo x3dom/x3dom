@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<title>Components Load Test</title>
+
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/lang/Properties.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<!--<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>-->
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<!--<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>-->
+
+<!-- BEGIN:TEST -->
+<script type="text/javascript" src="media/js/tests.js"></script>
+<!-- END:TEST -->
+
+</head>
+
+<body>
+
+<div class="group">
+    <h1>Component load test</h1>
+    <p>The 2D primitives and Texturing are loaded using the components functionality: </p>
+<pre><code>
+    &lt;x3d components="Texturing,Geometry2D" loadpath="../../src/nodes/" &gt;
+    ...
+</code></pre>
+
+<p> The statements above dynamically load the files <code>../../src/nodes/Texturing.js</code> and <code>../../src/nodes/Geometry2D.js</code>.
+    The following options are added:</p>
+    <dl>
+        <dt><code>components</code></dt>
+        <dd>The component to load. Each component needs to be in a .js file.</dd>
+        <dt><code>loadpath</code></dt>
+        <dd>The path or URI prefix where to load the components from.</dd>
+    </dl>
+
+
+    <x3d id="rotate-box" components="Texturing,Geometry2D" loadpath="../../src/nodes/" width='1000px' height='700px'>
+			<scene>
+            	<Background skyColor='0 0 0'></Background>
+
+                <transform translation="-4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorArc" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Arc2D id="testArc" radius ='1' subdivision='30' startAngle ='0' endAngle='1.57' ></Arc2D>
+                  </shape>
+                </transform>
+
+                 <transform translation="-1 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorArcClosePIE" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
+                    </appearance>
+                    <ArcClose2D id="testArcClosePIE" radius ='1' subdivision='20' startAngle ='1.57' endAngle='3.14' closureType='PIE'"></ArcClose2D>
+                  </shape>
+                </transform>
+
+                <transform translation="1 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorArcCloseCHORD" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
+                    </appearance>
+                    <ArcClose2D id="testArcCloseCHORD" radius ='1' subdivision='20' startAngle ='0' endAngle='1.57' closureType='CHORD';"></ArcClose2D>
+                  </shape>
+                </transform>
+
+                  <transform translation="4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorCircle" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Circle2D id="testCircle" radius ='1' subdivision='30'></Circle2D>
+                  </shape>
+                </transform>
+
+                <transform translation="-4 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorDisk" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
+                    </appearance>
+                    <Disk2D id="testDisk" innerRadius='0.5' outerRadius='1' subdivision='30'></Disk2D>
+                  </shape>
+                </transform>
+
+                 <transform translation="-2 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorPolyline" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Polyline2D id="testPolyline" lineSegments ='0 0, 1 1, 1 0.5, 0.5 -0.5'></Polyline2D>
+                  </shape>
+                </transform>
+
+                <transform translation="0 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorPolypoint" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Polypoint2D id="testPolypoint" point ='0 0, 0.5 0.7, -0.5 -0.3, -0.3 0.2, 0.3 -0.3'></Polypoint2D>
+                  </shape>
+                </transform>
+
+                <transform translation="2 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorRectangle" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
+                    </appearance>
+                    <Rectangle2D id="testRectangle" size='1 1'></Rectangle2D>
+                  </shape>
+                </transform>
+
+                <transform translation="4 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorTriangleSet" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png'></imageTexture>
+                    </appearance>
+                    <TriangleSet2D id="testTriangleSet" vertices ='0 0, 0.5 0.5, 1 -0.5, 0 0, -0.5 -0.5, -0.5 0.5'></TriangleSet2D>
+                  </shape>
+                </transform>
+			</scene>
+        </x3d>
+</div>
+</body>
+</html>

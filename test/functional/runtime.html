@@ -67,7 +67,7 @@
            <viewpoint position='2 0 5'  description="Camera 3"></viewpoint>
            <shape>
                 <appearance>
-                    <material diffuseColor='1 0 0' ></material>	
+                    <material diffuseColor='1 0 0' ></material>
                 </appearance>
                 <box DEF='box' ></box>
             </shape>
@@ -77,20 +77,20 @@
     	<ul class="plain">
 		    <li><em>Active bindable</em></span>
 	           	<ul>
-		    		<li><span id="ab_info"></span></li> 
+		    		<li><span id="ab_info"></span></li>
                     <li><a href="#" onClick="document.getElementById('bg0').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 0</a></li>
                     <li><a href="#" onClick="document.getElementById('bg1').setAttribute('set_bind','true');updateAbInfo('Background');return false;">Activate background 1</a></li>
-        		</ul>    
+        		</ul>
             </li>
 
 		    <li><em>Viewpoint</em>
             	<ul>
-		    		<li><a href="#" onClick="$element.runtime.nextView();updateAbInfo('X3DViewpointNode');return false;">Next view</a> [via <tt>runtime.nextView()</tt>]</li> 
-		    		<li><a href="#" onClick="$element.runtime.prevView();updateAbInfo('Viewpoint');return false;">Prev view</a></li> 
+		    		<li><a href="#" onClick="$element.runtime.nextView();updateAbInfo('X3DViewpointNode');return false;">Next view</a> [via <tt>runtime.nextView()</tt>]</li>
+		    		<li><a href="#" onClick="$element.runtime.prevView();updateAbInfo('Viewpoint');return false;">Prev view</a></li>
 			    	<li><a href="#" onClick="$element.runtime.resetView();return false;">Reset current view</a></li>
 				    <li><a href="#" onClick="$element.runtime.uprightView();return false;">Upright View</a></li>
 				    <li><a href="#" onClick="$element.runtime.showAll();return false;">Show all</a></li>
-		    		<li><a href="#" onClick="$element.runtime.lightView();return false;">Light View</a></li> 
+		    		<li><a href="#" onClick="$element.runtime.lightView();return false;">Light View</a></li>
 				</ul>
             </li>
 
@@ -159,7 +159,7 @@
 		updatePickInfo();
 		updateNavInfo();
 	}
-	
+
 	function updatePickInfo() {
 		pick_mode_info = document.getElementById('pick_mode_info');
 		pick_mode_info.innerHTML = $element.runtime.pickMode() + '/' + $element.runtime.pickMode({'internal':true});
@@ -187,7 +187,7 @@
 			link.innerHTML = 'Hide statistics';
 		}
 	}
-	
+
 	function toggleDebug(link) {
 		if (debug) {
 			$element.runtime.debug(false);

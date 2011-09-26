@@ -180,8 +180,85 @@ x3dom.isNumber = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
+/**
+ * Load javascript file either by performing an syncronous jax request
+ * an eval'ing the response or by dynamically creating a <script> tag.
+ *
+ * CAUTION: This function is a possible source for Cross-Site
+ *          Scripting Attacks.
+ *
+ * @param  src  The location of the source file relative to
+ *              path_prefix. If path_prefix is omitted, the
+ *              current directory (relative to the HTML document)
+ *              is used instead.
+ * @param  path_prefix A prefix URI to add to the resource to be loaded.
+ *                     The URI must be given in normalized path form ending in a
+ *                     path seperator (i.e. src/nodes/). It can be in absolute
+ *                     URI form (http://somedomain.tld/src/nodes/)
+ * @param  blocking    By default the lookup is done via blocking jax request.
+ *                     set to false to use the script i
+ */
+x3dom.loadJS = function(src, path_prefix, blocking) {
+    var blocking = (blocking === false) ? blocking : true;   // default to truye
+
+    if (blocking) {
+        var req;
+        var url = (path_prefix) ? path_prefix.trim() + src : src;
+
+        if (window.XMLHttpRequest) {
+            req = new XMLHttpRequest();
+        } else {
+            req = new ActiveXObject("Microsoft.XMLHTTP");
+        }
+
+        if (req) {
+            // third parameter false = synchronous/blocking call
+            // need this to load the JS before onload completes
+            req.open("GET", url, false);
+            req.send(null); // blocking
+
+            // maybe consider global eval
+            // http://perfectionkills.com/global-eval-what-are-the-options/#indirect_eval_call_examples
+            eval(req.responseText);
+        }
+
+    } else {
+        var head = document.getElementsByTagName('HEAD').item(0);
+        var script = document.createElement("script");
+        var loadpath = (path_prefix) ? path_prefix.trim() + src : src;
+        if (head) {
+            x3dom.debug.logError("Trying to load external JS file: " + loadpath);
+            //alert("Trying to load external JS file: " + loadpath);
+            script.type = "text/javascript";
+            script.src = loadpath;
+//        head.appendChild(script);
+            head.appendChild(script, head.firstChild);
+        } else {
+            alert("No document object found. Can't load components");
+            //x3dom.debug.logError("No document object found. Can't load components");
+        }
+    }
+};
 
 
+/**
+ * Load javascript file by performing an syncronous jax request
+ * an eval'ing the response.
+ *
+ * CAUTION: This function is a possible source for Cross-Site
+ *          Scripting Attacks.
+ *
+ * @param  src  The location of the source file relative to
+ *              path_prefix. If path_prefix is omitted, the
+ *              current directory (relative to the HTML document)
+ *              is used instead.
+ * @param  path_prefix A prefix URI to add to the resource to be loaded.
+ *                     The URI must be given in normalized path form ending in a
+ *                     path seperator (i.e. src/nodes/). It can be in absolute
+ *                     URI form (http://somedomain.tld/src/nodes/)
+ */
+x3dom.loadJSA = function(src, path_prefix) {
+};
 
 
 /**
