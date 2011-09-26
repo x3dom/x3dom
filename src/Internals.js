@@ -240,27 +240,6 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
     }
 };
 
-
-/**
- * Load javascript file by performing an syncronous jax request
- * an eval'ing the response.
- *
- * CAUTION: This function is a possible source for Cross-Site
- *          Scripting Attacks.
- *
- * @param  src  The location of the source file relative to
- *              path_prefix. If path_prefix is omitted, the
- *              current directory (relative to the HTML document)
- *              is used instead.
- * @param  path_prefix A prefix URI to add to the resource to be loaded.
- *                     The URI must be given in normalized path form ending in a
- *                     path seperator (i.e. src/nodes/). It can be in absolute
- *                     URI form (http://somedomain.tld/src/nodes/)
- */
-x3dom.loadJSA = function(src, path_prefix) {
-};
-
-
 /**
  * Provides requestAnimationFrame in a cross browser way.
  * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
