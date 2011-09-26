@@ -1,3 +1,290 @@
+2011-09-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added what could be componetized to satisfy p.c.
+
+  * : Doc fixes
+
+  * : Remove cruft
+
+  * : Added ability to load Components dynamically at runtime. Added functional
+  test and documentation patch. Converted geoPrimitives2D to HTML5.
+
+  * : Rename of README so markup works
+
+2011-09-26  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : fix
+
+2011-09-23  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : shader stuff
+
+2011-09-23  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : todo
+
+2011-09-23  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : added basics to get started with volRen
+
+2011-09-23  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : might be a litle fix
+
+2011-09-22  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix "Vertex shader sampler count exceeds" - picking Bug
+
+  * : - fix "Vertex shader sampler count exceeds" - picking bug
+
+2011-09-22  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : typos
+
+2011-09-22  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : example for 2d primitives
+
+2011-09-22  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - activate new ImageLoader with CORS support - change "scale to power of
+  two" default value from "false" to "true"
+
+2011-09-22  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : implementation of Disk2D
+
+2011-09-21  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : implementation of ArcClose2D
+
+  * : implementation of TriangleSet2D
+
+2011-09-20  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added image loader to global Makefile and updated test headers
+
+2011-09-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - small ImageLoadManager fix
+
+2011-09-19  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added doc page of projects using X3DOM.
+
+  * : Added warning that not all nodes are fully implemented
+
+  * : Update NodeTypeTree dump and updated documentation to include a link to
+  it
+
+2011-09-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - little Bug fix
+
+2011-09-17  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix dynamic ComposedShader update
+
+2011-09-15  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : TriangleSet2D
+
+  * : implementation of Polypoint2D
+
+  * : implementation of Polypoint2D
+
+  * : implementation of Rectangle2D, Circle2D, Arc2D
+
+2011-09-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Moved content from the WIKI to the documentation and README. Preperation
+  for WIKI removal.
+
+2011-09-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add ImageLoadManager.js (Priority-Queue for image loading)
+
+2011-09-08  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : starting at 2d primitivs
+
+2011-09-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : inital check-in
+
+2011-09-07  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : remove empty node docs
+
+2011-08-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. sound field change
+
+2011-08-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Simplification
+
+  * : Housekeeping
+
+  * : Gardening
+
+  * : Setting version/release in docs to 1.3dev
+
+  * : Added links to pdf and epub versions
+
+  * : Added links to pdf and epub versions
+
+  * : Added links to pdf and epub versions
+
+  * : Added links to pdf and epub versions
+
+  * : Using default theme for readthedocs.org
+
+  * : Removed the show source link for docs.
+
+  * : Added internals section to doc for X3DOM hackers
+
+  * : Added internals section to doc for X3DOM hackers
+
+  * : Getting rid of NaturalDocs dependency. The API documentation is now
+  maintained with the developer documentation. There is currently no need to
+  generate private API docs.
+
+  * : Added API methods
+
+  * : Fix in internal references
+
+  * : Removed tutorials/ directory. The Tutorials have been moved to the
+  official documentation.
+
+  * : Added FAQ section to docs
+
+  * : Started compatibility matrix chapter.
+
+2011-08-23  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Political correctness
+
+  * : Moved Developers guide one level up
+
+  * : Added Coform tutorial
+
+  * : Added Flash Mashup tutorial
+
+2011-08-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : acc. test
+
+  * : acc. test
+
+  * : acc. test
+
+2011-08-23  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added WOW Export tutorial
+
+  * : Added Maya Tutorial
+
+  * : Added 3ds max eport tutorial
+
+  * : Fixed DL link for horse file
+
+  * : Added Blender export tutorial
+
+  * : Added the data conversion tutorial
+
+  * : Image sounds and movie formats tutorial added to docs
+
+  * : Slight restructuruing of docs to seperate concerns and make the PDF look
+  more consistent ;)
+
+2011-08-22  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Converted Styling Tutorial to doc system
+
+2011-08-22  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. Plane geo
+
+2011-08-22  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Converted and updated getting strated tutorial to documentation system
+
+2011-08-19  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix
+
+2011-08-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - Add colorTexture - Add primType TRIANGLE_STRIP
+
+2011-08-16  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added link to tutorials on website until we have a basic getting started
+  tutorial
+
+  * : Doc fix
+
+  * : Added missing semicolons in API doc exmaples
+
+  * : Remove execute bit, damn cygwin ;)
+
+  * : More info about cross origin policy added
+
+2011-08-16  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : Geospatial test
+
+2011-08-16  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Tweak to css of docs
+
+  * : Better display of dev note in docs
+
+  * : Typos
+
+  * : Make dev notice of docs less distracting
+
+  * : Added 'under development' notice to documentation
+
+  * : Work on CORS section
+
+2011-08-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Fix for float problem with tables
+
+  * : Float fix for NPT test
+
+2011-08-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl. TextureProperties (at least the most important fields)
+
+2011-08-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Simpler structure for documentation. Layout fixes.
+
+  * : API docs started
+
+2011-08-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : test
+
+2011-08-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Typo
+
+  * : Added camera navigation section and fixed layout
+
+  * : Updated TODO list
+
+  * : Fixes to getting started chapter
+
+  * : Started 'Getting started' section of guide
+
+2011-08-10  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Moved unit tests main page to test/unit/
+
 2011-08-09  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
 
   * : Unit test thingy
