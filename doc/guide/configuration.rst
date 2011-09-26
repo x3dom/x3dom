@@ -36,8 +36,9 @@ showProgress       true, false, bar           true            Hide or show the l
                                                               use a progress bar.
 PrimitiveQuality   High, Medium, Low, float   High/1.0        Render quality (tesselation level) for Box, Cone,
                                                               Cylinder, Sphere.
-component[*]_      String (i.e. Geometry3D)  none            Name of the component to load
-loadpath[*]_       String (i.e. nodes/)      none            The path or URI where to find the components
+component [*]_     String (i.e. Geometry3D)   none            Name of the component to load
+loadpath [*]_      String (i.e. nodes/)       none            The path or URI where to find the components
 =================  =========================  ===========     =================================================
+
 
 .. [*] Experimental and only supported as X3D attribute right now.
