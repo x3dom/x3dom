@@ -252,8 +252,10 @@ x3dom.userAgentFeature = {
             }
             
             var t0 = new Date().getTime();
-            
-//            x3ds[i].runtime = x3dom.runtime;
+
+            if (!x3ds[i].runtime) {
+                 x3ds[i].runtime = x3dom.runtime;
+            }  
             x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
 //            x3ds[i].runtime.ready();
 
