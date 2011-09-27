@@ -52,7 +52,22 @@ if __name__ == '__main__':
     
     parser.add_option("-a", "--algo",       type="string",  dest="algo",      default="jsmin",            help='The algorithm to use. "jsmin" or "jspacker".')
     parser.add_option("-o", "--outfile",    type="string",  dest="outfile",   default="dist/x3dom.js",    help='The name of the output file.')
-    
+
     (options, args) = parser.parse_args()
-    
+
+    # Not very efficient but well..
+    options.outfile = 'dist/x3dom.js'
+    options.algo = None
+    x3dom_packer.build(parser, options, files + components)
+
+    options.outfile = 'dist/x3dom.min.js'
+    options.algo = 'jsmin'
+    x3dom_packer.build(parser, options, files + components)
+
+    options.outfile = 'dist/x3dom-core.js'
+    options.algo = None
+    x3dom_packer.build(parser, options, files)
+
+    options.outfile = 'dist/x3dom-core.min.js'
+    options.algo = 'jsmin'
     x3dom_packer.build(parser, options, files)
