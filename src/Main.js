@@ -113,30 +113,41 @@ x3dom.userAgentFeature = {
 
         // ~~ Components and params {{{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         var params;
-        var properties = new x3dom.Properties();  // stores the stuff in <param>
+        var settings = new x3dom.Properties();  // stores the stuff in <param>
         var components, prefix;
 
         // for each X3D element
         for (i=0; i < x3ds.length; i++) {
 
+            // default parameters
+            settings.setProperty("showLog", x3ds[i].getAttribute("showLog") || 'false');
+            settings.setProperty("showStat", x3ds[i].getAttribute("showStat") || 'false');
+            settings.setProperty("showProgress", x3ds[i].getAttribute("showProgress") || 'true');
+            settings.setProperty("PrimitiveQuality", x3ds[i].getAttribute("PrimitiveQuality") || 'High');
+
             // for each param element inside the X3D element
             // add settings to properties object
             params = x3ds[i].getElementsByTagName('PARAM');
             for (j=0; j < params.length; j++) {
-                properties.setProperty(params[j].getAttribute('name'), params[j].getAttribute('value'));
+                settings.setProperty(params[j].getAttribute('name'), params[j].getAttribute('value'));
+            }
+
+            // enable log
+            if (settings.getProperty('showLog') === 'true') {
+                x3dom.debug.activate(true);
+            } else {
+                x3dom.debug.activate(false);
             }
 
             // load components from params or default to x3d attribute
-            components = properties.getProperty('components', x3ds[i].getAttribute("components"));
-
+            components = settings.getProperty('components', x3ds[i].getAttribute("components"));
             if (components) {
-                prefix = properties.getProperty('loadpath', x3ds[i].getAttribute("loadpath"))
+                prefix = settings.getProperty('loadpath', x3ds[i].getAttribute("loadpath"))
                 components = components.trim().split(',');
                 for (j=0; j < components.length; j++) {
                     x3dom.loadJS(components[j] + ".js", prefix);
                 }
             }
-            // TODO: use this instead of the <scene><param /></scene> approach below (for showLog, etc.)
         }
         // }}}
 
@@ -159,20 +170,6 @@ x3dom.userAgentFeature = {
             x3ds.push(w3sg[i]);
         }
 
-        var activateLog = false;
-        for (i=0; i < x3ds.length; i++) {
-            // log is for all elements
-            var showLog = x3ds[i].getAttribute("showLog");
-            if (showLog !== null && showLog == "true") {
-                activateLog = true;
-                break;
-            }
-        }
-
-        // Activate debugging/logging for x3dom. Logging will only work for
-        // all log calls after this line!
-        x3dom.debug.activate(activateLog);
-
         if (x3dom.versionInfo !== undefined) {
             x3dom.debug.logInfo("X3Dom Version " + x3dom.versionInfo.version + ", " +
                                 "Revison " + x3dom.versionInfo.revision + ", " +
@@ -185,8 +182,9 @@ x3dom.userAgentFeature = {
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
         var x3d_element;
-        var x3d_canvas;
+        var x3dcanvas;
         var altDiv, altP, aLnk, altImg, altImgObj;
+        var t0,t1;
 
         for (i=0; i < x3ds.length; i++)
         {
@@ -230,47 +228,32 @@ x3dom.userAgentFeature = {
                 continue;
             }
             
-            var t0 = new Date().getTime();
+            t0 = new Date().getTime();
 
             if (!x3ds[i].runtime) {
                  x3ds[i].runtime = x3dom.runtime;
             }  
 
             x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
-            x3dcanvas.load(x3ds[i], i);
 
-            // evaluate a possible <param> setting "showLog" and override x3d attribute
-            // since the doc-object is only avail after .load() this can only be done
-            // here. Redundant log activation code above is required to capture
-            // log message before that :/
-			
-            showLog = x3dcanvas.doc.properties.getProperty("showLog", activateLog);
+            x3dcanvas.load(x3ds[i], i, settings);
 
-			if (showLog === true || showLog.toString().toLowerCase() === "true") {
-				activateLog = true;
-			} else if (showLog.toString().toLowerCase() === "false") {
-				activateLog = false;
-			}
-            x3dom.debug.activate(activateLog);
-
-            var showStats = x3dcanvas.doc.properties.getProperty("showStat", "false");
-            if (showStats === true) {
+            // show or hide statistics based on param/x3d attribute settings
+            if (settings.getProperty('showStat') === 'true') {
                 x3ds[i].runtime.statistics(true);
-            } else if (showStats === false) {
+            } else {
                 x3ds[i].runtime.statistics(false);
             }
 
-            var showProgress = x3dcanvas.doc.properties.getProperty("showProgress", x3d_element.getAttribute("showProgress") || "true");
-            if (showProgress.toLowerCase() === "bar") {
-                x3dcanvas.progressDiv.setAttribute("class", "x3dom-progress bar");
-                showProgress = "true";
-            }
-
-            if (showProgress.toLowerCase() === "true") {
+            if (settings.getProperty('showProgress') === 'true') {
+                if (settings.getProperty('showProgress') === 'bar'){
+                    x3dcanvas.progressDiv.setAttribute("class", "x3dom-progress bar");
+                }
                 x3ds[i].runtime.processIndicator(true);
-            } else if (showStats.toLowerCase() === "false") {
+            } else {
                 x3ds[i].runtime.processIndicator(false);
             }
+
 //            var showProgress = x3ds[i].getAttribute("showProgress");
 //            if (showProgress == 'true' || showProgress === true || showProgress == 'bar') {
 //                var spinner = document.createElement("div");
@@ -284,8 +267,7 @@ x3dom.userAgentFeature = {
 //            }
 
             x3dom.canvases.push(x3dcanvas);
-
-			var t1 = new Date().getTime() - t0;
+			t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
         }
         
