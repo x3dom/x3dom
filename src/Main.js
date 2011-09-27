@@ -110,18 +110,35 @@ x3dom.userAgentFeature = {
         var x3ds = document.getElementsByTagName('X3D');
         var w3sg = document.getElementsByTagName('webSG');
 
+        // ~~ Components and params {{{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+        var i,j;
+        var params;
+        var properties = new x3dom.Properties();  // stores the stuff in <param>
+        var components, prefix;
+
+        // for each X3D element
         for (i=0; i < x3ds.length; i++) {
-            // load components
-            components = x3ds[i].getAttribute("components");
+
+            // for each param element inside X3D element
+            params = x3ds[i].getElementsByTagName('PARAM');
+            for (j=0; j < params.length; j++) {
+                properties.setProperty(params[j].getAttribute('name'), params[j].getAttribute('value'));
+            }
+
+            // load components from params or default to x3d attribute
+            components = properties.getProperty('components', x3ds[i].getAttribute("components"));
+
             if (components) {
-                var prefix = x3ds[i].getAttribute("loadpath");
+                prefix = properties.getProperty('loadpath', x3ds[i].getAttribute("loadpath"))
                 components = components.trim().split(',');
                 for (j=0; j < components.length; j++) {
                     x3dom.loadJS(components[j] + ".js", prefix);
-//                    alert(components[j]);
                 }
             }
+            // TODO: use this instead of the <scene><param /></scene> approach below (for showLog, etc.)
         }
+        // }}}
+
 
         // active hacky DOMAttrModified workaround to webkit
         if (window.navigator.userAgent.match(/webkit/i)) {
