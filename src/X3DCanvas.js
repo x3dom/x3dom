@@ -889,8 +889,8 @@ x3dom.X3DCanvas.prototype.tick = function()
 /** Loads the given @p uri.
     @param uri can be a uri or an X3D node
     */
-x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos) {
-    this.doc = new x3dom.X3DDocument(this.canvas, this.gl);
+x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
+    this.doc = new x3dom.X3DDocument(this.canvas, this.gl, settings);
     var x3dCanvas = this;
 
     this.doc.onload = function () {

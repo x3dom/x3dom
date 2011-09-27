@@ -688,24 +688,16 @@ x3dom.registerNodeType(
     )
 );
 
-
+// deprecated, will be removed in 1.4
 x3dom.registerNodeType(
     "Param",
     "Core",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.Param.superClass.call(this, ctx);
-            this.addField_SFString(ctx, 'name', "");
-            this.addField_SFString(ctx, 'value', "");
         },{
             nodeChanged: function() {
-                var that = this;
-                if (that._nameSpace.doc && that._nameSpace.doc.properties) {
-                    that._nameSpace.doc.properties.setProperty(that._vf.name, that._vf.value);
-                } else {
-                  x3dom.debug.logError('Could not find properties object for registration ' + that.typeName());
-                }
-
+                  x3dom.debug.logWarning('DEPRECATED 1.3: Param element needs to be child of X3D element [<a href="http://x3dom.org/docs/latest/configuration.html">DOCS</a>]');
             }
         }
     )

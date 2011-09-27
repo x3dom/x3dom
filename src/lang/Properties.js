@@ -34,11 +34,10 @@ x3dom.Properties.prototype.merge = function(other) {
 //            x3dom.debug.logError("Properties: Arument not of type Properties");
 //            throw "ArgumentTypeError";
 //        }
-
-        for (var attrname in other) {
-            this.properties[attrname] = other[attrname];
-        }
-    };
+    for (var attrname in other.properties) {
+        this.properties[attrname] = other.properties[attrname];
+    }
+};
 
 
 x3dom.Properties.prototype.toString = function() {

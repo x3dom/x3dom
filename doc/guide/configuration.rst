@@ -11,16 +11,18 @@ the runtime.
 Usage
 -----
 The param element behaves just like any other HTML element. It must be
-nested below the scene element. For XHTML you can use the self-closing syntax,
+nested below the X3D element. For XHTML you can use the self-closing syntax,
 for HTML a closing tag is mandatory::
 
     <x3d>
+        <param name="showLog" value="true" ></param>
         <scene>
-            <param name="showLog" value="true" ></param>
             ...
         </scene>
     </x3d>
 
+Note: The param tag used to live as child of the scene element. This behavior has been changed with version 1.3 of
+X3DOM. You will get a deprecation warning and support will be removed in 1.4.
 
 Options
 -------
