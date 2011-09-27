@@ -105,13 +105,13 @@ x3dom.userAgentFeature = {
 (function () {
 
     var onload = function() {
+        var i,j;  // counters
 
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagName('X3D');
         var w3sg = document.getElementsByTagName('webSG');
 
         // ~~ Components and params {{{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-        var i,j;
         var params;
         var properties = new x3dom.Properties();  // stores the stuff in <param>
         var components, prefix;
@@ -119,7 +119,8 @@ x3dom.userAgentFeature = {
         // for each X3D element
         for (i=0; i < x3ds.length; i++) {
 
-            // for each param element inside X3D element
+            // for each param element inside the X3D element
+            // add settings to properties object
             params = x3ds[i].getElementsByTagName('PARAM');
             for (j=0; j < params.length; j++) {
                 properties.setProperty(params[j].getAttribute('name'), params[j].getAttribute('value'));
@@ -154,8 +155,6 @@ x3dom.userAgentFeature = {
         });
         w3sg = Array.map(w3sg, function (n) { n.hasRuntime = false; return n; });
         
-        var i=0; // re-usable counter
-
         for (i=0; i<w3sg.length; i++) {
             x3ds.push(w3sg[i]);
         }
@@ -185,76 +184,29 @@ x3dom.userAgentFeature = {
         
         // Create a HTML canvas for every X3D scene and wrap it with
         // an X3D canvas and load the content
+        var x3d_element;
+        var x3d_canvas;
+        var altDiv, altP, aLnk, altImg, altImgObj;
+
         for (i=0; i < x3ds.length; i++)
         {
-            var x3d_element = x3ds[i];
+            x3d_element = x3ds[i];
 
-        /*
-            // http://de.selfhtml.org/javascript/objekte/mimetypes.htm
-            if (navigator.mimeTypes["model/vrml"] &&
-                navigator.mimeTypes["model/vrml"].enabledPlugin != null)
-            {
-                alert(navigator.mimeTypes["model/vrml"].suffixes);
-                
-                var domString, embed;
-                //var dom = (new DOMParser()).parseFromString(xmlstring, "text/xml");
-                domString = (new XMLSerializer()).serializeToString(x3ds[i].childNodes[1]);
-                domString = "<X3D>\n" + domString + "\n</X3D>\n";
-                //domString = domString.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                //x3dom.debug.logInfo(domString);
-                //alert(domString);
-                
-                embed = document.createElement("embed");
-                embed.setAttribute("id", "embed1");
-                embed.setAttribute("type", "model/vrml");
-                embed.setAttribute("width", x3ds[i].getAttribute("width"));
-                embed.setAttribute("height", x3ds[i].getAttribute("height"));
-                //embed.setAttribute("src", "flipper.x3d");
-                
-                x3ds[i].parentNode.insertBefore(embed, x3ds[i]);
-                embed.load(domString);
-                
-                continue;
-            }
-        */
-        
             // http://www.howtocreate.co.uk/wrongWithIE/?chapter=navigator.plugins
             if (x3dom.detectActiveX()) {
                 x3dom.insertActiveX(x3d_element);
                 continue;
             }
         
-            var x3dcanvas = new x3dom.X3DCanvas(x3d_element, i);
-
-
+            x3dcanvas = new x3dom.X3DCanvas(x3d_element, i);
 
             if (x3dcanvas.gl === null) {
 
-            /*
-                var domString, embed;
-                //var dom = (new DOMParser()).parseFromString(xmlstring, "text/xml");
-                domString = (new XMLSerializer()).serializeToString(x3ds[i].childNodes[1]);
-                domString = "<X3D>\n" + domString + "\n</X3D>\n";
-                //domString = domString.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-                //x3dom.debug.logInfo(domString);
-                //alert(domString);
-                
-                embed = document.createElement("embed");
-                embed.setAttribute("id", "embed1");
-                embed.setAttribute("type", "model/vrml");
-                embed.setAttribute("width", x3dcanvas.canvasDiv.style.width);
-                embed.setAttribute("height", x3dcanvas.canvasDiv.style.height);
-                //embed.setAttribute("src", "flipper.x3d");
-                x3dcanvas.canvasDiv.appendChild(embed);
-                embed.load(domString);
-                break;
-            */
-                
-                var altDiv = document.createElement("div");
+                altDiv = document.createElement("div");
                 altDiv.setAttribute("class", "x3dom-nox3d");
-                var altP = document.createElement("p");
+                altP = document.createElement("p");
                 altP.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
-                var aLnk = document.createElement("a");
+                aLnk = document.createElement("a");
                 aLnk.setAttribute("href","http://www.x3dom.org/?page_id=9");
                 aLnk.appendChild(document.createTextNode("Follow link for a list of supported browsers... "));
                 
@@ -269,9 +221,9 @@ x3dom.userAgentFeature = {
                 }
 
                 // check if "altImg" is specified on x3d element and if so use it as background
-                var altImg = x3ds[i].getAttribute("altImg") || null;
+                altImg = x3ds[i].getAttribute("altImg") || null;
                 if (altImg) {
-                    var altImgObj = new Image();                
+                    altImgObj = new Image();
                     altImgObj.src = altImg;                    
                     x3d_element.style.backgroundImage = "url("+altImg+")";                    
                 }
@@ -283,14 +235,13 @@ x3dom.userAgentFeature = {
             if (!x3ds[i].runtime) {
                  x3ds[i].runtime = x3dom.runtime;
             }  
-            x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
-//            x3ds[i].runtime.ready();
 
+            x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
             x3dcanvas.load(x3ds[i], i);
 
             // evaluate a possible <param> setting "showLog" and override x3d attribute
             // since the doc-object is only avail after .load() this can only be done
-            // here. Redunant log activation code above is required to capture
+            // here. Redundant log activation code above is required to capture
             // log message before that :/
 			
             showLog = x3dcanvas.doc.properties.getProperty("showLog", activateLog);
@@ -320,7 +271,6 @@ x3dom.userAgentFeature = {
             } else if (showStats.toLowerCase() === "false") {
                 x3ds[i].runtime.processIndicator(false);
             }
-
 //            var showProgress = x3ds[i].getAttribute("showProgress");
 //            if (showProgress == 'true' || showProgress === true || showProgress == 'bar') {
 //                var spinner = document.createElement("div");
@@ -332,9 +282,6 @@ x3dom.userAgentFeature = {
 //                }
 //                 x3ds[i].appendChild(spinner);
 //            }
-
-
-
 
             x3dom.canvases.push(x3dcanvas);
 
@@ -349,8 +296,7 @@ x3dom.userAgentFeature = {
                 evt = document.createEvent("Events");    
                 evt.initEvent(eventType, true, true);     
                 document.dispatchEvent(evt);              
-            }
-            else if (document.createEventObject) {
+            } else if (document.createEventObject) {
                 evt = document.createEventObject();
                 // http://stackoverflow.com/questions/1874866/how-to-fire-onload-event-on-document-in-ie
                 document.body.fireEvent('on' + eventType, evt);   
