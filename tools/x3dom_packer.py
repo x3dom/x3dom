@@ -108,7 +108,12 @@ def build(parser, options, args):
         outfile = open(options.outfile, 'w')
         outfile.write(result)
         outfile.close()
-        
+    elif options.algo == None:
+        outfile = open(options.outfile, 'w')
+        outfile.write("/** X3DOM Runtime, http://www.x3dom.org/ %s - %s - %s */" % (version, git_revision, git_date) )
+        outfile.write(concatenated_file)
+        outfile.close()
+
     # Output some stats
     in_len = len(concatenated_file)    
     ratio = float(out_len) / float(in_len);
