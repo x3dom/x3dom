@@ -12,7 +12,7 @@
 
 // ### X3DDocument ###
 x3dom.X3DDocument = function(canvas, ctx) {
-    this.properties = x3dom.Properties;
+    this.properties = new x3dom.Properties();
     this.canvas = canvas;
     this.ctx = ctx;
     this.needRender = true;
