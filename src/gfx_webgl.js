@@ -1069,13 +1069,16 @@ x3dom.gfx_webgl = (function () {
             shape._webgl.lightsAndShadow = useLightingFunc(viewarea);
             
             var needFullReInit = (shape._webgl.lightsAndShadow[0] != oldLightsAndShadow[0] || 
-                                  shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1] || shape._dirty.shader);
+                                  shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1] ||
+                                  shape._dirty.shader);
 
             // TODO; do same for texcoords etc.!
-            if (shape._dirty.colors === true && shape._webgl.shader.color === undefined)
+            if (shape._dirty.colors === true &&
+                shape._webgl.shader.color === undefined &&
+                shape._cf.geometry.node._mesh._colors[0].length)
             {
                 // required since otherwise shape._webgl.shader.color stays undefined
-                // and thus the wrong shader will be chosen
+                // and thus the wrong shader will be chosen although there are colors
                 needFullReInit = true;
             }
                     
