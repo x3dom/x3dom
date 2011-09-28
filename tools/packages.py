@@ -6,8 +6,7 @@ basics = [
   'src/lang/Properties.js',
   'src/X3DCanvas.js',
   'src/Runtime.js',
-  'src/Main.js',
-  'src/version.js'
+  'src/Main.js'
 ]
 
 gfx = [
