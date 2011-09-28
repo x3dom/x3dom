@@ -33,7 +33,7 @@ class packer():
   # Create the version.js and fill in the git revision
   def generate_version_file(self, version_in):
     
-    version_out = "version.js"
+    version_out = "src/version.js"
     
     print "Using Version: '" + version_in + "' >> '" + version_out + "'"
     
@@ -75,9 +75,7 @@ class packer():
   def build(self, input_files, output_file, packaging_module):
 
     # find the VERSION file
-    if os.path.isfile("VERSION"):
-      version_file_name = "VERSION"
-    elif os.path.isfile("src/VERSION"):
+    if os.path.isfile("src/VERSION"):
       version_file_name = "src/VERSION"
     else:
       print "FATAL: Cannot find any VERSION file"
@@ -145,6 +143,7 @@ class packer():
         files += ["--js=" + filename]
         
       Popen(["java", "-jar", "tools/compiler.jar", "--js_output_file=" + output_file, "--summary_detail_level=3", "--warning_level=VERBOSE"] + files)
+      #Popen(["java", "-jar", "tools/compiler.jar", "--js_output_file=" + output_file] + files)
     
     # NONE
     elif packaging_module == None:
