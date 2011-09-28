@@ -8,7 +8,7 @@ Getting started
 
 Please have a look at the official documentation in order to get started:
 
-http://x3dom.org/docs/latest/
+http://x3dom.org/docs/latest
 
 
 
@@ -23,10 +23,10 @@ If you decided to post to the mailing list or forum, please include as much info
 Mailing Lists
 -------------
 
-**Users** (if you are using X3DOM to build something)    
+**Users** (if you are using X3DOM to build something)
 https://lists.sourceforge.net/lists/listinfo/x3dom-users
 
-**Developers** (discussion of X3DOM development itself)    
+**Developers** (discussion of X3DOM development itself)
 https://lists.sourceforge.net/lists/listinfo/x3dom-developers
 
 
@@ -40,7 +40,7 @@ Please report issues and attach patches here. For general help and questions dir
 
 **Uploading Files to the Issue Tracker**   
 The GitHub issue tracker does not allow to upload files. However, there's a service that helps you with sharing files:
-https://gist.github.com/
+https://gist.github.com
 Just copy and paste your file contents there and then copy the Gist URL into the issues form.
 
 It immensely helps us if you can provide a live web page illustrating your problem. So if you have webspace and can upload and post the URL with your issue, 
@@ -52,4 +52,4 @@ Contributing
 
 We encourage you to contribute to X3DOM! If you would like to contribute to X3DOM, there are severals ways you can do this. First you should subscribe to the developers mailing list, where the developers of X3DOM discuss the development of the library itself. 
 
-More Information can be found here: [[http://x3dom.org/docs/latest/internals/index.html]]
+More Information can be found here: http://x3dom.org/docs/latest/internals/index.html
