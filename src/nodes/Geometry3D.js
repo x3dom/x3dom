@@ -23,7 +23,7 @@ x3dom.registerNodeType(
 
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
-
+			
 			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
@@ -70,7 +70,86 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
-        }
+         },
+         {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {
+				
+				if(fieldName === "size") {
+					this._mesh._positions[0] = [];
+						
+					var sx = this._vf.size.x, sy = this._vf.size.y;
+					var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
+					var x = 0, y = 0;
+					var xstep = sx / subx;
+					var ystep = sy / suby;
+	
+					sx /= 2; sy /= 2;
+	
+					for (y = 0; y <= suby; y++) {
+						for (x = 0; x <= subx; x++) {
+							this._mesh._positions[0].push(x * xstep - sx);
+							this._mesh._positions[0].push(y * ystep - sy);
+							this._mesh._positions[0].push(0);							
+						}
+					}
+		
+					this._mesh._invalidate = true;
+					this._mesh._numCoords = this._mesh._positions[0].length / 3;
+						   
+					Array.forEach(this._parentNodes, function (node) {
+						node._dirty.positions = true;
+					});
+				} else if (fieldName === "subdivision") {
+					this._mesh._positions[0] = [];
+					this._mesh._indices[0] =[];
+					this._mesh._normals[0] = [];
+					this._mesh._texCoords[0] =[];
+						
+					var sx = this._vf.size.x, sy = this._vf.size.y;
+					var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
+					
+					var x = 0, y = 0;
+					var xstep = sx / subx;
+					var ystep = sy / suby;
+	
+					sx /= 2; sy /= 2;
+	
+					for (y = 0; y <= suby; y++) {
+						for (x = 0; x <= subx; x++) {
+							this._mesh._positions[0].push(x * xstep - sx);
+							this._mesh._positions[0].push(y * ystep - sy);
+							this._mesh._positions[0].push(0);
+							this._mesh._normals[0].push(0);
+							this._mesh._normals[0].push(0);
+							this._mesh._normals[0].push(1);
+							this._mesh._texCoords[0].push(x / subx);
+							this._mesh._texCoords[0].push(y / suby);
+						}
+					}
+	
+					for (y = 1; y <= suby; y++) {
+						for (x = 0; x < subx; x++) {
+							this._mesh._indices[0].push((y - 1) * (subx + 1) + x);
+							this._mesh._indices[0].push((y - 1) * (subx + 1) + x + 1);
+							this._mesh._indices[0].push(y * (subx + 1) + x);
+	
+							this._mesh._indices[0].push(y * (subx + 1) + x);
+							this._mesh._indices[0].push((y - 1) * (subx + 1) + x + 1);
+							this._mesh._indices[0].push(y * (subx + 1) + x + 1);
+						}
+					}
+					
+					this._mesh._invalidate = true;
+					this._mesh._numFaces = this._mesh._indices[0].length / 3;
+					this._mesh._numCoords = this._mesh._positions[0].length / 3;
+						   
+					Array.forEach(this._parentNodes, function (node) {
+						node.setAllDirty();
+					});
+				}
+        	}
+		}
     )
 );
 
@@ -170,14 +249,12 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
-
+			this.addField_SFFloat(ctx, 'radius', 1);
+			this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
+			 
             var qfactor = 1.0;
-
-            var r = ctx ? 1 : 10000;
-            
-            if (ctx && ctx.xmlNode.hasAttribute('radius')) {
-                r = +ctx.xmlNode.getAttribute('radius');
-            }
+			var r = this._vf.radius;
+			var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 			
 			var geoCacheID = 'Sphere_'+r;
 
@@ -203,10 +280,12 @@ x3dom.registerNodeType(
                 } else {
                     qfactor = parseFloat(qfactor);
                 }
+				
+				this._quality = qfactor;
 
 				var latNumber, longNumber;
-				var latitudeBands = Math.floor(24 * qfactor);
-				var longitudeBands = Math.floor(24 * qfactor);
+				var latitudeBands = Math.floor(subx * qfactor);
+				var longitudeBands = Math.floor(suby * qfactor);
 
                 //x3dom.debug.logInfo("Latitude bands:  "+ latitudeBands);
                 //x3dom.debug.logInfo("Longitude bands: "+ longitudeBands);
@@ -266,6 +345,122 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
+        },
+        {
+            fieldChanged: function(fieldName) {
+                 if (fieldName === "radius") {  
+                    this._mesh._positions[0] = [];
+					this._mesh._normals[0] = [];
+					var r = this._vf.radius;
+					var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
+					var qfactor = this._quality;
+									
+					var latNumber, longNumber;
+					var latitudeBands = Math.floor(subx * qfactor);
+					var longitudeBands = Math.floor(suby * qfactor);
+					
+					var theta, sinTheta, cosTheta;
+					var phi, sinPhi, cosPhi;
+					var x, y, z;
+	
+					for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+						theta = (latNumber * Math.PI) / latitudeBands;
+						sinTheta = Math.sin(theta);
+						cosTheta = Math.cos(theta);
+	
+						for (longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+							phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
+							sinPhi = Math.sin(phi);
+							cosPhi = Math.cos(phi);
+	
+							x = -cosPhi * sinTheta;
+							y = -cosTheta;
+							z = -sinPhi * sinTheta;
+	
+							this._mesh._positions[0].push(r * x);
+							this._mesh._positions[0].push(r * y);
+							this._mesh._positions[0].push(r * z);
+						}
+					}
+					
+					this._mesh._invalidate = true;
+					this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                    });
+                } else if (fieldName === "subdivision") {
+					this._mesh._positions[0] = [];
+					this._mesh._indices[0] =[];
+					this._mesh._normals[0] = [];
+					this._mesh._texCoords[0] =[];
+					
+					var r = this._vf.radius;
+					var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
+					var qfactor = this._quality;
+					
+					var latNumber, longNumber;
+					var latitudeBands = Math.floor(subx * qfactor);
+					var longitudeBands = Math.floor(suby * qfactor);
+	
+					var theta, sinTheta, cosTheta;
+					var phi, sinPhi, cosPhi;
+					var x, y, z, u, v;
+	
+					for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+						theta = (latNumber * Math.PI) / latitudeBands;
+						sinTheta = Math.sin(theta);
+						cosTheta = Math.cos(theta);
+	
+						for (longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+							phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
+							sinPhi = Math.sin(phi);
+							cosPhi = Math.cos(phi);
+	
+							x = -cosPhi * sinTheta;
+							y = -cosTheta;
+							z = -sinPhi * sinTheta;
+	
+							u = 0.25 - ((1.0 * longNumber) / longitudeBands);
+							v = latNumber / latitudeBands;
+	
+							this._mesh._positions[0].push(r * x);
+							this._mesh._positions[0].push(r * y);
+							this._mesh._positions[0].push(r * z);
+							this._mesh._normals[0].push(x);
+							this._mesh._normals[0].push(y);
+							this._mesh._normals[0].push(z);
+							this._mesh._texCoords[0].push(u);
+							this._mesh._texCoords[0].push(v);
+						}
+					}
+	
+					var first, second;
+	
+					for (latNumber = 0; latNumber < latitudeBands; latNumber++) {
+						for (longNumber = 0; longNumber < longitudeBands; longNumber++) {
+							first = (latNumber * (longitudeBands + 1)) + longNumber;
+							second = first + longitudeBands + 1;
+	
+							this._mesh._indices[0].push(first);
+							this._mesh._indices[0].push(second);
+							this._mesh._indices[0].push(first + 1);
+	
+							this._mesh._indices[0].push(second);
+							this._mesh._indices[0].push(second + 1);
+							this._mesh._indices[0].push(first + 1);
+						}
+					}
+					
+					this._mesh._invalidate = true;
+					this._mesh._numFaces = this._mesh._indices[0].length / 3;
+					this._mesh._numCoords = this._mesh._positions[0].length / 3;
+					
+					 Array.forEach(this._parentNodes, function (node) {
+                        node.setAllDirty();
+                    });
+				}
+            }
         }
     )
 );

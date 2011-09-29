@@ -193,6 +193,19 @@ x3dom.registerNodeType(
 
             isCCW: function() {
                 return this._cf.geometry.node._vf.ccw;
+            },
+			
+			setAllDirty: function () {
+				this._dirty.positions = true;
+				this._dirty.normals = true;
+				this._dirty.texcoords = true;
+				this._dirty.colors  =  true;
+				this._dirty.indexes  = true;
+				this._dirty.texture  = true;
+				this._dirty.material = true;
+				this._dirty.text = true;
+				this._dirty.shader = true;
+               
             }
         }
     )
