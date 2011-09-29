@@ -123,7 +123,7 @@ x3dom.registerNodeType(
 			var end = this._vf.endAngle;
 			
 			
-			var geoCacheID = 'ArcClose2D_'+r+start;
+			var geoCacheID = 'ArcClose2D_'+r+start+end+this._vf.closureType;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using ArcClose2D from Cache");
