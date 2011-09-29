@@ -618,6 +618,8 @@ x3dom.registerNodeType(
         {
             nodeChanged: function() {},
             fieldChanged: function(fieldName) {
+            var x;
+            var y;
 				this._mesh._positions[0] = [];
 				this._mesh._indices[0] =[];
 				for (var i = 0; i < this._vf.lineSegments.length ; i++) {
@@ -684,6 +686,8 @@ x3dom.registerNodeType(
         {
             nodeChanged: function() {},
             fieldChanged: function(fieldName) {
+            var x;
+            var y;
 				this._mesh._positions[0] = [];
 				this._mesh._indices[0] =[];
 				for (var i = 0; i < this._vf.point.length ; i++) {
@@ -860,8 +864,8 @@ x3dom.registerNodeType(
 				}
 				
 				for (var i = 0; i < this._vf.vertices.length ; i++) {
-					x = this._vf.vertices[i].x;
-					y = this._vf.vertices[i].y;
+					var x = this._vf.vertices[i].x;
+					var y = this._vf.vertices[i].y;
 					this._mesh._positions[0].push(x);
 					this._mesh._positions[0].push(y);
 					this._mesh._positions[0].push(0.0);

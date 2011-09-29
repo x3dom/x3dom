@@ -99,7 +99,7 @@ x3dom.registerNodeType(
               return this.elipsoideParameters['WE'];
             },
 
-            UTMtoGC: function(geoSystem, coors) {
+            UTMtoGC: function(geoSystem, coords) {
               x3dom.debug.logError('Not implemented GeoCoordinate: UTM');
             },
             
@@ -171,7 +171,7 @@ x3dom.registerNodeType(
                 if(geoOrigin.node)
                 {
                   var copy = new x3dom.fields.MFVec3f();
-                  for(var i=0; i<coors.length; ++i)
+                  for(var i=0; i<coords.length; ++i)
                   {
                     var current = new x3dom.fields.SFVec3f();
                     
@@ -430,7 +430,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'referenceBindableDescription', []);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ChildGroup);
             this.addField_SFNode('rootNode', x3dom.nodeTypes.ChildGroup);
-            this.addField_SFString(ctx, 'triggerName', Synchronize);
+            //this.addField_SFString(ctx, 'triggerName', Synchronize);
             this.addField_SFNode('privateChild1Node', x3dom.nodeTypes.ChildGroup);
             this.addField_SFNode('privateChild2Node', x3dom.nodeTypes.ChildGroup);
             this.addField_SFNode('privateChild3Node', x3dom.nodeTypes.ChildGroup);
@@ -593,7 +593,7 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 1, 0);
             this.addField_SFVec3d(ctx, 'position', 0, 0, 100000);
             this.addField_SFBool(ctx, 'headlight', true);
-            this.addField_MFString(ctx, 'navType', EXAMINE);
+            this.addField_MFString(ctx, 'navType', 'EXAMINE');
             this.addField_SFFloat(ctx, 'speedFactor', 1.0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ViewBindable);
         },

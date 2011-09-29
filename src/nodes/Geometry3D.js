@@ -575,6 +575,7 @@ x3dom.registerNodeType(
 				var p = [], n = [], t = [], i = [];
 
 				var j = 0;
+        var k = 0;
 
 				if (this._vf.side)
 				{
@@ -684,6 +685,7 @@ x3dom.registerNodeType(
 				var p = [], n = [], t = [], i = [];
 
 				var j = 0;
+        var k = 0;
 				if (this._vf.side)
 				{
 				  for (j=0, k=0; j<=sides; j++)
