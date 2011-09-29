@@ -47,7 +47,7 @@ x3dom.registerNodeType(
                 return null;
             },
 
-			getColorTextureURL: function() {
+            getColorTextureURL: function() {
                 return null;
             }
         }
@@ -288,7 +288,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'colorPerVertex', true);  // TODO
 
             this.addField_MFNode('attrib', x3dom.nodeTypes.X3DVertexAttributeNode);
-            this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
+            this.addField_SFNode('coord', x3dom.nodeTypes.X3DCoordinateNode);
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
 
             this.addField_MFInt32(ctx, 'coordIndex', []);
@@ -320,7 +320,8 @@ x3dom.registerNodeType(
 
                 var coordNode = this._cf.coord.node;
                 x3dom.debug.assert(coordNode);
-                positions = coordNode._vf.point;
+                
+                positions = coordNode.getPoints();
 
                 var numColComponents = 3;
                 var colorNode = this._cf.color.node;
