@@ -291,7 +291,7 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 
     switch (keyCode) {
         case 27: /* ESC */
-            history.back(); // emulate good old ESC key
+            window.history.back(); // emulate good old ESC key
             break;
         case 33: /* page up */
                 stack = this._scene.getViewpoint()._stack;

@@ -123,7 +123,7 @@ x3dom.registerNodeType(
 			var end = this._vf.endAngle;
 			
 			
-			var geoCacheID = 'ArcClose2D_'+r+start;
+			var geoCacheID = 'ArcClose2D_'+r+start+end+this._vf.closureType;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using ArcClose2D from Cache");
@@ -314,8 +314,7 @@ x3dom.registerNodeType(
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 					   
 				Array.forEach(this._parentNodes, function (node) {
-                   	node._dirty.positions = true;
-					node._dirty.colors = true;
+                   node.setAllDirty();
                 });
 			}
         }
@@ -565,8 +564,7 @@ x3dom.registerNodeType(
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
 				Array.forEach(this._parentNodes, function (node) {
-                   	node._dirty.positions = true;
-					node._dirty.colors = true;
+                   	node.setAllDirty();
                 });	
 			}
         }
@@ -618,6 +616,8 @@ x3dom.registerNodeType(
         {
             nodeChanged: function() {},
             fieldChanged: function(fieldName) {
+            var x;
+            var y;
 				this._mesh._positions[0] = [];
 				this._mesh._indices[0] =[];
 				for (var i = 0; i < this._vf.lineSegments.length ; i++) {
@@ -684,6 +684,8 @@ x3dom.registerNodeType(
         {
             nodeChanged: function() {},
             fieldChanged: function(fieldName) {
+            var x;
+            var y;
 				this._mesh._positions[0] = [];
 				this._mesh._indices[0] =[];
 				for (var i = 0; i < this._vf.point.length ; i++) {
@@ -860,8 +862,8 @@ x3dom.registerNodeType(
 				}
 				
 				for (var i = 0; i < this._vf.vertices.length ; i++) {
-					x = this._vf.vertices[i].x;
-					y = this._vf.vertices[i].y;
+					var x = this._vf.vertices[i].x;
+					var y = this._vf.vertices[i].y;
 					this._mesh._positions[0].push(x);
 					this._mesh._positions[0].push(y);
 					this._mesh._positions[0].push(0.0);
@@ -884,8 +886,7 @@ x3dom.registerNodeType(
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
 				Array.forEach(this._parentNodes, function (node) {
-                   	node._dirty.positions = true;
-					node._dirty.colors = true;
+                   node.setAllDirty();
                 });	
 			}
         }

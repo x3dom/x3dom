@@ -1370,10 +1370,10 @@ x3dom.gfx_webgl = (function () {
             // if (u > 1) { u = 1; }
             
             // prevent distortion
-            v0 = 1;
-            u0 = 0;
-            u = 1;
-            v = 0;
+            var v0 = 1;
+            var u0 = 0;
+            var u = 1;
+            var v = 0;
 
 //            x3dom.debug.logInfo(txtW + ", " + txtH + "; " + u0 + ", " + v0 + "; " + u + ", " + v);
 
@@ -2635,6 +2635,7 @@ x3dom.gfx_webgl = (function () {
 						if(shape._webgl.imageGeometry) {
 							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
 						} else {
+							//alert(shape._webgl.indexes[q].length);
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
 					}

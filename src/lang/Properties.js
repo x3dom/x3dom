@@ -42,7 +42,7 @@ x3dom.Properties.prototype.merge = function(other) {
 
 x3dom.Properties.prototype.toString = function() {
     var str = "";
-    for (name in this.properties) {
+    for (var name in this.properties) {
         str += "Name: " + name + " Value: " + this.properties[name] + "\n";
     }
     return str;
