@@ -51,7 +51,7 @@ x3dom.debug = {
 
 		// Check for firebug console
         try {
-            if (console) {
+            if (window.console.firebug !== undefined) {
                 x3dom.debug.isFirebugAvailable = true;           
             }
         }
@@ -158,8 +158,8 @@ x3dom.debug = {
 			node.innerHTML = logType + ": " + msg;
 			x3dom.debug.logContainer.insertBefore(node, x3dom.debug.logContainer.firstChild);
         } catch (err) {
-			if (console) {
-				console.warn(msg);
+			if (window.console.firebug !== undefined) {
+				window.console.warn(msg);
 			}
         }
         
@@ -167,16 +167,16 @@ x3dom.debug = {
         if (x3dom.debug.isFirebugAvailable) {
             switch (logType) {
                 case x3dom.debug.INFO:
-                    console.info(msg);
+                    window.console.info(msg);
                     break;
                 case x3dom.debug.WARNING:
-                    console.warn(msg);
+                    window.console.warn(msg);
                     break;
                 case x3dom.debug.ERROR:
-                    console.error(msg);
+                    window.console.error(msg);
                     break;
                 case x3dom.debug.EXCEPTION:
-                    console.debug(msg);
+                    window.console.debug(msg);
                     break;
                 default: 
                     break;
