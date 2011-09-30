@@ -70,23 +70,6 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### TextureCoordinate3D ### */
-x3dom.registerNodeType(
-    "TextureCoordinate3D",
-    "Texturing3D",
-    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
-        function (ctx) {
-            x3dom.nodeTypes.TextureCoordinate3D.superClass.call(this, ctx);
-
-            this.addField_MFVec3f(ctx, 'point', []);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
-        }
-    )
-);
-
 /* ### TextureCoordinate4D ### */
 x3dom.registerNodeType(
     "TextureCoordinate4D",
