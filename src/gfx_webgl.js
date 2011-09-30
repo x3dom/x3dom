@@ -1587,15 +1587,15 @@ x3dom.gfx_webgl = (function () {
 
                     image.onload = function()
                     {           
+						context.imageLoadManager.activeDownloads--; 
+						context.imageLoadManager.load();
+						
+						that._nameSpace.doc.needRender = true;
+                        that._nameSpace.doc.downloadCount -= 1;
+						
                         if(tex._vf.scale){
                             image = scaleImage(image);
                         }
-                        
-                        that._nameSpace.doc.needRender = true;
-                        that._nameSpace.doc.downloadCount -= 1;
-						
-						context.imageLoadManager.activeDownloads--; 
-						context.imageLoadManager.load();
                         
 						that._webgl.texture[unit] = texture;
 						
