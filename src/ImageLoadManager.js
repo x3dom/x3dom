@@ -21,7 +21,7 @@ x3dom.ImageLoadManager = function() {
 	
 	this.heap = [];
 	
-	this.maxDownloads = 10;
+	this.maxDownloads = 32;
 	
 	this.activeDownloads = 0;
 		
