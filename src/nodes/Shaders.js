@@ -218,6 +218,8 @@ x3dom.registerNodeType(
                     "    attribute vec3 color;\n" +
                     "    uniform mat4 modelViewProjectionMatrix;\n" +
                     "    uniform mat4 modelViewMatrix;\n" +
+					"    uniform mat4 normalMatrix;\n" +
+					"    uniform mat4 viewMatrix;\n" +
                     "    uniform sampler2D tex;\n");
         },
         {
