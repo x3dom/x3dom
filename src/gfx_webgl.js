@@ -2873,8 +2873,11 @@ x3dom.gfx_webgl = (function () {
         /*var normalMatrix = mat_view.mult(transform);
         normalMatrix = mat_view.inverse().transpose();*/
         
+		
+		
         var model_view = mat_view.mult(transform);
-        
+		
+		sp.viewMatrix 	   = mat_view.toGL();		
         sp.modelViewMatrix = model_view.toGL();
         sp.normalMatrix    = model_view.inverse().transpose().toGL();
         
