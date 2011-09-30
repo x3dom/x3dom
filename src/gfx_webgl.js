@@ -1667,28 +1667,33 @@ x3dom.gfx_webgl = (function () {
 				
 				var indexTexture = shape._cf.geometry.node.getIndexTexture();
 				if(indexTexture) {
+					indexTexture._vf.priority = 0;
 					shape.updateTexture(indexTexture, GI_texUnit++, 'index');
 				}
 				
 				for(var i=0; i<numCoordinateTextures; i++) {
 					var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(i);
 					if(coordinateTexture) {
+						coordinateTexture._vf.priority = 0;
 						shape.updateTexture(coordinateTexture, GI_texUnit++, 'coord');
 					}
 				}
 							
 				var normalTexture = shape._cf.geometry.node.getNormalTexture(0);
 				if(normalTexture) {
+					normalTexture._vf.priority = 0;
 					shape.updateTexture(normalTexture, GI_texUnit++, "normal");
 				}
 				
 				var texCoordTexture = shape._cf.geometry.node.getTexCoordTexture();
 				if(texCoordTexture) {
+					texCoordTexture._vf.priority = 0;
 					shape.updateTexture(texCoordTexture, GI_texUnit++, "texCoord");
 				}
 				
 				var colorTexture = shape._cf.geometry.node.getColorTexture();
 				if(colorTexture) {
+					colorTexture._vf.priority = 0;
 					shape.updateTexture(colorTexture, GI_texUnit++, "color");
 				}
 			}
