@@ -41,72 +41,73 @@
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
-<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <!-- END:X3DOM -->
 
     <!-- BEGIN:TEST -->
     <script type="text/javascript" src="media/js/tests.js"></script>
     <!-- END:TEST -->
 
-
-
 	</head>
+
     <body>
     <h1>Experimental WebSG Example</h1>
-<div class="group">
-<webSG id="myGraph" showLog='true' width='500px' height='400px'>
-    <scene id='scene'>
-      <shape>
-        <appearance sortType='opaque'>
-		  <texture>
-		    <img src='ogl.jpg'>
-		  </texture>
-          <composedShader>
-            <uniform name='tex' type='SFInt32' value='0'></uniform>
-            <uniform name='diffuseColor' type='SFVec3f' value='#ffff00'></uniform>
-            <shaderPart type='vertex'>
-                  attribute vec3 position;
-                  attribute vec3 normal;
-                  attribute vec2 texcoord;
-                  uniform mat4 modelViewProjectionMatrix;
-	              varying vec3 fragNormal;
-                  varying vec2 fragTexCoord;
-                  
-                  void main()
-                  {
-                      fragNormal = normal;
-                      fragTexCoord = texcoord;
-                      gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
-                  }
-            </shaderPart>
-            <shaderPart type='fragment'>
-                  #ifdef GL_ES
-                     precision highp float;
-                  #endif
-                  
-                  uniform sampler2D tex;
-                  uniform vec3 diffuseColor;
-	              varying vec3 fragNormal;
-                  varying vec2 fragTexCoord;
-                  
-                  void main()
-                  {
-                      vec3 color = (normalize(fragNormal) + 1.0) * 0.5;
-                      vec4 texCol = texture2D(tex, vec2(fragTexCoord.x, 1.0-fragTexCoord.y));
-                      gl_FragColor = vec4(color*texCol.rgb*diffuseColor, texCol.a);
-                  }
-            </shaderPart>
-          </composedShader>
-        </appearance>
-        <mesh primType="triangle" index="0 1 2, 0 2 3" >
-			<floatVertexAttribute name='position' numComponents='3' value='-4 -3 0, 4 -3 0, 4 3 0, -4 3 0'></floatVertexAttribute>
-            <floatVertexAttribute name='normal' numComponents='3' value='-0.57735 -0.57735 0.57735, 0.57735 -0.57735 0.57735, 0.57735 0.57735 0.57735, -0.57735 0.57735 0.57735'></floatVertexAttribute>
-            <floatVertexAttribute name='texcoord' numComponents='2' value='0 0, 1 0, 1 1, 0 1'></floatVertexAttribute>
-		</mesh>
-      </shape>
-    </scene>
-</webSG>
-</div>
+    <div class="group">
+    <webSG id="myGraph" showLog='true' width='500px' height='400px'>
+        <scene id='scene'>
+          <shape>
+            <appearance>
+              <texture>
+                <img src='media/img/ogl.jpg'>
+              </texture>
+                <!--
+              <composedShader>
+                <uniform name='tex0' type='SFInt32' value='0'></uniform>
+                <uniform name='diffuseColor' type='SFVec3f' value='#ffff00'></uniform>
+                <shaderPart type='vertex'>
+                      attribute vec3 position;
+                      attribute vec3 normal;
+                      attribute vec2 texcoord;
+                      uniform mat4 modelViewProjectionMatrix;
+                      varying vec3 fragNormal;
+                      varying vec2 fragTexCoord;
+
+                      void main()
+                      {
+                          fragNormal = normal;
+                          fragTexCoord = texcoord;
+                          gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                      }
+                </shaderPart>
+                <shaderPart type='fragment'>
+                      #ifdef GL_ES
+                         precision highp float;
+                      #endif
+
+                      uniform sampler2D tex0;
+                      uniform vec3 diffuseColor;
+                      varying vec3 fragNormal;
+                      varying vec2 fragTexCoord;
+
+                      void main()
+                      {
+                          vec3 color = (normalize(fragNormal) + 1.0) * 0.5;
+                          vec4 texCol = texture2D(tex, vec2(fragTexCoord.x, 1.0-fragTexCoord.y));
+                          gl_FragColor = vec4(color*texCol.rgb*diffuseColor, texCol.a);
+                      }
+                </shaderPart>
+              </composedShader>
+              -->
+            </appearance>
+            <mesh primType="triangle" index="0 1 2, 0 2 3" >
+                <floatVertexAttribute name='position' numComponents='3' value='-4 -3 0, 4 -3 0, 4 3 0, -4 3 0'></floatVertexAttribute>
+                <floatVertexAttribute name='normal' numComponents='3' value='-0.57735 -0.57735 0.57735, 0.57735 -0.57735 0.57735, 0.57735 0.57735 0.57735, -0.57735 0.57735 0.57735'></floatVertexAttribute>
+                <floatVertexAttribute name='texcoord' numComponents='2' value='0 0, 1 0, 1 1, 0 1'></floatVertexAttribute>
+            </mesh>
+          </shape>
+        </scene>
+    </webSG>
+    </div>
+
     <script type="text/javascript">
 	var col = false;
     
@@ -127,8 +128,8 @@
 			button.value = "Red";
         
         // Field update NYI
-		var mat = document.getElementsByName("diffuseColor")[0];
-		mat.setAttribute("value", (!col ? "#ffff00" : "#ff0000"));
+//		var mat = document.getElementsByName("diffuseColor")[0];
+//		mat.setAttribute("value", (!col ? "#ffff00" : "#ff0000"));
         
         var sg = document.getElementById("myGraph");
         
