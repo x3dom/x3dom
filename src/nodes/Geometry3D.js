@@ -1784,15 +1784,16 @@ x3dom.registerNodeType(
                 var pnts = this._cf.coord.node._vf.point;
                 var i, n = pnts.length;
 
-                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) ||
+               if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) /*||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
                     (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
-                    (this._vf.colorIndex.length > 0 && this._cf.color.node))
+                    (this._vf.colorIndex.length > 0 && this._cf.color.node)*/)
                 {
-                    // TODO; FIXME
+                    
+					// TODO; FIXME
                     x3dom.debug.logWarning("Ipol with creaseAngle == 0, too many coords, or multi-index!");
 
-                    /** HACK */
+                    // HACK 
                     this.nodeChanged();
 
                     Array.forEach(this._parentNodes, function (node) {
@@ -1810,7 +1811,7 @@ x3dom.registerNodeType(
                     // TODO; multi-index with different this._mesh._indices
                     pnts = this._cf.coord.node._vf.point;
                     n = pnts.length;
-
+					
                     this._mesh._positions[0] = [];
 
                     // TODO; optimize (is there a memcopy?)
@@ -1823,12 +1824,12 @@ x3dom.registerNodeType(
 
                     this._mesh._invalidate = true;
 
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                    Array.forEach(this._parentNodes, function (node) {					
+                         node._dirty.positions = true;
                     });
                 }
                 else if (fieldName == "color")
-                {
+                { 
                     pnts = this._cf.color.node._vf.color;
                     n = pnts.length;
 
@@ -1847,27 +1848,27 @@ x3dom.registerNodeType(
                 }
 				else if (fieldName == "normal")
                 {
-                    pnts = this._cf.color.node._vf.normal;
+                    pnts = this._cf.normal.node._vf.vector;
                     n = pnts.length;
-
-                    this._mesh._normal[0] = [];
-
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._normal[0].push(pnts[i].x);
-                        this._mesh._normal[0].push(pnts[i].y);
-                        this._mesh._normal[0].push(pnts[i].z);
+					
+                    this._mesh._normals[0] = [];
+					
+                    for (var i=0; i<n; i++)
+                    {					
+                        this._mesh._normals[0].push(pnts[i].x);
+                        this._mesh._normals[0].push(pnts[i].y);
+                        this._mesh._normals[0].push(pnts[i].z);
                     }
 					
 					this._mesh._invalidate = true;
-
+					
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.normal = true;
+                         node.setAllDirty();
                     });
                 }
 				else if (fieldName == "texCoord")
                 {
-                    pnts = this._cf.color.node._vf.texCoord;
+                    pnts = this._cf.texCoord.node._vf.point;
                     n = pnts.length;
 
                     this._mesh._texCoords[0] = [];
@@ -1881,7 +1882,7 @@ x3dom.registerNodeType(
 					this._mesh._invalidate = true;
 
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.texCoords = true;
+                        node.setAllDirty();
                     });
                 }
             }
