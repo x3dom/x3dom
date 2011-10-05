@@ -8,8 +8,9 @@ BASIC :=  src/lang/Array.js\
   src/debug.js\
   src/ImageLoadManager.js\
   src/lang/Properties.js\
-  src/X3DCanvas.js}
-  src/Runtime.js rc/Main.js
+  src/X3DCanvas.js\
+  src/Runtime.js\
+  src/Main.js
   
 GFX   :=  src/gfx_webgl.js\
   src/gfx_flash.js
