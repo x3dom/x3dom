@@ -249,7 +249,9 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
-			this.addField_SFFloat(ctx, 'radius', 1);
+
+            // sky box background creates sphere with r = 10000
+			this.addField_SFFloat(ctx, 'radius', ctx ? 1 : 10000);
 			this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
 			 
             var qfactor = 1.0;

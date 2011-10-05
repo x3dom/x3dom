@@ -17,45 +17,44 @@ COMPILER = ${JS_ENGINE} ${TOOL_DIR}/uglify.js --unsafe
 
 # order is important
 BASE_FILES = \
-	${SRC_DIR}/lang/Array.js\
-	${SRC_DIR}/Internals.js\
-    ${SRC_DIR}/debug.js\
-    ${SRC_DIR}/ImageLoadManager.js\
-	${SRC_DIR}/lang/Properties.js\
-    ${SRC_DIR}/X3DCanvas.js\
-    ${SRC_DIR}/Runtime.js\
-    ${SRC_DIR}/Main.js\
-	${SRC_DIR}/version.js\
-	${SRC_DIR}/gfx_webgl.js\
-	${SRC_DIR}/gfx_flash.js\
-    ${SRC_DIR}/Mesh.js\
-	${SRC_DIR}/X3DDocument.js\
-	${SRC_DIR}/MatrixMixer.js\
-	${SRC_DIR}/Viewarea.js\
-	${SRC_DIR}/fields.js\
-	${SRC_DIR}/nodes/NodeNameSpace.js\
-	${SRC_DIR}/nodes/Core.js\
-	${SRC_DIR}/nodes/Grouping.js\
-	${SRC_DIR}/nodes/Bindable.js\
-    ${SRC_DIR}/nodes/Rendering.js\
-    ${SRC_DIR}/nodes/Shape.js\
-	${SRC_DIR}/nodes/Lighting.js\
-	${SRC_DIR}/nodes/Interpolation.js\
-	${SRC_DIR}/nodes/Followers.js\
-	${SRC_DIR}/nodes/Time.js\
-	${SRC_DIR}/nodes/Networking.js\
-	${SRC_DIR}/nodes/EnvironmentalEffects.js\
-	${SRC_DIR}/nodes/Navigation.js\
-	${SRC_DIR}/nodes/Text.js\
-	${SRC_DIR}/nodes/Sound.js\
-	${SRC_DIR}/nodes/Texturing.js\
-    ${SRC_DIR}/nodes/Shaders.js\
-    ${SRC_DIR}/nodes/Geometry3D.js\
-    ${SRC_DIR}/nodes/Geospatial.js\
+  ${SRC_DIR}/lang/Array.js\
+  ${SRC_DIR}/Internals.js\
+  ${SRC_DIR}/debug.js\
+  ${SRC_DIR}/ImageLoadManager.js\
+  ${SRC_DIR}/lang/Properties.js\
+  ${SRC_DIR}/X3DCanvas.js\
+  ${SRC_DIR}/Runtime.js\
+  ${SRC_DIR}/Main.js\
+  ${SRC_DIR}/gfx_webgl.js\
+  ${SRC_DIR}/gfx_flash.js\
+  ${SRC_DIR}/Mesh.js\
+  ${SRC_DIR}/X3DDocument.js\
+  ${SRC_DIR}/MatrixMixer.js\
+  ${SRC_DIR}/Viewarea.js\
+  ${SRC_DIR}/fields.js\
+  ${SRC_DIR}/nodes/NodeNameSpace.js\
+  ${SRC_DIR}/nodes/Core.js\
+  ${SRC_DIR}/nodes/Grouping.js\
+  ${SRC_DIR}/nodes/Bindable.js\
+  ${SRC_DIR}/nodes/Rendering.js\
+  ${SRC_DIR}/nodes/Shape.js\
+  ${SRC_DIR}/nodes/Lighting.js\
+  ${SRC_DIR}/nodes/Interpolation.js\
+  ${SRC_DIR}/nodes/Followers.js\
+  ${SRC_DIR}/nodes/Time.js\
+  ${SRC_DIR}/nodes/Networking.js\
+  ${SRC_DIR}/nodes/EnvironmentalEffects.js\
+  ${SRC_DIR}/nodes/Navigation.js\
+  ${SRC_DIR}/nodes/Text.js\
+  ${SRC_DIR}/nodes/Sound.js\
+  ${SRC_DIR}/nodes/Texturing.js\
+  ${SRC_DIR}/nodes/Shaders.js\
+  ${SRC_DIR}/nodes/Geometry3D.js\
+  ${SRC_DIR}/nodes/Geospatial.js\
 
 COMPONENTS = \
-    ${SRC_DIR}/nodes/Geometry2D.js\
-    ${SRC_DIR}/nodes/VolumeRendering.js
+  ${SRC_DIR}/nodes/Geometry2D.js\
+  ${SRC_DIR}/nodes/VolumeRendering.js
 
 MODULES = ${BASE_FILES}
 

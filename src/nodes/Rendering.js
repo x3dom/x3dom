@@ -836,6 +836,19 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.X3DCoordinateNode.superClass.call(this, ctx);
+        },
+        {
+            fieldChanged: function (fieldName) {
+                Array.forEach(this._parentNodes, function (node) {
+                    node.fieldChanged("coord");
+                });
+            },
+
+            parentAdded: function (parent) {
+                if (parent._mesh && parent._cf.coord.node !== this) {
+                    parent.fieldChanged("coord");
+                }
+            }
         }
       )
 );
@@ -849,15 +862,9 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Coordinate.superClass.call(this, ctx);
 
-            //this._vf.point = [];
             this.addField_MFVec3f(ctx, 'point', []);
         },
         {
-            fieldChanged: function (fieldName) {
-                Array.forEach(this._parentNodes, function (node) {
-                    node.fieldChanged("coord");
-                });
-            },
             getPoints: function() {
                 return this._vf.point;
             }
@@ -875,6 +882,20 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Normal.superClass.call(this, ctx);
 
             this.addField_MFVec3f(ctx, 'vector', []);
+        },
+        {
+            fieldChanged: function (fieldName) {
+                Array.forEach(this._parentNodes, function (node) {
+                    node.fieldChanged("normal");
+                });
+            },
+
+            parentAdded: function (parent) {
+                if (parent._mesh && //parent._cf.coord.node &&
+                    parent._cf.normal.node !== this) {
+                    parent.fieldChanged("normal");
+                }
+            }
         }
     )
 );
@@ -894,11 +915,9 @@ x3dom.registerNodeType(
                 });
             },
 
-            // TODO; do same for texcoords etc.!
             parentAdded: function (parent) {
-                // FIXME; fix this quickfix that prevents from updating nodes
-                //        that are not yet initialized (assumes coordinates)!
-                if (parent._mesh && parent._cf.coord.node) {
+                if (parent._mesh && //parent._cf.coord.node &&
+                    parent._cf.color.node !== this) {
                     parent.fieldChanged("color");
                 }
             }
