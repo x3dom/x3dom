@@ -21,7 +21,7 @@ x3dom.ImageLoadManager = function() {
 	
 	this.heap = [];
 	
-	this.maxDownloads = 10;
+	this.maxDownloads = 32;
 	
 	this.activeDownloads = 0;
 		
@@ -45,10 +45,9 @@ x3dom.ImageLoadManager = function() {
 	};
 	
 	this.load = function() {
-		var that = this;
-		while(this.activeDownloads <= 10 && this.heap.length) {
+		while(this.activeDownloads <= this.maxDownloads && this.heap.length) {
+			var item = this.pop();
 			this.activeDownloads++;
-			var item = this.heap.pop();
 			item.image.crossOrigin = '';
 			item.image.src = item.url;
 		}
