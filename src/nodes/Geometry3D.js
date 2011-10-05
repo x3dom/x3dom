@@ -1843,6 +1843,45 @@ x3dom.registerNodeType(
                         node._dirty.colors = true;
                     });
                 }
+				else if (fieldName == "normal")
+                {
+                    pnts = this._cf.color.node._vf.normal;
+                    n = pnts.length;
+
+                    this._mesh._normal[0] = [];
+
+                    for (i=0; i<n; i++)
+                    {
+                        this._mesh._normal[0].push(pnts[i].x);
+                        this._mesh._normal[0].push(pnts[i].y);
+                        this._mesh._normal[0].push(pnts[i].z);
+                    }
+					
+					this._mesh._invalidate = true;
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.normal = true;
+                    });
+                }
+				else if (fieldName == "texCoord")
+                {
+                    pnts = this._cf.color.node._vf.texCoord;
+                    n = pnts.length;
+
+                    this._mesh._texCoords[0] = [];
+
+                    for (i=0; i<n; i++)
+                    {
+                        this._mesh._texCoords[0].push(pnts[i].x);
+                        this._mesh._texCoords[0].push(pnts[i].y);
+                    }
+					
+					this._mesh._invalidate = true;
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.texCoords = true;
+                    });
+                }
             }
         }
     )
