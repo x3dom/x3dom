@@ -2640,7 +2640,6 @@ x3dom.gfx_webgl = (function () {
 						if(shape._webgl.imageGeometry) {
 							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
 						} else {
-							//alert(shape._webgl.indexes[q].length);
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
 					}
