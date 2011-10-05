@@ -26,14 +26,14 @@ version_string = "/** X3DOM Runtime, http://www.x3dom.org */"
 
 tools_path = os.path.abspath(__file__)
 tools_path = os.path.dirname(tools_path)
-os.chdir(os.path.abspath(tools_path + "/.."))
+os.chdir(os.path.abspath(tools_path + "/../src"))
 
 class packer():
 
   # Create the version.js and fill in the git revision
   def generate_version_file(self, version_in):
     
-    version_out = "src/version.js"
+    version_out = "version.js"
     
     print "Using Version: '" + version_in + "' >> '" + version_out + "'"
     
@@ -75,8 +75,8 @@ class packer():
   def build(self, input_files, output_file, packaging_module):
 
     # find the VERSION file
-    if os.path.isfile("src/VERSION"):
-      version_file_name = "src/VERSION"
+    if os.path.isfile("VERSION"):
+      version_file_name = "VERSION"
     else:
       print "FATAL: Cannot find any VERSION file"
       sys.exit(0)
