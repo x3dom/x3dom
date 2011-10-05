@@ -45,13 +45,13 @@ SRC := $(BASIC) $(GFX) $(NODE) $(FIELDS)
 #---------------
 
 version.js:
-  touch version.js
+	touch version.js
 
 bundle: $(BUNDLE)
 
 clean: 
-  rm -f $(BUNDLE) out
+	rm -f $(BUNDLE) out
 
 $(BUNDLE): $(SRC)
-  python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
-  #cp x3dom.js ../example
+	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
+	#cp x3dom.js ../example
