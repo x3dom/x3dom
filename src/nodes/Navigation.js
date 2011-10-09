@@ -53,10 +53,13 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
             this.addField_SFFloat(ctx, 'zNear', 0.1);
-            this.addField_SFFloat(ctx, 'zFar', 100000);
+            this.addField_SFFloat(ctx, 'zFar', 10000);
 
-            this._viewMatrix = this._vf.orientation.toMatrix().transpose().
-                mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
+            //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
+            //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
+            this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
+                mult(this._vf.orientation.toMatrix()).inverse();
+
             this._projMatrix = null;
             this._lastAspect = 1.0;
         },
@@ -106,8 +109,10 @@ x3dom.registerNodeType(
                 this._viewMatrix = mat.mult(newView);
             },
             resetView: function() {
-                this._viewMatrix = this._vf.orientation.toMatrix().transpose().
-                    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
+                //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
+                //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
+                this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
+                    mult(this._vf.orientation.toMatrix()).inverse();
             },
 
             getProjectionMatrix: function(aspect)

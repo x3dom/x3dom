@@ -633,6 +633,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             evt.returnValue = true;
         }, true);
 
+        this.canvas.addEventListener('keydown', function (evt) {
+            var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
+            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+                this.parent.doc.onKeyDown(evt.keyCode);
+            }
+            this.parent.doc.needRender = true;
+            evt.returnValue = true;
+        }, true);
+        
 
         // http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
         // http://backtothecode.blogspot.com/2009/10/javascript-touch-and-gesture-events.html
