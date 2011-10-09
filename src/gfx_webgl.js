@@ -2871,16 +2871,14 @@ x3dom.gfx_webgl = (function () {
         // For rigid motions the inverse-transpose is not necessary
         /*var normalMatrix = mat_view.mult(transform);
         normalMatrix = mat_view.inverse().transpose();*/
-        
-		
-		
+
         var model_view = mat_view.mult(transform);
-		
-		sp.viewMatrix 	   = mat_view.toGL();		
+
         sp.modelViewMatrix = model_view.toGL();
         sp.normalMatrix    = model_view.inverse().transpose().toGL();
         
         if (userShader) {
+            sp.viewMatrix = mat_view.toGL();
             sp.modelViewMatrixInverse = model_view.inverse().toGL();
         }
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();

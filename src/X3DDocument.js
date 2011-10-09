@@ -275,7 +275,6 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
 
 // touch events
 x3dom.X3DDocument.prototype.onTouchMove = function (ctx, touch) {
-
     if (!ctx || !this._viewarea) {
         return;
     }
@@ -283,6 +282,26 @@ x3dom.X3DDocument.prototype.onTouchMove = function (ctx, touch) {
     x3dom.debug.logWarning("onTouchMove not implemented");
 };
 
+x3dom.X3DDocument.prototype.onKeyDown = function(keyCode)
+{
+    //x3dom.debug.logInfo("presses key " + keyCode);
+
+    switch (keyCode) {
+        case 37: /* left */
+            this._viewarea.strafeLeft();
+            break;
+        case 38: /* up */
+            this._viewarea.moveFwd();
+            break;
+        case 39: /* right */
+            this._viewarea.strafeRight();
+            break;
+        case 40: /* down */
+            this._viewarea.moveBwd();
+            break;
+        default:
+    }
+};
 
 x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 {
@@ -326,6 +345,8 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 {
     //x3dom.debug.logInfo("pressed key " + charCode);
+    var nav = this._scene.getNavigationInfo();
+
     switch (charCode)
     {
         case  32: /* space */
@@ -338,19 +359,15 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
                                     "m: toggle render mode | p: intersect type | r: reset view" +
                                     "e: examine mode | f: fly mode | w: walk mode | " +
-                                    "l: lookAt mode | u: upright position");
+                                    "l: lookAt mode | g: game mode | u: upright position");
             break;
         case  43: /* + (incr. speed) */
-                this._scene.getNavigationInfo()._vf.speed =
-                    2 * this._scene.getNavigationInfo()._vf.speed;
-                x3dom.debug.logInfo("Changed navigation speed to " +
-                    this._scene.getNavigationInfo()._vf.speed);
+                nav._vf.speed = 2 * nav._vf.speed;
+                x3dom.debug.logInfo("Changed navigation speed to " + nav._vf.speed);
             break;
         case  45: /* - (decr. speed) */
-                this._scene.getNavigationInfo()._vf.speed =
-                    0.5 * this._scene.getNavigationInfo()._vf.speed;
-                x3dom.debug.logInfo("Changed navigation speed to " +
-                    this._scene.getNavigationInfo()._vf.speed);
+                nav._vf.speed = 0.5 * nav._vf.speed;
+                x3dom.debug.logInfo("Changed navigation speed to " + nav._vf.speed);
             break;
         case  97: /* a, view all */
             this._viewarea.showAll();
@@ -367,15 +384,23 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                         (this._viewarea._visDbgBuf === true) ? "block" : "none";
             break;
         case 101: /* e, examine mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "examine";
+                nav._vf.type[0] = "examine";
                 x3dom.debug.logInfo("Switch to examine mode.");
             break;
         case 102: /* f, fly mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "fly";
+                nav._vf.type[0] = "fly";
                 x3dom.debug.logInfo("Switch to fly mode.");
             break;
+        case 103: /* g, game mode */
+                if (nav._vf.type[0].toLowerCase() !== "game")
+                {
+                    nav._vf.type[0] = "game";
+                    this._viewarea.initMouseState();
+                    x3dom.debug.logInfo("Switch to game mode.");
+                }
+            break;
         case 108: /* l, lookAt mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "lookat";
+                nav._vf.type[0] = "lookat";
                 x3dom.debug.logInfo("Switch to lookat mode.");
             break;
         case 109: /* m, toggle "points" attribute */
@@ -388,24 +413,29 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case 111: /* o, look around like in fly, but don't move */
             {
-                this._scene.getNavigationInfo()._vf.type[0] = "lookaround";
+                nav._vf.type[0] = "lookaround";
                 x3dom.debug.logInfo("Switch to lookAround mode.");
             }
             break;
         case 112: /* p, switch intersect type */
-                if (this._scene._vf.pickMode.toLowerCase() === "idbuf") {
-                    this._scene._vf.pickMode = "color";
-                }
-                else if (this._scene._vf.pickMode.toLowerCase() === "color") {
-                    this._scene._vf.pickMode = "texCoord";
-                }
-                else if (this._scene._vf.pickMode.toLowerCase() === "texcoord") {
-                    this._scene._vf.pickMode = "box";
-                }
-                else {
-                    this._scene._vf.pickMode = "idBuf";
-                }
-                x3dom.debug.logInfo("Switch pickMode to '" + this._scene._vf.pickMode + "'.");
+                switch(this._scene._vf.pickMode.toLowerCase())
+                {
+                    case "idbuf":
+                        this._scene._vf.pickMode = "color";
+                        break;
+                    case "color":
+                        this._scene._vf.pickMode = "texCoord";
+                        break;
+                    case "texcoord":
+                        this._scene._vf.pickMode = "box";
+                        break;
+                    default:
+                        this._scene._vf.pickMode = "idBuf";
+                        break;
+                };
+
+                x3dom.debug.logInfo("Switch pickMode to '" +
+                                    this._scene._vf.pickMode + "'.");
             break;
         case 114: /* r, reset view */
                 this._viewarea.resetView();
@@ -421,8 +451,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 this._viewarea.uprightView();
             break;
         case 119: /* w, walk mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "walk";
-                x3dom.debug.logInfo("Switch to walk mode.");
+                nav._vf.type[0] = "walk";
                 x3dom.debug.logInfo("Switch to walk mode.");
             break;
         default:
