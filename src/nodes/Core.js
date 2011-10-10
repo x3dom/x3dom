@@ -315,7 +315,6 @@ x3dom.registerNodeType(
                 }
             }
 
-
             if (! this._fieldWatchers[fromField]) {
                 this._fieldWatchers[fromField] = [];
             }
@@ -674,7 +673,6 @@ x3dom.registerNodeType(
         }
     )
 );
-
 
 
 // ### X3DSensorNode ###
