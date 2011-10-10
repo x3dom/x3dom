@@ -2742,21 +2742,17 @@ x3dom.gfx_webgl = (function () {
         var mat = shape._cf.appearance.node._cf.material.node;          
         var shaderCSS = shape._cf.appearance.node._shader;
         
-        if (shaderCSS !== null) {
-            if(x3dom.isa(shaderCSS, x3dom.nodeTypes.CommonSurfaceShader)) {
-                sp['material.diffuseColor']     = shaderCSS._vf.diffuseFactor.toGL();
-                sp['material.specularColor']    = shaderCSS._vf.specularFactor.toGL();
-                sp['material.emissiveColor']    = shaderCSS._vf.emissiveFactor.toGL();
-                sp['material.shininess']        = shaderCSS._vf.shininessFactor;
-                sp['material.ambientIntensity'] = (shaderCSS._vf.ambientFactor.x + 
-                    shaderCSS._vf.ambientFactor.y + shaderCSS._vf.ambientFactor.z)/3;
-                sp['material.transparency']     = 1.0 - shaderCSS._vf.alphaFactor;
-            }
-            else {
-                shaderCSS = null;
-            }
+        if (shaderCSS !== null && x3dom.isa(shaderCSS, x3dom.nodeTypes.CommonSurfaceShader)) {
+			sp['material.diffuseColor']     = shaderCSS._vf.diffuseFactor.toGL();
+			sp['material.specularColor']    = shaderCSS._vf.specularFactor.toGL();
+			sp['material.emissiveColor']    = shaderCSS._vf.emissiveFactor.toGL();
+			sp['material.shininess']        = shaderCSS._vf.shininessFactor;
+			sp['material.ambientIntensity'] = (shaderCSS._vf.ambientFactor.x + 
+				shaderCSS._vf.ambientFactor.y + shaderCSS._vf.ambientFactor.z)/3;
+			sp['material.transparency']     = 1.0 - shaderCSS._vf.alphaFactor;
         }
         else{
+			shaderCSS = null;
             sp['material.diffuseColor']         = mat._vf.diffuseColor.toGL();
             sp['material.specularColor']        = mat._vf.specularColor.toGL();
             sp['material.emissiveColor']        = mat._vf.emissiveColor.toGL();
