@@ -111,8 +111,9 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             avatarKnee = navi._vf.avatarSize[2];
         }
 
-        var dist = 0;
+        // get current view matrix
         var currViewMat = this.getViewMatrix();
+        var dist = 0;
 
         // check if forwards or backwards (on right button)
         var step = (this._lastButton & 2) ? -1 : 1;
@@ -124,23 +125,31 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         if (this._needNavigationMatrixUpdate === true)
         {
             this._needNavigationMatrixUpdate = false;
-
-            // get current view matrix
-            this._flyMat = new x3dom.fields.SFMatrix4f();
-            this._flyMat.setValues(currViewMat);
-
+            
             // reset examine matrices to identity
             this._rotMat = x3dom.fields.SFMatrix4f.identity();
             this._transMat = x3dom.fields.SFMatrix4f.identity();
             this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
 
-            // too many inversions here can lead to distortions
-            this._flyMat = this._flyMat.inverse();
+            var angleX = 0;
+            var angleY = Math.asin(currViewMat._02);
+            var C = Math.cos(angleY);
+            
+            if (Math.abs(C) > 0.005) {
+                angleX = Math.atan2(-currViewMat._12 / C, currViewMat._22 / C);
+            }
 
+            // too many inversions here can lead to distortions
+            this._flyMat = currViewMat.inverse();
+            
             this._from = this._flyMat.e3();
             this._at = this._from.subtract(this._flyMat.e2());
             //this._up = this._flyMat.e1();
             this._up = new x3dom.fields.SFVec3f(0, 1, 0);
+
+            this._pitch = angleX * 180 / Math.PI;
+            this._yaw = angleY * 180 / Math.PI;
+            this._eyePos = this._from.negate();
         }
 
         if (navi._vf.type[0].toLowerCase() === "game")
@@ -265,6 +274,7 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var yRotRad = (this._yaw / 180 * Math.PI);
         var xRotRad = (this._pitch / 180 * Math.PI);
 
+        var collision = false;
         var dist = 0;
         var fMat = this._flyMat.inverse();
 
@@ -276,16 +286,19 @@ x3dom.Viewarea.prototype.moveFwd = function()
             dist = this._pickingInfo.pickPos.subtract(fMat.e3()).length();
 
             if (dist <= 2 * avatarRadius) {
+                collision = true;
                 //x3dom.debug.logWarning("Collision at dist=" + dist.toFixed(4));
             }
-            else {
-                this._eyePos.x -= Math.sin(yRotRad) * speed;
-                this._eyePos.z += Math.cos(yRotRad) * speed;
-                this._eyePos.y += Math.sin(xRotRad) * speed;
-            }
         }
-        
+
         // TODO; check floor for terrain following!!!
+
+        if (!collision)
+        {
+            this._eyePos.x -= Math.sin(yRotRad) * speed;
+            this._eyePos.z += Math.cos(yRotRad) * speed;
+            this._eyePos.y += Math.sin(xRotRad) * speed;
+        }
     }
 };
 
@@ -649,25 +662,11 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
 x3dom.Viewarea.prototype.initMouseState = function()
 {
-    var mat = this.getViewMatrix();
-
-    var angleX = 0;
-    var angleY = Math.asin(mat._02);
-    var C = Math.cos(angleY);
-
-    if (Math.abs(C) > 0.005) {
-      angleX = Math.atan2(-mat._12 / C, mat._22 / C);
-    }
-
-    this._pitch = angleX * 180 / Math.PI;
-    this._yaw = angleY * 180 / Math.PI;
-    this._eyePos = mat.inverse().e3().negate();
     this._deltaT = 0;
-
     this._dx = 0;
     this._dy = 0;
-    this._lastX = 0;
-    this._lastY = 0;
+    this._lastX = -1;
+    this._lastY = -1;
     this._pressX = -1;
     this._pressY = -1;
     this._lastButton = 0;
@@ -842,6 +841,10 @@ x3dom.Viewarea.prototype.onMove = function (x, y, buttonState)
 {
     this.handleMoveEvt(x, y, buttonState);
 
+    if (this._lastX < 0 || this._lastY < 0) {
+        this._lastX = x;
+        this._lastY = y;
+    }
     this._dx = x - this._lastX;
     this._dy = y - this._lastY;
     this._lastX = x;

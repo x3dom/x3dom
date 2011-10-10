@@ -38,8 +38,6 @@ x3dom.registerNodeType(
     )
 );
 
-
-
 /* ### Viewpoint ### */
 x3dom.registerNodeType(
     "Viewpoint",
@@ -166,7 +164,30 @@ x3dom.registerNodeType(
             x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
         },
         {
-            // methods
+            fieldChanged: function(fieldName) {
+            },
+
+            getType: function() {
+                return this._vf.type[0].toLowerCase();
+            },
+
+            setType: function(type, viewarea) {
+                var navType = type.toLowerCase();
+                switch (navType) {
+                    case 'game':
+                        if (this._vf.type[0].toLowerCase() !== navType) {
+                            if (viewarea)
+                                viewarea.initMouseState();
+                            else
+                                this._nameSpace.doc._viewarea.initMouseState();
+                        }
+                        break;
+                    default:
+                        break;
+                }
+                this._vf.type[0] = navType;
+                x3dom.debug.logInfo("Switch to " + navType + " mode.");
+            }
         }
     )
 );
