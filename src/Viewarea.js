@@ -135,7 +135,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             var angleY = Math.asin(currViewMat._02);
             var C = Math.cos(angleY);
             
-            if (Math.abs(C) > 0.005) {
+            if (Math.abs(C) > 0.0001) {
                 angleX = Math.atan2(-currViewMat._12 / C, currViewMat._22 / C);
             }
 
@@ -171,6 +171,33 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             var fPos = x3dom.fields.SFMatrix4f.translation(this._eyePos);
 
             this._flyMat = xMat.mult(yMat).mult(fPos);
+
+            // check floor for terrain following (TODO: optimize!)
+            var flyMat = this._flyMat.inverse();
+            var tmpFrom = flyMat.e3();
+
+            var tmpAt = tmpFrom.addScaled(flyMat.e1(), -1.0);
+            var tmpUp = flyMat.e0().cross(flyMat.e1().negate()).normalize();
+
+            var tmpMat = x3dom.fields.SFMatrix4f.lookAt(tmpFrom, tmpAt, tmpUp);
+            tmpMat = tmpMat.inverse();
+
+            this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
+                        tmpMat, this.getProjectionMatrix().mult(tmpMat));
+
+            if (this._pickingInfo.pickObj)
+            {
+                dist = this._pickingInfo.pickPos.subtract(tmpFrom).length();
+                //x3dom.debug.logWarning("Floor collision at dist=" + dist.toFixed(4));
+
+                tmpFrom.y += (avatarHeight - dist);
+                flyMat.setTranslate(tmpFrom);
+
+                this._eyePos = flyMat.e3().negate();
+                this._flyMat = flyMat.inverse();
+
+                this._pickingInfo.pickObj = null;
+            }
 
             this._scene.getViewpoint().setView(this._flyMat);
 
@@ -274,11 +301,10 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var yRotRad = (this._yaw / 180 * Math.PI);
         var xRotRad = (this._pitch / 180 * Math.PI);
 
-        var collision = false;
         var dist = 0;
         var fMat = this._flyMat.inverse();
 
-        // check front
+        // check front for collisions
         this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
 
         if (this._pickingInfo.pickObj)
@@ -286,18 +312,13 @@ x3dom.Viewarea.prototype.moveFwd = function()
             dist = this._pickingInfo.pickPos.subtract(fMat.e3()).length();
 
             if (dist <= 2 * avatarRadius) {
-                collision = true;
                 //x3dom.debug.logWarning("Collision at dist=" + dist.toFixed(4));
             }
-        }
-
-        // TODO; check floor for terrain following!!!
-
-        if (!collision)
-        {
-            this._eyePos.x -= Math.sin(yRotRad) * speed;
-            this._eyePos.z += Math.cos(yRotRad) * speed;
-            this._eyePos.y += Math.sin(xRotRad) * speed;
+            else {
+                this._eyePos.x -= Math.sin(yRotRad) * speed;
+                this._eyePos.z += Math.cos(yRotRad) * speed;
+                this._eyePos.y += Math.sin(xRotRad) * speed;
+            }
         }
     }
 };
@@ -354,7 +375,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
         target = target.getViewMatrix();
     }
 
-    if (navi._vf.transitionType[0].toLowerCase() !== "teleport")
+    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.Viewpoint)) {
             prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
@@ -386,6 +407,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._needNavigationMatrixUpdate = true;
 };
 
 x3dom.Viewarea.prototype.getLights = function () {
@@ -529,7 +551,7 @@ x3dom.Viewarea.prototype.resetView = function()
 {
     var navi = this._scene.getNavigationInfo();
 
-    if (navi._vf.transitionType[0].toLowerCase() !== "teleport")
+    if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
         // EXPERIMENTAL (TODO: parent trafo of vp)
         this._mixer._beginTime = this._lastTS;
@@ -547,6 +569,7 @@ x3dom.Viewarea.prototype.resetView = function()
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._needNavigationMatrixUpdate = true;
 };
 
 x3dom.Viewarea.prototype.uprightView = function()
@@ -784,6 +807,7 @@ x3dom.Viewarea.prototype.onMouseOver = function (x, y, buttonState)
     this._lastButton = 0;
     this._lastX = x;
     this._lastY = y;
+    this._deltaT = 0;
 };
 
 x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
@@ -793,6 +817,7 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
     this._lastButton = 0;
     this._lastX = x;
     this._lastY = y;
+    this._deltaT = 0;
 };
 
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)

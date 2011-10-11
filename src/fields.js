@@ -449,7 +449,7 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation,
     angle_y = Math.asin(this._02);
     C = Math.cos(angle_y);
     
-    if (Math.abs(C) > 0.005) {
+    if (Math.abs(C) > 0.0001) {
       tr_x =  this._22 / C;
       tr_y = -this._12 / C;
       angle_x = Math.atan2(tr_y, tr_x);
