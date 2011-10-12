@@ -148,21 +148,56 @@ x3dom.registerNodeType(
 
             ctx.doc._nodeBag.trans.push(this);
 
-            // holds the current matrix
+            // holds the current matrix (local space transform)
             this._trafo = null;
         },
         {
-            // temporary per frame update method for CSS-Transform
-            tick: function(t) {
-                var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform");
-                //x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);
-                if (trans && (trans != 'none')) {
-                    this._trafo.setValueByStr(trans);
-                    //x3dom.debug.logInfo(' valid set:' + this._trafo);
-                    return true;
+            tick: function(t)
+            {
+              if( this._xmlNode && (
+                    this._xmlNode['transform'] ||
+                    this._xmlNode.hasAttribute('transform') ||
+                    this._listeners['transform'])
+              )
+              {
+                var transMatrix = this.getCurrentTransform();
+                
+                var event = {
+                  target: {},
+                  type: 'transform',
+                  worldX: transMatrix._03,
+                  worldY: transMatrix._13,
+                  worldZ: transMatrix._23,
+                  stopPropagation: function() { this.cancelBubble = true; }
+                };
+                
+                var attrib = this._xmlNode[event.type];
+                
+                if (typeof(attrib) === "function")
+                  attrib.call(this._xmlNode, event);
+                else
+                {
+                  var funcStr = this._xmlNode.getAttribute(event.type);
+                  var func = new Function('event', funcStr);
+                  func.call(this._xmlNode, event);
                 }
 
-                return false;
+                var list = this._listeners[event.type];
+                if (list)
+                  for (var it=0; it<list.length; it++)
+                    list[it].call(this._xmlNode, event);
+              }
+              
+              // temporary per frame update method for CSS-Transform
+              var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform");
+              //x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);
+              if (trans && (trans != 'none')) {
+                  this._trafo.setValueByStr(trans);
+                  //x3dom.debug.logInfo(' valid set:' + this._trafo);
+                  return true;
+              }
+
+              return false;
             },
 
             transformMatrix: function(transform) {
