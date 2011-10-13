@@ -1,0 +1,176 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>test</title>
+    <!-- BEGIN:X3DOM -->
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/lang/Properties.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<!-- END:X3DOM -->
+</head>
+       
+<body>
+	    <X3D id="rotate-box" xmlns="http://www.web3d.org/specifications/x3d-namespace" width='1000px' height='700px'>
+			<scene>
+            	<Background skyColor='0 0 0' />
+             
+                <!--transform translation="-4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorPlane" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <Plane id="testPlane" size ='1 1' subdivision='20 20' onmouseover="testPlane();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="0 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorSphere" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <Sphere id="testSphere" radius ='1' subdivision='30 30'  onmouseover="testSphere();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="4 2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorTorus" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <Torus id="testTorus" innerRadius = '0.3' outerRadius = '0.5' subdivision='24 24'  onmouseover="testTorus();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="-4 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorCone" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <Cone id="testCone" height='2' bottomRadius = '0.5' bottom = 'true' subdivision='8'  onmouseover="testCone();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="0 -2 0">
+                  <shape>
+                    <appearance>
+                      <material id="colorCylinder" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <Cylinder id="testCylinder" radius = '0.5' height='1' bottom = 'true' top = 'true' subdivision='8'  onmouseover="testCylinder();"/>
+                  </shape>
+                </transform-->
+                
+                 <transform translation="0 0 0">
+                    <Shape>
+                      <Appearance>
+                         <material diffuseColor='yellow'></material>
+                      	 <imageTexture url='media/img/igd_main.png' />
+                      </Appearance>
+                      <IndexedFaceSet id="testIndexedFaceSet" creaseAngle='3.14' coordIndex='
+                      0 1 2 3 4 5 6 7 8 -1
+                      9 10 11 12 13 14 15 16 17 -1
+                      
+                       ' convex='false' onmouseover="testIndexedFaceSet();">
+                      
+                      <!--0 1 2 5 -1 5 2 3 4 -1-->
+                      <!--IndexedFaceSet id="testIndexedFaceSet" creaseAngle='3.14' coordIndex='0 1 2 -1 2 3 4 -1' 
+                         colorIndex='2 1 3 -1 0 1 2 -1' normalIndex='2 1 3 -1 0 1 2 -1' texCoordIndex='1 3 2 -1 1 1 1-1'
+                         onmouseover="testIndexedFaceSet();"-->
+                      
+                        <Coordinate id="testIndexedFaceSetCoordinate" point='
+                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0  -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
+                        -1 0 0  -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0 1.5 -0.7 0 1 0 0
+                        
+                        '/>
+            			<!--Coordinate id="testIndexedFaceSetCoordinate" point='0 0 0   1 0 0   0 1 0  0.5 0.5 0 1 1 0'/-->
+                        <!--Color id="testIndexedFaceSetColor" color='1 0 1 0 1 1 0 0 1 1 0 0'/>
+                        <TextureCoordinate id="testIndexedFaceSetTextureCoordinate" point='1 1 1 1 0.7 0.3 1 1'/>
+                        <Normal id="testIndexedFaceSetNormal" vector='0 0 1 0 0 1  0 0 1 0 0 1'/-->
+                      </IndexedFaceSet>
+                   </Shape>
+                </transform>
+                                
+			</scene>
+        </X3D>
+        
+<script type="text/javascript" >
+	<![CDATA[
+	    var testPlane = function (event) {
+			document.getElementById('testPlane').setAttribute('size', '2 2');
+			document.getElementById('testPlane').setAttribute('subdivision', '2 2');
+			document.getElementById('colorPlane').setAttribute('diffuseColor', '1 0 0');
+        };
+		var testSphere = function (event) {
+			document.getElementById('testSphere').setAttribute('radius', '1.5');
+			document.getElementById('testSphere').setAttribute('subdivision', '2 4');
+			document.getElementById('colorSphere').setAttribute('diffuseColor', '1 0 0');
+        };
+		var testTorus = function (event) {
+			document.getElementById('testTorus').setAttribute('innerRadius', '0.5');
+			document.getElementById('testTorus').setAttribute('outerRadius', '1');
+			document.getElementById('testTorus').setAttribute('subdivision', '6 4');
+			document.getElementById('colorTorus').setAttribute('diffuseColor', '1 0 0');
+        };
+		var testCone = function (event) {
+			document.getElementById('testCone').setAttribute('height', '0.5');
+			document.getElementById('testCone').setAttribute('bottomRadius', '1');
+			document.getElementById('testCone').setAttribute('bottom', 'false');
+			document.getElementById('testCone').setAttribute('subdivision', '6');
+			document.getElementById('colorCone').setAttribute('diffuseColor', '1 0 0');
+        };
+		var testCylinder = function (event) {
+			document.getElementById('testCylinder').setAttribute('radius', '1');
+			document.getElementById('testCylinder').setAttribute('height', '0.5');
+			document.getElementById('testCylinder').setAttribute('bottom', 'false');
+			document.getElementById('testCylinder').setAttribute('top', 'false');
+			document.getElementById('testCylinder').setAttribute('subdivision', '4');
+			document.getElementById('colorCylinder').setAttribute('diffuseColor', '1 0 0');
+        };
+		var testIndexedFaceSet = function (event) {
+			//document.getElementById('testIndexedFaceSetCoordinate').setAttribute('point', '1 1 -0.5   1 0 1   0 1 1  2 2 -0.5');
+		    document.getElementById('testIndexedFaceSetTextureCoordinate').setAttribute('point', '0 0 0 1 1 0 1 1');
+			//document.getElementById('testIndexedFaceSetColor').setAttribute('color', '1 1 0 1 0 1 0 1 1 0 0 1');
+			//document.getElementById('testIndexedFaceSetNormal').setAttribute('vector', '1 0 0 1 0 0 1 0 0 1 0 0');
+        };
+	]]>
+</script>
+</body>
+</html>
