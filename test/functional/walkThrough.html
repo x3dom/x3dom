@@ -42,16 +42,17 @@
 <!-- END:X3DOM -->
 
     <!-- BEGIN:TEST -->
-    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!--script type="text/javascript" src="media/js/tests.js"></script-->
     <!-- END:TEST -->
 
   </head>
   <body>
-	<h1>Walkthrough</h1>
-    <x3d id='someUniqueId' showStat='true' showLog='true' width='512px' height='512px'>
+	<h1>Walk through</h1>
+    <div>
+    <x3d showStat='true' showLog='false' style='width: 90%; height: 80%'>
       <scene DEF='scene'>
         <viewpoint orientation='-0.21 0.97 0.0644 0.59193' position='45.15 0.42 5.11813'></viewpoint>
-        <navigationInfo type='"walk" "any"'></navigationInfo>
+        <navigationInfo type='"walk", "any"'></navigationInfo>
         <directionalLight direction="0 -1 0"></directionalLight>
         <transform rotation='-1 0 0 1.5708'>
           <shape>
@@ -63,5 +64,6 @@
         </transform>
       </scene>
     </x3d>
+    </div>
   </body>
 </html>

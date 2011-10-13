@@ -275,7 +275,6 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
 
 // touch events
 x3dom.X3DDocument.prototype.onTouchMove = function (ctx, touch) {
-
     if (!ctx || !this._viewarea) {
         return;
     }
@@ -283,33 +282,55 @@ x3dom.X3DDocument.prototype.onTouchMove = function (ctx, touch) {
     x3dom.debug.logWarning("onTouchMove not implemented");
 };
 
+x3dom.X3DDocument.prototype.onKeyDown = function(keyCode)
+{
+    //x3dom.debug.logInfo("presses key " + keyCode);
+
+    switch (keyCode) {
+        case 37: /* left */
+            this._viewarea.strafeLeft();
+            break;
+        case 38: /* up */
+            this._viewarea.moveFwd();
+            break;
+        case 39: /* right */
+            this._viewarea.strafeRight();
+            break;
+        case 40: /* down */
+            this._viewarea.moveBwd();
+            break;
+        default:
+    }
+};
 
 x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 {
     //x3dom.debug.logInfo("released key " + keyCode);
-    var stack;
+    var stack = null;
 
     switch (keyCode) {
         case 27: /* ESC */
             window.history.back(); // emulate good old ESC key
             break;
         case 33: /* page up */
-                stack = this._scene.getViewpoint()._stack;
-                if (stack) {
-                    stack.switchTo('next');
-                } else {
-                    x3dom.debug.logError ('No valid ViewBindable stack.');
-                }
+            stack = this._scene.getViewpoint()._stack;
+
+            if (stack) {
+                stack.switchTo('next');
+            }
+            else {
+                x3dom.debug.logError ('No valid ViewBindable stack.');
+            }
             break;
         case 34: /* page down */
-                stack = this._scene.getViewpoint()._stack;
+            stack = this._scene.getViewpoint()._stack;
 
-                if (stack) {
-                    stack.switchTo('prev');
-                }
-                else {
-                    x3dom.debug.logError ('No valid ViewBindable stack.');
-                }
+            if (stack) {
+                stack.switchTo('prev');
+            }
+            else {
+                x3dom.debug.logError ('No valid ViewBindable stack.');
+            }
             break;
         case 37: /* left */
             break;
@@ -326,104 +347,102 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
 x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 {
     //x3dom.debug.logInfo("pressed key " + charCode);
+    var nav = this._scene.getNavigationInfo();
+
     switch (charCode)
     {
         case  32: /* space */
-                var statDiv = this.canvas.parent.statDiv;
+            var statDiv = this.canvas.parent.statDiv;
 
-                if (statDiv) {
-                    statDiv.style.display = ((statDiv.style.display == 'none') ? 'inline' : 'none');
-                }
+            if (statDiv) {
+                statDiv.style.display = ((statDiv.style.display == 'none') ? 'inline' : 'none');
+            }
 
-                x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
-                                    "m: toggle render mode | p: intersect type | r: reset view" +
-                                    "e: examine mode | f: fly mode | w: walk mode | " +
-                                    "l: lookAt mode | u: upright position");
+            x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
+                                "m: toggle render mode | p: intersect type | r: reset view | " +
+                                "e: examine mode | f: fly mode | w: walk mode | " +
+                                "l: lookAt mode | g: game mode | u: upright position");
             break;
         case  43: /* + (incr. speed) */
-                this._scene.getNavigationInfo()._vf.speed =
-                    2 * this._scene.getNavigationInfo()._vf.speed;
-                x3dom.debug.logInfo("Changed navigation speed to " +
-                    this._scene.getNavigationInfo()._vf.speed);
+            nav._vf.speed = 2 * nav._vf.speed;
+            x3dom.debug.logInfo("Changed navigation speed to " + nav._vf.speed);
             break;
         case  45: /* - (decr. speed) */
-                this._scene.getNavigationInfo()._vf.speed =
-                    0.5 * this._scene.getNavigationInfo()._vf.speed;
-                x3dom.debug.logInfo("Changed navigation speed to " +
-                    this._scene.getNavigationInfo()._vf.speed);
+            nav._vf.speed = 0.5 * nav._vf.speed;
+            x3dom.debug.logInfo("Changed navigation speed to " + nav._vf.speed);
             break;
         case  97: /* a, view all */
             this._viewarea.showAll();
             break;
         case  100: /* d, switch on/off buffer view for dbg */
-                if (this._viewarea._visDbgBuf === undefined) {
-                    this._viewarea._visDbgBuf = true;
-                }
-                else {
-                    this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
-                }
+            if (this._viewarea._visDbgBuf === undefined) {
+                this._viewarea._visDbgBuf = true;
+            }
+            else {
+                this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
+            }
 
-                x3dom.debug.logContainer.style.display =
-                        (this._viewarea._visDbgBuf === true) ? "block" : "none";
+            x3dom.debug.logContainer.style.display =
+                    (this._viewarea._visDbgBuf === true) ? "block" : "none";
             break;
         case 101: /* e, examine mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "examine";
-                x3dom.debug.logInfo("Switch to examine mode.");
+            nav.setType("examine", this._viewarea);
             break;
         case 102: /* f, fly mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "fly";
-                x3dom.debug.logInfo("Switch to fly mode.");
+            nav.setType("fly", this._viewarea);
+            break;
+        case 103: /* g, game mode */
+            nav.setType("game", this._viewarea);
             break;
         case 108: /* l, lookAt mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "lookat";
-                x3dom.debug.logInfo("Switch to lookat mode.");
+            nav.setType("lookat", this._viewarea);
             break;
         case 109: /* m, toggle "points" attribute */
-                if (this._viewarea._points === undefined) {
-                    this._viewarea._points = true;
-                }
-                else {
-                    this._viewarea._points = !this._viewarea._points;
-                }
-            break;
-        case 111: /* o, look around like in fly, but don't move */
-            {
-                this._scene.getNavigationInfo()._vf.type[0] = "lookaround";
-                x3dom.debug.logInfo("Switch to lookAround mode.");
+            if (this._viewarea._points === undefined) {
+                this._viewarea._points = true;
+            }
+            else {
+                this._viewarea._points = !this._viewarea._points;
             }
             break;
+        case 111: /* o, look around like in fly, but don't move */
+            nav.setType("lookaround", this._viewarea);
+            break;
         case 112: /* p, switch intersect type */
-                if (this._scene._vf.pickMode.toLowerCase() === "idbuf") {
+            switch(this._scene._vf.pickMode.toLowerCase())
+            {
+                case "idbuf":
                     this._scene._vf.pickMode = "color";
-                }
-                else if (this._scene._vf.pickMode.toLowerCase() === "color") {
+                    break;
+                case "color":
                     this._scene._vf.pickMode = "texCoord";
-                }
-                else if (this._scene._vf.pickMode.toLowerCase() === "texcoord") {
+                    break;
+                case "texcoord":
                     this._scene._vf.pickMode = "box";
-                }
-                else {
+                    break;
+                default:
                     this._scene._vf.pickMode = "idBuf";
-                }
-                x3dom.debug.logInfo("Switch pickMode to '" + this._scene._vf.pickMode + "'.");
+                    break;
+            };
+
+            x3dom.debug.logInfo("Switch pickMode to '" +
+                                this._scene._vf.pickMode + "'.");
             break;
         case 114: /* r, reset view */
-                this._viewarea.resetView();
+            this._viewarea.resetView();
             break;
         case 115: /* s, light view */
-                if (this._nodeBag.lights.length > 0)
-                {
-                    this._viewarea.animateTo(this._viewarea.getLightMatrix()[0],
-                                             this._scene.getViewpoint());
-                }
+            if (this._nodeBag.lights.length > 0)
+            {
+                this._viewarea.animateTo(this._viewarea.getLightMatrix()[0],
+                                         this._scene.getViewpoint());
+            }
             break;
         case 117: /* u, upright position */
-                this._viewarea.uprightView();
+            this._viewarea.uprightView();
             break;
         case 119: /* w, walk mode */
-                this._scene.getNavigationInfo()._vf.type[0] = "walk";
-                x3dom.debug.logInfo("Switch to walk mode.");
-                x3dom.debug.logInfo("Switch to walk mode.");
+            nav.setType("walk", this._viewarea);
             break;
         default:
     }

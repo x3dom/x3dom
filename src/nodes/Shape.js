@@ -32,6 +32,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('material', x3dom.nodeTypes.X3DMaterialNode);
             this.addField_SFNode('texture',  x3dom.nodeTypes.X3DTextureNode);
             this.addField_SFNode('textureTransform', x3dom.nodeTypes.X3DTextureTransformNode);
+            this.addField_SFNode('blendMode', x3dom.nodeTypes.BlendMode);
+            this.addField_SFNode('depthMode', x3dom.nodeTypes.DepthMode);
             this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
 
             // shortcut to shader program
@@ -75,6 +77,42 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.X3DAppearanceChildNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+/* ### BlendMode ### */
+x3dom.registerNodeType(
+    "BlendMode",
+    "Shape",
+    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.BlendMode.superClass.call(this, ctx);
+
+            this.addField_SFString(ctx, 'srcFactor', "src_alpha");
+            this.addField_SFString(ctx, 'destFactor', "one_minus_src_alpha");
+            this.addField_SFColor(ctx, 'color', 1, 1, 1);
+            this.addField_SFFloat(ctx, 'colorTransparency', 0);
+            this.addField_SFString(ctx, 'alphaFunc', "none");
+            this.addField_SFFloat(ctx, 'alphaFuncValue', 0);
+            this.addField_SFString(ctx, 'equation', "none");
+        }
+    )
+);
+
+/* ### DepthMode ### */
+x3dom.registerNodeType(
+    "DepthMode",
+    "Shape",
+    defineClass(x3dom.nodeTypes.X3DAppearanceChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.DepthMode.superClass.call(this, ctx);
+
+            this.addField_SFBool(ctx, 'enableDepthTest', true);
+            this.addField_SFString(ctx, 'depthFunc', "none");
+            this.addField_SFBool(ctx, 'readOnly', false);
+            this.addField_SFFloat(ctx, 'zNearRange', -1);
+            this.addField_SFFloat(ctx, 'zFarRange', -1);
         }
     )
 );

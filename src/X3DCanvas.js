@@ -48,7 +48,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		var max_version = max;
 		var available_version = 0;
 
-		/* dieser Abschnitt ist f�r NS, Mozilla, Firefox und �hnliche Browser */
+		/* this section is for NS, Mozilla, Firefox and similar Browsers */
 		if(typeof(navigator.plugins["Shockwave Flash"]) == "object")
 		{
 			var description = navigator.plugins["Shockwave Flash"].description;
@@ -81,7 +81,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		div.style.fontFamily = "Arial";
 		div.style.textAlign = "center";
 		
-		div.appendChild(document.createTextNode('Your Browser doesn\'t support X3DOM'));
+		div.appendChild(document.createTextNode('Your Browser does not support X3DOM'));
 		div.appendChild(document.createElement('br'));
 		div.appendChild(document.createTextNode('Read more about X3DOM Browser support on:'));
 		div.appendChild(document.createElement('br'));
@@ -92,7 +92,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		div.appendChild(link);
 		x3dElem.appendChild(div);
 		
-		x3dom.debug.logError("Your Browser doesn't support X3DOM!");
+		x3dom.debug.logError("Your Browser does not support X3DOM!");
 	}
 
 	this.createFlashObject = function(x3dElem) {
@@ -293,6 +293,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         // http://snook.ca/archives/accessibility_and_usability/elements_focusable_with_tabindex
         canvas.setAttribute("tabindex", "0");
+        canvas.focus();
+        
         return canvas;
     };
 
@@ -633,6 +635,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             evt.returnValue = true;
         }, true);
 
+        this.canvas.addEventListener('keydown', function (evt) {
+            var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
+            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+                this.parent.doc.onKeyDown(evt.keyCode);
+            }
+            this.parent.doc.needRender = true;
+            evt.returnValue = true;
+        }, true);
+        
 
         // http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
         // http://backtothecode.blogspot.com/2009/10/javascript-touch-and-gesture-events.html

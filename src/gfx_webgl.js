@@ -1732,12 +1732,15 @@ x3dom.gfx_webgl = (function () {
             else {
                 //TODO; also account for other cases such as LineSet
 				if( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
-					if(shape._cf.geometry.node._vf.primType.toUpperCase() == 'POINTS') {
-						shape._webgl.primType = gl.POINTS;
-					} else if(shape._cf.geometry.node._vf.primType.toUpperCase() == 'TRIANGLESTRIP'){
-						shape._webgl.primType = gl.TRIANGLE_STRIP;
-					} else {
-						shape._webgl.primType = gl.TRIANGLES;
+					shape._webgl.primType = [];
+					for(var i=0; i<shape._cf.geometry.node._vf.primType.length; i++) {				
+						if(shape._cf.geometry.node._vf.primType[i].toUpperCase() == 'POINTS') {
+							shape._webgl.primType.push(gl.POINTS);
+						} else if(shape._cf.geometry.node._vf.primType[i].toUpperCase() == 'TRIANGLESTRIP'){
+							shape._webgl.primType.push(gl.TRIANGLE_STRIP);
+						} else {
+							shape._webgl.primType.push(gl.TRIANGLES);
+						}
 					}
 				} else {
 					shape._webgl.primType = gl.TRIANGLES;
@@ -2476,7 +2479,10 @@ x3dom.gfx_webgl = (function () {
                 try {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
-							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
+							for(var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
+								gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], gl.UNSIGNED_SHORT, offset);
+								offset += shape._cf.geometry.node._vf.vertexCount[v];
+							}
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
@@ -2527,9 +2533,7 @@ x3dom.gfx_webgl = (function () {
             { sp = scene._webgl.pickTexCoordShader; }
         sp.bind();
         
-        var i, n = scene.drawableObjects.length;
-        
-        for (i=0; i<n; i++)
+        for (var i=0; i<scene.drawableObjects.length; i++)
         {
             var trafo = scene.drawableObjects[i][0];
             var shape = scene.drawableObjects[i][1];
@@ -2638,7 +2642,10 @@ x3dom.gfx_webgl = (function () {
 				try {
 					if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
-							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
+							for(var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
+								gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], gl.UNSIGNED_SHORT, offset);
+								offset += shape._cf.geometry.node._vf.vertexCount[v];
+							}
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
@@ -2742,21 +2749,17 @@ x3dom.gfx_webgl = (function () {
         var mat = shape._cf.appearance.node._cf.material.node;          
         var shaderCSS = shape._cf.appearance.node._shader;
         
-        if (shaderCSS !== null) {
-            if(x3dom.isa(shaderCSS, x3dom.nodeTypes.CommonSurfaceShader)) {
-                sp['material.diffuseColor']     = shaderCSS._vf.diffuseFactor.toGL();
-                sp['material.specularColor']    = shaderCSS._vf.specularFactor.toGL();
-                sp['material.emissiveColor']    = shaderCSS._vf.emissiveFactor.toGL();
-                sp['material.shininess']        = shaderCSS._vf.shininessFactor;
-                sp['material.ambientIntensity'] = (shaderCSS._vf.ambientFactor.x + 
-                    shaderCSS._vf.ambientFactor.y + shaderCSS._vf.ambientFactor.z)/3;
-                sp['material.transparency']     = 1.0 - shaderCSS._vf.alphaFactor;
-            }
-            else {
-                shaderCSS = null;
-            }
+        if (shaderCSS !== null && x3dom.isa(shaderCSS, x3dom.nodeTypes.CommonSurfaceShader)) {
+			sp['material.diffuseColor']     = shaderCSS._vf.diffuseFactor.toGL();
+			sp['material.specularColor']    = shaderCSS._vf.specularFactor.toGL();
+			sp['material.emissiveColor']    = shaderCSS._vf.emissiveFactor.toGL();
+			sp['material.shininess']        = shaderCSS._vf.shininessFactor;
+			sp['material.ambientIntensity'] = (shaderCSS._vf.ambientFactor.x + 
+				shaderCSS._vf.ambientFactor.y + shaderCSS._vf.ambientFactor.z)/3;
+			sp['material.transparency']     = 1.0 - shaderCSS._vf.alphaFactor;
         }
         else{
+			shaderCSS = null;
             sp['material.diffuseColor']         = mat._vf.diffuseColor.toGL();
             sp['material.specularColor']        = mat._vf.specularColor.toGL();
             sp['material.emissiveColor']        = mat._vf.emissiveColor.toGL();
@@ -2871,16 +2874,14 @@ x3dom.gfx_webgl = (function () {
         // For rigid motions the inverse-transpose is not necessary
         /*var normalMatrix = mat_view.mult(transform);
         normalMatrix = mat_view.inverse().transpose();*/
-        
-		
-		
+
         var model_view = mat_view.mult(transform);
-		
-		sp.viewMatrix 	   = mat_view.toGL();		
+
         sp.modelViewMatrix = model_view.toGL();
         sp.normalMatrix    = model_view.inverse().transpose().toGL();
         
         if (userShader) {
+            sp.viewMatrix = mat_view.toGL();
             sp.modelViewMatrixInverse = model_view.inverse().toGL();
         }
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
@@ -3149,7 +3150,7 @@ x3dom.gfx_webgl = (function () {
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
               if (viewarea._points !== undefined && viewarea._points) {
 				if(shape._webgl.imageGeometry) {
-					gl.drawElements(gl.POINTS, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
+					gl.drawElements(gl.POINTS, shape._cf.geometry.node._vf.vertexCount[0], gl.UNSIGNED_SHORT, 0);
 				} else {
 					gl.drawElements(gl.POINTS, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 				}
@@ -3160,7 +3161,7 @@ x3dom.gfx_webgl = (function () {
                     //gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
                     //gl.enable(gl.POINT_SMOOTH);
 					if(shape._webgl.imageGeometry) {
-						gl.drawArrays(gl.POINTS, 0, shape._cf.geometry.node._vf.vertexCount);
+						gl.drawArrays(gl.POINTS, 0, shape._cf.geometry.node._vf.vertexCount[0]);
 					}else{
 						gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
 					}
@@ -3170,7 +3171,10 @@ x3dom.gfx_webgl = (function () {
                     //x3dom.debug.logInfo("indexLength: " + shape._webgl.indexes[q].length);
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
-							gl.drawElements(shape._webgl.primType, shape._cf.geometry.node._vf.vertexCount, gl.UNSIGNED_SHORT, 0);
+							for(var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
+								gl.drawElements(shape._webgl.primType[i], shape._cf.geometry.node._vf.vertexCount[i], gl.UNSIGNED_SHORT, offset);
+								offset += shape._cf.geometry.node._vf.vertexCount[i];
+							}
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
@@ -3198,14 +3202,16 @@ x3dom.gfx_webgl = (function () {
         
         if (shape._webgl.indexes && shape._webgl.indexes[0]) {
 			if(shape._webgl.imageGeometry) {
-				this.numFaces += shape._cf.geometry.node._vf.vertexCount/3.0;
+				for(var i=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++)
+					this.numFaces += shape._cf.geometry.node._vf.vertexCount[i]/3.0;
 			} else {
 				this.numFaces += shape._cf.geometry.node._mesh._numFaces;
 			}
         }
 		
 		if(shape._webgl.imageGeometry) {
-			this.numCoords += shape._cf.geometry.node._vf.vertexCount;
+			for(var i=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++)
+				this.numCoords += shape._cf.geometry.node._vf.vertexCount[i];
 		} else {
 			this.numCoords += shape._cf.geometry.node._mesh._numCoords;
 		}
@@ -3538,7 +3544,7 @@ x3dom.gfx_webgl = (function () {
         //gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
         //gl.enable(gl.SAMPLE_COVERAGE);
         //gl.sampleCoverage(0.5, false);
-        
+
         //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         //Workaround for WebKit & Co.
         gl.blendFuncSeparate(
@@ -3556,15 +3562,31 @@ x3dom.gfx_webgl = (function () {
         for (i=0, n=zPos.length; i<n; i++)
         {
             var obj = scene.drawableObjects[zPos[i][0]];
+            var needEnableBlending = false;
+
+            // HACK; fully impl. BlendMode! (also DeopthMode)
+            if (obj[1]._cf.appearance.node._cf.blendMode.node &&
+                obj[1]._cf.appearance.node._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
+                obj[1]._cf.appearance.node._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+            {
+                needEnableBlending = true;
+                gl.disable(gl.BLEND);
+            }
+
             this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
                 mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+
+            if (needEnableBlending) {
+                gl.enable(gl.BLEND);
+            }
         }
-        
+
         gl.disable(gl.BLEND);
         /*gl.blendFuncSeparate( // just multiply dest RGB by its A
             gl.ZERO, gl.DST_ALPHA,
             gl.ZERO, gl.ONE
-        );*/ 
+        );*/
+        
         gl.disable(gl.DEPTH_TEST);
         
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)

@@ -604,8 +604,7 @@ x3dom.registerNodeType(
                 }
                 posMax = positions.length;
 
-                if ( //(this._vf.creaseAngle <= x3dom.fields.Eps) ||
-                     (positions.length > 65535) )
+                if ( (positions.length > 65535) )
                 {
                     t = 0;
                     cnt = 0;
@@ -722,7 +721,7 @@ x3dom.registerNodeType(
                     }
 
                     if (!hasNormal) {
-                        this._mesh.calcNormals(this._vf.creaseAngle);
+                        this._mesh.calcNormals(Math.PI);
                     }
                     if (!hasTexCoord) {
                         this._mesh.calcTexCoords(texMode);
@@ -741,7 +740,7 @@ x3dom.registerNodeType(
                         this._mesh._normals[0] = normals.toGL();
                     }
                     else {
-                        this._mesh.calcNormals(this._vf.creaseAngle);
+                        this._mesh.calcNormals(Math.PI);
                     }
                     if (hasTexCoord) {
                         this._mesh._texCoords[0] = texCoords.toGL();
