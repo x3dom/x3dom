@@ -1372,6 +1372,7 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'normalIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
             this.addField_MFInt32(ctx, 'texCoordIndex', []);
+			this.addField_SFBool(ctx, 'convex', true);
         },
         {
             nodeChanged: function()
@@ -1728,23 +1729,42 @@ x3dom.registerNodeType(
                 else
                 {
                     t = 0;
-                    
-                    for (i = 0; i < indexes.length; ++i)
-                    {
-                        // Convert non-triangular polygons to a triangle fan
-                        // (TODO: this assumes polygons are convex)
-                        if (indexes[i] == -1) {
-                            t = 0;
-                            continue;
-                        }
+                    if(this._vf.convex) {
+						for (i = 0; i < indexes.length; ++i)
+						{
+							// Convert non-triangular polygons to a triangle fan
+							// (TODO: this assumes polygons are convex)
+							if (indexes[i] == -1) {
+								t = 0;
+								continue;
+							}
+							
+							switch (t) {
+							case 0: n0 = +indexes[i]; t = 1; break;
+							case 1: n1 = +indexes[i]; t = 2; break;
+							case 2: n2 = +indexes[i]; t = 3; this._mesh._indices[0].push(n0, n1, n2); break;
+							case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices[0].push(n0, n1, n2); break;
+							}
 
-                        switch (t) {
-                        case 0: n0 = +indexes[i]; t = 1; break;
-                        case 1: n1 = +indexes[i]; t = 2; break;
-                        case 2: n2 = +indexes[i]; t = 3; this._mesh._indices[0].push(n0, n1, n2); break;
-                        case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices[0].push(n0, n1, n2); break;
-                        }
-                    }
+						}
+					} else {
+						
+						var positionslist = [];
+						var indexeslist = [];
+												
+						for (var i = 0; i < indexes.length; ++i)
+						{	
+							if (indexes[i] == -1) {
+								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(indexeslist, positionslist));
+								indexeslist = [];
+								positionslist = [];
+								continue;
+							}
+							indexeslist.push(indexes[i]);
+							positionslist[indexes[i]] = (positions[indexes[i]]);
+						}								
+					}
+                   
 
                     this._mesh._positions[0] = positions.toGL();
 
@@ -1889,3 +1909,65 @@ x3dom.registerNodeType(
         }
     )
 );
+function getIndexes(indexeslist, positionslist) {
+	var ear = [];
+	var indexes = [];
+	for (var i = 0; i < indexeslist.length-1; i++)
+	{	
+	 var isEar = true;
+		for (var j = 0; j < indexeslist.length; j++)
+		{    
+			if(i == 0) {
+				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[indexeslist.length-1]], positionslist[indexeslist[i]], positionslist[indexeslist[i+1]])) {
+					isEar = false;
+				}	
+			} else {
+				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[i-1]], positionslist[indexeslist[i]], positionslist[indexeslist[i+1]])) {
+					isEar = false;
+				}	
+			}														
+		}
+		
+		if(isEar) {
+			if(i == 0) {	
+				ear.push(indexeslist[indexeslist.length-1],indexeslist[i],indexeslist[i+1]);
+					
+			} else {
+				ear.push(indexeslist[i-1],indexeslist[i],indexeslist[i+1]);			
+			}	
+		}
+	}
+	
+	while(ear.length > 3) {
+		for(var i = 1; i < ear.length-1; i++) {
+			if(isKonvex(positionslist[ear[i-1]],positionslist[ear[i]],positionslist[ear[i+1]])) {					
+					indexes.push(ear[i-1] ,ear[i],ear[i+1]);
+					ear.splice(i,1);
+			}
+		}
+	}
+	return indexes;
+}
+function isNotEar(ap1, tp1, tp2, tp3) {
+	var b0, b1, b2, b3;
+    b0 = ((tp2.x - tp1.x) * (tp3.y - tp1.y) - (tp3.x - tp1.x) * (tp2.y - tp1.y));
+    if (b0 != 0) {
+      b1 = (((tp2.x - ap1.x) * (tp3.y - ap1.y) - (tp3.x - ap1.x) * (tp2.y - ap1.y)) / b0);
+      b2 = (((tp3.x - ap1.x) * (tp1.y - ap1.y) - (tp1.x - ap1.x) * (tp3.y - ap1.y)) / b0);
+      b3 = 1 - b1 - b2;
+
+      return ((b1 > 0) && (b2 > 0) && (b3 > 0));
+	}
+    else {
+      return false;
+	}	
+}
+
+function isKonvex(p ,p1, p2) {
+    var l = ((p1.x - p.x) * (p2.y - p.y) - (p1.y - p.y) * (p2.x - p.x));
+    if (l < 0) {
+      return false;
+	} else {
+      return true;
+	}	
+}
