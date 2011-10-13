@@ -2480,7 +2480,7 @@ x3dom.gfx_webgl = (function () {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
 							for(var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
-								gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], gl.UNSIGNED_SHORT, offset);
+								gl.drawArrays(shape._webgl.primType[v], offset, shape._cf.geometry.node._vf.vertexCount[v]);
 								offset += shape._cf.geometry.node._vf.vertexCount[v];
 							}
 						} else {
@@ -2643,7 +2643,7 @@ x3dom.gfx_webgl = (function () {
 					if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
 							for(var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
-								gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], gl.UNSIGNED_SHORT, offset);
+								gl.drawArrays(shape._webgl.primType[v], offset, shape._cf.geometry.node._vf.vertexCount[v]);
 								offset += shape._cf.geometry.node._vf.vertexCount[v];
 							}
 						} else {
@@ -3172,7 +3172,7 @@ x3dom.gfx_webgl = (function () {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
 							for(var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
-								gl.drawElements(shape._webgl.primType[i], shape._cf.geometry.node._vf.vertexCount[i], gl.UNSIGNED_SHORT, offset);
+								gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
 								offset += shape._cf.geometry.node._vf.vertexCount[i];
 							}
 						} else {
