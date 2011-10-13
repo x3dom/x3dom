@@ -129,23 +129,21 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
 
 x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
 {
-    var result = x3dom.fields.SFMatrix4f.identity();
-    result.setTranslate(from);
-    
     var view = from.subtract(at).normalize();
-    var right = up.cross(view);
+    var right = up.normalize().cross(view);
 
+    // check if zero vector, i.e. linearly dependent
     if (right.dot(right) < x3dom.fields.Eps) {
-        return result;
+        x3dom.debug.logWarning("View matrix is linearly dependent.");
+        return x3dom.fields.SFMatrix4f.translation(from);
     }
-    
-    right.normalize();
-    var newup = view.cross(right).normalize();
-    
-    var tmp = x3dom.fields.SFMatrix4f.identity();
-    tmp.setValue(right, newup, view);
 
-    return result.mult(tmp);
+    var newUp = view.cross(right.normalize()).normalize();
+
+    var tmp = x3dom.fields.SFMatrix4f.identity();
+    tmp.setValue(right, newUp, view, from);
+
+    return tmp;
 };
 
 x3dom.fields.SFMatrix4f.prototype.setTranslate = function (vec) {
@@ -443,20 +441,16 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
 };
 
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scale) {
-    // Return [ T, S, x, y, z ] such that
-    //   rotateX(x); rotateY(y); rotateZ(z); scale(S); translate(T);
-    // does the equivalent transformation
-
     var T = new x3dom.fields.SFVec3f(this._03, this._13, this._23);
-    var S = new x3dom.fields.SFVec3f(1, 1, 1); // XXX
+    var S = new x3dom.fields.SFVec3f(1, 1, 1); // TODO; implement scale
 
     // http://www.j3d.org/matrix_faq/matrfaq_latest.html
     var angle_x, angle_y, angle_z, tr_x, tr_y, C;
     angle_y = Math.asin(this._02);
     C = Math.cos(angle_y);
     
-    if (Math.abs(C) > 0.005) {
-      tr_x = this._22 / C;
+    if (Math.abs(C) > 0.0001) {
+      tr_x =  this._22 / C;
       tr_y = -this._12 / C;
       angle_x = Math.atan2(tr_y, tr_x);
       tr_x =  this._00 / C;
@@ -486,7 +480,6 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation,
     scale.x = S.x;
     scale.y = S.y;
     scale.z = S.z;
-    //return [ T, S, angle_x, angle_y, angle_z ];
 };
 
 x3dom.fields.SFMatrix4f.prototype.log = function () {

@@ -1183,8 +1183,9 @@ x3dom.registerNodeType(
 			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
-			this.addField_SFFloat(ctx, 'vertexCount', 0);
-			this.addField_SFString(ctx, 'primType', 'TRIANGLES');
+			this.addField_MFFloat(ctx, 'vertexCount', [0]);
+			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+			
 			this.addField_SFFloat(ctx, 'numColorComponents', 3);
 			
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);

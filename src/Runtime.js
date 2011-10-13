@@ -238,7 +238,8 @@ x3dom.runtime = {
 	 */
 	lightView: function() {
 		if (this.canvas.doc._nodeBag.lights.length > 0) {
-			this.canvas.doc._viewarea.animateTo(this.canvas.doc._viewarea.getLightMatrix()[0], this.canvas.doc._scene.getViewpoint());
+			this.canvas.doc._viewarea.animateTo(this.canvas.doc._viewarea.getLightMatrix()[0],
+                                                this.canvas.doc._scene.getViewpoint());
 			return true;
 		} else {
 			x3dom.debug.logInfo("No lights to navigate to");
@@ -301,7 +302,7 @@ x3dom.runtime = {
 	 *     A string representing the active navigation type
 	 */
 	navigationType: function() {
-		return this.canvas.doc._scene.getNavigationInfo()._vf.type[0];
+		return this.canvas.doc._scene.getNavigationInfo().getType();
 	},
 
 
@@ -311,8 +312,7 @@ x3dom.runtime = {
 	 * Switches to examine mode
 	 */
 	examine: function() {
-		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "examine";
-        x3dom.debug.logInfo("Switch to examine mode.");
+		this.canvas.doc._scene.getNavigationInfo().setType("examine");
 	},
 
 	/**
@@ -321,8 +321,7 @@ x3dom.runtime = {
 	 * Switches to fly mode
 	 */
 	fly: function() {
-		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "fly";
-		x3dom.debug.logInfo("Switch to fly mode.");
+		this.canvas.doc._scene.getNavigationInfo().setType("fly");
 	},
 
 	/**
@@ -331,8 +330,7 @@ x3dom.runtime = {
 	 * Switches to lookAt mode
 	 */
 	lookAt: function() {
-		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "lookat";
-        x3dom.debug.logInfo("Switch to lookat mode.");
+		this.canvas.doc._scene.getNavigationInfo().setType("lookat");
 	},
 /**
 	 * APIFunction: lookAround
@@ -340,8 +338,7 @@ x3dom.runtime = {
 	 * Switches to lookAround mode
 	 */
 	lookAround: function() {
-		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "lookaround";
-        x3dom.debug.logInfo("Switch to lookAround mode.");
+		this.canvas.doc._scene.getNavigationInfo().setType("lookaround");
 	},
 
 	/**
@@ -350,8 +347,16 @@ x3dom.runtime = {
 	 * Switches to walk mode
 	 */
 	walk: function() {
-		this.canvas.doc._scene.getNavigationInfo()._vf.type[0] = "walk";
-        x3dom.debug.logInfo("Switch to walk mode.");
+		this.canvas.doc._scene.getNavigationInfo().setType("walk");
+	},
+
+    /**
+	 * APIFunction: game
+     *
+	 * Switches to game mode
+	 */
+	game: function() {
+		this.canvas.doc._scene.getNavigationInfo().setType("game");
 	},
 
 	/**
