@@ -2479,9 +2479,9 @@ x3dom.gfx_webgl = (function () {
                 try {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
-							for(var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
-								gl.drawElements(shape._webgl.primType[i], shape._cf.geometry.node._vf.vertexCount[i], gl.UNSIGNED_SHORT, offset);
-								offset += shape._cf.geometry.node._vf.vertexCount[i];
+							for(var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
+								gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], gl.UNSIGNED_SHORT, offset);
+								offset += shape._cf.geometry.node._vf.vertexCount[v];
 							}
 						} else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
