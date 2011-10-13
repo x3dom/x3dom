@@ -1749,7 +1749,6 @@ x3dom.registerNodeType(
 
 						}
 					} else {
-						
 						var positionslist = [];
 						var indexeslist = [];
 												
@@ -1913,13 +1912,13 @@ x3dom.registerNodeType(
 function getIndexes(indexeslist, positionslist) {
 	var ear = [];
 	var indexes = [];
-	for (var i = 0; i < indexeslist.length-1; i++)
+	for (var i = 1; i < indexeslist.length; i++)
 	{	
 	 var isEar = true;
 		for (var j = 0; j < indexeslist.length; j++)
 		{    
-			if(i == 0) {
-				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[indexeslist.length-1]], positionslist[indexeslist[i]], positionslist[indexeslist[i+1]])) {
+			if(i == indexeslist.length -1) {
+				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[i-1]], positionslist[indexeslist[i]], positionslist[indexeslist[0]])) {
 					isEar = false;
 				}	
 			} else {
@@ -1930,8 +1929,8 @@ function getIndexes(indexeslist, positionslist) {
 		}
 		
 		if(isEar) {
-			if(i == 0) {	
-				ear.push(indexeslist[indexeslist.length-1],indexeslist[i],indexeslist[i+1]);
+			if(i == indexeslist.length -1) {	
+				ear.push(indexeslist[i-1],indexeslist[i],indexeslist[0]);
 					
 			} else {
 				ear.push(indexeslist[i-1],indexeslist[i],indexeslist[i+1]);			
