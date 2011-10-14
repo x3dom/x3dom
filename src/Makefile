@@ -3,43 +3,43 @@ default: bundle
 #--- FILES ----
 BUNDLE := x3dom.js
 
-BASIC :=  src/lang/Array.js\
-  src/Internals.js\
-  src/debug.js\
-  src/ImageLoadManager.js\
-  src/lang/Properties.js\
-  src/X3DCanvas.js\
-  src/Runtime.js\
-  src/Main.js
+BASIC := lang/Array.js\
+  Internals.js\
+  debug.js\
+  ImageLoadManager.js\
+  lang/Properties.js\
+  X3DCanvas.js\
+  Runtime.js\
+  Main.js
   
-GFX   :=  src/gfx_webgl.js\
-  src/gfx_flash.js
+GFX := gfx_webgl.js\
+  gfx_flash.js
   
-NODE  :=  src/Mesh.js\
-  src/X3DDocument.js\
-  src/MatrixMixer.js\
-  src/Viewarea.js\
-  src/nodes/NodeNameSpace.js\
-  src/nodes/Core.js\
-  src/nodes/Grouping.js\
-  src/nodes/Bindable.js\
-  src/nodes/Rendering.js\
-  src/nodes/Shape.js\
-  src/nodes/Lighting.js\
-  src/nodes/Interpolation.js\
-  src/nodes/Followers.js\
-  src/nodes/Time.js\
-  src/nodes/Networking.js\
-  src/nodes/EnvironmentalEffects.js\
-  src/nodes/Navigation.js\
-  src/nodes/Text.js\
-  src/nodes/Sound.js\
-  src/nodes/Texturing.js\
-  src/nodes/Shaders.js\
-  src/nodes/Geometry3D.js\
-  src/nodes/Geospatial.js
+NODE := Mesh.js\
+  X3DDocument.js\
+  MatrixMixer.js\
+  Viewarea.js\
+  nodes/NodeNameSpace.js\
+  nodes/Core.js\
+  nodes/Grouping.js\
+  nodes/Bindable.js\
+  nodes/Rendering.js\
+  nodes/Shape.js\
+  nodes/Lighting.js\
+  nodes/Interpolation.js\
+  nodes/Followers.js\
+  nodes/Time.js\
+  nodes/Networking.js\
+  nodes/EnvironmentalEffects.js\
+  nodes/Navigation.js\
+  nodes/Text.js\
+  nodes/Sound.js\
+  nodes/Texturing.js\
+  nodes/Shaders.js\
+  nodes/Geometry3D.js\
+  nodes/Geospatial.js
   
-FIELDS := src/fields.js
+FIELDS := fields.js
 
 SRC := $(BASIC) $(GFX) $(NODE) $(FIELDS)
 #---------------
@@ -54,4 +54,4 @@ clean:
 
 $(BUNDLE): $(SRC)
 	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
-	#cp x3dom.js ../example
+	#cp x3dom.* ../example
