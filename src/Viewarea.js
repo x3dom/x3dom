@@ -152,15 +152,17 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             this._eyePos = this._from.negate();
         }
 
+        var tmpAt = null, tmpUp = null, tmpMat = null;
+
         if (navi._vf.type[0].toLowerCase() === "game")
         {
             this._pitch += this._dy;
             this._yaw   += this._dx;
 
             if (this._pitch >=  89) this._pitch = 89;
-            if (this._pitch <= -89) this._pitch = 89;
-            if (this._yaw >=  360)  this._yaw -= 360;
-            if (this._yaw <= -360)  this._yaw += 360;
+            if (this._pitch <= -89) this._pitch = -89;
+            if (this._yaw >=  360) this._yaw -= 360;
+            if (this._yaw < 0) this._yaw = 360 + this._yaw;
             
             this._dx = 0;
             this._dy = 0;
@@ -172,14 +174,16 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 
             this._flyMat = xMat.mult(yMat).mult(fPos);
 
-            // check floor for terrain following (TODO: optimize!)
+            // Finally check floor for terrain following (TODO: optimize!)
             var flyMat = this._flyMat.inverse();
+
             var tmpFrom = flyMat.e3();
+            tmpUp = new x3dom.fields.SFVec3f(0, -1, 0);
 
-            var tmpAt = tmpFrom.addScaled(flyMat.e1(), -1.0);
-            var tmpUp = flyMat.e0().cross(flyMat.e1().negate()).normalize();
+            tmpAt = tmpFrom.add(tmpUp);
+            tmpUp = flyMat.e0().cross(tmpUp).normalize();
 
-            var tmpMat = x3dom.fields.SFMatrix4f.lookAt(tmpFrom, tmpAt, tmpUp);
+            tmpMat = x3dom.fields.SFMatrix4f.lookAt(tmpFrom, tmpAt, tmpUp);
             tmpMat = tmpMat.inverse();
 
             this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
@@ -255,10 +259,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             // finally attach to ground when walking
             if (navi._vf.type[0].toLowerCase() === "walk")
             {
-                var tmpAt = this._from.addScaled(up, -1.0);
-                var tmpUp = sv.cross(up.negate()).normalize();  // lv
+                tmpAt = this._from.addScaled(up, -1.0);
+                tmpUp = sv.cross(up.negate()).normalize();  // lv
 
-                var tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
+                tmpMat = x3dom.fields.SFMatrix4f.lookAt(this._from, tmpAt, tmpUp);
                 tmpMat = tmpMat.inverse();
 
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
