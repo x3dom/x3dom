@@ -35,7 +35,7 @@ class packer():
     
     version_out = "version.js"
     
-    print "Using Version: '" + version_in + "' >> '" + version_out + "'"
+    print "Generating " + version_out
     
     # Read the base-version from the VERSION file
     if os.path.isfile(version_in):
@@ -57,10 +57,14 @@ class packer():
     except:
       git_revision = 0
       git_date = 0
+      print "  == GIT NOT FOUND =="
+      
+    print "  " + os.path.abspath(version_in) + " >> " + os.path.abspath(version_out)
     
     print "  Version  '", version, "'"
     print "  Revision '", git_revision, "'"
     print "  Date     '", git_date, "'"
+    print ""
     
     # Write the version and revision to file
     version_js_file = open(version_out, "w")
@@ -91,14 +95,18 @@ class packer():
     in_len = 0
     out_len = 0
     
+    # Merging files
+    print "Packing Files: "
     for filename in input_files:
       try:
+        print "  " + os.path.abspath(filename)
         f = open(filename, 'r')
         concatenated_file += f.read()
         f.close()
       except:
         print "Could not open input file '%s'. Skipping" % filename    
       concatenated_file += "\n"
+    print ""
      
     outpath = os.path.dirname(os.path.abspath(output_file))
     
