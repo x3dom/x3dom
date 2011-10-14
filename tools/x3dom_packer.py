@@ -35,7 +35,7 @@ class packer():
     
     version_out = "version.js"
     
-    print "Generating " + version_out
+    print "Generating version.js"
     
     # Read the base-version from the VERSION file
     if os.path.isfile(version_in):
@@ -57,13 +57,13 @@ class packer():
     except:
       git_revision = 0
       git_date = 0
-      print "  == GIT NOT FOUND =="
+      print "  WARNING:  Cannot find git executable"
       
-    print "  " + os.path.abspath(version_in) + " >> " + os.path.abspath(version_out)
-    
-    print "  Version  '", version, "'"
-    print "  Revision '", git_revision, "'"
-    print "  Date     '", git_date, "'"
+    print "  Input    ", os.path.abspath(version_in)
+    print "  Output   ", os.path.abspath(version_out)
+    print "  Version  ", version
+    print "  Revision ", git_revision
+    print "  Date     ", git_date
     print ""
     
     # Write the version and revision to file
@@ -96,7 +96,7 @@ class packer():
     out_len = 0
     
     # Merging files
-    print "Packing Files: "
+    print "Packing Files"
     for filename in input_files:
       try:
         print "  " + os.path.abspath(filename)
@@ -111,11 +111,13 @@ class packer():
     outpath = os.path.dirname(os.path.abspath(output_file))
     
     if not os.access(outpath, os.F_OK):
-      print "Create Dir: ", outpath
+      print "Create Dir ", outpath
       os.mkdir(outpath)
     
     # Packaging
-    print "Using packer: '" + packaging_module + "'"
+    print "Packaging"
+    print "  Algo    " + packaging_module
+    print "  Output  " + os.path.abspath(output_file)
     
     # JSMIN
     if packaging_module == "jsmin":
@@ -163,7 +165,8 @@ class packer():
     # Output some stats
     in_len = len(concatenated_file)    
     ratio = float(out_len) / float(in_len);
-    print "  packed: %s to %s, ratio is %s" % (in_len, out_len, ratio)
+    print "  Packed  %s -> %s" % (in_len, out_len)
+    print "  Ratio   %s" % (ratio)
 
 if __name__ == '__main__':
     parser = OptionParser(usage)
