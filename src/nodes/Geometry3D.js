@@ -1394,6 +1394,7 @@ x3dom.registerNodeType(
             this.addField_MFInt32(ctx, 'normalIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
             this.addField_MFInt32(ctx, 'texCoordIndex', []);
+			this.addField_SFBool(ctx, 'convex', true);
         },
         {
             nodeChanged: function()
@@ -1750,23 +1751,41 @@ x3dom.registerNodeType(
                 else
                 {
                     t = 0;
-                    
-                    for (i = 0; i < indexes.length; ++i)
-                    {
-                        // Convert non-triangular polygons to a triangle fan
-                        // (TODO: this assumes polygons are convex)
-                        if (indexes[i] == -1) {
-                            t = 0;
-                            continue;
-                        }
+                    if(this._vf.convex) {
+						for (i = 0; i < indexes.length; ++i)
+						{
+							// Convert non-triangular polygons to a triangle fan
+							// (TODO: this assumes polygons are convex)
+							if (indexes[i] == -1) {
+								t = 0;
+								continue;
+							}
+							
+							switch (t) {
+							case 0: n0 = +indexes[i]; t = 1; break;
+							case 1: n1 = +indexes[i]; t = 2; break;
+							case 2: n2 = +indexes[i]; t = 3; this._mesh._indices[0].push(n0, n1, n2); break;
+							case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices[0].push(n0, n1, n2); break;
+							}
 
-                        switch (t) {
-                        case 0: n0 = +indexes[i]; t = 1; break;
-                        case 1: n1 = +indexes[i]; t = 2; break;
-                        case 2: n2 = +indexes[i]; t = 3; this._mesh._indices[0].push(n0, n1, n2); break;
-                        case 3: n1 = n2; n2 = +indexes[i]; this._mesh._indices[0].push(n0, n1, n2); break;
-                        }
-                    }
+						}
+					} else {
+						var positionslist = [];
+						var indexeslist = [];
+												
+						for (var i = 0; i < indexes.length; ++i)
+						{	
+							if (indexes[i] == -1) {
+								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(indexeslist, positionslist));
+								indexeslist = [];
+								positionslist = [];
+								continue;
+							}
+							indexeslist.push(indexes[i]);
+							positionslist[indexes[i]] = (positions[indexes[i]]);
+						}								
+					}
+                   
 
                     this._mesh._positions[0] = positions.toGL();
 
@@ -1806,15 +1825,16 @@ x3dom.registerNodeType(
                 var pnts = this._cf.coord.node._vf.point;
                 var i, n = pnts.length;
 
-                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) ||
+               if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) /*||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
                     (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
-                    (this._vf.colorIndex.length > 0 && this._cf.color.node))
+                    (this._vf.colorIndex.length > 0 && this._cf.color.node)*/)
                 {
-                    // TODO; FIXME
+                    
+					// TODO; FIXME
                     x3dom.debug.logWarning("Ipol with creaseAngle == 0, too many coords, or multi-index!");
 
-                    /** HACK */
+                    // HACK 
                     this.nodeChanged();
 
                     Array.forEach(this._parentNodes, function (node) {
@@ -1832,7 +1852,7 @@ x3dom.registerNodeType(
                     // TODO; multi-index with different this._mesh._indices
                     pnts = this._cf.coord.node._vf.point;
                     n = pnts.length;
-
+					
                     this._mesh._positions[0] = [];
 
                     // TODO; optimize (is there a memcopy?)
@@ -1845,12 +1865,12 @@ x3dom.registerNodeType(
 
                     this._mesh._invalidate = true;
 
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                    Array.forEach(this._parentNodes, function (node) {					
+                         node._dirty.positions = true;
                     });
                 }
                 else if (fieldName == "color")
-                {
+                { 
                     pnts = this._cf.color.node._vf.color;
                     n = pnts.length;
 
@@ -1867,7 +1887,108 @@ x3dom.registerNodeType(
                         node._dirty.colors = true;
                     });
                 }
+				else if (fieldName == "normal")
+                {
+                    pnts = this._cf.normal.node._vf.vector;
+                    n = pnts.length;
+					
+                    this._mesh._normals[0] = [];
+					
+                    for (var i=0; i<n; i++)
+                    {					
+                        this._mesh._normals[0].push(pnts[i].x);
+                        this._mesh._normals[0].push(pnts[i].y);
+                        this._mesh._normals[0].push(pnts[i].z);
+                    }
+					
+					this._mesh._invalidate = true;
+					
+                    Array.forEach(this._parentNodes, function (node) {
+                         node.setAllDirty();
+                    });
+                }
+				else if (fieldName == "texCoord")
+                {
+                    pnts = this._cf.texCoord.node._vf.point;
+                    n = pnts.length;
+
+                    this._mesh._texCoords[0] = [];
+
+                    for (i=0; i<n; i++)
+                    {
+                        this._mesh._texCoords[0].push(pnts[i].x);
+                        this._mesh._texCoords[0].push(pnts[i].y);
+                    }
+					
+					this._mesh._invalidate = true;
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.setAllDirty();
+                    });
+                }
             }
         }
     )
 );
+function getIndexes(indexeslist, positionslist) {
+	var ear = [];
+	var indexes = [];
+	for (var i = 1; i < indexeslist.length; i++)
+	{	
+	 var isEar = true;
+		for (var j = 0; j < indexeslist.length; j++)
+		{    
+			if(i == indexeslist.length -1) {
+				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[i-1]], positionslist[indexeslist[i]], positionslist[indexeslist[0]])) {
+					isEar = false;
+				}	
+			} else {
+				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[i-1]], positionslist[indexeslist[i]], positionslist[indexeslist[i+1]])) {
+					isEar = false;
+				}	
+			}														
+		}
+		
+		if(isEar) {
+			if(i == indexeslist.length -1) {	
+				ear.push(indexeslist[i-1],indexeslist[i],indexeslist[0]);
+					
+			} else {
+				ear.push(indexeslist[i-1],indexeslist[i],indexeslist[i+1]);			
+			}	
+		}
+	}
+	
+	while(ear.length > 3) {
+		for(var i = 1; i < ear.length-1; i++) {
+			if(isKonvex(positionslist[ear[i-1]],positionslist[ear[i]],positionslist[ear[i+1]])) {					
+					indexes.push(ear[i-1] ,ear[i],ear[i+1]);
+					ear.splice(i,1);
+			}
+		}
+	}
+	return indexes;
+}
+function isNotEar(ap1, tp1, tp2, tp3) {
+	var b0, b1, b2, b3;
+    b0 = ((tp2.x - tp1.x) * (tp3.y - tp1.y) - (tp3.x - tp1.x) * (tp2.y - tp1.y));
+    if (b0 != 0) {
+      b1 = (((tp2.x - ap1.x) * (tp3.y - ap1.y) - (tp3.x - ap1.x) * (tp2.y - ap1.y)) / b0);
+      b2 = (((tp3.x - ap1.x) * (tp1.y - ap1.y) - (tp1.x - ap1.x) * (tp3.y - ap1.y)) / b0);
+      b3 = 1 - b1 - b2;
+
+      return ((b1 > 0) && (b2 > 0) && (b3 > 0));
+	}
+    else {
+      return false;
+	}	
+}
+
+function isKonvex(p ,p1, p2) {
+    var l = ((p1.x - p.x) * (p2.y - p.y) - (p1.y - p.y) * (p2.x - p.x));
+    if (l < 0) {
+      return false;
+	} else {
+      return true;
+	}	
+}
