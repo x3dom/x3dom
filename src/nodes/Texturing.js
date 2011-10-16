@@ -500,7 +500,21 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
         function (ctx) {
             x3dom.nodeTypes.X3DTextureCoordinateNode.superClass.call(this, ctx);
-        }
+        },
+		{
+			fieldChanged: function (fieldName) {
+                Array.forEach(this._parentNodes, function (node) {
+                    node.fieldChanged("texCoord");
+                });
+            },
+
+            parentAdded: function (parent) {
+                if (parent._mesh && //parent._cf.coord.node &&
+                    parent._cf.texCoord.node !== this) {
+                    parent.fieldChanged("texCoord");
+                }
+            }
+		}	
     )
 );
 

@@ -60,7 +60,7 @@ If you have access to Git, you can get a copy of the repository here::
 
 You can also check out a specific release from GitHub::
 
-    git clone git://github.com/x3dom/x3dom.git
+    git clone https://github.com/x3dom/x3dom.git
     git checkout <version>
     e.g. git checkout 1.2.0
 
