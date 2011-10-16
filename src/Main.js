@@ -269,6 +269,10 @@ x3dom.userAgentFeature = {
             x3dom.canvases.push(x3dcanvas);
 			t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
+			
+			//Start image queue
+			x3dom.ImageLoadManager.load();
+
         }
         
         var ready = (function(eventType) {

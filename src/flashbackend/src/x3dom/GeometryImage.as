@@ -10,10 +10,13 @@ package x3dom
 
 	public class GeometryImage extends Shape
 	{
-		
-		private var _coordinateTextureLoaded:Boolean;
+		private var _coordinateTexturesLoaded:Boolean;
+		private var _coordinateTexture0Loaded:Boolean;
+		private var _coordinateTexture1Loaded:Boolean;
 		private var _normalTextureLoaded:Boolean;
 		private var _texCoordTextureLoaded:Boolean;
+		private var _coords0:Bitmap = null;
+		private var _coords1:Bitmap = null;
 		
 		/**
 		 * 
@@ -65,17 +68,32 @@ package x3dom
 		 */
 		public function setCoordinateTexture(value:Object) : void
 		{
-			if(value.coordinateTexture)
+			_coordinateTexturesLoaded = false;
+			
+			if(value.coordinateTexture0)
 			{
-				_coordinateTextureLoaded = false;
+				_coordinateTexture0Loaded = false;
 				
-				var coordinateLoader:Loader = new Loader();
-				coordinateLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinateComplete);
-				coordinateLoader.load(new URLRequest(value.coordinateTexture));
+				var coordinateLoader0:Loader = new Loader();
+				coordinateLoader0.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate0Complete);
+				coordinateLoader0.load(new URLRequest(value.coordinateTexture0));
 			}
 			else
 			{
-				_coordinateTextureLoaded = true;
+				_coordinateTexture0Loaded = true;
+			}
+			
+			if(value.coordinateTexture1)
+			{
+				_coordinateTexture1Loaded = false;
+				
+				var coordinateLoader1:Loader = new Loader();
+				coordinateLoader1.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate1Complete);
+				coordinateLoader1.load(new URLRequest(value.coordinateTexture1));
+			}
+			else
+			{
+				_coordinateTexture1Loaded = true;
 			}
 		}
 		
@@ -103,7 +121,6 @@ package x3dom
 		 */
 		public function setTexCoordTexture(value:Object) : void
 		{
-			x3dom.Debug.logInfo(value.texCoordTexture);
 			if(value.texCoordTexture)
 			{
 				_texCoordTextureLoaded = false;
@@ -121,34 +138,68 @@ package x3dom
 		/**
 		 * 
 		 */
-		private function handleCoordinateComplete(e:Event) : void
+		private function handleCoordinate0Complete(e:Event) : void
 		{
-			var bitmap:Bitmap = Bitmap( e.target.content );
+			_coords0 = Bitmap( e.target.content );
+			_coordinateTexture0Loaded = true;
+			if(_coordinateTexture1Loaded == true) {
+				setMultiCoordinates()
+			}
 			
+		}
+		
+		/**
+		 * 
+		 */
+		private function handleCoordinate1Complete(e:Event) : void
+		{
+			_coords1 = Bitmap( e.target.content );
+			_coordinateTexture1Loaded = true;
+			if(_coordinateTexture0Loaded == true) {
+				setMultiCoordinates()
+			}
+		}
+		
+		private function setMultiCoordinates() : void
+		{
 			var color:uint;
-			var coordinate:Vector3D = new Vector3D();
+			var coordinate0:Vector3D = new Vector3D();
+			var coordinate1:Vector3D = new Vector3D();
 			var bias:Vector3D = _boundingBox.max.subtract(_boundingBox.min);
 			var vertices:Vector.<Number> = new Vector.<Number>();
 			
-			for(var y:uint=0; y<bitmap.height; y++)
+			for(var y:uint=0; y<_coords0.height; y++)
 			{
-				for(var x:uint=0; x<bitmap.width; x++)
+				for(var x:uint=0; x<_coords0.width; x++)
 				{
-					if( (y * bitmap.width + x) >= (_numTriangles[0] * 3) ) break;
+					if( (y * _coords0.width + x) >= (_numTriangles[0] * 3) ) break;
 					
-					color = bitmap.bitmapData.getPixel(x,y);
+					color = _coords0.bitmapData.getPixel(x,y);
 					
-					coordinate.x = ( (color >> 16 & 0xFF) / 255.0 ) * bias.x;
-					coordinate.y = ( (color >> 8 & 0xFF) / 255.0 ) * bias.y;
-					coordinate.z = ( (color & 0xFF) / 255.0 ) * bias.z;
-					coordinate = coordinate.add(_boundingBox.min);
+					coordinate0.x = ( (color >> 16 & 0xFF) / 255.0 );
+					coordinate0.y = ( (color >> 8 & 0xFF) / 255.0 );
+					coordinate0.z = ( (color & 0xFF) / 255.0 );
 					
-					vertices.push(coordinate.x, coordinate.y, coordinate.z);
+					if(_coords1) {
+						color = _coords1.bitmapData.getPixel(x,y);
+						
+						coordinate1.x = ( (color >> 16 & 0xFF) / 255.0 ) / 256.0;
+						coordinate1.y = ( (color >> 8 & 0xFF) / 255.0 ) / 256.0;
+						coordinate1.z = ( (color & 0xFF) / 255.0 ) / 256.0;
+						
+						coordinate0.incrementBy(coordinate1);
+					}
+					
+					coordinate0.x = (coordinate0.x * bias.x) + _boundingBox.min.x;
+					coordinate0.y = (coordinate0.y * bias.y) + _boundingBox.min.y;
+					coordinate0.z = (coordinate0.z * bias.z) + _boundingBox.min.z;
+					
+					vertices.push(coordinate0.x, coordinate0.y, coordinate0.z);	
 				}
 			}
 			setVertices(0, vertices);
 			
-			_coordinateTextureLoaded = true;
+			_coordinateTexturesLoaded = true;
 			
 			if(_normalTextureLoaded && _texCoordTextureLoaded) 
 			{
@@ -156,6 +207,7 @@ package x3dom
 				this.dispatchEvent( new Event( Event.COMPLETE ) );
 			}
 		}
+		
 		
 		/**
 		 * 
@@ -196,7 +248,7 @@ package x3dom
 			
 			_normalTextureLoaded = true;
 			
-			if(_coordinateTextureLoaded && _texCoordTextureLoaded) 
+			if(_coordinateTexturesLoaded && _texCoordTextureLoaded) 
 			{
 				_ready = true;
 				this.dispatchEvent( new Event( Event.COMPLETE ) );
@@ -212,6 +264,8 @@ package x3dom
 			
 			var color:uint;
 			var texCoord:Vector3D = new Vector3D();
+			var texCoord0:Vector3D = new Vector3D();
+			var texCoord1:Vector3D = new Vector3D();
 			var texCoords:Vector.<Number> = new Vector.<Number>();
 			
 			for(var y:uint=0; y<bitmap.height; y++)
@@ -222,8 +276,18 @@ package x3dom
 					
 					color = bitmap.bitmapData.getPixel(x,y);
 					
-					texCoord.x = (color >> 16 & 0xFF) / 255.0;
-					texCoord.y = (color >> 8 & 0xFF) / 255.0;
+					texCoord0.x = (color >> 16 & 0xFF) / 255.0;
+					texCoord0.y = (color >> 8 & 0xFF) / 255.0;
+					texCoord0.z = (color & 0xFF) / 255.0;
+					
+					color = bitmap.bitmapData.getPixel32(x,y);
+					
+					texCoord0.w = (color >> 24 & 0xFF) / 255.0;
+					
+					texCoord.x = (texCoord0.x * 0.996108948) + (texCoord0.z * 0.003891051);
+					texCoord.y = (texCoord0.y * 0.996108948) + (texCoord0.w * 0.003891051);		
+					
+					x3dom.Debug.logInfo("U: " + texCoord.x + " V: " + texCoord.y);
 					
 					texCoords.push(texCoord.x, texCoord.y);
 				}
@@ -233,7 +297,7 @@ package x3dom
 			
 			_texCoordTextureLoaded = true;
 			
-			if(_coordinateTextureLoaded && _normalTextureLoaded) 
+			if(_coordinateTexturesLoaded && _normalTextureLoaded) 
 			{
 				_ready = true;
 				this.dispatchEvent( new Event( Event.COMPLETE ) );

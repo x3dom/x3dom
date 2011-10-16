@@ -9,11 +9,12 @@
 		<link rel='stylesheet' type='text/css' href='../../x3dom.css'/>
 		<script type="text/javascript" src="../../lang/Array.js"></script>
 		<script type="text/javascript" src="../../Internals.js"></script>
+		<script type="text/javascript" src="../../debug.js"></script>
+		<script type="text/javascript" src="../../ImageLoadManager.js"></script>
+		<script type="text/javascript" src="../../lang/Properties.js"></script>
 		<script type="text/javascript" src="../../X3DCanvas.js"></script>
 		<script type="text/javascript" src="../../Runtime.js"></script>
 		<script type="text/javascript" src="../../Main.js"></script>
-		<script type="text/javascript" src="../../debug.js"></script>
-		<script type="text/javascript" src="../../lang/Properties.js"></script>
 		<script type="text/javascript" src="../../gfx_webgl.js"></script>
 		<script type="text/javascript" src="../../gfx_flash.js"></script>
 		<script type="text/javascript" src="../../X3DDocument.js"></script>
@@ -39,6 +40,8 @@
 		<script type="text/javascript" src="../../nodes/Texturing.js"></script>
 		<script type="text/javascript" src="../../nodes/Shaders.js"></script>
 		<script type="text/javascript" src="../../nodes/Geometry3D.js"></script>
+		<script type="text/javascript" src="../../nodes/Geometry2D.js"></script>
+		<script type="text/javascript" src="../../nodes/Geospatial.js"></script>
         <!-- END:X3DOM -->
 		
 		<style>
@@ -54,10 +57,10 @@
 				<Transform>
 			    	<Shape>
 				        <Appearance DEF="default">
-							<Material diffuseColor="0.561 0.878 0.341" specularColor="0.000 0.000 0.000" transparency="0.000" shininess="0.145"></Material>
+							<Material diffuseColor="0.588 0.588 0.588" specularColor="0.000 0.000 0.000" transparency="0.000" shininess="0.145"></Material>
 							<ImageTexture url="texture/DiffuseTexture.JPG"></ImageTexture>
 						</Appearance>
-						<ImageGeometry solid="false" DEF="Teapot01_0-GEOMETRY" position="0.0 0.0 0.0" size="32.16 15.75 20" vertexCount="12288">
+						<ImageGeometry solid="false" DEF="Teapot01_0-GEOMETRY" position="0.0 0.0 0" size="32.165772 15.75 20" vertexCount="12288">
 							<ImageTexture containerField="coord" url="texture/CoordinateTexture.png"></ImageTexture>
 							<ImageTexture containerField="normal" url="texture/NormalTexture.png"></ImageTexture>
 							<ImageTexture containerField="texCoord" url="texture/TexCoordTexture.png"></ImageTexture>

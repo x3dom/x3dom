@@ -1,15 +1,16 @@
 package x3dom.texturing
 {
-	import x3dom.Utils;
-	import flash.display3D.*;
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.display.Loader;
+	import flash.display3D.*;
+	import flash.display3D.textures.*;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	
-	import flash.display3D.textures.*;
+	import x3dom.Debug;
+	import x3dom.Utils;
 
 	public class ImageTexture extends BaseTexture
 	{
@@ -71,7 +72,7 @@ package x3dom.texturing
 		{
 			//Convert Loader to Bitmap
 			var bitmap:Bitmap = Bitmap( e.target.content );
-			
+
 			//Scale Bitmap to the next best power of two
 			bitmap = Utils.scaleBitmap(bitmap);
 			

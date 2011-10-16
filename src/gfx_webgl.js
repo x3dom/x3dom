@@ -19,7 +19,7 @@ x3dom.gfx_webgl = (function () {
         this.name = name;
         this.cached_shader_programs = {};
         this.cached_shaders = {};
-		this.imageLoadManager = new x3dom.ImageLoadManager();
+		//this.imageLoadManager = new x3dom.ImageLoadManager();
     }
 
     Context.prototype.getName = function() {
@@ -46,7 +46,7 @@ x3dom.gfx_webgl = (function () {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
                 if (ctx) {
                     var newCtx = new Context(ctx, canvas, 'webgl');
-                    
+
                     /*
                     var ext = "";
                     for (var fName in ctx) {
@@ -55,20 +55,43 @@ x3dom.gfx_webgl = (function () {
                     x3dom.debug.logInfo(ext);
                     */
                     try {
-                      if (ctx.getString) {
-                        x3dom.debug.logInfo("\nVendor: " + ctx.getString(ctx.VENDOR) + ", " + 
-                                            "Renderer: " + ctx.getString(ctx.RENDERER) + ", " + 
-                                            "Version: " + ctx.getString(ctx.VERSION) + ", " + 
-                                            "ShadingLangV.: " + ctx.getString(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
-                                            "\nExtensions: " + ctx.getString(ctx.EXTENSIONS));
-                      }
-                      else {
-                        x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
-                                            "Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
-                                            "Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
-                                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION));
-                                            //+ ", " + "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
-                      }
+						if (ctx.getString) {
+							x3dom.debug.logInfo("\nVendor: " + ctx.getString(ctx.VENDOR) + ", " + 
+												"Renderer: " + ctx.getString(ctx.RENDERER) + ", " + 
+												"Version: " + ctx.getString(ctx.VERSION) + ", " + 
+												"ShadingLangV.: " + ctx.getString(ctx.SHADING_LANGUAGE_VERSION) + ", " + 
+												"\nExtensions: " + ctx.getString(ctx.EXTENSIONS));
+						}
+						else {
+							x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
+												"Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
+												"Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
+												"ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION));
+												//+ ", " + "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
+												
+							//Save CAPS
+							x3dom.caps.VENDOR 							= ctx.getParameter(ctx.VENDOR);
+							x3dom.caps.VERSION							= ctx.getParameter(ctx.VERSION);
+							x3dom.caps.RENDERER							= ctx.getParameter(ctx.RENDERER);
+							x3dom.caps.SHADING_LANGUAGE_VERSION 		= ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION);
+							x3dom.caps.RED_BITS 						= ctx.getParameter(ctx.RED_BITS);
+							x3dom.caps.GREEN_BITS 						= ctx.getParameter(ctx.GREEN_BITS);
+							x3dom.caps.BLUE_BITS 						= ctx.getParameter(ctx.BLUE_BITS);
+							x3dom.caps.ALPHA_BITS 						= ctx.getParameter(ctx.ALPHA_BITS);
+							x3dom.caps.MAX_VERTEX_ATTRIBS				= ctx.getParameter(ctx.MAX_VERTEX_ATTRIBS);
+							x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS 	= ctx.getParameter(ctx.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
+							x3dom.caps.MAX_VARYING_VECTORS				= ctx.getParameter(ctx.MAX_VARYING_VECTORS);
+							x3dom.caps.MAX_VERTEX_UNIFORM_VECTORS		= ctx.getParameter(ctx.MAX_VERTEX_UNIFORM_VECTORS);
+							x3dom.caps.MAX_COMBINED_TEXTURE_IMAGE_UNITS	= ctx.getParameter(ctx.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
+							x3dom.caps.MAX_TEXTURE_SIZE					= ctx.getParameter(ctx.MAX_TEXTURE_SIZE);
+							x3dom.caps.MAX_CUBE_MAP_TEXTURE_SIZE		= ctx.getParameter(ctx.MAX_CUBE_MAP_TEXTURE_SIZE);
+							x3dom.caps.NUM_COMPRESSED_TEXTURE_FORMATS	= ctx.getParameter(ctx.NUM_COMPRESSED_TEXTURE_FORMATS);
+							x3dom.caps.MAX_RENDERBUFFER_SIZE			= ctx.getParameter(ctx.MAX_RENDERBUFFER_SIZE);
+							x3dom.caps.MAX_VIEWPORT_DIMS				= ctx.getParameter(ctx.MAX_VIEWPORT_DIMS);
+							x3dom.caps.ALIASED_LINE_WIDTH_RANGE			= ctx.getParameter(ctx.ALIASED_LINE_WIDTH_RANGE);
+							x3dom.caps.ALIASED_POINT_SIZE_RANGE			= ctx.getParameter(ctx.ALIASED_POINT_SIZE_RANGE);
+							x3dom.caps.EXTENSIONS						= ctx.getSupportedExtensions();
+						}
                       //x3dom.debug.logInfo(ctx.getSupportedExtensions());
                     }
                     catch (ex) {
@@ -1575,9 +1598,8 @@ x3dom.gfx_webgl = (function () {
                 else
                 {
                     texture = gl.createTexture();
-                    
-                    var image = new Image();
-					context.imageLoadManager.push(tex._vf.priority, image, tex._nameSpace.getURL(tex._vf.url[0]));
+					
+					var image = tex._image;
 					
 					//Old Loading
 					//image.crossOrigin = '';
@@ -1586,10 +1608,7 @@ x3dom.gfx_webgl = (function () {
                     that._nameSpace.doc.downloadCount += 1;					
 
                     image.onload = function()
-                    {           
-						context.imageLoadManager.activeDownloads--; 
-						context.imageLoadManager.load();
-						
+                    {           					
 						that._nameSpace.doc.needRender = true;
                         that._nameSpace.doc.downloadCount -= 1;
 						
@@ -1667,33 +1686,28 @@ x3dom.gfx_webgl = (function () {
 				
 				var indexTexture = shape._cf.geometry.node.getIndexTexture();
 				if(indexTexture) {
-					indexTexture._vf.priority = 0;
 					shape.updateTexture(indexTexture, GI_texUnit++, 'index');
 				}
 				
 				for(var i=0; i<numCoordinateTextures; i++) {
 					var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(i);
 					if(coordinateTexture) {
-						coordinateTexture._vf.priority = 0;
 						shape.updateTexture(coordinateTexture, GI_texUnit++, 'coord');
 					}
 				}
 							
 				var normalTexture = shape._cf.geometry.node.getNormalTexture(0);
 				if(normalTexture) {
-					normalTexture._vf.priority = 0;
 					shape.updateTexture(normalTexture, GI_texUnit++, "normal");
 				}
 				
 				var texCoordTexture = shape._cf.geometry.node.getTexCoordTexture();
 				if(texCoordTexture) {
-					texCoordTexture._vf.priority = 0;
 					shape.updateTexture(texCoordTexture, GI_texUnit++, "texCoord");
 				}
 				
 				var colorTexture = shape._cf.geometry.node.getColorTexture();
 				if(colorTexture) {
-					colorTexture._vf.priority = 0;
 					shape.updateTexture(colorTexture, GI_texUnit++, "color");
 				}
 			}
