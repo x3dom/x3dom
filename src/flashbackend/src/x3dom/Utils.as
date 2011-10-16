@@ -19,7 +19,8 @@ package x3dom
 		 */
 		public static function scaleBitmap(bitmap:Bitmap) : Bitmap
 		{
-			if (!isPowerOfTwo(bitmap.width) || !isPowerOfTwo(bitmap.height)) {
+			if (!isPowerOfTwo(bitmap.width) || !isPowerOfTwo(bitmap.height) ||
+				bitmap.width > 2048 || bitmap.height > 2048) {
 				var newWidth:Number  = nextBestPowerOfTwo( bitmap.width );
 				var newHeight:Number = nextBestPowerOfTwo( bitmap.height );
 				
@@ -60,7 +61,27 @@ package x3dom
 		public static function nextBestPowerOfTwo(x:Number) : Number
 		{
 			var log2x:Number = Math.log(x) / Math.log(2);
-			return Math.pow(2, Math.round(log2x));
+			var result:Number = Math.pow(2, Math.round(log2x));
+			
+			if(result > 2048) {
+				result = nextLowerPowerOfTwo(x);
+			}
+			return result;
+			
+		}
+		
+		public static function nextLowerPowerOfTwo(x:Number): Number {
+			var a:uint = 1, b:uint = 2;
+			
+			if (x < 1)
+				return 0;
+			
+			while (x > b) {
+				a += a;
+				b += b;
+			}
+			
+			return a;
 		}
 	}
 }

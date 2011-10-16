@@ -86,6 +86,11 @@ package x3dom
 		private static var _infoField:Sprite;
 		
 		/**
+		 * 
+		 */
+		private static var _texLoadWheel:Sprite;
+		
+		/**
 		 * Main entry point of the x3dom flash renderer
 		 */
 		public function FlashBackend()
@@ -113,7 +118,8 @@ package x3dom
 			initEventListener();
 			
 			//Create Context3D
-			createContext3D();	
+			createContext3D();
+			
 		}
 		
 		private function initLoadingScreen() : void

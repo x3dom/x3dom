@@ -17,106 +17,113 @@
  * Loader object that manage priority based 
  * image/texture loading.
  */
-x3dom.ImageLoadManager = function() {
+x3dom.ImageLoadManager = {
 	
-	this.heap = [];
+	heap: [],
 	
-	this.maxDownloads = 32;
+	complete: false,
 	
-	this.activeDownloads = 0;
-		
-	this.push = function(priority, image, url) {
-		this.heapUp(this.heap.push({priority: priority, image: image, url:url}) - 1);
-		this.load();
-	};
+	push: function(tex, priority) {
+		if(x3dom.caps.BACKEND == 'webgl') {
+			x3dom.debug.logInfo("[ImageLoadManager] Push image to queue: URL = " + tex._vf.url[0] + " | Priority = " + priority);
+			x3dom.ImageLoadManager.heapUp( x3dom.ImageLoadManager.heap.push({priority: priority, image: tex._image, url:tex._vf.url[0]}) - 1 );
+			if(x3dom.ImageLoadManager.complete) {
+				x3dom.ImageLoadManager.complete = false;
+				x3dom.ImageLoadManager.load();
+			}
+		}
+	},
 	
-	this.pop = function() {
-		if(this.isEmpty()) {
+	pop: function() {
+		if(x3dom.ImageLoadManager.isEmpty()) {
 		
 		} else {
-			var result = this.heap[0];
-			var tmp = this.heap.pop();
-			if(this.heap.length > 0) {
-				this.heap[0] = tmp;
-				this.heapDown(0);
+			var result = x3dom.ImageLoadManager.heap[0];
+			var tmp = x3dom.ImageLoadManager.heap.pop();
+			if(x3dom.ImageLoadManager.heap.length > 0) {
+				x3dom.ImageLoadManager.heap[0] = tmp;
+				x3dom.ImageLoadManager.heapDown(0);
 			} 
 			return result;
 		}
-	};
+	},
 	
-	this.load = function() {
-		while(this.activeDownloads <= this.maxDownloads && this.heap.length) {
-			var item = this.pop();
-			this.activeDownloads++;
-			item.image.crossOrigin = '';
-			item.image.src = item.url;
+	load: function() {
+		if(x3dom.caps.BACKEND == 'webgl') {
+			x3dom.debug.logInfo("[ImageLoadManager] Start loading...");
+			while( !x3dom.ImageLoadManager.isEmpty() ) {
+				var item = x3dom.ImageLoadManager.pop();
+				item.image.crossOrigin = '';
+				item.image.src = item.url;
+			}
+			x3dom.ImageLoadManager.complete = true;
 		}
-	};
+	},
 	
-	this.getLeftChildIndex = function(nodeIndex) {
+	getLeftChildIndex: function(nodeIndex) {
 		return parseInt( 2 * nodeIndex + 1 );
-	};
+	},
 	
-	this.getRightChildIndex = function(nodeIndex) {
+	getRightChildIndex: function(nodeIndex) {
 		return parseInt( 2 * nodeIndex + 2 );
-	};
+	},
 	
-	this.getParentIndex = function(nodeIndex) {
+	getParentIndex: function(nodeIndex) {
 		return parseInt( (nodeIndex - 1) / 2 );
-	};
+	},
 	
-	this.heapUp = function(nodeIndex) {
+	heapUp: function(nodeIndex) {
 		var parentIndex, tmp;
 		if (nodeIndex != 0) {
-			parentIndex = this.getParentIndex(nodeIndex);
-			if (this.heap[parentIndex].priority > this.heap[nodeIndex].priority) {
-				tmp = this.heap[parentIndex];
-				this.heap[parentIndex] = this.heap[nodeIndex];
-				this.heap[nodeIndex] = tmp;
-				this.heapUp(parentIndex);
+			parentIndex = x3dom.ImageLoadManager.getParentIndex(nodeIndex);
+			if (x3dom.ImageLoadManager.heap[parentIndex].priority > x3dom.ImageLoadManager.heap[nodeIndex].priority) {
+				tmp = x3dom.ImageLoadManager.heap[parentIndex];
+				x3dom.ImageLoadManager.heap[parentIndex] = x3dom.ImageLoadManager.heap[nodeIndex];
+				x3dom.ImageLoadManager.heap[nodeIndex] = tmp;
+				x3dom.ImageLoadManager.heapUp(parentIndex);
 			}
 		}
-	};
+	},
 	
-	this.heapDown = function(nodeIndex) {
+	heapDown: function(nodeIndex) {
 		var leftChildIndex, rightChildIndex, minIndex, tmp;
-		leftChildIndex = this.getLeftChildIndex(nodeIndex);
-		rightChildIndex = this.getRightChildIndex(nodeIndex);
-		if (rightChildIndex >= this.heap.length) {
-			  if (leftChildIndex >= this.heap.length)
+		leftChildIndex = x3dom.ImageLoadManager.getLeftChildIndex(nodeIndex);
+		rightChildIndex = x3dom.ImageLoadManager.getRightChildIndex(nodeIndex);
+		if (rightChildIndex >= x3dom.ImageLoadManager.heap.length) {
+			  if (leftChildIndex >= x3dom.ImageLoadManager.heap.length)
 					return;
 			  else
 					minIndex = leftChildIndex;
 		} else {
-			  if (this.heap[leftChildIndex].priority <= this.heap[rightChildIndex].priority)
+			  if (x3dom.ImageLoadManager.heap[leftChildIndex].priority <= x3dom.ImageLoadManager.heap[rightChildIndex].priority)
 					minIndex = leftChildIndex;
 			  else
 					minIndex = rightChildIndex;
 		}
-		if (this.heap[nodeIndex].priority > this.heap[minIndex].priority) {
-			  tmp = this.heap[minIndex];
-			  this.heap[minIndex] = this.heap[nodeIndex];
-			  this.heap[nodeIndex] = tmp;
-			  this.heapDown(minIndex);
+		if (x3dom.ImageLoadManager.heap[nodeIndex].priority > x3dom.ImageLoadManager.heap[minIndex].priority) {
+			  tmp = x3dom.ImageLoadManager.heap[minIndex];
+			  x3dom.ImageLoadManager.heap[minIndex] = x3dom.ImageLoadManager.heap[nodeIndex];
+			  x3dom.ImageLoadManager.heap[nodeIndex] = tmp;
+			  x3dom.ImageLoadManager.heapDown(minIndex);
 		}
-    };
+    },
 	
-	this.isEmpty = function() {
-        return (this.heap.length == 0);
-    };
+	isEmpty: function() {
+        return (x3dom.ImageLoadManager.heap.length == 0);
+    },
 	
-	this.toString = function() {
-		var string = "MinHeap [";
-		for(var i=0; i<this.heap.length; i++) {
+	toString: function() {
+		var string = "ImageLoadManager(" + x3dom.ImageLoadManager.heap.length + ") [";
+		for(var i=0; i<x3dom.ImageLoadManager.heap.length; i++) {
 			if(i!=0) string += ", ";
-			string += this.heap[i].priority + " - " + this.heap[i].data;
+			string += x3dom.ImageLoadManager.heap[i].priority + " - " + x3dom.ImageLoadManager.heap[i].url;
 		}
 		string += "]";
 		return string;
-	};
+	},
 	
-	this.length = function() {
-		return this.heap.length;
+	length: function() {
+		return x3dom.ImageLoadManager.heap.length;
 	}
 	
  };

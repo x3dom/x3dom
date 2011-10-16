@@ -277,7 +277,7 @@ x3dom.gfx_flash = (function() {
 		{
 			//Check if is GeometryImage-Node
 			var isImageGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry);
-		
+
 			//Set indices			
 			if( shape._dirty.indexes === true ) {
 				if(!isImageGeometry) {
@@ -304,7 +304,7 @@ x3dom.gfx_flash = (function() {
 														  bboxMin: shape._cf.geometry.node.getMin().toGL(),
 														  bboxMax: shape._cf.geometry.node.getMax().toGL(),
 														  bboxCenter: shape._cf.geometry.node.getCenter(),
-														  numTriangles: shape._cf.geometry.node._vf.vertexCount/3,
+														  numTriangles: shape._cf.geometry.node._vf.vertexCount[0]/3,
 													      coordinateTexture0: shape._cf.geometry.node.getCoordinateTextureURL(0),
 														  coordinateTexture1: shape._cf.geometry.node.getCoordinateTextureURL(1) } );
 				}

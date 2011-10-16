@@ -359,6 +359,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	this.isFlashReady = false;
 
     this.x3dElem = x3dElem;
+	
+	this.backend = 'none';
 
     if(this.x3dElem.getAttribute('backend') == 'flash') {
 		this.backend = 'flash';
@@ -389,6 +391,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
 		}
 	}
+	
+	x3dom.caps.BACKEND = this.backend;
 
 	this.fps_t0 = new Date().getTime();
     this.doc = null;

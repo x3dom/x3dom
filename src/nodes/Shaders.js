@@ -131,6 +131,33 @@ x3dom.registerNodeType(
         {
             nodeChanged: function()
             {
+				if(this._cf.emissiveTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.emissiveTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.ambientTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.ambientTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.diffuseTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.diffuseTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.specularTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.specularTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.shininessTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.shininessTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.reflectionTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.normalTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.normalTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.normalTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.transmissionTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.transmissionTexture.node._cf.texture.node, 5);
+				}
+				if(this._cf.environmentTexture.node) {
+					x3dom.ImageLoadManager.push( this._cf.environmentTexture.node._cf.texture.node, 5);
+				}			
             },
 
             fieldChanged: function(fieldName)

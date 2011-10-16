@@ -103,11 +103,10 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
             this.addField_SFBool(ctx, 'scale', true);
-			this.addField_SFInt32(ctx, 'priority', 5);
-            //this.addField_SFString(ctx, 'scale', "NONE");
 
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
+			this._image = new Image();
         },
         {
             invalidateGLObject: function ()
@@ -145,6 +144,7 @@ x3dom.registerNodeType(
                 if (fieldName == "url")
                 {
                     Array.forEach(this._parentNodes, function (app) {
+						app.nodeChanged();
                         Array.forEach(app._parentNodes, function (shape) {
                             shape._dirty.texture = true;
                         });
