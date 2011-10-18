@@ -51,7 +51,7 @@ x3dom.registerNodeType(
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
             this.addField_SFFloat(ctx, 'zNear', 0.1);
-            this.addField_SFFloat(ctx, 'zFar', 10000);
+            this.addField_SFFloat(ctx, 'zFar', 100000);
 
             //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
             //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
