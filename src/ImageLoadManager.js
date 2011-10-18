@@ -23,6 +23,8 @@ x3dom.ImageLoadManager = {
 	
 	complete: false,
 	
+	activeDownloads: 0,
+	
 	push: function(tex, priority) {
 		if(x3dom.caps.BACKEND == 'webgl') {
 			x3dom.debug.logInfo("[ImageLoadManager] Push image to queue: URL = " + tex._vf.url[0] + " | Priority = " + priority);
@@ -55,6 +57,7 @@ x3dom.ImageLoadManager = {
 				var item = x3dom.ImageLoadManager.pop();
 				item.image.crossOrigin = '';
 				item.image.src = item.url;
+				x3dom.ImageLoadManager.activeDownloads++;
 			}
 			x3dom.ImageLoadManager.complete = true;
 		}

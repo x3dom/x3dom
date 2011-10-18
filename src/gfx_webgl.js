@@ -1608,7 +1608,9 @@ x3dom.gfx_webgl = (function () {
                     that._nameSpace.doc.downloadCount += 1;					
 
                     image.onload = function()
-                    {           					
+                    {    
+						x3dom.ImageLoadManager.activeDownloads--;
+						
 						that._nameSpace.doc.needRender = true;
                         that._nameSpace.doc.downloadCount -= 1;
 						
