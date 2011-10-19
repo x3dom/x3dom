@@ -37,6 +37,9 @@ x3dom.components = {};
 /** Cache for primitive nodes (Box, Sphere, etc.) */
 x3dom.geoCache = [];
 
+/** Stores informations about Browser and Hardware capabilities */
+x3dom.caps = { PLATFORM: navigator.platform, AGENT: navigator.userAgent };
+
 /** Registers the node defined by @p nodeDef.
 
     The node is registered with the given @p nodeTypeName and @p componentName.

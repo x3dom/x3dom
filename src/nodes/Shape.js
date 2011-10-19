@@ -41,6 +41,10 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {
+				if(this._cf.texture.node) {
+					x3dom.ImageLoadManager.push( this._cf.texture.node, 5);
+				}
+			
                 if (!this._cf.material.node) {
                     this.addChild(x3dom.nodeTypes.Material.defaultNode());
                 }
