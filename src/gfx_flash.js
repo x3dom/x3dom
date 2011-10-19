@@ -304,7 +304,8 @@ x3dom.gfx_flash = (function() {
 														  bboxMin: shape._cf.geometry.node.getMin().toGL(),
 														  bboxMax: shape._cf.geometry.node.getMax().toGL(),
 														  bboxCenter: shape._cf.geometry.node.getCenter(),
-														  numTriangles: shape._cf.geometry.node._vf.vertexCount[0]/3,
+														  primType: shape._cf.geometry.node._vf.primType,
+														  vertexCount: shape._cf.geometry.node._vf.vertexCount,
 													      coordinateTexture0: shape._cf.geometry.node.getCoordinateTextureURL(0),
 														  coordinateTexture1: shape._cf.geometry.node.getCoordinateTextureURL(1) } );
 				}

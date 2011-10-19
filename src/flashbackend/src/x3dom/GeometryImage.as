@@ -6,6 +6,8 @@ package x3dom
 	import flash.geom.Vector3D;
 	import flash.net.URLRequest;
 	
+	import mx.flash.UIMovieClip;
+	
 	
 
 	public class GeometryImage extends Shape
@@ -17,6 +19,8 @@ package x3dom
 		private var _texCoordTextureLoaded:Boolean;
 		private var _coords0:Bitmap = null;
 		private var _coords1:Bitmap = null;
+		private var _primType:Array = new Array();
+		private var _vertexCount:Array = new Array();
 		
 		/**
 		 * 
@@ -32,11 +36,24 @@ package x3dom
 		 */
 		public function setProperties(value:Object) : void
 		{
-			
-			//Set number of Triangles
-			this._numTriangles[0] = Number( value.numTriangles );
-			
-			generateIndices();
+			//Set number of Triangle, vertexCount and primTypes
+			for(var i:uint=0; i<value.primType.length; i++)
+			{
+				this._primType[i] = value.primType[i];
+				
+				this._vertexCount[i] = Number(value.vertexCount[i]);
+				
+				if(this._primType[i] == 'TRIANGLES') 
+				{
+					this._numTriangles[i] = this._vertexCount[i] / 3;
+					generateIndices(i);
+				} 
+				else if(this._primType[i] == 'TRIANGLESTRIP') 
+				{
+					this._numTriangles[i] = this._vertexCount[i] - 2;
+					generateTriangleStripIndices(i)
+				}
+			}
 			
 			//Set boundingbox center
 			_boundingBox.center.setTo(value.bboxCenter[0], value.bboxCenter[1], value.bboxCenter[2]);
@@ -51,16 +68,34 @@ package x3dom
 		/**
 		 * 
 		 */
-		private function generateIndices() : void
+		private function generateIndices(idx:uint) : void
 		{
 			var indices:Vector.<uint> = new Vector.<uint>();
 			
-			for(var i:uint = 0; i<_numTriangles[0]*3; i++)
+			for(var i:uint = 0; i<_numTriangles[idx]*3; i++)
 			{
 				indices.push(i);
 			}
 			
-			setIndices(0, indices);
+			setIndices(idx, indices);
+		}
+		
+		/**
+		 * 
+		 */
+		private function generateTriangleStripIndices(idx:uint) : void
+		{
+			var indices:Vector.<uint> = new Vector.<uint>();
+			
+			for(var i:uint=0; i<Math.round(_numTriangles[idx]); i+=2)
+			{
+				if(i != 0) {
+					indices.push(i, i-1, i+1);
+				}
+				indices.push(i, i+1, i+2);
+			}
+			
+			setIndices(idx, indices);
 		}
 		
 		/**
@@ -163,6 +198,7 @@ package x3dom
 		private function setMultiCoordinates() : void
 		{
 			var color:uint;
+			var idx:uint = 0;
 			var coordinate0:Vector3D = new Vector3D();
 			var coordinate1:Vector3D = new Vector3D();
 			var bias:Vector3D = _boundingBox.max.subtract(_boundingBox.min);
@@ -172,7 +208,16 @@ package x3dom
 			{
 				for(var x:uint=0; x<_coords0.width; x++)
 				{
-					if( (y * _coords0.width + x) >= (_numTriangles[0] * 3) ) break;
+					
+					if( vertices.length/3 == (this._vertexCount[idx]) ) {
+						setVertices(idx, vertices);
+						idx++;
+						if(idx < this._vertexCount.length){
+							vertices = new Vector.<Number>();
+						} else {
+							break;
+						}
+					}
 					
 					color = _coords0.bitmapData.getPixel(x,y);
 					
@@ -194,10 +239,10 @@ package x3dom
 					coordinate0.y = (coordinate0.y * bias.y) + _boundingBox.min.y;
 					coordinate0.z = (coordinate0.z * bias.z) + _boundingBox.min.z;
 					
-					vertices.push(coordinate0.x, coordinate0.y, coordinate0.z);	
+					vertices.push(coordinate0.x, coordinate0.y, coordinate0.z);
+					
 				}
 			}
-			setVertices(0, vertices);
 			
 			_coordinateTexturesLoaded = true;
 			
@@ -216,7 +261,8 @@ package x3dom
 		{
 			var bitmap:Bitmap = Bitmap( e.target.content );
 			
-			var color:uint;
+			var color:uint;		
+			var idx:uint = 0;
 			var normal:Vector3D = new Vector3D();
 			var normals:Vector.<Number> = new Vector.<Number>();
 			
@@ -224,7 +270,15 @@ package x3dom
 			{
 				for(var x:uint=0; x<bitmap.width; x++)
 				{
-					if( (y * bitmap.width + x) >= (_numTriangles[0] * 3) ) break;
+					if( normals.length/3 == (this._vertexCount[idx]) ) {
+						setNormals(idx, normals);
+						idx++;
+						if(idx < this._vertexCount.length){
+							normals = new Vector.<Number>();
+						} else {
+							break;
+						}
+					}
 					
 					color = bitmap.bitmapData.getPixel(x,y);
 					
@@ -244,8 +298,6 @@ package x3dom
 				}
 			}
 			
-			setNormals(0, normals);
-			
 			_normalTextureLoaded = true;
 			
 			if(_coordinateTexturesLoaded && _texCoordTextureLoaded) 
@@ -262,7 +314,8 @@ package x3dom
 		{
 			var bitmap:Bitmap = Bitmap( e.target.content );
 			
-			var color:uint;
+			var color:uint;	
+			var idx:uint = 0;
 			var texCoord:Vector3D = new Vector3D();
 			var texCoord0:Vector3D = new Vector3D();
 			var texCoord1:Vector3D = new Vector3D();
@@ -272,7 +325,15 @@ package x3dom
 			{
 				for(var x:uint=0; x<bitmap.width; x++)
 				{
-					if( (y * bitmap.width + x) >= (_numTriangles[0] * 3) ) break;
+					if( texCoords.length/2 == (this._vertexCount[idx]) ) {
+						setTexCoords(idx, texCoords);
+						idx++;
+						if(idx < this._vertexCount.length){
+							texCoords = new Vector.<Number>();
+						} else {
+							break;
+						}
+					}
 					
 					color = bitmap.bitmapData.getPixel(x,y);
 					
@@ -287,13 +348,11 @@ package x3dom
 					texCoord.x = (texCoord0.x * 0.996108948) + (texCoord0.z * 0.003891051);
 					texCoord.y = (texCoord0.y * 0.996108948) + (texCoord0.w * 0.003891051);		
 					
-					x3dom.Debug.logInfo("U: " + texCoord.x + " V: " + texCoord.y);
+					//x3dom.Debug.logInfo("U: " + texCoord.x + " V: " + texCoord.y);
 					
 					texCoords.push(texCoord.x, texCoord.y);
 				}
 			}
-			
-			setTexCoords(0, texCoords);
 			
 			_texCoordTextureLoaded = true;
 			
