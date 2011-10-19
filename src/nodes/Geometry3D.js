@@ -1199,38 +1199,59 @@ x3dom.registerNodeType(
 			//TODO check if GPU-Version is supported (Flash, etc.)
 			//Dummy mesh generation only need for GPU-Version
 			
-			var geoCacheID = 'ImageGeometry';
+			if(x3dom.caps.BACKEND == 'webgl' && x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS > 0) {
+			
+				var geoCacheID = 'ImageGeometry';
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
-			{
-				x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
-				this._mesh = x3dom.geoCache[geoCacheID];
-			}
-			else
-			{
-				for(var y=0; y<256; y++)
+				if( x3dom.geoCache[geoCacheID] != undefined )
 				{
-					for(var x=0; x<256; x++)
-					{
-						var idx = y * 256 + x;
-						
-						if(idx == 65535) break;
-						
-						this._mesh._positions[0].push(x/256, y/256, 0);
-						this._mesh._indices[0].push(y*256+x);
-					}
+					x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
+					this._mesh = x3dom.geoCache[geoCacheID];
 				}
-				
-				this._mesh._invalidate = true;
-				this._mesh._numFaces = this._mesh._indices[0].length / 3;
-				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+				else
+				{
+					for(var y=0; y<256; y++)
+					{
+						for(var x=0; x<256; x++)
+						{
+							var idx = y * 256 + x;
+							
+							if(idx == 65535) break;
+							
+							this._mesh._positions[0].push(x/256, y/256, 0);
+							this._mesh._indices[0].push(y*256+x);
+						}
+					}
+					
+					this._mesh._invalidate = true;
+					this._mesh._numFaces = this._mesh._indices[0].length / 3;
+					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 
-				x3dom.geoCache[geoCacheID] = this._mesh;
+					x3dom.geoCache[geoCacheID] = this._mesh;
+				}
 			}
 		},
 		{
 			nodeChanged: function()
             {
+				if(this._cf.index.node) {
+					x3dom.ImageLoadManager.push( this._cf.index.node, 0);
+				}
+				if(this._cf.coord.nodes) {
+					for(var i=0; i<this._cf.coord.nodes.length; i++)
+						x3dom.ImageLoadManager.push( this._cf.coord.nodes[i], 0);
+				}
+				if(this._cf.normal.nodes) {
+					for(var i=0; i<this._cf.normal.nodes.length; i++)
+						x3dom.ImageLoadManager.push( this._cf.normal.nodes[i], 1);
+				}
+				if(this._cf.texCoord.node) {
+					x3dom.ImageLoadManager.push( this._cf.texCoord.node, 2);
+				}
+				if(this._cf.color.node) {
+					x3dom.ImageLoadManager.push( this._cf.color.node, 4);
+				}
+			
 				Array.forEach(this._parentNodes, function (node) {
                     node._dirty.positions = true;
 					node._dirty.normals = true;
