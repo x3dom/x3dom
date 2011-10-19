@@ -341,12 +341,14 @@ package x3dom
 					texCoord0.y = (color >> 8 & 0xFF) / 255.0;
 					texCoord0.z = (color & 0xFF) / 255.0;
 					
+					//x3dom.Debug.logInfo("U: " + texCoord0.x + " V: " + texCoord0.y);
+					
 					color = bitmap.bitmapData.getPixel32(x,y);
 					
 					texCoord0.w = (color >> 24 & 0xFF) / 255.0;
 					
 					texCoord.x = (texCoord0.x * 0.996108948) + (texCoord0.z * 0.003891051);
-					texCoord.y = (texCoord0.y * 0.996108948) + (texCoord0.w * 0.003891051);		
+					texCoord.y = (texCoord0.y * 0.996108948) + (texCoord0.w * 0.003891051);
 					
 					//x3dom.Debug.logInfo("U: " + texCoord.x + " V: " + texCoord.y);
 					
