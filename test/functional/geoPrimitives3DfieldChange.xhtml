@@ -6,6 +6,7 @@
     <!-- BEGIN:X3DOM -->
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/lang/DoublyLinkedList.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
 <script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
@@ -108,13 +109,14 @@
                       0 1 2 3 4 5 6 7 8 -1
                       9 10 11 12 13 14 15 16 17 -1' convex='false'>
                         <Coordinate point='
-                        1 0 0  1.5 0.7 0.5  0.5 0.5 0.5  0.7 1.5 1  0 1 1  -0.7 1.5 1  -0.5 0.5 0.5  -1.5 0.7 0.5  -1 0 0
-                        -1 0 0  -1.5 -0.7 0.5  -0.5 -0.5 0.5  -0.7 -1.5 1  0 -1 1  0.7 -1.5 1  0.5 -0.5 0.5 1.5 -0.7 0.5 1 0 0'/>
+                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0  -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
+                        -1 0 0  -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0'/>
                       </IndexedFaceSet>
                    </Shape>
                 </transform>
                 
-                 <transform translation="2 0 0">
+            
+                 <!--transform translation="2 0 0">
                     <Shape>
                       <Appearance>
                          <material diffuseColor='yellow'></material>
@@ -127,7 +129,7 @@
                         <Normal id="testIndexedFaceSetNormal" vector='0 0 1 0 0 1  0 0 1 0 0 1'/>
                       </IndexedFaceSet>
                    </Shape>
-                </transform>
+                </transform-->
                                 
 			</scene>
         </X3D>
