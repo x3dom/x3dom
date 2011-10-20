@@ -22,6 +22,7 @@ BASE_FILES = \
   ${SRC_DIR}/debug.js\
   ${SRC_DIR}/ImageLoadManager.js\
   ${SRC_DIR}/lang/Properties.js\
+  ${SRC_DIR}/lang/DoublyLinkedList.js\
   ${SRC_DIR}/X3DCanvas.js\
   ${SRC_DIR}/Runtime.js\
   ${SRC_DIR}/Main.js\

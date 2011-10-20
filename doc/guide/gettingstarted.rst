@@ -56,7 +56,7 @@ of the X3DOM code.
 
 If you have access to Git, you can get a copy of the repository here::
 
-    git clone git://github.com/x3dom/x3dom.git
+    git clone https://github.com/x3dom/x3dom.git
 
 You can also check out a specific release from GitHub::
 

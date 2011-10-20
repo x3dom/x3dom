@@ -8,6 +8,7 @@ BASIC := lang/Array.js\
   debug.js\
   ImageLoadManager.js\
   lang/Properties.js\
+  lang/DoublyLinkedList.js\
   X3DCanvas.js\
   Runtime.js\
   Main.js

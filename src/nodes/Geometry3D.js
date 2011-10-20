@@ -1770,19 +1770,16 @@ x3dom.registerNodeType(
 
 						}
 					} else {
-						var positionslist = [];
-						var indexeslist = [];
+						var linklist = new DoublyLinkedList();
 												
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
-								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(indexeslist, positionslist));
-								indexeslist = [];
-								positionslist = [];
+								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
+								linklist = new DoublyLinkedList();
 								continue;
 							}
-							indexeslist.push(indexes[i]);
-							positionslist[indexes[i]] = (positions[indexes[i]]);
+							linklist.appendNode(new ListNode(positions[indexes[i]], indexes[i]));
 						}								
 					}
                    
@@ -1930,42 +1927,28 @@ x3dom.registerNodeType(
         }
     )
 );
-function getIndexes(indexeslist, positionslist) {
-	var ear = [];
+function getIndexes(linklist) {
 	var indexes = [];
-	for (var i = 1; i < indexeslist.length; i++)
-	{	
-	 var isEar = true;
-		for (var j = 0; j < indexeslist.length; j++)
-		{    
-			if(i == indexeslist.length -1) {
-				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[i-1]], positionslist[indexeslist[i]], positionslist[indexeslist[0]])) {
-					isEar = false;
-				}	
-			} else {
-				if(isNotEar(positionslist[indexeslist[j]], positionslist[indexeslist[i-1]], positionslist[indexeslist[i]], positionslist[indexeslist[i+1]])) {
-					isEar = false;
-				}	
-			}														
+	var node = linklist.first.next;
+	var next = null;
+		
+	var isEar = true;
+	while(linklist.length >= 3) {
+		next = node.next;
+		for(var i = 0; i < linklist.length; i++) {
+			if(isNotEar(linklist.getNode(i).data, node.prev.data, node.data, node.next.data)) {
+				isEar = false;
+			}
 		}
 		
 		if(isEar) {
-			if(i == indexeslist.length -1) {	
-				ear.push(indexeslist[i-1],indexeslist[i],indexeslist[0]);
-					
-			} else {
-				ear.push(indexeslist[i-1],indexeslist[i],indexeslist[i+1]);			
-			}	
-		}
-	}
-	
-	while(ear.length > 3) {
-		for(var i = 1; i < ear.length-1; i++) {
-			if(isKonvex(positionslist[ear[i-1]],positionslist[ear[i]],positionslist[ear[i+1]])) {					
-					indexes.push(ear[i-1] ,ear[i],ear[i+1]);
-					ear.splice(i,1);
+			if(isKonvex(node.prev.data, node.data, node.next.data)) {
+				indexes.push(node.prev.index, node.index, node.next.index);
+				linklist.deleteNode(node);
 			}
 		}
+		node = next;
+		isEar = true;
 	}
 	return indexes;
 }
