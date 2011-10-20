@@ -5,11 +5,14 @@ package x3dom
 	import flash.events.*;
 	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
+	import flash.system.Security;
 	
 	[SWF(backgroundColor="#000000", width="550", height="400", frameRate="120")]
 	
 	public class FlashBackend extends MovieClip
 	{	
+		
+		Security.allowDomain('*');
 		
 		[Embed(source="res/Library.swf", symbol="LoadingText")]
 		private var LoadingScreen:Class;
