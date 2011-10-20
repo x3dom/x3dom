@@ -52,23 +52,302 @@
 	</head>
 	<body>
 		<X3D id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px' backend='flash'>
-			<Scene>
-				<Background skyColor='0.750 0.750 0.750'></Background>
-				<Transform>
-			    	<Shape>
-				        <Appearance DEF="default">
-							<Material diffuseColor="0.588 0.588 0.588" specularColor="0.000 0.000 0.000" transparency="0.000" shininess="0.145"></Material>
-							<ImageTexture url="texture/DiffuseTexture.JPG"></ImageTexture>
-						</Appearance>
-						<ImageGeometry solid="false" DEF="Teapot01_0-GEOMETRY" position="0.0 0.0 0" size="32.165772 15.75 20" vertexCount="12288">
-							<ImageTexture containerField="coord" url="texture/CoordinateTexture.png"></ImageTexture>
-							<ImageTexture containerField="normal" url="texture/NormalTexture.png"></ImageTexture>
-							<ImageTexture containerField="texCoord" url="texture/TexCoordTexture.png"></ImageTexture>
-						</ImageGeometry>
-			    	</Shape>
-			    </Transform>
-				<Viewpoint position='0 0 50'></Viewpoint>
-			</Scene>
-		</X3D>
+		  <scene DEF='scene'>
+        <viewpoint description='front' orientation='-0.0198424 0.978456 0.205499 2.52055' position='14.7909 9.11922 -22.6461'></viewpoint>
+        <viewpoint description='back' position='0.372499 0.833 30.295'></viewpoint>
+        <viewpoint description='side' orientation='-0.0143491 0.997152 0.0740423 2.08331' position='10.5135 1.04052 -8.48257'></viewpoint>
+        <viewpoint description='cockpit' orientation='-0.578425 0.815301 0.0266238 0.422092' position='8.64329 0.888994 -6.08825'></viewpoint>
+        <background></background>
+        <transform DEF='falcon'>
+          <shape>
+            <appearance DEF='Material__1'>
+              <material DEF='AOPT_Material_29548448' diffuseColor='0 0 0' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+              <imageTexture url='"texture/CABINBAC.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_0-GEOMETRY' vertexCount='68' primType='"TRIANGLESTRIP"' position='8.2735004425 0.36050003767 -5.87150001526' size='1.92500019073 1.88700008392 0.0389995574951'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_0-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_0-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_0-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__2'>
+              <material USE='AOPT_Material_29548448'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_1-GEOMETRY' vertexCount='775 846' primType='"TRIANGLESTRIP" "TRIANGLES"' position='2.96550035477 0.525500059128 -1.11100006104' size='12.5990009308 2.22900009155 14.3339996338'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_1-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_1-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__3'>
+              <material diffuseColor='0.338824 0.338824 0.338824' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_2-GEOMETRY' vertexCount='246 174' primType='"TRIANGLESTRIP" "TRIANGLES"' position='8.27400016785 0.377499997616 -6.97399997711' size='1.98399972916 1.95500004292 2.53599977493'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_2-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_2-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__4'>
+              <material diffuseColor='0.677647 0.677647 0.677647' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_3-GEOMETRY' vertexCount='8712 33090' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.208499908447 0.0454998016357 -6.86600017548' size='16.7150001526 4.19299983978 15.8640003204'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_3-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_3-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__5'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/EBOTTOM.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_4-GEOMETRY' vertexCount='224 1194' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 -1 4.63849973679' size='10.5 1.79999995232 6.47699975967'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_4-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_4-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_4-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__6'>
+              <material diffuseColor='0.64 0.64 0.661961' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_5-GEOMETRY' vertexCount='358 1269' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 -0.0319999456406 -3.92000007629' size='14.5719995499 3.69600009918 11.7259998322'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_5-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_5-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__7'>
+              <material diffuseColor='0.156863 0.172549 0.210196' shininess='1.266' specularColor='0.098039 0.107843 0.131373'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_6-GEOMETRY' vertexCount='116 375' primType='"TRIANGLESTRIP" "TRIANGLES"' position='8.22299957275 0.472999989986 -6.85299968719' size='1.28600025177 0.772000014782 1.6939997673'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_6-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_6-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__8'>
+              <material diffuseColor='0.592941 0.602353 0.643137' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_7-GEOMETRY' vertexCount='5958 15468' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.674999713898 0 -6.86149978638' size='17.1599998474 4.73999977112 16.1970005035'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_7-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_7-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__9'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/TUNNEL.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_8-GEOMETRY' vertexCount='1660 3384' primType='"TRIANGLESTRIP" "TRIANGLES"' position='6.24199962616 0.528500020504 -4.92399978638' size='6.06799983978 2.33500003815 6.8220000267'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_8-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_8-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_8-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__10'>
+              <material diffuseColor='0.301177 0.301177 0.301177' shininess='1.266' specularColor='0.5 0.5 0.5' transparency='0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_9-GEOMETRY' vertexCount='703 15' primType='"TRIANGLESTRIP" "TRIANGLES"' position='4.26750040054 0 -3.96749973297' size='9.89500045776 4.05000019073 8.69499969482'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_9-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_9-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__11'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/MAN-SIDE.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_10-GEOMETRY' vertexCount='18436 36783' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0100002288818 0 -3.09500026703' size='17.0820007324 4.42999982834 23.6899986267'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_10-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_10-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_10-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__12'>
+              <material diffuseColor='0.219608 0.316863 0.677647' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_11-GEOMETRY' vertexCount='19' primType='"TRIANGLESTRIP"' position='0 -0.0204999744892 7.25500011444' size='12.1420001984 0.697000026703 2.48999977112'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_11-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_11-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__13'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/EBOTTOM2.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_12-GEOMETRY' vertexCount='190 906' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 -1.29999995232 -3.69000005722' size='10.6800003052 0.999999940395 3.01999974251'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_12-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_12-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_12-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__14'>
+              <material diffuseColor='0.734118 0.746667 0.8' shininess='1.266' specularColor='0.437255 0.443137 0.47451'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_13-GEOMETRY' vertexCount='3658 8616' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-2.42700004578 0.805000066757 -2.45899987221' size='5.35200023651 6.5560002327 5.06199979782'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_13-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_13-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__15'>
+              <material shininess='1.266' specularColor='0.376471 0.376471 0.376471'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_14-GEOMETRY' vertexCount='277 768' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 0 -0.326000005007' size='0.365999996662 4.80399990082 0.372000038624'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_14-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_14-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__16'>
+              <material diffuseColor='0.564706 0.564706 0.558431' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_15-GEOMETRY' vertexCount='264 414' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 1.05999994278 7.80099964142' size='7.35599994659 0.879999995232 1.46199941635'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_15-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_15-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__17'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/SPIKES-1.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_16-GEOMETRY' vertexCount='2277 3654' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 0 -9.52400016785' size='15.5220003128 1.10000002384 10.751999855'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_16-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_16-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_16-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__18'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/OUTRIG-1.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_17-GEOMETRY' vertexCount='1766 6510' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 0.0849999785423 -14.8474998474' size='5.40000009537 1.02999997139 0.375'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_17-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_17-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_17-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__19'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/SIDING3.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_18-GEOMETRY' vertexCount='148 168' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 0 -9.375' size='15.6000003815 1 11.0499992371'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_18-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_18-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_18-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__20'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/END.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_19-GEOMETRY' vertexCount='1573 2199' primType='"TRIANGLESTRIP" "TRIANGLES"' size='16.3579998016 2.14599990845 2.18600010872'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_19-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_19-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_19-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__21'>
+              <material diffuseColor='0.150588 0.16 0.144314' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_20-GEOMETRY' vertexCount='10 60' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 1.11999988556 3.05349993706' size='10.1040000916 0.120000004768 1.16499996185'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_20-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_20-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__22'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/FRONTP-1.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_21-GEOMETRY' vertexCount='627 1443' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.00599992275238 -0.0469999313354 -5.65950012207' size='3.97800016403 4.01000022888 8.31900024414'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_21-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_21-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_21-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__23'>
+              <material diffuseColor='0.624314 0.624314 0.624314' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_22-GEOMETRY' vertexCount='294 330' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.000500023365021 0.133999943733 -5.80800008774' size='1.01699995995 3.83599996567 7.97799968719'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_22-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_22-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__24'>
+              <material diffuseColor='0 0 0' shininess='1.266' specularColor='0.437255 0.443137 0.47451'></material>
+              <imageTexture url='"texture/RADAR.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_23-GEOMETRY' vertexCount='2697 1698' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-3.92350006104 3.04349994659 -4.43200016022' size='2.45899987221 2.19099998474 1.29200005531'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_23-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_23-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_23-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__25'>
+              <material diffuseColor='0.611765 0.618039 0.649412' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_24-GEOMETRY' vertexCount='2505 2148' primType='"TRIANGLESTRIP" "TRIANGLES"' size='16.577999115 3.03600001335 3.03600001335'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_24-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_24-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__26'>
+              <material USE='AOPT_Material_29548448'></material>
+              <imageTexture url='"texture/CIRCLE-2.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_25-GEOMETRY' vertexCount='11015 14889' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0100002288818 0.0740000009537 0.0845003128052' size='17.0820007324 3.42199993134 17.4309997559'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_25-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_25-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_25-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__27'>
+              <material diffuseColor='0.238431 0.238431 0.238431' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_26-GEOMETRY' vertexCount='694 24' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 -0.0249999761581 -11.1680002213' size='9.60000038147 0.850000023842 7.6360001564'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_26-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_26-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__28'>
+              <material diffuseColor='0.602353 0.602353 0.602353' shininess='1.266' specularColor='0.5 0.5 0.5'></material>
+            </appearance>
+            <imageGeometry DEF='falcon_27-GEOMETRY' vertexCount='290 3' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0 0 -14.9975004196' size='4.33599996567 0.145999997854 0.0450000762939'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_27-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_27-GEOMETRY_normalImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+          <shape>
+            <appearance DEF='Material__29'>
+              <material diffuseColor='0 0 0' shininess='1.266' specularColor='0.376471 0.376471 0.376471'></material>
+              <imageTexture url='"texture/TURRET-2.jpg"'></imageTexture>
+            </appearance>
+            <imageGeometry DEF='falcon_28-GEOMETRY' vertexCount='3213 468' primType='"TRIANGLESTRIP" "TRIANGLES"' size='3.58200001717 4.09399986267 3.58200001717'>
+              <imageTexture containerField='coord' url='"geoTex/falcon_28-GEOMETRY_coordImage0.png"'></imageTexture>
+              <imageTexture containerField='normal' url='"geoTex/falcon_28-GEOMETRY_normalImage.png"'></imageTexture>
+              <imageTexture containerField='texCoord' url='"geoTex/falcon_28-GEOMETRY_texCoordImage.png"'></imageTexture>
+            </imageGeometry>
+          </shape>
+        </transform>
+      </scene>
+		</x3d>
 	</body>
 </html>
