@@ -369,7 +369,17 @@ x3dom.gfx_webgl = (function () {
         gl.shaderSource(vs, g_shaders['vs-x3d-'+suffix].data);
         gl.shaderSource(fs, g_shaders['fs-x3d-'+suffix].data);
         gl.compileShader(vs);
+		
+		if(!gl.getShaderParameter(vs, gl.COMPILE_STATUS)){
+			x3dom.debug.logError("VertexShader " + gl.getShaderInfoLog(vs));		
+		}
+		
         gl.compileShader(fs);
+		
+		if(!gl.getShaderParameter(fs, gl.COMPILE_STATUS)){
+			x3dom.debug.logError("FragmentShader " + gl.getShaderInfoLog(fs));		
+		}
+		
         gl.attachShader(prog, vs);
         gl.attachShader(prog, fs);
         gl.linkProgram(prog);
@@ -452,6 +462,13 @@ x3dom.gfx_webgl = (function () {
                     }
                     gl.shaderSource(shader[id], g_shaders[ids[id]].data);
                     gl.compileShader(shader[id]);
+					if(!gl.getShaderParameter(shader[id], gl.COMPILE_STATUS)){
+						if(id == 0) {
+							x3dom.debug.logError("VertexShader " + gl.getShaderInfoLog(shader[id]));
+						} else {
+							x3dom.debug.logError("FragmentShader " + gl.getShaderInfoLog(shader[id]));
+						}
+					}
                     this.cached_shaders[ids[id]] = shader[id];
                 }
             }
