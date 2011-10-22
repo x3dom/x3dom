@@ -54,7 +54,6 @@ Move backward               Right
 
 Fly
 ~~~
-
 Activate this mode by pressing the ``"f"`` key.
 
 ========================    ==============================
@@ -78,9 +77,10 @@ Move out                    Right
 
 
 Game
-~~~
-
+~~~~
 Activate this mode by pressing the ``"g"`` key.
+
+To look around (rotate view) move the mouse.
 
 ========================    ==============================
 Function                    Key
@@ -90,8 +90,7 @@ Move backward               Cursor down
 Strafe Left                 Cursor left
 Strafe Right                Cursor right
 ========================    ==============================
-Rotate view                 Move mouse
-========================    ==============================
+
 
 
 Non-interactive camera movement
