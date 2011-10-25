@@ -5,7 +5,7 @@ Camera Navigation
 =================
 The current WebGL/JS implementation of X3DOM provides some generic
 interaction and navigation methods. Interactive objects will be handled
-by HTML-Like events. Navigation can be user-defined or controlled by
+by HTML-like events. Navigation can be user-defined or controlled by
 specific predefined modes.
 
 Currently X3DOM supports the following interactive navigation modes:
@@ -13,7 +13,8 @@ Currently X3DOM supports the following interactive navigation modes:
 * Examine
 * Walk
 * Fly
-* Look at
+* Look-at
+* Game
 
 Non-Interactive movement encompasses the functionality of:
 
@@ -53,7 +54,6 @@ Move backward               Right
 
 Fly
 ~~~
-
 Activate this mode by pressing the ``"f"`` key.
 
 ========================    ==============================
@@ -73,6 +73,22 @@ Function                    Mouse Button
 ========================    ==============================
 Move in                     Left
 Move out                    Right
+========================    ==============================
+
+
+Game
+~~~~
+Activate this mode by pressing the ``"g"`` key.
+
+To look around (rotate view) move the mouse.
+
+========================    ==============================
+Function                    Key
+========================    ==============================
+Move forward                Cursor up
+Move backward               Cursor down
+Strafe Left                 Cursor left
+Strafe Right                Cursor right
 ========================    ==============================
 
 
