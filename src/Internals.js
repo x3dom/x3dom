@@ -257,3 +257,53 @@ window.requestAnimFrame = (function() {
              window.setTimeout(callback, 1000/60);
            };
 })();
+
+
+function getIndexes(linklist) {
+	var indexes = [];
+	var node = linklist.first.next;
+	var next = null;
+		
+	var isEar = true;
+	while(linklist.length >= 3) {
+		next = node.next;
+		for(var i = 0; i < linklist.length; i++) {
+			if(isNotEar(linklist.getNode(i).data, node.prev.data, node.data, node.next.data)) {
+				isEar = false;
+			}
+		}
+		
+		if(isEar) {
+			if(isKonvex(node.prev.data, node.data, node.next.data)) {
+				indexes.push(node.prev.point_index, node.point_index, node.next.point_index);
+				linklist.deleteNode(node);
+			}
+		}
+		node = next;
+		isEar = true;
+	}
+	return indexes;
+}
+function isNotEar(ap1, tp1, tp2, tp3) {
+	var b0, b1, b2, b3;
+    b0 = ((tp2.x - tp1.x) * (tp3.y - tp1.y) - (tp3.x - tp1.x) * (tp2.y - tp1.y));
+    if (b0 != 0) {
+      b1 = (((tp2.x - ap1.x) * (tp3.y - ap1.y) - (tp3.x - ap1.x) * (tp2.y - ap1.y)) / b0);
+      b2 = (((tp3.x - ap1.x) * (tp1.y - ap1.y) - (tp1.x - ap1.x) * (tp3.y - ap1.y)) / b0);
+      b3 = 1 - b1 - b2;
+
+      return ((b1 > 0) && (b2 > 0) && (b3 > 0));
+	}
+    else {
+      return false;
+	}	
+}
+
+function isKonvex(p ,p1, p2) {
+    var l = ((p1.x - p.x) * (p2.y - p.y) - (p1.y - p.y) * (p2.x - p.x));
+    if (l < 0) {
+      return false;
+	} else {
+      return true;
+	}	
+}
