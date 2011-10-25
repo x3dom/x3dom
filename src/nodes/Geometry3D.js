@@ -1740,7 +1740,7 @@ x3dom.registerNodeType(
 	
 						
 					} else {
-						alert('bin da')
+						
 					}
 					
 					if (!hasNormal) {
