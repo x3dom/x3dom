@@ -45,6 +45,7 @@
 </head>
        
 <body>
+
 	    <X3D id="rotate-box" xmlns="http://www.web3d.org/specifications/x3d-namespace" width='1000px' height='700px'>
 			<scene>
             	<Background skyColor='0 0 0' />
@@ -98,24 +99,7 @@
                     <Cylinder id="testCylinder" radius = '0.5' height='1' bottom = 'true' top = 'true' subdivision='8'  onmouseover="testCylinder();"/>
                   </shape>
                 </transform-->
-                
-                 <transform translation="-2 0 0">
-                    <Shape>
-                      <Appearance>
-                         <material diffuseColor='yellow'></material>
-                      	 <imageTexture url='media/img/igd_main.png' />
-                      </Appearance>
-                      <IndexedFaceSet creaseAngle='3.14' coordIndex='
-                      0 1 2 3 4 5 6 7 8 -1
-                      9 10 11 12 13 14 15 16 17 -1' convex='false'>
-                        <Coordinate point='
-                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0  -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
-                        -1 0 0  -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0'/>
-                      </IndexedFaceSet>
-                   </Shape>
-                </transform>
-                
-            
+                            
                  <!--transform translation="2 0 0">
                     <Shape>
                       <Appearance>
@@ -130,8 +114,76 @@
                       </IndexedFaceSet>
                    </Shape>
                 </transform-->
-                                
-			</scene>
+                
+                <!--transform translation="-2 0 0">
+                    <Shape>
+                      <Appearance>
+                         <material diffuseColor='yellow'></material>
+                      	 <imageTexture url='media/img/igd_main.png' />
+                      </Appearance>
+                      <IndexedFaceSet creaseAngle='3.14' coordIndex='
+                      0 1 2 3 4 5 6 7 8 -1
+                      9 10 11 12 13 14 15 16 17 -1' convex='false'>
+                        <Coordinate point='
+                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0  -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
+                        -1 0 0  -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0'/>
+                      </IndexedFaceSet>
+                   </Shape>
+                </transform-->
+                
+                 <transform translation="0 0 0">
+                    <Shape>
+                      <Appearance>
+                         <material diffuseColor='yellow'></material>
+                      	 <imageTexture url='media/img/igd_main.png' />
+                      </Appearance>
+                      <IndexedFaceSet coordIndex='
+                      0 1 2 3 4 5 -1
+                      0 5 6 7 8 9 -1
+                      0 9 10 11 12 13 -1
+                      0 13 14 15 16  17-1
+                      ' convex='false'>
+                        <Coordinate point='
+                        0 0 0  1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0
+                        -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
+                        -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0
+                          0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0
+                       '/>
+                      </IndexedFaceSet>
+                   </Shape>
+                </transform>
+                
+                 <transform translation="3 0 0">
+                    <Shape>
+                      <Appearance>
+                         <material diffuseColor='yellow'></material>
+                      	 <imageTexture url='media/img/igd_main.png' />
+                      </Appearance>
+                      <IndexedFaceSet coordIndex='
+                      0 1 2 3 4 5 6 7 8 -1
+                      9 10 11 12 13 14 15 16 17 -1' convex='false'>
+                        <Coordinate point='
+                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0  -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
+                        -1 0 0  -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0'/>
+                      </IndexedFaceSet>
+                   </Shape>
+                </transform>
+                
+                 <transform translation="-3 0 0">
+                    <Shape>
+                      <Appearance>
+                         <material diffuseColor='yellow'></material>
+                      	 <imageTexture url='media/img/igd_main.png' />
+                      </Appearance>
+                      <IndexedFaceSet coordIndex='
+                      0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 -1' convex='false'>
+                        <Coordinate point='
+                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0 -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
+                         -1.5 -0.7 0 -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0 '/>
+                      </IndexedFaceSet>
+                   </Shape>
+                </transform>
+ 			</scene>
         </X3D>
         
 <script type="text/javascript" >
