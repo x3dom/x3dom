@@ -268,13 +268,13 @@ function getIndexes(linklist) {
 	while(linklist.length >= 3) {
 		next = node.next;
 		for(var i = 0; i < linklist.length; i++) {
-			if(isNotEar(linklist.getNode(i).data, node.prev.data, node.data, node.next.data)) {
+			if(isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point)) {
 				isEar = false;
 			}
 		}
 		
 		if(isEar) {
-			if(isKonvex(node.prev.data, node.data, node.next.data)) {
+			if(isKonvex(node.prev.point, node.point, node.next.point)) {
 				indexes.push(node.prev.point_index, node.point_index, node.next.point_index);
 				linklist.deleteNode(node);
 			}
@@ -283,6 +283,42 @@ function getIndexes(linklist) {
 		isEar = true;
 	}
 	return indexes;
+}
+function getMultiIndexes(linklist) {
+	var multi_index_data = new Object();
+	multi_index_data.indices = [];
+	multi_index_data.normals = [];
+	multi_index_data.colors = [];
+	multi_index_data.texCoords = [];
+	var node = linklist.first.next;
+	var next = null;
+		
+	var isEar = true;
+	while(linklist.length >= 3) {
+		next = node.next;
+		for(var i = 0; i < linklist.length; i++) {
+			if(isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point)) {
+				isEar = false;
+			}
+		}
+		
+		if(isEar) {
+			if(isKonvex(node.prev.point, node.point, node.next.point)) {
+				multi_index_data.indices.push(node.prev.point_index, node.point_index, node.next.point_index);
+				if(node.multi_index_data.normals == false) {
+					multi_index_data.normals.push(false);
+				} else {
+					multi_index_data.normals.push(node.prev.multi_index_data.normals, node.multi_index_data.normals, node.next.multi_index_data.normals);
+				}
+				multi_index_data.colors.push(node.prev.multi_index_data.colors, node.multi_index_data.colors, node.next.multi_index_data.colors);
+				multi_index_data.texCoords.push(node.prev.multi_index_data.texCoords, node.multi_index_data.texCoords, node.next.multi_index_data.texCoords);
+				linklist.deleteNode(node);
+			}
+		}
+		node = next;
+		isEar = true;
+	}
+	return multi_index_data;
 }
 function isNotEar(ap1, tp1, tp2, tp3) {
 	var b0, b1, b2, b3;
