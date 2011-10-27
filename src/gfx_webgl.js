@@ -765,7 +765,7 @@ x3dom.gfx_webgl = (function () {
 				
 				//Color
 				if(vertexColor) {
-					shader += "vec3 fragColor = texture2D( GI_colorTexture, IG_texCoord ).rgb;";
+					shader += "fragColor = texture2D( GI_colorTexture, IG_texCoord ).rgb;";
 				}
 				
 				//PointSize
@@ -1844,7 +1844,6 @@ x3dom.gfx_webgl = (function () {
 					} else if (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture()) {
 						
 						var numColComponents = shape._cf.geometry.node._mesh._numColComponents;
-					
 						vsID = this.generateVS(viewarea, numColComponents, false, false, false, shape._webgl.lightsAndShadow, shape._webgl.imageGeometry, shape._webgl.indexedImageGeometry);
 						fsID = this.generateFS(viewarea, numColComponents, false, false, shape._webgl.lightsAndShadow);
 						shape._webgl.shader = this.getShaderProgram(gl, [vsID, fsID]);
