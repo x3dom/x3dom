@@ -9,20 +9,20 @@
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
-function ListNode(data,index) {
-	this.data = data;
-	this.index = index;
-	this.next = null;
-	this.prev = null;
-};
-
-function DoublyLinkedList() {
+x3dom.DoublyLinkedList = function() {
 	this.length = 0;
 	this.first = null;
 	this.last = null;
 };
+x3dom.DoublyLinkedList.ListNode = function(point, point_index, multi_index_data) {
+	this.point = point;
+	this.point_index = point_index;
+	this.multi_index_data = multi_index_data;
+	this.next = null;
+	this.prev = null;
+};
 
-DoublyLinkedList.prototype.appendNode = function(node) {
+x3dom.DoublyLinkedList.prototype.appendNode = function(node) {
   	if (this.first === null) {
     	node.prev = node;
     	node.next = node;
@@ -37,7 +37,7 @@ DoublyLinkedList.prototype.appendNode = function(node) {
   	}
   	this.length++;
 };
-DoublyLinkedList.prototype.insertAfterNode = function(node, newNode) {
+x3dom.DoublyLinkedList.prototype.insertAfterNode = function(node, newNode) {
   	newNode.prev = node;
  	newNode.next = node.next;
   	node.next.prev = newNode;
@@ -48,7 +48,7 @@ DoublyLinkedList.prototype.insertAfterNode = function(node, newNode) {
   	this.length++;
 };
 
-DoublyLinkedList.prototype.deleteNode = function(node) {
+x3dom.DoublyLinkedList.prototype.deleteNode = function(node) {
  	if (this.length > 1) {
 		node.prev.next = node.next;
 		node.next.prev = node.prev;
@@ -66,7 +66,7 @@ DoublyLinkedList.prototype.deleteNode = function(node) {
 	node.next = null;
 	this.length--;
 };
-DoublyLinkedList.prototype.getNode = function(index) {
+x3dom.DoublyLinkedList.prototype.getNode = function(index) {
 	var node = null;
 	if(index > this.length) {
 		return node;	
