@@ -1898,7 +1898,75 @@ x3dom.registerNodeType(
 	
 						
 					} else {
-						
+						var linklist = new x3dom.DoublyLinkedList();
+						var data = new Object();
+						for (var i = 0; i < indexes.length; ++i)
+						{	
+							if (hasNormalInd) {
+								x3dom.debug.assert(normalInd[i] != -1);
+							}
+							if (hasTexCoordInd) {
+								x3dom.debug.assert(texCoordInd[i] != -1);
+							}
+							if (hasColorInd) {
+								x3dom.debug.assert(colorInd[i] != -1);
+							}
+							
+							if (indexes[i] == -1) {
+								var multi_index_data = getMultiIndexes(linklist);	
+								this._mesh._indices[0] = this._mesh._indices[0].concat(multi_index_data.indices);
+					
+								if (hasNormal) {
+									if(multi_index_data.normals == false) {
+										this._mesh._multiIndIndices.push(multi_index_data.indices);
+									} else {
+										this._mesh._normals[0] = this._mesh._normals[0].concat(multi_index_data.normals);
+									}
+								}
+								if (hasColor) {
+									this._mesh._colors[0] = this._mesh._colors[0].concat(multi_index_data.colors);
+								}
+								if (hasTexCoord) {
+									this._mesh._texCoords[0] = this._mesh._texCoords[0].concat(multi_index_data.texCoords);
+								}
+								linklist = new x3dom.DoublyLinkedList();
+								faceCnt++;
+								continue;
+							}
+	
+							if (hasNormal) {
+								if (hasNormalInd && normPerVert) {
+									data.normals =  normals[normalInd[i]];	
+								} else if (hasNormalInd && !normPerVert) {
+									data.normals =  normals[normalInd[faceCnt]];
+								} else {
+									data.normals =  normals[indexes[i]];
+								}		
+							} else {
+								data.normals = false;
+							}
+							
+							if (hasColor) {
+								if (hasColorInd && colPerVert) {
+									data.colors =  colors[colorInd[i]];
+								} else if (hasColorInd && !colPerVert) {
+									data.colors =  colors[colorInd[faceCnt]];
+								} else {
+									data.colors =  colors[indexes[i]];
+								}
+							}
+							if (hasTexCoord) {
+								if (hasTexCoordInd) {
+									data.texCoords =  texCoords[texCoordInd[i]];
+								} else {
+									data.texCoords =  texCoords[indexes[i]];
+								}			
+							}
+							
+							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[indexes[i]], indexes[i], data));
+							
+						}
+						this._mesh._positions[0] = positions.toGL();
 					}
 					
 					if (!hasNormal) {
@@ -1946,9 +2014,8 @@ x3dom.registerNodeType(
 						}								
 					}
                    
-
                     this._mesh._positions[0] = positions.toGL();
-
+	
                     if (hasNormal) {
                         this._mesh._normals[0] = normals.toGL();
                     }
