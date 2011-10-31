@@ -26,9 +26,9 @@ package x3dom {
 		public function Bridge(scene:X3DScene, renderer:Renderer) 
 		{
 			//Set scene
-			_scene = scene;
+			this._scene = scene;
 			
-			_renderer = renderer;
+			this._renderer = renderer;
 			
 			//Register JS callback functions
 			ExternalInterface.addCallback("renderScene", renderScene);
@@ -65,16 +65,16 @@ package x3dom {
 		private function renderScene() : void
 		{
 			FlashBackend.getLoadingScreen().visible = false;
-			_scene.checkForRemovedNodes();
-			_renderer.render();
+			this._scene.checkForRemovedNodes();
+			this._renderer.render();
 		}
 		
 		private function pickValue(value:Object) : Object
 		{						
-			return {objID: _scene.pickedObj,
-					pickPosX: _scene.pickedPos.x,
-					pickPosY: _scene.pickedPos.y,
-					pickPosZ: _scene.pickedPos.z };
+			return {objID: this._scene.pickedObj,
+					pickPosX:this. _scene.pickedPos.x,
+					pickPosY: this._scene.pickedPos.y,
+					pickPosZ: this._scene.pickedPos.z };
 		}
 		
 		private function setFPS(value:Object) : void
@@ -84,24 +84,24 @@ package x3dom {
 		
 		private function setViewMatrix(value:Object) : void
 		{
-			_scene.viewMatrix = new Matrix3D( Vector.<Number>(value.viewMatrix) );
+			this._scene.viewMatrix = new Matrix3D( Vector.<Number>(value.viewMatrix) );
 		}
 		
 		private function setProjectionMatrix(value:Object) : void
 		{
-			_scene.projectionMatrix = new Matrix3D( Vector.<Number>(value.projectionMatrix) );
+			this._scene.projectionMatrix = new Matrix3D( Vector.<Number>(value.projectionMatrix) );
 		}
 		
 		private function setBackground(value:Object) : void
 		{
-			_scene.background.texURLs		= value.texURLs;
-			_scene.background.skyColor		= value.skyColor;
-			_scene.background.skyAngle		= value.skyAngle;
-			_scene.background.groundColor	= value.groundColor;
-			_scene.background.groundAngle	= value.groundAngle;
-			_scene.background.transparency	= Number(value.transparency);
+			this._scene.background.texURLs		= value.texURLs;
+			this._scene.background.skyColor		= value.skyColor;
+			this._scene.background.skyAngle		= value.skyAngle;
+			this._scene.background.groundColor	= value.groundColor;
+			this._scene.background.groundAngle	= value.groundAngle;
+			this._scene.background.transparency	= Number(value.transparency);
 			
-			_scene.background.init();
+			this._scene.background.init();
 		}
 		
 		private function setLights(value:Object) : void
@@ -119,12 +119,12 @@ package x3dom {
 			light.beamWidth			= Number(value.beamWidth);
 			light.cutOffAngle		= Number(value.cutOffAngle);
 			
-			_scene.lights[Number(value.idx)] = light;
+			this._scene.lights[Number(value.idx)] = light;
 		}
 		
 		private function setDirectionalLight(value:Object) : void
 		{
-			var light:DirectionalLight 	= DirectionalLight( _scene.getLight( uint(value.id), LightType.DIRECTIONALIGHT ) );
+			var light:DirectionalLight 	= DirectionalLight( this._scene.getLight( uint(value.id), LightType.DIRECTIONALIGHT ) );
 			light.on 					= Boolean( value.on );
 			light.intensity 			= Number( value.intensity );
 			light.ambientIntensity 		= Number( value.ambientIntensity );
@@ -134,7 +134,7 @@ package x3dom {
 		
 		private function setPointLight(value:Object) : void
 		{
-			var light:PointLight 	= PointLight( _scene.getLight( uint(value.id), LightType.POINTLIGHT ) );
+			var light:PointLight 	= PointLight( this._scene.getLight( uint(value.id), LightType.POINTLIGHT ) );
 			light.on 				= Boolean( value.on );
 			light.intensity 		= Number( value.intensity );
 			light.ambientIntensity 	= Number( value.ambientIntensity );
@@ -146,7 +146,7 @@ package x3dom {
 		
 		private function setSpotLight(value:Object) : void
 		{
-			var light:SpotLight 	= SpotLight( _scene.getLight( uint(value.id), LightType.SPOTLIGHT ) );
+			var light:SpotLight 	= SpotLight( this._scene.getLight( uint(value.id), LightType.SPOTLIGHT ) );
 			light.on 				= Boolean( value.on );
 			light.intensity 		= Number( value.intensity );
 			light.ambientIntensity 	= Number( value.ambientIntensity );
@@ -163,22 +163,22 @@ package x3dom {
 		{		
 			var text:X3DText = new X3DText();
 			text.setTextProperties(value);
-			_scene.getDrawableObject( uint(value.id) ).shape = text;
+			this._scene.getDrawableObject( uint(value.id) ).shape = text;
 		}
 		
 		private function setMeshTransform(value:Object) : void
 		{			
-			_scene.getDrawableObject( uint(value.id), uint(value.refID) ).transform = new Matrix3D( Vector.<Number>( value.transform ) );
+			this._scene.getDrawableObject( uint(value.id), uint(value.refID) ).transform = new Matrix3D( Vector.<Number>( value.transform ) );
 		}
 		
 		private function setMeshSolid(value:Object) : void
 		{			
-			_scene.getDrawableObject( uint(value.id) ).shape.solid = Boolean( value.solid );
+			this._scene.getDrawableObject( uint(value.id) ).shape.solid = Boolean( value.solid );
 		}
 		
 		private function setSphereMapping(value:Object) : void
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.sphereMapping = Boolean( value.sphereMapping );
+			this._scene.getDrawableObject( uint(value.id) ).shape.sphereMapping = Boolean( value.sphereMapping );
 		}
 		
 		private function setMeshMaterial(value:Object) : void
@@ -191,23 +191,23 @@ package x3dom {
 			material.specularColor		= Vector.<Number>( value.specularColor );
 			material.transparency		= Number( value.transparency );
 			
-			_scene.getDrawableObject( uint(value.id) ).shape.material = material;
+			this._scene.getDrawableObject( uint(value.id) ).shape.material = material;
 		}
 		
 		private function setGeometryImage(value:Object) : void
 		{
-			if(!_scene.getDrawableObject( uint(value.id) ).shape)
+			if(!this._scene.getDrawableObject( uint(value.id) ).shape)
 			{
 				var geometryImage:GeometryImage = new GeometryImage();
 				geometryImage.setProperties(value);
 			
-				_scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
+				this._scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
 			}
 		}
 		
 		private function setMeshColors(value:Object) : void 
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(value.colors), uint(value.components) );
+			this._scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(value.colors), uint(value.components) );
 		}
 		
 		private function setMeshColorsTexture(value:Object) : void 
@@ -217,32 +217,32 @@ package x3dom {
 		
 		private function setMeshIndices(value:Object) : void 
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
+			this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
 		}
 		
 		private function setMeshNormals(value:Object) : void 
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(value.normals) );
+			this._scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(value.normals) );
 		}
 		
 		private function setMeshNormalsTexture(value:Object) : void 
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.setNormalTexture(value);
+			this._scene.getDrawableObject( uint(value.id) ).shape.setNormalTexture(value);
 		}
 		
 		private function setMeshTexCoords(value:Object) : void 
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(value.texCoords) );
+			this._scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(value.texCoords) );
 		}
 		
 		private function setMeshTexCoordsTexture(value:Object) : void 
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.setTexCoordTexture(value);
+			this._scene.getDrawableObject( uint(value.id) ).shape.setTexCoordTexture(value);
 		}
 		
 		private function setMeshVertices(value:Object) : void 
 		{
-			_scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
+			this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
 		}
 		
 		private function setMeshVerticesTexture(value:Object) : void 
@@ -251,7 +251,7 @@ package x3dom {
 			geometryImage.setProperties(value);
 			geometryImage.setCoordinateTexture(value);
 			
-			_scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
+			this._scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
 		}
 		
 		private function setMeshTexture(value:Object) : void 
@@ -261,12 +261,12 @@ package x3dom {
 														 Boolean(value.repeatS),
 														 Boolean(value.repeatT) );
 
-			_scene.getDrawableObject( uint(value.id) ).shape.texture = texture;
+			this._scene.getDrawableObject( uint(value.id) ).shape.texture = texture;
 		}
 		
 		private function setPixelTexture(value:Object) : void 
 		{	
-			_scene.getDrawableObject( uint(value.id) ).shape.texture = new PixelTexture( Number(value.width),
+			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new PixelTexture( Number(value.width),
 																						 Number(value.height),
 																						 Number(value.comp),
 																						 value.pixels );
@@ -274,7 +274,7 @@ package x3dom {
 		
 		private function setCubeTexture(value:Object) : void 
 		{	
-			_scene.getDrawableObject( uint(value.id) ).shape.texture = new CubeMapTexture( value.texURLs[0], value.texURLs[1], value.texURLs[2],
+			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new CubeMapTexture( value.texURLs[0], value.texURLs[1], value.texURLs[2],
 																						   value.texURLs[3], value.texURLs[4], value.texURLs[5], true );
 		}
 		

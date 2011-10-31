@@ -32,64 +32,64 @@ package x3dom
 		
 		public function Background()
 		{
-			_context3D = FlashBackend.getContext();
+			this._context3D = FlashBackend.getContext();
 			
 			//Create background plane
-			createPlane();
+			this.createPlane();
 			
 			//Create background sphere
-			createSphere();
+			this.createSphere();
 		}
 		
 		public function init() : void
 		{
 			//Check if there are more than one skyColor and skyAngels count is one less skyColors count
-			if( (_skyColor.length/3) > 1 && _skyAngle.length == ((_skyColor.length/3)-1) )
+			if( (this._skyColor.length/3) > 1 && this._skyAngle.length == ((this._skyColor.length/3)-1) )
 			{
 				//Generate sky texture
-				generateSkyTexture();
-				_hasSkyTexture = true;
+				this.generateSkyTexture();
+				this._hasSkyTexture = true;
 			}
 			else
 			{
-				_hasSkyTexture = false;
+				this._hasSkyTexture = false;
 			}
 			
 			//check if there are background textures
-			if(_texURLs[0] != "")
+			if(this._texURLs[0] != "")
 			{
 				//Check if there are six textures for cubeTexture
-				if( _texURLs[0] != "" && _texURLs[1] != "" && _texURLs[2] != "" &&
-					_texURLs[3] != "" && _texURLs[4] != "" && _texURLs[5] != "" )
+				if( this._texURLs[0] != "" && this._texURLs[1] != "" && this._texURLs[2] != "" &&
+					this._texURLs[3] != "" && this._texURLs[4] != "" && this._texURLs[5] != "" )
 				{
-					_sphere.texture = new CubeMapTexture(_texURLs[0], _texURLs[1], _texURLs[2],
-													     _texURLs[3], _texURLs[4], _texURLs[5]);
-					_hasCubeTexture = true;
-					_hasBackTexture = false;
-					_hasSkyTexture = false;
+					this._sphere.texture = new CubeMapTexture(this._texURLs[0], this._texURLs[1], this._texURLs[2],
+														 	  this._texURLs[3], this._texURLs[4], this._texURLs[5]);
+					this._hasCubeTexture = true;
+					this._hasBackTexture = false;
+					this._hasSkyTexture = false;
 				}
 				else
 				{
-					_plane.texture = new ImageTexture(_texURLs[0]);
-					_hasBackTexture = true;
-					_hasCubeTexture = false;
-					_hasSkyTexture = false;
+					this._plane.texture = new ImageTexture(this._texURLs[0]);
+					this._hasBackTexture = true;
+					this._hasCubeTexture = false;
+					this._hasSkyTexture = false;
 				}
 			}
 			else
 			{
-				_hasBackTexture = false;
-				_hasCubeTexture = false;
+				this._hasBackTexture = false;
+				this._hasCubeTexture = false;
 			}
 				
 		}
 		
 		private function createPlane() :void
 		{
-			_plane = new Shape();
-			_plane.setVertices( 0, Vector.<Number>( [-1,-1,0, 1,-1,0, 1,1,0, -1,1,0] ) );
-			_plane.setTexCoords( 0, Vector.<Number>( [0,1, 1,1, 1,0, 0,0] ) );
-			_plane.setIndices( 0, Vector.<uint>( [0,1,2, 2,3,0] ) );
+			this._plane = new Shape();
+			this._plane.setVertices( 0, Vector.<Number>( [-1,-1,0, 1,-1,0, 1,1,0, -1,1,0] ) );
+			this._plane.setTexCoords( 0, Vector.<Number>( [0,1, 1,1, 1,0, 0,0] ) );
+			this._plane.setIndices( 0, Vector.<uint>( [0,1,2, 2,3,0] ) );
 		}
 		
 		private function createSphere() :void
@@ -153,10 +153,10 @@ package x3dom
 				}
 			}
 			
-			_sphere = new Shape();
-			_sphere.setVertices(0, vertices);
-			_sphere.setTexCoords(0, texCoords);
-			_sphere.setIndices(0, indices);
+			this._sphere = new Shape();
+			this._sphere.setVertices(0, vertices);
+			this._sphere.setTexCoords(0, texCoords);
+			this._sphere.setIndices(0, indices);
 		}
 			
 		private function generateSkyTexture() : void
@@ -167,34 +167,34 @@ package x3dom
 			var alphas:Array = new Array();
 			
 			//Fill color array with HEX-Colors
-			for(var i:int=0; i<_skyColor.length/3; i++) {
-				colors[i] = x3dom.Utils.rgb2Hex( _skyColor[i*3+0], _skyColor[i*3+1], _skyColor[i*3+2] );
+			for(var i:int=0; i<this._skyColor.length/3; i++) {
+				colors[i] = x3dom.Utils.rgb2Hex( this._skyColor[i*3+0], this._skyColor[i*3+1], this._skyColor[i*3+2] );
 			}
 			
 			//Fill angle array
-			for(i=0; i<_skyAngle.length; i++) {
+			for(i=0; i<this._skyAngle.length; i++) {
 				if(i == 0) angles[i] = 0;
-				angles[i+1] = _skyAngle[i];
+				angles[i+1] = this._skyAngle[i];
 			}
 			
-			if(_groundAngle.length > 0)
+			if(this._groundAngle.length > 0)
 			{
 				if (angles[angles.length-1] < Math.PI / 2) {
 					angles[angles.length] = Math.PI / 2 - 0.000001;
 					colors[colors.length] = colors[colors.length - 1];
 				}
 				
-				for (i=_groundAngle.length-1; i>=0; i--) {
-					if ( (i == _groundAngle.length-1) && (Math.PI - _groundAngle[i] <= Math.PI / 2) ) {
+				for (i=this._groundAngle.length-1; i>=0; i--) {
+					if ( (i == this._groundAngle.length-1) && (Math.PI - this._groundAngle[i] <= Math.PI / 2) ) {
 						angles[angles.length] = Math.PI / 2;
-						colors[colors.length] = x3dom.Utils.rgb2Hex( _groundColor[_groundColor.length-3], _groundColor[_groundColor.length-2], _groundColor[_groundColor.length-1]);
+						colors[colors.length] = x3dom.Utils.rgb2Hex( this._groundColor[this._groundColor.length-3], this._groundColor[this._groundColor.length-2], this._groundColor[this._groundColor.length-1]);
 					}
-					angles[angles.length] = Math.PI - _groundAngle[i];
-					colors[colors.length] = x3dom.Utils.rgb2Hex(_groundColor[i*3 + 0], _groundColor[i*3 + 1], _groundColor[i*3 + 2]);
+					angles[angles.length] = Math.PI - this._groundAngle[i];
+					colors[colors.length] = x3dom.Utils.rgb2Hex(this._groundColor[i*3 + 0], this._groundColor[i*3 + 1], this._groundColor[i*3 + 2]);
 				}
 				
 				angles[angles.length] = Math.PI;
-				colors[colors.length] = x3dom.Utils.rgb2Hex(_groundColor[0], _groundColor[1], _groundColor[2]);
+				colors[colors.length] = x3dom.Utils.rgb2Hex(this._groundColor[0], this._groundColor[1], this._groundColor[2]);
 			}
 			else
 			{
@@ -232,72 +232,72 @@ package x3dom
 			
 			//FlashBackend.stage().addChild(new Bitmap(bitmapData));
 			
-			_sphere.texture = new BitmapTexture( new Bitmap(bitmapData) );
+			this._sphere.texture = new BitmapTexture( new Bitmap(bitmapData) );
 		}
 		
 		public function set skyColor(skyColor:Array) : void
 		{
-			_skyColor = skyColor;
+			this._skyColor = skyColor;
 		}
 		
 		public function get skyColor() : Array
 		{
-			return _skyColor;
+			return this._skyColor;
 		}
 		
 		public function set skyAngle(skyAngle:Array) : void
 		{
-			_skyAngle = skyAngle;
+			this._skyAngle = skyAngle;
 		}
 		
 		public function set groundColor(groundColor:Array) : void
 		{
-			_groundColor = groundColor;
+			this._groundColor = groundColor;
 		}
 		
 		public function set groundAngle(groundAngle:Array) : void
 		{
-			_groundAngle = groundAngle;
+			this._groundAngle = groundAngle;
 		}
 		
 		public function set transparency(transparency:Number) : void
 		{
-			_transparency = transparency;
+			this._transparency = transparency;
 		}
 		
 		public function get transparency() : Number
 		{
-			return _transparency;
+			return this._transparency;
 		}
 		
 		public function set texURLs(texURLs:Array) : void
 		{
-			_texURLs = texURLs;
+			this._texURLs = texURLs;
 		}
 		
 		public function hasBackTexture() : Boolean
 		{
-			return _hasBackTexture;
+			return this._hasBackTexture;
 		}
 		
 		public function hasSkyTexture() : Boolean
 		{
-			return _hasSkyTexture;
+			return this._hasSkyTexture;
 		}
 		
 		public function hasCubeTexture() : Boolean
 		{
-			return _hasCubeTexture;
+			return this._hasCubeTexture;
 		}
 		
 		public function get plane() : Shape
 		{
-			return _plane;
+			return this._plane;
 		}
 		
 		public function get sphere() : Shape
 		{
-			return _sphere;
+			return this._sphere;
 		}
 	}
 }

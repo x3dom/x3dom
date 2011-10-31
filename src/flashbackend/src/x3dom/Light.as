@@ -20,113 +20,113 @@ package x3dom
 		
 		public function get type() : Number
 		{
-			return _type;
+			return this._type;
 		}
 		
 		public function set type(type:Number) : void
 		{
-			_type = type;
+			this._type = type;
 		}
 		
 		public function get on() : Boolean
 		{
-			return _on;
+			return this._on;
 		}
 		
 		public function set on(on:Boolean) : void
 		{
-			_on = on;
+			this._on = on;
 		}
 		
 		public function get color() : Array
 		{
-			return _color;
+			return this._color;
 		}
 		
 		public function set color(color:Array) : void
 		{
-			_color = color;
+			this._color = color;
 		}
 		
 		public function get intensity() : Number
 		{
-			return _intensity;
+			return this._intensity;
 		}
 		
 		public function set intensity(intensity:Number) : void
 		{
-			_intensity = intensity;
+			this._intensity = intensity;
 		}
 		
 		public function get ambientIntensity() : Number
 		{
-			return _ambientIntensity;
+			return this._ambientIntensity;
 		}
 		
 		public function set ambientIntensity(ambientIntensity:Number) : void
 		{
-			_ambientIntensity = ambientIntensity;
+			this._ambientIntensity = ambientIntensity;
 		}
 		
 		public function get direction() : Array
 		{
-			return _direction;
+			return this._direction;
 		}
 		
 		public function set direction(direction:Array) : void
 		{
-			_direction = direction;
-			_direction.push(0.0);
+			this._direction = direction;
+			this._direction.push(0.0);
 		}
 		
 		public function get attenuation() : Array
 		{
-			return _attenuation;
+			return this._attenuation;
 		}
 		
 		public function set attenuation(attenuation:Array) : void
 		{
-			_attenuation = attenuation;
+			this._attenuation = attenuation;
 		}
 		
 		public function get location() : Array
 		{
-			return _location;
+			return this._location;
 		}
 		
 		public function set location(location:Array) : void
 		{
-			_location = location;
+			this._location = location;
 		}
 		
 		public function get radius() : Number
 		{
-			return _radius;
+			return this._radius;
 		}
 		
 		public function set radius(radius:Number) : void
 		{
-			_radius = radius;
+			this._radius = radius;
 		}
 		
 		public function get beamWidth() : Number
 		{
-			return _beamWidth;
+			return this._beamWidth;
 		}
 		
 		public function set beamWidth(beamWidth:Number) : void
 		{
-			_beamWidth = beamWidth;
+			this._beamWidth = beamWidth;
 		}
 		
 		public function get cutOffAngle() : Number
 		{
-			return _cutOffAngle;
+			return this._cutOffAngle;
 		}
 		
 		public function set cutOffAngle(cutOffAngle:Number) : void
 		{
-			_cutOffAngle = cutOffAngle;
+			this._cutOffAngle = cutOffAngle;
 		}
 	}
 }

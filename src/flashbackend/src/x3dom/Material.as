@@ -61,12 +61,12 @@ package x3dom {
 								 specularColor:Vector.<Number> = null,
 								 transparency:Number = 0.0)
 		{
-			_ambientIntensity	= ambientIntensity;
-			_diffuseColor		= (diffuseColor != null) ? diffuseColor : Vector.<Number>( [ 0.2, 0.2, 0.2 ] );
-			_emissiveColor		= (emissiveColor != null) ? emissiveColor : Vector.<Number>( [ 0.0, 0.0, 0.0 ] );
-			_shininess			= shininess;
-			_specularColor		= (specularColor != null) ? specularColor : Vector.<Number>( [ 0.0, 0.0, 0.0 ] );
-			_transparency		= transparency;
+			this._ambientIntensity	= ambientIntensity;
+			this._diffuseColor		= (diffuseColor != null) ? diffuseColor : Vector.<Number>( [ 0.2, 0.2, 0.2 ] );
+			this._emissiveColor		= (emissiveColor != null) ? emissiveColor : Vector.<Number>( [ 0.0, 0.0, 0.0 ] );
+			this._shininess			= shininess;
+			this._specularColor		= (specularColor != null) ? specularColor : Vector.<Number>( [ 0.0, 0.0, 0.0 ] );
+			this._transparency		= transparency;
 		}
 		
 		/**
@@ -74,7 +74,7 @@ package x3dom {
 		*/
 		public function get ambientIntensity() : Number 
 		{
-			return _ambientIntensity;
+			return this._ambientIntensity;
 		}
 		
 		/**
@@ -82,7 +82,7 @@ package x3dom {
 		*/
 		public function set ambientIntensity(value:Number) : void 
 		{
-			_ambientIntensity = value;
+			this._ambientIntensity = value;
 		}
 		
 		/**
@@ -90,7 +90,7 @@ package x3dom {
 		*/
 		public function get diffuseColor() : Vector.<Number> 
 		{
-			return _diffuseColor;
+			return this._diffuseColor;
 		}
 		
 		/**
@@ -98,7 +98,7 @@ package x3dom {
 		*/
 		public function set diffuseColor(value:Vector.<Number>) : void 
 		{
-			_diffuseColor = value;
+			this._diffuseColor = value;
 		}
 		
 		/**
@@ -106,7 +106,7 @@ package x3dom {
 		*/
 		public function get emissiveColor() : Vector.<Number> 
 		{
-			return _emissiveColor;
+			return this._emissiveColor;
 		}
 		
 		/**
@@ -114,7 +114,7 @@ package x3dom {
 		*/
 		public function set emissiveColor(value:Vector.<Number>) : void 
 		{
-			_emissiveColor = value;
+			this._emissiveColor = value;
 		}
 		
 		/**
@@ -122,7 +122,7 @@ package x3dom {
 		*/
 		public function get shininess() : Number 
 		{
-			return _shininess;
+			return this._shininess;
 		}
 		
 		/**
@@ -130,7 +130,7 @@ package x3dom {
 		*/
 		public function set shininess(value:Number) : void 
 		{
-			_shininess = value;
+			this._shininess = value;
 		}
 		
 		/**
@@ -138,7 +138,7 @@ package x3dom {
 		*/
 		public function get specularColor() : Vector.<Number> 
 		{
-			return _specularColor;
+			return this._specularColor;
 		}
 		
 		/**
@@ -146,7 +146,7 @@ package x3dom {
 		*/
 		public function set specularColor(value:Vector.<Number>) : void 
 		{
-			_specularColor = value;
+			this._specularColor = value;
 		}
 		
 		/**
@@ -154,7 +154,7 @@ package x3dom {
 		*/
 		public function get transparency() : Number 
 		{
-			return _transparency;
+			return this._transparency;
 		}
 		
 		/**
@@ -162,7 +162,7 @@ package x3dom {
 		*/
 		public function set transparency(value:Number) : void 
 		{
-			_transparency = value;
+			this._transparency = value;
 		}
 		
 		/**
@@ -171,12 +171,12 @@ package x3dom {
 		public function toString() : String 
 		{
 			return 	"Material [ " +
-					"ambientIntensity: " + _ambientIntensity.toString() + " | " +
-					"diffuseColor: " + _diffuseColor.toString() + " | " +
-					"emissiveColor: " + _emissiveColor.toString() + " | " +
-					"shininess: " + _shininess.toString() + " | " +
-					"specularColor: " + _specularColor.toString() + " | " +
-					"transparency: " + _transparency.toString() + 
+					"ambientIntensity: " + this._ambientIntensity.toString() + " | " +
+					"diffuseColor: " + this._diffuseColor.toString() + " | " +
+					"emissiveColor: " + this._emissiveColor.toString() + " | " +
+					"shininess: " + this._shininess.toString() + " | " +
+					"specularColor: " + this._specularColor.toString() + " | " +
+					"transparency: " + this._transparency.toString() + 
 					" ]";
 		}
 

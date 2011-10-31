@@ -23,32 +23,32 @@ package x3dom
 		
 		public function set min(min:Vector3D) : void
 		{
-			_min = min;
+			this._min = min;
 		}
 		
 		public function get min() : Vector3D
 		{
-			return _min;
+			return this._min;
 		}
 		
 		public function set max(max:Vector3D) : void
 		{
-			_max = max;
+			this._max = max;
 		}
 		
 		public function get max() : Vector3D
 		{
-			return _max;
+			return this._max;
 		}
 		
 		public function set center(center:Vector3D) : void
 		{
-			_center = center;
+			this._center = center;
 		}
 		
 		public function get center() : Vector3D
 		{
-			return _center;
+			return this._center;
 		}
 	}
 }

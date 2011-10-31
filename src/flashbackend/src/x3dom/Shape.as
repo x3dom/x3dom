@@ -131,9 +131,9 @@ package x3dom
 			center.scaleBy(0.5);
 			
 			//Set BoundingBox values
-			_boundingBox.min = min;
-			_boundingBox.max = max;
-			_boundingBox.center = center;
+			this._boundingBox.min = min;
+			this._boundingBox.max = max;
+			this._boundingBox.center = center;
 		}
 		
 		/**
@@ -141,7 +141,7 @@ package x3dom
 		 */
 		public function set sphereMapping(sphereMapping:Boolean) : void
 		{
-			_sphereMapping = sphereMapping;
+			this._sphereMapping = sphereMapping;
 		}
 		
 		/**
@@ -149,7 +149,7 @@ package x3dom
 		 */
 		public function get sphereMapping() : Boolean
 		{
-			return _sphereMapping;
+			return this._sphereMapping;
 		}
 		
 		/**
@@ -157,7 +157,7 @@ package x3dom
 		 */
 		public function set boundingBox(boundingBox:BoundingBox) : void
 		{
-			_boundingBox = boundingBox;
+			this._boundingBox = boundingBox;
 		}
 		
 		/**
@@ -165,7 +165,7 @@ package x3dom
 		 */
 		public function get boundingBox() : BoundingBox
 		{
-			return _boundingBox;
+			return this._boundingBox;
 		}
 		
 		/**
@@ -173,7 +173,7 @@ package x3dom
 		 */
 		public function set solid(solid:Boolean) : void
 		{
-			_solid = solid;
+			this._solid = solid;
 		}
 		
 		/**
@@ -181,7 +181,7 @@ package x3dom
 		 */
 		public function get solid() : Boolean
 		{
-			return _solid;
+			return this._solid;
 		}
 		
 		/**
@@ -189,7 +189,7 @@ package x3dom
 		 */
 		public function set material(material:Material) : void
 		{
-			_material = material;
+			this._material = material;
 		}
 		
 		/**
@@ -197,7 +197,7 @@ package x3dom
 		 */
 		public function get material() : Material
 		{
-			return _material;
+			return this._material;
 		}
 		
 		/**
@@ -205,7 +205,7 @@ package x3dom
 		 */
 		public function get texture() : BaseTexture
 		{
-			return _texture;
+			return this._texture;
 		}
 		
 		/**
@@ -213,7 +213,7 @@ package x3dom
 		 */
 		public function set texture(texture:BaseTexture) : void
 		{
-			_texture = texture;
+			this._texture = texture;
 		}
 		
 		/**
@@ -221,7 +221,7 @@ package x3dom
 		 */
 		public function get numTriangles() : Array
 		{
-			return _numTriangles;
+			return this._numTriangles;
 		}
 		
 		/**
@@ -229,7 +229,7 @@ package x3dom
 		 */
 		public function get colorBuffer() : Array
 		{
-			return _colorBuffer;
+			return this._colorBuffer;
 		}
 		
 		/**
@@ -237,7 +237,7 @@ package x3dom
 		 */
 		public function get indexBuffer() : Array
 		{
-			return _indexBuffer;
+			return this._indexBuffer;
 		}
 		
 		/**
@@ -245,7 +245,7 @@ package x3dom
 		 */
 		public function get normalBuffer() : Array
 		{
-			return _normalBuffer;
+			return this._normalBuffer;
 		}
 		
 		/**
@@ -253,7 +253,7 @@ package x3dom
 		 */
 		public function get texCoordBuffer() : Array
 		{
-			return _texCoordBuffer;
+			return this._texCoordBuffer;
 		}
 		
 		/**
@@ -261,12 +261,12 @@ package x3dom
 		 */
 		public function get vertexBuffer() : Array
 		{
-			return _vertexBuffer;
+			return this._vertexBuffer;
 		}
 		
 		public function get numColorComponents() : uint
 		{
-			return _numColorComponents;
+			return this._numColorComponents;
 		}
 		
 		/**
@@ -278,16 +278,16 @@ package x3dom
 		public function setColors(idx:uint, colors:Vector.<Number>, numComponents:uint) : void 
 		{
 			//Init color Buffer if not done yet
-			if( !_colorBuffer) _colorBuffer = new Array();
+			if( !this._colorBuffer) this._colorBuffer = new Array();
 			
 			//Set number of color components
-			_numColorComponents = numComponents;
+			this._numColorComponents = numComponents;
 			
 			//Create color buffer
-			_colorBuffer[ idx ] = _context3D.createVertexBuffer( colors.length/numComponents, numComponents );
+			this._colorBuffer[ idx ] = this._context3D.createVertexBuffer( colors.length/numComponents, numComponents );
 			
 			//Set color buffer
-			_colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length/numComponents );
+			this._colorBuffer[ idx ].uploadFromVector( colors, 0, colors.length/numComponents );
 		}
 		
 		/**
@@ -297,16 +297,16 @@ package x3dom
 		 */
 		public function setIndices(idx:uint, indices:Vector.<uint>) : void 
 		{
-			_numTriangles[ idx ] = indices.length/3;
+			this._numTriangles[ idx ] = indices.length/3;
 			
 			//Init indices Buffer if not done yet
-			if( !_indexBuffer) _indexBuffer = new Array();
+			if( !this._indexBuffer) this._indexBuffer = new Array();
 			
 			//Create indices buffer
-			_indexBuffer[ idx ] = _context3D.createIndexBuffer( indices.length );
+			this._indexBuffer[ idx ] = this._context3D.createIndexBuffer( indices.length );
 			
 			//Set indices buffer
-			_indexBuffer[ idx ].uploadFromVector( indices, 0, indices.length );
+			this._indexBuffer[ idx ].uploadFromVector( indices, 0, indices.length );
 		}
 		
 		/**
@@ -317,13 +317,13 @@ package x3dom
 		public function setNormals(idx:uint, normals:Vector.<Number>) : void 
 		{		
 			//Init normals Buffer if not done yet
-			if( !_normalBuffer) _normalBuffer = new Array();
+			if( !this._normalBuffer) this._normalBuffer = new Array();
 			
 			//Create normals buffer
-			_normalBuffer[ idx ] = _context3D.createVertexBuffer( normals.length/3, 3 );
+			this._normalBuffer[ idx ] = this._context3D.createVertexBuffer( normals.length/3, 3 );
 			
 			//Set normals buffer
-			_normalBuffer[ idx ].uploadFromVector( normals, 0, normals.length/3 );
+			this._normalBuffer[ idx ].uploadFromVector( normals, 0, normals.length/3 );
 		}
 		
 		/**
@@ -334,13 +334,13 @@ package x3dom
 		public function setTexCoords(idx:uint, texCoords:Vector.<Number>) : void 
 		{		
 			//Init texture coordinate Buffer if not done yet
-			if( !_texCoordBuffer) _texCoordBuffer = new Array();
+			if( !this._texCoordBuffer) this._texCoordBuffer = new Array();
 			
 			//Create texture coordinate buffer
-			_texCoordBuffer[ idx ] = _context3D.createVertexBuffer( texCoords.length/2, 2 );
+			this._texCoordBuffer[ idx ] = this._context3D.createVertexBuffer( texCoords.length/2, 2 );
 			
 			//Set texture coordinate buffer
-			_texCoordBuffer[ idx ].uploadFromVector( texCoords, 0, texCoords.length/2 );
+			this._texCoordBuffer[ idx ].uploadFromVector( texCoords, 0, texCoords.length/2 );
 		}
 		
 		/**
@@ -351,16 +351,16 @@ package x3dom
 		public function setVertices(idx:uint, vertices:Vector.<Number>) : void 
 		{		
 			//Init texture coordinate Buffer if not done yet
-			if( !_vertexBuffer) _vertexBuffer = new Array();
+			if( !this._vertexBuffer) this._vertexBuffer = new Array();
 			
 			//Create vertices buffer
-			_vertexBuffer[ idx ] = _context3D.createVertexBuffer( vertices.length/3, 3 );
+			this._vertexBuffer[ idx ] = this._context3D.createVertexBuffer( vertices.length/3, 3 );
 			
 			//Set vertices buffer
-			_vertexBuffer[ idx ].uploadFromVector( vertices, 0, vertices.length/3 );
+			this._vertexBuffer[ idx ].uploadFromVector( vertices, 0, vertices.length/3 );
 			
 			//Calculate the BoundingBox
-			calculateBB(vertices);
+			this.calculateBB(vertices);
 		}
 	}
 }

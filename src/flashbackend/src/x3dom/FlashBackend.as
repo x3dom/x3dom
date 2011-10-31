@@ -99,6 +99,7 @@ package x3dom
 		public function FlashBackend()
 		{
 			_stage = stage;
+			
 			//Enable doubleClick feature for the stage
 			stage.doubleClickEnabled = true;
 			
@@ -108,20 +109,19 @@ package x3dom
 			stage.scaleMode = StageScaleMode.NO_SCALE;
 			
 			//Get FlashVars
-			getFlashVars();
+			this.getFlashVars();
 			
 			//Init LoadingScreen
-			initLoadingScreen();
-			
-			
-			//Init EventListener for Mouse interaction
-			initInfoField();
+			this.initLoadingScreen();
 			
 			//Init EventListener for Mouse interaction
-			initEventListener();
+			this.initInfoField();
+			
+			//Init EventListener for Mouse interaction
+			this.initEventListener();
 			
 			//Create Context3D
-			createContext3D();
+			this.createContext3D();
 			
 		}
 		
@@ -198,7 +198,7 @@ package x3dom
 			var param:Object = LoaderInfo(this.root.loaderInfo).parameters;
 			
 			//Set canvasIdx from flashVars
-			_canvasIdx = Number(param.canvasIdx);
+			this._canvasIdx = Number(param.canvasIdx);
 			
 			//Set stageWidth and stageHeight from flashVars
 			_stageWidth  = Number(param.width);
@@ -261,13 +261,13 @@ package x3dom
 			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 0, true );
 			
 			//Create X3DScene for scene managing
-			_scene = new X3DScene();
+			this._scene = new X3DScene();
 			
-			_renderer = new Renderer(_scene);
+			this._renderer = new Renderer(_scene);
 			//_renderer = new LPPRenderer(_scene);
 			
 			//Create JSToASBridge for communication
-			_bridge = new Bridge(_scene, _renderer);
+			this._bridge = new Bridge(_scene, _renderer);
 			
 			//Say JS that Flash is ready for rendering
 			ExternalInterface.call("x3dom.bridge.setFlashReady", _context3D.driverInfo, _canvasIdx);

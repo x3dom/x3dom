@@ -27,10 +27,10 @@ package x3dom.shaders
 		public function DynamicShader(shape:Shape, lights:Array)
 		{
 			//Get 3D Context
-			_context3D = FlashBackend.getContext();
+			this._context3D = FlashBackend.getContext();
 			
 			//Generate Program3D 
-			_program3D = _context3D.createProgram();
+			this._program3D = this._context3D.createProgram();
 			
 			//Generate vertex shader
 			var vertexShader:AGALMiniAssembler = generateVertexShader(shape, lights);
@@ -39,7 +39,7 @@ package x3dom.shaders
 			var fragmentShader:AGALMiniAssembler = generateFragmentShader(shape, lights);
 			
 			//Upload shaders to Program3D
-			program3D.upload( vertexShader.agalcode, fragmentShader.agalcode);
+			this._program3D.upload( vertexShader.agalcode, fragmentShader.agalcode);
 		}
 		
 		/**
@@ -210,7 +210,7 @@ package x3dom.shaders
 		 */ 
 		public function get program3D() : Program3D
 		{
-			return _program3D;
+			return this._program3D;
 		}
 	}
 }

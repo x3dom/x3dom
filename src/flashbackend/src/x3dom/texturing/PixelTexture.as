@@ -30,14 +30,14 @@ package x3dom.texturing
 		 */
 		private function defaultTexture() : void
 		{
-			_texture = _context3D.createTexture(2, 2, Context3DTextureFormat.BGRA, false);
-			Texture(_texture).uploadFromBitmapData( new BitmapData(2, 2, true, 0xFF000000) );
+			this._texture = _context3D.createTexture(1, 1, Context3DTextureFormat.BGRA, false);
+			Texture(_texture).uploadFromBitmapData( new BitmapData(1, 1, true, 0xFF000000) );
 		}
 		
 		private function generateTexture(width:Number, height:Number, comp:Number, pixels:Array) : void
 		{
 			//Set ready false
-			_ready = false;
+			this._ready = false;
 			
 			//Create new ByteArray for pixels
 			var byteArray:ByteArray = new ByteArray();
@@ -77,10 +77,10 @@ package x3dom.texturing
 			bitmap = Utils.scaleBitmap(bitmap);
 			
 			//Create Texture
-			_texture = _context3D.createTexture(bitmap.width, bitmap.height, Context3DTextureFormat.BGRA, false);
+			this._texture = _context3D.createTexture(bitmap.width, bitmap.height, Context3DTextureFormat.BGRA, false);
 			
 			//Upload texture from BitmapData
-			Texture(_texture).uploadFromBitmapData(bitmap.bitmapData);
+			Texture(this._texture).uploadFromBitmapData(bitmap.bitmapData);
 			
 			//Set ready true
 			_ready = true;

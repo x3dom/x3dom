@@ -48,19 +48,19 @@ package x3dom.texturing
 		public function BaseTexture(blending:Boolean = false, repeatS:Boolean = true, repeatT:Boolean = true)
 		{
 			//Get the 3D Context
-			_context3D = FlashBackend.getContext();
+			this._context3D = FlashBackend.getContext();
 			
 			//Set ready state
-			_ready = false
+			this._ready = false
 			
 			//Set blending
-			_blending = blending
+			this._blending = blending
 			
 			//Set repeatS
-			_repeatS = repeatS;
+			this._repeatS = repeatS;
 			
 			//Set repeatT
-			_repeatS = repeatT;
+			this._repeatS = repeatT;
 		}
 		
 		/**
@@ -68,7 +68,7 @@ package x3dom.texturing
 		 */
 		public function get texture() : TextureBase
 		{
-			return _texture;
+			return this._texture;
 		}
 		
 		/**
@@ -76,7 +76,7 @@ package x3dom.texturing
 		 */
 		public function set texture(texture:TextureBase) : void
 		{
-			_texture = texture;
+			this._texture = texture;
 		}
 		
 		/**
@@ -84,7 +84,7 @@ package x3dom.texturing
 		 */
 		public function get blending() : Boolean
 		{
-			return _blending;
+			return this._blending;
 		}
 		
 		/**
@@ -92,7 +92,7 @@ package x3dom.texturing
 		 */
 		public function set blending(blending:Boolean) : void
 		{
-			_blending = blending;
+			this._blending = blending;
 		}
 		
 		/**
@@ -100,7 +100,7 @@ package x3dom.texturing
 		 */
 		public function get repeatS() : Boolean
 		{
-			return _repeatS;
+			return this._repeatS;
 		}
 		
 		/**
@@ -108,7 +108,7 @@ package x3dom.texturing
 		 */
 		public function set repeatS(repeatS:Boolean) : void
 		{
-			_repeatS = repeatS;
+			this._repeatS = repeatS;
 		}
 		
 		/**
@@ -116,7 +116,7 @@ package x3dom.texturing
 		 */
 		public function get repeatT() : Boolean
 		{
-			return _repeatT;
+			return this._repeatT;
 		}
 		
 		/**
@@ -124,7 +124,7 @@ package x3dom.texturing
 		 */
 		public function set repeatT(repeatT:Boolean) : void
 		{
-			_repeatT = repeatT;
+			this._repeatT = repeatT;
 		}
 		
 		/**
@@ -132,7 +132,7 @@ package x3dom.texturing
 		 */
 		public function get ready() : Boolean
 		{
-			return _ready;
+			return this._ready;
 		}
 	}
 }

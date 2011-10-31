@@ -19,62 +19,62 @@ package x3dom
 		
 		public function X3DText()
 		{		
-			_textField = new TextField();
-			_textField.autoSize = TextFieldAutoSize.LEFT;
-			_textField.antiAliasType = AntiAliasType.ADVANCED;
-			_textField.multiline = true;
+			this._textField = new TextField();
+			this._textField.autoSize = TextFieldAutoSize.LEFT;
+			this._textField.antiAliasType = AntiAliasType.ADVANCED;
+			this._textField.multiline = true;
 			
-			_textFormat = new TextFormat();
+			this._textFormat = new TextFormat();
 		}
 		
 		public function setTextProperties(value:Object) : void
 		{		
 			//Set Text
-			_textField.text = value.text;
+			this._textField.text = value.text;
 			
 			//Set text size
-			_textFormat.size = Number( value.fontSize );
+			this._textFormat.size = Number( value.fontSize );
 			
 			//Set text font family
-			_textFormat.font = String( value.fontFamily ).replace(/\'/g,'').split(" ")[0];
+			this._textFormat.font = String( value.fontFamily ).replace(/\'/g,'').split(" ")[0];
 			
 			//Set text color
-			_textFormat.color = 0xFFFFFF;
+			this._textFormat.color = 0xFFFFFF;
 			
 			//Set text align
 			var fontAlign:String = String( value.fontAlign ).replace(/\'/g,'').split(" ")[0];
 			switch( fontAlign.toUpperCase() )
 			{
-				case "BEGIN": _textFormat.align = TextFormatAlign.LEFT; break;
-				case "END": _textFormat.align = TextFormatAlign.RIGHT; break;
-				case "MIDDLE": _textFormat.align = TextFormatAlign.CENTER; break;
-				case "FIRST": _textFormat.align = TextFormatAlign.LEFT; break;
-				default: _textFormat.align = TextFormatAlign.LEFT;
+				case "BEGIN": this._textFormat.align = TextFormatAlign.LEFT; break;
+				case "END": this._textFormat.align = TextFormatAlign.RIGHT; break;
+				case "MIDDLE": this._textFormat.align = TextFormatAlign.CENTER; break;
+				case "FIRST": this._textFormat.align = TextFormatAlign.LEFT; break;
+				default: this._textFormat.align = TextFormatAlign.LEFT;
 			}
 			
 			//Set text style
 			switch( String(value.fontStyle).toUpperCase() )
 			{
-				case "PLAIN": _textFormat.bold = false; _textFormat.italic = false; break;
-				case "BOLD": _textFormat.bold = true; _textFormat.italic = false; break;
-				case "ITALIC": _textFormat.bold = false; _textFormat.italic = true; break;
-				case "BOLDITALIC": _textFormat.bold = true; _textFormat.italic = true; break;
-				default: _textFormat.bold = false; _textFormat.italic = false;
+				case "PLAIN": this._textFormat.bold = false; _textFormat.italic = false; break;
+				case "BOLD": this._textFormat.bold = true; _textFormat.italic = false; break;
+				case "ITALIC": this._textFormat.bold = false; _textFormat.italic = true; break;
+				case "BOLDITALIC": this._textFormat.bold = true; _textFormat.italic = true; break;
+				default: this._textFormat.bold = false; _textFormat.italic = false;
 			}
 			
 			//Set TextField format
-			_textField.setTextFormat( _textFormat );
+			this._textField.setTextFormat( _textFormat );
 			
 			//Create bitmap from TextField
-			var bitmapData:BitmapData = new BitmapData(_textField.width, _textField.height, true, 0x00000000);
-			bitmapData.draw(_textField);
+			var bitmapData:BitmapData = new BitmapData(this._textField.width, this._textField.height, true, 0x00000000);
+			bitmapData.draw(this._textField);
 			
 			//Set bitmap as texture
 			this.texture = new BitmapTexture(new Bitmap(bitmapData), true);
 			
 			//Create Plane
-			var width:Number  = Utils.nextBestPowerOfTwo(_textField.width)/100.0;
-			var height:Number = Utils.nextBestPowerOfTwo(_textField.height)/100.0;
+			var width:Number  = Utils.nextBestPowerOfTwo(this._textField.width)/100.0;
+			var height:Number = Utils.nextBestPowerOfTwo(this._textField.height)/100.0;
 			this.setIndices( 0, Vector.<uint>([0,1,2, 2,3,0]) );
 			this.setVertices( 0, Vector.<Number>([-width,-height,0, width,-height,0, width,height,0, -width,height,0]) );
 			this.setNormals( 0, Vector.<Number>([0,0,1, 0,0,1, 0,0,1, 0,0,1]) );

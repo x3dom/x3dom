@@ -24,13 +24,13 @@ package x3dom
 		
 		public function DrawableObject(id:uint, refID:uint)
 		{
-			_id			= id;
-			_refID		= refID;
-			_context3D	= FlashBackend.getContext();
+			this._id			= id;
+			this._refID		= refID;
+			this._context3D	= FlashBackend.getContext();
 			
-			_shape		= null;
-			_transform	= new Matrix3D();
-			_updated	= true;
+			this._shape		= null;
+			this._transform	= new Matrix3D();
+			this._updated	= true;
 		}
 		
 		/**
@@ -38,7 +38,7 @@ package x3dom
 		 */
 		public function set id(id:uint) : void
 		{
-			_id = id;
+			this._id = id;
 		}
 		
 		/**
@@ -46,7 +46,7 @@ package x3dom
 		 */
 		public function get id() : uint
 		{
-			return _id;
+			return this._id;
 		}
 		
 		/**
@@ -54,7 +54,7 @@ package x3dom
 		 */
 		public function set refID(refID:uint) : void
 		{
-			_refID = refID;
+			this._refID = refID;
 		}
 		
 		/**
@@ -62,7 +62,7 @@ package x3dom
 		 */
 		public function get refID() : uint
 		{
-			return _refID;
+			return this._refID;
 		}
 		
 		/**
@@ -70,7 +70,7 @@ package x3dom
 		 */
 		public function set updated(updated:Boolean) : void
 		{
-			_updated = updated;
+			this._updated = updated;
 		}
 		
 		/**
@@ -78,7 +78,7 @@ package x3dom
 		 */
 		public function get updated() : Boolean
 		{
-			return _updated;
+			return this._updated;
 		}
 			
 		/**
@@ -86,7 +86,7 @@ package x3dom
 		 */
 		public function set shape(shape:Shape) : void
 		{
-			_shape = shape;
+			this._shape = shape;
 		}
 		
 		/**
@@ -94,10 +94,10 @@ package x3dom
 		 */
 		public function get shape() : Shape
 		{
-			if(_shape == null)
-				_shape = new Shape();
+			if(this._shape == null)
+				this._shape = new Shape();
 
-			return _shape;
+			return this._shape;
 		}
 		
 		/**
@@ -105,8 +105,8 @@ package x3dom
 		 */
 		public function set transform(transform:Matrix3D) : void
 		{
-			_updated = true;
-			_transform = transform;
+			this._updated = true;
+			this._transform = transform;
 		}
 		
 		/**
@@ -114,7 +114,7 @@ package x3dom
 		 */
 		public function get transform() : Matrix3D
 		{
-			return _transform;
+			return this._transform;
 		}
 		
 		/**
@@ -122,7 +122,7 @@ package x3dom
 		 */
 		public function get min() : Vector3D
 		{
-			return _transform.transformVector(_shape.boundingBox.min);
+			return this._transform.transformVector(this._shape.boundingBox.min);
 		}
 		
 		/**
@@ -130,7 +130,7 @@ package x3dom
 		 */
 		public function get max() : Vector3D
 		{
-			return _transform.transformVector(_shape.boundingBox.max);
+			return this._transform.transformVector(this._shape.boundingBox.max);
 		}
 		
 		/**
@@ -138,7 +138,7 @@ package x3dom
 		 */
 		public function get center() : Vector3D
 		{
-			return _transform.transformVector(_shape.boundingBox.center);
+			return this._transform.transformVector(this._shape.boundingBox.center);
 		}
 	}
 }

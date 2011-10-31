@@ -56,7 +56,7 @@
 		public function X3DScene() 
 		{
 			//Set Context3D
-			_context3D = FlashBackend.getContext();
+			this._context3D = FlashBackend.getContext();
 			
 		}
 		
@@ -69,18 +69,18 @@
 			var min:Vector3D = new Vector3D( 999999.0,  999999.0,  999999.0);
 			var max:Vector3D = new Vector3D(-999999.0, -999999.0, -999999.0);
 			
-			for(var i:uint = 0; i<_drawableObjects.length; i++) {
-				if(min.x > _drawableObjects[i].min.x) { min.x = _drawableObjects[i].min.x; }
-				if(min.y > _drawableObjects[i].min.y) { min.y = _drawableObjects[i].min.y; }
-				if(min.z > _drawableObjects[i].min.z) { min.z = _drawableObjects[i].min.z; }
+			for(var i:uint = 0; i<this._drawableObjects.length; i++) {
+				if(min.x > this._drawableObjects[i].min.x) { min.x = this._drawableObjects[i].min.x; }
+				if(min.y > this._drawableObjects[i].min.y) { min.y = this._drawableObjects[i].min.y; }
+				if(min.z > this._drawableObjects[i].min.z) { min.z = this._drawableObjects[i].min.z; }
 				
-				if(max.x < _drawableObjects[i].max.x) { max.x = _drawableObjects[i].max.x; }
-				if(max.y < _drawableObjects[i].max.y) { max.y = _drawableObjects[i].max.y; }
-				if(max.z < _drawableObjects[i].max.z) { max.z = _drawableObjects[i].max.z; }
+				if(max.x < this._drawableObjects[i].max.x) { max.x = this._drawableObjects[i].max.x; }
+				if(max.y < this._drawableObjects[i].max.y) { max.y = this._drawableObjects[i].max.y; }
+				if(max.z < this._drawableObjects[i].max.z) { max.z = this._drawableObjects[i].max.z; }
 			}
 			
-			_min = min;
-			_max = max
+			this._min = min;
+			this._max = max
 		}
 		
 		/**
@@ -88,7 +88,7 @@
 		 */
 		private function zSorting(a:DrawableObject, b:DrawableObject) : Number
 		{
-			return _viewMatrix.transformVector(a.center).z - _viewMatrix.transformVector(b.center).z;
+			return this._viewMatrix.transformVector(a.center).z - this._viewMatrix.transformVector(b.center).z;
 		}
 		
 		/**
@@ -96,7 +96,7 @@
 		 */
 		public function get background() : Background
 		{
-			return _background;
+			return this._background;
 		}
 		
 		/**
@@ -104,7 +104,7 @@
 		 */
 		public function get lights() : Array
 		{
-			return _lights;
+			return this._lights;
 		}
 		
 		/**
@@ -113,19 +113,19 @@
 		public function getLight(id:uint, type:String) : Object
 		{
 			//Search existend Light and return
-			for(var i:uint = 0; i<_lights.length; i++) {
-				if(_lights[i].id == id) return _lights[i];
+			for(var i:uint = 0; i<this._lights.length; i++) {
+				if(this._lights[i].id == id) return this._lights[i];
 			}
 			
 			//If nothing found create new Light
 			switch( type ) {
-				case LightType.DIRECTIONALIGHT: _lights.push( new DirectionalLight(id) ); break;
-				case LightType.POINTLIGHT: 		_lights.push( new PointLight(id) ); break;
-				case LightType.SPOTLIGHT: 		_lights.push( new SpotLight(id) ); break;
+				case LightType.DIRECTIONALIGHT: this._lights.push( new DirectionalLight(id) ); break;
+				case LightType.POINTLIGHT: 		this._lights.push( new PointLight(id) ); break;
+				case LightType.SPOTLIGHT: 		this._lights.push( new SpotLight(id) ); break;
 			}
 			
 			//Return new light
-			return _lights[_lights.length-1];
+			return this._lights[this._lights.length-1];
 		}
 		
 		/**
@@ -133,33 +133,33 @@
 		 */
 		public function getDrawableObject(id:Number, refID:Number = 0) : Object
 		{	
-			for(var i:uint=0; i<_drawableObjects.length; i++) {
-				if(_drawableObjects[i].id == id && _drawableObjects[i].refID == refID) {
-					return _drawableObjects[i];
+			for(var i:uint=0; i<this._drawableObjects.length; i++) {
+				if(this._drawableObjects[i].id == id && this._drawableObjects[i].refID == refID) {
+					return this._drawableObjects[i];
 				}
 			}
 			
 			//create drawable
-			_drawableObjects.push( new DrawableObject(id, refID) );
+			this._drawableObjects.push( new DrawableObject(id, refID) );
 			
 			if(refID > 0) {
-				_drawableObjects[_drawableObjects.length-1].shape = getDrawableObject(id).shape;
+				this._drawableObjects[this._drawableObjects.length-1].shape = getDrawableObject(id).shape;
 			}
 			
-			return _drawableObjects[_drawableObjects.length-1];
+			return _drawableObjects[this._drawableObjects.length-1];
 		}
 		
 		public function checkForRemovedNodes() : void
 		{
 			var tmp:Array = new Array()
-			for(var i:uint = 0; i<_drawableObjects.length; i++)
+			for(var i:uint = 0; i<this._drawableObjects.length; i++)
 			{
-				if(_drawableObjects[i].updated) {
-					_drawableObjects[i].updated = false;
-					tmp.push(_drawableObjects[i]);
+				if(this._drawableObjects[i].updated) {
+					this._drawableObjects[i].updated = false;
+					tmp.push(this._drawableObjects[i]);
 				} 
 			}
-			_drawableObjects = tmp;
+			this._drawableObjects = tmp;
 		}
 		
 		/**
@@ -167,7 +167,7 @@
 		 */
 		public function get viewMatrix() : Matrix3D
 		{
-			return _viewMatrix;
+			return this._viewMatrix;
 		}
 		
 		/**
@@ -175,7 +175,7 @@
 		 */
 		public function set viewMatrix(viewMatrix:Matrix3D) : void
 		{
-			_viewMatrix = viewMatrix;
+			this._viewMatrix = viewMatrix;
 		}
 		
 		/**
@@ -183,7 +183,7 @@
 		 */
 		public function get projectionMatrix() : Matrix3D
 		{
-			return _projMatrix;
+			return this._projMatrix;
 		}
 		
 		/**
@@ -191,7 +191,7 @@
 		 */
 		public function set projectionMatrix(projectionMatrix:Matrix3D) : void
 		{
-			_projMatrix = projectionMatrix;
+			this._projMatrix = projectionMatrix;
 		}
 		
 		/**
@@ -199,7 +199,7 @@
 		 */
 		public function get min() : Vector3D
 		{
-			return _min;
+			return this._min;
 		}
 		
 		/**
@@ -207,7 +207,7 @@
 		 */
 		public function get max() : Vector3D
 		{
-			return _max;
+			return this._max;
 		}
 		
 		/**
@@ -215,7 +215,7 @@
 		 */
 		public function set pickedObj(pickedObj:uint) : void
 		{
-			_pickedObj = pickedObj;
+			this._pickedObj = pickedObj;
 		}
 		
 		/**
@@ -223,7 +223,7 @@
 		 */
 		public function get pickedObj() : uint
 		{
-			return _pickedObj;
+			return this._pickedObj;
 		}
 		
 		/**
@@ -231,7 +231,7 @@
 		 */
 		public function set pickedPos(pickedPos:Vector3D) : void
 		{
-			_pickedPos = pickedPos;
+			this._pickedPos = pickedPos;
 		}
 		
 		/**
@@ -239,14 +239,14 @@
 		 */
 		public function get pickedPos() : Vector3D
 		{
-			return _pickedPos;
+			return this._pickedPos;
 		}
 		
 		public function get drawableObjects() : Array
 		{
-			_drawableObjects.sort(zSorting);
+			this._drawableObjects.sort(zSorting);
 			
-			return _drawableObjects;
+			return this._drawableObjects;
 		}
 
 	}
