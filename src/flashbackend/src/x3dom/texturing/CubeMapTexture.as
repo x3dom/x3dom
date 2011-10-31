@@ -7,6 +7,7 @@ package x3dom.texturing
 	import flash.display3D.textures.*;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.geom.Matrix;
 	import flash.net.URLRequest;
 	
 	import x3dom.Debug;
@@ -41,12 +42,12 @@ package x3dom.texturing
 		 */
 		private function defaultTexture() : void
 		{
-			var bitmapData:BitmapData = new BitmapData(2, 2, true, 0xFF000000);
+			var bitmapData:BitmapData = new BitmapData(1, 1, true, 0xFF000000);
 			
-			_texture = _context3D.createCubeTexture(2, Context3DTextureFormat.BGRA, false);
+			this._texture = _context3D.createCubeTexture(1, Context3DTextureFormat.BGRA, false);
 			
 			for(var i:uint=0; i<6; i++) {
-				CubeTexture(_texture).uploadFromBitmapData( bitmapData, i );
+				CubeTexture(this._texture).uploadFromBitmapData( bitmapData, i, 0);
 			}
 		}
 		
@@ -56,17 +57,17 @@ package x3dom.texturing
 		private function loadTexture(face:Number, url:String) : void
 		{	
 			//Set ready to false
-			_ready = false;
+			this._ready = false;
 			
 			//Create new Loader
-			_texLoader[face] = new Loader();
+			this._texLoader[face] = new Loader();
 			
 			//Add Complete- and IOError Listener to Loader
-			_texLoader[face].contentLoaderInfo.addEventListener(Event.COMPLETE, handleComplete);
-			_texLoader[face].contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
+			this._texLoader[face].contentLoaderInfo.addEventListener(Event.COMPLETE, handleComplete);
+			this._texLoader[face].contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
 			
 			//Load image from url
-			_texLoader[face].load( new URLRequest( url ) );
+			this._texLoader[face].load( new URLRequest( url ) );
 		}
 		
 		/**
@@ -80,28 +81,61 @@ package x3dom.texturing
 			//Scale Bitmap to the next best power of two
 			bitmap = Utils.scaleBitmap(bitmap);
 			
-			if(_texLoaded == 0) {
+			if(this._texLoaded == 0) {
 				//Create Texture
-				_tmpTexture = _context3D.createCubeTexture(bitmap.width, Context3DTextureFormat.BGRA, false);
+				this._tmpTexture = this._context3D.createCubeTexture(bitmap.width, Context3DTextureFormat.BGRA, false);
 			}
 			
 			//Get Face
-			var face:Number = _texLoader.indexOf( e.target.loader );
+			var face:Number = this._texLoader.indexOf( e.target.loader );
 			
 			//Upload texture from BitmapData
-			CubeTexture(_tmpTexture).uploadFromBitmapData(bitmap.bitmapData, face);
+			this.uploadTextureWithMipmaps(this._tmpTexture, bitmap.bitmapData, face);
+			//CubeTexture(this._tmpTexture).uploadFromBitmapData(bitmap.bitmapData, face);
 			
-			_texLoaded++;
+			this._texLoaded++;
 			
-			if(_texLoaded == 6) {
+			if(this._texLoaded == 6) {
 				//Set ready to true
-				_ready = true;
-				
-				_texture = _tmpTexture;
+				this._ready = true;
+				this._texture = _tmpTexture;
 				
 				//Dispatch Complete-Event
 				this.dispatchEvent( new Event( Event.COMPLETE ) );
 			}
+		}
+		
+		/**
+		 * Generate all mipmap levels for a given texture.
+		 * @param dest:Texture
+		 * @param src:BitmapData
+		 * @param face:uint
+		 */
+		public function uploadTextureWithMipmaps(dest:CubeTexture, src:BitmapData, face:uint):void
+		{
+			var ws:int = src.width;
+			var hs:int = src.height;
+			var level:int = 0;
+			var tmp:BitmapData;
+			var transform:Matrix = new Matrix();
+			
+			tmp = new BitmapData(src.width, src.height, true, 0x00000000);
+			
+			while ( ws >= 1 && hs >= 1 )
+			{ 
+				tmp.draw(src, transform, null, null, null, true); 
+				dest.uploadFromBitmapData(tmp, face, level);
+				transform.scale(0.5, 0.5);
+				level++;
+				ws >>= 1;
+				hs >>= 1;
+				if (hs && ws) 
+				{
+					tmp.dispose();
+					tmp = new BitmapData(ws, hs, true, 0x00000000);
+				}
+			}
+			tmp.dispose();
 		}
 		
 		/**

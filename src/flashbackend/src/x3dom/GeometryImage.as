@@ -28,7 +28,7 @@ package x3dom
 		public function GeometryImage()
 		{
 			super();
-			_ready = false;
+			this._ready = false;
 		}
 		
 		/**
@@ -46,23 +46,23 @@ package x3dom
 				if(this._primType[i] == 'TRIANGLES') 
 				{
 					this._numTriangles[i] = this._vertexCount[i] / 3;
-					generateIndices(i);
+					this.generateIndices(i);
 				} 
 				else if(this._primType[i] == 'TRIANGLESTRIP') 
 				{
 					this._numTriangles[i] = this._vertexCount[i] - 2;
-					generateTriangleStripIndices(i)
+					this.generateTriangleStripIndices(i)
 				}
 			}
 			
 			//Set boundingbox center
-			_boundingBox.center.setTo(value.bboxCenter[0], value.bboxCenter[1], value.bboxCenter[2]);
+			this._boundingBox.center.setTo(value.bboxCenter[0], value.bboxCenter[1], value.bboxCenter[2]);
 			
 			//Set boundingbox min
-			_boundingBox.min.setTo(value.bboxMin[0], value.bboxMin[1], value.bboxMin[2]);		
+			this._boundingBox.min.setTo(value.bboxMin[0], value.bboxMin[1], value.bboxMin[2]);		
 	
 			//Set boundingBox max
-			_boundingBox.max.setTo(value.bboxMax[0], value.bboxMax[1], value.bboxMax[2]);	
+			this._boundingBox.max.setTo(value.bboxMax[0], value.bboxMax[1], value.bboxMax[2]);	
 		}
 		
 		/**
@@ -72,12 +72,12 @@ package x3dom
 		{
 			var indices:Vector.<uint> = new Vector.<uint>();
 			
-			for(var i:uint = 0; i<_numTriangles[idx]*3; i++)
+			for(var i:uint = 0; i<this._numTriangles[idx]*3; i++)
 			{
 				indices.push(i);
 			}
 			
-			setIndices(idx, indices);
+			this.setIndices(idx, indices);
 		}
 		
 		/**
@@ -87,7 +87,7 @@ package x3dom
 		{
 			var indices:Vector.<uint> = new Vector.<uint>();
 			
-			for(var i:uint=0; i<Math.round(_numTriangles[idx]); i+=2)
+			for(var i:uint=0; i<Math.round(this._numTriangles[idx]); i+=2)
 			{
 				if(i != 0) {
 					indices.push(i, i-1, i+1);
@@ -95,7 +95,7 @@ package x3dom
 				indices.push(i, i+1, i+2);
 			}
 			
-			setIndices(idx, indices);
+			this.setIndices(idx, indices);
 		}
 		
 		/**
@@ -103,11 +103,11 @@ package x3dom
 		 */
 		public function setCoordinateTexture(value:Object) : void
 		{
-			_coordinateTexturesLoaded = false;
+			this._coordinateTexturesLoaded = false;
 			
 			if(value.coordinateTexture0)
 			{
-				_coordinateTexture0Loaded = false;
+				this._coordinateTexture0Loaded = false;
 				
 				var coordinateLoader0:Loader = new Loader();
 				coordinateLoader0.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate0Complete);
@@ -115,12 +115,12 @@ package x3dom
 			}
 			else
 			{
-				_coordinateTexture0Loaded = true;
+				this._coordinateTexture0Loaded = true;
 			}
 			
 			if(value.coordinateTexture1)
 			{
-				_coordinateTexture1Loaded = false;
+				this._coordinateTexture1Loaded = false;
 				
 				var coordinateLoader1:Loader = new Loader();
 				coordinateLoader1.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate1Complete);
@@ -128,7 +128,7 @@ package x3dom
 			}
 			else
 			{
-				_coordinateTexture1Loaded = true;
+				this._coordinateTexture1Loaded = true;
 			}
 		}
 		
@@ -139,7 +139,7 @@ package x3dom
 		{
 			if(value.normalTexture)
 			{
-				_normalTextureLoaded = false;
+				this._normalTextureLoaded = false;
 				
 				var normalLoader:Loader = new Loader();
 				normalLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleNormalComplete);
@@ -147,7 +147,7 @@ package x3dom
 			}
 			else
 			{
-				_normalTextureLoaded = true;
+				this._normalTextureLoaded = true;
 			}
 		}
 		
@@ -158,7 +158,7 @@ package x3dom
 		{
 			if(value.texCoordTexture)
 			{
-				_texCoordTextureLoaded = false;
+				this._texCoordTextureLoaded = false;
 				
 				var coordinateLoader:Loader = new Loader();
 				coordinateLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleTexCoordComplete);
@@ -166,7 +166,7 @@ package x3dom
 			}
 			else
 			{
-				_texCoordTextureLoaded = true;
+				this._texCoordTextureLoaded = true;
 			}
 		}
 		
@@ -175,10 +175,10 @@ package x3dom
 		 */
 		private function handleCoordinate0Complete(e:Event) : void
 		{
-			_coords0 = Bitmap( e.target.content );
-			_coordinateTexture0Loaded = true;
-			if(_coordinateTexture1Loaded == true) {
-				setMultiCoordinates()
+			this._coords0 = Bitmap( e.target.content );
+			this._coordinateTexture0Loaded = true;
+			if(this._coordinateTexture1Loaded == true) {
+				this.setMultiCoordinates()
 			}
 			
 		}
@@ -188,10 +188,10 @@ package x3dom
 		 */
 		private function handleCoordinate1Complete(e:Event) : void
 		{
-			_coords1 = Bitmap( e.target.content );
-			_coordinateTexture1Loaded = true;
-			if(_coordinateTexture0Loaded == true) {
-				setMultiCoordinates()
+			this._coords1 = Bitmap( e.target.content );
+			this._coordinateTexture1Loaded = true;
+			if(this._coordinateTexture0Loaded == true) {
+				this.setMultiCoordinates()
 			}
 		}
 		
@@ -201,16 +201,16 @@ package x3dom
 			var idx:uint = 0;
 			var coordinate0:Vector3D = new Vector3D();
 			var coordinate1:Vector3D = new Vector3D();
-			var bias:Vector3D = _boundingBox.max.subtract(_boundingBox.min);
+			var bias:Vector3D = this._boundingBox.max.subtract(_boundingBox.min);
 			var vertices:Vector.<Number> = new Vector.<Number>();
 			
-			for(var y:uint=0; y<_coords0.height; y++)
+			for(var y:uint=0; y<this._coords0.height; y++)
 			{
-				for(var x:uint=0; x<_coords0.width; x++)
+				for(var x:uint=0; x<this._coords0.width; x++)
 				{
 					
 					if( vertices.length/3 == (this._vertexCount[idx]) ) {
-						setVertices(idx, vertices);
+						this.setVertices(idx, vertices);
 						idx++;
 						if(idx < this._vertexCount.length){
 							vertices = new Vector.<Number>();
@@ -219,32 +219,32 @@ package x3dom
 						}
 					}
 					
-					color = _coords0.bitmapData.getPixel(x,y);
+					color = this._coords0.bitmapData.getPixel(x,y);
 					
 					coordinate0.x = ( (color >> 16 & 0xFF) / 255.0 );
 					coordinate0.y = ( (color >> 8 & 0xFF) / 255.0 );
 					coordinate0.z = ( (color & 0xFF) / 255.0 );
 					
-					if(_coords1) {
-						color = _coords1.bitmapData.getPixel(x,y);
+					if(this._coords1) {
+						color = this._coords1.bitmapData.getPixel(x,y);
 						
-						coordinate1.x = ( (color >> 16 & 0xFF) / 255.0 ) / 256.0;
-						coordinate1.y = ( (color >> 8 & 0xFF) / 255.0 ) / 256.0;
-						coordinate1.z = ( (color & 0xFF) / 255.0 ) / 256.0;
+						coordinate1.x = ( (color >> 16 & 0xFF) / 65280.0 );
+						coordinate1.y = ( (color >> 8 & 0xFF) / 65280.0 );
+						coordinate1.z = ( (color & 0xFF) / 65280.0 );
 						
 						coordinate0.incrementBy(coordinate1);
 					}
 					
-					coordinate0.x = (coordinate0.x * bias.x) + _boundingBox.min.x;
-					coordinate0.y = (coordinate0.y * bias.y) + _boundingBox.min.y;
-					coordinate0.z = (coordinate0.z * bias.z) + _boundingBox.min.z;
+					coordinate0.x = (coordinate0.x * bias.x) + this._boundingBox.min.x;
+					coordinate0.y = (coordinate0.y * bias.y) + this._boundingBox.min.y;
+					coordinate0.z = (coordinate0.z * bias.z) + this._boundingBox.min.z;
 					
 					vertices.push(coordinate0.x, coordinate0.y, coordinate0.z);
 					
 				}
 			}
 			
-			_coordinateTexturesLoaded = true;
+			this._coordinateTexturesLoaded = true;
 			
 			if(_normalTextureLoaded && _texCoordTextureLoaded) 
 			{
@@ -271,7 +271,7 @@ package x3dom
 				for(var x:uint=0; x<bitmap.width; x++)
 				{
 					if( normals.length/3 == (this._vertexCount[idx]) ) {
-						setNormals(idx, normals);
+						this.setNormals(idx, normals);
 						idx++;
 						if(idx < this._vertexCount.length){
 							normals = new Vector.<Number>();
@@ -298,11 +298,11 @@ package x3dom
 				}
 			}
 			
-			_normalTextureLoaded = true;
+			this._normalTextureLoaded = true;
 			
 			if(_coordinateTexturesLoaded && _texCoordTextureLoaded) 
 			{
-				_ready = true;
+				this._ready = true;
 				this.dispatchEvent( new Event( Event.COMPLETE ) );
 			}
 		}
@@ -326,7 +326,7 @@ package x3dom
 				for(var x:uint=0; x<bitmap.width; x++)
 				{
 					if( texCoords.length/2 == (this._vertexCount[idx]) ) {
-						setTexCoords(idx, texCoords);
+						this.setTexCoords(idx, texCoords);
 						idx++;
 						if(idx < this._vertexCount.length){
 							texCoords = new Vector.<Number>();
@@ -334,21 +334,22 @@ package x3dom
 							break;
 						}
 					}
+
+					color = bitmap.bitmapData.getPixel32(x,y);
 					
-					color = bitmap.bitmapData.getPixel(x,y);
-					
+					texCoord0.w = (color >> 24 & 0xFF) / 255.0;
 					texCoord0.x = (color >> 16 & 0xFF) / 255.0;
 					texCoord0.y = (color >> 8 & 0xFF) / 255.0;
 					texCoord0.z = (color & 0xFF) / 255.0;
 					
-					//x3dom.Debug.logInfo("U: " + texCoord0.x + " V: " + texCoord0.y);
+					//x3dom.Debug.logInfo("U: " + texCoord0.x.toPrecision(21) + " V: " + texCoord0.y.toPrecision(21));
 					
-					color = bitmap.bitmapData.getPixel32(x,y);
-					
-					texCoord0.w = (color >> 24 & 0xFF) / 255.0;
+					//color = bitmap.bitmapData.getPixel32(x,y);
 					
 					texCoord.x = (texCoord0.x * 0.996108948) + (texCoord0.z * 0.003891051);
 					texCoord.y = (texCoord0.y * 0.996108948) + (texCoord0.w * 0.003891051);
+					
+					//p[0] = (((col[0] * 255) * 256) + (col[2] * 255)) / 65535;
 					
 					//x3dom.Debug.logInfo("U: " + texCoord.x + " V: " + texCoord.y);
 					
@@ -356,11 +357,11 @@ package x3dom
 				}
 			}
 			
-			_texCoordTextureLoaded = true;
+			this._texCoordTextureLoaded = true;
 			
 			if(_coordinateTexturesLoaded && _normalTextureLoaded) 
 			{
-				_ready = true;
+				this._ready = true;
 				this.dispatchEvent( new Event( Event.COMPLETE ) );
 			}
 		}

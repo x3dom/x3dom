@@ -27,26 +27,26 @@ package x3dom.texturing
 		 */
 		private function defaultTexture() : void
 		{
-			_texture = _context3D.createTexture(2, 2, Context3DTextureFormat.BGRA, false);
-			Texture(_texture).uploadFromBitmapData( new BitmapData(2, 2, true, 0xFF000000) );
+			this._texture = _context3D.createTexture(1, 1, Context3DTextureFormat.BGRA, false);
+			Texture(this._texture).uploadFromBitmapData( new BitmapData(1, 1, true, 0xFF000000) );
 		}
 		
 		private function generateTexture(bitmap:Bitmap) : void
 		{
 			//Set ready false
-			_ready = false;
+			this._ready = false;
 			
 			//Scale Bitmap
 			bitmap = Utils.scaleBitmap(bitmap);
 			
 			//Create Texture
-			_texture = _context3D.createTexture(bitmap.width, bitmap.height, Context3DTextureFormat.BGRA, false);
+			this._texture = _context3D.createTexture(bitmap.width, bitmap.height, Context3DTextureFormat.BGRA, false);
 			
 			//Upload texture from BitmapData
-			Texture(_texture).uploadFromBitmapData(bitmap.bitmapData);
+			Texture(this._texture).uploadFromBitmapData(bitmap.bitmapData);
 			
 			//Set ready true
-			_ready = true;
+			this._ready = true;
 			
 			//Dispatch Complete-Event
 			this.dispatchEvent( new Event( Event.COMPLETE ) );

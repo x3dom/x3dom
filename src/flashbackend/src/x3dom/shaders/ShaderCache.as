@@ -33,7 +33,7 @@ package x3dom.shaders
 		public function ShaderCache()
 		{	
 			//Init shader cache
-			_cache = new Array();
+			this._cache = new Array();
 		}
 		
 		/**
@@ -42,54 +42,32 @@ package x3dom.shaders
 		public function getShader(shaderIdentifier:String) : Program3D
 		{
 			//Check if shader is in cache
-			if( _cache[shaderIdentifier] == undefined ) 
+			if( this._cache[shaderIdentifier] == undefined ) 
 			{
 				//Choose shader based on identifier
-				switch(shaderIdentifier) 
-				{
-					case ShaderIdentifier.PICKING:
-						_cache[shaderIdentifier] = new PickingShader().program3D;
-						break;
-					
-					case ShaderIdentifier.PICKING_COLOR:
-						//_cache[shaderIdentifier] = new PickingColorShader(_context3D).program3D;
-						break;
-					
-					case ShaderIdentifier.PICKING_TEXCOORD:
-						//_cache[shaderIdentifier] = new PickingTexCoordShader(_context3D).program3D;
-						break;
-					
-					case ShaderIdentifier.BACKGROUNDTEXTURE:
-						_cache[shaderIdentifier] = new BackgroundTextureShader().program3D;
-						break;
-					
-					case ShaderIdentifier.BACKGROUNDSKYTEXTURE:
-						_cache[shaderIdentifier] = new BackgroundSkyTextureShader().program3D;
-						break;
-					
-					case ShaderIdentifier.BACKGROUNDCUBETEXTURE:
-						_cache[shaderIdentifier] = new BackgroundCubeTextureShader().program3D;
-						break;
-					
-					case ShaderIdentifier.SHADOW:
-						//_cache[shaderIdentifier] = new ShadowShader(_context3D).program3D;
-						break;
-					
-					case ShaderIdentifier.DEPTH:
-						_cache[shaderIdentifier] = new DepthShader().program3D;
-						break;
-					
-					case ShaderIdentifier.NORMAL:
-						_cache[shaderIdentifier] = new NormalShader().program3D;
-						break;
-					
-					default:
-						break;
+				if(shaderIdentifier == ShaderIdentifier.PICKING) {
+					this._cache[shaderIdentifier] = new PickingShader().program3D;	
+				} else if(shaderIdentifier == ShaderIdentifier.PICKING_COLOR) {
+					//_cache[shaderIdentifier] = new PickingColorShader(_context3D).program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.PICKING_TEXCOORD) {
+					//_cache[shaderIdentifier] = new PickingTexCoordShader(_context3D).program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.BACKGROUNDTEXTURE) {
+					this._cache[shaderIdentifier] = new BackgroundTextureShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.BACKGROUNDSKYTEXTURE) {
+					this._cache[shaderIdentifier] = new BackgroundSkyTextureShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.BACKGROUNDCUBETEXTURE) {
+					this._cache[shaderIdentifier] = new BackgroundCubeTextureShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.SHADOW) {
+					//_cache[shaderIdentifier] = new ShadowShader(_context3D).program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.DEPTH) {
+					this._cache[shaderIdentifier] = new DepthShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.NORMAL) {
+					this._cache[shaderIdentifier] = new NormalShader().program3D;
 				}
 			}
 			
 			//Return Program3D from cache
-			return _cache[shaderIdentifier];
+			return this._cache[shaderIdentifier];
 		}
 		
 		/**
@@ -107,13 +85,13 @@ package x3dom.shaders
 										  String(shape.solid);
 
 			//Check if shader is in cache
-			if( _cache[shaderIdentifier] == undefined ) 
+			if( this._cache[shaderIdentifier] == undefined ) 
 			{
-				_cache[shaderIdentifier] = new DynamicShader(shape, lights).program3D;
+				this._cache[shaderIdentifier] = new DynamicShader(shape, lights).program3D;
 			}
 			
 			//Return Program3D from cache
-			return _cache[shaderIdentifier];
+			return this._cache[shaderIdentifier];
 		}
 	}
 }
