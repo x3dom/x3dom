@@ -65,7 +65,9 @@ x3dom.registerNodeType(
                 var that = this;
 
                 var xhr = new window.XMLHttpRequest();
-                xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+				if(xhr.overrideMimeType) {
+					xhr.overrideMimeType('text/xml');   //application/xhtml+xml
+				}
                 this._nameSpace.doc.downloadCount += 1;
 
                 xhr.onreadystatechange = function () {
