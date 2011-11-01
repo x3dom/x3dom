@@ -55,4 +55,5 @@ clean:
 
 $(BUNDLE): $(SRC)
 	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
+	cp x3dom.js x3dom.bak
 	#cp x3dom.* ../example
