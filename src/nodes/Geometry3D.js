@@ -1557,6 +1557,10 @@ x3dom.registerNodeType(
         {
             nodeChanged: function()
             {
+                // // FIXME: Workaround
+                this._vf.convex = true;
+                // // FIXME
+                
                 var time0 = new Date().getTime();
 
                 this.handleAttribs();
@@ -1898,6 +1902,7 @@ x3dom.registerNodeType(
 	
 						
 					} else {
+					    
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = new Object();
 						for (var i = 0; i < indexes.length; ++i)
