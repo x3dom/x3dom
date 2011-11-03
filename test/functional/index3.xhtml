@@ -1,0 +1,157 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>test</title>
+    
+    <!--link rel="stylesheet" type="text/css"  href="http://www.x3dom.org/x3dom/release/x3dom.css"></link>
+    <script type="text/javascript" src="http://www.x3dom.org/x3dom/release/x3dom.js"></script-->
+    
+    <!-- BEGIN:X3DOM -->
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/lang/Properties.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<!-- END:X3DOM -->
+</head>
+       
+<body>
+	    <X3D id="rotate-box" xmlns="http://www.web3d.org/specifications/x3d-namespace" width='1000px' height='700px'>
+			<scene>
+            	<Background skyColor='0 0 0' />
+            	<!--NavigationInfo type="none"></NavigationInfo-->
+                 
+                <!--transform translation="0 0 0" rotation="1 0 0 0" >
+                  <shape>
+                    <appearance>
+                      <material id="color" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Arc2D id="test" radius ='2' subdivision='30' startAngle ='1.57' endAngle='3.14' onmouseover="test();"/>
+                  </shape>
+                </transform-->
+                    
+                <!--transform translation="0 0 0" rotation="1 0 0 0.0" >
+                  <shape>
+                    <appearance>
+                      <material id="color" diffuseColor='yellow'></material>
+                      <imageTexture url='media/img/igd_main.png' />
+                    </appearance>
+                    <ArcClose2D id="test" radius ='2' subdivision='4' startAngle ='0' endAngle='2.14' closureType='CHORD' onmouseover="test();"/>
+                  </shape>
+                </transform-->
+                
+               
+                
+                
+                <transform translation="0 0 0" rotation="1 0 0 0.5">
+                  <shape>
+                    <appearance>
+                      <material id="color2" diffuseColor='blue'></material>
+                    </appearance>
+                    <cylinder radius="1.0" height="0.05" solid="false" bottom="false" top="false" side="true" onclick="alert(event.hitPnt);" onmouseover="color2();" onmouseout="colorBack2();"/>
+                  </shape>
+                </transform>
+                <transform translation="0 0 0" rotation="1 0 0 -1.0">
+                	<transform translation="0 0 0" rotation="0 0 1 0.7">
+                  	<shape>
+                    <appearance>
+                      <material id="color3" diffuseColor='green'></material>
+                    </appearance>
+                    <cylinder radius="1.0" height="0.05" solid="false" bottom="false" top="false" side="true" onclick="alert(event.hitPnt);" onmouseover="color3();" onmouseout="colorBack3();"/>
+                  </shape>
+                  </transform>
+                </transform>
+                <transform translation="0 0 0" rotation="1 0 0 -1.0">
+                	<transform translation="0 0 0" rotation="0 0 1 -0.7">
+                  	<shape>
+                    <appearance>
+                      <material id="color4" diffuseColor='green'></material>
+                    </appearance>
+                    <cylinder radius="1.0" height="0.05" solid="false" bottom="false" top="false" side="true" onclick="alert(event.hitPnt);" onmouseover="color4();" onmouseout="colorBack4();"/>
+                  </shape>
+                  </transform>
+                </transform>                        
+                
+                <transform translation="0 0 0" rotation="1 0 0 0.0" >
+                  <shape>
+                    <appearance>
+                       <material id="color" diffuseColor='red' transparency='0.5'></material>
+                    </appearance>
+                    <ArcClose2D id="test" radius ='1' subdivision='32' startAngle ='0' endAngle='6.2831' closureType='PIE' onclick="alert(event.hitPnt);" onmouseover="color();" onmouseout="colorBack();"/>
+                  </shape>
+                </transform>
+                
+                <transform translation="0 0 0" rotation="1 0 0 2" >
+                  <shape>
+                    <appearance>
+                      <material id="color" emissiveColor='yellow'></material>
+                    </appearance>
+                    <Arc2D id="test" radius ='1' subdivision='30' startAngle ='0' endAngle='3.14' onmouseover="test();"/>
+                  </shape>
+                </transform>
+			</scene>
+        </X3D>
+        
+<script type="text/javascript" >
+	<![CDATA[
+		
+        var color = function (event) {
+            document.getElementById('color').setAttribute('diffuseColor', '1 0.5 0');
+        };
+		 var colorBack = function (event) {
+            document.getElementById('color').setAttribute('diffuseColor', 'red');
+        };
+		 var color2 = function (event) {
+            document.getElementById('color2').setAttribute('diffuseColor', '0 0.5 1');
+        };
+		 var colorBack2 = function (event) {
+            document.getElementById('color2').setAttribute('diffuseColor', 'blue');
+        };
+		var color3 = function (event) {
+            document.getElementById('color3').setAttribute('diffuseColor', '0 1 0.5');
+        };
+		 var colorBack3 = function (event) {
+            document.getElementById('color3').setAttribute('diffuseColor', 'green');
+        };
+		var color4 = function (event) {
+            document.getElementById('color4').setAttribute('diffuseColor', '0 1 0.5');
+        };
+		 var colorBack4 = function (event) {
+            document.getElementById('color4').setAttribute('diffuseColor', 'green');
+        };
+	]]>
+</script>
+</body>
+</html>

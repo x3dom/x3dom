@@ -259,7 +259,37 @@ window.requestAnimFrame = (function() {
 })();
 
 
+function identifyPointDirection(linklist) {
+		var i, j, k;
+		var count = 0;
+		var z;
+
+		if (linklist.length < 3) {
+			return 0;
+		}
+
+		for (i = 0; i < linklist.length; i++) {
+			j = (i + 1) % linklist.length;
+			k = (i + 2) % linklist.length;
+			z = (linklist.getNode(j).point.x - linklist.getNode(i).point.x) * (linklist.getNode(k).point.y - linklist.getNode(j).point.y);
+			z -= (linklist.getNode(j).point.y - linklist.getNode(i).point.y) * (linklist.getNode(k).point.x - linklist.getNode(j).point.x);
+			if (z < 0) {
+				count--;
+			} else if (z > 0) {
+				count++;
+			}
+		}
+		if (count > 0) {
+			return 1;
+		} else if (count < 0) {
+			return -1;
+		} else {
+			return 0;
+		}
+}
+
 function getIndexes(linklist) {
+	alert('ja');
 	var indexes = [];
 	var node = linklist.first.next;
 	var next = null;
@@ -284,7 +314,9 @@ function getIndexes(linklist) {
 	}
 	return indexes;
 }
+
 function getMultiIndexes(linklist) {
+	
 	var multi_index_data = new Object();
 	multi_index_data.indices = [];
 	multi_index_data.normals = [];
