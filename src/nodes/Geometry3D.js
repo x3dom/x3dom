@@ -1902,7 +1902,6 @@ x3dom.registerNodeType(
 	
 						
 					} else {
-					    
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = new Object();
 						for (var i = 0; i < indexes.length; ++i)
@@ -1918,6 +1917,11 @@ x3dom.registerNodeType(
 							}
 							
 							if (indexes[i] == -1) {
+								alert(identifyPointDirection(linklist))
+								if(identifyPointDirection(linklist) == 0 || identifyPointDirection(linklist) == -1){
+									continue;
+								}
+							
 								var multi_index_data = getMultiIndexes(linklist);	
 								this._mesh._indices[0] = this._mesh._indices[0].concat(multi_index_data.indices);
 					
@@ -2011,6 +2015,9 @@ x3dom.registerNodeType(
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
+								if(identifyPointDirection(linklist) == 0 || identifyPointDirection(linklist) == -1){
+									continue;
+								}
 								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
 								linklist = new x3dom.DoublyLinkedList();
 								continue;
