@@ -66,7 +66,7 @@ This menu is invisible by default. Go to "Preferences" (Cmd-,) and select the
 
 **Rubber band scrolling in Mac OS X 10.7 Lion**
 
-On Mac OS Lion, with Apple input devices scrolling behaves differently. Wen reaching the end of a list or web page, a rubber band effect kicks in. This behavior is also present on iOS devices.
+On Mac OS Lion, with Apple input devices scrolling behaves differently. When reaching the end of a page, a rubber band effect kicks in. This behavior is also present on iOS devices.
 
 If you don't like the effect, you can turn if off using a CSS rule:
 
