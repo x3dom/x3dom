@@ -64,6 +64,18 @@ Safari 5.1+ is supporting WebGL, however you need to enable it in the Developer 
 This menu is invisible by default. Go to "Preferences" (Cmd-,) and select the
 "Advaned" tab. Enable the option "Show Develop menu in menu bar".
 
+**Rubber band scrolling in Mac OS X 10.7 Lion**
+
+On Mac OS Lion, with Apple input devices scrolling behaves differently. Wen reaching the end of a list or web page, a rubber band effect kicks in. This behavior is also present on iOS devices.
+
+If you don't like the effect, you can turn if off using a CSS rule:
+
+.. code-block:: css
+
+    body { overflow: hidden }
+    
+Keep in mind that this rule changes the default behavior of your browser and scrollbars might disappear entirely. It is only a workaround and the preferred fix is to wait for Apple to provide a switch to turn this functionality off. Also note that the rubber band scrolling might not be visible at all with non Apple pointing devices.
+
 
 Ubuntu Linux
 ~~~~~~~~~~~~
