@@ -33,10 +33,11 @@ Reference
 If you are looking for information on a specific function, class or method, this part of the documentation is for you.
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 1
    
    api
    nodes/index
+   components
 
 
 Notes & How-Tos
