@@ -258,44 +258,48 @@ window.requestAnimFrame = (function() {
            };
 })();
 
-
 function identifyPointDirection(linklist) {
-		var i, j, k;
+	
+		var l, k;
 		var count = 0;
 		var z;
-
+		var nodei, nodel, nodek;
+		
 		if (linklist.length < 3) {
-			return 0;
+			return true;
 		}
-
-		for (i = 0; i < linklist.length; i++) {
-			j = (i + 1) % linklist.length;
+		
+		for (var i = 0; i < linklist.length; i++) {
+			l = (i + 1) % linklist.length;
 			k = (i + 2) % linklist.length;
-			z = (linklist.getNode(j).point.x - linklist.getNode(i).point.x) * (linklist.getNode(k).point.y - linklist.getNode(j).point.y);
-			z -= (linklist.getNode(j).point.y - linklist.getNode(i).point.y) * (linklist.getNode(k).point.x - linklist.getNode(j).point.x);
+			
+			nodei = linklist.getNode(i);
+			nodel = linklist.getNode(l);
+			nodek = linklist.getNode(k); 
+					
+			z = (nodel.point.x - nodei.point.x) * (nodek.point.y - nodel.point.y);
+			z -= (nodel.point.y - nodei.point.y) * (nodek.point.x - nodel.point.x);
 			if (z < 0) {
 				count--;
 			} else if (z > 0) {
 				count++;
 			}
-		}
-		if (count > 0) {
-			return 1;
-		} else if (count < 0) {
-			return -1;
-		} else {
-			return 0;
-		}
+		}	
+		
+		if (count < 0) {
+			x3dom.debug.logInfo('ja');
+			linklist.invert();
+		}	
 }
 
 function getIndexes(linklist) {
-	alert('ja');
 	var indexes = [];
 	var node = linklist.first.next;
 	var next = null;
+	var count = 0;
 		
 	var isEar = true;
-	while(linklist.length >= 3) {
+	while(linklist.length >= 3 && count < 10) {
 		next = node.next;
 		for(var i = 0; i < linklist.length; i++) {
 			if(isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point)) {
@@ -307,6 +311,8 @@ function getIndexes(linklist) {
 			if(isKonvex(node.prev.point, node.point, node.next.point)) {
 				indexes.push(node.prev.point_index, node.point_index, node.next.point_index);
 				linklist.deleteNode(node);
+			} else {
+				count++;
 			}
 		}
 		node = next;
@@ -324,9 +330,10 @@ function getMultiIndexes(linklist) {
 	multi_index_data.texCoords = [];
 	var node = linklist.first.next;
 	var next = null;
+	var count = 0;
 		
 	var isEar = true;
-	while(linklist.length >= 3) {
+	while(linklist.length >= 3  && count < 10) {
 		next = node.next;
 		for(var i = 0; i < linklist.length; i++) {
 			if(isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point)) {
@@ -340,11 +347,34 @@ function getMultiIndexes(linklist) {
 				if(node.multi_index_data.normals == false) {
 					multi_index_data.normals.push(false);
 				} else {
-					multi_index_data.normals.push(node.prev.multi_index_data.normals, node.multi_index_data.normals, node.next.multi_index_data.normals);
+					multi_index_data.normals.push(node.prev.multi_index_data.normals.x,
+												  node.prev.multi_index_data.normals.y,
+												  node.prev.multi_index_data.normals.z,
+												  node.multi_index_data.normals.x,
+												  node.multi_index_data.normals.y,
+												  node.multi_index_data.normals.z,
+												  node.next.multi_index_data.normals.x,
+												  node.next.multi_index_data.normals.y,
+												  node.next.multi_index_data.normals.z);
 				}
-				multi_index_data.colors.push(node.prev.multi_index_data.colors, node.multi_index_data.colors, node.next.multi_index_data.colors);
-				multi_index_data.texCoords.push(node.prev.multi_index_data.texCoords, node.multi_index_data.texCoords, node.next.multi_index_data.texCoords);
+				/*multi_index_data.colors.push(node.prev.multi_index_data.colors.r,
+											 node.prev.multi_index_data.colors.g,
+											 node.prev.multi_index_data.colors.b,
+											 node.multi_index_data.colors.r,
+											 node.multi_index_data.colors.g,
+											 node.multi_index_data.colors.b,
+											 node.next.multi_index_data.colors.r,
+											 node.next.multi_index_data.colors.g,
+											 node.next.multi_index_data.colors.b);*/
+				multi_index_data.texCoords.push(node.prev.multi_index_data.texCoords.x,
+												node.prev.multi_index_data.texCoords.y,
+												node.multi_index_data.texCoords.x,
+												node.multi_index_data.texCoords.y,
+												node.next.multi_index_data.texCoords.x,
+												node.next.multi_index_data.texCoords.y);
 				linklist.deleteNode(node);
+			}  else {
+				count++;
 			}
 		}
 		node = next;
