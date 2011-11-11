@@ -840,6 +840,22 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 
     viewpoint._vf.centerOfRotation.setValues(this._pick);
     x3dom.debug.logInfo("New center of Rotation:  " + this._pick);
+
+    var mat = this.getViewMatrix().inverse();
+
+    var from = mat.e3();
+    var at = this._pick;
+    var up = mat.e1();
+
+    var norm = mat.e0().cross(up).normalize();
+    // get distance between look-at point and viewing plane
+    var dist = norm.dot(this._pick.subtract(from));
+    
+    from = at.addScaled(norm, -dist);
+    mat = x3dom.fields.SFMatrix4f.lookAt(from, at, up);
+    
+    x3dom.debug.logInfo("New camera position:  " + from);
+    this.animateTo(mat.inverse(), viewpoint);
 };
 
 x3dom.Viewarea.prototype.handleMoveEvt = function (x, y, buttonState)
