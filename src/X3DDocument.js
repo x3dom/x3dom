@@ -211,6 +211,14 @@ x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
     this._viewarea.onMove(x, y, buttonState);
 };
 
+x3dom.X3DDocument.prototype.onMoveView = function (ctx, translation, rotation) {
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+
+    this._viewarea.onMoveView(translation, rotation);
+};
+
 x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
     if (!ctx || !this._viewarea) {
         return;
