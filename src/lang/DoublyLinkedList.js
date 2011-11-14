@@ -82,6 +82,22 @@ x3dom.DoublyLinkedList.prototype.getNode = function(index) {
 		}
 	}
 };
+x3dom.DoublyLinkedList.prototype.invert = function() {
+	var node = null;
+	var tmp = null;
+	node = this.first;
+	
+	for(var i = 0; i < this.length; i++) {
+		tmp = node.prev;
+		node.prev =	node.next;
+		node.next = tmp;
+		node = node.prev;
+	}
+	tmp = this.first;
+	this.first = this.last;
+	this.last = tmp;
+};
+
 
 
 

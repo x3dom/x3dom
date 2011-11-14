@@ -1906,7 +1906,7 @@ x3dom.registerNodeType(
 						var data = new Object();
 						for (var i = 0; i < indexes.length; ++i)
 						{	
-							if (hasNormalInd) {
+							/*if (hasNormalInd) {
 								x3dom.debug.assert(normalInd[i] != -1);
 							}
 							if (hasTexCoordInd) {
@@ -1914,14 +1914,10 @@ x3dom.registerNodeType(
 							}
 							if (hasColorInd) {
 								x3dom.debug.assert(colorInd[i] != -1);
-							}
+							}*/
 							
 							if (indexes[i] == -1) {
-								alert(identifyPointDirection(linklist))
-								if(identifyPointDirection(linklist) == 0 || identifyPointDirection(linklist) == -1){
-									continue;
-								}
-							
+								identifyPointDirection(linklist);
 								var multi_index_data = getMultiIndexes(linklist);	
 								this._mesh._indices[0] = this._mesh._indices[0].concat(multi_index_data.indices);
 					
@@ -1935,7 +1931,7 @@ x3dom.registerNodeType(
 								if (hasColor) {
 									this._mesh._colors[0] = this._mesh._colors[0].concat(multi_index_data.colors);
 								}
-								if (hasTexCoord) {
+								if (hasTexCoord) {							
 									this._mesh._texCoords[0] = this._mesh._texCoords[0].concat(multi_index_data.texCoords);
 								}
 								linklist = new x3dom.DoublyLinkedList();
@@ -2010,14 +2006,12 @@ x3dom.registerNodeType(
 
 						}
 					} else {
-						//  Convert non-triangular convex polygons to a triangle fan
+						//  Convert non-triangular convex polygons to a triangle fan					
 						var linklist = new x3dom.DoublyLinkedList();					
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
-								if(identifyPointDirection(linklist) == 0 || identifyPointDirection(linklist) == -1){
-									continue;
-								}
+								identifyPointDirection(linklist);
 								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
 								linklist = new x3dom.DoublyLinkedList();
 								continue;
