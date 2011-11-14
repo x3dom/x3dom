@@ -880,6 +880,40 @@ x3dom.Viewarea.prototype.onMove = function (x, y, buttonState)
     this._lastY = y;
 };
 
+x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
+{
+  var navi = this._scene.getNavigationInfo();
+  var viewpoint = this._scene.getViewpoint();
+  
+  if (navi._vf.type[0].toLowerCase() === "examine")
+  {
+  /*
+    var min = x3dom.fields.SFVec3f.MAX();
+    var max = x3dom.fields.SFVec3f.MIN();
+    var ok = this._scene.getVolume(min, max, true);
+
+    var d = ok ? (max.subtract(min)).length() : 10;
+    d = (d < x3dom.fields.Eps) ? 1 : d;
+
+    var vec = new x3dom.fields.SFVec3f(d*translation.x, d*translation.y, d*translation.z);
+  */
+  if(translation)
+  {
+    var distance = 1 + Math.abs(this._movement.z);
+    
+    translation = translation.multiply(distance);
+    this._movement = this._movement.add(translation);
+
+    this._transMat = viewpoint.getViewMatrix().inverse().
+        mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+        mult(viewpoint.getViewMatrix());
+  }
+  
+  if(rotation)
+    this._rotMat = rotation.mult(this._rotMat);
+  }
+};
+
 x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 {
     // should onmouseover/-out be handled on drag?
@@ -897,7 +931,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
     if (navi._vf.type[0].toLowerCase() === "examine")
     {
-        if (buttonState & 1)
+        if (buttonState & 1) //left
         {
             var alpha = (dy * 2 * Math.PI) / this._width;
             var beta = (dx * 2 * Math.PI) / this._height;
@@ -916,7 +950,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 mult(mat).
                 mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
         }
-        if (buttonState & 4)
+        if (buttonState & 4) //middle
         {
             min = x3dom.fields.SFVec3f.MAX();
             max = x3dom.fields.SFVec3f.MIN();
@@ -935,7 +969,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
                 mult(viewpoint.getViewMatrix());
         }
-        if (buttonState & 2)
+        if (buttonState & 2) //right
         {
             min = x3dom.fields.SFVec3f.MAX();
             max = x3dom.fields.SFVec3f.MIN();

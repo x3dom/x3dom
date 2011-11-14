@@ -455,12 +455,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.canvas.mouse_drag_x = 0;
         this.canvas.mouse_drag_y = 0;
 
-		this.canvas.fingers = [];
-		this.canvas.wasMulti = false;
-		this.canvas.isMulti = false;
-
-		// this should go into a gestures collection
-		this.canvas.pinch_distance = 0;
+        this.canvas.isMulti = false;
 
         this.canvas.oncontextmenu = function(evt) {
             evt.preventDefault();
@@ -558,7 +553,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mousemove', function (evt) {
 
-            window.status=this.id+' MOVE: '+(evt.layerX || evt.x)+", "+(evt.layerY || evt.y);
+            // x3dom.debug.logInfo("mousemove(" + (evt.layerX || evt.x) + " | " + (evt.layerY || evt.y) + ")" );
 
             /*
             if (!this.mouse_dragging) {
@@ -572,18 +567,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             if (evt.ctrlKey)  { this.mouse_button = 4; }
             if (evt.altKey)   { this.mouse_button = 2; }
 
-			if (!this.isMulti)
-			{
-                this.mouse_drag_x = (evt.layerX || evt.x);
-                this.mouse_drag_y = (evt.layerY || evt.y);
+            if (!this.isMulti)
+            {
+              this.mouse_drag_x = (evt.layerX || evt.x);
+              this.mouse_drag_y = (evt.layerY || evt.y);
 
-				if (this.mouse_dragging) {
-					this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-				}
-				else {
-					this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-				}
-			}
+              if (this.mouse_dragging) {
+                this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+              }
+              else {
+                this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+              }
+            }
 
             this.parent.doc.needRender = true;
 
@@ -653,172 +648,190 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // http://backtothecode.blogspot.com/2009/10/javascript-touch-and-gesture-events.html
         // http://www.sitepen.com/blog/2008/07/10/touching-and-gesturing-on-the-iphone/
 
-		var debugMarker = true;
-		//var debugMarker = false;
-
-		var touchStartHandler = function(evt)
-		{
-			x3dom.debug.logInfo("[TOUCH START] New finger ID: " + evt.streamId + " detected");
-
-			if (debugMarker) {
-				// set a mark in HTML so we can track the position of the finger visually
-				var marker = document.createElement("div");
-				marker.appendChild(document.createTextNode("Finger: " + evt.streamId));
-				marker.id = evt.streamId;
-				marker.className = "x3dom-touch-marker";
-				document.body.appendChild(marker);
-			}
-
-			// touch object containing info about the detected touch
-			var touch = {
-				identifier: evt.streamId,
-				x: (evt.layerX || evt.x),
-				y: (evt.layerY || evt.y),
-				dx: 0,
-				dy: 0,
-				initialx: (evt.layerX || evt.x),
-				initialy: (evt.layerY || evt.y)
-			};
-
-			this.fingers.push(touch);
-
-			if (this.fingers.length > 1) {
-				this.wasMulti = this.isMulti;
-				this.isMulti = true;
-			}
-
-			x3dom.debug.logInfo("[TOUCH START] Number of fingers active:" + this.fingers.length);
-
-			evt.preventDefault();
+        // TOUCHES
+        var touches =
+        {
+          numTouches : 0,
+          
+          lastDrag : new x3dom.fields.SFVec2f(),
+          
+          lastMiddle : new x3dom.fields.SFVec2f(),
+          lastDistance : new x3dom.fields.SFVec2f(),
+          lastSquareDistance : 0,
+          lastAngle : 0,
+          
+          calcAngle : function(vector)
+          {
+            var rotation = vector.normalize().dot(new x3dom.fields.SFVec2f(1,0));
+            rotation = Math.acos(rotation);
+            
+            if(vector.y < 0)
+              rotation = Math.PI + (Math.PI - rotation);
+              
+            return rotation;
+          }
+        };
+        
+        var touchStartHandler = function(evt)
+        {
+          if(touches.numTouches < 1 && evt.touches.length == 1)
+          {
+            touches.numTouches = 1;
+            touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+          }
+          
+          else if(touches.numTouches < 2 && evt.touches.length >= 2)
+          {
+            touches.numTouches = 2;
+            
+            var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+            var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+            
+            var distance = touch1.subtract(touch0);
+            var middle = distance.multiply(0.5).add(touch0);
+            var squareDistance = distance.dot(distance);
+            
+            touches.lastDistance = distance;
+            touches.lastMiddle = middle;
+            touches.lastSquareDistance = squareDistance;
+            touches.lastAngle = touches.calcAngle(distance);
+          }
+        
+          evt.preventDefault();
         };
 
         var touchMoveHandler = function(evt)
-		{
-			for (var i=0; i < this.fingers.length; i++) {
+        {
+          // one finger: x/y rotation
+          if(evt.touches.length == 1)
+          {
+            var faktor = 0.2;
+            var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+            
+            var deltaDrag = currentDrag.subtract(touches.lastDrag);
+            touches.lastDrag = currentDrag;
+            
+            var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / (this.parent.canvas.width * faktor));
+            var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / (this.parent.canvas.height * faktor));
+            
+            var rotMatrix = mx.mult(my);
+            
+            this.parent.doc.onMoveView(that.gl, null, rotMatrix);
+            this.parent.doc.needRender = true;
+          }
+          
+          // two fingers: scale, translation, rotation around view (z) axis
+          else if(evt.touches.length >= 2)
+          {
+            var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+            var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
+            
+            var distance = touch1.subtract(touch0);
+            var middle = distance.multiply(0.5).add(touch0);
+            var squareDistance = distance.dot(distance);
+            
+            var deltaMiddle = middle.subtract(touches.lastMiddle);
+            var deltaZoom = squareDistance - touches.lastSquareDistance;
+            
+            var deltaMove = new x3dom.fields.SFVec3f(
+              deltaMiddle.x / 500,
+              -deltaMiddle.y / 500,
+              deltaZoom / 100000); // yes, this numbers are magic!
+            
+            var rotation = touches.calcAngle(distance);
+            var angleDelta = touches.lastAngle - rotation;
+            touches.lastAngle = rotation;
 
-				// tracking the coordinates of the fingers
-				if (this.fingers[i].identifier === evt.streamId) {
+            var rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
 
-					this.fingers[i].dx = this.fingers[i].x - (evt.layerX || evt.x);
-					this.fingers[i].dy = this.fingers[i].y - (evt.layerY || evt.y);
+            touches.lastMiddle = middle;
+            touches.lastDistance = distance;
+            touches.lastSquareDistance = squareDistance;
 
-					this.fingers[i].x = (evt.layerX || evt.x);
-					this.fingers[i].y = (evt.layerY || evt.y);
-
-					if (debugMarker) {
-						var marker = document.getElementById(evt.streamId);
-						marker.style.left = (evt.pageX+10)+"px";
-						marker.style.top = (evt.pageY+10)+"px";
-					}
-				}
-			}
-
-			// if two fingers are ready, hard core pinching action
-			if (this.fingers.length > 1)
-			{
-				// calc hypothenuse, distance between two fingers
-				var x1 = this.fingers[0].x;
-				var y1 = this.fingers[0].y;
-	  			var x2 = this.fingers[1].x;
-				var y2 = this.fingers[1].y;
-				var c = Math.sqrt( Math.pow((x1-x2),2) + Math.pow((y1-y2),2) );
-				//x3dom.debug.logInfo("[TOUCH] Distance of fingers: " + c);
-
-				// changes in distance since last triggering of event
-				var cdelta = Math.abs(this.pinch_distance - c);
-				//x3dom.debug.logInfo("[TOUCH] Distance of fingers: " + c + " delta: " + cdelta);
-
-				if (this.pinch_distance > 0) {
-					if (this.pinch_distance > c) {
-						this.mouse_drag_y -= 4.0 * cdelta;
-					}
-					else {
-						this.mouse_drag_y += 4.0 * cdelta;
-					}
-				}
-				this.pinch_distance = c; // save distance for next run
-
-				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
-				this.parent.doc.needRender = true;
-			}
-
-            window.status=this.id+' PINCH: '+evt.detail;
-            evt.preventDefault();
-            evt.returnValue = true;
+            this.parent.doc.onMoveView(that.gl, deltaMove, rotMatrix);
+            this.parent.doc.needRender = true;
+          }
+          
+          evt.preventDefault();
         };
 
-		var touchEndHandler = function(evt)
-		{
-            // mozilla
-			var found = false;
-            if (evt.streamId) {
-                x3dom.debug.logInfo("[TOUCH STOP] Finger ID: " + evt.streamId + " lifted");
+        var touchEndHandler = function(evt)
+        {
+          // init first finger for rotation
+          if(touches.numTouches == 2 && evt.touches.length == 1)
+            touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
+          
+          if(evt.touches.length < 2)
+            touches.numTouches = evt.touches.length;
 
-				for (var i=0; i < this.fingers.length; i++) {
-					if (this.fingers[i].identifier == evt.streamId) {
-
-						x3dom.debug.logInfo("[TOUCH STOP] Removed tracking for finger ID: " +
-											this.fingers[i].identifier);
-						this.fingers.splice(i,1);
-
-						if (debugMarker) {
-							document.body.removeChild(document.getElementById(evt.streamId));
-						}
-						found = true;
-					}
-				}
-            }
-			if (!found && this.fingers.length) {
-				this.fingers = [];
-			}
-			if (this.fingers.length === 0) {
-				x3dom.debug.logInfo("[TOUCH STOP] no fingers present");
-				this.pinch_distance = 0;
-
-				this.wasMulti = this.isMulti;
-				this.isMulti = false;
-			}
-
-			// this.parent.doc.needRender = true;
-		   	evt.preventDefault();
+          evt.preventDefault();
         };
 
-        var touchCancelHandler = function(evt) {
+        var touchCancelHandler = function(evt)
+        {
             x3dom.debug.logInfo("[TOUCH] cancel");
         };
-
-        var gestureStartHandler = function(evt) {
-            x3dom.debug.logInfo("[GESTURE] start");
+        // TOUCHES
+        
+        // GESTURES
+        /*
+        var last_rotation = 0.0;
+        var last_distance = 1.0;
+        */
+        var gestureStartHandler = function(evt)
+        {
+        /*
+            last_rotation = 0.0;
+            last_distance = 1.0;
+            
             this.parent.doc.needRender = true;
+        */
         };
 
-        var gestureChangeHandler = function(evt) {
+        var gestureChangeHandler = function(evt)
+        {
+        /*
             evt.preventDefault();
-            x3dom.debug.logInfo("[GESTURE] change Scale: " + evt.scale + ", Rotation: " + evt.rotation);
+            
+            var rot_delta = evt.rotation - last_rotation;
+            last_rotation = evt.rotation;
+            
+            var distance_delta = evt.scale - last_distance;
+            last_distance = evt.scale;
+            
+            var rotation = x3dom.fields.SFMatrix4f.rotationZ(-(rot_delta / 180.0) * Math.PI);
+            
+            this.parent.doc.onGesture(that.gl, distance_delta, rotation, null);
             this.parent.doc.needRender = true;
+        */
         };
 
-        var gestureEndHandler = function(evt) {
-            x3dom.debug.logInfo("[GESTURE] end detected");
+        var gestureEndHandler = function(evt)
+        {
+        /*
+            last_rotation = 0.0;
+            last_distance = 1.0;
+            
             this.parent.doc.needRender = true;
+        */
         };
+        // GESTURES
+        
+        // mozilla touch events
+        this.canvas.addEventListener('MozTouchDown',  touchStartHandler,    true);
+        this.canvas.addEventListener('MozTouchMove',  touchMoveHandler,     true);
+        this.canvas.addEventListener('MozTouchUp',    touchEndHandler,      true);
 
-        this.canvas.addEventListener('touchstart', touchStartHandler, true);
-        this.canvas.addEventListener('touchmove', touchMoveHandler, true);
-        this.canvas.addEventListener('touchend', touchEndHandler, true);
-        this.canvas.addEventListener('touchcancel', touchCancelHandler, true);
+        // apple touch events
+        this.canvas.addEventListener('touchstart',    touchStartHandler,    true);
+        this.canvas.addEventListener('touchmove',     touchMoveHandler,     true);
+        this.canvas.addEventListener('touchend',      touchEndHandler,      true);
+        this.canvas.addEventListener('touchcancel',   touchCancelHandler,   true);
 
-        // mozilla flavour of event naming
-        this.canvas.addEventListener('MozTouchDown', touchStartHandler, true);
-        this.canvas.addEventListener('MozTouchMove', touchMoveHandler, true);
-        this.canvas.addEventListener('MozTouchUp', touchEndHandler, true);
-
-        // gesture events, for now only supported by apple
-        this.canvas.addEventListener('gesturestart', gestureStartHandler, true);
+        // gesture events (only supported by apple)
+        this.canvas.addEventListener('gesturestart',  gestureStartHandler,  true);
         this.canvas.addEventListener('gesturechange', gestureChangeHandler, true);
-        this.canvas.addEventListener('gestureend', gestureEndHandler, true);
-
-
+        this.canvas.addEventListener('gestureend',    gestureEndHandler,    true);
     }
 };
 
