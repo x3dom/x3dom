@@ -138,16 +138,19 @@ x3dom.userAgentFeature = {
             } else {
                 x3dom.debug.activate(false);
             }
-
-            // load components from params or default to x3d attribute
-            components = settings.getProperty('components', x3ds[i].getAttribute("components"));
-            if (components) {
-                prefix = settings.getProperty('loadpath', x3ds[i].getAttribute("loadpath"))
-                components = components.trim().split(',');
-                for (j=0; j < components.length; j++) {
-                    x3dom.loadJS(components[j] + ".js", prefix);
+            
+            if (X3DOM_SECURITY_OFF) {
+                // load components from params or default to x3d attribute
+                components = settings.getProperty('components', x3ds[i].getAttribute("components"));
+                if (components) {
+                    prefix = settings.getProperty('loadpath', x3ds[i].getAttribute("loadpath"))
+                    components = components.trim().split(',');
+                    for (j=0; j < components.length; j++) {
+                        x3dom.loadJS(components[j] + ".js", prefix);
+                    }
                 }
             }
+
         }
         // }}}
 

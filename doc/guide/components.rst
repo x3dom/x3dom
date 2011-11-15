@@ -33,12 +33,12 @@ This technique works by manually including the X3DOM core library plus the compo
     <script src="Other.js"></script>
     
 
-**Benefits of this approach:**
+Benefits of this approach:
     
     * static loading (no ajax requests)
     * works locally without a webserver
 
-**Drawbacks of this approach:**
+Drawbacks of this approach:
 
     * more requests are required
     * more files to manage in complex setups (however could be somewhat mitigated using something like Sprockets)
@@ -51,9 +51,21 @@ X3DOM features a mechanism to load files at runtime.
 
 .. warning::
 
-    With this approach it is possible to load anything. An excellent way to inject malicious code into your application.
+    With this approach it is possible to load anything. An excellent way to inject malicious code into your application. Be aware of this possible exploit when using the technique described here.
 
-Loading components at runtime can be achieved by putting the following parameters in you X3D scene.
+In order to allow dynamic loading of components, you need to set a global variable in javascript *before* including X3DOM. This security precaution prevents the library from executing code that is known to be insecure. In order to disable security measures in X3DOM, put the following statement before the inclusion of X3DOM, i.g:
+
+.. code-block:: html
+    <html>
+    <head>
+    <script>
+        X3DOM_SECURITY_OFF = true;
+    </script>
+    <script src="x3dom.js"></script> 
+    </head>
+    ...
+
+Now, dynamic loading components at runtime can be achieved by putting the following parameters in you X3D scene.
 
 .. code-block:: html
 
@@ -66,7 +78,5 @@ Loading components at runtime can be achieved by putting the following parameter
 If `loadpath` is not set X3DOM tries to load the component from the documents parent URL.
 
 Keep in mind that the dynamic loading of X3DOM components performs an **synchronous** Ajax request. As such all the limitations of Ajax requests apply, plus the library is blocking your browser until it gets a response.
-
-
 
 
