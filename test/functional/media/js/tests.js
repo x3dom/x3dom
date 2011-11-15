@@ -13,6 +13,10 @@ var _init = function() {
 
 	var nav = document.createElement("nav");
 	nav.innerHTML = '<a href="index.html" class="back">back to test index</a> <a href="javascript:window.location=\'view-source:\'+window.location.href;">View Source</a>';
+	
+	if (typeof X3DOM_DOCS_LINK != "undefined" && X3DOM_DOCS_LINK) {
+    	nav.innerHTML += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<a href="http://x3dom.org/docs/latest/'+ X3DOM_DOCS_LINK +'">documentation</a>';
+	}
 	document.body.insertBefore(nav, document.body.firstChild);
 
 //	<nav><a href="index.html">back to test index</a></nav>
