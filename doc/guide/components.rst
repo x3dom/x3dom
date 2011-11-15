@@ -88,7 +88,6 @@ If `loadpath` is not set X3DOM tries to load the component from the documents pa
 
 Keep in mind that the dynamic loading of X3DOM components performs an **synchronous** Ajax request. As such all the limitations of Ajax requests apply, plus the library is blocking your browser until it gets a response.
 
-
 Drawbacks of this approach:
 
     * load order is important and has to be maintained by developer
@@ -99,9 +98,9 @@ Drawbacks of this approach:
     * ajax request caching not really supported
 
 
-Benefits of this approach:
-    
-    * none
+When to use this method:
+
+    * never
 
 
 Creating your own components
