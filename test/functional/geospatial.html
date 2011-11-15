@@ -3,7 +3,11 @@
   <head>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
     <title>Geospatial</title>
-    <!-- BEGIN:X3DOM -->
+    <script>
+        // enable execution of potentially insecure code
+        X3DOM_SECURITY_OFF = true;
+    </script>
+
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
@@ -40,11 +44,14 @@
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
-<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
-<!-- END:X3DOM -->
+
+<!-- <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script> -->
+
   </head>
   <body>
     <x3d id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='400px' height='400px'>
+        <param name="components" value="Geospatial"></param>
+        <param name="loadpath" value="../../src/nodes/"></param>
       <scene DEF='scene'>
         <group DEF='Layer_geb_IGD_LoD3t' bboxCenter='8.65985 49.8744 59.649' bboxSize='0.00160206 0.000953474 20.8681'>
           <group DEF='Layer_geb_IGD_LoD3t_73212555-63f8-4b96-a184-80061704eeeb' bboxCenter='8.65989 49.8743 59.649' bboxSize='0.0010336 0.0005819 20.8681'>
