@@ -33,6 +33,9 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'isActive', false);
             this.addField_SFTime(ctx, 'time', 0);
 
+            this.addField_SFBool(ctx,'first',true);
+            this.addField_SFFloat(ctx,'firstCycle',0.0);
+
             this._prevCycle = -1;
         },
         {
@@ -55,19 +58,42 @@ x3dom.registerNodeType(
                 var cycleFrac, cycle, fraction, elapsed;
                 var isActive = (ts >= this._vf.startTime);
 
-
+                // fix from here:
+                // http://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4566541
                 if (isActive && this._vf.cycleInterval > 0) {
                     cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
                     cycle = Math.floor(cycleFrac);
-                    fraction = cycleFrac - cycle;
-
-                    if (fraction < x3dom.fields.Eps) {
-                        if (ts > this._vf.startTime) {
-                            fraction = 1.0;
-                        }
+                    if (this._vf.first == true) {
+                        firstCycle=cycle;
                     }
-
+                    this._vf.first=false;
+                    if (((cycle - firstCycle) > 0) && (this._vf.loop == false)) {
+	                    fraction = 1.0;
+                    } else {
+	                    fraction = cycleFrac - cycle;
+	                    if (fraction < x3dom.fields.Eps) {
+		                    if (ts > this._vf.startTime) {
+			                    fraction = 1.0;
+		                    }
+	                   }
+                    }
                 }
+
+//                if (isActive && this._vf.cycleInterval > 0) {
+//                    cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
+//                    cycle = Math.floor(cycleFrac);
+//                    fraction = cycleFrac - cycle;
+//
+//                    if (fraction < x3dom.fields.Eps) {
+//                        if (ts > this._vf.startTime) {
+//                            fraction = 1.0;
+//                        }
+//                    }
+//
+//                }
+//
+
+
 
                 if (isActive) {
                     if (!this._vf.isActive) {
