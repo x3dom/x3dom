@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Components Example</title>
+    <link rel="stylesheet" type="text/css" href="x3dom.css">
+    <link rel="stylesheet" type="text/css" href="media/css/examples.css">
+    <script type="text/javascript" src="http://x3dom.org/x3dom/release/1.3/x3dom-core.js"></script>
+
+    <style>
+        .right { float:left ; margin-left:1em; margin-bottom:2em; font-size:.9em;}
+        pre {background-color:#ddd; border-radius:3px}
+    </style>
+
+</head>
+<body>
+    <div id="nav">
+        <a href="http://www.x3dom.org/?page_id=5">Example Index</a>
+    </div>
+
+    <div class="content">
+
+    <h1>X3DOM Components</h1>
+    <p>This example demonstrates how the <a href="http://x3dom.org/docs/latest/components.html">components</a> system can be used to load parts of X3DOM at runtime.</p>
+
+    <div class="group">
+        <x3d id="the_element" showStat="false" showLog="false" width="512px" height="512px">
+            <param name="components" value="Geospatial"></param>
+            <param name="loadpath" value="http://www.x3dom.org/x3dom/release/1.3.0-dev/more/"></param>
+            <scene>
+                <background id="bg0" skycolor='0.05 0.12 0.23' description="Background 0"></background>
+            <shape>
+                <appearance>
+                    <material diffuseColor='1 0 0' ></material>
+                </appearance>
+                <sphere></sphere>
+            </shape>
+        </scene>
+        </x3d>
+
+    <div class="right">
+        <p>In this example, the X3DOM core distribution was used and the Geometry3D components where dynamically loaded</p>
+
+    </div><!-- .right -->
+    </div><!-- .group -->
+	</div><!-- .content -->
+</body>
+</html>
