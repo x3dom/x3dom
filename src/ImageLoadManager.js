@@ -25,13 +25,15 @@ x3dom.ImageLoadManager = {
 	
 	activeDownloads: 0,
 	
-	push: function(tex, priority) {
-		if(x3dom.caps.BACKEND == 'webgl') {				
-			x3dom.debug.logInfo("[ImageLoadManager] Push image to queue: URL = " + tex._vf.url[0] + " | Priority = " + priority);
-			x3dom.ImageLoadManager.heapUp( x3dom.ImageLoadManager.heap.push({priority: priority, image: tex._image, url:tex._vf.url[0]}) - 1 );
-			if(x3dom.ImageLoadManager.complete) {
-				x3dom.ImageLoadManager.complete = false;
-				x3dom.ImageLoadManager.load();
+	push: function(tex) {
+		if(x3dom.caps.BACKEND == 'webgl') {
+			if(tex._vf.url[0] != undefined) {
+				x3dom.debug.logInfo("[ImageLoadManager] Push image to queue: URL = " + tex._vf.url[0] + " | Priority = " + tex._vf.priority);
+				x3dom.ImageLoadManager.heapUp( x3dom.ImageLoadManager.heap.push({priority: tex._vf.priority, image: tex._image, url:tex._vf.url[0]}) - 1 );
+				if(x3dom.ImageLoadManager.complete) {
+					x3dom.ImageLoadManager.complete = false;
+					x3dom.ImageLoadManager.load();
+				}
 			}
 		}
 	},
@@ -53,11 +55,12 @@ x3dom.ImageLoadManager = {
 	load: function() {
 		if(x3dom.caps.BACKEND == 'webgl') {
 			x3dom.debug.logInfo("[ImageLoadManager] Start loading...");
+			//alert(x3dom.ImageLoadManager.length());
 			while(!x3dom.ImageLoadManager.isEmpty()) {
 				var item = x3dom.ImageLoadManager.pop();
 				item.image.crossOrigin = '';
 				item.image.src = item.url;
-				item.image.onload = x3dom.ImageLoadManager.onLoadFnc;
+				//item.image.onload = x3dom.ImageLoadManager.onLoadFnc;
 				x3dom.ImageLoadManager.activeDownloads++;
 			}
 			x3dom.ImageLoadManager.complete = true;
@@ -65,6 +68,7 @@ x3dom.ImageLoadManager = {
 	},
 	
 	onLoadFnc: function(evt) {
+		alert("complete");
 		var event = document.createEvent("HTMLEvents");
 		event.initEvent('ImageLoadManager_Load', true, true);
 		this.dispatchEvent(event);

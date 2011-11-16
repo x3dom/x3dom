@@ -1620,12 +1620,13 @@ x3dom.gfx_webgl = (function () {
 					
 					//Old Loading
 					//var image = new Image();
-					//image.crossOrigin = '';
-                    //image.src = tex._nameSpace.getURL(tex._vf.url[0]);
+					image.crossOrigin = '';
+                    image.src = tex._nameSpace.getURL(tex._vf.url[0]);
 					
                     that._nameSpace.doc.downloadCount += 1;					
 
-                    var load = function()
+                    //var load = function()
+					image.onload = function()
                     {    
 						x3dom.ImageLoadManager.activeDownloads--;
 						
@@ -1672,7 +1673,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.debug.logError("Can't load tex url: " + tex._vf.url + " (at unit " + unit + ").");
                     };
 					
-					image.addEventListener('ImageLoadManager_Load', load, true);
+					//image.addEventListener('ImageLoadManager_Load', load, true);
                 }
             };
 			

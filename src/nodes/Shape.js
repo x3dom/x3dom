@@ -41,19 +41,6 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {
-				var tex = this._cf.texture.node
-				if(tex) {
-					if( x3dom.isa(tex, x3dom.nodeTypes.MultiTexture) ) {
-						for(var i=0; i<tex.size(); i++) {
-							var singleTex = tex.getTexture(i);
-							if( !x3dom.isa(singleTex, x3dom.nodeTypes.X3DEnvironmentTextureNode) )
-								x3dom.ImageLoadManager.push(singleTex, 5);
-						}
-					} else {
-						x3dom.ImageLoadManager.push(tex, 5);
-					}
-				}
-			
                 if (!this._cf.material.node) {
                     this.addChild(x3dom.nodeTypes.Material.defaultNode());
                 }
