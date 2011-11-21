@@ -117,6 +117,8 @@ To follow this chapter you need at least basic understanding of the following co
   * the Javascript object model
   * XML and HTML5
 
+Object system
+~~~~~~~~~~~~~
 
 In order to register a new node within the X3DOM system, you need to create the equivalent of a *class* that inherits properties from a superclass. Javascript itself does not implement a class based object model, it provides a prototype model. A prototype based object model can be seen as a superset of a traditional class based model. With a prototype based object system, one can implement a more limited class based system. That is exactly what X3DOM does.
 
@@ -124,9 +126,15 @@ For each node you want to implement in X3DOM you need to call the function::
 
     x3dom.registerNodeType("YourNodeName", "GroupName", definitionObj);
 
-This registers a node within the X3DOM system and provides a hook to the implementation of this class. The third parameter to registerNodeType is the return value of a call to the X3DOM function::
+This registers a node within the X3DOM system and provides a hook to the implementation of this class. The first parameter also is the name of the XML tag you are writing code for. The third parameter to registerNodeType is the return value of a call to the X3DOM function::
 
-    defineClass(nodeTypeObj, constructorObj, implementationObj);
+    defineClass(superclassObj, constructorObj, implementationObj);
+
+This function is roughly equivalent to creating a class definition in a language with an traditional class based object system.
+
+
+Hello World
+~~~~~~~~~~~
 
 Let's say we want to implement a custom node which echos a "Hello World" to the console, we first need to decided how the XML should look like. In this case, we simply want another XML tag that looks like this:
 
@@ -138,7 +146,7 @@ Let's say we want to implement a custom node which echos a "Hello World" to the 
       </scene>
     </x3d>
 
-Since there is no "hello" node in the X3DOM system nothing happens when we run this X3D in the browser. The ``<hello>`` tag is not recognized and therefore ignored by X3DOM. In order to make X3DOM aware of the ``<hello>`` tag we need to register a new node with the system and provide an implementation for that node. In order to do so we are using the two function calls described above:
+Since there is no *Hello* node in the X3DOM system nothing happens when we run this X3D in the browser. The ``<hello>`` tag is not recognized and therefore ignored by X3DOM. In order to make X3DOM aware of the ``<hello>`` tag we need to register a new node with the system and provide an implementation for that node. In order to do so we are using the two function calls described above:
 
 .. code-block:: javascript
 
@@ -161,6 +169,9 @@ First, the hello node is registered with X3DOM, the hello node belongs to the co
 
 The ``nodeChanged`` function is not the only function you can pass your implementation. For example, there is a ``fieldChanged`` method which is called whenever a attribute in the DOM changes, and you can implement your own methods here.
 
-For more examples of nodes, please refer to `the source code of the X3DOM nodes <https://github.com/x3dom/x3dom/tree/master/src/nodes>`_. It's the best way to learn how to deal with the X3DOM node system.
 
+More
+~~~~
+
+For more examples of nodes, please refer to `the source code of the X3DOM nodes <https://github.com/x3dom/x3dom/tree/master/src/nodes>`_. It's the best way to learn how to deal with the X3DOM node system.
 
