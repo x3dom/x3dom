@@ -106,31 +106,43 @@ When to use this method:
 Creating your own components
 ----------------------------
 
-TODO
+In this chapter you will learn how to extend X3DOM with your own nodes which you can load using the methods outlined above. We recommend to use the static loading approach in combination with the full profile x3dom.js. This will result in the inclusion of ``x3dom.js`` and ``YourComponent.js`` which will contain your custom code.
 
-Walkthrough example of how to extend X3DOM.
 
-    * put em in a file
-    * load using methods above
+In order to register a new node within the X3DOM system, you need to create the equivalent of a *class* that inherits properties from a superclass. Javascript itself does not implement a class based object model, it provides a prototype model. A prototype based object model can be seen as a superset of a traditional class based model. With a prototype based object system, one can implement a more limited class based system. That is exactly what X3DOM does.
+
+For each node you want to implement in X3DOM you need to call the function:
+
+    x3dom.registerNodeType("YourNodeName", "SuperclassName", object);
+    
+This registers a node within the X3DOM system and provides a hook to the implementation of this class. 
+
+Let's say we want to implement a custom node which echos a "Hello World" to the console. The X3D we wish to have should look like this:
+
+.. code-block:: xml
+
+    <x3d>
+      <scene>
+        <hello></hello>
+      </scene>
+    </x3d>
+
+Since there is no "hello" node in the X3DOM system this would not work. The XML is not recognized and therefore ignored by X3DOM. In order to make X3DOM recognize the ``<hello>`` tag we need to create a node class like this:
 
 .. code-block:: javascript
 
     x3dom.registerNodeType(
-        "MyExampleNode",
-        "MySuperClass",
-        defineClass(x3dom.nodeTypes.X3DSensorNode,
+        "Hello", 
+        "Core",
+        defineClass(x3dom.nodeTypes.X3DNode,
             function (ctx) {
-                x3dom.nodeTypes.MyExampleNode.superClass.call(this, ctx);
-                // fields
-            },
-            {
-                fieldChanged: function(fieldName)
-                {
-                },
-
-                parentRemoved: function(parent)
-                {
-                }
-            }
+                x3dom.nodeTypes.Hello.superClass.call(this, ctx);
+            }, {
+                nodeChanged: function() {
+                x3dom.debug.logInfo('Hello from the console');
+            }}
         )
     );
+    
+
+
