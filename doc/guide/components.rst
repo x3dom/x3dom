@@ -72,6 +72,7 @@ In order to disable security measures in X3DOM, put the following statement in y
       </script>
       <script src="x3dom.js"></script> 
       ...
+    </head>
 
 Now, dynamic loading components at runtime is enabled and can be used by putting the following parameters in you X3D scene.
 
