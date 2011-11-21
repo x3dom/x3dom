@@ -65,12 +65,13 @@ X3DOM features a mechanism to load files at runtime. With this approach it is po
 In order to disable security measures in X3DOM, put the following statement in your document ``<head>`` section and before the inclusion of X3DOM:
 
 .. code-block:: html
+
     <head>
       <script>
         X3DOM_SECURITY_OFF = true;
       </script>
       <script src="x3dom.js"></script> 
-    ...
+      ...
 
 Now, dynamic loading components at runtime is enabled and can be used by putting the following parameters in you X3D scene.
 
