@@ -122,7 +122,7 @@ In order to register a new node within the X3DOM system, you need to create the 
 
 For each node you want to implement in X3DOM you need to call the function::
 
-    x3dom.registerNodeType("YourNodeName", "SuperclassName", definitionObj);
+    x3dom.registerNodeType("YourNodeName", "GroupName", definitionObj);
 
 This registers a node within the X3DOM system and provides a hook to the implementation of this class. The third parameter to registerNodeType is the return value of a call to the X3DOM function::
 
@@ -157,12 +157,10 @@ Since there is no "hello" node in the X3DOM system nothing happens when we run t
     );
 
 
-First, the hello node is registered with X3DOM, the hello node inherits from the core node. We then create an implementation object of the type ``x3dom.nodeTypes.X3DNode``. We also define a constructor for our node in form of a function object that we pass to the ``defineClass()`` function (second positional parameter). The last parameter consists of an object literal containing function definitions for the node API. In this example we implement a function called ``nodeChanged`` which will be called by X3DOM anytime there is a change to the node element in the DOM. It is also called when the node is encountered the first time. This is the place where print a message to the console using the X3DOM debug facilities.
+First, the hello node is registered with X3DOM, the hello node belongs to the core nodes. We then create an implementation object of the type ``x3dom.nodeTypes.X3DNode``, the superclass. We also define a constructor for our node in form of a function object that we pass to the ``defineClass()`` function (second positional parameter). The last parameter consists of an object literal containing function definitions for the node API. In this example we implement a function called ``nodeChanged`` which will be called by X3DOM anytime there is a change to the node element in the DOM. It is also called when the node is encountered the first time. This is the place where print a message to the console using the X3DOM debug facilities.
 
 The ``nodeChanged`` function is not the only function you can pass your implementation. For example, there is a ``fieldChanged`` method which is called whenever a attribute in the DOM changes, and you can implement your own methods here.
 
 For more examples of nodes, please refer to `the source code of the X3DOM nodes <https://github.com/x3dom/x3dom/tree/master/src/nodes>`_. It's the best way to learn how to deal with the X3DOM node system.
-
-
 
 
