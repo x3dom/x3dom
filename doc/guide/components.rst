@@ -123,22 +123,22 @@ In order to register a new node within the X3DOM system, you need to create the 
 For each node you want to implement in X3DOM you need to call the function::
 
     x3dom.registerNodeType("YourNodeName", "SuperclassName", definitionObj);
-    
+
 This registers a node within the X3DOM system and provides a hook to the implementation of this class. The third parameter to registerNodeType is the return value of a call to the X3DOM function::
 
-    defineClass(nodeTypeObj, constructorFuncObj, implementationObj);
+    defineClass(nodeTypeObj, constructorObj, implementationObj);
 
-Let's say we want to implement a custom node which echos a "Hello World" to the console, we first need to decided how the XML should look like. In this case, we simply want another tag that looks like this:
+Let's say we want to implement a custom node which echos a "Hello World" to the console, we first need to decided how the XML should look like. In this case, we simply want another XML tag that looks like this:
 
 .. code-block:: xml
 
     <x3d>
       <scene>
-        <hello></hello>
+        <hello></hello>    <-- this is new
       </scene>
     </x3d>
 
-Since there is no "hello" node in the X3DOM system nothing happens when we run this X3D in the browser. The ``<hello>`` tag is not recognized and therefore ignored by X3DOM. In order to make X3DOM recognize the ``<hello>`` tag we need to create a node class using the two function calls described above:
+Since there is no "hello" node in the X3DOM system nothing happens when we run this X3D in the browser. The ``<hello>`` tag is not recognized and therefore ignored by X3DOM. In order to make X3DOM aware of the ``<hello>`` tag we need to register a new node with the system and provide an implementation for that node. In order to do so we are using the two function calls described above:
 
 .. code-block:: javascript
 
@@ -149,11 +149,20 @@ Since there is no "hello" node in the X3DOM system nothing happens when we run t
             function (ctx) {
                 x3dom.nodeTypes.Hello.superClass.call(this, ctx);
             }, {
-                nodeChanged: function() {
-                x3dom.debug.logInfo('Hello from the console');
-            }}
+                  nodeChanged: function() {
+                      x3dom.debug.logInfo('Hello World from the console');
+                  }
+            }
         )
     );
-    
+
+
+First, the hello node is registered with X3DOM, the hello node inherits from the core node. We then create an implementation object of the type ``x3dom.nodeTypes.X3DNode``. We also define a constructor for our node in form of a function object that we pass to the ``defineClass()`` function (second positional parameter). The last parameter consists of an object literal containing function definitions for the node API. In this example we implement a function called ``nodeChanged`` which will be called by X3DOM anytime there is a change to the node element in the DOM. It is also called when the node is encountered the first time. This is the place where print a message to the console using the X3DOM debug facilities.
+
+The ``nodeChanged`` function is not the only function you can pass your implementation. For example, there is a ``fieldChanged`` method which is called whenever a attribute in the DOM changes, and you can implement your own methods here.
+
+For more examples of nodes, please refer to `the source code of the X3DOM nodes <https://github.com/x3dom/x3dom/tree/master/src/nodes>`_. It's the best way to learn how to deal with the X3DOM node system.
+
+
 
 
