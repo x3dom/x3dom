@@ -1,4 +1,328 @@
+2011-11-21  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added more info to component docs
+
+  * : Whoops got that backwards
+
+  * : First draft of components docs
+
+  * : More on components
+
+  * : More documentation for components
+
+  * : Typos
+
+  * : Typos
+
+  * : Typos
+
+2011-11-16  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - change Texture priority assignment
+
+2011-11-15  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Started with components example. noop yet
+
+  * : docs
+
+  * : More documentation on components
+
+  * : Geospatial test using components system
+
+  * : Added documentation link feature to tests. When the global variable
+  X3DOM_DOCS_LINK points to  an URL of the documentation the top nav bar shows
+  that link to related documentation chapter.
+
+  * : Whoops
+
+  * : Added X3DOM_SECURITY_OFF switch to prevent execution of insecure code
+  (component loading)
+
+  * : More work on components documentation
+
+  * : Time Sensor loop=false fix from
+  https://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4566541
+
+2011-11-14  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : aplha version of multitouch for ipad
+
+2011-11-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : extended setRotCenter such that view moves there
+
+2011-11-10  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : triangulation of concave polygons
+
+2011-11-08  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Preliminary docs for component loading
+
+2011-11-07  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Typo in docs
+
+  * : Added Katarzyna to AUTHORS file
+
+  * : Added note on OS X Lion rubber band scrolling
+
+2011-11-03  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : identifyPointDirection
+
+2011-11-01  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Workaround for IE's lack of xhr.overrideMimeType.
+
+2011-11-01  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Create a x3dom.bak file on make saving last version
+
+  * : Workaround for linked list bug falling into endless loop
+
+2011-10-31  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - generate all flash cubmap mipmaps to fix Flash Player 11 cubemap bug -
+  some flash code optimation
+
+2011-10-27  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix ImageGeometry Color-Texture
+
+2011-10-27  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Tests for Triangulation by Ear Clipping for MultiIndex
+
+  * : Triangulation by Ear Clipping for MultiIndex
+
+2011-10-25  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Namespace x3dom for DoublyLinkedList and clean up
+
+  * : Ear Clipping Triangulation
+
+  * : Ear Clipping Triangulation
+
+2011-10-24  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix ImageLoadManager Multi-Texture bug
+
+2011-10-24  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Updated includes of tests
+
+  * : Added the linked list file to update includes script
+
+2011-10-22  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : documentation
+
+  * : documentation
+
+2011-10-21  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix ImageTexture USE bug
+
+2011-10-21  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix in height calc
+
+2011-10-20  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : elevation grid
+
+  * : elevation grid
+
+2011-10-20  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add getShaderInfoLog() for shader debugging
+
+2011-10-20  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : DoublyLinkedList and optimize Ear Clipping Triangulation
+
+2011-10-19  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - allow Flash crossDomain access
+
+  * : - add Flash multi prim-type support
+
+2011-10-18  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - re-add activeDownloads
+
+  * : - fix skyColor/zFar bug
+
+2011-10-16  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add caps - make ImageLoadManager global - some fixes
+
+2011-10-15  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : test
+
+  * : Fixed Git URL in docs
+
+2011-10-15  annakasia79 <katarzyna.wilkosinska@igd.freunhofer.de>
+
+  * : test
+
+2011-10-14  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : more debug
+
+  * : some debug output for the build
+
+2011-10-14  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : Mit falschen Pfaden konnte das nicht gehen -- naechstens bitte erst mal
+  testen vorm Kaputtmachen\!
+
+  * : bunch of fixes
+
+2011-10-13  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Triangulation of concave polygons (single index)
+
+2011-10-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - fix ImageGeometry multi-PrimType bug
+
+2011-10-13  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : Triangulation of concave polygon
+
+2011-10-13  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : there was already a "var i" in the scope above - Part II
+
+2011-10-13  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : there was already a "var i" in the scope above
+
+2011-10-12  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : register transform event on transform nodes, related to issue #32
+
+2011-10-11  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : terrain check
+
+2011-10-11  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add ImageGeometry multi-PrimType support
+
+2011-10-10  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add struct Material for ComposedShader
+
+2011-10-10  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanups
+
+2011-10-09  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : some game mode bricolages, no terrain following yet
+
+2011-10-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fix
+
+2011-10-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added mode to disable blending
+
+2011-10-05  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : IndexedFaceSet fieldChange
+
+2011-10-05  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : hope to fix make on linux
+
+2011-10-05  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : indexedFaceSet fieldChange
+
+2011-10-05  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : don't know how to make make :)
+
+  * : typo
+
+  * : tab instead of spaces
+
+  * : add missing path
+
+2011-10-02  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : fixed broken sky colors
+
+2011-09-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - add viewMatrix for ComposedShader
+
+2011-09-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added field update stuff, removed second texCoord3d def
+
+2011-09-30  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - increase maximum image downloads to 32 - set ImageGeometry texture
+  priority higher
+
+  * : - small ImageLoadManager fix
+
+2011-09-29  Katarzyna Wilkosinska <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : fieldChange and subdivision for Cylinder
+
+  * : fieldChange and subdivision for Cone
+
+  * : fieldChange and subdivision for Torus
+
+  * : bug fix needFullReInit
+
+  * : fieldChange function for Plane and Sphere
+
+2011-09-29  Timm Drevensek <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : typo
+
+2011-09-28  timmjd <Timm.Drevensek@igd.fraunhofer.de>
+
+  * : missed
+
+  * : * new version of googles closure compiler * cleanup of packer python
+  script * some cleanups in code to get closure compiler work again
+
+  * : should allow the usage of GeoCoordinate inside IndexedLineSet
+
+2011-09-28  Yvonne <yvonne.jung@igd.fraunhofer.de>
+
+  * : added missing check in gfx
+
+2011-09-27  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Refactored the <param> element behavior to be more consistent. Parameters
+  are now initialized onload and passed the the X3DDocument.
+
+  * : Naive hack to build: x3dom.js x3dom.min.js x3dom-core.js
+  x3dom-core.min.js
+
+  * : Removing some old stuff from entry point
+
+  * : Added support for setting components in <param> element; Prepared Main.js
+  to use DOM to parse param elements instead of using a Node which is
+  initialized too late for pre-init settings.
+
 2011-09-26  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Removed an instance of Array.forEach in X3DDocument.js (performance)
+
+  * : Regenerated ChangeLog
 
   * : Added what could be componetized to satisfy p.c.
 
