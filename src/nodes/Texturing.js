@@ -226,6 +226,7 @@ x3dom.registerNodeType(
                             if (url) {
                                 that._vf.url.push(url);
                                 x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+								x3dom.ImageLoadManager.push( that );
 
                                 if (childDomNode.localName === "video") {
                                     that._needPerFrameUpdate = true;
