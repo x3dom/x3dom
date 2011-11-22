@@ -205,10 +205,12 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
 
             this.addField_SFBool(ctx, 'hideChildren', true);
+			this.addField_SFInt32(ctx, 'priority', 10);
 
             this._video = null;
             this._intervalID = 0;
             this._canvas = null;
+			this._image = new Image();
         },
         {
             nodeChanged: function()
@@ -226,6 +228,7 @@ x3dom.registerNodeType(
                             if (url) {
                                 that._vf.url.push(url);
                                 x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
+								x3dom.ImageLoadManager.push( that );
 
                                 if (childDomNode.localName === "video") {
                                     that._needPerFrameUpdate = true;
