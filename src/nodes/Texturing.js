@@ -205,12 +205,10 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Texture.superClass.call(this, ctx);
 
             this.addField_SFBool(ctx, 'hideChildren', true);
-			this.addField_SFInt32(ctx, 'priority', 10);
 
             this._video = null;
             this._intervalID = 0;
             this._canvas = null;
-			this._image = new Image();
         },
         {
             nodeChanged: function()
