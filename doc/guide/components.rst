@@ -117,6 +117,7 @@ To follow this chapter you need at least basic understanding of the following co
   * the Javascript object model
   * XML and HTML5
 
+
 Object system
 ~~~~~~~~~~~~~
 
@@ -131,6 +132,8 @@ This registers a node within the X3DOM system and provides a hook to the impleme
     defineClass(superclassObj, constructorObj, implementationObj);
 
 This function is roughly equivalent to creating a class definition in a language with an traditional class based object system.
+
+*Note:* The ``defineClass`` function resides in the global Javascript namespace whereas the ``registerNodeType`` function is nested within the ``x3dom`` namespace. This is intentionally so and not a typo.
 
 
 Hello World
