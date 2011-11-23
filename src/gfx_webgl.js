@@ -1626,6 +1626,7 @@ x3dom.gfx_webgl = (function () {
                     that._nameSpace.doc.downloadCount += 1;					
 
                     var load = function()
+					//image.onload = function()
                     {    
 						x3dom.ImageLoadManager.activeDownloads--;
 						

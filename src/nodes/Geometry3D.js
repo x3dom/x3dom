@@ -1336,8 +1336,27 @@ x3dom.registerNodeType(
     "ImageGeometry",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        function (ctx) {
+        function (ctx) {	
             x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
+			
+			var coordPrio = -5;
+			var normalPrio = -4;
+			
+			for (var i=0; i<ctx.xmlNode.childNodes.length; i++) {
+				if ('imagetexture' == ctx.xmlNode.childNodes[i].localName) {
+					if ('coord' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
+						ctx.xmlNode.childNodes[i].setAttribute('priority', coordPrio);
+						coordPrio += 10;
+					} else if ('normal' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
+						ctx.xmlNode.childNodes[i].setAttribute('priority', normalPrio);
+						normalPrio += 10;
+					} else if ('texCoord' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
+						ctx.xmlNode.childNodes[i].setAttribute('priority', '-3');
+					} else if ('color' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
+						ctx.xmlNode.childNodes[i].setAttribute('priority', '-2');
+					}
+				}
+			}
 			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
@@ -1351,6 +1370,8 @@ x3dom.registerNodeType(
 			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
+
+			
 			
 			this._mesh._numColComponents = this._vf.numColorComponents;
 			
@@ -1391,25 +1412,7 @@ x3dom.registerNodeType(
 		},
 		{
 			nodeChanged: function()
-            {
-				if(this._cf.index.node) {
-					x3dom.ImageLoadManager.push( this._cf.index.node, 0);
-				}
-				if(this._cf.coord.nodes) {
-					for(var i=0; i<this._cf.coord.nodes.length; i++)
-						x3dom.ImageLoadManager.push( this._cf.coord.nodes[i], 0);
-				}
-				if(this._cf.normal.nodes) {
-					for(var i=0; i<this._cf.normal.nodes.length; i++)
-						x3dom.ImageLoadManager.push( this._cf.normal.nodes[i], 1);
-				}
-				if(this._cf.texCoord.node) {
-					x3dom.ImageLoadManager.push( this._cf.texCoord.node, 2);
-				}
-				if(this._cf.color.node) {
-					x3dom.ImageLoadManager.push( this._cf.color.node, 4);
-				}
-			
+            {		
 				Array.forEach(this._parentNodes, function (node) {
                     node._dirty.positions = true;
 					node._dirty.normals = true;
