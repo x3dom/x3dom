@@ -46,16 +46,80 @@
 </head>
        
 <body>
- <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' width='400px' height='400px'>
+ <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' width='600px' height='600px'>
       <Scene DEF='scene'>
-        <Viewpoint position='0 0.658 0.143' zNear='0.002'/>
+        <Viewpoint position='0 0.658 0.143' />
+        <!--Viewpoint position='0 0.658 0.143' zNear='0.002'/-->
         <Transform DEF='silence'>
           <Shape>
             <Appearance DEF='AOPT_Appearance_166931592'>
-              <Material DEF='HautGesicht_0' diffuseColor='0 0 0' shininess='0'/>
+              <Material DEF='HautGesicht_0' diffuseColor='0 1 0' shininess='0'/>
               <ImageTexture url='"media/img/face.jpg"'/>
             </Appearance>
-            <IndexedFaceSet DEF='silence_0Geo' 
+             <!--Appearance id='test'>
+                <Material diffuseColor=".7 .7 .7" specularColor=".5 .5 .5" />
+                
+                <ImageTexture url='"media/img/face.jpg"'/>
+               
+               
+                <ComposedShader DEF='ComposedShader'>
+                  <field name='tex' type='SFInt32' value='0'/>
+                  
+                  
+                  <ShaderPart type='VERTEX'>
+                  <![CDATA[
+                        attribute vec3 position;
+                        attribute vec3 normal;
+                        attribute vec2 texcoord;
+                        uniform mat4 modelViewMatrix; 
+                        uniform mat4 modelViewMatrixInverse;                     
+                        uniform mat4 modelViewProjectionMatrix;
+                        varying vec3 fragNormal;
+                        varying vec3 fragEyeVector;
+                       // varying vec2 fragTexCoord;
+                       
+                        
+                        void main()
+                        {
+                            vec4 eye = vec4(modelViewMatrixInverse * vec4(0.,0.,0.,1.));
+                            fragEyeVector = position - eye.xyz;
+                            
+                            fragNormal = normal;
+                         
+                            
+                            //fragTexCoord = vec2(texcoord.x, 1.0 - texcoord.y);
+                            gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                        }
+                  ]]>
+                  </ShaderPart>
+                  <ShaderPart type='FRAGMENT'>
+                  <![CDATA[
+                        #ifdef GL_ES
+                          precision highp float;
+                        #endif
+                        
+                        uniform sampler2D tex;
+                        varying vec3 fragNormal;
+                        varying vec3 fragEyeVector;
+                        //varying vec2 fragTexCoord;
+                    
+                        
+                        void main()
+                        {
+                            vec3 eye = normalize(fragEyeVector);
+                            
+                            vec3 normal = 0.5 * normalize(fragNormal) + vec3(0.5);
+                          
+                            //vec4 texCol = texture2D(tex, fragTexCoord);
+                           
+                           
+                            gl_FragColor = vec4(normal,1.0);
+                        }
+                  ]]>
+                  </ShaderPart>
+                </ComposedShader>
+            </Appearance-->
+            <IndexedFaceSet DEF='silence_0Geo'
             
             
             

@@ -14,10 +14,12 @@ x3dom.DoublyLinkedList = function() {
 	this.first = null;
 	this.last = null;
 };
-x3dom.DoublyLinkedList.ListNode = function(point, point_index, multi_index_data) {
+x3dom.DoublyLinkedList.ListNode = function(point, point_index, normals, colors, texCoords) {
 	this.point = point;
 	this.point_index = point_index;
-	this.multi_index_data = multi_index_data;
+	this.normals = normals;
+	this.colors = colors;
+	this.texCoords = texCoords;
 	this.next = null;
 	this.prev = null;
 };
