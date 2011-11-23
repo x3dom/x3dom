@@ -258,7 +258,7 @@ window.requestAnimFrame = (function() {
            };
 })();
 
-function identifyPointDirection(linklist) {
+function reversePointDirection(linklist) {
 	
 		var l, k;
 		var count = 0;
@@ -287,9 +287,10 @@ function identifyPointDirection(linklist) {
 		}	
 		
 		if (count < 0) {
-			x3dom.debug.logInfo('ja');
 			linklist.invert();
+			return true;
 		}	
+		return false;
 }
 
 function getIndexes(linklist) {
@@ -322,12 +323,13 @@ function getIndexes(linklist) {
 }
 
 function getMultiIndexes(linklist) {
-	
-	var multi_index_data = new Object();
-	multi_index_data.indices = [];
-	multi_index_data.normals = [];
-	multi_index_data.colors = [];
-	multi_index_data.texCoords = [];
+
+	var data = new Object();
+	data.indices = [];
+	data.point = [];
+	data.normals = [];
+	data.colors = [];
+	data.texCoords = [];
 	var node = linklist.first.next;
 	var next = null;
 	var count = 0;
@@ -342,36 +344,48 @@ function getMultiIndexes(linklist) {
 		}
 		
 		if(isEar) {
-			if(isKonvex(node.prev.point, node.point, node.next.point)) {
-				multi_index_data.indices.push(node.prev.point_index, node.point_index, node.next.point_index);
-				if(node.multi_index_data.normals == false) {
-					multi_index_data.normals.push(false);
-				} else {
-					multi_index_data.normals.push(node.prev.multi_index_data.normals.x,
-												  node.prev.multi_index_data.normals.y,
-												  node.prev.multi_index_data.normals.z,
-												  node.multi_index_data.normals.x,
-												  node.multi_index_data.normals.y,
-												  node.multi_index_data.normals.z,
-												  node.next.multi_index_data.normals.x,
-												  node.next.multi_index_data.normals.y,
-												  node.next.multi_index_data.normals.z);
+			if(isKonvex(node.prev.point, node.point, node.next.point)) {				
+				data.indices.push(node.prev.point_index, node.point_index, node.next.point_index);
+				data.point.push(node.prev.point.x,
+								node.prev.point.y,
+								node.prev.point.z,
+								node.point.x,
+								node.point.y,
+								node.point.z,
+								node.next.point.x,
+								node.next.point.y,
+								node.next.point.z);
+				if(node.normals) {					
+					data.normals.push(node.prev.normals.x,
+									  node.prev.normals.y,
+									  node.prev.normals.z,
+									  node.normals.x,
+									  node.normals.y,
+									  node.normals.z,
+									  node.next.normals.x,
+									  node.next.normals.y,
+									  node.next.normals.z);
+				
 				}
-				/*multi_index_data.colors.push(node.prev.multi_index_data.colors.r,
-											 node.prev.multi_index_data.colors.g,
-											 node.prev.multi_index_data.colors.b,
-											 node.multi_index_data.colors.r,
-											 node.multi_index_data.colors.g,
-											 node.multi_index_data.colors.b,
-											 node.next.multi_index_data.colors.r,
-											 node.next.multi_index_data.colors.g,
-											 node.next.multi_index_data.colors.b);*/
-				multi_index_data.texCoords.push(node.prev.multi_index_data.texCoords.x,
-												node.prev.multi_index_data.texCoords.y,
-												node.multi_index_data.texCoords.x,
-												node.multi_index_data.texCoords.y,
-												node.next.multi_index_data.texCoords.x,
-												node.next.multi_index_data.texCoords.y);
+				if(node.colors){
+					data.colors.push(node.prev.colors.r,
+								 	node.prev.colors.g,
+						  			node.prev.colors.b,
+							     	node.colors.r,
+								 	node.colors.g,
+								 	node.colors.b,
+								 	node.next.colors.r,
+								 	node.next.colors.g,
+								 	node.next.colors.b);//rgba beachten
+				}
+				if(node.texCoords){
+					data.texCoords.push(node.prev.texCoords.x,
+										node.prev.texCoords.y,
+										node.texCoords.x,
+										node.texCoords.y,
+										node.next.texCoords.x,
+										node.next.texCoords.y); //xyz texturen beachten
+				}
 				linklist.deleteNode(node);
 			}  else {
 				count++;
@@ -380,7 +394,7 @@ function getMultiIndexes(linklist) {
 		node = next;
 		isEar = true;
 	}
-	return multi_index_data;
+	return data;
 }
 function isNotEar(ap1, tp1, tp2, tp3) {
 	var b0, b1, b2, b3;
