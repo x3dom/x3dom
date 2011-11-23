@@ -1561,7 +1561,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 // // FIXME: Workaround
-                this._vf.convex = true;
+               // this._vf.convex = true;
                 // // FIXME
                 
                 var time0 = new Date().getTime();
@@ -1908,8 +1908,7 @@ x3dom.registerNodeType(
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = new Object();
 						cnt = 0;
-						//this._mesh._multiIndIndices = [];
-						
+												
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
@@ -1921,22 +1920,31 @@ x3dom.registerNodeType(
 										this._mesh._indices[0].push(cnt);
 										cnt++;
 									}
-									
-									this._mesh._positions[0]= this._mesh._positions[0].concat(multi_index_data.point);
+									multi_index_data.point = multi_index_data.point.reverse();
+									for(var k = 0; k < multi_index_data.point.length; k++){
+										this._mesh._positions[0]= this._mesh._positions[0].concat(multi_index_data.point[k].toGL());
+									}
 									
 									if (hasNormal) {
-										this._mesh._normals[0] = this._mesh._normals[0].concat(multi_index_data.normals);
-									} /*else {
-										this._mesh._multiIndIndices.push(multi_index_data.indices);
-									}*/
+										multi_index_data.normals = multi_index_data.normals.reverse();
+										for(var k = 0; k < multi_index_data.normals.length; k++){
+											this._mesh._normals[0]= this._mesh._normals[0].concat(multi_index_data.normals[k].toGL());
+										}
+									}
 									
 									if (hasColor) {
-										this._mesh._colors[0] = this._mesh._colors[0].concat(multi_index_data.colors);
+										multi_index_data.colors = multi_index_data.colors.reverse();
+										for(var k = 0; k < multi_index_data.colors.length; k++){
+											this._mesh._colors[0]= this._mesh._colors[0].concat(multi_index_data.colors[k].toGL());
+										}								
 									}
-									if (hasTexCoord) {							
-										this._mesh._texCoords[0] = this._mesh._texCoords[0].concat(multi_index_data.texCoords);
+									if (hasTexCoord) {	
+										multi_index_data.texCoords = multi_index_data.texCoords.reverse();
+										for(var k = 0; k < multi_index_data.texCoords.length; k++){
+											this._mesh._texCoords[0]= this._mesh._texCoords[0].concat(multi_index_data.texCoords[k].toGL());
+										}	
 									}
-								} /*else {
+								} else {
 									var multi_index_data = getMultiIndexes(linklist);
 									for (var j = 0; j < multi_index_data.indices.length; j++)
 									{	
@@ -1944,21 +1952,27 @@ x3dom.registerNodeType(
 										cnt++;
 									}
 									
-									this._mesh._positions[0]= this._mesh._positions[0].concat(multi_index_data.point);
+									for(var k = 0; k < multi_index_data.point.length; k++){
+										this._mesh._positions[0]= this._mesh._positions[0].concat(multi_index_data.point[k].toGL());
+									}
 									
 									if (hasNormal) {
-										this._mesh._normals[0] = this._mesh._normals[0].concat(multi_index_data.normals);
-									} /*else {
-										this._mesh._multiIndIndices.push(multi_index_data.indices);
+										for(var k = 0; k < multi_index_data.normals.length; k++){
+											this._mesh._normals[0]= this._mesh._normals[0].concat(multi_index_data.normals[k].toGL());
+										}
 									}
 									
 									if (hasColor) {
-										this._mesh._colors[0] = this._mesh._colors[0].concat(multi_index_data.colors);
+										for(var k = 0; k < multi_index_data.colors.length; k++){
+											this._mesh._colors[0]= this._mesh._colors[0].concat(multi_index_data.colors[k].toGL());
+										}								
 									}
-									if (hasTexCoord) {							
-										this._mesh._texCoords[0] = this._mesh._texCoords[0].concat(multi_index_data.texCoords);
+									if (hasTexCoord) {	
+										for(var k = 0; k < multi_index_data.texCoords.length; k++){
+											this._mesh._texCoords[0]= this._mesh._texCoords[0].concat(multi_index_data.texCoords[k].toGL());
+										}	
 									}
-								}*/
+								}
 								
 								
 								
@@ -1989,7 +2003,6 @@ x3dom.registerNodeType(
 							if (hasTexCoord) {
 								if (hasTexCoordInd) {
 									data.texCoords =  texCoords[texCoordInd[i]];
-									//alert(texCoords[texCoordInd[i]].toGL());
 								} else {
 									data.texCoords =  texCoords[indexes[i]];
 								}			
@@ -2007,7 +2020,6 @@ x3dom.registerNodeType(
 					}
 	
 					this._mesh.splitMesh();
-                    //x3dom.debug.logInfo(this._mesh._indices.length);
                 } // if isMulti
                 else
                 {
@@ -2034,10 +2046,15 @@ x3dom.registerNodeType(
 						//  Convert non-triangular convex polygons to a triangle fan					
 						var linklist = new x3dom.DoublyLinkedList();					
 						for (var i = 0; i < indexes.length; ++i)
-						{	
+						{
 							if (indexes[i] == -1) {
-								identifyPointDirection(linklist);
-								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
+								if(reversePointDirection(linklist))
+								{
+									var index = getIndexes(linklist);
+									this._mesh._indices[0] = this._mesh._indices[0].concat(index.reverse());
+								} else {
+									this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
+								}
 								linklist = new x3dom.DoublyLinkedList();
 								continue;
 							}

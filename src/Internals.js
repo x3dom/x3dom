@@ -266,7 +266,7 @@ function reversePointDirection(linklist) {
 		var nodei, nodel, nodek;
 		
 		if (linklist.length < 3) {
-			return true;
+			return false;
 		}
 		
 		for (var i = 0; i < linklist.length; i++) {
@@ -336,6 +336,12 @@ function getMultiIndexes(linklist) {
 		
 	var isEar = true;
 	while(linklist.length >= 3  && count < 10) {
+		if(count == 9) {
+			
+			for(var i = 0; i < linklist.length; i++) {
+				x3dom.debug.logInfo(linklist.getNode(i).point);
+			}
+		}
 		next = node.next;
 		for(var i = 0; i < linklist.length; i++) {
 			if(isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point)) {
@@ -346,45 +352,24 @@ function getMultiIndexes(linklist) {
 		if(isEar) {
 			if(isKonvex(node.prev.point, node.point, node.next.point)) {				
 				data.indices.push(node.prev.point_index, node.point_index, node.next.point_index);
-				data.point.push(node.prev.point.x,
-								node.prev.point.y,
-								node.prev.point.z,
-								node.point.x,
-								node.point.y,
-								node.point.z,
-								node.next.point.x,
-								node.next.point.y,
-								node.next.point.z);
+				data.point.push(node.prev.point,
+								node.point,
+								node.next.point);
 				if(node.normals) {					
-					data.normals.push(node.prev.normals.x,
-									  node.prev.normals.y,
-									  node.prev.normals.z,
-									  node.normals.x,
-									  node.normals.y,
-									  node.normals.z,
-									  node.next.normals.x,
-									  node.next.normals.y,
-									  node.next.normals.z);
+					data.normals.push(node.prev.normals,
+									  node.normals,
+									  node.next.normals);
 				
 				}
 				if(node.colors){
-					data.colors.push(node.prev.colors.r,
-								 	node.prev.colors.g,
-						  			node.prev.colors.b,
-							     	node.colors.r,
-								 	node.colors.g,
-								 	node.colors.b,
-								 	node.next.colors.r,
-								 	node.next.colors.g,
-								 	node.next.colors.b);//rgba beachten
+					data.colors.push(node.prev.colors,
+							     	node.colors,
+								 	node.next.colors);
 				}
 				if(node.texCoords){
-					data.texCoords.push(node.prev.texCoords.x,
-										node.prev.texCoords.y,
-										node.texCoords.x,
-										node.texCoords.y,
-										node.next.texCoords.x,
-										node.next.texCoords.y); //xyz texturen beachten
+					data.texCoords.push(node.prev.texCoords,
+										node.texCoords,
+										node.next.texCoords); 
 				}
 				linklist.deleteNode(node);
 			}  else {
