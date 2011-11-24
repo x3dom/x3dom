@@ -316,6 +316,15 @@ function getIndexes(linklist) {
 				count++;
 			}
 		}
+		
+		if(count == 9) {
+			if(reversePointDirection(linklist))
+			{
+				x3dom.debug.logInfo('vor ' + indexes);
+				indexes = indexes.concat(getIndexes(linklist).reverse());
+				x3dom.debug.logInfo('nach ' + indexes);
+			}
+		}
 		node = next;
 		isEar = true;
 	}
@@ -336,12 +345,6 @@ function getMultiIndexes(linklist) {
 		
 	var isEar = true;
 	while(linklist.length >= 3  && count < 10) {
-		if(count == 9) {
-			
-			for(var i = 0; i < linklist.length; i++) {
-				x3dom.debug.logInfo(linklist.getNode(i).point);
-			}
-		}
 		next = node.next;
 		for(var i = 0; i < linklist.length; i++) {
 			if(isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point)) {
@@ -374,6 +377,17 @@ function getMultiIndexes(linklist) {
 				linklist.deleteNode(node);
 			}  else {
 				count++;
+			}
+		}
+		if(count == 9) {
+			if(reversePointDirection(linklist))
+			{
+				var tmp = getMultiIndexes(linklist);
+				data.indices = data.indices.concat(tmp.indices.reverse());
+				data.point = data.point.concat(tmp.point.reverse());
+				data.normals = data.normals.concat(tmp.normals.reverse());
+				data.colors = data.indices.concat(tmp.colors.reverse());
+				data.texCoords = data.texCoords.concat(tmp.texCoords.reverse());			
 			}
 		}
 		node = next;
