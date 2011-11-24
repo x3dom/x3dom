@@ -298,6 +298,8 @@ function getIndexes(linklist) {
 	var node = linklist.first.next;
 	var next = null;
 	var count = 0;
+	
+	var invers = reversePointDirection(linklist);
 		
 	var isEar = true;
 	while(linklist.length >= 3 && count < 10) {
@@ -317,18 +319,20 @@ function getIndexes(linklist) {
 			}
 		}
 		
-		if(count == 9) {
+		if(count == 3) {
 			if(reversePointDirection(linklist))
-			{
-				x3dom.debug.logInfo('vor ' + indexes);
+			{			
 				indexes = indexes.concat(getIndexes(linklist).reverse());
-				x3dom.debug.logInfo('nach ' + indexes);
 			}
 		}
 		node = next;
 		isEar = true;
 	}
-	return indexes;
+	if(invers){
+		return indexes.reverse();
+	} else {
+		return indexes;
+	}
 }
 
 function getMultiIndexes(linklist) {
@@ -342,6 +346,8 @@ function getMultiIndexes(linklist) {
 	var node = linklist.first.next;
 	var next = null;
 	var count = 0;
+	
+	var invers = reversePointDirection(linklist);
 		
 	var isEar = true;
 	while(linklist.length >= 3  && count < 10) {
@@ -379,21 +385,31 @@ function getMultiIndexes(linklist) {
 				count++;
 			}
 		}
-		if(count == 9) {
+		if(count == 3) {
 			if(reversePointDirection(linklist))
 			{
 				var tmp = getMultiIndexes(linklist);
 				data.indices = data.indices.concat(tmp.indices.reverse());
 				data.point = data.point.concat(tmp.point.reverse());
 				data.normals = data.normals.concat(tmp.normals.reverse());
-				data.colors = data.indices.concat(tmp.colors.reverse());
+				data.colors = data.colors.concat(tmp.colors.reverse());
 				data.texCoords = data.texCoords.concat(tmp.texCoords.reverse());			
 			}
 		}
 		node = next;
 		isEar = true;
 	}
-	return data;
+	if(invers){	
+		data.indices = data.indices.reverse();
+		data.point = data.point.reverse();
+		data.normals = data.normals.reverse();
+		data.colors = data.colors.reverse();
+		data.texCoords = data.texCoords.reverse();
+		
+		return data;
+	} else {
+		return data;
+	}
 }
 function isNotEar(ap1, tp1, tp2, tp3) {
 	var b0, b1, b2, b3;

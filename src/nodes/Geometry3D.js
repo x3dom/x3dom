@@ -1561,7 +1561,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 // // FIXME: Workaround
-               // this._vf.convex = true;
+                this._vf.convex = true;
                 // // FIXME
                 
                 var time0 = new Date().getTime();
@@ -1912,70 +1912,32 @@ x3dom.registerNodeType(
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
-								if(reversePointDirection(linklist))
-								{
-									var multi_index_data = getMultiIndexes(linklist);
-									for (var j = 0; j < multi_index_data.indices.length; j++)
-									{	
-										this._mesh._indices[0].push(cnt);
-										cnt++;
-									}
-									multi_index_data.point = multi_index_data.point.reverse();
-									for(var k = 0; k < multi_index_data.point.length; k++){
-										this._mesh._positions[0]= this._mesh._positions[0].concat(multi_index_data.point[k].toGL());
-									}
+								
+								var multi_index_data = getMultiIndexes(linklist);
+																
+								for (var j = 0; j < multi_index_data.indices.length; j++)
+								{	
+									this._mesh._indices[0].push(cnt);
+									cnt++;
 									
-									if (hasNormal) {
-										multi_index_data.normals = multi_index_data.normals.reverse();
-										for(var k = 0; k < multi_index_data.normals.length; k++){
-											this._mesh._normals[0]= this._mesh._normals[0].concat(multi_index_data.normals[k].toGL());
-										}
+									this._mesh._positions[0].push(multi_index_data.point[j].x, multi_index_data.point[j].y, multi_index_data.point[j].z);
+									this._mesh._normals[0].push(multi_index_data.normals[j].x, multi_index_data.normals[j].y, multi_index_data.normals[j].z);
+									//this._mesh._colors[0].push(multi_index_data.colors[j].r, multi_index_data.colors[j].g, multi_index_data.colors[j].b);
+									this._mesh._texCoords[0].push(multi_index_data.texCoords[j].x, multi_index_data.texCoords[j].y);
+									//performance problemm
+									//this._mesh._positions[0] = this._mesh._positions[0].concat(multi_index_data.point[j].toGL());
+									/*if (hasNormal) {
+										this._mesh._normals[0]= this._mesh._normals[0].concat(multi_index_data.normals[j].toGL());
 									}
 									
 									if (hasColor) {
-										multi_index_data.colors = multi_index_data.colors.reverse();
-										for(var k = 0; k < multi_index_data.colors.length; k++){
-											this._mesh._colors[0]= this._mesh._colors[0].concat(multi_index_data.colors[k].toGL());
-										}								
+										this._mesh._colors[0]= this._mesh._colors[0].concat(multi_index_data.colors[j].toGL());
 									}
 									if (hasTexCoord) {	
-										multi_index_data.texCoords = multi_index_data.texCoords.reverse();
-										for(var k = 0; k < multi_index_data.texCoords.length; k++){
-											this._mesh._texCoords[0]= this._mesh._texCoords[0].concat(multi_index_data.texCoords[k].toGL());
-										}	
-									}
-								} else {
-									var multi_index_data = getMultiIndexes(linklist);
-									for (var j = 0; j < multi_index_data.indices.length; j++)
-									{	
-										this._mesh._indices[0].push(cnt);
-										cnt++;
-									}
-									
-									for(var k = 0; k < multi_index_data.point.length; k++){
-										this._mesh._positions[0]= this._mesh._positions[0].concat(multi_index_data.point[k].toGL());
-									}
-									
-									if (hasNormal) {
-										for(var k = 0; k < multi_index_data.normals.length; k++){
-											this._mesh._normals[0]= this._mesh._normals[0].concat(multi_index_data.normals[k].toGL());
-										}
-									}
-									
-									if (hasColor) {
-										for(var k = 0; k < multi_index_data.colors.length; k++){
-											this._mesh._colors[0]= this._mesh._colors[0].concat(multi_index_data.colors[k].toGL());
-										}								
-									}
-									if (hasTexCoord) {	
-										for(var k = 0; k < multi_index_data.texCoords.length; k++){
-											this._mesh._texCoords[0]= this._mesh._texCoords[0].concat(multi_index_data.texCoords[k].toGL());
-										}	
-									}
+										this._mesh._texCoords[0]= this._mesh._texCoords[0].concat(multi_index_data.texCoords[j].toGL());
+									}*/
 								}
-								
-								
-								
+									
 								linklist = new x3dom.DoublyLinkedList();
 								faceCnt++;
 								continue;
@@ -2048,13 +2010,7 @@ x3dom.registerNodeType(
 						for (var i = 0; i < indexes.length; ++i)
 						{
 							if (indexes[i] == -1) {
-								if(reversePointDirection(linklist))
-								{
-									var index = getIndexes(linklist);
-									this._mesh._indices[0] = this._mesh._indices[0].concat(index.reverse());
-								} else {
-									this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
-								}
+								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
 								linklist = new x3dom.DoublyLinkedList();
 								continue;
 							}
