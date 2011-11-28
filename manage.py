@@ -119,11 +119,24 @@ def build(mode='production'):
         except:
             print "  Error copying file %s" % src
     # done with components
+    
+    # ~~ copy other files ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    print("\nCopying additional files")
+    shutil.copy('README.md', DIST_ROOT)
+    shutil.copy('LICENSE', DIST_ROOT)
+    shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
+    shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
+    # end other files
 
+def _build_examples():
+    ## copy the exmaples to the distribution as well
+    # as x3dom.css, js, etc.
+    pass
 
 def release(version):
     # does everything necessary to bundle a major release
     # like git tagging, bundling tar/gz, deploying, etc.
+    # adding version numbers to files, etc.
     pass
 
 
