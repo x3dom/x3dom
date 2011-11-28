@@ -1,3 +1,33 @@
+2011-11-24  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : triangulation concave polygons performance optimization
+
+  * : triangulation concave polygons
+
+2011-11-23  annakasia79 <katarzyna.wilkosinska@igd.fraunhofer.de>
+
+  * : triangulation concave polygons new indexes
+
+  * : triangulation concave polygons
+
+2011-11-22  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Added a lot of documentation to teh build.py file. Not what what it does,
+  but what it actually should be doing. Use this a guide whenever messing with
+  the Build system.
+
+2011-11-22  Timo Sturm <timo.sturm@igd.fraunhofer.de>
+
+  * : - little fix
+
+  * : - fix Texture <img> loading
+
+  * : - fix ImageTexture USE bug again
+
+2011-11-22  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Regenerated CHANGELOG; Fixes to the components doc
+
 2011-11-21  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
 
   * : Added more info to component docs

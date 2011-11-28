@@ -1,3 +1,10 @@
+#
+# THIS MAKEFILE IS OLD AND WILL BE REPLACED
+# BY the manage.py file.
+#
+# For the moment leave it there untill the switch
+# is completed.
+
 V ?= 0
 
 SRC_DIR = src

@@ -26,7 +26,7 @@ version_string = "/** X3DOM Runtime, http://www.x3dom.org */"
 
 tools_path = os.path.abspath(__file__)
 tools_path = os.path.dirname(tools_path)
-os.chdir(os.path.abspath(tools_path + "/../src"))
+#os.chdir(os.path.abspath(tools_path + "/../src"))
 
 class packer():
 
@@ -80,7 +80,9 @@ class packer():
 
     # find the VERSION file
     if os.path.isfile("VERSION"):
-      version_file_name = "VERSION"
+        version_file_name = "VERSION"
+    elif os.path.isfile("src/VERSION"):
+        version_file_name = "src/VERSION"
     else:
       print "FATAL: Cannot find any VERSION file"
       sys.exit(0)

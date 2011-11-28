@@ -1,5 +1,10 @@
-basics = [
+
+def prefix_path(lst, path):
+    return [path + '/' + entry for entry in lst]
+
+BASICS = [
   'lang/Array.js',
+  'lang/DoublyLinkedList.js',
   'Internals.js',
   'debug.js',
   'ImageLoadManager.js',
@@ -9,12 +14,12 @@ basics = [
   'Main.js'
 ]
 
-gfx = [
+GFX = [
   'gfx_webgl.js',
   'gfx_flash.js'
 ]
 
-nodes = [
+NODES = [
   'Mesh.js',
   'X3DDocument.js',
   'MatrixMixer.js',
@@ -40,16 +45,16 @@ nodes = [
   'nodes/Geospatial.js'
 ]
 
-fields = [
+FIELDS = [
   'fields.js'
 ]
 
-components = [
+COMPONENTS = [
   'nodes/Geometry2D.js',
   'nodes/VolumeRendering.js'
 ]
 
-html_profile = basics + gfx + nodes + fields
-ext_profile = components
+CORE_PROFILE = BASICS + GFX + NODES + FIELDS
+MORE_PROFILE = COMPONENTS
 
-full_profile = html_profile + ext_profile
+FULL_PROFILE = CORE_PROFILE + MORE_PROFILE
