@@ -3,48 +3,16 @@
 
 import os, sys,shutil,re
 
+from packages import FULL_PROFILE, prefix_path
+
+FULL_PROFILE = prefix_path(FULL_PROFILE, '../../src')
+
 mydir = sys.argv[1]
 
-# DRY: build this from ../build.py:files
-x3dom_includes = '''
-<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
-<script type="text/javascript" src="../../src/lang/Array.js"></script>
-<script type="text/javascript" src="../../src/Internals.js"></script>
-<script type="text/javascript" src="../../src/debug.js"></script>
-<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
-<script type="text/javascript" src="../../src/lang/Properties.js"></script>
-<script type="text/javascript" src="../../src/lang/DoublyLinkedList.js"></script>
-<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
-<script type="text/javascript" src="../../src/Runtime.js"></script>
-<script type="text/javascript" src="../../src/Main.js"></script>
-<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
-<script type="text/javascript" src="../../src/gfx_flash.js"></script>
-<script type="text/javascript" src="../../src/X3DDocument.js"></script>
-<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
-<script type="text/javascript" src="../../src/Viewarea.js"></script>
-<script type="text/javascript" src="../../src/Mesh.js"></script>
-<script type="text/javascript" src="../../src/fields.js"></script>
-<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
-<script type="text/javascript" src="../../src/nodes/Core.js"></script>
-<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
-<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
-<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
-<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
-<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
-<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
-<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
-<script type="text/javascript" src="../../src/nodes/Time.js"></script>
-<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
-<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
-<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
-<script type="text/javascript" src="../../src/nodes/Text.js"></script>
-<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
-<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
-<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
-<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
-<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
-<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
-'''
+x3dom_includes = '<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />\n'
+
+for include in FULL_PROFILE:
+    x3dom_includes += '<script type="text/javascript" src="' + include + '"></script>\n'
 
 findreplace = [
 	(re.compile(
@@ -86,3 +54,45 @@ def myfun(dummy, curdir, filess):
          replaceStringInFile(curdir+'/'+child)
 
 os.path.walk(mydir, myfun, 3)
+
+
+
+# x3dom_includes = '''
+# <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+# <script type="text/javascript" src="../../src/lang/Array.js"></script>
+# <script type="text/javascript" src="../../src/Internals.js"></script>
+# <script type="text/javascript" src="../../src/debug.js"></script>
+# <script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+# <script type="text/javascript" src="../../src/lang/Properties.js"></script>
+# <script type="text/javascript" src="../../src/lang/DoublyLinkedList.js"></script>
+# <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+# <script type="text/javascript" src="../../src/Runtime.js"></script>
+# <script type="text/javascript" src="../../src/Main.js"></script>
+# <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+# <script type="text/javascript" src="../../src/gfx_flash.js"></script>
+# <script type="text/javascript" src="../../src/X3DDocument.js"></script>
+# <script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+# <script type="text/javascript" src="../../src/Viewarea.js"></script>
+# <script type="text/javascript" src="../../src/Mesh.js"></script>
+# <script type="text/javascript" src="../../src/fields.js"></script>
+# <script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Core.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Time.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+# <script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Text.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+# <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+# '''
