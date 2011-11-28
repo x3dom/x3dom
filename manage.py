@@ -98,6 +98,12 @@ def build():
     print("-- [ BUILD FINISHED ] -------------------------------------")
 
 
+def release(version):
+    # does everything necessary to bundle a major release
+    # like git tagging, bundling tar/gz, deploying, etc.
+    pass
+
+
 def runserver():
     import SimpleHTTPServer
     import SocketServer
@@ -184,6 +190,8 @@ if __name__ == '__main__':
 
     parser.add_argument('--build', action='store_true', default=False,  help='build the X3DOM distributables')
 
+    parser.add_argument('--release', nargs=1, action='store', help='make a release, version number RELEASE in the format x.x.x (major.minor.tiny)')
+
     parser.add_argument('--runserver', action='store_true', default=False,  help='run the development server')
     parser.add_argument('--deploy', action='store_true', default=False,  help='deploy X3DOM to the webserver')
     
@@ -203,6 +211,8 @@ if __name__ == '__main__':
     # parameter names and then building  parser stuff dynamically as well
     if args.build:
         build()
+    if args.release:
+        release()
     if args.runserver:
         runserver()
     elif args.deploy:
