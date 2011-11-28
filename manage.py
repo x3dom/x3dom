@@ -89,13 +89,36 @@ DOC_ROOT = os.path.join(PROJECT_ROOT, 'doc', 'guide')
 os.chdir(PROJECT_ROOT)
 
 
-def build():
-    print("-- [ BUILD STARTED ] --------------------------------------")
+def build(mode='production'):
+    print("\n-- [ BUILD STARTED ] --------------------------------------")
+
     packer = x3dom_packer.packer()
+    
+    # building compressed files
     packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom.min.js", "jsmin")
     packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom-core.min.js", "jsmin")
     packer.build(prefix_path(COMPONENTS, SRC_ROOT), "dist/x3dom-components.min.js", "jsmin")
-    print("-- [ BUILD FINISHED ] -------------------------------------")
+    
+    if mode == 'debug':
+        # building plain files (debug)
+        packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom.debug.js", 'none')
+        packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom-core.debug.js", 'none')
+        packer.build(prefix_path(COMPONENTS, SRC_ROOT), "dist/x3dom-components.debug.js", 'none')
+
+    # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    print("\nBundling components...")
+    nodes_dest = os.path.join(DIST_ROOT, 'components')
+
+    if not os.path.exists(nodes_dest):
+        os.makedirs(nodes_dest)
+        
+    for src in prefix_path(COMPONENTS, SRC_ROOT):
+        try:
+            print "  Copying file %s to %s" % (src, SRC_ROOT)
+            shutil.copy(src, SRC_ROOT)
+        except:
+            print "  Error copying file %s" % src
+    # done with components
 
 
 def release(version):
@@ -188,11 +211,12 @@ def clean():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Management script for X3DOM. Building, running things, cleaning up, testing, and then some.')
 
-    parser.add_argument('--build', action='store_true', default=False,  help='build the X3DOM distributables')
-
-    parser.add_argument('--release', nargs=1, action='store', help='make a release, version number RELEASE in the format x.x.x (major.minor.tiny)')
+    parser.add_argument('--build',  nargs='?', action='store', default=False, const='production', required=False,  choices= ['production', 'debug'],help='build the X3DOM distributables. The default is to build production libraries (minified). If you use the debug switch, you can produce plain versions')
+    
+    parser.add_argument('--release', action='store', help='make a release, version number RELEASE in the format x.x.x (major.minor.tiny)')
 
     parser.add_argument('--runserver', action='store_true', default=False,  help='run the development server')
+    
     parser.add_argument('--deploy', action='store_true', default=False,  help='deploy X3DOM to the webserver')
     
     parser.add_argument('--updatetests', action='store_true', default=False,  help='update the test files in test/ with new header information')
@@ -204,16 +228,21 @@ if __name__ == '__main__':
 
     parser.add_argument('--clean', action='store_true', default=False,  help='clean up build and remove all generated files')
 
+
+    
+
     args = parser.parse_args()
+    # print args
+    # exit()
     
     # this is better  be done the smart way with a simple tuple and dynamic
     # method calling. Or better yet a dict with help messages and 
     # parameter names and then building  parser stuff dynamically as well
     if args.build:
-        build()
-    if args.release:
+        build(mode=args.build)
+    elif args.release:
         release()
-    if args.runserver:
+    elif args.runserver:
         runserver()
     elif args.deploy:
         deploy()

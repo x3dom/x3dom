@@ -158,7 +158,7 @@ class packer():
       #Popen(["java", "-jar", "tools/compiler.jar", "--js_output_file=" + output_file] + files)
     
     # NONE
-    elif packaging_module == None:
+    elif packaging_module == 'none':
       outfile = open(output_file, 'w')
       outfile.write(version_string)
       outfile.write(concatenated_file)
@@ -173,7 +173,7 @@ class packer():
 if __name__ == '__main__':
     parser = OptionParser(usage)
     
-    parser.add_option("-a", "--algo",       type="string",  dest="algo",      help='The algorithm to use. [jsmin, jspacker, closure]',    default="jsmin")
+    parser.add_option("-a", "--algo",       type="string",  dest="algo",      help='The algorithm to use. [jsmin, jspacker, closure, none]',    default="jsmin")
     parser.add_option("-o", "--outfile",    type="string",  dest="outfile",   help='The name of the output file.')
     
     (options, input_files) = parser.parse_args()
