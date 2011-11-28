@@ -147,6 +147,26 @@ def docs():
 
     print("Done.")
 
+
+
+def _clone_or_pull():
+    # Gets Qunit
+    pass
+    # define clone_or_pull
+    # -@@if test ! -d $(strip ${1})/.git; then \
+    #       echo "Cloning $(strip ${1})..."; \
+    #       git clone $(strip ${verbose}) --depth=1 $(strip ${2}) $(strip ${1}); \
+    #   else \
+    #       echo "Pulling $(strip ${1})..."; \
+    #       git --git-dir=$(strip ${1})/.git pull $(strip ${verbose}) origin master; \
+    #   fi
+    # endef
+    # 
+    # 
+    # ${QUNIT_DIR}:
+    #   $(call clone_or_pull, ${QUNIT_DIR}, git://github.com/jquery/qunit.git)
+    
+
 def clean():
     # Make smarter (list of paths and files to remove, including
     # globbing patterns)
