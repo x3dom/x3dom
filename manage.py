@@ -239,10 +239,12 @@ if __name__ == '__main__':
 
     parser.add_argument('--docs', action='store_true', default=False,  help='build documentation')
 
-    parser.add_argument('--clean', action='store_true', default=False,  help='clean up build and remove all generated files')
+    parser.add_argument('--clean', action='store_true', default=False,  
+help='clean up build and remove all generated files')
+
+    parser.add_argument('--rebuild', action='store_true', default=False,  help='clean up and build everything again')
 
 
-    
 
     args = parser.parse_args()
     # print args
@@ -268,6 +270,10 @@ if __name__ == '__main__':
     elif args.changelog:
         changelog()
     elif args.docs:
+        docs()
+    elif args.rebuild:
+        clean()
+        build()
         docs()
     else:
         parser.print_help()

@@ -6,6 +6,7 @@ _site
 *.tmproj
 *.bak
 *.pyc
+version.js
 dist
 test/qunit
 tools/config/Data
