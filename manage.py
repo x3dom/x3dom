@@ -124,6 +124,8 @@ def build(mode='production'):
     print("\nCopying additional files")
     shutil.copy('README.md', DIST_ROOT)
     shutil.copy('LICENSE', DIST_ROOT)
+    shutil.copy('CHANGELOG', DIST_ROOT)
+    shutil.copy('AUTHORS', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
     # end other files
