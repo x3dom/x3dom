@@ -1,4 +1,16 @@
-default: bundle
+default: newstyle
+
+newstyle:
+	cp ../dist/x3dom.js x3dom.bak
+	cd ..; python manage.py --build; cd -
+	ln -s ../dist/x3dom.js x3dom.js
+
+
+
+
+
+################ OLD ###############
+#default: bundle
 
 #--- FILES ----
 BUNDLE := x3dom.js
@@ -57,3 +69,5 @@ $(BUNDLE): $(SRC)
 	python ../tools/x3dom_packer.py $(SRC) -o $(BUNDLE) 
 	cp x3dom.js x3dom.bak
 	#cp x3dom.* ../example
+
+.PHONY: newstyle

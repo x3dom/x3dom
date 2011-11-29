@@ -1,10 +1,5 @@
 .. _components:
 
-.. warning::
-
-    THIS SECTION IS WORK IN PROGRESS. THE BUILD SYSTEM DOES NOT YET
-    BUILD THE CORE VERSION OF X3DOM.
-
 
 Components
 ==========
