@@ -76,22 +76,23 @@ class packer():
     return version_out
   
   # Packaging
-  def build(self, input_files, output_file, packaging_module):
-
-    # find the VERSION file
-    if os.path.isfile("VERSION"):
-        version_file_name = "VERSION"
-    elif os.path.isfile("src/VERSION"):
-        version_file_name = "src/VERSION"
-    else:
-      print "FATAL: Cannot find any VERSION file"
-      sys.exit(0)
+  def build(self, input_files, output_file, packaging_module, include_version=True):
     
-    # parse file & generate version.js
-    version_out = self.generate_version_file(version_file_name);
+    if include_version == True:
+        # find the VERSION file
+        if os.path.isfile("VERSION"):
+            version_file_name = "VERSION"
+        elif os.path.isfile("src/VERSION"):
+            version_file_name = "src/VERSION"
+        else:
+          print "FATAL: Cannot find any VERSION file"
+          sys.exit(0)
     
-    # Add the version.js to the list of input files
-    input_files.append(version_out)
+        # parse file & generate version.js
+        version_out = self.generate_version_file(version_file_name);
+    
+        # Add the version.js to the list of input files
+        input_files.append(version_out)
 
     concatenated_file = ""
     in_len = 0
