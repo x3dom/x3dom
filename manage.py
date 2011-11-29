@@ -156,7 +156,7 @@ def runserver():
 def deploy():
     # TODO use fabric for that
     print("Updating x3dom.org... (requires you set up public key auth and a ssh config file)")
-    subprocess.call(['ssh', 'x3dom', "cd ~/web/x3dom/; git pull; cd src; make; cd ..; python manage.py --docs;"])
+    subprocess.call(['ssh', 'x3dom', "cd ~/web/x3dom/; git pull; cd src; make; cd ..; python manage.py --rebuild;"])
 
 def update_tests():
     # TODO, integrate the python script here instead of calling it
@@ -224,7 +224,7 @@ def clean():
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Management script for X3DOM. Building, running things, cleaning up, testing, and then some.')
 
-    parser.add_argument('--build',  nargs='?', action='store', default=False, const='production', required=False,  choices= ['production', 'debug'],help='build the X3DOM distributables. The default is to build production libraries (minified). If you use the debug switch, you can produce plain versions')
+    parser.add_argument('--build',  nargs='?', action='store', default=False, const='production', required=False,  choices= ['production', 'debug', 'source'],help='build the X3DOM distributables. The default is to build production libraries (minified). If you use the debug switch, you can produce plain versions, with the source switch the source could distributable will be generated')
     
     parser.add_argument('--release', action='store', help='make a release, version number RELEASE in the format x.x.x (major.minor.tiny)')
 
@@ -244,7 +244,7 @@ help='clean up build and remove all generated files')
 
     parser.add_argument('--rebuild', action='store_true', default=False,  help='clean up and build everything again')
 
-
+    
 
     args = parser.parse_args()
     # print args
