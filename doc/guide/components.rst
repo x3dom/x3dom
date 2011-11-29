@@ -27,8 +27,7 @@ By default X3DOM comes with all the additional nodes merged into ``x3dom-more.js
 
 If you are using ``x3dom-core.js`` and want to load the nodes above, you can use one of the methods described below.
 
-
-*Note:* It is recommended that you use the full X3DOM version (``x3dom.js``) in production environments - unless there is a very specific reason not to. The full version is compacted and optimized and in almost all cases the right way of including X3DOM. Should you opt for using the methods described here, you are trading negligible saving in initial download size for a much slower loading system, additional requests, way more complicated setup and maintenance, inability to use the browsers cache, problems with firewalls, proxy servers, CORS issues, CDNs, and not being able to run run locally without a web server. 
+*Note:* It is recommended that you use the full X3DOM version (``x3dom.js``) in production environments - unless there is a very specific reason not to. The full version is compacted, optimized and in almost all cases the right way of including X3DOM. Should you opt for using the methods described here, you are trading negligible saving in initial download size for a much slower loading system, additional requests, way more complicated setup and maintenance, inability to use the browsers cache, problems with firewalls, proxy servers, CORS issues, CDNs, and not being able to run run locally without a web server. 
 
 
 
@@ -109,13 +108,13 @@ Drawbacks of this approach:
 
 When to use this method:
 
-    * never
+    * never (unless there's no other feasible way)
 
 
 Extending X3DOM
 ---------------
 
-In this chapter you will learn how to extend X3DOM with your own nodes which you can load using the methods outlined above. We recommend to use the static loading approach in combination with the full profile x3dom.js. This will result in the inclusion of ``x3dom.js`` and ``YourComponent.js`` which will contain your custom code.
+In this chapter you will learn how to extend X3DOM with your own nodes which you can load using the methods outlined above. We recommend to use the static loading approach in combination with the full profile ``x3dom.js``. This results in the inclusion of ``x3dom.js`` and ``YourComponent.js`` which will contain your custom code.
 
 To follow this chapter you need at least basic understanding of the following concepts, principles, or technologies:
 
@@ -130,7 +129,7 @@ To follow this chapter you need at least basic understanding of the following co
 Object system
 ~~~~~~~~~~~~~
 
-In order to register a new node within the X3DOM system, you need to create the equivalent of a *class* that inherits properties from a superclass. Javascript itself does not implement a class based object model, it provides a prototype model. A prototype based object model can be seen as a superset of a traditional class based model. With a prototype based object system, one can implement a more limited class based system. That is exactly what X3DOM does.
+In order to register a new node within the X3DOM system, you need to create the equivalent of a *class* that inherits properties from a superclass. Javascript itself does not implement a class based object model, it provides a `prototype model <http://en.wikipedia.org/wiki/Prototype-based_programming>`_. A prototype based object model can be seen as a superset of a traditional class based model. With a prototype based object system, one can implement a more limited class based system. That is exactly what X3DOM does.
 
 For each node you want to implement in X3DOM you need to call the function::
 
