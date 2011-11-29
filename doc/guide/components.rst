@@ -13,8 +13,10 @@ X3DOM features a component system which allows you to load parts of the system a
 
 While logical grouping like this falls mostly into the category of code organization, it can be utilized to load only the parts you need for your application. With X3DOM there are two versions of the library in the distribution package:
 
-    * the standard full profile file: ``x3dom.js``
+    * the standard full profile file: ``x3dom.js`` 
     * the core containing only basic nodes: ``x3dom-core.js``
+
+See the release directory for these files `<http://x3dom.org/x3dom/release/dev/>`_.
 
 The full profile contains all the nodes of the official `X3D specification <http://www.web3d.org/x3d/specifications/OLD/ISO-IEC-19775-X3DAbstractSpecification/Part01/>`_, as far as they are implemented in X3DOM, merged into one file.
 
@@ -26,6 +28,7 @@ By default X3DOM comes with all the additional nodes merged into ``x3dom-more.js
     * VolumeRendering
 
 If you are using ``x3dom-core.js`` and want to load the nodes above, you can use one of the methods described below.
+
 
 *Note:* It is recommended that you use the full X3DOM version (``x3dom.js``) in production environments - unless there is a very specific reason not to. The full version is compacted, optimized and in almost all cases the right way of including X3DOM. Should you opt for using the methods described here, you are trading negligible saving in initial download size for a much slower loading system, additional requests, way more complicated setup and maintenance, inability to use the browsers cache, problems with firewalls, proxy servers, CORS issues, CDNs, and not being able to run run locally without a web server. 
 
