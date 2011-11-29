@@ -21,6 +21,7 @@ By default X3DOM comes with the following additional nodes:
 
     * Geometry2D
     * VolumeRendering
+    * Geospatial
 
 If you are using ``x3dom.js`` and you need to load the nodes above, you can use one of the methods described below.
 
