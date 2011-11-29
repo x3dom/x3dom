@@ -44,10 +44,10 @@ NODES = [
     'nodes/Texturing.js',
     'nodes/Shaders.js',
     'nodes/Geometry3D.js',
-    'nodes/Geospatial.js'
 ]
 
 COMPONENTS = [
+  'nodes/Geospatial.js',
   'nodes/Geometry2D.js',
   'nodes/VolumeRendering.js'
 ]
