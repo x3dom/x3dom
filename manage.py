@@ -95,15 +95,13 @@ def build(mode='production'):
     packer = x3dom_packer.packer()
     
     # building compressed files
-    packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom.js", "jsmin")
-    packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom-core.js", "jsmin")
-    packer.build(prefix_path(COMPONENTS, SRC_ROOT), "dist/x3dom-more.js", "jsmin")
-    
+    packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.js", "jsmin")
+    packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.js", "jsmin")
+        
     if mode == 'debug':
         # building plain files (debug)
-        packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom.debug.js", 'none')
-        packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom-core.debug.js", 'none')
-        packer.build(prefix_path(COMPONENTS, SRC_ROOT), "dist/x3dom-more.debug.js", 'none')
+        packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.debug.js", 'none')
+        packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.debug.js", 'none')
 
     # ~~~~ copy copy components extras ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
     print("\nBundling components...")
@@ -115,7 +113,8 @@ def build(mode='production'):
     for src in prefix_path(COMPONENTS, SRC_ROOT):
         try:
             print "  Copying file %s to %s" % (src, nodes_dest)
-            shutil.copy(src, nodes_dest)
+            packer.build([src], os.path.join(nodes_dest, os.path.basename(src)), 'jsmin', include_version=False)
+#            shutil.copy(src, nodes_dest)
         except:
             print "  Error copying file %s" % src
     # done with components
