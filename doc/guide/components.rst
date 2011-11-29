@@ -16,7 +16,7 @@ While logical grouping like this falls mostly into the category of code organiza
     * the standard full profile file: ``x3dom.js`` 
     * the core containing only basic nodes: ``x3dom-core.js``
 
-See the release directory for these files `<http://x3dom.org/x3dom/release/dev/>`_.
+You will find these files in release directory of X3DOM. Note that this is currently the development version of X3DOM. `<http://x3dom.org/release/dev/>`_.
 
 The full profile contains all the nodes of the official `X3D specification <http://www.web3d.org/x3d/specifications/OLD/ISO-IEC-19775-X3DAbstractSpecification/Part01/>`_, as far as they are implemented in X3DOM, merged into one file.
 

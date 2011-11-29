@@ -23,7 +23,7 @@ it work are the following files:
                      native X3DOM or WebGL.
 ===================  =====================================================
 
-You can `download the files from the X3DOM server <http://x3dom.org/x3dom/release/>`_
+You can `download the files from the X3DOM server <http://x3dom.org/release/>`_
 and put them on your harddisk or your webserver. The file naming follows
 the pattern: ``x3dom-vMAIOR.MINOR.js``.
 
@@ -31,7 +31,7 @@ the pattern: ``x3dom-vMAIOR.MINOR.js``.
 Development builds
 ------------------
 If you are adventurous and want to work with the latest development build of
-X3DOM `download the latest builds from the X3DOM server <http://x3dom.org/x3dom/release/>`_.
+X3DOM `download the latest builds from the X3DOM server <http://x3dom.org/release/>`_.
 Just use the files ending in no version number:
 
 * `x3dom.js <http://x3dom.org/x3dom/release/x3dom.js>`_
