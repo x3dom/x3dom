@@ -86,7 +86,7 @@ DIST_ROOT = os.path.join(PROJECT_ROOT, 'dist')
 DOC_ROOT = os.path.join(PROJECT_ROOT, 'doc', 'guide')
 
 # make sure we run from project root
-os.chdir(PROJECT_ROOT)
+#os.chdir(PROJECT_ROOT)
 
 
 def build(mode='production'):
@@ -158,7 +158,7 @@ def runserver():
 def deploy():
     # TODO use fabric for that
     print("Updating x3dom.org... (requires you set up public key auth and a ssh config file)")
-    subprocess.call(['ssh', 'x3dom', "cd ~/web/x3dom/; git pull; cd src; make; cd ..; python manage.py --rebuild;"])
+    subprocess.call('ssh x3dom "cd ~/web/x3dom/; git pull; cd src; make; cd ..; python manage.py --rebuild;"', shell=True)
 
 def update_tests():
     # TODO, integrate the python script here instead of calling it
