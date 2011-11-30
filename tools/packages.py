@@ -10,6 +10,7 @@ BASICS = [
   'ImageLoadManager.js',
   'lang/Properties.js',
   'lang/DoublyLinkedList.js',
+  'util/EarClipping.js',
   'X3DCanvas.js',
   'Runtime.js',
   'Main.js'
