@@ -1561,7 +1561,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 // // FIXME: Workaround
-                this._vf.convex = true;
+                //this._vf.convex = true;
                 // // FIXME
                 
                 var time0 = new Date().getTime();
@@ -1913,29 +1913,36 @@ x3dom.registerNodeType(
 						{	
 							if (indexes[i] == -1) {
 								
-								var multi_index_data = getMultiIndexes(linklist);
+								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
 																
 								for (var j = 0; j < multi_index_data.indices.length; j++)
 								{	
 									this._mesh._indices[0].push(cnt);
 									cnt++;
 									
-									this._mesh._positions[0].push(multi_index_data.point[j].x, multi_index_data.point[j].y, multi_index_data.point[j].z);
-									this._mesh._normals[0].push(multi_index_data.normals[j].x, multi_index_data.normals[j].y, multi_index_data.normals[j].z);
-									//this._mesh._colors[0].push(multi_index_data.colors[j].r, multi_index_data.colors[j].g, multi_index_data.colors[j].b);
-									this._mesh._texCoords[0].push(multi_index_data.texCoords[j].x, multi_index_data.texCoords[j].y);
-									//performance problemm
-									//this._mesh._positions[0] = this._mesh._positions[0].concat(multi_index_data.point[j].toGL());
-									/*if (hasNormal) {
-										this._mesh._normals[0]= this._mesh._normals[0].concat(multi_index_data.normals[j].toGL());
+									this._mesh._positions[0].push(multi_index_data.point[j].x,
+																  multi_index_data.point[j].y,
+																  multi_index_data.point[j].z);
+									if (hasNormal) {
+										this._mesh._normals[0].push(multi_index_data.normals[j].x,
+																	multi_index_data.normals[j].y,
+																	multi_index_data.normals[j].z);
 									}
-									
 									if (hasColor) {
-										this._mesh._colors[0]= this._mesh._colors[0].concat(multi_index_data.colors[j].toGL());
+										this._mesh._colors[0].push(multi_index_data.colors[j].r, 
+																   multi_index_data.colors[j].g, 
+																   multi_index_data.colors[j].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(multi_index_data.colors[j].a);
+										}
 									}
 									if (hasTexCoord) {	
-										this._mesh._texCoords[0]= this._mesh._texCoords[0].concat(multi_index_data.texCoords[j].toGL());
-									}*/
+										this._mesh._texCoords[0].push(multi_index_data.texCoords[j].x,
+																	  multi_index_data.texCoords[j].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(multi_index_data.texCoords[j].z);
+										}
+									}
 								}
 									
 								linklist = new x3dom.DoublyLinkedList();
@@ -2010,9 +2017,13 @@ x3dom.registerNodeType(
 						for (var i = 0; i < indexes.length; ++i)
 						{
 							if (indexes[i] == -1) {
-								this._mesh._indices[0] = this._mesh._indices[0].concat(getIndexes(linklist));
+								var linklist_indces = x3dom.EarClipping.getIndexes(linklist);
+															
+								for (var j = 0; j < linklist_indces.length; j++) {
+									this._mesh._indices[0].push(linklist_indces[j]);
+								}
 								linklist = new x3dom.DoublyLinkedList();
-								continue;
+							continue;
 							}
 							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[indexes[i]], indexes[i]));
 						}								
