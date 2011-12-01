@@ -51,7 +51,7 @@
 			<scene>
             	<Background skyColor='0 0 0' />
              
-                <!--transform translation="-4 2 0">
+                <transform translation="-4 2 0">
                   <shape>
                     <appearance>
                       <material id="colorPlane" diffuseColor='yellow'></material>
@@ -99,9 +99,9 @@
                     </appearance>
                     <Cylinder id="testCylinder" radius = '0.5' height='1' bottom = 'true' top = 'true' subdivision='8'  onmouseover="testCylinder();"/>
                   </shape>
-                </transform-->
+                </transform>
                             
-                 <!--transform translation="2 0 0">
+                 <transform translation="3 -3 0">
                     <Shape>
                       <Appearance>
                          <material diffuseColor='yellow'></material>
@@ -114,76 +114,8 @@
                         <Normal id="testIndexedFaceSetNormal" vector='0 0 1 0 0 1  0 0 1 0 0 1'/>
                       </IndexedFaceSet>
                    </Shape>
-                </transform-->
-                
-                <!--transform translation="-2 0 0">
-                    <Shape>
-                      <Appearance>
-                         <material diffuseColor='yellow'></material>
-                      	 <imageTexture url='media/img/igd_main.png' />
-                      </Appearance>
-                      <IndexedFaceSet creaseAngle='3.14' coordIndex='
-                      0 1 2 3 4 5 6 7 8 -1
-                      9 10 11 12 13 14 15 16 17 -1' convex='false'>
-                        <Coordinate point='
-                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0  -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
-                        -1 0 0  -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0'/>
-                      </IndexedFaceSet>
-                   </Shape>
-                </transform-->
-                
-                 <transform translation="0 0 0">
-                    <Shape>
-                      <Appearance>
-                         <material diffuseColor='yellow'></material>
-                      	 <imageTexture url='media/img/igd_main.png' />
-                      </Appearance>
-                      <IndexedFaceSet coordIndex='
-                      0 1 2 3 4 5 -1
-                      0 5 6 7 8 9 -1
-                      0 9 10 11 12 13 -1
-                      0 13 14 15 16  17-1
-                      ' convex='false'>
-                        <Coordinate point='
-                        0 0 0  1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0
-                        -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
-                        -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0
-                          0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0
-                       '/>
-                      </IndexedFaceSet>
-                   </Shape>
                 </transform>
-                
-                 <transform translation="3 0 0">
-                    <Shape>
-                      <Appearance>
-                         <material diffuseColor='yellow'></material>
-                      	 <imageTexture url='media/img/igd_main.png' />
-                      </Appearance>
-                      <IndexedFaceSet coordIndex='
-                      0 1 2 3 4 5 6 7 8 -1
-                      9 10 11 12 13 14 15 16 17 -1' convex='false'>
-                        <Coordinate point='
-                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0  -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
-                        -1 0 0  -1.5 -0.7 0  -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0  1 0 0'/>
-                      </IndexedFaceSet>
-                   </Shape>
-                </transform>
-                
-                 <transform translation="-3 0 0">
-                    <Shape>
-                      <Appearance>
-                         <material diffuseColor='yellow'></material>
-                      	 <imageTexture url='media/img/igd_main.png' />
-                      </Appearance>
-                      <IndexedFaceSet coordIndex='
-                      0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 -1' convex='false'>
-                        <Coordinate point='
-                        1 0 0  1.5 0.7 0  0.5 0.5 0  0.7 1.5 0  0 1 0 -0.7 1.5 0  -0.5 0.5 0  -1.5 0.7 0  -1 0 0
-                         -1.5 -0.7 0 -0.5 -0.5 0  -0.7 -1.5 0  0 -1 0  0.7 -1.5 0  0.5 -0.5 0  1.5 -0.7 0 '/>
-                      </IndexedFaceSet>
-                   </Shape>
-                </transform>
+               
  			</scene>
         </X3D>
         
@@ -192,33 +124,33 @@
 	    var testPlane = function (event) {
 			document.getElementById('testPlane').setAttribute('size', '2 2');
 			document.getElementById('testPlane').setAttribute('subdivision', '2 2');
-			document.getElementById('colorPlane').setAttribute('diffuseColor', '1 0 0');
+			document.getElementById('colorPlane').setAttribute('emissiveColor', '1 0 0');
         };
 		var testSphere = function (event) {
 			document.getElementById('testSphere').setAttribute('radius', '1.5');
 			document.getElementById('testSphere').setAttribute('subdivision', '2 4');
-			document.getElementById('colorSphere').setAttribute('diffuseColor', '1 0 0');
+			document.getElementById('colorSphere').setAttribute('emissiveColor', '1 0 0');
         };
 		var testTorus = function (event) {
 			document.getElementById('testTorus').setAttribute('innerRadius', '0.5');
 			document.getElementById('testTorus').setAttribute('outerRadius', '1');
 			document.getElementById('testTorus').setAttribute('subdivision', '6 4');
-			document.getElementById('colorTorus').setAttribute('diffuseColor', '1 0 0');
+			document.getElementById('colorTorus').setAttribute('emissiveColor', '1 0 0');
         };
 		var testCone = function (event) {
 			document.getElementById('testCone').setAttribute('height', '0.5');
 			document.getElementById('testCone').setAttribute('bottomRadius', '1');
 			document.getElementById('testCone').setAttribute('bottom', 'false');
 			document.getElementById('testCone').setAttribute('subdivision', '6');
-			document.getElementById('colorCone').setAttribute('diffuseColor', '1 0 0');
+			document.getElementById('colorCone').setAttribute('emissiveColor', '1 0 0');
         };
 		var testCylinder = function (event) {
 			document.getElementById('testCylinder').setAttribute('radius', '1');
 			document.getElementById('testCylinder').setAttribute('height', '0.5');
-			document.getElementById('testCylinder').setAttribute('bottom', 'false');
-			document.getElementById('testCylinder').setAttribute('top', 'false');
-			document.getElementById('testCylinder').setAttribute('subdivision', '4');
-			document.getElementById('colorCylinder').setAttribute('diffuseColor', '1 0 0');
+			//document.getElementById('testCylinder').setAttribute('bottom', 'false');
+			//document.getElementById('testCylinder').setAttribute('top', 'false');
+			//document.getElementById('testCylinder').setAttribute('subdivision', '4');
+			document.getElementById('colorCylinder').setAttribute('emissiveColor', '1 0 0');
         };
 		var testIndexedFaceSet = function (event) {
 			document.getElementById('testIndexedFaceSetCoordinate').setAttribute('point', '1 1 0  2 1 0  1 2 0 2 2 0');
