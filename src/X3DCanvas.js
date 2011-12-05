@@ -191,11 +191,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             "onkeypress",
             "onkeyup",
 
-            // touch
+            // w3c touch
             "ontouchstart",
             "ontouchmove",
             "ontouchend",
             "ontouchcancel",
+            
+            // apple gestures
             "ongesturestart",
             "ongesturechange",
             "ongestureend",
@@ -672,8 +674,25 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           }
         };
         
+        var MozTouchDownHandler = function(evt)
+        {
+          x3dom.debug.logInfo("[UNHANDLED TOUCH] MozTouchDown");
+        }
+        
+        var MozTouchMoveHandler = function(evt)
+        {
+          x3dom.debug.logInfo("[UNHANDLED TOUCH] MozTouchMove");
+        }
+        
+        var MozTouchUpHandler = function(evt)
+        {
+          x3dom.debug.logInfo("[UNHANDLED TOUCH] MozTouchUp");
+        }
+        
         var touchStartHandler = function(evt)
         {
+          evt.preventDefault();
+          
           if(touches.numTouches < 1 && evt.touches.length == 1)
           {
             touches.numTouches = 1;
@@ -696,12 +715,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             touches.lastSquareDistance = squareDistance;
             touches.lastAngle = touches.calcAngle(distance);
           }
-        
-          evt.preventDefault();
         };
 
         var touchMoveHandler = function(evt)
         {
+          evt.preventDefault();
+          
           // one finger: x/y rotation
           if(evt.touches.length == 1)
           {
@@ -751,82 +770,59 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             this.parent.doc.onMoveView(that.gl, deltaMove, rotMatrix);
             this.parent.doc.needRender = true;
           }
-          
-          evt.preventDefault();
         };
 
         var touchEndHandler = function(evt)
         {
+          evt.preventDefault();
+          
           // init first finger for rotation
           if(touches.numTouches == 2 && evt.touches.length == 1)
             touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
           
           if(evt.touches.length < 2)
             touches.numTouches = evt.touches.length;
-
-          evt.preventDefault();
         };
 
         var touchCancelHandler = function(evt)
         {
-            x3dom.debug.logInfo("[TOUCH] cancel");
+          x3dom.debug.logInfo("[UNHANDLED TOUCH] cancel");
+        };
+        
+        var touchLeaveHandler = function(evt)
+        {
+          x3dom.debug.logInfo("[UNHANDLED TOUCH] leave");
         };
         // TOUCHES
         
         // GESTURES
-        /*
-        var last_rotation = 0.0;
-        var last_distance = 1.0;
-        */
         var gestureStartHandler = function(evt)
         {
-        /*
-            last_rotation = 0.0;
-            last_distance = 1.0;
-            
-            this.parent.doc.needRender = true;
-        */
+          x3dom.debug.logInfo("[UNHANDLED GESTURE] gestureStart");
         };
 
         var gestureChangeHandler = function(evt)
         {
-        /*
-            evt.preventDefault();
-            
-            var rot_delta = evt.rotation - last_rotation;
-            last_rotation = evt.rotation;
-            
-            var distance_delta = evt.scale - last_distance;
-            last_distance = evt.scale;
-            
-            var rotation = x3dom.fields.SFMatrix4f.rotationZ(-(rot_delta / 180.0) * Math.PI);
-            
-            this.parent.doc.onGesture(that.gl, distance_delta, rotation, null);
-            this.parent.doc.needRender = true;
-        */
+          x3dom.debug.logInfo("[UNHANDLED GESTURE] gestureChange");
         };
 
         var gestureEndHandler = function(evt)
         {
-        /*
-            last_rotation = 0.0;
-            last_distance = 1.0;
-            
-            this.parent.doc.needRender = true;
-        */
+          x3dom.debug.logInfo("[UNHANDLED GESTURE] gestureEnd");
         };
         // GESTURES
         
         // mozilla touch events
-        this.canvas.addEventListener('MozTouchDown',  touchStartHandler,    true);
-        this.canvas.addEventListener('MozTouchMove',  touchMoveHandler,     true);
-        this.canvas.addEventListener('MozTouchUp',    touchEndHandler,      true);
+        this.canvas.addEventListener('MozTouchDown',  MozTouchDownHandler,  true);
+        this.canvas.addEventListener('MozTouchMove',  MozTouchMoveHandler,  true);
+        this.canvas.addEventListener('MozTouchUp',    MozTouchUpHandler,    true);
 
         // apple touch events
         this.canvas.addEventListener('touchstart',    touchStartHandler,    true);
         this.canvas.addEventListener('touchmove',     touchMoveHandler,     true);
         this.canvas.addEventListener('touchend',      touchEndHandler,      true);
         this.canvas.addEventListener('touchcancel',   touchCancelHandler,   true);
+        this.canvas.addEventListener('touchleave',    touchLeaveHandler,    true);
 
         // gesture events (only supported by apple)
         this.canvas.addEventListener('gesturestart',  gestureStartHandler,  true);
