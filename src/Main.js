@@ -114,7 +114,15 @@ x3dom.userAgentFeature = {
         // ~~ Components and params {{{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         var params;
         var settings = new x3dom.Properties();  // stores the stuff in <param>
-        var validParams = ['showLog', 'showStat', 'showProgress', 'PrimitiveQuality', 'component', 'loadpath'];
+        var validParams = array_to_object([ 
+            'showLog', 
+            'showStat', 
+            'showProgress', 
+            'PrimitiveQuality', 
+            'component', 
+            'loadpath', 
+            'disableDoubleClick',
+        ]);
         var components, prefix;
 
         // for each X3D element
@@ -130,8 +138,10 @@ x3dom.userAgentFeature = {
             // add settings to properties object
             params = x3ds[i].getElementsByTagName('PARAM');
             for (j=0; j < params.length; j++) {
-                if (params[j].getAttribute('name') in validParams) {
+                if (params[j].getAttribute('name') in  validParams) {
                     settings.setProperty(params[j].getAttribute('name'), params[j].getAttribute('value'));
+                } else {
+                    //x3dom.debug.logError("Unknown parameter: " + params[j].getAttribute('name'));
                 }
             }
 
