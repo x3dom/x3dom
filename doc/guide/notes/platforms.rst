@@ -65,6 +65,7 @@ Currently, the only way to use WebGL with Internet Explorer is by using the Goog
 Download and furhter reading:
 
     * `Chrome Frame <http://code.google.com/chrome/chromeframe/>`_
+    * `Getting started <http://www.chromium.org/developers/how-tos/chrome-frame-getting-started>`_
 
 
 Mac OS X
