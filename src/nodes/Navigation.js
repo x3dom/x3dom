@@ -113,6 +113,10 @@ x3dom.registerNodeType(
                     mult(this._vf.orientation.toMatrix()).inverse();
             },
 
+            getTransformation: function() {
+                return this.getCurrentTransform();
+            },
+
             getProjectionMatrix: function(aspect)
             {
                 if (this._projMatrix == null)
