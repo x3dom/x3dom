@@ -243,6 +243,13 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
     }
 };
 
+function array_to_object(a) {
+      var o = {};
+      for(var i=0;i<a.length;i++) {
+        o[a[i]]='';
+      }
+      return o;
+    }
 /**
  * Provides requestAnimationFrame in a cross browser way.
  * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js

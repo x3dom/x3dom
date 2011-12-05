@@ -54,7 +54,18 @@ of strange errors, please check the following lists for:
 Windows
 ~~~~~~~
 
-No specific notes yet.
+**Chrome Frame**
+
+Currently, the only way to use WebGL with Internet Explorer is by using the Google `Chrome Frame plugin <http://code.google.com/chrome/chromeframe/>`_. In order to make X3DOM use the WebGL renderer with Internet Explorer, you need to install Chrome Frame and enable it in your HTML or web browser configuration. The most simple way to enable ChromeFrame is to put this line in your HTML head section:
+
+.. code-block:: html
+
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+
+Download and furhter reading:
+
+    * `Chrome Frame <http://code.google.com/chrome/chromeframe/>`_
+    * `Getting started <http://www.chromium.org/developers/how-tos/chrome-frame-getting-started>`_
 
 
 Mac OS X
