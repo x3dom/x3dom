@@ -28,16 +28,17 @@ Options
 -------
 The following table lists the parameters currently supported.
 
-=================  =========================  ===========     =================================================
-  Parameter          Values                     Default         Description
-=================  =========================  ===========     =================================================
-showLog	           true, false                false           Hide or display the logging console
-showStat           true, false                false           Hide or display the statistics overlay
-showProgress       true, false, bar           true            Hide or show the loading indicator. The default
-                                                              indicator is a spinner. The value 'bar' will
-                                                              use a progress bar.
-PrimitiveQuality   High, Medium, Low, float   High/1.0        Render quality (tesselation level) for Box, Cone,
-                                                              Cylinder, Sphere.
-component          String (i.e. Geometry3D)   none            Name of the component to load
-loadpath           String (i.e. nodes/)       none            The path or URI where to find the components
-=================  =========================  ===========     =================================================
+==================    =========================    ===========     =================================================
+  Parameter            Values                       Default          Description
+==================    =========================    ===========     =================================================
+showLog	              true, false                  false             Hide or display the logging console
+showStat              true, false                  false             Hide or display the statistics overlay
+showProgress          true, false, bar             true              Hide or show the loading indicator. The default
+                                                                     indicator is a spinner. The value 'bar' will
+                                                                     use a progress bar.
+PrimitiveQuality      High, Medium, Low, float     High/1.0          Render quality (tesselation level) for Box, Cone,
+                                                                     Cylinder, Sphere.
+component             String (i.e. Geometry3D)     none              Name of the component to load
+loadpath              String (i.e. nodes/)         none              The path or URI where to find the components
+disableDoubleClick    true,false                   false             Disables the default double click action on viewarea
+==================    =========================    ===========     =================================================

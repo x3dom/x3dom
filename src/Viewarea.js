@@ -826,6 +826,10 @@ x3dom.Viewarea.prototype.onMouseOut = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
 {
+    if (this._doc.properties.getProperty('disableDoubleClick', 'false') === 'true') {
+        return;
+    }
+    
     var navi = this._scene.getNavigationInfo();
     if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none") {
         return;
