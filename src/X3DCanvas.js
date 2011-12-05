@@ -196,6 +196,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             "ontouchmove",
             "ontouchend",
             "ontouchcancel",
+            "touchleave",
             
             // apple gestures
             "ongesturestart",
@@ -674,21 +675,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           }
         };
         
-        var MozTouchDownHandler = function(evt)
-        {
-          x3dom.debug.logInfo("[UNHANDLED TOUCH] MozTouchDown");
-        }
-        
-        var MozTouchMoveHandler = function(evt)
-        {
-          x3dom.debug.logInfo("[UNHANDLED TOUCH] MozTouchMove");
-        }
-        
-        var MozTouchUpHandler = function(evt)
-        {
-          x3dom.debug.logInfo("[UNHANDLED TOUCH] MozTouchUp");
-        }
-        
         var touchStartHandler = function(evt)
         {
           evt.preventDefault();
@@ -783,7 +769,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           if(evt.touches.length < 2)
             touches.numTouches = evt.touches.length;
         };
-
+        
         var touchCancelHandler = function(evt)
         {
           x3dom.debug.logInfo("[UNHANDLED TOUCH] cancel");
@@ -813,9 +799,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // GESTURES
         
         // mozilla touch events
-        this.canvas.addEventListener('MozTouchDown',  MozTouchDownHandler,  true);
-        this.canvas.addEventListener('MozTouchMove',  MozTouchMoveHandler,  true);
-        this.canvas.addEventListener('MozTouchUp',    MozTouchUpHandler,    true);
+        this.canvas.addEventListener('MozTouchDown',  touchStartHandler,    true);
+        this.canvas.addEventListener('MozTouchMove',  touchMoveHandler,     true);
+        this.canvas.addEventListener('MozTouchUp',    touchEndHandler,      true);
 
         // apple touch events
         this.canvas.addEventListener('touchstart',    touchStartHandler,    true);
