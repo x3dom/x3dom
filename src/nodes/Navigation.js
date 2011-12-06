@@ -210,6 +210,8 @@ x3dom.registerNodeType(
 
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
             this._eyeViewUp = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._eyeLook = new x3dom.fields.SFVec3f(0,0,0);
+
             this._viewAlignedMat = x3dom.fields.SFMatrix4f.identity();
         },
         {
@@ -234,10 +236,17 @@ x3dom.registerNodeType(
                     rotMat = rot1.toMatrix().transpose();
 
                     var yAxis = rotMat.multMatrixPnt(new x3dom.fields.SFVec3f(0, 1, 0)).normalize();
+                    var zAxis = rotMat.multMatrixPnt(new x3dom.fields.SFVec3f(0, 0, 1)).normalize();
+
 
                     if(!this._eyeViewUp.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
-                        var rot2 = x3dom.fields.Quaternion.rotateFromTo(this._eyeViewUp, yAxis);
-                        rotMat = rot2.toMatrix().transpose().mult(rotMat);
+                        // var rot2 = x3dom.fields.Quaternion.rotateFromTo(this._eyeViewUp, yAxis);
+                        // rotMat = rot2.toMatrix().transpose().mult(rotMat);
+                        var rot2 = x3dom.fields.Quaternion.rotateFromTo(this._eyeLook, zAxis); // new local z-axis aligned with camera z-axis
+                        var rotatedyAxis = rot2.toMatrix().transpose().multMatrixVec(yAxis); // new: local y-axis rotated by rot2
+                        var rot3 = x3dom.fields.Quaternion.rotateFromTo(this._eyeViewUp, rotatedyAxis); // new: rotated local y-axis aligned with camera y-axis
+                        rotMat = rot2.toMatrix().transpose().mult(rotMat); // new
+                        rotMat = rot3.toMatrix().transpose().mult(rotMat); // new
                     }
                 }
                 else{
