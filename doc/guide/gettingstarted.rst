@@ -46,7 +46,7 @@ doubt, use the current release.
 Build from revision control
 ---------------------------
 **Note:** The following is for advanced developers. If you wish to use a rather
-recent version of X3DOM and do not want to tinker with Make and friends, just
+recent version of X3DOM and do not want to tinker with Python, just
 use the development build.
 
 All source code to X3DOM is kept under the Git revision control and you can
@@ -64,7 +64,7 @@ You can also check out a specific release from GitHub::
     git checkout <version>
     e.g. git checkout 1.2.0
 
-If you want to build your own copy of jQuery from the Git repository, you
+If you want to build your own copy of X3DOM from the Git repository, you
 need to build it from the sources.
 
 
