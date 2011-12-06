@@ -122,6 +122,7 @@ x3dom.userAgentFeature = {
             'component', 
             'loadpath', 
             'disableDoubleClick',
+            'maxActiveDownloads',
         ]);
         var components, prefix;
 
@@ -286,9 +287,11 @@ x3dom.userAgentFeature = {
 			t1 = new Date().getTime() - t0;
             x3dom.debug.logInfo("Time for setup and init of GL element no. " + i + ": " + t1 + " ms.");
 			
-			//Start image queue
-			x3dom.ImageLoadManager.load();
+            //Start image queue
 
+		    // gets the value of param name="maxActiveDownloads"
+		    // settings.getProperty('maxActiveDownloads', 10);
+            x3dom.ImageLoadManager.load();
         }
         
         var ready = (function(eventType) {
