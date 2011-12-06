@@ -18,8 +18,8 @@ We are going to use the box example scene established in the :ref:`firststeps` t
       <head>
         <meta charset="utf-8">
         <title>CSS Integration Test</title>
-        <link rel="stylesheet" href="http://www.x3dom.org/x3dom/release/x3dom.css">
-        <script src="http://www.x3dom.org/x3dom/release/x3dom.js"></script>
+        <link rel="stylesheet" href="http://www.x3dom.org/download/x3dom.css">
+        <script src="http://www.x3dom.org/download/x3dom.js"></script>
       </head>
       <body>
         <h1>Styling tutorial</h1>

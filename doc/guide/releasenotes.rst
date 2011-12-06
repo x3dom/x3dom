@@ -49,7 +49,7 @@ Verison 1.1
 
 Second stable release after almost 7 month.
 
-http://x3dom.org/x3dom/release/x3dom-v1.1.js
+http://x3dom.org/download/x3dom-v1.1.js
 
 Most features from the 1.1. milestone are implemented:
 
@@ -80,7 +80,7 @@ Version 1.0
 -----------
 First stable release of the framework.
 
-http://x3dom.org/x3dom/release/x3dom-v1.0.js
+http://x3dom.org/download/x3dom-v1.0.js
 
 All initially planned features are implemented:
 
