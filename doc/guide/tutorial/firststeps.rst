@@ -13,10 +13,10 @@ Authoring X3DOM content is very similar to authoring HTML. So just open an edito
       <head>
         <title>My first X3DOM page</title>
         <link rel="stylesheet" type="text/css" 
-              href="http://www.x3dom.org/x3dom/release/x3dom.css">
+              href="http://www.x3dom.org/download/x3dom.css">
         </link>
         <script type="text/javascript" 
-                src="http://www.x3dom.org/x3dom/release/x3dom.js">
+                src="http://www.x3dom.org/download/x3dom.js">
         </script>
       </head>
       <body>
@@ -46,7 +46,7 @@ Hence, we’ll now insert a red box into our page by inserting the following cod
     </x3d>
     
 
-You might wonder, why the ``<box>`` tag isn’t enough and what the other tags are good for. ``<scene>`` simply says, that you are going to define a 3D scene. And a ``<shape>`` defines the geometry (here a ``<box>``) as well as the ``<appearance>`` of an object. In our example, the whole appearance only consists of a red ``<material>``. If you want to learn more about these elements (or nodes as they are called in X3D), just follow `this link <http://x3dom.org/x3dom/release/dumpNodeTypeTree.html>`_ and click on the node you are interested in.
+You might wonder, why the ``<box>`` tag isn’t enough and what the other tags are good for. ``<scene>`` simply says, that you are going to define a 3D scene. And a ``<shape>`` defines the geometry (here a ``<box>``) as well as the ``<appearance>`` of an object. In our example, the whole appearance only consists of a red ``<material>``. If you want to learn more about these elements (or nodes as they are called in X3D), just follow `this link <http://x3dom.org/download/dumpNodeTypeTree.html>`_ and click on the node you are interested in.
 
 Because simply looking at one side of the box is bit boring, you can navigate within your scene with the help of the mouse. If you move the mouse with pressed left mouse button inside the area surrounded by a black border, you’ll rotate the point of view. With the middle mouse button you can pan around and with the right button you can zoom in and out. For more information see:  :ref:`navigation`.
 
