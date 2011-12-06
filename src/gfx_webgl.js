@@ -3525,6 +3525,7 @@ x3dom.gfx_webgl = (function () {
                 // https://github.com/x3dom/x3dom/issues/4
                 // fix from Nelson Silva https://github.com/inevo/x3dom/commit/ef84f15a00790a7d62b17751143a729979208326
                 obj3d._eyeViewUp = new x3dom.fields.SFVec3f(mat_view_model._10, mat_view_model._11, mat_view_model._12);
+                obj3d._eyeLook = new x3dom.fields.SFVec3f(mat_view_model._20, mat_view_model._21, mat_view_model._22);
             }
         }
         
