@@ -7,47 +7,53 @@
 # -------------------------------------------------------------------
 # 
 # This buildfile creates the distributable package of X3DOM
-# and zips it up as tarball and zip variants.
+# and zips it up as tarball and zip variants. It also provides additiona
+# management tasks for development and debugging.
+#
+#
+# BUILD PROCESS
+# =============
 #
 # First all required files are assembled in the dist/ directory of the X3DOM
-# checkout
+# checkout (aka build directory - maybe rename it).
 # 
 # dist/
 #   README                the readme
 #   LICENSE               the license for X3DOM
+#   components/           optional components to be used with core profile
+#       Geometry2D.js
+#       ...
 #   docs/
 #       nodetypes-x.x.x.html  The node type tree dump
 #   docs/html/            The documentation as browsable html
 #   docs/singlehtml/      The documentation as single page html
 #   docs/guide.pdf        The documnetation as PDF (optinal)
 #   examples/             Some selected examples that work locally
-#   x3dom-x.x.js          the full profile x3dom, un-minified
-#   x3dom-x.x.min.js      the full profile x3dom, minified
-#   x3dom-core-x.x.js     the core x3dom profile, un-minified
-#   x3dom-core-x.x.min.js the core minified
-#   x3dom-more-x.x.js     extended nodes unminified
-#   x3dom-more-x.x.min.js extended nodes minified
+#   x3dom.js              the core x3dom profile, minified
+#   x3dom-debug.js        the core x3dom profile, un-minified with comments
+#   x3dom-full.js         the full x3dom profile, minified
+#   x3dom-full.debug.js   the full x3dom profile, un-minified with comments
 #
-# The minified versions are for production environments. Meaning this
-# is what people should copy to their webservers. The unminified versions
-# are for local development and debugging. This is what people should use
-# locally when they develop their app with X3DOM.
+# The unminified versions are for local development and debugging. This is 
+# what people should use locally when they develop their app with X3DOM.
 #
-# Once the files are assembled, they should be zipped and targzed to:
+# RELEASE
+# =======
+# Once the files are assembled as outlined above, they are zipped and 
+# targzed to:
 #
 #   x3dom-x.x.x.tar.gz
 #   x3dom-x.x.x.zip
 #
-# Additionally this buildfile provides management tasks currently stored in 
-# the root level Makefile.
-#
-# Once the build completed, the files should be uploaded to the 
-# webserver (this is also accomplised by this file). We want to provide the 
-# tarball|zip in the release directory, but also the unzipped version. 
+# Once this is done, the Git repository is tagged with the release version 
+# x.x.x. Then the files should be uploaded to the webserver (this is also 
+# accomplised by this file). We want to provide the tarball|zip in the 
+# download directory, but also the unzipped version. 
 # The structure should look like this:
 
-#   x3dom.org/release/
-#      current/           -> symlink@x3dom-y.y.y/
+#   x3dom.org/download/
+#      dev/              -> development build x3dom/dist/
+#      latest/           -> symlink@x3dom-y.y.y/
 #      x3dom-x.x.x/
 #        <unzipped contents>
 #      x3dom-y.y.y/
@@ -58,11 +64,9 @@
 #      x3dom-y.y.y.zip
 #
 # Basically we have the zipped versions in one directory and a directory
-# with the unzipped ones as well as a symlink "current" pointing to the 
-# latest release directory
-
-
-
+# with the unzipped ones as well as a symlink "latest" pointing to the 
+# latest stable version
+# 
 # ----- 
 try:
     import argparse
