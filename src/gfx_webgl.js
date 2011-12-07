@@ -1673,7 +1673,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.debug.logError("Can't load tex url: " + tex._vf.url + " (at unit " + unit + ").");
                     };
 					
-					image.addEventListener('ImageLoadManager_Load', load, true);
+					(tex._complete) ? load() : image.addEventListener('ImageLoadManager_Load', load, true);
                 }
             };
 			
