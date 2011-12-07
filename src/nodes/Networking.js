@@ -73,12 +73,14 @@ x3dom.registerNodeType(
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == 4) {
                         delete xhr['onreadystatechange'];
-                        if (xhr.responseXML.documentElement.localName == 'parsererror') {
-                            that._nameSpace.doc.downloadCount -= 1;
-                            x3dom.debug.logError('XML parser failed on ' + that._vf.url +
-                                        ':\n' + xhr.responseXML.documentElement.textContent);
-                            return xhr;
-                        }
+						if(navigator.appName != "Microsoft Internet Explorer") {
+							if (xhr.responseXML.documentElement.localName == 'parsererror') {
+								that._nameSpace.doc.downloadCount -= 1;
+								x3dom.debug.logError('XML parser failed on ' + that._vf.url +
+											':\n' + xhr.responseXML.documentElement.textContent);
+								return xhr;
+							}
+						}
                     } else {
                         // still loading
                         //x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
@@ -94,7 +96,11 @@ x3dom.registerNodeType(
 
                     x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
 
-                    var xml = xhr.responseXML;
+                    if(navigator.appName != "Microsoft Internet Explorer"){
+						var xml = xhr.responseXML;
+					}else{
+						var xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
+					}
 
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                     var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
