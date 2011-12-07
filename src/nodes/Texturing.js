@@ -108,6 +108,7 @@ x3dom.registerNodeType(
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
 			this._image = new Image();
+			this._complete = false;
 			
 			x3dom.ImageLoadManager.push( this );
         },
@@ -147,6 +148,7 @@ x3dom.registerNodeType(
                 if (fieldName == "url")
                 {
 					x3dom.ImageLoadManager.push( this );
+					this._complete = false;
                     Array.forEach(this._parentNodes, function (app) {
 						app.nodeChanged();
                         Array.forEach(app._parentNodes, function (shape) {
