@@ -634,6 +634,72 @@ x3dom.gfx_webgl = (function () {
             return 0;
         }
     }
+	
+	Context.prototype.generateVSMobile = function (viewarea, vertexColor, texture, textureTransform, useLighting, geometryImage, indexedIG)
+    {
+    
+        var useFog = useFogFunc(viewarea);
+        var shaderIdentifier = "vs-x3d-mobil" + ( (vertexColor) ? 1 : 0 ) + 
+                                                ( (texture) ? 1 : 0 ) +
+												( (textureTransform) ? 1 : 0 ) +
+												( (useFog) ? 1 : 0 ) +
+												( useLighting[0] ) +
+												( (useLighting[1]) ? 1 : 0 ) +
+												( (geometryImage) ) +
+												( (indexedIG) );
+										   
+		if(!g_shaders[shaderIdentifier]){
+
+			var shader = "";
+            
+            //Set Attributes +Uniforms + Varyings
+            shader += "attribute vec3 position;";
+            shader += "attribute vec3 normal;";
+            shader += "uniform mat4 modelViewMatrix;";
+            shader += "uniform mat4 normalMatrix;";
+            shader += "uniform mat4 modelViewProjectionMatrix;";
+			
+			shader += "void main(void) {\n";
+			shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
+            shader += "}\n";
+		
+			g_shaders[shaderIdentifier] = {};
+            g_shaders[shaderIdentifier].type = "vertex";
+            g_shaders[shaderIdentifier].data = shader;
+        }else{
+            //x3dom.debug.logInfo("using existend Vertex Shader: " + shaderIdentifier);
+        }
+        
+        return shaderIdentifier;		
+	}
+	
+	Context.prototype.generateFSMobile = function (viewarea, vertexColor, texture, useLighting)
+    {
+        var useFog = useFogFunc(viewarea);
+        var shaderIdentifier = "fs-x3d-" + ( (vertexColor) ? 1 : 0 ) + 
+                                           ( (texture) ? 1 : 0 ) +
+                                           ( (useFog) ? 1 : 0 ) +
+                                           ( useLighting[0] ) +
+                                           ( (useLighting[1]) ? 1 : 0 );
+                                           
+        
+        if(!g_shaders[shaderIdentifier]) {
+		
+			var shader = "";
+			
+			shader += "void main(void) {\n";
+			shader += "	gl_FragColor = vec4(1.0, 0.0, 0.0, 1.0);\n";
+            shader += "}\n";
+			
+			g_shaders[shaderIdentifier] = {};
+            g_shaders[shaderIdentifier].type = "vertex";
+            g_shaders[shaderIdentifier].data = shader;
+        }else{
+            //x3dom.debug.logInfo("using existend Vertex Shader: " + shaderIdentifier);
+        }
+        
+        return shaderIdentifier;		
+	}
     
     Context.prototype.generateVS = function (viewarea, vertexColor, texture, textureTransform, cssMode, useLighting, geometryImage, indexedIG)
     {
