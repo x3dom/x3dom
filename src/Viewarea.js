@@ -991,6 +991,10 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         if (buttonState & 2) //right
         {
+            if (this._doc.properties.getProperty('disableRightDrag', 'false') === 'true') {
+                return;
+            }
+
             min = x3dom.fields.SFVec3f.MAX();
             max = x3dom.fields.SFVec3f.MIN();
             ok = this._scene.getVolume(min, max, true);
