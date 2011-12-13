@@ -817,6 +817,25 @@ x3dom.registerNodeType(
     )
 );
 
+
+/* ### IndexedTriangleStripSet ### */
+x3dom.registerNodeType(
+    "IndexedTriangleStripSet",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.IndexedTriangleStripSet.superClass.call(this, ctx);
+            this.addField_MFInt32(ctx, 'index', []);
+        },
+        {
+            nodeChanged: function() {
+                x3dom.debug.logError("========== IndexedTriangleStripSet is not implemented ==========")
+            }
+        }
+    )
+);
+
+
 /* ### X3DGeometricPropertyNode ### */
 x3dom.registerNodeType(
     "X3DGeometricPropertyNode",
