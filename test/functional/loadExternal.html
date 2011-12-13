@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>Load external X3D file (inline in disguise)</title>
+<script>
+    X3DOM_SECURITY_OFF = true;
+</script>
+<!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/lang/Properties.js"></script>
+<script type="text/javascript" src="../../src/lang/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<!-- END:X3DOM -->
+
+<!-- BEGIN:TEST -->
+<script type="text/javascript" src="media/js/tests.js"></script>
+<!-- END:TEST -->
+
+</head>
+<body">
+    <h1>Load external scene with src attribute (ajax)</h1>
+    <p>Demo of how to use the <tt>src</tt> attribute for loading X3D data.</p>
+    <p><b style="color:red">Caution:</b> This is the same as using an inline - loading a scene with Ajax.
+        You would expect that the browser does the loading when a <tt>src</tt> attribute occurs.
+        <b>IT DOES NOT WORK THAT WAY</b> in this case. Be aware when using the src attribute. That you are
+        actually dealing with inlines.</p>
+        <p>Best practice is NOT to use the src attribute, but instead add the inline to make clear what is happening.</p>
+<p> You will also have to set <tt>X3DOM_SECURITY_OFF = true</tt> globally before you include X3DOM.</p>
+    <div class="group">
+        <x3d src="media/data/flipper.x3d" id="the_element" width="512px" height="512px"></x3d>
+    </div>
+
+</script>
+</body>
+</html>
