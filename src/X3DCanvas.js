@@ -867,11 +867,11 @@ x3dom.X3DCanvas.prototype.tick = function()
         if (this.doc.needRender) {
 
             if (this.x3dElem.runtime.isReady == true) {
-                this.x3dElem.runtime.enterFrame(this.x3dElem);
+                this.x3dElem.runtime.enterFrame();
             } else {
                 this.x3dElem.runtime.ready();
                 this.x3dElem.runtime.isReady = true;
-                this.x3dElem.runtime.enterFrame(this.x3dElem);
+                this.x3dElem.runtime.enterFrame();
             }
 
             if (this.statDiv) {

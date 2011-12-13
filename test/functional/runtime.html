@@ -140,11 +140,11 @@
 	var ab_info;
 
 
-    x3dom.runtime.ready = function(x3delement) {
+    x3dom.runtime.ready = function() {
         alert("Custom runtime.ready() for all x3d elements on page.");
     };
 
-    x3dom.runtime.enterFrame = function(x3delement) {
+    x3dom.runtime.enterFrame = function() {
         x3dom.debug.logInfo("Custom enterFrame() for all elements on page (can be overwritten on per element basis)");
     };
 

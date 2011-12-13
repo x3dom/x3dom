@@ -188,7 +188,8 @@ x3dom.userAgentFeature = {
 
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) {
-            n.runtime = x3dom.runtime;
+            //n.runtime = x3dom.runtime;
+            n.runtime = new x3dom.Runtime();
             n.hasRuntime = true;
             return n;
         });
@@ -259,7 +260,7 @@ x3dom.userAgentFeature = {
             t0 = new Date().getTime();
 
             if (!x3ds[i].runtime) {
-                 x3ds[i].runtime = x3dom.runtime;
+                 x3ds[i].runtime = new x3dom.Runtime(x3ds[i], x3dcanvas);
             }  
 
             x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
