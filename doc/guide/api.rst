@@ -28,15 +28,13 @@ the X3D element they are working on as first parameter::
 Runtime
 -------
 
-..  js:function:: ready(element)
-
-    :param element: The X3D element the method is currently operation on.
+..  js:function:: ready()
 
     This method is called once the system initialized and is ready to
     render the first time. It is therefore possible to execute custom
     action by overriding this method in your code::
 
-        x3dom.runtime.ready = function(data) {
+        x3dom.runtime.ready = function() {
             alert("About to render something the first time");
         };
 
@@ -45,20 +43,11 @@ Runtime
     ``x3dom.js`` is the preferred way to ensure overloading of this function.
 
 
-..  js:function:: enterFrame(element)
-
-    :param element: The X3D element the method is currently operation on.
+..  js:function:: enterFrame()
 
     This method is called just before the next frame is rendered. It is
     therefore possible to execute custom actions by overriding this
     method in your code::
-
-        x3dom.runtime.enterFrame = function(data) {
-            alert("About to render next frame");
-        };
-
-    It is also possible to override this function on a per X3D
-    element basis::
 
         var element = document.getElementById('my_element');
         element.runtime.enterFrame = function() {
