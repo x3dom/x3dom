@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/lang/Properties.js"></script>
+<script type="text/javascript" src="../../src/lang/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<!-- END:X3DOM -->
+
+    <script type="text/javascript" src="media/js/tests.js"></script>
+  </head>
+
+<body>
+    <h1>IndexedTriangleStripSet</h1>
+    <p><a href="http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/rendering.html#IndexedTriangleStripSet">Spec</a>,
+    <a href="http://x3dgraphics.com/examples/X3dForWebAuthors/Chapter13-GeometryTrianglesQuadrilaterals/_pages/page04.html">X3D example</a></p>
+    <x3d showStat='true' showLog='true' width='400px' height='400px'>
+      <scene>
+        <viewpoint description='IndexedTriangleStripSet view' orientation='0 -1 0 0.07' position='-0.06 1.4 11.24'></viewpoint>
+        <background skyColor='1 1 1'></background>
+        <shape>
+            <IndexedTriangleStripSet index='9 10 11 12 13 -1 14 15 16 17 -1' solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
+                <coordinate point='-4 1 3 -2 2 1.5 -3 4 0.5 -2 3 1.5 0 4 0.0 2 3 1.5 5 5 -2.5 4 3 1.5 6 4 2.0 -4 1 3 -2 2 1.0 -3 4 0.0 -2 3 1.0 0 4 0.0 2 3 1.0 5 5 -2.0 4 3 1.5 6 4 2.0 0 -2 4 1 -3 3.5 1.5 -1.5 3 0 -1 2 -.5 0 2.5 -1.5 1 3 -2 0 3.5 -3 -2 2 -3 -4 3 2 -4 -2 0 -3 -.5 1.3 -1.5 -1 4 -2 -1.5 4.2 -4.2 -1 3 -6 -.5'></coordinate>
+                <color color='0 .8 0 0 1 1 1 0 0 1 .5 0 .8 0 1 1 1 0 .6 .3 .1 1 0 .5 0 1 .5 1 0 0 .8 0 1 1 1 0 0 1 1 1 .5 0 .6 .3 .1 1 0 .5 0 .8 0 0 1 .5'></color>
+            </IndexedTriangleStripSet>
+        </shape>
+      </scene>
+    </x3d>
+</body>
+</html>
