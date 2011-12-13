@@ -41,4 +41,5 @@ PrimitiveQuality      High, Medium, Low, float     High/1.0          Render qual
 component             String (i.e. Geometry3D)     none              Name of the component to load
 loadpath              String (i.e. nodes/)         none              The path or URI where to find the components
 disableDoubleClick    true,false                   false             Disables the default double click action on viewarea
+disableRightDrag      true,false                   false             Disable mouse right button drag and mouse wheel
 ==================    =========================    ===========     =================================================

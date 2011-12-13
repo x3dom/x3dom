@@ -122,7 +122,8 @@ x3dom.userAgentFeature = {
             'component', 
             'loadpath', 
             'disableDoubleClick',
-            'maxActiveDownloads',
+            'disableRightDrag',
+            'maxActiveDownloads'
         ]);
         var components, prefix;
 
