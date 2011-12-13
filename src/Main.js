@@ -116,7 +116,7 @@ x3dom.userAgentFeature = {
         var settings = new x3dom.Properties();  // stores the stuff in <param>
         var validParams = array_to_object([ 
             'showLog', 
-            'showStat', 
+            'showStat',
             'showProgress', 
             'PrimitiveQuality', 
             'component', 
@@ -166,6 +166,16 @@ x3dom.userAgentFeature = {
                 }
             }
 
+            // src=foo.x3d adding inline node, not a good idea, but...
+            if (typeof X3DOM_SECURITY_OFF != 'undefined' && X3DOM_SECURITY_OFF === true) {
+                if (x3ds[i].getAttribute("src")) {
+                    var _scene = document.createElement("scene");
+                    var _inl = document.createElement("Inline");
+                    _inl.setAttribute("url", x3ds[i].getAttribute("src"));
+                    _scene.appendChild(_inl);
+                    x3ds[i].appendChild(_scene);
+                }
+            }
         }
         // }}}
 
