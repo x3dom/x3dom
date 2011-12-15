@@ -3,9 +3,9 @@
 	<Transform id="1" translation="2 0 0">
 		<Shape id="2" DEF='sphere'>
 			<Appearance id="3">
-				<Material id="color" diffuseColor="1 0 0" />
+				<Material id="color2" diffuseColor="1 0 0" />
 			</Appearance>
-			<Sphere id="4" onmouseover="test2();" />
+			<Sphere id="4" onmouseover="test3();" onmouseout="test4();" />
 		</Shape>
 	</Transform>
   </Scene>
