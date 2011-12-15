@@ -528,50 +528,56 @@ x3dom.gfx_webgl = (function () {
             }
 
             loc = gl.getUniformLocation(sp, obj.name);
-            
+			
+			var objName = obj.name;
+			if(obj.name.lastIndexOf("[0]") == obj.name.length-3){
+				objName = obj.name.substr(0, obj.name.length-3);
+			}
+			
+			
             switch (obj.type) {
                 case gl.SAMPLER_2D:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
                     break;
                 case gl.SAMPLER_CUBE:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
                     break;
                 case gl.BOOL:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
                     break;
                 case gl.FLOAT:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
                     break;
                 case gl.FLOAT_VEC2:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]); }; })(loc));           
                     break;
                 case gl.FLOAT_VEC3:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniform3f(loc, val[0], val[1], val[2]); }; })(loc));
                     break;
                 case gl.FLOAT_VEC4:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniform4f(loc, val[0], val[1], val[2], val[3]); }; })(loc));
                     break;
                 case gl.FLOAT_MAT2:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniformMatrix2fv(loc, false, new Float32Array(val)); }; })(loc));
                     break;
                 case gl.FLOAT_MAT3:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniformMatrix3fv(loc, false, new Float32Array(val)); }; })(loc));
                     break;
                 case gl.FLOAT_MAT4:
-                    shader.__defineSetter__(obj.name, 
+                    shader.__defineSetter__(objName, 
                         (function (loc) { return function (val) { gl.uniformMatrix4fv(loc, false, new Float32Array(val)); }; })(loc));
                     break;
                 case gl.INT:
-                    shader.__defineSetter__(obj.name,
+                    shader.__defineSetter__(objName,
                         (function (loc) { return function (val) { gl.uniform1i(loc, val); }; }) (loc));
                     break;
                 default:
@@ -3324,7 +3330,6 @@ x3dom.gfx_webgl = (function () {
                 }
             }
         }
-        
         //===========================================================================
         // Set HeadLight
         //===========================================================================
@@ -3357,6 +3362,8 @@ x3dom.gfx_webgl = (function () {
 				sp['light[' + numLights + '].cutOffAngle']      = 0.0;
 			}
         }
+		
+		
         
         var userShader = shape._cf.appearance.node._shader;
         if (userShader) {
