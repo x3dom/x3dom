@@ -50,7 +50,10 @@ x3dom.registerNodeType(
 
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'load', true);
-        },
+			this.addField_MFString(ctx, 'nameSpaceName', []);
+			
+			this.currentInline = ctx.xmlNode;
+       },
         {
             fieldChanged: function (fieldName)
             {
@@ -111,7 +114,19 @@ x3dom.registerNodeType(
                         nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
                         nameSpace.setBaseURL (that._vf.url[0]);
                         newScene = nameSpace.setupTree(inlScene);
-                    } else {
+											
+						
+						if(that._vf.nameSpaceName.length != 0) {
+							Array.forEach ( inlScene.childNodes, function (childDomNode) {
+								if(childDomNode instanceof Element){
+									setNamespace(that._vf.nameSpaceName, childDomNode);
+									that.currentInline.appendChild(childDomNode);
+								}
+							} );
+						}
+						
+						
+				     } else {
                         x3dom.debug.logWarning('no Scene in ' + xml.localName);
                     }
 
@@ -142,3 +157,18 @@ x3dom.registerNodeType(
         }
     )
 );
+
+function setNamespace(prefix, childDomNode){
+	if(childDomNode instanceof Element) {
+	
+		if(childDomNode.hasAttribute('id'))	{
+			childDomNode.setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('id'));	
+		}
+	}
+	
+	if(childDomNode.hasChildNodes()){
+		Array.forEach ( childDomNode.childNodes, function (children) {
+				setNamespace(prefix, children);			
+		} );
+	}		
+}

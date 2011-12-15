@@ -104,7 +104,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 
         // return if it is already initialized
         if (domNode._x3domNode) {
-            x3dom.debug.logWarning ('Tree is already initialized');
+            x3dom.debug.logInfo('Tree is already initialized');
             return;
         }
 
