@@ -120,22 +120,30 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
         },
         onNodeInserted: function(e) {
+			
             // only act on x3dom nodes, ignore regular HTML
             if ('_x3domNode' in e.target.parentNode) {
-                var parent = e.target.parentNode._x3domNode;
-                var child = e.target;
-
-                //x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
-
-                if (parent._nameSpace) {
-                    var newNode = parent._nameSpace.setupTree(child);
-                    parent.addChild(newNode, child.getAttribute("containerField"));
-                    doc.needRender = true;
-                }
-                else {
-                    x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
-                }
+				if(e.target.parentNode.tagName == 'Inline' 
+				   || e.target.parentNode.tagName == 'INLINE' 
+				   || e.target.parentNode.tagName == 'inline') {
+					return;
+				} else {
+					var parent = e.target.parentNode._x3domNode;
+					var child = e.target;
+	
+					//x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
+	
+					if (parent._nameSpace) {
+						var newNode = parent._nameSpace.setupTree(child);
+						parent.addChild(newNode, child.getAttribute("containerField"));
+						doc.needRender = true;
+					}
+					else {
+						x3dom.debug.logWarning("No _nameSpace in onNodeInserted");
+					}
+				}
             }
+			
         }
     };
 

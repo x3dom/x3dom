@@ -5,7 +5,7 @@
         <Appearance id="3">
           <Material id="color1" diffuseColor="1 1 0"/>
         </Appearance>
-        <Box id="4" onmouseover="test3();" />
+        <Box id="4" onmouseover="test5();" onmouseout="test6();" />
       </Shape>
 	</Transform>
 	<Transform id="1" translation="2 0 0">
@@ -13,7 +13,7 @@
 			<Appearance id="3">
 				<Material id="color2" diffuseColor="1 0 0" />
 			</Appearance>
-			<Sphere id="4" onmouseover="test4();" />
+			<Sphere id="4" onmouseover="test7();" onmouseout="test8();" />
 		</Shape>
 	</Transform>
   </Scene>
