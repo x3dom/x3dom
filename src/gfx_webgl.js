@@ -115,12 +115,10 @@ x3dom.gfx_webgl = (function () {
     var g_shaders = {};
     
     g_shaders['vs-x3d-bg-texture'] = { type: "vertex", data:
-
         "attribute vec3 position;" +
         "varying vec2 fragTexCoord;" +
         "" +
         "void main(void) {" +
-
         "    vec2 texCoord = (position.xy + 1.0) * 0.5;" +
         "    fragTexCoord = texCoord;" +
 		"    gl_Position = vec4(position.xy, 0.0, 1.0);" +
@@ -140,14 +138,12 @@ x3dom.gfx_webgl = (function () {
         };
     
     g_shaders['fs-x3d-bg-texture'] = { type: "fragment", data:
-
         "#ifdef GL_ES             \n" +
         "  precision highp float; \n" +
         "#endif                   \n" +
         "\n" +
         "uniform sampler2D tex;\n" +
         "varying vec2 fragTexCoord;\n" +
-
         "\n" +
         "void main(void) {\n" +
         "    gl_FragColor = texture2D(tex, fragTexCoord);\n" +
@@ -289,29 +285,29 @@ x3dom.gfx_webgl = (function () {
         "varying vec3 worldCoord;" +
 		"uniform float indexed;" +
 		"uniform float imageGeometry;" +
-		"uniform vec3 GI_bboxMin;" +
-		"uniform vec3 GI_bboxMax;" +
-		"uniform float GI_coordTextureWidth;" +
-		"uniform float GI_coordTextureHeight;" +
-		"uniform float GI_indexTextureWidth;" +
-		"uniform float GI_indexTextureHeight;" +
-		"uniform sampler2D GI_indexTexture;" +
-		"uniform sampler2D GI_coordinateTexture;" +
+		"uniform vec3 IG_bboxMin;" +
+		"uniform vec3 IG_bboxMax;" +
+		"uniform float IG_coordTextureWidth;" +
+		"uniform float IG_coordTextureHeight;" +
+		"uniform float IG_indexTextureWidth;" +
+		"uniform float IG_indexTextureHeight;" +
+		"uniform sampler2D IG_indexTexture;" +
+		"uniform sampler2D IG_coordinateTexture;" +
 		
         "void main(void) {" +
 		"	 if(imageGeometry == 1.0) { " +
 		"		vec2 IG_texCoord;" +
 		"		if(indexed == 1.0) {" +
-		"			vec2 halfPixel = vec2(0.5/GI_indexTextureWidth,0.5/GI_indexTextureHeight);" +
-		"			IG_texCoord = vec2(position.x*(256.0/GI_indexTextureWidth), position.y*(256.0/GI_indexTextureHeight)) + halfPixel;" +
-		"			vec2 IG_index = texture2D( GI_indexTexture, IG_texCoord ).rg;" + 
+		"			vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);" +
+		"			IG_texCoord = vec2(position.x*(256.0/IG_indexTextureWidth), position.y*(256.0/IG_indexTextureHeight)) + halfPixel;" +
+		"			vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;" + 
 		"			IG_texCoord = IG_index * 0.996108948;" +
 		"		} else { " +
-		"			vec2 halfPixel = vec2(0.5/GI_coordTextureWidth, 0.5/GI_coordTextureHeight);" +
-		"			IG_texCoord = vec2(position.x*(256.0/GI_coordTextureWidth), position.y*(256.0/GI_coordTextureHeight)) + halfPixel;" +
+		"			vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);" +
+		"			IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)) + halfPixel;" +
 		"		}" +
-		"		vec3 pos = texture2D( GI_coordinateTexture, IG_texCoord ).rgb;" +
-		"	 	pos = pos * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;" +
+		"		vec3 pos = texture2D( IG_coordinateTexture, IG_texCoord ).rgb;" +
+		"	 	pos = pos * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;" +
         "    	worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
 		"		gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +		
 		"	 } else { " +
@@ -657,34 +653,24 @@ x3dom.gfx_webgl = (function () {
 		var lights				= (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight);
 		var solid				= (shape.isSolid()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
+		var imageGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) ? 1 : 0;
+		var iG_Precision		= (imageGeometry) ? shape._cf.geometry.node.numCoordinateTextures() : 0;
+		var iG_Indexed			= (imageGeometry && shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0;
 		
-        var shaderIdentifier = "vs-x3d-mobil-" + ( (vertexColor) ) + 
-                                                 ( (texture) ) +
-												 ( (textureTransform) ) +
-												 ( (sphereMapping) ) +
-												 ( (blending) ) +
-												 ( (solid) ) +
-												 ( (fog) ) +
-												 ( (lights) );
+        var shaderIdentifier = "vs-x3d-mobil-" +  vertexColor + 
+                                                  texture +
+												  textureTransform +
+												  sphereMapping +
+												  blending +
+												  solid +
+												  fog +
+												  lights +
+												  imageGeometry +
+												  iG_Precision +
+												  iG_Indexed;
 										   
-		x3dom.debug.logInfo(shaderIdentifier);
 		if(!g_shaders[shaderIdentifier]){
 		
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			var shader = "";
             
             //Set Attributes +Uniforms + Varyings
@@ -702,6 +688,24 @@ x3dom.gfx_webgl = (function () {
             shader += "uniform float ambientIntensity;\n";
 
 			shader += "varying vec4 fragColor;\n";
+			
+			if(imageGeometry) {
+				shader += "uniform vec3 IG_bboxMin;";
+				shader += "uniform vec3 IG_bboxMax;";
+				shader += "uniform float IG_coordTextureWidth;";
+				shader += "uniform float IG_coordTextureHeight;";
+				shader += "uniform sampler2D IG_normalTexture;";
+				
+				for( var i = 0; i < iG_Precision; i++ ) {
+					shader += "uniform sampler2D IG_coordinateTexture" + i + ";";
+				}
+				
+				if(iG_Indexed) {
+					shader += "uniform sampler2D IG_indexTexture;";
+					shader += "uniform float IG_indexTextureWidth;";
+					shader += "uniform float IG_indexTextureHeight;";
+				}
+			}
 			
 			if(fog) {
 				shader += "uniform vec3  fogColor;\n" +
@@ -742,24 +746,18 @@ x3dom.gfx_webgl = (function () {
 						  " 			   in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular) {" +
                           "   vec3 L;\n" +
                           "   float spot = 1.0, attentuation = 1.0;\n" +
-
-
                           "   if(lType == 0.0) {\n" +
                           "       L = -normalize(lDirection);\n" +
                           "   }else{\n" +
-
                           "       L = normalize(lLocation - (-V));" +
                           "       float distance = length(L);" +
                           "       L /= distance;\n" +
                           "       attentuation = 1.0 / (lAttenuation.x + lAttenuation.y * distance + lAttenuation.z * (distance * distance));" +
                           "       attentuation *= max(0.0, dot(N, L));" +
-
                           "       if(lType == 2.0) {" +
                           "           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));" +
-
                           "           if(spotAngle >= lCutOffAngle) spot = 0.0;" +
                           "           else if(spotAngle <= lBeamWidth) spot = 1.0;" +
-
                           "           else spot = (spotAngle - lCutOffAngle ) / (lBeamWidth - lCutOffAngle);" +
                           "       }" +
                           "   }" +
@@ -775,42 +773,26 @@ x3dom.gfx_webgl = (function () {
                           "   diffuse  += lColor * diffuseFactor * attentuation * spot;" +
                           "   specular += lColor * specularFactor * attentuation * spot;" +  
                           "}";
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 			}
 			
 			if(vertexColor){
-                if(vertexColor == 3){
-                    shader += "attribute vec3 color;";
-                }else{
-                    shader += "attribute vec4 color;";
-                }
+				if(imageGeometry) {
+					shader += "uniform sampler2D IG_colorTexture;";
+				} else {
+					if(vertexColor == 3){
+						shader += "attribute vec3 color;";
+					}else{
+						shader += "attribute vec4 color;";
+					}
+				}
             }
 			
 			if(texture) {
-				shader += "attribute vec2 texcoord;\n";
+				if(imageGeometry) {
+					shader += "uniform sampler2D IG_texCoordTexture;";
+				} else {
+					shader += "attribute vec2 texcoord;\n";
+				}
                 shader += "varying vec2 fragTexcoord;\n";
                 if(textureTransform){
                     shader += "uniform mat4 texTrafoMatrix;\n";
@@ -822,20 +804,76 @@ x3dom.gfx_webgl = (function () {
 			
 			shader += "void main(void) {\n";
 			
+			if(imageGeometry) {
+				if (iG_Indexed) {
+					shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);";
+					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_indexTextureWidth), position.y*(256.0/IG_indexTextureHeight)) + halfPixel;";
+					shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;";
+					
+					shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);";
+					shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;";
+				} else {
+					shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);";
+					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)) + halfPixel;";
+				}
+				
+				//Coordinates
+				shader += "vec3 temp = vec3(0.0, 0.0, 0.0);";
+				shader += "vec3 vertPosition = vec3(0.0, 0.0, 0.0);";
+				
+				for(var i=0; i<iG_Precision; i++) {
+					shader += "temp = texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;";
+					if(i) shader += "temp /= (" + i + ".0 * 256.0);";
+					shader += "vertPosition += temp;";
+				}
+
+				shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;";
+				
+				//Normals
+				shader += "vec3 vertNormal = texture2D( IG_normalTexture, IG_texCoord ).rgb;";
+				shader += "vertNormal = vertNormal * 2.0 - 1.0;";
+				
+				//TexCoords
+				if(texture) {
+					shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoordTexture, IG_texCoord );";
+					shader += "vec2 vertTexCoord;";
+					shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);";
+					shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);";
+				}
+				
+				//Color
+				if(vertexColor == 3) {
+					shader += "vec3 vertColor = texture2D( IG_colorTexture, IG_texCoord ).rgb;";
+				} else if(vertexColor == 4) {
+					shader += "vec4 vertColor = texture2D( IG_colorTexture, IG_texCoord ).rgba;";
+				}
+			} else {
+				shader += "vec3 vertNormal = normal;";
+				shader += "vec3 vertPosition = position;";
+				if(vertexColor == 3){
+					shader += "vec3 vertColor = color;";
+				} else if(vertexColor == 4) {
+					shader += "vec4 vertColor = color;";
+				}
+				if(texture) {
+					shader += "vec2 vertTexCoord = texcoord;";
+				}
+			}
+			
 			//positions to model-view-space
-			shader += "vec3 positionMV = (modelViewMatrix * vec4(position, 1.0)).xyz;\n";
+			shader += "vec3 positionMV = (modelViewMatrix * vec4(vertPosition, 1.0)).xyz;\n";
 			
 			//normals to model-view-space
-			shader += "vec3 normalMV = normalize( (normalMatrix * vec4(normal, 0.0)).xyz );\n";
+			shader += "vec3 normalMV = normalize( (normalMatrix * vec4(vertNormal, 0.0)).xyz );\n";
 			
 			//Calc TexCoords
 			if(texture){
                 if(sphereMapping) {
 					shader += " fragTexcoord = 0.5 + normalMV.xy / 2.0;\n";
 				} else if(textureTransform) {
-					shader += " fragTexcoord = (texTrafoMatrix * vec4(texcoord, 1.0, 1.0)).xy;\n";
+					shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
 				} else {
-					shader += " fragTexcoord = texcoord;\n";
+					shader += " fragTexcoord = vertTexCoord;\n";
 				}
             }
 			
@@ -871,10 +909,10 @@ x3dom.gfx_webgl = (function () {
 					shader += "fragColor.rgb = (emissiveColor + ambient*diffuseColor + specular*specularColor);\n";
 					shader += "fragColor.a = 1.0 - transparency;\n";
 				} else if(vertexColor == 3) {
-					shader += "fragColor.rgb = color;\n";
+					shader += "fragColor.rgb = vertColor;\n";
 					shader += "fragColor.a = 1.0 - transparency;\n";
 				} else if(vertexColor == 4) {
-					shader += "fragColor.rgba = color;\n";
+					shader += "fragColor.rgba = vertColor;\n";
 				} else {
 					shader += "fragColor.rgb = (emissiveColor + ambient*diffuseColor + diffuse*diffuseColor + specular*specularColor);\n";
 					shader += "fragColor.a = 1.0-transparency;\n";
@@ -885,10 +923,10 @@ x3dom.gfx_webgl = (function () {
 					shader += "fragColor.rgb = vec3(0.0);\n";
 					shader += "fragColor.a = 1.0 - transparency;\n";
 				} else if(vertexColor == 3) {
-					shader += "fragColor.rgb = color;\n";
+					shader += "fragColor.rgb = vertColor;\n";
 					shader += "fragColor.a = 1.0 - transparency;\n";
 				} else if(vertexColor == 4) {
-					shader += "fragColor.rgba = color;\n";
+					shader += "fragColor.rgba = vertColor;\n";
 				} else {
 					shader += "fragColor.rgb = diffuseColor + emissiveColor;\n;\n";
 					shader += "fragColor.a = 1.0-transparency;\n";
@@ -900,7 +938,7 @@ x3dom.gfx_webgl = (function () {
                 shader += "fragColor.rgb = fogColor * (1.0-f0) + f0 * (fragColor.rgb);\n";
 			}
 
-			shader += "gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n";
+			shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
             shader += "}\n";
 		
 			g_shaders[shaderIdentifier] = {};
@@ -909,7 +947,7 @@ x3dom.gfx_webgl = (function () {
         }else{
             //x3dom.debug.logInfo("using existend Vertex Shader: " + shaderIdentifier);
         }
-        
+
         return shaderIdentifier;		
 	}
 	
@@ -997,24 +1035,24 @@ x3dom.gfx_webgl = (function () {
             shader += "varying vec3 fragNormal;";
 			
 			if(geometryImage) {
-				shader += "uniform vec3 GI_bboxMin;";
-				shader += "uniform vec3 GI_bboxMax;";
-				shader += "uniform float GI_coordTextureWidth;";
-				shader += "uniform float GI_coordTextureHeight;";
+				shader += "uniform vec3 IG_bboxMin;";
+				shader += "uniform vec3 IG_bboxMax;";
+				shader += "uniform float IG_coordTextureWidth;";
+				shader += "uniform float IG_coordTextureHeight;";
 				
 				if(indexedIG) {
-					shader += "uniform sampler2D GI_indexTexture;";
-					shader += "uniform float GI_indexTextureWidth;";
-					shader += "uniform float GI_indexTextureHeight;";
+					shader += "uniform sampler2D IG_indexTexture;";
+					shader += "uniform float IG_indexTextureWidth;";
+					shader += "uniform float IG_indexTextureHeight;";
 				}
 				
 				for( var i = 0; i < geometryImage; i++ ) {
-					shader += "uniform sampler2D GI_coordinateTexture" + i + ";";
+					shader += "uniform sampler2D IG_coordinateTexture" + i + ";";
 				}
 				
-				shader += "uniform sampler2D GI_normalTexture;";
-				shader += "uniform sampler2D GI_texCoordTexture;";
-				shader += "uniform sampler2D GI_colorTexture;";	
+				shader += "uniform sampler2D IG_normalTexture;";
+				shader += "uniform sampler2D IG_texCoordTexture;";
+				shader += "uniform sampler2D IG_colorTexture;";	
 			}
 
             if(vertexColor){
@@ -1061,15 +1099,15 @@ x3dom.gfx_webgl = (function () {
 				
 				//Indices
 				if(indexedIG) {
-					shader += "vec2 halfPixel = vec2(0.5/GI_indexTextureWidth,0.5/GI_indexTextureHeight);";
-					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/GI_indexTextureWidth), position.y*(256.0/GI_indexTextureHeight)) + halfPixel;";
-					shader += "vec2 IG_index = texture2D( GI_indexTexture, IG_texCoord ).rg;";
+					shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);";
+					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_indexTextureWidth), position.y*(256.0/IG_indexTextureHeight)) + halfPixel;";
+					shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;";
 					
-					shader += "halfPixel = vec2(0.5/GI_coordTextureWidth,0.5/GI_coordTextureHeight);";
+					shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);";
 					shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;";
 				} else {
-					shader += "vec2 halfPixel = vec2(0.5/GI_coordTextureWidth, 0.5/GI_coordTextureHeight);";
-					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/GI_coordTextureWidth), position.y*(256.0/GI_coordTextureHeight)) + halfPixel;";
+					shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);";
+					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)) + halfPixel;";
 				}
 				
 				//Coordinates
@@ -1078,20 +1116,20 @@ x3dom.gfx_webgl = (function () {
 				
 				for(var i=0; i<geometryImage; i++)
 				{
-					shader += "temp = texture2D( GI_coordinateTexture" + i + ", IG_texCoord ).rgb;";
+					shader += "temp = texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;";
 					if(i) shader += "temp /= (" + i + ".0 * 256.0);";
 					shader += "vertPosition += temp;";
 				}
 
-				shader += "vertPosition = vertPosition * (GI_bboxMax - GI_bboxMin) + GI_bboxMin;";
+				shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;";
 				
 				//Normals
-				shader += "vec3 vertNormal = texture2D( GI_normalTexture, IG_texCoord ).rgb;";
+				shader += "vec3 vertNormal = texture2D( IG_normalTexture, IG_texCoord ).rgb;";
 				shader += "vertNormal = vertNormal * 2.0 - 1.0;";
 				
 				//TexCoords
 				if(texture || cssMode) {
-					shader += "vec4 IG_doubleTexCoords = texture2D( GI_texCoordTexture, IG_texCoord );";
+					shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoordTexture, IG_texCoord );";
 					shader += "vec2 vertTexCoord;";
 					shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);";
 					shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);";
@@ -1099,7 +1137,7 @@ x3dom.gfx_webgl = (function () {
 				
 				//Color
 				if(vertexColor) {
-					shader += "fragColor = texture2D( GI_colorTexture, IG_texCoord ).rgb;";
+					shader += "fragColor = texture2D( IG_colorTexture, IG_texCoord ).rgb;";
 				}
 				
 				//PointSize
@@ -2046,33 +2084,33 @@ x3dom.gfx_webgl = (function () {
 			
 			//If GeometryImage-Node load textures
 			if(shape._webgl.imageGeometry) {
-				var GI_texUnit = 1;
+				var IG_texUnit = 1;
 				
 				var indexTexture = shape._cf.geometry.node.getIndexTexture();
 				if(indexTexture) {
-					shape.updateTexture(indexTexture, GI_texUnit++, 'index');
+					shape.updateTexture(indexTexture, IG_texUnit++, 'index');
 				}
 				
 				for(var i=0; i<numCoordinateTextures; i++) {
 					var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(i);
 					if(coordinateTexture) {
-						shape.updateTexture(coordinateTexture, GI_texUnit++, 'coord');
+						shape.updateTexture(coordinateTexture, IG_texUnit++, 'coord');
 					}
 				}
 							
 				var normalTexture = shape._cf.geometry.node.getNormalTexture(0);
 				if(normalTexture) {
-					shape.updateTexture(normalTexture, GI_texUnit++, "normal");
+					shape.updateTexture(normalTexture, IG_texUnit++, "normal");
 				}
 				
 				var texCoordTexture = shape._cf.geometry.node.getTexCoordTexture();
 				if(texCoordTexture) {
-					shape.updateTexture(texCoordTexture, GI_texUnit++, "texCoord");
+					shape.updateTexture(texCoordTexture, IG_texUnit++, "texCoord");
 				}
 				
 				var colorTexture = shape._cf.geometry.node.getColorTexture();
 				if(colorTexture) {
-					shape.updateTexture(colorTexture, GI_texUnit++, "color");
+					shape.updateTexture(colorTexture, IG_texUnit++, "color");
 				}
 			}
             
@@ -2956,15 +2994,15 @@ x3dom.gfx_webgl = (function () {
 			if(shape._webgl.imageGeometry)
 			{
 				sp.imageGeometry    = 1.0;
-				sp.GI_bboxMin 		= shape._cf.geometry.node.getMin().toGL();
-				sp.GI_bboxMax		= shape._cf.geometry.node.getMax().toGL();
-				sp.GI_coordTextureWidth	 = shape._webgl.coordTextureWidth;
-				sp.GI_coordTextureHeight = shape._webgl.coordTextureHeight;
+				sp.IG_bboxMin 		= shape._cf.geometry.node.getMin().toGL();
+				sp.IG_bboxMax		= shape._cf.geometry.node.getMax().toGL();
+				sp.IG_coordTextureWidth	 = shape._webgl.coordTextureWidth;
+				sp.IG_coordTextureHeight = shape._webgl.coordTextureHeight;
 				
 				if(shape._webgl.indexedImageGeometry) {
 					sp.indexed = 1.0;
-					sp.GI_indexTextureWidth	 = shape._webgl.indexTextureWidth;
-					sp.GI_indexTextureHeight = shape._webgl.indexTextureHeight;
+					sp.IG_indexTextureWidth	 = shape._webgl.indexTextureWidth;
+					sp.IG_indexTextureHeight = shape._webgl.indexTextureHeight;
 					
 					gl.activeTexture(gl.TEXTURE0);
 					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1]);
@@ -2985,14 +3023,14 @@ x3dom.gfx_webgl = (function () {
 				var texUnit = 0;
 				
 				if(shape._cf.geometry.node.getIndexTexture()) {
-					if(!sp.GI_indexTexture) {
-						sp.GI_indexTexture = texUnit++;
+					if(!sp.IG_indexTexture) {
+						sp.IG_indexTexture = texUnit++;
 					}
 				}
 				
 				if(shape._cf.geometry.node.getCoordinateTexture(0)) {
-					if(!sp.GI_coordinateTexture) {
-						sp.GI_coordinateTexture = texUnit++;
+					if(!sp.IG_coordinateTexture) {
+						sp.IG_coordinateTexture = texUnit++;
 					}
 				}
 			}
@@ -3118,14 +3156,14 @@ x3dom.gfx_webgl = (function () {
         // Set GeometryImage variables
         //===========================================================================
 		if(shape._webgl.imageGeometry) {
-			sp.GI_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
-			sp.GI_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
-			sp.GI_coordTextureWidth	 = shape._webgl.coordTextureWidth;
-			sp.GI_coordTextureHeight = shape._webgl.coordTextureHeight;
+			sp.IG_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
+			sp.IG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
+			sp.IG_coordTextureWidth	 = shape._webgl.coordTextureWidth;
+			sp.IG_coordTextureHeight = shape._webgl.coordTextureHeight;
 			
 			if(shape._webgl.indexedImageGeometry) {
-				sp.GI_indexTextureWidth	 = shape._webgl.indexTextureWidth;
-				sp.GI_indexTextureHeight = shape._webgl.indexTextureHeight;
+				sp.IG_indexTextureWidth	 = shape._webgl.indexTextureWidth;
+				sp.IG_indexTextureHeight = shape._webgl.indexTextureHeight;
 			}
 		}
 
@@ -3142,9 +3180,6 @@ x3dom.gfx_webgl = (function () {
 				sp['fog.color']             = fog._vf.color.toGL();
 				sp['fog.visibilityRange']   = fog._vf.visibilityRange;
 				sp['fog.fogType']			= (fog._vf.fogType == "LINEAR") ? 0.0 : 1.0;
-
-
-
 			}
         }
         
@@ -3160,7 +3195,6 @@ x3dom.gfx_webgl = (function () {
 			sp['material.emissiveColor']    = shaderCSS._vf.emissiveFactor.toGL();
 			sp['material.shininess']        = shaderCSS._vf.shininessFactor;
 			sp['material.ambientIntensity'] = (shaderCSS._vf.ambientFactor.x + 
-
 											   shaderCSS._vf.ambientFactor.y + 
 											   shaderCSS._vf.ambientFactor.z)/3;
 			sp['material.transparency']     = 1.0 - shaderCSS._vf.alphaFactor;
@@ -3200,7 +3234,6 @@ x3dom.gfx_webgl = (function () {
             for(var p=0; p<numLights; p++){         
                 if(x3dom.isa(slights[p], x3dom.nodeTypes.DirectionalLight))
                 {
-
                     if(x3dom.caps.MOBILE) {
 						sp['Light'+p+'_Type']             = 0.0;
 						sp['Light'+p+'_On']               = (slights[p]._vf.on) ? 1.0 : 0.0;
@@ -3227,14 +3260,10 @@ x3dom.gfx_webgl = (function () {
 						sp['light[' + p + '].beamWidth']        = 0.0;
 						sp['light[' + p + '].cutOffAngle']      = 0.0;
 						sp['light[' + p + '].shadowIntensity']  = slights[p]._vf.shadowIntensity;
-
-
-
 					}
                 }
                 else if(x3dom.isa(slights[p], x3dom.nodeTypes.PointLight))
                 {
-
                     if(x3dom.caps.MOBILE) {
 						sp['Light'+p+'_Type']             = 1.0;
 						sp['Light'+p+'_On']               = (slights[p]._vf.on) ? 1.0 : 0.0;
@@ -3265,7 +3294,6 @@ x3dom.gfx_webgl = (function () {
                 }
                 else if(x3dom.isa(slights[p], x3dom.nodeTypes.SpotLight))
                 {
-
 					if(x3dom.caps.MOBILE) {
 						sp['Light'+p+'_Type']             = 2.0;
 						sp['Light'+p+'_On']               = (slights[p]._vf.on) ? 1.0 : 0.0;
@@ -3478,37 +3506,37 @@ x3dom.gfx_webgl = (function () {
 			//Associate GeometryImage texture units
 			if(shape._webgl.imageGeometry)
 			{
-				var GI_texUnit = 1;
+				var IG_texUnit = 1;
 				
 				if(shape._cf.geometry.node.getIndexTexture()) {
-					if(!sp.GI_indexTexture) {
-						sp.GI_indexTexture = GI_texUnit++;
+					if(!sp.IG_indexTexture) {
+						sp.IG_indexTexture = IG_texUnit++;
 					}
 				}
 
 				for(var i=0; i<shape._webgl.imageGeometry; i++) {
 					if(shape._cf.geometry.node.getCoordinateTexture(i)) {
-						if(!sp['GI_coordinateTexture' + i]) {
-							sp['GI_coordinateTexture' + i] = GI_texUnit++;
+						if(!sp['IG_coordinateTexture' + i]) {
+							sp['IG_coordinateTexture' + i] = IG_texUnit++;
 						}
 					}
 				}
 				
 				if(shape._cf.geometry.node.getNormalTexture(0)) {
-					if(!sp.GI_normalTexture) {
-						sp.GI_normalTexture = GI_texUnit++;
+					if(!sp.IG_normalTexture) {
+						sp.IG_normalTexture = IG_texUnit++;
 					}
 				}
 				
 				if(shape._cf.geometry.node.getTexCoordTexture()) {
-					if(!sp.GI_texCoordTexture) {
-						sp.GI_texCoordTexture = GI_texUnit++;
+					if(!sp.IG_texCoordTexture) {
+						sp.IG_texCoordTexture = IG_texUnit++;
 					}
 				}
 				
 				if(shape._cf.geometry.node.getColorTexture()) {
-					if(!sp.GI_colorTexture) {
-						sp.GI_colorTexture = GI_texUnit++;
+					if(!sp.IG_colorTexture) {
+						sp.IG_colorTexture = IG_texUnit++;
 					}
 				}
 			}
