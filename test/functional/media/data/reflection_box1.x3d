@@ -3,9 +3,9 @@
 	<Transform id="1" translation="-2 0 0">
       <Shape DEF='box' id="2">
         <Appearance id="3">
-          <Material id="color" diffuseColor="1 1 0"/>
+          <Material id="color1" diffuseColor="1 1 0"/>
         </Appearance>
-        <Box id="4" onmouseover="test1();" />
+        <Box id="4" onmouseover="test1();" onmouseout="test2();" />
       </Shape>
 	</Transform>
 	<Transform id="5">
