@@ -175,7 +175,7 @@ package x3dom.shaders
 				
 				shader += "sat ft3, ft3\n";								//saturate(NdotL)
 				shader += "sub ft4, ft3, fc4\n";
-				shader += "kil ft4.xxxx\n";
+				shader += "kil ft4.wwww\n";
 				shader += "mov oc, ft3 \n";							//Output Color
 			} else {
 				if( shape.colorBuffer ) {
@@ -193,7 +193,7 @@ package x3dom.shaders
 				shader += "mov ft1.w, fc1.w\n";
 				shader += "sat ft1, ft1\n";								//saturate(NdotL)
 				shader += "sub ft2, ft1, fc4\n";
-				shader += "kil ft2.xxxx\n";
+				shader += "kil ft2.wwww\n";
 				shader += "mov oc, ft1 \n";							//Output Color
 			}
 			

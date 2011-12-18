@@ -418,6 +418,15 @@ x3dom.Viewarea.prototype.getLights = function () {
     return this._doc._nodeBag.lights;
 };
 
+x3dom.Viewarea.prototype.getLightsShadow = function () {
+	var lights = this._doc._nodeBag.lights;
+	for(var l=0; l<lights.length; l++) {
+		if(lights[l]._vf.shadowIntensity > 0.0){
+            return true;
+        }
+	}
+};
+
 x3dom.Viewarea.prototype.getViewpointMatrix = function () {
     var viewpoint = this._scene.getViewpoint();
     var mat_viewpoint = viewpoint.getCurrentTransform();

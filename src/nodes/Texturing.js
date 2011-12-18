@@ -107,10 +107,10 @@ x3dom.registerNodeType(
 
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
-			this._image = new Image();
-			this._complete = false;
+			//this._image = new Image();
+			//this._complete = false;
 			
-			x3dom.ImageLoadManager.push( this );
+			//x3dom.ImageLoadManager.push( this );
         },
         {
             invalidateGLObject: function ()
@@ -147,7 +147,7 @@ x3dom.registerNodeType(
             {
                 if (fieldName == "url")
                 {
-					x3dom.ImageLoadManager.push( this );
+					//x3dom.ImageLoadManager.push( this );
 					this._complete = false;
                     Array.forEach(this._parentNodes, function (app) {
 						app.nodeChanged();
@@ -228,7 +228,7 @@ x3dom.registerNodeType(
                             if (url) {
                                 that._vf.url.push(url);
                                 x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
-								x3dom.ImageLoadManager.push( that );
+								//x3dom.ImageLoadManager.push( that );
 
                                 if (childDomNode.localName === "video") {
                                     that._needPerFrameUpdate = true;

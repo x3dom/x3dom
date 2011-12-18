@@ -1,0 +1,75 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+	<head>
+		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+		<title>X3DOM | GeometryImages</title>
+		
+    <!-- BEGIN:X3DOM -->
+		<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+		<script type="text/javascript" src="../../src/lang/Array.js"></script>
+		<script type="text/javascript" src="../../src/Internals.js"></script>
+		<script type="text/javascript" src="../../src/debug.js"></script>
+		<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+		<script type="text/javascript" src="../../src/lang/Properties.js"></script>
+		<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+		<script type="text/javascript" src="../../src/Runtime.js"></script>
+		<script type="text/javascript" src="../../src/Main.js"></script>
+		<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+		<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+		<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+		<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+		<script type="text/javascript" src="../../src/Viewarea.js"></script>
+		<script type="text/javascript" src="../../src/Mesh.js"></script>
+		<script type="text/javascript" src="../../src/fields.js"></script>
+		<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+		<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+		<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+	<!-- END:X3DOM -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+</head>
+		
+		<style>
+			body { background-color: #000; }
+			X3D, x3d { position:absolute; border: none; width: 800px; height: 500px; top:50%; left:50%; margin-left:-400px; margin-top:-250px; float: none; display:block;}
+		</style>
+		
+	</head>
+	<body>
+		<X3D id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px' backend='webgl'>
+			<Scene>
+				<Background skyColor='0.750 0.750 0.750'></Background>
+				<Transform>
+			    	<Shape>
+				        <Appearance DEF="default">
+							<Material diffuseColor="0.588 0.588 0.588" specularColor="0.000 0.000 0.000" transparency="0.000" shininess="0.145"></Material>
+							<ImageTexture url="media/texture/geometryImages/DiffuseTexture.JPG"></ImageTexture>
+						</Appearance>
+						<ImageGeometry solid="false" DEF="Teapot01_0-GEOMETRY" position="0.0 0.0 0" size="32.165772 15.75 20" vertexCount="12288">
+							<ImageTexture containerField="coord" url="media/texture/geometryImages/CoordinateTexture.png"></ImageTexture>
+							<ImageTexture containerField="normal" url="media/texture/geometryImages/NormalTexture.png"></ImageTexture>
+							<ImageTexture containerField="texCoord" url="media/texture/geometryImages/TexCoordTexture.png"></ImageTexture>
+						</ImageGeometry>
+			    	</Shape>
+			    </Transform>
+				<Viewpoint position='0 0 50'></Viewpoint>
+			</Scene>
+		</X3D>
+	</body>
+</html>

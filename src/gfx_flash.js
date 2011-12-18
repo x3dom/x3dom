@@ -122,6 +122,8 @@ x3dom.gfx_flash = (function() {
 		//Collect all drawableObjects
 		scene.drawableObjects = null;
 		scene.drawableObjects = [];
+		scene.drawableObjects.LODs = [];
+        scene.drawableObjects.Billboards = [];
 		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
 		
 		//Get Number of drawableObjects
@@ -146,8 +148,7 @@ x3dom.gfx_flash = (function() {
 				}
 				
 				this.setupShape(obj3d, trafo, RefList[obj3d._objectID]);
-			}
-		
+			}	
 		}		
 			
 		//Render the flash scene
