@@ -303,7 +303,7 @@ x3dom.userAgentFeature = {
 
 		    // gets the value of param name="maxActiveDownloads"
 		    // settings.getProperty('maxActiveDownloads', 10);
-            x3dom.ImageLoadManager.load();
+            //x3dom.ImageLoadManager.load();
         }
         
         var ready = (function(eventType) {
