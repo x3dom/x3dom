@@ -2276,20 +2276,17 @@ x3dom.gfx_webgl = (function () {
 						shape._dirty.shader = false;
                         //END OF HACK
                     }
-                }
+                } else {
+					if(x3dom.caps.MOBILE) {
+						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVSMobile(viewarea, shape), this.generateFSMobile(viewarea, shape)]);
+					} else {
+						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);
+					}
+				}
             }
         }
 		
-		//Set Shader
-		if(shape._dirty.shader) {
-			if(x3dom.caps.MOBILE) {
-				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVSMobile(viewarea, shape), this.generateFSMobile(viewarea, shape)]);
-			} else {
-				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);
-			}
-			shape._dirty.shader = false;
-		}
-		
+		shape._dirty.shader = false;
         var sp = shape._webgl.shader;
         
         shape._webgl.buffers = [];
