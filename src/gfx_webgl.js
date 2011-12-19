@@ -531,6 +531,7 @@ x3dom.gfx_webgl = (function () {
 			
 			var objName = obj.name;
 			if(obj.name.lastIndexOf("[0]") == obj.name.length-3){
+				x3dom.debug.logInfo(obj.name);
 				objName = obj.name.substr(0, obj.name.length-3);
 			}
 			
@@ -1892,6 +1893,11 @@ x3dom.gfx_webgl = (function () {
             };
 
             shape._webgl.primType = gl.TRIANGLES;
+			if(x3dom.caps.MOBILE) {
+				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVSMobile(viewarea, shape), this.generateFSMobile(viewarea, shape)]);
+			} else {
+				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);
+			}
         }
         else 
         {
@@ -2257,8 +2263,8 @@ x3dom.gfx_webgl = (function () {
 						if(x3dom.caps.MOBILE) {
 							x3dom.debug.logWarning("No mobile shader for CommonSurfaceShader! Using high quality shader!");
 						}
+						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);
 						
-						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);   
                     }else{
                         //FIXME; HACK
                         var hackID = 'HACK'+shape._objectID;
@@ -2268,7 +2274,7 @@ x3dom.gfx_webgl = (function () {
                         g_shaders['fs-x3d-'+hackID] = {};
                         g_shaders['fs-x3d-'+hackID].type = "fragment";
                         g_shaders['fs-x3d-'+hackID].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
-                    
+						x3dom.debug.logInfo("6");
                         shape._webgl.shader = getDefaultShaderProgram(gl, hackID);
 						shape._dirty.shader = false;
                         //END OF HACK
