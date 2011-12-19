@@ -2192,13 +2192,11 @@ x3dom.gfx_webgl = (function () {
                 //TODO; remove these hacky thousands of shaders!!!
                 if (shape._webgl.colors[0].length) {
                     shape._webgl.shader = this.getShaderProgram(gl, 
-                                          ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
-					shape._dirty.shader = false;						
+                                          ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);					
                 }
                 else {
                     shape._webgl.shader = this.getShaderProgram(gl, 
                                           ['vs-x3d-default', 'fs-x3d-default']);
-					shape._dirty.shader = false;
                 }
             }
             else if ( (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) ||
@@ -2211,12 +2209,10 @@ x3dom.gfx_webgl = (function () {
                 if (shape._webgl.colors[0].length) {
                     shape._webgl.shader = this.getShaderProgram(gl, 
                                           ['vs-x3d-vertexcolorUnlit', 'fs-x3d-vertexcolorUnlit']);
-					shape._dirty.shader = false;
                 }
                 else {
                     shape._webgl.shader = this.getShaderProgram(gl, 
                                           ['vs-x3d-default', 'fs-x3d-default']);
-					shape._dirty.shader = false;
                 }
             }
             else {
@@ -2261,7 +2257,8 @@ x3dom.gfx_webgl = (function () {
 						if(x3dom.caps.MOBILE) {
 							x3dom.debug.logWarning("No mobile shader for CommonSurfaceShader! Using high quality shader!");
 						}
-                        
+						
+						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);   
                     }else{
                         //FIXME; HACK
                         var hackID = 'HACK'+shape._objectID;
@@ -2286,7 +2283,10 @@ x3dom.gfx_webgl = (function () {
             }
         }
 		
+		//TODO find right place
 		shape._dirty.shader = false;
+		
+		
         var sp = shape._webgl.shader;
         
         shape._webgl.buffers = [];
