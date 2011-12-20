@@ -22,13 +22,15 @@
  * > ...
  */
 
+// Global runtime
+x3dom.runtime = {};
+
+
 x3dom.Runtime = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
     this.isReady = false;
 };
-
-
 
 x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     this.doc = doc;
@@ -38,7 +40,7 @@ x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     // format and structure needs to be decided.
     this.config = { };
     this.isReady = false;
-},
+};
 
 
 /**

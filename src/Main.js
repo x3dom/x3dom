@@ -259,11 +259,14 @@ x3dom.userAgentFeature = {
             
             t0 = new Date().getTime();
 
-            if (!x3ds[i].runtime) {
+//            if (!x3ds[i].runtime) {
                  x3ds[i].runtime = new x3dom.Runtime(x3ds[i], x3dcanvas);
-            }  
+//            }
 
             x3ds[i].runtime.initialize(x3ds[i], x3dcanvas);
+            if (x3dom.runtime.ready) {
+                x3ds[i].runtime.ready = x3dom.runtime.ready;
+            }
 
             x3dcanvas.load(x3ds[i], i, settings);
 
