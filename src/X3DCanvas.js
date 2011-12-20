@@ -477,8 +477,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 default: this.mouse_button = 0; break;
             }
 
-            this.mouse_drag_x = (evt.layerX || evt.x);
-            this.mouse_drag_y = (evt.layerY || evt.y);
+            this.mouse_drag_x = (evt.layerX || evt.offsetX || evt.x);
+            this.mouse_drag_y = (evt.layerY || evt.offsetY || evt.y);
             this.mouse_dragging = true;
 
             if (evt.shiftKey) { this.mouse_button = 1; }
@@ -488,7 +488,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
             this.parent.doc.needRender = true;
 
-            window.status=this.id+' DOWN: '+(evt.layerX || evt.x)+", "+(evt.layerY || evt.y);
+            window.status=this.id+' DOWN: '+(evt.layerX || evt.offsetX || evt.x)+", "+(evt.layerY || evt.offsetY || evt.y);
             //window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
             //evt.preventDefault();
             //evt.stopPropagation();
@@ -540,14 +540,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('dblclick', function (evt) {
             this.mouse_button = 0;
-            this.mouse_drag_x = (evt.layerX || evt.x);
-            this.mouse_drag_y = (evt.layerY || evt.y);
+            this.mouse_drag_x = (evt.layerX || evt.offsetX ||evt.x);
+            this.mouse_drag_y = (evt.layerY || evt.offsetY || evt.y);
             this.mouse_dragging = false;
 
             this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
             this.parent.doc.needRender = true;
 
-            window.status=this.id+' DBL: '+(evt.layerX || evt.x)+", "+(evt.layerY || evt.y);
+            window.status=this.id+' DBL: '+(evt.layerX  || evt.offsetX || evt.x)+", "+(evt.layerY || evt.offsetY || evt.y);
             //evt.preventDefault();
             //evt.stopPropagation();
             //evt.returnValue = false;
@@ -572,8 +572,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
             if (!this.isMulti)
             {
-              this.mouse_drag_x = (evt.layerX || evt.x);
-              this.mouse_drag_y = (evt.layerY || evt.y);
+              this.mouse_drag_x = (evt.layerX || evt.offsetX || evt.x);
+              this.mouse_drag_y = (evt.layerY || evt.offsetY || evt.y);
 
               if (this.mouse_dragging) {
                 this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
