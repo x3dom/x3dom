@@ -3,6 +3,12 @@
 Release notes
 =============
 
+Version 1.3
+-----------
+
+* Flash
+* 
+
 Version 1.2
 -----------
 After many months of work, we’re proud to announce the release today of 

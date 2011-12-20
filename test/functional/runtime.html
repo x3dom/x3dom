@@ -139,14 +139,10 @@
 	var nav_mode_info;
 	var ab_info;
 
-
     x3dom.runtime.ready = function() {
-        alert("Custom runtime.ready() for all x3d elements on page.");
+        alert('Hello World');
     };
 
-    x3dom.runtime.enterFrame = function() {
-        x3dom.debug.logInfo("Custom enterFrame() for all elements on page (can be overwritten on per element basis)");
-    };
 
 	function init(event) {
 //		$element = document.getElementById('the_element');
