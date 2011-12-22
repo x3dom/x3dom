@@ -51,6 +51,8 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
             this.addField_SFBool(ctx, 'load', true);
 			this.addField_MFString(ctx, 'nameSpaceName', []);
+			this.addField_SFBool(ctx, 'mapDEFToID', false);
+			
 			
 			this.currentInline = ctx.xmlNode;
        },
@@ -119,7 +121,7 @@ x3dom.registerNodeType(
 						if(that._vf.nameSpaceName.length != 0) {
 							Array.forEach ( inlScene.childNodes, function (childDomNode) {
 								if(childDomNode instanceof Element){
-									setNamespace(that._vf.nameSpaceName, childDomNode);
+									setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
 									that.currentInline.appendChild(childDomNode);
 								}
 							} );
@@ -158,17 +160,19 @@ x3dom.registerNodeType(
     )
 );
 
-function setNamespace(prefix, childDomNode){
+function setNamespace(prefix, childDomNode, mapDEFToID){
 	if(childDomNode instanceof Element) {
 	
 		if(childDomNode.hasAttribute('id'))	{
 			childDomNode.setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('id'));	
+		} else if (childDomNode.hasAttribute('DEF') && mapDEFToID){
+			childDomNode.setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('DEF'));
 		}
 	}
 	
 	if(childDomNode.hasChildNodes()){
 		Array.forEach ( childDomNode.childNodes, function (children) {
-				setNamespace(prefix, children);			
+				setNamespace(prefix, children, mapDEFToID);			
 		} );
 	}		
 }
