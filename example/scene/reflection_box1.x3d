@@ -1,0 +1,15 @@
+<X3D xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' profile='Full' version='3.0' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
+  <Scene>
+	<Transform id="1" translation="-2 0 0">
+      <Shape DEF='box' id="2">
+        <Appearance id="3">
+          <Material id="color1" diffuseColor="1 1 0"/>
+        </Appearance>
+        <Box id="4" onmouseover="test1();" onmouseout="test2();" />
+      </Shape>
+	</Transform>
+	<Transform id="5">
+			<Inline id="6" nameSpaceName="test2" url="reflection_box2.x3d" />
+	</Transform>
+  </Scene>
+</X3D>
