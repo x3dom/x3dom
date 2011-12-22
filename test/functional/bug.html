@@ -45,63 +45,91 @@
 <!-- END:X3DOM -->
 
 <style>
-    #the_element {
-      margin-top: 700px;
-      margin-left: 100px;
+	body {
+		margin-top: 50px;
+		margin-left: 30px;
+		border: 1px solid blue;
+	}
+	#element1 {
+		margin-top: 700px;
+		margin-left: 50px;
+		border: 1px solid green;
+		display: block;
+	}
+    #element2 {
+      margin-top: 20px;
+      margin-left: 20px;
+	  border: 1px solid red;
+	  display: block;
+    }
+	#element3 {
+      margin-top: 20px;
+      margin-left: 10px;
 	  border: 1px solid red;
     }
-	#the_element2 {
-      margin-top: 700px;
-      margin-left: 100px;
+	#element4 {
+      margin-top: 30px;
+      margin-left: 30px;
+	  border: 1px solid yellow;
+    }
+	#element5 {
+      margin-top: 30px;
+      margin-left: 30px;
+	  border: 1px solid yellow;
     }
  </style>
 
 </head>
      
 <body>
-	<X3D id="the_element" showStat="true" showLog="true" width="500px" height="500px">
-	  <scene>
-      <Background skyColor='0 0 0'></Background>
-	<Transform translation="-2 0 0">
-      <Shape DEF='box'>
-        <Appearance>
-          <Material id="color1" diffuseColor="1 1 0"></Material>
-        </Appearance>
-        <Box onmouseover="test1();" onmouseout="test8();"></Box>
-      </Shape>
-	</Transform>
-	<Transform translation="2 0 0">
-		<Shape DEF='sphere'>
-			<Appearance id="3">
-				<Material id="color2" diffuseColor="1 0 0" ></Material>
-			</Appearance>
-			<Sphere onmouseover="test2();" onmouseout="test7();" ></Sphere>
-		</Shape>
-	</Transform>
-  </scene>
-    </X3D>
-    
-    <X3D id="the_element2" showStat="true" showLog="true" width="500px" height="500px">
-	 <Scene>
-     <Background skyColor='0 0 0'></Background>
-	<Transform translation="-2 0 0">
-      <Shape DEF='box'>
-        <Appearance>
-          <Material id="color3" diffuseColor="1 1 0"></Material>
-        </Appearance>
-        <Box onmouseover="test3();" onmouseout="test6();" ></Box>
-      </Shape>
-	</Transform>
-	<Transform translation="2 0 0">
-		<Shape DEF='sphere'>
-			<Appearance>
-				<Material id="color4" diffuseColor="1 0 0"></Material>
-			</Appearance>
-			<Sphere onmouseover="test4();" onmouseout="test5();"  ></Sphere>
-		</Shape>
-	</Transform>
-  </Scene>
-    </x3d>
+	<div id="element1">
+     <div id="element4">
+        <X3D id="element2" showStat="true" showLog="true" width="500px" height="500px">
+          <scene>
+          <Background skyColor='0 0 0'></Background>
+        <Transform translation="-2 0 0">
+          <Shape DEF='box'>
+            <Appearance>
+              <Material id="color1" diffuseColor="1 1 0"></Material>
+            </Appearance>
+            <Box onmouseover="test1();" onmouseout="test8();"></Box>
+          </Shape>
+        </Transform>
+        <Transform translation="2 0 0">
+            <Shape DEF='sphere'>
+                <Appearance id="3">
+                    <Material id="color2" diffuseColor="1 0 0" ></Material>
+                </Appearance>
+                <Sphere onmouseover="test2();" onmouseout="test7();" ></Sphere>
+            </Shape>
+        </Transform>
+      </scene>
+        </X3D>
+        </div>
+        <div id="element5">
+        <X3D id="element3" showStat="true" showLog="true" width="500px" height="500px">
+         <Scene>
+         <Background skyColor='0 0 0'></Background>
+        <Transform translation="-2 0 0">
+          <Shape DEF='box'>
+            <Appearance>
+              <Material id="color3" diffuseColor="1 1 0"></Material>
+            </Appearance>
+            <Box onmouseover="test3();" onmouseout="test6();" ></Box>
+          </Shape>
+        </Transform>
+        <Transform translation="2 0 0">
+            <Shape DEF='sphere'>
+                <Appearance>
+                    <Material id="color4" diffuseColor="1 0 0"></Material>
+                </Appearance>
+                <Sphere onmouseover="test4();" onmouseout="test5();"  ></Sphere>
+            </Shape>
+        </Transform>
+      </Scene>
+        </x3d>
+        </div>
+    </div>
     
     
     
@@ -120,13 +148,13 @@
 			document.getElementById('color4').setAttribute('diffuseColor', '1 0 1');
         };
 		var test5 = function (event) {		
-			document.getElementById('color4').setAttribute('diffuseColor', '1 1 0');
+			document.getElementById('color4').setAttribute('diffuseColor', '1 0 0');
         };
 		var test6 = function (event) {		
 			document.getElementById('color3').setAttribute('diffuseColor', '1 1 0');
         };
 		var test7 = function (event) {		
-			document.getElementById('color2').setAttribute('diffuseColor', '1 1 0');
+			document.getElementById('color2').setAttribute('diffuseColor', '1 0 0');
         };
 		var test8 = function (event) {		
 			document.getElementById('color1').setAttribute('diffuseColor', '1 1 0');
