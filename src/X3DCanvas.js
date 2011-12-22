@@ -476,9 +476,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 case 2:  this.mouse_button = 2; break;  //right
                 default: this.mouse_button = 0; break;
             }
-
-            this.mouse_drag_x = (evt.layerX || evt.offsetX || evt.x);
-            this.mouse_drag_y = (evt.layerY || evt.offsetY || evt.y);
+					
+			this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
+            this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
+			
             this.mouse_dragging = true;
 
             if (evt.shiftKey) { this.mouse_button = 1; }
@@ -488,7 +489,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
             this.parent.doc.needRender = true;
 
-            window.status=this.id+' DOWN: '+(evt.layerX || evt.offsetX || evt.x)+", "+(evt.layerY || evt.offsetY || evt.y);
+			window.status=this.id+' DOWN: '+(evt.offsetX || evt.layerX || evt.x)+", "+(evt.offsetY || evt.layerY || evt.y);
             //window.status=this.id+' DOWN: '+evt.screenX+", "+evt.screenY;
             //evt.preventDefault();
             //evt.stopPropagation();
@@ -540,14 +541,16 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('dblclick', function (evt) {
             this.mouse_button = 0;
-            this.mouse_drag_x = (evt.layerX || evt.offsetX ||evt.x);
-            this.mouse_drag_y = (evt.layerY || evt.offsetY || evt.y);
+			
+			this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
+            this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
+			
             this.mouse_dragging = false;
 
             this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
             this.parent.doc.needRender = true;
 
-            window.status=this.id+' DBL: '+(evt.layerX  || evt.offsetX || evt.x)+", "+(evt.layerY || evt.offsetY || evt.y);
+			window.status=this.id+' DBL: '+(evt.offsetX || evt.layerX || evt.x)+", "+(evt.offsetY || evt.layerY || evt.y);
             //evt.preventDefault();
             //evt.stopPropagation();
             //evt.returnValue = false;
@@ -572,9 +575,30 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
             if (!this.isMulti)
             {
-              this.mouse_drag_x = (evt.layerX || evt.offsetX || evt.x);
-              this.mouse_drag_y = (evt.layerY || evt.offsetY || evt.y);
-
+				
+            		  
+			  this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
+              this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
+			  
+			  
+			  /*var top =  parseFloat( document.body.offsetTop) +  (parseFloat( document.body.style.marginTop) || 0);
+			  var left =  parseFloat( document.body.offsetLeft) +  (parseFloat( document.body.style.marginLeft) || 0);
+			  evt.target.offsetTop
+			  evt.target.offsetLeft
+			  evt.target.tagName
+			  evt.target.offsetParent.nodeName
+			  evt.target.offsetParent.offsetTop
+			  x3dom.debug.logInfo(evt.target.offsetParent.nodeName);
+			  this.mouse_drag_x = evt.clientX - left; 
+			  this.mouse_drag_y = evt.clientY - top;
+			  x3dom.debug.logInfo(document.body.scrollLeft);
+			  
+			  this.mouse_drag_x = document.body.scrollLeft+evt.clientX-evt.target.offsetParent.offsetLeft;
+			  this.mouse_drag_y = document.body.scrollTop+evt.clientY-evt.target.offsetParent.offsetTop;*/
+			  
+				
+			 
+				
               if (this.mouse_dragging) {
                 this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
               }

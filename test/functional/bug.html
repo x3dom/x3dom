@@ -1,6 +1,5 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<!DOCTYPE >
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 	<title>Inline test</title>
@@ -60,54 +59,54 @@
 </head>
      
 <body>
-	<X3D id="the_element" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
-	  <Scene>
-      <Background skyColor='0 0 0'/>
+	<X3D id="the_element" showStat="true" showLog="true" width="500px" height="500px">
+	  <scene>
+      <Background skyColor='0 0 0'></Background>
 	<Transform translation="-2 0 0">
       <Shape DEF='box'>
         <Appearance>
-          <Material id="color1" diffuseColor="1 1 0"/>
+          <Material id="color1" diffuseColor="1 1 0"></Material>
         </Appearance>
-        <Box onmouseover="test1();" onmouseout="test8();"/>
+        <Box onmouseover="test1();" onmouseout="test8();"></Box>
       </Shape>
 	</Transform>
 	<Transform translation="2 0 0">
 		<Shape DEF='sphere'>
 			<Appearance id="3">
-				<Material id="color2" diffuseColor="1 0 0" />
+				<Material id="color2" diffuseColor="1 0 0" ></Material>
 			</Appearance>
-			<Sphere onmouseover="test2();" onmouseout="test7();" />
+			<Sphere onmouseover="test2();" onmouseout="test7();" ></Sphere>
 		</Shape>
 	</Transform>
-  </Scene>
+  </scene>
     </X3D>
     
-    <X3D id="the_element2" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+    <X3D id="the_element2" showStat="true" showLog="true" width="500px" height="500px">
 	 <Scene>
-     <Background skyColor='0 0 0'/>
+     <Background skyColor='0 0 0'></Background>
 	<Transform translation="-2 0 0">
       <Shape DEF='box'>
         <Appearance>
-          <Material id="color3" diffuseColor="1 1 0"/>
+          <Material id="color3" diffuseColor="1 1 0"></Material>
         </Appearance>
-        <Box onmouseover="test3();" onmouseout="test6();" />
+        <Box onmouseover="test3();" onmouseout="test6();" ></Box>
       </Shape>
 	</Transform>
 	<Transform translation="2 0 0">
 		<Shape DEF='sphere'>
 			<Appearance>
-				<Material id="color4" diffuseColor="1 0 0" />
+				<Material id="color4" diffuseColor="1 0 0"></Material>
 			</Appearance>
-			<Sphere onmouseover="test4();" onmouseout="test5();" />
+			<Sphere onmouseover="test4();" onmouseout="test5();"  ></Sphere>
 		</Shape>
 	</Transform>
   </Scene>
-    </X3D>
+    </x3d>
     
     
     
     <script type="text/javascript" >
-	<![CDATA[
+	
 	    var test1 = function (event) {		
 			document.getElementById('color1').setAttribute('diffuseColor', '0 1 0');
         };	
@@ -132,7 +131,7 @@
 		var test8 = function (event) {		
 			document.getElementById('color1').setAttribute('diffuseColor', '1 1 0');
         };
-	]]>
+
 </script>
 </body>
 </html>
