@@ -591,12 +591,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			  x3dom.debug.logInfo(evt.target.offsetParent.nodeName);
 			  this.mouse_drag_x = evt.clientX - left; 
 			  this.mouse_drag_y = evt.clientY - top;
-			  x3dom.debug.logInfo(document.body.scrollLeft);
+			  x3dom.debug.logInfo(document.body.scrollLeft);*/
 			  
-			  this.mouse_drag_x = document.body.scrollLeft+evt.clientX-evt.target.offsetParent.offsetLeft;
-			  this.mouse_drag_y = document.body.scrollTop+evt.clientY-evt.target.offsetParent.offsetTop;*/
+			  //this.mouse_drag_x = document.body.scrollLeft+evt.clientX-evt.target.offsetParent.offsetLeft;
+			  //this.mouse_drag_y = document.body.scrollTop+evt.clientY-evt.target.offsetParent.offsetTop;
 			  
-				
+			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetLeft)
+			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetTop)
+							
 			 
 				
               if (this.mouse_dragging) {
