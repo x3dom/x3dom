@@ -132,7 +132,7 @@ x3dom.gfx_webgl = (function () {
         "varying vec2 fragTexCoord;" +
         "" +
         "void main(void) {" +
-        "    fragTexCoord = texcoord.xy;" +
+        "    fragTexCoord = texcoord;" +
         "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
         "}"
         };
@@ -2274,7 +2274,6 @@ x3dom.gfx_webgl = (function () {
                         g_shaders['fs-x3d-'+hackID] = {};
                         g_shaders['fs-x3d-'+hackID].type = "fragment";
                         g_shaders['fs-x3d-'+hackID].data = shape._cf.appearance.node._shader._fragment._vf.url[0];
-						x3dom.debug.logInfo("6");
                         shape._webgl.shader = getDefaultShaderProgram(gl, hackID);
 						shape._dirty.shader = false;
                         //END OF HACK
@@ -2534,23 +2533,22 @@ x3dom.gfx_webgl = (function () {
                 bgnd._webgl.shader = this.getShaderProgram(gl, 
                         ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
             }
-        } else {          
-
-            if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length) {
-
+        }
+        else 
+        {          
+            if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length) 
+            {
                 sphere = new x3dom.nodeTypes.Sphere();
+                texture = gl.createTexture();
                 
                 bgnd._webgl = {
                     positions: sphere._mesh._positions[0],
                     texcoords: sphere._mesh._texCoords[0],
                     indexes: sphere._mesh._indices[0],
                     buffers: [{}, {}, {}],
-                    texture: {}
+                    texture: texture,
+                    primType: gl.TRIANGLES
                 };
-                
-                bgnd._webgl.primType = gl.TRIANGLES;
-                bgnd._webgl.shader = this.getShaderProgram(gl, 
-                        ['vs-x3d-bg-texture-bgnd', 'fs-x3d-bg-texture']);
                 
                 var N = nextHighestPowerOfTwo(
                             bgnd.getSkyColor().length + bgnd.getGroundColor().length + 2);
@@ -2623,8 +2621,6 @@ x3dom.gfx_webgl = (function () {
                 
                 N = (pixels.length) / 3;
                 
-                texture = gl.createTexture();
-                bgnd._webgl.texture = texture;
                 gl.bindTexture(gl.TEXTURE_2D, texture);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
@@ -2632,8 +2628,11 @@ x3dom.gfx_webgl = (function () {
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
                 
                 gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-                gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 
-                              0, format, gl.UNSIGNED_BYTE, pixels);
+                gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 0, format, gl.UNSIGNED_BYTE, pixels);
+            	gl.bindTexture(gl.TEXTURE_2D, null);
+            	
+                bgnd._webgl.shader = this.getShaderProgram(gl, 
+                						['vs-x3d-bg-texture-bgnd', 'fs-x3d-bg-texture']);
             }
             else 
             {
@@ -2670,7 +2669,7 @@ x3dom.gfx_webgl = (function () {
             indexArray = null;
             
             if (sp.texcoord !== undefined)
-            {
+            {       
                 var texcBuffer = gl.createBuffer();
                 bgnd._webgl.buffers[2] = texcBuffer;
                 
@@ -2689,7 +2688,10 @@ x3dom.gfx_webgl = (function () {
         bgnd._webgl.render = function(gl, mat_scene)
         {
             var sp = bgnd._webgl.shader;
-            if (sp && sp.texcoord && bgnd._webgl.texture)
+            
+            if ((sp !== undefined && sp !== null) &&
+                (sp.texcoord !== undefined && sp.texcoord !== null) &&
+                (bgnd._webgl.texture !== undefined && bgnd._webgl.texture !== null))
             {
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
@@ -4084,7 +4086,7 @@ x3dom.gfx_webgl = (function () {
             var obj = scene.drawableObjects[zPos[i][0]];
             var needEnableBlending = false;
 
-            // HACK; fully impl. BlendMode! (also DeopthMode)
+            // HACK; fully impl. BlendMode! (also DepthMode)
             if (obj[1]._cf.appearance.node._cf.blendMode.node &&
                 obj[1]._cf.appearance.node._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
                 obj[1]._cf.appearance.node._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
