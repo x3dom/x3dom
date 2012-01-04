@@ -345,6 +345,36 @@ x3dom.registerNodeType(
             // to be overwritten by concrete classes
         },
         
+		callEvtHandler: function(eventType, event) {
+			var node = this;
+			
+			try {
+				var attrib = node._xmlNode[eventType];
+				event.target = node._xmlNode;
+				
+				if (typeof(attrib) === "function") {
+					attrib.call(node._xmlNode, event);
+				}
+				else {
+					var funcStr = node._xmlNode.getAttribute(eventType);
+					var func = new Function('event', funcStr);
+					func.call(node._xmlNode, event);
+				}
+				
+				var list = node._listeners[event.type];
+				if (list) {
+					for (var it=0; it<list.length; it++) {
+						list[it].call(node._xmlNode, event);
+					}
+				}
+			}
+			catch(ex) {
+				x3dom.debug.logException(ex);
+			}
+			
+			return event.cancelBubble;
+		},
+        
         initSetter: function (xmlNode, name) {
             xmlNode.__defineSetter__(name, function(value) {
         		xmlNode.setAttribute(name, value);
