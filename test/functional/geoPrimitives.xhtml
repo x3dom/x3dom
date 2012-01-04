@@ -130,7 +130,7 @@
 					</Shape>
                 </Transform>
                 
-				<Viewpoint centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
+				<Viewpoint id="aView" centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
                 <!--
                 <OrientationChaser id="oc" DEF="ochaser" duration="1.5" initialDestination="1 0 0 3.14" initialValue="0 1 0 0" />
                 <PositionChaser id="pc" DEF="pchaser" duration="1.5" initialDestination="-2 3 2" initialValue="0 0 0" />
@@ -184,11 +184,20 @@
             document.getElementById('blubb').removeEventListener('click', funcPtr, false);
         };
         
+        var viewFunc = function(evt) {
+        	x3dom.debug.logInfo("Matrix:      " + evt.matrix);
+        	x3dom.debug.logInfo("Position:    " + evt.position);
+        	x3dom.debug.logInfo("Orientation: " + evt.orientation);
+        	x3dom.debug.logInfo("ViewMat:     " + evt.viewmatrix);
+        };
+        
         function addIt() {
             document.getElementById('ausgabe').innerHTML = "test";
             document.getElementById('blubb').addEventListener('click', funcPtr, false);
 
             document.getElementById('kloppe').addEventListener('click', funcPtr2, false);
+            
+            document.getElementById('aView').addEventListener('viewpointChanged', viewFunc, false);
         }
         
         document.onload = addIt;

@@ -3902,6 +3902,9 @@ x3dom.gfx_webgl = (function () {
             
             scene._lastMin = min;
             scene._lastMax = max;
+            
+            viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
+        	viewarea._last_mat_scene = x3dom.fields.SFMatrix4f.identity();
         }
         else 
         {
@@ -3951,7 +3954,48 @@ x3dom.gfx_webgl = (function () {
         //}
         
         var mat_view = viewarea.getViewMatrix();
+        
+        if ( !viewarea._last_mat_view.equals(mat_view) )
+        {
+        	var e_viewpoint = viewarea._scene.getViewpoint();
+        	var e_eventType = "viewpointChanged";
+        	
+        	try {
+				if ( e_viewpoint._xmlNode && 
+						(e_viewpoint._xmlNode["on"+e_eventType] ||
+					 	 e_viewpoint._xmlNode.hasAttribute("on"+e_eventType) ||
+					 	 e_viewpoint._listeners[e_eventType]) )
+				{
+				    var e_viewtrafo = e_viewpoint.getCurrentTransform();
+					e_viewtrafo = mat_view.inverse().mult(e_viewtrafo);
+					
+					var e_translation = new x3dom.fields.SFVec3f(0, 0, 0);
+					var e_rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
+					var e_scale = new x3dom.fields.SFVec3f(1, 1, 1);
+					
+					e_viewtrafo.getTransform(e_translation, e_rotation, e_scale);
+					
+				    var e_event = {
+						target: e_viewpoint._xmlNode,
+						type: 	e_eventType,
+						viewmatrix: mat_view,
+						matrix: e_viewtrafo,
+						position: e_translation,
+						orientation: e_rotation,
+						cancelBubble: false,
+						stopPropagation: function() { this.cancelBubble = true; }
+					};
+					
+					e_viewpoint.callEvtHandler(e_eventType, e_event);
+				}
+			}
+			catch(e_e) {
+				x3dom.debug.logException(e_e);
+			}
+        }
+        
         viewarea._last_mat_view = mat_view;
+        
         var mat_scene = viewarea.getWCtoCCMatrix();
         viewarea._last_mat_scene = mat_scene;
         
