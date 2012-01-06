@@ -19,7 +19,11 @@ x3dom.fields.Eps = 0.000001;
     @class Represents a SFMatrix4f
     //TODO; use 2-dim array instead of _xx
   */
-x3dom.fields.SFMatrix4f = function(_00, _01, _02, _03, _10, _11, _12, _13, _20, _21, _22, _23, _30, _31, _32, _33) {
+x3dom.fields.SFMatrix4f = function(	_00, _01, _02, _03, 
+									_10, _11, _12, _13, 
+									_20, _21, _22, _23, 
+									_30, _31, _32, _33) 
+{
     if (arguments.length === 0) {
         this._00 = 1; this._01 = 0; this._02 = 0; this._03 = 0;
         this._10 = 0; this._11 = 1; this._12 = 0; this._13 = 0;
@@ -285,7 +289,7 @@ x3dom.fields.SFMatrix4f.prototype.negate = function () {
     );
 };
 
-x3dom.fields.SFMatrix4f.prototype.multiply = function (s) { // scale() is kinda ctor
+x3dom.fields.SFMatrix4f.prototype.multiply = function (s) {
     return new x3dom.fields.SFMatrix4f(
         s*this._00, s*this._01, s*this._02, s*this._03,
         s*this._10, s*this._11, s*this._12, s*this._13,
@@ -340,6 +344,11 @@ x3dom.fields.SFMatrix4f.prototype.toGL = function () {
         this._02, this._12, this._22, this._32,
         this._03, this._13, this._23, this._33
     ];
+};
+
+x3dom.fields.SFMatrix4f.prototype.at = function (i, j) {
+	var field = "_" + i + j;
+	return this[field];
 };
 
 x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
@@ -440,46 +449,66 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
            Math.abs(this._32-that._32) < eps && Math.abs(this._33-that._33) < eps;
 };
 
-x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scale) {
-    var T = new x3dom.fields.SFVec3f(this._03, this._13, this._23);
-    var S = new x3dom.fields.SFVec3f(1, 1, 1); // TODO; implement scale
+x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scaleFactor, scaleOrientation) 
+{
+	var flip = this.decompose(translation, rotation, scaleFactor, scaleOrientation);
+	scaleFactor = scaleFactor.multiply(flip);
+};
 
-    // http://www.j3d.org/matrix_faq/matrfaq_latest.html
-    var angle_x, angle_y, angle_z, tr_x, tr_y, C;
-    angle_y = Math.asin(this._02);
-    C = Math.cos(angle_y);
+x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
+{
+	var A = x3dom.fields.SFMatrix4f.identity();
+	A.setValues(this);
+	
+    var Q  = x3dom.fields.SFMatrix4f.identity(),
+		S  = x3dom.fields.SFMatrix4f.identity(),
+		SO = x3dom.fields.SFMatrix4f.identity();
+	
+	t.x = A._03;
+    t.y = A._13;
+    t.z = A._23;
     
-    if (Math.abs(C) > 0.0001) {
-      tr_x =  this._22 / C;
-      tr_y = -this._12 / C;
-      angle_x = Math.atan2(tr_y, tr_x);
-      tr_x =  this._00 / C;
-      tr_y = -this._01 / C;
-      angle_z = Math.atan2(tr_y, tr_x);
+    A._03 = 0.0;
+    A._13 = 0.0;
+    A._23 = 0.0;
+    
+    A._30 = 0.0;
+    A._31 = 0.0;
+    A._32 = 0.0;
+	
+	var det = A.polarDecompose(Q, S);
+	   
+    var f = 1.0;
+
+    if (det < 0.0) {
+        Q = Q.negate();
+        f = -1.0;
     }
     else {
-      angle_x = 0;
-      tr_x = this._11;
-      tr_y = this._10;
-      angle_z = Math.atan2(tr_y, tr_x);
+        f = 1.0;
     }
     
-    var R = new x3dom.fields.Quaternion(
-        -Math.cos((angle_x - angle_z)/2) * Math.sin(angle_y/2),
-         Math.sin((angle_x - angle_z)/2) * Math.sin(angle_y/2),
-        -Math.sin((angle_x + angle_z)/2) * Math.cos(angle_y/2),
-         Math.cos((angle_x + angle_z)/2) * Math.cos(angle_y/2) );
+    r.setValue(Q);
     
-    translation.x = T.x;
-    translation.y = T.y;
-    translation.z = T.z;
-    rotation.x = R.x;
-    rotation.y = R.y;
-    rotation.z = R.z;
-    rotation.w = R.w;
-    scale.x = S.x;
-    scale.y = S.y;
-    scale.z = S.z;
+    S.spectralDecompose(SO, s);
+    
+    so.setValue(SO);
+	
+	return f;
+};
+
+x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
+{
+	var det = 0;
+	
+	// TODO
+	
+	return det;
+};
+
+x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
+{
+	// TODO
 };
 
 x3dom.fields.SFMatrix4f.prototype.log = function () {
@@ -681,11 +710,15 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
 };
 
 x3dom.fields.SFMatrix4f.prototype.toString = function () {
-    return '[SFMatrix4f ' +
-        this._00+', '+this._01+', '+this._02+', '+this._03+'; '+
-        this._10+', '+this._11+', '+this._12+', '+this._13+'; '+
-        this._20+', '+this._21+', '+this._22+', '+this._23+'; '+
-        this._30+', '+this._31+', '+this._32+', '+this._33+']';
+    return '[SFMatrix4f \n' +
+		this._00.toFixed(6)+', '+this._01.toFixed(6)+', '+
+		this._02.toFixed(6)+', '+this._03.toFixed(6)+', \n'+
+        this._10.toFixed(6)+', '+this._11.toFixed(6)+', '+
+		this._12.toFixed(6)+', '+this._13.toFixed(6)+', \n'+
+        this._20.toFixed(6)+', '+this._21.toFixed(6)+', '+
+		this._22.toFixed(6)+', '+this._23.toFixed(6)+', \n'+
+        this._30.toFixed(6)+', '+this._31.toFixed(6)+', '+
+		this._32.toFixed(6)+', '+this._33.toFixed(6)+']';
 };
 
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
@@ -1014,7 +1047,7 @@ x3dom.fields.Quaternion.prototype.toAxisAngle = function()
     a = 2 * Math.acos( that.w );
     s = Math.sqrt( 1 - that.w * that.w );
     
-    if ( s < x3dom.fields.Eps )
+    if ( s === 0 ) //< x3dom.fields.Eps )
     {
         x = that.x;
         y = that.y;
@@ -1033,6 +1066,78 @@ x3dom.fields.Quaternion.prototype.toAxisAngle = function()
 x3dom.fields.Quaternion.prototype.angle = function()
 {
     return 2 * Math.acos(this.w);
+};
+
+x3dom.fields.Quaternion.prototype.setValue = function(matrix)
+{
+    var tr, s = 1;
+    var qt = [0, 0, 0];
+
+    var i = 0, j = 0, k = 0;
+    var nxt = [1, 2, 0];
+
+    tr = matrix._00 + matrix._11 + matrix._22;
+	
+    if (tr > 0.0)
+    {
+        s = Math.sqrt(tr + 1.0);
+
+        this.w = s * 0.5;
+
+        s = 0.5 / s;
+
+        this.x = (matrix._21 - matrix._12) * s;
+        this.y = (matrix._02 - matrix._20) * s;
+        this.z = (matrix._10 - matrix._01) * s;
+    }
+    else
+    {
+        if (matrix._11 > matrix._00) {
+            i = 1;
+		}
+        else {
+            i = 0;
+		}
+
+        if (matrix._22 > matrix.at(i, i)) {
+            i = 2;
+		}
+
+        j = nxt[i];
+        k = nxt[j];
+
+        s = Math.sqrt(matrix.at(i, i) - (matrix.at(j, j) + matrix.at(k, k)) + 1.0);
+
+        qt[i] = s * 0.5;
+        s     = 0.5 / s;
+
+        this.w = (matrix.at(k, j) - matrix.at(j, k)) * s;
+
+        qt[j] = (matrix.at(j, i) + matrix.at(i, j)) * s;
+        qt[k] = (matrix.at(k, i) + matrix.at(i, k)) * s;
+
+        this.x = qt[0];
+        this.y = qt[1];
+        this.z = qt[2];
+    }
+
+    if (this.w > 1.0 || this.w < -1.0)
+    {
+        var errThreshold = 1 + (x3dom.fields.Eps * 100);
+
+        if (this.w > errThreshold || this.w < -errThreshold)
+        {
+			// When copying, then everything, incl. the famous OpenSG MatToQuat bug
+            x3dom.debug.logInfo("MatToQuat: BUG: |quat[4]| (" + this.w +") >> 1.0 !");
+        }
+
+        if (this.w > 1.0) {
+            this.w = 1.0;
+        }
+        else {
+            this.w = -1.0;
+        }
+    }
 };
 
 x3dom.fields.Quaternion.prototype.dot = function (that) {
@@ -1183,6 +1288,7 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
     this.w = quat.w;
     return this;
 };
+
 
 /** SFColor constructor.
     @class Represents a SFColor

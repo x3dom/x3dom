@@ -344,6 +344,18 @@ x3dom.Runtime.prototype.game = function() {
 };
 
 /**
+ * Function: resetExamin
+ *
+ * Resets all variables required by examin mode to init state
+ */
+ x3dom.Runtime.prototype.resetExamin = function() {
+		this.canvas.doc._viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
+    	this.canvas.doc._viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
+    	this.canvas.doc._viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+		this.canvas.doc.needRender = true;
+ };
+
+/**
  * Function: togglePoints
  *
  * Toggles points attribute

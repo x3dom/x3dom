@@ -53,7 +53,7 @@
 	
 	<p>Geometric primitive types with picking</p>
     <div class="group">
-	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" width="500px" height="500px">
+	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" width="500px" height="500px" style="float:left;">
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
@@ -85,7 +85,7 @@
 					</Shape>
 				</Transform>
                 
-                <Anchor url="http://www.igd.fraunhofer.de/igd-a4/">
+                <Anchor url="http://www.igd.fraunhofer.de/vcst/">
 				<Transform DEF="sphereTrafo" translation="1.5 0 0"
                     onmouseover="document.getElementById('ausgabe').innerHTML='sphere.isOver=TRUE';"
                     onmouseout="document.getElementById('ausgabe').innerHTML='sphere.isOver=FALSE';">
@@ -95,7 +95,7 @@
 						</Appearance>
 						<Sphere DEF="sphere" />
 					</Shape>
-                    <Transform scale="0.5 1 1" translation="0 0 1">
+                    <!--Transform scale="10 10 10" translation="0 0 1">
                         <Shape>
                           <Appearance>
                             <Material DEF="txtMat" diffuseColor="olivedrab" specularColor="peachpuff" />
@@ -104,7 +104,7 @@
                             <FontStyle/>
                           </Text>
                         </Shape>
-                    </Transform>
+                    </Transform-->
 				</Transform>
                 </Anchor>
 				
@@ -146,13 +146,34 @@
                 <ROUTE fromNode='sdamper' fromField='value_changed' toNode='coneMat' toField='transparency'/>
 			</Scene>
         </X3D>
+        
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" showLog="true" width="300px" height="300px" style="float:left;">
+			<Scene>
+				<Shape>
+					<Appearance>
+						<Material diffuseColor="1 0 1" specularColor=".5 .5 .5" transparency="0.2" />
+					</Appearance>
+					<Sphere />
+				</Shape>
+				<Transform translation="3 0 0">
+					<Shape>
+						<Appearance>
+							<Material diffuseColor="0 1 1" specularColor=".5 .5 .5" transparency="0.15" />
+						</Appearance>
+						<Sphere />
+					</Shape>
+				</Transform>
+				<Viewpoint id="anotherView" centerOfRotation="0 0 0" position="0 0 10" orientation="0 1 0 0" />
+				<Background transparency='1' skyColor='0 0 0' />
+			</Scene>
+        </X3D>
 	</div>
 	
 	<p id="ausgabe" class="case">&nbsp;</p>
-    <p><input type="button" value="removeEventListener" onclick="delIt();"/></p>
-	
+    <p><input type="button" value="removeEventListener" onclick="delIt();"/>&nbsp;
+	<input type="button" value="set view" onclick="setView();"/></p>
     
-	<script type="text/javascript" >
+	<script type="text/javascript">
 	<![CDATA[
         //document.getElementById('ausgabe').innerHTML = "test";
         /*
@@ -184,11 +205,32 @@
             document.getElementById('blubb').removeEventListener('click', funcPtr, false);
         };
         
+        var pos = null, rot = null, mat = null;
+        
         var viewFunc = function(evt) {
-        	x3dom.debug.logInfo("Matrix:      " + evt.matrix);
-        	x3dom.debug.logInfo("Position:    " + evt.position);
-        	x3dom.debug.logInfo("Orientation: " + evt.orientation);
-        	x3dom.debug.logInfo("ViewMat:     " + evt.viewmatrix);
+        	pos = evt.position;
+        	rot = evt.orientation;
+			mat = evt.matrix;
+			
+        	document.getElementById('anotherView').setAttribute(
+        				'position', pos.x+' '+pos.y+' '+pos.z);
+        	document.getElementById('anotherView').setAttribute(
+        				'orientation', rot[0].x+' '+rot[0].y+' '+rot[0].z+' '+rot[1]);
+						
+			x3dom.debug.logInfo('position: ' + pos.x+' '+pos.y+' '+pos.z +'\n' +
+								'orientation: ' + rot[0].x+' '+rot[0].y+' '+rot[0].z+' '+rot[1]);
+        };
+        
+        var setView = function(evt) {
+			var e = document.getElementById("boxes");
+			e.runtime.resetExamin();
+			//e.runtime.canvas.doc._viewarea._scene.getViewpoint().setView(mat);
+			//return;
+			
+        	document.getElementById('aView').setAttribute(
+        				'position', pos.x+' '+pos.y+' '+pos.z);
+        	document.getElementById('aView').setAttribute(
+        				'orientation', rot[0].x+' '+rot[0].y+' '+rot[0].z+' '+rot[1]);
         };
         
         function addIt() {
