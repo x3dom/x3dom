@@ -3967,21 +3967,22 @@ x3dom.gfx_webgl = (function () {
 					 	 e_viewpoint._listeners[e_eventType]) )
 				{
 				    var e_viewtrafo = e_viewpoint.getCurrentTransform();
-					e_viewtrafo = mat_view.inverse().mult(e_viewtrafo);
+					e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
 					
-					var e_translation = new x3dom.fields.SFVec3f(0, 0, 0);
+					var e_mat = x3dom.fields.SFMatrix4f.identity();
+					e_mat.setValues(e_viewtrafo.inverse());
+					
 					var e_rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
-					var e_scale = new x3dom.fields.SFVec3f(1, 1, 1);
+					e_rotation.setValue(e_mat);
 					
-					e_viewtrafo.getTransform(e_translation, e_rotation, e_scale);
+					var e_translation = e_mat.e3();
 					
 				    var e_event = {
 						target: e_viewpoint._xmlNode,
-						type: 	e_eventType,
-						viewmatrix: mat_view,
+						type: e_eventType,
 						matrix: e_viewtrafo,
 						position: e_translation,
-						orientation: e_rotation,
+						orientation: e_rotation.toAxisAngle(),
 						cancelBubble: false,
 						stopPropagation: function() { this.cancelBubble = true; }
 					};
