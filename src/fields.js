@@ -449,11 +449,57 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
            Math.abs(this._32-that._32) < eps && Math.abs(this._33-that._33) < eps;
 };
 
+// keep old code for compatibility as long as new one is not fully impl.
+x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scale) {
+    var T = new x3dom.fields.SFVec3f(this._03, this._13, this._23);
+    var S = new x3dom.fields.SFVec3f(1, 1, 1); // TODO; implement scale
+
+    // http://www.j3d.org/matrix_faq/matrfaq_latest.html
+    var angle_x, angle_y, angle_z, tr_x, tr_y, C;
+    angle_y = Math.asin(this._02);
+    C = Math.cos(angle_y);
+    
+    if (Math.abs(C) > 0.0001) {
+      tr_x =  this._22 / C;
+      tr_y = -this._12 / C;
+      angle_x = Math.atan2(tr_y, tr_x);
+      tr_x =  this._00 / C;
+      tr_y = -this._01 / C;
+      angle_z = Math.atan2(tr_y, tr_x);
+    }
+    else {
+      angle_x = 0;
+      tr_x = this._11;
+      tr_y = this._10;
+      angle_z = Math.atan2(tr_y, tr_x);
+    }
+    
+    var R = new x3dom.fields.Quaternion(
+        -Math.cos((angle_x - angle_z)/2) * Math.sin(angle_y/2),
+         Math.sin((angle_x - angle_z)/2) * Math.sin(angle_y/2),
+        -Math.sin((angle_x + angle_z)/2) * Math.cos(angle_y/2),
+         Math.cos((angle_x + angle_z)/2) * Math.cos(angle_y/2) );
+    
+    translation.x = T.x;
+    translation.y = T.y;
+    translation.z = T.z;
+    rotation.x = R.x;
+    rotation.y = R.y;
+    rotation.z = R.z;
+    rotation.w = R.w;
+    scale.x = S.x;
+    scale.y = S.y;
+    scale.z = S.z;
+};
+
+/*
+// when impl. then delete old getTransform func above!
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scaleFactor, scaleOrientation) 
 {
 	var flip = this.decompose(translation, rotation, scaleFactor, scaleOrientation);
 	scaleFactor = scaleFactor.multiply(flip);
 };
+*/
 
 x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
 {
