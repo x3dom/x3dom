@@ -240,8 +240,19 @@ x3dom.debug = {
 	exists: function (obj, name, type) {
 		type = type || "function";
 		return (obj ? this.typeOf(obj[name]) : "null") === type;
-	}
+	},
 	
+	/**
+	 Dumps all members of the given object.
+	*/
+	
+	dumpFields: function (node) {
+		var str = "";
+		for (var fName in node) {
+			str += (fName + ", ");
+		}
+		x3dom.debug.logInfo(str + '\n');
+	}
 };
 
 // Call the setup function to... umm, well, setup x3dom.debug

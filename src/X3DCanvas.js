@@ -191,12 +191,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             "onkeypress",
             "onkeyup",
 
-            // w3c touch
+            // w3c touch: http://www.w3.org/TR/2011/WD-touch-events-20110505/
             "ontouchstart",
             "ontouchmove",
             "ontouchend",
             "ontouchcancel",
-            "touchleave",
+            "ontouchleave",
+			"ontouchenter",
             
             // apple gestures
             "ongesturestart",
@@ -567,19 +568,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             }
             */
 
-
-
             if (evt.shiftKey) { this.mouse_button = 1; }
             if (evt.ctrlKey)  { this.mouse_button = 4; }
             if (evt.altKey)   { this.mouse_button = 2; }
 
             if (!this.isMulti)
             {
-				
-            		  
 			  this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
               this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
-			  
 			  
 			  /*var top =  parseFloat( document.body.offsetTop) +  (parseFloat( document.body.style.marginTop) || 0);
 			  var left =  parseFloat( document.body.offsetLeft) +  (parseFloat( document.body.style.marginLeft) || 0);
@@ -598,9 +594,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			  
 			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetLeft)
 			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetTop)
-							
-			 
-				
+			
               if (this.mouse_dragging) {
                 this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
               }
@@ -736,6 +730,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             touches.lastSquareDistance = squareDistance;
             touches.lastAngle = touches.calcAngle(distance);
           }
+		  
+		  	// update volume only on click since expensive!
+			var min = x3dom.fields.SFVec3f.MAX();
+			var max = x3dom.fields.SFVec3f.MIN();
+		
+			if (this.parent.doc._scene.getVolume(min, max, true)) {
+				this.parent.doc._scene._lastMin = min;
+				this.parent.doc._scene._lastMax = max;
+			}
         };
         
         var touchStartHandlerMoz = function(evt)
@@ -794,10 +797,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             var deltaZoom = squareDistance - touches.lastSquareDistance;
             
             var deltaMove = new x3dom.fields.SFVec3f(
-              deltaMiddle.x / 500,
-              -deltaMiddle.y / 500,
-              deltaZoom / 100000); // yes, this numbers are magic!
-            
+            		 deltaMiddle.x / screen.width,
+            		-deltaMiddle.y / screen.height,
+              		 deltaZoom / (screen.width * screen.height * 0.2));
+			
             var rotation = touches.calcAngle(distance);
             var angleDelta = touches.lastAngle - rotation;
             touches.lastAngle = rotation;
@@ -871,6 +874,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.canvas.addEventListener('touchend',      touchEndHandler,      true);
         //this.canvas.addEventListener('touchcancel',   touchCancelHandler,   true);
         //this.canvas.addEventListener('touchleave',    touchLeaveHandler,    true);
+		//this.canvas.addEventListener('touchenter',    touchEnterHandler,    true);
 
         // gesture events (only apple)
         //this.canvas.addEventListener('gesturestart',  gestureStartHandler,  true);

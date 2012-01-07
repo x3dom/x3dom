@@ -437,6 +437,72 @@ x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
     return m;
 };
 
+x3dom.fields.SFMatrix4f.prototype.norm1_3x3 = function() {
+    var max, t = 0;
+    
+    max = Math.abs(this._00) + 
+          Math.abs(this._10) +
+          Math.abs(this._20);
+    
+    if((t = Math.abs(this._01) +
+            Math.abs(this._11) +
+            Math.abs(this._21)  ) > max)
+    {
+        max = t;
+    }
+    
+    if((t = Math.abs(this._02) +
+            Math.abs(this._12) +
+            Math.abs(this._22)  ) > max)
+    {
+        max = t;
+    }
+    
+    return max;
+};
+
+x3dom.fields.SFMatrix4f.prototype.normInf_3x3 = function() {
+    var max, t = 0;
+    
+    max = Math.abs(this._00) + 
+          Math.abs(this._01) +
+          Math.abs(this._02);
+    
+    if((t = Math.abs(this._10) +
+            Math.abs(this._11) +
+            Math.abs(this._12)  ) > max)
+    {
+        max = t;
+    }
+    
+    if((t = Math.abs(this._20) +
+            Math.abs(this._21) +
+            Math.abs(this._22)  ) > max)
+    {
+        max = t;
+    }
+    
+    return max;
+};
+
+x3dom.fields.SFMatrix4f.prototype.adjointT_3x3 = function () {
+	var result = x3dom.fields.SFMatrix4f.identity();
+	
+    result._00 = this._11 * this._22 - this._12 * this._21;
+    result._01 = this._12 * this._20 - this._10 * this._22;
+    result._02 = this._10 * this._21 - this._11 * this._20;
+    
+    result._10 = this._21 * this._02 - this._22 * this._01;
+    result._11 = this._22 * this._00 - this._20 * this._02;
+    result._12 = this._20 * this._01 - this._21 * this._00;
+    
+    result._20 = this._01 * this._12 - this._02 * this._11;
+    result._21 = this._02 * this._10 - this._00 * this._12;
+    result._22 = this._00 * this._11 - this._01 * this._10;
+	
+	return result;
+};
+
 x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
     var eps = 0.000000000001;
     return Math.abs(this._00-that._00) < eps && Math.abs(this._01-that._01) < eps && 
@@ -449,57 +515,31 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
            Math.abs(this._32-that._32) < eps && Math.abs(this._33-that._33) < eps;
 };
 
-// keep old code for compatibility as long as new one is not fully impl.
-x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scale) {
-    var T = new x3dom.fields.SFVec3f(this._03, this._13, this._23);
-    var S = new x3dom.fields.SFVec3f(1, 1, 1); // TODO; implement scale
-
-    // http://www.j3d.org/matrix_faq/matrfaq_latest.html
-    var angle_x, angle_y, angle_z, tr_x, tr_y, C;
-    angle_y = Math.asin(this._02);
-    C = Math.cos(angle_y);
-    
-    if (Math.abs(C) > 0.0001) {
-      tr_x =  this._22 / C;
-      tr_y = -this._12 / C;
-      angle_x = Math.atan2(tr_y, tr_x);
-      tr_x =  this._00 / C;
-      tr_y = -this._01 / C;
-      angle_z = Math.atan2(tr_y, tr_x);
-    }
-    else {
-      angle_x = 0;
-      tr_x = this._11;
-      tr_y = this._10;
-      angle_z = Math.atan2(tr_y, tr_x);
-    }
-    
-    var R = new x3dom.fields.Quaternion(
-        -Math.cos((angle_x - angle_z)/2) * Math.sin(angle_y/2),
-         Math.sin((angle_x - angle_z)/2) * Math.sin(angle_y/2),
-        -Math.sin((angle_x + angle_z)/2) * Math.cos(angle_y/2),
-         Math.cos((angle_x + angle_z)/2) * Math.cos(angle_y/2) );
-    
-    translation.x = T.x;
-    translation.y = T.y;
-    translation.z = T.z;
-    rotation.x = R.x;
-    rotation.y = R.y;
-    rotation.z = R.z;
-    rotation.w = R.w;
-    scale.x = S.x;
-    scale.y = S.y;
-    scale.z = S.z;
-};
-
-/*
-// when impl. then delete old getTransform func above!
-x3dom.fields.SFMatrix4f.prototype.getTransform = function(translation, rotation, scaleFactor, scaleOrientation) 
+/** Decomposes the matrix into a translation, rotation, scale,
+ *  and scale orientation. Any projection information is discarded.
+ *  The decomposition depends upon choice of center point for
+ *  rotation and scaling, which is optional as the last parameter.
+ */
+x3dom.fields.SFMatrix4f.prototype.getTransform = function(
+				translation, rotation, scaleFactor, scaleOrientation, center) 
 {
-	var flip = this.decompose(translation, rotation, scaleFactor, scaleOrientation);
+	var m = x3dom.fields.SFMatrix4f.identity();
+	
+	if (arguments.length > 4) {
+		m = x3dom.fields.SFMatrix4f.translation(center.negate());
+		m = m.mult(this);
+		
+		var c = x3dom.fields.SFMatrix4f.translation(center);
+		m = m.mult(c);
+	}
+	else {
+		m.setValues(this);
+	}
+	
+	var flip = m.decompose(translation, rotation, scaleFactor, scaleOrientation);
+	
 	scaleFactor = scaleFactor.multiply(flip);
 };
-*/
 
 x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
 {
@@ -545,16 +585,154 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so)
 
 x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
 {
-	var det = 0;
+    var TOL = 1.0e-6;
 	
-	// TODO
+    var Mk = this.transpose();
+    
+    var Ek = x3dom.fields.SFMatrix4f.identity(); 
+	var MkAdjT;
 	
-	return det;
+    var Mk_one = Mk.norm1_3x3();
+    var Mk_inf = Mk.normInf_3x3();
+    
+    var MkAdjT_one, MkAdjT_inf;
+    var Ek_one, Mk_det;
+       
+    do
+    {
+        // compute transpose of adjoint
+		MkAdjT = Mk.adjointT_3x3();
+        
+        // Mk_det = det(Mk) -- computed from the adjoint        
+        Mk_det = Mk._00 * MkAdjT._00 + 
+                 Mk._01 * MkAdjT._01 +
+                 Mk._02 * MkAdjT._02;
+        
+        // should this be a close to zero test ?
+        if(Mk_det === 0)
+        {
+            x3dom.debug.logWarning("polarDecompose: Mk_det == 0.0");
+            break;
+        }
+        
+        MkAdjT_one = MkAdjT.norm1_3x3();
+        MkAdjT_inf = MkAdjT.normInf_3x3();
+        
+        // compute update factors
+        var gamma = Math.sqrt( Math.sqrt((MkAdjT_one * MkAdjT_inf) / 
+							(Mk_one * Mk_inf)) / Math.abs(Mk_det) );
+        
+        var g1 = 0.5 * gamma;
+        var g2 = 0.5 / (gamma * Mk_det);
+           
+        Ek.setValues(Mk);
+        Mk = Mk.multiply (g1         ); // this does:
+        Mk = Mk.addScaled(MkAdjT, g2 ); // Mk = g1 * Mk + g2 * MkAdjT
+        Ek = Ek.addScaled(Mk,    -1.0); // Ek -= Mk;
+        
+        Ek_one = Ek.norm1_3x3  ();
+        Mk_one = Mk.norm1_3x3  ();
+        Mk_inf = Mk.normInf_3x3();
+        
+    } while (Ek_one > (Mk_one * TOL));
+    
+    var Q = Mk.transpose();
+    
+	var S = Mk.mult(this);
+	
+	var i, j;
+    
+    for (i = 0; i < 3; ++i)
+    {
+        for (j = i; j < 3; ++j)
+        {
+            S['_'+j+i] = 0.5 * (S['_'+j+i] + S['_'+i+j]);
+			S['_'+i+j] = 0.5 * (S['_'+j+i] + S['_'+i+j]);
+        }
+    }
+    
+    return Mk_det;
 };
 
 x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
 {
-	// TODO
+    var next = [1, 2, 0];
+    var maxIterations = 20;
+    var iter, i, j;
+    var diag = [], offDiag = [];
+    
+    diag[0] = this._00;
+    diag[1] = this._11;
+    diag[2] = this._22;
+    
+    offDiag[0] = this._12;
+    offDiag[1] = this._20;
+    offDiag[2] = this._01;
+    
+    for (iter = 0; iter < maxIterations; ++iter)
+    {
+        var sm = Math.abs(offDiag[0]) +  Math.abs(offDiag[1]) +  Math.abs(offDiag[2]);
+        
+        if (sm === 0) {        
+            break;
+        }
+        
+        for (i = 2; i >= 0; --i)
+        {
+            var p = next[i];
+            var q = next[p];
+            
+            var absOffDiag = Math.abs(offDiag[i]);
+            var g          = 100.0 * absOffDiag; 
+            
+            if (absOffDiag > 0.0)
+            {
+                var t, h = diag[q] - diag[p];
+                var absh = Math.abs(h);
+                
+                if (absh + g == absh)
+                {
+                    t = offDiag[i] / h;
+                }
+                else
+                {
+                    var theta = 0.5 * h / offDiag[i];
+                    t = 1.0 / (Math.abs(theta) + Math.sqrt(theta * theta + 1.0));
+                    
+                    t = theta < 0.0 ? -t : t;
+                }
+            
+                var c = 1.0 / Math.sqrt(t * t + 1.0);
+                var s = t * c;
+                
+                var tau = s / (c + 1.0);
+                var ta  = t * offDiag[i];
+                
+                offDiag[i] = 0.0;
+                
+                diag[p] -= ta;
+                diag[q] += ta;
+                
+                var offDiagq = offDiag[q];
+                
+                offDiag[q] -= s * (offDiag[p] + tau * offDiagq);
+                offDiag[p] += s * (offDiagq - tau * offDiag[p]);
+                
+                for (j = 2; j >= 0; --j)
+                {
+                    var a = SO['_'+j+p];
+                    var b = SO['_'+j+q];
+                    
+                    SO['_'+j+p] -= s * (b + tau * a);
+                    SO['_'+j+q] += s * (a - tau * b);
+                }
+            }
+        }
+    }
+    
+    k.x = diag[0];
+    k.y = diag[1];
+    k.z = diag[2];
 };
 
 x3dom.fields.SFMatrix4f.prototype.log = function () {
@@ -1540,8 +1718,8 @@ x3dom.fields.SFImage.prototype.setValueByStr = function(str) {
         return;
     }
     
-    var len;
-    for (var i=3; i<n; i++) {
+    var len, i;
+    for (i=3; i<n; i++) {
         if (!mc[i].substr) {
             continue;
         }
