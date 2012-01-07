@@ -47,13 +47,6 @@ x3dom.gfx_webgl = (function () {
                 if (ctx) {
                     var newCtx = new Context(ctx, canvas, 'webgl');
 
-                    /*
-                    var ext = "";
-                    for (var fName in ctx) {
-                        ext += (fName + " / ");
-                    }
-                    x3dom.debug.logInfo(ext);
-                    */
                     try {
 						if (ctx.getString) {
 							x3dom.debug.logInfo("\nVendor: " + ctx.getString(ctx.VENDOR) + ", " + 
@@ -3969,8 +3962,7 @@ x3dom.gfx_webgl = (function () {
 				    var e_viewtrafo = e_viewpoint.getCurrentTransform();
 					e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
 					
-					var e_mat = x3dom.fields.SFMatrix4f.identity();
-					e_mat.setValues(e_viewtrafo.inverse());
+					var e_mat = e_viewtrafo.inverse();
 					
 					var e_rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
 					e_rotation.setValue(e_mat);
