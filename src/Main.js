@@ -109,7 +109,7 @@ x3dom.userAgentFeature = {
 
         // Search all X3D elements in the page
         var x3ds = document.getElementsByTagName('X3D');
-        var w3sg = document.getElementsByTagName('webSG');
+        var w3sg = document.getElementsByTagName('webSG');	// FIXME
 
         // ~~ Components and params {{{ ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
         var params;
@@ -122,10 +122,11 @@ x3dom.userAgentFeature = {
             'component', 
             'loadpath', 
             'disableDoubleClick',
-            'disableRightDrag',
             'maxActiveDownloads'
         ]);
         var components, prefix;
+		
+		var showLoggingConsole = false;
 
         // for each X3D element
         for (i=0; i < x3ds.length; i++) {
@@ -149,9 +150,7 @@ x3dom.userAgentFeature = {
 
             // enable log
             if (settings.getProperty('showLog') === 'true') {
-                x3dom.debug.activate(true);
-            } else {
-                x3dom.debug.activate(false);
+				showLoggingConsole = true;
             }
 
             if (typeof X3DOM_SECURITY_OFF != 'undefined' && X3DOM_SECURITY_OFF === true) {
@@ -178,6 +177,12 @@ x3dom.userAgentFeature = {
             }
         }
         // }}}
+		
+		if (showLoggingConsole == true) {
+			x3dom.debug.activate(true);
+		} else {
+			x3dom.debug.activate(false);
+		}
 
 
         // active hacky DOMAttrModified workaround to webkit
@@ -242,7 +247,7 @@ x3dom.userAgentFeature = {
                 
                 x3dcanvas.x3dElem.appendChild(altDiv);
 
-                // remove the stats div (it's not ed when WebGL doesnt work)
+                // remove the stats div (it's not added when WebGL doesn't work)
                 if (x3dcanvas.statDiv) { 
                     x3d_element.removeChild(x3dcanvas.statDiv);
                 }

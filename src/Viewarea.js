@@ -911,36 +911,33 @@ x3dom.Viewarea.prototype.onMove = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 {
-  var navi = this._scene.getNavigationInfo();
-  var viewpoint = this._scene.getViewpoint();
-  
-  if (navi._vf.type[0].toLowerCase() === "examine")
-  {
-  /*
-    var min = x3dom.fields.SFVec3f.MAX();
-    var max = x3dom.fields.SFVec3f.MIN();
-    var ok = this._scene.getVolume(min, max, true);
+	var navi = this._scene.getNavigationInfo();
+	var viewpoint = this._scene.getViewpoint();
 
-    var d = ok ? (max.subtract(min)).length() : 10;
-    d = (d < x3dom.fields.Eps) ? 1 : d;
-
-    var vec = new x3dom.fields.SFVec3f(d*translation.x, d*translation.y, d*translation.z);
-  */
-  if(translation)
-  {
-    var distance = 1 + Math.abs(this._movement.z);
-    
-    translation = translation.multiply(distance);
-    this._movement = this._movement.add(translation);
-
-    this._transMat = viewpoint.getViewMatrix().inverse().
-        mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-        mult(viewpoint.getViewMatrix());
-  }
-  
-  if(rotation)
-    this._rotMat = rotation.mult(this._rotMat);
-  }
+	if (navi._vf.type[0].toLowerCase() === "examine")
+	{
+		if (translation)
+		{
+			var distance = 10;
+			
+			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			{
+				distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+				distance = (distance < x3dom.fields.Eps) ? 1 : distance;
+			}
+			
+			translation = translation.multiply(distance);
+			this._movement = this._movement.add(translation);
+			
+			this._transMat = viewpoint.getViewMatrix().inverse().
+				mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
+				mult(viewpoint.getViewMatrix());
+		}
+		
+		if (rotation) {
+			this._rotMat = rotation.mult(this._rotMat);
+		}
+	}
 };
 
 x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
@@ -981,12 +978,20 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         if (buttonState & 4) //middle
         {
-            min = x3dom.fields.SFVec3f.MAX();
-            max = x3dom.fields.SFVec3f.MIN();
-            ok = this._scene.getVolume(min, max, true);
-
-            d = ok ? (max.subtract(min)).length() : 10;
-            d = (d < x3dom.fields.Eps) ? 1 : d;
+			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			{
+				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+				d = (d < x3dom.fields.Eps) ? 1 : d;
+			}
+			else
+			{
+				min = x3dom.fields.SFVec3f.MAX();
+				max = x3dom.fields.SFVec3f.MIN();
+				ok = this._scene.getVolume(min, max, true);
+				
+				d = ok ? (max.subtract(min)).length() : 10;
+				d = (d < x3dom.fields.Eps) ? 1 : d;
+			}
             //x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
             //x3dom.debug.logInfo("w="+this._width+", h="+this._height);
 
@@ -1000,16 +1005,20 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         if (buttonState & 2) //right
         {
-            if (this._doc.properties.getProperty('disableRightDrag', 'false') === 'true') {
-                return;
-            }
-
-            min = x3dom.fields.SFVec3f.MAX();
-            max = x3dom.fields.SFVec3f.MIN();
-            ok = this._scene.getVolume(min, max, true);
-
-            d = ok ? (max.subtract(min)).length() : 10;
-            d = (d < x3dom.fields.Eps) ? 1 : d;
+			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			{
+				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+				d = (d < x3dom.fields.Eps) ? 1 : d;
+			}
+			else
+			{
+				min = x3dom.fields.SFVec3f.MAX();
+				max = x3dom.fields.SFVec3f.MIN();
+				ok = this._scene.getVolume(min, max, true);
+				
+				d = ok ? (max.subtract(min)).length() : 10;
+				d = (d < x3dom.fields.Eps) ? 1 : d;
+			}
             //x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
             //x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
 

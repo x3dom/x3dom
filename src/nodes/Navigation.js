@@ -63,16 +63,17 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                if (fieldName == "position" || fieldName == "orientation") {
-                    this._viewMatrix = this._vf.orientation.toMatrix().transpose().
-                        mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
+                if (fieldName == "position" || 
+					fieldName == "orientation") {
+                    this.resetView();
                 }
                 else if (fieldName == "fieldOfView" ||
-                         fieldName == "zNear" || fieldName == "zFar") {
+                         fieldName == "zNear" || 
+						 fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
                 }
                 else if (fieldName === "set_bind") {
-                    // XXX FIXME; call parent.fieldChanged();
+                    // FIXME; call parent.fieldChanged();
                     this.bind(this._vf.set_bind);
                 }
             },
