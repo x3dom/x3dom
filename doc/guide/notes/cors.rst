@@ -126,6 +126,11 @@ you loading resources from disk. Use the following startup parameters::
     --allow-file-access-from-files
     --allow-file-access
 
+To disable CORS protection for loading files from foreign servers, use the
+following startup switch::
+
+    --disable-web-security
+
 
 Firefox
 +++++++
