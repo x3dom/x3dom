@@ -376,9 +376,18 @@ x3dom.registerNodeType(
 		},
         
         initSetter: function (xmlNode, name) {
-            xmlNode.__defineSetter__(name, function(value) {
-        		xmlNode.setAttribute(name, value);
-			});
+			//IE has no __defineSetter__ !!!
+			if(xmlNode.__defineSetter__ != undefined) {
+				xmlNode.__defineSetter__(name, function(value) {
+					xmlNode.setAttribute(name, value);
+				});
+			} else {
+				Object.defineProperty(xmlNode, name, { 
+					set: function(value) { 
+						xmlNode.setAttribute(name, value); 
+					} 
+				});
+			}
         },
 
         addField_SFInt32: function (ctx, name, n) {
