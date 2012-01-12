@@ -15,28 +15,25 @@
 	$(document).ready(function() {
 		var x_low = 0, x_high = 10;
 		var y_low = 0, y_high = 10;
-		var z_low = 0, z_high = 10;
 		var t_low = 0, t_high = 10;
 		$.ajax({
 				url: 'http://212.201.49.173:8080/earthlook-ras',
 				type: 'GET',
 				dataType: "xml",
 				async: false,
-				data: 'service=WCS&version=2.0.0&request=DescribeCoverage&coverageId=TP',
+				data: 'service=WCS&version=2.0.0&request=DescribeCoverage&coverageId=climate_temperature',
 				success:  function(xml) {
 					$(xml).find('low').each(function(){
 						var low = $(this).text().split(" ");
 						x_low = low[0];
 						y_low = low[1];
-						z_low = low[2];
-						t_low = low[3];					
+						t_low = low[2];				
 					});
 					$(xml).find('high').each(function(){
 						var high = $(this).text().split(" ");
 						x_high = high[0];
 						y_high = high[1];
-						z_high = high[2];
-						t_high = high[3];
+						t_high = high[2];
 					});
 					
 				},
@@ -45,22 +42,22 @@
 				}
 		});
 				
-		$('#boxpoint').attr('point', -(x_high/2)+' '+-(y_high/2)+' '+-(z_high/2)
-								  +' '+(x_high/2)+' '+-(y_high/2)+' '+-(z_high/2)
-								  +' '+(x_high/2)+' '+(y_high/2)+' '+-(z_high/2)
-								  +' '+-(x_high/2)+' '+(y_high/2)+' '+-(z_high/2)
-								  +' '+-(x_high/2)+' '+-(y_high/2)+' '+(z_high/2)
-								  +' '+(x_high/2)+' '+-(y_high/2)+' '+(z_high/2)
-								  +' '+(x_high/2)+' '+(y_high/2)+' '+(z_high/2)
-								  +' '+-(x_high/2)+' '+(y_high/2)+' '+(z_high/2));
-		$('#rectangle1').attr('size',z_high +' '+ y_high);
+		$('#boxpoint').attr('point', -(x_high/2)+' '+-(y_high/2)+' '+-(t_high/2)
+								  +' '+(x_high/2)+' '+-(y_high/2)+' '+-(t_high/2)
+								  +' '+(x_high/2)+' '+(y_high/2)+' '+-(t_high/2)
+								  +' '+-(x_high/2)+' '+(y_high/2)+' '+-(t_high/2)
+								  +' '+-(x_high/2)+' '+-(y_high/2)+' '+(t_high/2)
+								  +' '+(x_high/2)+' '+-(y_high/2)+' '+(t_high/2)
+								  +' '+(x_high/2)+' '+(y_high/2)+' '+(t_high/2)
+								  +' '+-(x_high/2)+' '+(y_high/2)+' '+(t_high/2));
+		$('#rectangle1').attr('size',t_high +' '+ y_high);
 		$('#trans1').attr('translation', -(x_high/2)+' 0 0');
 		
-		$('#rectangle2').attr('size',x_high +' '+ z_high);
+		$('#rectangle2').attr('size',x_high +' '+ t_high);
 		$('#trans2').attr('translation', '0 '+-(y_high/2)+' 0');
 		
 		$('#rectangle3').attr('size',x_high +' '+ y_high);
-		$('#trans3').attr('translation', '0 0 '+ -(z_high/2));
+		$('#trans3').attr('translation', '0 0 '+ -(t_high/2));
 
 			$(function() { //X
 				$( "#slider1" ).slider({
@@ -71,7 +68,7 @@
 					slide: function( event, ui ) {
 						var x = ui.value - (x_high/2);
 						$('#trans1').attr('translation', x +' 0 0');
-						$('#texture1').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+x%28'+ui.value+'%29%2C+t%28'+$( "#slider4" ).slider( "value" )+'%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29');
+						$('#texture1').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for m in (climate_temperature) return encode( (char) (m[ x('+ui.value+') ] - 200)*2, "png" )');
 						$( "#x" ).text("X " + ui.value );
 					}
 				});
@@ -87,43 +84,27 @@
 					slide: function( event, ui ) {
 						var y = ui.value - (y_high/2);
 						$('#trans2').attr('translation', '0 '+y+' 0');
-						$('#texture2').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+y%28'+(y_high-ui.value)+'%29%2C+t%28'+$( "#slider4" ).slider( "value" )+'%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29');
+						$('#texture2').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for m in (climate_temperature) return encode( (char) (m[ y('+(y_high-ui.value)+') ] - 200)*2, "png" )');
 						$( "#y" ).text("Y " + ui.value );
 					}
 				});
 				$( "#y" ).text("Y " + $( "#slider2" ).slider( "value" ) );
 			});
 			
-			$(function() { //Z
+			$(function() { //t
 				$( "#slider3" ).slider({
-					value: z_low,
-					min: z_low,
-					max: z_high,
-					step: 1,
-					slide: function( event, ui ) {
-						var z = ui.value - (z_high/2);
-						$('#trans3').attr('translation', '0 0 '+ z);
-						$('#texture3').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+z%28'+ui.value+'%29%2C+t%28'+$( "#slider4" ).slider( "value" )+'%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29');
-						$( "#z" ).text("Z " + ui.value );
-					}
-				});
-				$( "#z" ).text("Z " + $( "#slider3" ).slider( "value" ) );
-			});
-			
-			$(function() { //T
-				$( "#slider4" ).slider({
 					value: t_low,
 					min: t_low,
 					max: t_high,
 					step: 1,
 					slide: function( event, ui ) {
-						$('#texture1').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+x%28'+$( "#slider1" ).slider( "value" )+'%29%2C+t%28'+ui.value+'%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29');
-						$('#texture2').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+y%28'+(y_high-$( "#slider2" ).slider( "value" ))+'%29%2C+t%28'+ui.value+'%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29');
-						$('#texture3').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+z%28'+$( "#slider3" ).slider( "value" )+'%29%2C+t%28'+ui.value+'%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29');
-						$( "#time" ).text("Time " + ui.value );
+						var t = ui.value - (t_high/2);
+						$('#trans3').attr('translation', '0 0 '+ t);
+						$('#texture3').attr('url', 'http://212.201.49.173:8080/earthlook-ras?query=for m in (climate_temperature) return encode( (char) (m[ t('+ui.value+') ] - 200)*2, "png" )');
+						$( "#t" ).text("t " + ui.value );
 					}
 				});
-				$( "#time" ).text("Time " + $( "#slider4" ).slider( "value" ) );
+				$( "#t" ).text("t " + $( "#slider3" ).slider( "value" ) );
 			});
 	});	
 </script>
@@ -131,12 +112,12 @@
 	body {
 		font-size: 12px;
 	}
-	.slider_wrapper1, .slider_wrapper2, .slider_wrapper3, .slider_wrapper4 {
+	.slider_wrapper1, .slider_wrapper2, .slider_wrapper3 {
 		padding: 10px;
 		width: 200px;
 		float: left;
 	}
-	#time, #x, #y, #z{
+	#time, #x, #y, #t{
 		color: #f6931f;
 		font-weight: bold;
 	}
@@ -185,7 +166,7 @@ html[xmlns] .clearfix {
                         <shape>
                             <appearance>
                               <material diffuseColor='yellow'></material>
-                              <imageTexture id="texture1" url='http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+x%280%29%2C+t%280%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29'></imageTexture>
+                              <imageTexture id="texture1" url='http://212.201.49.173:8080/earthlook-ras?query=for m in (climate_temperature) return encode( (char) (m[ x(10) ] - 200)*2, "png" )'></imageTexture>
                             </appearance>
                             <Rectangle2D id="rectangle1" subdivision='1 1' ></Rectangle2D>
                           </shape>      
@@ -194,7 +175,7 @@ html[xmlns] .clearfix {
                         <shape>
                             <appearance>
                               <material diffuseColor='yellow'></material>
-                               <imageTexture id="texture2" url='http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+y%280%29%2C+t%280%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29'></imageTexture>
+                               <imageTexture id="texture2" url='http://212.201.49.173:8080/earthlook-ras?query=for m in (climate_temperature) return encode( (char) (m[ y(10) ] - 200)*2, "png" )'></imageTexture>
                             </appearance>
                             <Rectangle2D id="rectangle2" subdivision='1 1' ></Rectangle2D>
                           </shape>                               
@@ -203,7 +184,7 @@ html[xmlns] .clearfix {
                         <shape>
                             <appearance>
                               <material diffuseColor='yellow'></material>
-                              <imageTexture id="texture3" url='http://212.201.49.173:8080/earthlook-ras?query=for+tp+in+%28TP%29+return+encode%28+%28char%29%28+%28tp%5B+z%280%29%2C+t%280%29+%5D+%2B+40%29*+2.5%29%2C+%22png%22+%29'></imageTexture>
+                              <imageTexture id="texture3" url='http://212.201.49.173:8080/earthlook-ras?query=for m in (climate_temperature) return encode( (char) (m[ t(10) ] - 200)*2, "png" )'></imageTexture>
                             </appearance>
                             <Rectangle2D id="rectangle3" subdivision='1 1' ></Rectangle2D>
                           </shape>   
@@ -224,14 +205,9 @@ html[xmlns] .clearfix {
      	<div id="slider2"></div>
      </div>
      <div class="slider_wrapper3">
-		<p id="z"></p>
+		<p id="t"></p>
      	<div id="slider3"></div>
      </div>
-     
-	<div class="slider_wrapper4">
-		<p id="time"></p>
-		<div id="slider4"></div>
-	</div>
 	
 	</div>
 	
