@@ -1,5 +1,4 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
@@ -46,21 +45,45 @@
 <!-- END:X3DOM -->
 
 <style>
-    #the_element {
-      margin-top: 700px;
-      margin-left: 100px;
+	body {
+		margin-top: 50px;
+		margin-left: 30px;
+		border: 1px solid blue;
+	}
+	#element1 {
+		margin-top: 700px;
+		margin-left: 50px;
+		border: 1px solid green;
+		display: block;
+	}
+    #element2 {
+      margin-top: 20px;
+      margin-left: 20px;
+	  border: 1px solid red;
+	  display: block;
+    }
+	#element3 {
+      margin-top: 20px;
+      margin-left: 10px;
 	  border: 1px solid red;
     }
-	#the_element2 {
-      margin-top: 700px;
-      margin-left: 100px;
+	#element4 {
+      margin-top: 30px;
+      margin-left: 30px;
+	  border: 1px solid yellow;
+    }
+	#element5 {
+      margin-top: 30px;
+      margin-left: 30px;
+	  border: 1px solid yellow;
     }
  </style>
 
-</head>
-     
+</head>     
 <body>
-	<X3D id="the_element" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+<div id="element1">
+<div id="element4">
+	<X3D  id="element2" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
 	  <Scene>
       <Background skyColor='0 0 0'/>
 	<Transform translation="-2 0 0">
@@ -81,8 +104,9 @@
 	</Transform>
   </Scene>
     </X3D>
-    
-    <X3D id="the_element2" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
+     </div>
+        <div id="element5">
+    <X3D id="element3" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
 	 <Scene>
      <Background skyColor='0 0 0'/>
 	<Transform translation="-2 0 0">
@@ -103,6 +127,8 @@
 	</Transform>
   </Scene>
     </X3D>
+  </div>
+ </div>
     
     
     
