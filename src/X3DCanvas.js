@@ -815,10 +815,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           }
         };
         
-        touchMoveHandlerW3C = function(evt)
+        var touchMoveHandlerW3C = function(evt)
         {
           touchMoveHandler(evt, this.parent.doc);
-        }
+        };
         
         var touchMoveHandlerMoz = function(evt)
         {
@@ -828,7 +828,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             if(mozilla_ids[i] == evt.streamId)
               mozilla_touches.touches[i] = evt;
           
-          touchMoveHandler(mozilla_touches, evt.view.myThat.doc);
+          touchMoveHandler(mozilla_touches, this.parent.doc);
         };
         
         // === Touch end ===
