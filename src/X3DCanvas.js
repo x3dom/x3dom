@@ -578,8 +578,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				
             		  
 			  this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
-              this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
-			  
+              this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);  
 			  
 			  /*var top =  parseFloat( document.body.offsetTop) +  (parseFloat( document.body.style.marginTop) || 0);
 			  var left =  parseFloat( document.body.offsetLeft) +  (parseFloat( document.body.style.marginLeft) || 0);
@@ -593,10 +592,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			  this.mouse_drag_y = evt.clientY - top;
 			  x3dom.debug.logInfo(document.body.scrollLeft);*/
 			  
-			  //this.mouse_drag_x = document.body.scrollLeft+evt.clientX-evt.target.offsetParent.offsetLeft;
-			  //this.mouse_drag_y = document.body.scrollTop+evt.clientY-evt.target.offsetParent.offsetTop;
-			  
-			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetLeft)
+			  /*this.mouse_drag_x = document.body.scrollLeft+evt.clientX-evt.target.offsetParent.offsetLeft;
+			  this.mouse_drag_y = document.body.scrollTop+evt.clientY-evt.target.offsetParent.offsetTop;
+			  x3dom.debug.logInfo(evt.target.nodeName)
+			  x3dom.debug.logInfo(evt.target.offsetParent.nodeName)
+			  x3dom.debug.logInfo(evt.target.offsetParent.offsetParent.nodeName)
+			  x3dom.debug.logInfo(evt.target.parentNode.nodeName)
+			  x3dom.debug.logInfo(evt.target.parentNode.parentNode.nodeName)*/
 			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetTop)
 							
 			 
