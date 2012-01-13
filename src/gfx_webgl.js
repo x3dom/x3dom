@@ -47,13 +47,6 @@ x3dom.gfx_webgl = (function () {
                 if (ctx) {
                     var newCtx = new Context(ctx, canvas, 'webgl');
 
-                    /*
-                    var ext = "";
-                    for (var fName in ctx) {
-                        ext += (fName + " / ");
-                    }
-                    x3dom.debug.logInfo(ext);
-                    */
                     try {
 						if (ctx.getString) {
 							x3dom.debug.logInfo("\nVendor: " + ctx.getString(ctx.VENDOR) + ", " + 
@@ -3902,6 +3895,9 @@ x3dom.gfx_webgl = (function () {
             
             scene._lastMin = min;
             scene._lastMax = max;
+            
+            viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
+        	viewarea._last_mat_scene = x3dom.fields.SFMatrix4f.identity();
         }
         else 
         {
@@ -3951,7 +3947,48 @@ x3dom.gfx_webgl = (function () {
         //}
         
         var mat_view = viewarea.getViewMatrix();
+        
+        if ( !viewarea._last_mat_view.equals(mat_view) )
+        {
+        	var e_viewpoint = viewarea._scene.getViewpoint();
+        	var e_eventType = "viewpointChanged";
+        	
+        	try {
+				if ( e_viewpoint._xmlNode && 
+						(e_viewpoint._xmlNode["on"+e_eventType] ||
+					 	 e_viewpoint._xmlNode.hasAttribute("on"+e_eventType) ||
+					 	 e_viewpoint._listeners[e_eventType]) )
+				{
+				    var e_viewtrafo = e_viewpoint.getCurrentTransform();
+					e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
+					
+					var e_mat = e_viewtrafo.inverse();
+					
+					var e_rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
+					e_rotation.setValue(e_mat);
+					
+					var e_translation = e_mat.e3();
+					
+				    var e_event = {
+						target: e_viewpoint._xmlNode,
+						type: e_eventType,
+						matrix: e_viewtrafo,
+						position: e_translation,
+						orientation: e_rotation.toAxisAngle(),
+						cancelBubble: false,
+						stopPropagation: function() { this.cancelBubble = true; }
+					};
+					
+					e_viewpoint.callEvtHandler(e_eventType, e_event);
+				}
+			}
+			catch(e_e) {
+				x3dom.debug.logException(e_e);
+			}
+        }
+        
         viewarea._last_mat_view = mat_view;
+        
         var mat_scene = viewarea.getWCtoCCMatrix();
         viewarea._last_mat_scene = mat_scene;
         
