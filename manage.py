@@ -161,7 +161,7 @@ def runserver():
 def deploy():
     # TODO use fabric for that
     print("Updating x3dom.org... (requires you set up public key auth and a ssh config file)")
-    subprocess.call('ssh x3dom "cd ~/web/x3dom/; git pull; cp src/x3dom.js src/x3dom.bak; python manage.py --rebuild; ln -s dist/x3dom.js src/x3dom.js"', shell=True)
+    subprocess.call('ssh x3dom "cd ~/web/x3dom/; git pull; python manage.py --rebuild; ln -s dist/x3dom.js src/x3dom.js"', shell=True)
 
 def update_tests():
     # TODO, integrate the python script here instead of calling it
