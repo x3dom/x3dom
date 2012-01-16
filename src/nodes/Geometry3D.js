@@ -2067,7 +2067,7 @@ x3dom.registerNodeType(
                 var pnts = this._cf.coord.node._vf.point;
                 var i, n = pnts.length;
 
-               if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) /*||
+                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) /*||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
                     (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
                     (this._vf.colorIndex.length > 0 && this._cf.color.node)*/)
