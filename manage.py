@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import with_statement
 # -------------------------------------------------------------------
 # NOTE:
 # What is written here is what this build file should do, not what it
@@ -79,6 +80,8 @@ except:
 import os
 import subprocess
 import shutil
+from contextlib import closing
+from zipfile import ZipFile, ZIP_DEFLATED
 
 from tools import x3dom_packer
 from tools.packages import FULL_PROFILE, CORE_PROFILE, COMPONENTS, prefix_path
@@ -138,12 +141,13 @@ def _build_examples():
     # as x3dom.css, js, etc.
     pass
 
-def release(version):
+def release(version='snapshot'):
     # does everything necessary to bundle a major release
     # like git tagging, bundling tar/gz, deploying, etc.
     # adding version numbers to files, etc.
-    pass
-
+    rebuild()
+    print("Creating ZIP distributable")
+    _zipdir(DIST_ROOT, 'dist/x3dom-%s.zip' % version)
 
 def runserver():
     import SimpleHTTPServer
@@ -226,6 +230,27 @@ def clean():
         os.remove("src/version.js")
         
 
+def rebuild():
+    clean()
+    build()
+    docs()
+
+
+def _zipdir(basedir, archivename):
+    assert os.path.isdir(basedir)
+    with closing(ZipFile(archivename, "w", ZIP_DEFLATED)) as z:
+        for root, dirs, files in os.walk(basedir):
+            # ignore empty directories
+            for fn in files:
+                # skip self and other zip files
+                if os.path.basename(fn) == os.path.basename(archivename):
+                    continue
+                print("Zipping %s" % fn)
+                absfn = os.path.join(root, fn)
+                zfn = absfn[len(basedir)+len(os.sep):] #XXX: relative path
+                z.write(absfn, zfn)
+
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Management script for X3DOM. Building, running things, cleaning up, testing, and then some.')
 
@@ -261,7 +286,7 @@ help='clean up build and remove all generated files')
     if args.build:
         build(mode=args.build)
     elif args.release:
-        release()
+        release(version=args.release)
     elif args.runserver:
         runserver()
     elif args.deploy:
@@ -277,9 +302,7 @@ help='clean up build and remove all generated files')
     elif args.docs:
         docs()
     elif args.rebuild:
-        clean()
-        build()
-        docs()
+        rebuild()
     else:
         parser.print_help()
             
