@@ -6,8 +6,40 @@ Release notes
 Version 1.3
 -----------
 
-* Flash
-* 
+  * Our participation at the W3C was officially launched
+  * We have moved from SF to GitHub
+  * We have added some unit tests
+  * We have renewed our documentation and added some tutorials
+  * We have added component support for X3DOM to hold the core tight and allow (non-)standardized extensions
+  * With the release of Flash 11 we are now able to use a non-beta API for the Flash fallback
+  * ```<x3d src='foo.x3d' />``` support allows integration of 3D content like
+    native images. Note: this will not behave like including images and only work in a client/server
+    environment due the fact that we have to use the XMLHttpRequest functionality
+  * We have redesigned our multitouch support. It now works on iOS devices and
+    multitouch setups with Mozilla. For Android and Firefox there seem to be
+    some bugs in the android implementation and this should work only
+    after these bugs are closed
+  * We worked on the WebGL-backend, reducing the shader complexity to run on
+    mobile hardware. The shaders are now chosen using a cabs-like system.
+  * Added support for billboards
+  * Redesigned our build system
+  * We have implemented functionality for reflecting inlined scenes into the
+    namespace of parent scenes. With this it is now possible to access
+    elements from the parent scene to address elements within the inlined
+    scene. Due to the lack of supporting such a concept in the X3D and
+    HTML standard we have made use of a custom extension (see field
+    nameSpaceName)
+  * Inline support in a flash renderer
+  * Support for a ```<param>``` tag. This allows to configure
+    the framework runtime at a single point
+  * Extended triangulation for generating triangles out of concave geometry
+  * New components
+  * Various fixes & new features
+
+With the new component model we have added the first two optional components:
+
+  * 2D primitive support for the use of elements like rectangles, discs, lines, etc.
+  * Initial support for some GEO referencing elements from the X3D specification
 
 Version 1.2
 -----------
