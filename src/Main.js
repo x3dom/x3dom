@@ -350,7 +350,13 @@ x3dom.userAgentFeature = {
             }
             return obj;
         };
-    }
+    } else if ((window.location.pathname.lastIndexOf(".html") > 0) && (navigator.userAgent.indexOf("Firefox") != -1)) {
+		 document.getElementById = function(id) {
+     
+            var node = travers(document.getElementsByTagName('body')[0], id);
+            return node;
+        };
+	}
     
     if (window.addEventListener)  {
         window.addEventListener('load', onload, false);
@@ -364,3 +370,20 @@ x3dom.userAgentFeature = {
     
 })();
 
+function travers(node, id) {
+	if(node instanceof Element) {
+		if(node.getAttribute('id') == id) {
+			return node;
+		} else if(node.hasChildNodes()) {
+			
+			for(var i = 0; (i < node.childNodes.length); i++) {								   
+				val = travers(node.childNodes[i], id);
+				if(val) return val;
+			}
+		} else {
+			return null;	
+		}
+	} else {
+		return null;
+	}
+};	

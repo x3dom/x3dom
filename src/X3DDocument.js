@@ -471,3 +471,7 @@ x3dom.X3DDocument.prototype.shutdown = function(ctx)
     }
     ctx.shutdown(this._viewarea);
 };
+
+
+
+
