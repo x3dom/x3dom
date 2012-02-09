@@ -1912,8 +1912,8 @@ x3dom.registerNodeType(
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
-								
 								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
+								
 																
 								for (var j = 0; j < multi_index_data.indices.length; j++)
 								{	
@@ -2025,6 +2025,7 @@ x3dom.registerNodeType(
 								linklist = new x3dom.DoublyLinkedList();
 							continue;
 							}
+							
 							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[indexes[i]], indexes[i]));
 						}								
 					}
