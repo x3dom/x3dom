@@ -68,6 +68,7 @@ x3dom.EarClipping = {
 	}, 
 
 	getIndexes: function (linklist) {
+		
 		var node = linklist.first.next;
 		var plane = this.identifyPlane(node.prev.point, node.point, node.next.point);
 		
@@ -79,7 +80,7 @@ x3dom.EarClipping = {
 			
 		var isEar = true;
 		
-		while(linklist.length >= 3 && count < 10) {
+		while(linklist.length >= 3 && count < 15) {
 			next = node.next;
 			for(var i = 0; i < linklist.length; i++) {
 				if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
@@ -96,7 +97,7 @@ x3dom.EarClipping = {
 				}
 			}
 			
-			if(count == 3) {
+			/*if(count == 3) {
 				if(this.reversePointDirection(linklist))
 				{		
 					var tmp = this.getIndexes(linklist).reverse();
@@ -104,7 +105,7 @@ x3dom.EarClipping = {
 						indexes.push(tmp[i]);
 					}
 				}
-			}
+			}*/
 			node = next;
 			isEar = true;
 		}
@@ -129,17 +130,20 @@ x3dom.EarClipping = {
 		node = linklist.first.next;
 		var next = null;
 		var count = 0;
-		
-		
+			
 		var isEar = true;
-		while(linklist.length >= 3  && count < 10) {
+		while(linklist.length >= 3  && count < 15) {
+		
+			
 			next = node.next;
 			for(var i = 0; i < linklist.length; i++) {
-				if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
+				
+			if(this.isNotEar(linklist.getNode(i).point, node.prev.point, node.point, node.next.point, plane)) {
 					isEar = false;
 				}
 			}
 			if(isEar) {
+				
 				if(this.isKonvex(node.prev.point, node.point, node.next.point, plane)) {				
 					data.indices.push(node.prev.point_index, node.point_index, node.next.point_index);
 					data.point.push(node.prev.point,
@@ -166,20 +170,22 @@ x3dom.EarClipping = {
 					count++;
 				}
 			}
-			if(count == 3) {
-			if(this.reversePointDirection(linklist))
-			{
-				var tmp = this.getMultiIndexes(linklist);
-				data.indices = data.indices.concat(tmp.indices.reverse());
-				data.point = data.point.concat(tmp.point.reverse());
-				data.normals = data.normals.concat(tmp.normals.reverse());
-				data.colors = data.colors.concat(tmp.colors.reverse());
-				data.texCoords = data.texCoords.concat(tmp.texCoords.reverse());			
-			}
-		}
+			
+			/*if(count == 3) {
+				if(this.reversePointDirection(linklist))
+				{
+					var tmp = this.getMultiIndexes(linklist);
+					data.indices = data.indices.concat(tmp.indices.reverse());
+					data.point = data.point.concat(tmp.point.reverse());
+					data.normals = data.normals.concat(tmp.normals.reverse());
+					data.colors = data.colors.concat(tmp.colors.reverse());
+					data.texCoords = data.texCoords.concat(tmp.texCoords.reverse());			
+				}
+			}*/
 			node = next;
 			isEar = true;
 		}
+		
 		if(invers){	
 			data.indices = data.indices.reverse();
 			data.point = data.point.reverse();

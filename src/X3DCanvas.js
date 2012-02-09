@@ -574,27 +574,50 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
             if (!this.isMulti)
             {
-			  this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
-              this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
+			 	this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
+              	this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
+				
+				
 			  
-			  /*var top =  parseFloat( document.body.offsetTop) +  (parseFloat( document.body.style.marginTop) || 0);
-			  var left =  parseFloat( document.body.offsetLeft) +  (parseFloat( document.body.style.marginLeft) || 0);
-			  evt.target.offsetTop
-			  evt.target.offsetLeft
-			  evt.target.tagName
-			  evt.target.offsetParent.nodeName
-			  evt.target.offsetParent.offsetTop
-			  x3dom.debug.logInfo(evt.target.offsetParent.nodeName);
-			  this.mouse_drag_x = evt.clientX - left; 
-			  this.mouse_drag_y = evt.clientY - top;
-			  x3dom.debug.logInfo(document.body.scrollLeft);*/
+			  /*position test
+			 
+			  if ( "getBoundingClientRect" in document.documentElement ) {
+				  	 if ( evt.pageX == null && evt.clientX != null ) {
+						evt.pageX = evt.clientX
+							+ ( document && document.scrollLeft || document.body && document.body.scrollLeft || 0 )
+							- ( document && document.clientLeft || document.body && document.body.clientLeft || 0 );
+						evt.pageY = evt.clientY 
+							+ ( document && document.scrollTop  || document.body && document.body.scrollTop  || 0 )
+							- ( document && document.clientTop  || document.body && document.body.clientTop  || 0 );
+					}
 			  
-			  //this.mouse_drag_x = document.body.scrollLeft+evt.clientX-evt.target.offsetParent.offsetLeft;
-			  //this.mouse_drag_y = document.body.scrollTop+evt.clientY-evt.target.offsetParent.offsetTop;
+					box =  evt.target.offsetParent.getBoundingClientRect();
+					x3dom.debug.logInfo(evt.target.offsetParent.style.borderLeftWidth 
+										  + ' ' + evt.target.offsetParent.style.paddingLeft);
+					x3dom.debug.logInfo(evt.target.offsetParent.style.borderTopWidth 
+										+ ' ' + evt.target.offsetParent.style.paddingTop);
+					
+					
+					scrolleft =  window.pageXOffset || document.body.scrollLeft;
+					scroltop = 	window.pageYOffset || document.body.scrollTop;
+					
+					x = evt.pageX - (box.left + scrolleft);
+					y =  evt.pageY - (box.top + scroltop);
+					x3dom.debug.logInfo(evt.pageX + ' ' + box.left);
+					
+					x3dom.debug.logInfo(x + ' ' + this.mouse_drag_x);
+					x3dom.debug.logInfo(y + ' ' + this.mouse_drag_y);
+					
+					this.mouse_drag_x = x;
+              		this.mouse_drag_y = y;
+			  } else {
+					this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
+              		this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);
+			  }
+			 position test*/
 			  
-			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetLeft)
-			  //x3dom.debug.logInfo(evt.target.offsetParent.offsetTop)
-			
+			  
+				
               if (this.mouse_dragging) {
                 this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
               }
