@@ -98,7 +98,11 @@ x3dom.setElementAttribute = function(attrName, newVal)
 // helper to get an element's attribute
 x3dom.getElementAttribute = function(attrName)
 {
-  return this._x3domNode._vf[attrName];
+  var attrib = this.__getAttribute(attrName);
+  if(attrib !== undefined)
+    return attrib;
+  else
+    return this._x3domNode._vf[attrName];
 };
 
 x3dom.addEventListener = function(type, func, phase)
