@@ -186,7 +186,7 @@ x3dom.Runtime.prototype.viewpoint = function() {
  * Returns:
  * 		Matrix object
  */
-x3dom.Runtime.prototype.pojectionMatrix = function() {
+x3dom.Runtime.prototype.projectionMatrix = function() {
     return this.canvas.doc._viewarea.getProjectionMatrix();
 };
 
@@ -508,6 +508,30 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
         return processDiv.style.display != 'none'
     }
 },
+
+
+
+/**
+ * Function: requirements
+ *
+ * NOTE: NOTE IMPLEMENTED YET
+ *
+ * Returns a requirement Matrix to identify application requirements
+ * to the renderer.
+ *
+ * Bit 1: Native
+ * Bit 2: WebGL
+ * Bit 3: Flash
+ * Bit 4: IR Plugin
+ *
+ * All bits to zero means no preference
+ *
+ * Returns:
+ * 		The requirement matrix as 8bit field
+ */
+x3dom.Runtime.prototype.requirements = function() {
+    return "0000";
+};
 
 
 x3dom.Runtime.prototype.properties = function() {
