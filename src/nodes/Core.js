@@ -402,22 +402,22 @@ x3dom.registerNodeType(
 
         addField: function (ctx, name, parse, def)
         {
-          if(ctx)
+          if (ctx && ctx.xmlNode)
           {
-            if(ctx.xmlNode)
-            {
-              if(ctx.xmlNode.hasAttribute(name)) // parsed value
+              if(ctx.xmlNode.hasAttribute(name)) { // parsed value
                 this._vf[name] = parse(ctx.xmlNode.getAttribute(name));
-                
-              else // default value
+              }
+              else { // default value
                 this._vf[name] = def;
-                
+              }
+			  
               this.initSetter(ctx.xmlNode, name);
               // this.initGetter(ctx.xmlNode, name);
               // this.initAttribute(ctx.xmlNode, name);
-            }
-            
-            else // default value
+          }
+          else 
+		  {
+			  // default value
               this._vf[name] = def;
           }
         },
@@ -511,7 +511,7 @@ x3dom.registerNodeType(
         
         addField_MFFloat: function (ctx, name, def)
         {
-          this.addField(ctx, name, function() { return x3dom.fields.MFFloat.parse(value); }, new x3dom.fields.MFFloat(def));
+          this.addField(ctx, name, function(value) { return x3dom.fields.MFFloat.parse(value); }, new x3dom.fields.MFFloat(def));
         },
         
         addField_MFDouble: function (ctx, name, def)
