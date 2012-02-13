@@ -71,8 +71,9 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
 // helper to set an element's attribute
 x3dom.setElementAttribute = function(attrName, newVal)
 {
-    // var prevVal = this.getAttribute(attrName);
+    var prevVal = this.getAttribute(attrName);
     this.__setAttribute(attrName, newVal);
+    //newVal = this.getAttribute(attrName);
 
     this._x3domNode.updateField(attrName, newVal);
     this._x3domNode._nameSpace.doc.needRender = true;
@@ -99,7 +100,7 @@ x3dom.setElementAttribute = function(attrName, newVal)
 x3dom.getElementAttribute = function(attrName)
 {
   var attrib = this.__getAttribute(attrName);
-  if(attrib !== undefined)
+  if(attrib !== undefined || !this._x3domNode)
     return attrib;
   else
     return this._x3domNode._vf[attrName];
@@ -130,7 +131,7 @@ x3dom.removeEventListener = function(type, func, phase)
       }
     }
   }
-}
+};
 
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     var n, t;
@@ -203,18 +204,18 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 n._xmlNode = domNode;
                 domNode._x3domNode = n;
                 
-                //active workaground for missing DOMAttrModified support
-                if(domNode.tagName !== undefined)
+                // active workaround for missing DOMAttrModified support
+                if (domNode.tagName !== undefined)
                 {
                   if(x3dom.userAgentFeature.supportsDOMAttrModified === false)
                   {
-                    if (!domNode.__setAttribute) 
+                    if (domNode.__setAttribute !== undefined) 
                     {
                       domNode.__setAttribute = domNode.setAttribute;
                       domNode.setAttribute = x3dom.setElementAttribute;
                     }
 
-                    if (!domNode.__getAttribute) 
+                    if (domNode.__getAttribute !== undefined) 
                     {
                       domNode.__getAttribute = domNode.getAttribute;
                       domNode.getAttribute = x3dom.getElementAttribute;
@@ -222,13 +223,13 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                   }
                   
                   // workaround since one cannot find out which handlers are registered
-                  if (!domNode.__addEventListener)
+                  if (domNode.__addEventListener !== undefined)
                   {
                     domNode.__addEventListener = domNode.addEventListener;
-                    domNode.addEventListener = x3dom.removeEventListener;
+                    domNode.addEventListener = x3dom.addEventListener;
                   }
                   
-                  if (!domNode.__removeEventListener)
+                  if (domNode.__removeEventListener !== undefined)
                   {
                     domNode.__removeEventListener = domNode.removeEventListener;
                     domNode.removeEventListener = x3dom.removeEventListener;
@@ -246,8 +247,9 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                   function (childDomNode)
                   {
                     var c = that.setupTree(childDomNode);
-                    if (c)
+                    if (c) {
                       n.addChild(c, childDomNode.getAttribute("containerField"));
+					}
                   }
                 );
 
