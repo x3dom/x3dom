@@ -55,50 +55,40 @@
     <table>
       <tr>
         <td>
-        
         <x3d showStat="true" showLog="true">
           <Scene>
             <Background skyColor='0.5 0.5 0.5'></Background>
-
             <LOD DEF='Switcher' forceTransitions='false' range='3 5 9 10 15 20'>
-            
-              <Inline DEF="inline1"  nameSpaceName="test1" url="media/data/box.x3d"><Inline/>
-            
+              <Inline DEF="inline1"  nameSpaceName="test1" url="media/data/box.x3d"></Inline>
               <Shape DEF='BoxShape'>
                 <Appearance>
-                <Material diffuseColor='1 0 0'><Material/>
+                  <Material diffuseColor='1 0 0'></Material>
                 </Appearance>
-                <Box/>
+                <Box></Box>
               </Shape> 
-              
               <Shape DEF='ConeShape'>
                 <Appearance>
-                <Material diffuseColor='1 1 0'><Material/>
+                  <Material diffuseColor='1 1 0'></Material>
                 </Appearance>
                 <Cone/> 
               </Shape>
               <Shape DEF='CylinderShape'>
                 <Appearance>
-                <Material diffuseColor='0 1 0'><Material/>
+                  <Material diffuseColor='0 1 0'></Material>
                 </Appearance>
-                <Cylinder/>
+                <Cylinder></Cylinder>
               </Shape>
               <Shape DEF='SphereShape'>
                 <Appearance>
-                <Material diffuseColor='0 0 1'><Material/>
+                  <Material diffuseColor='0 0 1'></Material>
                 </Appearance>
-                <Sphere/> 
+                <Sphere></Sphere>
               </Shape>
-              
-              <Inline DEF="inline1"  nameSpaceName="test1" url="media/data/box.x3d"><Inline/>
-
+              <Inline DEF="inline1"  nameSpaceName="test1" url="media/data/box.x3d"></Inline>
             </LOD>
-
-            <Viewpoint DEF='Camera01' description='Camera01' position='0 0 10' zNear='0' zFar='5000' fieldOfView='0.7854'><Viewpoint>
-
+            <Viewpoint DEF='Camera01' description='Camera01' position='0 0 10' zNear='0' zFar='5000' fieldOfView='0.7854'></Viewpoint>
           </Scene>
         </x3d>
-       
         </td>
       </tr>
     </table>
