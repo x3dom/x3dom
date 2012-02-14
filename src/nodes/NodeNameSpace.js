@@ -68,11 +68,20 @@ x3dom.NodeNameSpace.prototype.getURL = function (url) {
     }
 };
 
+// helper to get an element's attribute
+x3dom.getElementAttribute = function(attrName)
+{
+  var attrib = this.__getAttribute(attrName);
+  if((attrib !== undefined) || !this._x3domNode)
+    return attrib;
+  else
+    return this._x3domNode._vf[attrName];
+};
 
 // helper to set an element's attribute
 x3dom.setElementAttribute = function(attrName, newVal)
 {
-    var prevVal = this.getAttribute(attrName);
+    //var prevVal = this.getAttribute(attrName);
     this.__setAttribute(attrName, newVal);
     //newVal = this.getAttribute(attrName);
 
@@ -107,14 +116,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             x3dom.debug.logWarning('Tree is already initialized');
             return;
         }
-
-        //active workaground for missing DOMAttrModified support
-        if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
-             (domNode.tagName !== undefined) && (!domNode.__setAttribute) ) {
-            domNode.__setAttribute = domNode.setAttribute;
-            domNode.setAttribute = x3dom.setElementAttribute;
-        }
-
+        
         // workaround since one cannot find out which handlers are registered
         if ( (domNode.tagName !== undefined) &&
             (!domNode.__addEventListener) && (!domNode.__removeEventListener) )
@@ -182,6 +184,23 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 var ctx = { doc: this.doc, xmlNode: domNode };
                 n = new nodeType(ctx);
                 n._nameSpace = this;
+                
+                //active workaground for missing DOMAttrModified support
+                if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
+                     (domNode.tagName !== undefined) )
+                {
+                  if(!domNode.__setAttribute)
+                  {
+                    domNode.__setAttribute = domNode.setAttribute;
+                    domNode.setAttribute = x3dom.setElementAttribute;
+                  }
+                  
+                  if(!domNode.__getAttribute)
+                  {
+                    domNode.__getAttribute = domNode.getAttribute;
+                    domNode.getAttribute = x3dom.getElementAttribute;
+                  }
+                }
 
                 // x3dom.debug.logInfo("new node type: " + domNode.localName);
 
