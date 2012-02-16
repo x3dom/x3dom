@@ -2066,9 +2066,13 @@ x3dom.gfx_webgl = (function () {
 					//Old Loading
 					var image = new Image();
 					image.crossOrigin = '';
+				
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
-					
+					/*var elem = document.getElementsByTagName('body')[0];
+					elem.appendChild(image);*/
+		
                     that._nameSpace.doc.downloadCount += 1;					
+
 
 					//var image = tex._image;
                     //var load = function()
@@ -2115,7 +2119,6 @@ x3dom.gfx_webgl = (function () {
                     image.onerror = function()
                     {
                         that._nameSpace.doc.downloadCount -= 1;
-
                         x3dom.debug.logError("Can't load tex url: " + tex._vf.url + " (at unit " + unit + ").");
                     };
 					
@@ -2491,6 +2494,7 @@ x3dom.gfx_webgl = (function () {
                 var image = new Image();
                 
                 image.onload = function() {
+					
                     bgnd._nameSpace.doc.needRender = true;
                     bgnd._nameSpace.doc.downloadCount -= 1;
                     
