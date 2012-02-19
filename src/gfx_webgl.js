@@ -1144,13 +1144,16 @@ x3dom.gfx_webgl = (function () {
 				if(iG_Indexed) {
 					shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);";
 					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_indexTextureWidth), position.y*(256.0/IG_indexTextureHeight)) + halfPixel;";
+					//shader += "vec2 IG_texCoord = vec2(1.0/(2.0*IG_indexTextureWidth)+position.x*(IG_indexTextureWidth-1.0)/IG_indexTextureWidth, 1.0/(2.0*IG_indexTextureHeight)+position.y*(IG_indexTextureHeight-1.0)/IG_indexTextureHeight);";
 					shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;";
 					
 					shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);";
 					shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;";
+					//shader += "IG_texCoord = vec2(1.0/(2.0*IG_coordTextureWidth)+position.x*(IG_coordTextureWidth-1.0)/IG_coordTextureWidth, 1.0/(2.0*IG_coordTextureHeight)+position.y*(IG_coordTextureHeight-1.0)/IG_coordTextureHeight);";
 				} else {
 					shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);";
 					shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)) + halfPixel;";
+					//shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth)*(IG_coordTextureWidth-1.0)/(IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)*(IG_coordTextureHeight-1.0)/(IG_coordTextureHeight)) + halfPixel;";
 				}
 				
 				//Coordinates
@@ -1159,11 +1162,14 @@ x3dom.gfx_webgl = (function () {
 				
 				for(var i=0; i<iG_Precision; i++)
 				{
-					shader += "temp = texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;";
-					if(i) shader += "temp /= (" + i + ".0 * 256.0);";
+					shader += "temp = 255.0 * texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;";
+					shader += "vertPosition *= 256.0;";
 					shader += "vertPosition += temp;";
 				}
-
+				
+			    shader += "vertPosition /= (pow(2.0, 8.0 * " + iG_Precision + ".0) - 1.0);";
+			    
+			    // comment out if transformMatrix() from Shape is used for generating model matrix
 				shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;";
 				
 				//Normals
