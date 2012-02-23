@@ -320,19 +320,19 @@ x3dom.registerNodeType(
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                                this._vf.type.toLowerCase() == 'fragment');
 
-			
             if (!this._vf.url.length && ctx.xmlNode) {
                 var that = this;
                 try {
                     that._vf.url.push(ctx.xmlNode.childNodes[1].nodeValue);
-                    //x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
                     ctx.xmlNode.removeChild(ctx.xmlNode.childNodes[1]);
                 }
                 catch(e) {
                     Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
-                        if (childDomNode.nodeType === 4) {
+                        if (childDomNode.nodeType === 3) {
+                            that._vf.url.push(childDomNode.nodeValue);
+                        }
+                        else if (childDomNode.nodeType === 4) {
                             that._vf.url.push(childDomNode.data);
-                            //x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
                         }
                         childDomNode.parentNode.removeChild(childDomNode);
                     } );
