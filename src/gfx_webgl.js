@@ -819,12 +819,16 @@ x3dom.gfx_webgl = (function () {
 				shader += "vec3 temp = vec3(0.0, 0.0, 0.0);";
 				shader += "vec3 vertPosition = vec3(0.0, 0.0, 0.0);";
 				
-				for(var i=0; i<iG_Precision; i++) {
-					shader += "temp = texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;";
-					if(i) shader += "temp /= (" + i + ".0 * 256.0);";
+				for(var i=0; i<iG_Precision; i++)
+				{
+					shader += "temp = 255.0 * texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;";
+					shader += "vertPosition *= 256.0;";
 					shader += "vertPosition += temp;";
 				}
-
+				
+			    shader += "vertPosition /= (pow(2.0, 8.0 * " + iG_Precision + ".0) - 1.0);";
+                
+                // comment out if transformMatrix() from Shape is used for generating model matrix
 				shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;";
 				
 				//Normals
