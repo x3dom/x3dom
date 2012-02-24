@@ -1903,9 +1903,8 @@ x3dom.registerNodeType(
 								default:
 							}
 						}
-	
-						
-					} else {
+					} 
+					else {
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = new Object();
 						cnt = 0;
@@ -1915,7 +1914,7 @@ x3dom.registerNodeType(
 							if (indexes[i] == -1) {
 								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
 								
-																
+								// TODO; FIXME 	handle colorPerVertex/normalPerVertex false (i.e. face colors/normals)
 								for (var j = 0; j < multi_index_data.indices.length; j++)
 								{	
 									this._mesh._indices[0].push(cnt);
@@ -1924,12 +1923,12 @@ x3dom.registerNodeType(
 									this._mesh._positions[0].push(multi_index_data.point[j].x,
 																  multi_index_data.point[j].y,
 																  multi_index_data.point[j].z);
-									if (hasNormal) {
+									if (hasNormal && normPerVert) { // TODO: HANDLE ALSO normalPerVertex=false
 										this._mesh._normals[0].push(multi_index_data.normals[j].x,
 																	multi_index_data.normals[j].y,
 																	multi_index_data.normals[j].z);
 									}
-									if (hasColor) {
+									if (hasColor && colPerVert) { // TODO: HANDLE ALSO colorPerVertex=false
 										this._mesh._colors[0].push(multi_index_data.colors[j].r, 
 																   multi_index_data.colors[j].g, 
 																   multi_index_data.colors[j].b);
