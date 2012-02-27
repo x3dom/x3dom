@@ -2607,7 +2607,8 @@ x3dom.gfx_webgl = (function () {
                 
                 for (i=0; i<N; i++) {
                     var fract = i / (N - 1.0);
-                    interp._fieldWatchers.set_fraction[0].call(interp, fract);
+                    interp._vf.set_fraction = fract;
+                    interp.fieldChanged("set_fraction");
                     tmp[i] = interp._vf.value_changed;
                 }
                 
