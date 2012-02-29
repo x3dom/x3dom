@@ -22,18 +22,17 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'set_fraction', 0);
         },
         {
-            linearInterp: function (t, interp) {
-                if (t <= this._vf.key[0]) {
+            linearInterp: function (time, interp) {
+                if (time <= this._vf.key[0])
                     return this._vf.keyValue[0];
-                }
-                if (t >= this._vf.key[this._vf.key.length-1]) {
+                    
+                else if (time >= this._vf.key[this._vf.key.length-1])
                     return this._vf.keyValue[this._vf.key.length-1];
-                }
+                    
                 for (var i = 0; i < this._vf.key.length-1; ++i) {
-                    if ((this._vf.key[i] < t) && (t <= this._vf.key[i+1])) {
+                    if ((this._vf.key[i] < time) && (time <= this._vf.key[i+1]))
                         return interp( this._vf.keyValue[i], this._vf.keyValue[i+1],
-                                (t - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
-                    }
+                               (time - this._vf.key[i]) / (this._vf.key[i+1] - this._vf.key[i]) );
                 }
                 return this._vf.keyValue[0];
             }
@@ -54,11 +53,18 @@ x3dom.registerNodeType(
             } else {
                 this._vf.keyValue = new x3dom.fields.MFRotation();
             }
-
-            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this.linearInterp(msg, function (a, b, t) { return a.slerp(b, t); });
-                this.postMessage('value_changed', value);
-            } ];
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName === "set_fraction")
+                {
+                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        return a.slerp(b, t);
+                    });
+                    this.postMessage('value_changed', value);
+                }
+            }
         }
     )
 );
@@ -76,12 +82,19 @@ x3dom.registerNodeType(
             } else {
                 this._vf.keyValue = new x3dom.fields.MFVec3f();
             }
-
-            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this.linearInterp(msg, function (a, b, t) {
-                            return a.multiply(1.0-t).add(b.multiply(t)); });
-                this.postMessage('value_changed', value);
-            } ];
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName === "set_fraction")
+                {
+                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        return a.multiply(1.0-t).add(b.multiply(t));
+                    });
+                    
+                    this.postMessage('value_changed', value);
+                }
+            }
         }
     )
 );
@@ -99,12 +112,19 @@ x3dom.registerNodeType(
             } else {
                 this._vf.keyValue = new x3dom.fields.MFVec3f();
             }
-
-            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this.linearInterp(msg, function (a, b, t) {
-                            return a.multiply(1.0-t).add(b.multiply(t)).normalize(); });
-                this.postMessage('value_changed', value);
-            } ];
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName === "set_fraction")
+                {
+                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        return a.multiply(1.0-t).add(b.multiply(t)).normalize();
+                    });
+                    
+                    this.postMessage('value_changed', value);
+                }
+            }
         }
     )
 );
@@ -122,13 +142,20 @@ x3dom.registerNodeType(
             } else {
                 this._vf.keyValue = new x3dom.fields.MFColor();
             }
-
-            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this.linearInterp(msg, function (a, b, t) {
-                            // FIXME; perform color interpolation in HSV space
-                            return a.multiply(1.0-t).add(b.multiply(t)); });
-                this.postMessage('value_changed', value);
-            } ];
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName === "set_fraction")
+                {
+                    // FIXME; perform color interpolation in HSV space
+                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        return a.multiply(1.0-t).add(b.multiply(t));
+                    });
+                    
+                    this.postMessage('value_changed', value);
+                }
+            }
         }
     )
 );
@@ -147,11 +174,19 @@ x3dom.registerNodeType(
             } else {
                 this._vf.keyValue = new x3dom.fields.MFFloat();
             }
-
-            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this.linearInterp(msg, function (a, b, t) { return (1.0-t)*a + t*b; });
-                this.postMessage('value_changed', value);
-            } ];
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName === "set_fraction")
+                {
+                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        return (1.0-t)*a + t*b;
+                    });
+                    
+                    this.postMessage('value_changed', value);
+                }
+            }
         }
     )
 );
@@ -177,17 +212,23 @@ x3dom.registerNodeType(
                     this._vf.keyValue.push(val);
                 }
             }
-
-            this._fieldWatchers.fraction = this._fieldWatchers.set_fraction = [ function (msg) {
-                var value = this.linearInterp(msg, function (a, b, t) {
-                    var val = new x3dom.fields.MFVec3f();
-                    for (var i=0; i<a.length; i++) {
-                        val.push(a[i].multiply(1.0-t).add(b[i].multiply(t)));
-                    }
-                    return val;
-                });
-                this.postMessage('value_changed', value);
-            } ];
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if(fieldName === "set_fraction")
+                {
+                    var value = this.linearInterp(this._vf.set_fraction, function (a, b, t) {
+                        var val = new x3dom.fields.MFVec3f();
+                        for (var i=0; i<a.length; i++)
+                            val.push(a[i].multiply(1.0-t).add(b[i].multiply(t)));
+                            
+                        return val;
+                    });
+                    
+                    this.postMessage('value_changed', value);
+                }
+            }
         }
     )
 );
