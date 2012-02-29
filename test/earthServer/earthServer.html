@@ -71,15 +71,17 @@
 						
 						var box = $(this).find('lowerCorner').text().split(" ");
 						box = box.concat($(this).find('upperCorner').text().split(" "));
-						var bbox = box[0].slice(0,2)
-						+ ',' + box[1].slice(0,2)
-						+ ',' +box[2].slice(0,2)
-						+ ',' +box[3].slice(0,2);
+						var boxa = box[0].split(".")[0];
+						var boxb = box[1].split(".")[0];
+						var boxc = box[2].split(".")[0];
+						var boxd = box[3].split(".")[0];
 						
-						var width = '1000';
-						var height = '1000';
+						var bbox = boxa	+ ',' + boxb + ',' +boxc	+ ',' +boxd;
 						
-						$('#trans').append("<Transform translation='0 0 0'><shape><appearance><imageTexture url='http://kalyke.eox.at/eoxserver_timm/ows?service=wms&version=1.3.0&request=getmap&layers=IMAGE2009_rgb&styles=&transparent=true&format=image/png&crs=epsg:4326&bbox="+bbox+"&width="+width+"&height="+height+"&time="+img+"'></imageTexture></appearance><Rectangle2D onclick='alert("+bbox+")' size='1000 1000' subdivision='1 1' ></Rectangle2D></shape></Transform>");
+						var width = (boxa - boxb) *5;
+						var height = (boxc - boxd) *5;
+						
+						$('#trans').append("<Transform translation='"+index*5+" "+index*5+" "+index*5+"'><shape><appearance><imageTexture url='http://kalyke.eox.at/eoxserver_timm/ows?service=wms&version=1.3.0&request=getmap&layers=IMAGE2009_rgb&styles=&transparent=true&format=image/png&crs=epsg:4326&bbox="+bbox+"&width="+width+"&height="+height+"&time="+img+"'></imageTexture></appearance><Rectangle2D onclick='alert("+bbox+")' size='"+width+" "+height+"' subdivision='1 1' ></Rectangle2D></shape></Transform>");
 						
 					});	
 				},
@@ -101,7 +103,7 @@
 <body id="tmp">
 
      <div class="group">
-         <X3D width="700px" height="700px"  showLog="true" width="500px" height="500px">
+         <X3D width="700px" height="700px"  showLog="false" width="500px" height="500px">
             <scene>
                 <Background skyColor='0.5 0.5 0.5'></Background>
 				<Viewpoint position="50 0 2300"></Viewpoint>
