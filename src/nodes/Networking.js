@@ -93,7 +93,7 @@ x3dom.registerNodeType(
                         return xhr;
                     }
 
-                    if (xhr.status !== 200) {
+                    if ((xhr.status !== 200) && (xhr.status !== 0)) {
                         that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
                         return xhr;
