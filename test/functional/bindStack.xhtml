@@ -3,7 +3,6 @@
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 	<title>Text Bind Stack</title>
-    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css"/>
     <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
@@ -58,6 +57,9 @@
         <Scene>
             <Viewpoint id='cam01' description='foo' position='0 0 5'/>
             <Viewpoint id='cam02' description='bar' position='-3 -2 10'/>
+            <Viewfrustum id='cam03' description='frust' 
+                projection='2.414214 0 0 0, 0 2.414214 0 0, 0 0 -1.000002 -0.2, 0 0 -1.0 0'
+                modelview='1 0 0 -1, 0 1 0 2, 0 0 1 10, 0 0 0 1' />
             <Background id='bg01' skyColor='0 0 1'/>
             <Background id='bg02' skyColor='0 1 0'/>
             <NavigationInfo transitionType="LINEAR"/>
@@ -83,6 +85,11 @@
            onclick="document.getElementById('cam02').setAttribute('set_bind','true');"/>
 		<input type="button" value="02.set_bind false"
            onclick="document.getElementById('cam02').setAttribute('set_bind','false');"/>
+
+   		<input type="button" value="03.set_bind true"
+           onclick="document.getElementById('cam03').setAttribute('set_bind','true');"/>
+   		<input type="button" value="03.set_bind false"
+           onclick="document.getElementById('cam03').setAttribute('set_bind','false');"/>
     </div>
     
 </body>
