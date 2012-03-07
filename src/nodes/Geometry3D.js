@@ -1961,10 +1961,8 @@ x3dom.registerNodeType(
 							
 							if (hasColor) {
 								if (hasColorInd && colPerVert) {
-									x3dom.debug.logInfo('ver ' + colors[colorInd[i]]);
 									data.colors =  colors[colorInd[i]];
 								} else if (hasColorInd && !colPerVert) {
-									x3dom.debug.logInfo('face ' + colors[colorInd[faceCnt]]);
 									data.colors =  colors[colorInd[faceCnt]];
 								} else {
 									data.colors =  colors[indexes[i]];
