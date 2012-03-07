@@ -68,7 +68,6 @@ x3dom.EarClipping = {
 	}, 
 
 	getIndexes: function (linklist) {
-		
 		var node = linklist.first.next;
 		var plane = this.identifyPlane(node.prev.point, node.point, node.next.point);
 		
