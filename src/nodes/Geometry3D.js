@@ -1907,14 +1907,13 @@ x3dom.registerNodeType(
 					else {
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = new Object();
-						cnt = 0;
+						cnt = 0, faceCnt = 0;
 												
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
 								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
 								
-								// TODO; FIXME 	handle colorPerVertex/normalPerVertex false (i.e. face colors/normals)
 								for (var j = 0; j < multi_index_data.indices.length; j++)
 								{	
 									this._mesh._indices[0].push(cnt);
@@ -1923,19 +1922,19 @@ x3dom.registerNodeType(
 									this._mesh._positions[0].push(multi_index_data.point[j].x,
 																  multi_index_data.point[j].y,
 																  multi_index_data.point[j].z);
-									if (hasNormal && normPerVert) { // TODO: HANDLE ALSO normalPerVertex=false
+									if (hasNormal) { 
 										this._mesh._normals[0].push(multi_index_data.normals[j].x,
 																	multi_index_data.normals[j].y,
 																	multi_index_data.normals[j].z);
 									}
-									if (hasColor && colPerVert) { // TODO: HANDLE ALSO colorPerVertex=false
+									if (hasColor) { 
 										this._mesh._colors[0].push(multi_index_data.colors[j].r, 
 																   multi_index_data.colors[j].g, 
 																   multi_index_data.colors[j].b);
 										if (numColComponents === 4) {
 											this._mesh._colors[0].push(multi_index_data.colors[j].a);
 										}
-									}
+									} 
 									if (hasTexCoord) {	
 										this._mesh._texCoords[0].push(multi_index_data.texCoords[j].x,
 																	  multi_index_data.texCoords[j].y);
@@ -1962,8 +1961,10 @@ x3dom.registerNodeType(
 							
 							if (hasColor) {
 								if (hasColorInd && colPerVert) {
+									x3dom.debug.logInfo('ver ' + colors[colorInd[i]]);
 									data.colors =  colors[colorInd[i]];
 								} else if (hasColorInd && !colPerVert) {
+									x3dom.debug.logInfo('face ' + colors[colorInd[faceCnt]]);
 									data.colors =  colors[colorInd[faceCnt]];
 								} else {
 									data.colors =  colors[indexes[i]];
