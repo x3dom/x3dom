@@ -825,12 +825,243 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.IndexedTriangleStripSet.superClass.call(this, ctx);
+			
             this.addField_MFInt32(ctx, 'index', []);
         },
         {
             nodeChanged: function() {
-                x3dom.debug.logError("========== IndexedTriangleStripSet is not implemented ==========")
-            }
+				
+                var time0 = new Date().getTime();
+
+                this.handleAttribs();
+	
+                var hasNormal = false, hasTexCoord = false, hasColor = false;
+
+                var colPerVert = this._vf.colorPerVertex;
+                var normPerVert = this._vf.normalPerVertex;
+
+                var indexes = this._vf.index;
+				var positions, normals, texCoords, colors;
+
+                var coordNode = this._cf.coord.node;
+                x3dom.debug.assert(coordNode);
+                positions = coordNode._vf.point;
+
+                var normalNode = this._cf.normal.node;
+                if (normalNode) {
+                    hasNormal = true;
+                    normals = normalNode._vf.vector;
+                }
+                else {
+                    hasNormal = false;
+                }
+
+                var texMode = "", numTexComponents = 2;
+                var texCoordNode = this._cf.texCoord.node;
+                if (texCoordNode) {
+                    if (texCoordNode._vf.point) {
+                        hasTexCoord = true;
+                        texCoords = texCoordNode._vf.point;
+
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
+                            numTexComponents = 3;
+                        }
+                    }
+                    else if (texCoordNode._vf.mode) {
+                        texMode = texCoordNode._vf.mode;
+                    }
+                }
+                else {
+                    hasTexCoord = false;
+                }
+				this._mesh._numTexComponents = numTexComponents;
+
+                var numColComponents = 3;
+                var colorNode = this._cf.color.node;
+                if (colorNode) {
+                    hasColor = true;
+                    colors = colorNode._vf.color;
+
+                    if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
+                        numColComponents = 4;
+                    }
+                }
+                else {
+                    hasColor = false;
+                }
+				this._mesh._numColComponents = numColComponents;
+				
+                this._mesh._indices[0] = [];
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0] = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._colors[0] = [];
+				
+				var faceCnt = 0, cnt = 0;
+				var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
+				 
+				if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor)
+                {
+					for (i=1; i < indexes.length-2; ++i)
+					{
+						if (indexes[i+1] == -1) {
+							i = i+2;
+							faceCnt++;
+							continue;
+						}
+						
+						p1 = indexes[i];
+						p2 = indexes[i-1];
+						p3 = indexes[i+1];
+						
+						if (normPerVert) { 
+							n1 = p1;
+							n2 = p2;
+							n3 = p3;
+						} else if (!normPerVert) {
+							n1 = n2 = n3 = faceCnt;
+						}
+						 
+						t1 = p1;
+						t2 = p2;
+						t3 = p3;
+
+						if (colPerVert) {
+							c1 = p1;
+							c2 = p2;
+							c3 = p3;
+						} else if (!colPerVert) { 
+							c1 = c2 = c3 = faceCnt;
+						}
+	
+						this._mesh._indices[0].push(cnt++, cnt++, cnt++);				
+						
+						this._mesh._positions[0].push(positions[p1].x);
+						this._mesh._positions[0].push(positions[p1].y);
+						this._mesh._positions[0].push(positions[p1].z);
+						this._mesh._positions[0].push(positions[p2].x);
+						this._mesh._positions[0].push(positions[p2].y);
+						this._mesh._positions[0].push(positions[p2].z);
+						this._mesh._positions[0].push(positions[p3].x);
+						this._mesh._positions[0].push(positions[p3].y);
+						this._mesh._positions[0].push(positions[p3].z);
+					   
+						if (hasNormal) {
+							this._mesh._normals[0].push(normals[n1].x);
+							this._mesh._normals[0].push(normals[n1].y);
+							this._mesh._normals[0].push(normals[n1].z);
+							this._mesh._normals[0].push(normals[n2].x);
+							this._mesh._normals[0].push(normals[n2].y);
+							this._mesh._normals[0].push(normals[n2].z);
+							this._mesh._normals[0].push(normals[n3].x);
+							this._mesh._normals[0].push(normals[n3].y);
+							this._mesh._normals[0].push(normals[n3].z);
+									   
+						}
+	
+						if (hasColor) {
+							this._mesh._colors[0].push(colors[c1].r);
+							this._mesh._colors[0].push(colors[c1].g);
+							this._mesh._colors[0].push(colors[c1].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(colors[c1].a);
+							}    
+							this._mesh._colors[0].push(colors[c2].r);
+							this._mesh._colors[0].push(colors[c2].g);
+							this._mesh._colors[0].push(colors[c2].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(colors[c2].a);
+							}    
+							this._mesh._colors[0].push(colors[c3].r);
+							this._mesh._colors[0].push(colors[c3].g);
+							this._mesh._colors[0].push(colors[c3].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(colors[c3].a);
+							}    
+						}
+	
+						if (hasTexCoord) {
+							this._mesh._texCoords[0].push(texCoords[t1].x);
+							this._mesh._texCoords[0].push(texCoords[t1].y);
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].push(texCoords[t1].z);
+							}
+							this._mesh._texCoords[0].push(texCoords[t2].x);
+							this._mesh._texCoords[0].push(texCoords[t2].y);
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].push(texCoords[t2].z);
+							}
+							this._mesh._texCoords[0].push(texCoords[t3].x);
+							this._mesh._texCoords[0].push(texCoords[t3].y);
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].push(texCoords[t3].z);
+							}
+						}						
+					}
+					
+					if (!hasNormal) {
+						this._mesh.calcNormals(Math.PI);
+					}
+					
+					if (!hasTexCoord) {
+					  this._mesh.calcTexCoords(texMode);
+					}
+					
+					x3dom.debug.logInfo('ind '+this._mesh._indices[0]);
+					x3dom.debug.logInfo('pos '+this._mesh._positions[0]);
+					x3dom.debug.logInfo('nor '+this._mesh._normals[0]);
+					x3dom.debug.logInfo('col '+this._mesh._colors[0]);
+					x3dom.debug.logInfo('tex '+this._mesh._texCoords[0]);
+						
+					this._mesh.splitMesh();
+					
+				} else {
+					
+					for (i = 1; i < indexes.length; ++i)
+					{
+						if (indexes[i+1] == -1) {
+							i = i+2;
+							continue;
+						}
+						this._mesh._indices[0].push(indexes[i])	
+						this._mesh._indices[0].push(indexes[i-1])	
+						this._mesh._indices[0].push(indexes[i+1])	
+					}
+					
+					this._mesh._positions[0] = positions.toGL();
+	
+                    if (hasNormal) {
+                        this._mesh._normals[0] = normals.toGL();
+                    }
+                    else {
+                        this._mesh.calcNormals(Math.PI);
+                    }
+                    if (hasTexCoord) {
+                        this._mesh._texCoords[0] = texCoords.toGL();
+                        this._mesh._numTexComponents = numTexComponents;
+                    }
+                    else {
+                        this._mesh.calcTexCoords(texMode);
+                    }
+                    if (hasColor) {
+                        this._mesh._colors[0] = colors.toGL();
+                        this._mesh._numColComponents = numColComponents;
+                    }
+				}
+				
+				this._mesh._invalidate = true;
+                this._mesh._numFaces = 0;
+                this._mesh._numCoords = 0;
+                for (i=0; i<this._mesh._indices.length; i++) {
+                    this._mesh._numFaces += this._mesh._indices[i].length / 3;
+                    this._mesh._numCoords += this._mesh._positions[i].length / 3;
+                }
+				
+				 var time1 = new Date().getTime() - time0;
+           },
+		   fieldChanged: function (fieldName) {
+               
+           }
         }
     )
 );
