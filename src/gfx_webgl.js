@@ -2241,7 +2241,9 @@ x3dom.gfx_webgl = (function () {
 							shape._webgl.primType.push(gl.TRIANGLES);
 						}
 					}
-				} else {
+				} /*else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet)) {
+					shape._webgl.primType = gl.TRIANGLE_STRIP;
+				} */else {
 					shape._webgl.primType = gl.TRIANGLES;
 				}
                 

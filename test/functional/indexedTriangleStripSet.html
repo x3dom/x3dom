@@ -50,16 +50,25 @@
 
 <body>
     <h1>IndexedTriangleStripSet</h1>
-    <p><a href="http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/rendering.html#IndexedTriangleStripSet">Spec</a>,
+    <p><a href="http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/rendering.html#IndexedTriangleStripSet">Spec</a>,
     <a href="http://x3dgraphics.com/examples/X3dForWebAuthors/Chapter13-GeometryTrianglesQuadrilaterals/_pages/page04.html">X3D example</a></p>
-    <x3d showStat='true' showLog='true' width='400px' height='400px'>
+    <x3d showStat='false' showLog='true' width='510px' height='510px'>
       <scene>
         <viewpoint description='IndexedTriangleStripSet view' orientation='0 -1 0 0.07' position='-0.06 1.4 11.24'></viewpoint>
-        <background skyColor='1 1 1'></background>
+        <background skyColor='0.5 0.5 0.5'></background>
         <shape>
             <IndexedTriangleStripSet index='9 10 11 12 13 -1 14 15 16 17 -1' solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
                 <coordinate point='-4 1 3 -2 2 1.5 -3 4 0.5 -2 3 1.5 0 4 0.0 2 3 1.5 5 5 -2.5 4 3 1.5 6 4 2.0 -4 1 3 -2 2 1.0 -3 4 0.0 -2 3 1.0 0 4 0.0 2 3 1.0 5 5 -2.0 4 3 1.5 6 4 2.0 0 -2 4 1 -3 3.5 1.5 -1.5 3 0 -1 2 -.5 0 2.5 -1.5 1 3 -2 0 3.5 -3 -2 2 -3 -4 3 2 -4 -2 0 -3 -.5 1.3 -1.5 -1 4 -2 -1.5 4.2 -4.2 -1 3 -6 -.5'></coordinate>
                 <color color='0 .8 0 0 1 1 1 0 0 1 .5 0 .8 0 1 1 1 0 .6 .3 .1 1 0 .5 0 1 .5 1 0 0 .8 0 1 1 1 0 0 1 1 1 .5 0 .6 .3 .1 1 0 .5 0 .8 0 0 1 .5'></color>
+            </IndexedTriangleStripSet>
+         </shape>
+         
+         <shape>
+             <Appearance>
+                 <material diffuseColor='green'></material>
+              </Appearance>
+            <IndexedTriangleStripSet index='0 1 2 3 -1' solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
+                <coordinate point='0 0 0 0 -1 0 1 0 0 1 -1 0'></coordinate>
             </IndexedTriangleStripSet>
         </shape>
       </scene>
