@@ -51,24 +51,22 @@
 <!-- BEGIN:TEST -->
 <script type="text/javascript" src="media/js/tests.js"></script>
 <!-- END:TEST -->
-
   </head>
   
   <body>
     <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace'
          showStat='true' showLog='true' width='500px' height='500px'>
       <Scene>
-        <Group>
-          <Viewpoint description='Default' />
+          <Background skyColor='0 0 0'/>
+          <Viewpoint description='Default' zNear='0.0001' zFar='100'/>
           <Transform>
-            <VolumeData DEF='volume' dimensions='4.0 2.5 4.2'>
-              <ImageTexture3D url='"volume.mtd"'/>
+            <VolumeData id='volume' dimensions='4.0 4.0 4.0'>
+              <ImageTexture containerField='voxels' url='media/volume/aorta4096.png'/>
               <OpacityMapVolumeStyle>
-                <ImageTexture containerField='transferFunction' url='"transfer.png"'/>
+                <!--ImageTexture containerField='transferFunction' url='transfer.png'/-->
               </OpacityMapVolumeStyle>
             </VolumeData>
           </Transform>
-        </Group>
       </Scene>
     </X3D>
   </body>
