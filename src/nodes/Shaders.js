@@ -244,12 +244,21 @@ x3dom.registerNodeType(
                 {
                     var fieldName = this._cf.fields.nodes[i]._vf.name;
                     ctx.xmlNode = this._cf.fields.nodes[i]._xmlNode;
-                    ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
+                    
+                    if (ctx.xmlNode !== undefined && ctx.xmlNode !== null) {
+                        ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
 
-                    var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
-                    var func = new Function('ctx', 'name', funcName);
+                        var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
+                        var func = new Function('ctx', 'name', funcName);
 
-                    func.call(this, ctx, fieldName);
+                        func.call(this, ctx, fieldName);
+                    }
+                    else {
+                        var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name, n);";
+                        var func = new Function('ctx', 'name', 'n', funcName);
+
+                        func.call(this, null, fieldName, this._cf.fields.nodes[i]._vf.value);
+                    }
                 }
 				
 				Array.forEach(this._parentNodes, function (app) {
