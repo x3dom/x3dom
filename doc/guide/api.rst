@@ -153,3 +153,26 @@ Runtime
 
     Get or set the visibility of the statistics information. If parameter is 
     omitted, this method returns the visibility status as boolean.
+
+..  js:function:: getNodeTreeInfo()
+
+    :returns: A div element containin the nodes and link to specification
+
+    Return a div filled with nodes implemented and link to documentation.
+    This can be used to build interactive documentation.
+
+    Note: Unstable API method. Name and retrun value might change
+
+..  js:function:: getComponentInfo()
+
+    :returns: A div element containin the nodes and link to specification,
+              grouped by components and sorted alphabetically
+
+    Return a div filled with nodes implemented and link to documentation.
+    This particular method returns the the nodes grouped by components
+    and sorted alphabetically.
+
+    This can be used to build interactive documentation.
+
+    Note: Unstable API method. Name and retrun value might change
+
