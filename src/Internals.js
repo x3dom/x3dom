@@ -25,6 +25,48 @@ x3dom.xsltNS = 'http://www.w3.org/1999/XSL/x3dom.Transform';
 x3dom.xhtmlNS = 'http://www.w3.org/1999/xhtml';
 // <<<<<<<<<<<<<
 
+x3dom.specURLMap = {
+    CADGeometry: "CADGeometry.html",
+    Core: "core.html",
+    DIS: "dis.html",
+    CubeMapTexturing: "env_texture.html",
+    EnvironmentalEffects: "enveffects.html",
+    EnvironmentalSensor: "envsensor.html",
+    Followers: "followers.html",
+    Geospatial: "geodata.html",
+    Geometry2D: "geometry2D.html",
+    Geometry3D: "geometry3D.html",
+    Grouping: "group.html",
+    "H-Anim": "hanim.html",
+    Interpolation: "interp.html",
+    KeyDeviceSensor: "keyboard.html",
+    Layering: "layering.html",
+    Layout: "layout.html",
+    Lighting: "lighting.html",
+    Navigation: "navigation.html",
+    Networking: "networking.html",
+    NURBS: "nurbs.html",
+    ParticleSystems: "particle_systems.html",
+    Picking: "picking.html",
+    PointingDeviceSensor: "pointingsensor.html",
+    Rendering: "rendering.html",
+    RigidBodyPhysics: "rigid_physics.html",
+    Scripting: "scripting.html",
+    Shaders: "shaders.html",
+    Shape: "shape.html",
+    Sound: "sound.html",
+    Text: "text.html",
+    Texturing3D: "texture3D.html",
+    Texturing: "texturing.html",
+    Time: "time.html",
+    EventUtilities: "utils.html",
+    VolumeRendering: "volume.html"
+};
+
+x3dom.specBaseURL = "http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/";
+
+
+
 /** @namespace the x3dom.nodeTypes namespace. */
 x3dom.nodeTypes = {};
 
