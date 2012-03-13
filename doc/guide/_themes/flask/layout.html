@@ -1,6 +1,7 @@
 {%- extends "basic/layout.html" %}
 {%- block extrahead %}
   {{ super() }}
+    <script src="http://x3dom.org/download/dev/x3dom-full.js"></script>
   {% if theme_touch_icon %}
   <link rel="apple-touch-icon" href="{{ pathto('_static/' ~ theme_touch_icon, 1) }}" />
   {% endif %}
@@ -23,4 +24,12 @@
   {% if pagename == 'index' %}
   </div>
   {% endif %}
+<style>
+    .internal-node-list ul,
+    .internal-node-list, li {
+        margin:0;
+        padding:0;
+    }
+</style>
+
 {%- endblock %}
