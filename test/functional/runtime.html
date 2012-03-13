@@ -45,6 +45,7 @@
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
 
     <!-- BEGIN:TEST -->
@@ -209,11 +210,20 @@
 	}
 
     function dumpTree() {
-        document.getElementById('types').innerHTML =$element.runtime.getNodeTreeInfo();
+        if (x3dom.docs) {
+            document.getElementById('types').innerHTML = x3dom.docs.getNodeTreeInfo();
+        } else {
+            alert("Documentation module not loaded")
+        }
     }
 
     function dumpComponents() {
-        document.getElementById('types').innerHTML =$element.runtime.getComponentInfo();
+        if (x3dom.docs) {
+            document.getElementById('types').innerHTML =x3dom.docs.getComponentInfo();
+        } else {
+            alert("Documentation module not loaded")
+
+        }
     }
 
 </script>
