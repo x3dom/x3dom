@@ -10,7 +10,7 @@ FULL_PROFILE = prefix_path(FULL_PROFILE, '../../src')
 mydir = sys.argv[1]
 
 x3dom_includes = '''
-<meta http-equiv="X-UA-Compatible" content="chrome=1" />
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />\n'''
 
 for include in FULL_PROFILE:
