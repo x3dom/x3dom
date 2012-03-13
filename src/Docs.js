@@ -146,6 +146,7 @@ x3dom.docs.getComponentInfo = function() {
                     "' style='color:black; text-decoration:none; font-weight:bold;'>" +
                     t + "</a></li>";
         }
+        result += "</ul>";
     }
 
     return result;
