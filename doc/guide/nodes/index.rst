@@ -3,7 +3,9 @@
 Nodes
 =====
 
-Please visit the `Node Type Tree <http://x3dom.org/x3dom/test/functional/dumpNodeTypeTree.html>`_
+The following list is a live generated node list. You can only see
+this information in a browser. If you are viewing this documentation
+in other formats, please visit the `Node Type Tree <http://x3dom.org/x3dom/test/functional/dumpNodeTypeTree.html>`_
 document and click on a Node to view the related X3D specification.
 
 .. warning::
