@@ -15,7 +15,7 @@ document and click on a Node to view the related X3D specification.
 
    <div id="internal-node-list"></div>
    <script>
-   document.getElementById('internal-node-list').innerHTML = x3dom.docs.getNodeTreeInfo();
+   document.getElementById('internal-node-list').innerHTML = x3dom.docs.getComponentInfo();
    </script>
 
 .. This section of the X3DOM reference documentation needs work. If you would
