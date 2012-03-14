@@ -3207,6 +3207,31 @@ x3dom.gfx_webgl = (function () {
 				sp.IG_indexTextureWidth	 = shape._webgl.indexTextureWidth;
 				sp.IG_indexTextureHeight = shape._webgl.indexTextureHeight;
 			}
+			
+			//Associate GeometryImage texture units
+			var IG_texUnit = 1;
+			
+			if(shape._cf.geometry.node.getIndexTexture()) {
+				sp.IG_indexTexture = IG_texUnit++;
+			}
+
+			for(var i=0; i<shape._webgl.imageGeometry; i++) {
+				if(shape._cf.geometry.node.getCoordinateTexture(i)) {
+					sp['IG_coordinateTexture' + i] = IG_texUnit++;
+				}
+			}
+			
+			if(shape._cf.geometry.node.getNormalTexture(0)) {
+				sp.IG_normalTexture = IG_texUnit++;
+			}
+			
+			if(shape._cf.geometry.node.getTexCoordTexture()) {
+				sp.IG_texCoordTexture = IG_texUnit++;
+			}
+			
+			if(shape._cf.geometry.node.getColorTexture()) {
+				sp.IG_colorTexture = IG_texUnit++;
+			}
 		}
 
         //===========================================================================
@@ -3529,44 +3554,6 @@ x3dom.gfx_webgl = (function () {
                 var texTrafo = shape._cf.appearance.node.texTransformMatrix();
                 sp.texTrafoMatrix = texTrafo.toGL();
             }
-			
-			//Associate GeometryImage texture units
-			if(shape._webgl.imageGeometry)
-			{
-				var IG_texUnit = 1;
-				
-				if(shape._cf.geometry.node.getIndexTexture()) {
-					if(!sp.IG_indexTexture) {
-						sp.IG_indexTexture = IG_texUnit++;
-					}
-				}
-
-				for(var i=0; i<shape._webgl.imageGeometry; i++) {
-					if(shape._cf.geometry.node.getCoordinateTexture(i)) {
-						if(!sp['IG_coordinateTexture' + i]) {
-							sp['IG_coordinateTexture' + i] = IG_texUnit++;
-						}
-					}
-				}
-				
-				if(shape._cf.geometry.node.getNormalTexture(0)) {
-					if(!sp.IG_normalTexture) {
-						sp.IG_normalTexture = IG_texUnit++;
-					}
-				}
-				
-				if(shape._cf.geometry.node.getTexCoordTexture()) {
-					if(!sp.IG_texCoordTexture) {
-						sp.IG_texCoordTexture = IG_texUnit++;
-					}
-				}
-				
-				if(shape._cf.geometry.node.getColorTexture()) {
-					if(!sp.IG_colorTexture) {
-						sp.IG_colorTexture = IG_texUnit++;
-					}
-				}
-			}
             
             if(shaderCSS) {
                 var texUnit = 0;
