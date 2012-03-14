@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+    <!-- Copyright 2012 by John Congote <jcongote@vicomtech.org> -->
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+
+<!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+
+<!-- BEGIN:TEST -->
+<script type="text/javascript" src="media/js/tests.js"></script>
+<!-- END:TEST -->
+
+  </head>
+  
+  <body>
+
+   
+<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='true' width='500px' height='500px'>
+<Scene>
+<Group>
+ 
+<Background skyColor='0 0 0'/>
+<Viewpoint description='Default' position='0 0 2.5' zNear='0.0001' zFar='100'/>  
+
+<Shape>
+<Appearance>
+ 
+<MultiTexture>
+<RenderedTexture DEF='FBO' update='always' dimensions='500 500 4' repeatS='false' repeatT='false'>
+<Shape DEF="backProjection">
+<Appearance>
+     <ComposedShader DEF='ComposedShader'>
+       
+       <ShaderPart type='VERTEX'>
+       <![CDATA[
+             attribute vec3 position;
+             attribute vec3 color;
+             
+             uniform mat4 modelViewProjectionMatrix;
+             varying vec3 vertexColor;
+             
+             void main()
+             {
+             	vertexColor = color;
+             	gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+             }
+       ]]>
+       </ShaderPart>
+       <ShaderPart type='FRAGMENT'>
+       <![CDATA[
+             #ifdef GL_ES
+               precision highp float;
+             #endif
+             varying vec3 vertexColor;
+             
+             void main()
+             {
+                 gl_FragColor = vec4(vertexColor,1.0);
+             }
+       ]]>
+       </ShaderPart>
+     </ComposedShader>
+</Appearance>
+<IndexedFaceSet DEF='cube' solid='true' ccw='false' coordIndex='0, 1, 2, -1, 0, 2, 3, -1, 4, 5, 6, -1, 4, 6, 7, -1, 8, 9, 10, -1, 8, 10, 11, -1, 12, 13, 14, -1, 12, 14, 15, -1, 16, 17, 18, -1, 16, 18, 19, -1, 20, 21, 22, -1, 20, 22, 23'>
+<Coordinate point='-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5,  0.5, -0.5, -0.5,  0.5, 0.5, 0.5,  0.5, 0.5, 0.5,  0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5'/>
+<Color color='0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0'/>
+</IndexedFaceSet>
+</Shape>
+</RenderedTexture>
+
+<ImageTexture url='media/volume/aorta4096.png' />
+</MultiTexture>
+  
+     <ComposedShader DEF='ComposedShader'>
+       <field name='uBackCoord' type='SFInt32' value='0'/>
+       <field name='uVolData' type='SFInt32' value='1'/>
+       <ShaderPart type='VERTEX'>
+       <![CDATA[
+             attribute vec3 position;
+             attribute vec3 color;
+             uniform mat4 modelViewProjectionMatrix;
+             varying vec3 vertexColor;
+             varying vec4 vertexPosition;
+             
+             void main()
+             {
+             	vertexColor = color;
+             	vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);
+                gl_Position = vertexPosition;
+             }
+       ]]>
+       </ShaderPart>
+       <ShaderPart type='FRAGMENT'>
+       <![CDATA[
+            #ifdef GL_ES
+              precision highp float;
+            #endif
+             
+            uniform sampler2D uBackCoord;
+            uniform sampler2D uVolData;
+            varying vec3 vertexColor;
+            varying vec4 vertexPosition;
+             
+			const float Steps = 60.0;
+            const float numberOfSlices = 96.0;
+            const float slicesOverX = 10.0;
+            const float slicesOverY = 10.0;
+
+			vec4 getVolumeValue(vec3 volpos)
+			{
+				float s1,s2;
+				float dx1,dy1;
+				float dx2,dy2;
+
+				vec2 texpos1,texpos2;
+
+				s1 = floor(volpos.z*numberOfSlices);
+				s2 = s1+1.0;
+
+				dx1 = fract(s1/slicesOverX);
+				dy1 = floor(s1/slicesOverY)/slicesOverY;
+
+				dx2 = fract(s2/slicesOverX);
+				dy2 = floor(s2/slicesOverY)/slicesOverY;
+
+				texpos1.x = dx1+(volpos.x/slicesOverX);
+				texpos1.y = dy1+(volpos.y/slicesOverY);
+
+				texpos2.x = dx2+(volpos.x/slicesOverX);
+				texpos2.y = dy2+(volpos.y/slicesOverY);
+
+				return mix( texture2D(uVolData,texpos1), texture2D(uVolData,texpos2), (volpos.z*numberOfSlices)-s1);
+			}
+ 
+            void main()
+            {             	
+                vec2 texC = vertexPosition.xy/vertexPosition.w;
+                texC.x = 0.5*texC.x + 0.5;
+                texC.y = 0.5*texC.y + 0.5;
+                 
+				vec4 backColor = texture2D(uBackCoord,texC);
+
+				vec3 dir = backColor.rgb - vertexColor.rgb;
+				vec3 pos = vertexColor;
+				
+				vec4 src = vec4(0, 0, 0, 0);
+				vec4 value = vec4(0, 0, 0, 0);
+			 
+				float cont = 0.0;
+				
+				vec3 Step = dir/Steps;
+
+				for(float i = 0.0; i < Steps; i+=1.0)
+				{
+					//vec2 tf_pos;
+
+					//tf_pos.x = getVolumeValue(pos.xyz);		
+					//tf_pos.y = 0.5;
+					
+					//value = texture2D(utransferFunction,tf_pos);
+					//value = vec4(tf_pos.x,tf_pos.x,tf_pos.x,tf_pos.x);
+					value = getVolumeValue(pos);
+
+
+					if (value.a>0.0) 
+						cont+=1.0;
+
+					src += value;
+
+					//advance the current position
+					pos.xyz += Step;
+
+					//break if the position is greater than <1, 1, 1>
+					if(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0)
+						break;
+				}
+
+				src.rgb /= Steps;
+				//src.rgba /= cont;
+				src.a = 1.0; 
+
+				gl_FragColor = src;
+            }
+       ]]>
+       </ShaderPart>
+     </ComposedShader>
+</Appearance>
+
+
+<IndexedFaceSet DEF='cube' solid='true' ccw='true' coordIndex='0, 1, 2, -1, 0, 2, 3, -1, 4, 5, 6, -1, 4, 6, 7, -1, 8, 9, 10, -1, 8, 10, 11, -1, 12, 13, 14, -1, 12, 14, 15, -1, 16, 17, 18, -1, 16, 18, 19, -1, 20, 21, 22, -1, 20, 22, 23' >
+<Coordinate point='-0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, 0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5,  0.5, -0.5, -0.5,  0.5, 0.5, 0.5,  0.5, 0.5, 0.5,  0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, -0.5, 0.5, -0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, -0.5, 0.5, 0.5, -0.5, 0.5, 0.5, 0.5, 0.5, -0.5, 0.5, -0.5, -0.5, -0.5, -0.5, -0.5, 0.5, -0.5, 0.5, 0.5, -0.5, 0.5, -0.5'/>
+
+<Color color='0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0'/> 
+
+</IndexedFaceSet>
+</Shape>
+</Group>
+
+</Scene>
+</X3D>
+   
+  </body>
+</html>

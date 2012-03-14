@@ -205,8 +205,9 @@ x3dom.userAgentFeature = {
         }
 
         if (x3dom.versionInfo !== undefined) {
-            x3dom.debug.logInfo("X3Dom Version " + x3dom.versionInfo.version + ", " +
-                                "Revison " + x3dom.versionInfo.revision + ", " +
+            x3dom.debug.logInfo("X3DOM version " + x3dom.versionInfo.version + ", " +
+                                "Revison <a href='https://github.com/x3dom/x3dom/tree/"+ x3dom.versionInfo.revision +"'>"
+                                + x3dom.versionInfo.revision + "</a>, " +
                                 "Date " + x3dom.versionInfo.date);
         }
         

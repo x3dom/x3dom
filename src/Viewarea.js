@@ -375,13 +375,13 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
 {
     var navi = this._scene.getNavigationInfo();
 
-    if (x3dom.isa(target, x3dom.nodeTypes.Viewpoint)) {
+    if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode)) {
         target = target.getViewMatrix();
     }
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
-        if (prev && x3dom.isa(prev, x3dom.nodeTypes.Viewpoint)) {
+        if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
             prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
                          mult(this._transMat).mult(this._rotMat);
         }

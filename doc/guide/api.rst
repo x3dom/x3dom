@@ -3,6 +3,20 @@
 API
 ===
 
+The X3DOM API is currently split into two parts:
+
+  * Runtime
+  * Docs
+
+The runtime api provides progrmmatic live access to the system. The
+Documnetation API allows to dynamically generate documentation
+artifacts embedded dreived from the souce code (e.g. a list of
+loaded nodes).
+
+
+Runtime
+-------
+
 The X3DOM runtime API provides proxy object to programmatically read
 and modify runtime parameters. The runtime proxy is attached to each
 X3D element and can be used in the following manner::
@@ -25,8 +39,6 @@ the X3D element they are working on as first parameter::
     };
 
 
-Runtime
--------
 
 ..  js:function:: ready()
 
@@ -153,3 +165,43 @@ Runtime
 
     Get or set the visibility of the statistics information. If parameter is 
     omitted, this method returns the visibility status as boolean.
+
+
+Docs
+----
+
+The documentation API is a set of static functions (object literal)
+which allows to obtain documetantion related information form the
+library::
+
+    var info;
+    var info_pane;
+    info = x3dom.docs.getNodeTreeInfo();
+    info_pane = getElementById('infopane');
+    info_pane.innerHTML = info;
+
+The documentation module is optional and only provided with the
+x3dom-full package.
+
+..  js:function:: getNodeTreeInfo()
+
+    :returns: A div element containin the nodes and link to specification
+
+    Return a div filled with nodes implemented and link to documentation.
+    This can be used to build interactive documentation.
+
+    Note: Unstable API method. Name and retrun value might change
+
+..  js:function:: getComponentInfo()
+
+    :returns: A div element containin the nodes and link to specification,
+              grouped by components and sorted alphabetically
+
+    Return a div filled with nodes implemented and link to documentation.
+    This particular method returns the the nodes grouped by components
+    and sorted alphabetically.
+
+    This can be used to build interactive documentation.
+
+    Note: Unstable API method. Name and retrun value might change
+

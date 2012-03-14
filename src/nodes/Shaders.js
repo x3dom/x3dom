@@ -244,12 +244,21 @@ x3dom.registerNodeType(
                 {
                     var fieldName = this._cf.fields.nodes[i]._vf.name;
                     ctx.xmlNode = this._cf.fields.nodes[i]._xmlNode;
-                    ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
+                    
+                    if (ctx.xmlNode !== undefined && ctx.xmlNode !== null) {
+                        ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
 
-                    var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
-                    var func = new Function('ctx', 'name', funcName);
+                        var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
+                        var func = new Function('ctx', 'name', funcName);
 
-                    func.call(this, ctx, fieldName);
+                        func.call(this, ctx, fieldName);
+                    }
+                    else {
+                        var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name, n);";
+                        var func = new Function('ctx', 'name', 'n', funcName);
+
+                        func.call(this, null, fieldName, this._cf.fields.nodes[i]._vf.value);
+                    }
                 }
 				
 				Array.forEach(this._parentNodes, function (app) {
@@ -296,11 +305,22 @@ x3dom.registerNodeType(
                         break;
                     }
                 }
+                
+                if (field === 'url') 
+                {
+                    Array.forEach(this._parentNodes, function (app) {
+    					Array.forEach(app._parentNodes, function (shape) {
+    						shape._dirty.shader = true;
+    					});
+    				});
+                }
             },
 			
 			parentAdded: function()
 			{
-				this._parentNodes[0].nodeChanged();
+				Array.forEach(this._parentNodes, function (app) {
+					app.nodeChanged();
+				});
 			}
         }
     )
@@ -319,40 +339,53 @@ x3dom.registerNodeType(
 
             x3dom.debug.assert(this._vf.type.toLowerCase() == 'vertex' ||
                                this._vf.type.toLowerCase() == 'fragment');
-
-			
-            if (!this._vf.url.length && ctx.xmlNode) {
-                var that = this;
-                try {
-                    that._vf.url.push(ctx.xmlNode.childNodes[1].nodeValue);
-                    //x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
-                    ctx.xmlNode.removeChild(ctx.xmlNode.childNodes[1]);
-                }
-                catch(e) {
-                    Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
-                        if (childDomNode.nodeType === 4) {
-                            that._vf.url.push(childDomNode.data);
-                            //x3dom.debug.logInfo(that._vf.url[that._vf.url.length-1]);
-                        }
-                        childDomNode.parentNode.removeChild(childDomNode);
-                    } );
-                }
-            }
         },
         {
 			nodeChanged: function()
             {
-
+                var ctx = {};
+                ctx.xmlNode = this._xmlNode;
+                
+                if (ctx.xmlNode !== undefined && ctx.xmlNode !== null) 
+                {
+                    var that = this;
+                    
+                    if (that._vf.url.length) {
+                        that._vf.url = new x3dom.fields.MFString( [] );
+                    }
+                    try {
+                        that._vf.url.push(ctx.xmlNode.childNodes[1].nodeValue);
+                        ctx.xmlNode.removeChild(ctx.xmlNode.childNodes[1]);
+                    }
+                    catch(e) {
+                        Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
+                            if (childDomNode.nodeType === 3) {
+                                that._vf.url.push(childDomNode.nodeValue);
+                            }
+                            else if (childDomNode.nodeType === 4) {
+                                that._vf.url.push(childDomNode.data);
+                            }
+                            childDomNode.parentNode.removeChild(childDomNode);
+                        } );
+                    }
+                }
+                // else hope that url field was already set somehow
 			},
 			
 			fieldChanged: function(fieldName)
             {
-
+                if (fieldName === "url") {
+                    Array.forEach(this._parentNodes, function (shader) {
+    					shader.fieldChanged("url");
+    				});
+                }
 			},
 			
 			parentAdded: function()
-			{	
-				this._parentNodes[0].nodeChanged();
+			{
+				Array.forEach(this._parentNodes, function (shader) {
+					shader.nodeChanged();
+				});
 			}
         }
     )

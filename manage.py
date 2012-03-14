@@ -90,7 +90,8 @@ from tools.packages import FULL_PROFILE, CORE_PROFILE, COMPONENTS, prefix_path
 PROJECT_ROOT = os.path.dirname(__file__)
 SRC_ROOT = os.path.join(PROJECT_ROOT, 'src')
 DIST_ROOT = os.path.join(PROJECT_ROOT, 'dist')
-DOC_ROOT = os.path.join(PROJECT_ROOT, 'doc', 'guide')
+DOC_ROOT = os.path.join(PROJECT_ROOT, 'doc')
+GUIDE_ROOT = os.path.join(DOC_ROOT, 'guide')
 
 # make sure we run from project root
 #os.chdir(PROJECT_ROOT)
@@ -127,6 +128,10 @@ def build(mode='production'):
     # done with components
     
     # ~~ copy other files ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    dist_docs = os.path.join(DIST_ROOT, 'docs')
+    if not os.path.exists(dist_docs):
+        os.makedirs(dist_docs)
+
     print("\nCopying additional files")
     shutil.copy('README.md', DIST_ROOT)
     shutil.copy('LICENSE', DIST_ROOT)
@@ -134,6 +139,7 @@ def build(mode='production'):
     shutil.copy('AUTHORS', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/x3dom.css', DIST_ROOT)
     shutil.copy(SRC_ROOT + '/flashbackend/bin/x3dom.swf', DIST_ROOT)
+    shutil.copy(DOC_ROOT + '/help/dumpNodeTypeTree.html', DIST_ROOT + '/docs')
     # end other files
 
 def _build_examples():
@@ -189,12 +195,12 @@ def docs():
     print("Generating Sphinx documentation ...")
     
     SPHINX_BUILD_DIR = os.path.join(DIST_ROOT, 'docs', 'html')
-    subprocess.call(['sphinx-build', '-b', 'html', '-d' , SPHINX_BUILD_DIR + '/doctrees', '-D latex_paper_size=a4', DOC_ROOT, SPHINX_BUILD_DIR])
+    subprocess.call(['sphinx-build', '-b', 'html', '-d' , SPHINX_BUILD_DIR + '/doctrees', '-D latex_paper_size=a4', GUIDE_ROOT, SPHINX_BUILD_DIR])
     
     print("Building SINGLEHTML guide....")
 
     SPHINX_BUILD_DIR = os.path.join(DIST_ROOT, 'docs', 'singlehtml')
-    subprocess.call(['sphinx-build', '-b', 'singlehtml', '-d' , SPHINX_BUILD_DIR + '/doctrees', '-D latex_paper_size=a4', DOC_ROOT, SPHINX_BUILD_DIR])
+    subprocess.call(['sphinx-build', '-b', 'singlehtml', '-d' , SPHINX_BUILD_DIR + '/doctrees', '-D latex_paper_size=a4', GUIDE_ROOT, SPHINX_BUILD_DIR])
 
     print("Done.")
 

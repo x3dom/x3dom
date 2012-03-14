@@ -148,6 +148,83 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### Viewfrustum ### */
+x3dom.registerNodeType(
+    "Viewfrustum",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DViewpointNode,
+        function (ctx) {
+            x3dom.nodeTypes.Viewfrustum.superClass.call(this, ctx);
+            
+            this.addField_SFMatrix4f(ctx, 'modelview',  1, 0, 0, 0,
+                                                        0, 1, 0, 0,
+                                                        0, 0, 1, 0,
+                                                        0, 0, 0, 1);
+            this.addField_SFMatrix4f(ctx, 'projection', 1, 0, 0, 0,
+                                                        0, 1, 0, 0,
+                                                        0, 0, 1, 0,
+                                                        0, 0, 0, 1);
+            
+            this._viewMatrix = this._vf.modelview.inverse();
+            this._projMatrix = this._vf.projection;
+        },
+        {
+            fieldChanged: function (fieldName) {
+                if (fieldName == "modelview") {
+                    this._viewMatrix = this._vf.modelview.inverse();
+                }
+                else if (fieldName == "projection") {
+                    this._projMatrix = this._vf.projection;
+                }
+                else if (fieldName === "set_bind") {
+                    this.bind(this._vf.set_bind);
+                }
+            },
+
+            activate: function (prev) {
+                if (prev) {
+                    this._nameSpace.doc._viewarea.animateTo(this, prev);
+                }
+                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
+                this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
+            },
+
+            deactivate: function (prev) {
+                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
+            },
+
+            getCenterOfRotation: function() {
+                return new x3dom.fields.SFVec3f(0, 0, 0);
+            },
+            
+            getViewMatrix: function() {
+                return this._viewMatrix;
+            },
+            
+            getFieldOfView: function() {
+                return (2.0 * Math.atan(1.0 / this._projMatrix._11));
+            },
+
+            setView: function(newView) {
+                var mat = this.getCurrentTransform();
+                mat = mat.inverse();
+                this._viewMatrix = mat.mult(newView);
+            },
+            
+            resetView: function() {
+                this._viewMatrix = this._vf.modelview.inverse();
+            },
+
+            getTransformation: function() {
+                return this.getCurrentTransform();
+            },
+
+            getProjectionMatrix: function(aspect) {
+                return this._projMatrix;
+            }
+        }
+    )
+);
 
 /* ### NavigationInfo ### */
 x3dom.registerNodeType(
