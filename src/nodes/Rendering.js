@@ -1006,15 +1006,9 @@ x3dom.registerNodeType(
 					if (!hasTexCoord) {
 					  this._mesh.calcTexCoords(texMode);
 					}
-					
-					x3dom.debug.logInfo('ind '+this._mesh._indices[0]);
-					x3dom.debug.logInfo('pos '+this._mesh._positions[0]);
-					x3dom.debug.logInfo('nor '+this._mesh._normals[0]);
-					x3dom.debug.logInfo('col '+this._mesh._colors[0]);
-					x3dom.debug.logInfo('tex '+this._mesh._texCoords[0]);
-						
+			
 					this._mesh.splitMesh();
-					
+	
 				} else {
 					
 					for (i = 1; i < indexes.length; ++i)
@@ -1047,6 +1041,7 @@ x3dom.registerNodeType(
                         this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
                     }
+					
 				}
 				
 				this._mesh._invalidate = true;
@@ -1060,7 +1055,149 @@ x3dom.registerNodeType(
 				 var time1 = new Date().getTime() - time0;
            },
 		   fieldChanged: function (fieldName) {
-               
+
+                if (fieldName == "coord") {
+					var cor = this._cf.coord.node._vf.point;
+					//this.nodeChanged();
+                }
+				else if (fieldName == "color") {
+					var col = this._cf.color.node._vf.color;
+ 					var faceCnt = 0;
+					var c1 = c2 = c3 = 0;
+					
+					var numColComponents = 3;	
+                   
+					if (x3dom.isa(this._cf.color.node, x3dom.nodeTypes.ColorRGBA)) {
+						numColComponents = 4;
+					}
+					
+					this._mesh._colors[0] = [];
+					
+					var indexes = this._vf.index;
+					for (i=1; i < indexes.length-2; ++i)
+					{
+						if (indexes[i+1] == -1) {
+							i = i+2;
+							faceCnt++;
+							continue;
+						}
+						
+						if (this._vf.colorPerVertex) { 
+							c1 = indexes[i];
+							c2 = indexes[i-1];
+							c3 = indexes[i+1];
+						} else if (!this._vf.colorPerVertex) {
+							c1 = c2 = c3 = faceCnt;
+						}
+                        this._mesh._colors[0].push(col[c1].r);
+                        this._mesh._colors[0].push(col[c1].g);
+                        this._mesh._colors[0].push(col[c1].b);
+						if (numColComponents === 4) {
+							this._mesh._colors[0].push(col[c1].a);
+						}  
+						this._mesh._colors[0].push(col[c2].r);
+                        this._mesh._colors[0].push(col[c2].g);
+                        this._mesh._colors[0].push(col[c2].b);
+						if (numColComponents === 4) {
+							this._mesh._colors[0].push(col[c2].a);
+						}  
+						this._mesh._colors[0].push(col[c3].r);
+                        this._mesh._colors[0].push(col[c3].g);
+                        this._mesh._colors[0].push(col[c3].b);
+						if (numColComponents === 4) {
+							this._mesh._colors[0].push(col[c3].a);
+						}  
+						
+                    }
+					 
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
+                    }); 
+                }  
+				else if (fieldName == "normal") {
+                   var nor = this._cf.normal.node._vf.vector;
+				   var faceCnt = 0;
+					var n1 = n2 = n3 = 0;
+					x3dom.debug.logInfo('nor1 ' +this._mesh._normals[0]);
+					this._mesh._normals[0] = [];
+					
+					var indexes = this._vf.index;
+					for (i=1; i < indexes.length-2; ++i)
+					{
+						if (indexes[i+1] == -1) {
+							i = i+2;
+							faceCnt++;
+							continue;
+						}
+						
+						if (this._vf.normalPerVertex) { 
+							n1 = indexes[i];
+							n2 = indexes[i-1];
+							n3 = indexes[i+1];
+						} else if (!this._vf.normalPerVertex) {
+							n1 = n2 = n3 = faceCnt;
+						}
+                        this._mesh._normals[0].push(nor[n1].x);
+						this._mesh._normals[0].push(nor[n1].y);
+						this._mesh._normals[0].push(nor[n1].z);
+						this._mesh._normals[0].push(nor[n2].x);
+						this._mesh._normals[0].push(nor[n2].y);
+						this._mesh._normals[0].push(nor[n2].z);
+						this._mesh._normals[0].push(nor[n3].x);
+						this._mesh._normals[0].push(nor[n3].y);
+						this._mesh._normals[0].push(nor[n3].z);
+                    }
+					x3dom.debug.logInfo('nor2 ' +this._mesh._normals[0]);
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.normals = true;
+                    }); 
+                }
+				else if (fieldName == "texCoord") {
+                    var tex = this._cf.texCoord.node._vf.point;
+					var t1 = t2 = t3 = 0;
+					
+					var numTexComponents = 2;	
+                   
+					if (x3dom.isa(this._cf.texCoord.node, x3dom.nodeTypes.TextureCoordinate3D)) {
+                    	numTexComponents = 3;
+                    }
+					x3dom.debug.logInfo('tex1 ' +this._mesh._texCoords[0]);
+					this._mesh._texCoords[0] = [];
+					
+					var indexes = this._vf.index;
+					for (i=1; i < indexes.length-2; ++i)
+					{
+						if (indexes[i+1] == -1) {
+							i = i+2;
+							continue;
+						}
+						
+						t1 = indexes[i];
+						t2 = indexes[i-1];
+						t3 = indexes[i+1];
+						
+                        this._mesh._texCoords[0].push(tex[t1].x);
+                        this._mesh._texCoords[0].push(tex[t1].y);
+						if (numTexComponents === 3) {
+							this._mesh._texCoords[0].push(tex[t1].z);
+						}  
+						this._mesh._texCoords[0].push(tex[t2].x);
+                        this._mesh._texCoords[0].push(tex[t2].y);                       
+						if (numTexComponents === 3) {
+							this._mesh._texCoords[0].tex(col[t2].z);
+						}  
+						this._mesh._texCoords[0].push(tex[t3].x);
+                        this._mesh._texCoords[0].push(tex[t3].y);               
+						if (numTexComponents === 3) {
+							this._mesh._texCoords[0].push(tex[t3].z);
+						}  
+						
+                    }
+					x3dom.debug.logInfo('tex2 ' +this._mesh._texCoords[0]);
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.texCoords = true;
+                    }); 
+                }
            }
         }
     )
