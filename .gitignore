@@ -6,6 +6,7 @@ _site
 *.tmproj
 *.bak
 *.pyc
+*.db
 version.js
 dist
 test/qunit

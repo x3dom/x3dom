@@ -1397,8 +1397,9 @@ x3dom.registerNodeType(
 							
 							if(idx == 65535) break;
 							
+							//this._mesh._positions[0].push(x/255, y/255, 0);
 							this._mesh._positions[0].push(x/256, y/256, 0);
-							this._mesh._indices[0].push(y*256+x);
+							this._mesh._indices[0].push(idx);
 						}
 					}
 					
@@ -1902,19 +1903,17 @@ x3dom.registerNodeType(
 								default:
 							}
 						}
-	
-						
-					} else {
+					} 
+					else {
 						var linklist = new x3dom.DoublyLinkedList();
 						var data = new Object();
-						cnt = 0;
+						cnt = 0, faceCnt = 0;
 												
 						for (var i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
 								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
 								
-																
 								for (var j = 0; j < multi_index_data.indices.length; j++)
 								{	
 									this._mesh._indices[0].push(cnt);
@@ -1923,19 +1922,19 @@ x3dom.registerNodeType(
 									this._mesh._positions[0].push(multi_index_data.point[j].x,
 																  multi_index_data.point[j].y,
 																  multi_index_data.point[j].z);
-									if (hasNormal) {
+									if (hasNormal) { 
 										this._mesh._normals[0].push(multi_index_data.normals[j].x,
 																	multi_index_data.normals[j].y,
 																	multi_index_data.normals[j].z);
 									}
-									if (hasColor) {
+									if (hasColor) { 
 										this._mesh._colors[0].push(multi_index_data.colors[j].r, 
 																   multi_index_data.colors[j].g, 
 																   multi_index_data.colors[j].b);
 										if (numColComponents === 4) {
 											this._mesh._colors[0].push(multi_index_data.colors[j].a);
 										}
-									}
+									} 
 									if (hasTexCoord) {	
 										this._mesh._texCoords[0].push(multi_index_data.texCoords[j].x,
 																	  multi_index_data.texCoords[j].y);

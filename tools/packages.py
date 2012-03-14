@@ -8,8 +8,8 @@ BASICS = [
   'Internals.js',
   'debug.js',
   'ImageLoadManager.js',
-  'lang/Properties.js',
-  'lang/DoublyLinkedList.js',
+  'util/Properties.js',
+  'util/DoublyLinkedList.js',
   'util/EarClipping.js',
   'X3DCanvas.js',
   'Runtime.js',
@@ -50,7 +50,8 @@ NODES = [
 COMPONENTS = [
   'nodes/Geospatial.js',
   'nodes/Geometry2D.js',
-  'nodes/VolumeRendering.js'
+  'nodes/VolumeRendering.js',
+  'Docs.js'                    # interactive documnetatation
 ]
 
 CORE_PROFILE = BASICS + GFX + NODES

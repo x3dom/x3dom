@@ -958,25 +958,30 @@ x3dom.X3DCanvas.prototype.tick = function()
                 }
             }
 
-            if (this.progressDiv) {
-                // TODO: In order to display a bar we need a max value to determine where we are
-                // 100 / total * this.doc.downloadCount
-                // this.progressDiv.childNodes[1].setAttribute("style", "width: " + progressPercent + "%");
-                this.progressDiv.childNodes[0].textContent = 'Loading: ' + this.doc.downloadCount;
-                if (this.doc.downloadCount > 0) {
-                    this.progressDiv.style.display = 'inline';
-                } else {
-                    this.progressDiv.style.display = 'none';
-                }
+            if (this.doc.properties.getProperty("showProgress") !== 'false') {
+                if (this.progressDiv) {
+                    // TODO: In order to display a bar we need a max value to determine where we are
+                    // 100 / total * this.doc.downloadCount
+                    // this.progressDiv.childNodes[1].setAttribute("style", "width: " + progressPercent + "%");
+                    this.progressDiv.childNodes[0].textContent = 'Loading: ' + this.doc.downloadCount;
+                    if (this.doc.downloadCount > 0) {
+                        this.progressDiv.style.display = 'inline';
+                    } else {
+                        this.progressDiv.style.display = 'none';
+                    }
 
-                // TODO: fix these strange window-bound scope issues!
-                window.myThat = this;
-                window.myStopProgress = function stopProgress() {
-                    window.myThat.doc.downloadCount = 0;
-                    window.myThat.progressDiv.style.display = 'none';
-                };
-                window.setTimeout("window.myStopProgress()", 1500);
+                    // TODO: fix these strange window-bound scope issues!
+                    window.myThat = this;
+                    window.myStopProgress = function stopProgress() {
+                        window.myThat.doc.downloadCount = 0;
+                        window.myThat.progressDiv.style.display = 'none';
+                    };
+                    window.setTimeout("window.myStopProgress()", 1500);
+                }
+            } else {
+                this.progressDiv.style.display = 'none';
             }
+
         }
 
     } catch (e) {
