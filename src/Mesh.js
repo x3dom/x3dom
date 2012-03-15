@@ -22,6 +22,8 @@ x3dom.Mesh = function(parent)
     this._invalidate = true;
     this._numFaces = 0;
     this._numCoords = 0;
+	
+	this._primType = 'TRIANGLES';
     
     this._positions = [];
     this._normals   = [];
