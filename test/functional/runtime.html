@@ -74,7 +74,7 @@
                 <appearance>
                     <material diffuseColor='1 0 0' ></material>
                 </appearance>
-                <box DEF='box' ></box>
+                <box id='box' ></box>
             </shape>
     </scene>
     </x3d>
@@ -110,6 +110,7 @@
 
    		    <li><em>Misc</em>
             	<ul>
+            	    <li><a href="#" onClick="alert($element.runtime.isA(document.getElementById('box'),'X3DGeometryNode'));return false;">Check if Box is a X3DGeometryNode</a></li>
 	            	<li><a href="#" onClick="$element.runtime.togglePoints();return false;">Toggle points</a></li>
 				    <li><a href="#" onClick="alert('Speed value: ' + $element.runtime.speed());return false;">Show speed</a></li>
 				    <li><a href="#" onClick="$element.runtime.speed(10.0);return false;">Change speed to 10.0</a></li>
