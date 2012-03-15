@@ -106,9 +106,9 @@
              <Appearance>
                 <imageTexture url='media/img/hv.png' />
               </Appearance>
-            <IndexedTriangleStripSet onclick="test2();" index='0 1 2 3 -1' solid='false' normalPerVertex='true'>
-                <coordinate point='2 2 0 2 1 0 3 2 0 3 1 0'></coordinate>
-                 <normal vector='0 0 -1 0 0 0 0 0 0 0 0 1'></normal>
+            <IndexedTriangleStripSet onclick="test2();" index='0 1 2 3 -1' solid='false' normalPerVertex='false'>
+                <coordinate id="idCoord1" point='2 2 0 2 1 0 3 2 0 3 1 0'></coordinate>
+                 <normal id="idNormal1" vector='1 0 0'></normal>
                  <TextureCoordinate id="idTexture" point='0 1 0 0 1 1 1 0'></TextureCoordinate>
             </IndexedTriangleStripSet>
         </shape>
@@ -133,7 +133,9 @@
 			document.getElementById('idCoord').setAttribute('point', '2 -2 0 3 -1 0 3 -2 0 4 -1 0');
         };	
 		 var test3 = function (event) {	
-			document.getElementById('idTexture').setAttribute('point', '1 0 1 1 0 0 0 1');		
+			document.getElementById('idTexture').setAttribute('point', '1 0 1 1 0 0 0 1');
+			document.getElementById('idCoord1').setAttribute('point', '2 2 0 2 0 0 4 2 0 4 0 0');
+			document.getElementById('idNormal1').setAttribute('vector', '0 0 1');
         };	
 		 var test4 = function (event) {	
 			document.getElementById('idNormal').setAttribute('vector', '0 0 1');

@@ -899,9 +899,60 @@ x3dom.registerNodeType(
 				
 				var faceCnt = 0, cnt = 0;
 				var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
-				 
-				if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor)
-                {
+				
+				
+				/*if(hasNormal && hasTexCoord) {
+					
+					this._mesh._primType = 'TRIANGLE_STRIP';
+					
+					for (i=0; i < indexes.length; ++i)
+					{
+						if (indexes[i] == -1) {
+							faceCnt++;
+							continue;
+						}
+						
+						p1 = indexes[i];
+						
+						if (normPerVert) { 
+							n1 = p1;
+						} else if (!normPerVert) {
+							n1 = faceCnt;
+						}
+						if (colPerVert) {
+							c1 = p1;
+						} else if (!colPerVert) { 
+							c1 = faceCnt;
+						}
+						
+						this._mesh._indices[0].push(i)	;
+						this._mesh._positions[0].push(positions[p1].x);
+						this._mesh._positions[0].push(positions[p1].y);
+						this._mesh._positions[0].push(positions[p1].z);
+						
+						
+						this._mesh._normals[0].push(normals[n1].x);
+						this._mesh._normals[0].push(normals[n1].y);
+						this._mesh._normals[0].push(normals[n1].z);
+						
+						if (hasColor) {
+							this._mesh._colors[0].push(colors[c1].r);
+							this._mesh._colors[0].push(colors[c1].g);
+							this._mesh._colors[0].push(colors[c1].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(colors[c1].a);
+							}    
+						}
+						
+						
+						this._mesh._texCoords[0].push(texCoords[p1].x);
+						this._mesh._texCoords[0].push(texCoords[p1].y);
+						if (numTexComponents === 3) {
+							this._mesh._texCoords[0].push(texCoords[p1].z);
+						}
+					}
+					this._mesh.splitMesh();
+				} else*/ if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor) {
 					for (i=1; i < indexes.length-2; ++i)
 					{
 						if (indexes[i+1] == -1) {
@@ -1127,8 +1178,59 @@ x3dom.registerNodeType(
 					var faceCnt = 0, cnt = 0;
 					var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
 					 
-					if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor)
-					{
+					/*if(hasNormal && hasTexCoord) {
+					
+						this._mesh._primType = 'TRIANGLE_STRIP';
+						
+						for (i=0; i < indexes.length; ++i)
+						{
+							if (indexes[i] == -1) {
+								faceCnt++;
+								continue;
+							}
+							
+							p1 = indexes[i];
+							
+							if (normPerVert) { 
+								n1 = p1;
+							} else if (!normPerVert) {
+								n1 = faceCnt;
+							}
+							if (colPerVert) {
+								c1 = p1;
+							} else if (!colPerVert) { 
+								c1 = faceCnt;
+							}
+							
+							this._mesh._indices[0].push(i)	;
+							this._mesh._positions[0].push(positions[p1].x);
+							this._mesh._positions[0].push(positions[p1].y);
+							this._mesh._positions[0].push(positions[p1].z);
+							
+							
+							this._mesh._normals[0].push(normals[n1].x);
+							this._mesh._normals[0].push(normals[n1].y);
+							this._mesh._normals[0].push(normals[n1].z);
+							
+							if (hasColor) {
+								this._mesh._colors[0].push(colors[c1].r);
+								this._mesh._colors[0].push(colors[c1].g);
+								this._mesh._colors[0].push(colors[c1].b);
+								if (numColComponents === 4) {
+									this._mesh._colors[0].push(colors[c1].a);
+								}    
+							}
+							
+							
+							this._mesh._texCoords[0].push(texCoords[p1].x);
+							this._mesh._texCoords[0].push(texCoords[p1].y);
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].push(texCoords[p1].z);
+							}
+						}
+						this._mesh.splitMesh();
+					} else*/ if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor) {
+						
 						for (i=1; i < indexes.length-2; ++i)
 						{
 							if (indexes[i+1] == -1) {
@@ -1298,41 +1400,65 @@ x3dom.registerNodeType(
 					this._mesh._colors[0] = [];
 					
 					var indexes = this._vf.index;
-					for (i=1; i < indexes.length-2; ++i)
-					{
-						if (indexes[i+1] == -1) {
-							i = i+2;
-							faceCnt++;
-							continue;
+					
+					if(this._mesh._primType == 'TRIANGLE_STRIP') {
+						
+						for (i=0; i < indexes.length; ++i)
+						{
+							if (indexes[i] == -1) {	
+								faceCnt++;
+								continue;
+							}
+							
+							if (this._vf.colorPerVertex) { 
+								c1 = indexes[i];								
+							} else if (!this._vf.colorPerVertex) {
+								c1 = faceCnt;
+							}
+							this._mesh._colors[0].push(col[c1].r);
+							this._mesh._colors[0].push(col[c1].g);
+							this._mesh._colors[0].push(col[c1].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(col[c1].a);
+							}  
 						}
 						
-						if (this._vf.colorPerVertex) { 
-							c1 = indexes[i];
-							c2 = indexes[i-1];
-							c3 = indexes[i+1];
-						} else if (!this._vf.colorPerVertex) {
-							c1 = c2 = c3 = faceCnt;
+					} else {	
+						for (i=1; i < indexes.length-2; ++i)
+						{
+							if (indexes[i+1] == -1) {
+								i = i+2;
+								faceCnt++;
+								continue;
+							}
+							
+							if (this._vf.colorPerVertex) { 
+								c1 = indexes[i];
+								c2 = indexes[i-1];
+								c3 = indexes[i+1];
+							} else if (!this._vf.colorPerVertex) {
+								c1 = c2 = c3 = faceCnt;
+							}
+							this._mesh._colors[0].push(col[c1].r);
+							this._mesh._colors[0].push(col[c1].g);
+							this._mesh._colors[0].push(col[c1].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(col[c1].a);
+							}  
+							this._mesh._colors[0].push(col[c2].r);
+							this._mesh._colors[0].push(col[c2].g);
+							this._mesh._colors[0].push(col[c2].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(col[c2].a);
+							}  
+							this._mesh._colors[0].push(col[c3].r);
+							this._mesh._colors[0].push(col[c3].g);
+							this._mesh._colors[0].push(col[c3].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(col[c3].a);
+							}  
 						}
-                        this._mesh._colors[0].push(col[c1].r);
-                        this._mesh._colors[0].push(col[c1].g);
-                        this._mesh._colors[0].push(col[c1].b);
-						if (numColComponents === 4) {
-							this._mesh._colors[0].push(col[c1].a);
-						}  
-						this._mesh._colors[0].push(col[c2].r);
-                        this._mesh._colors[0].push(col[c2].g);
-                        this._mesh._colors[0].push(col[c2].b);
-						if (numColComponents === 4) {
-							this._mesh._colors[0].push(col[c2].a);
-						}  
-						this._mesh._colors[0].push(col[c3].r);
-                        this._mesh._colors[0].push(col[c3].g);
-                        this._mesh._colors[0].push(col[c3].b);
-						if (numColComponents === 4) {
-							this._mesh._colors[0].push(col[c3].a);
-						}  
-						
-                    }
+					}
 					 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
@@ -1346,31 +1472,53 @@ x3dom.registerNodeType(
 					this._mesh._normals[0] = [];
 					
 					var indexes = this._vf.index;
-					for (i=1; i < indexes.length-2; ++i)
-					{
-						if (indexes[i+1] == -1) {
-							i = i+2;
-							faceCnt++;
-							continue;
+					
+					if(this._mesh._primType == 'TRIANGLE_STRIP') {
+						
+						for (i=0; i < indexes.length; ++i)
+						{
+							if (indexes[i] == -1) {					
+								faceCnt++;
+								continue;
+							}
+							
+							if (this._vf.normalPerVertex) { 
+								n1 = indexes[i];					
+							} else if (!this._vf.normalPerVertex) {
+								n1 = faceCnt;
+							}
+							this._mesh._normals[0].push(nor[n1].x);
+							this._mesh._normals[0].push(nor[n1].y);
+							this._mesh._normals[0].push(nor[n1].z);	
 						}
 						
-						if (this._vf.normalPerVertex) { 
-							n1 = indexes[i];
-							n2 = indexes[i-1];
-							n3 = indexes[i+1];
-						} else if (!this._vf.normalPerVertex) {
-							n1 = n2 = n3 = faceCnt;
+					} else {					
+						for (i=1; i < indexes.length-2; ++i)
+						{
+							if (indexes[i+1] == -1) {
+								i = i+2;
+								faceCnt++;
+								continue;
+							}
+							
+							if (this._vf.normalPerVertex) { 
+								n1 = indexes[i];
+								n2 = indexes[i-1];
+								n3 = indexes[i+1];
+							} else if (!this._vf.normalPerVertex) {
+								n1 = n2 = n3 = faceCnt;
+							}
+							this._mesh._normals[0].push(nor[n1].x);
+							this._mesh._normals[0].push(nor[n1].y);
+							this._mesh._normals[0].push(nor[n1].z);
+							this._mesh._normals[0].push(nor[n2].x);
+							this._mesh._normals[0].push(nor[n2].y);
+							this._mesh._normals[0].push(nor[n2].z);
+							this._mesh._normals[0].push(nor[n3].x);
+							this._mesh._normals[0].push(nor[n3].y);
+							this._mesh._normals[0].push(nor[n3].z);
 						}
-                        this._mesh._normals[0].push(nor[n1].x);
-						this._mesh._normals[0].push(nor[n1].y);
-						this._mesh._normals[0].push(nor[n1].z);
-						this._mesh._normals[0].push(nor[n2].x);
-						this._mesh._normals[0].push(nor[n2].y);
-						this._mesh._normals[0].push(nor[n2].z);
-						this._mesh._normals[0].push(nor[n3].x);
-						this._mesh._normals[0].push(nor[n3].y);
-						this._mesh._normals[0].push(nor[n3].z);
-                    }
+					}
 					
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.normals = true;
@@ -1387,36 +1535,56 @@ x3dom.registerNodeType(
                     }
 					
 					this._mesh._texCoords[0] = [];
-					
 					var indexes = this._vf.index;
-					for (i=1; i < indexes.length-2; ++i)
-					{
-						if (indexes[i+1] == -1) {
-							i = i+2;
-							continue;
+					
+					if(this._mesh._primType == 'TRIANGLE_STRIP') {
+						
+						for (i=0; i < indexes.length; ++i)
+						{
+							if (indexes[i] == -1) {
+								continue;
+							}
+							
+							t1 = indexes[i];
+
+							this._mesh._texCoords[0].push(tex[t1].x);
+							this._mesh._texCoords[0].push(tex[t1].y);
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].push(tex[t1].z);
+							}  	
 						}
 						
-						t1 = indexes[i];
-						t2 = indexes[i-1];
-						t3 = indexes[i+1];
+					} else {
 						
-                        this._mesh._texCoords[0].push(tex[t1].x);
-                        this._mesh._texCoords[0].push(tex[t1].y);
-						if (numTexComponents === 3) {
-							this._mesh._texCoords[0].push(tex[t1].z);
-						}  
-						this._mesh._texCoords[0].push(tex[t2].x);
-                        this._mesh._texCoords[0].push(tex[t2].y);                       
-						if (numTexComponents === 3) {
-							this._mesh._texCoords[0].tex(col[t2].z);
-						}  
-						this._mesh._texCoords[0].push(tex[t3].x);
-                        this._mesh._texCoords[0].push(tex[t3].y);               
-						if (numTexComponents === 3) {
-							this._mesh._texCoords[0].push(tex[t3].z);
-						}  
-						
-                    }
+						for (i=1; i < indexes.length-2; ++i)
+						{
+							if (indexes[i+1] == -1) {
+								i = i+2;
+								continue;
+							}
+							
+							t1 = indexes[i];
+							t2 = indexes[i-1];
+							t3 = indexes[i+1];
+							
+							this._mesh._texCoords[0].push(tex[t1].x);
+							this._mesh._texCoords[0].push(tex[t1].y);
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].push(tex[t1].z);
+							}  
+							this._mesh._texCoords[0].push(tex[t2].x);
+							this._mesh._texCoords[0].push(tex[t2].y);                       
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].tex(col[t2].z);
+							}  
+							this._mesh._texCoords[0].push(tex[t3].x);
+							this._mesh._texCoords[0].push(tex[t3].y);               
+							if (numTexComponents === 3) {
+								this._mesh._texCoords[0].push(tex[t3].z);
+							}  
+							
+						}
+					}
 					
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.texCoords = true;
