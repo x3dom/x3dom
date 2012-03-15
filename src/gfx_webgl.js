@@ -2292,9 +2292,10 @@ x3dom.gfx_webgl = (function () {
 							shape._webgl.primType.push(gl.TRIANGLES);
 						}
 					}
-				} /*else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet)) {
+				} else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&  
+									shape._cf.geometry.node._mesh._primType == 'TRIANGLE_STRIP') {
 					shape._webgl.primType = gl.TRIANGLE_STRIP;
-				} */else {
+				} else {
 					shape._webgl.primType = gl.TRIANGLES;
 				}
                 
