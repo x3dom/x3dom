@@ -247,8 +247,8 @@ x3dom.Runtime.prototype.uprightView = function() {
  * Zooms so that all objects are fully visible.
  *
  */
-x3dom.Runtime.prototype.showAll = function() {
-    this.canvas.doc._viewarea.showAll();
+x3dom.Runtime.prototype.showAll = function(axis) {
+    this.canvas.doc._viewarea.showAll(axis);
 };
 
 /**

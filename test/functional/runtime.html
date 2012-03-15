@@ -64,6 +64,7 @@
     <x3d id="the_element" showProgress="true" showStat="true" showLog="true" width="512px" height="512px">
     <!--<div id="spinner" class="loader">Loading...</div>-->
     <scene>
+           <Background backUrl='"media/texture/generic/CubeBack.png"' bottomUrl='"media/texture/generic/CubeDown.png"' frontUrl='"media/texture/generic/CubeFront.png"' leftUrl='"media/texture/generic/CubeLeft.png"' rightUrl='"media/texture/generic/CubeRight.png"' topUrl='"media/texture/generic/CubeUp.png"'></Background>
            <background id="bg0" skycolor='0.05 0.12 0.23' description="Background 0"></background>
            <background id="bg1" skycolor='1.00 1.00 1.00' description="Background 1"></background>
            <viewpoint position='0 0 10' description="Camera 0"></viewpoint>
@@ -94,7 +95,12 @@
 		    		<li><a href="#" onClick="$element.runtime.prevView();updateAbInfo('Viewpoint');return false;">Prev view</a></li>
 			    	<li><a href="#" onClick="$element.runtime.resetView();return false;">Reset current view</a></li>
 				    <li><a href="#" onClick="$element.runtime.uprightView();return false;">Upright View</a></li>
-				    <li><a href="#" onClick="$element.runtime.showAll();return false;">Show all</a></li>
+				    <li><a href="#" onClick="$element.runtime.showAll('posX');return false;">Show all X</a></li>
+				    <li><a href="#" onClick="$element.runtime.showAll('negX');return false;">Show all -X</a></li>
+				    <li><a href="#" onClick="$element.runtime.showAll('posY');return false;">Show all Y</a></li>
+				    <li><a href="#" onClick="$element.runtime.showAll('negY');return false;">Show all -Y</a></li>
+				    <li><a href="#" onClick="$element.runtime.showAll('posZ');return false;">Show all Z</a></li>
+				    <li><a href="#" onClick="$element.runtime.showAll('negZ');return false;">Show all -Z</a></li>
 		    		<li><a href="#" onClick="$element.runtime.lightView();return false;">Light View</a></li>
 				</ul>
             </li>
@@ -163,7 +169,7 @@
         };
 
         $element.runtime.enterFrame = function() {
-            x3dom.debug.logInfo('Per element custom .runtime.enterFrame() function');
+            //x3dom.debug.logInfo('Per element custom .runtime.enterFrame() function');
         };
 
 		updateAbInfo('Viewpoint');
