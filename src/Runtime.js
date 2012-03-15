@@ -417,7 +417,7 @@ x3dom.Runtime.prototype.changePickMode = function(type, options) {
             break;
 
         default:
-            x3dom.debug.logWarning("Switch pickMode to "+ type + 'unknown intersect type');
+            x3dom.debug.logWarning("Switch pickMode to "+ type + ' unknown intersect type');
             type = undefined;
     }
 
@@ -530,6 +530,7 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
  * 		The requirement matrix as 8bit field
  */
 x3dom.Runtime.prototype.requirements = function() {
+    // Hmm, bit field in JS? Strange?!
     return "0000";
 };
 
@@ -540,4 +541,19 @@ x3dom.Runtime.prototype.properties = function() {
 
 x3dom.Runtime.prototype.backendName = function() {
     return this.canvas.backend;
+};
+
+
+x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
+    var inherits = false;
+    
+    if (nodeType && domNode && domNode._x3domNode) {
+        if (nodeType === "") {
+            nodeType = "X3DNode";
+        }
+        inherits = x3dom.isa(domNode._x3domNode, 
+                             x3dom.nodeTypesLC[nodeType.toLowerCase()]);
+    }
+    
+    return inherits;
 };
