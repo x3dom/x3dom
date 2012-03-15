@@ -1699,6 +1699,55 @@ x3dom.gfx_webgl = (function () {
                 
                 shape._dirty.colors = false;
               }
+			  if (!needFullReInit && shape._dirty.normals === true)
+              {
+				  
+                if (shape._webgl.shader.normal !== undefined)
+                {
+                    shape._webgl.normals[q] = shape._cf.geometry.node._mesh._normals[q];
+                    
+					gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
+            
+                    
+                    normalBuffer = gl.createBuffer();
+                    shape._webgl.buffers[5*q+2] = normalBuffer;					
+                    
+                    normals = new Float32Array(shape._webgl.normals[q]);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);             
+                    
+                    gl.vertexAttribPointer(shape._webgl.shader.normal, 3, gl.FLOAT, false, 0, 0); 
+                    
+                    normals = null;
+                }
+                
+                shape._dirty.normals = false; 
+              }
+			  if (!needFullReInit && shape._dirty.texCoords === true)
+              {
+				 
+               if (shape._webgl.shader.texcoord !== undefined)
+                {
+                    shape._webgl.texcoords[q] =  shape._cf.geometry.node._mesh._texCoords[q];
+                    
+                    gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
+					         
+                    texCoordBuffer = gl.createBuffer();
+                    shape._webgl.buffers[5*q+3] = texCoordBuffer;
+                    
+                    texCoords = new Float32Array(shape._webgl.texcoords[q]);
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);             
+                    
+                    gl.vertexAttribPointer(shape._webgl.shader.texCoord, 3, gl.FLOAT, false, 0, 0); 
+                    
+                    texCoords = null;
+                }
+                
+                shape._dirty.texCoords = false; 
+              }
               //TODO; check all other cases, too!
             }
             
