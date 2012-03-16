@@ -4152,6 +4152,7 @@ x3dom.gfx_webgl = (function () {
         // calls gl.clear etc. (bgnd stuff)
         bgnd._webgl.render(gl, mat_scene);
         
+        gl.depthMask(true);
         gl.depthFunc(gl.LEQUAL);
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
@@ -4178,8 +4179,9 @@ x3dom.gfx_webgl = (function () {
         {
             var obj = scene.drawableObjects[zPos[i][0]];
             var needEnableBlending = false;
+            var needEnableDepthMask = false;
 
-            // HACK; fully impl. BlendMode! (also DepthMode)
+            // HACK; fully impl. BlendMode and DepthMode!
             if (obj[1]._cf.appearance.node._cf.blendMode.node &&
                 obj[1]._cf.appearance.node._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
                 obj[1]._cf.appearance.node._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
@@ -4187,12 +4189,21 @@ x3dom.gfx_webgl = (function () {
                 needEnableBlending = true;
                 gl.disable(gl.BLEND);
             }
+            if (obj[1]._cf.appearance.node._cf.depthMode.node &&
+                obj[1]._cf.appearance.node._cf.depthMode.node._vf.readOnly === true)
+            {
+                needEnableDepthMask = true;
+                gl.depthMask(false);
+            }
 
             this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
                 mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
 
             if (needEnableBlending) {
                 gl.enable(gl.BLEND);
+            }
+            if (needEnableDepthMask) {
+                gl.depthMask(true);
             }
         }
 
