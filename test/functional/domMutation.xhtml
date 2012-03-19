@@ -57,7 +57,7 @@
 			<Scene>
 				<Background DEF='bgnd' transparency='0' skyColor='0.2 0.7 0.4' />
 				<Transform DEF="trafo" translation="0 0 0">
-					<Shape>
+					<Shape id='ball'>
 						<Appearance>
 							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" transparency="0" />
 						</Appearance>
@@ -108,9 +108,22 @@
         
         return false;
     }
+
+    var render = true;
+    
+    function toggleRender()
+    {
+        var elem = document.getElementById("ball");
+        
+        render = !render;
+        
+        elem.setAttribute("render", render.toString());
+        
+        return false;
+    }
     
     document.onload = function(evt) {
-        alert("Finished loading X3D scene.\nStart rendering...");
+        //alert("Finished loading X3D scene.\nStart rendering...");
     };
 	
 	]]></script>
@@ -121,7 +134,10 @@
     <br /> 
 	Dynamic childtree update
 	<input type="button" id="child" value="Add Child" onclick="addChild();" />
-	</div>
+    <br /> 
+    Toggle visibility of sphere
+    <input type="button" id="render" value="Change Visibility" onclick="toggleRender();" />
+    </div>
 
 </body>
 </html>
