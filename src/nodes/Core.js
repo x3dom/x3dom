@@ -151,6 +151,30 @@ x3dom.registerNodeType(
             }
             return valid;
         },
+        
+        highlight: function(enable, color)
+        {
+            if (this._vf.hasOwnProperty("diffuseColor")) 
+            {
+                if (enable) {
+                    if (this._actDiffuseColor === undefined)
+                        this._actDiffuseColor = new x3dom.fields.SFColor();
+                    
+                    this._actDiffuseColor.setValues(this._vf.diffuseColor);
+                    this._vf.diffuseColor.setValues(color);
+                }
+                else {
+                    if (this._actDiffuseColor !== undefined)
+                        this._vf.diffuseColor.setValues(this._actDiffuseColor);
+                }
+            }
+            
+            for (var i=0; i<this._childNodes.length; i++)
+            {
+                if (this._childNodes[i])
+                    this._childNodes[i].highlight(enable, color);
+            }
+        },
 
         find: function (type) {
             for (var i=0; i<this._childNodes.length; i++) {

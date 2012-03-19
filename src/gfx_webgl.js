@@ -430,6 +430,10 @@ x3dom.gfx_webgl = (function () {
     }
 
     
+//----------------------------------------------------------------------------
+/*! get shader program
+ */
+//----------------------------------------------------------------------------
     Context.prototype.getShaderProgram = function(gl, ids) 
     {
         var shader = [];
@@ -495,6 +499,7 @@ x3dom.gfx_webgl = (function () {
         
         return prog;
     };
+    
     
     // Returns "shader" such that "shader.foo = [1,2,3]" magically sets the appropriate uniform
     function wrapShaderProgram(gl, sp) 
@@ -639,6 +644,10 @@ x3dom.gfx_webgl = (function () {
         return result;
     }
 	
+//----------------------------------------------------------------------------
+/*! gen vs mobile
+ */
+//----------------------------------------------------------------------------
 	Context.prototype.generateVSMobile = function (viewarea, shape)
     {
 		var texture				= (shape._cf.appearance.node._cf.texture.node || x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) ? 1 : 0;
@@ -966,6 +975,10 @@ x3dom.gfx_webgl = (function () {
         return shaderIdentifier;		
 	};
 	
+//----------------------------------------------------------------------------
+/*! gen fs mobile
+ */
+//----------------------------------------------------------------------------
 	Context.prototype.generateFSMobile = function (viewarea, shape)
     {
         var texture		= (shape._cf.appearance.node._cf.texture.node || x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) ? 1 : 0;
@@ -1044,6 +1057,10 @@ x3dom.gfx_webgl = (function () {
         return shaderIdentifier;		
 	};
 	
+//----------------------------------------------------------------------------
+/*! gen vs
+ */
+//----------------------------------------------------------------------------
     Context.prototype.generateVS = function (viewarea, shape)
     {
 		var shader				= (shape._cf.appearance.node._shader && x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
@@ -1250,6 +1267,10 @@ x3dom.gfx_webgl = (function () {
         return shaderIdentifier;
     };
     
+//----------------------------------------------------------------------------
+/*! gen fs
+ */
+//----------------------------------------------------------------------------
     Context.prototype.generateFS = function (viewarea, shape)
     {
 		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture()) ? shape._cf.geometry.node._mesh._numColComponents : 0;
@@ -1556,8 +1577,12 @@ x3dom.gfx_webgl = (function () {
         
         return shaderIdentifier;
     };
+
     
-    /** setup gl objects for shape */
+//----------------------------------------------------------------------------
+/*! setup gl objects for shape
+ */
+//----------------------------------------------------------------------------
     Context.prototype.setupShape = function (gl, shape, viewarea) 
     {
         var q = 0;
@@ -2324,7 +2349,8 @@ x3dom.gfx_webgl = (function () {
 						if(x3dom.caps.MOBILE) {
 							x3dom.debug.logWarning("No mobile shader for CommonSurfaceShader! Using high quality shader!");
 						}
-						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);
+						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), 
+                                                                    this.generateFS(viewarea, shape)]);
 						
                     }else{
                         //FIXME; HACK
@@ -2341,9 +2367,11 @@ x3dom.gfx_webgl = (function () {
                     }
                 } else {
 					if(x3dom.caps.MOBILE) {
-						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVSMobile(viewarea, shape), this.generateFSMobile(viewarea, shape)]);
+						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVSMobile(viewarea, shape), 
+                                                                    this.generateFSMobile(viewarea, shape)]);
 					} else {
-						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);
+						shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), 
+                                                                    this.generateFS(viewarea, shape)]);
 					}
 				}
             }
@@ -2501,7 +2529,11 @@ x3dom.gfx_webgl = (function () {
         };
     };
     
-    // mainly manages rendering of backgrounds and buffer clearing
+    
+//----------------------------------------------------------------------------
+/*! mainly manages rendering of backgrounds and buffer clearing
+ */
+//----------------------------------------------------------------------------
     Context.prototype.setupScene = function(gl, bgnd) {
         var sphere;
         var texture;
@@ -2879,7 +2911,10 @@ x3dom.gfx_webgl = (function () {
         };
     };
     
-    // setup dbg fgnds
+//----------------------------------------------------------------------------
+/*! setup dbg fgnds
+ */
+//----------------------------------------------------------------------------
     Context.prototype.setupFgnds = function (gl, scene)
     {
         if (scene._fgnd !== undefined) {
@@ -2966,6 +3001,10 @@ x3dom.gfx_webgl = (function () {
         };
     };
     
+//----------------------------------------------------------------------------
+/*! render shadow pass
+ */
+//----------------------------------------------------------------------------
     Context.prototype.renderShadowPass = function(gl, scene, mat_light, mat_scene)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboShadow.fbo);
@@ -3034,7 +3073,10 @@ x3dom.gfx_webgl = (function () {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
     
-    
+//----------------------------------------------------------------------------
+/*! render picking pass
+ */
+//----------------------------------------------------------------------------
     Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, 
                                                    min, max, pickMode, lastX, lastY)
     {
@@ -3220,7 +3262,11 @@ x3dom.gfx_webgl = (function () {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
     
-    /** render single object/ shape */
+    
+//----------------------------------------------------------------------------
+/*! render single object/ shape
+ */
+//----------------------------------------------------------------------------
     Context.prototype.renderShape = function (transform, shape, viewarea, 
                                               slights, numLights, 
                                               mat_view, mat_scene, mat_light, 
@@ -3823,7 +3869,10 @@ x3dom.gfx_webgl = (function () {
         }
     };
     
-    /** render color-buf pass for picking */
+//----------------------------------------------------------------------------
+/*! render color-buf pass for picking
+ */
+//----------------------------------------------------------------------------
     Context.prototype.pickValue = function (viewarea, x, y, viewMat, sceneMat)
     {
         var gl = this.ctx3d;
@@ -3898,6 +3947,10 @@ x3dom.gfx_webgl = (function () {
         return true;
     };
     
+//----------------------------------------------------------------------------
+/*! render scene (main pass)
+ */
+//----------------------------------------------------------------------------
     Context.prototype.renderScene = function (viewarea) 
     {
         var gl = this.ctx3d;
@@ -4247,6 +4300,10 @@ x3dom.gfx_webgl = (function () {
         //scene.drawableObjects = null;
     };
     
+//----------------------------------------------------------------------------
+/*! render rendered texture pass
+ */
+//----------------------------------------------------------------------------
     Context.prototype.renderRTPass = function(gl, viewarea, rt)
     {
         var scene = viewarea._scene;
@@ -4371,6 +4428,10 @@ x3dom.gfx_webgl = (function () {
         }
     };
     
+//----------------------------------------------------------------------------
+/*! cleanup
+ */
+//----------------------------------------------------------------------------
     Context.prototype.shutdown = function(viewarea)
     {
         var gl = this.ctx3d;
@@ -4448,6 +4509,10 @@ x3dom.gfx_webgl = (function () {
         }
     };
     
+//----------------------------------------------------------------------------
+/*! load cubemap
+ */
+//----------------------------------------------------------------------------
     Context.prototype.loadCubeMap = function(gl, url, doc, bgnd)
     {
         var texture = gl.createTexture();
@@ -4511,7 +4576,10 @@ x3dom.gfx_webgl = (function () {
         return texture;
     };
     
-    // start of fbo init stuff
+//----------------------------------------------------------------------------
+/*! start of fbo init stuff
+ */
+//----------------------------------------------------------------------------
     Context.prototype.emptyTexImage2D = function(gl, internalFormat, width, height, format, type)
     {
         try {
@@ -4562,12 +4630,14 @@ x3dom.gfx_webgl = (function () {
         return tex;
     };
 
-    /*
-     * Creates FBO with given size
-     *   taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009
-     * Returned Object has
-     *   rbo, fbo, tex, width, height
-     */
+//----------------------------------------------------------------------------
+/*!
+ * Creates FBO with given size
+ *   taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009
+ * Returned Object has
+ *   rbo, fbo, tex, width, height
+ */
+//----------------------------------------------------------------------------
     Context.prototype.initFbo = function(gl, w, h, nearest)
     {
         var status = 0;
