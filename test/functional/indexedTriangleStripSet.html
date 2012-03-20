@@ -58,21 +58,88 @@
         <viewpoint description='IndexedTriangleStripSet view' orientation='0 -1 0 0.07' position='-0.06 1.4 11.24'></viewpoint>
         <background skyColor='0.5 0.5 0.5'></background>
         <shape>
-            <IndexedTriangleStripSet index='9 10 11 12 13 -1 14 15 16 17 -1' solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
-                <coordinate point='-4 1 3 -2 2 1.5 -3 4 0.5 -2 3 1.5 0 4 0.0 2 3 1.5 5 5 -2.5 4 3 1.5 6 4 2.0 -4 1 3 -2 2 1.0 -3 4 0.0 -2 3 1.0 0 4 0.0 2 3 1.0 5 5 -2.0 4 3 1.5 6 4 2.0 0 -2 4 1 -3 3.5 1.5 -1.5 3 0 -1 2 -.5 0 2.5 -1.5 1 3 -2 0 3.5 -3 -2 2 -3 -4 3 2 -4 -2 0 -3 -.5 1.3 -1.5 -1 4 -2 -1.5 4.2 -4.2 -1 3 -6 -.5'></coordinate>
-                <color color='0 .8 0 0 1 1 1 0 0 1 .5 0 .8 0 1 1 1 0 .6 .3 .1 1 0 .5 0 1 .5 1 0 0 .8 0 1 1 1 0 0 1 1 1 .5 0 .6 .3 .1 1 0 .5 0 .8 0 0 1 .5'></color>
+            <IndexedTriangleStripSet index='0 1 2 3 4 -1 5 6 7 8 -1' solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
+                <coordinate point='-4 1 3
+                   				   -2 2 1.0
+                   				   -3 4 0.0
+                     			   -2 3 1.0
+                     			    0 4 0.0
+                      			    2 3 1.0
+                       				5 5 -2.0
+                        			4 3 1.5
+                         			6 4 2.0'></coordinate>
+                <color id="idColor1" color='1 0 0
+                          					.8 0 1
+                          					1 1 0
+                            				0 1 1
+                             				1 .5 0
+                             			    .6 .3 .1
+                             				1 0 .5
+                             			    0 .8 0
+                             		        0 1 .5'></color>
             </IndexedTriangleStripSet>
          </shape>
          
          <shape>
+            <IndexedTriangleStripSet onclick="test4();" index='0 1 2 3 4 -1' solid='false' normalPerVertex='true' containerField='geometry'>
+                <coordinate point='-2 -0.5 -1
+                				   -1 2 0 
+                				    0 1 1
+                 				    1 2 0
+                                    2 -0.5 -1'></coordinate> 
+                <color id="idColor2" color='1 0 1 1 1 0 0 0 1 0 1 0 0 1 1'></color>     
+            </IndexedTriangleStripSet>
+         </shape>
+         
+         
+         
+         <shape>
              <Appearance>
-                 <material diffuseColor='green'></material>
+                 <material id="idColor3" diffuseColor='0 1 1'></material>
               </Appearance>
-            <IndexedTriangleStripSet index='0 1 2 3 -1' solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
-                <coordinate point='0 0 0 0 -1 0 1 0 0 1 -1 0'></coordinate>
+            <IndexedTriangleStripSet onclick="test3();" index='0 1 2 3 -1' solid='false' ccw='true' colorPerVertex='true' normalPerVertex='true' containerField='geometry'>
+                <coordinate point='-0.5 0 0 -0.5 -1 0 0.5 0 0 0.5 -1 0'></coordinate>
+            </IndexedTriangleStripSet>
+        </shape>
+      
+      <shape>
+             <Appearance>
+                <imageTexture url='media/img/hv.png' />
+              </Appearance>
+            <IndexedTriangleStripSet onclick="test2();" index='0 1 2 3 -1' solid='false' normalPerVertex='false'>
+                <coordinate id="idCoord1" point='2 2 0 2 1 0 3 2 0 3 1 0'></coordinate>
+                 <normal id="idNormal1" vector='1 0 0'></normal>
+                 <TextureCoordinate id="idTexture" point='0 1 0 0 1 1 1 0'></TextureCoordinate>
+            </IndexedTriangleStripSet>
+        </shape>
+        <shape>
+            <IndexedTriangleStripSet onclick="test1();" index='0 1 2 3 -1' solid='false' normalPerVertex='false' colorPerVertex='false'>
+                 <coordinate id="idCoord" point='2 -2 0 2 -1 0 3 -2 0 3 -1 0'></coordinate>
+                 <normal id="idNormal" vector='1 0 0'></normal>
+                 <color id="idColor4" color='1 0 1'></color>
             </IndexedTriangleStripSet>
         </shape>
       </scene>
     </x3d>
+    
+     <script type="text/javascript" >
+	    var test1 = function (event) {	
+			document.getElementById('idColor1').setAttribute('color', '0 1 1 1 0 1 0 0 1 0 1 1 0 0 1 0 1 1 1 0 1 0 1 1 1 0 1 ');
+			document.getElementById('idColor2').setAttribute('color', '0 1 1 0 0 1 1 0 1 0 0 1 0 1 1');
+			document.getElementById('idColor3').setAttribute('diffuseColor', '1 0 1');
+			document.getElementById('idColor4').setAttribute('color', '0 0 1');
+        };	
+		 var test2 = function (event) {	
+			document.getElementById('idCoord').setAttribute('point', '2 -2 0 3 -1 0 3 -2 0 4 -1 0');
+        };	
+		 var test3 = function (event) {	
+			document.getElementById('idTexture').setAttribute('point', '1 0 1 1 0 0 0 1');
+			document.getElementById('idCoord1').setAttribute('point', '2 2 0 2 0 0 4 2 0 4 0 0');
+			document.getElementById('idNormal1').setAttribute('vector', '0 0 1');
+        };	
+		 var test4 = function (event) {	
+			document.getElementById('idNormal').setAttribute('vector', '0 0 1');
+        };	
+	</script>
 </body>
 </html>

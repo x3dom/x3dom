@@ -54,10 +54,10 @@
     <h1>DOM Mutation test</h1>
 	<div class="group"> 
 		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="300px">
-			<Scene>
+			<Scene id='root'>
 				<Background DEF='bgnd' transparency='0' skyColor='0.2 0.7 0.4' />
 				<Transform DEF="trafo" translation="0 0 0">
-					<Shape>
+					<Shape id='ball'>
 						<Appearance>
 							<Material diffuseColor="1 0 0" specularColor=".5 .5 .5" transparency="0" />
 						</Appearance>
@@ -103,14 +103,42 @@
         t.appendChild(s);
         var b = document.createElement('Cone');
         s.appendChild(b);
+        var a = document.createElement('Appearance');
+        s.appendChild(a);
+        var m = document.createElement('Material');
+        a.appendChild(m);
         var ot = document.getElementsByTagName("Transform")[0];
         ot.appendChild(t);
         
         return false;
     }
+
+    var render = true, high = true;
+    
+    function toggleRender()
+    {
+        var elem = document.getElementById("ball");
+        
+        render = !render;
+        
+        elem.setAttribute("render", render.toString());
+        
+        return false;
+    }
+
+    function highlight(col)
+    {
+        var elem = document.getElementById("root");
+        
+        elem.highlight(high, col);
+        
+        high = !high;
+        
+        return false;
+    }
     
     document.onload = function(evt) {
-        alert("Finished loading X3D scene.\nStart rendering...");
+        //alert("Finished loading X3D scene.\nStart rendering...");
     };
 	
 	]]></script>
@@ -121,7 +149,13 @@
     <br /> 
 	Dynamic childtree update
 	<input type="button" id="child" value="Add Child" onclick="addChild();" />
-	</div>
+    <br /> 
+    Toggle visibility of sphere
+    <input type="button" id="render" value="Change Visibility" onclick="toggleRender();" />
+    <br /> 
+    Toggle highlight of subtree
+    <input type="button" id="highlight" value="Highlight Tree" onclick="highlight('yellow');" />
+    </div>
 
 </body>
 </html>

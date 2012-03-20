@@ -215,6 +215,15 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     this.defMap[n._DEF] = n;
                   }
                 }
+                
+                if (domNode.highlight === undefined) 
+                {
+                    domNode.highlight = function(enable, colorStr) {
+                        var color = x3dom.fields.SFColor.parse(colorStr);
+                        this._x3domNode.highlight(enable, color);
+                        this._x3domNode._nameSpace.doc.needRender = true;
+                    };
+                }
 
                 // link both DOM-Node and Scene-graph-Node
                 n._xmlNode = domNode;

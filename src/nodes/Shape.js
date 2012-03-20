@@ -177,6 +177,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
 
+            // FIXME: X3DShapeNode inherits from X3DChildNode and X3DBoundedObject
+            // (at least according to spec), therefore impl. "render" field there.
+            this.addField_SFBool(ctx, 'render', true);
+            
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
 
@@ -189,21 +193,23 @@ x3dom.registerNodeType(
                 colors: true,
                 indexes: true,
                 texture: true,
-				material: true,
-				text: true,
-				shader: true
+                material: true,
+                text: true,
+                shader: true
             };
         },
         {
-            collectDrawableObjects: function (transform, out) {
+            collectDrawableObjects: function (transform, out)
+            {
                 // TODO: culling etc
-                if (out !== null)
+                if (out !== null && this._vf.render)
                 {
                     out.push( [transform, this] );
                 }
             },
             
-            transformMatrix: function(transform) {
+            transformMatrix: function(transform)
+            {
                 // uncomment following for pushing position and size of IG to model matrix
                 /*
                 if (x3dom.isa(this._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))

@@ -537,26 +537,56 @@ x3dom.Viewarea.prototype.calcViewRay = function(x, y)
     return new x3dom.fields.Line(from, dir);
 };
 
-x3dom.Viewarea.prototype.showAll = function()
+x3dom.Viewarea.prototype.showAll = function(axis)
 {
     var min = x3dom.fields.SFVec3f.MAX();
     var max = x3dom.fields.SFVec3f.MIN();
 	
     var ok = this._scene.getVolume(min, max, true);
-	
+    	
     if (ok)
     {
+        var x = "x", y = "y", z = "z";
+        var sign = 1;
+        var to, from = new x3dom.fields.SFVec3f(0, 0, -1);
+        
+        switch (axis) {
+            case "posX":
+            sign = -1;
+            case "negX":
+            z = "x"; x = "y"; y = "z";
+            to = new x3dom.fields.SFVec3f(sign, 0, 0);
+            break;
+            case "posY":
+            sign = -1;
+            case "negY":
+            z = "y"; x = "z"; y = "x";
+            to = new x3dom.fields.SFVec3f(0, sign, 0);
+            break;
+            case "posZ":
+            sign = -1;
+            case "negZ":
+            default:
+            to = new x3dom.fields.SFVec3f(0, 0, -sign);
+            break;
+        }
+        
+        var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
+        var viewmat = quat.toMatrix();
+        
         var viewpoint = this._scene.getViewpoint();
         var fov = viewpoint.getFieldOfView();
 
         var dia = max.subtract(min);
-        var dist1 = (dia.y/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
-        var dist2 = (dia.x/2.0) / Math.tan(fov/2.0) + (dia.z/2.0);
+        var dist1 = (dia[y]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
+        var dist2 = (dia[x]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
 
         dia = min.add(dia.multiply(0.5));
-        dia.z += (dist1 > dist2 ? dist1 : dist2);
+        dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.001;
+        
+        viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
 
-        this.animateTo(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)), viewpoint);
+        this.animateTo(viewmat, viewpoint);
     }
 };
 
