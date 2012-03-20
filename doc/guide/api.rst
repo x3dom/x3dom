@@ -149,6 +149,31 @@ the X3D element they are working on as first parameter::
 
     Switches to walk mode.
 
+..  js:function:: game()
+
+    Switches to game mode.
+
+..  js:function:: resetExamin()
+
+     Resets all variables required by examin mode to init state
+
+..  js:function:: pickMode(options)
+
+    :param object options: An object of properties i.e. options = {'internals': true}
+    :returns: The current intersect type value suitable to use with changePickMode
+
+     Get the current pickmode intersect type. If the option 'internals':true is
+     provided, the interal representation is returned.
+
+
+..  js:function:: changePickMode(type, options)
+
+    :param string type: The new intersect type: idbuf, color, textcoord, or box.
+    :returns: True if the type hase been changed, false otherwise
+
+    Alter the value of intersct type. Can be one of: idbuf, color, textcoord, box.
+    Other values are ignored.
+
 
 ..  js:function:: speed(newSpeed)
     
@@ -165,6 +190,38 @@ the X3D element they are working on as first parameter::
 
     Get or set the visibility of the statistics information. If parameter is 
     omitted, this method returns the visibility status as boolean.
+
+..  js:function:: isA(domNode, nodeType)
+
+    :param object domNode: the node to test for
+    :param string nodeType: node name to test domNode against
+    :returns: True or false
+
+    Test a DOM node object against a node type string. This method
+    can be used to determine the "type" of a DOM node.
+
+
+..  js:function:: processIndicator(mode)
+
+    :param boolean mode: true to show indicator, false to hide
+    :returns: The current visibility of the process indicator info (true = visible, false = invisible)
+
+    Enable or disable the process indicator. If parameter is omitted, this method
+    only returns the the visibility status of the statistics info overlay.
+
+..  js:function:: backendName()
+
+    :returns: The current render backend name as string
+
+    Returns the currently used render backend name.
+
+..  js:function:: properties()
+
+    :returns: Properties object
+
+    Returns the properties object of the X3D element.
+    This holds all configuration parameters of the X3D element.
+
 
 
 Docs
