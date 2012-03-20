@@ -1362,6 +1362,7 @@ x3dom.registerNodeType(
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
 			this.addField_MFFloat(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+			this.addField_SFFloat(ctx, 'implicitMeshSize', 256.0);
 			
 			this.addField_SFFloat(ctx, 'numColorComponents', 3);
 			
@@ -1389,17 +1390,17 @@ x3dom.registerNodeType(
 				}
 				else
 				{
-					for(var y=0; y<256; y++)
+					for(var y=0; y<this._vf.implicitMeshSize; y++)
 					{
-						for(var x=0; x<256; x++)
+						for(var x=0; x<this._vf.implicitMeshSize; x++)
 						{
-							var idx = y * 256 + x;
+							//var idx = y * this._vf.implicitMeshSize + x;
 							
-							if(idx == 65535) break;
+							//if(idx == 65535) break;
 							
 							//this._mesh._positions[0].push(x/255, y/255, 0);
-							this._mesh._positions[0].push(x/256, y/256, 0);
-							this._mesh._indices[0].push(idx);
+							this._mesh._positions[0].push(x/this._vf.implicitMeshSize, y/this._vf.implicitMeshSize, 0);
+							//this._mesh._indices[0].push(idx);
 						}
 					}
 					
