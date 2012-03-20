@@ -33,6 +33,7 @@ a viable alternative.
 * `Apache mod_headers <http://httpd.apache.org/docs/2.1/en/mod/mod_headers.html>`_
 * `Lighttpd mod_setenv <http://redmine.lighttpd.net/wiki/1/Docs:ModSetEnv>`_
 * `NGINX headers module <http://wiki.nginx.org/HttpHeadersModule>`_
+* `Others <http://enable-cors.org/>`_
 
 *More information on proxy configuration:*
 
