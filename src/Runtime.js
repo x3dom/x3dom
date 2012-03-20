@@ -247,8 +247,8 @@ x3dom.Runtime.prototype.uprightView = function() {
  * Zooms so that all objects are fully visible.
  *
  */
-x3dom.Runtime.prototype.showAll = function() {
-    this.canvas.doc._viewarea.showAll();
+x3dom.Runtime.prototype.showAll = function(axis) {
+    this.canvas.doc._viewarea.showAll(axis);
 };
 
 /**
@@ -417,7 +417,7 @@ x3dom.Runtime.prototype.changePickMode = function(type, options) {
             break;
 
         default:
-            x3dom.debug.logWarning("Switch pickMode to "+ type + 'unknown intersect type');
+            x3dom.debug.logWarning("Switch pickMode to "+ type + ' unknown intersect type');
             type = undefined;
     }
 
@@ -510,11 +510,25 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
 },
 
 
-
 x3dom.Runtime.prototype.properties = function() {
     return this.canvas.doc.properties;
 };
 
 x3dom.Runtime.prototype.backendName = function() {
     return this.canvas.backend;
+};
+
+
+x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
+    var inherits = false;
+    
+    if (nodeType && domNode && domNode._x3domNode) {
+        if (nodeType === "") {
+            nodeType = "X3DNode";
+        }
+        inherits = x3dom.isa(domNode._x3domNode, 
+                             x3dom.nodeTypesLC[nodeType.toLowerCase()]);
+    }
+    
+    return inherits;
 };
