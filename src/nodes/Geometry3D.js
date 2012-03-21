@@ -2065,7 +2065,6 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-				x3dom.debug.logWarning("AAAAAAAAAAAAAAAAAAAA");
                 var pnts = this._cf.coord.node._vf.point;
                 var i, n = pnts.length;
 
@@ -2093,7 +2092,6 @@ x3dom.registerNodeType(
 
                 if (fieldName == "coord")
                 {
-					x3dom.debug.logWarning("BBBBBBBBBBBBBBBBB");
                     // TODO; multi-index with different this._mesh._indices
                     pnts = this._cf.coord.node._vf.point;
                     n = pnts.length;
