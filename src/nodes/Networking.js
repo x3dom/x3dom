@@ -171,12 +171,12 @@ x3dom.registerNodeType(
 );
 
 function setNamespace(prefix, childDomNode, mapDEFToID){
-	if(childDomNode instanceof Element) {
+	if(childDomNode instanceof Element && childDomNode.__setAttribute !== undefined) {
 	
-		if(childDomNode.hasAttribute('id'))	{
-			childDomNode.setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('id'));	
+		if(childDomNode.hasAttribute('id') )	{
+			childDomNode.__setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('id'));	
 		} else if (childDomNode.hasAttribute('DEF') && mapDEFToID){
-			childDomNode.setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('DEF'));
+			childDomNode.__setAttribute('id', prefix.toString().replace(' ','') +'__'+ childDomNode.getAttribute('DEF'));
 		}
 	}
 	

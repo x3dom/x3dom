@@ -1,0 +1,129 @@
+<!DOCTYPE >
+<html>
+
+	<head>
+        <meta http-equiv="X-UA-Compatible" content="chrome=1"></meta>
+		<meta http-equiv="Content-Type" content="text/html;charset=utf-8"></meta>
+		<title>Hello World</title>
+        
+         <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../../src/x3dom.css" />
+<script type="text/javascript" src="../../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../../src/Internals.js"></script>
+<script type="text/javascript" src="../../../src/debug.js"></script>
+<script type="text/javascript" src="../../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../../src/Main.js"></script>
+<script type="text/javascript" src="../../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../../src/fields.js"></script>
+<script type="text/javascript" src="../../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+		<script type="text/javascript" src="fademodels.js"></script>
+		<script type="text/javascript" src="debug.js"></script>
+   	
+   	<style>	
+			button {
+					background: #CCC;
+					border: 1px solid #666;
+					color: #666;
+					font-size: 14px;
+					font-weight: bold;
+					margin: 10px 0px;
+					padding: 5px 20px 5px 20px;
+					text-transform: uppercase;
+					}
+			button:hover {
+					background: #666;
+					border: 1px solid #333;
+					color: #333;
+					}
+		</style>
+		
+	</head>
+
+   <body>
+   
+   	<script type="text/javascript">
+   		
+   		//---Some Local variables---
+   		
+   		//Number of lines available to the DEBUG console
+   		x3dom.debug.maxLinesToLog=9000
+   		
+   		//Ambients that you want to fade away
+   		var arr = new Array("r1, r2, r3, r4, r5, r6, r7, r8, r9, r10, r11, r12");
+   		var len=arr.length;
+   		
+   		document.onload = addIt;
+   		document.onload = addIt2;
+   		
+	</script>
+   	
+    <table>
+    <tr>
+    <td>
+		<x3d id='x3d' showStat="true" showLog="true" width="800px" height="600px">
+			<scene id='scene' DEF='scene'>
+				<Background id='back' skyColor='0.5 0.5 0.5'></Background>
+
+				<Group id='content' DEF='ActualAmbientsGroup'>
+
+				<inline id='r1' nameSpaceName='nsr1' mapDEFToID='true' url='VL_att_01.x3d'></inline>
+				<inline id='r2' nameSpaceName='nsr2' mapDEFToID='true' url='VL_att_02.x3d'></inline>
+				<inline id='r3' nameSpaceName='nsr3' mapDEFToID='true' url='VL_att_03.x3d'></inline>
+				<inline id='r4' nameSpaceName='nsr4' mapDEFToID='true' url='VL_att_04.x3d'></inline>
+				<inline id='r5' nameSpaceName='nsr5' mapDEFToID='true' url='VL_att_05.x3d'></inline>
+				<inline id='r6' nameSpaceName='nsr6' mapDEFToID='true' url='VL_att_06.x3d'></inline>
+				<inline id='r7' nameSpaceName='nsr7' mapDEFToID='true' url='VL_att_07.x3d'></inline>
+				<inline id='r8' nameSpaceName='nsr8' mapDEFToID='true' url='VL_att_08.x3d'></inline>
+				<inline id='r9' nameSpaceName='nsr9' mapDEFToID='true' url='VL_att_09.x3d'></inline>
+				<inline id='r10' nameSpaceName='nsr10' mapDEFToID='true' url='VL_att_10.x3d'></inline>
+				<inline id='r11' nameSpaceName='nsr11' mapDEFToID='true' url='VL_att_11.x3d'></inline>
+				<inline id='r12' nameSpaceName='nsr12' mapDEFToID='true' url='VL_att_12.x3d'></inline>
+
+				</Group>
+
+  			</scene>
+		</x3d>
+	</td>
+  	</tr>
+	</table>
+
+	<button id="hide">Hide</button>
+    <button id="show">Show</button>
+    <button id="IDList">ID List</button>
+
+  </body>
+
+</html>
