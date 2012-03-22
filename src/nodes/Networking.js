@@ -109,17 +109,17 @@ x3dom.registerNodeType(
 						}
 					}
 					x3dom.debug.logInfo('status ' + xhr.status);
-					if(xhr.status == 202 && this.count < 10) {
-						this.count++;
-						x3dom.debug.logInfo('202 ' + this.count);
-						window.setTimeout(this.nodeChanged(), 10000);
-					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 202) && this.count > 9)) {
+					if(xhr.status == 202 && that.count < 10) {
+						that.count++;
+						x3dom.debug.logInfo('202 ' + that.count);
+						window.setTimeout(that.nodeChanged(), 10000);
+					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 202) && that.count > 9)) {
                         that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
-						this.count = 0;
+						that.count = 0;
                         return xhr;
                     }  else if ((xhr.status == 200) || (xhr.status == 0)) {
-						this.count = 0;
+						that.count = 0;
 					}
 					
                     x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
