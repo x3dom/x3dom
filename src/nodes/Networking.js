@@ -77,6 +77,7 @@ x3dom.registerNodeType(
 				
 
                 xhr.onreadystatechange = function () {
+					x3dom.debug.logInfo('onreadystatechange  ');
                     if (xhr.readyState == xhr.DONE)
                     {
                         if(xhr.responseXML == null)
@@ -103,11 +104,11 @@ x3dom.registerNodeType(
                         return xhr;
                     }
 					x3dom.debug.logInfo('status ' + xhr.status);
-					if(xhr.status == 503 && this.count < 10) {
+					if(xhr.status == 202 && this.count < 10) {
 						this.count++;
-						x3dom.debug.logInfo('503 ' + this.count);
+						x3dom.debug.logInfo('202 ' + this.count);
 						window.setTimeout(this.nodeChanged(), 10000);
-					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 503) && this.count > 9)) {
+					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 202) && this.count > 9)) {
                         that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
 						this.count = 0;
