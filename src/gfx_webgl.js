@@ -2592,6 +2592,7 @@ x3dom.gfx_webgl = (function () {
                 texture = gl.createTexture();
                 
                 var image = new Image();
+                image.crossOrigin = '';
                 
                 image.onload = function() {
                     bgnd._nameSpace.doc.needRender = true;
@@ -4546,6 +4547,7 @@ x3dom.gfx_webgl = (function () {
         for (var i=0; i<faces.length; i++) {
             var face = faces[i];
             var image = new Image();
+            image.crossOrigin = '';
             texture.pendingTextureLoads++;
             doc.downloadCount += 1;
             
