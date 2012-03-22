@@ -102,8 +102,8 @@ x3dom.registerNodeType(
                         //if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
                         return xhr;
                     }
-					
-					if(xhr.status == 503 && count < 10) {
+					x3dom.debug.logInfo('status ' + xhr.status);
+					if(xhr.status == 503 && this.count < 10) {
 						this.count++;
 						x3dom.debug.logInfo('503 ' + this.count);
 						window.setTimeout(this.nodeChanged(), 10000);
@@ -115,7 +115,7 @@ x3dom.registerNodeType(
                     }  else if ((xhr.status == 200) || (xhr.status == 0)) {
 						this.count = 0;
 					}
-
+					
                     x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
 
                     if(navigator.appName != "Microsoft Internet Explorer")
