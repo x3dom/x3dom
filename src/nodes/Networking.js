@@ -51,7 +51,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'load', true);
 			this.addField_MFString(ctx, 'nameSpaceName', []);
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
-			var count = 0;
+			this.count = 0;
 			
 			this.currentInline = ctx.xmlNode;
        },
@@ -66,7 +66,7 @@ x3dom.registerNodeType(
 
             nodeChanged: function ()
             {
-				x3dom.debug.logInfo('count ' + count);
+				x3dom.debug.logInfo('count ' + this.count);
                 var that = this;
 
                 var xhr = new window.XMLHttpRequest();
@@ -104,16 +104,16 @@ x3dom.registerNodeType(
                     }
 					
 					if(xhr.status == 503 && count < 10) {
-						count++;
-						x3dom.debug.logInfo('503 ' + count);
+						this.count++;
+						x3dom.debug.logInfo('503 ' + this.count);
 						window.setTimeout(this.nodeChanged(), 10000);
-					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 503) && count > 9)) {
+					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 503) && this.count > 9)) {
                         that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
-						count = 0;
+						this.count = 0;
                         return xhr;
                     }  else if ((xhr.status == 200) || (xhr.status == 0)) {
-						count = 0;
+						this.count = 0;
 					}
 
                     x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
