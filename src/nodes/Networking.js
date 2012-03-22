@@ -66,6 +66,7 @@ x3dom.registerNodeType(
 
             nodeChanged: function ()
             {
+				x3dom.debug.logInfo('count ' + count);
                 var that = this;
 
                 var xhr = new window.XMLHttpRequest();
@@ -104,7 +105,8 @@ x3dom.registerNodeType(
 					
 					if(xhr.status == 503 && count < 10) {
 						count++;
-						window.setTimeout(this.nodeChanged(), 50000);
+						x3dom.debug.logInfo('503 ' + count);
+						window.setTimeout(this.nodeChanged(), 10000);
 					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 503) && count > 9)) {
                         that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
