@@ -71,9 +71,9 @@ x3dom.registerNodeType(
                 var xhr = new window.XMLHttpRequest();
                 if(xhr.overrideMimeType)
                     xhr.overrideMimeType('text/xml');   //application/xhtml+xml
-				if(count == 0)	{
-                	this._nameSpace.doc.downloadCount += 1;
-				}
+					
+				this._nameSpace.doc.downloadCount += 1;
+				
 
                 xhr.onreadystatechange = function () {
                     if (xhr.readyState == xhr.DONE)
