@@ -78,31 +78,36 @@ x3dom.registerNodeType(
 
                 xhr.onreadystatechange = function () {
 					x3dom.debug.logInfo('onreadystatechange  ');
-                    if (xhr.readyState == xhr.DONE)
-                    {
-                        if(xhr.responseXML == null)
-                            return xhr;
-                        
-                        delete xhr['onreadystatechange'];
-                        
-                        if(navigator.appName != "Microsoft Internet Explorer")
-                        {
-                            if (xhr.responseXML.documentElement.localName == 'parsererror')
-                            {
-                                that._nameSpace.doc.downloadCount -= 1;
-                                x3dom.debug.logError('XML parser failed on ' + that._vf.url +
-                                            ':\n' + xhr.responseXML.documentElement.textContent);
-                                return xhr;
-                            }
-                        }
-                    }
-                    else
-                    {
-                        // still loading
-                        //x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-                        //if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
-                        return xhr;
-                    }
+					
+					if(xhr.status !== 202) {
+						if (xhr.readyState == xhr.DONE)
+						{
+							x3dom.debug.logInfo('onreadystatechange  DONE ');
+							if(xhr.responseXML == null)
+								return xhr;
+							
+							delete xhr['onreadystatechange'];
+							
+							if(navigator.appName != "Microsoft Internet Explorer")
+							{
+								if (xhr.responseXML.documentElement.localName == 'parsererror')
+								{
+									that._nameSpace.doc.downloadCount -= 1;
+									x3dom.debug.logError('XML parser failed on ' + that._vf.url +
+												':\n' + xhr.responseXML.documentElement.textContent);
+									return xhr;
+								}
+							}
+						}
+						else
+						{
+							x3dom.debug.logInfo('onreadystatechange  else ');
+							// still loading
+							//x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+							//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
+							return xhr;
+						}
+					}
 					x3dom.debug.logInfo('status ' + xhr.status);
 					if(xhr.status == 202 && this.count < 10) {
 						this.count++;
