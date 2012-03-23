@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Math Test</title>
+
+<script src="../../src/Internals.js"></script>
+<script src="../../src/lang/Math.js"></script>
+<script src="../../src/fields.js"></script>
+
+<script>
+
+// Edition 5.1 (June 2011)
+// http://www.ecma-international.org/publications/files/ECMA-ST/Ecma-262.pdf
+
+// Mozilla
+// https://developer.mozilla.org/en/JavaScript/Reference/Global_Objects/Array
+
+// TypedArrays
+// http://www.khronos.org/registry/typedarray/specs/latest
+
+/*
+MFVec3f.prototype = 
+{
+  construction : function() { console.log("construction"); },
+  toString : function() { return "toString"; },
+  toLocaleString : function() { return "toLocaleString"; },
+  
+  isArray : function(arg) { console.log(typeof arg); return true; },
+  
+  concat : function() { console.log("concat"); },
+  join : function() { console.log("join"); },
+  pop : function() { console.log("pop"); },
+  push : function() { console.log("push"); },
+  reverse : function() { console.log("reverse"); },
+  shift : function() { console.log("shift"); },
+  slice : function() { console.log("slice"); },
+
+  sort : function() { console.log("sort"); },
+  splice : function() { console.log("splice"); },
+  unshift : function() { console.log("unshift"); },
+  indexOf : function() { console.log("indexOf"); },
+  lastIndexOf : function() { console.log("lastIndexOf"); },
+  every : function() { console.log("every"); },
+  some : function() { console.log("some"); },
+  forEach : function() { console.log("forEach"); },
+  map : function() { console.log("map"); },
+  filter : function() { console.log("filter"); },
+  reduce : function() { console.log("reduce"); },
+  reduceRight : function() { console.log("reduceRight"); }
+};
+*/
+  
+function init()
+{
+  var s1 = new x3dom.SFVec3f(4,5,6);  
+  console.log(s1.toString());
+  
+  var s2 = new x3dom.SFVec3f(7,8,9);  
+  console.log(s1.toString());
+
+  var m1 = new x3dom.MFVec3f([1,2,3]);
+  console.log(m1.toString());
+  
+  var m2 = new x3dom.MFVec3f(4);
+  console.log(m2.toString());
+  
+  m1.push(s1);
+  console.log(m1.toString());
+  m1.unshift([7,8,9]);
+  console.log(m1.toString());
+  m1.shift();
+  console.log(m1.toString());
+
+  console.log(s1.dot(s2));
+};
+
+/*
+  unwire : function()
+  {
+    if(arguments.length > 0)
+    {
+      // view or typed array
+      if(arguments[0] instanceof math.Float32Array)
+        var _array = arguments[0];
+      
+      else
+      {
+        // count elements
+        var counter = function(arguments)
+        {
+          var elements = 0;
+          
+          for(var i=0; i<arguments.length; ++i)
+          {
+            if(arguments[i] instanceof math.Float32Array)
+              elements += arguments[i].length;
+              
+            else if(arguments[i] instanceof Array)
+              elements += counter(arguments[i]);
+              
+            else if(!(arguments[i] instanceof Object))
+              elements += 1;
+          }
+          
+          return elements;
+        };
+        
+        // copy elements to buffer
+        var merger = function(arguments, destination, offset)
+        {
+          for(var i=0; i<arguments.length; ++i)
+          {
+            if(arguments[i] instanceof math.Float32Array)
+            {
+              for(var j=0; j<arguments[i].length; ++j)
+                destination[offset + j] = arguments[i][j];
+                
+              offset += arguments[i].length;
+            }
+            else if(arguments[i] instanceof Array)
+              merger(arguments[i], destination, offset);
+            else if(!(arguments[i] instanceof Object))
+            {
+              destination[offset] = arguments[i];
+              offset++;
+            }
+          }
+          return elements;
+        };
+        
+        // count elements & merge to buffer
+        var _array = new math.Float32Array(counter(arguments));
+        merger(arguments, _array, 0);
+      }
+    }
+    
+    return _array;
+  }
+*/
+
+</script>
+</head>
+
+<body onLoad="init();">
+</body>
+</html>
