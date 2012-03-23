@@ -134,7 +134,7 @@ x3dom.registerNodeType(
                     var nameSpace = null;
                     
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
-                    if (xml !== undefined || xml !== null)
+                    if (xml !== undefined && xml !== null)
                     {
                         inlScene = xml.getElementsByTagName('Scene')[0] || 
                                    xml.getElementsByTagName('scene')[0];
