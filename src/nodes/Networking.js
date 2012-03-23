@@ -66,8 +66,7 @@ x3dom.registerNodeType(
 
             nodeChanged: function ()
             {
-				x3dom.debug.logInfo('count ' + this.count);
-                var that = this;
+				var that = this;
 
                 var xhr = new window.XMLHttpRequest();
                 if (xhr.overrideMimeType)
@@ -77,12 +76,11 @@ x3dom.registerNodeType(
 				
                 xhr.onreadystatechange = function () 
                 {
-					x3dom.debug.logInfo('onreadystatechange  ');
-					
-					if(xhr.status !== 202) {
+					if(xhr.status !== 202) 
+                    {
 						if (xhr.readyState == xhr.DONE)
 						{
-							x3dom.debug.logInfo('onreadystatechange  DONE ');
+							x3dom.debug.logInfo('xhr.onreadystatechange  DONE, status: ' + xhr.status);
 							if (xhr.responseXML == null)
 								return xhr;
 							
@@ -103,12 +101,11 @@ x3dom.registerNodeType(
 						{
                             // still loading
 							x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-							if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
+							//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
 							return xhr;
 						}
 					}
 					
-					x3dom.debug.logInfo('status ' + xhr.status);
 					if (xhr.status === 202 && that.count < 10) {
 						that.count++;
 						x3dom.debug.logInfo('202 ' + that.count + ', ' + (xhr.readyState == xhr.DONE));
@@ -137,7 +134,7 @@ x3dom.registerNodeType(
                     var nameSpace = null;
                     
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
-                    if (xml === undefined || xml === null)
+                    if (xml !== undefined || xml !== null)
                     {
                         inlScene = xml.getElementsByTagName('Scene')[0] || 
                                    xml.getElementsByTagName('scene')[0];
