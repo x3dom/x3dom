@@ -24,6 +24,8 @@
     setup();
     
     setup_table();
+    
+    array_type.innerHTML = "Array Type : [ " + math.Float32Array + " ]";
   };
 </script>
 </head>
@@ -31,6 +33,7 @@
 <body onLoad="init();" style="background-color:#EEE">
   <article style="width:80em; margin:0 auto; background:#FFF; display:block; font-family:sans-serif">
     <article style="background:#FFF; padding:2em 2em;">
+      <p id='array_type' />
       <input type="Button" value="Run all tests" onClick="run_all()" /><input type="Button" value="Run all tests @ once" onClick="run_all_at_once()" />
       <table border="0" cellpadding="1" callspacing="20" style="width:100%; text-align:center; background-color:#CCC;">
         <thead>
