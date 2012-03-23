@@ -1,4 +1,4 @@
-function setup()
+function setup_tests()
 {
   var m0_2x2 = [
     Math.random() * 100, Math.random() * 100,

@@ -1,10 +1,12 @@
 var all_suites = [];
-var table_names = ["fields.js", "math.js", "glMatrix.js", "mjs.js", "sylvester.js"]
+var table_names = [];
 
 var test_queue = [];
 
-function init_test()
+function init_test(tables)
 {
+  table_names = tables;
+
   var applet = document.createElement("applet");
   applet.code = "nano";
   applet.archive = "benchmark.js/nano.jar";
@@ -66,9 +68,22 @@ complete = function()
     test_queue[0].suite.run(true);
 }
 
-setup_table = function()
+setup_table = function(table_header, output_table)
 {
-  var table = document.getElementById("results");
+  var table = document.getElementById(output_table);
+  var table_header = document.getElementById(table_header);
+  
+  // setup header
+  for(var i=0; i<table_names.length; ++i)
+  {
+    var th = document.createElement("th");
+    th.width = "200px";
+    th.innerHTML = table_names[i];
+    
+    table_header.appendChild(th);
+  }
+  
+  
   
   for(var suite_id=0; suite_id<all_suites.length; ++suite_id)
   {
@@ -119,7 +134,8 @@ setup_table = function()
       }
     }
     
-    // delta
+    // TODO: delta (result)
+    /*
     var td_delta = document.createElement("td");
     
     td_delta.id = "delta_" + suite_id;
@@ -128,6 +144,7 @@ setup_table = function()
     suite.delta_out = td_delta;
     
     tr.appendChild(td_delta);
+    */
     
     // button
     var button = document.createElement("input");
