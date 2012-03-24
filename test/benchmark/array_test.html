@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Math Benchmark</title>
+
+<script src="benchmark.js/benchmark.js"></script>
+<script src="math_test.js"></script>
+
+<script>
+  var temp_typed_array = new Float32Array(65536);
+  var temp_array = new Array(65536);
+  var temp_values = new Float32Array(65536);
+  for(var i=0; i<65536; ++i)
+    temp_values["x" + i] = 0;
+    
+  var access_array = new Array(1024);
+  for(var i=0; i<access_array.length; ++i)
+    access_array[i] = Math.floor(Math.random() * 65536);
+  
+  function setup_tests()
+  {
+    create_test("Create (1)", [
+      function() { var temp = new Float32Array(1); },
+      function() { var temp = new Array(1); },
+      function() { var temp; }
+    ]);
+    
+    create_test("Create (8)", [
+      function() { var temp = new Float32Array(8); },
+      function() { var temp = new Array(8); },
+      function() { var temp = []; for(var i=0; i<8; ++i) temp["x" + i] = 0; },
+    ]);
+    
+    create_test("Create (1024)", [
+      function() { var temp = new Float32Array(1024); },
+      function() { var temp = new Array(1024); },
+      function() { var temp = []; for(var i=0; i<1024; ++i) temp["x" + i] = 0; },
+    ]);
+    
+    /* Chrome does not like :)
+    create_test("Create (65536)", [
+      function() { var temp = new Float32Array(65536); },
+      function() { var temp = new Array(65536); },
+      function() { var temp = []; for(var i=0; i<65536; ++i) temp["x" + i] = 0; },
+    ]);
+    
+    create_test("Create (1048576)", [
+      function() { var temp = new Float32Array(1048576); },
+      function() { var temp = new Array(1048576); },
+      function() { var temp = []; for(var i=0; i<1048576; ++i) temp["x" + i] = 0; },
+    ]);
+    */
+    
+    ////////
+    
+    create_test("Random read (1)", [
+      function() { var temp; for(var i=0; i<1; ++i) temp += temp_typed_array[access_array[i]]; },
+      function() { var temp; for(var i=0; i<1; ++i) temp += temp_array[access_array[i]]; },
+      function() { var temp; for(var i=0; i<1; ++i) temp += temp_values["x" + access_array[i]]; },
+    ]);
+    
+    create_test("Random read (8)", [
+      function() { var temp; for(var i=0; i<8; ++i) temp += temp_typed_array[access_array[i]]; },
+      function() { var temp; for(var i=0; i<8; ++i) temp += temp_array[access_array[i]]; },
+      function() { var temp; for(var i=0; i<8; ++i) temp += temp_values["x" + access_array[i]]; },
+    ]);
+    
+    create_test("Random read (1024)", [
+      function() { var temp; for(var i=0; i<1024; ++i) temp += temp_typed_array[access_array[i]]; },
+      function() { var temp; for(var i=0; i<1024; ++i) temp += temp_array[access_array[i]]; },
+      function() { var temp; for(var i=0; i<1024; ++i) temp += temp_values["x" + access_array[i]]; },
+    ]);
+    
+    ////////
+    
+    create_test("Random write (1)", [
+      function() { for(var i=0; i<1; ++i) temp_typed_array[access_array[i]] = 0; },
+      function() { for(var i=0; i<1; ++i) temp_array[access_array[i]] = 0; },
+      function() { for(var i=0; i<1; ++i) temp_values["x" + access_array[i]] = 0; },
+    ]);
+    
+    create_test("Random write (8)", [
+      function() { for(var i=0; i<8; ++i) temp_typed_array[access_array[i]] = 0; },
+      function() { for(var i=0; i<8; ++i) temp_array[access_array[i]] = 0; },
+      function() { for(var i=0; i<8; ++i) temp_values["x" + access_array[i]] = 0; },
+    ]);
+    
+    create_test("Random write (1024)", [
+      function() { for(var i=0; i<1024; ++i) temp_typed_array[access_array[i]] = 0; },
+      function() { for(var i=0; i<1024; ++i) temp_array[access_array[i]] = 0; },
+      function() { for(var i=0; i<1024; ++i) temp_values["x" + access_array[i]] = 0; },
+    ]);
+    
+    ////////
+    
+    create_test("Sequencial read (1)", [
+      function() { var temp; for(var i=0; i<1; ++i) temp += temp_typed_array[i]; },
+      function() { var temp; for(var i=0; i<1; ++i) temp += temp_array[i]; },
+      function() { var temp; for(var i=0; i<1; ++i) temp += temp_values["x" + i]; },
+    ]);
+    
+    create_test("Sequencial read (8)", [
+      function() { var temp; for(var i=0; i<8; ++i) temp += temp_typed_array[i]; },
+      function() { var temp; for(var i=0; i<8; ++i) temp += temp_array[i]; },
+      function() { var temp; for(var i=0; i<8; ++i) temp += temp_values["x" + i]; },
+    ]);
+    
+    create_test("Sequencial read (1024)", [
+      function() { var temp; for(var i=0; i<1024; ++i) temp += temp_typed_array[i]; },
+      function() { var temp; for(var i=0; i<1024; ++i) temp += temp_array[i]; },
+      function() { var temp; for(var i=0; i<1024; ++i) temp += temp_values["x" + i]; },
+    ]);
+    
+    ////////
+    
+    create_test("Sequencial write (1)", [
+      function() { for(var i=0; i<1; ++i) temp_typed_array[i] = 0; },
+      function() { for(var i=0; i<1; ++i) temp_array[i] = 0; },
+      function() { for(var i=0; i<1; ++i) temp_values["x" + i] = 0; },
+    ]);
+    
+    create_test("Sequencial write (8)", [
+      function() { for(var i=0; i<8; ++i) temp_typed_array[i] = 0; },
+      function() { for(var i=0; i<8; ++i) temp_array[i] = 0; },
+      function() { for(var i=0; i<8; ++i) temp_values["x" + i] = 0; },
+    ]);
+    
+    create_test("Sequencial write (1024)", [
+      function() { for(var i=0; i<1024; ++i) temp_typed_array[i] = 0; },
+      function() { for(var i=0; i<1024; ++i) temp_array[i] = 0; },
+      function() { for(var i=0; i<1024; ++i) temp_values["x" + i] = 0; },
+    ]);
+  }
+  
+  function init()
+  {
+    init_test(["Float32Array", "Arrays", "Value Array"]);
+    setup_tests();
+    
+    setup_table("result_header", "results");
+  };
+</script>
+</head>
+
+<body onLoad="init();" style="background-color:#EEE">
+  <article style="width:80em; margin:0 auto; background:#FFF; display:block; font-family:sans-serif">
+    <article style="background:#FFF; padding:2em 2em;">
+      <input type="Button" value="Run all tests" onClick="run_all()" /><input type="Button" value="Run all tests @ once" onClick="run_all_at_once()" />
+      <table border="0" cellpadding="1" callspacing="20" style="width:100%; text-align:center; background-color:#CCC;">
+        <thead>
+          <tr id="result_header" style="background-color:#CCC; color:#FFF">
+            <th>Test</th>
+          </tr>
+        </thead>
+        <tbody id="results" style="color:#333; font-size:x-small"></tbody>
+      </table>
+    </article>
+  </article>
+</body>
+</html>
