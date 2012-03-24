@@ -1098,55 +1098,55 @@ x3dom.gfx_webgl = (function () {
             var shader = "";
             
             //Set Attributes +Uniforms + Varyings
-            shader += "attribute vec3 position;";
-            shader += "attribute vec3 normal;";
-            shader += "uniform mat4 modelViewMatrix;";
-            shader += "uniform mat4 normalMatrix;";
-            shader += "uniform mat4 modelViewProjectionMatrix;";
-            shader += "varying vec3 fragNormal;";
+            shader += "attribute vec3 position;\n";
+            shader += "attribute vec3 normal;\n";
+            shader += "uniform mat4 modelViewMatrix;\n";
+            shader += "uniform mat4 normalMatrix;\n";
+            shader += "uniform mat4 modelViewProjectionMatrix;\n";
+            shader += "varying vec3 fragNormal;\n";
 			
 			if(imageGeometry) {
-				shader += "uniform vec3 IG_bboxMin;";
-				shader += "uniform vec3 IG_bboxMax;";
-				shader += "uniform float IG_coordTextureWidth;";
-				shader += "uniform float IG_coordTextureHeight;";
-				shader += "uniform float IG_implicitMeshSize;";
+				shader += "uniform vec3 IG_bboxMin;\n";
+				shader += "uniform vec3 IG_bboxMax;\n";
+				shader += "uniform float IG_coordTextureWidth;\n";
+				shader += "uniform float IG_coordTextureHeight;\n";
+				shader += "uniform float IG_implicitMeshSize;\n";
 				
 				if(iG_Indexed) {
-					shader += "uniform sampler2D IG_indexTexture;";
-					shader += "uniform float IG_indexTextureWidth;";
-					shader += "uniform float IG_indexTextureHeight;";
+					shader += "uniform sampler2D IG_indexTexture;\n";
+					shader += "uniform float IG_indexTextureWidth;\n";
+					shader += "uniform float IG_indexTextureHeight;\n";
 				}
 				
 				for( var i = 0; i < iG_Precision; i++ ) {
-					shader += "uniform sampler2D IG_coordinateTexture" + i + ";";
+					shader += "uniform sampler2D IG_coordinateTexture" + i + "\n;";
 				}
 				
-				shader += "uniform sampler2D IG_normalTexture;";
-				shader += "uniform sampler2D IG_texCoordTexture;";
-				shader += "uniform sampler2D IG_colorTexture;";	
+				shader += "uniform sampler2D IG_normalTexture;\n";
+				shader += "uniform sampler2D IG_texCoordTexture;\n";
+				shader += "uniform sampler2D IG_colorTexture;\n";	
 			}
 
             if(vertexColor){
                 if(vertexColor == 3.0){
-                    shader += "attribute vec3 color;";
-                    shader += "varying vec3 fragColor;";
+                    shader += "attribute vec3 color;\n";
+                    shader += "varying vec3 fragColor;\n";
                 }else{
-                    shader += "attribute vec4 color;";
-                    shader += "varying vec4 fragColor;";
+                    shader += "attribute vec4 color;\n";
+                    shader += "varying vec4 fragColor;\n";
                 }
             }
             if(texture){
-                shader += "attribute vec2 texcoord;";
-                shader += "varying vec2 fragTexcoord;";
+                shader += "attribute vec2 texcoord;\n";
+                shader += "varying vec2 fragTexcoord;\n";
                 if(textureTransform){
-                    shader += "uniform mat4 texTrafoMatrix;";
+                    shader += "uniform mat4 texTrafoMatrix;\n";
                 }
                 if(normalMap){
-                    shader += "attribute vec3 tangent;";
-                    shader += "attribute vec3 binormal;";
-                    shader += "varying vec3 fragTangent;";
-                    shader += "varying vec3 fragBinormal;";
+                    shader += "attribute vec3 tangent;\n";
+                    shader += "attribute vec3 binormal;\n";
+                    shader += "varying vec3 fragTangent;\n";
+                    shader += "varying vec3 fragBinormal;\n";
                 }
 				if(cubeMap) {
 					shader += "varying vec3 fragViewDir;\n";
@@ -1155,109 +1155,109 @@ x3dom.gfx_webgl = (function () {
             }
             
             if(lights || fog){
-                shader += "uniform vec3 eyePosition;";
-                shader += "varying vec3 fragEyePosition;";
-                shader += "varying vec3 fragPosition;";
+                shader += "uniform vec3 eyePosition;\n";
+                shader += "varying vec3 fragEyePosition;\n";
+                shader += "varying vec3 fragPosition;\n";
                 
                 if(shadow) {
-                    shader += "uniform mat4 matPV;";
-                    shader += "varying vec4 projCoord;";
+                    shader += "uniform mat4 matPV;\n";
+                    shader += "varying vec4 projCoord;\n";
                 }
             }
             
             //Set Main
-            shader += "void main(void) {"; 
+            shader += "void main(void) {\n"; 
 			
 			if(imageGeometry) {
 				
 				//Indices
 				if(iG_Indexed) {
-					shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);";
-					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_indexTextureWidth), position.y*(IG_implicitMeshSize/IG_indexTextureHeight)) + halfPixel;";
+					shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n";
+					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_indexTextureWidth), position.y*(IG_implicitMeshSize/IG_indexTextureHeight)) + halfPixel;\n";
 					//shader += "vec2 IG_texCoord = vec2(1.0/(2.0*IG_indexTextureWidth)+position.x*(IG_indexTextureWidth-1.0)/IG_indexTextureWidth, 1.0/(2.0*IG_indexTextureHeight)+position.y*(IG_indexTextureHeight-1.0)/IG_indexTextureHeight);";
-					shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;";
+					shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;\n";
 					
-					shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);";
-					shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;";
+					shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);\n";
+					shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;\n";
 					//shader += "IG_texCoord = vec2(1.0/(2.0*IG_coordTextureWidth)+position.x*(IG_coordTextureWidth-1.0)/IG_coordTextureWidth, 1.0/(2.0*IG_coordTextureHeight)+position.y*(IG_coordTextureHeight-1.0)/IG_coordTextureHeight);";
 				} else {
-					shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);";
-					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_coordTextureWidth), position.y*(IG_implicitMeshSize/IG_coordTextureHeight)) + halfPixel;";
+					shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n";
+					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_coordTextureWidth), position.y*(IG_implicitMeshSize/IG_coordTextureHeight)) + halfPixel;\n";
 					//shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth)*(IG_coordTextureWidth-1.0)/(IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)*(IG_coordTextureHeight-1.0)/(IG_coordTextureHeight)) + halfPixel;";
 				}
 				
 				//Coordinates
-				shader += "vec3 temp = vec3(0.0, 0.0, 0.0);";
-				shader += "vec3 vertPosition = vec3(0.0, 0.0, 0.0);";
+				shader += "vec3 temp = vec3(0.0, 0.0, 0.0);\n";
+				shader += "vec3 vertPosition = vec3(0.0, 0.0, 0.0);\n";
 				
 				for(var i=0; i<iG_Precision; i++)
 				{
-					shader += "temp = 255.0 * texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;";
-					shader += "vertPosition *= IG_implicitMeshSize;";
-					shader += "vertPosition += temp;";
+					shader += "temp = 255.0 * texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;\n";
+					shader += "vertPosition *= 256.0;\n";
+					shader += "vertPosition += temp;\n";
 				}
 				
-			    shader += "vertPosition /= (pow(2.0, 8.0 * " + iG_Precision + ".0) - 1.0);";
+			    shader += "vertPosition /= (pow(2.0, 8.0 * " + iG_Precision + ".0) - 1.0);\n";
 			    
 			    // comment out if transformMatrix() from Shape is used for generating model matrix
-				shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;";
+				shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;\n";
 				
 				//Normals
-				shader += "vec3 vertNormal = texture2D( IG_normalTexture, IG_texCoord ).rgb;";
-				shader += "vertNormal = vertNormal * 2.0 - 1.0;";
+				shader += "vec3 vertNormal = texture2D( IG_normalTexture, IG_texCoord ).rgb;\n";
+				shader += "vertNormal = vertNormal * 2.0 - 1.0;\n";
 				
 				//TexCoords
 				if(texture) {
-					shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoordTexture, IG_texCoord );";
+					shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoordTexture, IG_texCoord );\n";
 					shader += "vec2 vertTexCoord;";
-					shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);";
-					shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);";
+					shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);\n";
+					shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);\n";
 				}
 				
 				//Color
 				if(vertexColor) {
-					shader += "fragColor = texture2D( IG_colorTexture, IG_texCoord ).rgb;";
+					shader += "fragColor = texture2D( IG_colorTexture, IG_texCoord ).rgb;\n";
 				}
 				
 				//PointSize
-				shader += "gl_PointSize = 2.0;";
+				shader += "gl_PointSize = 2.0;\n";
 			} else {
-				shader += "vec3 vertNormal = normal;";
+				shader += "vec3 vertNormal = normal;\n";
 				if(texture) {
-					shader += "vec2 vertTexCoord = texcoord;";
+					shader += "vec2 vertTexCoord = texcoord;\n";
 				}
-				shader += "vec3 vertPosition = position;";
-				shader += "gl_PointSize = 2.0;";
+				shader += "vec3 vertPosition = position;\n";
+				shader += "gl_PointSize = 2.0;\n";
 				if(vertexColor){
-					shader += "fragColor = color;";
+					shader += "fragColor = color;\n";
 				}
 			}
             
-			shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;";
+			shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
             
             if(lights || fog){    
-                shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0)).xyz;";
-                shader += "fragEyePosition = eyePosition - fragPosition;";
+                shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0)).xyz;\n";
+                shader += "fragEyePosition = eyePosition - fragPosition;\n";
                 if(shadow) {
-                    shader += "projCoord = matPV * vec4(vertPosition+0.5*normalize(vertNormal), 1.0);";
+                    shader += "projCoord = matPV * vec4(vertPosition+0.5*normalize(vertNormal), 1.0);\n";
                 }
             }
             if(texture){
 				if(cubeMap) {
 					shader += "fragViewDir = (viewMatrix[3].xyz);\n";
 				} else if (sphereMapping) {
-					shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;";
+					shader += " fragTexcoord = 0.5 + fragNormal.xy / 2.0;\n";
                 } else if(textureTransform) {
-                    shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;";
+                    shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
                 } else {
-					shader += " fragTexcoord = vertTexCoord;";
+					shader += " fragTexcoord = vertTexCoord;\n";
 				}
                 if(normalMap){
-                    shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;";
-                    shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;";
+                    shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;\n";
+                    shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;\n";
                 }
             }
-			shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);";
+			shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
             shader += "}";
 			
             g_shaders[shaderIdentifier] = {};
