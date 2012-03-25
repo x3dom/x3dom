@@ -59,8 +59,8 @@ x3dom.gfx_webgl = (function () {
 							x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
 												"Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " + 
 												"Version: " + ctx.getParameter(ctx.VERSION) + ", " + 
-												"ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION));
-												//+ ", " + "\nExtensions: " + ctx.getParameter(ctx.EXTENSIONS));
+												"ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION)
+												+ ", " + "\nExtensions: " + ctx.getSupportedExtensions());
 												
 							//Save CAPS
 							x3dom.caps.VENDOR 							= ctx.getParameter(ctx.VENDOR);
@@ -3772,25 +3772,24 @@ x3dom.gfx_webgl = (function () {
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
               if (viewarea._points !== undefined && viewarea._points) {
 				if(shape._webgl.imageGeometry) {
-					gl.drawElements(gl.POINTS, shape._cf.geometry.node._vf.vertexCount[0], gl.UNSIGNED_SHORT, 0);
+					for(var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
+						gl.drawArrays(gl.POINTS, offset, shape._cf.geometry.node._vf.vertexCount[i]);
+						offset += shape._cf.geometry.node._vf.vertexCount[i];
+					}
 				} else {
 					gl.drawElements(gl.POINTS, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 				}
               }
               else {
-                // fixme; this differentiation isn't nice, but otherwise WebGL seems to run out of mem
                 if (shape._webgl.primType == gl.POINTS) {
-                    //gl.enable(gl.VERTEX_PROGRAM_POINT_SIZE);
-                    //gl.enable(gl.POINT_SMOOTH);
 					if(shape._webgl.imageGeometry) {
+					    // FIXME: still required? Seems to be handled below anyway...
 						gl.drawArrays(gl.POINTS, 0, shape._cf.geometry.node._vf.vertexCount[0]);
 					}else{
 						gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
 					}
-                    //gl.disable(gl.VERTEX_PROGRAM_POINT_SIZE);
                 }
                 else {
-                    //x3dom.debug.logInfo("indexLength: " + shape._webgl.indexes[q].length);
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if(shape._webgl.imageGeometry) {
 							for(var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
@@ -3824,8 +3823,12 @@ x3dom.gfx_webgl = (function () {
         
         if (shape._webgl.indexes && shape._webgl.indexes[0]) {
 			if(shape._webgl.imageGeometry) {
-				for(var i=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++)
-					this.numFaces += shape._cf.geometry.node._vf.vertexCount[i]/3.0;
+				for(var i=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
+				    if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP)
+					    this.numFaces += (shape._cf.geometry.node._vf.vertexCount[i] - 2);
+					else
+					    this.numFaces += (shape._cf.geometry.node._vf.vertexCount[i] / 3);
+				}
 			} else {
 				this.numFaces += shape._cf.geometry.node._mesh._numFaces;
 			}
