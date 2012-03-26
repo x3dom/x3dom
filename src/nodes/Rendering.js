@@ -1617,9 +1617,11 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                Array.forEach(this._parentNodes, function (node) {
-                    node.fieldChanged("coord");
-                });
+                if (fieldName === "coord") {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.fieldChanged("coord");
+                    });
+                }
             },
 
             parentAdded: function (parent) {
@@ -1663,9 +1665,11 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                Array.forEach(this._parentNodes, function (node) {
-                    node.fieldChanged("normal");
-                });
+                if (fieldName === "normal") {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.fieldChanged("normal");
+                    });
+                }
             },
 
             parentAdded: function (parent) {
@@ -1688,9 +1692,11 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                Array.forEach(this._parentNodes, function (node) {
-                    node.fieldChanged("color");
-                });
+                if (fieldName === "color") {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.fieldChanged("color");
+                    });
+                }
             },
 
             parentAdded: function (parent) {
