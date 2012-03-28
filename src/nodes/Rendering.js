@@ -952,7 +952,7 @@ x3dom.registerNodeType(
 						}
 					}
 					this._mesh.splitMesh();
-				} else*/ if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor) {
+				} else */if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor) {
 					for (i=1; i < indexes.length-2; ++i)
 					{
 						if (indexes[i+1] == -1) {
@@ -1060,8 +1060,7 @@ x3dom.registerNodeType(
 			
 					this._mesh.splitMesh();
 	
-				} else {
-					
+				} else {	
 					for (i = 1; i < indexes.length; ++i)
 					{
 						if (indexes[i+1] == -1) {
@@ -1229,7 +1228,7 @@ x3dom.registerNodeType(
 							}
 						}
 						this._mesh.splitMesh();
-					} else*/ if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor) {
+					} else */if ( (positions.length > 65535) || hasNormal  || hasTexCoord || hasColor) {
 						
 						for (i=1; i < indexes.length-2; ++i)
 						{
