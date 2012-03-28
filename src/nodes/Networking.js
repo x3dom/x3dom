@@ -64,9 +64,10 @@ x3dom.registerNodeType(
                 }
             },
 
-            nodeChanged: function ()
+           nodeChanged: function ()
             {
 				var that = this;
+				window.myinline = this;
 
                 var xhr = new window.XMLHttpRequest();
                 if (xhr.overrideMimeType)
@@ -76,40 +77,43 @@ x3dom.registerNodeType(
 				
                 xhr.onreadystatechange = function () 
                 {
-					if(xhr.status !== 202) 
-                    {
-						if (xhr.readyState == xhr.DONE)
+					/*if (xhr.readyState == xhr.DONE)
+					{
+						if (xhr.responseXML == null)
+							return xhr;
+						
+						delete xhr['onreadystatechange'];
+							
+						if(navigator.appName != "Microsoft Internet Explorer")
 						{
-							x3dom.debug.logInfo('xhr.onreadystatechange  DONE, status: ' + xhr.status);
-							if (xhr.responseXML == null)
-								return xhr;
-							
-							delete xhr['onreadystatechange'];
-							
-							if(navigator.appName != "Microsoft Internet Explorer")
+							if (xhr.responseXML.documentElement.localName == 'parsererror')
 							{
-								if (xhr.responseXML.documentElement.localName == 'parsererror')
-								{
-									that._nameSpace.doc.downloadCount -= 1;
-									x3dom.debug.logError('XML parser failed on ' + that._vf.url +
-												':\n' + xhr.responseXML.documentElement.textContent);
-									return xhr;
-								}
+								that._nameSpace.doc.downloadCount -= 1;
+								x3dom.debug.logError('XML parser failed on ' + that._vf.url +
+											':\n' + xhr.responseXML.documentElement.textContent);
+								return xhr;
 							}
 						}
-						else
-						{
-                            // still loading
-							x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-							//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
-							return xhr;
-						}
+					}
+					else
+					{
+                        // still loading
+						x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+						//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
+						return xhr;
+					}*/
+					if (xhr.readyState != 4) {
+						// still loading
+						x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+						return;
 					}
 					
 					if (xhr.status === 202 && that.count < 10) {
 						that.count++;
-						x3dom.debug.logInfo('202 ' + that.count + ', ' + (xhr.readyState == xhr.DONE));
-						window.setTimeout('that.nodeChanged()', 10000);
+						x3dom.debug.logInfo('Statuscode 202 and send new Request');
+						window.setTimeout(function(){ 
+							that.nodeChanged(); 
+							}, 5000);
                         return xhr;
 					}
 					else if ((xhr.status !== 200) && (xhr.status !== 0)) {
