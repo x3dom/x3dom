@@ -67,7 +67,6 @@ x3dom.registerNodeType(
            nodeChanged: function ()
             {
 				var that = this;
-				window.myinline = this;
 
                 var xhr = new window.XMLHttpRequest();
                 if (xhr.overrideMimeType)
