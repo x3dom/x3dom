@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1" />
+<title>Math Benchmark</title>
+
+<script src="benchmark.js/benchmark.js"></script>
+<script src="math_test.js"></script>
+
+<script src="../../src/Internals.js"></script>
+<script src="../../src/lang/Math.js"></script>
+<script src="../../src/fields.js"></script>
+
+<script src="3rdparty/glMatrix.js"></script>
+<script src="3rdparty/mjs.js"></script>
+<script src="3rdparty/sylvester.src.js"></script>
+
+<script src="math_test_init.js"></script>
+
+<script>
+  function init()
+  {
+    init_test(["fields.js", "math.js", "glMatrix.js", "mjs.js", "sylvester.js"]);
+    setup_tests();
+    
+    setup_table("result_header", "results");
+    
+    document.getElementById("array_type").innerHTML = "Array Type : [ " + math.Float32Array + " ]";
+  };
+</script>
+</head>
+
+<body onLoad="init();" style="background-color:#EEE">
+  <article style="width:80em; margin:0 auto; background:#FFF; display:block; font-family:sans-serif">
+    <article style="background:#FFF; padding:2em 2em;">
+      <p id='array_type'>typeof(array)</p>
+      <input type="Button" value="Run all tests" onClick="run_all()" /><input type="Button" value="Run all tests @ once" onClick="run_all_at_once()" />
+      <table border="0" cellpadding="1" callspacing="20" style="width:100%; text-align:center; background-color:#CCC;">
+        <thead>
+          <tr id="result_header" style="background-color:#CCC; color:#FFF">
+            <th>Test</th>
+          </tr>
+        </thead>
+        <tbody id="results" style="color:#333; font-size:x-small">
+        </tbody>
+      </table>
+    </article>
+  </article>
+</body>
+</html>

@@ -157,15 +157,22 @@ x3dom.registerNodeType(
             if (this._vf.hasOwnProperty("diffuseColor")) 
             {
                 if (enable) {
-                    if (this._actDiffuseColor === undefined)
+                    if (this._actDiffuseColor === undefined) {
                         this._actDiffuseColor = new x3dom.fields.SFColor();
+                        this._highlightOn = false;
+                    }
                     
-                    this._actDiffuseColor.setValues(this._vf.diffuseColor);
-                    this._vf.diffuseColor.setValues(color);
+                    if (!this._highlightOn) {
+                        this._actDiffuseColor.setValues(this._vf.diffuseColor);
+                        this._vf.diffuseColor.setValues(color);
+                        this._highlightOn = true;
+                    }
                 }
                 else {
-                    if (this._actDiffuseColor !== undefined)
+                    if (this._actDiffuseColor !== undefined) {
                         this._vf.diffuseColor.setValues(this._actDiffuseColor);
+                        this._highlightOn = false;
+                    }
                 }
             }
             

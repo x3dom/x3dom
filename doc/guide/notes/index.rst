@@ -14,3 +14,4 @@ things move up to the main documentation.
    platforms
    compatibility_matrix
    faq
+   resources

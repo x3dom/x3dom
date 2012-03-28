@@ -48,6 +48,11 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName) {
                 //Tc' = -C * S * R * C * T * Tc
+                if (fieldName == 'center'
+                    || fieldName == 'rotation'
+                    || fieldName == 'scale'
+                    || fieldName == 'translation') {
+
                 var negCenter = new x3dom.fields.SFVec3f(-this._vf.center.x, -this._vf.center.y, 1);
                 var posCenter = new x3dom.fields.SFVec3f(this._vf.center.x, this._vf.center.y, 0);
                 var trans3 = new x3dom.fields.SFVec3f(this._vf.translation.x, this._vf.translation.y, 0);
@@ -57,6 +62,7 @@ x3dom.registerNodeType(
                          mult(x3dom.fields.SFMatrix4f.scale(scale3)).
                          mult(x3dom.fields.SFMatrix4f.rotationZ(this._vf.rotation)).
                          mult(x3dom.fields.SFMatrix4f.translation(posCenter.add(trans3)));
+                }
             },
 
             texTransformMatrix: function() {
@@ -510,9 +516,11 @@ x3dom.registerNodeType(
         },
 		{
 			fieldChanged: function (fieldName) {
-                Array.forEach(this._parentNodes, function (node) {
-                    node.fieldChanged("texCoord");
-                });
+                if (fieldName === "texCoord") {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.fieldChanged("texCoord");
+                    });
+                }
             },
 
             parentAdded: function (parent) {

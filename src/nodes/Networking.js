@@ -51,8 +51,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'load', true);
 			this.addField_MFString(ctx, 'nameSpaceName', []);
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
+            
 			this.count = 0;
-			
 			this.currentInline = ctx.xmlNode;
        },
         {
@@ -66,24 +66,22 @@ x3dom.registerNodeType(
 
             nodeChanged: function ()
             {
-				x3dom.debug.logInfo('count ' + this.count);
-                var that = this;
+				var that = this;
 
                 var xhr = new window.XMLHttpRequest();
-                if(xhr.overrideMimeType)
+                if (xhr.overrideMimeType)
                     xhr.overrideMimeType('text/xml');   //application/xhtml+xml
 					
 				this._nameSpace.doc.downloadCount += 1;
 				
-
-                xhr.onreadystatechange = function () {
-					x3dom.debug.logInfo('onreadystatechange  ');
-					
-					if(xhr.status !== 202) {
+                xhr.onreadystatechange = function () 
+                {
+					if(xhr.status !== 202) 
+                    {
 						if (xhr.readyState == xhr.DONE)
 						{
-							x3dom.debug.logInfo('onreadystatechange  DONE ');
-							if(xhr.responseXML == null)
+							x3dom.debug.logInfo('xhr.onreadystatechange  DONE, status: ' + xhr.status);
+							if (xhr.responseXML == null)
 								return xhr;
 							
 							delete xhr['onreadystatechange'];
@@ -101,24 +99,26 @@ x3dom.registerNodeType(
 						}
 						else
 						{
-							x3dom.debug.logInfo('onreadystatechange  else ');
-							// still loading
-							//x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+                            // still loading
+							x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
 							//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
 							return xhr;
 						}
 					}
-					x3dom.debug.logInfo('status ' + xhr.status);
-					if(xhr.status == 202 && that.count < 10) {
+					
+					if (xhr.status === 202 && that.count < 10) {
 						that.count++;
-						x3dom.debug.logInfo('202 ' + that.count);
-						window.setTimeout(that.nodeChanged(), 10000);
-					} else if ((xhr.status !== 200) && (xhr.status !== 0) || ((xhr.status == 202) && that.count > 9)) {
+						x3dom.debug.logInfo('202 ' + that.count + ', ' + (xhr.readyState == xhr.DONE));
+						window.setTimeout('that.nodeChanged()', 10000);
+                        return xhr;
+					}
+					else if ((xhr.status !== 200) && (xhr.status !== 0)) {
                         that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
 						that.count = 0;
                         return xhr;
-                    }  else if ((xhr.status == 200) || (xhr.status == 0)) {
+                    }
+                    else if ((xhr.status == 200) || (xhr.status == 0)) {
 						that.count = 0;
 					}
 					
@@ -128,12 +128,18 @@ x3dom.registerNodeType(
                         var xml = xhr.responseXML;
                     else
                         var xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
-
+                    
+                    var inlScene = null;
+                    var newScene = null;
+                    var nameSpace = null;
+                    
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
-                    var inlScene = xml.getElementsByTagName('Scene')[0] || xml.getElementsByTagName('scene')[0];
-                    var newScene;
-                    var nameSpace;
-
+                    if (xml !== undefined && xml !== null)
+                    {
+                        inlScene = xml.getElementsByTagName('Scene')[0] || 
+                                   xml.getElementsByTagName('scene')[0];
+                    }
+                    
                     if (inlScene)
                     {
                         nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
@@ -152,23 +158,27 @@ x3dom.registerNodeType(
                             } );
                         }
                     }
-                     else
+                    else {
                         x3dom.debug.logWarning('no Scene in ' + xml.localName);
+                    }
 
                     // trick to free memory, assigning a property to global object, then deleting it
                     var global = x3dom.getGlobal();
+                    
                     while (that._childNodes.length !== 0)
                         global['_remover'] = that.removeChild(that._childNodes[0]);
                     
                     delete global['_remover'];
 
-                    that.addChild(newScene);
-                    //that._xmlNode.appendChild (inlScene);
-
-                    that._nameSpace.doc.downloadCount -= 1;
-                    that._nameSpace.doc.needRender = true;
-                    x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
-
+                    if (newScene)
+                    {
+                        that.addChild(newScene);
+                        
+                        that._nameSpace.doc.downloadCount -= 1;
+                        that._nameSpace.doc.needRender = true;
+                        x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
+                    }
+                    
                     newScene = null;
                     nameSpace = null;
                     xml = null;
