@@ -2323,6 +2323,10 @@ x3dom.gfx_webgl = (function () {
 				} else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&  
 									shape._cf.geometry.node._mesh._primType == 'TRIANGLE_STRIP') {
 					shape._webgl.primType = gl.TRIANGLE_STRIP;
+					/*shape._webgl.primType = [];
+					for(var i=0; i < 2; i++) {									
+						shape._webgl.primType.push(gl.TRIANGLE_STRIP);	
+					}*/
 				} else {
 					shape._webgl.primType = gl.TRIANGLES;
 				}
