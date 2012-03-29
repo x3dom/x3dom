@@ -50,17 +50,29 @@
 
 <script type="text/javascript">
 	var test = function() {	
-		document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 1');
+		document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 0.5');
 		document.getElementById('test__color2').setAttribute('diffuseColor', '0 1 1');
 		document.getElementById('test__color3').setAttribute('diffuseColor', '0.1 1 .03');
 		document.getElementById('test__color4').setAttribute('diffuseColor', '0.7 1 0');
 	}
+	
+	var changeColor = function() {	
+		document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 1');
+	}
+	var error = function(event) {	
+		alert('the ERROR ' + event.error);
+	}
+	var init = function() {	
+		document.getElementById('inline').addEventListener('onerror',error, false );
+	}
+	
 </script>
 </head>
-<body>       
+<body onLoad="init();">       
     <x3d width="700px" height="700px" showStat="true" showLog="true">
 		<scene>
-			<inline nameSpaceName='test' url='media/data/inlineTest.x3d'></inline>
+			<inline onload="changeColor();" nameSpaceName='test' url='media/data/inlineTest.x3d'></inline>
+            <inline id="inline" nameSpaceName='error' url='media/data/error.x3d'></inline>
 		</scene>
 	</x3d>
 	<input id="changeColor" type="submit" value="changeColor" onClick="test();" />

@@ -53,7 +53,7 @@ x3dom.registerNodeType(
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
             
 			this.count = 0;
-			this.currentInline = ctx.xmlNode;
+			this.currentInline = ctx.xmlNode;			
        },
         {
             fieldChanged: function (fieldName)
@@ -65,7 +65,7 @@ x3dom.registerNodeType(
             },
 
            nodeChanged: function ()
-            {
+            {			
 				var that = this;
 
                 var xhr = new window.XMLHttpRequest();
@@ -103,7 +103,7 @@ x3dom.registerNodeType(
 					}*/
 					if (xhr.readyState != 4) {
 						// still loading
-						x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
+						//x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
 						return;
 					}
 					
@@ -116,6 +116,46 @@ x3dom.registerNodeType(
                         return xhr;
 					}
 					else if ((xhr.status !== 200) && (xhr.status !== 0)) {
+						
+						if ( that.currentInline && 
+							(that.currentInline['onerror'] ||
+							 that.currentInline.hasAttribute('onerror')|| 
+							 that._listeners['onerror']) )
+							{
+								
+								try {
+									var evt = {
+										target:that.currentInline,
+										type: 'onerror',
+										error: 'XMLHttpRequest Error',
+										cancelBubble: false,
+										stopPropagation: function() { this.cancelBubble = true; }
+									};
+									
+									
+									var attrib = that.currentInline[evt.type];
+								
+									
+									if (typeof(attrib) === "function") {
+										attrib.call(that.currentInline, evt);
+									}
+									else {
+										var funcStr = that.currentInline.getAttribute(evt.type);
+										var func = new Function('evt', funcStr);
+										func.call(that.currentInline, evt);
+									}
+									
+									var list = that._listeners[evt.type];
+									if (list) {
+										for (var i = 0; i < list.length; i++) {
+											list[i].call(that.currentInline, evt);
+										}
+									}
+								}
+								catch(ex) {
+									x3dom.debug.logException(ex);
+								}
+							}
                         that._nameSpace.doc.downloadCount -= 1;
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
 						that.count = 0;
@@ -141,7 +181,47 @@ x3dom.registerNodeType(
                     {
                         inlScene = xml.getElementsByTagName('Scene')[0] || 
                                    xml.getElementsByTagName('scene')[0];
-                    }
+                    } else {
+						if ( that.currentInline && 
+							(that.currentInline['onerror'] ||
+							 that.currentInline.hasAttribute('onerror')|| 
+							 that._listeners['onerror']) )
+							{
+								
+								try {
+									var evt = {
+										target:that.currentInline,
+										type: 'onerror',
+										error: 'Parser Error',
+										cancelBubble: false,
+										stopPropagation: function() { this.cancelBubble = true; }
+									};
+									
+									
+									var attrib = that.currentInline[evt.type];
+								
+									
+									if (typeof(attrib) === "function") {
+										attrib.call(that.currentInline, evt);
+									}
+									else {
+										var funcStr = that.currentInline.getAttribute(evt.type);
+										var func = new Function('evt', funcStr);
+										func.call(that.currentInline, evt);
+									}
+									
+									var list = that._listeners[evt.type];
+									if (list) {
+										for (var i = 0; i < list.length; i++) {									
+											list[i].call(that.currentInline, evt);
+										}
+									}
+								}
+								catch(ex) {
+									x3dom.debug.logException(ex);
+								}
+							}
+					}
                     
                     if (inlScene)
                     {
@@ -160,8 +240,57 @@ x3dom.registerNodeType(
                                 }
                             } );
                         }
-                    }
-                    else {
+						
+						/*if(document.createEvent) {
+							var evt = document.createEvent("Events"); 
+							evt.initEvent('onload', false, false);  
+							that.currentInline.dispatchEvent(evt);
+						} else if(document.createEventObject) {
+							var evt = document.createEventObject();
+							that.currentInline.fireEvent("onload", evt);
+						}*/
+						
+						
+						if ( that.currentInline && 
+							(that.currentInline['onload'] ||
+							 that.currentInline.hasAttribute('onload')|| 
+							 that._listeners['onload']) )
+						{
+							
+							try {
+								var evt = {
+									target:that.currentInline,
+									type: 'onload',
+									cancelBubble: false,
+									stopPropagation: function() { this.cancelBubble = true; }
+								};
+								
+								
+								var attrib = that.currentInline[evt.type];
+							
+								
+								if (typeof(attrib) === "function") {
+									attrib.call(that.currentInline, evt);
+								}
+								else {
+									var funcStr = that.currentInline.getAttribute(evt.type);
+									var func = new Function('evt', funcStr);
+									func.call(that.currentInline, evt);
+								}
+								
+								var list = that._listeners[evt.type];
+								if (list) {
+									for (var i = 0; i < list.length; i++) {
+										list[i].call(that.currentInline, evt);
+									}
+								}
+							}
+							catch(ex) {
+								x3dom.debug.logException(ex);
+							}
+						}
+						
+                    } else {	
                         x3dom.debug.logWarning('no Scene in ' + xml.localName);
                     }
 
