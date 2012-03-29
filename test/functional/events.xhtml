@@ -3,9 +3,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<title>Inline test</title>
-
-    <!-- BEGIN:X3DOM -->
+<!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
@@ -49,37 +47,69 @@
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
 
-<script type="text/javascript" >
-	<![CDATA[
-		var test = function() {	
-		document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 0.5');
-		document.getElementById('test__color2').setAttribute('diffuseColor', '0 1 1');
-		document.getElementById('test__color3').setAttribute('diffuseColor', '0.1 1 .03');
-		document.getElementById('test__color4').setAttribute('diffuseColor', '0.7 1 0');
-	}
-	
-	var changeColor = function() {	
-		document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 1');
-	}
-	var error = function(event) {	
-		alert('the ERROR ' + event.error);
-	}
-
-	var init = function() {	
-		document.getElementById('inline').addEventListener('onerror',error, false );
-	}
-	]]>
+    <!-- BEGIN:TEST -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+    <!-- END:TEST -->
+    
+<script>
+<![CDATA[
+  var clicked = function(event)
+  {
+    document.getElementById('mouseClickEvent').innerHTML = "Click: [" + event.hitPnt[0] + " | " + event.hitPnt[1] + " | " + event.hitPnt[2] + "]";
+  };
+  
+  var transform = function(event)
+  {
+    document.getElementById('transformEvent').innerHTML = "Transform: [" + event.worldX + " | " + event.worldY + " | " + event.worldZ + "]";
+  };
+  
+  function init()
+  {
+    document.getElementById('box_2_2_id').addEventListener('click', clicked, false);
+    document.getElementById('box_2_2_id').addEventListener('transform', transform, false);
+  };
+  ]]>
 </script>
-</head>   
-<body>  
-	<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" width="500px" height="500px">
-	  <Scene>
-			<inline onload="changeColor();" nameSpaceName='test' url='media/data/inlineTest.x3d'></inline>
-            <inline id="inline" nameSpaceName='error' url='media/data/error.x3d'></inline>
-	  </Scene>
-    </X3D>     
+    
+  </head>
+  <body onLoad="init();">
+  
+  <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" width="500px" height="500px">
+    <scene DEF="scene">
+      <viewpoint position="16.0328 13.056 34.2417" orientation="-0.624839 0.780206 0.0292506 0.543473"></viewpoint>
+      
+      <transform scale="2.5 2.5 2.5">
         
-	<input id="changeColor" type="submit" value="changeColor" onclick="test();" />
+        <shape id="box_1_id" DEF="box_1">
+          <box size='0.5 0.5 0.5' />
+        </shape>
+        
+        <transform id="box_2_id" DEF="box_2">
+          <transform translation='0 0 5' id="box_2_2_id"
+            onmouseover="document.getElementById('mouseOverEvent').innerHTML='Mouse: over';"
+            onmouseout= "document.getElementById('mouseOverEvent').innerHTML='Mouse: out';">
+            <shape>
+              <appearance>
+                <material diffuseColor='1 0 0' />	
+              </appearance>
+              <box />
+            </shape>
+          </transform>
+        </transform>
+      </transform>
+      
+      <timesensor DEF="TIMER" cycleInterval="30" loop="true"></timesensor>
+      <orientationinterpolator DEF="ROTOR_A" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14, 1 0 0 6.28"></orientationinterpolator>
+      
+      <route fromNode="TIMER" fromField="fraction_changed" toNode="ROTOR_A" toField="set_fraction"></route>
+      <route fromNode="ROTOR_A" fromField="value_changed" toNode="box_2" toField="rotation"></route>
+      
+    </scene>
+  </X3D>
 
-</body>
+  <p id="mouseOverEvent" class="case">Mouse: xxx</p>
+  <p id="mouseClickEvent" class="case">Click: xxx</p>
+  <p id="transformEvent" class="case">Transform: xxx</p>
+  
+  </body>
 </html>
