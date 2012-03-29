@@ -114,6 +114,29 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### BinaryMesh ### */
+x3dom.registerNodeType(
+    "BinaryMesh",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.BinaryMesh.superClass.call(this, ctx);
+
+            this.addField_SFString(ctx, 'primType', "triangle");
+            this.addField_SFString(ctx, 'index', "");       // Uint16
+            this.addField_SFString(ctx, 'position', "");    // Float32
+            this.addField_SFString(ctx, 'normal', "");
+            this.addField_SFString(ctx, 'texcoord', "");
+            this.addField_SFString(ctx, 'color', "");
+        },
+        {
+            nodeChanged: function()
+            {
+                // TODO
+            }
+        }
+    )
+);
 
 /* ### PointSet ### */
 x3dom.registerNodeType(

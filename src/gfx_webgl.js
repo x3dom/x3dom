@@ -1731,7 +1731,6 @@ x3dom.gfx_webgl = (function () {
               }
 			  if (!needFullReInit && shape._dirty.normals === true)
               {
-				  
                 if (shape._webgl.shader.normal !== undefined)
                 {
                     shape._webgl.normals[q] = shape._cf.geometry.node._mesh._normals[q];
@@ -1756,8 +1755,7 @@ x3dom.gfx_webgl = (function () {
               }
 			  if (!needFullReInit && shape._dirty.texCoords === true)
               {
-				 
-               if (shape._webgl.shader.texcoord !== undefined)
+                if (shape._webgl.shader.texcoord !== undefined)
                 {
                     shape._webgl.texcoords[q] =  shape._cf.geometry.node._mesh._texCoords[q];
                     
@@ -1785,7 +1783,8 @@ x3dom.gfx_webgl = (function () {
                 return;
             }
         }
-        else if ( !x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) &&
+        else if (!(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) ||
+                   x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryMesh)) &&
                  (!shape._cf.geometry.node || 
 				   shape._cf.geometry.node._mesh._positions[0].length < 1) ) {
             x3dom.debug.logError("NO VALID MESH OR NO VERTEX POSITIONS SET!");
@@ -1980,9 +1979,11 @@ x3dom.gfx_webgl = (function () {
 
             shape._webgl.primType = gl.TRIANGLES;
 			if(x3dom.caps.MOBILE) {
-				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVSMobile(viewarea, shape), this.generateFSMobile(viewarea, shape)]);
+				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVSMobile(viewarea, shape), 
+				                                            this.generateFSMobile(viewarea, shape)]);
 			} else {
-				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), this.generateFS(viewarea, shape)]);
+				shape._webgl.shader = this.getShaderProgram(gl, [this.generateVS(viewarea, shape), 
+				                                            this.generateFS(viewarea, shape)]);
 			}
         }
         else 
@@ -2096,7 +2097,8 @@ x3dom.gfx_webgl = (function () {
                     {
                         that._nameSpace.doc.needRender = true;
 
-						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord") {
+						if (saveSize == "index" || saveSize == "coord" || saveSize == "normal" || 
+						    saveSize == "texCoord") {
 							that._webgl.textureFilter[unit] = gl.NEAREST;
 						}					
     
@@ -2186,7 +2188,8 @@ x3dom.gfx_webgl = (function () {
 							that._webgl.indexTextureHeight = image.height;
 						}
 						
-						if(saveSize == "index" || saveSize == "coord" || saveSize == "normal" || saveSize == "texCoord" ||saveSize == "color") {
+						if (saveSize == "index" || saveSize == "coord" || saveSize == "normal" || 
+						    saveSize == "texCoord" ||saveSize == "color") {
 							that._webgl.textureFilter[unit] = gl.NEAREST;
 						}else{
 							that._webgl.textureFilter[unit] = gl.LINEAR;
@@ -2389,8 +2392,175 @@ x3dom.gfx_webgl = (function () {
 		
 		
         var sp = shape._webgl.shader;
+        var currAttribs = 0;
         
         shape._webgl.buffers = [];
+        shape._webgl.dynamicFields = [];
+        
+        if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryMesh)) 
+        {
+            if (shape._cf.geometry.node._vf.primType.toUpperCase() == 'TRIANGLESTRIP') {
+				shape._webgl.primType = gl.TRIANGLE_STRIP;
+			} 
+			else {
+				shape._webgl.primType = gl.TRIANGLES;
+			}
+			// workaround
+			shape._cf.geometry.node._mesh._numTexComponents = 2;
+			
+            var t00 = new Date().getTime();
+            
+            var xmlhttp0 = new XMLHttpRequest();
+            xmlhttp0.open("GET", encodeURI(shape._nameSpace.getURL(
+                                    shape._cf.geometry.node._vf.index)) , true);
+            xmlhttp0.responseType = "arraybuffer";
+            
+            shape._nameSpace.doc.downloadCount += 1;
+            
+            xmlhttp0.onload = function() 
+            {
+               var XHR_buffer = xmlhttp0.response;
+               
+               var indicesBuffer = gl.createBuffer();
+               shape._webgl.buffers[0] = indicesBuffer;
+
+               var indexArray = new Uint16Array(XHR_buffer);
+
+               gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+               gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+               
+               // Test reading Data
+               //x3dom.debug.logWarning("arraybuffer[0]="+indexArray[0]);
+               
+               shape._webgl.indexLength = indexArray.length;    // FIXME
+               shape._cf.geometry.node._mesh._numFaces = indexArray.length / 3;
+               
+               indexArray = null;
+               
+               shape._nameSpace.doc.downloadCount -= 1;
+               shape._nameSpace.doc.needRender = true;
+               
+               var t11 = new Date().getTime() - t00;   
+               x3dom.debug.logWarning("XHR0 load time: " + t11 + " ms"); 
+            }
+            
+            xmlhttp0.send(null);
+            
+            var xmlhttp1 = new XMLHttpRequest();
+            xmlhttp1.open("GET", encodeURI(shape._nameSpace.getURL(
+                                    shape._cf.geometry.node._vf.position)) , true);
+            xmlhttp1.responseType = "arraybuffer";
+            
+            shape._nameSpace.doc.downloadCount += 1;
+            
+            xmlhttp1.onload = function() 
+            {
+               var XHR_buffer = xmlhttp1.response;
+               
+               positionBuffer = gl.createBuffer();
+               shape._webgl.buffers[1] = positionBuffer;
+               gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);               
+               
+               var vertices = new Float32Array(XHR_buffer);
+               
+               gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+               gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+               
+               gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+               gl.enableVertexAttribArray(sp.position);
+               
+               // Test reading Data
+               //x3dom.debug.logWarning("arraybuffer[0].vx="+vertices[0]);  
+               
+               shape._cf.geometry.node._mesh._numCoords = vertices.length / 3;
+               
+               vertices = null;
+               
+               shape._nameSpace.doc.downloadCount -= 1;
+               shape._nameSpace.doc.needRender = true;
+               
+               var t11 = new Date().getTime() - t00;   
+               x3dom.debug.logWarning("XHR1 load time: " + t11 + " ms"); 
+            }
+            
+            xmlhttp1.send(null);
+            
+            var xmlhttp2 = new XMLHttpRequest();
+            xmlhttp2.open("GET", encodeURI(shape._nameSpace.getURL(
+                                    shape._cf.geometry.node._vf.normal)) , true);
+            xmlhttp2.responseType = "arraybuffer";
+            
+            shape._nameSpace.doc.downloadCount += 1;
+            
+            xmlhttp2.onload = function() 
+            {
+               var XHR_buffer = xmlhttp2.response;
+               
+               var normalBuffer = gl.createBuffer();
+               shape._webgl.buffers[2] = normalBuffer;
+
+               var normals = new Float32Array(XHR_buffer);
+
+               gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+               gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
+
+               gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+               gl.enableVertexAttribArray(sp.normal);
+
+               // Test reading Data
+               //x3dom.debug.logWarning("arraybuffer[0].nx="+normals[0]);  
+               
+               normals = null;
+               
+               shape._nameSpace.doc.downloadCount -= 1;
+               shape._nameSpace.doc.needRender = true;
+               
+               var t11 = new Date().getTime() - t00;   
+               x3dom.debug.logWarning("XHR2 load time: " + t11 + " ms"); 
+            }
+            
+            xmlhttp2.send(null);
+            
+            var xmlhttp3 = new XMLHttpRequest();
+            xmlhttp3.open("GET", encodeURI(shape._nameSpace.getURL(
+                                    shape._cf.geometry.node._vf.texcoord)) , true);
+            xmlhttp3.responseType = "arraybuffer";
+            
+            shape._nameSpace.doc.downloadCount += 1;
+            
+            xmlhttp3.onload = function() 
+            {
+               var XHR_buffer = xmlhttp3.response;
+               
+               var texcBuffer = gl.createBuffer();
+               shape._webgl.buffers[3] = texcBuffer;
+
+               var texCoords = new Float32Array(XHR_buffer);
+
+               gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
+               gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
+
+               gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
+               gl.enableVertexAttribArray(sp.texcoord);
+
+               // Test reading Data
+               //x3dom.debug.logWarning("arraybuffer[0].tx="+texCoords[0]);  
+               
+               texCoords = null;
+               
+               shape._nameSpace.doc.downloadCount -= 1;
+               shape._nameSpace.doc.needRender = true;
+               
+               var t11 = new Date().getTime() - t00;   
+               x3dom.debug.logWarning("XHR3 load time: " + t11 + " ms"); 
+            }
+            
+            xmlhttp3.send(null);
+          
+            // TODO: color
+        }
+        else // No BinaryMesh -- FIXME
+        {
             
         for (q=0; q<shape._webgl.positions.length; q++)
         {
@@ -2470,9 +2640,6 @@ x3dom.gfx_webgl = (function () {
           }
         }
         
-        var currAttribs = 0;
-        shape._webgl.dynamicFields = [];
-        
         // TODO; FIXME; what if geometry with split mesh has dynamic fields?
         for (var df in shape._cf.geometry.node._mesh._dynamicFields)
         {
@@ -2496,6 +2663,8 @@ x3dom.gfx_webgl = (function () {
                 attribs = null;
             }
         }
+        
+        } // No BinaryMesh -- FIXME
         
         shape._webgl._minFilterDic = {
              NEAREST:                      gl.NEAREST                ,
@@ -3800,7 +3969,11 @@ x3dom.gfx_webgl = (function () {
 								gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
 								offset += shape._cf.geometry.node._vf.vertexCount[i];
 							}
-						} else {
+						}
+						else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryMesh)) {
+						    gl.drawElements(shape._webgl.primType, shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
+						}
+						else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
                     }
