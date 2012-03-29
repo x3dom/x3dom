@@ -1331,6 +1331,7 @@ x3dom.registerNodeType(
         }
     )
 );
+
 /* ### GeometryImage ### */
 x3dom.registerNodeType(
     "ImageGeometry",
@@ -1371,7 +1372,6 @@ x3dom.registerNodeType(
 			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
-
 			
 			
 			this._mesh._numColComponents = this._vf.numColorComponents;
@@ -1562,10 +1562,6 @@ x3dom.registerNodeType(
         {
             nodeChanged: function()
             {
-                // // FIXME: Workaround
-                //this._vf.convex = true;
-                // // FIXME
-                
                 var time0 = new Date().getTime();
 
                 this.handleAttribs();
@@ -1977,7 +1973,8 @@ x3dom.registerNodeType(
 								}			
 							}
 							
-							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[indexes[i]], indexes[i], data.normals, data.colors, data.texCoords));						
+							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(
+							    positions[indexes[i]], indexes[i], data.normals, data.colors, data.texCoords));						
 						}		
 					}
 					
@@ -2073,7 +2070,6 @@ x3dom.registerNodeType(
                     (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
                     (this._vf.colorIndex.length > 0 && this._cf.color.node)*/)
                 {
-                    
 					// TODO; FIXME
                     x3dom.debug.logWarning("Ipol with creaseAngle == 0, too many coords, or multi-index!");
 
