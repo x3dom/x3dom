@@ -1526,17 +1526,17 @@ x3dom.gfx_webgl = (function () {
 						shader += "alpha *= texColor.a;\n";
 					}
                     if(blending){
-						shader += "   rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);\n";
+						shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);\n";
 						if(cubeMap) {
 							shader += "rgb = mix(rgb, texColor.rgb, vec3(0.75));\n";
 						} else {
 							shader += "rgb *= texColor.rgb;\n";
 						}
                     }else{
-						shader += "   rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);\n";
+						shader += "rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);\n";
                     }
                 }else if(vertexColor){
-                    shader += "rgb = diffuse*fragColor.rgb;\n";
+                    shader += "rgb = (material.emissiveColor + ambient*fragColor.rgb + diffuse*fragColor.rgb + specular*material.specularColor);\n";
                     if(vertexColor == 4) {
                         shader += "alpha = fragColor.a;\n";
                     }
