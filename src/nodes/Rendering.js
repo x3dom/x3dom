@@ -114,17 +114,18 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### BinaryMesh ### */
+/* ### BinaryGeometry ### */
 x3dom.registerNodeType(
-    "BinaryMesh",
+    "BinaryGeometry",
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.BinaryMesh.superClass.call(this, ctx);
+            x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
 
-            this.addField_SFString(ctx, 'primType', "triangle");
+            this.addField_SFInt32(ctx, 'vertexCount', 0);
+            this.addField_SFString(ctx, 'primType', "TRIANGLES");
             this.addField_SFString(ctx, 'index', "");       // Uint16
-            this.addField_SFString(ctx, 'position', "");    // Float32
+            this.addField_SFString(ctx, 'coord', "");    // Float32
             this.addField_SFString(ctx, 'normal', "");
             this.addField_SFString(ctx, 'texcoord', "");
             this.addField_SFString(ctx, 'color', "");

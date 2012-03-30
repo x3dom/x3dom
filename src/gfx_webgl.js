@@ -1784,7 +1784,7 @@ x3dom.gfx_webgl = (function () {
             }
         }
         else if (!(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) ||
-                   x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryMesh)) &&
+                   x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) &&
                  (!shape._cf.geometry.node || 
 				   shape._cf.geometry.node._mesh._positions[0].length < 1) ) {
             x3dom.debug.logError("NO VALID MESH OR NO VERTEX POSITIONS SET!");
@@ -2397,7 +2397,7 @@ x3dom.gfx_webgl = (function () {
         shape._webgl.buffers = [];
         shape._webgl.dynamicFields = [];
         
-        if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryMesh)) 
+        if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) 
         {
             if (shape._cf.geometry.node._vf.primType.toUpperCase() == 'TRIANGLESTRIP') {
 				shape._webgl.primType = gl.TRIANGLE_STRIP;
@@ -2448,7 +2448,7 @@ x3dom.gfx_webgl = (function () {
             
             var xmlhttp1 = new XMLHttpRequest();
             xmlhttp1.open("GET", encodeURI(shape._nameSpace.getURL(
-                                    shape._cf.geometry.node._vf.position)) , true);
+                                    shape._cf.geometry.node._vf.coord)) , true);
             xmlhttp1.responseType = "arraybuffer";
             
             shape._nameSpace.doc.downloadCount += 1;
@@ -2559,7 +2559,7 @@ x3dom.gfx_webgl = (function () {
           
             // TODO: color
         }
-        else // No BinaryMesh -- FIXME
+        else // No BinaryGeometry -- FIXME
         {
             
         for (q=0; q<shape._webgl.positions.length; q++)
@@ -2664,7 +2664,7 @@ x3dom.gfx_webgl = (function () {
             }
         }
         
-        } // No BinaryMesh -- FIXME
+        } // No BinaryGeometry -- FIXME
         
         shape._webgl._minFilterDic = {
              NEAREST:                      gl.NEAREST                ,
@@ -3970,7 +3970,7 @@ x3dom.gfx_webgl = (function () {
 								offset += shape._cf.geometry.node._vf.vertexCount[i];
 							}
 						}
-						else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryMesh)) {
+						else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
 						    gl.drawElements(shape._webgl.primType, shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
 						}
 						else {
