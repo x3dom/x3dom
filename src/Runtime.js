@@ -361,7 +361,9 @@ x3dom.Runtime.prototype.game = function() {
  * Toggles points attribute
  */
 x3dom.Runtime.prototype.togglePoints = function() {
-    this.canvas.doc._viewarea._points = !this.canvas.doc._viewarea._points;
+    if (this.canvas.doc._viewarea._points === undefined)
+        this.canvas.doc._viewarea._points = 0;
+    this.canvas.doc._viewarea._points = ++this.canvas.doc._viewarea._points % 2; // % 3;
     this.canvas.doc.needRender = true;
 };
 
