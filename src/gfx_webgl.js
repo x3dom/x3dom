@@ -2318,7 +2318,7 @@ x3dom.gfx_webgl = (function () {
             }
             else {
                 //TODO; also account for other cases such as LineSet
-				if( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
+				if ( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
 					shape._webgl.primType = [];
 					for(var i=0; i<shape._cf.geometry.node._vf.primType.length; i++) {				
 						if(shape._cf.geometry.node._vf.primType[i].toUpperCase() == 'POINTS') {
@@ -2330,12 +2330,8 @@ x3dom.gfx_webgl = (function () {
 						}
 					}
 				} else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&  
-									shape._cf.geometry.node._mesh._primType == 'TRIANGLE_STRIP') {
+				          shape._cf.geometry.node._mesh._primType.toUpperCase() == 'TRIANGLESTRIP') {
 					shape._webgl.primType = gl.TRIANGLE_STRIP;
-					/*shape._webgl.primType = [];
-					for(var i=0; i < 2; i++) {									
-						shape._webgl.primType.push(gl.TRIANGLE_STRIP);	
-					}*/
 				} else {
 					shape._webgl.primType = gl.TRIANGLES;
 				}
@@ -2348,9 +2344,9 @@ x3dom.gfx_webgl = (function () {
                         var cssMode = 0; //Bit coded CSS Modes - 1.Bit > Diffuse, 2.Bit > Normal, 3.Bit > Specular
                         var cssShader = shape._cf.appearance.node._shader;
                         
-                        var diffuseTex   = cssShader.getDiffuseMap();
-                        var normalTex    = cssShader.getNormalMap(); 
-                        var specularTex  = cssShader.getSpecularMap(); 
+                        var diffuseTex  = cssShader.getDiffuseMap();
+                        var normalTex   = cssShader.getNormalMap(); 
+                        var specularTex = cssShader.getSpecularMap(); 
                         
                         if(diffuseTex != null){
                             shape.updateTexture(diffuseTex, texCnt++, "false");
@@ -3314,6 +3310,13 @@ x3dom.gfx_webgl = (function () {
 						else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
 						    gl.drawElements(shape._webgl.primType[0], shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
 						}
+    					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
+    					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
+        				    var indOff = shape._cf.geometry.node._indexOffset;
+        				    for (var io=1; io<indOff.length; io++) {
+             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             				}
+        				}
 						else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
@@ -3485,6 +3488,13 @@ x3dom.gfx_webgl = (function () {
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
     						gl.drawElements(shape._webgl.primType[0], shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
     					} 
+    					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
+    					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
+        				    var indOff = shape._cf.geometry.node._indexOffset;
+        				    for (var io=1; io<indOff.length; io++) {
+             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             				}
+        				}
 						else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
@@ -4030,18 +4040,20 @@ x3dom.gfx_webgl = (function () {
             // render object
             try {
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
-              if (viewarea._points !== undefined && viewarea._points) {
+              if (viewarea._points !== undefined && viewarea._points > 0) {
+                var polyMode = (viewarea._points == 1) ? gl.POINTS : gl.LINES;  // FIXME
+                
 				if (shape._webgl.imageGeometry) {
 					for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
-						gl.drawArrays(gl.POINTS, offset, shape._cf.geometry.node._vf.vertexCount[i]);
+						gl.drawArrays(polyMode, offset, shape._cf.geometry.node._vf.vertexCount[i]);
 						offset += shape._cf.geometry.node._vf.vertexCount[i];
 					}
 				}    
 				else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
-					gl.drawElements(gl.POINTS, shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
+					gl.drawElements(polyMode, shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
 				}
 				else {
-					gl.drawElements(gl.POINTS, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+					gl.drawElements(polyMode, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 				}
               }
               else {
@@ -4059,6 +4071,13 @@ x3dom.gfx_webgl = (function () {
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
     						gl.drawElements(shape._webgl.primType[0], shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
     					}
+    					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
+    					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
+        				    var indOff = shape._cf.geometry.node._indexOffset;
+        				    for (var io=1; io<indOff.length; io++) {
+             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             				}
+        				}
 						else {
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
