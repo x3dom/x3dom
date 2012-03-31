@@ -111,7 +111,7 @@ x3dom.Mesh.prototype.getCenter = function()
     this.getBBox(min, max, true);
     
     var center = min.add(max).multiply(0.5);
-    //x3dom.debug.logInfo("getCenter: " + min + " | " + max + " --> " + center);
+    //x3dom.debug.logInfo("center: " + center + "; size: " + max.subtract(min));
     
     return center;
 };
