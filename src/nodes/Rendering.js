@@ -114,31 +114,6 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### BinaryGeometry ### */
-x3dom.registerNodeType(
-    "BinaryGeometry",
-    "Rendering",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        function (ctx) {
-            x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
-
-            this.addField_SFInt32(ctx, 'vertexCount', 0);
-            this.addField_SFString(ctx, 'primType', "TRIANGLES");
-            this.addField_SFString(ctx, 'index', "");       // Uint16
-            this.addField_SFString(ctx, 'coord', "");    // Float32
-            this.addField_SFString(ctx, 'normal', "");
-            this.addField_SFString(ctx, 'texcoord', "");
-            this.addField_SFString(ctx, 'color', "");
-        },
-        {
-            nodeChanged: function()
-            {
-                // TODO
-            }
-        }
-    )
-);
-
 /* ### PointSet ### */
 x3dom.registerNodeType(
     "PointSet",
@@ -927,7 +902,7 @@ x3dom.registerNodeType(
 				
 				/*if(hasNormal && hasTexCoord) {
 					
-					this._mesh._primType = 'TRIANGLE_STRIP';
+					this._mesh._primType = 'TRIANGLESTRIP';
 					
 					for (i=0; i < indexes.length; ++i)
 					{
@@ -1203,7 +1178,7 @@ x3dom.registerNodeType(
 					 
 					/*if(hasNormal && hasTexCoord) {
 					
-						this._mesh._primType = 'TRIANGLE_STRIP';
+						this._mesh._primType = 'TRIANGLESTRIP';
 						
 						for (i=0; i < indexes.length; ++i)
 						{
@@ -1424,7 +1399,7 @@ x3dom.registerNodeType(
 					
 					var indexes = this._vf.index;
 					
-					if(this._mesh._primType == 'TRIANGLE_STRIP') {
+					if(this._mesh._primType == 'TRIANGLESTRIP') {
 						
 						for (i=0; i < indexes.length; ++i)
 						{
@@ -1496,7 +1471,7 @@ x3dom.registerNodeType(
 					
 					var indexes = this._vf.index;
 					
-					if(this._mesh._primType == 'TRIANGLE_STRIP') {
+					if(this._mesh._primType == 'TRIANGLESTRIP') {
 						
 						for (i=0; i < indexes.length; ++i)
 						{
@@ -1560,7 +1535,7 @@ x3dom.registerNodeType(
 					this._mesh._texCoords[0] = [];
 					var indexes = this._vf.index;
 					
-					if(this._mesh._primType == 'TRIANGLE_STRIP') {
+					if(this._mesh._primType == 'TRIANGLESTRIP') {
 						
 						for (i=0; i < indexes.length; ++i)
 						{

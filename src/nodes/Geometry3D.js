@@ -1332,7 +1332,96 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### GeometryImage ### */
+
+/* ### BinaryGeometry ### */
+x3dom.registerNodeType(
+    "BinaryGeometry",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
+            
+            this.addField_MFInt32 (ctx, 'vertexCount', [0]);
+            this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+            
+            this.addField_SFString(ctx, 'index', "");   // Uint16
+            this.addField_SFString(ctx, 'coord', "");   // Float32
+            this.addField_SFString(ctx, 'normal', "");
+            this.addField_SFString(ctx, 'texCoord', "");
+            this.addField_SFString(ctx, 'color', "");
+            
+            // workaround
+			this._mesh._numTexComponents = 2;
+			this._mesh._numColComponents = 3;
+			this._mesh._invalidate = false;
+			
+			for (var i=0; i<this._vf.vertexCount.length; i++) {
+			    this._mesh._numCoords += this._vf.vertexCount[i];
+		    }
+		    this._mesh.numFaces = 0;
+        },
+        {
+            nodeChanged: function()
+            {
+                // TODO: handle field updates and retrigger XHR
+            },
+            
+            getMin: function()
+			{
+				if (this._parentNodes.length >= 1) {
+                    var center = this._parentNodes[0]._vf.bboxCenter;
+                    var size = this._parentNodes[0]._vf.bboxSize;
+                    
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
+                    
+                    return center.subtract(size.multiply(0.5));
+                }
+                else {
+                    return new x3dom.fields.SFVec3f(0,0,0);
+                }
+			},
+			
+			getMax: function()
+			{
+				if (this._parentNodes.length >= 1) {
+                    var center = this._parentNodes[0]._vf.bboxCenter;
+                    var size = this._parentNodes[0]._vf.bboxSize;
+                    
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
+                    
+                    return center.add(size.multiply(0.5));
+                }
+                else {
+                    return new x3dom.fields.SFVec3f(0,0,0);
+                }
+			},
+			
+			getVolume: function(min, max, invalidate)
+			{
+				min.setValues(this.getMin());
+				max.setValues(this.getMax());
+				
+				return true;
+			},
+			
+			getCenter: function()
+			{
+				if (this._parentNodes.length >= 1) {
+                    return this._parentNodes[0]._vf.bboxCenter;
+                }
+                else {
+                    return new x3dom.fields.SFVec3f(0,0,0);
+                }
+			}
+        }
+    )
+);
+
+/* ### ImageGeometry ### */
 x3dom.registerNodeType(
     "ImageGeometry",
     "Geometry3D",
@@ -1361,11 +1450,10 @@ x3dom.registerNodeType(
 			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
-			this.addField_MFFloat(ctx, 'vertexCount', [0]);
+			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 			this.addField_SFFloat(ctx, 'implicitMeshSize', 256.0);
-			
-			this.addField_SFFloat(ctx, 'numColorComponents', 3);
+			this.addField_SFInt32(ctx, 'numColorComponents', 3);
 			
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
