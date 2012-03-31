@@ -1615,7 +1615,7 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                if (fieldName === "coord") {
+                if (fieldName === "coord" || fieldName === "point") {
                     Array.forEach(this._parentNodes, function (node) {
                         node.fieldChanged("coord");
                     });
@@ -1663,7 +1663,7 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                if (fieldName === "normal") {
+                if (fieldName === "normal" || fieldName === "vector") {
                     Array.forEach(this._parentNodes, function (node) {
                         node.fieldChanged("normal");
                     });
