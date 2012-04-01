@@ -1795,13 +1795,13 @@ x3dom.gfx_webgl = (function () {
         
         // we're on init, thus reset all dirty flags
         shape._dirty.positions = false;
-        shape._dirty.normals = false;
+        shape._dirty.normals   = false;
         shape._dirty.texcoords = false;
-        shape._dirty.colors = false;
-        shape._dirty.indexes = false;
-        shape._dirty.texture = false;
-		shape._dirty.material = true;
-        shape._dirty.shader = false;
+        shape._dirty.colors    = false;
+        shape._dirty.indexes   = false;
+        shape._dirty.texture   = false;
+		shape._dirty.material  = false;
+        shape._dirty.shader    = false;
         
         
         // dynamically attach clean-up method for GL objects
