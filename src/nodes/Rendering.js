@@ -56,7 +56,7 @@ x3dom.registerNodeType(
 
 /* ### Mesh ### */
 x3dom.registerNodeType(
-    "Mesh",
+    "Mesh",         // experimental WebSG geo node
     "Rendering",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
@@ -169,43 +169,25 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                var pnts;
-                var i, n;
-
-                if (fieldName == "coord")   // same as in IFS
+                var pnts = null;
+                
+                if (fieldName == "coord")
                 {
                     pnts = this._cf.coord.node._vf.point;
-                    n = pnts.length;
-
-                    this._mesh._positions[0] = [];
-
-                    // TODO; optimize (is there a memcopy?)
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._positions[0].push(pnts[i].x);
-                        this._mesh._positions[0].push(pnts[i].y);
-                        this._mesh._positions[0].push(pnts[i].z);
-                    }
-
+                    
+                    this._mesh._positions[0] = pnts.toGL();
+                    
                     this._mesh._invalidate = true;
 
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                    Array.forEach(this._parentNodes, function (node) {					
+                         node._dirty.positions = true;
                     });
                 }
                 else if (fieldName == "color")
                 {
                     pnts = this._cf.color.node._vf.color;
-                    n = pnts.length;
-
-                    this._mesh._colors[0] = [];
-
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._colors[0].push(pnts[i].r);
-                        this._mesh._colors[0].push(pnts[i].g);
-                        this._mesh._colors[0].push(pnts[i].b);
-                    }
+                    
+                    this._mesh._colors[0] = pnts.toGL();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
@@ -239,6 +221,7 @@ x3dom.registerNodeType(
             {
                 //var time0 = new Date().getTime();
 
+                // TODO; handle case that more than 2^16-1 attributes are to be referenced
                 var i, n = this._cf.attrib.nodes.length;
 
                 for (i=0; i<n; i++)
@@ -470,43 +453,25 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                var pnts;
-                var i, n;
-
+                var pnts = null;
+                
                 if (fieldName == "coord")
                 {
-                    // TODO; multi-index with different this._mesh._indices
                     pnts = this._cf.coord.node._vf.point;
-                    n = pnts.length;
-
-                    this._mesh._positions[0] = [];
-
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._positions[0].push(pnts[i].x);
-                        this._mesh._positions[0].push(pnts[i].y);
-                        this._mesh._positions[0].push(pnts[i].z);
-                    }
-
+                    
+                    this._mesh._positions[0] = pnts.toGL();
+                    
                     this._mesh._invalidate = true;
 
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                    Array.forEach(this._parentNodes, function (node) {					
+                         node._dirty.positions = true;
                     });
                 }
                 else if (fieldName == "color")
                 {
                     pnts = this._cf.color.node._vf.color;
-                    n = pnts.length;
-
-                    this._mesh._colors[0] = [];
-
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._colors[0].push(pnts[i].r);
-                        this._mesh._colors[0].push(pnts[i].g);
-                        this._mesh._colors[0].push(pnts[i].b);
-                    }
+                    
+                    this._mesh._colors[0] = pnts.toGL();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
