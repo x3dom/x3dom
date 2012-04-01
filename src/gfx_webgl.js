@@ -1157,7 +1157,9 @@ x3dom.gfx_webgl = (function () {
             
             if(lights || fog){
                 shader += "uniform vec3 eyePosition;\n";
-                shader += "varying vec3 fragEyePosition;\n";
+                if (fog) {
+                    shader += "varying vec3 fragEyePosition;\n";
+                }
                 shader += "varying vec3 fragPosition;\n";
                 
                 if(shadow) {
@@ -1238,7 +1240,9 @@ x3dom.gfx_webgl = (function () {
             
             if(lights || fog){    
                 shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0)).xyz;\n";
-                shader += "fragEyePosition = eyePosition - fragPosition;\n";
+                if (fog) {
+                    shader += "fragEyePosition = eyePosition - fragPosition;\n";
+                }
                 if(shadow) {
                     shader += "projCoord = matPV * vec4(vertPosition+0.5*normalize(vertNormal), 1.0);\n";
                 }
@@ -1451,17 +1455,14 @@ x3dom.gfx_webgl = (function () {
                 shader += "uniform float solid;             \n";
                 shader += "varying vec3 fragNormal;         \n";
                 shader += "varying vec3 fragPosition;       \n";
-                shader += "varying vec3 fragEyePosition;    \n";
                 shader += light;
                 if(shadows) {
                     shader += shadow;
                 }
             }
             if(fogs){
+                shader += "varying vec3 fragEyePosition;    \n";
                 shader += fog;
-                if(!lights){
-                    shader += "varying vec3 fragEyePosition;    \n";
-                }
             }
             
             //Set Main

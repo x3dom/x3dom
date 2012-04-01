@@ -603,7 +603,7 @@ x3dom.registerNodeType(
                 }
                 posMax = positions.length;
 
-                if ( (positions.length > 65535) )
+                if ( positions.length > 65535 )
                 {
                     t = 0;
                     cnt = 0;
@@ -615,8 +615,7 @@ x3dom.registerNodeType(
                     {
                         // Convert non-triangular polygons to a triangle fan
                         // (TODO: this assumes polygons are convex)
-
-//                        if ((i > 0) && !(i % 3)) {
+                        
                         if ((i > 0) && (i % 3 === 0 )) {
                             t = 0;
                             faceCnt++;
@@ -768,47 +767,55 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                var pnts;
-                var i, n;
-
+                var pnts = this._cf.coord.node._vf.point;
+                
+                if ( pnts.length > 65535 )  // are there other problematic cases?
+                {
+					// TODO; implement
+                    x3dom.debug.logWarning("IndexedTriangleSet: fieldChanged with " + 
+                                           "too many coordinates not yet implemented!");
+                    return;
+                }
+                
                 if (fieldName == "coord")
                 {
-                    // TODO; multi-index with different this._mesh._indices
-                    pnts = this._cf.coord.node._vf.point;
-                    n = pnts.length;
-
-                    this._mesh._positions[0] = [];
-
-                    // TODO; optimize (is there a memcopy?)
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._positions[0].push(pnts[i].x);
-                        this._mesh._positions[0].push(pnts[i].y);
-                        this._mesh._positions[0].push(pnts[i].z);
-                    }
-
+                    this._mesh._positions[0] = pnts.toGL();
+                    
+                    // tells the mesh that its bbox requires update
                     this._mesh._invalidate = true;
 
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                    Array.forEach(this._parentNodes, function (node) {					
+                         node._dirty.positions = true;
                     });
                 }
                 else if (fieldName == "color")
-                {
+                { 
                     pnts = this._cf.color.node._vf.color;
-                    n = pnts.length;
-
-                    this._mesh._colors[0] = [];
-
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._colors[0].push(pnts[i].r);
-                        this._mesh._colors[0].push(pnts[i].g);
-                        this._mesh._colors[0].push(pnts[i].b);
-                    }
+                    
+                    this._mesh._colors[0] = pnts.toGL();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
+                    });
+                }
+				else if (fieldName == "normal")
+                {
+                    pnts = this._cf.normal.node._vf.vector;
+					
+                    this._mesh._normals[0] = pnts.toGL();
+					
+                    Array.forEach(this._parentNodes, function (node) {
+                         node._dirty.normals = true;
+                    });
+                }
+				else if (fieldName == "texCoord")
+                {
+                    pnts = this._cf.texCoord.node._vf.point;
+                    
+                    this._mesh._texCoords[0] = pnts.toGL();
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.texcoords = true;
                     });
                 }
             }
@@ -830,7 +837,7 @@ x3dom.registerNodeType(
         {
             nodeChanged: function() 
             {
-                this.handleAttribs();   // check if still functional
+                this.handleAttribs();   // check if method is still functional
 	
                 var hasNormal = false, hasTexCoord = false, hasColor = false;
 
@@ -899,9 +906,8 @@ x3dom.registerNodeType(
                 this._mesh._numCoords = 0;
 				
 				var faceCnt = 0, cnt = 0;
-				var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
 				
-				if (hasNormal && positions.length <= 65535) // hasTexCoord?
+				if (hasNormal && positions.length <= 65535)
 				{
 					this._mesh._primType = 'TRIANGLESTRIP';
 					this._indexOffset = [];
@@ -919,14 +925,20 @@ x3dom.registerNodeType(
 					}
 					
 					this._mesh._positions[0] = positions.toGL();
-                    if (hasNormal) {
-                        this._mesh._normals[0] = normals.toGL();
-                    }
+					
+                    x3dom.debug.assert(normPerVert);
+                    this._mesh._normals[0] = normals.toGL();
+                    
                     if (hasTexCoord) {
                         this._mesh._texCoords[0] = texCoords.toGL();
                         this._mesh._numTexComponents = numTexComponents;
                     }
+                    else {
+                        x3dom.debug.logWarning("IndexedTriangleStripSet: no texCoords given and won't calculate!");
+                    }
+                    
                     if (hasColor) {
+                        x3dom.debug.assert(colPerVert);
                         this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
                     }
@@ -938,6 +950,8 @@ x3dom.registerNodeType(
 				} 
 				else 
 				{
+				    var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
+				    
 					for (i=1; i < indexes.length-2; ++i)
 					{
 						if (indexes[i+1] == -1) {
@@ -1050,6 +1064,69 @@ x3dom.registerNodeType(
                         this._mesh._numCoords += this._mesh._positions[i].length / 3;
                     }
 				}
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName != "coord" && fieldName != "normal" &&
+    				fieldName != "texCoord" && fieldName != "color")
+    			{
+    			    x3dom.debug.logWarning("IndexedTriangleStripSet: fieldChanged for " +
+    			                           fieldName + " not yet implemented!");
+    			    return;
+    			}
+        		
+                var pnts = this._cf.coord.node._vf.point;
+                
+                if ((this._cf.normal.node === null) || (pnts.length > 65535))
+                {
+					// TODO; implement
+                    x3dom.debug.logWarning("IndexedTriangleStripSet: fieldChanged without normals" + 
+                                           " or with too many coordinates not yet implemented!");
+                    return;
+                }
+
+                if (fieldName == "coord")
+                {
+                    this._mesh._positions[0] = pnts.toGL();
+                    
+                    // tells the mesh that its bbox requires update
+                    this._mesh._invalidate = true;
+
+                    Array.forEach(this._parentNodes, function (node) {					
+                         node._dirty.positions = true;
+                    });
+                }
+                else if (fieldName == "color")
+                { 
+                    pnts = this._cf.color.node._vf.color;
+                    
+                    this._mesh._colors[0] = pnts.toGL();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.colors = true;
+                    });
+                }
+				else if (fieldName == "normal")
+                {
+                    pnts = this._cf.normal.node._vf.vector;
+					
+                    this._mesh._normals[0] = pnts.toGL();
+					
+                    Array.forEach(this._parentNodes, function (node) {
+                         node._dirty.normals = true;
+                    });
+                }
+				else if (fieldName == "texCoord")
+                {
+                    pnts = this._cf.texCoord.node._vf.point;
+                    
+                    this._mesh._texCoords[0] = pnts.toGL();
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.texcoords = true;
+                    });
+                }
             }
         }
     )
