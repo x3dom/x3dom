@@ -20,4 +20,4 @@ Specifications
 
 Tools and Converters
 --------------------
-* XSLT to convert X3D to XHTML <http://www.web3d.org/x3d/stylesheets/X3dToX3dom.xslt>`_ A stylesheet to convert .x3d scenes to X3DOM xhtml encoding by Don Brutzman
+* `XSLT to convert X3D to XHTML <http://www.web3d.org/x3d/stylesheets/X3dToX3dom.xslt>`_ A stylesheet to convert .x3d scenes to X3DOM xhtml encoding by Don Brutzman
