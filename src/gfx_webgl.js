@@ -2313,8 +2313,7 @@ x3dom.gfx_webgl = (function () {
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
 				imageGeometry: numCoordinateTextures,
-				indexedImageGeometry: indexed,
-				indexLength: 0  // only for binary data via XHR
+				indexedImageGeometry: indexed
             };
             
             if (tex) {
@@ -2480,6 +2479,9 @@ x3dom.gfx_webgl = (function () {
 			        case 'POINTS':
 			            shape._webgl.primType.push(gl.POINTS);
 			            break;
+			        case 'LINES':
+			            shape._webgl.primType.push(gl.LINES);
+			            break;
 			        case 'TRIANGLESTRIP':
 			            shape._webgl.primType.push(gl.TRIANGLE_STRIP);
 			            break;
@@ -2515,13 +2517,21 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
 
                     // Test reading Data
-                    //x3dom.debug.logWarning("arraybuffer[0]="+indexArray[0]);
-
-                    shape._webgl.indexLength = indexArray.length;
-                    if (shape._webgl.primType[0] == gl.TRIANGLE_STRIP)
-                        shape._cf.geometry.node._mesh._numFaces = indexArray.length - 2;
-                    else
-                        shape._cf.geometry.node._mesh._numFaces = indexArray.length / 3;
+                    //x3dom.debug.logWarning("arraybuffer[0]="+indexArray[0]+"; n="+indexArray.length);
+                    
+        		    var geoNode = shape._cf.geometry.node;
+        		    
+                    if (geoNode._vf.vertexCount[0] == 0)
+                        geoNode._vf.vertexCount[0] = indexArray.length;
+                    
+                    geoNode._mesh._numFaces = 0;
+                    
+                    for (var i=0; i<geoNode._vf.vertexCount.length; i++) {
+                        if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP)
+                            geoNode._mesh._numFaces += geoNode._vf.vertexCount[i] - 2;
+                        else
+                            geoNode._mesh._numFaces += geoNode._vf.vertexCount[i] / 3;
+                    }
 
                     indexArray = null;
 
@@ -2563,13 +2573,9 @@ x3dom.gfx_webgl = (function () {
 
                     // Test reading Data
                     //x3dom.debug.logWarning("arraybuffer[0].vx="+vertices[0]);  
-
-                    var geoNode = shape._cf.geometry.node;
-                    if (geoNode._mesh._numCoords <= 0) {
-                        geoNode._mesh._numCoords = vertices.length / 3;
-                        geoNode._vf.vertexCount[0] = geoNode._mesh._numCoords;
-                    }
-
+                    
+                    shape._cf.geometry.node._mesh._numCoords = vertices.length / 3;
+                    
                     vertices = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
@@ -3374,7 +3380,11 @@ x3dom.gfx_webgl = (function () {
 							}
 						}
 						else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
-						    gl.drawElements(shape._webgl.primType[0], shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
+					        for (var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
+						        gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], 
+						                        gl.UNSIGNED_SHORT, 2*offset);
+						        offset += shape._cf.geometry.node._vf.vertexCount[v];
+					        }
 						}
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
@@ -3552,7 +3562,11 @@ x3dom.gfx_webgl = (function () {
 							}
 						}
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
-    						gl.drawElements(shape._webgl.primType[0], shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
+					        for (var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
+						        gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], 
+						                        gl.UNSIGNED_SHORT, 2*offset);
+						        offset += shape._cf.geometry.node._vf.vertexCount[v];
+					        }
     					} 
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
@@ -4116,7 +4130,11 @@ x3dom.gfx_webgl = (function () {
 					}
 				}    
 				else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
-					gl.drawElements(polyMode, shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
+			        for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
+				        gl.drawElements(polyMode, shape._cf.geometry.node._vf.vertexCount[i], 
+				                        gl.UNSIGNED_SHORT, 2*offset);
+				        offset += shape._cf.geometry.node._vf.vertexCount[i];
+			        }
 				}
 				else {
 					gl.drawElements(polyMode, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
@@ -4135,7 +4153,11 @@ x3dom.gfx_webgl = (function () {
 							}
 						}
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
-    						gl.drawElements(shape._webgl.primType[0], shape._webgl.indexLength, gl.UNSIGNED_SHORT, 0);
+                            for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
+						        gl.drawElements(shape._webgl.primType[i], shape._cf.geometry.node._vf.vertexCount[i], 
+						                        gl.UNSIGNED_SHORT, 2*offset);
+						        offset += shape._cf.geometry.node._vf.vertexCount[i];
+					        }
     					}
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
@@ -4187,7 +4209,11 @@ x3dom.gfx_webgl = (function () {
 			for(var i=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++)
 				this.numCoords += shape._cf.geometry.node._vf.vertexCount[i];
 			this.numDrawCalls += shape._cf.geometry.node._vf.vertexCount.length;
-		} 
+		}
+		else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
+		    this.numCoords += shape._cf.geometry.node._mesh._numCoords;
+		    this.numDrawCalls += shape._cf.geometry.node._vf.vertexCount.length;
+		}
 		else {
 			this.numCoords += shape._cf.geometry.node._mesh._numCoords;
 			
@@ -4425,6 +4451,7 @@ x3dom.gfx_webgl = (function () {
         
         var mat_view = viewarea.getViewMatrix();
         
+        // fire viewpointChanged event
         if ( !viewarea._last_mat_view.equals(mat_view) )
         {
         	var e_viewpoint = viewarea._scene.getViewpoint();
@@ -4518,9 +4545,6 @@ x3dom.gfx_webgl = (function () {
             if (obj3d) {
                 var mat_view_model = mat_view.mult(trafo);
                 obj3d._eye = trafo.inverse().multMatrixPnt(center);
-                // obj3d._eyeViewUp = new x3dom.fields.SFVec3f(mat_view._10, mat_view._11, mat_view._12);
-                // https://github.com/x3dom/x3dom/issues/4
-                // fix from Nelson Silva https://github.com/inevo/x3dom/commit/ef84f15a00790a7d62b17751143a729979208326
                 obj3d._eyeViewUp = new x3dom.fields.SFVec3f(mat_view_model._10, mat_view_model._11, mat_view_model._12);
                 obj3d._eyeLook = new x3dom.fields.SFVec3f(mat_view_model._20, mat_view_model._21, mat_view_model._22);
             }
@@ -4592,7 +4616,6 @@ x3dom.gfx_webgl = (function () {
                 );
         gl.enable(gl.BLEND);
         
-        // currently maximum of 4 supported in Mozilla
         var activeTex = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3,
                          gl.TEXTURE4, gl.TEXTURE5, gl.TEXTURE6, gl.TEXTURE7];
         
@@ -4602,7 +4625,7 @@ x3dom.gfx_webgl = (function () {
             var needEnableBlending = false;
             var needEnableDepthMask = false;
 
-            // HACK; fully impl. BlendMode and DepthMode!
+            // HACK; fully impl. BlendMode and DepthMode, also for renderedTexture pass!
             if (obj[1]._cf.appearance.node._cf.blendMode.node &&
                 obj[1]._cf.appearance.node._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
                 obj[1]._cf.appearance.node._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
@@ -4664,7 +4687,7 @@ x3dom.gfx_webgl = (function () {
             this.canvas.parent.statDiv.appendChild(document.createElement("br"));
             this.canvas.parent.statDiv.appendChild(document.createTextNode("#Pnts: " + this.numCoords));
             this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("#DrawCalls: " + this.numDrawCalls));
+            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Draws: " + this.numDrawCalls));
         }
         
         //scene.drawableObjects = null;

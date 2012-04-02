@@ -1353,12 +1353,10 @@ x3dom.registerNodeType(
             // workaround
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
-			this._mesh._invalidate = false;
 			
-			for (var i=0; i<this._vf.vertexCount.length; i++) {
-			    this._mesh._numCoords += this._vf.vertexCount[i];
-		    }
-		    this._mesh.numFaces = 0;
+			this._mesh._invalidate = false;
+			this._mesh._numCoords = 0;
+		    this._mesh._numFaces = 0;
         },
         {
             nodeChanged: function()
@@ -1461,20 +1459,20 @@ x3dom.registerNodeType(
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
 			
-			
+			// TODO: this._mesh._numTexComponents
 			this._mesh._numColComponents = this._vf.numColorComponents;
 			
 			if (this._vf.implicitMeshSize.y == 0)
 			    this._vf.implicitMeshSize.y = this._vf.implicitMeshSize.x;
 			
 			//TODO check if GPU-Version is supported (Flash, etc.)
-			//Dummy mesh generation only need for GPU-Version
+			//Dummy mesh generation only needed for GPU-Version
 			
 			if(x3dom.caps.BACKEND == 'webgl' && x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS > 0) {
 			
-				var geoCacheID = 'ImageGeometry';
+				var geoCacheID = 'ImageGeometry';   // TODO: implicitMeshSize may differ!!!
 
-				if( x3dom.geoCache[geoCacheID] != undefined )
+				if( x3dom.geoCache[geoCacheID] !== undefined )
 				{
 					x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
 					this._mesh = x3dom.geoCache[geoCacheID];
@@ -1485,13 +1483,7 @@ x3dom.registerNodeType(
 					{
 						for(var x=0; x<this._vf.implicitMeshSize.x; x++)
 						{
-							//var idx = y * this._vf.implicitMeshSize + x;
-							
-							//if(idx == 65535) break;
-							
-							//this._mesh._positions[0].push(x/255, y/255, 0);
 							this._mesh._positions[0].push(x/this._vf.implicitMeshSize.x, y/this._vf.implicitMeshSize.y, 0);
-							//this._mesh._indices[0].push(idx);
 						}
 					}
 					
@@ -1750,6 +1742,9 @@ x3dom.registerNodeType(
                      (hasTexCoord && hasTexCoordInd) ||
                      (hasColor && hasColorInd) )
                 {
+                    if (this._vf.creaseAngle <= x3dom.fields.Eps)
+                        x3dom.debug.logWarning('Fallback to inefficient multi-index mode since creaseAngle=0.');
+                    
                     // Found MultiIndex Mesh
 					if(this._vf.convex) {
 						t = 0;
