@@ -1452,7 +1452,7 @@ x3dom.registerNodeType(
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
 			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
-			this.addField_SFFloat(ctx, 'implicitMeshSize', 256.0);
+			this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);
 			this.addField_SFInt32(ctx, 'numColorComponents', 3);
 			
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
@@ -1463,6 +1463,9 @@ x3dom.registerNodeType(
 			
 			
 			this._mesh._numColComponents = this._vf.numColorComponents;
+			
+			if (this._vf.implicitMeshSize.y == 0)
+			    this._vf.implicitMeshSize.y = this._vf.implicitMeshSize.x;
 			
 			//TODO check if GPU-Version is supported (Flash, etc.)
 			//Dummy mesh generation only need for GPU-Version
@@ -1478,16 +1481,16 @@ x3dom.registerNodeType(
 				}
 				else
 				{
-					for(var y=0; y<this._vf.implicitMeshSize; y++)
+					for(var y=0; y<this._vf.implicitMeshSize.y; y++)
 					{
-						for(var x=0; x<this._vf.implicitMeshSize; x++)
+						for(var x=0; x<this._vf.implicitMeshSize.x; x++)
 						{
 							//var idx = y * this._vf.implicitMeshSize + x;
 							
 							//if(idx == 65535) break;
 							
 							//this._mesh._positions[0].push(x/255, y/255, 0);
-							this._mesh._positions[0].push(x/this._vf.implicitMeshSize, y/this._vf.implicitMeshSize, 0);
+							this._mesh._positions[0].push(x/this._vf.implicitMeshSize.x, y/this._vf.implicitMeshSize.y, 0);
 							//this._mesh._indices[0].push(idx);
 						}
 					}
