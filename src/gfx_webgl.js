@@ -3463,7 +3463,7 @@ x3dom.gfx_webgl = (function () {
 				sp.IG_bboxMax				= shape._cf.geometry.node.getMax().toGL();
 				sp.IG_coordTextureWidth	 	= shape._webgl.coordTextureWidth;
 				sp.IG_coordTextureHeight 	= shape._webgl.coordTextureHeight;
-				sp.IG_implicitMeshSize		= shape._cf.geometry.node._vf.implicitMeshSize;
+				sp.IG_implicitMeshSize		= shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
 				
 				if(shape._webgl.indexedImageGeometry) {
 					sp.indexed = 1.0;
@@ -3641,7 +3641,7 @@ x3dom.gfx_webgl = (function () {
 			sp.IG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
 			sp.IG_coordTextureWidth	 = shape._webgl.coordTextureWidth;
 			sp.IG_coordTextureHeight = shape._webgl.coordTextureHeight;
-			sp.IG_implicitMeshSize	 = shape._cf.geometry.node._vf.implicitMeshSize;
+			sp.IG_implicitMeshSize	 = shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
 			
 			if(shape._webgl.indexedImageGeometry) {
 				sp.IG_indexTextureWidth	 = shape._webgl.indexTextureWidth;
