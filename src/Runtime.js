@@ -246,6 +246,9 @@ x3dom.Runtime.prototype.uprightView = function() {
  *
  * Zooms so that all objects are fully visible.
  *
+ * Parameter:
+ *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
+ *
  */
 x3dom.Runtime.prototype.showAll = function(axis) {
     this.canvas.doc._viewarea.showAll(axis);
@@ -521,6 +524,19 @@ x3dom.Runtime.prototype.backendName = function() {
 };
 
 
+/**
+ * APIMethod isA
+ *
+ * Test a DOM node object against a node type string. This method
+ * can be used to determine the "type" of a DOM node.
+ *
+ * Parameters:
+ *    domNode: the node to test for
+ *    nodeType: node name to test domNode against
+ *
+ *  Returns:
+ *    True or false
+ */
 x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
     var inherits = false;
     
