@@ -2292,15 +2292,15 @@ x3dom.gfx_webgl = (function () {
                 }
             };
 			
-			var indexed = 0;
-			var numCoordinateTextures = 0;
-			if( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ) {
+			var indexed = 0, numCoordinateTextures = 0;
+
+			if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) && !x3dom.caps.MOBILE)
+            {
 				numCoordinateTextures = shape._cf.geometry.node.numCoordinateTextures();
 				indexed = (shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0;
 			}
-			
-			
-			//Need for right picking shader
+
+			//Needed for right picking shader
 			viewarea._scene._webgl.imageGeometry = numCoordinateTextures;
             
             shape._webgl = {
@@ -3453,10 +3453,10 @@ x3dom.gfx_webgl = (function () {
         gl.enable(gl.CULL_FACE);
         gl.disable(gl.BLEND);
         
-        var sp;
+        var sp = null;
         if (pickMode === 0)
 		{
-			if(scene._webgl.imageGeometry)
+			if (scene._webgl.imageGeometry > 0 && !x3dom.caps.MOBILE)   // Do mobile devices with vertex textures exist?
 				{ sp = scene._webgl.pickShaderIG; }
 			else
 				{ sp = scene._webgl.pickShader; }
@@ -4394,7 +4394,8 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.fboPick.pixelData = null;
             
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
-			scene._webgl.pickShaderIG = this.getShaderProgram(gl, ['vs-x3d-pickIG', 'fs-x3d-pick']); // TODO: mobile
+            if (!x3dom.caps.MOBILE)    // TODO: mobile
+			    scene._webgl.pickShaderIG = this.getShaderProgram(gl, ['vs-x3d-pickIG', 'fs-x3d-pick']);
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
