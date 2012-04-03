@@ -2575,7 +2575,28 @@ x3dom.gfx_webgl = (function () {
                     //x3dom.debug.logWarning("arraybuffer[0].vx="+vertices[0]);  
                     
                     shape._cf.geometry.node._mesh._numCoords = vertices.length / 3;
-                    
+
+                    if (shape._vf.bboxSize.x < 0 || shape._vf.bboxSize.y < 0 || shape._vf.bboxSize.z < 0)
+                    {
+                        var min = new x3dom.fields.SFVec3f(vertices[0],vertices[1],vertices[2]);
+                        var max = new x3dom.fields.SFVec3f(vertices[0],vertices[1],vertices[2]);
+
+                        for (var i=3; i<vertices.length; i+=3)
+                        {
+                            if (min.x > vertices[i+0]) { min.x = vertices[i+0]; }
+                            if (min.y > vertices[i+1]) { min.y = vertices[i+1]; }
+                            if (min.z > vertices[i+2]) { min.z = vertices[i+2]; }
+
+                            if (max.x < vertices[i+0]) { max.x = vertices[i+0]; }
+                            if (max.y < vertices[i+1]) { max.y = vertices[i+1]; }
+                            if (max.z < vertices[i+2]) { max.z = vertices[i+2]; }
+                        }
+
+                        // TODO; move to mesh for all cases?
+                        shape._vf.bboxCenter.setValues(min.add(max).multiply(0.5));
+                        shape._vf.bboxSize.setValues(max.subtract(min));
+                    }
+
                     vertices = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
