@@ -270,13 +270,21 @@ x3dom.Runtime.prototype.debug = function(show) {
     if (show === true) {
         this.canvas.doc._viewarea._visDbgBuf = true;
         x3dom.debug.logContainer.style.display = "block";
-        this.canvas.doc.needRender = true;
     }
     if (show === false) {
         this.canvas.doc._viewarea._visDbgBuf = false;
         x3dom.debug.logContainer.style.display = "none";
-        this.canvas.doc.needRender = true;
     }
+    else {
+        if (this.canvas.doc._viewarea._visDbgBuf === undefined) 
+            this.canvas.doc._viewarea._visDbgBuf = true;
+        else
+            this.canvas.doc._viewarea._visDbgBuf = !this.canvas.doc._viewarea._visDbgBuf;
+
+        x3dom.debug.logContainer.style.display =
+                (this.canvas.doc._viewarea._visDbgBuf === true) ? "block" : "none";
+    }
+    this.canvas.doc.needRender = true;
     return this.canvas.doc._viewarea._visDbgBuf;
 };
 
