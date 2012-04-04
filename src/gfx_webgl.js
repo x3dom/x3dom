@@ -2332,6 +2332,7 @@ x3dom.gfx_webgl = (function () {
 				}
                 
                 /** SHADER HACK (TODO: MAKE BETTER!) */
+				
                 if (shape._cf.appearance.node._shader !== null) {
                     if(x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)){
                         
@@ -3229,7 +3230,7 @@ x3dom.gfx_webgl = (function () {
 								gl.drawArrays(shape._webgl.primType[v], offset, shape._cf.geometry.node._vf.vertexCount[v]);
 								offset += shape._cf.geometry.node._vf.vertexCount[v];
 							}
-						} else {
+						} else {/*TEST*/
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
 					}
@@ -3800,7 +3801,7 @@ x3dom.gfx_webgl = (function () {
 								gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
 								offset += shape._cf.geometry.node._vf.vertexCount[i];
 							}
-						} else {
+						} else {/*test*/
 							gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
 						}
                     }
@@ -4074,7 +4075,7 @@ x3dom.gfx_webgl = (function () {
         {
         	var e_viewpoint = viewarea._scene.getViewpoint();
         	var e_eventType = "viewpointChanged";
-        	
+        	/*TEST*/
         	try {
 				if ( e_viewpoint._xmlNode && 
 						(e_viewpoint._xmlNode["on"+e_eventType] ||
