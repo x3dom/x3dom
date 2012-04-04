@@ -210,6 +210,14 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
     ctx.renderScene(this._viewarea);
 };
 
+x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+
+    ctx.pickValue(this._viewarea, x, y);
+};
+
 x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
     if (!ctx || !this._viewarea) {
         return;
