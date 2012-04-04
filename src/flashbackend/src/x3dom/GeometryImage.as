@@ -17,9 +17,11 @@ package x3dom
 		private var _coordinateTexture1Loaded:Boolean;
 		private var _normalTextureLoaded:Boolean;
 		private var _texCoordTextureLoaded:Boolean;
+		private var _colorTextureLoaded:Boolean;
 		private var _coords0:Bitmap = null;
 		private var _coords1:Bitmap = null;
 		private var _primType:Array = new Array();
+		private var _numColorComponents:uint;
 		private var _vertexCount:Array = new Array();
 		
 		/**
@@ -173,6 +175,26 @@ package x3dom
 		/**
 		 * 
 		 */
+		public function setColorTexture(value:Object) : void
+		{
+			if(value.colorTexture)
+			{
+				this._colorTextureLoaded = false;
+				this._numColorComponents = value.components;
+				
+				var colorLoader:Loader = new Loader();
+				colorLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleColorComplete);
+				colorLoader.load(new URLRequest(value.colorTexture));
+			}
+			else
+			{
+				this._colorTextureLoaded = true;
+			}
+		}
+		
+		/**
+		 * 
+		 */
 		private function handleCoordinate0Complete(e:Event) : void
 		{
 			this._coords0 = Bitmap( e.target.content );
@@ -246,7 +268,7 @@ package x3dom
 			
 			this._coordinateTexturesLoaded = true;
 			
-			if(_normalTextureLoaded && _texCoordTextureLoaded) 
+			if(_normalTextureLoaded && _texCoordTextureLoaded && _colorTextureLoaded) 
 			{
 				_ready = true;
 				this.dispatchEvent( new Event( Event.COMPLETE ) );
@@ -300,7 +322,7 @@ package x3dom
 			
 			this._normalTextureLoaded = true;
 			
-			if(_coordinateTexturesLoaded && _texCoordTextureLoaded) 
+			if(_coordinateTexturesLoaded && _texCoordTextureLoaded && _colorTextureLoaded) 
 			{
 				this._ready = true;
 				this.dispatchEvent( new Event( Event.COMPLETE ) );
@@ -359,7 +381,62 @@ package x3dom
 			
 			this._texCoordTextureLoaded = true;
 			
-			if(_coordinateTexturesLoaded && _normalTextureLoaded) 
+			if(_coordinateTexturesLoaded && _normalTextureLoaded && _colorTextureLoaded) 
+			{
+				this._ready = true;
+				this.dispatchEvent( new Event( Event.COMPLETE ) );
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		private function handleColorComplete(e:Event) : void
+		{
+			var bitmap:Bitmap = Bitmap( e.target.content );
+			
+			var color:uint;	
+			var idx:uint = 0;
+			var vertColor:Vector3D = new Vector3D();
+			var vertColors:Vector.<Number> = new Vector.<Number>();
+			
+			for(var y:uint=0; y<bitmap.height; y++)
+			{
+				for(var x:uint=0; x<bitmap.width; x++)
+				{
+					if( vertColors.length/3 == (this._vertexCount[idx]) ) {
+						this.setColors(idx, vertColors, this._numColorComponents);
+						idx++;
+						if(idx < this._vertexCount.length){
+							vertColors = new Vector.<Number>();
+						} else {
+							break;
+						}
+					}
+					
+					if(this._numColorComponents == 4)
+					{
+						color = bitmap.bitmapData.getPixel32(x,y);
+						vertColor.w = (color >> 24 & 0xFF) / 255.0;
+					} else {
+						color = bitmap.bitmapData.getPixel(x,y);
+					}
+					vertColor.x = (color >> 16 & 0xFF) / 255.0;
+					vertColor.y = (color >> 8 & 0xFF) / 255.0;
+					vertColor.z = (color & 0xFF) / 255.0;
+					
+					if(this._numColorComponents == 4)
+					{
+						vertColors.push(vertColor.x, vertColor.y, vertColor.z, vertColor.w);
+					} else {
+						vertColors.push(vertColor.x, vertColor.y, vertColor.z);
+					}
+				}
+			}
+			
+			this._colorTextureLoaded = true;
+			
+			if(_coordinateTexturesLoaded && _normalTextureLoaded && _texCoordTextureLoaded) 
 			{
 				this._ready = true;
 				this.dispatchEvent( new Event( Event.COMPLETE ) );

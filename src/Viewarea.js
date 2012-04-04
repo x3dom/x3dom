@@ -964,8 +964,15 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 				mult(viewpoint.getViewMatrix());
 		}
 		
-		if (rotation) {
-			this._rotMat = rotation.mult(this._rotMat);
+		if (rotation)
+        {
+            var center = viewpoint.getCenterOfRotation();
+
+            this._rotMat =
+                x3dom.fields.SFMatrix4f.translation(center).
+                mult(rotation).
+                mult(x3dom.fields.SFMatrix4f.translation(center.negate())).
+                mult(this._rotMat);
 		}
 	}
 };

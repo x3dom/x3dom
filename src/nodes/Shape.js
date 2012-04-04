@@ -180,11 +180,17 @@ x3dom.registerNodeType(
             // FIXME: X3DShapeNode inherits from X3DChildNode and X3DBoundedObject
             // (at least according to spec), therefore impl. "render" field there.
             this.addField_SFBool(ctx, 'render', true);
+            // same thing for bbox
+            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
             
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
 
             this._objectID = 0;
+            
+            // in WebGL-based renderer a clean-up function is attached
+            this._cleanupGLObjects = null;
 
             this._dirty = {
                 positions: true,
@@ -254,14 +260,24 @@ x3dom.registerNodeType(
             isCCW: function() {
                 return this._cf.geometry.node._vf.ccw;
             },
+
+            parentRemoved: function(parent) {
+                // Cleans all GL objects for WebGL-based renderer
+                if (this._cleanupGLObjects) {
+                    this._cleanupGLObjects();
+                }
+            },
 			
 			setAllDirty: function () {
+			    // vertex attributes
 				this._dirty.positions = true;
 				this._dirty.normals = true;
 				this._dirty.texcoords = true;
-				this._dirty.colors  =  true;
-				this._dirty.indexes  = true;
-				this._dirty.texture  = true;
+				this._dirty.colors =  true;
+				// indices/topology
+				this._dirty.indexes = true;
+				// appearance properties
+				this._dirty.texture = true;
 				this._dirty.material = true;
 				this._dirty.text = true;
 				this._dirty.shader = true;
@@ -289,62 +305,6 @@ x3dom.registerNodeType(
                 else if (!this._objectID && this._cf.geometry.node._pickable) {
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;
                     x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
-                }
-            },
-
-            // TODO: what if complete subtree is removed at once?
-            parentRemoved: function(parent)
-            {
-                if (this._parentNodes.length === 0 && this._webgl)
-                {
-                    var doc = this.findX3DDoc();
-                    var gl = doc.ctx.ctx3d;
-                    var sp = this._webgl.shader;
-
-                    for (var cnt=0; this._webgl.texture !== undefined &&
-                                    cnt < this._webgl.texture.length; cnt++)
-                    {
-                        if (this._webgl.texture[cnt])
-                        {
-                            gl.deleteTexture(this._webgl.texture[cnt]);
-                        }
-                    }
-
-                    for (var q=0; q<this._webgl.positions.length; q++)
-                    {
-                        if (sp.position !== undefined)
-                        {
-                            gl.deleteBuffer(this._webgl.buffers[5*q+1]);
-                            gl.deleteBuffer(this._webgl.buffers[5*q+0]);
-                        }
-
-                        if (sp.normal !== undefined)
-                        {
-                            gl.deleteBuffer(this._webgl.buffers[5*q+2]);
-                        }
-
-                        if (sp.texcoord !== undefined)
-                        {
-                            gl.deleteBuffer(this._webgl.buffers[5*q+3]);
-                        }
-
-                        if (sp.color !== undefined)
-                        {
-                            gl.deleteBuffer(this._webgl.buffers[5*q+4]);
-                        }
-                    }
-
-                    for (var df=0; df<this._webgl.dynamicFields.length; df++)
-                    {
-                        var attrib = this._webgl.dynamicFields[df];
-
-                        if (sp[attrib.name] !== undefined)
-                        {
-                            gl.deleteBuffer(attrib.buf);
-                        }
-                    }
-
-                    this._webgl = null;
                 }
             }
         }

@@ -123,7 +123,7 @@ package x3dom.shaders
 				}
 			}
 			
-			if( lights.length > 0 && !shape.colorBuffer) {
+			if( lights.length > 0) {
 				shader += "mov ft1, fc0\n";
 				shader += "nrm ft1.xyz, ft1\n";							//Normalize LightDir(ft1)
 				shader += "nrm ft2.xyz, v0 \n";							//Normalize Normal(ft2)

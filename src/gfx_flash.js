@@ -343,7 +343,10 @@ x3dom.gfx_flash = (function() {
 						}
 					}
 				} else {
-					
+					this.object.setMeshColorsTexture( { id: shape._objectID,
+														idx: 0, 
+														colorTexture: shape._cf.geometry.node.getColorTextureURL(),
+														components: shape._cf.geometry.node._mesh._numColComponents } );
 				}
 				shape._dirty.colors = false;
 			}

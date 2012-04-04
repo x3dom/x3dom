@@ -9,8 +9,8 @@
 		<script type="text/javascript" src="../../Internals.js"></script>
 		<script type="text/javascript" src="../../debug.js"></script>
 		<script type="text/javascript" src="../../ImageLoadManager.js"></script>
-		<script type="text/javascript" src="../../lang/Properties.js"></script>
-		<script type="text/javascript" src="../../lang/DoublyLinkedList.js"></script>
+		<script type="text/javascript" src="../../util/Properties.js"></script>
+		<script type="text/javascript" src="../../util/DoublyLinkedList.js"></script>
 		<script type="text/javascript" src="../../util/EarClipping.js"></script>
 		<script type="text/javascript" src="../../X3DCanvas.js"></script>
 		<script type="text/javascript" src="../../Runtime.js"></script>
@@ -43,25 +43,1025 @@
 		<script type="text/javascript" src="../../nodes/Geospatial.js"></script>
 		<script type="text/javascript" src="../../nodes/Geometry2D.js"></script>
 		<script type="text/javascript" src="../../nodes/VolumeRendering.js"></script>
-		<style>
-			body { background-color: #000; }
-			X3D, x3d { position:absolute; border: none; width: 800px; height: 450px; top:50%; left:50%; margin-left:-400px; margin-top:-225px; float: none; display:block;}
-		</style>
+		<script type="text/javascript">
+		      x3dom.runtime.ready = function() {
+		        var e = document.getElementById('exportedscene');
+		        e.runtime.showAll();
+		      };
+    	</script>
 	</head>
 	<body>
-		<X3D id='Main' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='450px' backend='flash'>
-			<Scene DEF='scene'>
-				<NavigationInfo headLight='false'></NavigationInfo>
-				<Viewpoint position='0 0 5'></Viewpoint>
-				<Transform>
-					<Shape>
-						<Appearance>
-							<Material diffuseColor='0.588 0.588 0.588' emissiveColor='1 0 0' specularColor='1.000 1.000 1.000' transparency='0.000' shininess='0.145'></Material>
-						</Appearance>
-						<Box></Box>
-					</Shape>
-				</Transform>
-			</Scene>
-		</X3D>
+		<x3d x="0px" y="0px" width="800px" height="600px" id="exportedscene" backend="flash">
+		  <scene>
+		    <background skycolor='0 0 0'></background>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.597637 2.511322 -4.859274' size='88.088531 94.281281 57.387035'>
+		            <imageTexture containerField='coord' url='"texgeo/1_48486_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/1_48486_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/1_48486_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/1_48486_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.597637 2.511322 -4.859274' size='88.088531 94.281281 57.387035'>
+		            <imageTexture containerField='coord' url='"texgeo/2_48486_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/2_48486_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/2_48486_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/2_48486_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.597637 2.511322 -4.859274' size='88.088531 94.281281 57.387035'>
+		            <imageTexture containerField='coord' url='"texgeo/3_48486_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/3_48486_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/3_48486_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/3_48486_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.597637 2.511322 -4.859274' size='88.088531 94.281281 57.387035'>
+		            <imageTexture containerField='coord' url='"texgeo/4_48486_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/4_48486_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/4_48486_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/4_48486_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.597637 2.511322 -4.859274' size='88.088531 94.281281 57.387035'>
+		            <imageTexture containerField='coord' url='"texgeo/5_48486_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/5_48486_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/5_48486_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/5_48486_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='6225' primtype='"TRIANGLES"' position='-0.597637 2.511322 -4.859274' size='88.088531 94.281281 57.387035'>
+		            <imageTexture containerField='coord' url='"texgeo/6_48486_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/6_48486_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/6_48486_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/6_48486_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/1_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/1_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/1_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/1_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/2_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/2_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/2_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/2_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/3_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/3_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/3_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/3_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/4_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/4_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/4_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/4_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/5_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/5_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/5_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/5_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/6_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/6_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/6_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/6_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/7_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/7_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/7_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/7_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/8_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/8_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/8_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/8_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/9_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/9_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/9_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/9_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/10_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/10_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/10_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/10_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/11_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/11_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/11_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/11_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/12_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/12_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/12_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/12_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/13_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/13_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/13_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/13_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/14_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/14_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/14_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/14_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/15_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/15_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/15_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/15_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/16_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/16_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/16_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/16_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/17_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/17_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/17_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/17_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/18_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/18_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/18_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/18_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/19_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/19_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/19_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/19_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/20_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/20_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/20_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/20_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/21_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/21_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/21_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/21_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/22_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/22_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/22_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/22_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/23_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/23_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/23_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/23_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/24_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/24_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/24_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/24_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/25_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/25_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/25_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/25_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/26_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/26_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/26_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/26_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/27_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/27_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/27_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/27_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/28_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/28_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/28_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/28_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/29_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/29_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/29_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/29_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/30_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/30_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/30_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/30_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/31_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/31_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/31_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/31_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/32_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/32_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/32_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/32_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/33_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/33_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/33_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/33_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/34_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/34_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/34_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/34_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/35_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/35_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/35_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/35_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/36_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/36_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/36_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/36_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/37_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/37_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/37_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/37_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/38_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/38_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/38_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/38_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/39_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/39_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/39_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/39_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/40_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/40_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/40_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/40_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/41_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/41_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/41_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/41_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/42_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/42_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/42_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/42_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/43_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/43_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/43_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/43_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/44_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/44_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/44_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/44_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/45_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/45_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/45_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/45_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/46_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/46_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/46_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/46_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/47_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/47_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/47_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/47_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/48_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/48_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/48_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/48_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/49_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/49_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/49_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/49_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/50_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/50_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/50_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/50_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/51_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/51_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/51_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/51_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/52_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/52_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/52_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/52_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/53_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/53_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/53_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/53_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/54_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/54_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/54_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/54_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/55_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/55_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/55_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/55_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/56_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/56_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/56_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/56_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/57_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/57_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/57_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/57_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/58_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/58_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/58_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/58_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/59_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/59_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/59_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/59_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/60_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/60_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/60_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/60_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/61_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/61_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/61_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/61_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/62_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/62_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/62_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/62_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/63_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/63_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/63_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/63_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='22335' primtype='"TRIANGLES"' position='-0.576752 2.491997 -4.819500' size='88.489502 94.653000 57.695000'>
+		            <imageTexture containerField='coord' url='"texgeo/64_54052_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/64_54052_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/64_54052_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/64_54052_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-15.208977 -10.685572 -3.023712' size='62.014099 34.468204 36.478973'>
+		            <imageTexture containerField='coord' url='"texgeo/1_54053_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/1_54053_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/1_54053_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/1_54053_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-15.208977 -10.685572 -3.023712' size='62.014099 34.468204 36.478973'>
+		            <imageTexture containerField='coord' url='"texgeo/2_54053_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/2_54053_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/2_54053_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/2_54053_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-15.208977 -10.685572 -3.023712' size='62.014099 34.468204 36.478973'>
+		            <imageTexture containerField='coord' url='"texgeo/3_54053_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/3_54053_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/3_54053_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/3_54053_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-15.208977 -10.685572 -3.023712' size='62.014099 34.468204 36.478973'>
+		            <imageTexture containerField='coord' url='"texgeo/4_54053_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/4_54053_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/4_54053_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/4_54053_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-15.208977 -10.685572 -3.023712' size='62.014099 34.468204 36.478973'>
+		            <imageTexture containerField='coord' url='"texgeo/5_54053_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/5_54053_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/5_54053_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/5_54053_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-15.208977 -10.685572 -3.023712' size='62.014099 34.468204 36.478973'>
+		            <imageTexture containerField='coord' url='"texgeo/6_54053_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/6_54053_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/6_54053_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/6_54053_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='3240' primtype='"TRIANGLES"' position='-15.208977 -10.685572 -3.023712' size='62.014099 34.468204 36.478973'>
+		            <imageTexture containerField='coord' url='"texgeo/7_54053_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/7_54053_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/7_54053_normal.png"'></imageTexture>
+		            <imageTexture containerField='color' url='"texgeo/7_54053_color.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/1_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/1_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/1_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/2_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/2_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/2_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/3_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/3_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/3_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/4_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/4_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/4_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/5_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/5_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/5_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/6_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/6_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/6_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/7_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/7_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/7_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/8_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/8_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/8_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/9_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/9_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/9_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/10_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/10_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/10_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/11_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/11_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/11_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/12_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/12_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/12_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/13_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/13_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/13_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/14_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/14_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/14_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='65535' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/15_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/15_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/15_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		        <shape>
+		          <appearance>
+		            <material diffuseColor='0.949 0.800 0.161' shininess='0.9' specularColor='0.9 0.9 0.9'></material>
+		          </appearance>
+		          <imagegeometry solid='false' vertexcount='26235' primtype='"TRIANGLES"' position='-0.075882 3.488678 -5.686951' size='83.890656 87.399567 55.563385'>
+		            <imageTexture containerField='coord' url='"texgeo/16_80863_coo0.png"'></imageTexture>
+		            <imageTexture containerField='coord' url='"texgeo/16_80863_coo1.png"'></imageTexture>
+		            <imageTexture containerField='normal' url='"texgeo/16_80863_normal.png"'></imageTexture>
+		          </imagegeometry>
+		        </shape>
+		</scene>
+      </x3d>
 	</body>
 </html>
