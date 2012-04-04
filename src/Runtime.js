@@ -246,6 +246,9 @@ x3dom.Runtime.prototype.uprightView = function() {
  *
  * Zooms so that all objects are fully visible.
  *
+ * Parameter:
+ *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
+ *
  */
 x3dom.Runtime.prototype.showAll = function(axis) {
     this.canvas.doc._viewarea.showAll(axis);
@@ -267,13 +270,21 @@ x3dom.Runtime.prototype.debug = function(show) {
     if (show === true) {
         this.canvas.doc._viewarea._visDbgBuf = true;
         x3dom.debug.logContainer.style.display = "block";
-        this.canvas.doc.needRender = true;
     }
     if (show === false) {
         this.canvas.doc._viewarea._visDbgBuf = false;
         x3dom.debug.logContainer.style.display = "none";
-        this.canvas.doc.needRender = true;
     }
+    else {
+        if (this.canvas.doc._viewarea._visDbgBuf === undefined) 
+            this.canvas.doc._viewarea._visDbgBuf = true;
+        else
+            this.canvas.doc._viewarea._visDbgBuf = !this.canvas.doc._viewarea._visDbgBuf;
+
+        x3dom.debug.logContainer.style.display =
+                (this.canvas.doc._viewarea._visDbgBuf === true) ? "block" : "none";
+    }
+    this.canvas.doc.needRender = true;
     return this.canvas.doc._viewarea._visDbgBuf;
 };
 
@@ -361,7 +372,9 @@ x3dom.Runtime.prototype.game = function() {
  * Toggles points attribute
  */
 x3dom.Runtime.prototype.togglePoints = function() {
-    this.canvas.doc._viewarea._points = !this.canvas.doc._viewarea._points;
+    if (this.canvas.doc._viewarea._points === undefined)
+        this.canvas.doc._viewarea._points = 0;
+    this.canvas.doc._viewarea._points = ++this.canvas.doc._viewarea._points % 2; // % 3;
     this.canvas.doc.needRender = true;
 };
 
@@ -519,6 +532,19 @@ x3dom.Runtime.prototype.backendName = function() {
 };
 
 
+/**
+ * APIMethod isA
+ *
+ * Test a DOM node object against a node type string. This method
+ * can be used to determine the "type" of a DOM node.
+ *
+ * Parameters:
+ *    domNode: the node to test for
+ *    nodeType: node name to test domNode against
+ *
+ *  Returns:
+ *    True or false
+ */
 x3dom.Runtime.prototype.isA = function(domNode, nodeType) {
     var inherits = false;
     

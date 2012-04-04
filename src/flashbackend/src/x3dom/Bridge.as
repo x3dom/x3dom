@@ -212,7 +212,7 @@ package x3dom {
 		
 		private function setMeshColorsTexture(value:Object) : void 
 		{
-			
+			this._scene.getDrawableObject( uint(value.id) ).shape.setColorTexture(value);
 		}
 		
 		private function setMeshIndices(value:Object) : void 
