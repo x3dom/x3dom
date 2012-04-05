@@ -1332,7 +1332,94 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### GeometryImage ### */
+
+/* ### BinaryGeometry ### */
+x3dom.registerNodeType(
+    "BinaryGeometry",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
+            
+            this.addField_MFInt32 (ctx, 'vertexCount', [0]);
+            this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+            
+            this.addField_SFString(ctx, 'index', "");   // Uint16
+            this.addField_SFString(ctx, 'coord', "");   // Float32
+            this.addField_SFString(ctx, 'normal', "");
+            this.addField_SFString(ctx, 'texCoord', "");
+            this.addField_SFString(ctx, 'color', "");
+            
+            // workaround
+			this._mesh._numTexComponents = 2;
+			this._mesh._numColComponents = 3;
+			
+			this._mesh._invalidate = false;
+			this._mesh._numCoords = 0;
+		    this._mesh._numFaces = 0;
+        },
+        {
+            nodeChanged: function()
+            {
+                // TODO: handle field updates and retrigger XHR
+            },
+            
+            getMin: function()
+			{
+				if (this._parentNodes.length >= 1) {
+                    var center = this._parentNodes[0]._vf.bboxCenter;
+                    var size = this._parentNodes[0]._vf.bboxSize;
+                    
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
+                    
+                    return center.subtract(size.multiply(0.5));
+                }
+                else {
+                    return new x3dom.fields.SFVec3f(0,0,0);
+                }
+			},
+			
+			getMax: function()
+			{
+				if (this._parentNodes.length >= 1) {
+                    var center = this._parentNodes[0]._vf.bboxCenter;
+                    var size = this._parentNodes[0]._vf.bboxSize;
+                    
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
+                    
+                    return center.add(size.multiply(0.5));
+                }
+                else {
+                    return new x3dom.fields.SFVec3f(0,0,0);
+                }
+			},
+			
+			getVolume: function(min, max, invalidate)
+			{
+				min.setValues(this.getMin());
+				max.setValues(this.getMax());
+				
+				return true;
+			},
+			
+			getCenter: function()
+			{
+				if (this._parentNodes.length >= 1) {
+                    return this._parentNodes[0]._vf.bboxCenter;
+                }
+                else {
+                    return new x3dom.fields.SFVec3f(0,0,0);
+                }
+			}
+        }
+    )
+);
+
+/* ### ImageGeometry ### */
 x3dom.registerNodeType(
     "ImageGeometry",
     "Geometry3D",
@@ -1361,11 +1448,10 @@ x3dom.registerNodeType(
 			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
 			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
-			this.addField_MFFloat(ctx, 'vertexCount', [0]);
+			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
-			this.addField_SFFloat(ctx, 'implicitMeshSize', 256.0);
-			
-			this.addField_SFFloat(ctx, 'numColorComponents', 3);
+			this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);
+			this.addField_SFInt32(ctx, 'numColorComponents', 3);
 			
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
@@ -1373,28 +1459,31 @@ x3dom.registerNodeType(
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
 			
-			
+			// TODO: this._mesh._numTexComponents
 			this._mesh._numColComponents = this._vf.numColorComponents;
 			
+			if (this._vf.implicitMeshSize.y == 0)
+			    this._vf.implicitMeshSize.y = this._vf.implicitMeshSize.x;
+			
 			//TODO check if GPU-Version is supported (Flash, etc.)
-			//Dummy mesh generation only need for GPU-Version
+			//Dummy mesh generation only needed for GPU-Version
 			
 			if(x3dom.caps.BACKEND == 'webgl' && x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS > 0) {
 			
-				var geoCacheID = 'ImageGeometry';
+				var geoCacheID = 'ImageGeometry';   // TODO: implicitMeshSize may differ!!!
 
-				if( x3dom.geoCache[geoCacheID] != undefined )
+				if( x3dom.geoCache[geoCacheID] !== undefined )
 				{
 					x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
 					this._mesh = x3dom.geoCache[geoCacheID];
 				}
 				else
 				{
-					for(var y=0; y<this._vf.implicitMeshSize; y++)
+					for(var y=0; y<this._vf.implicitMeshSize.y; y++)
 					{
-						for(var x=0; x<this._vf.implicitMeshSize; x++)
+						for(var x=0; x<this._vf.implicitMeshSize.x; x++)
 						{
-							this._mesh._positions[0].push(x/this._vf.implicitMeshSize, y/this._vf.implicitMeshSize, 0);
+							this._mesh._positions[0].push(x/this._vf.implicitMeshSize.x, y/this._vf.implicitMeshSize.y, 0);
 						}
 					}
 					
@@ -1653,6 +1742,9 @@ x3dom.registerNodeType(
                      (hasTexCoord && hasTexCoordInd) ||
                      (hasColor && hasColorInd) )
                 {
+                    if (this._vf.creaseAngle <= x3dom.fields.Eps)
+                        x3dom.debug.logWarning('Fallback to inefficient multi-index mode since creaseAngle=0.');
+                    
                     // Found MultiIndex Mesh
 					if(this._vf.convex) {
 						t = 0;
@@ -2056,46 +2148,48 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
+                if (fieldName != "coord" && fieldName != "normal" &&
+    				fieldName != "texCoord" && fieldName != "color")
+    			{
+    			    x3dom.debug.logWarning("IndexedFaceSet: fieldChanged for " +
+    			                           fieldName + " not yet implemented!");
+    			    return;
+    			}
+                
                 var pnts = this._cf.coord.node._vf.point;
-                var i, n = pnts.length;
-
-                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n / 3 > 65535) /*||
+                var n = pnts.length;
+                
+                if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > 65535) ||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
                     (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
-                    (this._vf.colorIndex.length > 0 && this._cf.color.node)*/)
+                    (this._vf.colorIndex.length > 0 && this._cf.color.node))
                 {
-					// TODO; FIXME
-                    x3dom.debug.logWarning("Ipol with creaseAngle == 0, too many coords, or multi-index!");
+					// TODO; implement
+                    x3dom.debug.logWarning("IndexedFaceSet: fieldChanged with creaseAngle == 0, " + 
+                                           "with too many coordinates or multi-index mesh is SLOW!");
 
-                    // HACK 
+                    // HACK: FIXME
                     this.nodeChanged();
 
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                        if (fieldName == "coord")
+        				    node._dirty.positions = true;
+        				if (fieldName == "normal")
+        				    node._dirty.normals = true;
+        				if (fieldName == "texCoord")
+        				    node._dirty.texcoords = true;
+        				if (fieldName == "color")
+        				    node._dirty.colors  =  true;
                     });
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.colors = true;
-                    });
-
+                    
                     return;
                 }
 
                 if (fieldName == "coord")
                 {
-                    // TODO; multi-index with different this._mesh._indices
-                    pnts = this._cf.coord.node._vf.point;
-                    n = pnts.length;
-					
-                    this._mesh._positions[0] = [];
-
-                    // TODO; optimize (is there a memcopy?)
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._positions[0].push(pnts[i].x);
-                        this._mesh._positions[0].push(pnts[i].y);
-                        this._mesh._positions[0].push(pnts[i].z);
-                    }
-
+                    this._mesh._positions[0] = pnts.toGL();
+                    
+                    // tells the mesh that its bbox requires update
                     this._mesh._invalidate = true;
 
                     Array.forEach(this._parentNodes, function (node) {					
@@ -2105,16 +2199,8 @@ x3dom.registerNodeType(
                 else if (fieldName == "color")
                 { 
                     pnts = this._cf.color.node._vf.color;
-                    n = pnts.length;
-
-                    this._mesh._colors[0] = [];
-
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._colors[0].push(pnts[i].r);
-                        this._mesh._colors[0].push(pnts[i].g);
-                        this._mesh._colors[0].push(pnts[i].b);
-                    }
+                    
+                    this._mesh._colors[0] = pnts.toGL();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
@@ -2123,40 +2209,21 @@ x3dom.registerNodeType(
 				else if (fieldName == "normal")
                 {
                     pnts = this._cf.normal.node._vf.vector;
-                    n = pnts.length;
 					
-                    this._mesh._normals[0] = [];
-					
-                    for (var i=0; i<n; i++)
-                    {					
-                        this._mesh._normals[0].push(pnts[i].x);
-                        this._mesh._normals[0].push(pnts[i].y);
-                        this._mesh._normals[0].push(pnts[i].z);
-                    }
-					
-					this._mesh._invalidate = true;
+                    this._mesh._normals[0] = pnts.toGL();
 					
                     Array.forEach(this._parentNodes, function (node) {
-                         node.setAllDirty();
+                         node._dirty.normals = true;
                     });
                 }
 				else if (fieldName == "texCoord")
                 {
                     pnts = this._cf.texCoord.node._vf.point;
-                    n = pnts.length;
-
-                    this._mesh._texCoords[0] = [];
-
-                    for (i=0; i<n; i++)
-                    {
-                        this._mesh._texCoords[0].push(pnts[i].x);
-                        this._mesh._texCoords[0].push(pnts[i].y);
-                    }
-					
-					this._mesh._invalidate = true;
-
+                    
+                    this._mesh._texCoords[0] = pnts.toGL();
+                    
                     Array.forEach(this._parentNodes, function (node) {
-                        node.setAllDirty();
+                        node._dirty.texcoords = true;
                     });
                 }
             }

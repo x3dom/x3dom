@@ -53,13 +53,16 @@
   <body>
     <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='true' width="550px" height="400px">
       <Scene DEF='scene'>
-        <Transform translation='0 -5 -100'>
-          <Shape>
+        <Viewpoint centerOfRotation='0 0 40' position='4.5 0 100'></Viewpoint>
+        <Transform>
+          <Shape bboxCenter="2.7269497 0 20.0641994" bboxSize="81.8891029 50.9567986 40.1283989">
             <Appearance>
                 <Material diffuseColor=".7 .7 .7" specularColor=".5 .5 .5"></Material>
+                <!--ImageTexture url='media/texture/generic/earth.jpg'></ImageTexture-->
             </Appearance>
-            <BinaryMesh index="index.txt.bin" position="coord.txt.bin" normal="normal.txt.bin" texcoord="texcoord.txt.bin">
-            </BinaryMesh>
+            <BinaryGeometry primType='"TRIANGLES"' index="index.txt.bin" coord="coord.txt.bin" 
+                            normal="normal.txt.bin" texCoord="texcoord.txt.bin" color="color.txt.bin">
+            </BinaryGeometry>
           </Shape>
         </Transform>
       </Scene>

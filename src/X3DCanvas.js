@@ -705,6 +705,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           lastDistance : new x3dom.fields.SFVec2f(),
           lastSquareDistance : 0,
           lastAngle : 0,
+
+          // FIXME: currently holds layerX/Y
+          lastLayer : new x3dom.fields.SFVec2f(),
           
           calcAngle : function(vector)
           {
@@ -724,13 +727,17 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         {
           touches : [],
           preventDefault : function() {}
-        }
+        };
         
         // === Touch Start ===
         var touchStartHandler = function(evt)
         {
           evt.preventDefault();
-          
+
+          touches.lastLayer.x = evt.layerX;
+          touches.lastLayer.y = evt.layerY;
+          // x3dom.debug.dumpFields(this.parent.doc);
+
           if(touches.numTouches < 1 && evt.touches.length == 1)
           {
             touches.numTouches = 1;
@@ -753,7 +760,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             touches.lastSquareDistance = squareDistance;
             touches.lastAngle = touches.calcAngle(distance);
           }
-		  
+
+          // TODO FIXME: get rid of layerX/Y for handling multi-touch interaction
 		  	// update volume only on click since expensive!
 			var min = x3dom.fields.SFVec3f.MAX();
 			var max = x3dom.fields.SFVec3f.MIN();
@@ -762,6 +770,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				this.parent.doc._scene._lastMin = min;
 				this.parent.doc._scene._lastMax = max;
 			}
+
+            this.parent.doc.onPick(that.gl, evt.layerX, evt.layerY);
+            //x3dom.debug.logWarning("begin: " + evt.layerX + ", " + evt.layerY);
+
+            // TODO: accessor via doc
+            this.parent.doc._viewarea.prepareEvents(evt.layerX, evt.layerY, 1, "onmousedown");
+            this.parent.doc._viewarea._pickingInfo.lastClickObj = this.parent.doc._viewarea._pickingInfo.pickObj;
+
+            this.parent.doc.needRender = true;
         };
         
         var touchStartHandlerMoz = function(evt)
@@ -788,7 +805,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         var touchMoveHandler = function(evt, doc)
         {
           evt.preventDefault();
-          
+
+          touches.lastLayer.x = evt.layerX;
+          touches.lastLayer.y = evt.layerY;
+
           // one finger: x/y rotation
           if(evt.touches.length == 1)
           {
@@ -801,8 +821,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
             
             var rotMatrix = mx.mult(my);
-            
+
+            // TODO FIXME: get rid of layerX/Y for handling multi-touch interaction
+            doc.onPick(that.gl, evt.layerX, evt.layerY);
+            //x3dom.debug.logWarning(evt.layerX + ", " + evt.layerY);
+
             doc.onMoveView(that.gl, null, rotMatrix);
+
             doc.needRender = true;
           }
           
@@ -866,6 +891,24 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           
           if(evt.touches.length < 2)
             touches.numTouches = evt.touches.length;
+
+          // TODO FIXME: get rid of layerX/Y for handling multi-touch interaction
+            this.parent.doc.onPick(that.gl, touches.lastLayer.x, touches.lastLayer.y);
+            //x3dom.debug.logWarning("end: " + touches.lastLayer.x + ", " + touches.lastLayer.y);
+
+            // TODO: accessor via doc
+            this.parent.doc._viewarea.prepareEvents(touches.lastLayer.x, touches.lastLayer.y, 1, "onmouseup");
+            this.parent.doc._viewarea._pickingInfo.lastClickObj = this.parent.doc._viewarea._pickingInfo.pickObj;
+
+            // click means that mousedown _and_ mouseup were detected on same element
+            if (this.parent.doc._viewarea._pickingInfo.pickObj &&
+                this.parent.doc._viewarea._pickingInfo.pickObj ===
+                this.parent.doc._viewarea._pickingInfo.lastClickObj)
+            {
+                this.parent.doc._viewarea.prepareEvents(touches.lastLayer.x, touches.lastLayer.y, 1, "onclick");
+            }
+
+            this.parent.doc.needRender = true;
         };
         
         var touchEndHandlerMoz = function(evt)
