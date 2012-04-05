@@ -239,17 +239,7 @@ x3dom.registerNodeType(
                                     that.currentInline.appendChild(childDomNode);
                                 }
                             } );
-                        }
-						
-						/*if(document.createEvent) {
-							var evt = document.createEvent("Events"); 
-							evt.initEvent('onload', false, false);  
-							that.currentInline.dispatchEvent(evt);
-						} else if(document.createEventObject) {
-							var evt = document.createEventObject();
-							that.currentInline.fireEvent("onload", evt);
-						}*/
-						
+                        }						
 						
 						if ( that.currentInline && 
 							(that.currentInline['onload'] ||

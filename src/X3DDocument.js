@@ -210,6 +210,14 @@ x3dom.X3DDocument.prototype.render = function (ctx) {
     ctx.renderScene(this._viewarea);
 };
 
+x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+
+    ctx.pickValue(this._viewarea, x, y);
+};
+
 x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
     if (!ctx || !this._viewarea) {
         return;
@@ -415,11 +423,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case 109: /* m, toggle "points" attribute */
             if (this._viewarea._points === undefined) {
-                this._viewarea._points = true;
+                this._viewarea._points = 0;
             }
-            else {
-                this._viewarea._points = !this._viewarea._points;
-            }
+            this._viewarea._points = ++this._viewarea._points % 3; // % 2;
             break;
         case 111: /* o, look around like in fly, but don't move */
             nav.setType("lookaround", this._viewarea);

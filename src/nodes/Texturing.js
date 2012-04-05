@@ -516,7 +516,9 @@ x3dom.registerNodeType(
         },
 		{
 			fieldChanged: function (fieldName) {
-                if (fieldName === "texCoord") {
+                if (fieldName === "texCoord" || fieldName === "point" || 
+                    fieldName === "parameter" || fieldName === "mode") 
+                {
                     Array.forEach(this._parentNodes, function (node) {
                         node.fieldChanged("texCoord");
                     });

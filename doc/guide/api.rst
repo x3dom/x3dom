@@ -113,6 +113,8 @@ the X3D element they are working on as first parameter::
 
     Zooms so that all objects are visible.
 
+    :param string axis: the axis as string: posX, negX, posY, negY, posZ, negZ
+
 
 ..  js:function:: debug(show)
     
