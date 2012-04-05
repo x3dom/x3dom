@@ -1394,13 +1394,7 @@ x3dom.registerNodeType(
 					{
 						for(var x=0; x<this._vf.implicitMeshSize; x++)
 						{
-							//var idx = y * this._vf.implicitMeshSize + x;
-							
-							//if(idx == 65535) break;
-							
-							//this._mesh._positions[0].push(x/255, y/255, 0);
 							this._mesh._positions[0].push(x/this._vf.implicitMeshSize, y/this._vf.implicitMeshSize, 0);
-							//this._mesh._indices[0].push(idx);
 						}
 					}
 					
