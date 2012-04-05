@@ -19,6 +19,7 @@ x3dom.gfx_webgl = (function () {
         this.name = name;
         this.cached_shader_programs = {};
         this.cached_shaders = {};
+		this.IG_PositionBuffer = null;
 		//this.imageLoadManager = new x3dom.ImageLoadManager();
     }
 
@@ -2559,6 +2560,25 @@ x3dom.gfx_webgl = (function () {
           
             // TODO: color
         }
+		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
+		{
+			if(this.IG_PositionBuffer == null) {
+				this.IG_PositionBuffer = gl.createBuffer();
+			}
+            shape._webgl.buffers[5*q+1] = this.IG_PositionBuffer;
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.IG_PositionBuffer);
+            
+            vertices = new Float32Array(shape._webgl.positions[q]);
+            
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, this.IG_PositionBuffer);
+            
+            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(sp.position);
+
+            vertices = null;
+		}
+		
         else // No BinaryMesh -- FIXME
         {
             
@@ -3292,6 +3312,15 @@ x3dom.gfx_webgl = (function () {
             if (shape._objectID < 1 || shape._webgl === undefined) {
                 continue;
             }
+			
+			//Get prev shape 
+			if(i > 0) {
+				var prev_shape = scene.drawableObjects[i-1][1];
+			}
+			//Get next shape
+			if(i < scene.drawableObjects.length-1) {
+				var next_shape = scene.drawableObjects[i+1][1];
+			}
             
             sp.modelMatrix = trafo.toGL();
             //sp.modelMatrix = mat_view.mult(trafo).toGL();
@@ -3349,32 +3378,38 @@ x3dom.gfx_webgl = (function () {
 				}
 			}
 			
+			
+
 			for (var q=0; q<shape._webgl.positions.length; q++)
 			{
-				if (sp.position !== undefined) 
+				//check prev, act
+				if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 				{
-					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
-					
-					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
-					
-					gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-					gl.enableVertexAttribArray(sp.position);
-				}
-				if (sp.color !== undefined)
-				{
-					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
-					
-					gl.vertexAttribPointer(sp.color, 
-						shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
-					gl.enableVertexAttribArray(sp.color);
-				}
-				if (sp.texcoord !== undefined)
-				{
-					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
+					if (sp.position !== undefined) 
+					{
+						gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
+						
+						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
+						
+						gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+						gl.enableVertexAttribArray(sp.position);
+					}
+					if (sp.color !== undefined)
+					{
+						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
+						
+						gl.vertexAttribPointer(sp.color, 
+							shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
+						gl.enableVertexAttribArray(sp.color);
+					}
+					if (sp.texcoord !== undefined)
+					{
+						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 
-					gl.vertexAttribPointer(sp.texcoord, 
-						shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
-					gl.enableVertexAttribArray(sp.texcoord);
+						gl.vertexAttribPointer(sp.texcoord, 
+							shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
+						gl.enableVertexAttribArray(sp.texcoord);
+					}
 				}
 				
 				if (shape.isSolid()) {
@@ -3407,14 +3442,19 @@ x3dom.gfx_webgl = (function () {
 					x3dom.debug.logException(shape._DEF + " renderPickingPass(): " + e);
 				}
 				
-				if (sp.position !== undefined) {
-					gl.disableVertexAttribArray(sp.position);
-				}
-				if (sp.color !== undefined) {
-					gl.disableVertexAttribArray(sp.color);
-				}
-				if (sp.texcoord !== undefined) {
-					gl.disableVertexAttribArray(sp.texcoord);
+				
+				//check act next
+				if(!next_shape || (next_shape && next_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
+				{
+					if (sp.position !== undefined) {
+						gl.disableVertexAttribArray(sp.position);
+					}
+					if (sp.color !== undefined) {
+						gl.disableVertexAttribArray(sp.color);
+					}
+					if (sp.texcoord !== undefined) {
+						gl.disableVertexAttribArray(sp.texcoord);
+					}
 				}
 			}
         }
@@ -3445,7 +3485,7 @@ x3dom.gfx_webgl = (function () {
 /*! render single object/ shape
  */
 //----------------------------------------------------------------------------
-    Context.prototype.renderShape = function (transform, shape, viewarea, 
+    Context.prototype.renderShape = function (transform, shape, prev_shape, next_shape, viewarea, 
                                               slights, numLights, 
                                               mat_view, mat_scene, mat_light, 
                                               gl, activeTex, oneShadowExistsAlready)
@@ -3907,38 +3947,43 @@ x3dom.gfx_webgl = (function () {
         
         for (var q=0; q<shape._webgl.positions.length; q++)
         {
-          if (sp.position !== undefined)
-          {
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
-            
-            gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
-            
-            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-            gl.enableVertexAttribArray(sp.position);
-          }
-          if (sp.normal !== undefined) 
-          {
-            gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+2]);            
-            
-            gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
-            gl.enableVertexAttribArray(sp.normal);
-          }
-          if (sp.texcoord !== undefined)
-          {
-            gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
-            
-            gl.vertexAttribPointer(sp.texcoord, 
-                shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
-            gl.enableVertexAttribArray(sp.texcoord);
-          }
-          if (sp.color !== undefined)
-          {
-            gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
-            
-            gl.vertexAttribPointer(sp.color, 
-                shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
-            gl.enableVertexAttribArray(sp.color);
-          }
+		
+			//check prev, act
+			if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
+			{
+			  if (sp.position !== undefined)
+			  {
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
+				
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
+				
+				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+				gl.enableVertexAttribArray(sp.position);
+			  }
+			  if (sp.normal !== undefined) 
+			  {
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+2]);            
+				
+				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+				gl.enableVertexAttribArray(sp.normal);
+			  }
+			  if (sp.texcoord !== undefined)
+			  {
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
+				
+				gl.vertexAttribPointer(sp.texcoord, 
+					shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
+				gl.enableVertexAttribArray(sp.texcoord);
+			  }
+			  if (sp.color !== undefined)
+			  {
+				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
+				
+				gl.vertexAttribPointer(sp.color, 
+					shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
+				gl.enableVertexAttribArray(sp.color);
+			  }
+			}
         
             // render object
             try {
@@ -3983,19 +4028,23 @@ x3dom.gfx_webgl = (function () {
             catch (e) {
                 x3dom.debug.logException(shape._DEF + " renderScene(): " + e);
             }
-            
-            if (sp.position !== undefined) {
-                gl.disableVertexAttribArray(sp.position);
-            }
-            if (sp.normal !== undefined) {
-                gl.disableVertexAttribArray(sp.normal);
-            }
-            if (sp.texcoord !== undefined) {
-                gl.disableVertexAttribArray(sp.texcoord);
-            }
-            if (sp.color !== undefined) {
-                gl.disableVertexAttribArray(sp.color);
-            }
+
+			//check act next
+			if(!next_shape || (next_shape && next_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
+			{
+				if (sp.position !== undefined) {
+					gl.disableVertexAttribArray(sp.position);
+				}
+				if (sp.normal !== undefined) {
+					gl.disableVertexAttribArray(sp.normal);
+				}
+				if (sp.texcoord !== undefined) {
+					gl.disableVertexAttribArray(sp.texcoord);
+				}
+				if (sp.color !== undefined) {
+					gl.disableVertexAttribArray(sp.color);
+				}
+			}
         }
         
         if (shape._webgl.indexes && shape._webgl.indexes[0]) {
@@ -4417,6 +4466,16 @@ x3dom.gfx_webgl = (function () {
         for (i=0, n=zPos.length; i<n; i++)
         {
             var obj = scene.drawableObjects[zPos[i][0]];
+			
+			//Get prev shape 
+			if(i > 0) {
+				var prev_obj = scene.drawableObjects[zPos[i-1][0]][1];
+			}
+			//Get next shape
+			if(i < zPos.length-1) {
+				var next_obj = scene.drawableObjects[zPos[i+1][0]][1];
+			}
+			
             var needEnableBlending = false;
             var needEnableDepthMask = false;
 
@@ -4435,7 +4494,7 @@ x3dom.gfx_webgl = (function () {
                 gl.depthMask(false);
             }
 
-            this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
+            this.renderShape(obj[0], obj[1], prev_obj, next_obj, viewarea, slights, numLights, 
                 mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
 
             if (needEnableBlending) {
