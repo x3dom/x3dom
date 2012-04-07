@@ -935,6 +935,8 @@ x3dom.registerNodeType(
 				{
 				    var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
 				    
+				    var swapOrder = false;
+				    
 					for (i=1; i < indexes.length-2; ++i)
 					{
 						if (indexes[i+1] == -1) {
@@ -943,9 +945,18 @@ x3dom.registerNodeType(
 							continue;
 						}
 						
-						p1 = indexes[i];
-						p2 = indexes[i-1];
-						p3 = indexes[i+1];
+						// care for counterclockwise point order
+						if (swapOrder) {
+    						p1 = indexes[i];
+    						p2 = indexes[i-1];
+    						p3 = indexes[i+1];
+						}
+						else {
+    						p1 = indexes[i-1];
+    						p2 = indexes[i];
+    						p3 = indexes[i+1];  
+						}
+						swapOrder = !swapOrder;
 						
 						if (normPerVert) { 
 							n1 = p1;
@@ -1282,6 +1293,7 @@ x3dom.registerNodeType(
 						this._mesh._invalidate = true;
 						this._mesh._numFaces = 0;
 						this._mesh._numCoords = 0;
+						
 						for (i=0; i<this._mesh._indices.length; i++) {
 							this._mesh._numFaces += this._mesh._indices[i].length / 3;
 							this._mesh._numCoords += this._mesh._positions[i].length / 3;
@@ -1290,7 +1302,6 @@ x3dom.registerNodeType(
 						Array.forEach(this._parentNodes, function (node) {
 							node.setAllDirty();
 						});
-						
 					}
 					else if (fieldName == "color") {
 						var col = this._cf.color.node._vf.color;
@@ -1307,7 +1318,6 @@ x3dom.registerNodeType(
 						
 						var indexes = this._vf.index;
 						
-							
 						for (i=1; i < indexes.length-2; ++i)
 						{
 							if (indexes[i+1] == -1) {
@@ -1343,7 +1353,6 @@ x3dom.registerNodeType(
 							}  
 						}
 						
-						 
 						Array.forEach(this._parentNodes, function (node) {
 							node._dirty.colors = true;
 						}); 
@@ -1356,8 +1365,7 @@ x3dom.registerNodeType(
 						this._mesh._normals[0] = [];
 						
 						var indexes = this._vf.index;
-						
-											
+							
 						for (i=1; i < indexes.length-2; ++i)
 						{
 							if (indexes[i+1] == -1) {
@@ -1383,7 +1391,6 @@ x3dom.registerNodeType(
 							this._mesh._normals[0].push(nor[n3].y);
 							this._mesh._normals[0].push(nor[n3].z);
 						}
-						
 						
 						Array.forEach(this._parentNodes, function (node) {
 							node._dirty.normals = true;
@@ -1428,9 +1435,7 @@ x3dom.registerNodeType(
 							if (numTexComponents === 3) {
 								this._mesh._texCoords[0].push(tex[t3].z);
 							}  
-								
 						}
-						
 						
 						Array.forEach(this._parentNodes, function (node) {
 							node._dirty.texCoords = true;
@@ -1502,6 +1507,7 @@ x3dom.registerNodeType(
 							
 							var indexes = this._vf.index;
 							this._mesh._normals[0] = [];
+							
 							var faceCnt = 0;
 							for (i=0; i < indexes.length; ++i)
 							{
