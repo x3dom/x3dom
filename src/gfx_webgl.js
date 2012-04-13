@@ -1591,12 +1591,10 @@ x3dom.gfx_webgl = (function () {
 //----------------------------------------------------------------------------
     Context.prototype.setupShape = function (gl, shape, viewarea) 
     {
-        var q = 0;
+        var i, q = 0;
         var tex = null;
-        var colorBuffer;
-        var vertices;
-        var colors;
-        var positionBuffer;
+        var IG_texUnit = 1;
+        var vertices, positionBuffer;
         
         if (shape._webgl !== undefined)
         {
@@ -1739,7 +1737,6 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.normals[q] = shape._cf.geometry.node._mesh._normals[q];
                     
 					gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
-            
                     
                     normalBuffer = gl.createBuffer();
                     shape._webgl.buffers[5*q+2] = normalBuffer;					
@@ -1779,9 +1776,48 @@ x3dom.gfx_webgl = (function () {
                 
                 shape._dirty.texCoords = false; 
               }
-              //TODO; check all other cases, too!
             }
-            
+
+		    if (shape._webgl.imageGeometry)
+            {
+                var texNode = null;
+
+                IG_texUnit = 1;     //Associate GeometryImage texture units
+
+                if ((texNode = shape._cf.geometry.node.getIndexTexture()) &&
+                    shape._cf.geometry.node._dirty.index == true) {
+                    shape.updateTexture(texNode, IG_texUnit++, 'index');
+                }
+
+                for (i=0; i<shape._webgl.imageGeometry &&
+                          shape._cf.geometry.node._dirty.coord == true; i++) {
+                    if ((texNode = shape._cf.geometry.node.getCoordinateTexture(i))) {
+                        shape.updateTexture(texNode, IG_texUnit++, 'coord');
+                    }
+                }
+
+                if ((texNode = shape._cf.geometry.node.getNormalTexture(0)) &&
+                    shape._cf.geometry.node._dirty.normal == true) {
+                    shape.updateTexture(texNode, IG_texUnit++, 'normal');
+                }
+
+                if ((texNode = shape._cf.geometry.node.getTexCoordTexture()) &&
+                    shape._cf.geometry.node._dirty.texCoord == true) {
+                    shape.updateTexture(texNode, IG_texUnit++, 'texCoord');
+                }
+
+                if ((texNode = shape._cf.geometry.node.getColorTexture()) &&
+                    shape._cf.geometry.node._dirty.color == true) {
+                    shape.updateTexture(texNode, IG_texUnit++, 'color');
+                }
+
+                shape._cf.geometry.node._dirty.coord = false;
+                shape._cf.geometry.node._dirty.normal = false;
+                shape._cf.geometry.node._dirty.texCoord = false;
+                shape._cf.geometry.node._dirty.color = false;
+                shape._cf.geometry.node._dirty.index = false;
+            }
+
             if (!needFullReInit) {
                 return;
             }
@@ -2330,7 +2366,7 @@ x3dom.gfx_webgl = (function () {
 					shape.updateTexture(indexTexture, IG_texUnit++, 'index');
 				}
 				
-				for(var i=0; i<numCoordinateTextures; i++) {
+				for(i=0; i<numCoordinateTextures; i++) {
 					var coordinateTexture = shape._cf.geometry.node.getCoordinateTexture(i);
 					if(coordinateTexture) {
 						shape.updateTexture(coordinateTexture, IG_texUnit++, 'coord');
@@ -2351,6 +2387,12 @@ x3dom.gfx_webgl = (function () {
 				if(colorTexture) {
 					shape.updateTexture(colorTexture, IG_texUnit++, "color");
 				}
+
+                shape._cf.geometry.node._dirty.coord = false;
+                shape._cf.geometry.node._dirty.normal = false;
+                shape._cf.geometry.node._dirty.texCoord = false;
+                shape._cf.geometry.node._dirty.color = false;
+                shape._cf.geometry.node._dirty.index = false;
 			}
             
             
@@ -3561,7 +3603,6 @@ x3dom.gfx_webgl = (function () {
 					}
 				}
 			}
-			
 			
 
 			for (var q=0; q<shape._webgl.positions.length; q++)

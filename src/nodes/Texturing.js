@@ -153,13 +153,22 @@ x3dom.registerNodeType(
             {
                 if (fieldName == "url")
                 {
+                    var that = this;
+
 					//x3dom.ImageLoadManager.push( this );
 					this._complete = false;
+
                     Array.forEach(this._parentNodes, function (app) {
-						app.nodeChanged();
-                        Array.forEach(app._parentNodes, function (shape) {
-                            shape._dirty.texture = true;
-                        });
+                        if (x3dom.isa(app, x3dom.nodeTypes.X3DAppearanceNode)) {
+                            app.nodeChanged();
+                            Array.forEach(app._parentNodes, function (shape) {
+                                shape._dirty.texture = true;
+                            });
+                        }
+                        else if (x3dom.isa(app, x3dom.nodeTypes.ImageGeometry)) {
+                            if ((containerField = that.getAttribute('containerField')))
+                                app._dirty[containerField] = true;
+                        }
                     });
                 }
             },
