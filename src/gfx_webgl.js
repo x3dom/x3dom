@@ -1416,7 +1416,7 @@ x3dom.gfx_webgl = (function () {
                             "};                         \n" +
                             "uniform Material material; \n";
                     
-            var shader = "";
+            var shader = "\n";
             shader += "#ifdef GL_ES             \n";
             shader += "  precision highp float; \n";
             shader += "#endif                   \n";
