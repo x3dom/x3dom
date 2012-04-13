@@ -1494,6 +1494,14 @@ x3dom.registerNodeType(
 					x3dom.geoCache[geoCacheID] = this._mesh;
 				}
 			}
+
+            this._dirty = {
+                coord: true,
+                normal: true,
+                texCoord: true,
+                color: true,
+                index: true
+            };
 		},
 		{
 			nodeChanged: function()
@@ -1502,8 +1510,18 @@ x3dom.registerNodeType(
                     node._dirty.positions = true;
 					node._dirty.normals = true;
 					node._dirty.texcoords = true;
+                    node._dirty.colors = true;
 				});
 			},
+
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "coord" || fieldName == "normal" ||
+                    fieldName == "texCoord" || fieldName == "color" ||
+                    fieldName == "index") {
+                    this._dirty[fieldName] = true;
+                }
+            },
 			
 			getMin: function()
 			{
