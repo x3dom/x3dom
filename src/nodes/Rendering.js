@@ -1145,6 +1145,7 @@ x3dom.registerNodeType(
 						
 						var faceCnt = 0, cnt = 0;
 						var p1, p2 , p3, n1, n2, n3, t1, t2, t3, c1, c2, c3;
+						var swapOrder = false;
 						 
 						if ( hasNormal  || hasTexCoord || hasColor) {
 							
@@ -1155,10 +1156,19 @@ x3dom.registerNodeType(
 									faceCnt++;
 									continue;
 								}
+							
 								
-								p1 = indexes[i];
-								p2 = indexes[i-1];
-								p3 = indexes[i+1];
+								if (swapOrder) {
+									p1 = indexes[i];
+									p2 = indexes[i-1];
+									p3 = indexes[i+1];
+								}
+								else {
+									p1 = indexes[i-1];
+									p2 = indexes[i];
+									p3 = indexes[i+1];  
+								}
+								swapOrder = !swapOrder;
 								
 								if (normPerVert) { 
 									n1 = p1;
@@ -1256,16 +1266,25 @@ x3dom.registerNodeType(
 							this._mesh.splitMesh();
 			
 						} else {
-							
+							var swapOrder = false;
 							for (i = 1; i < indexes.length; ++i)
 							{
 								if (indexes[i+1] == -1) {
 									i = i+2;
 									continue;
 								}
-								this._mesh._indices[0].push(indexes[i])	
-								this._mesh._indices[0].push(indexes[i-1])	
-								this._mesh._indices[0].push(indexes[i+1])	
+								
+								if (swapOrder) {
+									this._mesh._indices[0].push(indexes[i])	
+									this._mesh._indices[0].push(indexes[i-1])	
+									this._mesh._indices[0].push(indexes[i+1])	
+								}
+								else {
+									this._mesh._indices[0].push(indexes[i-1])	
+									this._mesh._indices[0].push(indexes[i])	
+									this._mesh._indices[0].push(indexes[i+1])	
+								}
+								swapOrder = !swapOrder;
 							}
 							
 							this._mesh._positions[0] = positions.toGL();
@@ -1317,6 +1336,7 @@ x3dom.registerNodeType(
 						this._mesh._colors[0] = [];
 						
 						var indexes = this._vf.index;
+						var swapOrder = false;
 						
 						for (i=1; i < indexes.length-2; ++i)
 						{
@@ -1327,9 +1347,17 @@ x3dom.registerNodeType(
 							}
 								
 							if (this._vf.colorPerVertex) { 
-								c1 = indexes[i];
-								c2 = indexes[i-1];
-								c3 = indexes[i+1];
+								if (swapOrder) {
+									c1 = indexes[i];
+									c2 = indexes[i-1];
+									c3 = indexes[i+1];
+								}
+								else {
+									c1 = indexes[i-1];
+									c2 = indexes[i];
+									c3 = indexes[i+1];	
+								}
+								swapOrder = !swapOrder;
 							} else if (!this._vf.colorPerVertex) {
 								c1 = c2 = c3 = faceCnt;
 							}
@@ -1365,6 +1393,7 @@ x3dom.registerNodeType(
 						this._mesh._normals[0] = [];
 						
 						var indexes = this._vf.index;
+						var swapOrder = false;
 							
 						for (i=1; i < indexes.length-2; ++i)
 						{
@@ -1375,9 +1404,17 @@ x3dom.registerNodeType(
 							}
 							
 							if (this._vf.normalPerVertex) { 
-								n1 = indexes[i];
-								n2 = indexes[i-1];
-								n3 = indexes[i+1];
+								if (swapOrder) {
+									n1 = indexes[i];
+									n2 = indexes[i-1];
+									n3 = indexes[i+1];
+								}
+								else {
+									n1 = indexes[i-1];
+									n2 = indexes[i];
+									n3 = indexes[i+1];	
+								}
+								swapOrder = !swapOrder;
 							} else if (!this._vf.normalPerVertex) {
 								n1 = n2 = n3 = faceCnt;
 							}
@@ -1408,6 +1445,7 @@ x3dom.registerNodeType(
 						
 						this._mesh._texCoords[0] = [];
 						var indexes = this._vf.index;
+						var swapOrder = false;
 						
 						for (i=1; i < indexes.length-2; ++i)
 						{
@@ -1416,9 +1454,18 @@ x3dom.registerNodeType(
 								continue;
 							}
 							
-							t1 = indexes[i];
-							t2 = indexes[i-1];
-							t3 = indexes[i+1];
+							
+							if (swapOrder) {
+								t1 = indexes[i];
+								t2 = indexes[i-1];
+								t3 = indexes[i+1];
+							}
+							else {
+								t1 = indexes[i-1];
+								t2 = indexes[i];
+								t3 = indexes[i+1];	
+							}
+							swapOrder = !swapOrder;
 							
 							this._mesh._texCoords[0].push(tex[t1].x);
 							this._mesh._texCoords[0].push(tex[t1].y);
