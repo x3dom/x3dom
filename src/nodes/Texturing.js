@@ -166,7 +166,7 @@ x3dom.registerNodeType(
                             });
                         }
                         else if (x3dom.isa(app, x3dom.nodeTypes.ImageGeometry)) {
-                            if ((containerField = that.getAttribute('containerField')))
+                            if ((containerField = that._vf['containerField']))
                                 app._dirty[containerField] = true;
                         }
                     });
