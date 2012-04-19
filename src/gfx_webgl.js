@@ -4904,7 +4904,16 @@ x3dom.gfx_webgl = (function () {
                    continue;
                 }
                 
-                this.renderShape(transform, shape, viewarea, slights, numLights, 
+				//Get prev shape 
+				if(i > 0) {
+					var prev_shape = scene.drawableObjects[i-1][1];
+				}
+				//Get next shape
+				if(i < scene.drawableObjects.length-1) {
+					var next_shape = scene.drawableObjects[i+1][1];
+				}
+				
+                this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
                         mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
             }
         }
@@ -4926,7 +4935,16 @@ x3dom.gfx_webgl = (function () {
                 
                 this.setupShape(gl, shape, viewarea);
                 
-                this.renderShape(transform, shape, viewarea, slights, numLights, 
+				//Get prev shape 
+				if(i > 0) {
+					var prev_shape = locScene.drawableObjects[i-1][1];
+				}
+				//Get next shape
+				if(i < locScene.drawableObjects.length-1) {
+					var next_shape = locScene.drawableObjects[i+1][1];
+				}
+				
+                this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
                         mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
             }
         }
