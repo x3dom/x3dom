@@ -191,6 +191,80 @@ x3dom.Runtime.prototype.projectionMatrix = function() {
 };
 
 /**
+ * Function: getWorldToCameraCoordinatesMatrix
+ *
+ * Returns the current world to camera coordinates matrix.
+ *
+ * Returns:
+ * 		Matrix object
+ */
+x3dom.Runtime.prototype.getWorldToCameraCoordinatesMatrix = function() {
+    return this.canvas.doc._viewarea.getWCtoCCMatrix();
+};
+
+/**
+ * Function: getCameraToWorldCoordinatesMatrix
+ *
+ * Returns the current camera to world coordinates matrix.
+ *
+ * Returns:
+ * 		Matrix object
+ */
+x3dom.Runtime.prototype.getCameraToWorldCoordinatesMatrix = function() {
+    return this.canvas.doc._viewarea.getCCtoWCMatrix();
+};
+
+/**
+ * Function: getViewingRay
+ *
+ * Returns the viewing ray for a given (x, y) position.
+ *
+ * Returns:
+ * 		Line object
+ */
+x3dom.Runtime.prototype.getViewingRay = function(x, y) {
+    return this.canvas.doc._viewarea.calcViewRay(x, y);
+};
+
+/**
+ * Function: getWidth
+ *
+ * Returns the width of the canvas element.
+ */
+x3dom.Runtime.prototype.getWidth = function() {
+    return this.canvas.doc._viewarea._width;
+};
+
+/**
+ * Function: getHeight
+ *
+ * Returns the width of the canvas element.
+ */
+x3dom.Runtime.prototype.getHeight = function() {
+    return this.canvas.doc._viewarea._height;
+};
+
+/**
+ * Function: calcScreenPos
+ *
+ * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ */
+x3dom.Runtime.prototype.calcScreenPos = function(wx, wy, wz) {
+    var pnt = new x3dom.fields.SFVec3f(wx, wy, wz);
+    
+    var mat = this.canvas.doc._viewarea.getWCtoCCMatrix();
+    var pos = mat.multFullMatrixPnt(pnt);
+    
+    var w = this.canvas.doc._viewarea._width;
+    var h = this.canvas.doc._viewarea._height;
+    
+    var x = Math.round((pos.x + 1) * (w - 1) / 2);
+    var y = Math.round((h - 1) * (1 - pos.y) / 2);
+    
+    return [x, y];
+};
+
+/**
  * Function: lightMatrix
  *
  * Returns the current light matrix.
