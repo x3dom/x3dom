@@ -185,17 +185,18 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 n = new nodeType(ctx);
                 n._nameSpace = this;
                 
-                //active workaground for missing DOMAttrModified support
-                if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false) &&
-                     (domNode.tagName !== undefined) )
+                //active workaround for missing DOMAttrModified support
+                if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false)
+						&& (domNode instanceof Element)
+					)
                 {
-                  if(!domNode.__setAttribute)
+                  if(domNode.setAttribute && !domNode.__setAttribute)
                   {
                     domNode.__setAttribute = domNode.setAttribute;
                     domNode.setAttribute = x3dom.setElementAttribute;
                   }
                   
-                  if(!domNode.__getAttribute)
+                  if(domNode.getAttribute && !domNode.__getAttribute)
                   {
                     domNode.__getAttribute = domNode.getAttribute;
                     domNode.getAttribute = x3dom.getElementAttribute;
