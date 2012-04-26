@@ -351,7 +351,7 @@ x3dom.userAgentFeature = {
             }
             return obj;
         };
-    } else if ((window.location.pathname.lastIndexOf(".html") > 0) && (navigator.userAgent.indexOf("Firefox") != -1)) {
+    } else if ((window.location.pathname.lastIndexOf(".xhtml") == -1) && (navigator.userAgent.indexOf("Firefox") != -1)) {
 		 document.getElementById = function(id) {
      
             var node = travers(document.getElementsByTagName('body')[0], id);
