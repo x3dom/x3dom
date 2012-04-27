@@ -1046,10 +1046,10 @@ function mousePosition(evt){
 		 
 	if ( "getBoundingClientRect" in document.documentElement ) {
 		//x3dom.debug.logInfo('getBoundingClientRect');
-		box =  evt.target.offsetParent.getBoundingClientRect();
+		var box =  evt.target.offsetParent.getBoundingClientRect();
 								
-		scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		scroltop = 	window.pageYOffset || document.body.scrollTop;
+		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
+		var scroltop = 	window.pageYOffset || document.body.scrollTop;
 		
 		var elem = evt.target.offsetParent;
 		
@@ -1071,8 +1071,8 @@ function mousePosition(evt){
 
 		//probleme bei xhtml und  firefox wegen x3d element
 		
-		scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		scroltop = 	window.pageYOffset || document.body.scrollTop;
+		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
+		var scroltop = 	window.pageYOffset || document.body.scrollTop;
 		
 		var elem = evt.target.offsetParent;
 		

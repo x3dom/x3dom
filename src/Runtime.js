@@ -245,11 +245,11 @@ x3dom.Runtime.prototype.getHeight = function() {
 };
 
 /**
- * Function: calcScreenPos
+ * Function: calcCanvasPos
  *
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
  */
-x3dom.Runtime.prototype.calcScreenPos = function(wx, wy, wz) {
+x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
     var pnt = new x3dom.fields.SFVec3f(wx, wy, wz);
     
     var mat = this.canvas.doc._viewarea.getWCtoCCMatrix();
@@ -261,6 +261,57 @@ x3dom.Runtime.prototype.calcScreenPos = function(wx, wy, wz) {
     var x = Math.round((pos.x + 1) * (w - 1) / 2);
     var y = Math.round((h - 1) * (1 - pos.y) / 2);
     
+    return [x, y];
+};
+
+/**
+ * Function: calcPagePos
+ *
+ * Returns the 2d page (returns the mouse coordinates relative to the document) position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ */
+x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
+
+	var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
+	var mousePos = this.calcCanvasPos(wx, wy, wz);
+	
+	var scrolleft =  window.pageXOffset || document.body.scrollLeft;
+	var scroltop = 	window.pageYOffset || document.body.scrollTop;
+	
+	var elem = this.canvas.canvas.offsetParent;
+	
+	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
+	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
+		
+	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
+	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
+	
+	var mousePos = this.calcCanvasPos(wx, wy, wz);
+		
+	var x = cavasPos.left + paddingLeft + borderLeftWidth + scrolleft + mousePos[0];
+    var y = cavasPos.top + paddingTop + borderTopWidth + scroltop + mousePos[1];
+    return [x, y];
+};
+
+/**
+ * Function: calcClientPos
+ *
+ * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ */
+x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
+    var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
+	
+	var elem = this.canvas.canvas.offsetParent;
+	
+	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
+	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
+		
+	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
+	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
+	
+	var mousePos = this.calcCanvasPos(wx, wy, wz);
+	
+	var x = cavasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
+    var y = cavasPos.top + paddingTop + borderTopWidth + mousePos[1];
     return [x, y];
 };
 
