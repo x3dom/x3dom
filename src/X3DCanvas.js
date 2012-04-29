@@ -344,7 +344,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         var _inner = document.createElement('span');
         _inner.setAttribute('style', "width: 25%;");
-        _inner.appendChild(document.createTextNode(" "));  // this needs to be a protected whitespace
+        _inner.appendChild(document.createTextNode(' '));  // this needs to be a protected whitespace
         progressDiv.appendChild(_inner);
 
         this.x3dElem.appendChild(progressDiv);
@@ -973,7 +973,7 @@ x3dom.X3DCanvas.prototype.tick = function()
                     // TODO: In order to display a bar we need a max value to determine where we are
                     // 100 / total * this.doc.downloadCount
                     // this.progressDiv.childNodes[1].setAttribute("style", "width: " + progressPercent + "%");
-                    this.progressDiv.childNodes[0].textContent = 'Loading: ' + this.doc.downloadCount;
+                    this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);
                     if (this.doc.downloadCount > 0) {
                         this.progressDiv.style.display = 'inline';
                     } else {
