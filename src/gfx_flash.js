@@ -110,6 +110,10 @@ x3dom.gfx_flash = (function() {
 		//Get Scene from Viewarea
         var scene = viewarea._scene;
 		
+		if(viewarea._last_mat_view == undefined) {
+			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
+		}
+		
 		//Setup the flash scene
 		this.setupScene(scene, viewarea);
 		
@@ -163,6 +167,51 @@ x3dom.gfx_flash = (function() {
 	Context.prototype.setupScene = function(scene, viewarea) {
 		//Set View-Matrix
 		var mat_view = viewarea.getViewMatrix();
+		
+		// fire viewpointChanged event
+        if ( !viewarea._last_mat_view.equals(mat_view) )
+        {
+        	var e_viewpoint = viewarea._scene.getViewpoint();
+        	var e_eventType = "viewpointChanged";
+        	/*TEST*/
+        	try {
+				if ( e_viewpoint._xmlNode && 
+						(e_viewpoint._xmlNode["on"+e_eventType] ||
+					 	 e_viewpoint._xmlNode.hasAttribute("on"+e_eventType) ||
+					 	 e_viewpoint._listeners[e_eventType]) )
+				{
+				    var e_viewtrafo = e_viewpoint.getCurrentTransform();
+					e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
+					
+					var e_mat = e_viewtrafo.inverse();
+					
+					var e_rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
+					e_rotation.setValue(e_mat);
+					
+					var e_translation = e_mat.e3();
+					
+				    var e_event = {
+						target: e_viewpoint._xmlNode,
+						type: e_eventType,
+						matrix: e_viewtrafo,
+						position: e_translation,
+						orientation: e_rotation.toAxisAngle(),
+						cancelBubble: false,
+						stopPropagation: function() { this.cancelBubble = true; }
+					};
+					
+					e_viewpoint.callEvtHandler(e_eventType, e_event);
+				}
+			}
+			catch(e_e) {
+				x3dom.debug.logException(e_e);
+			}
+        }
+        
+        viewarea._last_mat_view = mat_view;
+		
+		
+		
 		this.object.setViewMatrix( { viewMatrix: mat_view.toGL() });
 		
 		//Set Projection-Matrix
