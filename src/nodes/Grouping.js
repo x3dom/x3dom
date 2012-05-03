@@ -26,9 +26,12 @@ x3dom.registerNodeType(
             // Collects array of [transform matrix, node] for all objects that should be drawn.
             collectDrawableObjects: function (transform, out)
             {
-                if (!this._vf.render) {
+                if (!this._vf.render || !out) {
                     return;
                 }
+
+                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                    out.collect = true;
 
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
@@ -110,10 +113,13 @@ x3dom.registerNodeType(
             // Collects array of [transform matrix, node] for all objects that should be drawn.
             collectDrawableObjects: function (transform, out)
             {
-                if (this._vf.whichChoice < 0 ||
+                if (!out || this._vf.whichChoice < 0 ||
                     this._vf.whichChoice >= this._childNodes.length) {
                     return;
                 }
+
+                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                    out.collect = true;
 
                 if (this._childNodes[this._vf.whichChoice]) {
                     var childTransform = this._childNodes[this._vf.whichChoice].transformMatrix(transform);
@@ -388,6 +394,110 @@ x3dom.registerNodeType(
             // FIXME; implement optimizations; no need to maintain the children's
             // X3D representations, as they cannot be accessed after creation time
             x3dom.debug.logWarning("StaticGroup NYI");
+        }
+    )
+);
+
+// ### RemoteSelectionGroup ###
+x3dom.registerNodeType(
+    "RemoteSelectionGroup",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
+
+            this.addField_MFString(ctx, 'url', []);         // address for WebSocket connection
+            this.addField_MFString(ctx, 'idNameMap', []);   // list of subsequent id/name pairs
+
+            this._idList = [];        // to be updated by socket connection
+
+            if ("WebSocket" in window)
+            {
+                var that = this;
+
+                this._websocket = new WebSocket("wss://echo.websocket.org");
+                //this._websocket = new WebSocket(this._vf.url[0]);
+
+                this._websocket.onopen = function(evt)
+                {
+                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
+
+                    this._lastMsg = view.toGL().toString();
+
+                    this.send(this._lastMsg);
+                    x3dom.debug.logInfo("Sent: " + this._lastMsg);
+                };
+                this._websocket.onclose = function(evt) {
+                    x3dom.debug.logInfo("Disconnected");
+                };
+                this._websocket.onmessage = function(evt) {
+                    // TODO: currently, the event doesn't contain data, so let's generate some for testing
+                    var i = 0;
+                    for (i=0; i<=9; i++)
+                        that._idList[i] = '_0' + i;
+                    for (i=10; i<16; i++)
+                        that._idList[i] = '_' + i;
+                    //
+
+                    // send again -- check for timestamp etc.? XXX
+                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
+                    var message = view.toGL().toString();
+
+                    // send again to re-initiate draw
+                    if (this._lastMsg != message) {
+                        this._lastMsg = message;
+                        // TODO; send again without too much overhead
+                        x3dom.debug.logWarning("Response: " + evt.data);
+                    }
+                    this.send(message);
+
+                    // TODO: if oldList != newList then...
+                    that._nameSpace.doc.needRender = true;
+                };
+                this._websocket.onerror = function(evt) {
+                    x3dom.debug.logError(evt.data);
+                };
+
+                // if there were a d'tor this would belong there
+                // this._websocket.close();
+            }
+            else
+            {
+                x3dom.debug.logError("No WebSocket support!");
+            }
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "url")
+                {
+                    this._websocket.close();
+                    this._websocket = new WebSocket(this._vf.url[0]);
+                }
+            },
+
+            // Collects array of [matrix, node] for all objects with given id that should be drawn
+            // out is drawableObjects array
+            collectDrawableObjects: function (transform, out)
+            {
+                if (!this._vf.render || !out) {
+                    return;
+                }
+
+                out.useIdList = true;
+                out.collect = false;
+                out.idList = this._idList;
+
+                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                    out.collect = true;
+
+                for (var i=0; i<this._childNodes.length; i++) {
+                    if (this._childNodes[i]) {
+                        var childTransform = this._childNodes[i].transformMatrix(transform);
+                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                    }
+                }
+            }
         }
     )
 );

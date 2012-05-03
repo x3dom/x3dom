@@ -237,6 +237,9 @@ x3dom.registerNodeType(
         // Collects array of [transform matrix, node] for all objects that should be drawn.
         collectDrawableObjects: function (transform, out) {
             // TODO: culling etc.
+            if (out && out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                out.collect = true;
+
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     var childTransform = this._childNodes[i].transformMatrix(transform);
