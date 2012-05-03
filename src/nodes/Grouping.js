@@ -415,47 +415,51 @@ x3dom.registerNodeType(
             {
                 var that = this;
 
-                this._websocket = new WebSocket("wss://echo.websocket.org");
-                //this._websocket = new WebSocket(this._vf.url[0]);
+                this._websocket = new WebSocket(this._vf.url[0]);
+                
+                this._websocket._lastMsg = null;
 
                 this._websocket.onopen = function(evt)
                 {
                     var view = that._nameSpace.doc._viewarea.getViewMatrix();
-
                     this._lastMsg = view.toGL().toString();
 
                     this.send(this._lastMsg);
-                    x3dom.debug.logInfo("Sent: " + this._lastMsg);
+                    x3dom.debug.logInfo("WS Sent: " + this._lastMsg);
+                    this._lastMsg = "";     // triggers first update
                 };
-                this._websocket.onclose = function(evt) {
-                    x3dom.debug.logInfo("Disconnected");
+                
+                this._websocket.onclose = function(evt) 
+                {
+                    x3dom.debug.logInfo("WS Disconnected");
                 };
-                this._websocket.onmessage = function(evt) {
-                    // TODO: currently, the event doesn't contain data, so let's generate some for testing
-                    var i = 0;
-                    for (i=0; i<=9; i++)
-                        that._idList[i] = '_0' + i;
-                    for (i=10; i<16; i++)
-                        that._idList[i] = '_' + i;
-                    //
-
-                    // send again -- check for timestamp etc.? XXX
-                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
-                    var message = view.toGL().toString();
-
-                    // send again to re-initiate draw
-                    if (this._lastMsg != message) {
-                        this._lastMsg = message;
-                        // TODO; send again without too much overhead
-                        x3dom.debug.logWarning("Response: " + evt.data);
-                    }
-                    this.send(message);
-
+                
+                this._websocket.onmessage = function(evt) 
+                {
+                    that._idList = x3dom.fields.MFString.parse(evt.data);
+                    x3dom.debug.logInfo("WS Response: " + evt.data);
+                    
                     // TODO: if oldList != newList then...
                     that._nameSpace.doc.needRender = true;
                 };
-                this._websocket.onerror = function(evt) {
+                
+                this._websocket.onerror = function(evt) 
+                {
                     x3dom.debug.logError(evt.data);
+                };
+                
+                this._websocket.updateCamera = function()
+                {
+                    // send again
+                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
+                    var message = view.toGL().toString();
+                    
+                    if (this._lastMsg != null && this._lastMsg != message)
+                    {
+                        this._lastMsg = message;
+                        this.send(message);
+                        x3dom.debug.logInfo("WS Sent: " + message);
+                    }
                 };
 
                 // if there were a d'tor this would belong there
@@ -483,6 +487,8 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
+                
+                this._websocket.updateCamera();
 
                 out.useIdList = true;
                 out.collect = false;
