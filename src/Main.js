@@ -351,7 +351,10 @@ x3dom.userAgentFeature = {
             }
             return obj;
         };
-    } else if ((window.location.pathname.lastIndexOf(".xhtml") == -1) && (navigator.userAgent.indexOf("Firefox") != -1)) {
+    }
+	else if ((window.location.pathname.lastIndexOf(".xhtml") == -1) && (navigator.userAgent.indexOf("Firefox") != -1))
+	{
+		 // TODO: check if this works for servers where xhtml is standard page format
 		 document.getElementById = function(id) {
      
             var node = travers(document.getElementsByTagName('body')[0], id);

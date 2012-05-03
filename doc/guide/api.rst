@@ -225,6 +225,47 @@ the X3D element they are working on as first parameter::
     This holds all configuration parameters of the X3D element.
 
 
+..  js:function:: calcCanvasPos(wx,wy,xz)
+
+    :param wx: World coordiante X axis
+    :param wy: World coordiante Y axis
+    :param wz: World coordiante Z axis
+    :return: Array with 2D corrdinates (x,y)
+
+    Takes world coordinates (x,y,z) of the scene and calculates
+    the relating 2D X/Y coordinates respective to the canvas
+    the scene is rendered on.
+
+    This allows you to relate 3D world coordinates
+    to a specific position on the 2D canvas. This can be usable
+    to position a HTML element over the canvaas (like a hint window
+    for exmaple).
+
+
+..  js:function:: calcPagePos(wx,wy,xz)
+
+    :param wx: World coordiante X axis
+    :param wy: World coordiante Y axis
+    :param wz: World coordiante Z axis
+    :return: Array with 2D corrdinates (x,y)
+
+    Takes world coordinates (x,y,z) of the scene and calculates
+    the relating 2D X/Y coordinates relative to the document the
+    scene is rendered in.
+
+
+..  js:function:: calcClientPos(wx,wy,xz)
+
+    :param wx: World coordiante X axis
+    :param wy: World coordiante Y axis
+    :param wz: World coordiante Z axis
+    :return: Array with 2D corrdinates (x,y)
+
+    Takes world coordinates (x,y,z) of the scene and calculates
+    the relating 2D X/Y coordinates relative to the window the
+    scene is rendered in.
+
+
 
 Docs
 ----
