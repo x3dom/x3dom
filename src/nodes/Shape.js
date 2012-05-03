@@ -207,8 +207,13 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
+                if ( out && out.useIdList && this._cf.geometry.node !== null &&
+                    (out.idList.indexOf(this._DEF) >= 0 || out.idList.indexOf(this._cf.geometry.node._DEF) >= 0) )
+                    out.collect = true;
+
                 // TODO: culling etc
-                if (out !== null && this._vf.render)
+                if ( out !== null && this._vf.render &&
+                    (!out.useIdList || out.collect) )
                 {
                     out.push( [transform, this] );
                 }

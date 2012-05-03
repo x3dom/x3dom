@@ -295,9 +295,12 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
-                if (!this._vf.render) {
+                if (!this._vf.render || !out) {
                     return;
                 }
+
+                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                    out.collect = true;
 
                 // TODO; optimize getting volume
                 var min = x3dom.fields.SFVec3f.MAX();
@@ -377,6 +380,9 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
+                if (out && out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                    out.collect = true;
+
                 for (var i=0; i<this._childNodes.length; i++)
                 {
                     if (this._childNodes[i] && (this._childNodes[i] !== this._cf.proxy.node))
@@ -408,6 +414,9 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, out)
             {
                 var i=0, n=this._childNodes.length;
+
+                if (out && out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                    out.collect = true;
 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();

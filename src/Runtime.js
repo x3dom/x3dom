@@ -179,6 +179,18 @@ x3dom.Runtime.prototype.viewpoint = function() {
 };
 
 /**
+ * Function: viewMatrix
+ *
+ * Returns the current view matrix.
+ *
+ * Returns:
+ * 		Matrix object
+ */
+x3dom.Runtime.prototype.viewMatrix = function() {
+    return this.canvas.doc._viewarea.getViewMatrix();
+};
+
+/**
  * Function: projectionMatrix
  *
  * Returns the current projection matrix.
