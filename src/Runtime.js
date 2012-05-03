@@ -249,7 +249,7 @@ x3dom.Runtime.prototype.getHeight = function() {
  *
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
  */
-x3dom.Runtime.prototype.calcScreenPos = function(wx, wy, wz) {
+x3dom.Runtime.prototype.calScreenPos = function(wx, wy, wz) {
     var pnt = new x3dom.fields.SFVec3f(wx, wy, wz);
     
     var mat = this.canvas.doc._viewarea.getWCtoCCMatrix();
