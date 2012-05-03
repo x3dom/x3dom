@@ -336,7 +336,7 @@ x3dom.userAgentFeature = {
         }
     };
     
-    if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
+    //if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
         document.__getElementById = document.getElementById;
         document.getElementById = function(id) {
             var obj = this.__getElementById(id);
@@ -351,7 +351,7 @@ x3dom.userAgentFeature = {
             }
             return obj;
         };
-    }
+    /*}
 	else if ((window.location.pathname.lastIndexOf(".xhtml") == -1) && (navigator.userAgent.indexOf("Firefox") != -1))
 	{
 		 // TODO: check if this works for servers where xhtml is standard page format
@@ -360,7 +360,7 @@ x3dom.userAgentFeature = {
             var node = travers(document.getElementsByTagName('body')[0], id);
             return node;
         };
-	}
+	}*/
     
     if (window.addEventListener)  {
         window.addEventListener('load', onload, false);
@@ -374,7 +374,7 @@ x3dom.userAgentFeature = {
     
 })();
 
-function travers(node, id) {
+/*function travers(node, id) {
 	if(node instanceof Element) {
 		if(node.getAttribute('id') == id) {
 			return node;
@@ -390,4 +390,4 @@ function travers(node, id) {
 	} else {
 		return null;
 	}
-};	
+};*/	
