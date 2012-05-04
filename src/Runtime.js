@@ -392,6 +392,70 @@ x3dom.Runtime.prototype.showAll = function(axis) {
 };
 
 /**
+ * APIFunction: showObject
+ *
+ * Zooms so that a given object is fully visible.
+ *
+ * Parameter:
+ *     obj  - the scene-graph element on which to focus
+ *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
+ *
+ */
+x3dom.Runtime.prototype.showObject = function(obj, axis) {
+    var min = x3dom.fields.SFVec3f.MAX();
+    var max = x3dom.fields.SFVec3f.MIN();
+
+    if (obj && obj._x3domNode &&
+        obj._x3domNode.getVolume(min, max, true))
+    {
+        min = obj._x3domNode.getCurrentTransform().multMatrixPnt(min);
+        max = obj._x3domNode.getCurrentTransform().multMatrixPnt(max);
+
+        var x = "x", y = "y", z = "z";
+        var sign = 1;
+        var to, from = new x3dom.fields.SFVec3f(0, 0, -1);
+
+        switch (axis) {
+            case "posX":
+                sign = -1;
+            case "negX":
+                z = "x"; x = "y"; y = "z";
+                to = new x3dom.fields.SFVec3f(sign, 0, 0);
+                break;
+            case "posY":
+                sign = -1;
+            case "negY":
+                z = "y"; x = "z"; y = "x";
+                to = new x3dom.fields.SFVec3f(0, sign, 0);
+                break;
+            case "posZ":
+                sign = -1;
+            case "negZ":
+            default:
+                to = new x3dom.fields.SFVec3f(0, 0, -sign);
+                break;
+        }
+
+        var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
+        var viewmat = quat.toMatrix();
+
+        var viewpoint = this.canvas.doc._scene.getViewpoint();
+        var fov = viewpoint.getFieldOfView();
+
+        var dia = max.subtract(min);
+        var dist1 = (dia[y]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
+        var dist2 = (dia[x]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
+
+        dia = min.add(dia.multiply(0.5));
+        dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.1;
+
+        viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
+
+        this.canvas.doc._viewarea.animateTo(viewmat, viewpoint);
+    }
+};
+
+/**
  * APIFunction: debug
  *
  * Displays or hides the debug window. If parameter is omitted,

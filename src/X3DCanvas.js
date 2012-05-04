@@ -518,8 +518,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mouseover', function (evt) {
 			if(!this.isMulti) {
-				x3dom.debug.logInfo('mouseover');
-				
 				this.mouse_button = 0;
 				this.mouse_dragging = false;
 
