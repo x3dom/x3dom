@@ -724,6 +724,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     if (needRecurse) {
         recurse(obj);
     }
+	
 };
 
 x3dom.Viewarea.prototype.initMouseState = function()
