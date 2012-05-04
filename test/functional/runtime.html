@@ -67,16 +67,26 @@
            <Background backUrl='"media/texture/generic/CubeBack.png"' bottomUrl='"media/texture/generic/CubeDown.png"' frontUrl='"media/texture/generic/CubeFront.png"' leftUrl='"media/texture/generic/CubeLeft.png"' rightUrl='"media/texture/generic/CubeRight.png"' topUrl='"media/texture/generic/CubeUp.png"'></Background>
            <background id="bg0" skycolor='0.05 0.12 0.23' description="Background 0"></background>
            <background id="bg1" skycolor='1.00 1.00 1.00' description="Background 1"></background>
-           <viewpoint position='0 0 10' description="Camera 0"></viewpoint>
+           <viewpoint position='2 0 15' description="Camera 0"></viewpoint>
            <viewpoint position='-2 0 5' description="Camera 1"></viewpoint>
            <viewpoint position='0 2 5'  description="Camera 2"></viewpoint>
            <viewpoint position='2 0 5'  description="Camera 3"></viewpoint>
+           <transform translation="0 0 1" rotation="0 1 0 0.5">
            <shape>
                 <appearance>
                     <material diffuseColor='1 0 0' ></material>
                 </appearance>
                 <box id='box' ></box>
             </shape>
+            <transform translation="5 1 0">
+                <shape id="foo">
+                    <appearance>
+                        <material diffuseColor='0 1 0'></material>
+                    </appearance>
+                    <sphere></sphere>
+                </shape>
+            </transform>
+           </transform>
     </scene>
     </x3d>
 
@@ -101,6 +111,8 @@
 				    <li><a href="#" onClick="$element.runtime.showAll('negY');return false;">Show all -Y</a></li>
 				    <li><a href="#" onClick="$element.runtime.showAll('posZ');return false;">Show all Z</a></li>
 				    <li><a href="#" onClick="$element.runtime.showAll('negZ');return false;">Show all -Z</a></li>
+
+                    <li><a href="#" onClick="$element.runtime.showObject(document.getElementById('foo'));return false;">Show sphere</a></li>
 		    		<li><a href="#" onClick="$element.runtime.lightView();return false;">Light View</a></li>
 				</ul>
             </li>
