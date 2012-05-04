@@ -410,6 +410,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'idNameMap', []);   // list of subsequent id/name pairs
 
             this._idList = [];        // to be updated by socket connection
+            this._websocket = null;
 
             if ("WebSocket" in window)
             {
@@ -473,7 +474,7 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "url")
+                if (fieldName == "url" && this._websocket)
                 {
                     this._websocket.close();
                     this._websocket = new WebSocket(this._vf.url[0]);
@@ -488,7 +489,8 @@ x3dom.registerNodeType(
                     return;
                 }
                 
-                this._websocket.updateCamera();
+                if (this._websocket)
+                    this._websocket.updateCamera();
 
                 out.useIdList = true;
                 out.collect = false;
