@@ -469,164 +469,170 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         };
 
         this.canvas.addEventListener('mousedown', function (evt) {
-            this.focus();
-			
-            switch(evt.button) {
-                case 0:  this.mouse_button = 1; break;  //left
-                case 1:  this.mouse_button = 4; break;  //middle
-                case 2:  this.mouse_button = 2; break;  //right
-                default: this.mouse_button = 0; break;
-            }
-					
-			/*this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
-            this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);*/
-			
-			var pos = mousePosition(evt);
-			this.mouse_drag_x = pos.x;
-            this.mouse_drag_y = pos.y;
-			
-            this.mouse_dragging = true;
+			if(!this.isMulti) {
+				this.focus();
+				
+				switch(evt.button) {
+					case 0:  this.mouse_button = 1; break;  //left
+					case 1:  this.mouse_button = 4; break;  //middle
+					case 2:  this.mouse_button = 2; break;  //right
+					default: this.mouse_button = 0; break;
+				}
+				
+				var pos = mousePosition(evt);
+				this.mouse_drag_x = pos.x;
+				this.mouse_drag_y = pos.y;
+				
+				this.mouse_dragging = true;
 
-            if (evt.shiftKey) { this.mouse_button = 1; }
-            if (evt.ctrlKey)  { this.mouse_button = 4; }
-            if (evt.altKey)   { this.mouse_button = 2; }
+				if (evt.shiftKey) { this.mouse_button = 1; }
+				if (evt.ctrlKey)  { this.mouse_button = 4; }
+				if (evt.altKey)   { this.mouse_button = 2; }
 
-            this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-            this.parent.doc.needRender = true;
+				this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				this.parent.doc.needRender = true;
 
-			window.status=this.id+' DOWN: '+ pos.x +", "+ pos.y;
-			//window.status=this.id+' DOWN: '+(evt.offsetX || evt.layerX || evt.x)+", "+(evt.offsetY || evt.layerY || evt.y);
-            
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				window.status=this.id+' DOWN: '+ pos.x +", "+ pos.y;
+				
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
         }, false);
 
         this.canvas.addEventListener('mouseup', function (evt) {
-            this.mouse_button = 0;
-            this.mouse_dragging = false;
+			if(!this.isMulti) {
+				this.mouse_button = 0;
+				this.mouse_dragging = false;
 
-            this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-            this.parent.doc.needRender = true;
+				this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				this.parent.doc.needRender = true;
 
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
         }, false);
 
         this.canvas.addEventListener('mouseover', function (evt) {
-            this.mouse_button = 0;
-            this.mouse_dragging = false;
+			if(!this.isMulti) {
+				x3dom.debug.logInfo('mouseover');
+				
+				this.mouse_button = 0;
+				this.mouse_dragging = false;
 
-            this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-            this.parent.doc.needRender = true;
+				this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				this.parent.doc.needRender = true;
 
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
+			
         }, false);
 
         this.canvas.addEventListener('mouseout', function (evt) {
-            this.mouse_button = 0;
-            this.mouse_dragging = false;
+			if(!this.isMulti) {
+				this.mouse_button = 0;
+				this.mouse_dragging = false;
 
-            this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-            this.parent.doc.needRender = true;
+				this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				this.parent.doc.needRender = true;
 
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
         }, false);
 
         this.canvas.addEventListener('dblclick', function (evt) {
-            this.mouse_button = 0;
-			
-			/*this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
-            this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y);*/
-			
-			var pos = mousePosition(evt);
-			this.mouse_drag_x = pos.x;
-            this.mouse_drag_y = pos.y;
-			
-            this.mouse_dragging = false;
+			if(!this.isMulti) {
+				this.mouse_button = 0;
+				
+				var pos = mousePosition(evt);
+				this.mouse_drag_x = pos.x;
+				this.mouse_drag_y = pos.y;
+				
+				this.mouse_dragging = false;
 
-            this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
-            this.parent.doc.needRender = true;
+				this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
+				this.parent.doc.needRender = true;
 
-			
-			window.status=this.id+' DBL: '+ pos.x +", "+ pos.y;
-			//window.status=this.id+' DBL: '+(evt.offsetX || evt.layerX || evt.x)+", "+(evt.offsetY || evt.layerY || evt.y);
-			
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				
+				window.status=this.id+' DBL: '+ pos.x +", "+ pos.y;
+				
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
         }, false);
 
         this.canvas.addEventListener('mousemove', function (evt) {
-            /*
-            if (!this.mouse_dragging) {
-                return;
-            }
-            */
+			if(!this.isMulti) {
+				/*
+				if (!this.mouse_dragging) {
+					return;
+				}
+				*/
 
-            if (evt.shiftKey) { this.mouse_button = 1; }
-            if (evt.ctrlKey)  { this.mouse_button = 4; }
-            if (evt.altKey)   { this.mouse_button = 2; }
-
-            if (!this.isMulti)
-            {
-			 	/*this.mouse_drag_x = (evt.offsetX || evt.layerX || evt.x);
-              	this.mouse_drag_y = (evt.offsetY || evt.layerY || evt.y); */ 
-				
+				if (evt.shiftKey) { this.mouse_button = 1; }
+				if (evt.ctrlKey)  { this.mouse_button = 4; }
+				if (evt.altKey)   { this.mouse_button = 2; }
+           
 				var pos = mousePosition(evt);
 				this.mouse_drag_x = pos.x;
               	this.mouse_drag_y = pos.y; 
 				
-              if (this.mouse_dragging) {
-                this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-              }
-              else {
-                this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-              }
-            }
+				  if (this.mouse_dragging) {
+					this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				  }
+				  else {
+					this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				  }
+			   
 
-            this.parent.doc.needRender = true;
+				this.parent.doc.needRender = true;
 
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
         }, false);
 
         this.canvas.addEventListener('DOMMouseScroll', function (evt) {
-            this.mouse_drag_y += 2 * evt.detail;
+			if(!this.isMulti) {
+				this.mouse_drag_y += 2 * evt.detail;
 
-            this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
-            this.parent.doc.needRender = true;
+				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
+				this.parent.doc.needRender = true;
 
-            window.status=this.id+' SCROLL: '+evt.detail;
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				window.status=this.id+' SCROLL: '+evt.detail;
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
         }, false);
 
         this.canvas.addEventListener('mousewheel', function (evt) {
-            this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
+			if(!this.isMulti) {
+				this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
 
-            this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
-            this.parent.doc.needRender = true;
+				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
+				this.parent.doc.needRender = true;
 
-            window.status=this.id+' SCROLL: '+evt.detail;
-            //evt.preventDefault();
-            //evt.stopPropagation();
-            //evt.returnValue = false;
-            evt.returnValue = true;
+				window.status=this.id+' SCROLL: '+evt.detail;
+				//evt.preventDefault();
+				//evt.stopPropagation();
+				//evt.returnValue = false;
+				evt.returnValue = true;
+			}
         }, false);
 
         this.canvas.addEventListener('keypress', function (evt) {
@@ -696,11 +702,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         };
         
         // === Touch Start ===
-        var touchStartHandler = function(evt)
+        var touchStartHandler = function(evt, doc)
         {
-			evt.preventDefault();			
-			touches.lastLayer = [];
+			evt.preventDefault();
+			if(doc == null)
+				doc  = this.parent.doc;
 			
+			touches.lastLayer = [];
+		
 			for(var i = 0; i < evt.touches.length; i++) {
 				var pos = mousePosition(evt.touches[i]);
 				touches.lastLayer.push(new Array(evt.touches[i].identifier, new x3dom.fields.SFVec2f(pos.x,pos.y)));
@@ -731,22 +740,23 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			var min = x3dom.fields.SFVec3f.MAX();
 			var max = x3dom.fields.SFVec3f.MIN();
 		
-			if (this.parent.doc._scene.getVolume(min, max, true)) {
-				this.parent.doc._scene._lastMin = min;
-				this.parent.doc._scene._lastMax = max;
+			if (doc._scene.getVolume(min, max, true)) {
+				doc._scene._lastMin = min;
+				doc._scene._lastMax = max;
 			}
 			
 			for(var i = 0; i < evt.touches.length; i++) {
 				var pos = mousePosition(evt.touches[i]);
-				this.parent.doc.onPick(that.gl, pos.x, pos.y);
-				this.parent.doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
-				this.parent.doc._viewarea._pickingInfo.lastClickObj = this.parent.doc._viewarea._pickingInfo.pickObj;
-				this.parent.doc.needRender = true;
+				doc.onPick(that.gl, pos.x, pos.y);
+				doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
+				doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
+				doc.needRender = true;
 			}            
         };
         
         var touchStartHandlerMoz = function(evt)
         {
+			this.isMulti = true;
 			evt.preventDefault();
           
 			var new_id = true;
@@ -759,15 +769,17 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				mozilla_ids.push(evt.streamId);
 				mozilla_touches.touches.push(evt);
 			}
+			touchStartHandler(mozilla_touches, this.parent.doc);
           
-			touchStartHandler(mozilla_touches);
         };
         
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
 			evt.preventDefault();
-			
+			if(doc == null)
+				doc  = this.parent.doc;
+		
 			/*for(var i = 0; i < evt.touches.length; i++) {
 				for(var i = 0; i < touches.lastLayer.length; i++) {
 					if(evt.touches[i].identifier == touches.lastLayer[i][0])
@@ -780,25 +792,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 			// one finger: x/y rotation
 			if(evt.touches.length == 1) {
-		  
 				var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-            
+								
 				var deltaDrag = currentDrag.subtract(touches.lastDrag);
 				touches.lastDrag = currentDrag;
-            
+				
 				var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
 				var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
-            
 				var rotMatrix = mx.mult(my);
-
-				var pos = mousePosition(evt);	
-				//doc.onPick(that.gl, pos.x, pos.y);            
-
+				
 				doc.onMoveView(that.gl, null, rotMatrix);
-
 				doc.needRender = true;
 			} else if(evt.touches.length >= 2) { // two fingers: scale, translation, rotation around view (z) axis
-		  
 				var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 				var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
             
@@ -829,26 +834,23 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
         };
         
-        var touchMoveHandlerW3C = function(evt)
-        {
-            touchMoveHandler(evt, this.parent.doc);
-        };
-        
         var touchMoveHandlerMoz = function(evt)
         {
-          evt.preventDefault();
+			evt.preventDefault();
           
-          for(var i=0; i<mozilla_ids.length; ++i)
-            if(mozilla_ids[i] == evt.streamId)
-              mozilla_touches.touches[i] = evt;
+			for(var i=0; i<mozilla_ids.length; ++i)
+				if(mozilla_ids[i] == evt.streamId)
+					mozilla_touches.touches[i] = evt;
           
-          touchMoveHandler(mozilla_touches, this.parent.doc);
+			touchMoveHandler(mozilla_touches, this.parent.doc);
         };
         
         // === Touch end ===
-        var touchEndHandler = function(evt)
+        var touchEndHandler = function(evt, doc)
         {
 			evt.preventDefault();
+			if(doc == null)
+				doc  = this.parent.doc;			
           
 			// reinit first finger for rotation
 			if(touches.numTouches == 2 && evt.touches.length == 1)
@@ -856,44 +858,44 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           
 			if(evt.touches.length < 2)
 				touches.numTouches = evt.touches.length;
-
+			
 			for(var i = 0; i < touches.lastLayer.length; i++) {
 				var pos = touches.lastLayer[i][1];
 				
-				this.parent.doc.onPick(that.gl, pos.x, pos.y);
-			
-				this.parent.doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmouseup");
-			
-				this.parent.doc._viewarea._pickingInfo.lastClickObj = this.parent.doc._viewarea._pickingInfo.pickObj;
-
+				doc.onPick(that.gl, pos.x, pos.y);
+				
+				doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmouseup");
+				doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
+				
 				// click means that mousedown _and_ mouseup were detected on same element
-				if (this.parent.doc._viewarea._pickingInfo.pickObj &&
-					this.parent.doc._viewarea._pickingInfo.pickObj ===
-					this.parent.doc._viewarea._pickingInfo.lastClickObj) {
+				if (doc._viewarea._pickingInfo.pickObj &&
+					doc._viewarea._pickingInfo.pickObj ===
+					doc._viewarea._pickingInfo.lastClickObj) {
 					
-					this.parent.doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onclick");	
+					doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onclick");	
 				}
-
 			}
-			this.parent.doc.needRender = true;
+			doc.needRender = true;
+			
         };
         
         var touchEndHandlerMoz = function(evt)
         {
-          evt.preventDefault();
+			this.isMulti = false;
+			evt.preventDefault();
           
-          var remove_index = -1;
-          for(var i=0; i<mozilla_ids.length; ++i)
-            if(mozilla_ids[i] == evt.streamId)
-              remove_index = i;
+			var remove_index = -1;
+			for(var i=0; i<mozilla_ids.length; ++i)
+				if(mozilla_ids[i] == evt.streamId)
+					remove_index = i;
               
-          if(remove_index != -1)
-          {
-            mozilla_ids.splice(remove_index, 1);
-            mozilla_touches.touches.splice(remove_index, 1);
-          }
+			if(remove_index != -1)
+			{
+				mozilla_ids.splice(remove_index, 1);
+				mozilla_touches.touches.splice(remove_index, 1);
+			}
           
-          touchEndHandler(mozilla_touches);
+			touchEndHandler(mozilla_touches, this.parent.doc);
         };
         
         // mozilla touch events
@@ -903,7 +905,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         // w3c / apple touch events
         this.canvas.addEventListener('touchstart',    touchStartHandler,    true);
-        this.canvas.addEventListener('touchmove',     touchMoveHandlerW3C,  true);
+        this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
         this.canvas.addEventListener('touchend',      touchEndHandler,      true);
         //this.canvas.addEventListener('touchcancel',   touchCancelHandler,   true);
         //this.canvas.addEventListener('touchleave',    touchLeaveHandler,    true);
@@ -1043,11 +1045,8 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
 
 
 function mousePosition(evt){
-		 
 	if ( "getBoundingClientRect" in document.documentElement ) {
-		//x3dom.debug.logInfo('getBoundingClientRect');
-		var box =  evt.target.offsetParent.getBoundingClientRect();
-								
+		var box =  evt.target.offsetParent.getBoundingClientRect();				
 		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
 		var scroltop = 	window.pageYOffset || document.body.scrollTop;
 		
@@ -1059,9 +1058,9 @@ function mousePosition(evt){
 		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
 							
-		x = evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft);
-		y =  evt.pageY - (box.top + paddingTop + borderTopWidth + scroltop);	
-		
+		var x = evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft);
+		var y =  evt.pageY - (box.top + paddingTop + borderTopWidth + scroltop);
+				
 	} else { 
 		x3dom.debug.logInfo('NO getBoundingClientRect');
 		/*TODO Für den Fall das es keine Funktion getBoundingClientRect() gibt
@@ -1082,8 +1081,8 @@ function mousePosition(evt){
 		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
 							
-		x = evt.pageX - (left + paddingLeft + borderLeftWidth);
-		y =  evt.pageY - (right + paddingTop + borderTopWidth);	*/
+		var x = evt.pageX - (left + paddingLeft + borderLeftWidth);
+		var y =  evt.pageY - (right + paddingTop + borderTopWidth);	*/
 	}
 	
 	return new x3dom.fields.SFVec2f(x, y);

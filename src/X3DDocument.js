@@ -214,7 +214,7 @@ x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
     if (!ctx || !this._viewarea) {
         return;
     }
-
+	
     ctx.pickValue(this._viewarea, x, y);
 };
 
