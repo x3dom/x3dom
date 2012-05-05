@@ -291,8 +291,8 @@ x3dom.registerNodeType(
 
             parentRemoved: function(parent)
             {
-                var i;
-                var n;
+                var i, n;
+                
                 if (this._parentNodes.length === 0) {
                     var doc = this.findX3DDoc();
 
@@ -363,9 +363,12 @@ x3dom.registerNodeType(
                                                     0, 1, 0, 0,
                                                     0, 0, 1, 0,
                                                     0, 0, 0, 1);
-            this._trafo = this._vf.matrix;
+            this._trafo = this._vf.matrix.transpose();
         },
         {
+            fieldChanged: function (fieldName) {
+                this._trafo = this._vf.matrix.transpose();
+            }
         }
     )
 );

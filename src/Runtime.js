@@ -279,7 +279,8 @@ x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
 /**
  * Function: calcPagePos
  *
- * Returns the 2d page (returns the mouse coordinates relative to the document) position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ * Returns the 2d page (returns the mouse coordinates relative to the document) position [cx, cy] 
+ * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
 
@@ -307,7 +308,8 @@ x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
 /**
  * Function: calcClientPos
  *
- * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy] 
+ * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
     var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
@@ -352,7 +354,7 @@ x3dom.Runtime.prototype.resetView = function() {
 /**
  * Function: lightView
  *
- * Navigates to the light, if any.
+ * Navigates to the first light, if any.
  *
  * Returns:
  * 		True if navigation was possible, false otherwise.
@@ -456,6 +458,47 @@ x3dom.Runtime.prototype.showObject = function(obj, axis) {
 };
 
 /**
+ * APIMethod getCenter
+ *
+ * Returns the center of a X3DShapeNode or X3DGeometryNode.
+ *
+ * Parameters:
+ *    domNode: the node for which its center shall be returned
+ *
+ *  Returns:
+ *    Node center (or null if no Shape or Geometry)
+ */
+x3dom.Runtime.prototype.getCenter = function(domNode) {
+    if (domNode && domNode._x3domNode &&
+        (this.isA(domNode, "X3DShapeNode") || this.isA(domNode, "X3DGeometryNode")))
+    {
+        return domNode._x3domNode.getCenter();
+    }
+    
+    return null;
+};
+
+/**
+ * APIMethod getCurrentTransform
+ *
+ * Returns the current to world transformation of a node.
+ *
+ * Parameters:
+ *    domNode: the node for which its transformation shall be returned
+ *
+ *  Returns:
+ *    Transformation matrix (or null no valid node is given)
+ */
+x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
+    if (domNode && domNode._x3domNode)
+    {
+        return domNode._x3domNode.getCurrentTransform();
+    }
+    
+    return null;
+};
+
+/**
  * APIFunction: debug
  *
  * Displays or hides the debug window. If parameter is omitted,
@@ -512,7 +555,7 @@ x3dom.Runtime.prototype.examine = function() {
 };
 
 /**
- * APIunction: fly
+ * APIFunction: fly
  *
  * Switches to fly mode
  */

@@ -219,6 +219,9 @@
         context.stroke();
         */
         
+        myCanvas.parentNode._x3domNode.fieldChanged("url");
+        document.getElementById("aScene").render();
+        
         var aCanvas = document.getElementById("aCanvas");
         
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
@@ -364,7 +367,7 @@
 
 <body onload='main();'>
 	<h1>Canvas painting test</h1>
-    <p>Instructions here</p>
+    <p>&nbsp;</p>
 
 	<div class="group">
     <x3d id="aScene" showStat="true" showLog="true" x="0px" y="0px" >
