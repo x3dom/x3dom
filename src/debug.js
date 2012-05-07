@@ -251,7 +251,9 @@ x3dom.debug = {
 		for (var fName in node) {
 			str += (fName + ", ");
 		}
-		x3dom.debug.logInfo(str + '\n');
+		str += '\n';
+		x3dom.debug.logInfo(str);
+		return str;
 	}
 };
 
