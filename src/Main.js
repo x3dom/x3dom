@@ -184,12 +184,13 @@ x3dom.userAgentFeature = {
 			x3dom.debug.activate(false);
 		}
 
-
+/*
         // active hacky DOMAttrModified workaround to webkit
         if (window.navigator.userAgent.match(/webkit/i)) {
-            x3dom.debug.logInfo ("Active DOMAttrModifiedEvent workaround for webkit ");
+            x3dom.debug.logInfo ("Activate DOMAttrModifiedEvent workaround for WebKit.");
             x3dom.userAgentFeature.supportsDOMAttrModified = false;
         }
+*/
 
         // Convert the collection into a simple array (is this necessary?)
         x3ds = Array.map(x3ds, function (n) {
