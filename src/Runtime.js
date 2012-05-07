@@ -396,62 +396,93 @@ x3dom.Runtime.prototype.showAll = function(axis) {
 /**
  * APIFunction: showObject
  *
- * Zooms so that a given object is fully visible.
+ * Zooms so that a given object is fully visible in the middle of the screen.
  *
  * Parameter:
  *     obj  - the scene-graph element on which to focus
- *     axis - the axis as string: posX, negX, posY, negY, posZ, negZ
- *
  */
-x3dom.Runtime.prototype.showObject = function(obj, axis) {
+x3dom.Runtime.prototype.showObject = function(obj) {
     var min = x3dom.fields.SFVec3f.MAX();
     var max = x3dom.fields.SFVec3f.MIN();
 
     if (obj && obj._x3domNode &&
         obj._x3domNode.getVolume(min, max, true))
     {
-        min = obj._x3domNode.getCurrentTransform().multMatrixPnt(min);
-        max = obj._x3domNode.getCurrentTransform().multMatrixPnt(max);
+        var mat = obj._x3domNode.getCurrentTransform();
 
-        var x = "x", y = "y", z = "z";
-        var sign = 1;
-        var to, from = new x3dom.fields.SFVec3f(0, 0, -1);
+        min = mat.multMatrixPnt(min);
+        max = mat.multMatrixPnt(max);
 
-        switch (axis) {
-            case "posX":
-                sign = -1;
-            case "negX":
-                z = "x"; x = "y"; y = "z";
-                to = new x3dom.fields.SFVec3f(sign, 0, 0);
-                break;
-            case "posY":
-                sign = -1;
-            case "negY":
-                z = "y"; x = "z"; y = "x";
-                to = new x3dom.fields.SFVec3f(0, sign, 0);
-                break;
-            case "posZ":
-                sign = -1;
-            case "negZ":
-            default:
-                to = new x3dom.fields.SFVec3f(0, 0, -sign);
-                break;
-        }
+        // assume FOV_smaller as camera's fovMode
+        var focalLen = (this.canvas.doc._viewarea._width < this.canvas.doc._viewarea._height) ?
+                        this.canvas.doc._viewarea._width : this.canvas.doc._viewarea._height;
 
-        var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
-        var viewmat = quat.toMatrix();
+        var n0 = new x3dom.fields.SFVec3f(0, 0, 1);    // facingDir
+        var percArea = 1.0;     // for full shot size (::= shotSizes[shotType])
+
+        // needed if we want to generalize that according to CinematographicViewpoint
+        //var SHOT_BOUNDARY = 0.4;
+        //if (percArea < SHOT_BOUNDARY) percArea += 1.0;
+        //if (shotSize < SHOT_BOUNDARY) node = objCloseUp;
+        //else node = objFull;
+        /*
+         // shotSizes/shotType
+         4.00f, // extremeLong
+         2.00f, // long
+         1.00f, // full (default)
+         0.70f, // mediumFull
+         0.50f, // medium
+         0.45f, // mediumClose
+         0.20f, // close
+         0.10f, // wideCloseup
+         0.00f, // closeup
+         -0.10f, // mediumCloseup
+         -0.35f, // extremeCloseup
+         */
 
         var viewpoint = this.canvas.doc._scene.getViewpoint();
-        var fov = viewpoint.getFieldOfView();
+        var fov = viewpoint.getFieldOfView() / 2.0;
+        var ta = Math.tan(fov);
 
-        var dia = max.subtract(min);
-        var dist1 = (dia[y]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
-        var dist2 = (dia[x]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
+        if (Math.abs(ta) > x3dom.fields.Eps) {
+            focalLen /= ta;
+        }
 
-        dia = min.add(dia.multiply(0.5));
-        dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.1;
+        var w = this.canvas.doc._viewarea._width - 1;
+        var h = this.canvas.doc._viewarea._height - 1;
 
-        viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
+        var frame = 0.25;
+        var minScreenPos = new x3dom.fields.SFVec2f(frame * w, frame * h);
+
+        frame = 0.75;
+        var maxScreenPos = new x3dom.fields.SFVec2f(frame * w, frame * h);
+
+        var dia2 = max.subtract(min).multiply(0.5);     // half diameter
+        var rw = dia2.length();                         // approx radius
+
+        var pc = min.add(dia2);                         // center in wc
+        var vc = maxScreenPos.subtract(minScreenPos).multiply(0.5);
+
+        var rs = 1.5 * vc.length();
+        vc = vc.add(minScreenPos);
+
+        var dist = 1.0;
+        if (rs > x3dom.fields.Eps) {
+            dist = (rw / rs) * Math.sqrt(vc.x*vc.x + vc.y*vc.y + focalLen*focalLen);
+        }
+
+        n0 = mat.multMatrixVec(n0).normalize();
+        n0 = n0.multiply(percArea * dist);
+        var p0 = pc.add(n0);
+
+        var qDir = x3dom.fields.Quaternion.rotateFromTo(new x3dom.fields.SFVec3f(0, 0, 1), n0);
+        var R = qDir.toMatrix();
+
+        var T = x3dom.fields.SFMatrix4f.translation(p0.negate());
+        var M = x3dom.fields.SFMatrix4f.translation(p0);
+
+        M = M.mult(R).mult(T).mult(M);
+        var viewmat = M.inverse();
 
         this.canvas.doc._viewarea.animateTo(viewmat, viewpoint);
     }
