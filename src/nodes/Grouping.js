@@ -425,7 +425,7 @@ x3dom.registerNodeType(
 
                 this._websocket.onopen = function(evt)
                 {
-                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
+                    var view = that._nameSpace.doc._viewarea.getWCtoCCMatrix();
                     this._lastMsg = view.toGL().toString();
 
                     this.send(this._lastMsg);
@@ -455,7 +455,7 @@ x3dom.registerNodeType(
                 this._websocket.updateCamera = function()
                 {
                     // send again
-                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
+                    var view = that._nameSpace.doc._viewarea.getWCtoCCMatrix();
                     var message = view.toGL().toString();
                     
                     if (this._lastMsg != null && this._lastMsg != message)
