@@ -425,8 +425,11 @@ x3dom.registerNodeType(
 
                 this._websocket.onopen = function(evt)
                 {
-                    var view = that._nameSpace.doc._viewarea.getWCtoCCMatrix();
+                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
                     this._lastMsg = view.toGL().toString();
+                    
+                    view = that._nameSpace.doc._viewarea.getProjectionMatrix();
+                    this._lastMsg += ("," + view.toGL().toString());
 
                     this.send(this._lastMsg);
                     x3dom.debug.logInfo("WS Sent: " + this._lastMsg);
@@ -455,8 +458,11 @@ x3dom.registerNodeType(
                 this._websocket.updateCamera = function()
                 {
                     // send again
-                    var view = that._nameSpace.doc._viewarea.getWCtoCCMatrix();
+                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
                     var message = view.toGL().toString();
+                    
+                    view = that._nameSpace.doc._viewarea.getProjectionMatrix();
+                    message += ("," + view.toGL().toString());
                     
                     if (this._lastMsg != null && this._lastMsg != message)
                     {
