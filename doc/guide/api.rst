@@ -266,6 +266,36 @@ the X3D element they are working on as first parameter::
     scene is rendered in.
 
 
+..  js:function:: viewMatrix()
+
+    :return: A matrix object
+
+    Returns the current view matrix.
+
+
+..  js:function:: showObject(obj, axis)
+
+    :param obj: the scene-graph element on which to focus
+    :param axis: the axis as string, one of: posX, negX, posY, negY, posZ, negZ
+
+     Zooms so that a given object is fully visible.
+
+
+..  js:function:: getCenter(domNode)
+
+    :param domNode: the node for which its center shall be returned
+    :return: Node center or 'null' if donNode is not a Shape or Geometry
+
+    Returns the center of a X3DShapeNode or X3DGeometryNode as SF3Vec3f object.
+
+..  js:function:: getCurrentTransform(domNode)
+
+    :param domNode: the node for which its transformation shall be returned
+    :return: Transformation matrix (or null no valid node is given)
+
+    Returns the current to world transformation of a given node. If no valid
+    node is given ``null`` is returned.
+
 
 Docs
 ----

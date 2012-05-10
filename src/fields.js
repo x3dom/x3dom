@@ -1499,6 +1499,11 @@ x3dom.fields.Quaternion.rotateFromTo = function (fromVec, toVec) {
     return new x3dom.fields.Quaternion(axis.x, axis.y, axis.z, s);
 };
 
+x3dom.fields.Quaternion.prototype.toGL = function () {
+    var val = this.toAxisAngle();
+    return [ val[0].x, val[0].y, val[0].z, val[1] ];
+};
+
 x3dom.fields.Quaternion.prototype.toString = function () {
     return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
 };
@@ -1991,7 +1996,13 @@ x3dom.fields.MFRotation.prototype.setValueByStr = function(str) {
 x3dom.fields.MFRotation.prototype.toGL = function() {
     var a = [];
 
-    //TODO
+    Array.map( this, function(c) {
+        var val = c.toAxisAngle();
+        a.push(val[0].x);
+        a.push(val[0].y);
+        a.push(val[0].z);
+        a.push(val[1]);
+    });
 
     return a;
 };
@@ -2255,7 +2266,9 @@ x3dom.fields.MFString.prototype.setValueByStr = function(str) {
 x3dom.fields.MFString.prototype.toString = function () {
     var str = "";
     for (var i=0; i<this.length; i++) {
-        str = str + this[i] + " ";
+        str = str + this[i];
+        if (i<this.length-1)
+            str += " ";
     }
     return str;
 };

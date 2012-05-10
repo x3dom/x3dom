@@ -469,7 +469,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mousedown', function (evt) {
 			if(!this.isMulti) {
-			x3dom.debug.logInfo('mousedown');
+			//x3dom.debug.logInfo('mousedown');
 				this.focus();
 				
 				switch(evt.button) {
@@ -503,7 +503,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mouseup', function (evt) {
 			if(!this.isMulti) {
-			x3dom.debug.logInfo('mouseup');
+			//x3dom.debug.logInfo('mouseup');
 				this.mouse_button = 0;
 				this.mouse_dragging = false;
 
@@ -519,7 +519,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mouseover', function (evt) {
 			if(!this.isMulti) {
-				x3dom.debug.logInfo('mouseover');
+				//x3dom.debug.logInfo('mouseover');
 				this.mouse_button = 0;
 				this.mouse_dragging = false;
 
@@ -536,7 +536,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mouseout', function (evt) {
 			if(!this.isMulti) {
-			x3dom.debug.logInfo('mouseout');
+			//x3dom.debug.logInfo('mouseout');
 				this.mouse_button = 0;
 				this.mouse_dragging = false;
 
@@ -552,7 +552,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('dblclick', function (evt) {
 			if(!this.isMulti) {
-			x3dom.debug.logInfo('dblclick');
+			//x3dom.debug.logInfo('dblclick');
 				this.mouse_button = 0;
 				
 				var pos = mousePosition(evt);
@@ -576,7 +576,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mousemove', function (evt) {
 			if(!this.isMulti) {
-			x3dom.debug.logInfo('mousemove');
+			//x3dom.debug.logInfo('mousemove');
 				/*
 				if (!this.mouse_dragging) {
 					return;
@@ -610,7 +610,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('DOMMouseScroll', function (evt) {
 			if(!this.isMulti) {
-			x3dom.debug.logInfo('DOMMouseScroll');
+			//x3dom.debug.logInfo('DOMMouseScroll');
 				this.mouse_drag_y += 2 * evt.detail;
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
@@ -626,7 +626,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mousewheel', function (evt) {
 			if(!this.isMulti) {
-			x3dom.debug.logInfo('mousewheel');
+			//x3dom.debug.logInfo('mousewheel');
 				this.mouse_drag_y -= 0.1 * evt.wheelDeltaY;
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
@@ -710,7 +710,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch Start ===
         var touchStartHandler = function(evt, doc)
         {
-		x3dom.debug.logInfo('touchStartHandler');
+		//x3dom.debug.logInfo('touchStartHandler');
 			evt.preventDefault();
 			if(doc == null)
 				doc  = this.parent.doc;
@@ -763,7 +763,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchStartHandlerMoz = function(evt)
         {
-			x3dom.debug.logInfo('touchStartHandlerMoz');
+			//x3dom.debug.logInfo('touchStartHandlerMoz');
 			this.isMulti = true;
 			evt.preventDefault();
           
@@ -784,7 +784,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-		x3dom.debug.logInfo('touchMoveHandler');
+		//x3dom.debug.logInfo('touchMoveHandler');
 			evt.preventDefault();
 			if(doc == null)
 				doc  = this.parent.doc;
@@ -845,7 +845,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchMoveHandlerMoz = function(evt)
         {
-		x3dom.debug.logInfo('touchMoveHandlerMoz');
+		//x3dom.debug.logInfo('touchMoveHandlerMoz');
 			evt.preventDefault();
           
 			for(var i=0; i<mozilla_ids.length; ++i)
@@ -858,7 +858,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch end ===
         var touchEndHandler = function(evt, doc)
         {
-		x3dom.debug.logInfo('touchEndHandler');
+		//x3dom.debug.logInfo('touchEndHandler');
 			evt.preventDefault();
 			if(doc == null)
 				doc  = this.parent.doc;			
@@ -892,7 +892,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchEndHandlerMoz = function(evt)
         {
-		x3dom.debug.logInfo('touchEndHandlerMoz');
+		//x3dom.debug.logInfo('touchEndHandlerMoz');
 			this.isMulti = false;
 			evt.preventDefault();
           
