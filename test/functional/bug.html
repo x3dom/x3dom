@@ -48,6 +48,17 @@
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
 
+ <script type="text/javascript" >
+	
+	function listenTo(evt) {
+		evt.preventDefault();
+		var text = document.createTextNode("   touch   ");
+		document.getElementById("text").appendChild(text);
+	}
+	
+	document.addEventListener("MozTouchMove", listenTo,true);
+	document.addEventListener("touchmove", listenTo,true);
+</script>
 </head>
      
 <body>       
@@ -91,8 +102,8 @@
 			</Scene>
         </x3d>     
 	<input type="button" value="reset"  onclick="reset();"> 
-	
-    <script type="text/javascript" >
+	<p id="text"></p>
+    <script type="text/javascript" >	
 	    var test1 = function (event) {		
 			document.getElementById('color1').setAttribute('diffuseColor', '0 1 0');
         };	
