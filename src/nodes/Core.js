@@ -411,7 +411,7 @@ x3dom.registerNodeType(
         
         initSetter: function (xmlNode, name) {
 			 //IE has no __defineSetter__ !!!
-			if(xmlNode.__defineSetter__ != undefined) {
+			if (xmlNode.__defineSetter__ !== undefined) {
 				xmlNode.__defineSetter__(name, function(value) {
 					xmlNode.setAttribute(name, value);
 				});
@@ -422,6 +422,19 @@ x3dom.registerNodeType(
 					} 
 				});	
       		}
+      		
+			if (!xmlNode.attributes[name]) {
+			    try {
+			        var str = this._vf[name].toGL().toString();
+			        if (!str) { str = "\0"; }
+			        xmlNode.setAttribute(name, str);
+		        }
+		        catch(e) {
+		            var str = this._vf[name].toString();
+		            if (!str) { str = "\0"; }
+		            xmlNode.setAttribute(name, str);
+		        }
+		    }
         },
 
         addField_SFInt32: function (ctx, name, n) {

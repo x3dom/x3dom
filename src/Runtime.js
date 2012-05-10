@@ -279,7 +279,8 @@ x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
 /**
  * Function: calcPagePos
  *
- * Returns the 2d page (returns the mouse coordinates relative to the document) position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ * Returns the 2d page (returns the mouse coordinates relative to the document) position [cx, cy] 
+ * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
 
@@ -307,7 +308,8 @@ x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
 /**
  * Function: calcClientPos
  *
- * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
+ * Returns the 2d client (returns the mouse coordinates relative to the window) position [cx, cy] 
+ * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
     var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
@@ -352,7 +354,7 @@ x3dom.Runtime.prototype.resetView = function() {
 /**
  * Function: lightView
  *
- * Navigates to the light, if any.
+ * Navigates to the first light, if any.
  *
  * Returns:
  * 		True if navigation was possible, false otherwise.
@@ -389,6 +391,142 @@ x3dom.Runtime.prototype.uprightView = function() {
  */
 x3dom.Runtime.prototype.showAll = function(axis) {
     this.canvas.doc._viewarea.showAll(axis);
+};
+
+/**
+ * APIFunction: showObject
+ *
+ * Zooms so that a given object is fully visible in the middle of the screen.
+ *
+ * Parameter:
+ *     obj  - the scene-graph element on which to focus
+ */
+x3dom.Runtime.prototype.showObject = function(obj) {
+    var min = x3dom.fields.SFVec3f.MAX();
+    var max = x3dom.fields.SFVec3f.MIN();
+
+    if (obj && obj._x3domNode &&
+        obj._x3domNode.getVolume(min, max, true))
+    {
+        var mat = obj._x3domNode.getCurrentTransform();
+
+        min = mat.multMatrixPnt(min);
+        max = mat.multMatrixPnt(max);
+
+        // assume FOV_smaller as camera's fovMode
+        var focalLen = (this.canvas.doc._viewarea._width < this.canvas.doc._viewarea._height) ?
+                        this.canvas.doc._viewarea._width : this.canvas.doc._viewarea._height;
+
+        var n0 = new x3dom.fields.SFVec3f(0, 0, 1);    // facingDir
+        var percArea = 1.0;     // for full shot size (::= shotSizes[shotType])
+
+        // needed if we want to generalize that according to CinematographicViewpoint
+        //var SHOT_BOUNDARY = 0.4;
+        //if (percArea < SHOT_BOUNDARY) percArea += 1.0;
+        //if (shotSize < SHOT_BOUNDARY) node = objCloseUp;
+        //else node = objFull;
+        /*
+         // shotSizes/shotType
+         4.00f, // extremeLong
+         2.00f, // long
+         1.00f, // full (default)
+         0.70f, // mediumFull
+         0.50f, // medium
+         0.45f, // mediumClose
+         0.20f, // close
+         0.10f, // wideCloseup
+         0.00f, // closeup
+         -0.10f, // mediumCloseup
+         -0.35f, // extremeCloseup
+         */
+
+        var viewpoint = this.canvas.doc._scene.getViewpoint();
+        var fov = viewpoint.getFieldOfView() / 2.0;
+        var ta = Math.tan(fov);
+
+        if (Math.abs(ta) > x3dom.fields.Eps) {
+            focalLen /= ta;
+        }
+
+        var w = this.canvas.doc._viewarea._width - 1;
+        var h = this.canvas.doc._viewarea._height - 1;
+
+        var frame = 0.25;
+        var minScreenPos = new x3dom.fields.SFVec2f(frame * w, frame * h);
+
+        frame = 0.75;
+        var maxScreenPos = new x3dom.fields.SFVec2f(frame * w, frame * h);
+
+        var dia2 = max.subtract(min).multiply(0.5);     // half diameter
+        var rw = dia2.length();                         // approx radius
+
+        var pc = min.add(dia2);                         // center in wc
+        var vc = maxScreenPos.subtract(minScreenPos).multiply(0.5);
+
+        var rs = 1.5 * vc.length();
+        vc = vc.add(minScreenPos);
+
+        var dist = 1.0;
+        if (rs > x3dom.fields.Eps) {
+            dist = (rw / rs) * Math.sqrt(vc.x*vc.x + vc.y*vc.y + focalLen*focalLen);
+        }
+
+        n0 = mat.multMatrixVec(n0).normalize();
+        n0 = n0.multiply(percArea * dist);
+        var p0 = pc.add(n0);
+
+        var qDir = x3dom.fields.Quaternion.rotateFromTo(new x3dom.fields.SFVec3f(0, 0, 1), n0);
+        var R = qDir.toMatrix();
+
+        var T = x3dom.fields.SFMatrix4f.translation(p0.negate());
+        var M = x3dom.fields.SFMatrix4f.translation(p0);
+
+        M = M.mult(R).mult(T).mult(M);
+        var viewmat = M.inverse();
+
+        this.canvas.doc._viewarea.animateTo(viewmat, viewpoint);
+    }
+};
+
+/**
+ * APIMethod getCenter
+ *
+ * Returns the center of a X3DShapeNode or X3DGeometryNode.
+ *
+ * Parameters:
+ *    domNode: the node for which its center shall be returned
+ *
+ *  Returns:
+ *    Node center (or null if no Shape or Geometry)
+ */
+x3dom.Runtime.prototype.getCenter = function(domNode) {
+    if (domNode && domNode._x3domNode &&
+        (this.isA(domNode, "X3DShapeNode") || this.isA(domNode, "X3DGeometryNode")))
+    {
+        return domNode._x3domNode.getCenter();
+    }
+    
+    return null;
+};
+
+/**
+ * APIMethod getCurrentTransform
+ *
+ * Returns the current to world transformation of a node.
+ *
+ * Parameters:
+ *    domNode: the node for which its transformation shall be returned
+ *
+ *  Returns:
+ *    Transformation matrix (or null no valid node is given)
+ */
+x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
+    if (domNode && domNode._x3domNode)
+    {
+        return domNode._x3domNode.getCurrentTransform();
+    }
+    
+    return null;
 };
 
 /**
@@ -448,7 +586,7 @@ x3dom.Runtime.prototype.examine = function() {
 };
 
 /**
- * APIunction: fly
+ * APIFunction: fly
  *
  * Switches to fly mode
  */

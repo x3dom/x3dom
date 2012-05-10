@@ -291,8 +291,8 @@ x3dom.registerNodeType(
 
             parentRemoved: function(parent)
             {
-                var i;
-                var n;
+                var i, n;
+                
                 if (this._parentNodes.length === 0) {
                     var doc = this.findX3DDoc();
 
@@ -363,9 +363,12 @@ x3dom.registerNodeType(
                                                     0, 1, 0, 0,
                                                     0, 0, 1, 0,
                                                     0, 0, 0, 1);
-            this._trafo = this._vf.matrix;
+            this._trafo = this._vf.matrix.transpose();
         },
         {
+            fieldChanged: function (fieldName) {
+                this._trafo = this._vf.matrix.transpose();
+            }
         }
     )
 );
@@ -424,6 +427,9 @@ x3dom.registerNodeType(
                 {
                     var view = that._nameSpace.doc._viewarea.getViewMatrix();
                     this._lastMsg = view.toGL().toString();
+                    
+                    view = that._nameSpace.doc._viewarea.getProjectionMatrix();
+                    this._lastMsg += ("," + view.toGL().toString());
 
                     this.send(this._lastMsg);
                     x3dom.debug.logInfo("WS Sent: " + this._lastMsg);
@@ -454,6 +460,9 @@ x3dom.registerNodeType(
                     // send again
                     var view = that._nameSpace.doc._viewarea.getViewMatrix();
                     var message = view.toGL().toString();
+                    
+                    view = that._nameSpace.doc._viewarea.getProjectionMatrix();
+                    message += ("," + view.toGL().toString());
                     
                     if (this._lastMsg != null && this._lastMsg != message)
                     {
