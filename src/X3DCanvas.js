@@ -1043,7 +1043,11 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
 
 
 function mousePosition(evt){
-	if ( "getBoundingClientRect" in document.documentElement ) {
+
+    var convertPoint = window.webkitConvertPointFromNodeToPage;
+    var x, y;
+
+    if ( "getBoundingClientRect" in document.documentElement ) {
 		var box =  evt.target.offsetParent.getBoundingClientRect();				
 		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
 		var scroltop = 	window.pageYOffset || document.body.scrollTop;
@@ -1058,9 +1062,21 @@ function mousePosition(evt){
 							
 		var x = evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft);
 		var y =  evt.pageY - (box.top + paddingTop + borderTopWidth + scroltop);
-				
-	} else { 
-		x3dom.debug.logInfo('NO getBoundingClientRect');
+
+        return new x3dom.fields.SFVec2f(x, y);
+
+    } else if (convertPoint) {
+
+        var zeroPoint = new WebKitPoint(0,0 );
+        var point = convertPoint(evt.target, zeroPoint);
+
+        x =  Math.round(point.x);
+        y =  Math.round(point.y);
+
+        return new x3dom.fields.SFVec2f(x, y);
+
+    } else {
+		x3dom.debug.logInfo('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
 		/*TODO Für den Fall das es keine Funktion getBoundingClientRect() gibt
 		
 		var left = evt.target.offsetParent.offsetLeft; //sollte in eine schleife addiert werden, immer relativ zum offsetParent
@@ -1082,6 +1098,7 @@ function mousePosition(evt){
 		var x = evt.pageX - (left + paddingLeft + borderLeftWidth);
 		var y =  evt.pageY - (right + paddingTop + borderTopWidth);	*/
 	}
-	
+
 	return new x3dom.fields.SFVec2f(x, y);
 }
+
