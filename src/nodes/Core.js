@@ -235,10 +235,13 @@ x3dom.registerNodeType(
         },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
+        // TODO: culling etc.
         collectDrawableObjects: function (transform, out) {
-            // TODO: culling etc.
-            if (out && out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+            var collectNeedsReset = false;
+            if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
                 out.collect = true;
+                collectNeedsReset = true;
+            }
 
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
@@ -246,6 +249,9 @@ x3dom.registerNodeType(
                     this._childNodes[i].collectDrawableObjects(childTransform, out);
                 }
             }
+            
+            if (collectNeedsReset)
+                out.collect = false;
         },
 
         doIntersect: function(line) {
