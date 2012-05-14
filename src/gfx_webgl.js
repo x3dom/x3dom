@@ -888,6 +888,16 @@ x3dom.gfx_webgl = (function () {
 			
 			shader += "vec3 eye = -positionMV;\n";
 			
+			shader += "vec3 rgb = diffuseColor;\n";
+			shader += "float alpha = 1.0 - transparency;\n";
+			
+			if(vertexColor) {
+				shader += "rgb = vertColor.rgb;\n";
+				if(vertexColor == 4) {
+					shader += "alpha = vertColor.a;\n";
+				}
+			}
+			
 			//Calc TexCoords
 			if(texture){
 				if(cubeMap) {
@@ -926,38 +936,24 @@ x3dom.gfx_webgl = (function () {
 										"normalMV, eye, ambient, diffuse, specular);\n";
 				}
 				
-				if(texture && blending) {				
-					shader += "fragColor.rgb = (emissiveColor + ambient*diffuseColor + diffuse*diffuseColor + specular*specularColor);\n";
-					shader += "fragColor.a = 1.0 - transparency;\n";
-				} else if(texture && !blending) {
+				if(texture && !blending) {
 					shader += "fragAmbient = ambient;\n";
-					shader += "fragDiffuse = diffuse;\n";
+					shader += "fragDiffuse = rgb;\n";
 					shader += "fragColor.rgb = (emissiveColor + specular*specularColor);\n";
-					shader += "fragColor.a = 1.0 - transparency;\n";
-				} else if(vertexColor == 3) {
-				    shader += "fragColor.rgb = (emissiveColor + ambient*vertColor + diffuse*vertColor + specular*specularColor);\n";
-					shader += "fragColor.a = 1.0 - transparency;\n";
-				} else if(vertexColor == 4) {
-    				shader += "fragColor.rgb = (emissiveColor + ambient*vertColor.rgb + diffuse*vertColor.rgb + specular*specularColor);\n";
-					shader += "fragColor.a = vertColor.a;\n";
+					shader += "fragColor.a = alpha;\n";
 				} else {
-					shader += "fragColor.rgb = (emissiveColor + ambient*diffuseColor + diffuse*diffuseColor + specular*specularColor);\n";
-					shader += "fragColor.a = 1.0-transparency;\n";
+					shader += "fragColor.rgb = (emissiveColor + ambient*rgb + diffuse*rgb + specular*specularColor);\n";
+					shader += "fragColor.a = alpha;\n";
 				}
 			} else {
 				if(texture && !blending) {
 					shader += "fragAmbient = vec3(1.0);\n";
 					shader += "fragDiffuse = vec3(1.0);\n";
 					shader += "fragColor.rgb = vec3(0.0);\n";
-					shader += "fragColor.a = 1.0 - transparency;\n";
-				} else if(vertexColor == 3) {
-					shader += "fragColor.rgb = vertColor;\n";
-					shader += "fragColor.a = 1.0 - transparency;\n";
-				} else if(vertexColor == 4) {
-					shader += "fragColor.rgba = vertColor;\n";
+					shader += "fragColor.a = alpha;\n";
 				} else {
-					shader += "fragColor.rgb = diffuseColor + emissiveColor;\n;\n";
-					shader += "fragColor.a = 1.0-transparency;\n";
+					shader += "fragColor.rgb = rgb + emissiveColor;\n;\n";
+					shader += "fragColor.a = alpha;\n";
 				}
 			}
 			
@@ -1469,9 +1465,15 @@ x3dom.gfx_webgl = (function () {
             //Set Main
             shader += "void main(void) {    \n";
                 
-            shader += "vec3 rgb      = vec3(0.0, 0.0, 0.0); \n";
-            shader += "float alpha = 1.0 - material.transparency;\n";
-            
+			shader += "vec3 rgb = material.diffuseColor; \n";
+			shader += "float alpha = 1.0 - material.transparency;\n";
+			
+			if(vertexColor) {
+                shader += "rgb = fragColor.rgb;\n";
+				if(vertexColor == 4) {
+					shader += "alpha = fragColor.a;\n";
+				}
+			}
             
             if(lights){
                 shader += "vec3 ambient   = vec3(0.07, 0.07, 0.07);\n";
@@ -1516,6 +1518,7 @@ x3dom.gfx_webgl = (function () {
                 if(shaderSpec) {
                     shader += "specular *= texture2D( spec, vec2(fragTexcoord.x, 1.0-fragTexcoord.y) ).rgb;\n";
                 }
+				
                 if(texture || shaderDiffuse){
 					if(cubeMap) {
 						shader += "vec3 viewDir = normalize(fragViewDir);\n";
@@ -1529,7 +1532,7 @@ x3dom.gfx_webgl = (function () {
 						shader += "alpha *= texColor.a;\n";
 					}
                     if(blending){
-						shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);\n";
+						shader += "rgb = (material.emissiveColor + ambient*rgb + diffuse*rgb + specular*material.specularColor);\n";
 						if(cubeMap) {
 							shader += "rgb = mix(rgb, texColor.rgb, vec3(0.75));\n";
 						} else {
@@ -1538,13 +1541,8 @@ x3dom.gfx_webgl = (function () {
                     }else{
 						shader += "rgb = (material.emissiveColor + ambient*texColor.rgb + diffuse*texColor.rgb + specular*material.specularColor);\n";
                     }
-                }else if(vertexColor){
-                    shader += "rgb = (material.emissiveColor + ambient*fragColor.rgb + diffuse*fragColor.rgb + specular*material.specularColor);\n";
-                    if(vertexColor == 4) {
-                        shader += "alpha = fragColor.a;\n";
-                    }
                 }else{
-                    shader += "rgb = (material.emissiveColor + ambient*material.diffuseColor + diffuse*material.diffuseColor + specular*material.specularColor);\n";
+                    shader += "rgb = (material.emissiveColor + ambient*rgb + diffuse*rgb + specular*material.specularColor);\n";
                 }
                 if(shadows) {
                     shader += "rgb *= shadowed;\n";
