@@ -1911,50 +1911,63 @@ x3dom.gfx_webgl = (function () {
             var font_topToBottom = true;
 
 
-            // http://www.spoonofdeath.com/delph/webgltext.html
+            // {{{ multiline helper functions start
             var createMultilineText = function(ctx, textToWrite, maxWidth, text) {
-            	textToWrite = textToWrite.replace("\n"," ");
-            	var currentText = textToWrite;
-            	var futureText;
-            	var subWidth = 0;
-            	var maxLineWidth = 0;
 
-            	var wordArray = textToWrite.split(" ");
-            	var wordsInCurrent, wordArrayLength;
-            	wordsInCurrent = wordArrayLength = wordArray.length;
+                textToWrite = textToWrite.replace("\n"," ");
 
-            	// Reduce currentText until it is less than maxWidth or is a single word
-            	// futureText var keeps track of text not yet written to a text line
-            	while (measureText(ctx, currentText) > maxWidth && wordsInCurrent > 1) {
-            		wordsInCurrent--;
-            		var linebreak = false;
+                var currentText = textToWrite;
+                var futureText;
+                var subWidth = 0;
+                var maxLineWidth = 0;
 
-            		currentText = futureText = "";
-            		for(var i = 0; i < wordArrayLength; i++) {
-            			if (i < wordsInCurrent) {
-            				currentText += wordArray[i];
-            				if (i+1 < wordsInCurrent) { currentText += " "; }
-            			}
-            			else {
-            				futureText += wordArray[i];
-            				if(i+1 < wordArrayLength) { futureText += " "; }
-            			}
-            		}
-            	}
-            	text.push(currentText); // Write this line of text to the array
-            	maxLineWidth = measureText(ctx, currentText);
+                var wordArray = textToWrite.split(" ");
+                var wordsInCurrent, wordArrayLength;
 
-            	// If there is any text left to be written call the function again
-            	if(futureText) {
-            		subWidth = createMultilineText(ctx, futureText, maxWidth, text);
-            		if (subWidth > maxLineWidth) {
-            			maxLineWidth = subWidth;
-            		}
-            	}
+                wordsInCurrent = wordArrayLength = wordArray.length;
 
-            	// Return the maximum line width
-            	return maxLineWidth;
+                while (measureText(ctx, currentText) > maxWidth && wordsInCurrent > 1) {
+                    wordsInCurrent--;
+                    var linebreak = false;
+
+                    currentText = futureText = "";
+                    for(var i = 0; i < wordArrayLength; i++) {
+                        if (i < wordsInCurrent) {
+                            currentText += wordArray[i];
+                            if (i+1 < wordsInCurrent) { currentText += " "; }
+                        }
+                        else {
+                            futureText += wordArray[i];
+                            if( i+1 < wordArrayLength) { futureText += " "; }
+                        }
+                    }
+                }
+                text.push(currentText);
+                maxLineWidth = measureText(ctx, currentText);
+
+                if(futureText) {
+                    subWidth = createMultilineText(ctx, futureText, maxWidth, text);
+                    if (subWidth > maxLineWidth) {
+                        maxLineWidth = subWidth;
+                    }
+                }
+
+                return maxLineWidth;
             };
+
+            // should probably be refactored
+            var getPowerOfTwo = function(value, pow) {
+                var pow = pow || 1;
+                while(pow<value) {
+                    pow *= 2;
+                }
+                return pow;
+            };
+
+            var measureText = function(ctx, textToMeasure) {
+                return ctx.measureText(textToMeasure).width;
+            };
+            // }}}
 
 
             if (fontStyleNode !== null) {
