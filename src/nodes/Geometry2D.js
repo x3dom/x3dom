@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 			var end = this._vf.endAngle;
 			
 			
-			var geoCacheID = 'Arc2D_'+ r + start + end + Math.random();
+			var geoCacheID = 'Arc2D_'+ r + start + end;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using Arc2D from Cache");
@@ -121,9 +121,8 @@ x3dom.registerNodeType(
 			var r = this._vf.radius;
 			var start = this._vf.startAngle;
 			var end = this._vf.endAngle;
-			
-			
-			var geoCacheID = 'ArcClose2D_'+r+start+end+this._vf.closureType+ Math.random();
+
+			var geoCacheID = 'ArcClose2D_'+r+start+end+this._vf.closureType;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using ArcClose2D from Cache");
@@ -392,7 +391,7 @@ x3dom.registerNodeType(
 			
 			var r = this._vf.radius;
 			
-			var geoCacheID = 'Circle2D_'+r+ Math.random();
+			var geoCacheID = 'Circle2D_'+r;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using Circle2D from Cache");
@@ -486,7 +485,7 @@ x3dom.registerNodeType(
 			var ir = this._vf.innerRadius;
 			var or = this._vf.outerRadius;
 			
-			var geoCacheID = 'Disk2D_'+ir+or+ Math.random();
+			var geoCacheID = 'Disk2D_'+ir+or;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using Disk2D from Cache");
@@ -641,7 +640,7 @@ x3dom.registerNodeType(
 			var x = this._vf.lineSegments[0].x;
 			var y = this._vf.lineSegments[0].y;
          	
-			var geoCacheID = 'Polyline2D_'+x+'-'+y+ Math.random();
+			var geoCacheID = 'Polyline2D_'+x+'-'+y;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
@@ -714,7 +713,7 @@ x3dom.registerNodeType(
 			var x = this._vf.point[0].x;
 			var y = this._vf.point[0].y;
          	
-			var geoCacheID = 'Polypoint2D_'+x+'-'+y+ Math.random();
+			var geoCacheID = 'Polypoint2D_'+x+'-'+y;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
@@ -778,7 +777,7 @@ x3dom.registerNodeType(
             var sx = this._vf.size.x, sy = this._vf.size.y;
 			var partx = this._vf.subdivision.x, party = this._vf.subdivision.y;
          	
-			var geoCacheID = 'Rectangle2D_'+sx+'-'+sy+ Math.random();
+			var geoCacheID = 'Rectangle2D_'+sx+'-'+sy;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
@@ -915,7 +914,7 @@ x3dom.registerNodeType(
 			var x = this._vf.vertices[0].x;
 			var y = this._vf.vertices[0].y;
          	
-			var geoCacheID = 'TriangleSet2D_'+x+'-'+y+ Math.random();
+			var geoCacheID = 'TriangleSet2D_'+x+'-'+y;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{

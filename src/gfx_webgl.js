@@ -2080,7 +2080,8 @@ x3dom.gfx_webgl = (function () {
                 //buffers: [{},{},{},{},{}],
                 lightsAndShadow: useLightingFunc(viewarea),
 				imageGeometry: 0,
-				indexedImageGeometry: 0
+				indexedImageGeometry: 0,
+                binaryGeometry: 0   // 0 := no BG
             };
 
             shape._webgl.primType = gl.TRIANGLES;
