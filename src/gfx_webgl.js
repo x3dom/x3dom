@@ -1914,7 +1914,7 @@ x3dom.gfx_webgl = (function () {
             // {{{ multiline helper functions start
             var createMultilineText = function(ctx, textToWrite, maxWidth, text) {
 
-                textToWrite = textToWrite.replace("\n"," ");
+                textToWrite = textToWrite.toString().replace("\n"," ");
 
                 var currentText = textToWrite;
                 var futureText;
@@ -2012,9 +2012,22 @@ x3dom.gfx_webgl = (function () {
                 font_horizontal = fontStyleNode._vf.horizontal;
                 font_language = fontStyleNode._vf.language;
             }
-            
+
             var string = shape._cf.geometry.node._vf.string;
-            var text = string.toString().split('\\');
+//            var text = string.toString().split('\\');
+
+
+            var canvasX, canvasY;
+            var textX, textY;
+            var textToWrite = string.toString().split('\\');
+            var paragraph = [];
+
+
+            var maxWidth = 100;
+            var squareTexture = true;
+            var textHeight = font_size;
+            var textAlignment = font_justify;
+
 
             var text_canvas = document.createElement('canvas');
             text_canvas.dir = font_leftToRight;
@@ -2029,6 +2042,36 @@ x3dom.gfx_webgl = (function () {
 
             // calculate font size in px
             text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+
+            if (maxWidth && measureText(text_ctx, textToWrite) > maxWidth) {
+                maxWidth = createMultilineText(text_ctx, textToWrite, maxWidth, paragraph);
+                canvasX = getPowerOfTwo(maxWidth);
+            } else {
+                paragraph.push(textToWrite);
+                canvasX = getPowerOfTwo(text_ctx.measureText(textToWrite).width);
+            }
+
+            canvasY = getPowerOfTwo(textHeight*(paragraph.length+1));
+            if(squareTexture) {
+                (canvasX > canvasY) ? canvasY = canvasX : canvasX = canvasY;
+            }
+
+//            text_canvas.width = canvasX;
+//            text_canvas.height = canvasY;
+
+            switch(textAlignment) {
+                case "left":
+                    textX = 0;
+                    break;
+                case "center":
+                    textX = canvasX/2;
+                    break;
+                case "right":
+                    textX = canvasX;
+                    break;
+            }
+            textY = canvasY/2;
+
 
             var txtW = text_ctx.measureText(string).width;
             var txtH = text_ctx.measureText(string).height || text_canvas.height;
@@ -2047,7 +2090,17 @@ x3dom.gfx_webgl = (function () {
 
             text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
             text_ctx.textAlign = font_justify;
-            
+
+//            // create the multiline text
+//            var offset = (canvasY - textHeight*(paragraph.length+1)) * 0.5;
+//            for(var i = 0; i < paragraph.length; i++) {
+//                if(paragraph.length > 1) {
+//                    textY = (i+1)*textHeight + offset;
+//                }
+//                text_ctx.fillText(paragraph[i], textX,  textY);
+//            }
+
+
             var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
             var topOffset  = (text_ctx.canvas.height - font_size) / 2.0;
 
@@ -2081,7 +2134,7 @@ x3dom.gfx_webgl = (function () {
             shape._cf.geometry.node._mesh._invalidate = true;
             shape._cf.geometry.node._mesh._numFaces = 2;
             shape._cf.geometry.node._mesh._numCoords = 4;
-                
+
             shape._webgl = {
                 positions: shape._cf.geometry.node._mesh._positions,
                 normals: shape._cf.geometry.node._mesh._normals,
