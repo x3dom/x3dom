@@ -299,8 +299,11 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                var collectNeedsReset = false;
+                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
                     out.collect = true;
+                    collectNeedsReset = true;
+                }
 
                 // TODO; optimize getting volume
                 var min = x3dom.fields.SFVec3f.MAX();
@@ -311,7 +314,7 @@ x3dom.registerNodeType(
                 var mid = (max.add(min).multiply(0.5)).add(new x3dom.fields.SFVec3f(0, 0, 0));
                 var billboard_to_viewer = this._eye.subtract(mid);
 
-                if(this._vf.axisOfRotation.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)){
+                if(this._vf.axisOfRotation.equals(new x3dom.fields.SFVec3f(0, 0, 0), x3dom.fields.Eps)) {
                     var rot1 = x3dom.fields.Quaternion.rotateFromTo(
                                 billboard_to_viewer, new x3dom.fields.SFVec3f(0, 0, 1));
                     rotMat = rot1.toMatrix().transpose();
@@ -330,7 +333,7 @@ x3dom.registerNodeType(
                         rotMat = rot3.toMatrix().transpose().mult(rotMat); // new
                     }
                 }
-                else{
+                else {
                     var normalPlane = this._vf.axisOfRotation.cross(billboard_to_viewer);
                     normalPlane = normalPlane.normalize();
 
@@ -344,8 +347,9 @@ x3dom.registerNodeType(
                         degreesToRotate += Math.PI;
                     }
 
-                        rotMat = x3dom.fields.SFMatrix4f.parseRotation(
-                            this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y + ", " + this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
+                    rotMat = x3dom.fields.SFMatrix4f.parseRotation(
+                            this._vf.axisOfRotation.x + ", " + this._vf.axisOfRotation.y + ", " + 
+                            this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
                 }
 
                 for (var i=0; i<this._childNodes.length; i++) {
@@ -359,6 +363,9 @@ x3dom.registerNodeType(
                     //optimization, exploit coherence and do it for next frame (see LOD)
                     out.Billboards.push( [transform, this] );
                 }
+                
+                if (collectNeedsReset)
+                    out.collect = false;
             }
         }
     )
@@ -380,8 +387,11 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
-                if (out && out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                var collectNeedsReset = false;
+                if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
                     out.collect = true;
+                    collectNeedsReset = true;
+                }
 
                 for (var i=0; i<this._childNodes.length; i++)
                 {
@@ -391,6 +401,9 @@ x3dom.registerNodeType(
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
+                
+                if (collectNeedsReset)
+                    out.collect = false;
             }
         }
     )
@@ -415,8 +428,11 @@ x3dom.registerNodeType(
             {
                 var i=0, n=this._childNodes.length;
 
-                if (out && out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                var collectNeedsReset = false;
+                if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
                     out.collect = true;
+                    collectNeedsReset = true;
+                }
 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
@@ -445,6 +461,9 @@ x3dom.registerNodeType(
                     //optimization, exploit coherence and do it for next frame
                     out.LODs.push( [transform, this] );
                 }
+                
+                if (collectNeedsReset)
+                    out.collect = false;
             }
         }
     )

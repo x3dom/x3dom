@@ -30,8 +30,11 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                var collectNeedsReset = false;
+                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
                     out.collect = true;
+                    collectNeedsReset = true;
+                }
 
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
@@ -39,6 +42,9 @@ x3dom.registerNodeType(
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
+                
+                if (collectNeedsReset)
+                    out.collect = false;
             }
         }
     )
@@ -118,13 +124,19 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                var collectNeedsReset = false;
+                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
                     out.collect = true;
+                    collectNeedsReset = true;
+                }
 
                 if (this._childNodes[this._vf.whichChoice]) {
                     var childTransform = this._childNodes[this._vf.whichChoice].transformMatrix(transform);
                     this._childNodes[this._vf.whichChoice].collectDrawableObjects(childTransform, out);
                 }
+                
+                if (collectNeedsReset)
+                    out.collect = false;
             },
 
             doIntersect: function(line)
@@ -505,7 +517,7 @@ x3dom.registerNodeType(
                 out.collect = false;
                 out.idList = this._idList;
 
-                if (out.useIdList && out.idList.indexOf(this._DEF) >= 0)
+                if (out.idList.indexOf(this._DEF) >= 0)
                     out.collect = true;
 
                 for (var i=0; i<this._childNodes.length; i++) {
@@ -514,6 +526,10 @@ x3dom.registerNodeType(
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
+                
+                // assumes that this node can't be nested...
+                out.useIdList = false;
+                out.collect = false;
             }
         }
     )
