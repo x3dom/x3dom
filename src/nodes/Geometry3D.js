@@ -24,7 +24,7 @@ x3dom.registerNodeType(
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 			
-			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby + Math.random();
+			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
@@ -325,7 +325,7 @@ x3dom.registerNodeType(
                 sy = this._vf.size.y,
                 sz = this._vf.size.z;
 
-			var geoCacheID = 'Box_'+sx+'-'+sy+'-'+sz + Math.random();
+			var geoCacheID = 'Box_'+sx+'-'+sy+'-'+sz;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
@@ -416,7 +416,7 @@ x3dom.registerNodeType(
 			var r = this._vf.radius;
 			var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 			
-			var geoCacheID = 'Sphere_'+r + Math.random();
+			var geoCacheID = 'Sphere_'+r;
 
 			if (x3dom.geoCache[geoCacheID] != undefined) {
 				x3dom.debug.logInfo("Using Sphere from Cache");
@@ -640,7 +640,7 @@ x3dom.registerNodeType(
 			var outerRadius = this._vf.outerRadius;
 			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 					
-			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius + Math.random();
+			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
@@ -804,7 +804,7 @@ x3dom.registerNodeType(
 			
 			var sides = this._vf.subdivision;
 
-			var geoCacheID = 'Cone_'+this._vf.bottomRadius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.side + Math.random();
+			var geoCacheID = 'Cone_'+this._vf.bottomRadius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.side;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
@@ -1042,7 +1042,7 @@ x3dom.registerNodeType(
 			
 			var sides = this._vf.subdivision;
 
-			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side + Math.random();
+			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
 
 			if( x3dom.geoCache[geoCacheID] != undefined )
 			{
