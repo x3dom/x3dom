@@ -4704,10 +4704,23 @@ x3dom.gfx_webgl = (function () {
             center = obj3d.getCenter();
             center = trafo.multMatrixPnt(center);
             center = mat_view.multMatrixPnt(center);
-            
-            zPos[i] = [i, center.z];
+
+			var sortType = (obj3d._cf.appearance.node != undefined) ? obj3d._cf.appearance.node._vf.sortType : "opaque";
+       
+            zPos[i] = [i, center.z, sortType];
         }
-        zPos.sort(function(a, b) { return a[1] - b[1]; });
+		
+        //zPos.sort(function(a, b) { return a[1] - b[1]; });
+		
+		zPos.sort( function (a,b) {
+			if(a[2] === b[2])  
+			{  
+				return a[1] - b[1];
+			}
+			var x = a[2].toLowerCase(), y = b[2].toLowerCase();  
+			return x < y ? -1 : x > y ? 1 : 0; 
+				
+		});
         
         m = scene.drawableObjects.Billboards.length;
         n = scene.drawableObjects.LODs.length;

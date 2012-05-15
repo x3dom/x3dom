@@ -35,6 +35,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('blendMode', x3dom.nodeTypes.BlendMode);
             this.addField_SFNode('depthMode', x3dom.nodeTypes.DepthMode);
             this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
+			this.addField_SFString(ctx, 'sortType', 'auto');
 
             // shortcut to shader program
             this._shader = null;
@@ -48,6 +49,14 @@ x3dom.registerNodeType(
                 if (this._cf.shaders.nodes.length) {
                     this._shader = this._cf.shaders.nodes[0];
                 }
+				
+				if(this._vf.sortType == 'auto') {
+					if(this._cf.material.node && this._cf.material.node._vf.transparency > 0) {
+						this._vf.sortType = 'transparent';
+					} else {
+						this._vf.sortType = 'opaque';
+					}
+				}
             },
 
             texTransformMatrix: function() {
