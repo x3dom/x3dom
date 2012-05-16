@@ -10,38 +10,6 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-/* ### Text ### */
-x3dom.registerNodeType(
-    "Text",
-    "Text",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        function (ctx) {
-            x3dom.nodeTypes.Text.superClass.call(this, ctx);
-
-            this.addField_MFString(ctx, 'string', []);
-            this.addField_MFFloat(ctx, 'length', []);
-            this.addField_SFFloat(ctx, 'maxExtent', 0.0);
-
-            this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);
-        },
-		{
-        	nodeChanged: function() {
-            	if (!this._cf.fontStyle.node) {
-                	this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
-                }
-            },
-			fieldChanged: function(fieldName) {
-				if (fieldName == 'string' || fieldName == 'family' || fieldName == 'horizontal' || fieldName == 'justify' || fieldName == 'language' ||
-					fieldName == 'leftToRight' || fieldName == 'size' || fieldName == 'spacing' || fieldName == 'style' || fieldName == 'topToBottom') {
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.texture = true;
-						node._dirty.text = true;
-                    });
-				}
-			}
-        }
-    ) // defineClass
-); // registerNodeType
 
 /* ### X3DFontStyleNode ### */
 x3dom.registerNodeType(
@@ -74,7 +42,6 @@ x3dom.registerNodeType(
         },
 		{
         	nodeChanged: function() {
-
             },
 
 			fieldChanged: function(fieldName) {
@@ -97,3 +64,39 @@ x3dom.nodeTypes.FontStyle.defaultNode = function() {
     }
     return x3dom.nodeTypes.FontStyle._defaultNode;
 };
+
+/* ### Text ### */
+x3dom.registerNodeType(
+    "Text",
+    "Text",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.Text.superClass.call(this, ctx);
+
+            this.addField_MFString(ctx, 'string', []);
+            this.addField_MFFloat(ctx, 'length', []);
+            this.addField_SFFloat(ctx, 'maxExtent', 0.0);
+            this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);
+        },
+        {
+            nodeChanged: function() {
+                if (!this._cf.fontStyle.node) {
+                    this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
+                }
+            },
+
+            fieldChanged: function(fieldName) {
+                if (fieldName == 'string' || fieldName == 'family' ||
+                    fieldName == 'horizontal' || fieldName == 'justify' ||
+                    fieldName == 'language' || fieldName == 'leftToRight' ||
+                    fieldName == 'size' || fieldName == 'spacing' ||
+                    fieldName == 'style' || fieldName == 'topToBottom') {
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.texture = true;
+                        node._dirty.text = true;
+                    });
+                }
+            }
+        }
+    ) // defineClass
+); // registerNodeType

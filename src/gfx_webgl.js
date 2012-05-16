@@ -4705,11 +4705,12 @@ x3dom.gfx_webgl = (function () {
             center = trafo.multMatrixPnt(center);
             center = mat_view.multMatrixPnt(center);
 
-			var sortType = (obj3d._cf.appearance.node != undefined) ? obj3d._cf.appearance.node._vf.sortType : "opaque";
+			var sortType = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortType : "opaque";
        
             zPos[i] = [i, center.z, sortType];
         }
-		
+
+        // TODO: sortKey which is per sortType
         //zPos.sort(function(a, b) { return a[1] - b[1]; });
 		
 		zPos.sort( function (a,b) {
@@ -4718,8 +4719,7 @@ x3dom.gfx_webgl = (function () {
 				return a[1] - b[1];
 			}
 			var x = a[2].toLowerCase(), y = b[2].toLowerCase();  
-			return x < y ? -1 : x > y ? 1 : 0; 
-				
+			return x < y ? -1 : x > y ? 1 : 0;
 		});
         
         m = scene.drawableObjects.Billboards.length;
@@ -4979,6 +4979,8 @@ x3dom.gfx_webgl = (function () {
         
         var transform, shape;
         var locScene = rt._cf.scene.node;
+
+        var needEnableBlending, needEnableDepthMask;
         
         if (!locScene || locScene === scene)
         {
@@ -5001,9 +5003,36 @@ x3dom.gfx_webgl = (function () {
 				if(i < scene.drawableObjects.length-1) {
 					var next_shape = scene.drawableObjects[i+1][1];
 				}
-				
+
+                needEnableBlending = false;
+                needEnableDepthMask = false;
+
+                // HACK; fully impl. BlendMode and DepthMode
+                appearance = shape._cf.appearance.node;
+
+                if (appearance._cf.blendMode.node &&
+                    appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
+                    appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+                {
+                    needEnableBlending = true;
+                    gl.disable(gl.BLEND);
+                }
+                if (appearance._cf.depthMode.node &&
+                    appearance._cf.depthMode.node._vf.readOnly === true)
+                {
+                    needEnableDepthMask = true;
+                    gl.depthMask(false);
+                }
+
                 this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
                         mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+
+                if (needEnableBlending) {
+                    gl.enable(gl.BLEND);
+                }
+                if (needEnableDepthMask) {
+                    gl.depthMask(true);
+                }
             }
         }
         else
@@ -5038,9 +5067,36 @@ x3dom.gfx_webgl = (function () {
 				if(i < locScene.drawableObjects.length-1) {
 					var next_shape = locScene.drawableObjects[i+1][1];
 				}
-				
+
+                needEnableBlending = false;
+                needEnableDepthMask = false;
+
+                // HACK; fully impl. BlendMode and DepthMode
+                appearance = shape._cf.appearance.node;
+
+                if (appearance._cf.blendMode.node &&
+                    appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
+                    appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+                {
+                    needEnableBlending = true;
+                    gl.disable(gl.BLEND);
+                }
+                if (appearance._cf.depthMode.node &&
+                    appearance._cf.depthMode.node._vf.readOnly === true)
+                {
+                    needEnableDepthMask = true;
+                    gl.depthMask(false);
+                }
+
                 this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
                         mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+
+                if (needEnableBlending) {
+                    gl.enable(gl.BLEND);
+                }
+                if (needEnableDepthMask) {
+                    gl.depthMask(true);
+                }
             }
         }
         
