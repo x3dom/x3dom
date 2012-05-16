@@ -4689,7 +4689,8 @@ x3dom.gfx_webgl = (function () {
         t0 = new Date().getTime();
         
         // do z-sorting for transparency (currently no separate transparency list)
-        var zPos = [];
+        var zPos = [], sortKeyArr = [], zPosTransp = {};
+        var sortKeyProp = "";
         var i, m, n = scene.drawableObjects.length;
         var center, trafo, obj3d;
         
@@ -4705,22 +4706,37 @@ x3dom.gfx_webgl = (function () {
             center = trafo.multMatrixPnt(center);
             center = mat_view.multMatrixPnt(center);
 
-			var sortType = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortType : "opaque";
-       
-            zPos[i] = [i, center.z, sortType];
+            var sortType = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortType : "opaque";
+            var sortKey = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortKey : 0;
+
+            if (sortType === "opaque") {
+                zPos.push([i, center.z, sortKey]);
+            }
+            else {
+                sortKeyProp = sortKey.toString();
+                if (zPosTransp[sortKeyProp] === undefined)
+                    zPosTransp[sortKeyProp] = [];
+
+                zPosTransp[sortKeyProp].push([i, center.z, sortKey]);
+                sortKeyArr.push(sortKey);
+            }
         }
 
-        // TODO: sortKey which is per sortType
-        //zPos.sort(function(a, b) { return a[1] - b[1]; });
-		
-		zPos.sort( function (a,b) {
-			if(a[2] === b[2])  
-			{  
-				return a[1] - b[1];
-			}
-			var x = a[2].toLowerCase(), y = b[2].toLowerCase();  
-			return x < y ? -1 : x > y ? 1 : 0;
-		});
+        // sort solid objects only according to sortKey
+        zPos.sort(function(a, b) { return a[2] - b[2]; });
+
+        // sort transparent objects along viewer distance and sortKey
+        sortKeyArr.sort(function(a, b) { return a - b; });
+
+        for (var sortKeyArrIt=0; sortKeyArrIt < sortKeyArr.length; ++sortKeyArrIt) {
+            sortKeyProp = sortKeyArr[sortKeyArrIt];
+
+            zPosTransp[sortKeyProp].sort( function(a, b) {
+                return a[1] - b[1];
+            } );
+
+            zPos = zPos.concat(zPosTransp[sortKeyProp]);
+        }
         
         m = scene.drawableObjects.Billboards.length;
         n = scene.drawableObjects.LODs.length;
@@ -4836,17 +4852,18 @@ x3dom.gfx_webgl = (function () {
 			
             var needEnableBlending = false;
             var needEnableDepthMask = false;
+            var shapeApp = obj[1]._cf.appearance.node;
 
-            // HACK; fully impl. BlendMode and DepthMode, also for renderedTexture pass!
-            if (obj[1]._cf.appearance.node._cf.blendMode.node &&
-                obj[1]._cf.appearance.node._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
-                obj[1]._cf.appearance.node._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+            // HACK; fully impl. BlendMode and DepthMode
+            if (shapeApp._cf.blendMode.node &&
+                shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
+                shapeApp._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
             {
                 needEnableBlending = true;
                 gl.disable(gl.BLEND);
             }
-            if (obj[1]._cf.appearance.node._cf.depthMode.node &&
-                obj[1]._cf.appearance.node._cf.depthMode.node._vf.readOnly === true)
+            if (shapeApp._cf.depthMode.node &&
+                shapeApp._cf.depthMode.node._vf.readOnly === true)
             {
                 needEnableDepthMask = true;
                 gl.depthMask(false);

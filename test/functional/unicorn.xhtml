@@ -61,7 +61,7 @@
 <Scene DEF='scene'>
 <Background skyColor='1 1 1'/>
 <Shape>
-<Appearance>
+<Appearance sortKey='0'>
 <Material diffuseColor='1 1 1' />
 <ImageTexture url='media/texture/generic/unicorn_0.png'/>
 </Appearance>
@@ -75,8 +75,9 @@
 </IndexedFaceSet>
 </Shape>
 
-<Shape>
-<Appearance>
+<Shape render="true">
+<Appearance sortKey='2'>
+<DepthMode readOnly="true"></DepthMode>
 <Material diffuseColor='1 1 1' />
 <ImageTexture url='media/texture/generic/unicorn_0.png'/>
 </Appearance>

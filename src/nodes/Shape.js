@@ -54,7 +54,14 @@ x3dom.registerNodeType(
 				if(this._vf.sortType == 'auto') {
 					if(this._cf.material.node && this._cf.material.node._vf.transparency > 0) {
 						this._vf.sortType = 'transparent';
-					} else {
+					}
+                    else if (this._cf.texture.node && this._cf.texture.node._vf.url.length) {
+                        // uhh, this is a rather coarse guess...
+                        if (this._cf.texture.node._vf.url[0].toLowerCase().indexOf('.'+'png') >= 0) {
+                            this._vf.sortType = 'transparent';
+                        }
+                    }
+                    else {
 						this._vf.sortType = 'opaque';
 					}
 				}
