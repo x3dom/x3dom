@@ -938,7 +938,7 @@ x3dom.gfx_webgl = (function () {
 				
 				if(texture && !blending) {
 					shader += "fragAmbient = ambient;\n";
-					shader += "fragDiffuse = rgb;\n";
+					shader += "fragDiffuse = vec3(1.0);\n";
 					shader += "fragColor.rgb = (emissiveColor + specular*specularColor);\n";
 					shader += "fragColor.a = alpha;\n";
 				} else {
