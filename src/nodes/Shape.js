@@ -35,7 +35,8 @@ x3dom.registerNodeType(
             this.addField_SFNode('blendMode', x3dom.nodeTypes.BlendMode);
             this.addField_SFNode('depthMode', x3dom.nodeTypes.DepthMode);
             this.addField_MFNode('shaders', x3dom.nodeTypes.X3DShaderNode);
-			this.addField_SFString(ctx, 'sortType', 'auto');
+			this.addField_SFString(ctx, 'sortType', 'auto');      // [auto, transparent, opaque]
+            this.addField_SFInt32(ctx, 'sortKey', 0);             // Change render order manually
 
             // shortcut to shader program
             this._shader = null;
