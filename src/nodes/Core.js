@@ -429,7 +429,7 @@ x3dom.registerNodeType(
 				});	
       		}
       		
-			/*if (!xmlNode.attributes[name]) {
+			if (!xmlNode.attributes[name]) {
 			    try {
 			        var str = this._vf[name].toGL().toString();
 			        if (!str) { str = "\0"; }
@@ -440,7 +440,7 @@ x3dom.registerNodeType(
 		            if (!str) { str = "\0"; }
 		            xmlNode.setAttribute(name, str);
 		        }
-		    }*/
+		    }
         },
 
         addField_SFInt32: function (ctx, name, n) {
