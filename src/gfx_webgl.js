@@ -72,6 +72,7 @@ x3dom.gfx_webgl = (function () {
 							x3dom.caps.GREEN_BITS 						= ctx.getParameter(ctx.GREEN_BITS);
 							x3dom.caps.BLUE_BITS 						= ctx.getParameter(ctx.BLUE_BITS);
 							x3dom.caps.ALPHA_BITS 						= ctx.getParameter(ctx.ALPHA_BITS);
+							x3dom.caps.DEPTH_BITS 						= ctx.getParameter(ctx.DEPTH_BITS);
 							x3dom.caps.MAX_VERTEX_ATTRIBS				= ctx.getParameter(ctx.MAX_VERTEX_ATTRIBS);
 							x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS 	= ctx.getParameter(ctx.MAX_VERTEX_TEXTURE_IMAGE_UNITS);
 							x3dom.caps.MAX_VARYING_VECTORS				= ctx.getParameter(ctx.MAX_VARYING_VECTORS);
