@@ -429,7 +429,7 @@ x3dom.registerNodeType(
 				});	
       		}
       		
-			if (!xmlNode.attributes[name]) {
+			/*if (!xmlNode.attributes[name]) {
 			    try {
 			        var str = this._vf[name].toGL().toString();
 			        if (!str) { str = "\0"; }
@@ -438,10 +438,9 @@ x3dom.registerNodeType(
 		        catch(e) {
 		            var str = this._vf[name].toString();
 		            if (!str) { str = "\0"; }
-					x3dom.debug.logInfo(name+ '    '+ str);
-		            //xmlNode.setAttribute(name, str);
+		            xmlNode.setAttribute(name, str);
 		        }
-		    }
+		    }*/
         },
 
         addField_SFInt32: function (ctx, name, n) {

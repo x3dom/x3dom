@@ -3,7 +3,7 @@
 	<Transform id="1" translation="2 0 0">
 		<Shape DEF='sphere'>
 			<Appearance id="3">
-				<Material id="color2" diffuseColor="1 0 0" />
+				<Material id="color2" diffuseColor="0.5 0 0.5" />
 			</Appearance>
 			<Sphere id="4" onmouseover="test3();" onmouseout="test4();" />
 		</Shape>

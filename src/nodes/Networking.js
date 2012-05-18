@@ -59,6 +59,16 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName)
             {
                 if (fieldName == "url") {
+					if(this._vf.nameSpaceName.length != 0) {
+						var node = this.currentInline;
+						if ( node.hasChildNodes() )
+						{
+							while ( node.childNodes.length >= 1 )
+							{
+								node.removeChild( node.firstChild );       
+							} 
+						}
+					}
                     var xhr = this.nodeChanged();
                     xhr = null;
                 }
