@@ -438,7 +438,8 @@ x3dom.registerNodeType(
 		        catch(e) {
 		            var str = this._vf[name].toString();
 		            if (!str) { str = "\0"; }
-		            xmlNode.setAttribute(name, str);
+					x3dom.debug.logInfo(name+ '    '+ str);
+		            //xmlNode.setAttribute(name, str);
 		        }
 		    }
         },
