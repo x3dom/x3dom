@@ -29,103 +29,139 @@ x3dom.registerNodeType(
             this.addField_SFTime(ctx, 'resumeTime', 0);
 
             this.addField_SFTime(ctx, 'cycleTime', 0);
+            this.addField_SFTime(ctx, 'elapsedTime', 0);
             this.addField_SFFloat(ctx, 'fraction_changed', 0);
             this.addField_SFBool(ctx, 'isActive', false);
+            this.addField_SFBool(ctx, 'isPaused', false);
             this.addField_SFTime(ctx, 'time', 0);
 
-            this.addField_SFBool(ctx,'first',true);
-            this.addField_SFFloat(ctx,'firstCycle',0.0);
+            this.addField_SFBool(ctx,'first', true);
+            this.addField_SFFloat(ctx,'firstCycle', 0.0);
 
             this._prevCycle = -1;
+            this._lastTime = 0;
+            this._cycleStopTime = 0;
+            this._activatedTime = 0;
+
+            if (this._vf.startTime > 0) {
+                this._updateCycleStopTime();
+            }
+
+            this._backupStartTime = this._vf.startTime;
+            this._backupStopTime = this._vf.stopTime;
+            this._backupCycleInterval = this._vf.cycleInterval;
         },
         {
-            onframe: function (ts)
+            onframe: function (time)
             {
-                // http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/time.html#Timecycles
-                // (startTime >= stopTime && loop == false): isActive(true) at startTime, isActiveFalse(after 1st cycle)
-                // startTime >= stopTime && loop == True: isActive(true) at startTime, cycle forever
-                // startTime < stopTime && loop == True: isActive(true) at startTime, cycle to stopTime, isActive(false) at stopTime
-                // set_stopTime && loop == True: isActive(true) at startTime, cycle to new stopTime, isActive(false) at new stopTime
-                // loop == True, then setLoop(false): isActive(true) at startTime, cycle, when loop false, isActive(false) at end of current cycle
-
                 if (!this._vf.enabled) {
+                    this._lastTime = time;
                     return;
                 }
 
-                var doRun = (ts >= this._vf.startTime);
-                var doPaused = (ts >= this._vf.pauseTime) && (this._vf.pauseTime > this._vf.resumeTime);
+                var isActive = ( this._vf.cycleInterval > 0 &&
+                    time >= this._vf.startTime &&
+                    (time < this._vf.stopTime || this._vf.stopTime <= this._vf.startTime) &&
+                    (this._vf.loop == true || (this._vf.loop == false && time < this._cycleStopTime)) );
 
-                var cycleFrac, cycle, fraction, elapsed;
-                var isActive = (ts >= this._vf.startTime);
-
-                // fix from here:
-                // http://sourceforge.net/projects/x3dom/forums/forum/957286/topic/4566541
-                if (isActive && this._vf.cycleInterval > 0) {
-                    cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
-                    cycle = Math.floor(cycleFrac);
-                    if (this._vf.first == true) {
-                        firstCycle=cycle;
-                    }
-                    this._vf.first=false;
-                    if (((cycle - firstCycle) > 0) && (this._vf.loop == false)) {
-	                    fraction = 1.0;
-                    } else {
-	                    fraction = cycleFrac - cycle;
-	                    if (fraction < x3dom.fields.Eps) {
-		                    if (ts > this._vf.startTime) {
-			                    fraction = 1.0;
-		                    }
-	                   }
-                    }
+                if (isActive && !this._vf.isActive) {
+                    this.postMessage('isActive', true);
+                    this._activatedTime = time;
                 }
 
-//                if (isActive && this._vf.cycleInterval > 0) {
-//                    cycleFrac = (ts - this._vf.startTime) / this._vf.cycleInterval;
-//                    cycle = Math.floor(cycleFrac);
-//                    fraction = cycleFrac - cycle;
-//
-//                    if (fraction < x3dom.fields.Eps) {
-//                        if (ts > this._vf.startTime) {
-//                            fraction = 1.0;
-//                        }
-//                    }
-//
-//                }
-//
+                // Checking for this._vf.isActive allows the dispatch of 'final events' (before
+                // deactivation)
 
+                if (isActive || this._vf.isActive) {
+                    this.postMessage('elapsedTime', time - this._activatedTime);
 
+                    var isPaused = ( time >= this._vf.pauseTime && this._vf.pauseTime > this._vf.resumeTime );
 
-                if (isActive) {
-                    if (!this._vf.isActive) {
-                        this.postMessage('isActive', true);
+                    if (isPaused && !this._vf.isPaused) {
+                        this.postMessage('isPaused', true);
+                        this.postMessage('pauseTime', time);
+                    } else if (!isPaused && this._vf.isPaused) {
+                        this.postMessage('isPaused', false);
+                        this.postMessage('resumeTime', time);
                     }
 
-                    this.postMessage('fraction_changed', fraction);
-                    this.postMessage('time', ts);
+                    if (!isPaused) {
+                        var cycleFrac = this._getCycleAt(time);
+                        var cycle = Math.floor(cycleFrac);
 
-                    if (this._prevCycle != cycle) {
+                        var cycleTime = this._vf.startTime + cycle*this._vf.cycleInterval;
+                        var adjustTime = 0;
 
-                        this._prevCycle = cycle;
+                        if (this._vf.stopTime > this._vf.startTime &&
+                            this._lastTime < this._vf.stopTime && time >= this._vf.stopTime)
+                            adjustTime = this._vf.stopTime;
+                        else if (this._lastTime < cycleTime && time >= cycleTime)
+                            adjustTime = cycleTime;
 
-                        this.postMessage('cycleTime', ts);
-
-                        // TODO: this._vf.loop
-                        if (!this._vf.loop) {
-                            this.postMessage('isActive', false);
+                        if( adjustTime > 0 ) {
+                            time = adjustTime;
+                            cycleFrac = this._getCycleAt(time);
+                            cycle = Math.floor(cycleFrac);
                         }
-                        return;
 
+                        var fraction = cycleFrac - cycle;
+
+                        if (fraction < x3dom.fields.Eps) {
+                            fraction = ( this._lastTime < this._vf.startTime ? 0.0 : 1.0 );
+                            this.postMessage('cycleTime', time);
+                        }
+
+                        this.postMessage('fraction_changed', fraction);
+
+                        this.postMessage('time', time);
                     }
                 }
+
+                if (!isActive && this._vf.isActive)
+                    this.postMessage('isActive', false);
+
+                this._lastTime = time;
             },
 
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "enabled") {
-                    // TODO; eval relevant outputs
+                    // TODO; eval other relevant outputs
                     if (!this._vf.enabled && this._vf.isActive) {
                         this.postMessage('isActive', false);
                     }
+                }
+                else if (fieldName == "startTime") {
+                    // Spec: Should be ignored when active. (Restore old value)
+                    if (this._vf.isActive) {
+                        this._vf.startTime = this._backupStartTime;
+                        return;
+                    }
+
+                    this._backupStartTime = this._vf.startTime;
+                    this._updateCycleStopTime();
+                }
+                else if (fieldName == "stopTime") {
+                    // Spec: Should be ignored when active and less than startTime. (Restore old value)
+                    if (this._vf.isActive && this._vf.stopTime <= this._vf.startTime) {
+                        this._vf.stopTime = this._backupStopTime;
+                        return;
+                    }
+
+                    this._backupStopTime = this._vf.stopTime;
+                }
+                else if (fieldName == "cycleInterval") {
+                    // Spec: Should be ignored when active. (Restore old value)
+                    if (this._vf.isActive) {
+                        this._vf.cycleInterval = this._backupCycleInterval;
+                        return;
+                    }
+
+                    this._backupCycleInterval = this._vf.cycleInterval;
+                    this._updateCycleStopTime();
+                }
+                else if (fieldName == "loop") {
+                    this._updateCycleStopTime();
                 }
             },
 
@@ -139,6 +175,24 @@ x3dom.registerNodeType(
                             doc._nodeBag.timer.splice(i, 1);
                         }
                     }
+                }
+            },
+
+            _getCycleAt: function(time)
+            {
+                return Math.max( 0.0, time - this._vf.startTime ) / this._vf.cycleInterval;
+            },
+
+            _updateCycleStopTime: function()
+            {
+                if (this._vf.loop == false) {
+                    var now = new Date().getTime() / 1000;
+                    var cycleToStop = Math.floor(this._getCycleAt(now)) + 1;
+
+                    this._cycleStopTime = this._vf.startTime + cycleToStop*this._vf.cycleInterval;
+                }
+                else {
+                    this._cycleStopTime = 0;
                 }
             }
         }
