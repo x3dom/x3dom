@@ -38,16 +38,11 @@ package x3dom {
 			ExternalInterface.addCallback("setBackground", setBackground);
 			ExternalInterface.addCallback("setMeshTransform", setMeshTransform);
 			ExternalInterface.addCallback("setMeshMaterial", setMeshMaterial);
-			ExternalInterface.addCallback("setGeometryImage", setGeometryImage);
 			ExternalInterface.addCallback("setMeshColors", setMeshColors);
-			ExternalInterface.addCallback("setMeshColorsTexture", setMeshColorsTexture);
 			ExternalInterface.addCallback("setMeshIndices", setMeshIndices);
 			ExternalInterface.addCallback("setMeshNormals", setMeshNormals);
-			ExternalInterface.addCallback("setMeshNormalsTexture", setMeshNormalsTexture);
 			ExternalInterface.addCallback("setMeshTexCoords", setMeshTexCoords);
-			ExternalInterface.addCallback("setMeshTexCoordsTexture", setMeshTexCoordsTexture);
 			ExternalInterface.addCallback("setMeshVertices", setMeshVertices);
-			ExternalInterface.addCallback("setMeshVerticesTexture", setMeshVerticesTexture);
 			ExternalInterface.addCallback("setMeshTexture", setMeshTexture);
 			ExternalInterface.addCallback("setPixelTexture", setPixelTexture);
 			ExternalInterface.addCallback("setCubeTexture", setCubeTexture);
@@ -56,9 +51,8 @@ package x3dom {
 			ExternalInterface.addCallback("setDirectionalLight", setDirectionalLight);
 			ExternalInterface.addCallback("setPointLight", setPointLight);
 			ExternalInterface.addCallback("setSpotLight", setSpotLight);
-			ExternalInterface.addCallback("setText", setText);
 			ExternalInterface.addCallback("setSphereMapping", setSphereMapping);
-			ExternalInterface.addCallback("setMeshSolid", setMeshSolid);
+			ExternalInterface.addCallback("setMeshProperties", setMeshProperties);
 			ExternalInterface.addCallback("setFPS", setFPS);
 		}
 		
@@ -159,21 +153,17 @@ package x3dom {
 			light.radius			= Number( value.radius );
 		}
 		
-		private function setText(value:Object) : void
-		{		
-			var text:X3DText = new X3DText();
-			text.setTextProperties(value);
-			this._scene.getDrawableObject( uint(value.id) ).shape = text;
-		}
-		
 		private function setMeshTransform(value:Object) : void
 		{			
 			this._scene.getDrawableObject( uint(value.id), uint(value.refID) ).transform = new Matrix3D( Vector.<Number>( value.transform ) );
 		}
 		
-		private function setMeshSolid(value:Object) : void
+		private function setMeshProperties(value:Object) : void
 		{			
-			this._scene.getDrawableObject( uint(value.id) ).shape.solid = Boolean( value.solid );
+			this._scene.getDrawableObject( uint(value.id) ).type = String( value.type );
+			this._scene.getDrawableObject( uint(value.id) ).sortType = String( value.sortType );
+			this._scene.getDrawableObject( uint(value.id) ).sortKey = String( value.sortKey );
+			this._scene.getDrawableObject( uint(value.id) ).shape.setProperties( value );
 		}
 		
 		private function setSphereMapping(value:Object) : void
@@ -194,88 +184,101 @@ package x3dom {
 			this._scene.getDrawableObject( uint(value.id) ).shape.material = material;
 		}
 		
-		private function setGeometryImage(value:Object) : void
-		{
-			if(!this._scene.getDrawableObject( uint(value.id) ).shape)
-			{
-				var geometryImage:GeometryImage = new GeometryImage();
-				geometryImage.setProperties(value);
-			
-				this._scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
-			}
-		}
-		
 		private function setMeshColors(value:Object) : void 
 		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(value.colors), uint(value.components) );
-		}
-		
-		private function setMeshColorsTexture(value:Object) : void 
-		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setColorTexture(value);
+			switch( this._scene.getDrawableObject( uint(value.id) ).type ) {
+				case "ImageGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setColorTexture(value);
+					break;
+				case "BinaryGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, value.colors, value.components );
+					break;
+				default:
+					this._scene.getDrawableObject( uint(value.id) ).shape.setColors( value.idx, Vector.<Number>(value.colors), uint(value.components) );
+					break;
+			}
 		}
 		
 		private function setMeshIndices(value:Object) : void 
 		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
+			switch( this._scene.getDrawableObject( uint(value.id) ).type ) {
+				case "ImageGeometry":
+					break;
+				case "BinaryGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, value.indices );
+					break;
+				default:
+					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
+					break;
+			}	
 		}
 		
 		private function setMeshNormals(value:Object) : void 
 		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(value.normals) );
-		}
-		
-		private function setMeshNormalsTexture(value:Object) : void 
-		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setNormalTexture(value);
+			switch( this._scene.getDrawableObject( uint(value.id) ).type ) {
+				case "ImageGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setNormalTexture(value);
+					break;
+				case "BinaryGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, value.normals );
+					break;
+				default:
+					this._scene.getDrawableObject( uint(value.id) ).shape.setNormals( value.idx, Vector.<Number>(value.normals) );
+					break;
+			}	
 		}
 		
 		private function setMeshTexCoords(value:Object) : void 
 		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(value.texCoords) );
-		}
-		
-		private function setMeshTexCoordsTexture(value:Object) : void 
-		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setTexCoordTexture(value);
+			switch( this._scene.getDrawableObject( uint(value.id) ).type ) {
+				case "ImageGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setTexCoordTexture(value);
+					break;
+				case "BinaryGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, value.texCoords );
+					break;
+				default:
+					this._scene.getDrawableObject( uint(value.id) ).shape.setTexCoords( value.idx, Vector.<Number>(value.texCoords) );
+					break;
+			}		
 		}
 		
 		private function setMeshVertices(value:Object) : void 
 		{
-			this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
-		}
-		
-		private function setMeshVerticesTexture(value:Object) : void 
-		{
-			var geometryImage:GeometryImage = new GeometryImage();
-			geometryImage.setProperties(value);
-			geometryImage.setCoordinateTexture(value);
+			switch( this._scene.getDrawableObject( uint(value.id) ).type ) {
+				case "ImageGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setCoordinateTexture(value);
+					break;
+				case "BinaryGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, value.vertices );
+					break;
+				default:
+					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
+					break;
+			}
 			
-			this._scene.getDrawableObject( uint(value.id) ).shape = geometryImage;
 		}
 		
 		private function setMeshTexture(value:Object) : void 
 		{
-			var texture:ImageTexture = new ImageTexture( String(value.url),
-														 Boolean(Number(value.origChannelCount) == 1.0 || Number(value.origChannelCount) == 2.0),
-														 Boolean(value.repeatS),
-														 Boolean(value.repeatT) );
-
-			this._scene.getDrawableObject( uint(value.id) ).shape.texture = texture;
+			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new ImageTexture( String(value.url),
+																							  Boolean(Number(value.origChannelCount) == 1.0 || Number(value.origChannelCount) == 2.0),
+																							  Boolean(value.repeatS),
+																							  Boolean(value.repeatT) );
 		}
 		
 		private function setPixelTexture(value:Object) : void 
 		{	
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new PixelTexture( Number(value.width),
-																						 Number(value.height),
-																						 Number(value.comp),
-																						 value.pixels );
+																						 	  Number(value.height),
+																						 	  Number(value.comp),
+																						 	  value.pixels );
 		}
 		
 		private function setCubeTexture(value:Object) : void 
 		{	
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new CubeMapTexture( value.texURLs[0], value.texURLs[1], value.texURLs[2],
-																						   value.texURLs[3], value.texURLs[4], value.texURLs[5], true );
+																						   		value.texURLs[3], value.texURLs[4], value.texURLs[5], true );
 		}
 		
 		private function setCanvasTexture(value:Object) : void 

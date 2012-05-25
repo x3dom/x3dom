@@ -63,6 +63,8 @@ package x3dom.shaders
 					this._cache[shaderIdentifier] = new DepthShader().program3D;
 				} else if(shaderIdentifier == ShaderIdentifier.NORMAL) {
 					this._cache[shaderIdentifier] = new NormalShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.DIRLIGHTSHADER) {
+					this._cache[shaderIdentifier] = new DirLightShader().program3D;
 				}
 			}
 			

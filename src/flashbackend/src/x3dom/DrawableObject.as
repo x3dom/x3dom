@@ -18,17 +18,21 @@ package x3dom
 		
 		private var _id:uint;
 		private var _refID:uint;
+		private var _type:String;
 		private var _shape:Shape;
 		private var _transform:Matrix3D;
 		private var _updated:Boolean;
+		private var _sortType:String;
+		private var _sortKey:uint;
 		
 		public function DrawableObject(id:uint, refID:uint)
 		{
-			this._id			= id;
+			this._id		= id;
 			this._refID		= refID;
 			this._context3D	= FlashBackend.getContext();
 			
 			this._shape		= null;
+			this._type		= "DEFAULT";
 			this._transform	= new Matrix3D();
 			this._updated	= true;
 		}
@@ -60,9 +64,57 @@ package x3dom
 		/**
 		 * @private
 		 */
+		public function get type() : String
+		{
+			return this._type;
+		}
+		
+		/**
+		 * 
+		 */
+		public function set type(type:String) : void
+		{
+			this._type = type;
+		}
+		
+		/**
+		 * @private
+		 */
 		public function get refID() : uint
 		{
 			return this._refID;
+		}
+		
+		/**
+		 * 
+		 */
+		public function set sortType(sortType:String) : void
+		{
+			this._sortType = sortType;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get sortKey() : uint
+		{
+			return this._sortKey;
+		}
+		
+		/**
+		 * 
+		 */
+		public function set sortKey(sortKey:uint) : void
+		{
+			this._sortKey = sortKey;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function get sortType() : String
+		{
+			return this._sortType;
 		}
 		
 		/**
@@ -94,9 +146,18 @@ package x3dom
 		 */
 		public function get shape() : Shape
 		{
-			if(this._shape == null)
-				this._shape = new Shape();
-
+			if(this._shape == null) {
+				if(this._type == "ImageGeometry") {
+					this._shape = new ImageGeometry();
+				} else if(this._type == "BinaryGeometry") {
+					this._shape = new BinaryGeometry();
+				} else if(this._type == "Text")  {
+					this._shape = new X3DText();
+				} else {
+					this._shape = new Shape();
+				}
+				
+			}
 			return this._shape;
 		}
 		
