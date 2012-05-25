@@ -58,7 +58,7 @@ package x3dom
 		 * Specifiying the number of color components. 3 means RGB and 4 means RGBA.
 		 * @default 3
 		 */
-		private var _numColorComponents:uint = 3;
+		protected var _numColorComponents:uint = 3;
 		
 		/**
 		 * Specifiying the colors used by the geometry.
@@ -102,6 +102,15 @@ package x3dom
 		public function Shape()
 		{
 			_context3D = FlashBackend.getContext();
+		}
+		
+		/**
+		 * Set Mesh properties
+		 * @default null
+		 */
+		public function setProperties(value:Object) : void
+		{
+			this._solid = Boolean( value.solid );
 		}
 		
 		/**
@@ -275,7 +284,7 @@ package x3dom
 		 * @param colors Vector with the colors 
 		 * @param numColorComponents Number of color components
 		 */
-		public function setColors(idx:uint, colors:Vector.<Number>, numComponents:uint) : void 
+		public function setColors(idx:uint, colors:Object, numComponents:uint) : void 
 		{
 			//Init color Buffer if not done yet
 			if( !this._colorBuffer) this._colorBuffer = new Array();
@@ -295,7 +304,7 @@ package x3dom
 		 * @param idx Index of the Array where indices are saved
 		 * @param colors Vector with the indices 
 		 */
-		public function setIndices(idx:uint, indices:Vector.<uint>) : void 
+		public function setIndices(idx:uint, indices:Object) : void 
 		{
 			this._numTriangles[ idx ] = indices.length/3;
 			
@@ -314,7 +323,7 @@ package x3dom
 		 * @param idx Index of the Array where normals are saved
 		 * @param normals Vector with the normals 
 		 */
-		public function setNormals(idx:uint, normals:Vector.<Number>) : void 
+		public function setNormals(idx:uint, normals:Object) : void 
 		{		
 			//Init normals Buffer if not done yet
 			if( !this._normalBuffer) this._normalBuffer = new Array();
@@ -331,7 +340,7 @@ package x3dom
 		 * @param idx Index of the Array where textureCoordinates are saved
 		 * @param texCoords Vector with the textureCoordinates 
 		 */
-		public function setTexCoords(idx:uint, texCoords:Vector.<Number>) : void 
+		public function setTexCoords(idx:uint, texCoords:Object) : void 
 		{		
 			//Init texture coordinate Buffer if not done yet
 			if( !this._texCoordBuffer) this._texCoordBuffer = new Array();
@@ -348,8 +357,8 @@ package x3dom
 		 * @param idx Index of the Array where vertices are saved
 		 * @param vertices Vector with the vertices 
 		 */
-		public function setVertices(idx:uint, vertices:Vector.<Number>) : void 
-		{		
+		public function setVertices(idx:uint, vertices:Object) : void 
+		{					
 			//Init texture coordinate Buffer if not done yet
 			if( !this._vertexBuffer) this._vertexBuffer = new Array();
 			
@@ -360,7 +369,7 @@ package x3dom
 			this._vertexBuffer[ idx ].uploadFromVector( vertices, 0, vertices.length/3 );
 			
 			//Calculate the BoundingBox
-			this.calculateBB(vertices);
+			this.calculateBB(vertices as Vector.<Number>);
 		}
 	}
 }

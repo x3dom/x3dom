@@ -263,8 +263,8 @@ package x3dom
 			//Create X3DScene for scene managing
 			this._scene = new X3DScene();
 			
-			this._renderer = new Renderer(_scene);
-			//_renderer = new LPPRenderer(_scene);
+			this._renderer = new ForwardRenderer(_scene);
+			//this._renderer = new LPPRenderer(_scene);
 			
 			//Create JSToASBridge for communication
 			this._bridge = new Bridge(_scene, _renderer);

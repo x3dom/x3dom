@@ -27,7 +27,7 @@ package x3dom
 			this._textFormat = new TextFormat();
 		}
 		
-		public function setTextProperties(value:Object) : void
+		override public function setProperties(value:Object) : void
 		{		
 			//Set Text
 			this._textField.text = value.text;
@@ -79,6 +79,8 @@ package x3dom
 			this.setVertices( 0, Vector.<Number>([-width,-height,0, width,-height,0, width,height,0, -width,height,0]) );
 			this.setNormals( 0, Vector.<Number>([0,0,1, 0,0,1, 0,0,1, 0,0,1]) );
 			this.setTexCoords( 0, Vector.<Number>([0,0, 1,0, 1,1, 0,1]) );
+			
+			super.setProperties(value);
 		}
 	}
 }

@@ -10,7 +10,7 @@ package x3dom
 	
 	
 
-	public class GeometryImage extends Shape
+	public class ImageGeometry extends Shape
 	{
 		private var _coordinateTexturesLoaded:Boolean;
 		private var _coordinateTexture0Loaded:Boolean;
@@ -21,13 +21,12 @@ package x3dom
 		private var _coords0:Bitmap = null;
 		private var _coords1:Bitmap = null;
 		private var _primType:Array = new Array();
-		private var _numColorComponents:uint;
 		private var _vertexCount:Array = new Array();
 		
 		/**
 		 * 
 		 */
-		public function GeometryImage()
+		public function ImageGeometry()
 		{
 			super();
 			this._ready = false;
@@ -36,7 +35,7 @@ package x3dom
 		/**
 		 * 
 		 */
-		public function setProperties(value:Object) : void
+		override public function setProperties(value:Object) : void
 		{
 			//Set number of Triangle, vertexCount and primTypes
 			for(var i:uint=0; i<value.primType.length; i++)
@@ -64,7 +63,9 @@ package x3dom
 			this._boundingBox.min.setTo(value.bboxMin[0], value.bboxMin[1], value.bboxMin[2]);		
 	
 			//Set boundingBox max
-			this._boundingBox.max.setTo(value.bboxMax[0], value.bboxMax[1], value.bboxMax[2]);	
+			this._boundingBox.max.setTo(value.bboxMax[0], value.bboxMax[1], value.bboxMax[2]);
+			
+			super.setProperties(value);
 		}
 		
 		/**
