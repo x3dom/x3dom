@@ -49,19 +49,40 @@
 	<body>
 		<x3d x="0px" y="0px" width="1024px" height="512px" backend="flash">
 		  <Scene DEF='scene'>
-        <Viewpoint centerOfRotation='0 0 40' position='4.5 0 100'></Viewpoint>
-        <Transform>
-          <Shape bboxCenter="2.7269497 0 20.0641994" bboxSize="81.8891029 50.9567986 40.1283989">
-            <Appearance>
-                <Material diffuseColor=".7 .7 .7" specularColor=".5 .5 .5"></Material>
-				<ImageTexture url="texture/DiffuseTexture.JPG"></ImageTexture>
-            </Appearance>
-            <BinaryGeometry primType='"TRIANGLES"' index="index.txt.bin" coord="coord.txt.bin" 
-                            normal="normal.txt.bin" texCoord="texcoord.txt.bin" color="color.txt.bin">
-            </BinaryGeometry>
-          </Shape>
-        </Transform>
-      </Scene>
+		  	<Background skyColor='1 1 1'></Background>
+				<Transform translation='0 0 0'>
+					<Shape solid='false'>
+						<Appearance DEF='_01_-_Default' sortType='transparent'>
+							<Material diffuseColor='0 0 1' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
+						</Appearance>
+						<Box></Box>
+					</Shape>
+				</Transform>
+				<Transform translation='0 0 -3'>
+					<Shape solid='false'>
+						<Appearance DEF='_01_-_Default' sortType='transparent'>
+							<Material diffuseColor='0 0 1' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
+						</Appearance>
+						<Box></Box>
+					</Shape>
+				</Transform>
+				<Transform translation='0 0 -6'>
+					<Shape solid='false'>
+						<Appearance DEF='_01_-_Default' sortType='transparent'>
+							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
+						</Appearance>
+						<Box size='1 1 1'></Box>
+					</Shape>
+				</Transform>
+				<Transform translation='0 0 -9'>
+					<Shape solid='false'>
+						<Appearance DEF='_01_-_Default' sortType='transparent'>
+							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
+						</Appearance>
+						<Box size='1 1 1'></Box>
+					</Shape>
+				</Transform>
+			</Scene>
       </x3d>
 	</body>
 </html>

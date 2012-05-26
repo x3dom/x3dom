@@ -90,7 +90,7 @@ package x3dom
 		 */
 		public function set sortType(sortType:String) : void
 		{
-			this._sortType = sortType;
+			this._sortType = sortType.toLowerCase();
 		}
 		
 		/**

@@ -335,7 +335,7 @@ x3dom.gfx_flash = (function() {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "ImageGeometry",
 												 sortType: shape._cf.appearance.node._vf.sortType,
-												 sortKey: shape._cf.appearance.node._vf.sortType,
+												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid(),
 												 bboxMin: shape._cf.geometry.node.getMin().toGL(),
 												 bboxMax: shape._cf.geometry.node.getMax().toGL(),
@@ -347,7 +347,7 @@ x3dom.gfx_flash = (function() {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "BinaryGeometry",
 												 sortType: shape._cf.appearance.node._vf.sortType,
-												 sortKey: shape._cf.appearance.node._vf.sortType,
+												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid(),
 												 primType: shape._cf.geometry.node._vf.primType,
 												 vertexCount: shape._cf.geometry.node._vf.vertexCount } );
@@ -355,7 +355,7 @@ x3dom.gfx_flash = (function() {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "Default",
 												 sortType: shape._cf.appearance.node._vf.sortType,
-												 sortKey: shape._cf.appearance.node._vf.sortType,
+												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid() } );
 			}
 			
@@ -557,7 +557,7 @@ x3dom.gfx_flash = (function() {
 					this.object.setMeshProperties( { id: shape._objectID,
 													 type: "Text",
 													 sortType: shape._cf.appearance.node._vf.sortType,
-												     sortKey: shape._cf.appearance.node._vf.sortType,
+												     sortKey: shape._cf.appearance.node._vf.sortKey,
 													 solid: shape.isSolid(),
 												     text: shape._cf.geometry.node._vf.string,
 												     fontFamily: ['SERIF'],
@@ -573,7 +573,7 @@ x3dom.gfx_flash = (function() {
 					this.object.setMeshProperties( { id: shape._objectID,
 													 type: "Text",
 													 sortType: shape._cf.appearance.node._vf.sortType,
-												     sortKey: shape._cf.appearance.node._vf.sortType,
+												     sortKey: shape._cf.appearance.node._vf.sortKey,
 													 solid: shape.isSolid(),
 													 text: shape._cf.geometry.node._vf.string,
 												     fontFamily: fontStyleNode._vf.family.toString(),
