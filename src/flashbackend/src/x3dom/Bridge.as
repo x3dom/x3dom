@@ -162,7 +162,7 @@ package x3dom {
 		{			
 			this._scene.getDrawableObject( uint(value.id) ).type = String( value.type );
 			this._scene.getDrawableObject( uint(value.id) ).sortType = String( value.sortType );
-			this._scene.getDrawableObject( uint(value.id) ).sortKey = String( value.sortKey );
+			this._scene.getDrawableObject( uint(value.id) ).sortKey = Number( value.sortKey );
 			this._scene.getDrawableObject( uint(value.id) ).shape.setProperties( value );
 		}
 		

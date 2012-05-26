@@ -88,7 +88,13 @@
 		 */
 		private function zSorting(a:DrawableObject, b:DrawableObject) : Number
 		{
-			return this._viewMatrix.transformVector(a.center).z - this._viewMatrix.transformVector(b.center).z;
+			if(a.sortType == b.sortType) {
+				if(a.sortKey == b.sortKey) {
+					return this._viewMatrix.transformVector(a.center).z - this._viewMatrix.transformVector(b.center).z;
+				}
+				return a.sortKey - b.sortKey;
+			}
+			return (a.sortType < b.sortType) ? -1 : (a.sortType > b.sortType) ? 1 : 0;
 		}
 		
 		/**
@@ -242,6 +248,9 @@
 			return this._pickedPos;
 		}
 		
+		/**
+		 * @private
+		 */
 		public function get drawableObjects() : Array
 		{
 			this._drawableObjects.sort(zSorting);
