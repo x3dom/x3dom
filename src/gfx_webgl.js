@@ -381,13 +381,13 @@ x3dom.gfx_webgl = (function () {
         gl.compileShader(vs);
 		
 		if(!gl.getShaderParameter(vs, gl.COMPILE_STATUS)){
-			x3dom.debug.logError("VertexShader " + gl.getShaderInfoLog(vs));		
+			x3dom.debug.logError("VertexShader " + gl.getShaderInfoLog(vs));	      
 		}
 		
         gl.compileShader(fs);
 		
 		if(!gl.getShaderParameter(fs, gl.COMPILE_STATUS)){
-			x3dom.debug.logError("FragmentShader " + gl.getShaderInfoLog(fs));		
+			x3dom.debug.logError("FragmentShader " + gl.getShaderInfoLog(fs));	          
 		}
 		
         gl.attachShader(prog, vs);
@@ -396,7 +396,10 @@ x3dom.gfx_webgl = (function () {
         
         var msg = gl.getProgramInfoLog(prog);
         if (msg) {
-            x3dom.debug.logError(msg);
+            if (msg.indexOf("warning") >= 0)
+                x3dom.debug.logWarning(msg);
+            else
+                x3dom.debug.logError(msg);
         }
         
         return wrapShaderProgram(gl, prog);
@@ -497,9 +500,10 @@ x3dom.gfx_webgl = (function () {
             var msg = gl.getProgramInfoLog(prog);
                 
             if (msg) {
-				//alert(debug[0]);
-				//alert(debug[1]);
-                x3dom.debug.logError(msg);
+                if (msg.indexOf("warning") >= 0)
+                    x3dom.debug.logWarning(msg);
+                else
+                    x3dom.debug.logError(msg);
             }
             this.cached_shader_programs[ids[0]+ids[1]] = wrapShaderProgram(gl, prog);
             prog = this.cached_shader_programs[ids[0]+ids[1]];
@@ -535,7 +539,7 @@ x3dom.gfx_webgl = (function () {
             
             if (glErr !== 0) {
                 //x3dom.debug.logInfo("GetProgramiv(ACTIVE_UNIFORMS) not implemented, loop until error");
-                x3dom.debug.logError("GL-Error: " + glErr);
+                x3dom.debug.logError("GL-Error (on searching uniforms): " + glErr);
                 //break;
             }
 
@@ -611,7 +615,7 @@ x3dom.gfx_webgl = (function () {
             
             if (glErr !== 0) {
                 //x3dom.debug.logInfo("GetProgramiv(ACTIVE_ATTRIBUTES) not implemented, loop until error");
-                x3dom.debug.logError("GL-Error: " + glErr);
+                x3dom.debug.logError("GL-Error (on searching attributes): " + glErr);
                 //break;    
             }
 
