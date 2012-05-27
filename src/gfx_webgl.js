@@ -1833,8 +1833,17 @@ x3dom.gfx_webgl = (function () {
         else if (!(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) ||
                    x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) &&
                  (!shape._cf.geometry.node || 
-				   shape._cf.geometry.node._mesh._positions[0].length < 1) ) {
-            x3dom.debug.logError("NO VALID MESH OR NO VERTEX POSITIONS SET!");
+				   shape._cf.geometry.node._mesh._positions[0].length < 1) ) 
+		{
+		    if (x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS < 2 &&
+		        x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) {
+		        x3dom.debug.logError("Can't render ImageGeometry nodes with only " +
+		                              x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS +
+		                             " vertex texture units. Please upgrade your GPU!");
+		    }
+		    else {
+                x3dom.debug.logError("NO VALID MESH OR NO VERTEX POSITIONS SET!");
+            }
             return;
         }
         
@@ -2851,6 +2860,8 @@ x3dom.gfx_webgl = (function () {
                     x3dom.debug.logInfo("XHR4/ color load time: " + t11 + " ms");
                 };
             }
+            
+            // TODO: tangent AND binormal
         }
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
 		{
