@@ -430,13 +430,14 @@ x3dom.registerNodeType(
       		}
       		
 			if (!xmlNode.attributes[name]) {
+			    var str = "";
 			    try {
-			        var str = this._vf[name].toGL().toString();
+			        str = this._vf[name].toGL().toString();
 			        if (!str) { str = "\0"; }
 			        xmlNode.setAttribute(name, str);
 		        }
 		        catch(e) {
-		            var str = this._vf[name].toString();
+		            str = this._vf[name].toString();
 		            if (!str) { str = "\0"; }
 		            xmlNode.setAttribute(name, str);
 		        }

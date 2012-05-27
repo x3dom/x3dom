@@ -1349,6 +1349,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normal', "");
             this.addField_SFString(ctx, 'texCoord', "");
             this.addField_SFString(ctx, 'color', "");
+            this.addField_SFString(ctx, 'tangent', "");     //TODO
+            this.addField_SFString(ctx, 'binormal', "");    //TODO
             
             // workaround
 			this._mesh._numTexComponents = 2;

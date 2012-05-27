@@ -48,18 +48,17 @@
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
     <script type="text/javascript" src="media/js/tests.js"></script>
-</head>
 		
 		<style>
-			body { background-color: #000; }
-			X3D, x3d { position:absolute; border: none; width: 800px; height: 500px; top:50%; left:50%; margin-left:-400px; margin-top:-250px; float: none; display:block;}
+			X3D, x3d { border: none; width: 800px; height: 500px; }
 		</style>
 		
 	</head>
 	<body>
-		<X3D id='someUniqueId' showStat='false' showLog='false' x='0px' y='0px' width='800px' height='500px' backend='webgl'>
+		<X3D id='someUniqueId' showStat='false' showLog='false'>
 			<Scene>
 				<Background skyColor='0.750 0.750 0.750'></Background>
+				<Viewpoint position='0 0 50'></Viewpoint>
 				<Transform>
 			    	<Shape>
 				        <Appearance DEF="default">
@@ -73,7 +72,6 @@
 						</ImageGeometry>
 			    	</Shape>
 			    </Transform>
-				<Viewpoint position='0 0 50'></Viewpoint>
 			</Scene>
 		</X3D>
 	</body>
