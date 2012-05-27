@@ -103,9 +103,11 @@ x3d:hover,
     font-family: Helvetica, sans-serif;
     line-height:10px;
     font-size: 10px;
-    border: 1px solid green;
-	z-index:100;
-	width:60px;
+    color: darkorange;
+    background: cornsilk;
+    opacity: 0.6;
+    border: 2px solid orange;
+	z-index: 200;
 }
 
 .x3dom-nox3d {

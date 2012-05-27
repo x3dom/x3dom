@@ -77,12 +77,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		div.style.fontWidth = "bold";
 		div.style.padding = "10px 10px 10px 10px";
 		div.style.display = "inline-block";
-		div.style.fontFamily = "Arial";
+		div.style.fontFamily = "Helvetica";
 		div.style.textAlign = "center";
 		
 		div.appendChild(document.createTextNode('Your Browser does not support X3DOM'));
 		div.appendChild(document.createElement('br'));
-		div.appendChild(document.createTextNode('Read more about X3DOM Browser support on:'));
+		div.appendChild(document.createTextNode('Read more about Browser support on:'));
 		div.appendChild(document.createElement('br'));
 		
 		var link = document.createElement('a');
@@ -207,7 +207,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             "MozTouchDown",
             "MozTouchMove",
             "MozTouchUp"
-
         ];
 
         // TODO; handle attribute event handlers dynamically during runtime
@@ -448,9 +447,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this.createProgressDiv();
-    this.progressDiv.style.display = 'inline';
-
-
+    this.progressDiv.style.display = (this.showProgress == null || this.showProgress == "true") ? "inline" : "none";
+    
+    this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
+    this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
+    
+    
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
         // event handler for mouse interaction
         this.canvas.mouse_dragging = false;
@@ -687,6 +689,54 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
               rotation = Math.PI + (Math.PI - rotation);
               
             return rotation;
+          },
+          
+          // set a mark in HTML so we can track the position of the finger visually
+          visMarker: this.showTouchpoints,
+          visMarkerBag: new Array(),
+          
+          visualizeTouches: function(evt, cleanup)
+          {
+              if (!this.visMarker)
+                  return;
+              
+              var touchBag = [];
+              var marker = null;
+              
+              for (var i=0; i<evt.touches.length; i++) {
+                  var id = evt.touches[i].identifier;
+                  var index = this.visMarkerBag.indexOf(id);
+                  
+                  if (this.visMarkerBag.indexOf(id) >= 0) {
+                      marker = document.getElementById("visMarker" + id);
+                      
+                      marker.style.left = (evt.touches[i].screenX) + "px";
+                      marker.style.top  = (evt.touches[i].screenY) + "px";
+                  }
+                  else {
+                      marker = document.createElement("div");
+                      
+        			  marker.appendChild(document.createTextNode("#" + id));
+        			  marker.id = "visMarker" + id;
+        			  marker.className = "x3dom-touch-marker";
+        			  document.body.appendChild(marker);
+        			  
+        			  index = this.visMarkerBag.length;
+        			  this.visMarkerBag[index] = id;
+                  }
+                  
+                  touchBag.push(id);
+              }
+              
+              for (var j=this.visMarkerBag.length-1; j>=0; j--) {
+                  var oldId = this.visMarkerBag[j];
+                  
+                  if (touchBag.indexOf(oldId) < 0) {
+                      this.visMarkerBag.splice(j, 1);
+                      marker = document.getElementById("visMarker" + oldId);
+                      document.body.removeChild(marker);
+                  }
+              }
           }
         };
         
@@ -703,6 +753,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         var touchStartHandler = function(evt, doc)
         {
 			evt.preventDefault();
+			touches.visualizeTouches(evt);
+			
 			if(doc == null)
 				doc  = this.parent.doc;
 			
@@ -775,6 +827,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         var touchMoveHandler = function(evt, doc)
         {
 			evt.preventDefault();
+			touches.visualizeTouches(evt);
+			
 			if(doc == null)
 				doc  = this.parent.doc;
 		
@@ -847,6 +901,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         var touchEndHandler = function(evt, doc)
         {
 			evt.preventDefault();
+			touches.visualizeTouches(evt);
+			
 			if(doc == null)
 				doc  = this.parent.doc;			
           
@@ -902,17 +958,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
 
         // w3c / apple touch events
-        this.canvas.addEventListener('touchstart',    touchStartHandler,    true);
+        this.canvas.addEventListener('touchstart',    touchStartHandler, true);
         this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
-        this.canvas.addEventListener('touchend',      touchEndHandler,      true);
+        this.canvas.addEventListener('touchend',      touchEndHandler,   true);
         //this.canvas.addEventListener('touchcancel',   touchCancelHandler,   true);
         //this.canvas.addEventListener('touchleave',    touchLeaveHandler,    true);
 		//this.canvas.addEventListener('touchenter',    touchEnterHandler,    true);
-
-        // gesture events (only apple)
-        //this.canvas.addEventListener('gesturestart',  gestureStartHandler,  true);
-        //this.canvas.addEventListener('gesturechange', gestureChangeHandler, true);
-        //this.canvas.addEventListener('gestureend',    gestureEndHandler,    true);
     }
 };
 
