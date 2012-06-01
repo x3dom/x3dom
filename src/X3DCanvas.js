@@ -451,6 +451,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
     this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
+    //this.showTouchpoints = this.showTouchpoints ? (this.showTouchpoints.toLowerCase() == "true") : false;
     
     
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
@@ -699,19 +700,22 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           {
               if (!this.visMarker)
                   return;
-              
+
               var touchBag = [];
               var marker = null;
               
               for (var i=0; i<evt.touches.length; i++) {
-                  var id = evt.touches[i].identifier;
+                  var id = evt.touches[i].identifier || evt.touches[i].streamId;
                   var index = this.visMarkerBag.indexOf(id);
                   
                   if (this.visMarkerBag.indexOf(id) >= 0) {
                       marker = document.getElementById("visMarker" + id);
-                      
-                      marker.style.left = (evt.touches[i].screenX) + "px";
-                      marker.style.top  = (evt.touches[i].screenY) + "px";
+
+                      marker.style.left = (evt.touches[i].clientX) + "px";
+                      marker.style.top  = (evt.touches[i].clientY) + "px";
+
+                      //marker.style.left = (evt.touches[i].screenX) + "px";
+                      //marker.style.top  = (evt.touches[i].screenY) + "px";
                   }
                   else {
                       marker = document.createElement("div");
@@ -1093,15 +1097,15 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
 };
 
 
-function mousePosition(evt){
+function mousePosition(evt) {
 
     var convertPoint = window.webkitConvertPointFromNodeToPage;
-    var x, y;
+    var x = 0, y = 0;
 
     if ( "getBoundingClientRect" in document.documentElement ) {
 		var box =  evt.target.offsetParent.getBoundingClientRect();				
 		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		var scroltop = 	window.pageYOffset || document.body.scrollTop;
+		var scrolltop = 	window.pageYOffset || document.body.scrollTop;
 		
 		var elem = evt.target.offsetParent;
 		
@@ -1111,23 +1115,23 @@ function mousePosition(evt){
 		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
 							
-		var x = evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft);
-		var y =  evt.pageY - (box.top + paddingTop + borderTopWidth + scroltop);
+		x = evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft);
+		y = evt.pageY - (box.top + paddingTop + borderTopWidth + scrolltop);
 
         return new x3dom.fields.SFVec2f(x, y);
 
     } else if (convertPoint) {
 
-        var zeroPoint = new WebKitPoint(0,0 );
+        var zeroPoint = new WebKitPoint(0,0);
         var point = convertPoint(evt.target, zeroPoint);
 
-        x =  Math.round(point.x);
-        y =  Math.round(point.y);
+        x = Math.round(point.x);
+        y = Math.round(point.y);
 
         return new x3dom.fields.SFVec2f(x, y);
 
     } else {
-		x3dom.debug.logInfo('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
+		x3dom.debug.logError('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
 		/*TODO Für den Fall das es keine Funktion getBoundingClientRect() gibt
 		
 		var left = evt.target.offsetParent.offsetLeft; //sollte in eine schleife addiert werden, immer relativ zum offsetParent
@@ -1136,7 +1140,7 @@ function mousePosition(evt){
 		//probleme bei xhtml und  firefox wegen x3d element
 		
 		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		var scroltop = 	window.pageYOffset || document.body.scrollTop;
+		var scrolltop = 	window.pageYOffset || document.body.scrollTop;
 		
 		var elem = evt.target.offsetParent;
 		
@@ -1152,4 +1156,3 @@ function mousePosition(evt){
 
 	return new x3dom.fields.SFVec2f(x, y);
 }
-
