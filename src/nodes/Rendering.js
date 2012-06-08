@@ -500,7 +500,7 @@ x3dom.registerNodeType(
 
                 this.handleAttribs();
 
-                // TODO; implement normalPerVertex
+				var colPerVert = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
 
                 var indexes = this._vf.index;
@@ -568,7 +568,7 @@ x3dom.registerNodeType(
                 }
                 posMax = positions.length;
 
-                if ( positions.length > 65535 )
+                if ( positions.length > 65535)
                 {
                     t = 0;
                     cnt = 0;
@@ -582,32 +582,56 @@ x3dom.registerNodeType(
                         // (TODO: this assumes polygons are convex)
                         
                         if ((i > 0) && (i % 3 === 0 )) {
-                            t = 0;
-                            faceCnt++;
-                        }
+                            t = 0; 
+							faceCnt++;							
+                        }					
 
                         //TODO: OPTIMIZE but think about cache coherence regarding arrays!!!
                         switch (t)
                         {
                             case 0:
                                 p0 = +indexes[i];
-                                n0 = p0;
+								if (normPerVert) { 
+									 n0 = p0;
+								} else if (!normPerVert) {
+									n0 = faceCnt;
+								}
                                 t0 = p0;
-                                c0 = p0;
+                                if (colPerVert) { 
+									 c0 = p0;
+								} else if (!colPerVert) {
+									c0 = faceCnt;
+								}
                                 t = 1;
                             break;
                             case 1:
                                 p1 = +indexes[i];
-                                n1 = p1;
+								if (normPerVert) { 
+									 n1 = p1;
+								} else if (!normPerVert) {
+									n1 = faceCnt;
+								}
                                 t1 = p1;
-                                c1 = p1;
+                                if (colPerVert) { 
+									 c1 = p1;
+								} else if (!colPerVert) {
+									c1 = faceCnt;
+								}
                                 t = 2;
                             break;
                             case 2:
                                 p2 = +indexes[i];
-                                n2 = p2;
+                                if (normPerVert) { 
+									 n2 = p2;
+								} else if (!normPerVert) {
+									n2 = faceCnt;
+								}
                                 t2 = p2;
-                                c2 = p2;
+                                if (colPerVert) { 
+									 c2 = p2;
+								} else if (!colPerVert) {
+									c2 = faceCnt;
+								}
                                 t = 3;
 
                                 this._mesh._indices[0].push(cnt++, cnt++, cnt++);
@@ -696,13 +720,36 @@ x3dom.registerNodeType(
                 } // if isMulti
                 else
                 {
-                    this._mesh._indices[0] = indexes.toGL();
+					faceCnt = 0;
+					for (i=0; i<indexes.length; i++)
+					{
+						if ((i > 0) && (i % 3 === 0 )) {                   
+							faceCnt++;							
+                        }	
+						
+						this._mesh._indices[0].push(indexes[i]);
+							
+						if(!normPerVert) {
+							this._mesh._normals[0].push(normals[faceCnt].x);
+							this._mesh._normals[0].push(normals[faceCnt].y);
+							this._mesh._normals[0].push(normals[faceCnt].z);
+						}
+						if(!colPerVert) {								
+							this._mesh._colors[0].push(colors[faceCnt].r);
+							this._mesh._colors[0].push(colors[faceCnt].g);
+							this._mesh._colors[0].push(colors[faceCnt].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(colors[faceCnt].a);
+							}   
+						}  				
+					}
+               
                     this._mesh._positions[0] = positions.toGL();
 
-                    if (hasNormal) {
+                    if (hasNormal && normPerVert) {
                         this._mesh._normals[0] = normals.toGL();
                     }
-                    else {
+                    else if(!hasNormal) {
                         this._mesh.calcNormals(Math.PI);
                     }
                     if (hasTexCoord) {
@@ -712,7 +759,7 @@ x3dom.registerNodeType(
                     else {
                         this._mesh.calcTexCoords(texMode);
                     }
-                    if (hasColor) {
+                    if (hasColor && colPerVert) {
                         this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
                     }
@@ -754,24 +801,71 @@ x3dom.registerNodeType(
                     });
                 }
                 else if (fieldName == "color")
-                { 
-                    pnts = this._cf.color.node._vf.color;
-                    
-                    this._mesh._colors[0] = pnts.toGL();
-
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.colors = true;
-                    });
+                {                                      
+					pnts = this._cf.color.node._vf.color;
+						
+					if (this._vf.colorPerVertex) { 
+				
+						this._mesh._colors[0] = pnts.toGL();	
+							
+					} else if (!this._vf.colorPerVertex) {
+						
+						var faceCnt = 0;
+						var numColComponents = 3;	
+                   		if (x3dom.isa(this._cf.color.node, x3dom.nodeTypes.ColorRGBA)) {
+							numColComponents = 4;
+						}
+							
+						this._mesh._colors[0] = [];
+							
+						var indexes = this._vf.index;
+						for (i=0; i < indexes.length; ++i)
+						{
+							if ((i > 0) && (i % 3 === 0 )) {                   
+								faceCnt++;							
+							}	
+								
+							this._mesh._colors[0].push(pnts[faceCnt].r);
+							this._mesh._colors[0].push(pnts[faceCnt].g);
+							this._mesh._colors[0].push(pnts[faceCnt].b);
+							if (numColComponents === 4) {
+								this._mesh._colors[0].push(pnts[faceCnt].a);
+							}  
+						}
+					}
+					Array.forEach(this._parentNodes, function (node) {
+						node._dirty.colors = true;
+					});
                 }
 				else if (fieldName == "normal")
-                {
-                    pnts = this._cf.normal.node._vf.vector;
-					
-                    this._mesh._normals[0] = pnts.toGL();
-					
-                    Array.forEach(this._parentNodes, function (node) {
-                         node._dirty.normals = true;
-                    });
+                {                 
+					pnts = this._cf.normal.node._vf.vector;
+						
+					if (this._vf.normalPerVertex) { 
+						
+						this._mesh._normals[0] = pnts.toGL();
+							
+					} else if (!this._vf.normalPerVertex) {
+							
+						var indexes = this._vf.index;
+						this._mesh._normals[0] = [];
+						
+						var faceCnt = 0;
+						for (i=0; i < indexes.length; ++i)
+						{
+							if ((i > 0) && (i % 3 === 0 )) {                   
+								faceCnt++;							
+							}	
+							
+							this._mesh._normals[0].push(pnts[faceCnt].x);
+							this._mesh._normals[0].push(pnts[faceCnt].y);
+							this._mesh._normals[0].push(pnts[faceCnt].z);	
+						}
+					}
+
+					Array.forEach(this._parentNodes, function (node) {
+						 node._dirty.normals = true;
+					});
                 }
 				else if (fieldName == "texCoord")
                 {
