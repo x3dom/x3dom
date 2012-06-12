@@ -54,12 +54,13 @@
     <style>
         X3D {
             border: 0px; 
-            position:fixed; 
+            position:fixed;
             top:0px; 
             left:0px; 
             z-index:1;
+            top:30px;
             width:1000px;
-            height:600px;
+            height:670px;
         }
     </style>
   </head>
@@ -89,6 +90,7 @@ A component-based architecture supports creation of different "profiles" which c
 
     <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='false' showLog='true'>
       <Scene DEF='scene'>
+        <Viewpoint centerOfRotation="-0.32 -4.7 -60"></Viewpoint>
         <Transform translation='0 -5 -100'>
           <Shape>
             <Appearance>
