@@ -174,11 +174,15 @@ x3dom.gfx_webgl = (function () {
         "\n" +
         "uniform samplerCube tex;" +
         "varying vec3 fragNormal;" +
-        "" +
+        " " +
+        "float magn(float val) {" +
+        "    return ((val >= 0.0) ? val : -1.0 * val);" +
+        "}" +
+        " " +
         "void main(void) {" +
         "    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));" +
-        "    if (abs(normal.y) >= abs(normal.x) && abs(normal.y) >= abs(normal.z))" +
-        "        normal.x *= -1.0;" +
+        "    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z) && normal.y < 0.0)" +
+        "        normal.xz = -normal.xz;" +
         "    gl_FragColor = textureCube(tex, normal);" +
         "}"
         };
@@ -378,6 +382,7 @@ x3dom.gfx_webgl = (function () {
         
         gl.shaderSource(vs, g_shaders['vs-x3d-'+suffix].data);
         gl.shaderSource(fs, g_shaders['fs-x3d-'+suffix].data);
+
         gl.compileShader(vs);
 		
 		if(!gl.getShaderParameter(vs, gl.COMPILE_STATUS)){
@@ -392,6 +397,7 @@ x3dom.gfx_webgl = (function () {
 		
         gl.attachShader(prog, vs);
         gl.attachShader(prog, fs);
+
         gl.linkProgram(prog);
         
         var msg = gl.getProgramInfoLog(prog);
@@ -5297,7 +5303,7 @@ x3dom.gfx_webgl = (function () {
                         doc.needRender = true;
                     }
                 };
-            }( texture, face, image, (bgnd && (i<=1 || i>=4)) );
+            }( texture, face, image, (bgnd /*&& (i<=1 || i>=4)*/) );
 
             image.onerror = function()
             {
