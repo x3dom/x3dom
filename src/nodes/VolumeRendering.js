@@ -461,30 +461,28 @@ x3dom.registerNodeType(
                     
 		            // second texture, ray direction and length
         		    this.vrcBackCubeShaderVertex._vf.type = 'vertex';		    
-        		    this.vrcBackCubeShaderVertex._vf.url.push (
+        		    this.vrcBackCubeShaderVertex._vf.url[0] =
         			"attribute vec3 position;" +
         			"attribute vec3 color;" +
         			"varying vec3 fragColor;" +
         			"uniform mat4 modelViewProjectionMatrix;" +
-        			"" +
+        			" " +
         			"void main(void) {" +
         			"    fragColor = color;" +
         			"    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
-        			"}"
-        		    );
+        			"}";
 
         		    this.vrcBackCubeShaderFragment._vf.type = 'fragment';
-        		    this.vrcBackCubeShaderFragment._vf.url.push(
+        		    this.vrcBackCubeShaderFragment._vf.url[0] =
         			"#ifdef GL_ES             \n" +
         			"  precision highp float; \n" +
         			"#endif                   \n" +
-        			"" +
+                    "\n" +
         			"varying vec3 fragColor;" +
         			"" +
         			"void main(void) {" +
         			"    gl_FragColor = vec4(fragColor, 1.0);" +
-        			"}"
-        		    );
+        			"}";
 		            
         		    this.vrcBackCubeShader.addChild(this.vrcBackCubeShaderFragment, 'parts');
         		    this.vrcBackCubeShaderFragment.nodeChanged();
@@ -537,26 +535,26 @@ x3dom.registerNodeType(
         		    
 		            // here goes the volume shader
         		    this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
-        		    this.vrcFrontCubeShaderVertex._vf.url.push(
+        		    this.vrcFrontCubeShaderVertex._vf.url[0] =
         			"attribute vec3 position;"+
         			"attribute vec3 color;"+
         			"uniform mat4 modelViewProjectionMatrix;"+
         			"varying vec3 vertexColor;"+
         			"varying vec4 vertexPosition;"+
+                    " " +
         			"void main()"+
         			"{"+
         			"vertexColor = color;"+
         			"vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);"+
         			"gl_Position = vertexPosition;"+
-        			"}"
-        		    );
+        			"}";
 
         		    this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
-        		    this.vrcFrontCubeShaderFragment._vf.url.push(
+        		    this.vrcFrontCubeShaderFragment._vf.url[0] =
         			"#ifdef GL_ES             \n" +
         			"  precision highp float; \n" +
         			"#endif                   \n" +
-        			"" +
+                    "\n" +
         			"uniform sampler2D uBackCoord;"+
         			"uniform sampler2D uVolData;"+
         			"varying vec3 vertexColor;"+
@@ -608,8 +606,7 @@ x3dom.registerNodeType(
         			"src.a = 1.0;"+
         			"if(src.r <= 0.01 && src.g <= 0.01 && src.b <= 0.01) discard;"+
         			"gl_FragColor = src;"+
-        			"}"
-        		    );
+        			"}";
 		    
         		    this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
         		    this.vrcFrontCubeShaderVertex.nodeChanged();
