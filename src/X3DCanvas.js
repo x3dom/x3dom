@@ -756,6 +756,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch Start ===
         var touchStartHandler = function(evt, doc)
         {
+            //x3dom.debug.logWarning("start");
+            this.isMulti = true;
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
@@ -810,6 +812,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchStartHandlerMoz = function(evt)
         {
+            //x3dom.debug.logWarning("start moz");
 			this.isMulti = true;
 			evt.preventDefault();
           
@@ -830,6 +833,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
+            //x3dom.debug.logWarning("move");
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
@@ -892,6 +896,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchMoveHandlerMoz = function(evt)
         {
+            //x3dom.debug.logWarning("move moz");
 			evt.preventDefault();
           
 			for(var i=0; i<mozilla_ids.length; ++i)
@@ -904,6 +909,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch end ===
         var touchEndHandler = function(evt, doc)
         {
+            //x3dom.debug.logWarning("end");
+            this.isMulti = false;
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
@@ -939,6 +946,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchEndHandlerMoz = function(evt)
         {
+            //x3dom.debug.logWarning("end moz");
 			this.isMulti = false;
 			evt.preventDefault();
           
@@ -962,6 +970,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
 
         // w3c / apple touch events
+        // in Chrome via chrome://flags/
         this.canvas.addEventListener('touchstart',    touchStartHandler, true);
         this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
         this.canvas.addEventListener('touchend',      touchEndHandler,   true);
