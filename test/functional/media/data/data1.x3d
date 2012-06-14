@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<X3D xmlns:xsd="http://www.w3.org/2001/XMLSchema-instance" profile="Full" version="3.0" xsd:noNamespaceSchemaLocation="http://www.web3d.org/specifications/x3d-3.0.xsd">
+<Scene>
+	<Shape>
+		<Appearance>
+			<Material diffuseColor="1 1 0"></Material>
+		</Appearance>
+		<Sphere></Sphere>
+	</Shape>
+	<Transform translation="2 0 0">
+		<Inline nameSpaceName="test2" url="data2.x3d"></Inline>
+	</Transform>
+</Scene>
+</X3D>

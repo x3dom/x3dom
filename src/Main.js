@@ -336,8 +336,42 @@ x3dom.userAgentFeature = {
             x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
         }
     };
-    
-    //if (window.location.pathname.lastIndexOf(".xhtml") > 0) {
+	
+    /* FIX PROBLEM IN CHROME - HACK - searching for better solution !!! */
+	if (navigator.userAgent.indexOf("Chrome") != -1) {
+		document.__getElementsByTagName = document.getElementsByTagName;
+		
+		document.getElementsByTagName = function(tag) {
+			var obj = new Array();   
+				
+			var elems = this.__getElementsByTagName("*");
+			tag = tag.toUpperCase();
+			for (var i = 0; i < elems.length; i++) {
+				var tagName = elems[i].tagName.toUpperCase();		
+				if (tagName === tag) {
+					obj.push(elems[i]);
+				}
+			}
+           
+            return obj;
+        };
+
+		document.__getElementById = document.getElementById;
+        document.getElementById = function(id) {
+            var obj = this.__getElementById(id);
+            
+            if (!obj) {
+                var elems = this.__getElementsByTagName("*");
+                for (var i=0; i<elems.length && !obj; i++) {
+                    if (elems[i].getAttribute("id") === id) {
+                        obj = elems[i];
+                    }
+                }
+            }
+            return obj;
+        };
+		
+	} else { /* END OF HACK */
         document.__getElementById = document.getElementById;
         document.getElementById = function(id) {
             var obj = this.__getElementById(id);
@@ -352,16 +386,7 @@ x3dom.userAgentFeature = {
             }
             return obj;
         };
-    /*}
-	else if ((window.location.pathname.lastIndexOf(".xhtml") == -1) && (navigator.userAgent.indexOf("Firefox") != -1))
-	{
-		 // TODO: check if this works for servers where xhtml is standard page format
-		 document.getElementById = function(id) {
-     
-            var node = travers(document.getElementsByTagName('body')[0], id);
-            return node;
-        };
-	}*/
+	}
     
     if (window.addEventListener)  {
         window.addEventListener('load', onload, false);
@@ -374,21 +399,3 @@ x3dom.userAgentFeature = {
     }
     
 })();
-
-/*function travers(node, id) {
-	if(node instanceof Element) {
-		if(node.getAttribute('id') == id) {
-			return node;
-		} else if(node.hasChildNodes()) {
-			
-			for(var i = 0; (i < node.childNodes.length); i++) {								   
-				val = travers(node.childNodes[i], id);
-				if(val) return val;
-			}
-		} else {
-			return null;	
-		}
-	} else {
-		return null;
-	}
-};*/	
