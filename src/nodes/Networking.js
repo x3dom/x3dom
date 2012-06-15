@@ -130,13 +130,13 @@ x3dom.registerNodeType(
 						if ( that.currentInline && 
 							(that.currentInline['onerror'] ||
 							 that.currentInline.hasAttribute('onerror')|| 
-							 that._listeners['onerror']) )
+							 that._listeners['error']) )
 							{
 								
 								try {
 									var evt = {
 										target:that.currentInline,
-										type: 'onerror',
+										type: 'error',
 										error: 'XMLHttpRequest Error',
 										cancelBubble: false,
 										stopPropagation: function() { this.cancelBubble = true; }
@@ -150,7 +150,7 @@ x3dom.registerNodeType(
 										attrib.call(that.currentInline, evt);
 									}
 									else {
-										var funcStr = that.currentInline.getAttribute(evt.type);
+										var funcStr = that.currentInline.getAttribute("on" + evt.type);
 										var func = new Function('evt', funcStr);
 										func.call(that.currentInline, evt);
 									}
@@ -195,14 +195,14 @@ x3dom.registerNodeType(
 						if ( that.currentInline && 
 							(that.currentInline['onerror'] ||
 							 that.currentInline.hasAttribute('onerror')|| 
-							 that._listeners['onerror']) )
+							 that._listeners['error']) )
 							{
 								
 								try {
 									var evt = {
 										target:that.currentInline,
-										type: 'onerror',
-										error: 'Parser Error',
+										type: 'error',
+										error: 'XMLHttpRequest Error',
 										cancelBubble: false,
 										stopPropagation: function() { this.cancelBubble = true; }
 									};
@@ -215,14 +215,14 @@ x3dom.registerNodeType(
 										attrib.call(that.currentInline, evt);
 									}
 									else {
-										var funcStr = that.currentInline.getAttribute(evt.type);
+										var funcStr = that.currentInline.getAttribute("on" + evt.type);
 										var func = new Function('evt', funcStr);
 										func.call(that.currentInline, evt);
 									}
 									
 									var list = that._listeners[evt.type];
 									if (list) {
-										for (var i = 0; i < list.length; i++) {									
+										for (var i = 0; i < list.length; i++) {
 											list[i].call(that.currentInline, evt);
 										}
 									}
@@ -254,13 +254,12 @@ x3dom.registerNodeType(
 						if ( that.currentInline && 
 							(that.currentInline['onload'] ||
 							 that.currentInline.hasAttribute('onload')|| 
-							 that._listeners['onload']) )
+							 that._listeners['load']) )
 						{
-							
 							try {
 								var evt = {
 									target:that.currentInline,
-									type: 'onload',
+									type: 'load',
 									cancelBubble: false,
 									stopPropagation: function() { this.cancelBubble = true; }
 								};
@@ -273,7 +272,7 @@ x3dom.registerNodeType(
 									attrib.call(that.currentInline, evt);
 								}
 								else {
-									var funcStr = that.currentInline.getAttribute(evt.type);
+									var funcStr = that.currentInline.getAttribute("on" + evt.type);
 									var func = new Function('evt', funcStr);
 									func.call(that.currentInline, evt);
 								}
