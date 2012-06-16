@@ -162,7 +162,7 @@ x3dom.gfx_webgl = (function () {
         "varying vec3 fragNormal;" +
         "" +
         "void main(void) {" +
-        "    fragNormal = (vec4(normalize(position), 0.0)).xyz;" +
+        "    fragNormal = normalize(position);" +
         "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
         "}"
         };
@@ -181,7 +181,7 @@ x3dom.gfx_webgl = (function () {
         " " +
         "void main(void) {" +
         "    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));" +
-        "    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z) && normal.y < 0.0)" +
+        "    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z))" +
         "        normal.xz = -normal.xz;" +
         "    gl_FragColor = textureCube(tex, normal);" +
         "}"
@@ -5272,7 +5272,9 @@ x3dom.gfx_webgl = (function () {
                      gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 
                      gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X];
         }
-        else {
+        else
+        {
+            //       back, front, bottom, top, left, right
             faces = [gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
                      gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
                      gl.TEXTURE_CUBE_MAP_NEGATIVE_X, gl.TEXTURE_CUBE_MAP_POSITIVE_X];
@@ -5303,7 +5305,7 @@ x3dom.gfx_webgl = (function () {
                         doc.needRender = true;
                     }
                 };
-            }( texture, face, image, (bgnd /*&& (i<=1 || i>=4)*/) );
+            }( texture, face, image, bgnd );
 
             image.onerror = function()
             {
