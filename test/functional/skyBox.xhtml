@@ -59,7 +59,72 @@
     <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' x='0px' y='0px' width='500px' height='500px'>
       <Scene>
         <Background backUrl='"media/texture/generic/CubeBack.png"' bottomUrl='"media/texture/generic/CubeDown.png"' frontUrl='"media/texture/generic/CubeFront.png"' leftUrl='"media/texture/generic/CubeLeft.png"' rightUrl='"media/texture/generic/CubeRight.png"' topUrl='"media/texture/generic/CubeUp.png"' />
-        <Viewpoint position='0 0 0' />
+        <Viewpoint position='0 0 4' />
+        <Transform>
+          <Shape>
+            <Appearance>
+                <Material diffuseColor=".7 .7 .7" specularColor=".5 .5 .5" />
+                <ComposedCubeMapTexture repeatS="false" repeatT="false">
+    				<ImageTexture url="media/texture/generic/CubeBack.png" containerField="back"/>
+    				<ImageTexture url="media/texture/generic/CubeDown.png" containerField="bottom"/>
+    				<ImageTexture url="media/texture/generic/CubeFront.png" containerField="front"/>
+    				<ImageTexture url="media/texture/generic/CubeLeft.png" containerField="left"/>
+    				<ImageTexture url="media/texture/generic/CubeRight.png" containerField="right"/>
+    				<ImageTexture url="media/texture/generic/CubeUp.png" containerField="top"/>
+                    <!--                 
+                    <ImageTexture containerField="back" url="media/texture/cubemap/bBK.png"></ImageTexture>
+                    <ImageTexture containerField="bottom" url="media/texture/cubemap/bDN.png" ></ImageTexture>
+                    <ImageTexture containerField="front" url="media/texture/cubemap/bFR.png" ></ImageTexture>
+                    <ImageTexture containerField="left" url="media/texture/cubemap/bLF.png" ></ImageTexture>
+                    <ImageTexture containerField="right" url="media/texture/cubemap/bRT.png" ></ImageTexture>
+                    <ImageTexture containerField="top" url="media/texture/cubemap/bUP.png"></ImageTexture>
+					<ImageTexture url="media/texture/cubemap/BK.png" containerField="back"/>
+					<ImageTexture url="media/texture/cubemap/BT.png" containerField="bottom"/>
+					<ImageTexture url="media/texture/cubemap/FR.png" containerField="front"/>
+					<ImageTexture url="media/texture/cubemap/LF.png" containerField="left"/>
+					<ImageTexture url="media/texture/cubemap/RT.png" containerField="right"/>
+					<ImageTexture url="media/texture/cubemap/TP.png" containerField="top"/>
+                    -->   
+                </ComposedCubeMapTexture>
+                
+                <ComposedShader DEF='ComposedShader'>
+                  <field name='cube' type='SFInt32' value='0'/>
+                  
+                  <ShaderPart type='VERTEX'>
+                  <![CDATA[
+                        attribute vec3 position;
+                        attribute vec3 normal;
+                        uniform mat4 modelViewProjectionMatrix;
+                        varying vec3 fragNormal;
+                        
+                        void main()
+                        {
+                            fragNormal = normal;
+                            gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+                        }
+                  ]]>
+                  </ShaderPart>
+                  <ShaderPart type='FRAGMENT'>
+                  <![CDATA[
+                        #ifdef GL_ES
+                          precision highp float;
+                        #endif
+                        
+                        uniform samplerCube cube;
+                        varying vec3 fragNormal;
+                        
+                        void main()
+                        {
+                            vec3 normal = normalize(fragNormal);
+                            gl_FragColor = textureCube(cube, normal);
+                        }
+                  ]]>
+                  </ShaderPart>
+                </ComposedShader>
+            </Appearance>
+            <Sphere solid="false" />
+          </Shape>
+        </Transform>
       </Scene>
     </X3D>
   </body>
