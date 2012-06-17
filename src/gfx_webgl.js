@@ -4672,7 +4672,7 @@ x3dom.gfx_webgl = (function () {
         {
         	var e_viewpoint = viewarea._scene.getViewpoint();
         	var e_eventType = "viewpointChanged";
-        	/*TEST*/
+        	
         	try {
 				if ( e_viewpoint._xmlNode && 
 						(e_viewpoint._xmlNode["on"+e_eventType] ||
@@ -4968,6 +4968,21 @@ x3dom.gfx_webgl = (function () {
 //----------------------------------------------------------------------------
     Context.prototype.renderRTPass = function(gl, viewarea, rt)
     {
+        switch(rt._vf.update.toUpperCase())
+        {
+            case "NONE":
+                return;
+            case "NEXT_FRAME_ONLY":
+                if (!rt._needRenderUpdate) {
+                    return;
+                }
+                rt._needRenderUpdate = false;
+                break;
+            case "ALWAYS":
+            default:
+                break;
+        }
+        
         var scene = viewarea._scene;
         var bgnd = null; 
         
@@ -5101,7 +5116,8 @@ x3dom.gfx_webgl = (function () {
             locScene.drawableObjects.collect = false;
             locScene.drawableObjects.idList = [];
 
-            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableObjects);
+            locScene.collectDrawableObjects(
+                locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()), locScene.drawableObjects);
             
             n = locScene.drawableObjects.length;
             
@@ -5109,6 +5125,8 @@ x3dom.gfx_webgl = (function () {
             {
                 transform = locScene.drawableObjects[i][0];
                 shape = locScene.drawableObjects[i][1];
+                
+                //x3dom.debug.logWarning(i + "\n" + transform);
                 
                 if (shape._vf.render !== undefined && shape._vf.render === false) {
                    continue;
