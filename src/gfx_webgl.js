@@ -1865,12 +1865,15 @@ x3dom.gfx_webgl = (function () {
         
         
         // dynamically attach clean-up method for GL objects
-        shape._cleanupGLObjects = function()
+        if (shape._cleanupGLObjects == null)
         {
-            if (this._parentNodes.length === 0 && this._webgl)
+          shape._cleanupGLObjects = function(force)
+          {
+            // FIXME; what if complete tree is removed? Then _parentNodes.length my be greater 0.
+            if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
             {
-                var doc = this.findX3DDoc();
-                var gl = doc.ctx.ctx3d;
+                //var doc = this.findX3DDoc();
+                //var gl = doc.ctx.ctx3d;
                 var sp = this._webgl.shader;
 
                 for (var cnt=0; this._webgl.texture !== undefined &&
@@ -1910,9 +1913,10 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
 
-                this._webgl = null;
+                delete this._webgl;
             }
-        };  // shape._cleanupGLObjects()
+          };  // shape._cleanupGLObjects()
+        }
         
         
         // TODO; finish text!
