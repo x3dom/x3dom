@@ -357,7 +357,7 @@
     </script>
     
     <style>
-        #ctrlContainer { position: absolute; top:485px; left:875px; padding: 0px; width: 280px; }
+        #ctrlContainer { padding: 0px; width: 280px; }
         #sliderContainer div { float:left; width: 200px;}
         #sliderContainer li { height: 20px;}
         #sliderContainer ul { clear: both; list-style-type: none; margin: 10px 0 10px 0; padding: 0; }
@@ -370,14 +370,16 @@
     <p>&nbsp;</p>
 
 	<div class="group">
-    <x3d id="aScene" showStat="true" showLog="true" x="0px" y="0px" >
+
+    <div style="float:left; width:600px">
+    <x3d id="aScene" showStat="true" showLog="false" x="0px" y="0px" width="256" height="256">
       <scene>
         <background skyColor='.5 .4 .2'></background>
         <viewpoint position='0 0 5'></viewpoint>
           <shape>
             <appearance>
                 <texture hideChildren="false">
-                    <canvas width='256' height='256' id='myCanvas' style="border: solid 1px black; position:absolute; top:20px;left:520px;">
+                    <canvas width='256' height='256' id='myCanvas' style="border: solid 1px black; position:absolute; top:00px;left:256px;">
                 </texture>
                 <material diffuseColor='0.6 0.9 0.5'></material>	
             </appearance>
@@ -396,13 +398,16 @@
          </translation>
       </scene>
     </x3d>
-	</div>    
 
-	<div class="group">
+	</div>
 
-	    <span style="position:absolute; top:490px; left:620px;" onMouseOver="document.getElementById('colPick').color.showPicker();">
+    <div style="float:left;">
+        <span style="color:olive; font-size:large;">Paint the texture!</span>
+        <br>&nbsp;<br>
+
+	    <span onMouseOver="document.getElementById('colPick').color.showPicker();">
 	        Choose pen color: <br>&nbsp;<br>
-			<input id="colPick" class="color" value="000000" onChange="pen_col = '#'+this.color.toString();" />
+			<input id="colPick" class="color" value="000000" onChange="pen_col = '#'+this.color.toString();">
 	    </span>
     
 	    <div id="ctrlContainer">
@@ -416,22 +421,24 @@
 	            </ul>
     	    </div>
 	    </div>
-    
-    </div>
-    
-    <div style="position:absolute; top:150px; left:900px;">
-        <span style="color:olive; font-size:large;">Paint the texture!</span>
-        <br>&nbsp;<br>
-        <span onMouseOver="document.getElementById('bgcolPick').color.showPicker();">
+
+
+        <div>
+            <br>
+            <span onMouseOver="document.getElementById('bgcolPick').color.showPicker();">
             Choose background color: <br>&nbsp;<br>
             <input id="bgcolPick" class="color" value="000000" onChange="bg_col = '#'+this.color.toString();" />
-        </span>
+            </span>
         <br>&nbsp;<br>
         Clear image with background color: <br>&nbsp;<br>
         <button onClick="clearImage(bg_col);">Reset</button>
+        </div>
+
+
     </div>
 
-    
+    </div>
+
     <script>
     $(document).ready(function(){
         
