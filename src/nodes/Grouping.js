@@ -421,84 +421,125 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'url', []);         // address for WebSocket connection
-            this.addField_MFString(ctx, 'idNameMap', []);   // list of subsequent id/name pairs
+            this.addField_MFString(ctx, 'url', []);             // address for WebSocket connection
+            this.addField_MFString(ctx, 'idNameMap', []);       // list of subsequent id/name pairs (TODO)
+            this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
+            this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
 
-            this._idList = [];        // to be updated by socket connection
-            this._websocket = null;
+            this._idList = [];          // to be updated by socket connection
+            this._websocket = null;     // pointer to socket
 
-            if ("WebSocket" in window)
-            {
-                var that = this;
-
-                this._websocket = new WebSocket(this._vf.url[0]);
-                
-                this._websocket._lastMsg = null;
-
-                this._websocket.onopen = function(evt)
-                {
-                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
-                    this._lastMsg = view.toGL().toString();
-                    
-                    view = that._nameSpace.doc._viewarea.getProjectionMatrix();
-                    this._lastMsg += ("," + view.toGL().toString());
-
-                    this.send(this._lastMsg);
-                    x3dom.debug.logInfo("WS Sent: " + this._lastMsg);
-                    this._lastMsg = "";     // triggers first update
-                };
-                
-                this._websocket.onclose = function(evt) 
-                {
-                    x3dom.debug.logInfo("WS Disconnected");
-                };
-                
-                this._websocket.onmessage = function(evt) 
-                {
-                    that._idList = x3dom.fields.MFString.parse(evt.data);
-                    x3dom.debug.logInfo("WS Response: " + evt.data);
-                    
-                    // TODO: if oldList != newList then...
-                    that._nameSpace.doc.needRender = true;
-                };
-                
-                this._websocket.onerror = function(evt) 
-                {
-                    x3dom.debug.logError(evt.data);
-                };
-                
-                this._websocket.updateCamera = function()
-                {
-                    // send again
-                    var view = that._nameSpace.doc._viewarea.getViewMatrix();
-                    var message = view.toGL().toString();
-                    
-                    view = that._nameSpace.doc._viewarea.getProjectionMatrix();
-                    message += ("," + view.toGL().toString());
-                    
-                    if (this._lastMsg != null && this._lastMsg != message)
-                    {
-                        this._lastMsg = message;
-                        this.send(message);
-                        x3dom.debug.logInfo("WS Sent: " + message);
-                    }
-                };
-
-                // if there were a d'tor this would belong there
-                // this._websocket.close();
-            }
-            else
-            {
-                x3dom.debug.logError("No WebSocket support!");
-            }
+            this.initializeSocket();    // init socket connection
         },
         {
+            initializeSocket: function() 
+            {
+                var that = this;
+                
+                if ("WebSocket" in window)
+                {
+                    var wsUrl = "ws://localhost:35668/cstreams/0";
+                    
+                    if (this._vf.url.length && this._vf.url[0].length)
+                        wsUrl = this._vf.url[0];
+
+                    this._websocket = new WebSocket(wsUrl);
+
+                    this._websocket._lastMsg = null;
+
+                    this._websocket.onopen = function(evt)
+                    {
+                        x3dom.debug.logInfo("WS Connected");
+                        
+                        var view = that._nameSpace.doc._viewarea.getViewMatrix();
+                        this._lastMsg = view.toGL().toString();
+
+                        view = that._nameSpace.doc._viewarea.getProjectionMatrix();
+                        this._lastMsg += ("," + view.toGL().toString());
+
+                        this.send(this._lastMsg);
+                        x3dom.debug.logInfo("WS Sent: " + this._lastMsg);
+                        
+                        this._lastMsg = "";     // triggers first update
+                    };
+
+                    this._websocket.onclose = function(evt) 
+                    {
+                        x3dom.debug.logInfo("WS Disconnected");
+
+                        if (that._vf.reconnect)
+                        {
+                            window.setTimeout(function() { 
+        						that.initializeSocket();
+        					}, 2000);
+					    }
+                    };
+
+                    this._websocket.onmessage = function(evt) 
+                    {
+                        if (that._vf.maxRenderedIds < 0)
+                        {
+                            // render all sent items
+                            that._idList = x3dom.fields.MFString.parse(evt.data);
+                        }
+                        else if (that._vf.maxRenderedIds > 0) 
+                        {
+                            // render #maxRenderedIds items
+                            that._idList = [];
+                            var arr = x3dom.fields.MFString.parse(evt.data);
+                            for (var i=0; i<that._vf.maxRenderedIds; ++i) {
+                                that._idList[i] = arr[i];
+                            }
+                        }
+                        
+                        // TODO: if oldList != newList then...
+                        if (that._vf.maxRenderedIds != 0) 
+                        {
+                            x3dom.debug.logInfo("WS Response: " + evt.data);
+                            that._nameSpace.doc.needRender = true;
+                        }
+                    };
+
+                    this._websocket.onerror = function(evt) 
+                    {
+                        x3dom.debug.logError(evt.data);
+                    };
+
+                    this._websocket.updateCamera = function()
+                    {
+                        // send again
+                        var view = that._nameSpace.doc._viewarea.getViewMatrix();
+                        var message = view.toGL().toString();
+
+                        view = that._nameSpace.doc._viewarea.getProjectionMatrix();
+                        message += ("," + view.toGL().toString());
+
+                        if (this._lastMsg != null && this._lastMsg != message)
+                        {
+                            this._lastMsg = message;
+                            this.send(message);
+                            x3dom.debug.logInfo("WS Sent: " + message);
+                        }
+                    };
+
+                    // if there were a d'tor this would belong there
+                    // this._websocket.close();
+                }
+                else
+                {
+                    x3dom.debug.logError("Browser has no WebSocket support!");
+                }
+            },
+            
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "url" && this._websocket)
+                if (fieldName == "url")
                 {
-                    this._websocket.close();
-                    this._websocket = new WebSocket(this._vf.url[0]);
+                    if (this._websocket) {
+                        this._websocket.close();
+                        this._websocket = null;
+                    }
+                    this.initializeSocket();
                 }
             },
 

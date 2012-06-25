@@ -162,7 +162,7 @@ x3dom.gfx_webgl = (function () {
         "varying vec3 fragNormal;" +
         "" +
         "void main(void) {" +
-        "    fragNormal = (vec4(normalize(position), 0.0)).xyz;" +
+        "    fragNormal = normalize(position);" +
         "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
         "}"
         };
@@ -181,7 +181,7 @@ x3dom.gfx_webgl = (function () {
         " " +
         "void main(void) {" +
         "    vec3 normal = -reflect(normalize(fragNormal), vec3(0.0,0.0,1.0));" +
-        "    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z) && normal.y < 0.0)" +
+        "    if (magn(normal.y) >= magn(normal.x) && magn(normal.y) >= magn(normal.z))" +
         "        normal.xz = -normal.xz;" +
         "    gl_FragColor = textureCube(tex, normal);" +
         "}"
@@ -1865,12 +1865,15 @@ x3dom.gfx_webgl = (function () {
         
         
         // dynamically attach clean-up method for GL objects
-        shape._cleanupGLObjects = function()
+        if (shape._cleanupGLObjects == null)
         {
-            if (this._parentNodes.length === 0 && this._webgl)
+          shape._cleanupGLObjects = function(force)
+          {
+            // FIXME; what if complete tree is removed? Then _parentNodes.length my be greater 0.
+            if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
             {
-                var doc = this.findX3DDoc();
-                var gl = doc.ctx.ctx3d;
+                //var doc = this.findX3DDoc();
+                //var gl = doc.ctx.ctx3d;
                 var sp = this._webgl.shader;
 
                 for (var cnt=0; this._webgl.texture !== undefined &&
@@ -1910,9 +1913,10 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
 
-                this._webgl = null;
+                delete this._webgl;
             }
-        };  // shape._cleanupGLObjects()
+          };  // shape._cleanupGLObjects()
+        }
         
         
         // TODO; finish text!
@@ -4611,6 +4615,8 @@ x3dom.gfx_webgl = (function () {
             
             viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
         	viewarea._last_mat_scene = x3dom.fields.SFMatrix4f.identity();
+
+            this._calledViewpointChangedHandler = false;
         }
         else 
         {
@@ -4666,18 +4672,18 @@ x3dom.gfx_webgl = (function () {
         //}
         
         var mat_view = viewarea.getViewMatrix();
-        
+
         // fire viewpointChanged event
-        if ( !viewarea._last_mat_view.equals(mat_view) )
+        if ( !this._calledViewpointChangedHandler || !viewarea._last_mat_view.equals(mat_view) )
         {
         	var e_viewpoint = viewarea._scene.getViewpoint();
         	var e_eventType = "viewpointChanged";
-        	/*TEST*/
+
         	try {
 				if ( e_viewpoint._xmlNode && 
-						(e_viewpoint._xmlNode["on"+e_eventType] ||
-					 	 e_viewpoint._xmlNode.hasAttribute("on"+e_eventType) ||
-					 	 e_viewpoint._listeners[e_eventType]) )
+					(e_viewpoint._xmlNode["on"+e_eventType] ||
+					 e_viewpoint._xmlNode.hasAttribute("on"+e_eventType) ||
+					 e_viewpoint._listeners[e_eventType]) )
 				{
 				    var e_viewtrafo = e_viewpoint.getCurrentTransform();
 					e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
@@ -4700,6 +4706,8 @@ x3dom.gfx_webgl = (function () {
 					};
 					
 					e_viewpoint.callEvtHandler(e_eventType, e_event);
+
+                    this._calledViewpointChangedHandler = true;
 				}
 			}
 			catch(e_e) {
@@ -4968,6 +4976,21 @@ x3dom.gfx_webgl = (function () {
 //----------------------------------------------------------------------------
     Context.prototype.renderRTPass = function(gl, viewarea, rt)
     {
+        switch(rt._vf.update.toUpperCase())
+        {
+            case "NONE":
+                return;
+            case "NEXT_FRAME_ONLY":
+                if (!rt._needRenderUpdate) {
+                    return;
+                }
+                rt._needRenderUpdate = false;
+                break;
+            case "ALWAYS":
+            default:
+                break;
+        }
+        
         var scene = viewarea._scene;
         var bgnd = null; 
         
@@ -5101,7 +5124,8 @@ x3dom.gfx_webgl = (function () {
             locScene.drawableObjects.collect = false;
             locScene.drawableObjects.idList = [];
 
-            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableObjects);
+            locScene.collectDrawableObjects(
+                locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()), locScene.drawableObjects);
             
             n = locScene.drawableObjects.length;
             
@@ -5109,6 +5133,8 @@ x3dom.gfx_webgl = (function () {
             {
                 transform = locScene.drawableObjects[i][0];
                 shape = locScene.drawableObjects[i][1];
+                
+                //x3dom.debug.logWarning(i + "\n" + transform);
                 
                 if (shape._vf.render !== undefined && shape._vf.render === false) {
                    continue;
@@ -5272,7 +5298,9 @@ x3dom.gfx_webgl = (function () {
                      gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 
                      gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X];
         }
-        else {
+        else
+        {
+            //       back, front, bottom, top, left, right
             faces = [gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
                      gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
                      gl.TEXTURE_CUBE_MAP_NEGATIVE_X, gl.TEXTURE_CUBE_MAP_POSITIVE_X];
@@ -5303,7 +5331,7 @@ x3dom.gfx_webgl = (function () {
                         doc.needRender = true;
                     }
                 };
-            }( texture, face, image, (bgnd /*&& (i<=1 || i>=4)*/) );
+            }( texture, face, image, bgnd );
 
             image.onerror = function()
             {

@@ -102,7 +102,7 @@ x3dom.userAgentFeature = {
 };
 
 
-(function () {
+(function loadX3DOM() {
 
     var onload = function() {
         var i,j;  // counters
