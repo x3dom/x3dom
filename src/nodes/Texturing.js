@@ -291,24 +291,38 @@ x3dom.registerNodeType(
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
             this.addField_SFNode('fog', x3dom.nodeTypes.X3DFogNode);    //TODO
-            this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);     //TODO
+            this.addField_SFNode('scene', x3dom.nodeTypes.X3DNode);
             this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
             this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);
             this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
 
             x3dom.debug.assert(this._vf.dimensions.length >= 3);
             this._clearParents = true;
+            this._needRenderUpdate = true;
         },
         {
             nodeChanged: function()
             {
                 this._clearParents = true;
+                this._needRenderUpdate = true;
             },
 
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "excludeNodes") {
-                    this._clearParents = true;
+                switch(fieldName) 
+                {
+                    case "excludeNodes":
+                        this._clearParents = true;
+                        break;
+                    case "update":
+                        if (this._vf.update.toUpperCase() == "NEXT_FRAME_ONLY" ||
+                            this._vf.update.toUpperCase() == "ALWAYS") {
+                            this._needRenderUpdate = true;
+                        }
+                        break;
+                    default:
+                        // TODO: dimensions
+                        break;
                 }
             },
 

@@ -50,8 +50,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
-            this.addField_SFFloat(ctx, 'zNear', 0.1);
-            this.addField_SFFloat(ctx, 'zFar', 100000);
+            this.addField_SFFloat(ctx, 'zNear', 0.1);       // -1 (TODO; adapt Bgnd)
+            this.addField_SFFloat(ctx, 'zFar',  100000);    // -1 (TODO; adapt Bgnd)
 
             //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
             //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
@@ -120,13 +120,64 @@ x3dom.registerNodeType(
 
             getProjectionMatrix: function(aspect)
             {
+                var fovy = this._vf.fieldOfView;
+                var zfar = this._vf.zFar;
+                var znear = this._vf.zNear;
+
+                if (znear <= 0 || zfar <= 0)
+                {
+                    var min = x3dom.fields.SFVec3f.MAX();
+                    var max = x3dom.fields.SFVec3f.MIN();
+                    var ok = this._nameSpace.doc._viewarea._scene.getVolume(min, max, true);
+
+                    if (ok)
+                    {
+                        var nearScale = 0.8, farScale = 1.2;
+                        var dia = max.subtract(min);
+                        var sRad = dia.length() / 2;
+                        var mat = this._nameSpace.doc._viewarea.getViewMatrix().inverse();
+
+                        var vp = mat.e3();
+                        var sCenter = min.add(dia).multiply(0.5);
+
+                        var vDist = vp.subtract(sCenter).length();
+
+                        if (sRad) {
+                          if (vDist > sRad) {
+                            // Camera outside of the scene
+                            znear = (vDist - sRad) * nearScale;
+                            zfar = (vDist + sRad) * farScale;
+                          }
+                          else {
+                            // Camera inside of the scene
+                            znear = x3dom.fields.Eps;
+                            zfar = (vDist + sRad) * farScale;
+                          }
+                        }
+                        else {
+                          znear = 0.1;
+                          zfar = 100000;
+                        }
+
+                        var zNearLimit = zfar / 100000;
+                        znear = (znear > zNearLimit) ? znear : zNearLimit;
+                        //x3dom.debug.logInfo("\nVP: " + vp + "\nCT: " + sCenter + "\nNF: " + znear + " -> " + zfar);
+                    }
+                    else {
+                        znear = 0.1;
+                        zfar = 100000;
+                    }
+
+                    if (this._vf.zFar > 0)
+                        zfar = this._vf.zFar;
+                    if (this._vf.zNear > 0)
+                        znear = this._vf.zNear;
+                }
+
                 if (this._projMatrix == null)
                 {
-                    var fovy = this._vf.fieldOfView;
-                    var zfar = this._vf.zFar;
-                    var znear = this._vf.zNear;
-
                     var f = 1/Math.tan(fovy/2);
+
                     this._projMatrix = new x3dom.fields.SFMatrix4f(
                         f/aspect, 0, 0, 0,
                         0, f, 0, 0,
@@ -138,8 +189,13 @@ x3dom.registerNodeType(
                 }
                 else if (this._lastAspect !== aspect)
                 {
-                    this._projMatrix._00 = (1 / Math.tan(this._vf.fieldOfView / 2)) / aspect;
+                    this._projMatrix._00 = (1 / Math.tan(fovy / 2)) / aspect;
                     this._lastAspect = aspect;
+                }
+                else if (znear <= 0 || zfar <= 0)
+                {
+                    this._projMatrix._22 = (znear+zfar)/(znear-zfar);
+                    this._projMatrix._23 = 2*znear*zfar/(znear-zfar);
                 }
 
                 return this._projMatrix;

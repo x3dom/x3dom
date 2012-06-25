@@ -52,7 +52,7 @@
      
 <body>
 	<X3D showStat="true" showLog="true" width="500px" height="500px">
-	  <Scene>
+	  <Scene id="scene">
 		<Background skyColor='0 0 0'></Background>
 			<Shape>
 			<Appearance>
@@ -69,14 +69,41 @@
     </X3D>    
     
     <script type="text/javascript" >
-		var test = function (event) {
-			alert(document.getElementsByTagName('Material').length);
-			
+		var test = function (event) {			
 			var test = document.getElementsByTagName('Material');
 			for(var i = 0; i < test.length; i++) {
 				test[i].setAttribute('diffuseColor', '1 0 0');
 			}
+				
+			var scene = document.getElementById('scene');
+			var materials = new Array(); 
+			travers(scene, 'Material', materials);
+			
+			for(var i = 0; i < materials.length; i++) {
+				materials[i].setAttribute('diffuseColor', '0 .5 .5');
+			}
 		};
+		
+		function travers(node, tag, materials) {			
+			if(node instanceof Element) {
+				tag = tag.toUpperCase();
+				var tagName = node.tagName.toUpperCase();
+			
+				if (tagName === tag) { 
+					materials.push(node);	  	
+				} 
+				if(node.hasChildNodes()) {
+					for(var i = 0; (i < node.childNodes.length); i++) {                   	  	
+						travers(node.childNodes[i], tag, materials);  	 	
+					}	  	
+				} else {	  	
+					return;    	
+				}	
+				
+			} else {	  	
+				return;
+			}
+		}
 	</script>
 </body>
 </html>
