@@ -4615,6 +4615,8 @@ x3dom.gfx_webgl = (function () {
             
             viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
         	viewarea._last_mat_scene = x3dom.fields.SFMatrix4f.identity();
+
+            this._calledViewpointChangedHandler = false;
         }
         else 
         {
@@ -4670,18 +4672,18 @@ x3dom.gfx_webgl = (function () {
         //}
         
         var mat_view = viewarea.getViewMatrix();
-        
+
         // fire viewpointChanged event
-        if ( !viewarea._last_mat_view.equals(mat_view) )
+        if ( !this._calledViewpointChangedHandler || !viewarea._last_mat_view.equals(mat_view) )
         {
         	var e_viewpoint = viewarea._scene.getViewpoint();
         	var e_eventType = "viewpointChanged";
-        	
+
         	try {
 				if ( e_viewpoint._xmlNode && 
-						(e_viewpoint._xmlNode["on"+e_eventType] ||
-					 	 e_viewpoint._xmlNode.hasAttribute("on"+e_eventType) ||
-					 	 e_viewpoint._listeners[e_eventType]) )
+					(e_viewpoint._xmlNode["on"+e_eventType] ||
+					 e_viewpoint._xmlNode.hasAttribute("on"+e_eventType) ||
+					 e_viewpoint._listeners[e_eventType]) )
 				{
 				    var e_viewtrafo = e_viewpoint.getCurrentTransform();
 					e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
@@ -4704,6 +4706,8 @@ x3dom.gfx_webgl = (function () {
 					};
 					
 					e_viewpoint.callEvtHandler(e_eventType, e_event);
+
+                    this._calledViewpointChangedHandler = true;
 				}
 			}
 			catch(e_e) {
