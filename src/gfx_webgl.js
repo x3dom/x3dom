@@ -3830,7 +3830,7 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.renderShape = function (transform, shape, prev_shape, next_shape, viewarea, 
                                               slights, numLights, 
                                               mat_view, mat_scene, mat_light, 
-                                              gl, activeTex, oneShadowExistsAlready)
+                                              gl, oneShadowExistsAlready)
     {
         if (shape._webgl === undefined) {
             return;
@@ -4180,7 +4180,7 @@ x3dom.gfx_webgl = (function () {
                 x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
             {
                 //gl.enable(gl.TEXTURE_CUBE_MAP);
-                gl.activeTexture(activeTex[cnt]);
+                gl.activeTexture(gl.TEXTURE0 + cnt);
                 gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture[cnt]);
                 
                 gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrapS);
@@ -4194,7 +4194,7 @@ x3dom.gfx_webgl = (function () {
             else
             {
                 //gl.enable(gl.TEXTURE_2D);
-                gl.activeTexture(activeTex[cnt]);
+                gl.activeTexture(gl.TEXTURE0 + cnt);
                 gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[cnt]);
 
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
@@ -4243,7 +4243,7 @@ x3dom.gfx_webgl = (function () {
             if (!sp.sh_tex) {
                 sp.sh_tex = cnt;
             }
-            gl.activeTexture(activeTex[cnt]);
+            gl.activeTexture(gl.TEXTURE0 + cnt);
             gl.bindTexture(gl.TEXTURE_2D, scene._webgl.fboShadow.tex);
             
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
@@ -4452,17 +4452,17 @@ x3dom.gfx_webgl = (function () {
                 if (shape._webgl.texture[cnt].textureCubeReady && tex && 
                     x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
                 {
-                    gl.activeTexture(activeTex[cnt]);
+                    gl.activeTexture(gl.TEXTURE0 + cnt);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                     //gl.disable(gl.TEXTURE_CUBE_MAP);
                 } else {
-                    gl.activeTexture(activeTex[cnt]);
+                    gl.activeTexture(gl.TEXTURE0 + cnt);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 }
             }
         }
         if (oneShadowExistsAlready) {
-            gl.activeTexture(activeTex[cnt]);
+            gl.activeTexture(gl.TEXTURE0 + cnt);
             gl.bindTexture(gl.TEXTURE_2D, null);
         }
         //gl.disable(gl.TEXTURE_2D);
@@ -4629,8 +4629,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl._currFboWidth = fboWidth;
                 scene._webgl._currFboHeight = fboHeight;
                 
-                scene._webgl.fboPick = this.initFbo(gl, 
-                             fboWidth, fboHeight, true);
+                scene._webgl.fboPick = this.initFbo(gl, fboWidth, fboHeight, true);
                 scene._webgl.fboPick.pixelData = null;
                 
                 x3dom.debug.logInfo("Refreshed picking FBO to size (" + 
@@ -4881,10 +4880,7 @@ x3dom.gfx_webgl = (function () {
                     //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
                 );
         gl.enable(gl.BLEND);
-        
-        var activeTex = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3,
-                         gl.TEXTURE4, gl.TEXTURE5, gl.TEXTURE6, gl.TEXTURE7];
-        
+
         for (i=0, n=zPos.length; i<n; i++)
         {
             var obj = scene.drawableObjects[zPos[i][0]];
@@ -4918,7 +4914,7 @@ x3dom.gfx_webgl = (function () {
             }
 
             this.renderShape(obj[0], obj[1], prev_obj, next_obj, viewarea, slights, numLights, 
-                mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+                mat_view, mat_scene, mat_light, gl, oneShadowExistsAlready);
 
             if (needEnableBlending) {
                 gl.enable(gl.BLEND);
@@ -5054,9 +5050,6 @@ x3dom.gfx_webgl = (function () {
         var numLights = slights.length;
         var oneShadowExistsAlready = false;
         
-        var activeTex = [gl.TEXTURE0, gl.TEXTURE1, gl.TEXTURE2, gl.TEXTURE3,
-                         gl.TEXTURE4, gl.TEXTURE5, gl.TEXTURE6, gl.TEXTURE7];
-        
         var transform, shape;
         var locScene = rt._cf.scene.node;
 
@@ -5105,7 +5098,7 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
-                        mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+                        mat_view, mat_scene, mat_light, gl, oneShadowExistsAlready);
 
                 if (needEnableBlending) {
                     gl.enable(gl.BLEND);
@@ -5172,7 +5165,7 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
-                        mat_view, mat_scene, mat_light, gl, activeTex, oneShadowExistsAlready);
+                        mat_view, mat_scene, mat_light, gl, oneShadowExistsAlready);
 
                 if (needEnableBlending) {
                     gl.enable(gl.BLEND);
@@ -5373,14 +5366,14 @@ x3dom.gfx_webgl = (function () {
         }
     };
 
-    Context.prototype.initTex = function(gl, w, h, nearest)
+    Context.prototype.initTex = function(gl, w, h, nearest, type)
     {
         var tex = gl.createTexture();
         gl.bindTexture(gl.TEXTURE_2D, tex);
-        
-        this.emptyTexImage2D(gl, gl.RGBA, w, h, gl.RGBA, gl.UNSIGNED_BYTE);
+
+        this.emptyTexImage2D(gl, gl.RGBA, w, h, gl.RGBA, type);
         //this.emptyTexImage2D(gl, gl.DEPTH_COMPONENT16, w, h, gl.DEPTH_COMPONENT, gl.UNSIGNED_BYTE);
-        
+
         if (nearest) {
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
             gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
@@ -5394,47 +5387,57 @@ x3dom.gfx_webgl = (function () {
         gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
         //gl.generateMipmap(gl.TEXTURE_2D);
         gl.bindTexture(gl.TEXTURE_2D, null);
-        
+
         tex.width = w;
         tex.height = h;
-        
+
         return tex;
     };
 
 //----------------------------------------------------------------------------
-/*!
- * Creates FBO with given size
- *   taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009
- * Returned Object has
- *   rbo, fbo, tex, width, height
- */
+    /*!
+     * Creates FBO with given size
+     *   taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009
+     * Returned Object has
+     *   rbo, fbo, tex, width, height
+     */
 //----------------------------------------------------------------------------
     Context.prototype.initFbo = function(gl, w, h, nearest)
     {
-        var status = 0;
         var fbo = gl.createFramebuffer();
         var rb = gl.createRenderbuffer();
-        var tex = this.initTex(gl, w, h, nearest);
-        
+
+        var type = gl.UNSIGNED_BYTE;
+        /*
+        if (gl.getExtension("OES_texture_float")) {
+            type = gl.FLOAT;
+            x3dom.debug.logInfo("Using fp extension...");
+        }
+        */
+        var tex = this.initTex(gl, w, h, nearest, type);
+
         gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
         gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
-        
+
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-        
-        status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
-        x3dom.debug.logInfo("FBO-Status: " + status);
-        
-        var r = {};
-        r.fbo = fbo;
-        r.rbo = rb;
-        r.tex = tex;
-        r.width = w;
-        r.height = h;
-        
+
+        var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
+        if (status != gl.FRAMEBUFFER_COMPLETE)
+            x3dom.debug.logWarning("FBO-Status: " + status);
+
+        var r = {
+            fbo: fbo,
+            rbo: rb,
+            tex: tex,
+            width: w,
+            height: h,
+            typ: type
+        };
+
         return r;
     };
 
