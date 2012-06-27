@@ -4573,6 +4573,15 @@ x3dom.gfx_webgl = (function () {
         
         if (!scene._webgl)
         {
+            var type = gl.UNSIGNED_BYTE;
+
+            this._fpTexSupport = gl.getExtension("OES_texture_float");
+
+            if (this._fpTexSupport) {
+                type = gl.FLOAT;
+                //x3dom.debug.logInfo("WebGL backend: found support for floating point textures");
+            }
+
             scene._webgl = {};
             this.setupFgnds(gl, scene);
             
@@ -4581,27 +4590,30 @@ x3dom.gfx_webgl = (function () {
             
             scene._webgl._currFboWidth = Math.round(this.canvas.width * scene._webgl.pickScale);
             scene._webgl._currFboHeight = Math.round(this.canvas.height * scene._webgl.pickScale);
-            
+
+            // TODO: FIXME when spec ready: readPixels not (yet?) available for float textures
+            // https://bugzilla.mozilla.org/show_bug.cgi?id=681903
+            // https://www.khronos.org/webgl/public-mailing-list/archives/1108/msg00025.html
             scene._webgl.fboPick = this.initFbo(gl, 
-                         scene._webgl._currFboWidth, scene._webgl._currFboHeight, true);
+                         scene._webgl._currFboWidth, scene._webgl._currFboHeight, true, gl.UNSIGNED_BYTE);
             scene._webgl.fboPick.pixelData = null;
             
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
-            if (!x3dom.caps.MOBILE)    // TODO: mobile
+            if (!x3dom.caps.MOBILE)    // TODO: mobile + fp
 			    scene._webgl.pickShaderIG = this.getShaderProgram(gl, ['vs-x3d-pickIG', 'fs-x3d-pick']);
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
-            scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false);
+            scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false, gl.UNSIGNED_BYTE); // type);  TODO: fp shadows
             scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
             
-            // TODO; for testing do it on init, but must be refreshed on change
+            // TODO; for testing do it on init, but must be refreshed on node change!
             for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl, 
                             rt_tex._vf.dimensions[0], 
-                            rt_tex._vf.dimensions[1], false);
+                            rt_tex._vf.dimensions[1], false, type);
             }
             
             // init scene volume to improve picking speed
@@ -4629,7 +4641,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl._currFboWidth = fboWidth;
                 scene._webgl._currFboHeight = fboHeight;
                 
-                scene._webgl.fboPick = this.initFbo(gl, fboWidth, fboHeight, true);
+                scene._webgl.fboPick = this.initFbo(gl, fboWidth, fboHeight, true, scene._webgl.fboPick.typ);
                 scene._webgl.fboPick.pixelData = null;
                 
                 x3dom.debug.logInfo("Refreshed picking FBO to size (" + 
@@ -5350,7 +5362,7 @@ x3dom.gfx_webgl = (function () {
             gl.texImage2D(gl.TEXTURE_2D, 0, internalFormat, width, height, 0, format, type, null);
         }
         catch (e) {
-
+            // seems to be no longer necessary, but anyway...
             var bytes = 3;
             switch (internalFormat)
             {
@@ -5402,13 +5414,13 @@ x3dom.gfx_webgl = (function () {
      *   rbo, fbo, tex, width, height
      */
 //----------------------------------------------------------------------------
-    Context.prototype.initFbo = function(gl, w, h, nearest)
+    Context.prototype.initFbo = function(gl, w, h, nearest, type)
     {
         var fbo = gl.createFramebuffer();
         var rb = gl.createRenderbuffer();
 
-        var type = gl.UNSIGNED_BYTE;
         /*
+        var type = gl.UNSIGNED_BYTE;
         if (gl.getExtension("OES_texture_float")) {
             type = gl.FLOAT;
             x3dom.debug.logInfo("Using fp extension...");
