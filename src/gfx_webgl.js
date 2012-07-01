@@ -97,15 +97,15 @@ x3dom.gfx_webgl = (function () {
                             {
                                 x3dom.caps.MOBILE = true;
                             }
-                            if(x3dom.caps.MOBILE) {
-								x3dom.debug.logWarning("Detected mobile Browser! Using low quality shaders!");
+                            if (x3dom.caps.MOBILE) {
+								x3dom.debug.logWarning("Detected mobile graphics card! Using low quality shaders without ImageGeometry support!");
 							}
 						}
                     }
                     catch (ex) {
                         x3dom.debug.logWarning(
                                 "Your browser probably supports an older WebGL version. " +
-                                "Please try the mobile runtime instead:\n" +
+                                "Please try the old mobile runtime instead:\n" +
                                 "http://www.x3dom.org/x3dom/src_mobile/x3dom.js");
                         newCtx = null;
                     }
