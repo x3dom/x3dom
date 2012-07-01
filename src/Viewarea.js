@@ -968,12 +968,16 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 		if (rotation)
         {
             var center = viewpoint.getCenterOfRotation();
-
-            this._rotMat =
-                x3dom.fields.SFMatrix4f.translation(center).
+            
+            var mat = this.getViewMatrix();
+            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
+            
+            this._rotMat = this._rotMat.
+                mult(x3dom.fields.SFMatrix4f.translation(center)).
+                mult(mat.inverse()).
                 mult(rotation).
-                mult(x3dom.fields.SFMatrix4f.translation(center.negate())).
-                mult(this._rotMat);
+                mult(mat).
+                mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
 		}
 	}
 };
