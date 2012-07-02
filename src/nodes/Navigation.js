@@ -50,8 +50,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
-            this.addField_SFFloat(ctx, 'zNear', 0.1);       // -1 (TODO; adapt Bgnd)
-            this.addField_SFFloat(ctx, 'zFar',  100000);    // -1 (TODO; adapt Bgnd)
+            this.addField_SFFloat(ctx, 'zNear', 0.1);
+            this.addField_SFFloat(ctx, 'zFar',  100000);
 
             //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
             //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
@@ -126,48 +126,45 @@ x3dom.registerNodeType(
 
                 if (znear <= 0 || zfar <= 0)
                 {
-                    var min = x3dom.fields.SFVec3f.MAX();
-                    var max = x3dom.fields.SFVec3f.MIN();
-                    var ok = this._nameSpace.doc._viewarea._scene.getVolume(min, max, true);
-
-                    if (ok)
-                    {
-                        var nearScale = 0.8, farScale = 1.2;
-                        var dia = max.subtract(min);
-                        var sRad = dia.length() / 2;
-                        var mat = this._nameSpace.doc._viewarea.getViewMatrix().inverse();
-
-                        var vp = mat.e3();
-                        var sCenter = min.add(dia).multiply(0.5);
-
-                        var vDist = vp.subtract(sCenter).length();
-
-                        if (sRad) {
-                          if (vDist > sRad) {
-                            // Camera outside of the scene
+                    var zRatio = 100000;    // 10000
+                    var nearScale = 0.8, farScale = 1.2;
+                    var viewarea = this._nameSpace.doc._viewarea;
+                    
+                    var min = new x3dom.fields.SFVec3f();
+                    min.setValues(viewarea._scene._lastMin);
+                    
+                    var max = new x3dom.fields.SFVec3f();
+                    max.setValues(viewarea._scene._lastMax);
+                    
+                    var dia = max.subtract(min);
+                    var sRad = dia.length() / 2;
+                    
+                    var mat = viewarea.getViewMatrix().inverse();
+                    var vp = mat.e3();
+                    
+                    var sCenter = min.add(dia).multiply(0.5);
+                    var vDist = vp.subtract(sCenter).length();
+                    
+                    if (sRad) {
+                        if (vDist > sRad) {
+                            // Camera outside scene
                             znear = (vDist - sRad) * nearScale;
-                            zfar = (vDist + sRad) * farScale;
-                          }
-                          else {
-                            // Camera inside of the scene
-                            znear = x3dom.fields.Eps;
-                            zfar = (vDist + sRad) * farScale;
-                          }
                         }
                         else {
-                          znear = 0.1;
-                          zfar = 100000;
+                            // Camera inside scene
+                            znear = x3dom.fields.Eps;
                         }
-
-                        var zNearLimit = zfar / 100000;
-                        znear = (znear > zNearLimit) ? znear : zNearLimit;
-                        //x3dom.debug.logInfo("\nVP: " + vp + "\nCT: " + sCenter + "\nNF: " + znear + " -> " + zfar);
+                        zfar = (vDist + sRad) * farScale;
                     }
                     else {
                         znear = 0.1;
                         zfar = 100000;
                     }
-
+                    
+                    var zNearLimit = zfar / zRatio;
+                    znear = (znear > zNearLimit) ? znear : zNearLimit;
+                    //x3dom.debug.logInfo("\nVP: " + vp + "\nCT: " + sCenter + "\nNF: " + znear + " -> " + zfar);
+                    
                     if (this._vf.zFar > 0)
                         zfar = this._vf.zFar;
                     if (this._vf.zNear > 0)
@@ -176,8 +173,8 @@ x3dom.registerNodeType(
 
                 if (this._projMatrix == null)
                 {
-                    var f = 1/Math.tan(fovy/2);
-
+                    var f = 1 / Math.tan(fovy / 2);
+                    
                     this._projMatrix = new x3dom.fields.SFMatrix4f(
                         f/aspect, 0, 0, 0,
                         0, f, 0, 0,
@@ -364,7 +361,7 @@ x3dom.registerNodeType(
                 // TODO; optimize getting volume
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, true);
+                var ok = this.getVolume(min, max, false);
                 var rotMat = x3dom.fields.SFMatrix4f.identity();
 
                 var mid = (max.add(min).multiply(0.5)).add(new x3dom.fields.SFVec3f(0, 0, 0));
@@ -492,7 +489,7 @@ x3dom.registerNodeType(
 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, true);
+                var ok = this.getVolume(min, max, false);
 
                 var mid = (max.add(min).multiply(0.5)).add(this._vf.center);
                 var len = mid.subtract(this._eye).length();

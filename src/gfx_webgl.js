@@ -3289,9 +3289,12 @@ x3dom.gfx_webgl = (function () {
             }
         }
         
-        bgnd._webgl.render = function(gl, mat_scene)
+        bgnd._webgl.render = function(gl, mat_view, mat_proj)
         {
             var sp = bgnd._webgl.shader;
+            var mat_scene = null;
+            var projMatrix_22 = mat_proj._22,
+                projMatrix_23 = mat_proj._23;
             
             if ((sp !== undefined && sp !== null) &&
                 (sp.texcoord !== undefined && sp.texcoord !== null) &&
@@ -3311,7 +3314,16 @@ x3dom.gfx_webgl = (function () {
                     sp.tex = 0;
                 }
                 sp.alpha = 1.0;
+                
+                // adapt projection matrix to better near/far
+                mat_proj._22 = 100001 / 99999;
+                mat_proj._23 = 200000 / 99999;
+                
+                mat_scene = mat_proj.mult(mat_view);
                 sp.modelViewProjectionMatrix = mat_scene.toGL();
+                
+                mat_proj._22 = projMatrix_22;
+                mat_proj._23 = projMatrix_23;
                 
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
@@ -3373,7 +3385,15 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 if (bgnd._webgl.texture.textureCubeReady) {
+                    // adapt projection matrix to better near/far
+                    mat_proj._22 = 100001 / 99999;
+                    mat_proj._23 = 200000 / 99999;
+
+                    mat_scene = mat_proj.mult(mat_view);
                     sp.modelViewProjectionMatrix = mat_scene.toGL();
+
+                    mat_proj._22 = projMatrix_22;
+                    mat_proj._23 = projMatrix_23;
                     
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, bgnd._webgl.texture);
@@ -4626,6 +4646,7 @@ x3dom.gfx_webgl = (function () {
             scene._lastMax = max;
             
             viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
+            viewarea._last_mat_proj = x3dom.fields.SFMatrix4f.identity();
         	viewarea._last_mat_scene = x3dom.fields.SFMatrix4f.identity();
 
             this._calledViewpointChangedHandler = false;
@@ -4682,6 +4703,7 @@ x3dom.gfx_webgl = (function () {
             }
         //}
         
+        var mat_proj = viewarea.getProjectionMatrix();
         var mat_view = viewarea.getViewMatrix();
 
         // fire viewpointChanged event
@@ -4727,9 +4749,11 @@ x3dom.gfx_webgl = (function () {
         }
         
         viewarea._last_mat_view = mat_view;
+        viewarea._last_mat_proj = mat_proj;
         
-        var mat_scene = viewarea.getWCtoCCMatrix();
+        var mat_scene = mat_proj.mult(mat_view);  //viewarea.getWCtoCCMatrix();
         viewarea._last_mat_scene = mat_scene;
+        
         
         // sorting and stuff
         t0 = new Date().getTime();
@@ -4872,7 +4896,7 @@ x3dom.gfx_webgl = (function () {
         gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         
         // calls gl.clear etc. (bgnd stuff)
-        bgnd._webgl.render(gl, mat_scene);
+        bgnd._webgl.render(gl, mat_view, mat_proj);
         
         gl.depthMask(true);
         gl.depthFunc(gl.LEQUAL);
@@ -5003,7 +5027,8 @@ x3dom.gfx_webgl = (function () {
         var bgnd = null; 
         
         var mat_view = rt.getViewMatrix();
-        var mat_scene = rt.getWCtoCCMatrix();
+        var mat_proj = rt.getProjectionMatrix();
+        var mat_scene = mat_proj.mult(mat_view);
         
         var lightMatrix = viewarea.getLightMatrix()[0];
         var mat_light = viewarea.getWCtoLCMatrix(lightMatrix);
@@ -5039,13 +5064,13 @@ x3dom.gfx_webgl = (function () {
         else if (rt._cf.background.node === scene.getBackground())
         {
             bgnd = scene.getBackground();
-            bgnd._webgl.render(gl, mat_scene);
+            bgnd._webgl.render(gl, mat_view, mat_proj);
         }
         else 
         {
             bgnd = rt._cf.background.node;
             this.setupScene(gl, bgnd);
-            bgnd._webgl.render(gl, mat_scene);
+            bgnd._webgl.render(gl, mat_view, mat_proj);
         }
         
         gl.depthFunc(gl.LEQUAL);

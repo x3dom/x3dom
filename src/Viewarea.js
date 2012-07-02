@@ -450,7 +450,7 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
     {
         var min = x3dom.fields.SFVec3f.MAX();
         var max = x3dom.fields.SFVec3f.MIN();
-        var ok = this._scene.getVolume(min, max, true);    //TODO; FFF optimize
+        var ok = this._scene.getVolume(min, max, false);    //TODO; FFF optimize
 
         if (ok)
         {
@@ -1029,7 +1029,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, true);
+				ok = this._scene.getVolume(min, max, false);
 				
 				d = ok ? (max.subtract(min)).length() : 10;
 				d = (d < x3dom.fields.Eps) ? 1 : d;
@@ -1056,7 +1056,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, true);
+				ok = this._scene.getVolume(min, max, false);
 				
 				d = ok ? (max.subtract(min)).length() : 10;
 				d = (d < x3dom.fields.Eps) ? 1 : d;
