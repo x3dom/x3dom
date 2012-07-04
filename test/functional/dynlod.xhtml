@@ -53,16 +53,17 @@
 </head>
   <body>
   <h1>Dynamic LOD</h1>
-    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='true' width='600px' height='400px'>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='false' width='800px' height='600px'>
       <Scene DEF='scene'>
         <DynamicLOD center='0 0 0' size="2 2" subdivision="10 10">
             <Shape containerField="root">
               <Appearance>
-                <Material diffuseColor='1 1 0'/>
+                <Material diffuseColor='.2 .4 1.0'/>
               </Appearance>
             </Shape>
         </DynamicLOD>
         <Background skyColor=".1 .15 .3"/>
+        <Viewpoint zNear="0.000001" zFar="100"/>
       </Scene>
     </X3D>
   </body>
