@@ -555,9 +555,14 @@ x3dom.registerNodeType(
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
             this.addField_SFNode ('root', x3dom.nodeTypes.X3DShapeNode);
             
+            this.addField_SFString(ctx, 'urlHead', "http://r");
+            this.addField_SFString(ctx, 'urlCenter', ".ortho.tiles.virtualearth.net/tiles/h");
+            this.addField_SFString(ctx, 'urlTail', ".png?g=-1");
+            
             this.rootGeometry = new x3dom.nodeTypes.Plane(ctx);
             this.level = 0;
             this.quadrant = 4;
+            this.cell = "";
         },
         {
             nodeChanged: function()
@@ -592,14 +597,14 @@ x3dom.registerNodeType(
                 //calculate range check for viewer distance d (with range in local coordinates)
                 if (len > 0.00001 && len / 2 <= this._vf.size.length()) {
                     /*  Quadrants per level:
-                        1 | 0
+                        0 | 1
                         -----
                         2 | 3
                     */
                     if (this._childNodes.length <= 1) {
                         var offset = new Array(
-                                new x3dom.fields.SFVec3f( 0.25*this._vf.size.x,  0.25*this._vf.size.y, 0),
                                 new x3dom.fields.SFVec3f(-0.25*this._vf.size.x,  0.25*this._vf.size.y, 0),
+                                new x3dom.fields.SFVec3f( 0.25*this._vf.size.x,  0.25*this._vf.size.y, 0),
                                 new x3dom.fields.SFVec3f(-0.25*this._vf.size.x, -0.25*this._vf.size.y, 0),
                                 new x3dom.fields.SFVec3f( 0.25*this._vf.size.x, -0.25*this._vf.size.y, 0)
                             );
@@ -609,21 +614,39 @@ x3dom.registerNodeType(
                             
                             node._nameSpace = this._nameSpace;
                             node._eye.setValues(this._eye);
+                            
                             node.level = this.level + 1;
                             node.quadrant = l;
+                            node.cell = this.cell + l;
+                            
+                            node._vf.urlHead = this._vf.urlHead;
+                            node._vf.urlCenter = this._vf.urlCenter;
+                            node._vf.urlTail = this._vf.urlTail;
                             
                             node._vf.center = this._vf.center.add(offset[l]);
                             node._vf.size = this._vf.size.multiply(0.5);
                             node._vf.subdivision.setValues(this._vf.subdivision);
                             
                             var app = new x3dom.nodeTypes.Appearance();
-                            var mat = new x3dom.nodeTypes.Material();
                             
+                            var mat = new x3dom.nodeTypes.Material();
                             mat._vf.diffuseColor = new x3dom.fields.SFVec3f(Math.random(),Math.random(),Math.random());
+                            
+                            var tex = new x3dom.nodeTypes.ImageTexture();
+                            tex._nameSpace = this._nameSpace;
+                            tex._vf.url[0] = this._vf.urlHead + node.quadrant + this._vf.urlCenter + node.cell + this._vf.urlTail;
+                            //x3dom.debug.logInfo(tex._vf.url[0]);
+                            
                             app.addChild(mat);
                             mat.nodeChanged();
                             
+                            app.addChild(tex);
+                            tex.nodeChanged();
+                            
                             var shape = new x3dom.nodeTypes.Shape();
+                            shape._nameSpace = this._nameSpace;
+                            //shape._dirty.texture = true;
+                            
                             shape.addChild(app);
                             app.nodeChanged();
                             
