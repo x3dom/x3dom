@@ -518,7 +518,7 @@ x3dom.registerNodeType(
                 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, true);
+                var ok = this.getVolume(min, max, false);
                 
                 var mid = max.add(min).multiply(0.5).add(this._vf.center);
                 var len = mid.subtract(this._eye).length();
@@ -595,7 +595,7 @@ x3dom.registerNodeType(
                 var l, len = this._vf.center.subtract(this._eye).length();
                 
                 //calculate range check for viewer distance d (with range in local coordinates)
-                if (len > 0.00001 && len / 2 <= this._vf.size.length()) {
+                if (len > x3dom.fields.Eps && len * this._vf.subScale <= this._vf.size.length()) {
                     /*  Quadrants per level:
                         0 | 1
                         -----
@@ -629,23 +629,22 @@ x3dom.registerNodeType(
                             
                             var app = new x3dom.nodeTypes.Appearance();
                             
-                            var mat = new x3dom.nodeTypes.Material();
-                            mat._vf.diffuseColor = new x3dom.fields.SFVec3f(Math.random(),Math.random(),Math.random());
+                            //var mat = new x3dom.nodeTypes.Material();
+                            //mat._vf.diffuseColor = new x3dom.fields.SFVec3f(Math.random(),Math.random(),Math.random());
+                            //
+                            //app.addChild(mat);
+                            //mat.nodeChanged();
                             
                             var tex = new x3dom.nodeTypes.ImageTexture();
                             tex._nameSpace = this._nameSpace;
                             tex._vf.url[0] = this._vf.urlHead + node.quadrant + this._vf.urlCenter + node.cell + this._vf.urlTail;
                             //x3dom.debug.logInfo(tex._vf.url[0]);
                             
-                            app.addChild(mat);
-                            mat.nodeChanged();
-                            
                             app.addChild(tex);
                             tex.nodeChanged();
                             
                             var shape = new x3dom.nodeTypes.Shape();
                             shape._nameSpace = this._nameSpace;
-                            //shape._dirty.texture = true;
                             
                             shape.addChild(app);
                             app.nodeChanged();
@@ -666,6 +665,19 @@ x3dom.registerNodeType(
                 else {
                     root.collectDrawableObjects(transform, out);
                 }
+            },
+            
+            getVolume: function(min, max, invalidate)
+            {
+                min.setValues(this._vf.center);
+                min.x -= 0.5 * this._vf.size.x;
+                min.y -= 0.5 * this._vf.size.y;
+                
+                max.setValues(this._vf.center);
+                max.x += 0.5 * this._vf.size.x;
+                max.y += 0.5 * this._vf.size.y;
+                
+                return true;
             }
         }
     )
