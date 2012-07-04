@@ -55,15 +55,16 @@
   <h1>Dynamic LOD</h1>
     <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='false' width='800px' height='600px'>
       <Scene DEF='scene'>
-        <DynamicLOD center='0 0 0' size="2 2" subdivision="1 1">
+        <DynamicLOD center='0 0 0' size="4 3" subdivision="1 1">
             <Shape containerField="root">
               <Appearance>
                 <Material diffuseColor='.2 .4 1.0'/>
+                <!--ImageTexture url='media/texture/generic/earth.jpg'/-->
               </Appearance>
             </Shape>
         </DynamicLOD>
         <Background skyColor=".1 .15 .3"/>
-        <Viewpoint zNear="0.000001" zFar="100"/>
+        <Viewpoint zNear="0.000001" zFar="100" position="0 0 11" />
       </Scene>
     </X3D>
   </body>
