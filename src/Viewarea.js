@@ -635,6 +635,9 @@ x3dom.Viewarea.prototype.uprightView = function()
 
 x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
 {
+    if (!node || !node._xmlNode)
+        return;
+        
     event.target = node._xmlNode;
     var attrib = node._xmlNode[eventType];
 
@@ -687,7 +690,8 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     try {
         var anObj = obj;
 
-        if ( !anObj._xmlNode[eventType] &&
+        if ( anObj && anObj._xmlNode &&
+             !anObj._xmlNode[eventType] &&
              !anObj._xmlNode.hasAttribute(eventType) &&
              !anObj._listeners[event.type]) {
             anObj = anObj._cf.geometry.node;

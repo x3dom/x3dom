@@ -20,13 +20,14 @@ x3dom.registerNodeType(
 
             this.addField_SFVec2f(ctx, 'size', 2, 2);
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
+            this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
 
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 			
-			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby;
+			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby+'-'+this._vf.center.x+'-'+this._vf.center.y+'-'+this._vf.center.z;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( ctx && x3dom.geoCache[geoCacheID] != undefined )
 			{
 				x3dom.debug.logInfo("Using Plane from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
@@ -41,9 +42,9 @@ x3dom.registerNodeType(
 
                 for (y = 0; y <= suby; y++) {
                     for (x = 0; x <= subx; x++) {
-                        this._mesh._positions[0].push(x * xstep - sx);
-						this._mesh._positions[0].push(y * ystep - sy);
-						this._mesh._positions[0].push(0);
+                        this._mesh._positions[0].push(this._vf.center.x + x * xstep - sx);
+						this._mesh._positions[0].push(this._vf.center.y + y * ystep - sy);
+						this._mesh._positions[0].push(this._vf.center.z);
 						this._mesh._normals[0].push(0);
 						this._mesh._normals[0].push(0);
 						this._mesh._normals[0].push(1);
@@ -88,9 +89,9 @@ x3dom.registerNodeType(
 	
 					for (y = 0; y <= suby; y++) {
 						for (x = 0; x <= subx; x++) {
-							this._mesh._positions[0].push(x * xstep - sx);
-							this._mesh._positions[0].push(y * ystep - sy);
-							this._mesh._positions[0].push(0);							
+							this._mesh._positions[0].push(this._vf.center.x + x * xstep - sx);
+							this._mesh._positions[0].push(this._vf.center.y + y * ystep - sy);
+							this._mesh._positions[0].push(this._vf.center.z);							
 						}
 					}
 		
@@ -117,9 +118,9 @@ x3dom.registerNodeType(
 	
 					for (y = 0; y <= suby; y++) {
 						for (x = 0; x <= subx; x++) {
-							this._mesh._positions[0].push(x * xstep - sx);
-							this._mesh._positions[0].push(y * ystep - sy);
-							this._mesh._positions[0].push(0);
+							this._mesh._positions[0].push(this._vf.center.x + x * xstep - sx);
+							this._mesh._positions[0].push(this._vf.center.y + y * ystep - sy);
+							this._mesh._positions[0].push(this._vf.center.z);
 							this._mesh._normals[0].push(0);
 							this._mesh._normals[0].push(0);
 							this._mesh._normals[0].push(1);

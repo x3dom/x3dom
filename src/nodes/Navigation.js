@@ -462,38 +462,67 @@ x3dom.registerNodeType(
     )
 );
 
-// ### LOD ###
+// ### X3DLODNode ###
 x3dom.registerNodeType(
-    "LOD",
+    "X3DLODNode",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.LOD.superClass.call(this, ctx);
+            x3dom.nodeTypes.X3DLODNode.superClass.call(this, ctx);
 
             this.addField_SFBool (ctx, "forceTransitions", false);
-            this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
-            this.addField_MFFloat(ctx, "range", []);
+            this.addField_SFVec3f(ctx, "center", 0, 0, 0);
 
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function(transform, out)
             {
-                var i=0, n=this._childNodes.length;
-
                 var collectNeedsReset = false;
                 if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
                     out.collect = true;
                     collectNeedsReset = true;
                 }
+                
+                this.visitChildren(transform, out);
 
+                if (out !== null)
+                {
+                    //optimization, exploit coherence and do it for next frame
+                    out.LODs.push( [transform, this] );
+                }
+                
+                if (collectNeedsReset)
+                    out.collect = false;
+            },
+            
+            visitChildren: function(transform, out) {}
+        }
+    )
+);
+
+// ### LOD ###
+x3dom.registerNodeType(
+    "LOD",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DLODNode,
+        function (ctx) {
+            x3dom.nodeTypes.LOD.superClass.call(this, ctx);
+
+            this.addField_MFFloat(ctx, "range", []);
+        },
+        {
+            visitChildren: function(transform, out)
+            {
+                var i=0, n=this._childNodes.length;
+                
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, false);
-
-                var mid = (max.add(min).multiply(0.5)).add(this._vf.center);
+                var ok = this.getVolume(min, max, true);
+                
+                var mid = max.add(min).multiply(0.5).add(this._vf.center);
                 var len = mid.subtract(this._eye).length();
-
+                
                 //calculate range check for viewer distance d (with range in local coordinates)
                 //N+1 children nodes for N range values (L0, if d < R0, ... Ln-1, if d >= Rn-1)
                 while (i < this._vf.range.length && len > this._vf.range[i]) {
@@ -508,17 +537,113 @@ x3dom.registerNodeType(
                     var childTransform = this._childNodes[i].transformMatrix(transform);
                     this._childNodes[i].collectDrawableObjects(childTransform, out);
                 }
-
-                if (out !== null)
-                {
-                    //optimization, exploit coherence and do it for next frame
-                    out.LODs.push( [transform, this] );
-                }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             }
         }
     )
 );
 
+// ### DynamicLOD ###
+x3dom.registerNodeType(
+    "DynamicLOD",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DLODNode,
+        function (ctx) {
+            x3dom.nodeTypes.DynamicLOD.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'subScale', 0.5);
+            this.addField_SFVec2f(ctx, 'size', 2, 2);
+            this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
+            this.addField_SFNode ('root', x3dom.nodeTypes.X3DShapeNode);
+            
+            this.rootGeometry = new x3dom.nodeTypes.Plane(ctx);
+            this.level = 0;
+            this.quadrant = 4;
+        },
+        {
+            nodeChanged: function()
+            {
+                var root = this._cf.root.node;
+                
+                if (root == null || root._cf.geometry.node != null)
+                    return;
+                
+                this.rootGeometry._vf.size.setValues(this._vf.size);
+                this.rootGeometry._vf.subdivision.setValues(this._vf.subdivision);
+                this.rootGeometry._vf.center.setValues(this._vf.center);
+                this.rootGeometry.fieldChanged("subdivision");   // trigger update
+                
+    		    this._cf.root.node.addChild(this.rootGeometry);  // add to shape
+    		    this.rootGeometry.nodeChanged();
+    		    
+    		    this._cf.root.node.nodeChanged();
+    		    
+    		    this._nameSpace.doc.needRender = true;
+            },
+            
+            visitChildren: function(transform, out)
+            {
+                var root = this._cf.root.node;
+                
+                if (root == null)
+                    return;
+                
+                var l, len = this._vf.center.subtract(this._eye).length();
+                
+                //calculate range check for viewer distance d (with range in local coordinates)
+                if (len > 0.00001 && len / 2 <= this._vf.size.length()) {
+                    /*  Quadrants per level:
+                        1 | 0
+                        -----
+                        2 | 3
+                    */
+                    if (this._childNodes.length <= 1) {
+                        var offset = new Array(
+                                new x3dom.fields.SFVec3f( 0.25*this._vf.size.x,  0.25*this._vf.size.y, 0),
+                                new x3dom.fields.SFVec3f(-0.25*this._vf.size.x,  0.25*this._vf.size.y, 0),
+                                new x3dom.fields.SFVec3f(-0.25*this._vf.size.x, -0.25*this._vf.size.y, 0),
+                                new x3dom.fields.SFVec3f( 0.25*this._vf.size.x, -0.25*this._vf.size.y, 0)
+                            );
+                        
+                        for (l=0; l<4; l++) {
+                            var node = new x3dom.nodeTypes.DynamicLOD();
+                            
+                            node._nameSpace = this._nameSpace;
+                            node._eye.setValues(this._eye);
+                            node.level = this.level + 1;
+                            node.quadrant = l;
+                            
+                            node._vf.center = this._vf.center.add(offset[l]);
+                            node._vf.size = this._vf.size.multiply(0.5);
+                            node._vf.subdivision.setValues(this._vf.subdivision);
+                            
+                            var app = new x3dom.nodeTypes.Appearance();
+                            var mat = new x3dom.nodeTypes.Material();
+                            
+                            mat._vf.diffuseColor = new x3dom.fields.SFVec3f(Math.random(),Math.random(),Math.random());
+                            app.addChild(mat);
+                            mat.nodeChanged();
+                            
+                            var shape = new x3dom.nodeTypes.Shape();
+                            shape.addChild(app);
+                            app.nodeChanged();
+                            
+                            node.addChild(shape, "root");
+                            shape.nodeChanged();
+                            
+                            this.addChild(node);
+                            node.nodeChanged();
+                        }
+                    }
+                    else {
+                        for (l=1; l<this._childNodes.length; l++) {
+                            this._childNodes[l].collectDrawableObjects(transform, out);
+                        }
+                    }
+                }
+                else {
+                    root.collectDrawableObjects(transform, out);
+                }
+            }
+        }
+    )
+);
