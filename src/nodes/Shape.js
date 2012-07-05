@@ -328,6 +328,7 @@ x3dom.registerNodeType(
                     this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
                 }
                 if (!this._cf.geometry.node) {
+                    if (this._DEF)
                     x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
                 }
                 else if (!this._objectID && this._cf.geometry.node._pickable) {

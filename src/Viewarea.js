@@ -450,7 +450,7 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
     {
         var min = x3dom.fields.SFVec3f.MAX();
         var max = x3dom.fields.SFVec3f.MIN();
-        var ok = this._scene.getVolume(min, max, true);    //TODO; FFF optimize
+        var ok = this._scene.getVolume(min, max, false);    //TODO; FFF optimize
 
         if (ok)
         {
@@ -635,6 +635,9 @@ x3dom.Viewarea.prototype.uprightView = function()
 
 x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
 {
+    if (!node || !node._xmlNode)
+        return;
+        
     event.target = node._xmlNode;
     var attrib = node._xmlNode[eventType];
 
@@ -687,7 +690,8 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
     try {
         var anObj = obj;
 
-        if ( !anObj._xmlNode[eventType] &&
+        if ( anObj && anObj._xmlNode &&
+             !anObj._xmlNode[eventType] &&
              !anObj._xmlNode.hasAttribute(eventType) &&
              !anObj._listeners[event.type]) {
             anObj = anObj._cf.geometry.node;
@@ -968,12 +972,16 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 		if (rotation)
         {
             var center = viewpoint.getCenterOfRotation();
-
-            this._rotMat =
-                x3dom.fields.SFMatrix4f.translation(center).
+            
+            var mat = this.getViewMatrix();
+            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
+            
+            this._rotMat = this._rotMat.
+                mult(x3dom.fields.SFMatrix4f.translation(center)).
+                mult(mat.inverse()).
                 mult(rotation).
-                mult(x3dom.fields.SFMatrix4f.translation(center.negate())).
-                mult(this._rotMat);
+                mult(mat).
+                mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
 		}
 	}
 };
@@ -1025,7 +1033,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, true);
+				ok = this._scene.getVolume(min, max, false);
 				
 				d = ok ? (max.subtract(min)).length() : 10;
 				d = (d < x3dom.fields.Eps) ? 1 : d;
@@ -1052,7 +1060,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, true);
+				ok = this._scene.getVolume(min, max, false);
 				
 				d = ok ? (max.subtract(min)).length() : 10;
 				d = (d < x3dom.fields.Eps) ? 1 : d;

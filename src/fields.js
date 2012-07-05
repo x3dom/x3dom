@@ -2266,9 +2266,10 @@ x3dom.fields.MFString.prototype.setValueByStr = function(str) {
 x3dom.fields.MFString.prototype.toString = function () {
     var str = "";
     for (var i=0; i<this.length; i++) {
-        str = str + this[i];
+		 str = str + this[i] + " ";
+        /*str = str + this[i];
         if (i<this.length-1)
-            str += " ";
+            str += " ";*/
     }
     return str;
 };

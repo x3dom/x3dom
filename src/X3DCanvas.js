@@ -673,6 +673,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         {
           numTouches : 0,
           
+          firstTouchTime: new Date().getTime(),
+          firstTouchPoint: new x3dom.fields.SFVec2f(0,0),
+          
           lastDrag : new x3dom.fields.SFVec2f(),
           
           lastMiddle : new x3dom.fields.SFVec2f(),
@@ -775,7 +778,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 				touches.numTouches = 1;
 				touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-				
 			} else if(touches.numTouches < 2 && evt.touches.length >= 2) {
 			
 				touches.numTouches = 2;
@@ -914,15 +916,20 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
-			if(doc == null)
-				doc  = this.parent.doc;			
+			if (doc == null)
+				doc = this.parent.doc;
           
 			// reinit first finger for rotation
-			if(touches.numTouches == 2 && evt.touches.length == 1)
+			if (touches.numTouches == 2 && evt.touches.length == 1)
 				touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-          
-			if(evt.touches.length < 2)
-				touches.numTouches = evt.touches.length;
+			
+			var dblClick = false;
+			
+			if (evt.touches.length < 2) {
+			    if (touches.numTouches == 1)
+			        dblClick = true;
+			    touches.numTouches = evt.touches.length;
+			}
 			
 			for(var i = 0; i < touches.lastLayer.length; i++) {
 				var pos = touches.lastLayer[i][1];
@@ -940,8 +947,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 					doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onclick");	
 				}
 			}
-			doc.needRender = true;
 			
+            if (dblClick) {
+                var now = new Date().getTime();
+                var dist = touches.firstTouchPoint.subtract(touches.lastDrag).length();
+
+                if (dist < 18 && now - touches.firstTouchTime < 180)
+                    doc.onDoubleClick(that.gl, 0, 0);
+
+                touches.firstTouchTime = now;
+                touches.firstTouchPoint = touches.lastDrag;
+            }
+			
+			doc.needRender = true;
         };
         
         var touchEndHandlerMoz = function(evt)
