@@ -253,9 +253,10 @@ x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
     var min = x3dom.fields.SFVec3f.MAX();
     var max = x3dom.fields.SFVec3f.MIN();
 
-    this._viewarea._scene.getVolume(min, max, true);
-    this._viewarea._scene._lastMin = min;
-    this._viewarea._scene._lastMax = max;
+    if (this._viewarea._scene.getVolume(min, max, true)) {
+        this._viewarea._scene._lastMin = min;
+        this._viewarea._scene._lastMax = max;
+    }
 
     ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMousePress(x, y, buttonState);
