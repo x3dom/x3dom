@@ -2276,7 +2276,6 @@ x3dom.gfx_webgl = (function () {
                     {
                         tex._video = document.createElement('video');
                         tex._video.setAttribute('autobuffer', 'true');
-                        //tex._video.setAttribute('src', tex._vf.url);
                         var p = document.getElementsByTagName('body')[0];
                         p.appendChild(tex._video);
                         //tex._video.style.display = "none";
@@ -2324,7 +2323,7 @@ x3dom.gfx_webgl = (function () {
 							that._webgl.indexTextureWidth  = tex._video.clientWidth;
 							that._webgl.indexTextureHeight = tex._video.clientHeight;
 						}
-                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url);
+                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url[0]);
                         
                         tex._video.play();
                         tex._intervalID = setInterval(updateMovie, 16);
@@ -2408,15 +2407,15 @@ x3dom.gfx_webgl = (function () {
 						tex._complete = true;
 						
                         var t11 = new Date().getTime() - t00;
-                        x3dom.debug.logInfo(texture + " bound tex url " + tex._vf.url + " at unit " + unit +
-                                            " with img load time " + t11 + " ms.");
+                        //x3dom.debug.logInfo(texture + " bound tex url " + tex._vf.url[0] + " at unit " + unit +
+                        //                    " with img load time " + t11 + " ms.");
                     };
 
                     image.onerror = function()
                     {
                         that._nameSpace.doc.downloadCount -= 1;
 
-                        x3dom.debug.logError("Can't load tex url: " + tex._vf.url + " (at unit " + unit + ").");
+                        x3dom.debug.logError("Can't load tex url: " + tex._vf.url[0] + " (at unit " + unit + ").");
                     };
 					
 					//(tex._complete || image.complete) ? load() : image.addEventListener('ImageLoadManager_Load', load, true);
