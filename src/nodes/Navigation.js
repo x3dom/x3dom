@@ -126,7 +126,7 @@ x3dom.registerNodeType(
 
                 if (znear <= 0 || zfar <= 0)
                 {
-                    var zRatio = 100000;    // 10000
+                    var zRatio = 10000;
                     var nearScale = 0.8, farScale = 1.2;
                     var viewarea = this._nameSpace.doc._viewarea;
                     
@@ -141,9 +141,9 @@ x3dom.registerNodeType(
                     
                     var mat = viewarea.getViewMatrix().inverse();
                     var vp = mat.e3();
-                    
-                    var sCenter = min.add(dia).multiply(0.5);
-                    var vDist = vp.subtract(sCenter).length();
+
+                    var sCenter = min.add(dia.multiply(0.5));
+                    var vDist = (vp.subtract(sCenter)).length();
                     
                     if (sRad) {
                         if (vDist > sRad) {
@@ -152,7 +152,7 @@ x3dom.registerNodeType(
                         }
                         else {
                             // Camera inside scene
-                            znear = x3dom.fields.Eps;
+                            znear = 0; //x3dom.fields.Eps;
                         }
                         zfar = (vDist + sRad) * farScale;
                     }
@@ -162,7 +162,7 @@ x3dom.registerNodeType(
                     }
                     
                     var zNearLimit = zfar / zRatio;
-                    znear = (znear > zNearLimit) ? znear : zNearLimit;
+                    znear = Math.max(znear, Math.max(x3dom.fields.Eps, zNearLimit));
                     //x3dom.debug.logInfo("\nVP: " + vp + "\nCT: " + sCenter + "\nNF: " + znear + " -> " + zfar);
                     
                     if (this._vf.zFar > 0)
@@ -184,15 +184,22 @@ x3dom.registerNodeType(
 
                     this._lastAspect = aspect;
                 }
-                else if (this._lastAspect !== aspect)
+                else
                 {
-                    this._projMatrix._00 = (1 / Math.tan(fovy / 2)) / aspect;
-                    this._lastAspect = aspect;
-                }
-                else if (znear <= 0 || zfar <= 0)
-                {
-                    this._projMatrix._22 = (znear+zfar)/(znear-zfar);
-                    this._projMatrix._23 = 2*znear*zfar/(znear-zfar);
+                    if (this._lastAspect !== aspect)
+                    {
+                        this._projMatrix._00 = (1 / Math.tan(fovy / 2)) / aspect;
+                        this._lastAspect = aspect;
+                    }
+                    if (znear <= 0 || zfar <= 0)
+                    {
+                        var div = znear - zfar;
+                        if (div != 0)
+                        {
+                            this._projMatrix._22 = (znear+zfar)/div;
+                            this._projMatrix._23 = 2*znear*zfar/div;
+                        }
+                    }
                 }
 
                 return this._projMatrix;
@@ -596,7 +603,7 @@ x3dom.registerNodeType(
                 
                 //calculate range check for viewer distance d (with range in local coordinates)
                 if (len > x3dom.fields.Eps && len * this._vf.subScale <= this._vf.size.length()) {
-                    /*  Quadrants per level:
+                    /*  Quadrants per level: (TODO; make parameterizable, e.g. 0 and 1 might be swapped)
                         0 | 1
                         -----
                         2 | 3
@@ -672,10 +679,12 @@ x3dom.registerNodeType(
                 min.setValues(this._vf.center);
                 min.x -= 0.5 * this._vf.size.x;
                 min.y -= 0.5 * this._vf.size.y;
+                min.z -= x3dom.fields.Eps;
                 
                 max.setValues(this._vf.center);
                 max.x += 0.5 * this._vf.size.x;
                 max.y += 0.5 * this._vf.size.y;
+                max.z += x3dom.fields.Eps;
                 
                 return true;
             }
