@@ -1381,36 +1381,42 @@ x3dom.registerNodeType(
             
             getMin: function()
 			{
-				if (this._parentNodes.length >= 1) {
-                    var center = this._parentNodes[0]._vf.bboxCenter;
-                    var size = this._parentNodes[0]._vf.bboxSize;
-                    
-                    if (size.x < 0 || size.y < 0 || size.z < 0) {
-                        return center;
-                    }
-                    
-                    return center.subtract(size.multiply(0.5));
+			    var center, size;
+			    
+				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                    center = this._parentNodes[0]._vf.bboxCenter;
+                    size = this._parentNodes[0]._vf.bboxSize;
                 }
                 else {
-                    return new x3dom.fields.SFVec3f(0,0,0);
+                    center = this._vf.position;
+                    size = this._vf.size;
                 }
+                
+                if (size.x < 0 || size.y < 0 || size.z < 0) {
+                    return center;
+                }
+                
+                return center.subtract(size.multiply(0.5));
 			},
 			
 			getMax: function()
 			{
-				if (this._parentNodes.length >= 1) {
-                    var center = this._parentNodes[0]._vf.bboxCenter;
-                    var size = this._parentNodes[0]._vf.bboxSize;
-                    
-                    if (size.x < 0 || size.y < 0 || size.z < 0) {
-                        return center;
-                    }
-                    
-                    return center.add(size.multiply(0.5));
+			    var center, size;
+			    
+				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                    center = this._parentNodes[0]._vf.bboxCenter;
+                    size = this._parentNodes[0]._vf.bboxSize;
                 }
                 else {
-                    return new x3dom.fields.SFVec3f(0,0,0);
+                    center = this._vf.position;
+                    size = this._vf.size;
                 }
+                
+                if (size.x < 0 || size.y < 0 || size.z < 0) {
+                    return center;
+                }
+                    
+                return center.add(size.multiply(0.5));
 			},
 			
 			getVolume: function(min, max, invalidate)
@@ -1423,11 +1429,12 @@ x3dom.registerNodeType(
 			
 			getCenter: function()
 			{
-				if (this._parentNodes.length >= 1) {
+				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+				    // compatibility with old implementation and examples
                     return this._parentNodes[0]._vf.bboxCenter;
                 }
                 else {
-                    return new x3dom.fields.SFVec3f(0,0,0);
+                    return this._vf.position;
                 }
 			}
         }
