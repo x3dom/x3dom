@@ -446,12 +446,87 @@ x3dom.gfx_webgl = (function () {
         return Math.pow(2, Math.round(log2x));
     }
 
+    function getArrayBufferView(type, buffer)
+    {
+        var array = null;
+        
+        switch(type)
+        {
+            case "Int8":
+                array = new Int8Array(buffer);
+                break;
+            case "Uint8":
+                array = new Uint8Array(buffer);
+                break;
+            case "Int16":
+                array = new Int16Array(buffer);
+                break;
+            case "Uint16":
+                array = new Uint16Array(buffer);
+                break;
+            case "Int32":
+                array = new Int32Array(buffer);
+                break;
+            case "Uint32":
+                array = new Uint32Array(buffer);
+                break;
+            case "Float32":
+                array = new Float32Array(buffer);
+                break;
+            case "Float64":
+                array = new Float64Array(buffer);
+                break;
+            default:
+                x3dom.debug.logError("Can't create typed array view of type " + type + ", trying Float32...");
+                array = new Float32Array(buffer);
+                break;
+        }
+
+        return array;
+    }
+
+    function getVertexAttribType(type, gl)
+    {
+        var dataType = gl.NONE;
+
+        switch(type)
+        {
+            case "Int8":
+                dataType = gl.BYTE;
+                break;
+            case "Uint8":
+                dataType = gl.UNSIGNED_BYTE;
+                break;
+            case "Int16":
+                dataType = gl.SHORT;
+                break;
+            case "Uint16":
+                dataType = gl.UNSIGNED_SHORT;
+                break;
+            case "Int32":
+                dataType = gl.INT;
+                break;
+            case "Uint32":
+                dataType = gl.UNSIGNED_INT;
+                break;
+            case "Float32":
+                dataType = gl.FLOAT;
+                break;
+            case "Float64":
+            default:
+                x3dom.debug.logError("Can't find GL data type for " + type + ", getting FLOAT...");
+                dataType = gl.FLOAT;
+                break;
+        }
+
+        return dataType;
+    }
     
 //----------------------------------------------------------------------------
 /*! get shader program
  */
 //----------------------------------------------------------------------------
-    Context.prototype.getShaderProgram = function(gl, ids) 
+    Context.prototype.getShaderProgram = function(gl, ids)
     {
         var shader = [];
         var prog = null;
@@ -1714,7 +1789,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.position, 3, gl.FLOAT, false, 0, 0);
+                    gl.vertexAttribPointer(shape._webgl.shader.position, 3, shape._webgl.coordType, false, 0, 0);
 
                     vertices = null;
                 }
@@ -1737,7 +1812,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.color, 3, gl.FLOAT, false, 0, 0); 
+                    gl.vertexAttribPointer(shape._webgl.shader.color, 3, shape._webgl.colorType, false, 0, 0);
                     
                     colors = null;
                 }
@@ -1760,7 +1835,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.normal, 3, gl.FLOAT, false, 0, 0); 
+                    gl.vertexAttribPointer(shape._webgl.shader.normal, 3, shape._webgl.normalType, false, 0, 0);
                     
                     normals = null;
                 }
@@ -1783,7 +1858,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.texCoord, 3, gl.FLOAT, false, 0, 0); 
+                    gl.vertexAttribPointer(shape._webgl.shader.texCoord, 3, shape._webgl.texCoordType, false, 0, 0);
                     
                     texCoords = null;
                 }
@@ -2171,6 +2246,10 @@ x3dom.gfx_webgl = (function () {
                 texture: [ids],
 				textureFilter: [gl.LINEAR], 
                 //buffers: [{},{},{},{},{}],
+                coordType: gl.FLOAT,
+                normalType: gl.FLOAT,
+                texCoordType: gl.FLOAT,
+                colorType: gl.FLOAT,
                 lightsAndShadow: useLightingFunc(viewarea),
 				imageGeometry: 0,
 				indexedImageGeometry: 0,
@@ -2441,6 +2520,10 @@ x3dom.gfx_webgl = (function () {
                 indexes: shape._cf.geometry.node._mesh._indices,
                 //indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
                 //buffers: [{},{},{},{},{}],
+                coordType: gl.FLOAT,
+                normalType: gl.FLOAT,
+                texCoordType: gl.FLOAT,
+                colorType: gl.FLOAT,
                 lightsAndShadow: useLightingFunc(viewarea),
 				imageGeometry: numCoordinateTextures,
 				indexedImageGeometry: indexed,
@@ -2652,7 +2735,7 @@ x3dom.gfx_webgl = (function () {
                     var indicesBuffer = gl.createBuffer();
                     shape._webgl.buffers[0] = indicesBuffer;
 
-                    var indexArray = new Uint16Array(XHR_buffer);
+                    var indexArray = getArrayBufferView("Uint16", XHR_buffer);
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -2706,12 +2789,15 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[1] = positionBuffer;
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);               
 
-                    var vertices = new Float32Array(XHR_buffer);
+                    var attribTypeStr = shape._cf.geometry.node._vf.coordType;
+                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+
+                    var vertices = getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-                    gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
                     gl.enableVertexAttribArray(sp.position);
 
                     // Test reading Data
@@ -2719,7 +2805,8 @@ x3dom.gfx_webgl = (function () {
                     
                     shape._cf.geometry.node._mesh._numCoords = vertices.length / 3;
 
-                    if (shape._vf.bboxSize.x < 0 || shape._vf.bboxSize.y < 0 || shape._vf.bboxSize.z < 0)
+                    if ((attribTypeStr == "Float32") &&
+                        (shape._vf.bboxSize.x < 0 || shape._vf.bboxSize.y < 0 || shape._vf.bboxSize.z < 0))
                     {
                         var min = new x3dom.fields.SFVec3f(vertices[0],vertices[1],vertices[2]);
                         var max = new x3dom.fields.SFVec3f(vertices[0],vertices[1],vertices[2]);
@@ -2769,12 +2856,15 @@ x3dom.gfx_webgl = (function () {
                     var normalBuffer = gl.createBuffer();
                     shape._webgl.buffers[2] = normalBuffer;
 
-                    var normals = new Float32Array(XHR_buffer);
+                    var attribTypeStr = shape._cf.geometry.node._vf.normalType;
+                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+
+                    var normals = getArrayBufferView("Float32", XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
 
-                    gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+                    gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false, 0, 0);
                     gl.enableVertexAttribArray(sp.normal);
 
                     // Test reading Data
@@ -2809,12 +2899,15 @@ x3dom.gfx_webgl = (function () {
                     var texcBuffer = gl.createBuffer();
                     shape._webgl.buffers[3] = texcBuffer;
 
-                    var texCoords = new Float32Array(XHR_buffer);
+                    var attribTypeStr = shape._cf.geometry.node._vf.texCoordType;
+                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+
+                    var texCoords = getArrayBufferView("Float32", XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
 
-                    gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0); 
+                    gl.vertexAttribPointer(sp.texcoord, 2, shape._webgl.texCoordType, false, 0, 0);
                     gl.enableVertexAttribArray(sp.texcoord);
 
                     // Test reading Data
@@ -2849,12 +2942,15 @@ x3dom.gfx_webgl = (function () {
                     var colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[4] = colorBuffer;
 
-                    var colors = new Float32Array(XHR_buffer);
+                    var attribTypeStr = shape._cf.geometry.node._vf.colorType;
+                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+
+                    var colors = getArrayBufferView("Float32", XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
 
-                    gl.vertexAttribPointer(sp.color, 3, gl.FLOAT, false, 0, 0); 
+                    gl.vertexAttribPointer(sp.color, 3, shape._webgl.colorType, false, 0, 0);
                     gl.enableVertexAttribArray(sp.color);
 
                     // Test reading Data
@@ -2885,7 +2981,7 @@ x3dom.gfx_webgl = (function () {
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.IG_PositionBuffer);
             
-            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+            gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
             gl.enableVertexAttribArray(sp.position);
 
             vertices = null;
@@ -2918,7 +3014,7 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-                gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+                gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
                 gl.enableVertexAttribArray(sp.position);
 
                 vertices = null;
@@ -2933,7 +3029,7 @@ x3dom.gfx_webgl = (function () {
                 gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
             
-                gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+                gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false, 0, 0);
                 gl.enableVertexAttribArray(sp.normal);
 
                 normals = null;
@@ -2949,7 +3045,7 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
             
                 gl.vertexAttribPointer(sp.texcoord, 
-                    shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
+                    shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
                 
                 texCoords = null;
@@ -2965,7 +3061,7 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
             
                 gl.vertexAttribPointer(sp.color, 
-                    shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
+                    shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false, 0, 0);
                 gl.enableVertexAttribArray(sp.color);
                 
                 colors = null;
@@ -3572,7 +3668,7 @@ x3dom.gfx_webgl = (function () {
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
                     
-                    gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
                     gl.enableVertexAttribArray(sp.position);
                 }
                 
@@ -3737,7 +3833,7 @@ x3dom.gfx_webgl = (function () {
 						
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 						
-						gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+						gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
 						gl.enableVertexAttribArray(sp.position);
 					}
 					if (sp.color !== undefined)
@@ -3745,7 +3841,7 @@ x3dom.gfx_webgl = (function () {
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 						
 						gl.vertexAttribPointer(sp.color, 
-							shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
+							shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false, 0, 0);
 						gl.enableVertexAttribArray(sp.color);
 					}
 					if (sp.texcoord !== undefined)
@@ -3753,7 +3849,7 @@ x3dom.gfx_webgl = (function () {
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 
 						gl.vertexAttribPointer(sp.texcoord, 
-							shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
+							shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false, 0, 0);
 						gl.enableVertexAttribArray(sp.texcoord);
 					}
 				}
@@ -4317,14 +4413,14 @@ x3dom.gfx_webgl = (function () {
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 				
-				gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+				gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
 				gl.enableVertexAttribArray(sp.position);
 			  }
 			  if (sp.normal !== undefined) 
 			  {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+2]);            
 				
-				gl.vertexAttribPointer(sp.normal, 3, gl.FLOAT, false, 0, 0); 
+				gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false, 0, 0);
 				gl.enableVertexAttribArray(sp.normal);
 			  }
 			  if (sp.texcoord !== undefined)
@@ -4332,7 +4428,7 @@ x3dom.gfx_webgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 				
 				gl.vertexAttribPointer(sp.texcoord, 
-					shape._cf.geometry.node._mesh._numTexComponents, gl.FLOAT, false, 0, 0); 
+					shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false, 0, 0);
 				gl.enableVertexAttribArray(sp.texcoord);
 			  }
 			  if (sp.color !== undefined)
@@ -4340,7 +4436,7 @@ x3dom.gfx_webgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 				
 				gl.vertexAttribPointer(sp.color, 
-					shape._cf.geometry.node._mesh._numColComponents, gl.FLOAT, false, 0, 0); 
+					shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false, 0, 0);
 				gl.enableVertexAttribArray(sp.color);
 			  }
 			}

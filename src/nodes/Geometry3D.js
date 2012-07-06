@@ -1341,7 +1341,9 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
-            
+
+            this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
+            this.addField_SFVec3f (ctx, 'size', 0, 0, 0);
             this.addField_MFInt32 (ctx, 'vertexCount', [0]);
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
             
@@ -1352,6 +1354,16 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'color', "");
             this.addField_SFString(ctx, 'tangent', "");     //TODO
             this.addField_SFString(ctx, 'binormal', "");    //TODO
+
+            // Typed Array View Types
+            // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
+            //this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString(ctx, 'coordType', "Float32");
+            this.addField_SFString(ctx, 'normalType', "Float32");
+            this.addField_SFString(ctx, 'texCoordType', "Float32");
+            this.addField_SFString(ctx, 'colorType', "Float32");
+            //this.addField_SFString(ctx, 'tangentType', "Float32");
+            //this.addField_SFString(ctx, 'binormalType', "Float32");
             
             // workaround
 			this._mesh._numTexComponents = 2;
