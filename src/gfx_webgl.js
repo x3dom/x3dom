@@ -2793,6 +2793,20 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
 
                     var vertices = getArrayBufferView(attribTypeStr, XHR_buffer);
+                    
+                    // FIXME; move to shader
+                    if (attribTypeStr != "Float32")
+                    {
+                        var center = shape._cf.geometry.node._vf.position;
+                        var size = shape._cf.geometry.node._vf.size;
+                        
+                        for (var j=0; j<vertices.length; j+=3)
+                        {
+                            vertices[j+0] = center.x + size.x * vertices[j+0] / 32767;
+                            vertices[j+1] = center.y + size.y * vertices[j+1] / 32767;
+                            vertices[j+2] = center.z + size.z * vertices[j+2] / 32767;
+                        }
+                    }
 
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -2826,7 +2840,7 @@ x3dom.gfx_webgl = (function () {
                         shape._vf.bboxCenter.setValues(min.add(max).multiply(0.5));
                         shape._vf.bboxSize.setValues(max.subtract(min));
                     }
-
+                    
                     vertices = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
@@ -2857,9 +2871,9 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[2] = normalBuffer;
 
                     var attribTypeStr = shape._cf.geometry.node._vf.normalType;
-                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.normalType = getVertexAttribType(attribTypeStr, gl);
 
-                    var normals = getArrayBufferView("Float32", XHR_buffer);
+                    var normals = getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
@@ -2900,9 +2914,9 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[3] = texcBuffer;
 
                     var attribTypeStr = shape._cf.geometry.node._vf.texCoordType;
-                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.texCoordType = getVertexAttribType(attribTypeStr, gl);
 
-                    var texCoords = getArrayBufferView("Float32", XHR_buffer);
+                    var texCoords = getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
@@ -2943,9 +2957,9 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[4] = colorBuffer;
 
                     var attribTypeStr = shape._cf.geometry.node._vf.colorType;
-                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.colorType = getVertexAttribType(attribTypeStr, gl);
 
-                    var colors = getArrayBufferView("Float32", XHR_buffer);
+                    var colors = getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
