@@ -1343,7 +1343,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
 
             this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
-            this.addField_SFVec3f (ctx, 'size', 0, 0, 0);
+            this.addField_SFVec3f (ctx, 'size', 1, 1, 1);
             this.addField_MFInt32 (ctx, 'vertexCount', [0]);
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
             
@@ -1462,7 +1462,7 @@ x3dom.registerNodeType(
 			}
 			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
-			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
 			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 			this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);
