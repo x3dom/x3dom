@@ -270,19 +270,20 @@ x3dom.gfx_webgl = (function () {
     
     g_shaders['vs-x3d-pick'] = { type: "vertex", data:
         "attribute vec3 position;" +
+        "uniform vec3 bgCenter;" +
+		"uniform vec3 bgSize;" +
+		"uniform float bgPrecisionMax;" +
         "uniform mat4 modelMatrix;" +
         "uniform mat4 modelViewProjectionMatrix;" +
         "uniform vec3 wcMin;" +
         "uniform vec3 wcMax;" +
         "varying vec3 worldCoord;" +
         "void main(void) {" +
-        "    worldCoord = (modelMatrix * vec4(position, 1.0)).xyz;" +
+        "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;" +
         "    vec3 dia = wcMax - wcMin;" +
-        "    worldCoord = worldCoord - wcMin;" +
-        "    worldCoord.x /= dia.x;" +
-        "    worldCoord.y /= dia.y;" +
-        "    worldCoord.z /= dia.z;" +
-        "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
+        "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
+        "    worldCoord = (worldCoord - wcMin) / dia;" +
+        "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
         "}"
         };
 		
@@ -755,6 +756,8 @@ x3dom.gfx_webgl = (function () {
 		var imageGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) ? 1 : 0;
 		var iG_Precision		= (imageGeometry) ? shape._cf.geometry.node.numCoordinateTextures() : 0;
 		var iG_Indexed			= (imageGeometry && shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0;
+		var requireBBox         = (shape._cf.geometry.node._vf.coordType !== undefined && shape._cf.geometry.node._vf.coordType != "Float32");
+		var requireBBoxCol      = (shape._cf.geometry.node._vf.colorType !== undefined && shape._cf.geometry.node._vf.colorType != "Float32");
 		
         var shaderIdentifier = "vs-x3d-mobil-" +  vertexColor + 
                                                   texture +
@@ -767,9 +770,11 @@ x3dom.gfx_webgl = (function () {
 												  lights +
 												  imageGeometry +
 												  iG_Precision +
-												  iG_Indexed;
-										  
-		if(!g_shaders[shaderIdentifier]){
+												  iG_Indexed + 
+												  requireBBox + 
+												  requireBBoxCol;
+		
+		if(!g_shaders[shaderIdentifier]) {
 		
 			var shader = "";
             
@@ -789,9 +794,17 @@ x3dom.gfx_webgl = (function () {
 
 			shader += "varying vec4 fragColor;\n";
 			
+			if(requireBBox) {
+				shader += "uniform vec3 bgCenter;\n";
+				shader += "uniform vec3 bgSize;\n";
+				shader += "uniform float bgPrecisionMax;\n";
+			}
+			if(requireBBoxCol) {
+			    shader += "uniform float bgPrecisionColMax;\n";
+			}
 			if(imageGeometry) {
-				shader += "uniform vec3 IG_bboxMin;";
-				shader += "uniform vec3 IG_bboxMax;";
+			    shader += "uniform vec3 IG_bboxMin;\n";
+			    shader += "uniform vec3 IG_bboxMax;\n";
 				shader += "uniform float IG_coordTextureWidth;";
 				shader += "uniform float IG_coordTextureHeight;";
 				shader += "uniform sampler2D IG_normalTexture;";
@@ -882,7 +895,7 @@ x3dom.gfx_webgl = (function () {
 				} else {
 					if(vertexColor == 3){
 						shader += "attribute vec3 color;";
-					}else{
+					} else{
 						shader += "attribute vec4 color;";
 					}
 				}
@@ -961,10 +974,16 @@ x3dom.gfx_webgl = (function () {
 			} else {
 				shader += "vec3 vertNormal = normal;";
 				shader += "vec3 vertPosition = position;";
+				if(requireBBox) {
+				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
+			    }
 				if(vertexColor == 3){
 					shader += "vec3 vertColor = color;";
 				} else if(vertexColor == 4) {
 					shader += "vec4 vertColor = color;";
+				}
+				if(requireBBoxCol && vertexColor >= 3) {
+				    shader += "vertColor = vertColor / bgPrecisionColMax;\n";
 				}
 				if(texture) {
 					shader += "vec2 vertTexCoord = texcoord;";
@@ -1059,8 +1078,6 @@ x3dom.gfx_webgl = (function () {
 			g_shaders[shaderIdentifier] = {};
             g_shaders[shaderIdentifier].type = "vertex";
             g_shaders[shaderIdentifier].data = shader;
-        }else{
-            //x3dom.debug.logInfo("using existend Vertex Shader: " + shaderIdentifier);
         }
 
         return shaderIdentifier;		
@@ -1141,8 +1158,6 @@ x3dom.gfx_webgl = (function () {
 			g_shaders[shaderIdentifier] = {};
             g_shaders[shaderIdentifier].type = "fragment";
             g_shaders[shaderIdentifier].data = shader;
-        }else{
-            //x3dom.debug.logInfo("using existend Vertex Shader: " + shaderIdentifier);
         }
         
         return shaderIdentifier;		
@@ -1167,6 +1182,8 @@ x3dom.gfx_webgl = (function () {
 		var imageGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) ? 1 : 0;
 		var iG_Precision		= (imageGeometry) ? shape._cf.geometry.node.numCoordinateTextures() : 0;
 		var iG_Indexed			= (imageGeometry && shape._cf.geometry.node.getIndexTexture() != null) ? 1 : 0;
+		var requireBBox         = (shape._cf.geometry.node._vf.coordType !== undefined && shape._cf.geometry.node._vf.coordType != "Float32");
+		var requireBBoxCol      = (shape._cf.geometry.node._vf.colorType !== undefined && shape._cf.geometry.node._vf.colorType != "Float32");
 										   
 		var shaderIdentifier = "vs-x3d-" +  vertexColor + 
                                             texture +
@@ -1179,9 +1196,11 @@ x3dom.gfx_webgl = (function () {
 											shadow +
 											imageGeometry +
 											iG_Precision +
-											iG_Indexed;
+											iG_Indexed +
+											requireBBox + 
+											requireBBoxCol;
 
-        if(!g_shaders[shaderIdentifier]){
+        if(!g_shaders[shaderIdentifier]) {
             //x3dom.debug.logInfo("generate new Vertex Shader: " + shaderIdentifier);
             
             var shader = "";
@@ -1194,6 +1213,14 @@ x3dom.gfx_webgl = (function () {
             shader += "uniform mat4 modelViewProjectionMatrix;\n";
             shader += "varying vec3 fragNormal;\n";
 			
+			if(requireBBox) {
+				shader += "uniform vec3 bgCenter;\n";
+				shader += "uniform vec3 bgSize;\n";
+				shader += "uniform float bgPrecisionMax;\n";
+			}
+			if(requireBBoxCol) {
+			    shader += "uniform float bgPrecisionColMax;\n";
+			}
 			if(imageGeometry) {
 				shader += "uniform vec3 IG_bboxMin;\n";
 				shader += "uniform vec3 IG_bboxMax;\n";
@@ -1318,9 +1345,17 @@ x3dom.gfx_webgl = (function () {
 					shader += "vec2 vertTexCoord = texcoord;\n";
 				}
 				shader += "vec3 vertPosition = position;\n";
+				if(requireBBox) {
+				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
+			    }
 				shader += "gl_PointSize = 2.0;\n";
 				if(vertexColor){
-					shader += "fragColor = color;\n";
+    				if(requireBBoxCol) {
+    				    shader += "fragColor = color / bgPrecisionColMax;\n";
+    				}
+    				else {
+    					shader += "fragColor = color;\n";
+    				}
 				}
 			}
             
@@ -1356,8 +1391,6 @@ x3dom.gfx_webgl = (function () {
             g_shaders[shaderIdentifier] = {};
             g_shaders[shaderIdentifier].type = "vertex";
             g_shaders[shaderIdentifier].data = shader;
-        }else{
-            //x3dom.debug.logInfo("using existend Vertex Shader: " + shaderIdentifier);
         }
         
         return shaderIdentifier;
@@ -1666,8 +1699,6 @@ x3dom.gfx_webgl = (function () {
             g_shaders[shaderIdentifier] = {};
             g_shaders[shaderIdentifier].type = "fragment";
             g_shaders[shaderIdentifier].data = shader;
-        }else{
-            //x3dom.debug.logInfo("using existing Fragment Shader: " + shaderIdentifier);
         }
         
         return shaderIdentifier;
@@ -2799,13 +2830,16 @@ x3dom.gfx_webgl = (function () {
                     {
                         var center = shape._cf.geometry.node._vf.position;
                         var size = shape._cf.geometry.node._vf.size;
-                        
+                        /*
                         for (var j=0; j<vertices.length; j+=3)
                         {
                             vertices[j+0] = center.x + size.x * vertices[j+0] / 32767;
                             vertices[j+1] = center.y + size.y * vertices[j+1] / 32767;
                             vertices[j+2] = center.z + size.z * vertices[j+2] / 32767;
-                        }
+                        }*/
+                        
+                        shape._vf.bboxCenter.setValues(center);
+                        shape._vf.bboxSize.setValues(size);
                     }
 
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
@@ -3761,6 +3795,9 @@ x3dom.gfx_webgl = (function () {
             { sp = scene._webgl.pickTexCoordShader; }
         sp.bind();
         
+        var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
+        var bgSize = new x3dom.fields.SFVec3f(1, 1, 1).toGL();
+        
         for (var i=0; i<scene.drawableObjects.length; i++)
         {
             var trafo = scene.drawableObjects[i][0];
@@ -3790,7 +3827,22 @@ x3dom.gfx_webgl = (function () {
 			
 			sp.imageGeometry = 0.0;
 			
-			if(shape._webgl.imageGeometry)  // FIXME: mobile errors
+			if (shape._webgl.coordType != gl.FLOAT)
+			{
+			    sp.bgCenter       = shape._cf.geometry.node._vf.position.toGL();
+			    sp.bgSize         = shape._cf.geometry.node._vf.size.toGL();
+    		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');
+    		}
+    		else {
+			    sp.bgCenter = bgCenter;
+			    sp.bgSize   = bgSize;
+    		    sp.bgPrecisionMax = 1;
+    		}
+    		if (shape._webgl.colorType != gl.FLOAT) {
+    		    sp.bgPrecisionColMax = shape._cf.geometry.node.getPrecisionMax('colorType');
+			}
+			
+			if (shape._webgl.imageGeometry)  // FIXME: mobile errors
 			{
 				sp.imageGeometry    		= 1.0;
 				sp.IG_bboxMin 				= shape._cf.geometry.node.getMin().toGL();
@@ -3984,7 +4036,16 @@ x3dom.gfx_webgl = (function () {
 		//===========================================================================
         // Set GeometryImage variables
         //===========================================================================
-		if(shape._webgl.imageGeometry) {
+		if (shape._webgl.coordType != gl.FLOAT)
+		{
+		    sp.bgCenter       = shape._cf.geometry.node._vf.position.toGL();
+		    sp.bgSize         = shape._cf.geometry.node._vf.size.toGL();
+		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');
+		}
+		if (shape._webgl.colorType != gl.FLOAT) {
+		    sp.bgPrecisionColMax = shape._cf.geometry.node.getPrecisionMax('colorType');
+		}
+		if (shape._webgl.imageGeometry) {
 			sp.IG_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
 			sp.IG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
 			sp.IG_coordTextureWidth	 = shape._webgl.coordTextureWidth;
