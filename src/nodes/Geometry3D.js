@@ -1436,6 +1436,29 @@ x3dom.registerNodeType(
                 else {
                     return this._vf.position;
                 }
+			},
+			
+			getPrecisionMax: function(type)
+			{
+    			switch(this._vf[type])
+                {
+                    case "Int8":
+                        return 127.0;
+                    case "Uint8":
+                        return 255.0;
+                    case "Int16":
+                        return 32767.0;
+                    case "Uint16":
+                        return 65535.0;
+                    case "Int32":
+                        return 2147483647.0;
+                    case "Uint32":
+                        return 4294967295.0;
+                    case "Float32":
+                    case "Float64":
+                    default:
+                        return 1.0;
+                }
 			}
         }
     )
