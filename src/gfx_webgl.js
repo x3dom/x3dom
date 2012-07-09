@@ -1838,7 +1838,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.position, 3, shape._webgl.coordType, false, 0, 0);
+                    gl.vertexAttribPointer(shape._webgl.shader.position, 3, shape._webgl.coordType, false,
+                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 
                     vertices = null;
                 }
@@ -1861,7 +1862,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.color, 3, shape._webgl.colorType, false, 0, 0);
+                    gl.vertexAttribPointer(shape._webgl.shader.color, 3, shape._webgl.colorType, false,
+                        shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     
                     colors = null;
                 }
@@ -1884,7 +1886,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.normal, 3, shape._webgl.normalType, false, 0, 0);
+                    gl.vertexAttribPointer(shape._webgl.shader.normal, 3, shape._webgl.normalType, false,
+                        shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                     
                     normals = null;
                 }
@@ -1907,7 +1910,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.texCoord, 3, shape._webgl.texCoordType, false, 0, 0);
+                    gl.vertexAttribPointer(shape._webgl.shader.texCoord, 3, shape._webgl.texCoordType, false,
+                        shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                     
                     texCoords = null;
                 }
@@ -2846,11 +2850,12 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
+                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.position);
 
                     // Test reading Data
-                    //x3dom.debug.logWarning("arraybuffer[0].vx="+vertices[0]);  
+                    //x3dom.debug.logWarning("arraybuffer[0].vx="+vertices[0]);
                     
                     shape._cf.geometry.node._mesh._numCoords = vertices.length / 3;
 
@@ -2913,7 +2918,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
 
-                    gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false, 0, 0);
+                    gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false,
+                        shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.normal);
 
                     // Test reading Data
@@ -2956,7 +2962,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
 
-                    gl.vertexAttribPointer(sp.texcoord, 2, shape._webgl.texCoordType, false, 0, 0);
+                    gl.vertexAttribPointer(sp.texcoord, 2, shape._webgl.texCoordType, false,
+                        shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.texcoord);
 
                     // Test reading Data
@@ -2999,7 +3006,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
 
-                    gl.vertexAttribPointer(sp.color, 3, shape._webgl.colorType, false, 0, 0);
+                    gl.vertexAttribPointer(sp.color, 3, shape._webgl.colorType, false,
+                        shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.color);
 
                     // Test reading Data
@@ -3030,7 +3038,8 @@ x3dom.gfx_webgl = (function () {
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.IG_PositionBuffer);
             
-            gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
+            gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
             gl.enableVertexAttribArray(sp.position);
 
             vertices = null;
@@ -3063,7 +3072,8 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-                gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
+                gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                    shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
                 vertices = null;
@@ -3078,7 +3088,8 @@ x3dom.gfx_webgl = (function () {
                 gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
             
-                gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false, 0, 0);
+                gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false,
+                    shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.normal);
 
                 normals = null;
@@ -3094,7 +3105,8 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
             
                 gl.vertexAttribPointer(sp.texcoord, 
-                    shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false, 0, 0);
+                    shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false,
+                    shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.texcoord);
                 
                 texCoords = null;
@@ -3110,7 +3122,8 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
             
                 gl.vertexAttribPointer(sp.color, 
-                    shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false, 0, 0);
+                    shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false,
+                    shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.color);
                 
                 colors = null;
@@ -3717,7 +3730,8 @@ x3dom.gfx_webgl = (function () {
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
                     
-                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
+                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.position);
                 }
                 
@@ -3903,7 +3917,8 @@ x3dom.gfx_webgl = (function () {
 						
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 						
-						gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
+						gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                            shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.position);
 					}
 					if (sp.color !== undefined)
@@ -3911,7 +3926,8 @@ x3dom.gfx_webgl = (function () {
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 						
 						gl.vertexAttribPointer(sp.color, 
-							shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false, 0, 0);
+							shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false,
+                            shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.color);
 					}
 					if (sp.texcoord !== undefined)
@@ -3919,7 +3935,8 @@ x3dom.gfx_webgl = (function () {
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 
 						gl.vertexAttribPointer(sp.texcoord, 
-							shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false, 0, 0);
+							shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false,
+                            shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.texcoord);
 					}
 				}
@@ -4498,14 +4515,16 @@ x3dom.gfx_webgl = (function () {
 				
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 				
-				gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 0, 0);
+				gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                    shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.position);
 			  }
 			  if (sp.normal !== undefined) 
 			  {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+2]);            
 				
-				gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false, 0, 0);
+				gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false,
+                    shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.normal);
 			  }
 			  if (sp.texcoord !== undefined)
@@ -4513,7 +4532,8 @@ x3dom.gfx_webgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 				
 				gl.vertexAttribPointer(sp.texcoord, 
-					shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false, 0, 0);
+					shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false,
+                    shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.texcoord);
 			  }
 			  if (sp.color !== undefined)
@@ -4521,7 +4541,8 @@ x3dom.gfx_webgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 				
 				gl.vertexAttribPointer(sp.color, 
-					shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false, 0, 0);
+					shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false,
+                    shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.color);
 			  }
 			}
