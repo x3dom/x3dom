@@ -220,6 +220,12 @@ x3dom.registerNodeType(
                 text: true,
                 shader: true
             };
+
+            // FIXME; move somewhere else and allow generic values!!!
+            this._coordStrideOffset = [0, 0];
+            this._normalStrideOffset = [0, 0];
+            this._texCoordStrideOffset = [0, 0];
+            this._colorStrideOffset = [0, 0];
         },
         {
             collectDrawableObjects: function (transform, out)

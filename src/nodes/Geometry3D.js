@@ -1378,6 +1378,47 @@ x3dom.registerNodeType(
             {
                 // TODO: handle field updates and retrigger XHR
             },
+
+            parentAdded: function()
+            {
+                var offsetInd, strideInd, offset, stride;
+
+                offsetInd = this._vf.coord.lastIndexOf('#') + 1;
+                strideInd = this._vf.coord.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.coord.substring(offsetInd, strideInd);
+                    stride = +this._vf.coord.substring(strideInd);
+                    this._parentNodes[0]._coordStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("coord:" + stride + ", " + offset);
+                }
+
+                offsetInd = this._vf.normal.lastIndexOf('#') + 1;
+                strideInd = this._vf.normal.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.normal.substring(offsetInd, strideInd);
+                    stride = +this._vf.normal.substring(strideInd);
+                    this._parentNodes[0]._normalStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("normal:" + stride + ", " + offset);
+                }
+
+                offsetInd = this._vf.texCoord.lastIndexOf('#') + 1;
+                strideInd = this._vf.texCoord.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.texCoord.substring(offsetInd, strideInd);
+                    stride = +this._vf.texCoord.substring(strideInd);
+                    this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("texCoord:" + stride + ", " + offset);
+                }
+
+                offsetInd = this._vf.color.lastIndexOf('#') + 1;
+                strideInd = this._vf.color.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.color.substring(offsetInd, strideInd);
+                    stride = +this._vf.color.substring(strideInd);
+                    this._parentNodes[0]._colorStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("color:" + stride + ", " + offset);
+                }
+            },
             
             getMin: function()
 			{
