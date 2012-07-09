@@ -6,7 +6,6 @@ var AttributeArray = function(numComponents, bytesPerComponent, bitsPerRefinemen
 	this.bitsPerRefinement = bitsPerRefinement;
 	this.offset			   = offset;
 	this.stride 		   = stride;
-	this.refinedBits	   = 0;
 	
 	//@todo: throw error if bytesPerComponent is no valid number
 	
@@ -110,6 +109,7 @@ function returnAttributeArray(attribIndex) {
  *
  */
 function refineAttributeData(attribIndex, refinementBuffer) {
+
 	if (refinementsDone >= availableRefinementLevels)
 		return;
 		
@@ -143,19 +143,17 @@ function refineAttributeData(attribIndex, refinementBuffer) {
 	var componentMask  = [];
 	var componentShift = [];
 	
-	var newBitsPerComponent = attrib.bitsPerRefinement / attrib.numComponents;
-	
 	for (c = 0; c < attrib.numComponents; ++c) {
-		componentShift[c] 	= (attrib.numComponents - 1 - c) * newBitsPerComponent;
-		componentMask[c] 	= 0x00000000 | (Math.pow(2, newBitsPerComponent) - 1);
+		componentShift[c] 	= (attrib.numComponents - 1 - c) * attrib.bitsPerRefinement;
+		componentMask[c] 	= 0x00000000 | (Math.pow(2, attrib.bitsPerRefinement) - 1);
 		componentMask[c]  <<= componentShift[c];
 	}
 	
 	var dataChunk;
-	var chunkComponents 	= [];
-	var refinedBits 		= refinementsDone * attrib.bitsPerRefinement;	
-	var rightShift 			= (attrib.stride * 8) - attrib.offset - attrib.bitsPerRefinement;
-	var leftShift			= (attrib.bytesPerComponent * 8) - newBitsPerComponent - refinedBits;
+	var chunkComponents = [];
+	var refinedBits 	= refinementsDone 					  * attrib.bitsPerRefinement;
+	var rightShift 		= (attrib.stride * 8) - attrib.offset - attrib.bitsPerRefinement * attrib.numComponents;
+	var leftShift		= (attrib.bytesPerComponent * 8) - attrib.bitsPerRefinement - refinedBits;
 	
 	var baseIdx = 0;
 	var i;
@@ -231,7 +229,7 @@ onmessage = function(event) {
 			break;
 			
 		case 'refine':
-			refineAttributeData(0, refinementBuffers[refinementsDone]);
+			refineAttributeData(1, refinementBuffers[refinementsDone]);
 			break;
 	}	
 }
