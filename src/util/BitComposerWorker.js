@@ -167,8 +167,7 @@ function refineAttributeData(attribIndex, refinementBuffer) {
 		
 		//extract and apply all components of the data chunk		
 		for (c = 0; c < attrib.numComponents; ++c) {			
-			chunkComponents[c] = dataChunk & componentMask[c];
-			
+			chunkComponents[c] = dataChunk & componentMask[c];			
 			//shift component to the matching position
 			chunkComponents[c] >>>= componentShift[c];
 			chunkComponents[c]  <<= leftShift;			
