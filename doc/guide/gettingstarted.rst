@@ -14,37 +14,38 @@ X3DOM itself depends on no external libraries. All you need in order to make
 it work are the following files:
 
 ===================  =====================================================
-``x3dom-v1.2.js``    The minified X3DOM library in a given version
-``x3dom-v1.2.css``   Stylesheets for X3DOM, you need to include this file
+``x3dom.js``         The minified X3DOM library in a given version
+``x3dom.css``        Stylesheets for X3DOM, you need to include this file
                      in your webpage in order for X3DOM to display.
                      However you can also take it as template to
                      adapt your own stylesheet.
-``x3dom-1.2.swf``    The Flash 11 integration, for browsers not supporting
+``x3dom.swf``        The Flash 11 integration, for browsers not supporting
                      native X3DOM or WebGL.
 ===================  =====================================================
 
 You can `download the files from the X3DOM server <http://x3dom.org/download/>`_
-and put them on your harddisk or your webserver. The file naming follows
-the pattern: ``x3dom-vMAIOR.MINOR.js``.
+and put them on your harddisk or your webserver. The released versions reside
+in subdirectories with version numbers, for exmaple version 1.3 is available
+at `1.3/ <http://x3dom.org/download/1.3/>`_. For the current release you can use
+the shortcut `current/ <http://x3dom.org/download/current/>`_ it will always point
+to the latest released version.
 
 
 Development builds
 ------------------
 If you are adventurous and want to work with the latest development build of
-X3DOM `download the latest builds from the X3DOM server <http://x3dom.org/download/>`_.
-Just use the files ending in no version number:
+X3DOM `download the latest builds from the X3DOM server at
+<http://x3dom.org/download/dev/>`_.
 
-* `x3dom.js <http://x3dom.org/download/x3dom.js>`_
-* `x3dom.css <http://x3dom.org/download/x3dom.css>`_
-* `x3dom.swf <http://x3dom.org/download/x3dom.swf>`_
-
-**WARNING:** Do **NOT** use the development builds in a production system. It is
-not thoroughly tested. It is not stable and will probably break things. If in
-doubt, use the current release.
+The development build automatically created every night and will contain
+many fixes and features not available to the released versions. We try to
+keep the development build at a working stage and not break compatibility
+with released versions. However a working dev build can not be guaranteed
+all the time.
 
 
-Build from revision control
----------------------------
+Build your own
+--------------
 **Note:** The following is for advanced developers. If you wish to use a rather
 recent version of X3DOM and do not want to tinker with Python, just
 use the development build.
