@@ -6,8 +6,7 @@ var AttributeArray = function(numComponents, bytesPerComponent, bitsPerRefinemen
 	this.bitsPerRefinement = bitsPerRefinement;
 	this.offset			   = offset;
 	this.stride 		   = stride;
-	this.refinedBits	   = 0;	
-	this.refinementBuffers = [];
+	this.refinedBits	   = 0;
 	
 	//@todo: throw error if bytesPerComponent is no valid number
 	
@@ -18,10 +17,9 @@ var AttributeArray = function(numComponents, bytesPerComponent, bitsPerRefinemen
 		case 2	:
 			this.bufferView = new Uint16Array(arrayBuffer);
 			break;
-		case 1	:
-		default :
-			bufferView = new Uint8Array(arrayBuffer);
-			this.bufferView = arrayBuffer;
+		case 1	:		
+		default :		
+			this.bufferView = new Uint8Array(arrayBuffer);
 	}
 }
 
@@ -31,7 +29,9 @@ var attribArrays    = [];
 
 //the number of refinements that have already been processed
 var refinementsDone 		  = 0;
+
 var availableRefinementLevels = 0;
+var refinementBuffers		  = [];
 
 
 /**
@@ -47,9 +47,9 @@ var availableRefinementLevels = 0;
  *		arrayBuffer		  - The ArrayBuffer object which will be used for the attribute array
  */
 function transferAttributeArray(attribIndex, numComponents, bytesPerComponent, bitsPerRefinement,
-								offset, stride, arrayBuffer) {
+								offset, stride, arrayBuffer) {								
 	attribArrays[attribIndex] = new AttributeArray(numComponents, bytesPerComponent, bitsPerRefinement,
-								offset, stride, arrayBuffer);
+												   offset, stride, arrayBuffer);
 }
 
 
@@ -180,10 +180,15 @@ function refineAttributeData(attribIndex, refinementBuffer) {
 		baseIdx += attrib.numComponents;
 	}
 	
-	postMessage({msg			 : 'refinementDone',
-				 lvl		     : refinementsDone,
-				 attributeBuffer : attribArrayView.buffer},
-				 [attribArrayView.buffer]);
+	var attribBuffers = [];
+	for (i = 0; i < attribArrays.length; ++i){
+		attribBuffers[i] = attribArrays[i].bufferView.buffer;		
+	}	
+	
+	postMessage({msg			  : 'refinementDone',
+				 lvl		      : refinementsDone,
+				 attributeBuffers : attribBuffers},
+				 attribBuffers);
 				 				 
 	++refinementsDone;	
 }
@@ -222,12 +227,12 @@ onmessage = function(event) {
 			break;
 			
 		case 'transferRefinementData':
-			attribArrays[event.data.attribIndex].refinementBuffers[event.data.level] = event.data.arrayBuffer;
+			refinementBuffers[event.data.level] = event.data.arrayBuffer;
 			++availableRefinementLevels;
 			break;
 			
 		case 'refine':
-			refineAttributeData(0, attribArrays[0].refinementBuffers[refinementsDone]);
+			refineAttributeData(0, refinementBuffers[refinementsDone]);
 			break;
 	}	
 }
