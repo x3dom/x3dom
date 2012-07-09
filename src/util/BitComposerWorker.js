@@ -1,14 +1,11 @@
 //a small AttributeArray wrapper class
 var AttributeArray = function(numComponents, bytesPerComponent, bitsPerRefinement,
-							  offset, stride, arrayBuffer) {	
+							  offset, arrayBuffer) {
+	//---------------------------------
+	//static general information
 	this.numComponents 	   = numComponents;	
 	this.bytesPerComponent = bytesPerComponent;	
-	this.bitsPerRefinement = bitsPerRefinement;
-	this.offset			   = offset;
-	this.stride 		   = stride;
-	
-	//@todo: throw error if bytesPerComponent is no valid number
-	
+	//@todo: throw error if bytesPerComponent is no valid number	
 	switch (this.bytesPerComponent) {
 		case 4	:
 			this.bufferView = new Uint32Array(arrayBuffer);
@@ -20,6 +17,28 @@ var AttributeArray = function(numComponents, bytesPerComponent, bitsPerRefinemen
 		default :		
 			this.bufferView = new Uint8Array(arrayBuffer);
 	}
+	
+	//---------------------------------
+	//static refinement information
+	this.bitsPerRefinement = bitsPerRefinement;
+	this.offset			   = offset;
+	this.componentMask     = [];
+	this.componentShift    = [];
+	
+	var c;
+	for (c = 0; c < this.numComponents; ++c) {
+		this.componentShift[c] 	 = (this.numComponents - 1 - c) * this.bitsPerRefinement;
+		this.componentMask[c] 	 = 0x00000000 | (Math.pow(2, this.bitsPerRefinement) - 1);
+		this.componentMask[c]  <<= this.componentShift[c];
+	}
+	
+	//---------------------------------
+	//dynamic refinement information
+	this.rightShift 	 = 0;
+	this.leftShift 	     = 0;
+	this.baseIdx 		 = 0;
+	this.shiftedChunk	 = 0;
+	this.chunkComponents = [];	
 }
 
 
@@ -29,44 +48,21 @@ var attribArrays    = [];
 //the number of refinements that have already been processed
 var refinementsDone 		  = 0;
 
-var availableRefinementLevels = 0;
-var refinementBuffers		  = [];
+var refinementBufferViews	  = [];
+
+var stride;
 
 
-/**
- * Registers an ArrayBuffer object which will be used for an attribute with the given index.
- * This passes the ownership of the ArrayBuffer object to the worker.
- * The ownership is returned by a message to the application each time the attribute array been
- * refined, see refineAttributeData(...).
- *
- * Parameters:
- *		attribIndex 	  - The index which will be used to indentify the attribute
- *		numComponents  	  - The number of components of each value, usually 1, 2, 3 or 4
- *		bytesPerComponent - The number of bytes per component, must be 1, 2 or 4
- *		arrayBuffer		  - The ArrayBuffer object which will be used for the attribute array
+/** 
  */
 function transferAttributeArray(attribIndex, numComponents, bytesPerComponent, bitsPerRefinement,
-								offset, stride, arrayBuffer) {								
+								offset, arrayBuffer) {								
 	attribArrays[attribIndex] = new AttributeArray(numComponents, bytesPerComponent, bitsPerRefinement,
-												   offset, stride, arrayBuffer);
+												   offset, arrayBuffer);
 }
 
 
 /**
- * Returns the ArrayBuffer corresponding to the attribute with the given index by sending a message
- * to the application. The buffer will be the first argument to the message receiver's callback,
- * denoted as 'attributeBuffer'.
- * For example, after registering a function as a message callback, you might receive data the following way:
- *
- *   > function messageFromWorker(event) {
- *	 >      if (event.data.attributeBuffer) {
- *	 >			var attributeBufferView   = new Uint32Array(event.data.attributeBuffer);
- *   >			//do something with the attribute buffer...
- *	 >		}
- *   > }
- *
- * Parameters:
- *		attribIndex - The index which will be used to indentify the attribute
  * 
  */
 function returnAttributeArray(attribIndex) {
@@ -75,42 +71,11 @@ function returnAttributeArray(attribIndex) {
 }
 
 
-/**
- * Refines the content of the attribute array with the given index, using the given ArrayBuffer.
- * The new bits will used instead of the most significant undefined (zero) bits in the registered
- * attribute array.
- * After refinement, the worker sends a message which returns the reference and ownership to the given
- * ArrayBuffer to the application. The buffer will be the first argument to the message receiver's callback,
- * denoted as 'refinementBuffer'.
- * For example, after registering a function as a message callback, you might receive data the following way:
- *
- *   > function messageFromWorker(event) {
- *	 >      if (event.data.refinementBuffer) {
- *	 >			var refinementBufferView   = new Uint8Array(event.data.refinementBuffer);
- *   >			//do something else with the refinement buffer...
- *	 >		}
- *   > }
- *
- * Note that the number of bits within the data chunk of a given attribute must be divisible by
- * the number of its components. You might for example use 6 bits to refine an attribute with three
- * components (e.g. x,y,z), but not to refine one with four components (e.g. x,y,z,w).
- *
- * With the use of the offset and stride parameters, interweaved data arrays, containing data of
- * several attributes at each index, can be used. Each element of the array will then consist of
- * [stride] bytes, where the data chunk of [numBits] bits for each attribute is located at the given
- * offset within the element.
- *
- * Parameters:
- *		attribIndex - The index of the attribute
- *		numBits		- The number of bits of the attribute. Must be divisible by the attribute's number of components
- *		offset		- The bit offset of the attribute inside each part of the buffer
- *		stride 		- The byte offset between consecutive values of the attribute inside the buffer, must be 1, 2 or 4
- *		buffer		- The ArrayBuffer object which contains data used for refinement
- *
+/** 
  */
-function refineAttributeData(attribIndex, refinementBuffer) {
-
-	if (refinementsDone >= availableRefinementLevels)
+function refineAttributeData(refinementBufferView) {
+	
+	if (refinementsDone >= refinementBufferViews.length)
 		return;
 		
 	//@todo: Check parameters!
@@ -119,69 +84,51 @@ function refineAttributeData(attribIndex, refinementBuffer) {
 	//@todo: if it works, check if converting some bitops to *2, /2 or + ops gives better performance,
 	//		 as, according to 'Javascript. The Good Parts.', the internal format is always 'double'
 	
-	var attrib			= attribArrays[attribIndex];
-	var attribArrayView = attrib.bufferView;
-	
-	//depending on the size of each element, we have to pick a matching view on the ArrayBuffer
-	var refinementBufferView;	
-	
-	switch (attrib.stride) {
-		case 4	:
-			refinementBufferView = new Uint32Array(refinementBuffer);
-			break;
-		case 2	:
-			refinementBufferView = new Uint16Array(refinementBuffer);
-			break;
-		case 1	:
-		default :
-			refinementBufferView = new Uint8Array(refinementBuffer);
-	}
-	
-	var c;
-	
-	//generate bitmasks which will be used during data extraction
-	var componentMask  = [];
-	var componentShift = [];
-	
-	for (c = 0; c < attrib.numComponents; ++c) {
-		componentShift[c] 	= (attrib.numComponents - 1 - c) * attrib.bitsPerRefinement;
-		componentMask[c] 	= 0x00000000 | (Math.pow(2, attrib.bitsPerRefinement) - 1);
-		componentMask[c]  <<= componentShift[c];
-	}
-	
+	var i, c, attrib;
 	var dataChunk;
-	var chunkComponents = [];
-	var refinedBits 	= refinementsDone 					  * attrib.bitsPerRefinement;
-	var rightShift 		= (attrib.stride * 8) - attrib.offset - attrib.bitsPerRefinement * attrib.numComponents;
-	var leftShift		= (attrib.bytesPerComponent * 8) - attrib.bitsPerRefinement - refinedBits;
 	
-	var baseIdx = 0;
-	var i;
-	
-	for (i = 0; i < refinementBufferView.length; ++i) {	
-		//extract refinement data chunk for the corresponding attribute
-		dataChunk    = 0x00000000 | refinementBufferView[i];
-		dataChunk >>>= rightShift;
+	for (i = 0; i < attribArrays.length; ++i) {
+		attrib		  	  = attribArrays[i];
 		
-		//extract and apply all components of the data chunk		
-		for (c = 0; c < attrib.numComponents; ++c) {			
-			chunkComponents[c] = dataChunk & componentMask[c];			
-			//shift component to the matching position
-			chunkComponents[c] >>>= componentShift[c];
-			chunkComponents[c]  <<= leftShift;			
-			
-			//add data chunk to achieve a refinement			
-			attribArrayView[baseIdx + c] |= chunkComponents[c];
-		}
-		
-		baseIdx += attrib.numComponents;
+		attrib.rightShift = stride * 8 - attrib.offset - attrib.bitsPerRefinement * attrib.numComponents;	
+		attrib.leftShift  = (attrib.bytesPerComponent * 8) - attrib.bitsPerRefinement -
+							(refinementsDone * attrib.bitsPerRefinement);
+		attrib.baseIdx	  = 0;
 	}
 	
+	for (i = 0; i < refinementBufferView.length; ++i) {		
+		//extract refinement data chunk as 32 bit data
+		dataChunk = 0x00000000 | refinementBufferView[i];
+		
+		//apply data chunk to all attribute arrays		
+		for (j = 0; j < attribArrays.length; ++j) {
+			attrib = attribArrays[j];
+			
+			attrib.shiftedChunk = dataChunk >>> attrib.rightShift;
+			
+			//extract and apply all component data of the attribute	
+			for (c = 0; c < attrib.numComponents; ++c) {		
+				attrib.chunkComponents[c] = attrib.shiftedChunk & attrib.componentMask[c];			
+				
+				//shift component to the matching position
+				attrib.chunkComponents[c] >>>= attrib.componentShift[c];
+				attrib.chunkComponents[c]  <<= attrib.leftShift;
+				
+				//add data chunk to achieve a refinement
+				attrib.bufferView[attrib.baseIdx + c] |= attrib.chunkComponents[c];			
+			}
+			
+			attrib.baseIdx += attrib.numComponents;
+		}
+	}
+	
+	//renewed per call due to changing buffer ownership
 	var attribBuffers = [];
-	for (i = 0; i < attribArrays.length; ++i){
+	for (i = 0; i < attribArrays.length; ++i) {
 		attribBuffers[i] = attribArrays[i].bufferView.buffer;		
 	}	
 	
+	//send back the attribute buffer references
 	postMessage({msg			  : 'refinementDone',
 				 lvl		      : refinementsDone,
 				 attributeBuffers : attribBuffers},
@@ -192,44 +139,40 @@ function refineAttributeData(attribIndex, refinementBuffer) {
 
 
 /**
- * Message receiver method for the worker.
- * To invoke a function of the worker, specify its name as a 'cmd' member of your JSON object which is
- * transmitted as the message content. As required for transferable objects within messages, ArrayBuffers
- * must be passed within the second argument within an array.
  *
- * Example 1: A call to
- *
- *				refineAttributeData(1, 2, 6, 1, buffer) 
- *
- * 			  is transmitted as a message with
- *
- *				postMessage({cmd 		 : 'refineAttributeData',
- *							 attribIndex : 1,
- *							 numBits	 : 2,
- *							 offset		 : 6,
- *							 stride		 : 1,
- *							 arrayBuffer : myBuffer},
- *							 [myBuffer]);
  */
 onmessage = function(event) {
 	switch (event.data.cmd) {
 		case 'transferAttributeArray':
 			transferAttributeArray(event.data.attribIndex,
+			
 								   event.data.numComponents,
 								   event.data.bytesPerComponent,
 								   event.data.bitsPerRefinement,
 								   event.data.offset,
-								   event.data.stride,
+								   
 								   event.data.arrayBuffer);
 			break;
 			
-		case 'transferRefinementData':
-			refinementBuffers[event.data.level] = event.data.arrayBuffer;
-			++availableRefinementLevels;
+		case 'transferRefinementData':			
+			stride = event.data.stride;
+
+			switch (stride) {
+				case 4	:
+					refinementBufferViews[event.data.level] = new Uint32Array(event.data.arrayBuffer);
+					break;
+				case 2	:
+					refinementBufferViews[event.data.level] = new Uint16Array(event.data.arrayBuffer);
+					break;
+				case 1	:
+				default :
+					refinementBufferViews[event.data.level] = new Uint8Array(event.data.arrayBuffer);
+			}
+	
 			break;
 			
 		case 'refine':
-			refineAttributeData(1, refinementBuffers[refinementsDone]);
+			refineAttributeData(refinementBufferViews[refinementsDone]);
 			break;
 	}	
 }
