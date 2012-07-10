@@ -10,14 +10,6 @@
  * Philip Taylor: http://philip.html5.org
  */
  
- //begin hack
- var x3dom = {};
- 
- x3dom.debug = {};
- x3dom.debug.logError = function(msg) {
-	console.log(msg);
- };
- //end hack
  
  /**
  * Class: x3dom.DownloadManager
@@ -35,10 +27,12 @@ var Request = function(url, onloadCallback, priority){
 	this.priority = priority;
 	this.xhr 	  = new XMLHttpRequest();
 	
+	var self = this;
+	
 	this.xhr.onload = function() {
 		//when loading has finished,
 		//execute user-given onload callback
-		onloadCallback(this.xhr);
+		onloadCallback({xhr : self.xhr, url : self.url});
 		
 		--x3dom.DownloadManager.activeDownloads;
 		
@@ -49,6 +43,10 @@ var Request = function(url, onloadCallback, priority){
 
 Request.prototype.send = function() {
 	this.xhr.open('GET', encodeURI(this.url), true); //asynchronous	
+	
+	//at the moment, ArrayBuffer is the only possible return type
+	this.xhr.responseType = "arraybuffer";
+	
 	this.xhr.send(null);
 };
 
@@ -103,6 +101,12 @@ insertRequest : function(req) {
 },
 
 
+/**
+ * Requests a download from the given URL, with the given onloadCallback and priority.
+ * The callback function will be invoked with a JSON object as parameter, where the
+ * 'xhr' member contains a reference to the finished XmlHttpRequest and the 'url' member
+ * contains the original user-given URL of the object.
+ */
 get : function(url, onloadCallback, priority) {
 	if (!url) {
 		x3dom.debug.logError('No URL specified.');		
