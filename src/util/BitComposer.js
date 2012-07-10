@@ -27,7 +27,7 @@
 	this.refinementDataURLs   = [];	
 	this.nextLevelToSend  	  = 0;	
 	this.refinementsToProcess = [];
-	this.requestedRefinement  = {pending 			   : false,
+	this.requestedRefinement  = {pendingRequests 	   : 0,
 								 attributeArrayBuffers : []	   };
 								 
 	this.useDebugOutput = false;
@@ -84,18 +84,18 @@
 								 numAttributeBitsPerLevel 	   : numAttributeBitsPerLevel,
 								 attributeOffset  		   	   : attributeOffset,
 								 stride			   			   : estimatedStride});
-		
+
 		var self = this;
-		
+
 		//send priority-based requests for all refinement levels
-		for (i = 0; i < attributeArrayBuffers.length; ++i) {
+		for (i = 0; i < refinementDataURLs.length; ++i) {
 		    x3dom.DownloadManager.get(this.refinementDataURLs[i],
 									  function(response){ self.refinementDataDownloaded(response); },
 									  i);
 		}
-		
+
 		//request the first refinement
-		this.refine(attributeArrayBuffers);		
+		this.refine(attributeArrayBuffers);	
 	} else {
 		 x3dom.debug.logError('Unable to initialize bit composer: the given attribute parameter arrays are not of the same length.');
 	}	
@@ -112,19 +112,23 @@
 		
 		this.nextLevelToSend++;
 		
-		this.requestedRefinement.pending = false;
+		if (this.requestedRefinement.pendingRequests) {
+			this.requestedRefinement.pendingRequests--;
+		}
 		
 		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('Refinement request processed!');
+			x3dom.debug.logInfo('Refinement request processed! ' + this.requestedRefinement.pendingRequests +
+								' request(s) pending.');
 		}
 	}
 	//postpone refinement request until the matching data was downloaded
 	else if (this.nextLevelToSend < this.refinementDataURLs.length) {
-		this.requestedRefinement.pending 			   = true;
+		this.requestedRefinement.pendingRequests++;
 		this.requestedRefinement.attributeArrayBuffers = attributeArrayBuffers;
 		
 		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('Refinement request postponed...');
+			x3dom.debug.logInfo('Refinement request postponed. '  + this.requestedRefinement.pendingRequests +
+								' request(s) pending.');
 		}
 	}
 	//no refinements left - we're done!
@@ -149,19 +153,19 @@
 
 		if (i < this.refinementDataURLs.length) {
 			if (this.useDebugOutput) {
-				x3dom.debug.logInfo('Refinement level ' + i + ' available!');
+				x3dom.debug.logInfo('Refinement level ' + i + ' has been loaded!');
 			}
 			
 			this.worker.postMessage({cmd 		 : 'transferRefinementData',
 									 level		 : i,
 									 arrayBuffer : data.xhr.response},
 									[data.xhr.response]);
-								
+
 			this.refinementsToProcess.push(i);
 			this.refinementsToProcess.sort(function(a, b) { return a - b; });
 
-			//if there is a pending request for refinement, try to process it
-		    if (this.requestedRefinement.pending) {
+			//if there is a pendingRequests request for refinement, try to process it
+		    if (this.requestedRefinement.pendingRequests) {
 				this.refine(this.requestedRefinement.attributeArrayBuffers);
 			}
 		}
