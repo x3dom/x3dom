@@ -836,7 +836,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
         laMat = laMat.inverse();
 
         dist = newFrom.subtract(from).length();
-        var dur = Math.log(dist / navi._vf.speed);
+        var dur = Math.max(0.5, Math.log((1 + dist) / navi._vf.speed));
 
         this.animateTo(laMat, this._scene.getViewpoint(), dur);
     }
@@ -1101,7 +1101,8 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
             this.checkEvents(obj, x, y, buttonState, eventType);
 
             if (eventType === "onclick") {  // debug
-                x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
+                if (obj._xmlNode)
+                    x3dom.debug.logInfo("Hit \"" + obj._xmlNode.localName + "/ " + obj._DEF + "\"");
                 x3dom.debug.logInfo("Ray hit at position " + this._pick);
             }
         }
