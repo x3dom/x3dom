@@ -29,7 +29,11 @@ var Request = function(url, onloadCallback, priority){
 	
 	var self = this;
 	
-	this.xhr.onload = function() {
+	this.xhr.onload = function() {		
+		if (x3dom.DownloadManager.debugOutput) {
+			x3dom.debug.logInfo('Download manager received data for URL \'' + self.url + '\'.');
+		}
+		
 		//when loading has finished,
 		//execute user-given onload callback
 		onloadCallback({xhr : self.xhr, url : self.url});
@@ -45,9 +49,13 @@ Request.prototype.send = function() {
 	this.xhr.open('GET', encodeURI(this.url), true); //asynchronous	
 	
 	//at the moment, ArrayBuffer is the only possible return type
-	this.xhr.responseType = "arraybuffer";
+	this.xhr.responseType = 'arraybuffer';
 	
 	this.xhr.send(null);
+	
+	if (x3dom.DownloadManager.debugOutput) {
+		x3dom.debug.logInfo('Download manager sent XHR for URL \'' + this.url + '\'.');
+	}
 };
 
  
@@ -60,23 +68,29 @@ maxDownloads 	: 6,  //number of max. concurrent downloads
 
 activeDownloads : 0,  //number of active downloads
 
+debugOutput		: false,
 
-tryNextDownload : function(){
+
+toggleDebugOutput : function(flag) {
+	this.debugOutput = flag;	
+},
+
+
+tryNextDownload : function() {
 	var firstRequest;
 	var i;
 		
 	//if there are less then maxDownloads running, start a new one,
 	//otherwise do nothing
-	if (this.activeDownloads < this.maxDownloads) {		
+	if (this.activeDownloads < this.maxDownloads) {	
 		//remove first queue element, if any
-		
 		for (i = 0; i < this.requests.length; ++i) {
 			//find the request queue with the highest priority
 			if (this.requests[i] && this.requests[i].length > 0){
 				//remove first request from the queue
 				firstRequest = this.requests[i].shift();
 				break;
-			}			
+			}
 		}
 		
 		if (firstRequest) {
@@ -114,7 +128,7 @@ get : function(url, onloadCallback, priority) {
 	else if (!onloadCallback) {
 		x3dom.debug.logError('No onload callback specified. Ignoring request for \"' +
 							 url + '\"');
-	} else {		
+	} else {	
 		var p = 0;
 		
 		//if a priority is given then take it,
@@ -127,6 +141,10 @@ get : function(url, onloadCallback, priority) {
 		
 		//enqueue request priority-based
 		this.insertRequest(r);
+		
+		if (x3dom.DownloadManager.debugOutput) {
+			x3dom.debug.logInfo('Download manager received request for URL \'' + url + '\'.');
+		}
 	}
 }
 	
