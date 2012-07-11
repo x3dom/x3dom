@@ -448,6 +448,7 @@ x3dom.registerNodeType(
                     this._websocket = new WebSocket(wsUrl);
 
                     this._websocket._lastMsg = null;
+                    this._websocket._lastData = "";
 
                     this._websocket.onopen = function(evt)
                     {
@@ -463,6 +464,7 @@ x3dom.registerNodeType(
                         x3dom.debug.logInfo("WS Sent: " + this._lastMsg);
                         
                         this._lastMsg = "";     // triggers first update
+                        this._lastData = "";
                     };
 
                     this._websocket.onclose = function(evt) 
@@ -494,11 +496,11 @@ x3dom.registerNodeType(
                             }
                         }
                         
-                        // TODO: if oldList != newList then...
-                        if (that._vf.maxRenderedIds != 0) 
+                        if (that._vf.maxRenderedIds != 0 && this._lastData != evt.data)
                         {
-                            x3dom.debug.logInfo("WS Response: " + evt.data);
+                            this._lastData = evt.data;
                             that._nameSpace.doc.needRender = true;
+                            x3dom.debug.logInfo("WS Response: " + evt.data);
                         }
                     };
 
@@ -577,7 +579,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj)
-                            obj.collectDrawableObjects(childTransform, out);
+                            obj.collectDrawableObjects(transform, out);
                     }
                 }
                 else
