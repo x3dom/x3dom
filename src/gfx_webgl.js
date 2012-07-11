@@ -2927,7 +2927,7 @@ x3dom.gfx_webgl = (function () {
                     shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;
-                    x3dom.debug.logInfo("XHR1/ coord load time: " + t11 + " ms");
+                    x3dom.debug.logInfo("XHR/ interleaved array load time: " + t11 + " ms");
                 };
             }
             
