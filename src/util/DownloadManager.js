@@ -155,7 +155,8 @@ insertRequest : function(req) {
  * 'arrayBuffer' member contains a reference to the requested data and the 'url' member
  * contains the original user-given URL of the object.
  *
- * If a request to the given url has already been processed, the data is directly returned.
+ * If a request to the given url has already been processed, the data is directly returned
+ * by invoking the callback as usual.
  * 
  * If there is no data from the given url available, but there is already a running request
  * for it, the new callback is just appended to the old running request object. Note that,

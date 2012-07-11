@@ -27,6 +27,8 @@
 	this.refinementDataURLs   		= [];	
 	this.nextLevelToSend  	  		= 0;	
 	this.downloadedRefinementLevels = [];
+	
+	//@todo: attributeArrayBuffers should be typed arrays
 	this.requestedRefinement  		= {pendingRequests 	   : 0,
 									   attributeArrayBuffers : []	   };
 								 
@@ -43,7 +45,8 @@
 	var i;		
 	
 	//forward refinemed attribute data by invoking the initially set callback function
-	if (event.data.msg == 'refinementDone') {		
+	if (event.data.msg == 'refinementDone') {
+		//@todo: attributeArrayBuffers should be typed arrays	
 		this.refinementCallback({attributeArrayBuffers : event.data.attributeArrayBuffers});
 	}
 	//display error message text from worker
@@ -52,7 +55,7 @@
 	}
  }
  
- 
+ //@todo: attributeArrayBuffers should be typed arrays
  x3dom.BitComposer.prototype.init = function(attributeArrayBuffers, numAttributeComponents, numAttributeBytesPerComponent,
 											 numAttributeBitsPerLevel, refinementDataURLs, refinementCallback) {
 	var attributeOffset = [];
@@ -102,16 +105,21 @@
  };
  
  
+ //@todo: attributeArrayBuffers should be typed arrays
  x3dom.BitComposer.prototype.refine = function(attributeArrayBuffers) {
 	this.requestedRefinement.pendingRequests++;
 	
+	//@todo: attributeArrayBuffers should be typed arrays
 	this.refine_private(attributeArrayBuffers);
  };
  
  
+ //@todo: attributeArrayBuffers should be typed arrays
  x3dom.BitComposer.prototype.refine_private = function(attributeArrayBuffers) {
 	//check if the next level was already downloaded
 	if (this.downloadedRefinementLevels.length && this.downloadedRefinementLevels[0] === this.nextLevelToSend) {
+		//@todo: attributeArrayBuffers should be typed arrays
+		//...		
 		this.worker.postMessage({cmd : 'refine', attributeArrayBuffers : attributeArrayBuffers},
 								attributeArrayBuffers);
 
@@ -176,6 +184,8 @@
 			
 			//if there is a pendingRequests request for refinement, try to process it
 		    if (this.requestedRefinement.pendingRequests) {
+			
+				//@todo: attributeArrayBuffers should be typed arrays
 				this.refine_private(this.requestedRefinement.attributeArrayBuffers);
 			}
 		}
