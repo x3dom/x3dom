@@ -2842,11 +2842,9 @@ x3dom.gfx_webgl = (function () {
                 };
             }
 
-            // interleaved array - all in one
+            // interleaved array -- assume all attributes are given in one single array buffer
             if (shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.coord.length > 0)
             {
-                x3dom.debug.logInfo("Interleaved stride/offset handling requested...");
-                
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.open("GET", encodeURI(shape._nameSpace.getURL(
                                         shape._cf.geometry.node._vf.coord)) , true);
@@ -2862,20 +2860,21 @@ x3dom.gfx_webgl = (function () {
                     var geoNode = shape._cf.geometry.node;
                     var attribTypeStr = geoNode._vf.coordType;
 
-                    // assume same data type for all attributes
+                    // assume same data type for all attributes (but might be wrong)
                     shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
-                    shape._webgl.normalType = getVertexAttribType(attribTypeStr, gl);
-                    shape._webgl.texCoordType = getVertexAttribType(attribTypeStr, gl);
-                    shape._webgl.colorType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.normalType = shape._webgl.coordType;
+                    shape._webgl.texCoordType = shape._webgl.coordType;
+                    shape._webgl.colorType = shape._webgl.coordType;
 
                     var attributes = getArrayBufferView(attribTypeStr, XHR_buffer);
 
-                    // calculate single data package by including stride and type size
+                    // calculate number of single data packages by including stride and type size
                     var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
                     if (dataLen)
                         geoNode._mesh._numCoords = (attributes.length / dataLen) / 3;
 
                     var buffer = gl.createBuffer();
+
                     shape._webgl.buffers[1] = buffer;
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -2921,7 +2920,7 @@ x3dom.gfx_webgl = (function () {
                         gl.enableVertexAttribArray(sp.color);
                     }
 
-                    attributes = null;
+                    attributes = null;  // delete data block in CPU memory
 
                     shape._nameSpace.doc.downloadCount -= 1;
                     shape._nameSpace.doc.needRender = true;
