@@ -23,12 +23,12 @@
 	this.worker = new Worker('BitComposerWorker.js');	
 	this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
 	
-	this.refinementCallback   = {};	
-	this.refinementDataURLs   = [];	
-	this.nextLevelToSend  	  = 0;	
-	this.refinementsToProcess = [];
-	this.requestedRefinement  = {pendingRequests 	   : 0,
-								 attributeArrayBuffers : []	   };
+	this.refinementCallback   		= {};	
+	this.refinementDataURLs   		= [];	
+	this.nextLevelToSend  	  		= 0;	
+	this.downloadedRefinementLevels = [];
+	this.requestedRefinement  		= {pendingRequests 	   : 0,
+									   attributeArrayBuffers : []	   };
 								 
 	this.useDebugOutput = false;
  };
@@ -94,7 +94,7 @@
 									  i);
 		}
 
-		//request the first refinement
+		//the call to this function includes a request for the first refinement
 		this.refine(attributeArrayBuffers);	
 	} else {
 		 x3dom.debug.logError('Unable to initialize bit composer: the given attribute parameter arrays are not of the same length.');
@@ -102,18 +102,29 @@
  };
  
  
- x3dom.BitComposer.prototype.refine = function(attributeArrayBuffers) {	
+ x3dom.BitComposer.prototype.refine = function(attributeArrayBuffers) {
+	this.requestedRefinement.pendingRequests++;
+	
+	this.refine_private(attributeArrayBuffers);
+ };
+ 
+ 
+ x3dom.BitComposer.prototype.refine_private = function(attributeArrayBuffers) {
 	//check if the next level was already downloaded
-	if (this.refinementsToProcess.length && this.refinementsToProcess[0] === this.nextLevelToSend) {
+	if (this.downloadedRefinementLevels.length && this.downloadedRefinementLevels[0] === this.nextLevelToSend) {
 		this.worker.postMessage({cmd : 'refine', attributeArrayBuffers : attributeArrayBuffers},
 								attributeArrayBuffers);
 
-		this.refinementsToProcess.shift();
+		this.downloadedRefinementLevels.shift();
 		
 		this.nextLevelToSend++;
 		
 		if (this.requestedRefinement.pendingRequests) {
 			this.requestedRefinement.pendingRequests--;
+		}
+		else {
+			x3dom.debug.logError('BitComposer error: a refinement job was sent to the worker without being requested by the user. ' + 
+								 'This can mean that the worker received invalid data due to missing ArrayBuffer ownership.');
 		}
 		
 		if (this.useDebugOutput) {
@@ -122,8 +133,7 @@
 		}
 	}
 	//postpone refinement request until the matching data was downloaded
-	else if (this.nextLevelToSend < this.refinementDataURLs.length) {
-		this.requestedRefinement.pendingRequests++;
+	else if (this.nextLevelToSend < this.refinementDataURLs.length) {		
 		this.requestedRefinement.attributeArrayBuffers = attributeArrayBuffers;
 		
 		if (this.useDebugOutput) {
@@ -137,13 +147,13 @@
 			x3dom.debug.logInfo('No refinements left to process!');
 		}
 	}
- };
+ },
  
  
  x3dom.BitComposer.prototype.refinementDataDownloaded = function(data) {
 	var i;
 
-	if (data.xhr.responseType === 'arraybuffer') {
+	if (data.arrayBuffer) {
 		//find level of the returned data
 		for (i = 0; i < this.refinementDataURLs.length; ++i) {
 			if (data.url === this.refinementDataURLs[i]) {
@@ -158,15 +168,15 @@
 			
 			this.worker.postMessage({cmd 		 : 'transferRefinementData',
 									 level		 : i,
-									 arrayBuffer : data.xhr.response},
-									[data.xhr.response]);
+									 arrayBuffer : data.arrayBuffer},
+									[data.arrayBuffer]);
 
-			this.refinementsToProcess.push(i);
-			this.refinementsToProcess.sort(function(a, b) { return a - b; });
-
+			this.downloadedRefinementLevels.push(i);
+			this.downloadedRefinementLevels.sort(function(a, b) { return a - b; });
+			
 			//if there is a pendingRequests request for refinement, try to process it
 		    if (this.requestedRefinement.pendingRequests) {
-				this.refine(this.requestedRefinement.attributeArrayBuffers);
+				this.refine_private(this.requestedRefinement.attributeArrayBuffers);
 			}
 		}
 		else {
@@ -174,8 +184,7 @@
 		}
 	}
 	else {
-		x3dom.debug.logError('Unable to use downloaded refinement data: response type \'' + data.xhr.responseType +
-							 '\' should be \'arraybuffer\' instead.');
+		x3dom.debug.logError('Unable to use downloaded refinement data: no ArrayBuffer data recognized.');
 	}
  }
  
