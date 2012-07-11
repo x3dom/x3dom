@@ -2871,7 +2871,7 @@ x3dom.gfx_webgl = (function () {
                     // calculate number of single data packages by including stride and type size
                     var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
                     if (dataLen)
-                        geoNode._mesh._numCoords = (attributes.length / dataLen) / 3;
+                        geoNode._mesh._numCoords = attributes.length / dataLen;
 
                     var buffer = gl.createBuffer();
 
