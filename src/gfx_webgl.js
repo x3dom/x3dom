@@ -522,6 +522,26 @@ x3dom.gfx_webgl = (function () {
 
         return dataType;
     }
+
+    function getDataTypeSize(type)  // in Byte
+    {
+        switch(type)
+        {
+            case "Int8":
+            case "Uint8":
+                return 1;
+            case "Int16":
+            case "Uint16":
+                return 2;
+            case "Int32":
+            case "Uint32":
+            case "Float32":
+                return 4;
+            case "Float64":
+            default:
+                return 8;
+        }
+    }
     
 //----------------------------------------------------------------------------
 /*! get shader program
@@ -2821,9 +2841,98 @@ x3dom.gfx_webgl = (function () {
                     x3dom.debug.logInfo("XHR0/ index load time: " + t11 + " ms"); 
                 };
             }
+
+            // interleaved array - all in one
+            if (shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.coord.length > 0)
+            {
+                x3dom.debug.logInfo("Interleaved stride/offset handling requested...");
+                
+                var xmlhttp = new XMLHttpRequest();
+                xmlhttp.open("GET", encodeURI(shape._nameSpace.getURL(
+                                        shape._cf.geometry.node._vf.coord)) , true);
+                xmlhttp.responseType = "arraybuffer";
+
+                shape._nameSpace.doc.downloadCount += 1;
+                xmlhttp.send(null);
+
+                xmlhttp.onload = function()
+                {
+                    var XHR_buffer = xmlhttp.response;
+
+                    var geoNode = shape._cf.geometry.node;
+                    var attribTypeStr = geoNode._vf.coordType;
+
+                    // assume same data type for all attributes
+                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.normalType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.texCoordType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.colorType = getVertexAttribType(attribTypeStr, gl);
+
+                    var attributes = getArrayBufferView(attribTypeStr, XHR_buffer);
+
+                    // calculate single data package by including stride and type size
+                    var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
+                    if (dataLen)
+                        geoNode._mesh._numCoords = (attributes.length / dataLen) / 3;
+
+                    var buffer = gl.createBuffer();
+                    shape._webgl.buffers[1] = buffer;
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
+
+                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.position);
+
+                    if (shape._cf.geometry.node._vf.normal.length > 0)
+                    {
+                        shape._webgl.buffers[2] = buffer;
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
+
+                        gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false,
+                            shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+                        gl.enableVertexAttribArray(sp.normal);
+                    }
+
+                    if (shape._cf.geometry.node._vf.texCoord.length > 0)
+                    {
+                        shape._webgl.buffers[3] = buffer;
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
+
+                        gl.vertexAttribPointer(sp.texcoord, 2, shape._webgl.texCoordType, false,
+                            shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                        gl.enableVertexAttribArray(sp.texcoord);
+                    }
+
+                    if (shape._cf.geometry.node._vf.color.length > 0)
+                    {
+                        shape._webgl.buffers[4] = buffer;
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
+
+                        gl.vertexAttribPointer(sp.color, 3, shape._webgl.colorType, false,
+                            shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
+                        gl.enableVertexAttribArray(sp.color);
+                    }
+
+                    attributes = null;
+
+                    shape._nameSpace.doc.downloadCount -= 1;
+                    shape._nameSpace.doc.needRender = true;
+
+                    var t11 = new Date().getTime() - t00;
+                    x3dom.debug.logInfo("XHR1/ coord load time: " + t11 + " ms");
+                };
+            }
             
             // coord
-            if (shape._cf.geometry.node._vf.coord.length > 0)
+            if (!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.coord.length > 0)
             {
                 var xmlhttp1 = new XMLHttpRequest();
                 xmlhttp1.open("GET", encodeURI(shape._nameSpace.getURL(
@@ -2892,7 +3001,7 @@ x3dom.gfx_webgl = (function () {
             }
             
             // normal
-            if (shape._cf.geometry.node._vf.normal.length > 0)
+            if (!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.normal.length > 0)
             {
                 var xmlhttp2 = new XMLHttpRequest();
                 xmlhttp2.open("GET", encodeURI(shape._nameSpace.getURL(
@@ -2936,7 +3045,7 @@ x3dom.gfx_webgl = (function () {
             }
             
             // texCoord
-            if (shape._cf.geometry.node._vf.texCoord.length > 0)
+            if (!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.texCoord.length > 0)
             {
                 var xmlhttp3 = new XMLHttpRequest();
                 xmlhttp3.open("GET", encodeURI(shape._nameSpace.getURL(
@@ -2980,7 +3089,7 @@ x3dom.gfx_webgl = (function () {
             }
           
             // color
-            if (shape._cf.geometry.node._vf.color.length > 0)
+            if (!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.color.length > 0)
             {
                 var xmlhttp4 = new XMLHttpRequest();
                 xmlhttp4.open("GET", encodeURI(shape._nameSpace.getURL(
