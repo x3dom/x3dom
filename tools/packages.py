@@ -8,6 +8,7 @@ BASICS = [
   'Internals.js',
   'debug.js',
   'ImageLoadManager.js',
+  'util/DownloadManager.js',
   'util/Properties.js',
   'util/DoublyLinkedList.js',
   'util/EarClipping.js',
