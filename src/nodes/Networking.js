@@ -53,14 +53,13 @@ x3dom.registerNodeType(
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
             
 			this.count = 0;
-			this.currentInline = ctx.xmlNode;			
        },
         {
             fieldChanged: function (fieldName)
             {
                 if (fieldName == "url") {
 					if(this._vf.nameSpaceName.length != 0) {
-						var node = this.currentInline;
+						var node = this._xmlNode;
 						if ( node.hasChildNodes() )
 						{
 							while ( node.childNodes.length >= 1 )
@@ -71,6 +70,46 @@ x3dom.registerNodeType(
 					}
                     var xhr = this.nodeChanged();
                     xhr = null;
+                }
+            },
+
+            fireEvents: function(eventType)
+            {
+                if ( this._xmlNode &&
+                    (this._xmlNode['on'+eventType] ||
+                     this._xmlNode.hasAttribute('on'+eventType) ||
+                     this._listeners[eventType]) )
+                {
+                    var event = {
+                        target: this._xmlNode,
+                        type: eventType,
+                        error: (eventType == "error") ? "XMLHttpRequest Error" : "",
+                        cancelBubble: false,
+                        stopPropagation: function() { this.cancelBubble = true; }
+                    };
+
+                    try {
+                        var attrib = this._xmlNode["on" + eventType];
+
+                        if (typeof(attrib) === "function") {
+                            attrib.call(this._xmlNode, event);
+                        }
+                        else {
+                            var funcStr = this._xmlNode.getAttribute("on" + eventType);
+                            var func = new Function('event', funcStr);
+                            func.call(this._xmlNode, event);
+                        }
+
+                        var list = this._listeners[eventType];
+                        if (list) {
+                            for (var i = 0; i < list.length; i++) {
+                                list[i].call(this._xmlNode, event);
+                            }
+                        }
+                    }
+                    catch(ex) {
+                        x3dom.debug.logException(ex);
+                    }
                 }
             },
 
@@ -126,48 +165,10 @@ x3dom.registerNodeType(
                         return xhr;
 					}
 					else if ((xhr.status !== 200) && (xhr.status !== 0)) {
-						
-						if ( that.currentInline && 
-							(that.currentInline['onerror'] ||
-							 that.currentInline.hasAttribute('onerror')|| 
-							 that._listeners['error']) )
-							{
-								
-								try {
-									var evt = {
-										target:that.currentInline,
-										type: 'error',
-										error: 'XMLHttpRequest Error',
-										cancelBubble: false,
-										stopPropagation: function() { this.cancelBubble = true; }
-									};
-									
-									
-									var attrib = that.currentInline[evt.type];
-								
-									
-									if (typeof(attrib) === "function") {
-										attrib.call(that.currentInline, evt);
-									}
-									else {
-										var funcStr = that.currentInline.getAttribute("on" + evt.type);
-										var func = new Function('evt', funcStr);
-										func.call(that.currentInline, evt);
-									}
-									
-									var list = that._listeners[evt.type];
-									if (list) {
-										for (var i = 0; i < list.length; i++) {
-											list[i].call(that.currentInline, evt);
-										}
-									}
-								}
-								catch(ex) {
-									x3dom.debug.logException(ex);
-								}
-							}
-                        that._nameSpace.doc.downloadCount -= 1;
+						that.fireEvents("error");
                         x3dom.debug.logError('XMLHttpRequest requires a web server running!');
+
+                        that._nameSpace.doc.downloadCount -= 1;
 						that.count = 0;
                         return xhr;
                     }
@@ -175,68 +176,30 @@ x3dom.registerNodeType(
 						that.count = 0;
 					}
 					
-                    x3dom.debug.logInfo('Inline: downloading '+that._vf.url+' done.');
+                    x3dom.debug.logInfo('Inline: downloading '+that._vf.url[0]+' done.');
 
-                    if(navigator.appName != "Microsoft Internet Explorer")
-                        var xml = xhr.responseXML;
+                    var inlScene = null, newScene = null, nameSpace = null, xml = null
+
+                    if (navigator.appName != "Microsoft Internet Explorer")
+                        xml = xhr.responseXML;
                     else
-                        var xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
-                    
-                    var inlScene = null;
-                    var newScene = null;
-                    var nameSpace = null;
-                    
+                        xml = new DOMParser().parseFromString(xhr.responseText, "text/xml");
+
                     //TODO; check if exists and FIXME: it's not necessarily the first scene in the doc!
                     if (xml !== undefined && xml !== null)
                     {
                         inlScene = xml.getElementsByTagName('Scene')[0] || 
                                    xml.getElementsByTagName('scene')[0];
-                    } else {
-						if ( that.currentInline && 
-							(that.currentInline['onerror'] ||
-							 that.currentInline.hasAttribute('onerror')|| 
-							 that._listeners['error']) )
-							{
-								
-								try {
-									var evt = {
-										target:that.currentInline,
-										type: 'error',
-										error: 'XMLHttpRequest Error',
-										cancelBubble: false,
-										stopPropagation: function() { this.cancelBubble = true; }
-									};
-									
-									
-									var attrib = that.currentInline[evt.type];
-								
-									
-									if (typeof(attrib) === "function") {
-										attrib.call(that.currentInline, evt);
-									}
-									else {
-										var funcStr = that.currentInline.getAttribute("on" + evt.type);
-										var func = new Function('evt', funcStr);
-										func.call(that.currentInline, evt);
-									}
-									
-									var list = that._listeners[evt.type];
-									if (list) {
-										for (var i = 0; i < list.length; i++) {
-											list[i].call(that.currentInline, evt);
-										}
-									}
-								}
-								catch(ex) {
-									x3dom.debug.logException(ex);
-								}
-							}
+                    }
+                    else {
+                        that.fireEvents("error");
 					}
                     
                     if (inlScene)
                     {
                         nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
-                        nameSpace.setBaseURL (that._vf.url[0]);
+                        nameSpace.setBaseURL(that._vf.url[0]);
+
                         newScene = nameSpace.setupTree(inlScene);
                         
                         if(that._vf.nameSpaceName.length != 0)
@@ -246,51 +209,15 @@ x3dom.registerNodeType(
                                 if(childDomNode instanceof Element)
                                 {
                                     setNamespace(that._vf.nameSpaceName, childDomNode, that._vf.mapDEFToID);
-                                    that.currentInline.appendChild(childDomNode);
+                                    that._xmlNode.appendChild(childDomNode);
                                 }
                             } );
-                        }						
-						
-						if ( that.currentInline && 
-							(that.currentInline['onload'] ||
-							 that.currentInline.hasAttribute('onload')|| 
-							 that._listeners['load']) )
-						{
-							try {
-								var evt = {
-									target:that.currentInline,
-									type: 'load',
-									cancelBubble: false,
-									stopPropagation: function() { this.cancelBubble = true; }
-								};
-								
-								
-								var attrib = that.currentInline[evt.type];
-							
-								
-								if (typeof(attrib) === "function") {
-									attrib.call(that.currentInline, evt);
-								}
-								else {
-									var funcStr = that.currentInline.getAttribute("on" + evt.type);
-									var func = new Function('evt', funcStr);
-									func.call(that.currentInline, evt);
-								}
-								
-								var list = that._listeners[evt.type];
-								if (list) {
-									for (var i = 0; i < list.length; i++) {
-										list[i].call(that.currentInline, evt);
-									}
-								}
-							}
-							catch(ex) {
-								x3dom.debug.logException(ex);
-							}
-						}
-						
-                    } else {	
-                        x3dom.debug.logWarning('no Scene in ' + xml.localName);
+                        }
+
+						that.fireEvents("load");
+                    }
+                    else {
+                        x3dom.debug.logError('No Scene in ' + xml.localName);
                     }
 
                     // trick to free memory, assigning a property to global object, then deleting it
@@ -307,17 +234,23 @@ x3dom.registerNodeType(
                         
                         that._nameSpace.doc.downloadCount -= 1;
                         that._nameSpace.doc.needRender = true;
-                        x3dom.debug.logInfo('Inline: added '+that._vf.url+' to scene.');
+                        x3dom.debug.logInfo('Inline: added '+that._vf.url[0]+' to scene.');
                     }
                     
                     newScene = null;
                     nameSpace = null;
-                    xml = null;
                     inlScene = null;
+                    xml = null;
                 };
 
                 xhr.open('GET', encodeURI(this._nameSpace.getURL(this._vf.url[0])), true);
-                xhr.send(null);
+                try {
+                    xhr.send(null);
+                }
+                catch(ex) {
+                    that.fireEvents("error");
+                    x3dom.debug.logError(ex);
+                }
                 return xhr;
             }
         }

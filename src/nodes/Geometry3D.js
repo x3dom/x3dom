@@ -1341,7 +1341,9 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
-            
+
+            this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
+            this.addField_SFVec3f (ctx, 'size', 1, 1, 1);
             this.addField_MFInt32 (ctx, 'vertexCount', [0]);
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
             
@@ -1352,6 +1354,16 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'color', "");
             this.addField_SFString(ctx, 'tangent', "");     //TODO
             this.addField_SFString(ctx, 'binormal', "");    //TODO
+
+            // Typed Array View Types
+            // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
+            //this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString(ctx, 'coordType', "Float32");
+            this.addField_SFString(ctx, 'normalType', "Float32");
+            this.addField_SFString(ctx, 'texCoordType', "Float32");
+            this.addField_SFString(ctx, 'colorType', "Float32");
+            //this.addField_SFString(ctx, 'tangentType', "Float32");
+            //this.addField_SFString(ctx, 'binormalType', "Float32");
             
             // workaround
 			this._mesh._numTexComponents = 2;
@@ -1366,39 +1378,86 @@ x3dom.registerNodeType(
             {
                 // TODO: handle field updates and retrigger XHR
             },
+
+            parentAdded: function()
+            {
+                var offsetInd, strideInd, offset, stride;
+
+                offsetInd = this._vf.coord.lastIndexOf('#') + 1;
+                strideInd = this._vf.coord.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.coord.substring(offsetInd, strideInd);
+                    stride = +this._vf.coord.substring(strideInd);
+                    this._parentNodes[0]._coordStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("coord:" + stride + ", " + offset);
+                }
+
+                offsetInd = this._vf.normal.lastIndexOf('#') + 1;
+                strideInd = this._vf.normal.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.normal.substring(offsetInd, strideInd);
+                    stride = +this._vf.normal.substring(strideInd);
+                    this._parentNodes[0]._normalStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("normal:" + stride + ", " + offset);
+                }
+
+                offsetInd = this._vf.texCoord.lastIndexOf('#') + 1;
+                strideInd = this._vf.texCoord.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.texCoord.substring(offsetInd, strideInd);
+                    stride = +this._vf.texCoord.substring(strideInd);
+                    this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("texCoord:" + stride + ", " + offset);
+                }
+
+                offsetInd = this._vf.color.lastIndexOf('#') + 1;
+                strideInd = this._vf.color.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.color.substring(offsetInd, strideInd);
+                    stride = +this._vf.color.substring(strideInd);
+                    this._parentNodes[0]._colorStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("color:" + stride + ", " + offset);
+                }
+            },
             
             getMin: function()
 			{
-				if (this._parentNodes.length >= 1) {
-                    var center = this._parentNodes[0]._vf.bboxCenter;
-                    var size = this._parentNodes[0]._vf.bboxSize;
-                    
-                    if (size.x < 0 || size.y < 0 || size.z < 0) {
-                        return center;
-                    }
-                    
-                    return center.subtract(size.multiply(0.5));
+			    var center, size;
+			    
+				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                    center = this._parentNodes[0]._vf.bboxCenter;
+                    size = this._parentNodes[0]._vf.bboxSize;
                 }
                 else {
-                    return new x3dom.fields.SFVec3f(0,0,0);
+                    center = this._vf.position;
+                    size = this._vf.size;
                 }
+                
+                if (size.x < 0 || size.y < 0 || size.z < 0) {
+                    return center;
+                }
+                
+                return center.subtract(size.multiply(0.5));
 			},
 			
 			getMax: function()
 			{
-				if (this._parentNodes.length >= 1) {
-                    var center = this._parentNodes[0]._vf.bboxCenter;
-                    var size = this._parentNodes[0]._vf.bboxSize;
-                    
-                    if (size.x < 0 || size.y < 0 || size.z < 0) {
-                        return center;
-                    }
-                    
-                    return center.add(size.multiply(0.5));
+			    var center, size;
+			    
+				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                    center = this._parentNodes[0]._vf.bboxCenter;
+                    size = this._parentNodes[0]._vf.bboxSize;
                 }
                 else {
-                    return new x3dom.fields.SFVec3f(0,0,0);
+                    center = this._vf.position;
+                    size = this._vf.size;
                 }
+                
+                if (size.x < 0 || size.y < 0 || size.z < 0) {
+                    return center;
+                }
+                    
+                return center.add(size.multiply(0.5));
 			},
 			
 			getVolume: function(min, max, invalidate)
@@ -1411,11 +1470,35 @@ x3dom.registerNodeType(
 			
 			getCenter: function()
 			{
-				if (this._parentNodes.length >= 1) {
+				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+				    // compatibility with old implementation and examples
                     return this._parentNodes[0]._vf.bboxCenter;
                 }
                 else {
-                    return new x3dom.fields.SFVec3f(0,0,0);
+                    return this._vf.position;
+                }
+			},
+			
+			getPrecisionMax: function(type)
+			{
+    			switch(this._vf[type])
+                {
+                    case "Int8":
+                        return 127.0;
+                    case "Uint8":
+                        return 255.0;
+                    case "Int16":
+                        return 32767.0;
+                    case "Uint16":
+                        return 65535.0;
+                    case "Int32":
+                        return 2147483647.0;
+                    case "Uint32":
+                        return 4294967295.0;
+                    case "Float32":
+                    case "Float64":
+                    default:
+                        return 1.0;
                 }
 			}
         }
@@ -1450,7 +1533,7 @@ x3dom.registerNodeType(
 			}
 			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
-			this.addField_SFVec3f(ctx, 'size', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
 			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 			this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);

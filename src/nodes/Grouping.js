@@ -422,12 +422,14 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
 
             this.addField_MFString(ctx, 'url', []);             // address for WebSocket connection
-            this.addField_MFString(ctx, 'idNameMap', []);       // list of subsequent id/name pairs (TODO)
+            this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
+
+            this._nameObjMap = {};
 
             this.initializeSocket();    // init socket connection
         },
@@ -530,7 +532,19 @@ x3dom.registerNodeType(
                     x3dom.debug.logError("Browser has no WebSocket support!");
                 }
             },
-            
+
+            nodeChanged: function ()
+            {
+                this._nameObjMap = {};
+
+                for (var i= 0, n=this._vf.label.length; i<n; ++i)
+                {
+                    var shape = this._childNodes[i];
+                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode))
+                        this._nameObjMap[this._vf.label[i]] = shape;
+                }
+            },
+
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "url")
@@ -554,17 +568,32 @@ x3dom.registerNodeType(
                 if (this._websocket)
                     this._websocket.updateCamera();
 
-                out.useIdList = true;
-                out.collect = false;
-                out.idList = this._idList;
+                // TODO; fully remove idList in collect, but for now...
+                var i;
 
-                if (out.idList.indexOf(this._DEF) >= 0)
-                    out.collect = true;
+                if (this._vf.label.length)
+                {
+                    for (i=0; i<this._idList.length; i++)
+                    {
+                        var obj = this._nameObjMap[this._idList[i]];
+                        if (obj)
+                            obj.collectDrawableObjects(childTransform, out);
+                    }
+                }
+                else
+                {
+                    out.useIdList = true;
+                    out.collect = false;
+                    out.idList = this._idList;
 
-                for (var i=0; i<this._childNodes.length; i++) {
-                    if (this._childNodes[i]) {
-                        var childTransform = this._childNodes[i].transformMatrix(transform);
-                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                    if (out.idList.indexOf(this._DEF) >= 0)
+                        out.collect = true;
+
+                    for (i=0; i<this._childNodes.length; i++) {
+                        if (this._childNodes[i]) {
+                            var childTransform = this._childNodes[i].transformMatrix(transform);
+                            this._childNodes[i].collectDrawableObjects(childTransform, out);
+                        }
                     }
                 }
                 
