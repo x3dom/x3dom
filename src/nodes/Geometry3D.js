@@ -1366,6 +1366,7 @@ x3dom.registerNodeType(
             //this.addField_SFString(ctx, 'binormalType', "Float32");
             
             // workaround
+            this._hasStrideOffset = false;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
 			
@@ -1389,7 +1390,8 @@ x3dom.registerNodeType(
                     offset = +this._vf.coord.substring(offsetInd, strideInd);
                     stride = +this._vf.coord.substring(strideInd);
                     this._parentNodes[0]._coordStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("coord:" + stride + ", " + offset);
+                    this._hasStrideOffset = true;
+                    x3dom.debug.logInfo("coord stride/offset:" + stride + ", " + offset);
                 }
 
                 offsetInd = this._vf.normal.lastIndexOf('#') + 1;
@@ -1398,7 +1400,7 @@ x3dom.registerNodeType(
                     offset = +this._vf.normal.substring(offsetInd, strideInd);
                     stride = +this._vf.normal.substring(strideInd);
                     this._parentNodes[0]._normalStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("normal:" + stride + ", " + offset);
+                    x3dom.debug.logInfo("normal stride/offset:" + stride + ", " + offset);
                 }
 
                 offsetInd = this._vf.texCoord.lastIndexOf('#') + 1;
@@ -1407,7 +1409,7 @@ x3dom.registerNodeType(
                     offset = +this._vf.texCoord.substring(offsetInd, strideInd);
                     stride = +this._vf.texCoord.substring(strideInd);
                     this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("texCoord:" + stride + ", " + offset);
+                    x3dom.debug.logInfo("texCoord stride/offset:" + stride + ", " + offset);
                 }
 
                 offsetInd = this._vf.color.lastIndexOf('#') + 1;
@@ -1416,7 +1418,7 @@ x3dom.registerNodeType(
                     offset = +this._vf.color.substring(offsetInd, strideInd);
                     stride = +this._vf.color.substring(strideInd);
                     this._parentNodes[0]._colorStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("color:" + stride + ", " + offset);
+                    x3dom.debug.logInfo("color stride/offset:" + stride + ", " + offset);
                 }
             },
             
