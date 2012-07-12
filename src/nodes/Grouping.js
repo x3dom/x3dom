@@ -425,7 +425,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
-            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnNav', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
+            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
@@ -574,13 +574,16 @@ x3dom.registerNodeType(
                     this._websocket.updateCamera();
 
                 // TODO; fully remove idList in collect, but for now...
-                var i, n;
+                var i, n, maxCnt;
 
                 if (this._vf.label.length)
                 {
                     n = this._idList.length;
-                    if (this._nameSpace.doc._viewarea._lastButton > 0) {
-                        n = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnNav, 1.0) * n), 0.0);
+                    maxCnt = this._vf.maxRenderedIds;
+
+                    if (this._nameSpace.doc._viewarea._lastButton > 0 && maxCnt > 0) {
+                        var num = Math.max(maxCnt, 16);
+                        n = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnMove, 1.0) * num), 0.0);
                     }
 
                     for (i=0; i<n; i++)
