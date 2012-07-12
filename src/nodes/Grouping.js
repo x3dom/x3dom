@@ -425,6 +425,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
+            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnNav', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
@@ -491,7 +492,9 @@ x3dom.registerNodeType(
                             // render #maxRenderedIds items
                             that._idList = [];
                             var arr = x3dom.fields.MFString.parse(evt.data);
-                            for (var i=0; i<that._vf.maxRenderedIds; ++i) {
+                            var n = Math.min(arr.length, Math.abs(that._vf.maxRenderedIds));
+
+                            for (var i=0; i<n; ++i) {
                                 that._idList[i] = arr[i];
                             }
                         }
@@ -571,11 +574,16 @@ x3dom.registerNodeType(
                     this._websocket.updateCamera();
 
                 // TODO; fully remove idList in collect, but for now...
-                var i;
+                var i, n;
 
                 if (this._vf.label.length)
                 {
-                    for (i=0; i<this._idList.length; i++)
+                    n = this._idList.length;
+                    if (this._nameSpace.doc._viewarea._lastButton > 0) {
+                        n = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnNav, 1.0) * n), 0.0);
+                    }
+
+                    for (i=0; i<n; i++)
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj)
