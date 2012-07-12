@@ -34,15 +34,15 @@ var Request = function(url, onloadCallback, priority){
 		if (x3dom.DownloadManager.debugOutput) {
 			x3dom.debug.logInfo('Download manager received data for URL \'' + self.url + '\', invoking callbacks.');
 		}
-		//@todo: this feature is temporarily disabled
+
 		//check if object is loaded for the first time or if it has been set to dirty
 		if (!x3dom.DownloadManager.loadedObjects[url]) {
-			//x3dom.DownloadManager.loadedObjects[url] = {arrayBuffer : self.xhr.response};
+			x3dom.DownloadManager.loadedObjects[url] = {arrayBuffer : self.xhr.response};
 		}
 	
 		var i;
 		for (i = 0; i < self.onloadCallbacks.length; ++i) {			
-			self.onloadCallbacks[i]({arrayBuffer : self.xhr.response,//x3dom.DownloadManager.loadedObjects[url].arrayBuffer,
+			self.onloadCallbacks[i]({arrayBuffer : x3dom.DownloadManager.loadedObjects[url].arrayBuffer,
 									 url 		 : self.url});
 		}
 		
@@ -68,7 +68,7 @@ Request.prototype.send = function() {
 	}
 };
 
- 
+
 x3dom.DownloadManager = {
 
 

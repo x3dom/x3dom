@@ -32,14 +32,17 @@ typedef Vertex  Normal;
 
 struct Triangle
 {
-	unsigned int v0, v1, v2;
+	unsigned int v0, v1, v2,
+				 n0, n1, n2;
 };
 
 
-Triangle make_Triangle(unsigned int v0, unsigned int v1, unsigned int v2)
+Triangle make_Triangle(unsigned int v0, unsigned int v1, unsigned int v2,
+					   unsigned int n0, unsigned int n1, unsigned int n2)
 {
 	Triangle t;
 	t.v0 = v0; t.v1 = v1; t.v2 = v2;
+	t.n0 = n0; t.n1 = n1; t.n2 = n2;
 	return t;
 }
 
@@ -69,10 +72,19 @@ void read_face(char * str, std::vector<Triangle> & list)
 	Triangle t;
 	
 	t.v0 = atoi(str);
+	str  = strchr(str, '/') + 2;	
+	t.n0 = atoi(str);
 	str  = strchr(str, ' ') + 1;
+	
 	t.v1 = atoi(str);
+	str  = strchr(str, '/') + 2;
+	t.n1 = atoi(str);
 	str  = strchr(str, ' ') + 1;
-	t.v2 = atoi(str);
+	
+	t.v2 = atoi(str);	
+	str  = strchr(str, '/') + 2;
+	t.n2 = atoi(str);
+	str  = strchr(str, ' ') + 1;
 	
 	list.push_back(t);
 }
@@ -89,9 +101,9 @@ void computeRefinementData(unsigned char * buffer, unsigned int level,
 	for (std::vector<Triangle>::const_iterator it = face_data.begin(), end = face_data.end();
 		 it != end; ++it)
 	{
-		combined_data.push_back(std::make_pair<Vertex, Normal>(vertex_data[it->v0 - 1], normal_data[it->v0 - 1]));
-		combined_data.push_back(std::make_pair<Vertex, Normal>(vertex_data[it->v1 - 1], normal_data[it->v1 - 1]));
-		combined_data.push_back(std::make_pair<Vertex, Normal>(vertex_data[it->v2 - 1], normal_data[it->v2 - 1]));
+		combined_data.push_back(std::make_pair<Vertex, Normal>(vertex_data.at(it->v0 - 1), normal_data.at(it->n0 - 1)));
+		combined_data.push_back(std::make_pair<Vertex, Normal>(vertex_data.at(it->v1 - 1), normal_data.at(it->n1 - 1)));
+		combined_data.push_back(std::make_pair<Vertex, Normal>(vertex_data.at(it->v2 - 1), normal_data.at(it->n2 - 1)));
 	}
 	
 	for (unsigned int i = 0; i < combined_data.size(); ++i)
@@ -213,7 +225,20 @@ int main(int argc, char * argv[])
 		
 		fclose(object_file_handle);
 		
-		printf("Read %d vertices and %d triangles.\n", vertex_data.size(), face_data.size());
+		printf("Read %d vertices and %d triangles.\n", vertex_data.size(), face_data.size());		
+		
+		if (normal_data.size() != vertex_data.size())
+		{
+			printf("Incompatible model file: The number of normals (%d) is not equal to the number of vertices (%d). Filling with default values. \n",
+				   normal_data.size(), vertex_data.size());
+			//return -1;
+			Normal n;
+			n.x = n.y = 0.0; n.z = 1.0;
+			while (normal_data.size() < vertex_data.size())
+				normal_data.push_back(n);
+			while (normal_data.size() > vertex_data.size())
+				vertex_data.push_back(n);
+		}
 		
 		printf("Compositing refinement data ...\n");
 		
