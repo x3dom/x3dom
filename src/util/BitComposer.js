@@ -28,7 +28,6 @@
 	this.nextLevelToSend  	  		= 0;	
 	this.downloadedRefinementLevels = [];
 	
-	//@todo: attributeArrayBuffers should be typed arrays
 	this.requestedRefinement  		= {pendingRequests 	   : 0,
 									   attributeArrayBuffers : []	   };
 								 
@@ -42,9 +41,7 @@
  
  
  x3dom.BitComposer.prototype.messageFromWorker = function(event) {	
-	var i;		
-	
-	//forward refinemed attribute data by invoking the initially set callback function
+	//forward refined attribute data by invoking the initially set callback function
 	if (event.data.msg == 'refinementDone') {		
 		this.refinementCallback({attributeArrayBuffers : event.data.attributeArrayBuffers});
 	}
@@ -61,7 +58,7 @@
 	var i, off;	
 	var refinementBuffers;
 	var self = this;
-		
+
 	if (numAttributeBitsPerComponent.length >   0 									  &&		
 		numAttributeBitsPerComponent.length === numAttributeComponents.length 		  &&
 		numAttributeBitsPerComponent.length === numAttributeBitsPerLevel.length		) {
@@ -138,7 +135,7 @@
 	//no refinements left - we're done!
 	else {
 		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('No refinements left to process!');
+			x3dom.debug.logInfo('No refinements left to process!');			
 		}
 	}
  },
@@ -167,8 +164,8 @@
 
 			this.downloadedRefinementLevels.push(i);
 			this.downloadedRefinementLevels.sort(function(a, b) { return a - b; });
-			
-			//if there is a pendingRequests request for refinement, try to process it
+
+			//if there is a pending request for refinement, try to process it
 		    if (this.requestedRefinement.pendingRequests) {			
 				this.refine_private(this.requestedRefinement.attributeArrayBuffers);
 			}

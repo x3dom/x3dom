@@ -141,7 +141,7 @@ function refineAttributeData(refinementBufferView) {
 onmessage = function(event) {
 	var i, j;
 	var attributeArrayBuffer;
-	var numBytesPerElement;
+	var numBitsPerElement;
 	
 	switch (event.data.cmd) {
 		case 'setAttributes':				
@@ -192,20 +192,20 @@ onmessage = function(event) {
 						if (interleavedMode) {
 							//in interleaved mode, all attributeArrays refer to the same buffer
 							if (i === 0) {
-								numBytesPerElement = 0;
+								numBitsPerElement = 0;
 								for (j = 0; j < attribArrays.length; ++j) {
-									numBytesPerElement += attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;									
+									numBitsPerElement += attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;
 								}
 								
-								attributeArrayBuffer = new ArrayBuffer(numBytesPerElement * refinementBufferViews[refinementsDone].length);
+								attributeArrayBuffer = new ArrayBuffer((numBitsPerElement / 8) * refinementBufferViews[refinementsDone].length);
 							}
 							else {
 								attributeArrayBuffer = attribArrays[0].bufferView.buffer;
 							}
 						}
 						else {
-							numBytesPerElement   = attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;
-							attributeArrayBuffer = new ArrayBuffer(numBytesPerElement * refinementBufferViews[refinementsDone].length);
+							numBitsPerElement    = attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;
+							attributeArrayBuffer = new ArrayBuffer((numBitsPerElement / 8) * refinementBufferViews[refinementsDone].length);
 						}
 					}
 					else {
