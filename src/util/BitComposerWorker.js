@@ -1,21 +1,21 @@
 //a small AttributeArray wrapper class
-var AttributeArray = function(numComponents, numBytesPerComponent, numBitsPerLevel, readOffset) {
+var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComponentPerLevel, readOffset) {
 	//---------------------------------
 	//static general information
-	this.numComponents 	   	  = numComponents;	
-	this.numBytesPerComponent = numBytesPerComponent;	
+	this.numComponents 	   	 = numComponents;	
+	this.numBitsPerComponent = numBitsPerComponent;	
 	
 	//---------------------------------
 	//static refinement information
-	this.numBitsPerLevel = numBitsPerLevel;
-	this.readOffset	     = readOffset;
-	this.componentMask   = [];
-	this.componentShift  = [];
+	this.numBitsPerComponentPerLevel = numBitsPerComponentPerLevel;
+	this.readOffset	     			 = readOffset;
+	this.componentMask   			 = [];
+	this.componentShift  			 = [];
 	
 	var c;
 	for (c = 0; c < this.numComponents; ++c) {
-		this.componentShift[c] 	 = (this.numComponents - 1 - c) * this.numBitsPerLevel;
-		this.componentMask[c] 	 = 0x00000000 | (Math.pow(2, this.numBitsPerLevel) - 1);
+		this.componentShift[c] 	 = (this.numComponents - 1 - c) * this.numBitsPerComponentPerLevel;
+		this.componentMask[c] 	 = 0x00000000 | (Math.pow(2, this.numBitsPerComponentPerLevel) - 1);
 		this.componentMask[c]  <<= this.componentShift[c];
 	}
 	
@@ -69,9 +69,9 @@ function refineAttributeData(refinementBufferView) {
 	for (i = 0; i < attribArrays.length; ++i) {
 		attrib		  	  = attribArrays[i];
 		
-		attrib.rightShift = strideReading * 8 - attrib.readOffset - attrib.numBitsPerLevel * attrib.numComponents;	
-		attrib.leftShift  = (attrib.numBytesPerComponent * 8) - attrib.numBitsPerLevel -
-							(refinementsDone * attrib.numBitsPerLevel);
+		attrib.rightShift = strideReading * 8 - attrib.readOffset - attrib.numBitsPerComponentPerLevel * attrib.numComponents;	
+		attrib.leftShift  = attrib.numBitsPerComponent - attrib.numBitsPerComponentPerLevel -
+							(refinementsDone * attrib.numBitsPerComponentPerLevel);
 		attrib.baseIdx	  = 0;
 	}
 	
@@ -123,7 +123,7 @@ function refineAttributeData(refinementBufferView) {
  * Please remember to send ArrayBuffer objects according to the rules for transferables, i.e. in the form
  * > postMessage({cmd: 'myCommand' , ... , arrayBuffer: myBuffer }, [myBuffer]);
  *
- * setAttributes: {attribIndex, numAttributeComponents, numAttributeBytesPerComponent, numAttributeBitsPerLevel, attributeOffset}
+ * setAttributes: {attribIndex, numAttributeComponents, numAttributeBitsPerComponent, numAttributeBitsPerLevel, attributeOffset}
  *		Register attributes inside the worker and specify some information about them.
  *		The 'numAttributeBitsPerLevel' and 'offset' parameters provide information about the storage format of	the attributes'
  *		refinement data within the refinement buffers.
@@ -147,11 +147,11 @@ onmessage = function(event) {
 		case 'setAttributes':				
 			for (i = 0; i < event.data.numAttributeComponents.length; ++i) {
 				attribArrays[i] = new AttributeArray(event.data.numAttributeComponents[i],
-													 event.data.numAttributeBytesPerComponent[i],
-													 event.data.numAttributeBitsPerLevel[i],
+													 event.data.numAttributeBitsPerComponent[i],
+													 event.data.numAttributeBitsPerLevel[i] / event.data.numAttributeComponents[i],
 													 event.data.attributeReadOffset[i]);
 													 
-				strideReading += event.data.numAttributeBitsPerLevel[i] * event.data.numAttributeBytesPerComponent[i];
+				strideReading += event.data.numAttributeBitsPerLevel[i];
 			}
 			
 			//if the offset and stride parameters are given, assume a single, interleaved output array
@@ -194,7 +194,7 @@ onmessage = function(event) {
 							if (i === 0) {
 								numBytesPerElement = 0;
 								for (j = 0; j < attribArrays.length; ++j) {
-									numBytesPerElement += attribArrays[i].numBytesPerComponent * attribArrays[i].numComponents;									
+									numBytesPerElement += attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;									
 								}
 								
 								attributeArrayBuffer = new ArrayBuffer(numBytesPerElement * refinementBufferViews[refinementsDone].length);
@@ -204,7 +204,7 @@ onmessage = function(event) {
 							}
 						}
 						else {
-							numBytesPerElement   = attribArrays[i].numBytesPerComponent * attribArrays[i].numComponents;
+							numBytesPerElement   = attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;
 							attributeArrayBuffer = new ArrayBuffer(numBytesPerElement * refinementBufferViews[refinementsDone].length);
 						}
 					}
@@ -212,18 +212,18 @@ onmessage = function(event) {
 						attributeArrayBuffer = event.data.attributeArrayBuffers[i];
 					}
 					
-					switch (attribArrays[i].numBytesPerComponent) {						
-						case 4 :
+					switch (attribArrays[i].numBitsPerComponent) {						
+						case 32 :
 							attribArrays[i].bufferView = new Uint32Array(attributeArrayBuffer);
 							break;
-						case 2 :
+						case 16 :
 							attribArrays[i].bufferView = new Uint16Array(attributeArrayBuffer);
 							break;
-						case 1 :
+						case 8 :
 							attribArrays[i].bufferView = new Uint8Array(attributeArrayBuffer);
 							break;
 						default:		
-							postMessage('Unable to start refinement: no valid value (' + attribArrays[i].numBytesPerComponent +
+							postMessage('Unable to start refinement: no valid value (' + attribArrays[i].numBitsPerComponent +
 										+ ' instead of 1, 2 or 4) set for bytesPerComponent of attribute array ' + i + '.');
 					}
 				}

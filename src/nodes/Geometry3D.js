@@ -1507,6 +1507,64 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### BitLODRefinement ### */
+x3dom.registerNodeType(
+    "BitLODGeoComponent",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {	
+            x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
+			
+			this.addField_SFString(ctx, 'src', "");
+			this.addField_MFInt32(ctx, 'format', []);
+			this.addField_MFInt32(ctx, 'attrib', []);
+		},
+		{
+			nodeChanged: function()
+            {		
+				
+			},
+
+            fieldChanged: function(fieldName)
+            {
+                
+            }
+		}
+	)
+);
+
+/* ### BitLODGeometry ### */
+x3dom.registerNodeType(
+    "BitLODGeometry",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {	
+            x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
+			
+			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
+			this.addField_MFInt32(ctx, 'vertexCount', [0]);
+			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+			this.addField_SFString(ctx, 'index', "");   // Uint16		
+			this.addField_MFNode(ctx, 'component', x3dom.nodeTypes.BitLODComponent);
+			
+		},
+		{
+			nodeChanged: function()
+            {		
+				
+			},
+
+            fieldChanged: function(fieldName)
+            {
+                
+            }
+		}
+	)
+);
+
+
+
 /* ### ImageGeometry ### */
 x3dom.registerNodeType(
     "ImageGeometry",
