@@ -55,29 +55,29 @@
  }
  
 
- x3dom.BitComposer.prototype.run = function(numAttributeComponents, numAttributeBytesPerComponent,
+ x3dom.BitComposer.prototype.run = function(numAttributeComponents, numAttributeBitsPerComponent,
 											numAttributeBitsPerLevel, refinementDataURLs, refinementCallback) {
 	var attributeReadOffset = [];
 	var i, off;	
 	var refinementBuffers;
 	var self = this;
 		
-	if (numAttributeBytesPerComponent.length >   0 									  &&		
-		numAttributeBytesPerComponent.length === numAttributeComponents.length 		  &&
-		numAttributeBytesPerComponent.length === numAttributeBitsPerLevel.length		) {
+	if (numAttributeBitsPerComponent.length >   0 									  &&		
+		numAttributeBitsPerComponent.length === numAttributeComponents.length 		  &&
+		numAttributeBitsPerComponent.length === numAttributeBitsPerLevel.length		) {
 		
 		this.refinementCallback = refinementCallback;
 		this.refinementDataURLs = refinementDataURLs;
 		
 		off = 0;
-		for (i = 0; i < numAttributeBytesPerComponent.length; ++i) {
+		for (i = 0; i < numAttributeBitsPerComponent.length; ++i) {
 			attributeReadOffset[i] = off;			
-			off 			 	  += numAttributeBitsPerLevel[i] * numAttributeComponents[i];			
+			off 			 	  += numAttributeBitsPerLevel[i];
 		}
 		
 		this.worker.postMessage({cmd 		 	   			   : 'setAttributes',										  
 								 numAttributeComponents 	   : numAttributeComponents,
-								 numAttributeBytesPerComponent : numAttributeBytesPerComponent,											  
+								 numAttributeBitsPerComponent  : numAttributeBitsPerComponent,											  
 								 numAttributeBitsPerLevel 	   : numAttributeBitsPerLevel,
 								 attributeReadOffset  		   : attributeReadOffset});
 
@@ -169,9 +169,7 @@
 			this.downloadedRefinementLevels.sort(function(a, b) { return a - b; });
 			
 			//if there is a pendingRequests request for refinement, try to process it
-		    if (this.requestedRefinement.pendingRequests) {
-			
-				//@todo: attributeArrayBuffers should be typed arrays
+		    if (this.requestedRefinement.pendingRequests) {			
 				this.refine_private(this.requestedRefinement.attributeArrayBuffers);
 			}
 		}

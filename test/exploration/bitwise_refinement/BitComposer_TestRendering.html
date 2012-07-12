@@ -259,8 +259,8 @@
 				//x3dom.DownloadManager.toggleDebugOutput(true);				
 				
 				bitComposer.run([2, 3], 					 //components
-								[1, 2], 					 //attribute bytes per component
-								[1, 2], 					 //bits per component per refinement level
+								[8, 16], 					 //attribute bits for each component
+								[2, 6], 					 //bits per refinement level for all components
 								refinementURLs,			     //URLs for the files of the refinement levels
 								refinementFinishedCallback); //callback, executed on refinement
 			}			
