@@ -79,8 +79,8 @@
 			}
 		</script>		
 	
-		<script type="text/javascript" src='BitComposer.js'></script>
-		<script type="text/javascript" src='DownloadManager.js'></script>
+		<script type="text/javascript" src='../../../src/util/BitComposer.js'></script>
+		<script type="text/javascript" src='../../../src/util/DownloadManager.js'></script>
 		<script type="text/javascript">
 			var bitComposer;
 			var refinedLevels = 0;
@@ -242,13 +242,6 @@
 			function main() {
 				setupWebGL();
 				
-				//@todo: at the moment, this is hard-coded:
-				//		 the monkey has 11808 transmitted vertices
-				
-				//create some ArrayBuffers, initialized to 0 ...
-				var attribBuffers = [new ArrayBuffer(1*2*11808),  //8  bit normals
-									 new ArrayBuffer(2*3*11808)]; //16 bit coords
-
 				//... get some URLs of files with refinement data ...
 				var i, refinementURLs = [];
 				for (i = 0; i < 8; ++i) {
@@ -256,13 +249,12 @@
 				}
 				
 				//... and feed a BitComposer object with the data.
-				bitComposer = new x3dom.BitComposer();
+				bitComposer = new x3dom.BitComposer('../../../src/util/BitComposerWorker.js');
 				
 				//bitComposer.toggleDebugOutput(true);
 				//x3dom.DownloadManager.toggleDebugOutput(true);				
 				
-				bitComposer.run(attribBuffers,
-								[2, 3], 					 //components
+				bitComposer.run([2, 3], 					 //components
 								[1, 2], 					 //attribute bytes per component
 								[1, 2], 					 //bits per component per refinement level
 								refinementURLs,			     //URLs for the files of the refinement levels
