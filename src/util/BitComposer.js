@@ -45,8 +45,7 @@
 	var i;		
 	
 	//forward refinemed attribute data by invoking the initially set callback function
-	if (event.data.msg == 'refinementDone') {
-		//@todo: attributeArrayBuffers should be typed arrays	
+	if (event.data.msg == 'refinementDone') {		
 		this.refinementCallback({attributeArrayBuffers : event.data.attributeArrayBuffers});
 	}
 	//display error message text from worker
@@ -58,10 +57,10 @@
 
  x3dom.BitComposer.prototype.run = function(numAttributeComponents, numAttributeBytesPerComponent,
 											numAttributeBitsPerLevel, refinementDataURLs, refinementCallback) {
-	var attributeOffset = [];
-	var i, off;
-	var estimatedStride;
+	var attributeReadOffset = [];
+	var i, off;	
 	var refinementBuffers;
+	var self = this;
 		
 	if (numAttributeBytesPerComponent.length >   0 									  &&		
 		numAttributeBytesPerComponent.length === numAttributeComponents.length 		  &&
@@ -70,24 +69,17 @@
 		this.refinementCallback = refinementCallback;
 		this.refinementDataURLs = refinementDataURLs;
 		
-		off = 0, estimatedStride = 0;
+		off = 0;
 		for (i = 0; i < numAttributeBytesPerComponent.length; ++i) {
-			attributeOffset[i] = off;			
-			off 			  += numAttributeBitsPerLevel[i] * numAttributeComponents[i];
-			estimatedStride   += numAttributeBitsPerLevel[i];
+			attributeReadOffset[i] = off;			
+			off 			 	  += numAttributeBitsPerLevel[i] * numAttributeComponents[i];			
 		}
-		
-		//guess stride by checking the number of bits per refinement		
-		estimatedStride = Math.ceil(estimatedStride / 8);
 		
 		this.worker.postMessage({cmd 		 	   			   : 'setAttributes',										  
 								 numAttributeComponents 	   : numAttributeComponents,
 								 numAttributeBytesPerComponent : numAttributeBytesPerComponent,											  
 								 numAttributeBitsPerLevel 	   : numAttributeBitsPerLevel,
-								 attributeOffset  		   	   : attributeOffset,
-								 stride			   			   : estimatedStride});
-
-		var self = this;
+								 attributeReadOffset  		   : attributeReadOffset});
 
 		//send priority-based requests for all refinement levels
 		for (i = 0; i < refinementDataURLs.length; ++i) {

@@ -1,5 +1,5 @@
 //a small AttributeArray wrapper class
-var AttributeArray = function(numComponents, numBytesPerComponent, numBitsPerLevel, offset) {
+var AttributeArray = function(numComponents, numBytesPerComponent, numBitsPerLevel, readOffset) {
 	//---------------------------------
 	//static general information
 	this.numComponents 	   	  = numComponents;	
@@ -8,7 +8,7 @@ var AttributeArray = function(numComponents, numBytesPerComponent, numBitsPerLev
 	//---------------------------------
 	//static refinement information
 	this.numBitsPerLevel = numBitsPerLevel;
-	this.offset			 = offset;
+	this.readOffset	     = readOffset;
 	this.componentMask   = [];
 	this.componentShift  = [];
 	
@@ -26,7 +26,14 @@ var AttributeArray = function(numComponents, numBytesPerComponent, numBitsPerLev
 	this.baseIdx 		 = 0;
 	this.shiftedChunk	 = 0;
 	this.chunkComponents = [];
+	
+	this.bufferView		 = {}; //renewed on every refinement due to changing ownership
 }
+
+
+//flag for interleaved encoding - if this is true, each AttributeArray's bufferView
+//members will refer to the same buffer, but use different offsets in their view
+var interleavedMode = false;
 
 
 //list of registered attribute arrays
@@ -38,7 +45,7 @@ var refinementBufferViews = [];
 
 
 //size in bytes of a single element of the refinement buffers
-var stride = 0;
+var strideReading = 0;
 
 
 //number of refinements that have already been processed
@@ -62,7 +69,7 @@ function refineAttributeData(refinementBufferView) {
 	for (i = 0; i < attribArrays.length; ++i) {
 		attrib		  	  = attribArrays[i];
 		
-		attrib.rightShift = stride * 8 - attrib.offset - attrib.numBitsPerLevel * attrib.numComponents;	
+		attrib.rightShift = strideReading * 8 - attrib.readOffset - attrib.numBitsPerLevel * attrib.numComponents;	
 		attrib.leftShift  = (attrib.numBytesPerComponent * 8) - attrib.numBitsPerLevel -
 							(refinementsDone * attrib.numBitsPerLevel);
 		attrib.baseIdx	  = 0;
@@ -132,20 +139,35 @@ function refineAttributeData(refinementBufferView) {
  * level 2 is the lowest unprocessed level, the 'refine' function will post an error message.
  */
 onmessage = function(event) {
+	var i, j;
+	var attributeArrayBuffer;
+	var numBytesPerElement;
+	
 	switch (event.data.cmd) {
-		case 'setAttributes':
-			var i;		
+		case 'setAttributes':				
 			for (i = 0; i < event.data.numAttributeComponents.length; ++i) {
 				attribArrays[i] = new AttributeArray(event.data.numAttributeComponents[i],
 													 event.data.numAttributeBytesPerComponent[i],
 													 event.data.numAttributeBitsPerLevel[i],
-													 event.data.attributeOffset[i]);				 
+													 event.data.attributeReadOffset[i]);
+													 
+				strideReading += event.data.numAttributeBitsPerLevel[i] * event.data.numAttributeBytesPerComponent[i];
 			}
-			stride = event.data.stride;			
+			
+			//if the offset and stride parameters are given, assume a single, interleaved output array
+			if (event.data.offset && event.data.stride) {
+				interleavedMode = true;
+			}
+			
+			//guess strideReading by checking the number of bits per refinement
+		    //usually, we expect this to be an exact multiple of 8, as one doesn't
+			//want to waste space in the encoded data
+			strideReading = Math.ceil(strideReading / 8);
+			
 			break;
 			
 		case 'transferRefinementData':
-			switch (stride) {
+			switch (strideReading) {
 				case 4 :
 					refinementBufferViews[event.data.level] = new Uint32Array(event.data.arrayBuffer);
 					break;
@@ -156,21 +178,35 @@ onmessage = function(event) {
 					refinementBufferViews[event.data.level] = new Uint8Array(event.data.arrayBuffer);
 					break;
 				default:
-					postMessage('Refinement data not accepted: stride is ' + stride +
-								', but must be set to 1, 2 or 4 before transferring refinement data.');
+					postMessage('Refinement data not accepted: strideReading was found to be ' + strideReading +
+								' bytes, but must be set to 1, 2 or 4 before transferring refinement data.');
 			}
 			break;
 
 		case 'refine':
 			if (refinementsDone < refinementBufferViews.length && refinementBufferViews[refinementsDone]) {
-				for (i = 0; i < attribArrays.length; ++i) {
-					var attributeArrayBuffer;
-					
+				
+				for (i = 0; i < attribArrays.length; ++i) {					
 					//if this is the first call, create the attribute array buffers
 					if (!refinementsDone) {
-						var numElements        = refinementBufferViews[refinementsDone].length;
-						var numBytesPerElement = attribArrays[i].numBytesPerComponent * attribArrays[i].numComponents;
-						attributeArrayBuffer   = new ArrayBuffer(numElements * numBytesPerElement); 
+						if (interleavedMode) {
+							//in interleaved mode, all attributeArrays refer to the same buffer
+							if (i === 0) {
+								numBytesPerElement = 0;
+								for (j = 0; j < attribArrays.length; ++j) {
+									numBytesPerElement += attribArrays[i].numBytesPerComponent * attribArrays[i].numComponents;									
+								}
+								
+								attributeArrayBuffer = new ArrayBuffer(numBytesPerElement * refinementBufferViews[refinementsDone].length);
+							}
+							else {
+								attributeArrayBuffer = attribArrays[0].bufferView.buffer;
+							}
+						}
+						else {
+							numBytesPerElement   = attribArrays[i].numBytesPerComponent * attribArrays[i].numComponents;
+							attributeArrayBuffer = new ArrayBuffer(numBytesPerElement * refinementBufferViews[refinementsDone].length);
+						}
 					}
 					else {
 						attributeArrayBuffer = event.data.attributeArrayBuffers[i];
