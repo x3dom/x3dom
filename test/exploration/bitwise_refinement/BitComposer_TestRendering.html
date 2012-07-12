@@ -93,6 +93,8 @@
 			var projMat;   //projection matrix
 			var mvProjMat; //modelViewProjection matrix
 			
+			var numArrayElements;
+			
 			var glBuffers = {	//object data buffers on the gpu
 				positions: {},
 				normals:   {}
@@ -142,6 +144,8 @@
 								
 				var normalBuffer = new Uint8Array(attributeData.attributeArrayBuffers[0]);
 				var coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[1]);
+				
+				numArrayElements = coordBuffer.length / 3;
 				
 				++refinedLevels;
 				
@@ -235,7 +239,7 @@
 				
 				//draw VBO content
 				//	"monkey.obj" has 3936 triangles -> 11808  array vertices				
-				gl.drawArrays(gl.TRIANGLES, 0, 11808);
+				gl.drawArrays(gl.TRIANGLES, 0, numArrayElements);
 			}
 			
 			
