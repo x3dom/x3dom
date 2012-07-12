@@ -129,7 +129,7 @@ function refineAttributeData(refinementBufferView) {
  *
  * Although refinement data can be set in any random order, the next refinement which is processed when calling 'refine' will
  * always be the lowest unprocessed level. If such a level has not been set up, e.g. if levels 0,1 and 3 have been set up and
- * level 2 is the lowest unprocessed level, the 'refine' function won't do anything.
+ * level 2 is the lowest unprocessed level, the 'refine' function will post an error message.
  */
 onmessage = function(event) {
 	switch (event.data.cmd) {
@@ -163,16 +163,28 @@ onmessage = function(event) {
 
 		case 'refine':
 			if (refinementsDone < refinementBufferViews.length && refinementBufferViews[refinementsDone]) {
-				for (i = 0; i < attribArrays.length; ++i) {				
+				for (i = 0; i < attribArrays.length; ++i) {
+					var attributeArrayBuffer;
+					
+					//if this is the first call, create the attribute array buffers
+					if (!refinementsDone) {
+						var numElements        = refinementBufferViews[refinementsDone].length;
+						var numBytesPerElement = attribArrays[i].numBytesPerComponent * attribArrays[i].numComponents;
+						attributeArrayBuffer   = new ArrayBuffer(numElements * numBytesPerElement); 
+					}
+					else {
+						attributeArrayBuffer = event.data.attributeArrayBuffers[i];
+					}
+					
 					switch (attribArrays[i].numBytesPerComponent) {						
 						case 4 :
-							attribArrays[i].bufferView = new Uint32Array(event.data.attributeArrayBuffers[i]);
+							attribArrays[i].bufferView = new Uint32Array(attributeArrayBuffer);
 							break;
 						case 2 :
-							attribArrays[i].bufferView = new Uint16Array(event.data.attributeArrayBuffers[i]);
+							attribArrays[i].bufferView = new Uint16Array(attributeArrayBuffer);
 							break;
 						case 1 :
-							attribArrays[i].bufferView = new Uint8Array(event.data.attributeArrayBuffers[i]);
+							attribArrays[i].bufferView = new Uint8Array(attributeArrayBuffer);
 							break;
 						default:		
 							postMessage('Unable to start refinement: no valid value (' + attribArrays[i].numBytesPerComponent +
@@ -180,6 +192,8 @@ onmessage = function(event) {
 					}
 				}
 				refineAttributeData(refinementBufferViews[refinementsDone]);				
+			} else {
+				postMessage('Cannot process refinement: No refinement data loaded for the requested level ' + refinementsDone + '!');
 			}
 			break;
 	}

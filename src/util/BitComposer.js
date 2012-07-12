@@ -18,9 +18,9 @@
   *		- automatically provide the worker with refinement data in the correct order,
   *		  by utilizing the x3dom.DownloadManager
   */
- x3dom.BitComposer = function() {
+ x3dom.BitComposer = function(workerScriptfile) {
 	var self = this;
-	this.worker = new Worker('BitComposerWorker.js');	
+	this.worker = new Worker(workerScriptfile ? workerScriptfile : 'BitComposerWorker.js');	
 	this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
 	
 	this.refinementCallback   		= {};	
@@ -55,24 +55,23 @@
 	}
  }
  
- //@todo: attributeArrayBuffers should be typed arrays
- x3dom.BitComposer.prototype.run = function(attributeArrayBuffers, numAttributeComponents, numAttributeBytesPerComponent,
+
+ x3dom.BitComposer.prototype.run = function(numAttributeComponents, numAttributeBytesPerComponent,
 											numAttributeBitsPerLevel, refinementDataURLs, refinementCallback) {
 	var attributeOffset = [];
 	var i, off;
 	var estimatedStride;
 	var refinementBuffers;
 		
-	if (attributeArrayBuffers.length >   0 									  &&
-		attributeArrayBuffers.length === numAttributeBytesPerComponent.length &&
-		attributeArrayBuffers.length === numAttributeComponents.length 		  &&
-		attributeArrayBuffers.length === numAttributeBitsPerLevel.length		) {
+	if (numAttributeBytesPerComponent.length >   0 									  &&		
+		numAttributeBytesPerComponent.length === numAttributeComponents.length 		  &&
+		numAttributeBytesPerComponent.length === numAttributeBitsPerLevel.length		) {
 		
 		this.refinementCallback = refinementCallback;
 		this.refinementDataURLs = refinementDataURLs;
 		
 		off = 0, estimatedStride = 0;
-		for (i = 0; i < attributeArrayBuffers.length; ++i) {
+		for (i = 0; i < numAttributeBytesPerComponent.length; ++i) {
 			attributeOffset[i] = off;			
 			off 			  += numAttributeBitsPerLevel[i] * numAttributeComponents[i];
 			estimatedStride   += numAttributeBitsPerLevel[i];
@@ -98,28 +97,23 @@
 		}
 
 		//the call to this function includes a request for the first refinement
-		this.refine(attributeArrayBuffers);	
+		this.refine([]);
 	} else {
 		 x3dom.debug.logError('Unable to initialize bit composer: the given attribute parameter arrays are not of the same length.');
 	}	
  };
  
  
- //@todo: attributeArrayBuffers should be typed arrays
  x3dom.BitComposer.prototype.refine = function(attributeArrayBuffers) {
 	this.requestedRefinement.pendingRequests++;
-	
-	//@todo: attributeArrayBuffers should be typed arrays
+		
 	this.refine_private(attributeArrayBuffers);
  };
  
  
- //@todo: attributeArrayBuffers should be typed arrays
  x3dom.BitComposer.prototype.refine_private = function(attributeArrayBuffers) {
 	//check if the next level was already downloaded
 	if (this.downloadedRefinementLevels.length && this.downloadedRefinementLevels[0] === this.nextLevelToSend) {
-		//@todo: attributeArrayBuffers should be typed arrays
-		//...		
 		this.worker.postMessage({cmd : 'refine', attributeArrayBuffers : attributeArrayBuffers},
 								attributeArrayBuffers);
 
