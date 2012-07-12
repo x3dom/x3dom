@@ -138,8 +138,7 @@
 			}
 			
 			
-			function refinementFinishedCallback(attributeData) {
-				
+			function refinementFinishedCallback(attributeData) {				
 				console.log('=> Client received refined data for level ' + refinedLevels + '!');
 								
 				var normalBuffer = new Uint8Array(attributeData.attributeArrayBuffers[0]);
@@ -163,7 +162,7 @@
 				renderScene();
 				
 				//enjoy it for a few secs :-)
-				sleep(1000);
+				//sleep(1000);
 				
 				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';				
 				
