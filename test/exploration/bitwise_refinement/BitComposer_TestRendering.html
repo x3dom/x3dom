@@ -178,7 +178,7 @@
 				//sleep(1000);
 				
 				if (refinedLevels === 1) {
-					(window.requestAnimationFrame ? window.requestAnimationFrame : window.mozRequestAnimationFrame)(animate);
+					requestAnimFrame(animate);
 				}
 				
 				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';				
@@ -233,7 +233,7 @@
 			
 			
 			function animate(){
-				(window.requestAnimationFrame ? window.requestAnimationFrame : window.mozRequestAnimationFrame)(animate);
+				requestAnimFrame(animate);
 				
 				var viewpoint = [0.0, 0.0, 2.5];
 				
@@ -293,6 +293,17 @@
 				canvas.addEventListener('mouseup',   mouseUpCallback,   false);
 				canvas.addEventListener('mousemove', mouseMoveCallback, false);
 				
+				window.requestAnimFrame = (function(){
+				  return  window.requestAnimationFrame       || 
+						  window.webkitRequestAnimationFrame || 
+						  window.mozRequestAnimationFrame    || 
+						  window.oRequestAnimationFrame      || 
+						  window.msRequestAnimationFrame     || 
+						  function( callback ){
+							window.setTimeout(callback, 1000 / 60);
+						  };
+				})();
+				
 				fpsElement = document.getElementById('fpsElement');
 				
 				//... get some URLs of files with refinement data ...
@@ -305,7 +316,7 @@
 				bitComposer = new x3dom.BitComposer('../../../src/util/BitComposerWorker.js');
 				
 				//bitComposer.toggleDebugOutput(true);
-				//x3dom.DownloadManager.toggleDebugOutput(true);				
+				//x3dom.DownloadManager.toggleDebugOutput(true);			
 				
 				bitComposer.run([2, 3], 					 //components
 								[8, 16], 					 //attribute bits for each component
