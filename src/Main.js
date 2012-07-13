@@ -345,13 +345,18 @@ x3dom.userAgentFeature = {
 			var obj = new Array();   
 				
 			var elems = this.__getElementsByTagName("*");
-			tag = tag.toUpperCase();
-			for (var i = 0; i < elems.length; i++) {
-				var tagName = elems[i].tagName.toUpperCase();		
-				if (tagName === tag) {
-					obj.push(elems[i]);
+			if(tag =="*"){
+				obj = elems;
+			} else {
+				tag = tag.toUpperCase();
+				for (var i = 0; i < elems.length; i++) {
+					var tagName = elems[i].tagName.toUpperCase();		
+					if (tagName === tag) {
+						obj.push(elems[i]);
+					}
 				}
 			}
+			
            
             return obj;
         };

@@ -1,0 +1,112 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <title>JQuery Manipulation</title>
+	
+	  <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+
+
+    <style>
+        label { width: 100px; float: left; clear: both; }
+        #ctrlContainer { border: 1px solid #000; padding: 20px; float: left; width: 280px; margin-left: 20px; }
+        #sliderContainer div { float:left; width: 200px; }
+        #sliderContainer li { height: 25px; }
+        #sliderContainer ul { clear: both; list-style-type: none; margin: 20px 0 10px 0; padding: 0; }
+    </style>
+</head>
+       
+<body style="background-color:#E0E0E0;">
+
+    <h1>JQuery Manipulation: Using jQuery to manipulate an Attribute</h1>
+
+    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" x="0px" y="0px" width="400px" height="400px" style="float:left;">
+        <Scene DEF='scene'>
+            <Viewpoint position='0 0 10' />
+			<Background skyColor='1 1 1' />
+            <Transform id='trans'>
+                <Shape>
+                    <Appearance>
+                        <Material diffuseColor='0 0 0' specularColor='.2 .2 .2' />
+                    </Appearance>
+                    <Box DEF='box'/>
+                </Shape>
+            </Transform>
+        </Scene>
+    </X3D>
+	
+    <div id="ctrlContainer">
+        <p>Change the color of the cube using the RGB sliders, which updates the "diffuseColor" attribute of the Material node using jQuery.</p>
+        <div id="sliderContainer">
+            <ul>
+                <li><label>Red</label><div id="redSlider" class="slider"/></li>
+                <li><label>Green</label><div id="greenSlider" class="slider"/></li>
+                <li><label>Blue</label><div id="blueSlider" class="slider"/></li>
+            </ul>
+        </div>
+    </div>
+   
+    <script type="text/javascript" src="media/js/jquery.min.js"></script>
+    <link type="text/css" href="media/css/jquery-ui.css" rel="stylesheet" />
+    <script type="text/javascript" src="media/js/jquery-ui.min.js"></script>
+	
+    <script type="text/javascript">
+        $(document).ready(function(){
+            
+            // Create the sliders
+            $(".slider").slider({min: 0, max: 1, step: 0.01, slide: function(e, ui) {
+                var newCol =   $("#redSlider").slider('option', 'value') + " " 
+                             + $("#greenSlider").slider('option', 'value') + " "  
+                             + $("#blueSlider").slider('option', 'value');              
+                $("Material").attr("diffuseColor", newCol);
+            }});
+
+        });
+    </script>
+
+</body>
+</html>
