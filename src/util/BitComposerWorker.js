@@ -84,38 +84,41 @@ function refineAttributeData(refinementBufferView) {
 		
 	var component;
 		
-	/*for (j = 0; j < m; ++j) {		
+	/*	
+	for (j = 0; j < m; ++j) {		
 		attrib = attribArrays[j];
 	
 		nc		    = attrib.numComponents;
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = 0; i < n; ++i) {
-		
+		for (i = 0; i < n; ++i) {		
 			dataChunk = refinementBufferView[i];
 			
-			for (c = 0; c < nc; ++c) {
+			for (c = 0; c < nc; ++c) {				
 				component = dataChunk & attrib.componentMask[c];			
 				
 				component >>>= attrib.componentLeftShift[c];
 				component  <<= attrib.precisionOffset;
-				
-				idx 			  = baseIdx + c;
-				writeTarget[idx] |= component;
+							
+				idx 			  = baseIdx + c;				
+				writeTarget[idx] |= component;				
 			}
 			
 			baseIdx += nc;
 		}
-	}*/
+	}
+	*/
+	// BEGIN INLINED LOOP
+	//{	
+		//j = 0:
 		attrib = attribArrays[0];
 	
 		nc		    = attrib.numComponents;
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = 0; i < n; ++i) {
-		
+		for (i = 0; i < n; ++i) {		
 			dataChunk = refinementBufferView[i];
 			
 			for (c = 0; c < nc; ++c) {
@@ -131,16 +134,14 @@ function refineAttributeData(refinementBufferView) {
 			baseIdx += nc;
 		}
 		
-		
-		
+		//j = 1:
 		attrib = attribArrays[1];
 	
 		nc		    = attrib.numComponents;
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = 0; i < n; ++i) {
-		
+		for (i = 0; i < n; ++i) {		
 			dataChunk = refinementBufferView[i];
 			
 			for (c = 0; c < nc; ++c) {
@@ -154,8 +155,9 @@ function refineAttributeData(refinementBufferView) {
 			}
 			
 			baseIdx += nc;
-		}
-		
+		}		
+	//}
+	//END INLINED LOOP	
 	
 	//renewed per call due to changing buffer ownership
 	var attributeArrayBuffers = [];
