@@ -8,24 +8,13 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 	//---------------------------------
 	//static refinement information
 	this.numBitsPerComponentPerLevel = numBitsPerComponentPerLevel;
-	this.readOffset	     			 = readOffset;
-	this.componentMask   			 = [];
-	this.componentShift  			 = [];
-	
-	var c;
-	for (c = 0; c < this.numComponents; ++c) {
-		this.componentShift[c] 	 = (this.numComponents - 1 - c) * this.numBitsPerComponentPerLevel;
-		this.componentMask[c] 	 = 0x00000000 | (Math.pow(2, this.numBitsPerComponentPerLevel) - 1);
-		this.componentMask[c]  <<= this.componentShift[c];
-	}
+	this.readOffset	     			 = readOffset;	
 	
 	//---------------------------------
 	//dynamic refinement information
-	this.rightShift 	 = 0;
-	this.leftShift 	     = 0;
-	this.baseIdx 		 = 0;
-	this.shiftedChunk	 = 0;
-	this.chunkComponents = [];
+	this.componentMask   	 = [];
+	this.componentLeftShift  = [];
+	this.precisionOffset 	     = 0;
 	
 	this.bufferView		 = {}; //renewed on every refinement due to changing ownership
 }
@@ -63,38 +52,60 @@ function refineAttributeData(refinementBufferView) {
 	//@todo: if it works, check if converting some bitops to *2, /2 or + ops gives better performance,
 	//		 as, according to 'Javascript. The Good Parts.', the internal format is always 'double'
 	
-	var i, c, attrib;
+	var start = new Date();
+	
+	var i, c, nc, attrib, attributeLeftShift;
 	var dataChunk;
 	
-	for (i = 0; i < attribArrays.length; ++i) {
-		attrib		  	  = attribArrays[i];
-		
-		attrib.rightShift = strideReading * 8 - attrib.readOffset - attrib.numBitsPerComponentPerLevel * attrib.numComponents;	
-		attrib.leftShift  = attrib.numBitsPerComponent - attrib.numBitsPerComponentPerLevel -
-							(refinementsDone * attrib.numBitsPerComponentPerLevel);
-		attrib.baseIdx	  = 0;
-	}
+	var m = attribArrays.length;
 	
-	for (i = 0; i < refinementBufferView.length; ++i) {		
-		//extract refinement data chunk as 32 bit data
-		dataChunk = 0x00000000 | refinementBufferView[i];
+	for (i = 0; i < m; ++i) {
+		attrib = attribArrays[i];
+		nc	   = attrib.numComponents;
 		
-		//apply data chunk to all attribute arrays
-		for (j = 0; j < attribArrays.length; ++j) {
-			attrib = attribArrays[j];
+		attributeLeftShift 	   = (strideReading * 8) - attrib.readOffset - attrib.numBitsPerComponentPerLevel * nc;	
+		attrib.precisionOffset = attrib.numBitsPerComponent - attrib.numBitsPerComponentPerLevel -
+								 (refinementsDone * attrib.numBitsPerComponentPerLevel);
+							
+		for (c = 0; c < nc; ++c) {
+			attrib.componentLeftShift[c] = attributeLeftShift + (nc - c - 1) * attrib.numBitsPerComponentPerLevel;
 			
-			attrib.shiftedChunk = dataChunk >>> attrib.rightShift;
+			attrib.componentMask[c]    = 0 | (Math.pow(2, attrib.numBitsPerComponentPerLevel) - 1);
+			attrib.componentMask[c]  <<= attrib.componentLeftShift[c];
+		}
+	}	
+	
+	var n = refinementBufferView.length;	
 		
-			for (c = 0; c < attrib.numComponents; ++c) {		
-				attrib.chunkComponents[c] = attrib.shiftedChunk & attrib.componentMask[c];			
+	var nc,
+		writeTarget,
+		baseIdx,
+		idx;
+		
+	var component;
+		
+	for (j = 1; j < m; ++j) {		
+		attrib = attribArrays[j];
+	
+		nc		    = attrib.numComponents;
+		writeTarget = attrib.bufferView;
+		baseIdx		= 0;
+		
+		for (i = 0; i < n; ++i) {
+		
+			dataChunk = refinementBufferView[i];
+			
+			for (c = 0; c < nc; ++c) {
+				component = dataChunk & attrib.componentMask[c];			
 				
-				attrib.chunkComponents[c] >>>= attrib.componentShift[c];
-				attrib.chunkComponents[c]  <<= attrib.leftShift;
-								
-				attrib.bufferView[attrib.baseIdx + c] |= attrib.chunkComponents[c];			
+				component >>>= attrib.componentLeftShift[c];
+				component  <<= attrib.precisionOffset;
+				
+				idx 			  = baseIdx + c;
+				writeTarget[idx] |= component;
 			}
 			
-			attrib.baseIdx += attrib.numComponents;
+			baseIdx += nc;
 		}
 	}
 	
@@ -109,6 +120,8 @@ function refineAttributeData(refinementBufferView) {
 	postMessage({msg			  	   : 'refinementDone',
 				 attributeArrayBuffers : attributeArrayBuffers},
 				 attributeArrayBuffers);
+				 
+	postMessage('I needed ' + ((new Date()) - start) + ' ms to do the job!');
 				 				 
 	++refinementsDone;	
 }
