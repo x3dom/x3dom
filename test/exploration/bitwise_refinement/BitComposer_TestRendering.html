@@ -79,11 +79,14 @@
 			}
 		</script>		
 	
+		<script type="text/javascript" src='../../../src/util/BitComposerSync.js'></script>
 		<script type="text/javascript" src='../../../src/util/BitComposer.js'></script>
 		<script type="text/javascript" src='../../../src/util/DownloadManager.js'></script>
 		<script type="text/javascript">
 			var bitComposer;
 			var refinedLevels = 0;
+			
+			const UseBitComposerSync = true;
 						
 			var canvas;	 //WebGL canvas
 			var gl;		 //WebGL context
@@ -183,9 +186,11 @@
 				
 				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';				
 				
-				bitComposer.refine(attributeData.attributeArrayBuffers);
+				if (!UseBitComposerSync) {
+					bitComposer.refine(attributeData.attributeArrayBuffers);
+				}
 				
-				console.log('=> Refined data GPU upload and communication with Worker took ' + (Date.now() - refinementCallbackStart) + 'ms!');				
+				console.log('=> Refined data GPU upload (incl. communication with Worker) took ' + (Date.now() - refinementCallbackStart) + 'ms!');				
 			}
 			
 			
@@ -312,10 +317,15 @@
 					refinementURLs.push('data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');					
 				}
 				
-				//... and feed a BitComposer object with the data.
-				bitComposer = new x3dom.BitComposer('../../../src/util/BitComposerWorker.js');
+				//... and feed a BitComposer object with the data.				
+				if (UseBitComposerSync) {
+					bitComposer = new x3dom.BitComposerSync();
+				}
+				else {
+					bitComposer = new x3dom.BitComposer('../../../src/util/BitComposerWorker.js');
+				}
 				
-				//bitComposer.toggleDebugOutput(true);
+				bitComposer.toggleDebugOutput(true);
 				//x3dom.DownloadManager.toggleDebugOutput(true);			
 				
 				bitComposer.run([2, 3], 					 //components
