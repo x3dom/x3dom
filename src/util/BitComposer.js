@@ -45,9 +45,9 @@
 	if (event.data.msg == 'refinementDone') {		
 		this.refinementCallback({attributeArrayBuffers : event.data.attributeArrayBuffers});
 	}
-	//display error message text from worker
+	//display message text from worker
 	else {
-		x3dom.debug.logError('Error message from WebWorker context: ' + event.data);
+		x3dom.debug.logInfo('Message from WebWorker context: ' + event.data);
 	}
  }
  

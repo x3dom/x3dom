@@ -86,7 +86,9 @@
 			var bitComposer;
 			var refinedLevels = 0;
 			
-			const UseBitComposerSync = true;
+			var loadingTimer;
+			
+			const UseBitComposerSync = false;
 						
 			var canvas;	 //WebGL canvas
 			var gl;		 //WebGL context
@@ -184,13 +186,17 @@
 					requestAnimFrame(animate);
 				}
 				
-				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';				
+				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';
 				
+				if (refinedLevels === 8) {
+					document.getElementById('myHeading').textContent += ', after  ' + (Date.now() - loadingTimer) + ' ms.';
+				}
+	  
 				if (!UseBitComposerSync) {
 					bitComposer.refine(attributeData.attributeArrayBuffers);
 				}
 				
-				console.log('=> Refined data GPU upload (incl. communication with Worker) took ' + (Date.now() - refinementCallbackStart) + 'ms!');				
+				console.log('=> Refined data GPU upload (incl. communication with Worker) took ' + (Date.now() - refinementCallbackStart) + ' ms!');				
 			}
 			
 			
@@ -291,7 +297,7 @@
 			}
 			
 			
-			function main() {			
+			function main() {				
 				setupWebGL();
 				
 				canvas.addEventListener('mousedown', mouseDownCallback, false);
@@ -325,8 +331,10 @@
 					bitComposer = new x3dom.BitComposer('../../../src/util/BitComposerWorker.js');
 				}
 				
-				bitComposer.toggleDebugOutput(true);
+				//bitComposer.toggleDebugOutput(true);
 				//x3dom.DownloadManager.toggleDebugOutput(true);			
+				
+				loadingTimer = Date.now();
 				
 				bitComposer.run([2, 3], 					 //components
 								[8, 16], 					 //attribute bits for each component
