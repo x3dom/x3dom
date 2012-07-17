@@ -35,7 +35,7 @@ x3dom.debug = {
     
     // the maximum number of lines to log in order to prevent
     // the browser to slow down
-    maxLinesToLog: 1000,
+    maxLinesToLog: 100000,
 
 	// the container div for the logging messages
 	logContainer: null,
