@@ -588,6 +588,8 @@ x3dom.registerNodeType(
                     //    n = Math.min(n, num);
                     //}
 					
+					x3dom.debug.logError("Num Nodes:" + n));
+                    
                     for (i=0; i<n; i++)
                     {
                         var obj = this._nameObjMap[this._idList[i]];
