@@ -547,7 +547,11 @@ x3dom.registerNodeType(
                     var shape = this._childNodes[i];
                     if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode))
                         this._nameObjMap[this._vf.label[i]] = shape;
+					else
+						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
                 }
+
+                x3dom.debug.logError("--RSG NC-- label size: " + this._vf.label.length + ", map size: " + Object.keys(this._nameObjMap).length);
             },
 
             fieldChanged: function(fieldName)
@@ -595,6 +599,8 @@ x3dom.registerNodeType(
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj)
                             obj.collectDrawableObjects(transform, out);
+						else
+							x3dom.debug.logError("Invalid Label:" + this._idList[i]);
                     }
                 }
                 else
