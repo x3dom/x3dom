@@ -49,17 +49,14 @@ var refinementsDone = 0;
  * the worker looses the ownership of those buffers until they are re-transferred for the next refinement.
  */
 function refineAttributeData(refinementBufferView) {
-	//@todo: if it works, check if converting some bitops to *2, /2 or + ops gives better performance,
-	//		 as, according to 'Javascript. The Good Parts.', the internal format is always 'double'
-	
-	var start = new Date();
+	var start = Date.now();
 	
 	var i, c, nc, attrib, attributeLeftShift;
 	var dataChunk;
 	
 	var m = attribArrays.length;
 	
-	for (i = 0; i < m; ++i) {
+	for (i = m; i--; ) {
 		attrib = attribArrays[i];
 		nc	   = attrib.numComponents;
 		
@@ -83,8 +80,8 @@ function refineAttributeData(refinementBufferView) {
 		idx;
 		
 	var component;
-		
-	/*	
+/*	
+	//BEGIN STANDARD LOOP
 	for (j = 0; j < m; ++j) {		
 		attrib = attribArrays[j];
 	
@@ -108,7 +105,8 @@ function refineAttributeData(refinementBufferView) {
 			baseIdx += nc;
 		}
 	}
-	*/
+	//END STANDARD LOOP
+	/*
 	// BEGIN INLINED LOOP
 	//{	
 		//j = 0:
@@ -118,7 +116,7 @@ function refineAttributeData(refinementBufferView) {
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = 0; i < n; ++i) {		
+		for (i = n; i--; ) {		
 			dataChunk = refinementBufferView[i];
 			
 			for (c = 0; c < nc; ++c) {
@@ -141,7 +139,7 @@ function refineAttributeData(refinementBufferView) {
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = 0; i < n; ++i) {		
+		for (i = n; i--; ) {		
 			dataChunk = refinementBufferView[i];
 			
 			for (c = 0; c < nc; ++c) {
@@ -155,9 +153,47 @@ function refineAttributeData(refinementBufferView) {
 			}
 			
 			baseIdx += nc;
-		}		
+		}
 	//}
-	//END INLINED LOOP	
+	//END INLINED LOOP
+	*/
+	//BEGIN OPTIMIZED LOOP
+	//{		
+		var writeTargetNor = attribArrays[0].bufferView;
+		var writeTargetPos = attribArrays[1].bufferView;
+		var norPrecOff	   = attribArrays[0].precisionOffset;
+		var posPrecOff	   = attribArrays[1].precisionOffset;
+		var idxNor   	   = 0;
+		var idxPos   	   = 0;
+		
+		var n1, n2, p1, p2, p3;
+		
+		for (i = n; i--; ) {		
+			dataChunk = refinementBufferView[i];
+			
+			n1   = (dataChunk & 0x80) >>> (7 - norPrecOff);	//norPrecOff is in [0,7]
+			
+			n2   = (dataChunk & 0x40) >>> 6;
+			n2 <<= norPrecOff;
+			
+			writeTargetNor[idxNor++] |= n1;
+			writeTargetNor[idxNor++] |= n2;
+			
+			p1   = (dataChunk & 0x30) >>> 4;
+			p1 <<= posPrecOff; 
+			
+			p2   = (dataChunk & 0x0C) >>> 2;
+			p2 <<= posPrecOff;
+			
+			p3 	 = (dataChunk & 0x03);
+			p3 <<= posPrecOff;
+			
+			writeTargetPos[idxPos++] |= p1;
+			writeTargetPos[idxPos++] |= p2;
+			writeTargetPos[idxPos++] |= p3;
+		}
+	//}
+	//END OPTIMIZED LOOP
 	
 	//renewed per call due to changing buffer ownership
 	var attributeArrayBuffers = [];
@@ -166,12 +202,12 @@ function refineAttributeData(refinementBufferView) {
 		attributeArrayBuffers[i] = attribArrays[i].bufferView.buffer;		
 	}
 	
+	postMessage('I needed ' + (Date.now() - start) + ' ms to do the job!');
+	
 	//send back the attribute buffer references
 	postMessage({msg			  	   : 'refinementDone',
 				 attributeArrayBuffers : attributeArrayBuffers},
 				 attributeArrayBuffers);
-				 
-	postMessage('I needed ' + ((new Date()) - start) + ' ms to do the job!');
 				 				 
 	++refinementsDone;	
 }

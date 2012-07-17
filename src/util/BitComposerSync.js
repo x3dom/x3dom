@@ -57,6 +57,8 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 	
 	//number of refinements that have already been processed
 	this.refinementsDone 			= 0;
+	
+	this.refinementInProcess		= false;
  };
  
  
@@ -111,29 +113,31 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
  
  
  x3dom.BitComposerSync.prototype.tryNextRefinement = function(attributeArrayBuffers) {
-	//check if the next level was already downloaded
-	if (this.downloadedRefinementLevels.length && this.downloadedRefinementLevels[0] === this.nextLevelProcess) {		
-		this.downloadedRefinementLevels.shift();
-		this.nextLevelProcess++;
-		
-		this.refineAttributeData(this.refinementBufferViews[this.refinementsDone]);
-		
-		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('Refinement request processed! ' + this.downloadedRefinementLevels.length +
-								' jobs left.');
+	if (!this.refinementInProcess) {
+		//check if the next level was already downloaded
+		if (this.downloadedRefinementLevels.length && this.downloadedRefinementLevels[0] === this.nextLevelProcess) {		
+			this.downloadedRefinementLevels.shift();
+			this.nextLevelProcess++;
+			
+			this.refineAttributeData(this.refinementBufferViews[this.refinementsDone]);
+			
+			if (this.useDebugOutput) {
+				x3dom.debug.logInfo('Refinement request processed! ' + this.downloadedRefinementLevels.length +
+									' jobs left.');
+			}
 		}
-	}
-	//postpone refinement request until the matching data was downloaded
-	else if (this.nextLevelProcess < this.refinementDataURLs.length) {		
-		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('Refinement request postponed. '  + this.downloadedRefinementLevels.length +
-								' jobs left.');
+		//postpone refinement request until the matching data was downloaded
+		else if (this.nextLevelProcess < this.refinementDataURLs.length) {		
+			if (this.useDebugOutput) {
+				x3dom.debug.logInfo('Refinement request postponed. '  + this.downloadedRefinementLevels.length +
+									' jobs left.');
+			}
 		}
-	}
-	//no refinements left - we're done!
-	else {
-		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('No refinements left to process!');			
+		//no refinements left - we're done!
+		else {
+			if (this.useDebugOutput) {
+				x3dom.debug.logInfo('No refinements left to process!');			
+			}
 		}
 	}
  },
@@ -215,14 +219,15 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 					}
 				}
 			}
-			
+
 			this.tryNextRefinement();
-			
-			if (lvl == (this.refinementDataURLs.length - 1)) {
+				
+			//@todo: check!
+			/*if (lvl === (this.refinementDataURLs.length - 1)) {
 				while (this.refinementsDone < this.refinementDataURLs.length) {
 					this.tryNextRefinement();
 				}
-			}
+			}*/
 		}
 		else {
 			x3dom.logError('Error when enqueueing refinement data: no level with the given URL could be found.');
@@ -249,13 +254,18 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 	this.refinementCallback({attributeArrayBuffers : attributeArrayBuffers});
 	return;
 	*/
-	
+		
 	var start = new Date();
 	
-	var i, c, nc, attrib, attributeLeftShift;
+	this.refinementInProcess = true;
+	
+	var i, j, c,
+		n, m, nc,
+		attrib, attributeLeftShift;
+		
 	var dataChunk;
 	
-	var m = this.attribArrays.length;
+	m = this.attribArrays.length;
 	
 	for (i = 0; i < m; ++i) {
 		attrib = this.attribArrays[i];
@@ -273,18 +283,20 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 		}
 	}
 	
-	var n = refinementBufferView.length;	
+	n = refinementBufferView.length;	
 		
-	var nc,
-		writeTarget,
+	var writeTarget,
 		baseIdx,
 		idx;
 		
 	var component;
-		
-	/*	
-	for (j = 0; j < m; ++j) {		
-		attrib = this.attribArrays[j];
+	var self = this;
+/*
+	for (j = 0; j < m; ++j) {
+	//split-up function	
+	//j = 0;
+	//(function() {
+		attrib 		= self.attribArrays[j];
 	
 		nc		    = attrib.numComponents;
 		writeTarget = attrib.bufferView;
@@ -302,47 +314,34 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 				idx 			  = baseIdx + c;				
 				writeTarget[idx] |= component;				
 			}
-			
+		
 			baseIdx += nc;
 		}
+			
+		// ++j;
+		
+		// if (j < m) {
+			// setTimeout(arguments.callee, 0);
+		// }
+		// else {
+			// self.finishedRefinement(start);
+		// }
+	// })();
 	}
+	this.finishedRefinement(start);
 	*/
 	
 	// BEGIN INLINED LOOP
 	//{	
-		//j = 0:
-		/*
-		attrib = this.attribArrays[0];
+	(function(){
+		//j = 0:		
+		attrib = self.attribArrays[0];
 	
 		nc		    = attrib.numComponents;
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = 0; i < n; ++i) {		
-			dataChunk = refinementBufferView[i];
-			
-			for (c = 0; c < nc; ++c) {
-				component = dataChunk & attrib.componentMask[c];			
-				
-				component >>>= attrib.componentLeftShift[c];
-				component  <<= attrib.precisionOffset;
-				
-				idx 			  = baseIdx + c;
-				writeTarget[idx] |= component;
-			}
-			
-			baseIdx += nc;
-		}
-		*/
-		
-		//j = 1:
-		attrib = this.attribArrays[1];
-	
-		nc		    = attrib.numComponents;
-		writeTarget = attrib.bufferView;
-		baseIdx		= 0;
-		
-		for (i = 0; i < n; ++i) {		
+		for (i = n; --i; ) {		
 			dataChunk = refinementBufferView[i];
 			
 			for (c = 0; c < nc; ++c) {
@@ -357,19 +356,56 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 			
 			baseIdx += nc;
 		}		
-	//}
-	//END INLINED LOOP	
+	})();
 	
-	//renewed per call due to changing buffer ownership
+	(function(){
+		//j = 1:
+		attrib = self.attribArrays[1];
+	
+		nc		    = attrib.numComponents;
+		writeTarget = attrib.bufferView;
+		baseIdx		= 0;
+		
+		for (i = n; --i; ) {		
+			dataChunk = refinementBufferView[i];
+			
+			for (c = 0; c < nc; ++c) {
+				component = dataChunk & attrib.componentMask[c];			
+				
+				component >>>= attrib.componentLeftShift[c];
+				component  <<= attrib.precisionOffset;
+				
+				idx 			  = baseIdx + c;
+				writeTarget[idx] |= component;
+			}
+			
+			baseIdx += nc;
+		}
+		
+		self.finishedRefinement(start);
+	})();
+	//}
+	//END INLINED LOOP
+	//this.finishedRefinement(start);
+	
+}
+
+
+x3dom.BitComposerSync.prototype.finishedRefinement = function(start) {	
+	var i;
+	
+	//'pack' the buffers
 	var attributeArrayBuffers = [];
 		
 	for (i = 0; i < this.attribArrays.length; ++i) {
 		attributeArrayBuffers[i] = this.attribArrays[i].bufferView.buffer;		
-	}
-	
-	++this.refinementsDone;
+	}	
 	
 	x3dom.debug.logInfo('--- I needed ' + (Date.now() - start) + ' ms to do the job. ---');
 	
 	this.refinementCallback({attributeArrayBuffers : attributeArrayBuffers});
+	
+	this.refinementInProcess = false;
+	++this.refinementsDone;	
+	this.tryNextRefinement();
 }
