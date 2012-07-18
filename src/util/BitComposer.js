@@ -20,7 +20,8 @@
   */
  x3dom.BitComposer = function(workerScriptfile) {
 	var self = this;
-	this.worker = new Worker(workerScriptfile ? workerScriptfile : 'BitComposerWorker.js');	
+	
+	this.worker = new Worker(workerScriptfile ? workerScriptfile : 'BitComposerWorker.js');		
 	this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
 	
 	this.refinementCallback   		= {};	
@@ -53,16 +54,17 @@
  
 
  x3dom.BitComposer.prototype.run = function(numAttributeComponents, numAttributeBitsPerComponent,
-											numAttributeBitsPerLevel, refinementDataURLs, refinementCallback) {
+											numAttributeBitsPerLevel, refinementDataURLs, refinementCallback,
+											attributeWriteOffset, strideWriting) {
 	var attributeReadOffset = [];
 	var i, off;	
 	var refinementBuffers;
 	var self = this;
 
-	if (numAttributeBitsPerComponent.length >   0 									  &&		
-		numAttributeBitsPerComponent.length === numAttributeComponents.length 		  &&
-		numAttributeBitsPerComponent.length === numAttributeBitsPerLevel.length		) {
-		
+	if (numAttributeBitsPerComponent.length >   0 								&&		
+		numAttributeBitsPerComponent.length === numAttributeComponents.length 	&&
+		numAttributeBitsPerComponent.length === numAttributeBitsPerLevel.length	  ) {
+
 		this.refinementCallback = refinementCallback;
 		this.refinementDataURLs = refinementDataURLs;
 		
@@ -76,7 +78,9 @@
 								 numAttributeComponents 	   : numAttributeComponents,
 								 numAttributeBitsPerComponent  : numAttributeBitsPerComponent,											  
 								 numAttributeBitsPerLevel 	   : numAttributeBitsPerLevel,
-								 attributeReadOffset  		   : attributeReadOffset});
+								 attributeReadOffset  		   : attributeReadOffset,
+								 attributeWriteOffset		   : attributeWriteOffset,
+								 strideWriting				   : strideWriting});
 
 		//send priority-based requests for all refinement levels
 		for (i = 0; i < refinementDataURLs.length; ++i) {

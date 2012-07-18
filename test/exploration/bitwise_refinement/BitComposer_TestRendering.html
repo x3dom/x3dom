@@ -1,11 +1,16 @@
-<html>
+﻿<html>
+	<meta charset="UTF-8">
 	<head>
 		<title>Progressive bitwise LOD</title>
 	</head>	
-	<body onload="main();">		
+	<body onload="main();">
 		<h1 id="myHeading">Detail Level 0 / 8</h1>		
 		<i>FPS: </i><i id='fpsElement'></i><br />
 		<canvas id="myCanvas" width="400" height="400"></canvas>
+		<br/>
+		<strong id="workerTimerElement">[Worker time not measured]</strong>
+		<br/>
+		<strong id="interleavedOutputFlagElement">[Interleaved output flag not tested]</strong>
 		<br/>
 		(For debug messages, see javascript console)
 		
@@ -49,7 +54,7 @@
 				normal.y = sin(theta) * sin(phi);
 				normal.z = cos(theta);
 				
-				v_VertexNormal = normal * 0.5 + vec3(0.5, 0.5, 0.5);
+				v_VertexNormal = normal * 0.5 + vec3(0.5, 0.5, 0.5);		
 			}
 		</script>
 
@@ -88,7 +93,10 @@
 			
 			var loadingTimer;
 			
-			const UseBitComposerSync = false;
+			const UseBitComposerSync   = false;
+			const UseInterleavedOutput = true;
+			
+			const StrideInBits = 96;
 						
 			var canvas;	 //WebGL canvas
 			var gl;		 //WebGL context
@@ -106,6 +114,9 @@
 			var timestampLastFPSUpdate	= 0;
 			
 			var program; //main GPU program (shaders)
+			
+			var positionAttribLocation;
+			var normalAttribLocation;
 			
 			var mvMat;     //modelView matrix
 			var projMat;   //projection matrix
@@ -130,7 +141,7 @@
 			}
 
 
-			function setupWebGL(){
+			function setupWebGL() {
 				canvas = document.getElementById("myCanvas");
 				
 				gl = canvas.getContext("experimental-webgl");
@@ -165,33 +176,48 @@
 				
 				console.log('=> Client received refined data for level ' + refinedLevels + '!');
 								
-				var normalBuffer = new Uint8Array(attributeData.attributeArrayBuffers[0]);
-				var coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[1]);
+				var normalBuffer,
+					coordBuffer;
 				
-				numArrayElements = coordBuffer.length / 3;
+				if (UseInterleavedOutput) {					
+					coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[0]);
+				}
+				else {
+					normalBuffer = new Uint16Array(attributeData.attributeArrayBuffers[0]);
+					coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[1]);
+				}
 				
+				if (UseInterleavedOutput) {
+					numArrayElements = (coordBuffer.length * Uint16Array.BYTES_PER_ELEMENT * 8) / StrideInBits;
+				}
+				else {
+					numArrayElements = coordBuffer.length / 3;
+				}
+
 				++refinedLevels;
 				
 				//upload the VBO data to the GPU
 				gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
 				gl.bufferData(gl.ARRAY_BUFFER, coordBuffer, gl.STATIC_DRAW);
 				
-				gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normals);
-				gl.bufferData(gl.ARRAY_BUFFER, normalBuffer, gl.STATIC_DRAW);
+				if (!UseInterleavedOutput) {
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normals);
+					gl.bufferData(gl.ARRAY_BUFFER, normalBuffer, gl.STATIC_DRAW);
+				}
 
 				//enjoy it for a few secs :-)
 				//sleep(1000);
-				
+
 				if (refinedLevels === 1) {
 					requestAnimFrame(animate);
 				}
-				
+
 				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';
-				
+
 				if (refinedLevels === 8) {
 					document.getElementById('myHeading').textContent += ', after  ' + (Date.now() - loadingTimer) + ' ms.';
 				}
-	  
+
 				if (!UseBitComposerSync) {
 					bitComposer.refine(attributeData.attributeArrayBuffers);
 				}
@@ -240,6 +266,9 @@
 				console.log("Program validation result: \"" + gl.getProgramInfoLog(program) + "\"");
 				
 				gl.useProgram(program);
+				
+				positionAttribLocation = gl.getAttribLocation(program, "a_VertexPosition");
+				normalAttribLocation   = gl.getAttribLocation(program, "a_VertexNormal");
 			}
 			
 			
@@ -284,11 +313,18 @@
 				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 				
 				//specify the VBOs as vertex attributes
-				gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
-				gl.vertexAttribPointer(gl.getAttribLocation(program, "a_VertexPosition"), 3, gl.UNSIGNED_SHORT, true, 0, 0);
-				
-				gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normals);
-				gl.vertexAttribPointer(gl.getAttribLocation(program, "a_VertexNormal"), 2, gl.UNSIGNED_BYTE, true, 0, 0);
+				if (UseInterleavedOutput) {
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
+					gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true, 6*2, 0  );
+					gl.vertexAttribPointer(normalAttribLocation,   2, gl.UNSIGNED_SHORT, true, 6*2, 4*2);							
+				}
+				else {
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
+					gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true, 0, 0);
+					
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normals);
+					gl.vertexAttribPointer(normalAttribLocation, 2, gl.UNSIGNED_SHORT, true, 0, 0);
+				}
 				
 				//draw VBO content
 				gl.drawArrays(gl.TRIANGLES, 0, numArrayElements);
@@ -297,7 +333,11 @@
 			}
 			
 			
-			function main() {				
+			function main() {
+				document.getElementById('interleavedOutputFlagElement').textContent = UseInterleavedOutput 			?
+																						'Using interleaved Output.' :
+																						'Using separated Output';
+																						
 				setupWebGL();
 				
 				canvas.addEventListener('mousedown', mouseDownCallback, false);
@@ -333,14 +373,25 @@
 				
 				//bitComposer.toggleDebugOutput(true);
 				//x3dom.DownloadManager.toggleDebugOutput(true);			
-				
+
 				loadingTimer = Date.now();
-				
-				bitComposer.run([2, 3], 					 //components
-								[8, 16], 					 //attribute bits for each component
-								[2, 6], 					 //bits per refinement level for all components
-								refinementURLs,			     //URLs for the files of the refinement levels
-								refinementFinishedCallback); //callback, executed on refinement
+
+				if (UseInterleavedOutput) {
+					bitComposer.run([2,   3], 					//components
+									[16, 16], 					//attribute bits for each component
+									[2,   6], 					//bits per refinement level for all components
+									refinementURLs,			    //URLs for the files of the refinement levels
+									refinementFinishedCallback, //callback, executed on refinement
+									[64, 0],					//write offset in bits (interleaved output)
+									StrideInBits);			    //write stride in bits (interleaved output)
+				}
+				else {
+					bitComposer.run([2,   3], 					//components
+									[16, 16], 					//attribute bits for each component
+									[2,   6], 					//bits per refinement level for all components
+									refinementURLs,			    //URLs for the files of the refinement levels
+									refinementFinishedCallback);//callback, executed on refinement
+				}
 			}
 
 
