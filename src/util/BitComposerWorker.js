@@ -3,8 +3,10 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 	//---------------------------------
 	//static general information
 	this.numComponents 	   	 = numComponents;	
-	this.numBitsPerComponent = numBitsPerComponent;	
-	
+	this.numBitsPerComponent = numBitsPerComponent	
+	this.strideWriting		 = numComponents; //default value, gets changed for interleaved data
+	//this.writeOffset set on demand
+		
 	//---------------------------------
 	//static refinement information
 	this.numBitsPerComponentPerLevel = numBitsPerComponentPerLevel;
@@ -35,6 +37,10 @@ var refinementBufferViews = [];
 
 //size in bytes of a single element of the refinement buffers
 var strideReading = 0;
+
+
+//size in bytes of a single element of the interleaved output buffer, if any
+var strideWriting = 0;
 
 
 //number of refinements that have already been processed
@@ -80,8 +86,9 @@ function refineAttributeData(refinementBufferView) {
 		idx;
 		
 	var component;
-/*	
+	
 	//BEGIN STANDARD LOOP
+	/*
 	for (j = 0; j < m; ++j) {		
 		attrib = attribArrays[j];
 	
@@ -105,8 +112,9 @@ function refineAttributeData(refinementBufferView) {
 			baseIdx += nc;
 		}
 	}
+	*/
 	//END STANDARD LOOP
-	/*
+	
 	// BEGIN INLINED LOOP
 	//{	
 		//j = 0:
@@ -129,9 +137,9 @@ function refineAttributeData(refinementBufferView) {
 				writeTarget[idx] |= component;
 			}
 			
-			baseIdx += nc;
+			baseIdx += attrib.strideWriting;
 		}
-		
+				
 		//j = 1:
 		attrib = attribArrays[1];
 	
@@ -152,11 +160,11 @@ function refineAttributeData(refinementBufferView) {
 				writeTarget[idx] |= component;
 			}
 			
-			baseIdx += nc;
-		}
+			baseIdx += attrib.strideWriting;
+		}		
 	//}
 	//END INLINED LOOP
-	*/
+/*
 	//BEGIN OPTIMIZED LOOP
 	//{		
 		var writeTargetNor = attribArrays[0].bufferView;
@@ -171,13 +179,14 @@ function refineAttributeData(refinementBufferView) {
 		for (i = n; i--; ) {		
 			dataChunk = refinementBufferView[i];
 			
-			n1   = (dataChunk & 0x80) >>> (7 - norPrecOff);	//norPrecOff is in [0,7]
+			n1   = (dataChunk & 0x80) >>> 7;
+			n1 <<= norPrecOff;
 			
 			n2   = (dataChunk & 0x40) >>> 6;
 			n2 <<= norPrecOff;
 			
-			writeTargetNor[idxNor++] |= n1;
-			writeTargetNor[idxNor++] |= n2;
+			// writeTargetNor[idxNor++] |= n1;
+			// writeTargetNor[idxNor++] |= n2;
 			
 			p1   = (dataChunk & 0x30) >>> 4;
 			p1 <<= posPrecOff; 
@@ -188,18 +197,23 @@ function refineAttributeData(refinementBufferView) {
 			p3 	 = (dataChunk & 0x03);
 			p3 <<= posPrecOff;
 			
-			writeTargetPos[idxPos++] |= p1;
-			writeTargetPos[idxPos++] |= p2;
-			writeTargetPos[idxPos++] |= p3;
+			// writeTargetPos[idxPos++] |= p1;
+			// writeTargetPos[idxPos++] |= p2;
+			// writeTargetPos[idxPos++] |= p3;
 		}
 	//}
 	//END OPTIMIZED LOOP
-	
+*/
 	//renewed per call due to changing buffer ownership
 	var attributeArrayBuffers = [];
-		
-	for (i = 0; i < attribArrays.length; ++i) {
-		attributeArrayBuffers[i] = attribArrays[i].bufferView.buffer;		
+	
+	if (interleavedMode) {
+		attributeArrayBuffers[0] = attribArrays[0].bufferView.buffer;
+	}
+	else {
+		for (i = 0; i < attribArrays.length; ++i) {
+			attributeArrayBuffers[i] = attribArrays[i].bufferView.buffer;		
+		}
 	}
 	
 	postMessage('I needed ' + (Date.now() - start) + ' ms to do the job!');
@@ -249,13 +263,19 @@ onmessage = function(event) {
 													 event.data.numAttributeBitsPerComponent[i],
 													 event.data.numAttributeBitsPerLevel[i] / event.data.numAttributeComponents[i],
 													 event.data.attributeReadOffset[i]);
-													 
-				strideReading += event.data.numAttributeBitsPerLevel[i];
+
+				strideReading += event.data.numAttributeBitsPerLevel[i];				
+					
+				if (event.data.attributeWriteOffset && event.data.strideWriting) {
+					attribArrays[i].writeOffset   = event.data.attributeWriteOffset[i];					
+					attribArrays[i].strideWriting = (event.data.strideWriting / attribArrays[i].numBitsPerComponent);
+				}
 			}
 			
 			//if the offset and stride parameters are given, assume a single, interleaved output array
-			if (event.data.offset && event.data.stride) {
-				interleavedMode = true;
+			if (event.data.attributeWriteOffset && event.data.strideWriting) {
+				interleavedMode = true;				
+				strideWriting   = event.data.strideWriting;
 			}
 			
 			//guess strideReading by checking the number of bits per refinement
@@ -285,45 +305,53 @@ onmessage = function(event) {
 		case 'refine':
 			if (refinementsDone < refinementBufferViews.length && refinementBufferViews[refinementsDone]) {
 				
-				for (i = 0; i < attribArrays.length; ++i) {					
+				for (i = 0; i < attribArrays.length; ++i) {				
 					//if this is the first call, create the attribute array buffers
-					if (!refinementsDone) {
+					if (!refinementsDone) {						
 						if (interleavedMode) {
-							//in interleaved mode, all attributeArrays refer to the same buffer
 							if (i === 0) {
-								numBitsPerElement = 0;
-								for (j = 0; j < attribArrays.length; ++j) {
-									numBitsPerElement += attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;
-								}
-								
-								attributeArrayBuffer = new ArrayBuffer((numBitsPerElement / 8) * refinementBufferViews[refinementsDone].length);
+								attributeArrayBuffer = new ArrayBuffer((strideWriting / 8) * refinementBufferViews[0].length);
 							}
 							else {
 								attributeArrayBuffer = attribArrays[0].bufferView.buffer;
 							}
-						}
+						}						
 						else {
 							numBitsPerElement    = attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;
-							attributeArrayBuffer = new ArrayBuffer((numBitsPerElement / 8) * refinementBufferViews[refinementsDone].length);
+							attributeArrayBuffer = new ArrayBuffer((numBitsPerElement / 8) * refinementBufferViews[0].length);
 						}
 					}
 					else {
-						attributeArrayBuffer = event.data.attributeArrayBuffers[i];
+						if (interleavedMode) {
+							attributeArrayBuffer = event.data.attributeArrayBuffers[0];
+						}
+						else {
+							attributeArrayBuffer = event.data.attributeArrayBuffers[i];
+						}
 					}
 					
-					switch (attribArrays[i].numBitsPerComponent) {						
+					var ArrayType;
+					
+					switch (attribArrays[i].numBitsPerComponent) {
 						case 32 :
-							attribArrays[i].bufferView = new Uint32Array(attributeArrayBuffer);
+							ArrayType = Uint32Array;
 							break;
 						case 16 :
-							attribArrays[i].bufferView = new Uint16Array(attributeArrayBuffer);
+							ArrayType = Uint16Array;
 							break;
 						case 8 :
-							attribArrays[i].bufferView = new Uint8Array(attributeArrayBuffer);
+							ArrayType = Uint8Array;
 							break;
 						default:		
 							postMessage('Unable to start refinement: no valid value (' + attribArrays[i].numBitsPerComponent +
 										+ ' instead of 1, 2 or 4) set for bytesPerComponent of attribute array ' + i + '.');
+					}
+					
+					if (interleavedMode) {			
+						attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer, (attribArrays[i].writeOffset / 8));
+					}
+					else {
+						attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer);
 					}
 				}
 				refineAttributeData(refinementBufferViews[refinementsDone]);				
