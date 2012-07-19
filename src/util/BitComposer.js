@@ -32,7 +32,7 @@
 	this.requestedRefinement  		= {pendingRequests 	   : 0,
 									   attributeArrayBuffers : []	   };
 								 
-	this.useDebugOutput = false;
+	this.useDebugOutput = false;  
  };
  
  
@@ -45,6 +45,23 @@
 	//forward refined attribute data by invoking the initially set callback function
 	if (event.data.msg == 'refinementDone') {		
 		this.refinementCallback({attributeArrayBuffers : event.data.attributeArrayBuffers});
+	}
+	//@todo: debug hack
+	//debug: measure time until attribute metadata has been set up inside the worker
+	else if (event.data.msg == 'workerSetUp') {
+		var timerDisplay = document.getElementById('workerTimerElement');
+		if (timerDisplay && (typeof loadingTimer !== 'undefined')) {
+			timerDisplay.textContent = 'Worker set up after ' + (event.data.timestamp - loadingTimer) + ' ms';
+		}
+	}
+  //@todo: debug hack
+	//debug: measure time worker needed for decoding
+	else if (event.data.msg == 'decodeTime') {	
+    console.log('Worker needed ' + event.data.time + ' ms to do the job.');
+    
+    if (typeof UpdateDecode !== 'undefined') {
+      UpdateDecode(event.data.time);
+    }
 	}
 	//display message text from worker
 	else {
@@ -74,23 +91,24 @@
 			off 			 	  += numAttributeBitsPerLevel[i];
 		}
 		
-		this.worker.postMessage({cmd 		 	   			   : 'setAttributes',										  
-								 numAttributeComponents 	   : numAttributeComponents,
-								 numAttributeBitsPerComponent  : numAttributeBitsPerComponent,											  
-								 numAttributeBitsPerLevel 	   : numAttributeBitsPerLevel,
-								 attributeReadOffset  		   : attributeReadOffset,
-								 attributeWriteOffset		   : attributeWriteOffset,
-								 strideWriting				   : strideWriting});
-
-		//send priority-based requests for all refinement levels
+		this.worker.postMessage({cmd 		 	   		  : 'setAttributes',										  
+								 numAttributeComponents 	    : numAttributeComponents,
+								 numAttributeBitsPerComponent : numAttributeBitsPerComponent,											  
+								 numAttributeBitsPerLevel 	  : numAttributeBitsPerLevel,
+								 attributeReadOffset  		    : attributeReadOffset,
+								 attributeWriteOffset		      : attributeWriteOffset,
+								 strideWriting				        : strideWriting});
+		
+		//send priority-based requests for all refinement levels		
 		for (i = 0; i < refinementDataURLs.length; ++i) {
 		    x3dom.DownloadManager.get(this.refinementDataURLs[i],
 									  function(response){ self.refinementDataDownloaded(response); },
 									  i);
-		}
+		}		
 
 		//the call to this function includes a request for the first refinement
 		this.refine([]);
+		
 	} else {
 		 x3dom.debug.logError('Unable to initialize bit composer: the given attribute parameter arrays are not of the same length.');
 	}	
@@ -170,7 +188,7 @@
 			this.downloadedRefinementLevels.sort(function(a, b) { return a - b; });
 
 			//if there is a pending request for refinement, try to process it
-		    if (this.requestedRefinement.pendingRequests) {			
+		  if (this.requestedRefinement.pendingRequests) {			
 				this.refine_private(this.requestedRefinement.attributeArrayBuffers);
 			}
 		}
