@@ -240,21 +240,6 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
  
  
  x3dom.BitComposerSync.prototype.refineAttributeData = function(refinementBufferView) {
-	/*
-	var attributeArrayBuffers = [];
-		
-	for (i = 0; i < this.attribArrays.length; ++i) {
-		attributeArrayBuffers[i] = this.attribArrays[i].bufferView.buffer;		
-	}
-	
-	++this.refinementsDone;
-	
-	x3dom.debug.logInfo('I needed ' + 23.42 + ' ms to do the job!');
-	
-	this.refinementCallback({attributeArrayBuffers : attributeArrayBuffers});
-	return;
-	*/
-		
 	var start = new Date();
 	
 	this.refinementInProcess = true;
@@ -330,7 +315,7 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 	}
 	this.finishedRefinement(start);
 	*/
-	
+	/*
 	// BEGIN INLINED LOOP
 	//{	
 	(function(){
@@ -386,6 +371,47 @@ var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComp
 	})();
 	//}
 	//END INLINED LOOP
+  */
+  //BEGIN OPTIMIZED LOOP
+	//{		
+		var writeTargetNor = this.attribArrays[0].bufferView;
+		var writeTargetPos = this.attribArrays[1].bufferView;
+		var norPrecOff	   = this.attribArrays[0].precisionOffset;
+		var posPrecOff	   = this.attribArrays[1].precisionOffset;
+		var idxNor   	   = 0;
+		var idxPos   	   = 0;
+		
+		var n1, n2, p1, p2, p3;
+		
+		for (i = 0; i < n; ++i) {
+      dataChunk = refinementBufferView[i];
+			
+			n1   = (dataChunk & 0x80) >>> 7;
+			n1 <<= norPrecOff;
+			
+			n2   = (dataChunk & 0x40) >>> 6;
+			n2 <<= norPrecOff;
+			
+			writeTargetNor[idxNor++] |= n1;
+			writeTargetNor[idxNor++] |= n2;
+			
+			p1   = (dataChunk & 0x30) >>> 4;
+			p1 <<= posPrecOff; 
+			
+			p2   = (dataChunk & 0x0C) >>> 2;
+			p2 <<= posPrecOff;
+			
+			p3 	 = (dataChunk & 0x03);
+			p3 <<= posPrecOff;
+			
+			writeTargetPos[idxPos++] |= p1;
+			writeTargetPos[idxPos++] |= p2;
+			writeTargetPos[idxPos++] |= p3;
+		}
+  this.finishedRefinement(start);
+	//}
+	//END OPTIMIZED LOOP
+  
 	//this.finishedRefinement(start);
 	
 }
