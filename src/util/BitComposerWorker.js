@@ -1,4 +1,4 @@
-//a small AttributeArray wrapper class
+﻿//a small AttributeArray wrapper class
 var AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComponentPerLevel, readOffset) {
 	//---------------------------------
 	//static general information
@@ -114,7 +114,7 @@ function refineAttributeData(refinementBufferView) {
 	}
 	*/
 	//END STANDARD LOOP
-	
+/*
 	// BEGIN INLINED LOOP
 	//{	
 		//j = 0:
@@ -164,7 +164,7 @@ function refineAttributeData(refinementBufferView) {
 		}		
 	//}
 	//END INLINED LOOP
-/*
+*/
 	//BEGIN OPTIMIZED LOOP
 	//{		
 		var writeTargetNor = attribArrays[0].bufferView;
@@ -176,7 +176,7 @@ function refineAttributeData(refinementBufferView) {
 		
 		var n1, n2, p1, p2, p3;
 		
-		for (i = n; i--; ) {		
+		for (i = 0; i < n; ++i) {		
 			dataChunk = refinementBufferView[i];
 			
 			n1   = (dataChunk & 0x80) >>> 7;
@@ -185,8 +185,8 @@ function refineAttributeData(refinementBufferView) {
 			n2   = (dataChunk & 0x40) >>> 6;
 			n2 <<= norPrecOff;
 			
-			// writeTargetNor[idxNor++] |= n1;
-			// writeTargetNor[idxNor++] |= n2;
+			writeTargetNor[idxNor++] |= n1;
+			writeTargetNor[idxNor++] |= n2;
 			
 			p1   = (dataChunk & 0x30) >>> 4;
 			p1 <<= posPrecOff; 
@@ -197,13 +197,13 @@ function refineAttributeData(refinementBufferView) {
 			p3 	 = (dataChunk & 0x03);
 			p3 <<= posPrecOff;
 			
-			// writeTargetPos[idxPos++] |= p1;
-			// writeTargetPos[idxPos++] |= p2;
-			// writeTargetPos[idxPos++] |= p3;
+			writeTargetPos[idxPos++] |= p1;
+			writeTargetPos[idxPos++] |= p2;
+			writeTargetPos[idxPos++] |= p3;
 		}
 	//}
 	//END OPTIMIZED LOOP
-*/
+
 	//renewed per call due to changing buffer ownership
 	var attributeArrayBuffers = [];
 	

@@ -8,7 +8,7 @@ var start_drawing = false;
 
 
 //---
-const UseInterleavedOutput = true;
+const UseInterleavedOutput = false;
 		
 const StrideInBits = 96;
 
@@ -31,6 +31,7 @@ var refinedLevels = 0;
 function UpdateDecode(ms) {
   decode_ms += ms;
 }
+
 
 function UpdateTotal(ms) {
   start_drawing = true;

@@ -59,7 +59,7 @@ Mesh.prototype.BindAndDraw = function(gl, program) {
   program.vertexAttribPointers(BUDDHA_ATTRIB_ARRAYS);
 
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, this.ibo);
-
+  console.log(this.num_indices);
   gl.drawElements(gl.TRIANGLES, this.num_indices, gl.UNSIGNED_SHORT, 0);
 }
 

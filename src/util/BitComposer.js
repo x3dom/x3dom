@@ -1,4 +1,4 @@
-/*
+﻿/*
  * X3DOM JavaScript Library
  * http://x3dom.org
  *
