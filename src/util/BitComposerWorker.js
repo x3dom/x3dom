@@ -124,7 +124,7 @@ function refineAttributeData(refinementBufferView) {
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = n; i--; ) {		
+		for (i = 0; i < n; ++i) {		
 			dataChunk = refinementBufferView[i];
 			
 			for (c = 0; c < nc; ++c) {
@@ -147,7 +147,7 @@ function refineAttributeData(refinementBufferView) {
 		writeTarget = attrib.bufferView;
 		baseIdx		= 0;
 		
-		for (i = n; i--; ) {		
+		for (i = 0; i < n; ++i) {		
 			dataChunk = refinementBufferView[i];
 			
 			for (c = 0; c < nc; ++c) {
@@ -216,12 +216,13 @@ function refineAttributeData(refinementBufferView) {
 		}
 	}
 	
-	postMessage('I needed ' + (Date.now() - start) + ' ms to do the job!');
+	postMessage({msg  : 'decodeTime',
+               time : (Date.now() - start)});
 	
 	//send back the attribute buffer references
-	postMessage({msg			  	   : 'refinementDone',
-				 attributeArrayBuffers : attributeArrayBuffers},
-				 attributeArrayBuffers);
+	postMessage({msg			  	         : 'refinementDone',
+               attributeArrayBuffers : attributeArrayBuffers},
+               attributeArrayBuffers);
 				 				 
 	++refinementsDone;	
 }
@@ -257,7 +258,12 @@ onmessage = function(event) {
 	var numBitsPerElement;
 	
 	switch (event.data.cmd) {
-		case 'setAttributes':				
+		case 'setAttributes':
+			if (!refinementsDone) {
+				postMessage({msg 	   : 'workerSetUp',
+							 timestamp : Date.now()});
+			}
+			
 			for (i = 0; i < event.data.numAttributeComponents.length; ++i) {
 				attribArrays[i] = new AttributeArray(event.data.numAttributeComponents[i],
 													 event.data.numAttributeBitsPerComponent[i],
@@ -279,7 +285,7 @@ onmessage = function(event) {
 			}
 			
 			//guess strideReading by checking the number of bits per refinement
-		    //usually, we expect this to be an exact multiple of 8, as one doesn't
+		  //usually, we expect this to be an exact multiple of 8, as one doesn't
 			//want to waste space in the encoded data
 			strideReading = Math.ceil(strideReading / 8);
 			
@@ -354,7 +360,9 @@ onmessage = function(event) {
 						attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer);
 					}
 				}
+				
 				refineAttributeData(refinementBufferViews[refinementsDone]);				
+				
 			} else {
 				postMessage('Cannot process refinement: No refinement data loaded for the requested level ' + refinementsDone + '!');
 			}

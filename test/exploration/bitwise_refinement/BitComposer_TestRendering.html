@@ -8,6 +8,8 @@
 		<i>FPS: </i><i id='fpsElement'></i><br />
 		<canvas id="myCanvas" width="400" height="400"></canvas>
 		<br/>
+		<strong id="webGLSetupTimestampDisplayElement">[WebGL setup time not measured]</strong>
+		<br/>
 		<strong id="workerTimerElement">[Worker time not measured]</strong>
 		<br/>
 		<strong id="interleavedOutputFlagElement">[Interleaved output flag not tested]</strong>
@@ -215,7 +217,7 @@
 				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';
 
 				if (refinedLevels === 8) {
-					document.getElementById('myHeading').textContent += ', after  ' + (Date.now() - loadingTimer) + ' ms.';
+					document.getElementById('myHeading').textContent += ', after  ' + (Date.now() - loadingTimer) + ' ms';
 				}
 
 				if (!UseBitComposerSync) {
@@ -334,11 +336,16 @@
 			
 			
 			function main() {
+				loadingTimer = Date.now();
+				
 				document.getElementById('interleavedOutputFlagElement').textContent = UseInterleavedOutput 			?
 																						'Using interleaved Output.' :
 																						'Using separated Output';
-																						
+				
 				setupWebGL();
+				
+				document.getElementById('webGLSetupTimestampDisplayElement').textContent = 'WebGL set up after ' +
+																						   (Date.now() - loadingTimer) + ' ms';
 				
 				canvas.addEventListener('mousedown', mouseDownCallback, false);
 				canvas.addEventListener('mouseup',   mouseUpCallback,   false);
@@ -374,7 +381,7 @@
 				//bitComposer.toggleDebugOutput(true);
 				//x3dom.DownloadManager.toggleDebugOutput(true);			
 
-				loadingTimer = Date.now();
+				
 
 				if (UseInterleavedOutput) {
 					bitComposer.run([2,   3], 					//components
