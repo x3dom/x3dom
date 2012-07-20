@@ -397,8 +397,8 @@
 				//... get some URLs of files with refinement data ...
 				var i, refinementURLs = [];
 				for (i = 0; i < 8; ++i) {
-          //@todo: we need a tool to get absolute URLs from relative ones here ...
-					refinementURLs.push('file:///U:/Projects/x3dom/test/exploration/bitwise_refinement/data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');
+          //@todo: a.t.m., this is relative to the worker's location!
+					refinementURLs.push('../../test/exploration/bitwise_refinement/data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');
 				}
 				
 				//... and feed a BitComposer object with the data.				
