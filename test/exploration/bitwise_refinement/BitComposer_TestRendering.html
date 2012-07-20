@@ -96,7 +96,7 @@
 			var loadingTimer;
 			
 			const UseBitComposerSync   = false;
-			const UseInterleavedOutput = false;
+			const UseInterleavedOutput = true;
 			
 			const StrideInBits = 96;
 						
@@ -182,8 +182,9 @@
 					coordBuffer;
 				
 				if (UseInterleavedOutput) {					
-					coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[0]);
+					coordBuffer  = new Uint16Array(attributeData);
 				}
+        //@todo: check
 				else {
 					normalBuffer = new Uint16Array(attributeData.attributeArrayBuffers[0]);
 					coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[1]);
@@ -211,9 +212,38 @@
 				//sleep(1000);
 
 				if (refinedLevels === 1) {
-					requestAnimFrame(animate);
+					//requestAnimFrame(animate);
 				}
-
+        
+        
+        ///
+        var viewpoint = [0.0, 0.0, 2.5];
+				
+				var vLoc = gl.getUniformLocation(program, "u_Viewpoint");
+				gl.uniform3fv(vLoc, viewpoint);
+				
+				mvMat.makeIdentity();				
+				mvMat.translate(-viewpoint[0], -viewpoint[1], -viewpoint[2]);				
+				mvMat.rotate(angleY, 0, 1, 0);
+				mvMat.rotate(angleX, 1, 0, 0);
+				
+				if (mouseDown) {
+					angleY += mouseDiffX;
+					angleX += mouseDiffY;
+				}
+				
+				mouseDiffX = 0;
+				mouseDiffY = 0;
+				
+				mvProjMat.load(projMat);
+				mvProjMat.multiply(mvMat);				
+				
+				mvProjMat.setUniform(gl, gl.getUniformLocation(program, "u_MVPMat"), false)
+				
+				renderScene();
+        //
+        
+        
 				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';
 
 				if (refinedLevels === 8) {
@@ -221,7 +251,7 @@
 				}
 
 				if (!UseBitComposerSync) {
-					bitComposer.refine(attributeData.attributeArrayBuffers);
+					bitComposer.refine(attributeData);
 				}
 				
 				console.log('=> Refined data GPU upload (incl. communication with Worker) took ' + (Date.now() - refinementCallbackStart) + ' ms!');				
@@ -367,7 +397,8 @@
 				//... get some URLs of files with refinement data ...
 				var i, refinementURLs = [];
 				for (i = 0; i < 8; ++i) {
-					refinementURLs.push('data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');					
+          //@todo: we need a tool to get absolute URLs from relative ones here ...
+					refinementURLs.push('file:///U:/Projects/x3dom/test/exploration/bitwise_refinement/data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');
 				}
 				
 				//... and feed a BitComposer object with the data.				
