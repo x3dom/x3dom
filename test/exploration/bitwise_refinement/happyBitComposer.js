@@ -11,7 +11,7 @@ var awaitingSecondAttrib = false;
 //---
 const UseInterleavedOutput = true;
 		
-const NumLevels = 4;
+const NumLevels = 8;
 
 const StrideInBits = 96;
 
@@ -28,6 +28,15 @@ var normalAttribLocation;
 var numArrayElements = 0;
 
 var refinedLevels = 0;
+
+function sleep(milliseconds) {
+  var start = new Date().getTime();
+  var newDate;
+  do {
+    newDate = new Date();
+  }
+  while ((newDate.getTime() - start) < milliseconds);
+}
 //---
 
 
@@ -53,7 +62,7 @@ var refinementURLs = [ '../../test/exploration/bitwise_refinement/data/refinemen
                        '../../test/exploration/bitwise_refinement/data/refinement05.bin',
                        '../../test/exploration/bitwise_refinement/data/refinement06.bin',
                        '../../test/exploration/bitwise_refinement/data/refinement07.bin' ];
-             /*
+/*
 var refinementURLs = ['../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level0.bin',
                       '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level1.bin',
                       '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level2.bin',
@@ -219,6 +228,11 @@ function refinementFinishedCallback(buffer) {
   
   ++refinedLevels;
   
+  if (refinedLevels === 2 ||
+      refinedLevels === 4 ||
+      refinedLevels === 6 ||
+      refinedLevels === 8   )
+  {
   var s = Date.now();
   
   //upload the VBO data to the GPU
@@ -229,21 +243,22 @@ function refinementFinishedCallback(buffer) {
   
   //@todo: check this hack!
   drawAllowed = true;
+  }
   
   if (!UseInterleavedOutput) {
     glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.normals);
     glContext.bufferData(glContext.ARRAY_BUFFER, normalBuffer, glContext.STATIC_DRAW);
   }
   
-  //enjoy it for a few secs :-)
-  //sleep(1000);
+  //enjoy it :-)
+  //sleep(500);
 
   if (refinedLevels === NumLevels) {
     UpdateTotal(Date.now() - start_time);
   }
-  else {
+  //else {
     bitComposer.refine(buffer);
-  }
+  //}
 }
     
     
