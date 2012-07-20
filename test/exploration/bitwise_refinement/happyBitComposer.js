@@ -6,10 +6,13 @@ var decode_ms = 0;
 
 var start_drawing = false;
 
+var awaitingSecondAttrib = false;
 
 //---
-const UseInterleavedOutput = false;
+const UseInterleavedOutput = true;
 		
+const NumLevels = 4;
+
 const StrideInBits = 96;
 
 var glContext;
@@ -40,19 +43,30 @@ function UpdateTotal(ms) {
 }
 
 		 
-var refinementURLs = [ 'data/refinement00.bin',
-					   'data/refinement01.bin',
-					   'data/refinement02.bin',
-					   'data/refinement03.bin',
-					   'data/refinement04.bin',
-					   'data/refinement05.bin',
-					   'data/refinement06.bin',
-					   'data/refinement07.bin' ];
+//@todo: we need a tool to convert relative URLs to absolute ones...
 
+var refinementURLs = [ '../../test/exploration/bitwise_refinement/data/refinement00.bin',
+                       '../../test/exploration/bitwise_refinement/data/refinement01.bin',
+                       '../../test/exploration/bitwise_refinement/data/refinement02.bin',
+                       '../../test/exploration/bitwise_refinement/data/refinement03.bin',
+                       '../../test/exploration/bitwise_refinement/data/refinement04.bin',
+                       '../../test/exploration/bitwise_refinement/data/refinement05.bin',
+                       '../../test/exploration/bitwise_refinement/data/refinement06.bin',
+                       '../../test/exploration/bitwise_refinement/data/refinement07.bin' ];
+             /*
+var refinementURLs = ['../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level0.bin',
+                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level1.bin',
+                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level2.bin',
+                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level3.bin',
+                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level4.bin',
+                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level5.bin',
+                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level6.bin',
+                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level7.bin'];
+*/
              
 function LoaderExample() { }
 
-
+var drawAllowed = false;
 LoaderExample.prototype = {
 
 
@@ -124,6 +138,8 @@ update : function(gl, dt)
 
 draw : function(gl)
 {
+  if (drawAllowed){
+  
   // Move some of this (viewport, projection) to a reshape function.
   var w = this.ui.width;
   var h = this.ui.height;
@@ -146,7 +162,7 @@ draw : function(gl)
 
   gl.uniformMatrix4fv(this.program.set_uniform["u_mvp"], false,
                       this.xform.modelViewProjectionMatrix);
-                      
+
   //-> original code:
   //gl.bindBuffer(gl.ARRAY_BUFFER, this.vbo);
   //program.vertexAttribPointers(BUDDHA_ATTRIB_ARRAYS);
@@ -168,27 +184,32 @@ draw : function(gl)
   }
   
   gl.drawArrays(gl.TRIANGLES, 0, numArrayElements);
-  //-  
+  //-
+  
+  if (refinedLevels !== NumLevels){
+    drawAllowed = false;
+  }
+  }
 }
 
 
 };
 
 
-function refinementFinishedCallback(attributeData) {  
+function refinementFinishedCallback(buffer) {  
   console.log('=> Client received refined data for level ' + refinedLevels + '!');
           
   var normalBuffer,
       coordBuffer;
-  
+    
   if (UseInterleavedOutput) {					
-    coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[0]);
+    coordBuffer  = new Uint16Array(buffer);
   }
   else {
-    normalBuffer = new Uint16Array(attributeData.attributeArrayBuffers[0]);
-    coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[1]);
+    normalBuffer = new Uint16Array(buffer);
+    coordBuffer  = new Uint16Array(buffer);
   }
-  
+
   if (UseInterleavedOutput) {
     numArrayElements = (coordBuffer.length * Uint16Array.BYTES_PER_ELEMENT * 8) / StrideInBits;
   }
@@ -198,23 +219,31 @@ function refinementFinishedCallback(attributeData) {
   
   ++refinedLevels;
   
+  var s = Date.now();
+  
   //upload the VBO data to the GPU
-  glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.positions);
+  glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.positions);  
   glContext.bufferData(glContext.ARRAY_BUFFER, coordBuffer, glContext.STATIC_DRAW);
+  
+  console.log('*** GPU upload took ' + (Date.now() - s) + ' ms ***');
+  
+  //@todo: check this hack!
+  drawAllowed = true;
   
   if (!UseInterleavedOutput) {
     glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.normals);
     glContext.bufferData(glContext.ARRAY_BUFFER, normalBuffer, glContext.STATIC_DRAW);
   }
-
+  
   //enjoy it for a few secs :-)
   //sleep(1000);
 
-  if (refinedLevels === 8) {
+  if (refinedLevels === NumLevels) {
     UpdateTotal(Date.now() - start_time);
   }
-  
-  bitComposer.refine(attributeData.attributeArrayBuffers);
+  else {
+    bitComposer.refine(buffer);
+  }
 }
     
     
