@@ -9,13 +9,13 @@
 
 
 //Refinement information
-// Bit:			  0    1    2    3    4    5   6    7
-// Information: | n1 | n2 | px | px | py | py |pz | pz |
+// Bit:			      0    1    2    3    4    5    6    7
+// Information: | px | px | py | py | pz | pz | n1 | n2 |
 namespace R
 {
 	const unsigned int Levels    = 8;
-	const unsigned int PosOffset = 2;
-	const unsigned int NorOffset = 0;
+	const unsigned int PosOffset = 0;
+	const unsigned int NorOffset = 6;
 	const unsigned int BitsPos   = 2;
 	const unsigned int BitsNor   = 1;
 };
@@ -227,6 +227,21 @@ int main(int argc, char * argv[])
 		
 		printf("Read %d vertices and %d triangles.\n", vertex_data.size(), face_data.size());		
 		
+    printf("Bounding box data: \n [%f %f %f] - [%f %f %f]\n", min_coord.x, min_coord.y, min_coord.z,
+                                                              max_coord.x, max_coord.y, max_coord.z);
+                                                            
+    float scaleX = max_coord.x - min_coord.x;
+    float scaleY = max_coord.y - min_coord.y;
+    float scaleZ = max_coord.z - min_coord.z;
+     
+    float greatest = std::max(std::max<float>(scaleX, scaleY), scaleZ);
+    
+    if (greatest == scaleX){ scaleY = scaleY / scaleX; scaleZ = scaleZ / scaleX; scaleX = 1.0;}
+    if (greatest == scaleY){ scaleX = scaleX / scaleY; scaleZ = scaleZ / scaleY; scaleY = 1.0;}
+    if (greatest == scaleZ){ scaleX = scaleZ / scaleZ; scaleY = scaleY / scaleZ; scaleZ = 1.0;}
+    
+    printf("(To unnormalize data, scale with %f / %f / %f)\n", scaleX, scaleY, scaleZ);
+    
 		if (normal_data.size() != vertex_data.size())
 		{
 			printf("Incompatible model file: The number of normals (%d) is not equal to the number of vertices (%d). Filling with default values. \n",
@@ -270,7 +285,6 @@ int main(int argc, char * argv[])
 		}
 		
 		free(filename);
-	
 		
 		/*
 		printf("Writing 8 bit data to \"refinement0.bin\".\n");
