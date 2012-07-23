@@ -3332,21 +3332,14 @@ x3dom.gfx_webgl = (function () {
 					that.bitLODComposer.refine(refinedBuffer);
 				};
 
-				/*this.bitLODComposer.run([3, 2], 					 			//components
-									    [16, 16], 					 			//attribute bits for each component
-									    [6, 2], 					 			//bits per refinement level for all components
+				this.bitLODComposer.run([3, 2], 					 			     //components
+									    [16, 16], 					 			            //attribute bits for each component
+									    [6, 2], 					 			              //bits per refinement level for all components
 									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
 									    callBack,
-                      [0, 64],					          //write offset in bits (interleaved output)
-                      96);			        //write stride in bits (interleaved output)*/
-                      
-        this.bitLODComposer.run([2, 3], 					 			//components
-									    [16, 16], 					 			//attribute bits for each component
-									    [2, 6], 					 			//bits per refinement level for all components
-									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
-									    callBack,
-                      [64, 0],					          //write offset in bits (interleaved output)
-                      96);			        //write stride in bits (interleaved output)
+                      [0, 64],					                    //write offset in bits (interleaved output)
+                      96);			                            //write stride in bits (interleaved output)
+     
 			}
 		}		
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
