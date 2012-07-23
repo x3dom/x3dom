@@ -1,4 +1,4 @@
-﻿/*
+/*
  * X3DOM JavaScript Library
  * http://x3dom.org
  *
@@ -11,26 +11,24 @@
  */
  
  
- /**
-  * This class does three things:
+  /**
+  * This class does two things:
   *		- host a background WebWorker which performs the bitwise composition
   *		- wrap the message interface which is used to communicate with the worker
-  *		- automatically provide the worker with refinement data in the correct order,
-  *		  by utilizing the x3dom.DownloadManager
+
+
   */
- x3dom.BitLODComposer = function() {
+ x3dom.BitLODComposer = function(workerScriptfile) {
+
 	var self = this;
 	
-	this.worker = new Worker( new x3dom.BitLODWorker().toBlob() );	
+  this.worker = new Worker( new x3dom.BitLODWorker().toBlob() );	
+  
+  this.worker.postMessage = this.worker.webkitPostMessage || this.worker.postMessage;
+  
 	this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
 	
-	this.refinementCallback   		= {};	
-	this.refinementDataURLs   		= [];	
-	this.nextLevelToSend  	  		= 0;	
-	this.downloadedRefinementLevels = [];
-	
-	this.requestedRefinement  		= {pendingRequests 	   : 0,
-									   attributeArrayBuffers : []	   };
+	this.refinementCallback  = {};
 								 
 	this.useDebugOutput = false;  
  };
@@ -41,38 +39,51 @@
  };
  
  
- x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {	
-	//forward refined attribute data by invoking the initially set callback function
-	if (event.data.msg == 'refinementDone') {		
-		this.refinementCallback({attributeArrayBuffers : event.data.attributeArrayBuffers});
-	}
-	//@todo: debug hack
-	//debug: measure time until attribute metadata has been set up inside the worker
-	else if (event.data.msg == 'workerSetUp') {
-		var timerDisplay = document.getElementById('workerTimerElement');
-		if (timerDisplay && (typeof loadingTimer !== 'undefined')) {
-			timerDisplay.textContent = 'Worker set up after ' + (event.data.timestamp - loadingTimer) + ' ms';
-		}
-	}
-  //@todo: debug hack
-	//debug: measure time worker needed for decoding
-	else if (event.data.msg == 'decodeTime') {	
-    console.log('Worker needed ' + event.data.time + ' ms to do the job.');
+ x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
+  if (event.data.msg) {
     
-    if (typeof UpdateDecode !== 'undefined') {
-      UpdateDecode(event.data.time);
+    //display message text from worker
+    if (event.data.msg == 'log') {		
+      x3dom.debug.logInfo('Message from WebWorker context: ' + event.data.text);
     }
-	}
-	//display message text from worker
+
+    //@todo: debug hack
+    //debug: measure time until attribute metadata has been set up inside the worker
+    else if (event.data.msg == 'workerSetUp') {
+      var timerDisplay = document.getElementById('workerTimerElement');
+      if (timerDisplay && (typeof loadingTimer !== 'undefined')) {
+        timerDisplay.textContent = 'Worker set up after ' + (event.data.timestamp - loadingTimer) + ' ms';
+      }
+    }
+
+    //@todo: debug hack
+    //debug: measure time worker needed for decoding
+    else if (event.data.msg == 'decodeTime') {	
+      x3dom.debug.logInfo('Worker needed ' + event.data.time + ' ms to do the job.');
+      
+
+      if (typeof UpdateDecode !== 'undefined') {
+        UpdateDecode(event.data.time);
+      }
+    }
+  }	
+
+
 	else {
-		x3dom.debug.logInfo('Message from WebWorker context: ' + event.data);
+    //forward refined attribute data by invoking the initially set callback function  		
+    this.refinementCallback(event.data);
+    
+    //if (++refs === 8)    
+    //this.refinementCallback(event.data);
+    //else
+    //this.refine(event.data);
 	}
  }
  
 
  x3dom.BitLODComposer.prototype.run = function(numAttributeComponents, numAttributeBitsPerComponent,
-											numAttributeBitsPerLevel, refinementDataURLs, refinementCallback,
-											attributeWriteOffset, strideWriting) {
+                                            numAttributeBitsPerLevel, refinementDataURLs, refinementCallback,
+                                            attributeWriteOffset, strideWriting) {
 	var attributeReadOffset = [];
 	var i, off;	
 	var refinementBuffers;
@@ -83,7 +94,6 @@
 		numAttributeBitsPerComponent.length === numAttributeBitsPerLevel.length	  ) {
 
 		this.refinementCallback = refinementCallback;
-		this.refinementDataURLs = refinementDataURLs;
 		
 		off = 0;
 		for (i = 0; i < numAttributeBitsPerComponent.length; ++i) {
@@ -97,107 +107,36 @@
 								 numAttributeBitsPerLevel 	  : numAttributeBitsPerLevel,
 								 attributeReadOffset  		    : attributeReadOffset,
 								 attributeWriteOffset		      : attributeWriteOffset,
-								 strideWriting				        : strideWriting});
-		
-		//send priority-based requests for all refinement levels		
-		for (i = 0; i < refinementDataURLs.length; ++i) {
-		    x3dom.DownloadManager.get(this.refinementDataURLs[i],
-									  function(response){ self.refinementDataDownloaded(response); },
-									  i);
-		}		
-
-		//the call to this function includes a request for the first refinement
-		this.refine([]);
-		
+								 strideWriting				        : strideWriting});	
+  
+    for (i = 0; i < refinementDataURLs.length; ++i) {
+      (function(idx) {
+        var xhr = new XMLHttpRequest();
+        
+        xhr.onload = function() {
+          self.refinementDataLoaded(xhr, idx);
+        };
+        
+        xhr.open('GET', refinementDataURLs[i], true); //asynchronous         
+        xhr.responseType = 'arraybuffer';
+        
+        xhr.send(null);
+      })(i);
+    }
 	} else {
 		 x3dom.debug.logError('Unable to initialize bit composer: the given attribute parameter arrays are not of the same length.');
-	}	
+	}
+  
+  this.refine(new ArrayBuffer(0));
  };
  
  
- x3dom.BitLODComposer.prototype.refine = function(attributeArrayBuffers) {
-	this.requestedRefinement.pendingRequests++;
-		
-	this.refine_private(attributeArrayBuffers);
+ x3dom.BitLODComposer.prototype.refine = function(attributeArrayBuffer) {    
+   this.worker.postMessage(attributeArrayBuffer, [attributeArrayBuffer]);
  };
  
  
- x3dom.BitLODComposer.prototype.refine_private = function(attributeArrayBuffers) {
-	//check if the next level was already downloaded
-	if (this.downloadedRefinementLevels.length && this.downloadedRefinementLevels[0] === this.nextLevelToSend) {
-		this.worker.postMessage({cmd : 'refine', attributeArrayBuffers : attributeArrayBuffers},
-								attributeArrayBuffers);
-
-		this.downloadedRefinementLevels.shift();
-		
-		this.nextLevelToSend++;
-		
-		if (this.requestedRefinement.pendingRequests) {
-			this.requestedRefinement.pendingRequests--;
-		}
-		else {
-			x3dom.debug.logError('BitComposer error: a refinement job was sent to the worker without being requested by the user. ' + 
-								 'This can mean that the worker received invalid data due to missing ArrayBuffer ownership.');
-		}
-		
-		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('Refinement request processed! ' + this.requestedRefinement.pendingRequests +
-								' request(s) pending.');
-		}
-	}
-	//postpone refinement request until the matching data was downloaded
-	else if (this.nextLevelToSend < this.refinementDataURLs.length) {		
-		this.requestedRefinement.attributeArrayBuffers = attributeArrayBuffers;
-		
-		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('Refinement request postponed. '  + this.requestedRefinement.pendingRequests +
-								' request(s) pending.');
-		}
-	}
-	//no refinements left - we're done!
-	else {
-		if (this.useDebugOutput) {
-			x3dom.debug.logInfo('No refinements left to process!');			
-		}
-	}
- },
- 
- 
- x3dom.BitLODComposer.prototype.refinementDataDownloaded = function(data) {
-	var i;
-
-	if (data.arrayBuffer) {
-		//find level of the returned data
-		for (i = 0; i < this.refinementDataURLs.length; ++i) {
-			if (data.url === this.refinementDataURLs[i]) {
-				break;
-			}
-		}
-
-		if (i < this.refinementDataURLs.length) {
-			if (this.useDebugOutput) {
-				x3dom.debug.logInfo('Refinement level ' + i + ' has been loaded!');
-			}
-			
-			this.worker.postMessage({cmd 		 : 'transferRefinementData',
-									 level		 : i,
-									 arrayBuffer : data.arrayBuffer},
-									[data.arrayBuffer]);
-
-			this.downloadedRefinementLevels.push(i);
-			this.downloadedRefinementLevels.sort(function(a, b) { return a - b; });
-
-			//if there is a pending request for refinement, try to process it
-		  if (this.requestedRefinement.pendingRequests) {			
-				this.refine_private(this.requestedRefinement.attributeArrayBuffers);
-			}
-		}
-		else {
-			x3dom.logError('Error when enqueueing refinement data: no level with the given URL could be found.');
-		}
-	}
-	else {
-		x3dom.debug.logError('Unable to use downloaded refinement data: no ArrayBuffer data recognized.');
-	}
+ x3dom.BitLODComposer.prototype.refinementDataLoaded = function(xhr, l) {  
+  this.worker.postMessage({buffer : xhr.response, level : l},
+                          [xhr.response]);
  }
- 

@@ -1,34 +1,39 @@
-﻿
-
-
-
-
-
 x3dom.BitLODWorker = function()
 {
 	//flag for interleaved encoding - if this is true, each AttributeArray's bufferView
-	//members will refer to the same buffer, but use different offsets in their view
-	this.interleavedMode = false;
-	
-	//list of registered attribute arrays
-	this.attribArrays = [];
+  //members will refer to the same buffer, but use different offsets in their view
+  this.interleavedMode = false;
 
 
-	//views on the refinement buffers
-	this.refinementBufferViews = [];
+  //list of registered attribute arrays
+  this.attribArrays = [];
 
 
-	//size in bytes of a single element of the refinement buffers
-	this.strideReading = 0;
+  //views on the refinement buffers
+  this.refinementBufferViews = [];
 
 
-	//size in bytes of a single element of the interleaved output buffer, if any
-	this.strideWriting = 0;
+  //size in bytes of a single element of the refinement buffers
+  this.strideReading = 0;
 
 
-	//number of refinements that have already been processed
-	this.refinementsDone = 0;
-}
+  //size in bytes of a single element of the interleaved output buffer, if any
+  this.strideWriting = 0;
+
+
+  this.refinementDataURLs = 0;
+
+
+  this.availableRefinementLevels = [];
+
+
+  //number of refinements that have already been processed
+  this.refinementsDone = 0;
+
+
+  this.requestedRefinements = 0;
+  
+};
 
 /**
  * Refines the data stored in the registered attribute arrays, using the given refinement buffer.
@@ -37,22 +42,24 @@ x3dom.BitLODWorker = function()
  * contain a reference to the attributes' ArrayBuffer objects (attributeArrayBuffers), meaning that
  * the worker looses the ownership of those buffers until they are re-transferred for the next refinement.
  */
-x3dom.BitLODWorker.prototype.refineAttributeData = function (refinementBufferView) 
+x3dom.BitLODWorker.prototype.refineAttributeData = function (level) 
 {
 	var start = Date.now();
 	
+  var refinementBufferView = refinementBufferViews[level];
+  
 	var i, c, nc, attrib, attributeLeftShift;
 	var dataChunk;
 	
 	var m = attribArrays.length;
 	
-	for (i = m; i--; ) {
+	for (i = 0; i < m; ++i) {
 		attrib = attribArrays[i];
 		nc	   = attrib.numComponents;
 		
 		attributeLeftShift 	   = (strideReading * 8) - attrib.readOffset - attrib.numBitsPerComponentPerLevel * nc;	
 		attrib.precisionOffset = attrib.numBitsPerComponent - attrib.numBitsPerComponentPerLevel -
-								 (refinementsDone * attrib.numBitsPerComponentPerLevel);
+                             (level * attrib.numBitsPerComponentPerLevel);
 							
 		for (c = 0; c < nc; ++c) {
 			attrib.componentLeftShift[c] = attributeLeftShift + (nc - c - 1) * attrib.numBitsPerComponentPerLevel;
@@ -65,67 +72,115 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (refinementBufferVie
 	var n = refinementBufferView.length;	
 		
 	var nc,
-		writeTarget,
-		baseIdx,
-		idx;
+      writeTarget,
+      baseIdx,
+      idx;
 		
 	var component;
-		
-	var writeTargetNor = attribArrays[0].bufferView;
-	var writeTargetPos = attribArrays[1].bufferView;
-	var norPrecOff	   = attribArrays[0].precisionOffset;
-	var posPrecOff	   = attribArrays[1].precisionOffset;
-	var idxNor   	   = 0;
-	var idxPos   	   = 0;
 	
-	var n1, n2, p1, p2, p3;
+	// BEGIN INLINED LOOP
+	//{	
+		//j = 0:
+		attrib = attribArrays[0];
 	
-	for (i = 0; i < n; ++i) {		
-		dataChunk = refinementBufferView[i];
+		nc		      = attrib.numComponents;
+		writeTarget = attrib.bufferView;
+		baseIdx		  = 0;
 		
-		n1   = (dataChunk & 0x80) >>> 7;
-		n1 <<= norPrecOff;
-		
-		n2   = (dataChunk & 0x40) >>> 6;
-		n2 <<= norPrecOff;
-		
-		writeTargetNor[idxNor++] |= n1;
-		writeTargetNor[idxNor++] |= n2;
-		
-		p1   = (dataChunk & 0x30) >>> 4;
-		p1 <<= posPrecOff; 
-		
-		p2   = (dataChunk & 0x0C) >>> 2;
-		p2 <<= posPrecOff;
-		
-		p3 	 = (dataChunk & 0x03);
-		p3 <<= posPrecOff;
-		
-		writeTargetPos[idxPos++] |= p1;
-		writeTargetPos[idxPos++] |= p2;
-		writeTargetPos[idxPos++] |= p3;
-	}
-
-	//renewed per call due to changing buffer ownership
-	var attributeArrayBuffers = [];
-	
-	if (interleavedMode) {
-		attributeArrayBuffers[0] = attribArrays[0].bufferView.buffer;
-	}
-	else {
-		for (i = 0; i < attribArrays.length; ++i) {
-			attributeArrayBuffers[i] = attribArrays[i].bufferView.buffer;		
+		for (i = 0; i < n; ++i) {		
+			dataChunk = refinementBufferView[i];
+			
+			for (c = 0; c < nc; ++c) {
+				component = dataChunk & attrib.componentMask[c];			
+				
+				component >>>= attrib.componentLeftShift[c];
+				component  <<= attrib.precisionOffset;
+				
+				idx 			        = baseIdx + c;
+				writeTarget[idx] |= component;
+			}
+			
+			baseIdx += attrib.strideWriting;
 		}
-	}
+				
+		//j = 1:
+		attrib = attribArrays[1];
 	
+		nc		      = attrib.numComponents;
+		writeTarget = attrib.bufferView;
+		baseIdx		  = 0;
+		
+		for (i = 0; i < n; ++i) {	
+			dataChunk = refinementBufferView[i];
+			
+			for (c = 0; c < nc; ++c) {
+				component = dataChunk & attrib.componentMask[c];			
+				
+				component >>>= attrib.componentLeftShift[c];
+				component  <<= attrib.precisionOffset;
+				
+				idx 			        = baseIdx + c;
+				writeTarget[idx] |= component;
+			}
+			
+			baseIdx += attrib.strideWriting;
+		}	
+	//}
+	//END INLINED LOOP
+
+	//BEGIN OPTIMIZED LOOP
+	//{		
+  /*
+		var writeTargetNor = attribArrays[0].bufferView;
+		var writeTargetPos = attribArrays[1].bufferView;
+		var norPrecOff	   = attribArrays[0].precisionOffset;
+		var posPrecOff	   = attribArrays[1].precisionOffset;
+		var idxNor   	     = 0;
+		var idxPos   	     = 0;
+    var norStrideWOff  = attribArrays[0].strideWriting - 2;
+    var posStrideWOff  = attribArrays[1].strideWriting - 3;
+		var n1, n2, p1, p2, p3;
+		
+		for (i = 0; i < n; ++i) {		
+			dataChunk = refinementBufferView[i];
+			
+			n1   = (dataChunk & 0x80) >>> 7;
+			n1 <<= norPrecOff;
+			
+			n2   = (dataChunk & 0x40) >>> 6;
+			n2 <<= norPrecOff;
+			
+			writeTargetNor[idxNor++] |= n1;
+			writeTargetNor[idxNor++] |= n2;
+      
+      idxNor += 4;
+			
+			p1   = (dataChunk & 0x30) >>> 4;
+			p1 <<= posPrecOff; 
+			
+			p2   = (dataChunk & 0x0C) >>> 2;
+			p2 <<= posPrecOff;
+			
+			p3 	 = (dataChunk & 0x03);
+			p3 <<= posPrecOff;
+			
+			writeTargetPos[idxPos++] |= p1;
+			writeTargetPos[idxPos++] |= p2;
+			writeTargetPos[idxPos++] |= p3;
+      
+      idxPos += 3;
+		}
+  */
+	//}
+	//END OPTIMIZED LOOP
+
 	postMessage({msg  : 'decodeTime',
                time : (Date.now() - start)});
-	
-	//send back the attribute buffer references
-	postMessage({msg			  	         : 'refinementDone',
-               attributeArrayBuffers : attributeArrayBuffers},
-               attributeArrayBuffers);
-				 				 
+                   
+  //send back the attribute buffer references
+  postMessage(attribArrays[0].bufferView.buffer,
+             [attribArrays[0].bufferView.buffer]);
+  			 				 
 	++refinementsDone;	
 };
 
@@ -158,11 +213,13 @@ x3dom.BitLODWorker.prototype.onmessage = function(event) {
 	var attributeArrayBuffer;
 	var numBitsPerElement;
 	
-	switch (event.data.cmd) {
-		case 'setAttributes':
-			if (!refinementsDone) {
-				postMessage({msg 	   : 'workerSetUp',
-							 timestamp : Date.now()});
+  //COMMANDS
+	if (event.data.cmd !== undefined) {
+  
+		if (event.data.cmd === 'setAttributes') {    
+    	if (!refinementsDone) {
+				postMessage({msg 	     : 'workerSetUp',
+                     timestamp : Date.now()});
 			}
 			
 			for (i = 0; i < event.data.numAttributeComponents.length; ++i) {
@@ -178,102 +235,172 @@ x3dom.BitLODWorker.prototype.onmessage = function(event) {
 					attribArrays[i].strideWriting = (event.data.strideWriting / attribArrays[i].numBitsPerComponent);
 				}
 			}
-			
-			//if the offset and stride parameters are given, assume a single, interleaved output array
-			if (event.data.attributeWriteOffset && event.data.strideWriting) {
-				interleavedMode = true;				
-				strideWriting   = event.data.strideWriting;
-			}
+
+			interleavedMode = true;				
+			strideWriting   = event.data.strideWriting;
 			
 			//guess strideReading by checking the number of bits per refinement
 		  //usually, we expect this to be an exact multiple of 8, as one doesn't
 			//want to waste space in the encoded data
 			strideReading = Math.ceil(strideReading / 8);
-			
-			break;
-			
-		case 'transferRefinementData':
-			switch (strideReading) {
-				case 4 :
-					refinementBufferViews[event.data.level] = new Uint32Array(event.data.arrayBuffer);
-					break;
-				case 2 :
-					refinementBufferViews[event.data.level] = new Uint16Array(event.data.arrayBuffer);
-					break;
-				case 1 :
-					refinementBufferViews[event.data.level] = new Uint8Array(event.data.arrayBuffer);
-					break;
-				default:
-					postMessage('Refinement data not accepted: strideReading was found to be ' + strideReading +
-								' bytes, but must be set to 1, 2 or 4 before transferring refinement data.');
-			}
-			break;
-
-		case 'refine':
-			if (refinementsDone < refinementBufferViews.length && refinementBufferViews[refinementsDone]) {
-				
-				for (i = 0; i < attribArrays.length; ++i) {				
-					//if this is the first call, create the attribute array buffers
-					if (!refinementsDone) {						
-						if (interleavedMode) {
-							if (i === 0) {
-								attributeArrayBuffer = new ArrayBuffer((strideWriting / 8) * refinementBufferViews[0].length);
-							}
-							else {
-								attributeArrayBuffer = attribArrays[0].bufferView.buffer;
-							}
-						}						
-						else {
-							numBitsPerElement    = attribArrays[i].numBitsPerComponent * attribArrays[i].numComponents;
-							attributeArrayBuffer = new ArrayBuffer((numBitsPerElement / 8) * refinementBufferViews[0].length);
-						}
-					}
-					else {
-						if (interleavedMode) {
-							attributeArrayBuffer = event.data.attributeArrayBuffers[0];
-						}
-						else {
-							attributeArrayBuffer = event.data.attributeArrayBuffers[i];
-						}
-					}
-					
-					var ArrayType;
-					
-					switch (attribArrays[i].numBitsPerComponent) {
-						case 32 :
-							ArrayType = Uint32Array;
-							break;
-						case 16 :
-							ArrayType = Uint16Array;
-							break;
-						case 8 :
-							ArrayType = Uint8Array;
-							break;
-						default:		
-							postMessage('Unable to start refinement: no valid value (' + attribArrays[i].numBitsPerComponent +
-										+ ' instead of 1, 2 or 4) set for bytesPerComponent of attribute array ' + i + '.');
-					}
-					
-					if (interleavedMode) {			
-						attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer, (attribArrays[i].writeOffset / 8));
-					}
-					else {
-						attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer);
-					}
-				}
-				
-				refineAttributeData(refinementBufferViews[refinementsDone]);				
-				
-			} else {
-				postMessage('Cannot process refinement: No refinement data loaded for the requested level ' + refinementsDone + '!');
-			}
-			break;
+		}
+  }
+  //DATA
+	else {      
+      //refinement data
+      if (event.data.level !== undefined) {
+        refinementDataLoaded(event.data.buffer, event.data.level);
+      }
+      //attribute data
+      else {
+        ++requestedRefinements;
+          
+        if (refinementsDone) {       
+          //if this is not the first call, own the attribute array buffers
+          for (i = 0; i < attribArrays.length; ++i) {
+            //select buffer
+            if (interleavedMode) {
+              attributeArrayBuffer = event.data;
+            }
+            else {
+              //@todo: what do we do now? :-P
+              attributeArrayBuffer = event.data.attributeArrayBuffers[i];
+            }
+            
+            //create views          
+            var ArrayType;
+          
+            switch (attribArrays[i].numBitsPerComponent) {
+              case 32 :
+                ArrayType = Uint32Array;
+                break;
+              case 16 :
+                ArrayType = Uint16Array;
+                break;
+              case 8 :
+                ArrayType = Uint8Array;
+                break;
+              default:		
+                postMessage({msg  : 'log',
+                             text : 'Unable to start refinement: no valid value (' + attribArrays[i].numBitsPerComponent +
+                                    ' instead of 1, 2 or 4) set for bytesPerComponent of attribute array ' + i + '.'});
+            }
+            
+            if (interleavedMode) {			
+              attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer, (attribArrays[i].writeOffset / 8));
+            }
+            else {
+              attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer);
+            }
+          }
+        }
+        
+        tryNextRefinement();
+      }
 	}
 };
+
+
+x3dom.BitLODWorker.prototype.refinementDataLoaded = function(buffer, l) {
+  var i;
+ 
+  switch (strideReading) {
+    case 4 :
+      refinementBufferViews[l] = new Uint32Array(buffer);
+      break;
+    case 2 :
+      refinementBufferViews[l] = new Uint16Array(buffer);
+      break;
+    case 1 :
+      refinementBufferViews[l] = new Uint8Array(buffer);
+      break;
+    default:		
+      postMessage({msg  : 'log',
+                   text : 'Unable to start refinement: no valid value (' + attribArrays[i].numBitsPerComponent +
+                          ' instead of 1, 2 or 4) set for bytesPerComponent of attribute array ' + i + '.'});
+  }
+  
+  availableRefinementLevels.push(l);
+  availableRefinementLevels.sort(function(a, b){ return a - b; });
+     
+  if (!refinementsDone) {	
+    for (i = 0; i < attribArrays.length; ++i) {  
+      //create / select buffer      
+      if (i === 0) {
+        attributeArrayBuffer = new ArrayBuffer((strideWriting / 8) * refinementBufferViews[l].length);
+      }
+      else {
+        attributeArrayBuffer = attribArrays[0].bufferView.buffer;
+      }
+      
+      //create views          
+      var ArrayType;
+    
+      switch (attribArrays[i].numBitsPerComponent) {
+        case 32 :
+          ArrayType = Uint32Array;
+          break;
+        case 16 :
+          ArrayType = Uint16Array;
+          break;
+        case 8 :
+          ArrayType = Uint8Array;
+          break;
+        default:		
+          postMessage({msg  : 'log',
+                       text : 'Unable to start refinement: no valid value (' + attribArrays[i].numBitsPerComponent +
+                              ' instead of 1, 2 or 4) set for bytesPerComponent of attribute array ' + i + '.'});
+      }
+      
+      attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer, (attribArrays[i].writeOffset / 8));      
+    }
+  }  
+  
+  tryNextRefinement();
+}
+
+
+x3dom.BitLODWorker.prototype.tryNextRefinement = function() {
+  var nextLevel;
+  
+  if (requestedRefinements && availableRefinementLevels.length) {
+    nextLevel = availableRefinementLevels.shift();
+    --requestedRefinements;
+                
+    refineAttributeData(nextLevel);    
+  }
+}
+
+
+//a small AttributeArray wrapper class
+x3dom.BitLODWorker.prototype.AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComponentPerLevel, readOffset) {
+	//---------------------------------
+	//static general information
+	this.numComponents 	   	 = numComponents;	
+	this.numBitsPerComponent = numBitsPerComponent	
+	this.strideWriting		   = numComponents; //default value, gets changed for interleaved data
+	//this.writeOffset set on demand
+		
+	//---------------------------------
+	//static refinement information
+	this.numBitsPerComponentPerLevel = numBitsPerComponentPerLevel;
+	this.readOffset	     			       = readOffset;	
+	
+	//---------------------------------
+	//dynamic refinement information
+	this.componentMask   	   = [];
+	this.componentLeftShift  = [];
+	this.precisionOffset 	   = 0;
+	
+	this.bufferView		 = {}; //renewed on every refinement due to changing ownership
+};
+
 
 x3dom.BitLODWorker.prototype.toBlob = function ()
 {
 	var str = '';
+  
+  str += "  postMessage = (typeof webkitPostMessage !== 'undefined') ? webkitPostMessage : postMessage;\n";
 
     for (var p in this)
 	{
@@ -295,32 +422,9 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 			}
 		}
     }
-	
+  
 	var bb = new WebKitBlobBuilder();
 	bb.append(str);
 	
 	return window.webkitURL.createObjectURL(bb.getBlob());
-};
-
-//a small AttributeArray wrapper class
-x3dom.BitLODWorker.prototype.AttributeArray = function(numComponents, numBitsPerComponent, numBitsPerComponentPerLevel, readOffset) {
-	//---------------------------------
-	//static general information
-	this.numComponents 	   	 = numComponents;	
-	this.numBitsPerComponent = numBitsPerComponent	
-	this.strideWriting		 = numComponents; //default value, gets changed for interleaved data
-	//this.writeOffset set on demand
-		
-	//---------------------------------
-	//static refinement information
-	this.numBitsPerComponentPerLevel = numBitsPerComponentPerLevel;
-	this.readOffset	     			 = readOffset;	
-	
-	//---------------------------------
-	//dynamic refinement information
-	this.componentMask   	 = [];
-	this.componentLeftShift  = [];
-	this.precisionOffset 	     = 0;
-	
-	this.bufferView		 = {}; //renewed on every refinement due to changing ownership
 };
