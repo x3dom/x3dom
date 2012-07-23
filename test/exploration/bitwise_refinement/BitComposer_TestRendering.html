@@ -85,9 +85,9 @@
 				*/
 			}
 		</script>		
-	
-		<script type="text/javascript" src='../../../src/util/BitComposerSync.js'></script>
-		<script type="text/javascript" src='../../../src/util/BitComposer.js'></script>
+		
+		<script type="text/javascript" src='../../../src/util/BitLODComposer.js'></script>
+    <script type="text/javascript" src='../../../src/util/BitLODWorker.js'></script>
 		<script type="text/javascript" src='../../../src/util/DownloadManager.js'></script>
 		<script type="text/javascript">
 			var bitComposer;
@@ -398,7 +398,7 @@
 				var i, refinementURLs = [];
 				for (i = 0; i < 8; ++i) {
           //@todo: a.t.m., this is relative to the worker's location!
-					refinementURLs.push('../../test/exploration/bitwise_refinement/data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');
+					refinementURLs.push('data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');
 				}
 				
 				//... and feed a BitComposer object with the data.				
@@ -406,7 +406,7 @@
 					bitComposer = new x3dom.BitComposerSync();
 				}
 				else {
-					bitComposer = new x3dom.BitComposer('../../../src/util/BitComposerWorker.js');
+					bitComposer = new x3dom.BitLODComposer();
 				}
 				
 				//bitComposer.toggleDebugOutput(true);
