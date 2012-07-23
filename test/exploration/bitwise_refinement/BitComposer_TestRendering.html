@@ -396,40 +396,23 @@
 				
 				//... get some URLs of files with refinement data ...
 				var i, refinementURLs = [];
-				for (i = 0; i < 8; ++i) {
-          //@todo: a.t.m., this is relative to the worker's location!
+				for (i = 0; i < 8; ++i) {          
 					refinementURLs.push('data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');
 				}
 				
-				//... and feed a BitComposer object with the data.				
-				if (UseBitComposerSync) {
-					bitComposer = new x3dom.BitComposerSync();
-				}
-				else {
-					bitComposer = new x3dom.BitLODComposer();
-				}
+				//... and feed a BitComposer object with the data		
+				bitComposer = new x3dom.BitLODComposer();
 				
 				//bitComposer.toggleDebugOutput(true);
-				//x3dom.DownloadManager.toggleDebugOutput(true);			
+				//x3dom.DownloadManager.toggleDebugOutput(true);				
 
-				
-
-				if (UseInterleavedOutput) {
-					bitComposer.run([2,   3], 					//components
-									[16, 16], 					//attribute bits for each component
-									[2,   6], 					//bits per refinement level for all components
-									refinementURLs,			    //URLs for the files of the refinement levels
-									refinementFinishedCallback, //callback, executed on refinement
-									[64, 0],					//write offset in bits (interleaved output)
-									StrideInBits);			    //write stride in bits (interleaved output)
-				}
-				else {
-					bitComposer.run([2,   3], 					//components
-									[16, 16], 					//attribute bits for each component
-									[2,   6], 					//bits per refinement level for all components
-									refinementURLs,			    //URLs for the files of the refinement levels
-									refinementFinishedCallback);//callback, executed on refinement
-				}
+        bitComposer.run([3, 2], 					          //components
+                        [16, 16], 					        //attribute bits for each component
+                        [6,   2], 					        //bits per refinement level for all components
+                        refinementURLs,			        //URLs for the files of the refinement levels
+                        refinementFinishedCallback, //callback, executed on refinement
+                        [0, 64],					          //write offset in bits (interleaved output)
+                        StrideInBits);			        //write stride in bits (interleaved output)
 			}
 
 

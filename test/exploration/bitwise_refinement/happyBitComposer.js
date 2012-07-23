@@ -52,25 +52,23 @@ function UpdateTotal(ms) {
 }
 
 		 
-//@todo: we need a tool to convert relative URLs to absolute ones...
-
-var refinementURLs = [ '../../test/exploration/bitwise_refinement/data/refinement00.bin',
-                       '../../test/exploration/bitwise_refinement/data/refinement01.bin',
-                       '../../test/exploration/bitwise_refinement/data/refinement02.bin',
-                       '../../test/exploration/bitwise_refinement/data/refinement03.bin',
-                       '../../test/exploration/bitwise_refinement/data/refinement04.bin',
-                       '../../test/exploration/bitwise_refinement/data/refinement05.bin',
-                       '../../test/exploration/bitwise_refinement/data/refinement06.bin',
-                       '../../test/exploration/bitwise_refinement/data/refinement07.bin' ];
+var refinementURLs = [ 'data/refinement00.bin',
+                       'data/refinement01.bin',
+                       'data/refinement02.bin',
+                       'data/refinement03.bin',
+                       'data/refinement04.bin',
+                       'data/refinement05.bin',
+                       'data/refinement06.bin',
+                       'data/refinement07.bin' ];
 /*
-var refinementURLs = ['../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level0.bin',
-                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level1.bin',
-                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level2.bin',
-                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level3.bin',
-                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level4.bin',
-                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level5.bin',
-                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level6.bin',
-                      '../../test/exploration/bitwise_refinement/data/lodGeo/AOPT32098208_level7.bin'];
+var refinementURLs = ['data/lodGeo/AOPT32098208_level0.bin',
+                      'data/lodGeo/AOPT32098208_level1.bin',
+                      'data/lodGeo/AOPT32098208_level2.bin',
+                      'data/lodGeo/AOPT32098208_level3.bin',
+                      'data/lodGeo/AOPT32098208_level4.bin',
+                      'data/lodGeo/AOPT32098208_level5.bin',
+                      'data/lodGeo/AOPT32098208_level6.bin',
+                      'data/lodGeo/AOPT32098208_level7.bin'];
 */
              
 function LoaderExample() { }
@@ -115,27 +113,18 @@ load : function(gl)
 
   //----
   
-  bitComposer = new x3dom.BitComposer('../../../src/util/BitComposerWorker.js');
+  bitComposer = new x3dom.BitLODComposer();
 
   //bitComposer.toggleDebugOutput(true);
   //x3dom.DownloadManager.toggleDebugOutput(true);
 
-  if (UseInterleavedOutput) {
-    bitComposer.run([2,   3], 					        //components
-                    [16, 16], 					        //attribute bits for each component
-                    [2,   6], 					        //bits per refinement level for all components
-                    refinementURLs,			        //URLs for the files of the refinement levels
-                    refinementFinishedCallback, //callback, executed on refinement
-                    [64, 0],					          //write offset in bits (interleaved output)
-                    StrideInBits);			        //write stride in bits (interleaved output)
-  }
-  else {
-    bitComposer.run([2,   3], 					         //components
-                    [16, 16], 					         //attribute bits for each component
-                    [2,   6], 					         //bits per refinement level for all components
-                    refinementURLs,			         //URLs for the files of the refinement levels
-                    refinementFinishedCallback); //callback, executed on refinement
-  }  
+  bitComposer.run([3, 2], 					          //components
+                  [16, 16], 					        //attribute bits for each component
+                  [6,   2], 					        //bits per refinement level for all components
+                  refinementURLs,			        //URLs for the files of the refinement levels
+                  refinementFinishedCallback, //callback, executed on refinement
+                  [0, 64],					          //write offset in bits (interleaved output)
+                  StrideInBits);			        //write stride in bits (interleaved output)
 },
 
 
