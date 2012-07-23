@@ -53,24 +53,27 @@
   </head>
   <body>
     <x3d id='someUniqueId' showStat='false' showLog='true' width='400px' height='400px'>
-      <scene>
-		<Background skyColor='0.5 1 0'></Background>
-        <viewpoint position='0 0 2.5'></viewpoint>
-		<shape>
-		  <appearance>
-			<material ambientIntensity='0' shininess='0.15625' specularColor='1 1 1'></material>
-		  </appearance>
-		  <BitLODGeometry vertexCount='11808' primType='"TRIANGLES"' size='1 1 1' position='0 0 0'>
-			<BitLODGeoComponent src='media/data/refinement00.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-			<BitLODGeoComponent src='media/data/refinement01.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-			<BitLODGeoComponent src='media/data/refinement02.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-			<BitLODGeoComponent src='media/data/refinement03.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-			<BitLODGeoComponent src='media/data/refinement04.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-			<BitLODGeoComponent src='media/data/refinement05.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-			<BitLODGeoComponent src='media/data/refinement06.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-			<BitLODGeoComponent src='media/data/refinement07.bin' attrib='"normal2" "coord3"' format='2 6'></BitLODGeoComponent>
-		  </BitLODGeometry>
-		</shape>
+      <scene DEF='scene'>
+        <viewpoint position='0 0 248.282'></viewpoint>
+        <group>
+          <group>
+            <shape DEF='SP_34834'>
+              <appearance DEF='App_0'>
+                <material ambientIntensity='0' shininess='0.15625' specularColor='1 1 1'></material>
+              </appearance>
+              <BitLODGeometry index='media/data/bitbunny/AOPT32098208_indexBinary.bin' vertexCount='208353' primType='"TRIANGLES"' size='155.699005127 154.333999634 120.674003601' >
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level0.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level1.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level2.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level3.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level4.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level5.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level6.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+                <BitLODGeoComponent src='media/data/bitbunny/AOPT32098208_level7.bin' attrib='"coord3" "normal2"' format='6 2'></BitLODGeoComponent>
+              </BitLODGeometry>
+            </shape>
+          </group>
+        </group>
       </scene>
     </x3d>
   </body>

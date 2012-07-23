@@ -1516,7 +1516,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
 			
 			this.addField_SFString(ctx, 'src', "");
-			this.addField_MFString(ctx, 'type', []);
+			this.addField_MFString(ctx, 'format', []);
 			this.addField_MFString(ctx, 'attrib', []);
 		},
 		{
@@ -1579,39 +1579,36 @@ x3dom.registerNodeType(
 		},
 		{
 			nodeChanged: function()
-            {	
+      {	 
 				var components = this._cf.components.nodes;
 				var numComponents = components.length;
 				if(numComponents)
 				{
 					var attribs = components[0]._vf.attrib;
-					var type  = components[0]._vf.type;
+					var format  = components[0]._vf.format;
 					
 					var numAttribs = attribs.length;
-					var numTypes  = type.length;
+					var numFormats  = format.length;
 					
-					if(numAttribs == numTypes)
+					if(numAttribs == numFormats)
 					{
 						for(var a=0; a<numAttribs; a++)
 						{
 							switch(attribs[a])
 							{
 								case "coord3":
-									var coordType = type[a];
-									this.numBitsPerCoord = (this.getNumBits(coordType) / 8) * 3;
-									this._vf.coordType = coordType;
+									this.numBitsPerCoord = (format[a] * numComponents) / 3;
+									this._vf.coordType = this.getType(this.numBitsPerCoord);
 								break;
 								
 								case "normal3":
-									var normalType = type[a];
-									this.numBitsPerCoord = (this.getNumBits(normalType) / 8) * 3;
-									this._vf.normalType = normalType;
+									this.numBitsPerNormal = (format[a] * numComponents) / 3;
+									this._vf.normalType = this.getType(this.numBitsPerNormal);
 								break;
 								
 								case "normal2":
-									var normalType = type[a];
-									this.numBitsPerNormal = (this.getNumBits(normalType) / 8) * 2;
-									this._vf.normalType = normalType;
+									this.numBitsPerNormal = (format[a] * numComponents) / 2;
+									this._vf.normalType = this.getType(this.numBitsPerNormal);
 								break;
 								
 								default:
@@ -1625,11 +1622,17 @@ x3dom.registerNodeType(
 					}
 				}
 			},
+      
+      parentAdded: function()
+      {
+        this._parentNodes[0]._coordStrideOffset = [12, 0];
+        this._parentNodes[0]._normalStrideOffset = [12, 8];
+      },
 
-            fieldChanged: function(fieldName)
-            {
-                
-            },
+      fieldChanged: function(fieldName)
+      {
+          
+      },
 			
 			getMin: function()
 			{
@@ -1677,12 +1680,12 @@ x3dom.registerNodeType(
 			
 			getNumVertexCounts: function()
 			{
-				this._vf.vertexCount.length;
+				return this._vf.vertexCount.length;
 			},
 			
 			getVertexCount: function(idx)
 			{
-				if( idx < this.getNumVertexCounts() )
+				if( idx < this.getNumVertexCounts() ) 
 					return this._vf.vertexCount[idx];
 			},
 			
@@ -1711,18 +1714,16 @@ x3dom.registerNodeType(
 				return URLs;
 			},
 			
-			getNumBits: function(type)
+			getType: function(bits)
 			{
-    			switch(type)
+    			switch(bits)
                 {
-                    case "Int8" || "Uint8":
-                        return 8;
-                    case "Int16" || "Uint16":
-                        return 16;
-                    case "Int32" || "Uint32" || "Float32":
-                        return 32;
-                    case "Float64":
-						return 64;
+                    case 8:
+                        return "Uint8";
+                    case 16:
+                        return "Uint16";
+                    case 32:
+                        return "Float32";
                     default:
                         return 0;
                 }

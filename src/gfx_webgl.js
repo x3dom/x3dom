@@ -1238,6 +1238,7 @@ x3dom.gfx_webgl = (function () {
 		var shadow				= (viewarea.getLightsShadow()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
 		var imageGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) ? 1 : 0;
+    var bitLODGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
 		var iG_Precision		= (imageGeometry) ? shape._cf.geometry.node.numCoordinateTextures() : 0;
 		var iG_Indexed			= (imageGeometry && shape._cf.geometry.node.getIndexTexture() != null) ? 1 : 0;
 		var requireBBox         = (shape._cf.geometry.node._vf.coordType !== undefined && shape._cf.geometry.node._vf.coordType != "Float32");
@@ -1424,8 +1425,6 @@ x3dom.gfx_webgl = (function () {
 					shader += "vertNormal.x = sin(theta) * cos(phi);\n";
 					shader += "vertNormal.y = sin(theta) * sin(phi);\n";
 					shader += "vertNormal.z = cos(theta);\n";
-				
-					shader += "vertNormal = vertNormal * 2.0 - 1.0;\n";
 				} else {
 					shader += "vec3 vertNormal = normal;";
 				}
@@ -1442,9 +1441,14 @@ x3dom.gfx_webgl = (function () {
 				}
 				shader += "vec3 vertPosition = position;\n";
 				
-				if(requireBBox) {
+        if(bitLODGeometry)
+        {
+          shader += "vertPosition = (vertPosition / bgPrecisionMax) * 2.0 - 1.0;\n";
+          shader += "vertPosition = bgCenter + bgSize * vertPosition;\n";
+        }
+				else if(requireBBox) {
 				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
-			    }
+			  }
 				shader += "gl_PointSize = 2.0;\n";
 				if(vertexColor){
     				if(requireBBoxCol) {
@@ -3283,59 +3287,66 @@ x3dom.gfx_webgl = (function () {
 				
 				var that = this;
 				
-				function callBack(attributeData)
+				function callBack(refinedBuffer)
 				{	
-					//Coordinates
-					var attribTypeStr 		= bitLODGeometry._vf.coordType;
-					shape._webgl.coordType  = getVertexAttribType(attribTypeStr, gl);
+          var attribTypeStr 		= bitLODGeometry._vf.coordType;
+          
+          shape._webgl.coordType    = getVertexAttribType(attribTypeStr, gl);
+          shape._webgl.normalType   = shape._webgl.coordType;
 					
-					var vertices = getArrayBufferView(attribTypeStr, attributeData.attributeArrayBuffers[1]);
+					var attributes = getArrayBufferView(attribTypeStr, refinedBuffer);
+          
+          // calculate number of single data packages by including stride and type size
+          var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
+          if (dataLen)
+              bitLODGeometry._mesh._numCoords = attributes.length / dataLen;
 					
-					var positionBuffer = gl.createBuffer();
+					var buffer = gl.createBuffer();
 					
-					shape._webgl.buffers[1] = positionBuffer;
+          //Vertices
+					shape._webgl.buffers[1] = buffer;
 					
-					gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-					gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+					gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
 					
-					gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, true, 
+					gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
 										   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.position);
+          gl.enableVertexAttribArray(sp.position);
+          
+          
+          //Normals
+          shape._webgl.buffers[2] = buffer;
 					
-					bitLODGeometry._mesh._numCoords = vertices.length / 3;
+					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+					gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
 					
-					vertices = null;
-					
-					//Normals
-					var attribTypeStr 		= bitLODGeometry._vf.normalType;
-					shape._webgl.normalType = getVertexAttribType(bitLODGeometry._vf.normalType, gl);
-
-					var normals = getArrayBufferView(attribTypeStr, attributeData.attributeArrayBuffers[0]);
-					
-					var normalBuffer = gl.createBuffer();
-					
-					shape._webgl.buffers[2] = normalBuffer;
-					
-					gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-					gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
-					
-					gl.vertexAttribPointer(sp.normal, 2, shape._webgl.normalType, true, 
+					gl.vertexAttribPointer(sp.normal, 2, shape._webgl.normalType, false, 
 										   shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
-                    gl.enableVertexAttribArray(sp.normal);
+          gl.enableVertexAttribArray(sp.normal);
 					
-					normals = null;
-
-                    //shape._nameSpace.doc.downloadCount -= 1;
-                    shape._nameSpace.doc.needRender = true;
+					attributes = null;
 					
-					that.bitLODComposer.refine(attributeData.attributeArrayBuffers);
+          //shape._nameSpace.doc.downloadCount -= 1;
+          shape._nameSpace.doc.needRender = true;
+					
+					that.bitLODComposer.refine(refinedBuffer);
 				};
 
-				this.bitLODComposer.run([2, 3], 					 			//components
-									    [8, 16], 					 			//attribute bits for each component
+				/*this.bitLODComposer.run([3, 2], 					 			//components
+									    [16, 16], 					 			//attribute bits for each component
+									    [6, 2], 					 			//bits per refinement level for all components
+									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
+									    callBack,
+                      [0, 64],					          //write offset in bits (interleaved output)
+                      96);			        //write stride in bits (interleaved output)*/
+                      
+        this.bitLODComposer.run([2, 3], 					 			//components
+									    [16, 16], 					 			//attribute bits for each component
 									    [2, 6], 					 			//bits per refinement level for all components
 									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
-									    callBack); 								//callback, executed on refinement
+									    callBack,
+                      [64, 0],					          //write offset in bits (interleaved output)
+                      96);			        //write stride in bits (interleaved output)
 			}
 		}		
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
