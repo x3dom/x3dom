@@ -1507,17 +1507,17 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### BitLODRefinement ### */
+/* ### BitLODGeoComponent ### */
 x3dom.registerNodeType(
     "BitLODGeoComponent",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {	
-            x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
+            x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
 			
 			this.addField_SFString(ctx, 'src', "");
-			this.addField_MFInt32(ctx, 'format', []);
-			this.addField_MFInt32(ctx, 'attrib', []);
+			this.addField_MFString(ctx, 'type', []);
+			this.addField_MFString(ctx, 'attrib', []);
 		},
 		{
 			nodeChanged: function()
@@ -1528,7 +1528,12 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 
-            }
+            },
+			
+			getSrc: function()
+			{
+				return this._vf.src;
+			}
 		}
 	)
 );
@@ -1539,26 +1544,212 @@ x3dom.registerNodeType(
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {	
-            x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
+            x3dom.nodeTypes.BitLODGeometry.superClass.call(this, ctx);
 			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
 			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 			this.addField_SFString(ctx, 'index', "");   // Uint16		
-			this.addField_MFNode(ctx, 'component', x3dom.nodeTypes.BitLODComponent);
+			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
+			
+			// Typed Array View Types
+            // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
+            //this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString(ctx, 'coordType', "Uint16");
+            this.addField_SFString(ctx, 'normalType', "Uint8");
+            this.addField_SFString(ctx, 'texCoordType', "Float32");
+            this.addField_SFString(ctx, 'colorType', "Float32");
+            //this.addField_SFString(ctx, 'tangentType', "Float32");
+            //this.addField_SFString(ctx, 'binormalType', "Float32");
+			
+			this.numBitsPerCoord  = 0;
+			this.numBitsPerNormal = 0;
+			
+			
+			// workaround
+            this._hasStrideOffset = false;
+			this._mesh._numTexComponents = 2;
+			this._mesh._numColComponents = 3;
+			
+			this._mesh._invalidate = false;
+			this._mesh._numCoords = 0;
+		    this._mesh._numFaces = 0;
 			
 		},
 		{
 			nodeChanged: function()
-            {		
-				
+            {	
+				var components = this._cf.components.nodes;
+				var numComponents = components.length;
+				if(numComponents)
+				{
+					var attribs = components[0]._vf.attrib;
+					var type  = components[0]._vf.type;
+					
+					var numAttribs = attribs.length;
+					var numTypes  = type.length;
+					
+					if(numAttribs == numTypes)
+					{
+						for(var a=0; a<numAttribs; a++)
+						{
+							switch(attribs[a])
+							{
+								case "coord3":
+									var coordType = type[a];
+									this.numBitsPerCoord = (this.getNumBits(coordType) / 8) * 3;
+									this._vf.coordType = coordType;
+								break;
+								
+								case "normal3":
+									var normalType = type[a];
+									this.numBitsPerCoord = (this.getNumBits(normalType) / 8) * 3;
+									this._vf.normalType = normalType;
+								break;
+								
+								case "normal2":
+									var normalType = type[a];
+									this.numBitsPerNormal = (this.getNumBits(normalType) / 8) * 2;
+									this._vf.normalType = normalType;
+								break;
+								
+								default:
+								break;
+							}	
+						}
+					}
+					else
+					{
+						x3dom.debug.logError("[BitLODGeometry] attrib and format have different size");
+					}
+				}
 			},
 
             fieldChanged: function(fieldName)
             {
                 
-            }
+            },
+			
+			getMin: function()
+			{
+				return this._vf.position.subtract( this._vf.size.multiply(0.5) );
+			},
+			
+			getMax: function()
+			{
+				return this._vf.position.add( this._vf.size.multiply(0.5) );
+			},
+			
+			getVolume: function(min, max, invalidate)
+			{
+				min.setValues(this.getMin());
+				max.setValues(this.getMax());
+				
+				return true;
+			},
+			
+			getCenter: function()
+			{
+				return this._vf.position;
+			},
+			
+			hasIndex: function()
+			{
+				return (this._vf.index.length) ? true : false;
+			},
+			
+			hasPolarNormals: function()
+			{
+				return true; //TODO
+			},
+			
+			getNumPrimTypes: function()
+			{
+				return this._vf.primType.length;
+			},
+			
+			getPrimType: function(idx)
+			{
+				if( idx < this.getNumPrimTypes() )
+					return this._vf.primType[idx].toUpperCase();
+			},
+			
+			getNumVertexCounts: function()
+			{
+				this._vf.vertexCount.length;
+			},
+			
+			getVertexCount: function(idx)
+			{
+				if( idx < this.getNumVertexCounts() )
+					return this._vf.vertexCount[idx];
+			},
+			
+			setVertexCount: function(idx, value)
+			{
+				this._vf.vertexCount[idx] = value;
+			},
+			
+			getNumComponents: function()
+			{
+				return this._cf.components.nodes.length;
+			},
+			
+			getComponent: function(idx)
+			{
+				return this._cf.components.nodes[idx];
+			},
+			
+			getComponentsURLs: function()
+			{
+				var URLs = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					URLs[c] = this._cf.components.nodes[c].getSrc();
+					
+				return URLs;
+			},
+			
+			getNumBits: function(type)
+			{
+    			switch(type)
+                {
+                    case "Int8" || "Uint8":
+                        return 8;
+                    case "Int16" || "Uint16":
+                        return 16;
+                    case "Int32" || "Uint32" || "Float32":
+                        return 32;
+                    case "Float64":
+						return 64;
+                    default:
+                        return 0;
+                }
+			},
+			
+			getPrecisionMax: function(type)
+			{
+    			switch(this._vf[type])
+                {
+                    case "Int8":
+                        return 127.0;
+                    case "Uint8":
+                        return 255.0;
+                    case "Int16":
+                        return 32767.0;
+                    case "Uint16":
+                        return 65535.0;
+                    case "Int32":
+                        return 2147483647.0;
+                    case "Uint32":
+                        return 4294967295.0;
+                    case "Float32":
+                    case "Float64":
+                    default:
+                        return 1.0;
+                }
+			}
 		}
 	)
 );
