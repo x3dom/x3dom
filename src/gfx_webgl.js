@@ -3235,7 +3235,7 @@ x3dom.gfx_webgl = (function () {
 							shape._webgl.primType.push(gl.TRIANGLES);
 							break;
 					}
-				}				
+				}
 				
 				//Check if there are indices avaible
 				if(bitLODGeometry.hasIndex())
@@ -3289,21 +3289,21 @@ x3dom.gfx_webgl = (function () {
 				
 				function callBack(refinedBuffer)
 				{	
-          var attribTypeStr 		= bitLODGeometry._vf.coordType;
-          
-          shape._webgl.coordType    = getVertexAttribType(attribTypeStr, gl);
-          shape._webgl.normalType   = shape._webgl.coordType;
+					var attribTypeStr 		= bitLODGeometry._vf.coordType;
+					  
+					shape._webgl.coordType    = getVertexAttribType(attribTypeStr, gl);
+					shape._webgl.normalType   = shape._webgl.coordType;
 					
 					var attributes = getArrayBufferView(attribTypeStr, refinedBuffer);
           
-          // calculate number of single data packages by including stride and type size
-          var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
-          if (dataLen)
-              bitLODGeometry._mesh._numCoords = attributes.length / dataLen;
+					// calculate number of single data packages by including stride and type size
+					var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
+					if (dataLen)
+						bitLODGeometry._mesh._numCoords = attributes.length / dataLen;
 					
 					var buffer = gl.createBuffer();
 					
-          //Vertices
+					//Vertices
 					shape._webgl.buffers[1] = buffer;
 					
 					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
@@ -3311,34 +3311,34 @@ x3dom.gfx_webgl = (function () {
 					
 					gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
 										   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-          gl.enableVertexAttribArray(sp.position);
+					gl.enableVertexAttribArray(sp.position);
           
           
-          //Normals
-          shape._webgl.buffers[2] = buffer;
+					//Normals
+					shape._webgl.buffers[2] = buffer;
 					
 					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 					gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
 					
 					gl.vertexAttribPointer(sp.normal, 2, shape._webgl.normalType, false, 
 										   shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
-          gl.enableVertexAttribArray(sp.normal);
+					gl.enableVertexAttribArray(sp.normal);
 					
 					attributes = null;
 					
-          //shape._nameSpace.doc.downloadCount -= 1;
-          shape._nameSpace.doc.needRender = true;
+				    //shape._nameSpace.doc.downloadCount -= 1;
+				    shape._nameSpace.doc.needRender = true;
 					
 					that.bitLODComposer.refine(refinedBuffer);
 				};
 
-				this.bitLODComposer.run([3, 2], 					 			     //components
-									    [16, 16], 					 			            //attribute bits for each component
-									    [6, 2], 					 			              //bits per refinement level for all components
+				this.bitLODComposer.run([3, 2], 					 			//components
+									    [16, 16], 					 			//attribute bits for each component
+									    [6, 2], 					 			//bits per refinement level for all components
 									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
 									    callBack,
-                      [0, 64],					                    //write offset in bits (interleaved output)
-                      96);			                            //write stride in bits (interleaved output)
+										[0, 64],					            //write offset in bits (interleaved output)
+										96);			                        //write stride in bits (interleaved output)
      
 			}
 		}		

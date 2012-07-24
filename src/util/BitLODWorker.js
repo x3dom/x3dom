@@ -1,3 +1,12 @@
+BlobBuilder = (typeof BlobBuilder !== 'undefined') ? BlobBuilder : 
+			  (typeof WebKitBlobBuilder !== 'undefined') ? WebKitBlobBuilder : 
+			  (typeof MozBlobBuilder !== 'undefined') ? MozBlobBuilder : undefined;
+
+URL = (typeof URL !== 'undefined') ? URL : 
+	  (typeof webkitURL !== ' undefined') ? webkitURL : undefined;
+
+
+
 x3dom.BitLODWorker = function()
 {
 	//flag for interleaved encoding - if this is true, each AttributeArray's bufferView
@@ -423,8 +432,10 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 		}
     }
   
-	var bb = new WebKitBlobBuilder();
+	
+  
+	var bb = new BlobBuilder();
 	bb.append(str);
 	
-	return window.webkitURL.createObjectURL(bb.getBlob());
+	return URL.createObjectURL(bb.getBlob());
 };
