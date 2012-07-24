@@ -1,3 +1,12 @@
+BlobBuilder = (typeof BlobBuilder !== 'undefined') ? BlobBuilder : 
+			  (typeof WebKitBlobBuilder !== 'undefined') ? WebKitBlobBuilder : 
+			  (typeof MozBlobBuilder !== 'undefined') ? MozBlobBuilder : undefined;
+
+URL = (typeof URL !== 'undefined') ? URL : 
+	  (typeof webkitURL !== ' undefined') ? webkitURL : undefined;
+
+
+
 x3dom.BitLODWorker = function()
 {
   //list of registered attribute arrays
@@ -34,7 +43,7 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 {
 	var start = Date.now();
 	
-  var refinementBufferView = refinementBufferViews[level];
+	var refinementBufferView = refinementBufferViews[level];
   
 	var i, c, nc, attrib, attributeLeftShift;
 	var dataChunk;
@@ -351,13 +360,13 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 {
 	var str = '';
   
-  str += "  postMessage = (typeof webkitPostMessage !== 'undefined') ? webkitPostMessage : postMessage;\n";
+    str += 'postMessage = (typeof webkitPostMessage !== "undefined") ? webkitPostMessage : postMessage;\n';
 
     for (var p in this)
 	{
 		if(this[p] != x3dom.BitLODWorker.prototype.toBlob)
 		{
-			str += 'var ' + p + ' = ';
+			str += p + ' = ';
 			
 			if (this[p] instanceof String) 
 			{
@@ -374,8 +383,8 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 		}
     }
   
-	var bb = new WebKitBlobBuilder();
+	var bb = new BlobBuilder();
 	bb.append(str);
 	
-	return window.webkitURL.createObjectURL(bb.getBlob());
+	return URL.createObjectURL(bb.getBlob());
 };
