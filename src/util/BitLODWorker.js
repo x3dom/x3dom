@@ -1,10 +1,5 @@
 x3dom.BitLODWorker = function()
 {
-	//flag for interleaved encoding - if this is true, each AttributeArray's bufferView
-  //members will refer to the same buffer, but use different offsets in their view
-  this.interleavedMode = false;
-
-
   //list of registered attribute arrays
   this.attribArrays = [];
 
@@ -18,7 +13,7 @@ x3dom.BitLODWorker = function()
 
 
   //size in bytes of a single element of the interleaved output buffer, if any
-  this.strideWriting = 0;
+  this.globalStrideWriting = 0;
 
 
   this.refinementDataURLs = 0;
@@ -32,16 +27,9 @@ x3dom.BitLODWorker = function()
 
 
   this.requestedRefinements = 0;
-  
 };
 
-/**
- * Refines the data stored in the registered attribute arrays, using the given refinement buffer.
- * Once the refinement is done, a message containing a JSON object with the 'msg' member value set
- * to 'refinementDone' is sent to the connected application. Additionally, the JSON object will
- * contain a reference to the attributes' ArrayBuffer objects (attributeArrayBuffers), meaning that
- * the worker looses the ownership of those buffers until they are re-transferred for the next refinement.
- */
+
 x3dom.BitLODWorker.prototype.refineAttributeData = function (level) 
 {
 	var start = Date.now();
@@ -184,33 +172,9 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 	++refinementsDone;	
 };
 
-/**
- * Handles an incoming message to the worker. Currently, the worker reacts on three different message types,
- * the command of choice can be specified as a string within the 'cmd' member of the transmitted JSON object.
- * The three possible values of this member are 'setAttributes', 'transferRefinementData' and 'refine'.
- * The commands and their arguments, specified as attributes of the transmitted JSON objects, are listed below.
- *
- * Please remember to send ArrayBuffer objects according to the rules for transferables, i.e. in the form
- * > postMessage({cmd: 'myCommand' , ... , arrayBuffer: myBuffer }, [myBuffer]);
- *
- * setAttributes: {attribIndex, numAttributeComponents, numAttributeBitsPerComponent, numAttributeBitsPerLevel, attributeOffset}
- *		Register attributes inside the worker and specify some information about them.
- *		The 'numAttributeBitsPerLevel' and 'offset' parameters provide information about the storage format of	the attributes'
- *		refinement data within the refinement buffers.
- *
- * transferRefinementData: {level, arrayBuffer}
- *		Sends a reference to the refinement data buffer at the given level to the worker.
- *
- * refine: {attributeBuffers}
- *		Continues refinement, using the given attribute arrays. This passes each attribute array's ownership back to the worker.
- *
- * Although refinement data can be set in any random order, the next refinement which is processed when calling 'refine' will
- * always be the lowest unprocessed level. If such a level has not been set up, e.g. if levels 0,1 and 3 have been set up and
- * level 2 is the lowest unprocessed level, the 'refine' function will post an error message.
- */
+
 x3dom.BitLODWorker.prototype.onmessage = function(event) {
-	var i, j;
-	var attributeArrayBuffer;
+	var i, j;	
 	var numBitsPerElement;
 	
   //COMMANDS
@@ -236,8 +200,7 @@ x3dom.BitLODWorker.prototype.onmessage = function(event) {
 				}
 			}
 
-			interleavedMode = true;				
-			strideWriting   = event.data.strideWriting;
+      globalStrideWriting = event.data.strideWriting;
 			
 			//guess strideReading by checking the number of bits per refinement
 		  //usually, we expect this to be an exact multiple of 8, as one doesn't
@@ -256,17 +219,9 @@ x3dom.BitLODWorker.prototype.onmessage = function(event) {
         ++requestedRefinements;
           
         if (refinementsDone) {       
-          //if this is not the first call, own the attribute array buffers
+          //if this is not the first call, own the attribute array buffer
           for (i = 0; i < attribArrays.length; ++i) {
-            //select buffer
-            if (interleavedMode) {
-              attributeArrayBuffer = event.data;
-            }
-            else {
-              //@todo: what do we do now? :-P
-              attributeArrayBuffer = event.data.attributeArrayBuffers[i];
-            }
-            
+          
             //create views          
             var ArrayType;
           
@@ -286,12 +241,7 @@ x3dom.BitLODWorker.prototype.onmessage = function(event) {
                                     ' instead of 1, 2 or 4) set for bytesPerComponent of attribute array ' + i + '.'});
             }
             
-            if (interleavedMode) {			
-              attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer, (attribArrays[i].writeOffset / 8));
-            }
-            else {
-              attribArrays[i].bufferView = new ArrayType(attributeArrayBuffer);
-            }
+            attribArrays[i].bufferView = new ArrayType(event.data, (attribArrays[i].writeOffset / 8));            
           }
         }
         
@@ -327,7 +277,7 @@ x3dom.BitLODWorker.prototype.refinementDataLoaded = function(buffer, l) {
     for (i = 0; i < attribArrays.length; ++i) {  
       //create / select buffer      
       if (i === 0) {
-        attributeArrayBuffer = new ArrayBuffer((strideWriting / 8) * refinementBufferViews[l].length);
+        attributeArrayBuffer = new ArrayBuffer((globalStrideWriting / 8) * refinementBufferViews[l].length);
       }
       else {
         attributeArrayBuffer = attribArrays[0].bufferView.buffer;
@@ -391,8 +341,9 @@ x3dom.BitLODWorker.prototype.AttributeArray = function(numComponents, numBitsPer
 	this.componentMask   	   = [];
 	this.componentLeftShift  = [];
 	this.precisionOffset 	   = 0;
-	
-	this.bufferView		 = {}; //renewed on every refinement due to changing ownership
+  
+  //view on the refinement buffer, renewed on every refinement due to changing ownership  
+	this.bufferView = {};
 };
 
 
