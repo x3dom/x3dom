@@ -1516,7 +1516,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
 			
 			this.addField_SFString(ctx, 'src', "");
-			this.addField_MFString(ctx, 'format', []);
+			this.addField_MFInt32(ctx, 'format', []);
 			this.addField_MFString(ctx, 'attrib', []);
 		},
 		{

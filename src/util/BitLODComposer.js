@@ -18,13 +18,13 @@
 
 
   */
- x3dom.BitLODComposer = function(workerScriptfile) {
+ x3dom.BitLODComposer = function() {
 
 	var self = this;
 	
-  this.worker = new Worker( new x3dom.BitLODWorker().toBlob() );	
+	this.worker = new Worker( new x3dom.BitLODWorker().toBlob() );	
   
-  this.worker.postMessage = this.worker.webkitPostMessage || this.worker.postMessage;
+	this.worker.postMessage = this.worker.webkitPostMessage || this.worker.postMessage;
   
 	this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
 	
@@ -40,38 +40,36 @@
  
  
  x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
-  if (event.data.msg) {
-    
-    //display message text from worker
-    if (event.data.msg == 'log') {		
-      x3dom.debug.logInfo('Message from WebWorker context: ' + event.data.text);
-    }
+	  if (event.data.msg) {
+		
+		//display message text from worker
+		if (event.data.msg == 'log') {		
+		  x3dom.debug.logInfo('Message from WebWorker context: ' + event.data.text);
+		}
 
-    //@todo: debug hack
-    //debug: measure time until attribute metadata has been set up inside the worker
-    else if (event.data.msg == 'workerSetUp') {
-      var timerDisplay = document.getElementById('workerTimerElement');
-      if (timerDisplay && (typeof loadingTimer !== 'undefined')) {
-        timerDisplay.textContent = 'Worker set up after ' + (event.data.timestamp - loadingTimer) + ' ms';
-      }
-    }
+		//@todo: debug hack
+		//debug: measure time until attribute metadata has been set up inside the worker
+		else if (event.data.msg == 'workerSetUp') {
+		  var timerDisplay = document.getElementById('workerTimerElement');
+		  if (timerDisplay && (typeof loadingTimer !== 'undefined')) {
+			timerDisplay.textContent = 'Worker set up after ' + (event.data.timestamp - loadingTimer) + ' ms';
+		  }
+		}
 
-    //@todo: debug hack
-    //debug: measure time worker needed for decoding
-    else if (event.data.msg == 'decodeTime') {	
-      x3dom.debug.logInfo('Worker needed ' + event.data.time + ' ms to do the job.');
-      
+		//@todo: debug hack
+		//debug: measure time worker needed for decoding
+		else if (event.data.msg == 'decodeTime') {	
+		  x3dom.debug.logInfo('Worker needed ' + event.data.time + ' ms to do the job.');
+		  
 
-      if (typeof UpdateDecode !== 'undefined') {
-        UpdateDecode(event.data.time);
-      }
-    }
-  }	
-
-
+		  if (typeof UpdateDecode !== 'undefined') {
+			UpdateDecode(event.data.time);
+		  }
+		}
+	}	
 	else {
-    //forward refined attribute data by invoking the initially set callback function  		
-    this.refinementCallback(event.data);
+		//forward refined attribute data by invoking the initially set callback function  		
+		this.refinementCallback(event.data);
     
     //if (++refs === 8)    
     //this.refinementCallback(event.data);
