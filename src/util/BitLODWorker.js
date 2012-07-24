@@ -55,7 +55,7 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 {
 	var start = Date.now();
 	
-  var refinementBufferView = refinementBufferViews[level];
+	var refinementBufferView = refinementBufferViews[level];
   
 	var i, c, nc, attrib, attributeLeftShift;
 	var dataChunk;
@@ -409,13 +409,13 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 {
 	var str = '';
   
-  str += "  postMessage = (typeof webkitPostMessage !== 'undefined') ? webkitPostMessage : postMessage;\n";
+    str += 'postMessage = (typeof webkitPostMessage !== "undefined") ? webkitPostMessage : postMessage;\n';
 
     for (var p in this)
 	{
 		if(this[p] != x3dom.BitLODWorker.prototype.toBlob)
 		{
-			str += 'var ' + p + ' = ';
+			str += p + ' = ';
 			
 			if (this[p] instanceof String) 
 			{
@@ -431,8 +431,6 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 			}
 		}
     }
-  
-	
   
 	var bb = new BlobBuilder();
 	bb.append(str);

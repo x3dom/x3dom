@@ -30,7 +30,7 @@
 	
 	this.refinementCallback  = {};
 								 
-	this.useDebugOutput = false;  
+	this.useDebugOutput = false; 
  };
  
  
@@ -40,6 +40,7 @@
  
  
  x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
+ 
 	  if (event.data.msg) {
 		
 		//display message text from worker
