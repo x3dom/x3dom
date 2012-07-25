@@ -62,20 +62,15 @@
 		else if (event.data.msg == 'decodeTime') {	
 		  x3dom.debug.logInfo('Worker needed ' + event.data.time + ' ms to do the job.');
 		  
-
 		  if (typeof UpdateDecode !== 'undefined') {
 			UpdateDecode(event.data.time);
 		  }
 		}
+    
 	}	
 	else {
 		//forward refined attribute data by invoking the initially set callback function  		
 		this.refinementCallback(event.data);
-    
-    //if (++refs === 8)    
-    //this.refinementCallback(event.data);
-    //else
-    //this.refine(event.data);
 	}
  }
  
@@ -87,8 +82,9 @@
 	var i, off;	
 	var refinementBuffers;
 	var self = this;
-
-	if (numAttributeBitsPerComponent.length >   0 								&&		
+  var downloadCallbacks, downloadPriorities;
+  
+	if (numAttributeBitsPerComponent.length >   0 								            &&		
 		numAttributeBitsPerComponent.length === numAttributeComponents.length 	&&
 		numAttributeBitsPerComponent.length === numAttributeBitsPerLevel.length	  ) {
 
@@ -108,20 +104,27 @@
 								 attributeWriteOffset		      : attributeWriteOffset,
 								 strideWriting				        : strideWriting});	
   
-    for (i = 0; i < refinementDataURLs.length; ++i) {
+    downloadCallbacks  = [];
+    downloadPriorities = [];
+    
+    for (i = 0; i < refinementDataURLs.length; ++i) {      
+      downloadPriorities[i] = i;
       (function(idx) {
-        var xhr = new XMLHttpRequest();
         
-        xhr.onload = function() {
-          self.refinementDataLoaded(xhr, idx);
+        downloadCallbacks[i] = function(arrayBuffer) {
+          self.refinementDataLoaded(arrayBuffer, idx);
         };
-        
-        xhr.open('GET', refinementDataURLs[i], true); //asynchronous         
-        xhr.responseType = 'arraybuffer';
-        
-        xhr.send(null);
       })(i);
     }
+    
+    //this is just an option:
+    //it tells the download manager to return data only if there are no pending requests of higher priority left
+    //this way, we ensure can guarantee to get all levels in the correct order, which is visually more satisfying
+    //however, one may decide to leave this option out to allow for a random refinement processing order
+    x3dom.DownloadManager.toggleStrictReturnOrder(true);
+    
+    x3dom.DownloadManager.get(refinementDataURLs, downloadCallbacks, downloadPriorities);
+    
 	} else {
 		 x3dom.debug.logError('Unable to initialize bit composer: the given attribute parameter arrays are not of the same length.');
 	}
@@ -135,7 +138,7 @@
  };
  
  
- x3dom.BitLODComposer.prototype.refinementDataLoaded = function(xhr, l) {  
-  this.worker.postMessage({buffer : xhr.response, level : l},
-                          [xhr.response]);
+ x3dom.BitLODComposer.prototype.refinementDataLoaded = function(arrayBuffer, l) {  
+  this.worker.postMessage({buffer : arrayBuffer, level : l},
+                          [arrayBuffer]);
  }
