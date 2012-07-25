@@ -23,33 +23,34 @@
 
 //a small Request class
 var Request = function(url, onloadCallback, priority){
-	this.url 	  		 = url;	
-	this.priority 		 = priority;
-	this.xhr 	  		 = new XMLHttpRequest();
+	this.url 	  		     = url;	
+	this.priority 		   = priority;
+	this.xhr 	  		     = new XMLHttpRequest();
 	this.onloadCallbacks = [onloadCallback];
 	
 	var self = this;
 
 	this.xhr.onload = function() {		
 		if (x3dom.DownloadManager.debugOutput) {
-			x3dom.debug.logInfo('Download manager received data for URL \'' + self.url + '\', invoking callbacks.');
-		}
-
-		//check if object is loaded for the first time or if it has been set to dirty
-		if (!x3dom.DownloadManager.loadedObjects[url]) {
-			x3dom.DownloadManager.loadedObjects[url] = {arrayBuffer : self.xhr.response};
-		}
-	
-		var i;
-		for (i = 0; i < self.onloadCallbacks.length; ++i) {			
-			self.onloadCallbacks[i]({arrayBuffer : x3dom.DownloadManager.loadedObjects[url].arrayBuffer,
-									 url 		 : self.url});
+			x3dom.debug.logInfo('Download manager received data for URL \'' + self.url + '\'.');
 		}
 		
 		--x3dom.DownloadManager.activeDownloads;
-		
-		x3dom.DownloadManager.removeDownload(self);
-		
+	
+    if ((x3dom.DownloadManager.stallToKeepOrder === false ) || (x3dom.DownloadManager.resultGetsStalled(self.priority) === false)) {
+      var i;
+      for (i = 0; i < self.onloadCallbacks.length; ++i) {			
+        self.onloadCallbacks[i](self.xhr.response);
+      }
+      
+      x3dom.DownloadManager.removeDownload(self);
+      
+      x3dom.DownloadManager.updateStalledResults();
+    }
+    else if (x3dom.DownloadManager.debugOutput) {
+			x3dom.debug.logInfo('Download manager stalled downloaded result for URL \'' + self.url + '\'.');
+		}
+    
 		x3dom.DownloadManager.tryNextDownload();
 	};
 };
@@ -71,20 +72,24 @@ Request.prototype.send = function() {
 
 x3dom.DownloadManager = {
 
+requests 		     : [], //map priority->[requests]
 
-requests 		: [], //map priority->[requests]
+maxDownloads 	   : 6,  //number of max. concurrent downloads
 
-maxDownloads 	: 6,  //number of max. concurrent downloads
+activeDownloads  : 0,  //number of active downloads
 
-activeDownloads : 0,  //number of active downloads
+debugOutput		   : false,
 
-loadedObjects	: {}, //map from urls to arraybuffer data (encapsulated as {arraybuffer : buffer})
-
-debugOutput		: false,
+stallToKeepOrder : false,
 
 
 toggleDebugOutput : function(flag) {
 	this.debugOutput = flag;	
+},
+
+
+toggleStrictReturnOrder : function(flag) {
+  this.stallToKeepOrder = flag;
 },
 
 
@@ -136,16 +141,53 @@ tryNextDownload : function() {
 },
 
 
-insertRequest : function(req) {	
-	if (this.requests[req.priority]) {
-		this.requests[req.priority].push(req);
-	}
-	else {
-		this.requests[req.priority] = [req];
-	}
-	
-	//try to download data
-	this.tryNextDownload();
+resultGetsStalled : function(priority) {
+  var i;
+  
+  for (i = 0; i < priority; ++i) {
+    if (this.requests[i] && this.requests[i].length) {
+      return true;
+    }
+  }
+  
+  return false;
+},
+
+
+updateStalledResults : function() {
+  if (x3dom.DownloadManager.stallToKeepOrder) {  
+    var i, j, k;
+    var req, pendingRequestFound = false;
+    
+    for (i = 0; i < this.requests.length && !pendingRequestFound; ++i) {
+    
+      if (this.requests[i]) {
+        for (j = 0; j < this.requests[i].length; ++j) {
+          //check if there is a stalled result and relase it, if so
+          req = this.requests[i][j];
+          
+          if (req.xhr.readyState === XMLHttpRequest.DONE) {
+          
+            if (x3dom.DownloadManager.debugOutput) {
+              x3dom.debug.logInfo('Download manager releases stalled result for URL \'' + req.url + '\'.');
+            }
+            
+            for (k = 0; k < req.onloadCallbacks.length; ++k) {
+              req.onloadCallbacks[k](req.xhr.response);
+            }
+            
+            //remove request from the list
+            this.requests[i].splice(j, 1);          
+          }
+          //if there is an unfinished result, stop releasing results of lower priorities
+          else {
+            pendingRequestFound = true;	
+          }
+        }
+      }
+      
+    }
+  }
 },
 
 
@@ -163,63 +205,62 @@ insertRequest : function(req) {
  * in this special case, the priority of the old request is not changed, i.e. the priority
  * of the new request to the same url is ignored.
  */
-get : function(url, onloadCallback, priority) {
-	if (!url) {
-		x3dom.debug.logError('No URL specified.');		
-	}
-	else if (!onloadCallback) {
-		x3dom.debug.logError('No onload callback specified. Ignoring request for \"' +
-							 url + '\"');
-	} else {
-		if (x3dom.DownloadManager.debugOutput) {
-			x3dom.debug.logInfo('Download manager accepted request for URL \'' + url + '\'.');
-		}
-		//if the data has already been downloaded has not been set to dirty, return it
-		if (x3dom.DownloadManager.loadedObjects[url]) {
-			if (x3dom.DownloadManager.debugOutput) {
-				x3dom.debug.logInfo('Download returns previously stored data for URL \'' + url + '\', invoking callback.');
-			}
-		
-			onloadCallback({arrayBuffer : this.loadedObjects[url].arrayBuffer,
-							url			: url});
-		}
-		//enqueue request priority-based or append callback to a matching active request
-		else {
-			//check if there is already an enqueued or sent request for the given url
-			var i, j;
-			var found = false;
-
-			for (i = 0; i < this.requests.length && !found; ++i) {	
-				if (this.requests[i]){			
-					for (j = 0; j < this.requests[i].length; ++j) {
-						if (this.requests[i][j].url === url) {							
-							this.requests[i][j].onloadCallbacks.push(onloadCallback);
-							if (x3dom.DownloadManager.debugOutput) {
-								x3dom.debug.logInfo('Download manager appended onload callback for URL \'' + url +
-													'\' to a running request using the same URL.');
-							}
-							
-							found = true;
-							break;
-						}
-					}
-				}
-			}
-		
-			if (!found) {
-				var p = 0;
-				
-				//if a priority is given then take it, otherwise assume 0
-				if (priority) {
-					p = priority;
-				}
-				
-				var r = new Request(url, onloadCallback, p);
-				
-				this.insertRequest(r);
-			}
-		}
-	}
+get : function(urls, onloadCallbacks, priorities) {
+  var i, j, k;
+  var found = false;
+  var url, onloadCallback, priority;
+  
+  if (urls.length !== onloadCallbacks.length || urls.length !== priorities.length)
+  {
+    x3dom.debug.logError('DownloadManager: The number of given urls, onload callbacks and priorities is not equal. Ignoring requests.');
+    return;
+  }
+  
+  //insert requests
+  for (k = 0; k < urls.length; ++k) {
+    if (!onloadCallbacks[k] === undefined || !priorities[k] === undefined) {
+      x3dom.debug.logError('DownloadManager: No onload callback and / or priority specified. Ignoring request for \"' + url + '\"');
+      continue;
+    }
+    else {
+      url            = urls[k];
+      onloadCallback = onloadCallbacks[k];
+      priority       = priorities[k];
+      
+      //enqueue request priority-based or append callback to a matching active request		
+      
+      //check if there is already an enqueued or sent request for the given url
+      for (i = 0; i < this.requests.length && !found; ++i) {
+        if (this.requests[i]){			
+          for (j = 0; j < this.requests[i].length; ++j) {
+            if (this.requests[i][j].url === url) {							
+              this.requests[i][j].onloadCallbacks.push(onloadCallback);
+              if (x3dom.DownloadManager.debugOutput) {
+                x3dom.debug.logInfo('Download manager appended onload callback for URL \'' + url + '\' to a running request using the same URL.');
+              }
+              
+              found = true;
+              break;
+            }
+          }
+        }
+      }
+    
+      if (!found) {
+        var r = new Request(url, onloadCallback, priority);
+        
+        if (this.requests[priority]) {
+          this.requests[priority].push(r);
+        }
+        else {
+          this.requests[priority] = [r];
+        }
+      }
+    }
+  }
+  
+  //try to download data
+	this.tryNextDownload();
 }
 	
 	
