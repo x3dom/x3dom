@@ -81,7 +81,7 @@ x3dom.gfx_webgl = (function () {
 							x3dom.caps.MAX_COMBINED_TEXTURE_IMAGE_UNITS	= ctx.getParameter(ctx.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
 							x3dom.caps.MAX_TEXTURE_SIZE					= ctx.getParameter(ctx.MAX_TEXTURE_SIZE);
 							x3dom.caps.MAX_CUBE_MAP_TEXTURE_SIZE		= ctx.getParameter(ctx.MAX_CUBE_MAP_TEXTURE_SIZE);
-							x3dom.caps.NUM_COMPRESSED_TEXTURE_FORMATS	= ctx.getParameter(ctx.NUM_COMPRESSED_TEXTURE_FORMATS);
+							x3dom.caps.COMPRESSED_TEXTURE_FORMATS	= ctx.getParameter(ctx.COMPRESSED_TEXTURE_FORMATS);
 							x3dom.caps.MAX_RENDERBUFFER_SIZE			= ctx.getParameter(ctx.MAX_RENDERBUFFER_SIZE);
 							x3dom.caps.MAX_VIEWPORT_DIMS				= ctx.getParameter(ctx.MAX_VIEWPORT_DIMS);
 							x3dom.caps.ALIASED_LINE_WIDTH_RANGE			= ctx.getParameter(ctx.ALIASED_LINE_WIDTH_RANGE);
@@ -4060,7 +4060,7 @@ x3dom.gfx_webgl = (function () {
             
             for (var q=0; q<shape._webgl.positions.length; q++)
             {
-                if (sp.position !== undefined) 
+                if (sp.position !== undefined && shape._webgl.buffers[5*q+0] && shape._webgl.buffers[5*q+1]) 
                 {
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
                     
@@ -4245,7 +4245,7 @@ x3dom.gfx_webgl = (function () {
 				//check prev, act
 				if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 				{
-					if (sp.position !== undefined) 
+					if (sp.position !== undefined && shape._webgl.buffers[5*q+0] && shape._webgl.buffers[5*q+1]) 
 					{
 						gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
 						
@@ -4255,7 +4255,7 @@ x3dom.gfx_webgl = (function () {
                             shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.position);
 					}
-					if (sp.color !== undefined)
+					if (sp.color !== undefined && shape._webgl.buffers[5*q+4])
 					{
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 						
@@ -4264,7 +4264,7 @@ x3dom.gfx_webgl = (function () {
                             shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.color);
 					}
-					if (sp.texcoord !== undefined)
+					if (sp.texcoord !== undefined && shape._webgl.buffers[5*q+3])
 					{
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 
@@ -4846,7 +4846,7 @@ x3dom.gfx_webgl = (function () {
 			//check prev, act
 			if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 			{
-			  if (sp.position !== undefined)
+			  if (sp.position !== undefined && shape._webgl.buffers[5*q+0] && shape._webgl.buffers[5*q+1])
 			  {
 				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
 
@@ -4856,7 +4856,7 @@ x3dom.gfx_webgl = (function () {
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.position);
 			  }
-			  if (sp.normal !== undefined) 
+			  if (sp.normal !== undefined && shape._webgl.buffers[5*q+2]) 
 			  {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+2]);            
 				
@@ -4870,7 +4870,7 @@ x3dom.gfx_webgl = (function () {
 					gl.enableVertexAttribArray(sp.normal);
 				}
 			  }
-			  if (sp.texcoord !== undefined)
+			  if (sp.texcoord !== undefined && shape._webgl.buffers[5*q+3])
 			  {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 				
@@ -4879,7 +4879,7 @@ x3dom.gfx_webgl = (function () {
                     shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.texcoord);
 			  }
-			  if (sp.color !== undefined)
+			  if (sp.color !== undefined && shape._webgl.buffers[5*q+4])
 			  {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 				
