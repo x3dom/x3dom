@@ -4060,10 +4060,12 @@ x3dom.gfx_webgl = (function () {
             
             for (var q=0; q<shape._webgl.positions.length; q++)
             {
-                if (sp.position !== undefined && shape._webgl.buffers[5*q+0] && shape._webgl.buffers[5*q+1]) 
+				if(shape._webgl.buffers[5*q+0])
+				{
+					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
+				}
+                if (sp.position !== undefined && shape._webgl.buffers[5*q+1]) 
                 {
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
-                    
                     gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
                     
                     gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
@@ -4245,10 +4247,12 @@ x3dom.gfx_webgl = (function () {
 				//check prev, act
 				if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 				{
-					if (sp.position !== undefined && shape._webgl.buffers[5*q+0] && shape._webgl.buffers[5*q+1]) 
+					if(shape._webgl.buffers[5*q+0])
 					{
 						gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
-						
+					}
+					if (sp.position !== undefined && shape._webgl.buffers[5*q+1]) 
+					{	
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 						
 						gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
@@ -4846,10 +4850,12 @@ x3dom.gfx_webgl = (function () {
 			//check prev, act
 			if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 			{
-			  if (sp.position !== undefined && shape._webgl.buffers[5*q+0] && shape._webgl.buffers[5*q+1])
+			  if(shape._webgl.buffers[5*q+0])
 			  {
-				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
-
+			  	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
+			  }
+			  if (sp.position !== undefined && shape._webgl.buffers[5*q+1])
+			  {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 				
 				gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
