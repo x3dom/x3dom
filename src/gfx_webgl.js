@@ -2858,7 +2858,7 @@ x3dom.gfx_webgl = (function () {
 			// 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
 			shape._webgl.binaryGeometry = -1;
 			
-			var internalDownloadCount = 0;
+			shape._webgl.internalDownloadCount = 0;
 			
             // index
             if (shape._cf.geometry.node._vf.index.length > 0)
@@ -2869,7 +2869,7 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp0.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				internalDownloadCount += 1;
+				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp0.send(null);
             
@@ -2907,8 +2907,8 @@ x3dom.gfx_webgl = (function () {
                     indexArray = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
-					internalDownloadCount -= 1;
-                    if(internalDownloadCount == 0)
+					shape._webgl.internalDownloadCount -= 1;
+                    if(shape._webgl.internalDownloadCount == 0)
 						shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
@@ -2925,7 +2925,7 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp.responseType = "arraybuffer";
 
                 shape._nameSpace.doc.downloadCount += 1;
-				internalDownloadCount += 1;
+				shape._webgl.internalDownloadCount += 1;
                 xmlhttp.send(null);
 
                 xmlhttp.onload = function()
@@ -2998,8 +2998,8 @@ x3dom.gfx_webgl = (function () {
                     attributes = null;  // delete data block in CPU memory
 
                     shape._nameSpace.doc.downloadCount -= 1;
-					internalDownloadCount -= 1;
-                    if(internalDownloadCount == 0)
+					shape._webgl.internalDownloadCount -= 1;
+                    if(shape._webgl.internalDownloadCount == 0)
 						shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;
@@ -3016,7 +3016,7 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp1.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				internalDownloadCount += 1;
+				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp1.send(null);
             
@@ -3070,9 +3070,9 @@ x3dom.gfx_webgl = (function () {
                     vertices = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
-					internalDownloadCount -= 1;
-                    if(internalDownloadCount == 0)
-						shape._nameSpace.doc.needRender = true;
+					shape._webgl.internalDownloadCount -= 1;
+                    if(shape._webgl.internalDownloadCount == 0)
+						shape._webgl.shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
                     x3dom.debug.logInfo("XHR1/ coord load time: " + t11 + " ms"); 
@@ -3088,7 +3088,7 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp2.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				internalDownloadCount += 1;
+				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp2.send(null);
             
@@ -3117,8 +3117,8 @@ x3dom.gfx_webgl = (function () {
                     normals = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
-					internalDownloadCount -= 1;
-                    if(internalDownloadCount == 0)
+					shape._webgl.internalDownloadCount -= 1;
+                    if(shape._webgl.internalDownloadCount == 0)
 						shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
@@ -3135,7 +3135,7 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp3.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				internalDownloadCount += 1;
+				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp3.send(null);
             
@@ -3164,8 +3164,8 @@ x3dom.gfx_webgl = (function () {
                     texCoords = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
-					internalDownloadCount -= 1;
-                    if(internalDownloadCount == 0)
+					shape._webgl.internalDownloadCount -= 1;
+                    if(shape._webgl.internalDownloadCount == 0)
 						shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
@@ -3182,7 +3182,7 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp4.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				internalDownloadCount += 1;
+				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp4.send(null);
             
@@ -3211,8 +3211,8 @@ x3dom.gfx_webgl = (function () {
                     colors = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
-					internalDownloadCount -= 1;
-					if(internalDownloadCount == 0)
+					shape._webgl.internalDownloadCount -= 1;
+					if(shape._webgl.internalDownloadCount == 0)
 						shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
