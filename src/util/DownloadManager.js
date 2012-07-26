@@ -260,7 +260,9 @@ get : function(urls, onloadCallbacks, priorities) {
   }
   
   //try to download data
-	this.tryNextDownload();
+  while (this.activeDownloads < this.maxDownloads) {
+    this.tryNextDownload();
+  }
 }
 	
 	
