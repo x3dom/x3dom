@@ -1623,16 +1623,16 @@ x3dom.registerNodeType(
 				}
 			},
       
-      parentAdded: function()
-      {
-        this._parentNodes[0]._coordStrideOffset = [12, 0];
-        this._parentNodes[0]._normalStrideOffset = [12, 8];
-      },
-
-      fieldChanged: function(fieldName)
-      {
-          
-      },
+		    parentAdded: function()
+		    {
+			  this._parentNodes[0]._coordStrideOffset = [12, 0];
+			  this._parentNodes[0]._normalStrideOffset = [12, 8];
+		    },
+            
+		    fieldChanged: function(fieldName)
+		    {
+			    
+		    },
 			
 			getMin: function()
 			{
