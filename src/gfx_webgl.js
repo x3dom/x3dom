@@ -775,12 +775,13 @@ x3dom.gfx_webgl = (function () {
 		var solid				= (shape.isSolid()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
 		var imageGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) ? 1 : 0;
+		var bitLODGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
 		var iG_Precision		= (imageGeometry) ? shape._cf.geometry.node.numCoordinateTextures() : 0;
 		var iG_Indexed			= (imageGeometry && shape._cf.geometry.node.getIndexTexture() != null) ? 1.0 : 0.0;
 		var requireBBox         = (shape._cf.geometry.node._vf.coordType !== undefined && shape._cf.geometry.node._vf.coordType != "Float32");
+		var requireBBoxNor      = (shape._cf.geometry.node._vf.normalType !== undefined && shape._cf.geometry.node._vf.normalType != "Float32");
 		var requireBBoxCol      = (shape._cf.geometry.node._vf.colorType !== undefined && shape._cf.geometry.node._vf.colorType != "Float32");
 		var requireBBoxTex      = (shape._cf.geometry.node._vf.texCoordType !== undefined && shape._cf.geometry.node._vf.texCoordType != "Float32");
-		var bitLODGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
 		var polarNormal			= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry) && shape._cf.geometry.node.hasPolarNormals()) ? 1 : 0;
 		
         var shaderIdentifier = "vs-x3d-mobil-" +  vertexColor + 
@@ -796,6 +797,7 @@ x3dom.gfx_webgl = (function () {
 												  iG_Precision +
 												  iG_Indexed + 
 												  requireBBox + 
+												  requireBBoxNor +
 												  requireBBoxCol + 
 												  requireBBoxTex +
 												  bitLODGeometry +
@@ -1020,15 +1022,19 @@ x3dom.gfx_webgl = (function () {
 					shader += "vertNormal.x = sin(theta) * cos(phi);\n";
 					shader += "vertNormal.y = sin(theta) * sin(phi);\n";
 					shader += "vertNormal.z = cos(theta);\n";
-				
-					shader += "vertNormal = vertNormal * 0.5 + vec3(0.5, 0.5, 0.5);\n";
 				} else {
-					shader += "vec3 vertNormal = normal;";
+					shader += "vec3 vertNormal = normal;\n";
+					if(requireBBoxNor) {
+						shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
+					}
 				}
 				
 				shader += "vec3 vertPosition = position;";
 				
-				if(requireBBox) {
+				if(bitLODGeometry){
+				  shader += "vertPosition = (vertPosition / bgPrecisionMax) * 2.0 - 1.0;\n";
+				  shader += "vertPosition = bgCenter + bgSize * vertPosition;\n";
+				} else if(requireBBox) {
 				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 			    }
 				
@@ -1238,7 +1244,7 @@ x3dom.gfx_webgl = (function () {
 		var shadow				= (viewarea.getLightsShadow()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
 		var imageGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) ? 1 : 0;
-    var bitLODGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
+		var bitLODGeometry		= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
 		var iG_Precision		= (imageGeometry) ? shape._cf.geometry.node.numCoordinateTextures() : 0;
 		var iG_Indexed			= (imageGeometry && shape._cf.geometry.node.getIndexTexture() != null) ? 1 : 0;
 		var requireBBox         = (shape._cf.geometry.node._vf.coordType !== undefined && shape._cf.geometry.node._vf.coordType != "Float32");
@@ -1257,6 +1263,7 @@ x3dom.gfx_webgl = (function () {
 											lights +
 											shadow +
 											imageGeometry +
+											bitLODGeometry +
 											iG_Precision +
 											iG_Indexed +
 											requireBBox +
@@ -1426,12 +1433,11 @@ x3dom.gfx_webgl = (function () {
 					shader += "vertNormal.y = sin(theta) * sin(phi);\n";
 					shader += "vertNormal.z = cos(theta);\n";
 				} else {
-					shader += "vec3 vertNormal = normal;";
+					shader += "vec3 vertNormal = normal;\n";
+					if(requireBBoxNor) {
+						shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
+					}
 				}
-				
-				if(requireBBoxNor) {
-    				//shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
-    			}
 				
 				if(texture) {
 					shader += "vec2 vertTexCoord = texcoord;\n";
@@ -1441,14 +1447,14 @@ x3dom.gfx_webgl = (function () {
 				}
 				shader += "vec3 vertPosition = position;\n";
 				
-        if(bitLODGeometry)
-        {
-          shader += "vertPosition = (vertPosition / bgPrecisionMax) * 2.0 - 1.0;\n";
-          shader += "vertPosition = bgCenter + bgSize * vertPosition;\n";
-        }
+				if(bitLODGeometry)
+				{
+				  shader += "vertPosition = (vertPosition / bgPrecisionMax) * 2.0 - 1.0;\n";
+				  shader += "vertPosition = bgCenter + bgSize * vertPosition;\n";
+				}
 				else if(requireBBox) {
 				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
-			  }
+				}
 				shader += "gl_PointSize = 2.0;\n";
 				if(vertexColor){
     				if(requireBBoxCol) {
