@@ -32,6 +32,7 @@ precision highp float;
 #endif
 
 uniform mat4 u_mvp;
+uniform vec3 u_offset;
 
 attribute vec3 a_position;
 attribute vec2 a_normal;
@@ -58,7 +59,9 @@ void main(void) {
    
   vec3 p   = a_position - vec3(0.5, 0.5, 0.5);
    
-  gl_Position = u_mvp * vec4(p.x, 2.75 * p.y, p.z, 1.0);
+  gl_Position = u_mvp * vec4(0.4 * (p.x + 30.0*u_offset.x),
+                             0.4 * (p.y + 30.0*u_offset.y - 4.0),
+                             0.9 * (p.z + 30.0*u_offset.z), 1.0);
 }
 </script>
 
