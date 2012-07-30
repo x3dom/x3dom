@@ -20,7 +20,7 @@ x3dom.gfx_webgl = (function () {
         this.cached_shader_programs = {};
         this.cached_shaders = {};
 		this.IG_PositionBuffer = null;
-		this.bitLODComposer = null;
+		//this.bitLODComposer = null;
 		//this.imageLoadManager = new x3dom.ImageLoadManager();
     }
 
@@ -281,6 +281,26 @@ x3dom.gfx_webgl = (function () {
         "varying vec3 worldCoord;" +
         "void main(void) {" +
         "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;" +
+        "    vec3 dia = wcMax - wcMin;" +
+        "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
+        "    worldCoord = (worldCoord - wcMin) / dia;" +
+        "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
+        "}"
+        };
+		
+	g_shaders['vs-x3d-pickBLG'] = { type: "vertex", data:
+        "attribute vec3 position;" +
+        "uniform vec3 BLG_bboxMin;" +
+		"uniform vec3 BLG_bboxMax;" +
+		"uniform float bgPrecisionMax;" +
+        "uniform mat4 modelMatrix;" +
+        "uniform mat4 modelViewProjectionMatrix;" +
+        "uniform vec3 wcMin;" +
+        "uniform vec3 wcMax;" +
+        "varying vec3 worldCoord;" +
+        "void main(void) {" +
+        "	 vec3 pos  = position / bgPrecisionMax;" +
+		"	 pos =  pos * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;" +
         "    vec3 dia = wcMax - wcMin;" +
         "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
         "    worldCoord = (worldCoord - wcMin) / dia;" +
@@ -1325,6 +1345,11 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform sampler2D IG_texCoordTexture;\n";
 				shader += "uniform sampler2D IG_colorTexture;\n";	
 			}
+			
+			if(bitLODGeometry) {
+				shader += "uniform vec3 BLG_bboxMin;\n";
+				shader += "uniform vec3 BLG_bboxMax;\n";
+			}
 
             if(vertexColor){
                 if(vertexColor == 3.0){
@@ -1448,9 +1473,9 @@ x3dom.gfx_webgl = (function () {
 				shader += "vec3 vertPosition = position;\n";
 				
 				if(bitLODGeometry)
-				{
-				  shader += "vertPosition = (vertPosition / bgPrecisionMax) * 2.0 - 1.0;\n";
-				  shader += "vertPosition = bgCenter + bgSize * vertPosition;\n";
+				{			  
+				  shader += "vertPosition = vertPosition / bgPrecisionMax;\n";			  
+				  shader += "vertPosition = vertPosition * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;\n";
 				}
 				else if(requireBBox) {
 				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
@@ -3308,8 +3333,8 @@ x3dom.gfx_webgl = (function () {
 				}
 			
 				//If there is still no BitComposer create a new one 
-				if(this.bitLODComposer == null) 
-					this.bitLODComposer = new x3dom.BitLODComposer();
+				//if(this.bitLODComposer == null) 
+					shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
 				
 				var that = this;
 				
@@ -3355,10 +3380,10 @@ x3dom.gfx_webgl = (function () {
 				    //shape._nameSpace.doc.downloadCount -= 1;
 				    shape._nameSpace.doc.needRender = true;
 					
-					that.bitLODComposer.refine(refinedBuffer);
+					shape._webgl.bitLODComposer.refine(refinedBuffer);
 				};
 
-				this.bitLODComposer.run([3, 2], 					 			//components
+				shape._webgl.bitLODComposer.run([3, 2], 					 	//components
 									    [16, 16], 					 			//attribute bits for each component
 									    [6, 2], 					 			//bits per refinement level for all components
 									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
@@ -4145,6 +4170,8 @@ x3dom.gfx_webgl = (function () {
 		{
 			if (scene._webgl.imageGeometry > 0 && !x3dom.caps.MOBILE)   // Do mobile devices with vertex textures exist?
 				{ sp = scene._webgl.pickShaderIG; }
+			else if (scene._webgl.bitLODGeometry != 0)
+				{ sp = scene._webgl.pickShaderBLG; }
 			else
 				{ sp = scene._webgl.pickShader; }
 		}
@@ -4201,6 +4228,12 @@ x3dom.gfx_webgl = (function () {
 			}
 			if (shape._webgl.texCoordType != gl.FLOAT) {
 			    sp.bgPrecisionTexMax = shape._cf.geometry.node.getPrecisionMax('texCoordType');
+			}
+			
+			if(shape._webgl.bitLODGeometry != 0)
+			{
+				sp.BLG_bboxMin = shape._cf.geometry.node.getMin().toGL();
+				sp.BLG_bboxMax = shape._cf.geometry.node.getMax().toGL();
 			}
 			
 			if (shape._webgl.imageGeometry)  // FIXME: mobile errors
@@ -4453,6 +4486,12 @@ x3dom.gfx_webgl = (function () {
 			if(shape._cf.geometry.node.getColorTexture()) {
 				sp.IG_colorTexture = IG_texUnit++;
 			}
+		}
+		
+		if(shape._webgl.bitLODGeometry != 0)
+		{
+			sp.BLG_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
+			sp.BLG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
 		}
 
         //===========================================================================
@@ -5179,6 +5218,7 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
             if (!x3dom.caps.MOBILE)    // TODO: mobile + fp
 			    scene._webgl.pickShaderIG = this.getShaderProgram(gl, ['vs-x3d-pickIG', 'fs-x3d-pick']);
+			scene._webgl.pickShaderBLG = this.getShaderProgram(gl, ['vs-x3d-pickBLG', 'fs-x3d-pick']);
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
