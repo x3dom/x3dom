@@ -11,40 +11,64 @@
  */
  
  
-  /**
+ /**
   * This class does two things:
   *		- host a background WebWorker which performs the bitwise composition
   *		- wrap the message interface which is used to communicate with the worker
 
 
-  */
- x3dom.BitLODComposer = function() {
+  */  
+x3dom.BitLODComposer = function() {
 
-	var self = this;
+  var self = this;
 	
-	this.worker = new Worker( new x3dom.BitLODWorker().toBlob() );	
+  if (typeof Worker !== 'undefined') {
   
-	this.worker.postMessage = this.worker.webkitPostMessage || this.worker.postMessage;
+    this.worker = new Worker( new x3dom.BitLODWorker().toBlob() );
+    
+    this.worker.postMessage = this.worker.webkitPostMessage || this.worker.postMessage;
+    
+    this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
+    
+  }
+  else if (!x3dom.BitLODComposer.suppressOnWorkersNotSupported) {
+    x3dom.BitLODComposer.suppressOnWorkersNotSupported();
+    x3dom.BitLODComposer.suppressOnWorkersNotSupported = true;
+  }
   
-	this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
-	
-	this.refinementCallback  = {};
-								 
-	this.useDebugOutput = false; 
- };
+  this.refinementCallback  = {};
+                 
+  this.useDebugOutput = false;
+};
  
  
- x3dom.BitLODComposer.prototype.toggleDebugOutput = function(flag) {
-	this.useDebugOutput = flag;
- };
+//global flags to avoid multiple popups with the same warning
+x3dom.BitLODComposer.suppressOnTransferablesNotSupported = false;
+x3dom.BitLODComposer.suppressOnWorkersNotSupported       = false;
  
  
- x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
+x3dom.BitLODComposer.onTransferablesNotSupported = function() {
+  alert('Your browser does not support transferables.\n' +
+        'This application might run slower than expected due to data cloning operations.');
+};
+               
+               
+x3dom.BitLODComposer.suppressOnWorkersNotSupported = function() {
+  alert('WebWorkers are not supported by your browser. Unable to run BitLODComposer.');
+};
+  
+ 
+x3dom.BitLODComposer.prototype.toggleDebugOutput = function(flag) {
+this.useDebugOutput = flag;
+};
+ 
+ 
+x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
  
 	  if (event.data.msg) {
 		
 		//display message text from worker
-		if (event.data.msg == 'log') {		
+		if (event.data.msg == 'log') {	
 		  x3dom.debug.logInfo('Message from WebWorker context: ' + event.data.text);
 		}
 
@@ -96,13 +120,23 @@
 			off 			 	  += numAttributeBitsPerLevel[i];
 		}
 		
+    var testChunk = new ArrayBuffer(1);
+    
 		this.worker.postMessage({cmd 		 	   		  : 'setAttributes',										  
-								 numAttributeComponents 	    : numAttributeComponents,
-								 numAttributeBitsPerComponent : numAttributeBitsPerComponent,											  
-								 numAttributeBitsPerLevel 	  : numAttributeBitsPerLevel,
-								 attributeReadOffset  		    : attributeReadOffset,
-								 attributeWriteOffset		      : attributeWriteOffset,
-								 strideWriting				        : strideWriting});	
+                             numAttributeComponents 	    : numAttributeComponents,
+                             numAttributeBitsPerComponent : numAttributeBitsPerComponent,											  
+                             numAttributeBitsPerLevel 	  : numAttributeBitsPerLevel,
+                             attributeReadOffset  		    : attributeReadOffset,
+                             attributeWriteOffset		      : attributeWriteOffset,
+                             strideWriting				        : strideWriting,
+                             testChunk                    : testChunk},
+                            [testChunk]);
+                            
+    //after postMessage, testChunk should have been transfered and neutered
+    if (testChunk.byteLength > 0 && !x3dom.BitLODComposer.suppressOnTransferablesNotSupported) {
+      x3dom.BitLODComposer.onTransferablesNotSupported();
+      x3dom.BitLODComposer.suppressOnTransferablesNotSupported = true;
+    }
   
     downloadCallbacks  = [];
     downloadPriorities = [];
