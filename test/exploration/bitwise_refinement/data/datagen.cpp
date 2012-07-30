@@ -142,8 +142,8 @@ void computeRefinementData(unsigned char * buffer, unsigned int level,
 		float theta = acos(n.z);
 		float phi   = atan2(n.y, n.x);
 		
-		theta = (theta 		  /         M_PI ) * 255.0f;
-		phi   = ((phi - M_PI) / (2.0f * M_PI)) * 255.0f;
+		theta = (theta 		    /         M_PI ) * 255.0f;
+		phi   = ((phi + M_PI) / (2.0f * M_PI)) * 255.0f;
 		
 		unsigned int theta_i = theta;
 		unsigned int phi_i   = phi;
