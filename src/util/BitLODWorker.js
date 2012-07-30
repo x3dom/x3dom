@@ -3,7 +3,7 @@ BlobBuilder = (typeof BlobBuilder !== 'undefined') ? BlobBuilder :
 			  (typeof MozBlobBuilder !== 'undefined') ? MozBlobBuilder : undefined;
 
 URL = (typeof URL !== 'undefined') ? URL : 
-	  (typeof webkitURL !== ' undefined') ? webkitURL : undefined;
+	  (typeof webkitURL !== 'undefined') ? webkitURL : undefined;
 
 
 

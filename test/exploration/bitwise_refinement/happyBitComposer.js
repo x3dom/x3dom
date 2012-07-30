@@ -51,7 +51,7 @@ function UpdateTotal(ms) {
       " ms, Total time: " + ms + " ms";
 }
 
-		 
+/*
 var refinementURLs = [ 'data/refinement00.bin',
                        'data/refinement01.bin',
                        'data/refinement02.bin',
@@ -60,6 +60,17 @@ var refinementURLs = [ 'data/refinement00.bin',
                        'data/refinement05.bin',
                        'data/refinement06.bin',
                        'data/refinement07.bin' ];
+*/
+                       
+var refinementURLs = [ 'LG_0_level0.bin',
+                       'LG_0_level1.bin',
+                       'LG_0_level2.bin',
+                       'LG_0_level3.bin',
+                       'LG_0_level4.bin',
+                       'LG_0_level5.bin',
+                       'LG_0_level6.bin',
+                       'LG_0_level7.bin' ];                       
+                       
 /*
 var refinementURLs = ['data/lodGeo/AOPT32098208_level0.bin',
                       'data/lodGeo/AOPT32098208_level1.bin',
@@ -180,8 +191,12 @@ draw : function(gl)
     gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normals);
     gl.vertexAttribPointer(normalAttribLocation, 2, gl.UNSIGNED_SHORT, true, 0, 0);
   }
+    
+  //gl.drawArrays(gl.TRIANGLES, 0, numArrayElements);
   
-  gl.drawArrays(gl.TRIANGLES, 0, numArrayElements);
+  //BEN:
+  gl.drawArrays(gl.TRIANGLE_STRIP, 0, 99876);
+  gl.drawArrays(gl.TRIANGLES, 99876, 5091);
   //-
   
   if (refinedLevels !== NumLevels){
