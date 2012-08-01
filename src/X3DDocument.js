@@ -223,7 +223,8 @@ x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y);
+    if (this._viewarea._scene._vf.doPickPass)
+        ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMove(x, y, buttonState);
 };
 
@@ -240,7 +241,8 @@ x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y);
+    if (this._viewarea._scene._vf.doPickPass)
+        ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onDrag(x, y, buttonState);
 };
 

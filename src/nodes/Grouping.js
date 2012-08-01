@@ -642,6 +642,8 @@ x3dom.registerNodeType(
             // define the experimental picking mode:
             // box, exact (NYI), idBuf, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
+            // experimental field to switch off picking
+            this.addField_SFBool(ctx, 'doPickPass', true);
         },
         {
             /* bindable getter (e.g. getViewpoint) are added automatically */
