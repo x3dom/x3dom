@@ -52,7 +52,6 @@
 	<!-- END:X3DOM -->
   </head>  
   <body>    
-    <!---Begin Standard Interaction Component
     <div style="width:300px;float:left;">
       <fieldset style="margin:4px;">
         <legend><strong>Viewer Settings</strong></legend>        
@@ -124,12 +123,12 @@
       This is some explanatory text.</br>
       It contains <i>html markups</i>.
     </div>
-    -->
     <div style="clear:both;"></div>
-      <x3d id="logo" showLog="false"  width="300px" height="300px">
+      <br/>
+      <x3d id="x3dElement"' showStat="false" showLog="false" style="width:100%;height:75%">
         <scene>
           <viewpoint position='0 0 10' ></viewpoint>
-          <background></background>
+          <background id="sceneBackground" skyColor="0.4 0.4 0.5"></background>
           <shape>
               <appearance>
                   <material diffuseColor='0.603 0.894 0.909' ></material>
