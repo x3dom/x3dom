@@ -144,8 +144,11 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             
             this._from = this._flyMat.e3();
             this._at = this._from.subtract(this._flyMat.e2());
-            //this._up = this._flyMat.e1();
-            this._up = new x3dom.fields.SFVec3f(0, 1, 0);
+            
+            if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
+                this._up = new x3dom.fields.SFVec3f(0, 1, 0);
+            else
+                this._up = this._flyMat.e1();
 
             this._pitch = angleX * 180 / Math.PI;
             this._yaw = angleY * 180 / Math.PI;
@@ -821,18 +824,18 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
         var len = dir.length();
         dir = dir.normalize();
 
-        var newUp = new x3dom.fields.SFVec3f(0, 1, 0);
+        //var newUp = new x3dom.fields.SFVec3f(0, 1, 0);
         var newAt = from.addScaled(dir, len);
 
-        var s = dir.cross(newUp).normalize();
-        dir = s.cross(newUp).normalize();
+        var s = dir.cross(up).normalize();
+        dir = s.cross(up).normalize();
 
         if (step < 0) {
             dist = (0.5 + len + dist) * 2;
         }
         var newFrom = newAt.addScaled(dir, dist);
 
-        laMat = x3dom.fields.SFMatrix4f.lookAt(newFrom, newAt, newUp);
+        laMat = x3dom.fields.SFMatrix4f.lookAt(newFrom, newAt, up);
         laMat = laMat.inverse();
 
         dist = newFrom.subtract(from).length();
