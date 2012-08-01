@@ -466,6 +466,29 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 117: /* u, upright position */
             this._viewarea.uprightView();
             break;
+        case 118: /* v, print viewpoint position/orientation */
+            var that = this;
+            (function() {
+                var mat_view = that._viewarea.getViewMatrix();
+                var e_viewpoint = that._viewarea._scene.getViewpoint();
+                
+    			var e_viewtrafo = e_viewpoint.getCurrentTransform();
+    			e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
+    			
+    			var e_mat = e_viewtrafo.inverse();
+    			
+    			var rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
+    			rotation.setValue(e_mat);
+    			
+    			var translation = e_mat.e3();
+				var rot = rotation.toAxisAngle();
+    			
+    			x3dom.debug.logInfo('Viewpoint position="' + translation.x.toFixed(5) + ' ' 
+    			                    + translation.y.toFixed(5) + ' ' + translation.z.toFixed(5) + '" ' +
+    								'orientation="' + rot[0].x.toFixed(5) + ' ' + rot[0].y.toFixed(5) + ' ' 
+    								+ rot[0].z.toFixed(5) + ' ' + rot[1].toFixed(5) + '"');
+            })();
+            break;
         case 119: /* w, walk mode */
             nav.setType("walk", this._viewarea);
             break;
