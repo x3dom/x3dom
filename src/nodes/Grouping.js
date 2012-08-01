@@ -503,7 +503,7 @@ x3dom.registerNodeType(
                         {
                             this._lastData = evt.data;
                             that._nameSpace.doc.needRender = true;
-                            x3dom.debug.logInfo("WS Response: " + evt.data);
+                            //x3dom.debug.logInfo("WS Response: " + evt.data);
                         }
                     };
 
@@ -525,7 +525,7 @@ x3dom.registerNodeType(
                         {
                             this._lastMsg = message;
                             this.send(message);
-                            x3dom.debug.logInfo("WS Sent: " + message);
+                            //x3dom.debug.logInfo("WS Sent: " + message);
                         }
                     };
 
@@ -550,9 +550,6 @@ x3dom.registerNodeType(
 					else
 						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
                 }
-
-                //x3dom.debug.logWarning("--RSG NC-- label size: " + this._vf.label.length + 
-                //                      ", map size: " + Object.keys(this._nameObjMap).length);
             },
 
             fieldChanged: function(fieldName)
@@ -592,8 +589,6 @@ x3dom.registerNodeType(
                         num = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnMove, 1.0) * num), 0.0);
                         n = Math.min(n, num);
                     }
-					
-					//x3dom.debug.logWarning("Num Nodes: " + n);
                     
                     for (i=0; i<n; i++)
                     {
@@ -601,7 +596,7 @@ x3dom.registerNodeType(
                         if (obj)
                             obj.collectDrawableObjects(transform, out);
 						else
-							x3dom.debug.logError("Invalid Label: " + this._idList[i]);
+							x3dom.debug.logError("Invalid label: " + this._idList[i]);
                     }
                 }
                 else
