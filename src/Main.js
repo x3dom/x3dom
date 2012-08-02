@@ -338,7 +338,7 @@ x3dom.userAgentFeature = {
     };
 	
     /* FIX PROBLEM IN CHROME - HACK - searching for better solution !!! */
-	/* if (navigator.userAgent.indexOf("Chrome") != -1) {
+	if (navigator.userAgent.indexOf("Chrome") != -1) {
 		document.__getElementsByTagName = document.getElementsByTagName;
 		
 		document.getElementsByTagName = function(tag) {
@@ -357,7 +357,6 @@ x3dom.userAgentFeature = {
 				}
 			}
 			
-           
             return obj;
         };
 
@@ -376,7 +375,7 @@ x3dom.userAgentFeature = {
             return obj;
         };
 		
-	} else */ { /* END OF HACK */
+	} else { /* END OF HACK */
         document.__getElementById = document.getElementById;
         document.getElementById = function(id) {
             var obj = this.__getElementById(id);
