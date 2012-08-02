@@ -597,10 +597,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			   
 				this.parent.doc.needRender = true;
 
+                /*
 				evt.preventDefault();
 				evt.stopPropagation();
 				evt.returnValue = false;
-				//evt.returnValue = true;
+				*/
+				evt.returnValue = true;
 			}
         }, false);
 
