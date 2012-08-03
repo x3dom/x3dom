@@ -23,6 +23,7 @@ of different kinds, but they still feature everything you need to get started.
    :maxdepth: 1
 
    dataconversion
+   aopt
    blender_export
    max_export
    maya_export
