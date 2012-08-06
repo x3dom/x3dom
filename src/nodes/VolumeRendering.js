@@ -190,6 +190,125 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### MPRVolumeStyle ### */
+
+x3dom.registerNodeType(
+     "MPRVolumeStyle",
+     "VolumeRendering",
+     defineClass(x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode,
+         function (ctx) {
+            x3dom.nodeTypes.MPRVolumeStyle.superClass.call(this, ctx);
+            
+            this.addField_SFVec3f(ctx, 'originLine', 1.0, 1.0, 0.0);
+            this.addField_SFVec3f(ctx, 'finalLine', 0.0, 1.0, 0.0);
+            this.addField_SFFloat(ctx, 'positionLine', 0.2);
+            
+            this.uniformVec3fOriginLine = new x3dom.nodeTypes.Field(ctx);
+            this.uniformVec3fFinalLine = new x3dom.nodeTypes.Field(ctx);
+            this.uniformFloatPosition = new x3dom.nodeTypes.Field(ctx);
+             
+         },
+         {
+            nodeChange: function() {},
+            uniforms: function() {
+                var unis = [];
+/*
+                this.uniformVec3fOriginLine._vf.name = 'originLine';
+                this.uniformVec3fOriginLine._vf.type = 'SFVec3f';
+                this.uniformVec3fOriginLine._vf.value = this._vf.originLine;
+                unis.push(this.uniformVec3fOriginLine);
+
+                this.uniformVec3fFinalLine._vf.name = 'finalLine';
+                this.uniformVec3fFinalLine._vf.type = 'SFVec3f';
+                this.uniformVec3fFinalLine._vf.value = this._vf.finalLine;
+                unis.push(this.uniformVec3fFinalLine);
+*/
+                this.uniformFloatPosition._vf.name = 'positionLine';
+                this.uniformFloatPosition._vf.type = 'SFFloat';
+                this.uniformFloatPosition._vf.value = this._vf.positionLine;
+                unis.push(this.uniformFloatPosition);
+  
+                return unis;
+            },        
+            vertexShaderText : function() {
+                 var shader = 
+                "attribute vec3 position;\n"+
+                "attribute vec3 color;\n"+
+                "uniform mat4 modelViewProjectionMatrix;\n"+
+                "varying vec3 vertexColor;\n"+
+                "varying vec4 vertexPosition;\n"+
+                "\n" +
+                "void main()\n"+
+                "{\n"+
+                "  vertexColor = color;\n"+
+                "  vertexPosition = modelViewProjectionMatrix * vec4(position, 1.0);\n"+
+                "  gl_Position = vertexPosition;\n"+
+                "}";
+                return shader;
+            },
+            fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
+                 var shader = 
+                "#ifdef GL_ES\n" +
+                "  precision highp float;\n" +
+                "#endif\n" +
+                "\n" +
+                "uniform sampler2D uBackCoord;\n"+
+                "uniform sampler2D uVolData;\n"+
+                "const vec3 originLine=vec3(1.0,0.0,0.0);\n"+
+                "const vec3 finalLine=vec3(0.0,0.0,0.0);\n"+
+                "uniform float positionLine;\n"+
+                "varying vec3 vertexColor;\n"+
+                "varying vec4 vertexPosition;\n"+
+                "const float Steps = 60.0;\n"+
+                "const float numberOfSlices = "+ numberOfSlices.toPrecision(5)+";\n"+
+                "const float slicesOverX = " + slicesOverX.toPrecision(5) +";\n"+
+                "const float slicesOverY = " + slicesOverY.toPrecision(5) +";\n"+
+                "\n" +
+                "vec4 cTexture3D(sampler2D vol, vec3 volpos, float nS, float nX, float nY)\n"+
+                "{\n"+
+                "  clamp(volpos.x,0.0,1.0);\n"+
+                "  clamp(volpos.y,0.0,1.0);\n"+
+                "  clamp(volpos.z,0.0,1.0);\n"+
+                "  float s1,s2;\n"+
+                "  float dx1,dy1;\n"+
+                "  float dx2,dy2;\n"+
+                "  vec2 texpos1,texpos2;\n"+
+                "  s1 = floor(volpos.z*nS);\n"+
+                "  s2 = s1+1.0;\n"+
+                "  dx1 = fract(s1/nX);\n"+
+                "  dy1 = floor(s1/nY)/nY;\n"+
+                "  dx2 = fract(s2/nX);\n"+
+                "  dy2 = floor(s2/nY)/nY;\n"+
+                "  texpos1.x = dx1+(volpos.x/nX);\n"+
+                "  texpos1.y = dy1+(volpos.y/nY);\n"+
+                "  texpos2.x = dx2+(volpos.x/nX);\n"+
+                "  texpos2.y = dy2+(volpos.y/nY);\n"+
+                "  return mix( texture2D(vol,texpos1), texture2D(vol,texpos2), volpos.z-floor(volpos.z));\n"+
+                "}"+
+                "\n"+
+                "void main()\n"+
+                "{\n"+
+                "  vec2 texC = vertexPosition.xy/vertexPosition.w;\n"+
+                "  texC = 0.5*texC + 0.5;\n"+
+                "  vec4 backColor = texture2D(uBackCoord,texC);\n"+
+                "  vec3 dir =  backColor.xyz -vertexColor.xyz;\n"+
+                "  vec3 normalPlane = finalLine-originLine;\n"+
+                "  vec3 pointLine = normalPlane*positionLine+originLine;\n"+
+                "  float d = dot(pointLine-vertexColor.xyz,normalPlane)/dot(dir,normalPlane);\n"+
+                "  vec4 color = vec4(0.0,0.0,0.0,0.0);\n"+
+                "  vec3 pos = d*dir+vertexColor.rgb;\n"+
+                "  if (!(pos.x > 1.0 || pos.y > 1.0 || pos.z > 1.0 || pos.x<0.0 || pos.y<0.0 || pos.z<0.0)){\n"+
+                "    color = vec4(cTexture3D(uVolData,pos.rgb,numberOfSlices,slicesOverX,slicesOverY).rgb,1.0);\n"+
+                "  }\n"+
+                "  gl_FragColor = color;\n"+
+                "}";
+                return shader;
+            }
+         }
+    )
+);
+
+
 /* ### OpacityMapVolumeStyle ### */
 x3dom.registerNodeType(
     "OpacityMapVolumeStyle",
@@ -591,127 +710,129 @@ x3dom.registerNodeType(
                 {
                     this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
                     
-                            // second texture, ray direction and length
-                            this.vrcBackCubeShaderVertex._vf.type = 'vertex';
-                            this.vrcBackCubeShaderVertex._vf.url[0] =
-                                "attribute vec3 position;\n" +
-                                "attribute vec3 color;\n" +
-                                "varying vec3 fragColor;\n" +
-                                "uniform mat4 modelViewProjectionMatrix;\n" +
-                                "\n" +
-                                "void main(void) {\n" +
-                                "    fragColor = color;\n" +
-                                "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
-                                "}\n";
+                    // second texture, ray direction and length
+                    this.vrcBackCubeShaderVertex._vf.type = 'vertex';
+                    this.vrcBackCubeShaderVertex._vf.url[0] =
+                        "attribute vec3 position;\n" +
+                        "attribute vec3 color;\n" +
+                        "varying vec3 fragColor;\n" +
+                        "uniform mat4 modelViewProjectionMatrix;\n" +
+                        "\n" +
+                        "void main(void) {\n" +
+                        "    fragColor = color;\n" +
+                        "    gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);\n" +
+                        "}\n";
 
-                            this.vrcBackCubeShaderFragment._vf.type = 'fragment';
-                            this.vrcBackCubeShaderFragment._vf.url[0] =
-                                "#ifdef GL_ES\n" +
-                                "  precision highp float;\n" +
-                                "#endif\n" +
-                                "\n" +
-                                "varying vec3 fragColor;\n" +
-                                "\n" +
-                                "void main(void) {\n" +
-                                "    gl_FragColor = vec4(fragColor, 1.0);\n" +
-                                "}\n";
-                            
-                            this.vrcBackCubeShader.addChild(this.vrcBackCubeShaderFragment, 'parts');
-                            this.vrcBackCubeShaderFragment.nodeChanged();
-                            
-                            this.vrcBackCubeShader.addChild(this.vrcBackCubeShaderVertex, 'parts');
-                            this.vrcBackCubeShaderVertex.nodeChanged();
-                            
-                            this.vrcBackCubeAppearance.addChild(this.vrcBackCubeShader);
-                            this.vrcBackCubeShader.nodeChanged();
-                            
-                            // initialize fbo - note that internally the datatypes must fit!
-                            this.vrcRenderTexture._vf.update = 'always';
-                            this.vrcRenderTexture._vf.dimensions = [500, 500, 4];
-                            this.vrcRenderTexture._vf.repeatS = false;
-                            this.vrcRenderTexture._vf.repeatT = false;
-                            this.vrcRenderTexture._nameSpace = this._nameSpace;
-                            
-                            this.vrcBackCubeGeometry._vf.size = new x3dom.fields.SFVec3f(
-                            this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
-                            this.vrcBackCubeGeometry._vf.ccw = false;
-                            this.vrcBackCubeGeometry._vf.solid = true;
-                            // manually trigger size update
-                            this.vrcBackCubeGeometry.fieldChanged("size");
-                            
-                            this.vrcBackCubeShape.addChild(this.vrcBackCubeGeometry);
-                            this.vrcBackCubeGeometry.nodeChanged();
-                            
-                            this.vrcBackCubeShape.addChild(this.vrcBackCubeAppearance);
-                            this.vrcBackCubeAppearance.nodeChanged();
-                            
-                            this.vrcRenderTexture.addChild(this.vrcBackCubeShape, 'scene');
-                            this.vrcBackCubeShape.nodeChanged();
-                            
-                            // create shortcut to volume data set
-                            this.vrcVolumeTexture = this._cf.voxels.node;
-                            this.vrcVolumeTexture._vf.repeatS = false;
-                            this.vrcVolumeTexture._vf.repeatT = false;
-                            
-                            this.vrcMultiTexture._nameSpace = this._nameSpace;
-                            
-                            this.vrcMultiTexture.addChild(this.vrcRenderTexture, 'texture');
-                            this.vrcRenderTexture.nodeChanged();
-                            
-                            this.vrcMultiTexture.addChild(this.vrcVolumeTexture, 'texture');
+                    this.vrcBackCubeShaderFragment._vf.type = 'fragment';
+                    this.vrcBackCubeShaderFragment._vf.url[0] =
+                        "#ifdef GL_ES\n" +
+                        "  precision highp float;\n" +
+                        "#endif\n" +
+                        "\n" +
+                        "varying vec3 fragColor;\n" +
+                        "\n" +
+                        "void main(void) {\n" +
+                        "    gl_FragColor = vec4(fragColor, 1.0);\n" +
+                        "}\n";
+                    
+                    this.vrcBackCubeShader.addChild(this.vrcBackCubeShaderFragment, 'parts');
+                    this.vrcBackCubeShaderFragment.nodeChanged();
+                    
+                    this.vrcBackCubeShader.addChild(this.vrcBackCubeShaderVertex, 'parts');
+                    this.vrcBackCubeShaderVertex.nodeChanged();
+                    
+                    this.vrcBackCubeAppearance.addChild(this.vrcBackCubeShader);
+                    this.vrcBackCubeShader.nodeChanged();
+                    
+                    // initialize fbo - note that internally the datatypes must fit!
+                    this.vrcRenderTexture._vf.update = 'always';
+                    this.vrcRenderTexture._vf.dimensions = [500, 500, 4];
+                    this.vrcRenderTexture._vf.repeatS = false;
+                    this.vrcRenderTexture._vf.repeatT = false;
+                    this.vrcRenderTexture._nameSpace = this._nameSpace;
+                    
+                    this.vrcBackCubeGeometry._vf.size = new x3dom.fields.SFVec3f(
+                    this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
+                    this.vrcBackCubeGeometry._vf.ccw = false;
+                    this.vrcBackCubeGeometry._vf.solid = true;
+                    // manually trigger size update
+                    this.vrcBackCubeGeometry.fieldChanged("size");
+                    
+                    this.vrcBackCubeShape.addChild(this.vrcBackCubeGeometry);
+                    this.vrcBackCubeGeometry.nodeChanged();
+                    
+                    this.vrcBackCubeShape.addChild(this.vrcBackCubeAppearance);
+                    this.vrcBackCubeAppearance.nodeChanged();
+                    
+                    this.vrcRenderTexture.addChild(this.vrcBackCubeShape, 'scene');
+                    this.vrcBackCubeShape.nodeChanged();
+                    
+                    // create shortcut to volume data set
+                    this.vrcVolumeTexture = this._cf.voxels.node;
+                    this.vrcVolumeTexture._vf.repeatS = false;
+                    this.vrcVolumeTexture._vf.repeatT = false;
+                    
+                    this.vrcMultiTexture._nameSpace = this._nameSpace;
+                    
+                    this.vrcMultiTexture.addChild(this.vrcRenderTexture, 'texture');
+                    this.vrcRenderTexture.nodeChanged();
+                    
+                    this.vrcMultiTexture.addChild(this.vrcVolumeTexture, 'texture');
+                    this.vrcVolumeTexture.nodeChanged();
+                    
+                    // textures from styles
+                    if (this._cf.renderStyle.node.textures != undefined){
+                        var styleTextures = this._cf.renderStyle.node.textures();
+                        for (var i = 0; i< styleTextures.length; i++)
+                        {
+                            this.vrcMultiTexture.addChild(styleTextures[i], 'texture');
                             this.vrcVolumeTexture.nodeChanged();
-                            
-                            // textures from styles
-                            var styleTextures = this._cf.renderStyle.node.textures();
-                            for (var i = 0; i< styleTextures.length; i++)
-                            {
-                                this.vrcMultiTexture.addChild(styleTextures[i], 'texture');
-                                this.vrcVolumeTexture.nodeChanged();
-                            }
-                            
-                            this._cf.appearance.node.addChild(this.vrcMultiTexture);
-                            this.vrcMultiTexture.nodeChanged();
-                            
-                            
-                            // here goes the volume shader
-                            this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
-                            this.vrcFrontCubeShaderVertex._vf.url[0]=this._cf.renderStyle.node.vertexShaderText();
+                        }
+                    }
+                    
+                    this._cf.appearance.node.addChild(this.vrcMultiTexture);
+                    this.vrcMultiTexture.nodeChanged();
+                    
+                    
+                    // here goes the volume shader
+                    this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
+                    this.vrcFrontCubeShaderVertex._vf.url[0]=this._cf.renderStyle.node.vertexShaderText();
 
-                            this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
-                            this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
+                    this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
+                    this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
 
-                            this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
-                            this.vrcFrontCubeShaderVertex.nodeChanged();
-                            
-                            this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFragment, 'parts');
-                            this.vrcFrontCubeShaderFragment.nodeChanged();
-                            
-                            this.vrcFrontCubeShaderFieldBackCoord._vf.name = 'uBackCoord';
-                            this.vrcFrontCubeShaderFieldBackCoord._vf.type = 'SFInt32';
-                            this.vrcFrontCubeShaderFieldBackCoord._vf.value = 0;
+                    this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
+                    this.vrcFrontCubeShaderVertex.nodeChanged();
+                    
+                    this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFragment, 'parts');
+                    this.vrcFrontCubeShaderFragment.nodeChanged();
+                    
+                    this.vrcFrontCubeShaderFieldBackCoord._vf.name = 'uBackCoord';
+                    this.vrcFrontCubeShaderFieldBackCoord._vf.type = 'SFInt32';
+                    this.vrcFrontCubeShaderFieldBackCoord._vf.value = 0;
 
-                            this.vrcFrontCubeShaderFieldVolData._vf.name = 'uVolData';
-                            this.vrcFrontCubeShaderFieldVolData._vf.type = 'SFInt32';
-                            this.vrcFrontCubeShaderFieldVolData._vf.value = 1;
+                    this.vrcFrontCubeShaderFieldVolData._vf.name = 'uVolData';
+                    this.vrcFrontCubeShaderFieldVolData._vf.type = 'SFInt32';
+                    this.vrcFrontCubeShaderFieldVolData._vf.value = 1;
 
-                            this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldBackCoord, 'fields');
-                            this.vrcFrontCubeShaderFieldBackCoord.nodeChanged();
-                            
-                            this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldVolData, 'fields');
-                            this.vrcFrontCubeShaderFieldVolData.nodeChanged();
-                            
-                            
-                            var ShaderUniforms = this._cf.renderStyle.node.uniforms()
-                            for (var i = 0; i<ShaderUniforms.length; i++)
-                            {
-                                this.vrcFrontCubeShader.addChild(ShaderUniforms[i], 'fields');
-                            }
-                            this.vrcFrontCubeShaderFieldVolData.nodeChanged();
-                        
-                            this._cf.appearance.node.addChild(this.vrcFrontCubeShader);
-                            this.vrcFrontCubeShader.nodeChanged();
-                            
-                            this._cf.appearance.node.nodeChanged();
+                    this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldBackCoord, 'fields');
+                    this.vrcFrontCubeShaderFieldBackCoord.nodeChanged();
+                    
+                    this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldVolData, 'fields');
+                    this.vrcFrontCubeShaderFieldVolData.nodeChanged();
+                    
+                    
+                    var ShaderUniforms = this._cf.renderStyle.node.uniforms()
+                    for (var i = 0; i<ShaderUniforms.length; i++)
+                    {
+                        this.vrcFrontCubeShader.addChild(ShaderUniforms[i], 'fields');
+                    }
+                    this.vrcFrontCubeShaderFieldVolData.nodeChanged();
+                
+                    this._cf.appearance.node.addChild(this.vrcFrontCubeShader);
+                    this.vrcFrontCubeShader.nodeChanged();
+                    
+                    this._cf.appearance.node.nodeChanged();
                 }
 
                 if (!this._cf.geometry.node) {
