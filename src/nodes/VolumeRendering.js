@@ -209,7 +209,21 @@ x3dom.registerNodeType(
              
          },
          {
-            nodeChange: function() {},
+            nodeChanged: function() {},
+
+            fieldChanged: function(fieldName) {
+                 if (fieldName == "originLine" ||
+                     fieldName == "finalLine" ||
+                     fieldName == "positionLine") {
+                      //var that = this;
+                      //Array.forEach(this._parentNodes, function (vol) {
+                      //  vol.updateFields("positionLine", that._vf.positionLine);
+                      //});
+                     this.uniformFloatPosition._vf.value = this._vf.positionLine;
+                     this.uniformFloatPosition.fieldChanged("value");
+                 }
+            },
+
             uniforms: function() {
                 var unis = [];
 /*
@@ -329,6 +343,7 @@ x3dom.registerNodeType(
         {
             nodeChanged: function() {},
             fieldChanged: function(fieldName) {},
+
             uniforms: function() {
                 var unis = [];
                 
@@ -799,7 +814,8 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShaderVertex._vf.url[0]=this._cf.renderStyle.node.vertexShaderText();
 
                     this.vrcFrontCubeShaderFragment._vf.type = 'fragment';
-                    this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
+                    this.vrcFrontCubeShaderFragment._vf.url[0]=this._cf.renderStyle.node.fragmentShaderText(
+                        this.vrcVolumeTexture._vf.numberOfSlices, this.vrcVolumeTexture._vf.slicesOverX, this.vrcVolumeTexture._vf.slicesOverY);
 
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderVertex, 'parts');
                     this.vrcFrontCubeShaderVertex.nodeChanged();
@@ -843,12 +859,13 @@ x3dom.registerNodeType(
                     this._cf.geometry.node._vf.ccw = true;
                     this._cf.geometry.node._vf.solid = true;
 
-                                        // workaround to trigger field change...
+                    // workaround to trigger field change...
                     this._cf.geometry.node.fieldChanged("size");
                     this._cf.geometry.node.fieldChanged("ccw");
                     this._cf.geometry.node.fieldChanged("solid");
                 }
             },
+
             fieldChanged: function(fieldName) {}
         }
     )
