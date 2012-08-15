@@ -54,29 +54,68 @@
 <script type="text/javascript" src="media/js/tests.js"></script>
 <!-- END:TEST -->
 
+  <style>
+      #ctrlContainer { float:left; position: relative; top:20px; left:20px; padding: 0px; width: 300px; height:50px; background-color: #888;}
+      #sliderContainer div { float:left; width: 280px; }
+      #sliderContainer li { height: 20px; }
+      #sliderContainer ul { clear: both; list-style-type: none; margin: 10px 0 10px 0; padding: 0; }
+  </style>
+
+      <link type="text/css" href="media/css/jquery-ui.css" rel="stylesheet" />
+      <script type="text/javascript" src="media/js/jquery.min.js"></script>
+      <script type="text/javascript" src="media/js/jquery-ui.min.js"></script>
+
   </head>
   
   <body>
   
   <h1>MPR Volume Style Node</h1>
-  
+
+  <div>
     <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace'
-         showStat='true' showLog='false' width='500px' height='500px'>
+         showStat='true' showLog='true' width='500px' height='500px'>
       <Scene>
           <Background skyColor='0.0 0.0 0.0'/>
           <Viewpoint description='Default' zNear='0.0001' zFar='100'/>
           <Transform>
             <VolumeData id='volume' dimensions='4.0 4.0 4.0'>
-              <ImageTextureAtlas containerField='voxels' url='media/volume/aorta4096.png' numberOfSlices='96' slicesOverX='10' slicesOverY='10'/>
-              <MPRVolumeStyle positionLine='0.5'>
+              <ImageTextureAtlas containerField='voxels' url='media/volume/aorta4096.png'
+                                 numberOfSlices='96' slicesOverX='10' slicesOverY='10'/>
+              <MPRVolumeStyle id='style' positionLine='0.1'>
                 <!--ImageTexture containerField='transferFunction' url='media/volume/transfer/transfer.png'/-->
               </MPRVolumeStyle>
             </VolumeData>
           </Transform>
       </Scene>
     </X3D>
+  </div>
 
-    
-    
+  <div id="ctrlContainer">
+      <span style="font-size:110%;">Choose <i>positionLine</i> with slider: </span>
+      <br/>
+      <div id="sliderContainer">
+          <ul>
+              <li>
+                  <div id="threshSlider" class="slider0"></div>
+              </li>
+          </ul>
+      </div>
+  </div>
+
+  <script><![CDATA[
+
+  var threshold = 1.0;
+
+  $(document).ready( function()
+  {
+      $(".slider0").slider({min: 0, max: 1, step: 0.01, value: 0, animate: true,
+          range: false, slide: function(e, ui) {
+              threshold = ui.value;
+              document.getElementById("style").setAttribute('positionLine', threshold);
+          }});
+  } );
+
+  ]]></script>
+
   </body>
 </html>
