@@ -11,9 +11,9 @@ aopt is a powerful command line tool that comes bundled with InstantReality. If 
 
 	aopt –i <input.foo> -x <output>.x3d
 
-Or to VRML:
+Or to HTML:
 
-	aopt –i <input.foo> -v <output>.wrl
+	aopt –i <input.foo> -N <output>.html
 
 You can also export to HTML and XHTML `directly <http://x3dom.org/docs/dev/tutorial/dataconversion.html>`_.
 
