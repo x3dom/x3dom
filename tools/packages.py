@@ -53,8 +53,9 @@ NODES = [
 COMPONENTS = [
   'nodes/Geospatial.js',
   'nodes/Geometry2D.js',
+  'nodes/Texturing3D.js',
   'nodes/VolumeRendering.js',
-  'Docs.js'                    # interactive documnetatation
+  'Docs.js'                    # interactive documentation
 ]
 
 CORE_PROFILE = BASICS + GFX + NODES
