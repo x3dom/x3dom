@@ -15,7 +15,7 @@ Or to HTML:
 
 	aopt –i <input.foo> -N <output>.html
 
-You can also export to HTML and XHTML `directly <http://x3dom.org/docs/dev/tutorial/dataconversion.html>`_.
+For a general introduction to data conversion with aopt `check here <http://x3dom.org/docs/dev/tutorial/dataconversion.html>`_.
 
 Analyzing your 3D model
 -----------------------
