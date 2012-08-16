@@ -1,0 +1,334 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns='http://www.w3.org/1999/xhtml'>
+
+    <!-- Copyright 2012 by John Congote <jcongote@vicomtech.org> -->
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
+
+<!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+
+<!-- BEGIN:TEST -->
+<script type="text/javascript" src="media/js/tests.js"></script>
+<!-- END:TEST -->
+
+  </head>
+  
+  <body>
+
+   
+<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='true' width='500px' height='500px'>
+<Scene>
+<Group>
+ 
+<Background skyColor='0 0 0'/>
+<Viewpoint description='Default' position='0 0 2.5' zNear='0.0001' zFar='100'/>  
+<Shape DEF="volume">
+<Appearance>
+ 
+<MultiTexture>
+<ImageTexture url='media/volume/aorta4096.png' />
+<ImageTexture url='media/volume/TF2D256.png' />
+</MultiTexture>
+  
+     <ComposedShader DEF='ComposedShader'>
+       <field name='uVolData' type='SFInt32' value='0'/>
+       <field id='texTF' name='texTF' type='SFInt32' value='1'/>
+       <ShaderPart type='VERTEX'>
+       <![CDATA[
+uniform mat4 modelViewProjectionMatrix;
+uniform mat4 modelViewMatrixInverse;
+attribute vec3 position;
+
+mat4 textureMatrix;
+mat4 textureMatrixInverse;
+       
+varying vec3 rayStart;
+varying vec3 rayDir;
+
+void main()
+{
+textureMatrix = mat4(1.000, 0.000, 0.000, 0.500, 0.000, 1.000, 0.000, 0.500, 0.000, 0.000, 1.000, 0.500, 0.000, 0.000, 0.000, 1.000);
+textureMatrixInverse = mat4(1.000, 0.000, 0.000, -0.500, 0.000, 1.000, 0.000, -0.500, 0.000, 0.000, 1.000, -0.500, 0.000,  0.000,  0.000,  1.000);
+rayStart = (textureMatrix*vec4(position, 1.0)).xyz;
+rayDir = rayStart-(textureMatrix*modelViewMatrixInverse*vec4(0.0,0.0,0.0,1.0)).xyz;
+gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);
+}
+       ]]>
+       </ShaderPart>
+       <ShaderPart type='FRAGMENT'>
+       <![CDATA[
+#ifdef GL_ES
+precision highp float;
+#endif
+
+uniform mat4 modelViewProjectionMatrix;
+//uniform gl_DepthRangeParameters gl_DepthRange;
+
+uniform mat4 modelViewMatrix;
+uniform mat4 modelViewMatrixInverse;
+
+uniform sampler2D uVolData;
+uniform sampler2D texTF;
+
+
+mat4 textureMatrix;
+mat4 textureMatrixInverse;
+
+float rayStep = 0.01;
+const float numberOfSlices = 96.0;
+const float slicesOverX = 10.0;
+const float slicesOverY = 10.0;
+
+
+varying vec3 rayStart;
+varying vec3 rayDir;
+
+
+vec4 cTexture3D(sampler2D uData,vec3 volpos)
+{
+  float s1,s2;
+  float dx1,dy1;
+  float dx2,dy2;
+
+  vec2 texpos1,texpos2;
+
+  s1 = floor(volpos.z*numberOfSlices);
+  s2 = s1+1.0;
+
+  dx1 = fract(s1/slicesOverX);
+  dy1 = floor(s1/slicesOverY)/slicesOverY;
+
+  dx2 = fract(s2/slicesOverX);
+  dy2 = floor(s2/slicesOverY)/slicesOverY;
+
+  texpos1.x = dx1+(volpos.x/slicesOverX);
+  texpos1.y = dy1+(volpos.y/slicesOverY);
+
+  texpos2.x = dx2+(volpos.x/slicesOverX);
+  texpos2.y = dy2+(volpos.y/slicesOverY);
+
+  return mix( texture2D(uData,texpos1), texture2D(uData,texpos2), (volpos.z*numberOfSlices)-s1);
+}
+
+// OpacityMapVolumeStyle
+// Notes:
+void OpacityMapVolumeStyle2D( inout vec4 sample_color,
+                             vec4 orig_color,
+                             vec4 pos,
+                             bool enabled,
+                             int nr_components,
+                             sampler2D transferFunction) {
+ if( enabled ) {
+   vec2 tex_coord = vec2( 0.0, 0.0 );
+   if( nr_components == 1 ) {
+     tex_coord.s = orig_color.r;
+   } else if( nr_components == 2 ) {
+     tex_coord.s = orig_color.r;
+     tex_coord.t = orig_color.a;
+   } else {
+     tex_coord.s = orig_color.r;
+     tex_coord.t = orig_color.g;
+   }
+   sample_color = texture2D(transferFunction, tex_coord );
+ }
+}
+
+
+struct RayResult {
+ vec4 color;
+ vec4 zpoint;
+};
+
+// compute t such that r0+t*dir is the exit point of the [0,1] box
+float rayexit(vec3 r0, vec3 dir) {
+	vec3 q = 1.0/(dir+1.0e-6);
+	vec3 t0 = -r0*q;
+	vec3 tmax = max(t0,q+t0);
+	return min(tmax.x,min(tmax.y,tmax.z));
+}
+
+// traverse ray
+// Inputs:
+//   r0  - ray start (xyz), ray exit time (w)
+//   dir - ray direction (xyz), step length (-w)
+// Output:
+//   RayResult.color  - the computed RGBA color for this fragment
+//   RayResult.zpoint - the point to use for depth calculations,
+//                      if zpoint.x<0, no depth is computed
+
+RayResult traverseRay(vec4 r0, vec4 dir) 
+{
+	//useful stuff (hopefully not computed if not needed...?)
+	mat4 view_to_tex = textureMatrix*modelViewMatrixInverse;
+	mat4 tex_to_view = modelViewMatrix*textureMatrixInverse;
+	vec4 viewdir_tex = vec4( -normalize(dir.xyz), 0.0 );
+	
+	// return value
+	RayResult rr;
+	
+	// initial color of this fragment is black with zero alpha
+	rr.color = vec4(0.0, 0.0, 0.0, 0.0);
+	// initial depth is not defined
+	rr.zpoint = vec4(-1.0, 0.0, 0.0, 0.0);
+
+	// compositing loop
+	//while( rr.color.a<0.95 && r0.w>=0.0 ) 
+	for (float rayIterator = 0.0; rayIterator < 100.0; rayIterator += 1.0)
+	{	
+		vec4 orig_sample_color = cTexture3D(uVolData, r0.xyz);
+		
+		orig_sample_color.a = orig_sample_color.r;
+		
+		//ORIG_SAMPLE_MANIP
+		
+		// color of this sample
+		vec4 sample_color = orig_sample_color;
+		
+		//BEGIN INSIDE-LOOP
+		OpacityMapVolumeStyle2D(sample_color, orig_sample_color, r0, true, 2, texTF);
+		//END INSIDE-LOOP
+		
+		//BEGIN COMPOSITING
+		// front-to-back compositing
+		sample_color.rgb *= sample_color.a;
+		rr.color += sample_color*(1.0-rr.color.a);
+		if( rr.zpoint.x < 0.0 && rr.color.a > 0.0 ) 
+		{
+			rr.zpoint = vec4( r0.xyz, 1 );
+		}
+	
+		//END COMPOSITING
+		
+		// step forward along ray
+		r0 += dir;
+		
+		if (!(rr.color.a<0.95 && r0.w>=0.0))
+			break;
+	}
+	
+	//BEGIN POST-LOOP
+	//END POST-LOOP
+	
+	if( rr.color.a == 0.0 ) discard;
+	
+	// return result
+	return rr;
+}
+
+
+void main()
+{
+	textureMatrix = mat4(1.000, 0.000, 0.000, 0.500, 0.000, 1.000, 0.000, 0.500, 0.000, 0.000, 1.000, 0.500, 0.000, 0.000, 0.000, 1.000);
+	textureMatrixInverse = mat4(1.000, 0.000, 0.000, -0.500, 0.000, 1.000, 0.000, -0.500, 0.000, 0.000, 1.000, -0.500, 0.000,  0.000,  0.000,  1.000);
+	
+	// initialize ray
+	vec4 raydir = vec4(normalize(rayDir), -1.0);
+	float texit = rayexit(rayStart,raydir.xyz);
+	raydir = rayStep*raydir;
+	vec4 raypos = vec4(rayStart, texit);
+	
+	// traverse ray
+	RayResult rr = traverseRay(raypos, raydir);
+
+
+	// set color
+	gl_FragColor= rr.color;
+	/*
+	// set depth if computed
+	if( rr.zpoint.x>=0.0 ) {
+	  // set depth
+	  vec4 tmp = modelViewProjectionMatrix*textureMatrixInverse*rr.zpoint;
+	  // in window coordinates
+	  gl_FragDepth = 0.5*(gl_DepthRange.diff*tmp.z/tmp.w + gl_DepthRange.near+gl_DepthRange.far);
+	} else {
+	  gl_FragDepth = gl_FragCoord.z;
+	}*/
+	
+}
+       ]]>
+       </ShaderPart>
+     </ComposedShader>
+</Appearance>
+
+
+<IndexedFaceSet DEF='cube' solid='true' ccw='true' coordIndex='0, 1, 2, -1, 0, 2, 3, -1, 4, 5, 6, -1, 4, 6, 7, -1, 8, 9, 10, -1, 8, 10, 11, -1, 12, 13, 14, -1, 12, 14, 15, -1, 16, 17, 18, -1, 16, 18, 19, -1, 20, 21, 22, -1, 20, 22, 23' >
+<Coordinate point='0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0,  1.0, 0.0, 0.0,  1.0, 1.0, 1.0,  1.0, 1.0, 1.0,  1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0'/>
+
+
+<Color color='0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 1.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 0.0, 1.0, 1.0, 0.0, 1.0, 1.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0'/> 
+
+</IndexedFaceSet>
+</Shape>
+</Group>
+</Scene>
+</X3D>
+   
+  </body>
+</html>
+
+<!--
+  Matrix4f S  = Matrix4f(1.0f/dim.x, 0.0, 0.0, 0.0,
+                         0.0, 1.0f/dim.y, 0.0, 0.0,
+                         0.0, 0.0, 1.0f/dim.z, 0.0, 
+                         0.0, 0.0, 0.0, 1.0f);
+  // center => [0, 1]
+  Matrix4f  T  = Matrix4f(1.0, 0.0, 0.0, 0.5,
+                          0.0, 1.0, 0.0, 0.5,
+                          0.0, 0.0, 1.0, 0.5,
+                          0.0, 0.0, 0.0, 1.0);
+T*S
+1.000 0.000 0.000 0.500
+0.000 1.000 0.000 0.500
+0.000 0.000 1.000 0.500
+0.000 0.000 0.000 1.000
+
+T*S inverse
+1.000  0.000  0.000 -0.500
+0.000  1.000  0.000 -0.500
+0.000  0.000  1.000 -0.500
+0.000  0.000  0.000  1.000			  
+			  
+-->
