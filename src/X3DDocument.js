@@ -120,7 +120,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
         },
         onNodeInserted: function(e) {
-			
             // only act on x3dom nodes, ignore regular HTML
             if ('_x3domNode' in e.target.parentNode) {
 				if(e.target.parentNode.tagName == 'Inline' 
@@ -132,10 +131,12 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 					var child = e.target;
 	
 					//x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
-	
 					if (parent._nameSpace) {
 						var newNode = parent._nameSpace.setupTree(child);
-						parent.addChild(newNode, child.getAttribute("containerField"));
+                        if (e.target instanceof Element)
+						    parent.addChild(newNode, child.getAttribute("containerField"));
+                        else
+                            parent.nodeChanged();
 						doc.needRender = true;
 					}
 					else {
@@ -143,7 +144,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 					}
 				}
             }
-			
         }
     };
 
