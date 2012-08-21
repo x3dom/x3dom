@@ -357,7 +357,6 @@ x3dom.userAgentFeature = {
 				}
 			}
 			
-           
             return obj;
         };
 
