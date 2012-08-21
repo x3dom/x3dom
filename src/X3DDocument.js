@@ -421,6 +421,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 103: /* g, game mode */
             nav.setType("game", this._viewarea);
             break;
+        case 104: /* h, helicopter mode */
+            nav.setType("helicopter", this._viewarea);
+            break;
         case 108: /* l, lookAt mode */
             nav.setType("lookat", this._viewarea);
             break;
@@ -448,7 +451,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 default:
                     this._scene._vf.pickMode = "idBuf";
                     break;
-            };
+            }
 
             x3dom.debug.logInfo("Switch pickMode to '" +
                                 this._scene._vf.pickMode + "'.");

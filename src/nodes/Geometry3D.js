@@ -27,9 +27,9 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby+'-'+this._vf.center.x+'-'+this._vf.center.y+'-'+this._vf.center.z;
 
-			if( ctx && x3dom.geoCache[geoCacheID] != undefined )
+			if( ctx && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Plane from Cache");
+				//x3dom.debug.logInfo("Using Plane from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -328,9 +328,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Box_'+sx+'-'+sy+'-'+sz;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Box from Cache");
+				//x3dom.debug.logInfo("Using Box from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -419,8 +419,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Sphere_'+r;
 
-			if (x3dom.geoCache[geoCacheID] != undefined) {
-				x3dom.debug.logInfo("Using Sphere from Cache");
+			if (x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Sphere from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				if(ctx) {
@@ -643,9 +643,9 @@ x3dom.registerNodeType(
 					
 			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Torus from Cache");
+				//x3dom.debug.logInfo("Using Torus from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -807,9 +807,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Cone_'+this._vf.bottomRadius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.side;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Cone from Cache");
+				//x3dom.debug.logInfo("Using Cone from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -1045,9 +1045,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Cylinder from Cache");
+				//x3dom.debug.logInfo("Using Cylinder from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -1812,7 +1812,7 @@ x3dom.registerNodeType(
 
 				if( x3dom.geoCache[geoCacheID] !== undefined )
 				{
-					x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
+					//x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
 					this._mesh = x3dom.geoCache[geoCacheID];
 				}
 				else
