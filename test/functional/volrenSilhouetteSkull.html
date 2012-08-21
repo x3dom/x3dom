@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE X3D PUBLIC "ISO//Web3D//DTD X3D 3.3//EN" "http://www.web3d.org/specifications/x3d-3.3.dtd">
+<X3D profile='Interchange' version='3.3' xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.3.xsd'>
+  <head>
+    <component level='2' name='VolumeRendering'/>
+    <meta content='SilhouetteSkull.x3d' name='title'/>
+    <meta content='Volume rendering of a CT scan of a skull, rendered with silhouette enhancement render style' name='description'/>
+    <meta content='24 March 2011' name='created'/>
+    <meta content='2 August 2011' name='modified'/>
+    <meta content='Andrew Wood, Nicholas Polys: Virginia Tech' name='creator'/>
+    <meta content='SilhouetteSkull.x3d' name='reference'/>
+    <meta content='Dataset, ./datasets/nrrd/skull.nrrd' name='reference'/>
+    <meta content='All datasets, ./datasets.zip' name='reference'/>
+    <meta content='Volume Data obtained from, www.volvis.org' name='reference'/>
+    <meta content='Nrrd conversion utility located at http://teem.sourceforge.net/unrrdu/index.html' name='Reference'/>
+    <meta content='../licence/html' name='license'/>
+  </head>
+  <Scene>
+    <Group>
+      <Viewpoint DEF='VP' orientation='-0.675123 0.549845 0.491812 4.56937' position='-0.294435 -0.11334 0.0508642'/>
+      <Background DEF='BG' skyColor='0 0 0'/>
+      <Transform scale='0.117188 0.117188 0.117188'>
+        <VolumeData dimensions='1.28 1.28 1.28'>
+          <SilhouetteEnhancementVolumeStyle silhouetteBoundaryOpacity='1' silhouetteRetainedOpacity='.5' silhouetteSharpness='10'/>
+          <ImageTexture3D containerField='voxels' url='"./datasets/nrrd/skull.nrrd" "https://snoid.sv.vt.edu/medical/X3DVolumes/examples/datasets/nrrd/skull.nrrd"'/>
+        </VolumeData>
+      </Transform>
+    </Group>
+  </Scene>
+</X3D>

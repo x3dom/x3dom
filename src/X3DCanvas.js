@@ -595,13 +595,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 					this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				  }
 			   
-
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
-				evt.returnValue = true;
+				
+				evt.preventDefault();
+				evt.stopPropagation();
+				evt.returnValue = false;
+				//evt.returnValue = true;
 			}
         }, false);
 

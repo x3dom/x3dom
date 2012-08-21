@@ -582,9 +582,9 @@ x3dom.registerNodeType(
                 {
                     n = this._idList.length;
                     maxCnt = this._vf.maxRenderedIds;
-
 					
-                    if (this._nameSpace.doc._viewarea._lastButton > 0 && maxCnt > 0) {
+                    if ((this._nameSpace.doc._viewarea._lastButton > 0 || 
+                         this._nameSpace.doc._viewarea._isAnimating) && maxCnt > 0) {
                         var num = Math.max(maxCnt, 16);
                         num = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnMove, 1.0) * num), 0.0);
                         n = Math.min(n, num);

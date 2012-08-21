@@ -46,6 +46,7 @@ x3dom.Viewarea = function (document, scene) {
     this._lastButton = 0;
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
 
+    this._isAnimating = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
 
@@ -84,8 +85,9 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
     var needNavAnim = this.navigateTo(timeStamp);
 
     this._lastTS = timeStamp;
+    this._isAnimating = (needMixAnim || needNavAnim);
 
-    return (needMixAnim || needNavAnim);
+    return this._isAnimating;
 };
 
 x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
