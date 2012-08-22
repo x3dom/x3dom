@@ -97,6 +97,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                         (this._lastButton > 0 &&
                         (navi._vf.type[0].toLowerCase() === "fly" ||
                          navi._vf.type[0].toLowerCase() === "walk" ||
+                         navi._vf.type[0].toLowerCase() === "helicopter" ||
                          navi._vf.type[0].toLowerCase().substr(0, 5) === "looka")) );
     
     this._deltaT = timeStamp - this._lastTS;
@@ -146,6 +147,9 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             
             this._from = this._flyMat.e3();
             this._at = this._from.subtract(this._flyMat.e2());
+
+            if (navi._vf.type[0].toLowerCase() === "helicopter")
+                this._at.y = this._from.y;
             
             if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
                 this._up = new x3dom.fields.SFVec3f(0, 1, 0);
@@ -209,6 +213,59 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             }
 
             this._scene.getViewpoint().setView(this._flyMat);
+
+            return needNavAnim;
+        }
+        else if (navi._vf.type[0].toLowerCase() === "helicopter")
+        {
+            if (navi._vf.typeParams.length >= 2) {
+                theta = navi._vf.typeParams[0];
+                this._from.y = navi._vf.typeParams[1];
+                this._at.y = this._from.y;
+            }
+            else
+                theta = 0;
+
+            step *= this._deltaT * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+
+            // rotate around the up vector
+            var q = x3dom.fields.Quaternion.axisAngle(this._up, phi);
+            var temp = q.toMatrix();
+
+            var fin = x3dom.fields.SFMatrix4f.translation(this._from);
+            fin = fin.mult(temp);
+
+            temp = x3dom.fields.SFMatrix4f.translation(this._from.negate());
+            fin = fin.mult(temp);
+
+            this._at = fin.multMatrixPnt(this._at);
+
+            // rotate around the side vector
+            var lv = this._at.subtract(this._from).normalize();
+            var sv = lv.cross(this._up).normalize();
+            var up = sv.cross(lv).normalize();
+
+            lv = lv.multiply(step);
+
+            this._from = this._from.add(lv);
+            this._at = this._at.add(lv);
+
+            // rotate around the side vector
+            q = x3dom.fields.Quaternion.axisAngle(sv, theta);
+            temp = q.toMatrix();
+
+            fin = x3dom.fields.SFMatrix4f.translation(this._from);
+            fin = fin.mult(temp);
+
+            temp = x3dom.fields.SFMatrix4f.translation(this._from.negate());
+            fin = fin.mult(temp);
+
+            var at = fin.multMatrixPnt(this._at);
+
+            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, at, up);
+
+            //this.animateTo(this._flyMat.inverse(), this._scene.getViewpoint());
+            this._scene.getViewpoint().setView(this._flyMat.inverse());
 
             return needNavAnim;
         }
@@ -433,8 +490,44 @@ x3dom.Viewarea.prototype.getLightsShadow = function () {
 };
 
 x3dom.Viewarea.prototype.getViewpointMatrix = function () {
+    var navi = this._scene.getNavigationInfo();
     var viewpoint = this._scene.getViewpoint();
     var mat_viewpoint = viewpoint.getCurrentTransform();
+
+    // helicopter mode needs to manipulate view matrix
+    if (navi._vf.type[0].toLowerCase() == "helicopter" &&
+        navi._vf.typeParams.length >= 2 && !navi._heliUpdated)
+    {
+        var theta = navi._vf.typeParams[0];
+        var height = navi._vf.typeParams[1];
+
+        var currViewMat = viewpoint.getViewMatrix().mult(mat_viewpoint.inverse()).inverse();
+
+        this._from = currViewMat.e3();
+        this._at = this._from.subtract(currViewMat.e2());
+        this._up = new x3dom.fields.SFVec3f(0, 1, 0);
+
+        this._from.y = height;
+        this._at.y = height;
+
+        var sv = currViewMat.e0();
+        var q = x3dom.fields.Quaternion.axisAngle(sv, theta);
+        var temp = q.toMatrix();
+
+        var fin = x3dom.fields.SFMatrix4f.translation(this._from);
+        fin = fin.mult(temp);
+
+        temp = x3dom.fields.SFMatrix4f.translation(this._from.negate());
+        fin = fin.mult(temp);
+
+        this._at = fin.multMatrixPnt(this._at);
+
+        this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
+        this._scene.getViewpoint().setView(this._flyMat.inverse());
+
+        navi._heliUpdated = true;
+    }
+    // end of special helicopter handling
 
     //return mat_viewpoint.mult(viewpoint.getViewMatrix());
     return viewpoint.getViewMatrix().mult(mat_viewpoint.inverse());
@@ -471,13 +564,14 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
 
             for (i=0; i<n; i++)
             {
-                //FIXME; lights might be influenced by parent transformation
                 if (x3dom.isa(lights[i], x3dom.nodeTypes.PointLight)) {
-                    dia = dia.subtract(lights[i]._vf.location).normalize();
+                    var wcLoc = lights[i].getCurrentTransform().multMatrixPnt(lights[i]._vf.location);
+                    dia = dia.subtract(wcLoc).normalize();
                 }
                 else {
-                    var dir = lights[i]._vf.direction.normalize().negate();
-                    dia = dia.add(dir.multiply(1.2*(dist1 > dist2 ? dist1 : dist2)));
+                    var dir = lights[i].getCurrentTransform().multMatrixVec(lights[i]._vf.direction);
+                    dir = dir.normalize().negate();
+                    dia = dia.add(dir.multiply(1.2 * (dist1 > dist2 ? dist1 : dist2)));
                 }
 
                 l_arr[i] = lights[i].getViewMatrix(dia);
