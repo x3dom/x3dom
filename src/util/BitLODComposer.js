@@ -87,7 +87,7 @@ x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
 		  x3dom.debug.logInfo('Worker needed ' + event.data.time + ' ms to do the job.');
 		  
 		  if (typeof UpdateDecode !== 'undefined') {
-			UpdateDecode(event.data.time);
+        UpdateDecode(event.data.time);
 		  }
 		}
     
