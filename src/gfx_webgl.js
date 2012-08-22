@@ -2181,66 +2181,6 @@ x3dom.gfx_webgl = (function () {
             var font_leftToRight = true;
             var font_topToBottom = true;
 
-
-            // {{{ multiline helper functions start
-            var createMultilineText = function(ctx, textToWrite, maxWidth, text) {
-
-                textToWrite = textToWrite.toString().replace("\n"," ");
-
-                var currentText = textToWrite;
-                var futureText;
-                var subWidth = 0;
-                var maxLineWidth = 0;
-
-                var wordArray = textToWrite.split(" ");
-                var wordsInCurrent, wordArrayLength;
-
-                wordsInCurrent = wordArrayLength = wordArray.length;
-
-                while (measureText(ctx, currentText) > maxWidth && wordsInCurrent > 1) {
-                    wordsInCurrent--;
-                    var linebreak = false;
-
-                    currentText = futureText = "";
-                    for(var i = 0; i < wordArrayLength; i++) {
-                        if (i < wordsInCurrent) {
-                            currentText += wordArray[i];
-                            if (i+1 < wordsInCurrent) { currentText += " "; }
-                        }
-                        else {
-                            futureText += wordArray[i];
-                            if( i+1 < wordArrayLength) { futureText += " "; }
-                        }
-                    }
-                }
-                text.push(currentText);
-                maxLineWidth = measureText(ctx, currentText);
-
-                if(futureText) {
-                    subWidth = createMultilineText(ctx, futureText, maxWidth, text);
-                    if (subWidth > maxLineWidth) {
-                        maxLineWidth = subWidth;
-                    }
-                }
-
-                return maxLineWidth;
-            };
-
-            // should probably be refactored
-            var getPowerOfTwo = function(value, pow) {
-                var pow = pow || 1;
-                while(pow<value) {
-                    pow *= 2;
-                }
-                return pow;
-            };
-
-            var measureText = function(ctx, textToMeasure) {
-                return ctx.measureText(textToMeasure).width;
-            };
-            // }}}
-
-
             if (fontStyleNode !== null) {
 
                 var fonts = fontStyleNode._vf.family.toString();
@@ -2269,13 +2209,14 @@ x3dom.gfx_webgl = (function () {
                 font_topToBottom = fontStyleNode._vf.topToBottom;
                 
                 // TODO: make it possible to use mutiple values
-                font_justify = fontStyleNode._vf.justify.toString().replace(/\'/g,'');
+                font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
+				
                 switch (font_justify.toUpperCase()) {
                     case 'BEGIN': font_justify = 'left'; break;
                     case 'END': font_justify = 'right'; break;
                     case 'FIRST': font_justify = 'left'; break; // not clear what to do with this one
                     case 'MIDDLE': font_justify = 'center'; break;
-                    default: font_justify = 'left';
+                    default: font_justify = 'left'; break;
                 }
 
                 font_size = fontStyleNode._vf.size;
@@ -2284,119 +2225,89 @@ x3dom.gfx_webgl = (function () {
                 font_language = fontStyleNode._vf.language;
             }
 
-            var string = shape._cf.geometry.node._vf.string;
-//            var text = string.toString().split('\\');
-
-
-            var canvasX, canvasY;
+            			
+			/* ***** */
+			var paragraph = shape._cf.geometry.node._vf.string;
             var textX, textY;
-            var textToWrite = string.toString().split('\\');
-            var paragraph = [];
-
-
-            var maxWidth = 100;
-            var squareTexture = true;
-            var textHeight = font_size;
-            var textAlignment = font_justify;
-
 
             var text_canvas = document.createElement('canvas');
             text_canvas.dir = font_leftToRight;
-            text_canvas.width  = viewarea._width;
-            text_canvas.height = font_size;
-            text_canvas.display = 'none';
-
+			var textHeight = font_size;
+            var textAlignment = font_justify;			
+			
             // needed to make webfonts work
             document.body.appendChild(text_canvas);
 
             var text_ctx = text_canvas.getContext('2d');
-
+			
             // calculate font size in px
             text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
-
-            if (maxWidth && measureText(text_ctx, textToWrite) > maxWidth) {
-                maxWidth = createMultilineText(text_ctx, textToWrite, maxWidth, paragraph);
-                canvasX = getPowerOfTwo(maxWidth);
-            } else {
-                paragraph.push(textToWrite);
-                canvasX = getPowerOfTwo(text_ctx.measureText(textToWrite).width);
+			
+			
+			var maxWidth = text_ctx.measureText(paragraph[0]).width;
+			// calculate maxWidth
+			for(var i = 1; i < paragraph.length; i++) {  
+				if(text_ctx.measureText(paragraph[i]).width > maxWidth)
+					maxWidth = text_ctx.measureText(paragraph[i]).width;
             }
-
-            canvasY = getPowerOfTwo(textHeight*(paragraph.length+1));
-            if(squareTexture) {
-                (canvasX > canvasY) ? canvasY = canvasX : canvasX = canvasY;
-            }
-
-//            text_canvas.width = canvasX;
-//            text_canvas.height = canvasY;
+			
+			text_canvas.width = maxWidth;
+		    text_canvas.height = textHeight * paragraph.length; 
 
             switch(textAlignment) {
                 case "left":
                     textX = 0;
                     break;
                 case "center":
-                    textX = canvasX/2;
+                    textX = text_canvas.width/2;
                     break;
                 case "right":
-                    textX = canvasX;
+                    textX = text_canvas.width;
                     break;
             }
-            textY = canvasY/2;
 
-
-            var txtW = text_ctx.measureText(string).width;
-            var txtH = text_ctx.measureText(string).height || text_canvas.height;
-
-            text_canvas.width = Math.pow(2, Math.ceil(Math.log(txtW)/Math.log(2)));
-            text_canvas.height = Math.pow(2, Math.ceil(Math.log(txtH)/Math.log(2)));
+			var txtW =  text_canvas.width;
+            var txtH = text_canvas.height;
 
             text_ctx.fillStyle = 'rgba(0,0,0,0)';
             text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
             
             // write white text with black border
-            text_ctx.fillStyle = 'white';
+            text_ctx.fillStyle = 'white';			
             text_ctx.lineWidth = 2.5;
             text_ctx.strokeStyle = 'grey';
             text_ctx.textBaseline = 'top';
 
             text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
-            text_ctx.textAlign = font_justify;
+            text_ctx.textAlign = textAlignment;
 
-//            // create the multiline text
-//            var offset = (canvasY - textHeight*(paragraph.length+1)) * 0.5;
-//            for(var i = 0; i < paragraph.length; i++) {
-//                if(paragraph.length > 1) {
-//                    textY = (i+1)*textHeight + offset;
-//                }
-//                text_ctx.fillText(paragraph[i], textX,  textY);
-//            }
-
-
-            var leftOffset = (text_ctx.canvas.width - txtW) / 2.0;
-            var topOffset  = (text_ctx.canvas.height - font_size) / 2.0;
-
-            text_ctx.fillText(string, leftOffset, topOffset);
+            // create the multiline text
+            for(var i = 0; i < paragraph.length; i++) {  
+                textY = i*textHeight;          
+                text_ctx.fillText(paragraph[i], textX,  textY);
+            }
             
             var ids = gl.createTexture();
             gl.bindTexture(gl.TEXTURE_2D, ids);
             gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, text_canvas);
 			
 			//remove canvas after Texture creation
-            document.body.removeChild(text_canvas);
-            
+			document.body.removeChild(text_canvas);
+            /* ****** */
+			
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
             gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
             gl.bindTexture(gl.TEXTURE_2D, null);
 
-            var w = txtW/100.0; //txtW/txtH;
+            var w = txtW/100.0; 
             var h = txtH/100.0;
             
             // prevent distortion
             var v0 = 1, u0 = 0;
             var u = 1, v = 0;
-
+			
             shape._cf.geometry.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
             shape._cf.geometry.node._mesh._normals[0] = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
             shape._cf.geometry.node._mesh._texCoords[0] = [u0,v, u,v, u,v0, u0,v0];
@@ -4731,6 +4642,7 @@ x3dom.gfx_webgl = (function () {
 			if(tex) {
 				sp.origChannelCount = tex._vf.origChannelCount;
 			}
+			//else FIXME: could be a text texture!!!!
 
             var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
             var minFilter = gl.LINEAR, magFilter = gl.LINEAR;
@@ -4771,10 +4683,10 @@ x3dom.gfx_webgl = (function () {
             }
             else
             {
-                if (tex && tex._vf.repeatS === false) {
+				if (!tex || tex._vf.repeatS == false) {
                     wrapS = gl.CLAMP_TO_EDGE;
                 }
-                if (tex && tex._vf.repeatT === false) {
+                if (!tex || tex._vf.repeatT == false) {
                     wrapT = gl.CLAMP_TO_EDGE;
                 }
             }
