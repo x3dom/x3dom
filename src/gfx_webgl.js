@@ -4319,7 +4319,7 @@ x3dom.gfx_webgl = (function () {
 //----------------------------------------------------------------------------
     Context.prototype.renderShape = function (transform, shape, prev_shape, next_shape, viewarea, 
                                               slights, numLights, 
-                                              mat_view, mat_scene, mat_light, 
+                                              mat_view, mat_scene, mat_light, mat_proj,
                                               gl, oneShadowExistsAlready)
     {
         if (shape._webgl === undefined) {
@@ -4614,17 +4614,13 @@ x3dom.gfx_webgl = (function () {
         }
         
         // transformation matrices
-        // Calculate and Set Normalmatrix
-        // For rigid motions the inverse-transpose is not necessary
-        /*var normalMatrix = mat_view.mult(transform);
-        normalMatrix = mat_view.inverse().transpose();*/
-
         var model_view = mat_view.mult(transform);
 
         sp.modelViewMatrix = model_view.toGL();
         sp.normalMatrix    = model_view.inverse().transpose().toGL();
         
         //if (userShader) {
+            sp.projectionMatrix = mat_proj.toGL();
             sp.viewMatrix = mat_view.toGL();
             sp.modelViewMatrixInverse = model_view.inverse().toGL();
         //}
@@ -4633,7 +4629,6 @@ x3dom.gfx_webgl = (function () {
         for (var cnt=0; shape._webgl.texture !== undefined && 
                         cnt < shape._webgl.texture.length; cnt++)
         {
-            
           if (shape._webgl.texture[cnt])
           {
             if (shape._cf.appearance.node._cf.texture.node) {
@@ -4803,7 +4798,6 @@ x3dom.gfx_webgl = (function () {
         
         for (var q=0; q<shape._webgl.positions.length; q++)
         {
-		
 			//check prev, act
 			if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 			{
@@ -5460,7 +5454,7 @@ x3dom.gfx_webgl = (function () {
             }
 
             this.renderShape(obj[0], obj[1], prev_obj, next_obj, viewarea, slights, numLights, 
-                mat_view, mat_scene, mat_light, gl, oneShadowExistsAlready);
+                mat_view, mat_scene, mat_light, mat_proj, gl, oneShadowExistsAlready);
 
             if (needEnableBlending) {
                 gl.enable(gl.BLEND);
@@ -5645,7 +5639,7 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
-                        mat_view, mat_scene, mat_light, gl, oneShadowExistsAlready);
+                        mat_view, mat_scene, mat_light, mat_proj, gl, oneShadowExistsAlready);
 
                 if (needEnableBlending) {
                     gl.enable(gl.BLEND);
@@ -5712,7 +5706,7 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 this.renderShape(transform, shape, prev_shape, next_shape, viewarea, slights, numLights, 
-                        mat_view, mat_scene, mat_light, gl, oneShadowExistsAlready);
+                        mat_view, mat_scene, mat_light, mat_proj, gl, oneShadowExistsAlready);
 
                 if (needEnableBlending) {
                     gl.enable(gl.BLEND);
