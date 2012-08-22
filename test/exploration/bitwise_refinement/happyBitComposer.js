@@ -158,7 +158,7 @@ function UpdateDecode(ms) {
 
 function UpdateTotal(ms) {
   start_drawing = true;
-  out.innerHTML = "Decode time: " + decode_ms +
+  out.innerHTML = "Decode time (sum of all threads): " + decode_ms +
       " ms, Total time: " + ms + " ms";
 }
 
@@ -377,11 +377,7 @@ function refinementFinishedCallback(buffer, patchIdx, bitComposer) {
   
   ++refinedLevels[patchIdx];
   
-  if (true ||
-      refinedLevels[patchIdx] === 2 ||
-      refinedLevels[patchIdx] === 4 ||
-      refinedLevels[patchIdx] === 6 ||
-      refinedLevels[patchIdx] === 8   )
+  if (refinedLevels[patchIdx] === NumLevels)
   {
  
   //upload the VBO data to the GPU
@@ -389,23 +385,28 @@ function refinementFinishedCallback(buffer, patchIdx, bitComposer) {
   glContext.bufferData(glContext.ARRAY_BUFFER, coordBuffer, glContext.STATIC_DRAW);
   
   //@todo: check this hack!
-  drawAllowed = true;
-  }
-  
-  if (!UseInterleavedOutput) {
-    glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers[patchIdx].normals);
-    glContext.bufferData(glContext.ARRAY_BUFFER, normalBuffer, glContext.STATIC_DRAW);
+  //drawAllowed = true;  
   }
   
   //enjoy it :-)
   //sleep(500);
 
-  if (refinedLevels[patchIdx] === NumLevels) {
-    UpdateTotal(Date.now() - start_time);
+  var allFinished = true;
+  var b;  
+  for (b = 0; b < NumLevels; ++b) {
+    if (refinedLevels[b] !== NumLevels) {
+      allFinished = false;
+      break;
+    }
   }
-  //else {
+  
+  if (allFinished) {
+    UpdateTotal(Date.now() - start_time);
+    drawAllowed = true;
+  }  
+  else if (refinedLevels[patchIdx] !== NumLevels) {
     bitComposer.refine(buffer);
-  //}
+  }
 }
     
     
