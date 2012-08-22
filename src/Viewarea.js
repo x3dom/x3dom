@@ -218,13 +218,14 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         }
         else if (navi._vf.type[0].toLowerCase() === "helicopter")
         {
-            if (navi._vf.typeParams.length >= 2) {
+            if (navi._vf.typeParams.length >= 1) {
                 theta = navi._vf.typeParams[0];
-                this._from.y = navi._vf.typeParams[1];
-                this._at.y = this._from.y;
+                if (navi._vf.typeParams.length >= 2)
+                    this._from.y = navi._vf.typeParams[1];
             }
             else
                 theta = 0;
+            this._at.y = this._from.y;
 
             step *= this._deltaT * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
 
@@ -496,19 +497,19 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function () {
 
     // helicopter mode needs to manipulate view matrix
     if (navi._vf.type[0].toLowerCase() == "helicopter" &&
-        navi._vf.typeParams.length >= 2 && !navi._heliUpdated)
+        navi._vf.typeParams.length >= 1 && !navi._heliUpdated)
     {
         var theta = navi._vf.typeParams[0];
-        var height = navi._vf.typeParams[1];
-
         var currViewMat = viewpoint.getViewMatrix().mult(mat_viewpoint.inverse()).inverse();
 
         this._from = currViewMat.e3();
         this._at = this._from.subtract(currViewMat.e2());
         this._up = new x3dom.fields.SFVec3f(0, 1, 0);
 
-        this._from.y = height;
-        this._at.y = height;
+        if (navi._vf.typeParams.length >= 2) {
+            this._from.y = navi._vf.typeParams[1];
+        }
+        this._at.y = this._from.y;
 
         var sv = currViewMat.e0();
         var q = x3dom.fields.Quaternion.axisAngle(sv, theta);
