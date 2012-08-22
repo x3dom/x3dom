@@ -1,12 +1,7 @@
-BlobBuilder = (typeof BlobBuilder !== 'undefined') ? BlobBuilder : 
-			  (typeof WebKitBlobBuilder !== 'undefined') ? WebKitBlobBuilder : 
-			  (typeof MozBlobBuilder !== 'undefined') ? MozBlobBuilder : undefined;
-
 URL = (typeof URL !== 'undefined') ? URL : 
-	  (typeof webkitURL !== 'undefined') ? webkitURL : undefined;
+        (typeof webkitURL !== 'undefined') ? webkitURL : undefined;
 
-
-
+        
 x3dom.BitLODWorker = function()
 {
   //list of registered attribute arrays
@@ -381,10 +376,8 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 			  str += this[p] + ';\n';
 			}
 		}
-    }
+  }
   
-	var bb = new BlobBuilder();
-	bb.append(str);
-	
-	return URL.createObjectURL(bb.getBlob());
+  var blob = new Blob([str]);
+  return URL.createObjectURL(blob);
 };
