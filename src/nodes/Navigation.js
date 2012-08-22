@@ -293,6 +293,7 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
+            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60]);   // down angle and height for helicopter
             this.addField_MFFloat(ctx, 'avatarSize', [0.25,1.6,0.75]);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
@@ -301,6 +302,8 @@ x3dom.registerNodeType(
 
             //TODO; use avatarSize + visibilityLimit for projection matrix
             x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
+
+            this._heliUpdated = false;
         },
         {
             fieldChanged: function(fieldName) {
@@ -319,6 +322,11 @@ x3dom.registerNodeType(
                                 viewarea.initMouseState();
                             else
                                 this._nameSpace.doc._viewarea.initMouseState();
+                        }
+                        break;
+                    case 'helicopter':
+                        if (this._vf.type[0].toLowerCase() !== navType) {
+                            this._heliUpdated = false;
                         }
                         break;
                     default:
