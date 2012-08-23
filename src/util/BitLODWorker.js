@@ -71,7 +71,6 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 	var component;
 	
 	// BEGIN INLINED LOOP
-  /*
 	//{	
 		//j = 0:
 		attrib = attribArrays[0];
@@ -119,11 +118,11 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 			baseIdx += attrib.strideWriting;
 		}	
 	//}
-  */
 	//END INLINED LOOP
 
 	//BEGIN OPTIMIZED LOOP (pos: 3 x 2 bit, nor: 2 x 1 bit)
 	//{
+  /*
 		var writeTargetNor = attribArrays[0].bufferView;
 		var writeTargetPos = attribArrays[1].bufferView;
 		var norPrecOff	   = attribArrays[0].precisionOffset;
