@@ -1543,6 +1543,7 @@ x3dom.gfx_webgl = (function () {
 		var texture				= (shape._cf.appearance.node._cf.texture.node || x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) ? 1 : 0;
 		var cubeMap				= (shape._cf.appearance.node._cf.texture.node) ? x3dom.isa(shape._cf.appearance.node._cf.texture.node, x3dom.nodeTypes.X3DEnvironmentTextureNode) ? 1 : 0 : 0;
 		var blending			= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) || cubeMap || (shape._cf.appearance.node._cf.texture.node && (shape._cf.appearance.node._cf.texture.node._vf.origChannelCount == 1.0 || shape._cf.appearance.node._cf.texture.node._vf.origChannelCount == 2.0))) ? 1 : 0;
+		var text = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text);
 		var shader 				= (shape._cf.appearance.node._shader && x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
 		var shaderDiffuse 		= (shader && shape._cf.appearance.node._shader.getDiffuseMap()) ? 1 : 0;
 		var shaderNormal 		= (shader && shape._cf.appearance.node._shader.getNormalMap()) ? 1 : 0;
@@ -1825,7 +1826,13 @@ x3dom.gfx_webgl = (function () {
                 shader += "rgb = fog.color * (1.0-f0) + f0 * (rgb);\n";
             }
             //shader += "rgb = clamp(rgb, 0.0, 1.0);\n";
-            shader += "if (alpha <= 0.1) discard;\n";
+			
+			if(text) {
+				shader += "if (alpha <= 0.5) discard;\n";
+			} else {
+				shader += "if (alpha <= 0.1) discard;\n";
+			}
+            
             shader += "gl_FragColor = vec4(rgb, alpha);\n";
 			shader += "}\n";
             

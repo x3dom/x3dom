@@ -51,7 +51,7 @@
 
 </head>
      
-<body>
+<body onload="preload();">
 	<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="true" showLog="true" width="500px" height="500px">
 	  <Scene>
 		<Viewpoint position='0 0 10'/>
@@ -78,6 +78,14 @@
     
     <script type="text/javascript" >
 	<![CDATA[
+		var preload = function (event) {	
+			var xmlHttp = new XMLHttpRequest();
+			if (xmlHttp) {
+				xmlHttp.open('GET', 'media/data/reflection_box4.x3d', true);
+				xmlHttp.send(null);
+			}
+        };
+		
 		var changeURL = function (event) {	
 			document.getElementById('deleteTest').setAttribute('url', 'media/data/reflection_box4.x3d');
         };
