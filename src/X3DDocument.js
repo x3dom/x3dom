@@ -387,7 +387,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
                                 "m: toggle render mode | p: intersect type | r: reset view | " +
-                                "e: examine mode | f: fly mode | w: walk mode | " +
+                                "e: examine mode | f: fly mode | w: walk mode | h: helicopter mode | " +
                                 "l: lookAt mode | g: game mode | u: upright position");
             break;
         case  43: /* + (incr. speed) */
@@ -397,6 +397,26 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case  45: /* - (decr. speed) */
             nav._vf.speed = 0.5 * nav._vf.speed;
             x3dom.debug.logInfo("Changed navigation speed to " + nav._vf.speed);
+            break;
+        case  54: /* 6 (incr height) */
+            nav._vf.typeParams[1] += 1.0;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter height to " + nav._vf.typeParams[1]);
+            break;
+        case  55: /* 7 (decr height) */
+            nav._vf.typeParams[1] -= 1.0;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter height to " + nav._vf.typeParams[1]);
+            break;
+        case  56: /* 8 (decr height) */
+            nav._vf.typeParams[0] -= 0.02;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter angle to " + nav._vf.typeParams[0]);
+            break;
+        case  57: /* 9 (incr angle) */
+            nav._vf.typeParams[0] += 0.02;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter angle to " + nav._vf.typeParams[0]);
             break;
         case  97: /* a, view all */
             this._viewarea.showAll();
