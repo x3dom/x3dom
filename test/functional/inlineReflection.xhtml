@@ -71,13 +71,19 @@
 		</Transform>
 	  </Scene>
     </X3D>
+	
+	<input onclick="changeURL();" type="button" value="Change URL" />
     
     
     
     <script type="text/javascript" >
 	<![CDATA[
+		var changeURL = function (event) {	
+			document.getElementById('deleteTest').setAttribute('url', 'media/data/reflection_box4.x3d');
+        };
+		
+		
 	    var test1 = function (event) {	
-			document.getElementById('deleteTest').setAttribute('url', 'media/data/reflection_box2.x3d');
 			document.getElementById('test1__color1').setAttribute('diffuseColor', '0 1 0');
         };	
 		var test2 = function (event) {		
