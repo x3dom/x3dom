@@ -293,7 +293,7 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
-            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60]);   // down angle and height for helicopter
+            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60]);   // view angle and height for helicopter mode
             this.addField_MFFloat(ctx, 'avatarSize', [0.25,1.6,0.75]);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
@@ -307,10 +307,21 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function(fieldName) {
+                if (fieldName == "typeParams") {
+                    this._heliUpdated = false;
+                    alert(this._heliUpdated)
+                }
             },
 
             getType: function() {
                 return this._vf.type[0].toLowerCase();
+            },
+
+            getTypeParams: function() {
+                var theta  = (this._vf.typeParams.length >= 1) ? this._vf.typeParams[0] : 0;
+                var height = (this._vf.typeParams.length >= 2) ? this._vf.typeParams[1] : 0;
+
+                return [theta, height];
             },
 
             setType: function(type, viewarea) {

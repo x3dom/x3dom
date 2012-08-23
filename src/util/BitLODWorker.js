@@ -63,10 +63,7 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 	
 	var n = refinementBufferView.length;	
 		
-	var nc,
-      writeTarget,
-      baseIdx,
-      idx;
+	var writeTarget, baseIdx, idx;
 		
 	var component;
 	
@@ -124,6 +121,7 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 
 	//BEGIN OPTIMIZED LOOP (pos: 3 x 2 bit, nor: 2 x 1 bit)
 	//{
+    /*
 		var writeTargetNor = attribArrays[0].bufferView;
 		var writeTargetPos = attribArrays[1].bufferView;
 		var norPrecOff	   = attribArrays[0].precisionOffset;
@@ -312,7 +310,7 @@ x3dom.BitLODWorker.prototype.refinementDataLoaded = function(buffer, l) {
   }  
   
   tryNextRefinement();
-}
+};
 
 
 x3dom.BitLODWorker.prototype.tryNextRefinement = function() {
@@ -324,7 +322,7 @@ x3dom.BitLODWorker.prototype.tryNextRefinement = function() {
                 
     refineAttributeData(nextLevel);    
   }
-}
+};
 
 
 //a small AttributeArray wrapper class
@@ -332,7 +330,7 @@ x3dom.BitLODWorker.prototype.AttributeArray = function(numComponents, numBitsPer
 	//---------------------------------
 	//static general information
 	this.numComponents 	   	 = numComponents;	
-	this.numBitsPerComponent = numBitsPerComponent	
+	this.numBitsPerComponent = numBitsPerComponent;
 	this.strideWriting		   = numComponents; //default value, gets changed for interleaved data
 	//this.writeOffset set on demand
 		
