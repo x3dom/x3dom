@@ -708,16 +708,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
               
               for (var i=0; i<evt.touches.length; i++) {
                   var id = evt.touches[i].identifier || evt.touches[i].streamId;
+                  if (!id) id = 0;
+                  
                   var index = this.visMarkerBag.indexOf(id);
                   
-                  if (this.visMarkerBag.indexOf(id) >= 0) {
+                  if (index >= 0) {
                       marker = document.getElementById("visMarker" + id);
 
-                      marker.style.left = (evt.touches[i].clientX) + "px";
-                      marker.style.top  = (evt.touches[i].clientY) + "px";
-
-                      //marker.style.left = (evt.touches[i].screenX) + "px";
-                      //marker.style.top  = (evt.touches[i].screenY) + "px";
+                      marker.style.left = (evt.touches[i].pageX) + "px";
+                      marker.style.top  = (evt.touches[i].pageY) + "px";
                   }
                   else {
                       marker = document.createElement("div");
