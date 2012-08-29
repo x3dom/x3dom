@@ -60,7 +60,8 @@
 				
                 <Group id='kloppe'
                        onmousemove="document.getElementById('bar').setAttribute('translation', event.hitPnt);
-                                document.getElementById('pc').setAttribute('set_destination', event.hitPnt);"
+                                document.getElementById('pc').setAttribute('set_destination', event.hitPnt);
+                                document.getElementById('posOut').innerHTML=event.hitPnt;"
                        onclick="document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
                                 document.getElementById('cc').setAttribute('set_destination', '0 1 0');">
                                 
@@ -86,7 +87,7 @@
 					</Shape>
 				</Transform>
                 
-                <Anchor url="http://www.igd.fraunhofer.de/vcst/">
+                <Anchor url="http://www.igd.fraunhofer.de/vcst/"  parameter="target = _self">
 				<Transform DEF="sphereTrafo" translation="1.5 0 0"
                     onmouseover="document.getElementById('ausgabe').innerHTML='sphere.isOver=TRUE';"
                     onmouseout="document.getElementById('ausgabe').innerHTML='sphere.isOver=FALSE';">
@@ -171,6 +172,7 @@
 	</div>
 	
 	<p id="ausgabe" class="case">&nbsp;</p>
+    <p id="posOut" class="case">&nbsp;</p>
     <p><input type="button" value="removeEventListener" onclick="delIt();"/>&nbsp;
 	<input type="button" value="set view" onclick="setView();"/></p>
     
