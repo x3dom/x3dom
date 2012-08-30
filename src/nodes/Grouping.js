@@ -426,6 +426,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
+            this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
@@ -571,7 +572,18 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
-                
+
+                if (!this._vf.enableCulling)
+                {
+                    for (var j=0; j<this._childNodes.length; j++) {
+                        if (this._childNodes[j]) {
+                            var childTrafo = this._childNodes[j].transformMatrix(transform);
+                            this._childNodes[j].collectDrawableObjects(childTrafo, out);
+                        }
+                    }
+                    return;
+                }
+
                 if (this._websocket)
                     this._websocket.updateCamera();
 
