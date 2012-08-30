@@ -19,6 +19,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Anchor.superClass.call(this, ctx);
 
             this.addField_MFString(ctx, 'url', []);
+            this.addField_MFString(ctx, 'parameter', []);
         },
         {
             doIntersect: function(line) {
@@ -32,9 +33,28 @@ x3dom.registerNodeType(
             },
 
             handleTouch: function() {
-                // fixme; window.open usually gets blocked
-                // but this way the current page is lost?!
-                window.location = this._nameSpace.getURL(this._vf.url[0]);
+                var url = this._vf.url.length ? this._vf.url[0] : "";
+                var aPos = url.search("#");
+                var anchor = "";
+                if (aPos >= 0)
+                    anchor = url.slice(aPos+1);
+                
+                var param = this._vf.parameter.length ? this._vf.parameter[0] : "";
+                var tPos = param.search("target=");
+                var target = "";
+                if (tPos >= 0)
+                    target = param.slice(tPos+7);
+                
+                // TODO: implement #Viewpoint bind 
+                // http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/networking.html#Anchor
+                x3dom.debug.logInfo("Anchor url=" + url + ", target=" + target + ", #viewpoint=" + anchor);
+                
+                if (target.length == 0 || target == "_blank") {
+                    window.open(this._nameSpace.getURL(url), target);
+                }
+                else {
+                    window.location = this._nameSpace.getURL(url);
+                }
             }
         }
     )

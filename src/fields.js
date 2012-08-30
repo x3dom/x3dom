@@ -519,6 +519,8 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
  *  and scale orientation. Any projection information is discarded.
  *  The decomposition depends upon choice of center point for
  *  rotation and scaling, which is optional as the last parameter.
+ *  (Note that quaternions need to be converted via .toAxisAngle()
+ *  to an axis/angle pair for being used in the x3d dom tree.)
  */
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 				translation, rotation, scaleFactor, scaleOrientation, center) 
@@ -538,7 +540,7 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 	
 	var flip = m.decompose(translation, rotation, scaleFactor, scaleOrientation);
 	
-	scaleFactor = scaleFactor.multiply(flip);
+	scaleFactor.setValues(scaleFactor.multiply(flip));
 };
 
 x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
@@ -585,7 +587,7 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so)
 
 x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
 {
-    var TOL = 1.0e-6;
+    var TOL = 0.000001;  //1.0e-6
 	
     var Mk = this.transpose();
     
@@ -620,31 +622,28 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
         
         // compute update factors
         var gamma = Math.sqrt( Math.sqrt((MkAdjT_one * MkAdjT_inf) / 
-							(Mk_one * Mk_inf)) / Math.abs(Mk_det) );
+							  (Mk_one * Mk_inf)) / Math.abs(Mk_det) );
         
         var g1 = 0.5 * gamma;
         var g2 = 0.5 / (gamma * Mk_det);
            
         Ek.setValues(Mk);
-        Mk = Mk.multiply (g1         ); // this does:
-        Mk = Mk.addScaled(MkAdjT, g2 ); // Mk = g1 * Mk + g2 * MkAdjT
-        Ek = Ek.addScaled(Mk,    -1.0); // Ek -= Mk;
+        Mk = Mk.multiply (g1);         // this does:
+        Mk = Mk.addScaled(MkAdjT, g2); // Mk = g1 * Mk + g2 * MkAdjT
+        Ek = Ek.addScaled(Mk, -1.0);   // Ek -= Mk;
         
-        Ek_one = Ek.norm1_3x3  ();
-        Mk_one = Mk.norm1_3x3  ();
+        Ek_one = Ek.norm1_3x3();
+        Mk_one = Mk.norm1_3x3();
         Mk_inf = Mk.normInf_3x3();
         
     } while (Ek_one > (Mk_one * TOL));
     
-    var Q = Mk.transpose();
-    
-	var S = Mk.mult(this);
-	
-	var i, j;
-    
-    for (i = 0; i < 3; ++i)
+    Q.setValues(Mk.transpose());
+    S.setValues(Mk.mult(this));
+
+    for (var i = 0; i < 3; ++i)
     {
-        for (j = i; j < 3; ++j)
+        for (var j = i; j < 3; ++j)
         {
             S['_'+j+i] = 0.5 * (S['_'+j+i] + S['_'+i+j]);
 			S['_'+i+j] = 0.5 * (S['_'+j+i] + S['_'+i+j]);

@@ -206,9 +206,7 @@ x3dom.gfx_webgl = (function () {
         "  precision highp float; \n" +
         "#endif                   \n" +
         "\n" +
-        "uniform vec3 diffuseColor;" +
         "uniform float alpha;" +
-        "uniform float lightOn;" +
         "varying vec3 fragColor;" +
         "" +
         "void main(void) {" +
@@ -261,11 +259,11 @@ x3dom.gfx_webgl = (function () {
         "  precision highp float; \n" +
         "#endif                   \n" +
         "\n" +
-        "uniform float alpha;" +
+        "uniform float lowBit;" +
         "varying vec3 fragColor;" +
         "" +
         "void main(void) {" +
-        "    gl_FragColor = vec4(fragColor, alpha);" +
+        "    gl_FragColor = vec4(fragColor, lowBit);" +
         "}"
         };
     
@@ -276,14 +274,11 @@ x3dom.gfx_webgl = (function () {
 		"uniform float bgPrecisionMax;" +
         "uniform mat4 modelMatrix;" +
         "uniform mat4 modelViewProjectionMatrix;" +
-        "uniform vec3 wcMin;" +
-        "uniform vec3 wcMax;" +
+        "uniform vec3 from;" +
         "varying vec3 worldCoord;" +
         "void main(void) {" +
         "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;" +
-        "    vec3 dia = wcMax - wcMin;" +
-        "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
-        "    worldCoord = (worldCoord - wcMin) / dia;" +
+        "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;" +
         "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
         "}"
         };
@@ -295,15 +290,12 @@ x3dom.gfx_webgl = (function () {
 		"uniform float bgPrecisionMax;" +
         "uniform mat4 modelMatrix;" +
         "uniform mat4 modelViewProjectionMatrix;" +
-        "uniform vec3 wcMin;" +
-        "uniform vec3 wcMax;" +
+        "uniform vec3 from;" +
         "varying vec3 worldCoord;" +
         "void main(void) {" +
-        "	 vec3 pos  = position / bgPrecisionMax;" +
-		"	 pos =  pos * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;" +
-        "    vec3 dia = wcMax - wcMin;" +
-        "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
-        "    worldCoord = (worldCoord - wcMin) / dia;" +
+        "	 vec3 pos = position / bgPrecisionMax;" +
+		"	 pos = pos * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;" +
+        "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;" +
         "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
         "}"
         };
@@ -312,8 +304,7 @@ x3dom.gfx_webgl = (function () {
         "attribute vec3 position;" +
         "uniform mat4 modelMatrix;" +
         "uniform mat4 modelViewProjectionMatrix;" +
-        "uniform vec3 wcMin;" +
-        "uniform vec3 wcMax;" +
+        "uniform vec3 from;" +
         "varying vec3 worldCoord;" +
 		"uniform float indexed;" +
 		"uniform float imageGeometry;" +
@@ -341,17 +332,12 @@ x3dom.gfx_webgl = (function () {
 		"		}" +
 		"		vec3 pos = texture2D( IG_coordinateTexture, IG_texCoord ).rgb;" +
 		"	 	pos = pos * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;" +
-        "    	worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz;" +
+        "    	worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;" +
 		"		gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +		
 		"	 } else { " +
-        "    	worldCoord = (modelMatrix * vec4(position, 1.0)).xyz;" +
+        "    	worldCoord = (modelMatrix * vec4(position, 1.0)).xyz - from;" +
 		"		gl_Position = modelViewProjectionMatrix * vec4(position, 1.0);" +
 		"	 }" +
-        "    vec3 dia = wcMax - wcMin;" +
-        "    worldCoord = worldCoord - wcMin;" +
-        "    worldCoord.x /= dia.x;" +
-        "    worldCoord.y /= dia.y;" +
-        "    worldCoord.z /= dia.z;" +
         "}"
         };
 
@@ -360,10 +346,16 @@ x3dom.gfx_webgl = (function () {
         "  precision highp float; \n" +
         "#endif                   \n" +
         "\n" +
-        "uniform float alpha;" +
+        "uniform float highBit;" +
+        "uniform float lowBit;" +
+        "uniform float sceneSize;" +
         "varying vec3 worldCoord;" +
         "void main(void) {" +
-        "    gl_FragColor = vec4(worldCoord, alpha);" +
+        "    vec4 col = vec4(0.0, 0.0, highBit, lowBit);" +
+        "    float d = 65535.0 * (length(worldCoord) / sceneSize);" +
+        "    col.r = (d / 256.0) / 255.0;" +
+        "    col.g = (fract(d / 256.0) * 256.0) / 255.0;" +
+        "    gl_FragColor = col;" +
         "}"
         };
 
@@ -4068,13 +4060,13 @@ x3dom.gfx_webgl = (function () {
  */
 //----------------------------------------------------------------------------
     Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, 
-                                                   min, max, pickMode, lastX, lastY)
+                                                   from, sceneSize, pickMode, lastX, lastY)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         
         gl.viewport(0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height);
         
-        gl.clearColor(0.0, 0.0, 0.0, 1.0);
+        gl.clearColor(0.0, 0.0, 0.0, 0.0);
         gl.clearDepth(1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
         
@@ -4121,15 +4113,16 @@ x3dom.gfx_webgl = (function () {
 			}
             
             sp.modelMatrix = trafo.toGL();
-            //sp.modelMatrix = mat_view.mult(trafo).toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
-            
-            sp.wcMin = min.toGL();
-            sp.wcMax = max.toGL();
-            //FIXME; allow more than 255 objects!
-            sp.alpha = 1.0 - shape._objectID / 255.0;
-			
-			sp.imageGeometry = 0.0;
+
+            sp.lowBit = (shape._objectID & 255) / 255.0;
+            sp.alpha = sp.lowBit;   // FIXME (pick unlit colors mode)
+            sp.highBit = (shape._objectID >>> 8) / 255.0;
+
+            sp.from = from.toGL();
+            sp.sceneSize = sceneSize;
+
+            sp.imageGeometry = 0.0;
 			
 			if (shape._webgl.coordType != gl.FLOAT)
 			{
@@ -4281,8 +4274,7 @@ x3dom.gfx_webgl = (function () {
 					x3dom.debug.logException(shape._DEF + " renderPickingPass(): " + e);
 				}
 				
-				
-				//check act next
+				//check act, next
 				if(!next_shape || (next_shape && next_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 				{
 					if (sp.position !== undefined) {
@@ -4312,7 +4304,7 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.fboPick.pixelData = [];
             //No Exception on file:// when starting with additional flags:
             //chrome.exe --enable-webgl --use-gl=desktop --log-level=0 
-            //           --allow-file-access-from-files --allow-file-access  --disable-web-security
+            //           --allow-file-access-from-files --allow-file-access --disable-web-security
             x3dom.debug.logException(se + " (cannot pick)");
         }
         
@@ -5041,11 +5033,31 @@ x3dom.gfx_webgl = (function () {
         
         var min = scene._lastMin;
         var max = scene._lastMax;
+        var from = mat_view.inverse().e3();
+
+        // get bbox of scene bbox and camera position
+        {
+            var _min = x3dom.fields.SFVec3f.copy(from);
+            var _max = x3dom.fields.SFVec3f.copy(from);
+
+            if (_min.x > min.x) { _min.x = min.x; }
+            if (_min.y > min.y) { _min.y = min.y; }
+            if (_min.z > min.z) { _min.z = min.z; }
+
+            if (_max.x < max.x) { _max.x = max.x; }
+            if (_max.y < max.y) { _max.y = max.y; }
+            if (_max.z < max.z) { _max.z = max.z; }
+
+            min.setValues(_min);
+            max.setValues(_max);
+        }
+
+        var sceneSize = max.subtract(min).length() + x3dom.fields.Eps;
         
         // render to texture for reading pixel values
         this.renderPickingPass(gl, scene, 
                                mat_view, mat_scene, 
-                               min, max, 
+                               from, sceneSize,
                                pickMode, x, y);
         
         //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
@@ -5053,16 +5065,27 @@ x3dom.gfx_webgl = (function () {
         var index = 0;
         if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
-            var charMax = (pickMode > 0) ? 1 : 255;
-            
-            pickPos.x = scene._webgl.fboPick.pixelData[index + 0] / charMax;
-            pickPos.y = scene._webgl.fboPick.pixelData[index + 1] / charMax;
-            pickPos.z = scene._webgl.fboPick.pixelData[index + 2] / charMax;
-            
-            if (pickMode === 0) {
-                pickPos = pickPos.multComponents(max.subtract(min)).add(min);
+            var objId = 0;
+
+            if (pickMode === 0)
+            {
+                var dist = sceneSize * (256 * scene._webgl.fboPick.pixelData[index + 0] +
+                           scene._webgl.fboPick.pixelData[index + 1]) / 65535;
+                var line = viewarea.calcViewRay(x, y);
+
+                pickPos = line.pos.add(line.dir.multiply(dist));
+
+                objId = 256 * scene._webgl.fboPick.pixelData[index + 2] +
+                        scene._webgl.fboPick.pixelData[index + 3];
             }
-            var objId = 255 - scene._webgl.fboPick.pixelData[index + 3];
+            else
+            {
+                pickPos.x = scene._webgl.fboPick.pixelData[index + 0];
+                pickPos.y = scene._webgl.fboPick.pixelData[index + 1];
+                pickPos.z = scene._webgl.fboPick.pixelData[index + 2];
+
+                objId = scene._webgl.fboPick.pixelData[index + 3];
+            }
             //x3dom.debug.logInfo(pickPos + " / " + objId);
             
             if (objId > 0) {
