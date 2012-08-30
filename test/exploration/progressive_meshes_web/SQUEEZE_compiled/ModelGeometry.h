@@ -84,7 +84,9 @@ public:
     void get_triangles(std::vector<Triangle> & triangles, std::vector<Vertex> & new_vertex_data);
     
 private:
-    bool ModelGeometry::can_be_collapsed(unsigned int e, const std::vector<Halfedge> & halfedges);
+    bool can_be_collapsed(unsigned int e, const std::vector<Halfedge> & halfedges);
+
+    void get_normal(unsigned int vp, unsigned int vq, unsigned int vr, float n[3]);
 
     AdjacencyMap adjacency;
 

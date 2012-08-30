@@ -18,6 +18,47 @@ struct ErrorInfo
 };
 
 
+float dot(float a[3], float b[3])
+{
+  return a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
+}
+
+
+void cross(float u[3], float v[3], float n[3])
+{
+  n[0] = u[1]*v[2] - u[2]*v[1];
+  n[1] = u[2]*v[0] - u[0]*v[2];
+  n[2] = u[0]*v[1] - u[1]*v[0];
+}
+
+
+void ModelGeometry::get_normal(unsigned int vp, unsigned int vq, unsigned int vr, float n[3])
+{
+  const Vertex & p = vertex_data->at(vp);
+  const Vertex & q = vertex_data->at(vq);
+  const Vertex & r = vertex_data->at(vr);
+
+  float u[3], v[3];
+  float norm;
+
+  // right hand system, CCW triangle
+  u[0] = q.x - p.x;
+  u[1] = q.y - p.y;
+  u[2] = q.z - p.z;
+
+  v[0] = r.x - p.x;
+  v[1] = r.y - p.y;
+  v[2] = r.z - p.z;
+
+  // plane normal
+  cross(u, v, n);
+  norm = sqrt(n[0]*n[0] + n[1]*n[1] + n[2]*n[2]);
+  n[0] = n[0] / norm;
+  n[1] = n[1] / norm;
+  n[2] = n[2] / norm;
+}
+
+
 int walk_CCW(unsigned int index, const std::vector<Halfedge> & halfedges)
 {
     return halfedges.at(prevHalfEdgeIdx(index)).twin;
@@ -124,7 +165,7 @@ void ModelGeometry::create_half_edges()
 
 bool ModelGeometry::can_be_collapsed(unsigned int e, const std::vector<Halfedge> & halfedges)
 {
-    const Halfedge & h    = halfedges.at(e);
+    const Halfedge & h = halfedges.at(e);
     
     //if there is no twin, or if it is already selected for a collapse, discard e
     if (h.twin == -1)
@@ -135,10 +176,11 @@ bool ModelGeometry::can_be_collapsed(unsigned int e, const std::vector<Halfedge>
     if (twin.state == MARKED_FOR_COLLAPSE)
         return false;
 
+    unsigned int e_next = nextHalfEdgeIdx(e);
 
     //discard anything close to the border
     const Halfedge & prev      = halfedges.at(prevHalfEdgeIdx(e));
-    const Halfedge & next      = halfedges.at(nextHalfEdgeIdx(e));
+    const Halfedge & next      = halfedges.at(e_next);
     const Halfedge & twin_prev = halfedges.at(prevHalfEdgeIdx(h.twin));
     const Halfedge & twin_next = halfedges.at(nextHalfEdgeIdx(h.twin));
 
@@ -151,7 +193,7 @@ bool ModelGeometry::can_be_collapsed(unsigned int e, const std::vector<Halfedge>
     //walk CW around the 'tip' of the halfedge
     std::vector<unsigned int> halfedges_around_tip;
 
-    unsigned int current_halfedge = nextHalfEdgeIdx(e);
+    unsigned int current_halfedge = e_next;
     int current_twin;
 
     do
@@ -179,6 +221,9 @@ bool ModelGeometry::can_be_collapsed(unsigned int e, const std::vector<Halfedge>
 
     current_halfedge = nextHalfEdgeIdx(h.twin);
 
+    float n1_a[3], n1_b[3],
+          n2_a[3], n2_b[3],
+          cprod_1[3], cprod_2[3];
     do
     {
         current_twin = halfedges.at(current_halfedge).twin;
@@ -193,7 +238,36 @@ bool ModelGeometry::can_be_collapsed(unsigned int e, const std::vector<Halfedge>
         halfedges_around_base.push_back(current_halfedge);
 
         //check if normals would get flipped
-        //...
+        if (halfedges_around_base.size() > 1)
+        {
+            get_normal(halfedges.at(current_halfedge).v,
+                       halfedges.at(nextHalfEdgeIdx(current_halfedge)).v,
+                       halfedges.at(prevHalfEdgeIdx(current_halfedge)).v,
+                       n1_a);
+            
+            get_normal(halfedges.at(e_next).v,
+                       halfedges.at(nextHalfEdgeIdx(current_halfedge)).v,
+                       halfedges.at(prevHalfEdgeIdx(current_halfedge)).v,
+                       n1_b);
+
+            if (dot(n1_a, n1_b) < 0.0f)
+                return false;
+
+            if (halfedges_around_base.size() > 2)
+            {
+                cross(n1_a, n2_a, cprod_1);
+                cross(n1_b, n2_b, cprod_2);
+
+                if (dot(cprod_1, cprod_2) < 0.0f)
+                    return false;
+            }
+
+            for (unsigned int i = 0; i < 3; ++i)
+            {
+                n2_a[i] = n1_a[i];
+                n2_b[i] = n1_b[i];
+            }
+        }
 
         current_halfedge = walk_CW(current_halfedge, halfedges);
         

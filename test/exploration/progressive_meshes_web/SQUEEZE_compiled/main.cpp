@@ -9,12 +9,25 @@ int main(int argc, char * argv[])
 		return -1;
     }
 
-    ModelHandler m;
-    m.read_OBJ(argv[1]);
+    char out_file[64];
 
-    m.compress_model();
+    unsigned int i = 0;
+    do
+    {
+        ModelHandler m;
 
-    m.write_OBJ("result.obj");
+        if (i == 0)
+            m.read_OBJ(argv[1]);
+        else
+            m.read_OBJ(out_file);
+
+        m.compress_model();
+
+        sprintf(out_file, "../data/simplified_%d.obj", i+1);
+
+        m.write_OBJ(out_file);
+    }
+    while (++i < 8);
 
 	return 0;
 }
