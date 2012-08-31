@@ -488,12 +488,10 @@ x3dom.Viewarea.prototype.getLightsShadow = function () {
 	}
 };
 
-x3dom.Viewarea.prototype.getViewpointMatrix = function () {
+x3dom.Viewarea.prototype.updateSpecialNavigation = function (viewpoint, mat_viewpoint) {
     var navi = this._scene.getNavigationInfo();
-    var viewpoint = this._scene.getViewpoint();
-    var mat_viewpoint = viewpoint.getCurrentTransform();
-
-    // helicopter mode needs to manipulate view matrix
+    
+    // helicopter mode needs to manipulate view matrix specially
     if (navi._vf.type[0].toLowerCase() == "helicopter" && !navi._heliUpdated)
     {
         var typeParams = navi.getTypeParams();
@@ -524,9 +522,14 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function () {
 
         navi._heliUpdated = true;
     }
-    // end of special helicopter handling
+};
 
-    //return mat_viewpoint.mult(viewpoint.getViewMatrix());
+x3dom.Viewarea.prototype.getViewpointMatrix = function () {
+    var viewpoint = this._scene.getViewpoint();
+    var mat_viewpoint = viewpoint.getCurrentTransform();
+    
+    this.updateSpecialNavigation(viewpoint, mat_viewpoint);
+    
     return viewpoint.getViewMatrix().mult(mat_viewpoint.inverse());
 };
 
@@ -1052,7 +1055,7 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 		{
 			var distance = 10;
 			
-			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
 				distance = (distance < x3dom.fields.Eps) ? 1 : distance;
@@ -1121,7 +1124,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         if (buttonState & 4) //middle
         {
-			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
 				d = (d < x3dom.fields.Eps) ? 1 : d;
@@ -1130,7 +1133,12 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, false);
+				
+				ok = this._scene.getVolume(min, max, true);
+				if (ok) {
+                    this._scene._lastMin = min;
+                    this._scene._lastMax = max;
+                }
 				
 				d = ok ? (max.subtract(min)).length() : 10;
 				d = (d < x3dom.fields.Eps) ? 1 : d;
@@ -1138,7 +1146,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             //x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
             //x3dom.debug.logInfo("w="+this._width+", h="+this._height);
 
-            vec = new x3dom.fields.SFVec3f(d*dx/this._width,d*(-dy)/this._height,0);
+            vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
             this._movement = this._movement.add(vec);
 
             //TODO; move real distance along viewing plane
@@ -1148,7 +1156,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         if (buttonState & 2) //right
         {
-			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
 				d = (d < x3dom.fields.Eps) ? 1 : d;
@@ -1157,7 +1165,12 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, false);
+				
+				ok = this._scene.getVolume(min, max, true);
+				if (ok) {
+                    this._scene._lastMin = min;
+                    this._scene._lastMax = max;
+                }
 				
 				d = ok ? (max.subtract(min)).length() : 10;
 				d = (d < x3dom.fields.Eps) ? 1 : d;
@@ -1165,7 +1178,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             //x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
             //x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
 
-            vec = new x3dom.fields.SFVec3f(0,0,d*(dx+dy)/this._height);
+            vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
             this._movement = this._movement.add(vec);
 
             //TODO; move real distance along viewing ray
@@ -1181,7 +1194,6 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     this._lastX = x;
     this._lastY = y;
 };
-
 
 x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 {
