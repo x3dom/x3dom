@@ -60,7 +60,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'visibilityRange', 0);
         },
         {
-            // methods
         }
     )
 );
@@ -91,7 +90,9 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("Url") > 0) {
+                if (fieldName.indexOf("Url") > 0 ||
+                    fieldName.search("sky") >= 0 || 
+                    fieldName.search("ground") >= 0) {
                     this._dirty = true;
                 }
                 else if (fieldName === "set_bind") {
@@ -119,14 +120,6 @@ x3dom.registerNodeType(
                     this._nameSpace.getURL(this._vf.topUrl[0]),
                     this._nameSpace.getURL(this._vf.leftUrl[0]),
                     this._nameSpace.getURL(this._vf.rightUrl[0])
-                    /*
-                    this._nameSpace.getURL(this._vf.rightUrl[0]),
-                    this._nameSpace.getURL(this._vf.leftUrl[0]),
-                    this._nameSpace.getURL(this._vf.topUrl[0]),
-                    this._nameSpace.getURL(this._vf.bottomUrl[0]),
-                    this._nameSpace.getURL(this._vf.frontUrl[0]),
-                    this._nameSpace.getURL(this._vf.backUrl[0])
-                    */
                 ];
             }
         }
