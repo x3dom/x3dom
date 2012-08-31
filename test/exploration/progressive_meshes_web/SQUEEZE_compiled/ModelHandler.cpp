@@ -192,8 +192,12 @@ int ModelHandler::write_OBJ(const char * filename)
 void ModelHandler::compress_model()
 {
     geometry.simplify();
+}
 
-    std::vector<Vertex>   new_vertex_data;
+
+void ModelHandler::update()
+{
+    std::vector<Vertex> new_vertex_data;
 
     face_data.clear();
 
@@ -203,5 +207,23 @@ void ModelHandler::compress_model()
 
     vertex_data = new_vertex_data;
 
-    printf("Model after compression: %d vertices and %d triangles.\n", vertex_data.size(), face_data.size());
+    printf("Model has now %d vertices and %d triangles.\n", vertex_data.size(), face_data.size());
+}
+
+
+void ModelHandler::uncompress_model()
+{
+    geometry.refine();
+}
+
+
+const ModelGeometry & ModelHandler::get_geometry() const
+{
+    return geometry;
+}
+
+
+ModelGeometry & ModelHandler::get_geometry()
+{
+    return geometry;
 }
