@@ -19,6 +19,7 @@ x3dom.Viewarea = function (document, scene) {
 
     this._pickingInfo = {
         pickPos: {},
+        pickNorm: {},
         pickObj: null,
         lastObj: null,
         lastClickObj: null
@@ -44,7 +45,9 @@ x3dom.Viewarea = function (document, scene) {
     this._pressX = -1;
     this._pressY = -1;
     this._lastButton = 0;
+    
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
 
     this._isAnimating = false;
     this._lastTS = 0;
@@ -779,6 +782,9 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         worldX: that._pick.x,
         worldY: that._pick.y,
         worldZ: that._pick.z,
+        normalX: that._pickNorm.x,
+        normalY: that._pickNorm.y,
+        normalZ: that._pickNorm.z,
         hitPnt: that._pick.toGL(), // for convenience
         hitObject: obj._xmlNode ? obj._xmlNode : null,
         cancelBubble: false,
@@ -1206,6 +1212,7 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 
         if (obj) {
             this._pick.setValues(this._pickingInfo.pickPos);
+            this._pickNorm.setValues(this._pickingInfo.pickNorm);
 
             this.checkEvents(obj, x, y, buttonState, eventType);
 
