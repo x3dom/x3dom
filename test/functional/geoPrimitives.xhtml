@@ -54,14 +54,15 @@
 	
 	<p>Geometric primitive types with picking</p>
     <div class="group">
-	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" width="500px" height="500px" style="float:left;">
+	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" 
+	        showStat="true" showLog="true" width="500px" height="500px" style="float:left;">
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
                 <Group id='kloppe'
-                       onmousemove="document.getElementById('bar').setAttribute('translation', event.hitPnt);
+                       onmousemove="/*document.getElementById('bar').setAttribute('translation', event.hitPnt);*/
                                 document.getElementById('pc').setAttribute('set_destination', event.hitPnt);
-                                document.getElementById('posOut').innerHTML=event.hitPnt;"
+                                updateStuff(event);"
                        onclick="document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
                                 document.getElementById('cc').setAttribute('set_destination', '0 1 0');">
                                 
@@ -123,14 +124,28 @@
                 
                 </Group>
                 
-                <Transform id="bar" DEF="foo" scale=".15 .15 .15">
-					<Shape>
+                <Transform id="bar" DEF="foo" scale=".15 .4 .15">
+					<Shape isPickable="false" DEF="float">
 						<Appearance>
 							<Material USE="txtMat" />
 						</Appearance>
-						<Sphere />
+						<Cone />
 					</Shape>
                 </Transform>
+                
+                
+              <Transform translation="0 0 0">
+                  <Shape isPickable="false" DEF="line">
+                      <!--IndexedLineSet coordIndex="0 1 -1 0 2 -1 0 3 -1">
+                          <Coordinate id="cpnt" point="0.0 0.0 0.0, 0.0 0.0 1.0, 1.0 0.0 0.0, 0.0 1.0 0.0"/>
+                          <Color color="1 1 1, 1 1 0, 1 0 1, 0 1 1"/>
+                      </IndexedLineSet-->
+                    <IndexedLineSet coordIndex="0 1 -1">
+                        <Coordinate id="cpnt" point="0.0 0.0 0.0, 0.0 1.0 0.0"/>
+                        <Color color="0 1 1, 1 0 1"/>
+                    </IndexedLineSet>
+                  </Shape>
+              </Transform>
                 
 				<Viewpoint id="aView" centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
                 <!--
@@ -142,14 +157,15 @@
                 <PositionDamper id="pc" DEF="pchaser" tau="1.0" order="1" initialDestination="-2 3 2" initialValue="0 0 0" />
                 <ScalarDamper id="sc" DEF="sdamper" tau="1.0" order="1" initialDestination="0" initialValue="1" />
                 <ColorDamper id="cc" DEF="cdamper" tau="1.0" order="1" initialDestination="1 1 0" initialValue="0 1 0" />
-                <ROUTE fromNode='pchaser' fromField='value_changed' toNode='foo' toField='translation'/>
+                <!--ROUTE fromNode='pchaser' fromField='value_changed' toNode='foo' toField='translation'/-->
                 <ROUTE fromNode='ochaser' fromField='value_changed' toNode='coneTrafo' toField='rotation'/>
                 <ROUTE fromNode='cdamper' fromField='value_changed' toNode='coneMat' toField='diffuseColor'/>
                 <ROUTE fromNode='sdamper' fromField='value_changed' toNode='coneMat' toField='transparency'/>
 			</Scene>
         </X3D>
         
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" width="300px" height="300px" style="float:left;">
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" 
+            showStat="true" width="300px" height="300px" style="float:left;">
 			<Scene>
 				<Shape>
 					<Appearance>
@@ -189,6 +205,34 @@
             document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
         };
         */
+        
+        function updateStuff(event)
+        {
+            document.getElementById('posOut').innerHTML = event.worldX.toFixed(4) + ", " + 
+                                                          event.worldY.toFixed(4) + ", " + 
+                                                          event.worldZ.toFixed(4) + " | " + 
+                                                          event.normalX.toFixed(4) + ", " + 
+                                                          event.normalY.toFixed(4) + ", " + 
+                                                          event.normalZ.toFixed(4);
+            
+            var l = document.getElementById('cpnt');
+            var t = document.getElementById('bar');
+            
+            var norm = new x3dom.fields.SFVec3f(event.normalX, event.normalY, event.normalZ);
+            
+            l.setAttribute('point', event.worldX+' '+event.worldY+' '+event.worldZ+', '+
+                            (event.worldX+2.5*norm.x)+' '+(event.worldY+2.5*norm.y)+' '+(event.worldZ+2.5*norm.z));
+            
+            var qDir = x3dom.fields.Quaternion.rotateFromTo(new x3dom.fields.SFVec3f(0, 1, 0), 
+                                                            norm);
+                                                            //new x3dom.fields.SFVec3f(0, 0, -1));
+            var rot = qDir.toAxisAngle();
+            
+            //x3dom.debug.logWarning(rot);  
+            t.setAttribute('rotation', rot[0].x+' '+rot[0].y+' '+rot[0].z+' '+rot[1]);
+            //t.setAttribute('translation', (event.worldX+norm.x)+' '+(event.worldY+norm.y)+' '+(event.worldZ+norm.z));
+            t.setAttribute('translation', event.worldX+' '+event.worldY+' '+event.worldZ);
+        }
         
         var funcPtr = function (event) {
             document.getElementById('ausgabe').innerHTML = event.type + " (" + 

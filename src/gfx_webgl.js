@@ -5060,7 +5060,7 @@ x3dom.gfx_webgl = (function () {
             max.setValues(_max);
         }
 
-        var sceneSize = max.subtract(min).length() + x3dom.fields.Eps;
+        var sceneSize = max.subtract(min).length(); // + x3dom.fields.Eps;
         
         // render to texture for reading pixel values
         this.renderPickingPass(gl, scene, 
@@ -5093,6 +5093,7 @@ x3dom.gfx_webgl = (function () {
                 line = viewarea.calcViewRay(x + 1.0/scene._webgl.pickScale, y);
                 
                 var right = line.pos.add(line.dir.multiply(dist));
+                right = right.subtract(pickPos).normalize();
                 
                 index = 8;
                 dist = sceneSize * (256 * scene._webgl.fboPick.pixelData[index + 0] +
@@ -5100,8 +5101,9 @@ x3dom.gfx_webgl = (function () {
                 line = viewarea.calcViewRay(x, y - 1.0/scene._webgl.pickScale);
                 
                 var up = line.pos.add(line.dir.multiply(dist));
+                up = up.subtract(pickPos).normalize();
                 
-                pickNorm = (right.subtract(pickPos)).cross(up.subtract(pickPos)).normalize();
+                pickNorm = right.cross(up).normalize();
             }
             else
             {
