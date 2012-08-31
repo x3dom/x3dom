@@ -20,7 +20,6 @@ x3dom.gfx_webgl = (function () {
         this.cached_shader_programs = {};
         this.cached_shaders = {};
 		this.IG_PositionBuffer = null;
-		//this.bitLODComposer = null;
 		//this.imageLoadManager = new x3dom.ImageLoadManager();
     }
 
@@ -28,7 +27,7 @@ x3dom.gfx_webgl = (function () {
         return this.name;
     };
 
-    function setupContext(canvas) {
+    function setupContext(canvas, forbidMobileShaders) {
         // TODO: add experimental-webgl, webgl test    
         // x3dom.debug.logInfo("setupContext: canvas=" + canvas);
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
@@ -98,8 +97,17 @@ x3dom.gfx_webgl = (function () {
                             {
                                 x3dom.caps.MOBILE = true;
                             }
-                            if (x3dom.caps.MOBILE) {
-								x3dom.debug.logWarning("Detected mobile graphics card! Using low quality shaders without ImageGeometry support!");
+                            if (x3dom.caps.MOBILE)
+                            {
+                                if (forbidMobileShaders) {
+                                    x3dom.caps.MOBILE = false;
+                                    x3dom.debug.logWarning("Detected mobile graphics card! " + 
+								        "But being forced to desktop shaders which might not work!");
+                                }
+                                else {
+								    x3dom.debug.logWarning("Detected mobile graphics card! " + 
+								        "Using low quality shaders without ImageGeometry support!");
+							    }
 							}
 						}
                     }
@@ -3243,8 +3251,7 @@ x3dom.gfx_webgl = (function () {
 				}
 			
 				//If there is still no BitComposer create a new one 
-				//if(this.bitLODComposer == null) 
-					shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
+				shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
 				
 				var that = this;
 				
@@ -5132,7 +5139,6 @@ x3dom.gfx_webgl = (function () {
 
             if (this._fpTexSupport) {
                 type = gl.FLOAT;
-                //x3dom.debug.logInfo("WebGL backend: found support for floating point textures");
             }
 
             scene._webgl = {};
