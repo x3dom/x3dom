@@ -70,6 +70,21 @@ struct Triangle
 };
 
 
+struct EdgeCollapse
+{
+    unsigned int v;         //vertex
+    unsigned int e1, e2;    //edges (global)
+    unsigned int a, b;      //edges (local)
+
+    float dx, dy, dz;       //difference vector
+
+    bool operator<(const EdgeCollapse & other) const
+    {
+        return v < other.v;
+    }
+};
+
+
 class ModelGeometry 
 {
 public:
@@ -81,8 +96,18 @@ public:
 
     void simplify();
 
+    void refine();
+
     void get_triangles(std::vector<Triangle> & triangles, std::vector<Vertex> & new_vertex_data);
     
+    void compute_local_edge_indices();
+
+    void compute_global_edge_indices();
+
+    void write_collapses(const char * filename);
+
+    void read_collapses(const char * filename);
+
 private:
     bool can_be_collapsed(unsigned int e, const std::vector<Halfedge> & halfedges);
 
@@ -95,4 +120,6 @@ private:
     std::vector<Edge> edges;
 
     std::vector<Vertex> * vertex_data;
+
+    std::vector<EdgeCollapse> collapses;
 };

@@ -18,6 +18,14 @@ public:
 
     void compress_model();
 
+    void update();
+
+    void uncompress_model();
+
+    const ModelGeometry & get_geometry() const;
+
+    ModelGeometry & get_geometry();
+
 private:
     std::vector<Vertex	> vertex_data;
     std::vector<Normal	> normal_data;
