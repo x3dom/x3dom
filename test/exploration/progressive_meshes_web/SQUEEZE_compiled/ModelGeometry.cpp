@@ -532,6 +532,25 @@ void ModelGeometry::simplify()
             assert(coll_4 != -1);
             halfedges.at(coll_4).twin = coll_3;
 
+            
+            //double-check:
+            //make sure that never more than two vertices are collapsed into one during one batch
+            int checked_edge = coll_2;
+            do
+            {
+                assert(halfedges.at(checked_edge).state == UNCHANGED);                
+                checked_edge = walk_CCW(checked_edge, halfedges);
+            }
+            while (checked_edge != coll_2);
+
+            checked_edge = coll_4;
+            do
+            {
+                assert(halfedges.at(checked_edge).state == UNCHANGED);                
+                checked_edge = walk_CCW(checked_edge, halfedges);
+            }
+            while (checked_edge != coll_4);
+
 
             //store edge collapse info
             EdgeCollapse coll;
@@ -598,7 +617,6 @@ void ModelGeometry::refine()
 
         assert(c.v < vertex_data->size());
         
-        //assert(c.e1 < 4000000 && c.e2 < 4000000);
 
         //add a new vertex
         const Vertex & v_split = vertex_data->at(c.v);
@@ -654,14 +672,11 @@ void ModelGeometry::refine()
         halfedges.at(halfedges.at(c.e2).twin).twin = tb_e1;
         halfedges.at(c.e2).twin                    = tb_e2;
 
-
+        
         //assign new vertex to neighboured halfedges
         current_edge = c.e1;
 
-        while (current_edge != tb_e0 &&
-               current_edge != tb_e1 &&
-               current_edge != tb_e2 &&
-               current_edge != -1      )
+        while (current_edge != tb_e1)
         {
             halfedges.at(current_edge).v = vertex_data->size() - 1;
             
@@ -763,6 +778,8 @@ void ModelGeometry::compute_local_edge_indices()
                 min_idx = cutedge_indices.size() - 1;
             }
 
+            assert(halfedges.at(e).state == UNCHANGED);
+
             cutedge_indices.push_back(e);
 
             e = walk_CCW(e, halfedges);
@@ -781,6 +798,8 @@ void ModelGeometry::compute_local_edge_indices()
                 min_idx = cutedge_indices.size() - 1;
             }
 
+            assert(halfedges.at(e).state == UNCHANGED);
+
             cutedge_indices.push_back(e);
 
             e = walk_CCW(e, halfedges);
@@ -797,6 +816,8 @@ void ModelGeometry::compute_local_edge_indices()
           else if (cutedge_indices.at(i % cutedge_indices.size()) == it->e2)
             it->b = i-min_idx;
         }
+
+        assert(it->a != INT_MAX && it->b != INT_MAX);
     }
 }
 
@@ -844,12 +865,10 @@ void ModelGeometry::compute_global_edge_indices()
 
             it->e1 = cutedge_indices.at((min_idx + it->a) % adjacent_halfedges.size());
             it->e2 = cutedge_indices.at((min_idx + it->b) % adjacent_halfedges.size());
-
-            assert(it->e1 < 4000000 && it->e2 < 4000000);
         }
         else
         {
-            printf("WARNING: At least one split-vertex does not exist yet.\n");
+            printf("ERROR: At least one split-vertex does not exist yet.\n");
             return;
         }
     }
@@ -898,11 +917,38 @@ void ModelGeometry::write_collapses(const char * filename)
 
     free(used);
 
+
+    //transform edge indices to discard unused edges
+    unsigned int * new_indices_edges = (unsigned int *) malloc(halfedges.size() * sizeof(unsigned int));
+
+    idx = 0;
+    for (unsigned int i = 0; i < halfedges.size(); i+=3)
+    {
+        const Halfedge & h0 = halfedges.at(i);
+        const Halfedge & h1 = halfedges.at(i+1);
+        const Halfedge & h2 = halfedges.at(i+2);
+
+        if (h0.state == UNCHANGED &&
+            h1.state == UNCHANGED &&
+            h2.state == UNCHANGED   )
+        {
+            new_indices_edges[i]   = idx;
+            new_indices_edges[i+1] = idx+1;
+            new_indices_edges[i+2] = idx+2;
+            idx += 3;
+        }
+    }
+
     //write collapses
     for (std::vector<EdgeCollapse>::const_iterator it = collapses.begin(), end = collapses.end();
          it != end; ++it)
     {   
-        fprintf(f, "%d %d %d %f %f %f \n", new_indices[it->v], it->a, it->b, it->dx, it->dy, it->dz);
+        //fprintf(f, "%d %d %d %f %f %f \n", new_indices[it->v], it->a, it->b, it->dx, it->dy, it->dz);
+        fprintf(f, "%d %d %d %f %f %f \n", new_indices[it->v], new_indices_edges[it->e1], new_indices_edges[it->e2], it->dx, it->dy, it->dz);
+
+        if (halfedges.at(it->e1).state != UNCHANGED ||
+            halfedges.at(it->e2).state != UNCHANGED   )
+            printf("ERROR: A stored cut-edge refers to an already collapsed half-edge!\n");
     }
 
     free(new_indices);
@@ -927,13 +973,14 @@ void ModelGeometry::read_collapses(const char * filename)
     
     EdgeCollapse coll;
 
-    while (fscanf(f, "%d %d %d %f %f %f \n", &coll.v, &coll.a, &coll.b, &coll.dx, &coll.dy, &coll.dz) != EOF)
+    //while (fscanf(f, "%d %d %d %f %f %f \n", &coll.v, &coll.a, &coll.b, &coll.dx, &coll.dy, &coll.dz) != EOF)
+    while (fscanf(f, "%d %d %d %f %f %f \n", &coll.v, &coll.e1, &coll.e2, &coll.dx, &coll.dy, &coll.dz) != EOF)
     {   
         collapses.push_back(coll);
     }
 
     //transform local edge indices to global edges indices
-    compute_global_edge_indices();
+    //compute_global_edge_indices();
 
     fclose(f);
 
