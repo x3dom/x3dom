@@ -652,6 +652,9 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
+            
+            this._lastMin = null;
+            this._lastMax = null;
         },
         {
             /* bindable getter (e.g. getViewpoint) are added automatically */
