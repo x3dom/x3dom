@@ -5102,8 +5102,6 @@ x3dom.gfx_webgl = (function () {
                 var up = line.pos.add(line.dir.multiply(dist));
                 
                 pickNorm = (right.subtract(pickPos)).cross(up.subtract(pickPos)).normalize();
-                
-                pickPos=right;
             }
             else
             {
