@@ -197,6 +197,7 @@ x3dom.registerNodeType(
             // FIXME: X3DShapeNode inherits from X3DChildNode and X3DBoundedObject
             // (at least according to spec), therefore impl. "render" field there.
             this.addField_SFBool(ctx, 'render', true);
+            this.addField_SFBool(ctx, 'isPickable', true);
             // same thing for bbox
             this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);

@@ -4106,7 +4106,8 @@ x3dom.gfx_webgl = (function () {
             var trafo = scene.drawableObjects[i][0];
             var shape = scene.drawableObjects[i][1];
             
-            if (shape._objectID < 1 || shape._webgl === undefined) {
+            if (shape._objectID < 1 || shape._webgl === undefined ||
+                shape._vf.isPickable == false) {
                 continue;
             }
 			
@@ -4301,9 +4302,9 @@ x3dom.gfx_webgl = (function () {
         try {
             var x = lastX * scene._webgl.pickScale,
                 y = scene._webgl.fboPick.height - 1 - lastY * scene._webgl.pickScale;
-            var data = new Uint8Array(4);    // 4 = 1 * 1 * 4
+            var data = new Uint8Array(16);    // 4 = 1 * 1 * 4; then take 2x2 window
             
-            gl.readPixels(x, y, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, data);
+            gl.readPixels(x, y, 2, 2, gl.RGBA, gl.UNSIGNED_BYTE, data);
             
             scene._webgl.fboPick.pixelData = data;
         }
@@ -5072,6 +5073,7 @@ x3dom.gfx_webgl = (function () {
         var index = 0;
         if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
+            var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
             var objId = 0;
 
             if (pickMode === 0)
@@ -5084,6 +5086,22 @@ x3dom.gfx_webgl = (function () {
 
                 objId = 256 * scene._webgl.fboPick.pixelData[index + 2] +
                         scene._webgl.fboPick.pixelData[index + 3];
+                
+                index = 4;
+                dist = sceneSize * (256 * scene._webgl.fboPick.pixelData[index + 0] +
+                       scene._webgl.fboPick.pixelData[index + 1]) / 65535;
+                line = viewarea.calcViewRay(x + 1.0/scene._webgl.pickScale, y);
+                
+                var right = line.pos.add(line.dir.multiply(dist));
+                
+                index = 8;
+                dist = sceneSize * (256 * scene._webgl.fboPick.pixelData[index + 0] +
+                       scene._webgl.fboPick.pixelData[index + 1]) / 65535;
+                line = viewarea.calcViewRay(x, y - 1.0/scene._webgl.pickScale);
+                
+                var up = line.pos.add(line.dir.multiply(dist));
+                
+                pickNorm = (right.subtract(pickPos)).cross(up.subtract(pickPos)).normalize();
             }
             else
             {
@@ -5099,10 +5117,12 @@ x3dom.gfx_webgl = (function () {
                 //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
                 //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
                 viewarea._pickingInfo.pickPos = pickPos;
+                viewarea._pickingInfo.pickNorm = pickNorm;
                 viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[objId];
             }
             else {
                 viewarea._pickingInfo.pickObj = null;
+                //viewarea._pickingInfo.pickNorm = null;
                 //viewarea._pickingInfo.lastObj = null;
                 viewarea._pickingInfo.lastClickObj = null;
             }
