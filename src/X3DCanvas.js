@@ -17,9 +17,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     var that = this;
 	this.canvasIdx = canvasIdx;
-    this.initContext = function(canvas) {
+	
+    this.initContext = function(canvas, forbidMobileShaders) {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
-        var gl = x3dom.gfx_webgl(canvas);
+        var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders);
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
             this.x3dElem.removeChild(canvas);
@@ -278,8 +279,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         }
 
         // Apply the width and height of the X3D element to the canvas
-        var w = 2;
-        var h = 2;
+        var w = 2, h = 2;
 
         if ((w = x3dElem.getAttribute("width")) !== null) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
@@ -309,8 +309,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         ];
 
         if ((_old_dim[0] != new_dim[0]) || (_old_dim[1] != new_dim[1])) {
-            //x3dom.debug.logInfo("Resize detected w/h: " +
-            //    _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
             _old_dim = new_dim;
             that.x3dElem.setAttribute("width", new_dim[0]);
             that.x3dElem.setAttribute("height", new_dim[1]);
@@ -362,29 +360,33 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     this.x3dElem = x3dElem;
 	
-	this.backend = 'none';
+	this.backend = this.x3dElem.getAttribute('backend');
+	if (this.backend)
+	    this.backend = this.backend.toLowerCase()
+	else
+	    this.backend = 'none';
 
-    if(this.x3dElem.getAttribute('backend') == 'flash') {
+    if (this.backend == 'flash') {
 		this.backend = 'flash';
 		this.canvas = this.createFlashObject(x3dElem);
-		if(this.canvas != null) {
+		if (this.canvas != null) {
 			this.canvas.parent = this;
 			this.gl = this.initFlashContext(this.canvas);
 		} else {
 			this.createInitFailedDiv(x3dElem);
 			return null;
 		}
-	}else{
-		this.backend = 'webgl';
+	} else {
 		this.canvas = this.createHTMLCanvas(x3dElem);
 		this.canvas.parent = this;
-		this.gl = this.initContext(this.canvas);
-		if(this.gl == null)
+		this.gl = this.initContext(this.canvas, (this.backend.search("desktop") >= 0));
+		this.backend = 'webgl';
+		if (this.gl == null)
 		{
 			x3dom.debug.logInfo("Fallback to Flash Renderer");
 			this.backend = 'flash';
 			this.canvas = this.createFlashObject(x3dElem);
-			if(this.canvas != null) {
+			if (this.canvas != null) {
 				this.canvas.parent = this;
 				this.gl = this.initFlashContext(this.canvas);
 			} else {
@@ -402,7 +404,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     // allow listening for (size) changes
     x3dElem.__setAttribute = x3dElem.setAttribute;
     x3dElem.setAttribute = function(attrName, newVal) {
-        //var prevVal = this.getAttribute(attrName);
         this.__setAttribute(attrName, newVal);
 
         switch(attrName) {
@@ -411,7 +412,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"), 0);
-                    //x3dom.debug.logInfo("width: " + that.doc._viewarea._width);
                 }
                 break;
 
@@ -419,7 +419,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"), 0);
-                    //x3dom.debug.logInfo("height: " + that.doc._viewarea._height);
                 }
                 break;
 
@@ -444,7 +443,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = this.createStatDiv();
     this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
-
+    
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this.createProgressDiv();
     this.progressDiv.style.display = (this.showProgress == null || this.showProgress == "true") ? "inline" : "none";
@@ -493,12 +492,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				window.status=this.id+' DOWN: '+ pos.x +", "+ pos.y;
 				
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
 				evt.returnValue = true;
 			}
         }, false);
@@ -510,10 +504,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
@@ -525,10 +516,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
 			
@@ -541,10 +529,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
@@ -561,24 +546,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
 				this.parent.doc.needRender = true;
-
 				
-				window.status=this.id+' DBL: '+ pos.x +", "+ pos.y;
-				
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
 				evt.returnValue = true;
 			}
         }, false);
 
         this.canvas.addEventListener('mousemove', function (evt) {
 			if(!this.isMulti) {
-				/*
-				if (!this.mouse_dragging) {
-					return;
-				}
-				*/
 
 				if (evt.shiftKey) { this.mouse_button = 1; }
 				if (evt.ctrlKey)  { this.mouse_button = 4; }
@@ -588,19 +562,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				this.mouse_drag_x = pos.x;
               	this.mouse_drag_y = pos.y; 
 				
-				  if (this.mouse_dragging) {
+				if (this.mouse_dragging) {
 					this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-				  }
-				  else {
+				}
+				else {
 					this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-				  }
+				}
 			   
 				this.parent.doc.needRender = true;
 				
+				// deliberately different for performance reasons
 				evt.preventDefault();
 				evt.stopPropagation();
 				evt.returnValue = false;
-				//evt.returnValue = true;
 			}
         }, false);
 
@@ -610,11 +584,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-
-				window.status=this.id+' SCROLL: '+evt.detail;
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
@@ -625,11 +595,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-
-				window.status=this.id+' SCROLL: '+evt.detail;
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
@@ -661,11 +627,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             this.parent.doc.needRender = true;
             evt.returnValue = true;
         }, true);
-        
 
-        // http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
-        // http://backtothecode.blogspot.com/2009/10/javascript-touch-and-gesture-events.html
-        // http://www.sitepen.com/blog/2008/07/10/touching-and-gesturing-on-the-iphone/
 
         // Multitouch Events
         var touches =
@@ -757,7 +719,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch Start ===
         var touchStartHandler = function(evt, doc)
         {
-            //x3dom.debug.logWarning("start");
             this.isMulti = true;
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
@@ -812,7 +773,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchStartHandlerMoz = function(evt)
         {
-            //x3dom.debug.logWarning("start moz");
 			this.isMulti = true;
 			evt.preventDefault();
           
@@ -833,22 +793,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-            //x3dom.debug.logWarning("move");
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
-			if(doc == null)
-				doc  = this.parent.doc;
-		
-			/*for(var i = 0; i < evt.touches.length; i++) {
-				for(var i = 0; i < touches.lastLayer.length; i++) {
-					if(evt.touches[i].identifier == touches.lastLayer[i][0])
-					{
-						var pos = mousePosition(evt.touches[i]);
-						touches.lastLayer[i] = new Array(evt.touches[i].identifier, new x3dom.fields.SFVec2f(pos.x,pos.y));
-					}
-				}
-			}*/
+			if (doc == null)
+				doc = this.parent.doc;
 
 			// one finger: x/y rotation
 			if(evt.touches.length == 1) {
@@ -896,7 +845,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchMoveHandlerMoz = function(evt)
         {
-            //x3dom.debug.logWarning("move moz");
 			evt.preventDefault();
           
 			for(var i=0; i<mozilla_ids.length; ++i)
@@ -909,7 +857,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch end ===
         var touchEndHandler = function(evt, doc)
         {
-            //x3dom.debug.logWarning("end");
             this.isMulti = false;
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
@@ -962,7 +909,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchEndHandlerMoz = function(evt)
         {
-            //x3dom.debug.logWarning("end moz");
 			this.isMulti = false;
 			evt.preventDefault();
           
@@ -985,14 +931,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
         this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
 
-        // w3c / apple touch events
-        // in Chrome via chrome://flags/
+        // w3c / apple touch events (in Chrome via chrome://flags)
         this.canvas.addEventListener('touchstart',    touchStartHandler, true);
         this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
         this.canvas.addEventListener('touchend',      touchEndHandler,   true);
-        //this.canvas.addEventListener('touchcancel',   touchCancelHandler,   true);
-        //this.canvas.addEventListener('touchleave',    touchLeaveHandler,    true);
-		//this.canvas.addEventListener('touchenter',    touchEnterHandler,    true);
     }
 };
 
@@ -1050,9 +992,6 @@ x3dom.X3DCanvas.prototype.tick = function()
 
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
                 if (this.progressDiv) {
-                    // TODO: In order to display a bar we need a max value to determine where we are
-                    // 100 / total * this.doc.downloadCount
-                    // this.progressDiv.childNodes[1].setAttribute("style", "width: " + progressPercent + "%");
                     this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);
                     if (this.doc.downloadCount > 0) {
                         this.progressDiv.style.display = 'inline';
@@ -1121,7 +1060,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
     this.doc.load(uri, sceneElemPos);
 };
 
-
+/** Helper that converts a point from node coordinates to page coordinates */
 function mousePosition(evt) {
 
     var convertPoint = window.webkitConvertPointFromNodeToPage;
@@ -1130,7 +1069,7 @@ function mousePosition(evt) {
     if ( "getBoundingClientRect" in document.documentElement ) {
 		var box =  evt.target.offsetParent.getBoundingClientRect();				
 		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		var scrolltop = 	window.pageYOffset || document.body.scrollTop;
+		var scrolltop =  window.pageYOffset || document.body.scrollTop;
 		
 		var elem = evt.target.offsetParent;
 		
@@ -1157,26 +1096,6 @@ function mousePosition(evt) {
 
     } else {
 		x3dom.debug.logError('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
-		/*TODO Für den Fall das es keine Funktion getBoundingClientRect() gibt
-		
-		var left = evt.target.offsetParent.offsetLeft; //sollte in eine schleife addiert werden, immer relativ zum offsetParent
-		var right = evt.target.offsetParent.offsetRight; //sollte in eine schleife addiert werden, immer relativ zum offsetParent
-
-		//probleme bei xhtml und  firefox wegen x3d element
-		
-		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		var scrolltop = 	window.pageYOffset || document.body.scrollTop;
-		
-		var elem = evt.target.offsetParent;
-		
-		var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
-		var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
-		
-		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
-		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
-							
-		var x = evt.pageX - (left + paddingLeft + borderLeftWidth);
-		var y =  evt.pageY - (right + paddingTop + borderTopWidth);	*/
 	}
 
 	return new x3dom.fields.SFVec2f(x, y);
