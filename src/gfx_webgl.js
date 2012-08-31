@@ -3961,7 +3961,7 @@ x3dom.gfx_webgl = (function () {
                                 scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
             }
             catch(e) {
-                x3dom.debug.logException("Render background: " + e);
+                x3dom.debug.logException("Render foreground: " + e);
             }
             
             gl.disableVertexAttribArray(sp.position);
@@ -5530,6 +5530,7 @@ x3dom.gfx_webgl = (function () {
         
         gl.disable(gl.DEPTH_TEST);
         
+        /*
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
             if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
@@ -5546,6 +5547,7 @@ x3dom.gfx_webgl = (function () {
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }
         }
+        */
         gl.flush();
         
         t1 = new Date().getTime() - t0;
