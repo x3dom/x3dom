@@ -349,6 +349,23 @@ x3dom.gfx_webgl = (function () {
         "}"
         };
 
+    // http://www.gamedev.net/topic/442138-packing-a-float-into-a-a8r8g8b8-texture-shader/
+    // TODO: use same method for shadows!
+    /*
+    encode (fDist is the normalized distance):
+    	const float4 bitSh	= float4(256*256*256, 256*256, 256, 1);
+    	const float4 bitMsk = float4(0, 1.0/256.0, 1.0/256.0, 1.0/256.0);
+    	float4 comp;
+    	comp	= fDist * bitSh;
+    	comp	= frac(comp);
+    	comp	-= comp.xxyz * bitMsk;
+    	return comp;
+
+    decode (vec is the rgba encoded value):
+    	const float4 bitShifts = float4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1);
+    	return dot(vec.xyzw , bitShifts);
+    */
+
     g_shaders['fs-x3d-pick'] = { type: "fragment", data:
         "#ifdef GL_ES             \n" +
         "  precision highp float; \n" +
@@ -359,10 +376,10 @@ x3dom.gfx_webgl = (function () {
         "uniform float sceneSize;" +
         "varying vec3 worldCoord;" +
         "void main(void) {" +
+        "    float d = length(worldCoord) / sceneSize;" +
         "    vec4 col = vec4(0.0, 0.0, highBit, lowBit);" +
-        "    float d = 65535.0 * (length(worldCoord) / sceneSize);" +
-        "    col.r = (d / 256.0) / 255.0;" +
-        "    col.g = (fract(d / 256.0) * 256.0) / 255.0;" +
+        "    vec2 comp = fract(d * vec2(256.0, 1.0));" +
+        "    col.rg = comp - (comp.rr * vec2(0.0, 1.0/256.0));" +
         "    gl_FragColor = col;" +
         "}"
         };
@@ -5074,33 +5091,37 @@ x3dom.gfx_webgl = (function () {
         if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
             var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
-            var objId = 0;
+            var objId = scene._webgl.fboPick.pixelData[index + 3];
 
             if (pickMode === 0)
             {
-                var dist = sceneSize * (256 * scene._webgl.fboPick.pixelData[index + 0] +
-                           scene._webgl.fboPick.pixelData[index + 1]) / 65535;
+                objId += 256 * scene._webgl.fboPick.pixelData[index + 2];
+                
+                var pixelOffset = 1.0 / scene._webgl.pickScale, denom = 1.0 / 256.0;
+                
+                var dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
+                           (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                
                 var line = viewarea.calcViewRay(x, y);
-
-                pickPos = line.pos.add(line.dir.multiply(dist));
-
-                objId = 256 * scene._webgl.fboPick.pixelData[index + 2] +
-                        scene._webgl.fboPick.pixelData[index + 3];
                 
-                index = 4;
-                dist = sceneSize * (256 * scene._webgl.fboPick.pixelData[index + 0] +
-                       scene._webgl.fboPick.pixelData[index + 1]) / 65535;
-                line = viewarea.calcViewRay(x + 1.0/scene._webgl.pickScale, y);
+                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
                 
-                var right = line.pos.add(line.dir.multiply(dist));
+                index = 4;      // get right pixel
+                dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
+                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                
+                line = viewarea.calcViewRay(x + pixelOffset, y);
+                
+                var right = line.pos.add(line.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
                 
-                index = 8;
-                dist = sceneSize * (256 * scene._webgl.fboPick.pixelData[index + 0] +
-                       scene._webgl.fboPick.pixelData[index + 1]) / 65535;
-                line = viewarea.calcViewRay(x, y - 1.0/scene._webgl.pickScale);
+                index = 8;      // get top pixel
+                dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
+                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
                 
-                var up = line.pos.add(line.dir.multiply(dist));
+                line = viewarea.calcViewRay(x, y - pixelOffset);
+                
+                var up = line.pos.add(line.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
                 
                 pickNorm = right.cross(up).normalize();
@@ -5110,8 +5131,6 @@ x3dom.gfx_webgl = (function () {
                 pickPos.x = scene._webgl.fboPick.pixelData[index + 0];
                 pickPos.y = scene._webgl.fboPick.pixelData[index + 1];
                 pickPos.z = scene._webgl.fboPick.pixelData[index + 2];
-
-                objId = scene._webgl.fboPick.pixelData[index + 3];
             }
             //x3dom.debug.logInfo(pickPos + " / " + objId);
             
@@ -5124,7 +5143,6 @@ x3dom.gfx_webgl = (function () {
             }
             else {
                 viewarea._pickingInfo.pickObj = null;
-                //viewarea._pickingInfo.pickNorm = null;
                 //viewarea._pickingInfo.lastObj = null;
                 viewarea._pickingInfo.lastClickObj = null;
             }
