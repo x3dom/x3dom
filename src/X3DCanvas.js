@@ -213,7 +213,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // TODO; handle attribute event handlers dynamically during runtime
         for (var i=0; i < evtArr.length; i++)
         {
-//            var evtName = "on" + evtArr[i];
             var evtName = evtArr[i];
             var userEvt = x3dElem.getAttribute(evtName);
             if (userEvt) {
@@ -319,7 +318,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         var statDiv = document.createElement('div');
         statDiv.setAttribute("class", "x3dom-statdiv");
         statDiv.innerHTML = "0 fps";
-        this.x3dElem.appendChild(statDiv);
 
         statDiv.oncontextmenu = statDiv.onmousedown = function(evt) {
             evt.preventDefault();
@@ -342,8 +340,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         _inner.setAttribute('style', "width: 25%;");
         _inner.appendChild(document.createTextNode(' '));  // this needs to be a protected whitespace
         progressDiv.appendChild(_inner);
-
-        this.x3dElem.appendChild(progressDiv);
 
         progressDiv.oncontextmenu = progressDiv.onmousedown = function(evt) {
             evt.preventDefault();
@@ -443,10 +439,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = this.createStatDiv();
     this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
+    this.x3dElem.appendChild(this.statDiv);
     
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this.createProgressDiv();
-    this.progressDiv.style.display = (this.showProgress == null || this.showProgress == "true") ? "inline" : "none";
+    this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "inline" : "none";
+    this.x3dElem.appendChild(this.progressDiv);
     
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
     this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
@@ -568,7 +566,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				else {
 					this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				}
-			   
+			    
 				this.parent.doc.needRender = true;
 				
 				// deliberately different for performance reasons
@@ -935,6 +933,43 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.canvas.addEventListener('touchstart',    touchStartHandler, true);
         this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
         this.canvas.addEventListener('touchend',      touchEndHandler,   true);
+    };
+    
+    /** Helper that converts a point from node coordinates to page coordinates 
+        FIXME: does NOT work when x3dom.css is not included so that x3d element is not floating
+    */
+    function mousePosition(evt)
+    {
+        var convertPoint = window.webkitConvertPointFromNodeToPage;
+        var x = 0, y = 0;
+
+        if ( "getBoundingClientRect" in document.documentElement ) {
+            var elem = evt.target.offsetParent;    // should be x3dElem
+    		var box = elem.getBoundingClientRect();
+    		
+    		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
+    		var scrolltop =  window.pageYOffset || document.body.scrollTop;
+            
+    		var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
+    		var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
+            
+    		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
+    		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
+    		
+    		x = Math.round(evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft));
+    		y = Math.round(evt.pageY - (box.top + paddingTop + borderTopWidth + scrolltop));
+        }
+        else if (convertPoint) {
+            var point = convertPoint(evt.target, new WebKitPoint(0, 0));
+
+            x = Math.round(point.x);
+            y = Math.round(point.y);
+        }
+        else {
+    		x3dom.debug.logError('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
+    	}
+    	
+    	return new x3dom.fields.SFVec2f(x, y);
     }
 };
 
@@ -1059,44 +1094,3 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
 
     this.doc.load(uri, sceneElemPos);
 };
-
-/** Helper that converts a point from node coordinates to page coordinates */
-function mousePosition(evt) {
-
-    var convertPoint = window.webkitConvertPointFromNodeToPage;
-    var x = 0, y = 0;
-
-    if ( "getBoundingClientRect" in document.documentElement ) {
-		var box =  evt.target.offsetParent.getBoundingClientRect();				
-		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		var scrolltop =  window.pageYOffset || document.body.scrollTop;
-		
-		var elem = evt.target.offsetParent;
-		
-		var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
-		var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
-		
-		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
-		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
-							
-		x = evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft);
-		y = evt.pageY - (box.top + paddingTop + borderTopWidth + scrolltop);
-
-        return new x3dom.fields.SFVec2f(x, y);
-
-    } else if (convertPoint) {
-
-        var zeroPoint = new WebKitPoint(0,0);
-        var point = convertPoint(evt.target, zeroPoint);
-
-        x = Math.round(point.x);
-        y = Math.round(point.y);
-
-        return new x3dom.fields.SFVec2f(x, y);
-
-    } else {
-		x3dom.debug.logError('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
-	}
-
-	return new x3dom.fields.SFVec2f(x, y);
-}

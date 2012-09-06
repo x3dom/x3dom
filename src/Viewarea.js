@@ -761,8 +761,8 @@ x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
             }
         }
     }
-    catch(ex) {
-        x3dom.debug.logException(ex);
+    catch(e) {
+        x3dom.debug.logException(e);
     }
 
     return event.cancelBubble;
@@ -835,6 +835,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         recurse(obj);
     }
 	
+	return needRecurse;
 };
 
 x3dom.Viewarea.prototype.initMouseState = function()

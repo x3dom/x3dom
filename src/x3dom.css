@@ -20,7 +20,7 @@ X3D, x3d {
   position:relative;    /* in order to be able to position stat-div within X3D */
   float:left;           /* float the element so it has the same size like the canvas */
   cursor:pointer;
-  margin:0;
+  margin: 0;
   padding: 0;
   border: 1px solid #000;
 }
@@ -52,7 +52,7 @@ x3d:hover,
 }
 .x3dom-progress {
     margin: 0;
-    padding: 6px 8px 0 26px;
+    padding: 6px 8px 0px 26px;
     left: 0px;
     top: 0px;
     position: absolute;
@@ -96,7 +96,7 @@ x3d:hover,
 }
 
 .x3dom-touch-marker {
-	display:inline;
+	display: inline;
     padding: 5px;
 	border-radius: 10px;
     position: absolute;
@@ -108,6 +108,19 @@ x3d:hover,
     opacity: 0.6;
     border: 2px solid orange;
 	z-index: 200;
+}
+
+.x3dom-logContainer {
+    border: 2px solid olivedrab;
+    height: 200px;
+    padding: 4px;
+    overflow: auto;
+    white-space: pre-wrap;
+    font-family: sans-serif;
+    font-size: x-small;
+    color: #00ff00;
+    background-color: black;
+    margin-right: 10px;
 }
 
 .x3dom-nox3d {
