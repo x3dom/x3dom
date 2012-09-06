@@ -13,6 +13,7 @@
     };
     //end hack
   </script>
+  <script type="text/javascript" src="RefinementJob.js"></script>
   <script type="text/javascript" src="RefinementJobManager.js"></script>
   <script type="text/javascript" src="RefinementJobWorker.js"></script>
   <body onload="main();">
@@ -56,22 +57,12 @@
           rm.continueProcessing(attributeId);
         };
         
-        var job0 = {
-          format           : 2,
-          finishedCallback : dataAvailable
-        };
-        
-        var job1 = {
-          format           : 3,
-          finishedCallback : dataAvailable
-        };
-        
         var rm = new x3dom.RefinementJobManager();
         
         rm.addResultBuffer(0, bufferView);
         
-        rm.addRefinementJob(0, job0);
-        rm.addRefinementJob(0, job1);
+        rm.addRefinementJob(0, 0, 2, dataAvailable);
+        rm.addRefinementJob(0, 1, 3, dataAvailable);
       }
     </script>
   </body>  

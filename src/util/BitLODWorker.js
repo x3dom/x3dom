@@ -52,7 +52,7 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 		attributeLeftShift 	   = (strideReading * 8) - attrib.readOffset - attrib.numBitsPerComponentPerLevel * nc;	
 		attrib.precisionOffset = attrib.numBitsPerComponent - attrib.numBitsPerComponentPerLevel -
                              (level * attrib.numBitsPerComponentPerLevel);
-							
+
 		for (c = 0; c < nc; ++c) {
 			attrib.componentLeftShift[c] = attributeLeftShift + (nc - c - 1) * attrib.numBitsPerComponentPerLevel;
 			
