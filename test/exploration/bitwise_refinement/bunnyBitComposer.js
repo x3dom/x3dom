@@ -107,6 +107,7 @@ load : function(gl)
     
   
   refinementManager = new x3dom.RefinementJobManager();
+  //refinementManager = new x3dom.BitLODComposer();
 
 
 	//BEGIN GET INDICES
@@ -139,8 +140,9 @@ load : function(gl)
     refinementManager.addRefinementJob(0,                           //attributeId / resultBufferId
                                        i,                           //job priority
                                        refinementURLs[i],           //data file url
+                                       i,                           //refinement level (-> important for bit shift)
                                        refinementFinishedCallback,  //'job finished'-callback
-                                       96,                          //stride in bits (size of a single result element)
+                                       StrideInBits,                //stride in bits (size of a single result element)
                                        [3, 2],                      //number of components information array
                                        [6, 2],                      //bits per refinement level information array
                                        [0, 6],                      //read offset (bits) information array
@@ -148,14 +150,14 @@ load : function(gl)
   }
   
   /*
-	bitComposer.run([3, 2], 		    //components
+	refinementManager.run([3, 2], 		    //components
                   [16, 16], 		  //attribute bits for each component
                   [6,   2], 		  //bits per refinement level for all components
                   refinementURLs,	//URLs for the files of the refinement levels
                   refinementFinishedCallback,       //callback, executed on refinement
                   [0, 64],		    //write offset in bits (interleaved output)
                   StrideInBits);	//write stride in bits (interleaved output)
-  */
+                  */
 },
 
 
@@ -213,6 +215,7 @@ draw : function(gl)
 
 
 function refinementFinishedCallback(attributeId, bufferView) {
+//function refinementFinishedCallback(bufferView) {
   console.log('=> Client received refined data for level ' + refinedLevels + '!');
 
   numArrayElements = (bufferView.length * Uint16Array.BYTES_PER_ELEMENT * 8) / StrideInBits;
@@ -232,6 +235,7 @@ function refinementFinishedCallback(attributeId, bufferView) {
   }  
   else {
     refinementManager.continueProcessing(attributeId);
+    //refinementManager.refine(bufferView);
   }  
 }
 

@@ -46,20 +46,21 @@ x3dom.RefinementJobManager.prototype.addResultBuffer = function(attributeId, buf
 };
 
 
-x3dom.RefinementJobManager.prototype.addRefinementJob = function(attributeId, priority, url, finishedCallback, stride,
-                                                                 numComponentsList, bitsPerLevelList, readOffsetList, writeOffsetList) {
+x3dom.RefinementJobManager.prototype.addRefinementJob = function(attributeId, priority, url, level, finishedCallback, stride,
+                                                                 numComponentsList, bitsPerLevelList, readOffsetList, writeOffsetList) {  
   var self = this;  
   
-  var job = {priority           : priority,        
-              url               : url,
-              finishedCallback  : finishedCallback,
-              stride            : stride,
-              numComponentsList : numComponentsList,
-              bitsPerLevelList  : bitsPerLevelList,
-              readOffsetList    : readOffsetList,
-              writeOffsetList   : writeOffsetList,
-              state             : JOB_WAITING_FOR_DATA,
-              dataBuffer        : {}                   };
+  var job = {priority          : priority,        
+             url               : url,
+             level             : level,
+             finishedCallback  : finishedCallback,
+             stride            : stride,
+             numComponentsList : numComponentsList,
+             bitsPerLevelList  : bitsPerLevelList,
+             readOffsetList    : readOffsetList,
+             writeOffsetList   : writeOffsetList,
+             state             : JOB_WAITING_FOR_DATA,
+             dataBuffer        : {}                   };
   
   this.attributes[attributeId].jobs.push(job);
   
@@ -69,19 +70,33 @@ x3dom.RefinementJobManager.prototype.addRefinementJob = function(attributeId, pr
     downloadCallback = function(arrayBuffer) {
       self.jobInputDataLoaded(attId, url, arrayBuffer);
     };
-  })(attributeId);
-    
+  })(attributeId, url);
+  
+  
+  //CODE FOR DOWNLOAD MANAGER USE:
   //this is just an option:
   //it tells the download manager to return data only if there are no pending requests of higher priority left
   //this way, we ensure can guarantee to get all levels in the correct order, which is visually more satisfying
   //however, one may decide to leave this option out to allow for a random refinement processing order
-  x3dom.DownloadManager.toggleStrictReturnOrder(true);
+  //x3dom.DownloadManager.toggleStrictReturnOrder(true);
     
-  x3dom.DownloadManager.get([url], [downloadCallback], [priority]);
+  //x3dom.DownloadManager.get([url], [downloadCallback], [priority]);
+  //(END CODE FOR DOWNLOAD MANAGER USE)
+  
+  
+  //ALTERNATIVE CODE WITHOUT DONWLOAD MANAGER USE:
+  var xhr = new XMLHttpRequest();
+	xhr.open("GET", url, true);
+	xhr.responseType = "arraybuffer";	
+  xhr.onload = function() {          
+	  downloadCallback(xhr.response);    
+	};  
+  xhr.send(null);
+  //(ALTERNATIVE CODE WITHOUT DONWLOAD MANAGER USE:)
 };
 
 
-x3dom.RefinementJobManager.prototype.jobInputDataLoaded = function(attributeId, url, dataBuffer) {
+x3dom.RefinementJobManager.prototype.jobInputDataLoaded = function(attributeId, url, dataBuffer) {  
   var i;
   var jobs = this.attributes[attributeId].jobs;
   
@@ -96,7 +111,7 @@ x3dom.RefinementJobManager.prototype.jobInputDataLoaded = function(attributeId, 
 }
 
 
-x3dom.RefinementJobManager.prototype.tryNextJob = function(attributeId) {
+x3dom.RefinementJobManager.prototype.tryNextJob = function(attributeId) {  
   var i, job;
   var jobs           = this.attributes[attributeId].jobs;  
   var owningBuffer   = true;
@@ -120,6 +135,7 @@ x3dom.RefinementJobManager.prototype.tryNextJob = function(attributeId) {
     
     this.worker.postMessage({msg                         : 'processJob',
                              attributeId                 : attributeId,
+                             level                       : job.level,
                              stride                      : job.stride,
                              numComponentsList           : job.numComponentsList,
                              bitsPerLevelList            : job.bitsPerLevelList,
@@ -171,7 +187,7 @@ x3dom.RefinementJobManager.prototype.messageFromWorker = function(message) {
         break;
                                     
       case 'log':
-        console.log('Message from Worker Context: ' + message.data.txt);
+        x3dom.debug.logInfo('Message from Worker Context: ' + message.data.txt);
         break;
     }
   }
@@ -188,5 +204,8 @@ x3dom.RefinementJobManager.prototype.getBufferView = function(attributeId) {
       return new Uint16Array(att.resultBuffer);
     case 4:
       return new Uint32Array(att.resultBuffer);
+    default:
+      x3dom.debug.logError('Unable to create BufferView: the given number of ' + att.resultBufferBytesPerElement +
+                           ' bytes per element does not match any Uint buffer type.');
   }
 };
