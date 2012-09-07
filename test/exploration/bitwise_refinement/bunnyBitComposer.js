@@ -18,6 +18,8 @@ const NumLevels = 8;
 
 const StrideInBits = 96;
 
+var texture;
+
 var glContext;
 
 var glBuffers;	//object data buffers on the gpu
@@ -25,14 +27,14 @@ var glBuffers;	//object data buffers on the gpu
   {
   indices:   {},
   positions: {},
-  normals:   {}  
+  normals:   {},
+  texcoords: {}
   }
   */
 
 var positionAttribLocation;
 var normalAttribLocation;
-      
-var numArrayElements = 0;
+var texcoordAttributeLocation;
 
 var refinedLevels = 0, refinementsTexCoord = 0;
 
@@ -92,16 +94,19 @@ load : function(gl)
   this.program = program;
   program.use();
   
-  positionAttribLocation = gl.getAttribLocation(this.program.handle_, 'a_position');
-  normalAttribLocation   = gl.getAttribLocation(this.program.handle_, 'a_normal');
+  positionAttribLocation    = gl.getAttribLocation(this.program.handle_, 'a_position');
+  normalAttribLocation      = gl.getAttribLocation(this.program.handle_, 'a_normal');
+  texcoordAttributeLocation = gl.getAttribLocation(this.program.handle_, 'a_texcoord');
   
   gl.enableVertexAttribArray(positionAttribLocation);
   gl.enableVertexAttribArray(normalAttribLocation);
+  gl.enableVertexAttribArray(texcoordAttributeLocation);
   
   glBuffers = {};  
   glBuffers.indices   = gl.createBuffer();
   glBuffers.positions = gl.createBuffer();
   glBuffers.normals   = gl.createBuffer();
+  glBuffers.texcoords = gl.createBuffer();
   
   glContext = gl;
     
@@ -109,7 +114,20 @@ load : function(gl)
   refinementManager = new x3dom.RefinementJobManager();
   //refinementManager = new x3dom.BitLODComposer();
 
-
+  //BEGIN GET TEXTURE 
+  texture = gl.createTexture();
+  var img = new Image();
+  img.onload = function() {
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, img);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
+    gl.generateMipmap(gl.TEXTURE_2D);
+    gl.bindTexture(gl.TEXTURE_2D, null);
+  };
+  img.src = "bitbunny/fractal.png";
+  //END GET TEXTURE
+  
 	//BEGIN GET INDICES
 	var xhr = new XMLHttpRequest();
 	xhr.open("GET", 'bitbunny/bitbunnyLG_0_indexBinary.bin', true);
@@ -130,15 +148,19 @@ load : function(gl)
   
   const numVerts = 34834;
   
-  var buf = new ArrayBuffer(12 * numVerts);
-  
+  var buf = new ArrayBuffer(12 * numVerts);  
   var interleavedCoordNormalBuffer = new Uint16Array(buf);
   
-  refinementManager.addResultBuffer(0, interleavedCoordNormalBuffer);
+  var tBuf = new ArrayBuffer(4 * numVerts);  
+  var texCoordBuffer = new Uint16Array(tBuf);
   
+  refinementManager.addResultBuffer(0, interleavedCoordNormalBuffer);
+  refinementManager.addResultBuffer(1, texCoordBuffer);
+  
+  //normal / coord refinements
   for (i = 0; i < NumLevels; ++i) {
     refinementManager.addRefinementJob(0,                           //attributeId / resultBufferId
-                                       i,                           //job priority
+                                       i,                           //download priority
                                        refinementURLs[i],           //data file url
                                        i,                           //refinement level (-> important for bit shift)
                                        refinementFinishedCallback,  //'job finished'-callback
@@ -149,15 +171,22 @@ load : function(gl)
                                        [0, 64]);                    //write offset (bits) information array                                       
   }
   
-  /*
-	refinementManager.run([3, 2], 		    //components
-                  [16, 16], 		  //attribute bits for each component
-                  [6,   2], 		  //bits per refinement level for all components
-                  refinementURLs,	//URLs for the files of the refinement levels
-                  refinementFinishedCallback,       //callback, executed on refinement
-                  [0, 64],		    //write offset in bits (interleaved output)
-                  StrideInBits);	//write stride in bits (interleaved output)
-                  */
+  //texcoord refinements
+  texCoordURLs = ['bitbunny/bitbunnyLG_0_level8.bin',  'bitbunny/bitbunnyLG_0_level9.bin',
+                  'bitbunny/bitbunnyLG_0_level10.bin', 'bitbunny/bitbunnyLG_0_level11.bin'];
+  for (i = 0; i < 4; ++i) {
+    refinementManager.addRefinementJob(1,                           //attributeId / resultBufferId
+                                       i,                           //download priority
+                                       texCoordURLs[i],             //data file url
+                                       i,                           //refinement level (-> important for bit shift)
+                                       refinementFinishedCallback,  //'job finished'-callback
+                                       32,                          //stride in bits (size of a single result element)
+                                       [2],                         //number of components information array
+                                       [8],                         //bits per refinement level information array
+                                       [0],                         //read offset (bits) information array
+                                       [0]);                        //write offset (bits) information array                                       
+  }
+  
 },
 
 
@@ -190,58 +219,54 @@ draw : function(gl)
 
     this.xform.model.loadIdentity();	
     this.xform.model.rotate(sglDegToRad(this.angle), 0.0, 1.0, 0.0);
-	this.xform.model.rotate(sglDegToRad(90.0), 1.0, 0.0, 0.0);
+    this.xform.model.rotate(sglDegToRad(90.0), 1.0, 0.0, 0.0);
 
     gl.uniformMatrix4fv(this.program.set_uniform["u_mvp"], false,
                         this.xform.modelViewProjectionMatrix);
 
+    gl.activeTexture(gl.TEXTURE0);
+    gl.bindTexture(gl.TEXTURE_2D, texture);
+    gl.uniform1i(gl.getUniformLocation(this.program.handle_, "u_sampler"), 0);
    
     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, glBuffers.indices);
    
-	gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
-	gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true, 6*2, 0  );
-	gl.vertexAttribPointer(normalAttribLocation,   2, gl.UNSIGNED_SHORT, true, 6*2, 4*2);
+    gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
+    gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true, 6*2, 0  );
+    gl.vertexAttribPointer(normalAttribLocation,   2, gl.UNSIGNED_SHORT, true, 6*2, 4*2);
+    
+    gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.texcoords);
+    gl.vertexAttribPointer(texcoordAttributeLocation, 2, gl.UNSIGNED_SHORT, true, 2*2, 0);
 
-	gl.drawElements(gl.TRIANGLES, 208353, gl.UNSIGNED_SHORT, 0);
-  
-    //-  
-	if (refinedLevels !== NumLevels){
-		drawAllowed = false;
-	}
-  }
-  
+    gl.drawElements(gl.TRIANGLES, 208353, gl.UNSIGNED_SHORT, 0);  
+  }  
 }
 };
 
 
-function refinementFinishedCallback(attributeId, bufferView) {
-//function refinementFinishedCallback(bufferView) {
-  console.log('=> Client received refined data for level ' + refinedLevels + '!');
-
-  numArrayElements = (bufferView.length * Uint16Array.BYTES_PER_ELEMENT * 8) / StrideInBits;
+function refinementFinishedCallback(attributeId, bufferView) {  
+  if (attributeId === 0) {
+    console.log('=> Client received refined coord/normal data for level ' + refinedLevels + '!');
+    
+    ++refinedLevels;
+    
+    //upload the VBO data to the GPU
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.positions);  
+    glContext.bufferData(glContext.ARRAY_BUFFER, bufferView, glContext.STATIC_DRAW);
+    
+    if (refinedLevels === NumLevels) {     
+      UpdateTotal(Date.now() - start_time);
+    }
+  }
+  else if (attributeId === 1) {
+    console.log('=> Client received refined texcoord data!');
+     
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.texcoords);
+    glContext.bufferData(glContext.ARRAY_BUFFER, bufferView, glContext.STATIC_DRAW);
+  }  
   
-  ++refinedLevels;
-  
-  //@todo: check this hack!
   drawAllowed = true;
   
-  if (refinedLevels === NumLevels)
-  { 
-	  //upload the VBO data to the GPU
-	  glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.positions);  
-	  glContext.bufferData(glContext.ARRAY_BUFFER, bufferView, glContext.STATIC_DRAW);
-	  
-	  UpdateTotal(Date.now() - start_time);
-  }  
-  else {
-    refinementManager.continueProcessing(attributeId);
-    //refinementManager.refine(bufferView);
-  }  
-}
-
-
-function refinementFinishedCallbackTexCoords(buffer) {
-	++refinementsTexCoord;
+  refinementManager.continueProcessing(attributeId);
 }
 
 

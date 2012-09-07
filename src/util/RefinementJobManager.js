@@ -13,10 +13,9 @@ x3dom.RefinementJobManager = function() {
     this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
   }
   else if (!x3dom.RefinementJobManager.suppressOnWorkersNotSupported) {
-    x3dom.RefinementJobManager.onWorkersNotSupported();
     x3dom.RefinementJobManager.suppressOnWorkersNotSupported = true;
-  }
- 
+    x3dom.RefinementJobManager.onWorkersNotSupported();    
+  } 
   
   this.attributes = [];
 };
@@ -79,20 +78,20 @@ x3dom.RefinementJobManager.prototype.addRefinementJob = function(attributeId, pr
   //this way, we ensure can guarantee to get all levels in the correct order, which is visually more satisfying
   //however, one may decide to leave this option out to allow for a random refinement processing order
   //x3dom.DownloadManager.toggleStrictReturnOrder(true);
-    
-  //x3dom.DownloadManager.get([url], [downloadCallback], [priority]);
+  
+  x3dom.DownloadManager.get([url], [downloadCallback], [priority]);
   //(END CODE FOR DOWNLOAD MANAGER USE)
   
   
-  //ALTERNATIVE CODE WITHOUT DONWLOAD MANAGER USE:
-  var xhr = new XMLHttpRequest();
-	xhr.open("GET", url, true);
-	xhr.responseType = "arraybuffer";	
-  xhr.onload = function() {          
-	  downloadCallback(xhr.response);    
-	};  
-  xhr.send(null);
-  //(ALTERNATIVE CODE WITHOUT DONWLOAD MANAGER USE:)
+  //ALTERNATIVE CODE WITHOUT DOWNLOAD MANAGER USE:
+  // var xhr = new XMLHttpRequest();
+	// xhr.open("GET", url, true);
+	// xhr.responseType = "arraybuffer";	
+  // xhr.onload = function() {          
+	  // downloadCallback(xhr.response);    
+	// };  
+  // xhr.send(null);
+  //(ALTERNATIVE CODE WITHOUT DOWNLOAD MANAGER USE:)
 };
 
 
@@ -149,8 +148,8 @@ x3dom.RefinementJobManager.prototype.tryNextJob = function(attributeId) {
     //after postMessage, the buffers should have been transfered and neutered
 		if ((job.dataBuffer.byteLength > 0 || this.attributes[attributeId].resultBuffer.byteLength > 0) &&
         !x3dom.RefinementJobManager.suppressOnTransferablesNotSupported                               ) {
-		  x3dom.RefinementJobManager.onTransferablesNotSupported();
 		  x3dom.RefinementJobManager.suppressOnTransferablesNotSupported = true;
+      x3dom.RefinementJobManager.onTransferablesNotSupported();		  
 		}
   }
 };

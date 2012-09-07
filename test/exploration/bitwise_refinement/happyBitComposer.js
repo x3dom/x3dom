@@ -9,16 +9,29 @@ var start_drawing = false;
 var awaitingSecondAttrib = false;
 
 //---
-//const ACTIVE = 14;
-//const NumPatches = (ACTIVE + 1);
 const NumPatches = 16;
 
+const NumVerts = [26199,
+                  32682,
+                  33278,
+                  30521,
+                  23156,
+                  24937,
+                  28923,
+                  33301,
+                  39060,
+                  33187,
+                  38677,
+                  35154,
+                  24511,
+                  22165,
+                  37560,
+                  35913];
+                  
 const PrimCount = [{a : 72884,
                     b : 2730  },
                    {a : 90528,
-                    b : 3444  },
-                   {a : 99968,
-                    b : 3642  },
+                    b : 3444  },                   
                    {a : 92007,
                     b : 3462  },
                    {a : 84212,
@@ -44,12 +57,13 @@ const PrimCount = [{a : 72884,
                    {a : 61274,
                     b : 2430  },
                    {a : 104126,
-                    b : 4386  }
+                    b : 4386  },
+                   {a : 99968,
+                    b : 3642  }
                     ];
                     
 const FileBaseURIs = [encodeURI("lodGeo/G0_"),
-                      encodeURI("lodGeo/G1_"),
-                      encodeURI("lodGeo/G15_"),
+                      encodeURI("lodGeo/G1_"),                      
                       encodeURI("lodGeo/G2_"),
                       encodeURI("lodGeo/G3_"),
                       encodeURI("lodGeo/G4_"),
@@ -62,11 +76,11 @@ const FileBaseURIs = [encodeURI("lodGeo/G0_"),
                       encodeURI("lodGeo/G11_"),
                       encodeURI("lodGeo/G12_"),
                       encodeURI("lodGeo/G13_"),
-                      encodeURI("lodGeo/G14_")]
+                      encodeURI("lodGeo/G14_"),
+                      encodeURI("lodGeo/G15_")];
                        
 const Offsets = [{x : 0.0150144994259, y : 0.235128998756, z : -0.0129659995437},
-                 {x : 0.0150395017117, y : 0.21044999361, z : -0.00991200096905},
-                 {x : -0.0170029997826, y : 0.222592502832, z : -0.0113889984787},
+                 {x : 0.0150395017117, y : 0.21044999361, z : -0.00991200096905},                 
                  {x : 0.0150015000254, y : 0.185926496983, z : -0.00905999913812},
                  {x : 0.015164501965, y : 0.161074995995, z : -0.00654399953783},
                  {x : -0.0170179996639, y : 0.185856491327, z : -0.00910650007427},
@@ -79,11 +93,11 @@ const Offsets = [{x : 0.0150144994259, y : 0.235128998756, z : -0.0129659995437}
                  {x : 0.0149069987237, y : 0.062527500093, z : -0.0066795013845},
                  {x : -0.01427350007, y : 0.0870749950409, z : -0.0068469978869},
                  {x : -0.0330730006099, y : 0.0868249982595, z : -0.00686400011182},
-                 {x : -0.024871500209, y : 0.0622909963131, z : -0.00668999925256}]
+                 {x : -0.024871500209, y : 0.0622909963131, z : -0.00668999925256},
+                 {x : -0.0170029997826, y : 0.222592502832, z : -0.0113889984787}];
 
 const Scales = [ {x : 0.0393669977784, y : 0.0253019928932, z : 0.033886000514 },
                  {x : 0.0397630035877, y : 0.0262499898672, z : 0.0456780008972},
-                 {x : 0.0258460007608, y : 0.0500349998474, z : 0.042732000351 },              
                  {x : 0.0402889996767, y : 0.026203006506 , z : 0.0477060005069},
                  {x : 0.0401150025427, y : 0.026000007987 , z : 0.0588600002229},
                  {x : 0.0262500010431, y : 0.0259370058775, z : 0.0464130006731},
@@ -96,7 +110,8 @@ const Scales = [ {x : 0.0393669977784, y : 0.0253019928932, z : 0.033886000514 }
                  {x : 0.0405999980867, y : 0.0245949961245, z : 0.0813969969749},
                  {x : 0.0212609991431, y : 0.0260000005364, z : 0.0748520046473},                 
                  {x : 0.0193519983441, y : 0.0254999995232, z : 0.0648780018091},
-                 {x : 0.0424570031464, y : 0.0250679962337, z : 0.0814180001616} ]
+                 {x : 0.0424570031464, y : 0.0250679962337, z : 0.0814180001616},
+                 {x : 0.0258460007608, y : 0.0500349998474, z : 0.042732000351 }];
 
 const Colors = [{r : 0.3, g : 0.3, b : 0.3},
                 {r : 0.3, g : 0.3, b : 1.0},
@@ -161,6 +176,7 @@ function UpdateTotal(ms) {
   out.innerHTML = "Decode time (sum of all threads): " + decode_ms +
       " ms, Total time: " + ms + " ms";
 }
+
 
 /*
 var refinementURLs = [ 'data/refinement00.bin',
@@ -252,30 +268,37 @@ load : function(gl)
   //END GET INDICES
   //----
     
-  for (b = 0; b < NumPatches; ++b) {
-  
-    var bitComposer = new x3dom.BitLODComposer();
-
-    //bitComposer.toggleDebugOutput(true);
+  for (b = 0; b < NumPatches; ++b) {  
+    refinedLevels[b] = 0;
     
+    var refinementManager = new x3dom.RefinementJobManager();
+
     var callback;
     
-    (function (idx, bc){
+    (function (idx, rm) {    
+      callback = function(attributeId, bufferView){
+        refinementFinishedCallback(attributeId, bufferView, idx, rm);
+      };    
+    })(b, refinementManager);
     
-        callback = function(buffer){
-        refinementFinishedCallback(buffer, idx, bc);
-      };
+    var buf = new ArrayBuffer(12 * NumVerts[b]);
     
-    })(b, bitComposer);
+    var interleavedCoordNormalBuffer = new Uint16Array(buf);
     
-    bitComposer.run([3, 2], 					  //components
-                    [16, 16], 					//attribute bits for each component
-                    [6,   2], 					//bits per refinement level for all components
-                    refinementURLs[b],	//URLs for the files of the refinement levels
-                    callback,           //callback, executed on refinement
-                    [0, 64],					  //write offset in bits (interleaved output)
-                    StrideInBits);			//write stride in bits (interleaved output)
-                  
+    refinementManager.addResultBuffer(0, interleavedCoordNormalBuffer);
+    
+    for (i = 0; i < NumLevels; ++i) {
+      refinementManager.addRefinementJob(0,                    //attributeId / resultBufferId
+                                         i,                    //download priority
+                                         refinementURLs[b][i], //data file url
+                                         i,                    //refinement level (-> important for bit shift)
+                                         callback,             //'job finished'-callback
+                                         StrideInBits,         //stride in bits (size of a single result element)
+                                         [3, 2],               //number of components information array
+                                         [6, 2],               //bits per refinement level information array
+                                         [0, 6],               //read offset (bits) information array
+                                         [0, 64]);             //write offset (bits) information array                                       
+    }                  
   }
 },
 
@@ -340,7 +363,7 @@ draw : function(gl)
     //-  
     var b;
     for (b = 0; b < NumPatches; ++b) {
-      if (refinedLevels[b] !== NumLevels){
+      if (refinedLevels[b] !== NumLevels) {        
         drawAllowed = false;
       }
     }
@@ -351,11 +374,8 @@ draw : function(gl)
 };
 
 
-function refinementFinishedCallback(buffer, patchIdx, bitComposer) {
-  if (!refinedLevels[patchIdx])
-    refinedLevels[patchIdx] = 0;
-  
-  console.log('=> Client received refined data for level ' + refinedLevels[patchIdx] + ' of patch ' + patchIdx + '!');
+function refinementFinishedCallback(attributeId, buffer, patchIdx, refinementJobManager) {  
+  //console.log('=> Client received refined data for level ' + refinedLevels[patchIdx] + ' of patch ' + patchIdx + '!');
           
   var normalBuffer,
       coordBuffer;
@@ -377,23 +397,18 @@ function refinementFinishedCallback(buffer, patchIdx, bitComposer) {
   
   ++refinedLevels[patchIdx];
   
-  if (refinedLevels[patchIdx] === NumLevels)
-  {
- 
-  //upload the VBO data to the GPU
-  glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers[patchIdx].positions);  
-  glContext.bufferData(glContext.ARRAY_BUFFER, coordBuffer, glContext.STATIC_DRAW);
+  drawAllowed = true;
   
-  //@todo: check this hack!
-  //drawAllowed = true;  
+  //if (refinedLevels[patchIdx] === NumLevels)
+  { 
+    //upload the VBO data to the GPU
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers[patchIdx].positions);  
+    glContext.bufferData(glContext.ARRAY_BUFFER, coordBuffer, glContext.STATIC_DRAW);
   }
   
-  //enjoy it :-)
-  //sleep(500);
-
   var allFinished = true;
   var b;  
-  for (b = 0; b < NumLevels; ++b) {
+  for (b = 0; b < NumPatches; ++b) {
     if (refinedLevels[b] !== NumLevels) {
       allFinished = false;
       break;
@@ -401,11 +416,10 @@ function refinementFinishedCallback(buffer, patchIdx, bitComposer) {
   }
   
   if (allFinished) {
-    UpdateTotal(Date.now() - start_time);
-    drawAllowed = true;
+    UpdateTotal(Date.now() - start_time);    
   }  
   else if (refinedLevels[patchIdx] !== NumLevels) {
-    bitComposer.refine(buffer);
+    refinementJobManager.continueProcessing(attributeId);
   }
 }
     

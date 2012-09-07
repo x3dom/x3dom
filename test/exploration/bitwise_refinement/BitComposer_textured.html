@@ -23,8 +23,8 @@
   //end hack
 </script>
 <script type="text/javascript" src='../../../src/util/DownloadManager.js'></script>
-<script type="text/javascript" src='RefinementJobManager.js'></script>
-<script type="text/javascript" src='RefinementJobWorker.js'></script>
+<script type="text/javascript" src='../../../src/util/RefinementJobManager.js'></script>
+<script type="text/javascript" src='../../../src/util/RefinementJobWorker.js'></script>
 
 <script id="SIMPLE_VERTEX_SHADER" type="text/x-vertex">
 #ifdef GL_ES
@@ -35,8 +35,10 @@ uniform mat4 u_mvp;
 
 attribute vec3 a_position;
 attribute vec2 a_normal;
+attribute vec2 a_texcoord;
 
 varying vec3 v_normal;
+varying vec2 v_texcoord;
 
 void main(void) {     
   float Pi = 2.0 * asin(1.0);
@@ -56,6 +58,8 @@ void main(void) {
   gl_Position = u_mvp * vec4(p.x,
                              p.y - 1.0,
                              p.z, 1.0);
+                             
+  v_texcoord = a_texcoord;
 }
 </script>
 
@@ -65,13 +69,19 @@ precision highp float;
 #endif
 
 varying vec3 v_normal;
+varying highp vec2 v_texcoord;
+
+uniform sampler2D u_sampler;
 
 void main(void) {	
     // Simple, soft directional lighting.
     vec3 normal = normalize(v_normal);
     vec3 light_vec = normalize(vec3(0.25, 0.25, -1.0));
     float light = 0.5 + 0.5*dot(normal, light_vec);
-    gl_FragData[0] = vec4(vec3(light*light), 1.0);
+    
+    vec4 decal = texture2D(u_sampler, vec2(v_texcoord.s, v_texcoord.t));
+    
+    gl_FragData[0] = decal * vec4(vec3(light*light), 1.0);
 }
 </script>
 

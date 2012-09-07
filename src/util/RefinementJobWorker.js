@@ -134,6 +134,7 @@ x3dom.RefinementJobWorker.prototype.addBits_3x2_2x1 = function(dataBufferView, r
 	//}
 };
 
+
 x3dom.RefinementJobWorker.prototype.addBits = function(level, stride,
                                                        numComponentsList, bitsPerLevelList, readOffsetList, writeOffsetList,
                                                        dataBufferView, resultBufferView) {
