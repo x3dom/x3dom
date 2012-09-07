@@ -3627,7 +3627,7 @@ x3dom.gfx_webgl = (function () {
                     sky[i+1] = bgnd._vf.skyAngle[i];
                 }
                 
-                if (n > 0) {
+                if (n > 0 || bgnd._vf.groundColor.length == 1) {
                     if (sky[sky.length-1] < Math.PI / 2) {
                         sky[sky.length] = Math.PI / 2 - x3dom.fields.Eps;
                         colors[colors.length] = colors[colors.length - 1];
@@ -3642,6 +3642,10 @@ x3dom.gfx_webgl = (function () {
                         colors[colors.length] = bgnd._vf.groundColor[i + 1];
                     }
                     
+                    if (n == 0 && bgnd._vf.groundColor.length == 1) {
+                        sky[sky.length] = Math.PI / 2;
+                        colors[colors.length] = bgnd._vf.groundColor[0];
+                    }
                     sky[sky.length] = Math.PI;
                     colors[colors.length] = bgnd._vf.groundColor[0];
                 }
@@ -3657,6 +3661,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 x3dom.debug.assert(sky.length == colors.length);
+                x3dom.debug.logInfo(colors +"\n" + sky)
                 
                 var interp = new x3dom.nodeTypes.ColorInterpolator();
                 
