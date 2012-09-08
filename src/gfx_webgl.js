@@ -28,20 +28,17 @@ x3dom.gfx_webgl = (function () {
     };
 
     function setupContext(canvas, forbidMobileShaders) {
-        // TODO: add experimental-webgl, webgl test    
-        // x3dom.debug.logInfo("setupContext: canvas=" + canvas);
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
-        // Context creation params (not yet working)
-        // https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/doc/spec/WebGL-spec.html#5.2.1
+        // Context creation params
         var ctxAttribs = { alpha: true,
                            depth: true,
                            stencil: true,
                            antialias: true,
-                           premultipliedAlpha: false 
+                           premultipliedAlpha: false,
+                           preserveDrawingBuffer: true
                          };
-        // FIXME; do we need to handle context lost events?
-        // https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/doc/spec/WebGL-spec.html#5.16.1
+        
         for (var i=0; i<validContextNames.length; i++) {
             try {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
@@ -5093,7 +5090,9 @@ x3dom.gfx_webgl = (function () {
         //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
         //               scene._webgl.fboPick.width + scene._lastX ) * 4;
         var index = 0;
-        if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
+        if (index >= 0 && scene._webgl.fboPick.pixelData && 
+            index < scene._webgl.fboPick.pixelData.length)
+        {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
             var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
             var objId = scene._webgl.fboPick.pixelData[index + 3];

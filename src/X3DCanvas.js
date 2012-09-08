@@ -282,12 +282,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         if ((w = x3dElem.getAttribute("width")) !== null) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
+            if (w.indexOf("%") >= 0) {
+				x3dom.debug.logWarning("The width attribute is to be specified in pixels.");
+			}
             canvas.style.width = w;
             canvas.setAttribute("width", w);
         }
 
         if ((h = x3dElem.getAttribute("height")) !== null) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
+            if (h.indexOf("%") >= 0) {
+				x3dom.debug.logWarning("The height attribute is to be specified in pixels.");
+			}
             canvas.style.height = h;
             canvas.setAttribute("height", h);
         }
@@ -466,7 +472,20 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             evt.returnValue = false;
             return false;
         };
-
+        
+        // TODO: handle context lost events properly
+        this.canvas.addEventListener("webglcontextlost", function(event) {
+            x3dom.debug.logWarning("WebGL context lost");
+            event.preventDefault();
+        }, false);
+        
+        this.canvas.addEventListener("webglcontextrestored", function(event) {
+            x3dom.debug.logError("recover WebGL state and resources on context lost NYI");
+            event.preventDefault();
+        }, false);
+        
+        
+        // Mouse Events
         this.canvas.addEventListener('mousedown', function (evt) {
 			if(!this.isMulti) {
 				this.focus();
@@ -478,16 +497,16 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 					default: this.mouse_button = 0; break;
 				}
 				
-				var pos = mousePosition(evt);
+				if (evt.shiftKey) { this.mouse_button = 1; }
+				if (evt.ctrlKey)  { this.mouse_button = 4; }
+				if (evt.altKey)   { this.mouse_button = 2; }
+				
+				var pos = this.parent.mousePosition(evt);
 				this.mouse_drag_x = pos.x;
 				this.mouse_drag_y = pos.y;
 				
 				this.mouse_dragging = true;
-
-				if (evt.shiftKey) { this.mouse_button = 1; }
-				if (evt.ctrlKey)  { this.mouse_button = 4; }
-				if (evt.altKey)   { this.mouse_button = 2; }
-
+				
 				this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
 				
@@ -536,7 +555,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			if(!this.isMulti) {
 				this.mouse_button = 0;
 				
-				var pos = mousePosition(evt);
+				var pos = this.parent.mousePosition(evt);
 				this.mouse_drag_x = pos.x;
 				this.mouse_drag_y = pos.y;
 				
@@ -556,7 +575,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				if (evt.ctrlKey)  { this.mouse_button = 4; }
 				if (evt.altKey)   { this.mouse_button = 2; }
            
-				var pos = mousePosition(evt);
+				var pos = this.parent.mousePosition(evt);
 				this.mouse_drag_x = pos.x;
               	this.mouse_drag_y = pos.y; 
 				
@@ -598,9 +617,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
         }, false);
 
+
+        // Key Events
         this.canvas.addEventListener('keypress', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
                 this.parent.doc.onKeyPress(evt.charCode);
             }
             this.parent.doc.needRender = true;
@@ -610,7 +631,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // in webkit special keys are only handled on key-up
         this.canvas.addEventListener('keyup', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
                 this.parent.doc.onKeyUp(evt.keyCode);
             }
             this.parent.doc.needRender = true;
@@ -619,7 +640,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('keydown', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
                 this.parent.doc.onKeyDown(evt.keyCode);
             }
             this.parent.doc.needRender = true;
@@ -721,13 +742,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
-			if(doc == null)
-				doc  = this.parent.doc;
+			if (doc == null)
+				doc = this.parent.doc;
 			
 			touches.lastLayer = [];
 		
 			for(var i = 0; i < evt.touches.length; i++) {
-				var pos = mousePosition(evt.touches[i]);
+				var pos = this.parent.mousePosition(evt.touches[i]);
 				touches.lastLayer.push(new Array(evt.touches[i].identifier, new x3dom.fields.SFVec2f(pos.x,pos.y)));
 			}
            
@@ -761,7 +782,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
 			
 			for(var i = 0; i < evt.touches.length; i++) {
-				var pos = mousePosition(evt.touches[i]);
+				var pos = this.parent.mousePosition(evt.touches[i]);
 				doc.onPick(that.gl, pos.x, pos.y);
 				doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
 				doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
@@ -785,7 +806,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				mozilla_touches.touches.push(evt);
 			}
 			touchStartHandler(mozilla_touches, this.parent.doc);
-          
         };
         
         // === Touch Move ===
@@ -810,7 +830,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				
 				doc.onMoveView(that.gl, null, rotMatrix);
 				doc.needRender = true;
-			} else if(evt.touches.length >= 2) { // two fingers: scale, translation, rotation around view (z) axis
+			}
+			// two fingers: scale, translation, rotation around view (z) axis
+			else if(evt.touches.length >= 2) {
 				var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 				var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
             
@@ -938,7 +960,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     /** Helper that converts a point from node coordinates to page coordinates 
         FIXME: does NOT work when x3dom.css is not included so that x3d element is not floating
     */
-    function mousePosition(evt)
+    this.mousePosition = function(evt)
     {
         var convertPoint = window.webkitConvertPointFromNodeToPage;
         var x = 0, y = 0;
@@ -970,7 +992,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     	}
     	
     	return new x3dom.fields.SFVec2f(x, y);
-    }
+    };
 };
 
 x3dom.X3DCanvas.prototype.tick = function()

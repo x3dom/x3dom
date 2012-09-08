@@ -5,6 +5,8 @@ Styling with CSS
 
 This tutorial guides you through the process of using CSS with X3DOM. In order to demonstrate the functionality, we are going to create a HTML document with a X3DOM scene. That scene is then amended with a button that allows to resize the scene by setting CSS attributes using JavaScript.
 
+Important: you should always include the X3DOM default stylesheet ``x3dom.css``, since it initializes some important settings necessary due to the fact that X3DOM's new 3D elements are unknown to the Browser and so are their styles. For example, if the ``<x3d>`` element is not floating (e.g. using the `float:left` property), the relative mouse positions cannot be calculated correctly and picking does not work!
+
 
 Basic scene document
 --------------------
@@ -60,7 +62,7 @@ The following CSS rules, added to the ``<head>`` of the HTML document element wi
       </style>
     </head>
     ...
-    <x3d id="the_one">
+    <x3d id="the_element">
     ...
     
 We need to remove the ``width`` and ``height`` attributes as well because they take precedence over the CSS rules. In order to change the background of the WebGL viewport we add the CSS background rule. To make this work, the scene must be transparent (default). If you change the background in the X3D definition, it will not be visible because it is disguised by the X3D background.
@@ -100,7 +102,7 @@ First step is adding a piece of markup that we can use for styling as a button. 
         ...
     </x3d>
 
-Semantically we are fine, but now we need to style the button so it floats over the scene. The following style rules will accomplish this. Please note the `position: realtive` property we are setting on the ``x3d`` element. We need this to allow absolute positioning of the button within the ``x3d`` element. Otherwise it would position absolute to the page. Additionally we need to remove the default 1 pixels border added by the X3DOM default stylesheet.
+Semantically we are fine, but now we need to style the button so it floats over the scene. The following style rules will accomplish this. Please note the `position: relative` property we are setting on the ``x3d`` element. We need this to allow absolute positioning of the button within the ``x3d`` element. Otherwise it would position absolute to the page. Additionally we need to remove the default 1 pixels border added by the X3DOM default stylesheet.
 
 .. code-block:: css
 

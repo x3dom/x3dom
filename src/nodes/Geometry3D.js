@@ -2604,8 +2604,6 @@ x3dom.registerNodeType(
 					this._mesh._numColComponents = numColComponents;
 
 
-
-
 					var i, t, cnt, faceCnt;
 					var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 					
@@ -2942,7 +2940,7 @@ x3dom.registerNodeType(
 					}
 	
 					Array.forEach(this._parentNodes, function (node) {
-						node.setAllDirty();
+						node.setGeoDirty();
 					});	 
                 } 
 				else {
