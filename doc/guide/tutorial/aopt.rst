@@ -1,7 +1,7 @@
 .. _aopt:
 
-Analyzing & optimizing your model for the 3D Web
-==============================================
+Analyzing and optimizing your model for the 3D Web
+==================================================
 
 The InstantReality platform provides its users tools to help them better understand and optimize their (possibly large) 3D data sets. One such tool is aopt that (among other things) can help you in various ways to optimize 3D models with a special focus on scene-graph data.
 
@@ -10,7 +10,7 @@ The InstantReality platform provides its users tools to help them better underst
 aopt
 ----
 
-aopt is a powerful command line tool that comes bundled with InstantReality. If you have InstantReality installed, opening your command line and entering "aopt" will provide you with a list of all available command line arguments and some examples of its usage. A very basic procedure for example would be to convert a file that InstantReality can open (e.g. in obj or ply format) into an X3D file:
+aopt is a powerful command line tool that comes bundled with InstantReality. If you have InstantReality installed, opening your command line and entering "aopt" will provide you with a list of all available command line arguments and some examples of its usage. A very basic procedure for example would be to convert a file that InstantReality can open (e.g. in obj, ply or wrl format) into an X3D file:
 
 .. code-block:: none
 
@@ -29,6 +29,8 @@ Analyzing your 3D model
 
 You can get some basic statistics for your file using the "-p" parameter:
 
+.. code-block:: none
+
 	aopt -i <input.foo> -p
 
 This will give you some basic information like the number of nodes and the numbers of various types of nodes. For example, a scene that is static but heavy on the number of nodes might be suited for automatic restructuring (see below).
@@ -45,7 +47,7 @@ If you want to retain the basic structure of your scene-graphs (i.e. not change 
 
 Note: currently it is import that "imggeo" (or any folder you choose) does exist. Please also note that the "/" is NOT optional, it needs to be added at the end of the path.
 
-The ":is" part is a sub-parameter. "i" is for "index" and "s" for "strip", so this example will generate and store indexed trianglestrip geometry. For ``ImageGeometry`` nodes these are the only options available and it is recommended to either use ":s" or ":is".
+The ":is" part is a sub-parameter. "i" is for "index" and "s" for "strip", so this example will generate and store indexed trianglestrip geometry. For ``ImageGeometry`` nodes these are the only options available and it is recommended to either use `s` or `is`.
 
 As an alternative you can convert to ``BinaryGeometry`` instead of ``ImageGeometry`` nodes:
 
@@ -81,10 +83,10 @@ For ``BinaryGeometry`` the available parameters are:
 * c: compact (use 16 bit representation for vertex attributes)
 * I: interleaved (use 16 bit interleaved vertex data)
 
-Restructuring
--------------
+Mesh restructuring
+------------------
 
-If you are willing to completely restructure the scene-graph to increase performance, you can use this funtion:
+If you are willing to completely restructure the scene-graph to increase performance, you can use this function:
 
 .. code-block:: none
 
@@ -115,7 +117,7 @@ Currently available sub-parameters for the "-F" option are:
 * bool idmap: Should an ID map be created?
 * bool flat: Scene is stored in a flat graph (true), or in a hierarchy (false)
 * bool cacheopt: Merges all geometry nodes with same material and rebuild it to chunks of 65,535 (= 2^16 - 1) vertices
-* bool calcnormals: false to keep normals, true to recalc them after building new geometry node
+* bool calcnormals: false to keep normals, true to recalc them after building new geometries
 * int maxIndexSize: Maximum index size for rebuild by index/texture
 * int maxTextureSize: Maximum texture size for rebuild by texture size
 * float centerBB: Output will be transformed to a centered BBox with given size
@@ -126,4 +128,4 @@ Example:
 
 	aopt -i <input.foo> -F Scene:maxtris(5000),flat(true),calcnormals(false),centerBB(50) -x <output>.x3d
 
-Note: Depending on the operation the internal tree optimization method chooses, not all parameters are used! Boolean values can be both 0/1 and false/true.
+Note: Depending on the operation the internal tree optimization method chooses, not all parameters are used! Boolean values can be both, 0/1 and false/true.
