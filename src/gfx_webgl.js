@@ -347,22 +347,6 @@ x3dom.gfx_webgl = (function () {
         };
 
     // http://www.gamedev.net/topic/442138-packing-a-float-into-a-a8r8g8b8-texture-shader/
-    // TODO: use same method for shadows!
-    /*
-    encode (fDist is the normalized distance):
-    	const float4 bitSh	= float4(256*256*256, 256*256, 256, 1);
-    	const float4 bitMsk = float4(0, 1.0/256.0, 1.0/256.0, 1.0/256.0);
-    	float4 comp;
-    	comp	= fDist * bitSh;
-    	comp	= frac(comp);
-    	comp	-= comp.xxyz * bitMsk;
-    	return comp;
-
-    decode (vec is the rgba encoded value):
-    	const float4 bitShifts = float4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1);
-    	return dot(vec.xyzw , bitShifts);
-    */
-
     g_shaders['fs-x3d-pick'] = { type: "fragment", data:
         "#ifdef GL_ES             \n" +
         "  precision highp float; \n" +
@@ -409,7 +393,20 @@ x3dom.gfx_webgl = (function () {
         "    gl_FragColor = outVal;" +
         "}"
         };
-        
+    
+    g_shaders['fs-x3d-shadow-floatExt'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
+        "varying vec4 projCoord;" +
+        "void main(void) {" +
+        "    vec3 proj = (projCoord.xyz / projCoord.w);" +
+        //"    gl_FragColor = vec4(proj.z, proj.z, proj.z, 1.0);" +
+        "    gl_FragColor = vec4(proj, 1.0);" +
+        "}"
+        };
+    
     function getDefaultShaderProgram(gl, suffix) 
     {
         var prog = gl.createProgram();
@@ -1659,13 +1656,20 @@ x3dom.gfx_webgl = (function () {
                             "        {" +
                             "            projectiveBiased.x += (j*stepSize);" +
                             "            projectiveBiased.y += (i*stepSize);" +
-                            "            vec4 zCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
-                            "            float fromFixed = 256.0 / 255.0;" +
+                            "            vec4 zCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);";
+                            
+            if (!this._fpTexSupport) {
+                shadow +=   "            float fromFixed = 256.0 / 255.0;" +
                             "            float z = zCol.r * fromFixed;" +
                             "            z += zCol.g * fromFixed / (255.0);" +
                             "            z += zCol.b * fromFixed / (255.0 * 255.0);" +
-                            "            z += zCol.a * fromFixed / (255.0 * 255.0 * 255.0);" +
-                            "            if (z < projectiveBiased.z) blockerCount += 1.0;" +
+                            "            z += zCol.a * fromFixed / (255.0 * 255.0 * 255.0);";
+            }
+            else {
+                shadow +=   "            float z = zCol.b;";
+            }
+                            
+            shadow +=       "            if (z < projectiveBiased.z) blockerCount += 1.0;" +
                             "            projectiveBiased.x -= (j*stepSize);" +
                             "            projectiveBiased.y -= (i*stepSize);" +
                             "        }" +
@@ -5063,23 +5067,21 @@ x3dom.gfx_webgl = (function () {
         var from = mat_view.inverse().e3();
 
         // get bbox of scene bbox and camera position
-        {
-            var _min = x3dom.fields.SFVec3f.copy(from);
-            var _max = x3dom.fields.SFVec3f.copy(from);
+        var _min = x3dom.fields.SFVec3f.copy(from);
+        var _max = x3dom.fields.SFVec3f.copy(from);
 
-            if (_min.x > min.x) { _min.x = min.x; }
-            if (_min.y > min.y) { _min.y = min.y; }
-            if (_min.z > min.z) { _min.z = min.z; }
+        if (_min.x > min.x) { _min.x = min.x; }
+        if (_min.y > min.y) { _min.y = min.y; }
+        if (_min.z > min.z) { _min.z = min.z; }
 
-            if (_max.x < max.x) { _max.x = max.x; }
-            if (_max.y < max.y) { _max.y = max.y; }
-            if (_max.z < max.z) { _max.z = max.z; }
+        if (_max.x < max.x) { _max.x = max.x; }
+        if (_max.y < max.y) { _max.y = max.y; }
+        if (_max.z < max.z) { _max.z = max.z; }
 
-            min.setValues(_min);
-            max.setValues(_max);
-        }
+        min.setValues(_min);
+        max.setValues(_max);
 
-        var sceneSize = max.subtract(min).length(); // + x3dom.fields.Eps;
+        var sceneSize = max.subtract(min).length();
         
         // render to texture for reading pixel values
         this.renderPickingPass(gl, scene, 
@@ -5208,8 +5210,11 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
-            scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false, gl.UNSIGNED_BYTE); // type);  TODO: fp shadows
-            scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
+            scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false, type);
+            if (this._fpTexSupport)
+                scene._webgl.shadowShader = this.getShaderProgram(gl, ['vs-x3d-shadow', 'fs-x3d-shadow-floatExt']);
+            else
+                scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
             
             // TODO; for testing do it on init, but must be refreshed on node change!
             for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
@@ -5249,8 +5254,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl.fboPick = this.initFbo(gl, fboWidth, fboHeight, true, scene._webgl.fboPick.typ);
                 scene._webgl.fboPick.pixelData = null;
                 
-                x3dom.debug.logInfo("Refreshed picking FBO to size (" + 
-                                    (fboWidth) + ", " + (fboHeight) + ")");
+                x3dom.debug.logInfo("Refreshed picking FBO to size (" + fboWidth + ", " + fboHeight + ")");
             }
         }
         
@@ -5270,7 +5274,7 @@ x3dom.gfx_webgl = (function () {
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
 
-            // remote rendering stuff XXX
+            // TODO; remove remote rendering stuff XXX
             scene.drawableObjects.useIdList = false;
             scene.drawableObjects.collect = false;
             scene.drawableObjects.idList = [];
@@ -5360,8 +5364,10 @@ x3dom.gfx_webgl = (function () {
             center = trafo.multMatrixPnt(center);
             center = mat_view.multMatrixPnt(center);
 
-            var sortType = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortType : "opaque";
-            var sortKey = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortKey : 0;
+            var sortType = (obj3d._cf.appearance.node !== undefined) ? 
+                            obj3d._cf.appearance.node._vf.sortType : "opaque";
+            var sortKey  = (obj3d._cf.appearance.node !== undefined) ? 
+                            obj3d._cf.appearance.node._vf.sortKey : 0;
 
             if (sortType.toLowerCase() === "opaque") {
                 zPos.push([i, center.z, sortKey]);
@@ -5400,8 +5406,6 @@ x3dom.gfx_webgl = (function () {
             var zPosTranspArr = zPosTransp[sortKeyProp];
             
             zPosTranspArr.sort(function(a, b) { return a[1] - b[1]; });
-
-            //zPos = zPos.concat(zPosTransp[sortKeyProp]);
             zPos.push.apply(zPos, zPosTranspArr);
         }
         
@@ -5487,10 +5491,6 @@ x3dom.gfx_webgl = (function () {
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
         
-        //gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
-        //gl.enable(gl.SAMPLE_COVERAGE);
-        //gl.sampleCoverage(0.5, false);
-
         //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         //Workaround for WebKit & Co.
         gl.blendFuncSeparate(
@@ -5552,24 +5552,24 @@ x3dom.gfx_webgl = (function () {
         
         gl.disable(gl.DEPTH_TEST);
         
-        /*
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
+            /*
             if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
                 scene._vf.pickMode.toLowerCase() === "color" ||
                 scene._vf.pickMode.toLowerCase() === "texcoord") {
-                gl.viewport(0, 3*this.canvas.height/4, 
+                gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
-            
+            */
             if (oneShadowExistsAlready) {
-                gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
+                gl.viewport(0, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }
         }
-        */
+        
         gl.flush();
         
         t1 = new Date().getTime() - t0;
@@ -5735,7 +5735,7 @@ x3dom.gfx_webgl = (function () {
         {
             locScene.drawableObjects = [];
 
-            // remote rendering stuff XXX
+            // TODO; remove remote rendering stuff XXX
             locScene.drawableObjects.useIdList = false;
             locScene.drawableObjects.collect = false;
             locScene.drawableObjects.idList = [];
@@ -5749,8 +5749,6 @@ x3dom.gfx_webgl = (function () {
             {
                 transform = locScene.drawableObjects[i][0];
                 shape = locScene.drawableObjects[i][1];
-                
-                //x3dom.debug.logWarning(i + "\n" + transform);
                 
                 if (shape._vf.render !== undefined && shape._vf.render === false) {
                    continue;
@@ -6029,14 +6027,7 @@ x3dom.gfx_webgl = (function () {
     {
         var fbo = gl.createFramebuffer();
         var rb = gl.createRenderbuffer();
-
-        /*
-        var type = gl.UNSIGNED_BYTE;
-        if (gl.getExtension("OES_texture_float")) {
-            type = gl.FLOAT;
-            x3dom.debug.logInfo("Using fp extension...");
-        }
-        */
+        
         var tex = this.initTex(gl, w, h, nearest, type);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -6067,4 +6058,3 @@ x3dom.gfx_webgl = (function () {
     return setupContext;
 
 })();
-
