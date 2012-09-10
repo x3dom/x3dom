@@ -3662,7 +3662,6 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 x3dom.debug.assert(sky.length == colors.length);
-                x3dom.debug.logInfo(colors +"\n" + sky)
                 
                 var interp = new x3dom.nodeTypes.ColorInterpolator();
                 
