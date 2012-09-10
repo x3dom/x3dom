@@ -5216,7 +5216,8 @@ x3dom.gfx_webgl = (function () {
             obj = x3dom.nodeTypes.Shape.idMap.nodeID[obj];
             obj = (obj && obj._xmlNode) ? obj._xmlNode : null;
             
-            pickedNodes.push(obj);
+            if (obj)
+                pickedNodes.push(obj);
         }
         
         return pickedNodes;
