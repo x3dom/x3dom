@@ -63,8 +63,14 @@ package x3dom.shaders
 					this._cache[shaderIdentifier] = new DepthShader().program3D;
 				} else if(shaderIdentifier == ShaderIdentifier.NORMAL) {
 					this._cache[shaderIdentifier] = new NormalShader().program3D;
-				} else if(shaderIdentifier == ShaderIdentifier.DIRLIGHTSHADER) {
+				} else if(shaderIdentifier == ShaderIdentifier.DIRLIGHTDIFFSHADER) {
 					this._cache[shaderIdentifier] = new DirLightShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.DIRLIGHTSPECSHADER) {
+					this._cache[shaderIdentifier] = new DirLightSpecShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.POINTLIGHTDIFFSHADER) {
+					this._cache[shaderIdentifier] = new PointLightDiffShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.LPPDYNAMICSHADER) {
+					this._cache[shaderIdentifier] = new LPPDynamicShader().program3D;
 				}
 			}
 			
@@ -79,9 +85,9 @@ package x3dom.shaders
 		{
 			//Build Shader identifier [light(false|true) / texture(false|true) / blend(false|true) / cubeMap(false|true) / color(false|true) / sphereMapping(false|true)  / solid(false|true)]
 			var shaderIdentifier:String = String(lights.length>0) + " / " + 
-										  String(Boolean(shape.texture)) + " / " + 
-										  String(shape.texture && shape.texture.blending) + " / " + 
-										  String(shape.texture && shape.texture is CubeMapTexture) + " / " +
+										  String(Boolean(shape.texCoordBuffer && shape.texture)) + " / " + 
+										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture.blending)) + " / " + 
+										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture is CubeMapTexture)) + " / " +
 										  String(Boolean(shape.colorBuffer)) + " / " + 
 										  String(shape.sphereMapping) + " / " +
 										  String(shape.solid);

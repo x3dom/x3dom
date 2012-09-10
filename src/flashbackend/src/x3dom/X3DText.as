@@ -35,6 +35,8 @@ package x3dom
 			//Set text size
 			this._textFormat.size = Number( value.fontSize );
 			
+			this._textField.multiline = true;
+			
 			//Set text font family
 			this._textFormat.font = String( value.fontFamily ).replace(/\'/g,'').split(" ")[0];
 			
