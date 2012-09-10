@@ -1045,7 +1045,7 @@ x3dom.gfx_webgl = (function () {
 				}
 			} else {
 				if(polarNormal) {
-					shader += "float PI = 2.0 * asin(1.0);\n";
+					shader += "float PI = 3.14159265358979;\n";
 					shader += "float theta = normal.x*PI;\n";
 					shader += "float phi   = normal.y*PI*2.0 - PI;\n";
 				
@@ -1411,16 +1411,12 @@ x3dom.gfx_webgl = (function () {
 				if(iG_Indexed) {
 					shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n";
 					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_indexTextureWidth), position.y*(IG_implicitMeshSize/IG_indexTextureHeight)) + halfPixel;\n";
-					//shader += "vec2 IG_texCoord = vec2(1.0/(2.0*IG_indexTextureWidth)+position.x*(IG_indexTextureWidth-1.0)/IG_indexTextureWidth, 1.0/(2.0*IG_indexTextureHeight)+position.y*(IG_indexTextureHeight-1.0)/IG_indexTextureHeight);";
 					shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;\n";
-					
 					shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);\n";
 					shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;\n";
-					//shader += "IG_texCoord = vec2(1.0/(2.0*IG_coordTextureWidth)+position.x*(IG_coordTextureWidth-1.0)/IG_coordTextureWidth, 1.0/(2.0*IG_coordTextureHeight)+position.y*(IG_coordTextureHeight-1.0)/IG_coordTextureHeight);";
 				} else {
 					shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n";
 					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_coordTextureWidth), position.y*(IG_implicitMeshSize/IG_coordTextureHeight)) + halfPixel;\n";
-					//shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth)*(IG_coordTextureWidth-1.0)/(IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)*(IG_coordTextureHeight-1.0)/(IG_coordTextureHeight)) + halfPixel;";
 				}
 				
 				//Coordinates
@@ -1460,7 +1456,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "gl_PointSize = 2.0;\n";
 			} else {
 				if(polarNormal) {
-					shader += "float PI = 2.0 * asin(1.0);\n";
+					shader += "float PI = 3.14159265358979;\n";
 					shader += "float theta = normal.x*PI;\n";
 					shader += "float phi   = normal.y*PI*2.0 - PI;\n";
 				
@@ -4089,7 +4085,7 @@ x3dom.gfx_webgl = (function () {
  */
 //----------------------------------------------------------------------------
     Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, 
-                                                   from, sceneSize, pickMode, lastX, lastY)
+                            from, sceneSize, pickMode, lastX, lastY, width, height)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         
@@ -4324,9 +4320,9 @@ x3dom.gfx_webgl = (function () {
         try {
             var x = lastX * scene._webgl.pickScale,
                 y = scene._webgl.fboPick.height - 1 - lastY * scene._webgl.pickScale;
-            var data = new Uint8Array(16);    // 4 = 1 * 1 * 4; then take 2x2 window
+            var data = new Uint8Array(4 * width * height);    // 4 = 1 * 1 * 4; then take width x height window
             
-            gl.readPixels(x, y, 2, 2, gl.RGBA, gl.UNSIGNED_BYTE, data);
+            gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
             
             scene._webgl.fboPick.pixelData = data;
         }
@@ -5083,10 +5079,8 @@ x3dom.gfx_webgl = (function () {
         var sceneSize = max.subtract(min).length();
         
         // render to texture for reading pixel values
-        this.renderPickingPass(gl, scene, 
-                               mat_view, mat_scene, 
-                               from, sceneSize,
-                               pickMode, x, y);
+        this.renderPickingPass(gl, scene, mat_view, mat_scene, 
+                               from, sceneSize, pickMode, x, y, 2, 2);
         
         //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
         //               scene._webgl.fboPick.width + scene._lastX ) * 4;
