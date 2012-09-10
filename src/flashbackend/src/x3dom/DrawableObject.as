@@ -25,7 +25,7 @@ package x3dom
 		private var _sortType:String;
 		private var _sortKey:uint;
 		
-		public function DrawableObject(id:uint, refID:uint)
+		public function DrawableObject(id:uint=-1, refID:uint=-1)
 		{
 			this._id		= id;
 			this._refID		= refID;
@@ -151,6 +151,8 @@ package x3dom
 					this._shape = new ImageGeometry();
 				} else if(this._type == "BinaryGeometry") {
 					this._shape = new BinaryGeometry();
+				} else if(this._type == "BitLODGeometry")  {
+					this._shape = new BitLODGeometry();
 				} else if(this._type == "Text")  {
 					this._shape = new X3DText();
 				} else {

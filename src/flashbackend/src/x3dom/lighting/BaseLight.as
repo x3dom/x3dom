@@ -44,6 +44,22 @@ package x3dom.lighting
 		/**
 		 * Enables/disables this Light
 		 */
+		public function get id() : uint
+		{
+			return _id;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set id(id:uint) : void
+		{
+			_id = id;
+		}
+		
+		/**
+		 * Enables/disables this Light
+		 */
 		public function get on() : Boolean
 		{
 			return _on;
@@ -71,6 +87,7 @@ package x3dom.lighting
 		public function set color(color:Vector.<uint>) : void
 		{
 			_color = color;
+			this._color.push(0.0);
 		}
 		
 		/**

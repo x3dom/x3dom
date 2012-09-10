@@ -8,7 +8,7 @@ package x3dom.shaders
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Program3D;
 	
-	public class NormalShader
+	public class DirLightDiffShader
 	{
 		/**
 		 * Holds our 3D context
@@ -16,14 +16,14 @@ package x3dom.shaders
 		private var _context3D:Context3D;
 		
 		/**
-		 * Program3D for the PickingShader
+		 * Program3D for the BackgroundTextureShader
 		 */
 		private var _program3D:Program3D;
 		
 		/**
-		 * Generate the final Program3D for the DepthShader
+		 * Generate the final Program3D for the DirLightShader
 		 */
-		public function NormalShader()
+		public function DirLightDiffShader()
 		{
 			//Get 3D Context
 			this._context3D = FlashBackend.getContext();
@@ -49,19 +49,15 @@ package x3dom.shaders
 			//Init shader string
 			var shader:String = "";
 			
-			//Build shader
-			//shader += "m44 v0, va1, vc4\n";	//Normal*MV-Matrix -> (v0)
+			//Build shader						
+			shader += "mov v0, va1\n";			//TexCoord -> Fragment(v0)		
+			shader += "mov vt2,vc8\n";
+			shader += "dp3 vt1.x, vt2, vc0\n";
+			shader += "dp3 vt1.y, vt2, vc1\n";
+			shader += "dp3 vt1.z, vt2, vc2\n";
+			shader += "mov v2, vt1.xyz0\n";
 			
-			shader += "dp3 vt0.x, va1, vc4\n";	//Normal*MV-Matrix -> (v0)
-			shader += "dp3 vt0.y, va1, vc5\n";	//Normal*MV-Matrix -> (v0)
-			shader += "dp3 vt0.z, va1, vc6\n";	//Normal*MV-Matrix -> (v0)
-			
-			shader += "add vt0.xyz, vt0.xyz, vc8.y\n";
-			shader += "mul vt0.xyz, vt0.xyz, vc8.x\n";
-			
-			shader += "mov v0, vt0.xyz\n";	//Normal*MV-Matrix -> (v0)
-			
-			shader += "m44 op, va0, vc0\n";	//Position*MVP-Matrix -> (op)
+			shader += "mov op, va0\n";
 			
 			//Generate AGALMiniAssembler from generated Shader
 			var vertexShader:AGALMiniAssembler = new AGALMiniAssembler();
@@ -79,9 +75,28 @@ package x3dom.shaders
 			//Init shader string
 			var shader:String = "";
 			
-			shader += "mov ft0.xyz, v0\n";
-			shader += "mov ft0.w, fc0.x\n";
-			shader += "mov oc, ft0\n"; 					//Output color*/
+			//Build shader
+			/*02*/ shader += "tex ft1, v0, fs0 <2d, clamp, linear>\n";		//Sample Depth Texture		-> ft1
+			 
+			/*03*/ shader += "mov ft2, fc1\n";
+			/*04*/ shader += "div ft2, ft2, fc2\n";							//1/1.0, 1/255.0, 1/65025.0, 1/16581375.0
+			/*05*/ shader += "dp4 ft1.x, ft1, ft2\n"; 						//dot(rgba,ft2) = depth -> ft1.x
+			
+			/*06*/ shader += "sub ft3.xxxx, ft1.x, fc0.x\n";				//if(depth-0.01)
+			/*07*/ shader += "kill ft3.xxxx\n";								//kill
+
+			/*11*/ shader += "tex ft2, v0, fs1 <2d, clamp, linear>\n";		//Sample Normal Texture		-> ft2
+			/*12*/ shader += "mul ft2.xyz, ft2.xyz, fc0.z\n";				//Normal * 2.0
+			/*13*/ shader += "sub ft2.xyz, ft2.xyz, fc1.x\n";				//Normal - 1.0
+			/*14*/ shader += "nrm ft2.xyz, ft2.xyz\n";						//normalize(N)
+			
+			/*15*/ shader += "neg ft3, v2\n";								//-LightDir
+			/*16*/ shader += "nrm ft3.xyz, ft3\n";							//normalize(LightDir)
+			
+			/*19*/ shader += "dp3 ft4, ft2, ft3\n";							//NdotL
+			
+			/*21*/ shader += "mul ft1, fc4, ft4\n";							//lightColor * NdotL
+			/*24*/ shader += "mov oc, ft1\n";								//Output color
 			
 			//Generate AGALMiniAssembler from generated Shader
 			var fragmentShader:AGALMiniAssembler = new AGALMiniAssembler();
