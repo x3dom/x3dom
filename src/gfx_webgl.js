@@ -2889,6 +2889,7 @@ x3dom.gfx_webgl = (function () {
 
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
+
                 xmlhttp.send(null);
 
                 xmlhttp.onload = function()
@@ -3035,7 +3036,7 @@ x3dom.gfx_webgl = (function () {
                     shape._nameSpace.doc.downloadCount -= 1;
 					shape._webgl.internalDownloadCount -= 1;
                     if(shape._webgl.internalDownloadCount == 0)
-						shape._webgl.shape._nameSpace.doc.needRender = true;
+						shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
                     x3dom.debug.logInfo("XHR1/ coord load time: " + t11 + " ms"); 
@@ -3223,17 +3224,17 @@ x3dom.gfx_webgl = (function () {
 				//Check if there are indices avaible
 				if(bitLODGeometry.hasIndex())
 				{
-					var xmlhttp0 = new XMLHttpRequest();
-					xmlhttp0.open("GET", encodeURI(shape._nameSpace.getURL(bitLODGeometry._vf.index)) , true);
-					xmlhttp0.responseType = "arraybuffer";
+					var xmlhttpLOD = new XMLHttpRequest();
+					xmlhttpLOD.open("GET", encodeURI(shape._nameSpace.getURL(bitLODGeometry._vf.index)) , true);
+					xmlhttpLOD.responseType = "arraybuffer";
             
 					shape._nameSpace.doc.downloadCount += 1;
             
-					xmlhttp0.send(null);
+					xmlhttpLOD.send(null);
             
-					xmlhttp0.onload = function() 
+					xmlhttpLOD.onload = function()
 					{
-						var XHR_buffer = xmlhttp0.response;
+						var XHR_buffer = xmlhttpLOD.response;
 
 						var indicesBuffer = gl.createBuffer();
 						shape._webgl.buffers[0] = indicesBuffer;
@@ -3267,8 +3268,6 @@ x3dom.gfx_webgl = (function () {
 				//If there is still no BitComposer create a new one 
 				shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
 				
-				var that = this;
-				
 				function callBack(refinedBuffer)
 				{	
 					var attribTypeStr 		= bitLODGeometry._vf.coordType;
@@ -3294,8 +3293,7 @@ x3dom.gfx_webgl = (function () {
 					gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
 										   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 					gl.enableVertexAttribArray(sp.position);
-          
-          
+
 					//Normals
 					shape._webgl.buffers[2] = buffer;
 					
@@ -3312,7 +3310,7 @@ x3dom.gfx_webgl = (function () {
 				    shape._nameSpace.doc.needRender = true;
 					
 					shape._webgl.bitLODComposer.refine(refinedBuffer);
-				};
+				}
 
 				shape._webgl.bitLODComposer.run([3, 2], 					 	//components
 									    [16, 16], 					 			//attribute bits for each component

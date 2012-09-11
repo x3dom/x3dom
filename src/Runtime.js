@@ -257,7 +257,8 @@ x3dom.Runtime.prototype.getHeight = function() {
 /**
  * Function: mousePosition
  *
- * Returns the 2d canvas layer position [x, y] for a given mouse event.
+ * Returns the 2d canvas layer position [x, y] for a given mouse event, i.e.,
+ * the mouse cursor's x and y positions relative to the canvas (x3d) element.
  */
 x3dom.Runtime.prototype.mousePosition = function(event) {
     var pos = this.canvas.mousePosition(event);
