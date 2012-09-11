@@ -5152,6 +5152,76 @@ x3dom.gfx_webgl = (function () {
         
         return true;
     };
+
+//----------------------------------------------------------------------------
+/*! render color-buf pass for picking sub-window
+ */
+//----------------------------------------------------------------------------
+    Context.prototype.pickRect = function (viewarea, x1, y1, x2, y2)
+    {
+        var gl = this.ctx3d;
+        var scene = viewarea ? viewarea._scene : null;
+        
+        // method requires that scene has already been rendered at least once
+        if (gl === null || scene === null || !scene._webgl || !scene.drawableObjects)
+            return false;
+        
+        // values not fully correct but unnecessary anyway, just to feed the shader
+        var from = viewarea._last_mat_view.inverse().e3();
+        var sceneSize = scene._lastMax.subtract(scene._lastMin).length();
+        
+        var x = (x1 <= x2) ? x1 : x2;
+        var y = (y1 >= y2) ? y1 : y2;
+        var width  = (1 + Math.abs(x2 - x1)) * scene._webgl.pickScale;
+        var height = (1 + Math.abs(y2 - y1)) * scene._webgl.pickScale;
+        
+        // render to texture for reading pixel values
+        this.renderPickingPass(gl, scene, viewarea._last_mat_view, viewarea._last_mat_scene, 
+                    from, sceneSize, 0, x, y, (width<1) ? 1:width, (height<1) ? 1:height);
+        
+        var index = 0;
+        var pickedObjects = [];
+        
+        // get objects in rectangle
+        for (index = 0; scene._webgl.fboPick.pixelData && 
+             index < scene._webgl.fboPick.pixelData.length; index += 4)
+        {
+            var objId = scene._webgl.fboPick.pixelData[index + 3] + 
+                        scene._webgl.fboPick.pixelData[index + 2] * 256;
+            
+            if (objId > 0)
+                pickedObjects.push(objId);
+        }
+        pickedObjects.sort();
+        
+        // make found object IDs unique
+        pickedObjects = ( function(arr) {
+                var a = [], l = arr.length;
+                for (var i=0; i<l; i++) {
+                    for (var j=i+1; j<l; j++) {
+                        if (arr[i] === arr[j])
+                            j = ++i;
+                    }
+                    a.push(arr[i]);
+                }
+                return a;
+            } )(pickedObjects);
+        
+        var pickedNodes = [];
+        
+        for (index = 0; index < pickedObjects.length; index++)
+        {
+            var obj = pickedObjects[index];
+            
+            obj = x3dom.nodeTypes.Shape.idMap.nodeID[obj];
+            obj = (obj && obj._xmlNode) ? obj._xmlNode : null;
+            
+            if (obj)
+                pickedNodes.push(obj);
+        }
+        
+        return pickedNodes;
+    };
     
 //----------------------------------------------------------------------------
 /*! render scene (main pass)

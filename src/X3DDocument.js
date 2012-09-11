@@ -209,6 +209,14 @@ x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
     ctx.pickValue(this._viewarea, x, y);
 };
 
+x3dom.X3DDocument.prototype.onPickRect = function (ctx, x1, y1, x2, y2) {
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+	
+    return ctx.pickRect(this._viewarea, x1, y1, x2, y2);
+};
+
 x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
     if (!ctx || !this._viewarea) {
         return;
