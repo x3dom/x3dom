@@ -2,6 +2,7 @@ package x3dom
 {
 	import flash.errors.*;
 	import flash.events.*;
+	import flash.external.ExternalInterface;
 	import flash.geom.Vector3D;
 	import flash.net.URLLoader;
 	import flash.net.URLLoaderDataFormat;
@@ -258,6 +259,10 @@ package x3dom
 			}
 			
 			super.setVertices(0, vertices);
+			
+			if( (this._vertexType == "Float32") && (this._bgSize.x == 1 || this._bgSize.y == 1 || this._bgSize.z == 1) ) {				
+				ExternalInterface.call("x3dom.bridge.setBBox", this._id, this._boundingBox.center, this.boundingBox.size);
+			}
 			
 			this._verticesComplete = true;
 			this.isReady();

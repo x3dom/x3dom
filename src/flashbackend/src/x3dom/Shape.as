@@ -25,6 +25,11 @@ package x3dom
 		public var _ready:Boolean = true;
 		
 		/**
+		 * Holds the shape id
+		 */
+		protected var _id:uint;
+		
+		/**
 		 * Specifiying the Material used by geometry.
 		 * @default Default Material
 		 */
@@ -136,6 +141,7 @@ package x3dom
 		 */
 		public function setProperties(value:Object) : void
 		{
+			this._id = uint( value.id );
 			this._solid = Boolean( value.solid );
 		}
 		
@@ -169,6 +175,7 @@ package x3dom
 			this._boundingBox.min = min;
 			this._boundingBox.max = max;
 			this._boundingBox.center = center;
+			this._boundingBox.size = max.subtract(min);
 		}
 		
 		/**

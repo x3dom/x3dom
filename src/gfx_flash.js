@@ -74,6 +74,12 @@ x3dom.bridge = {
 			x3dCanvas.doc.onKeyPress(charCode);
 		}
 		x3dCanvas.doc.needRender = true;
+	},
+	
+	setBBox: function(id, center, size) {
+		var shape = x3dom.nodeTypes.Shape.idMap.nodeID[id];
+		shape._vf.bboxCenter.setValues( new x3dom.fields.SFVec3f(center.x,center.y,center.z) );
+        shape._vf.bboxSize.setValues( new x3dom.fields.SFVec3f(size.x,size.y,size.z) );
 	}
 };
 
