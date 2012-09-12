@@ -78,7 +78,7 @@ load : function(gl)
   
   var refinementURLs = [];
   for (i = 0; i < NumLevels; ++i) {
-    refinementURLs[i] = (encodeURI('bitbunny/bitbunnyLG_0_level' + i + '.bin'));
+    refinementURLs[i] = (encodeURI('bitbunny_aopt/LG_0_level' + i + '.bin'));
   }
   
   this.xform = new SglTransformStack();
@@ -112,7 +112,6 @@ load : function(gl)
     
   
   refinementManager = new x3dom.RefinementJobManager();
-  //refinementManager = new x3dom.BitLODComposer();
 
   //BEGIN GET TEXTURE 
   texture = gl.createTexture();
@@ -130,7 +129,7 @@ load : function(gl)
   
 	//BEGIN GET INDICES
 	var xhr = new XMLHttpRequest();
-	xhr.open("GET", 'bitbunny/bitbunnyLG_0_indexBinary.bin', true);
+	xhr.open("GET", 'bitbunny_aopt/LG_0_indexBinary.bin', true);
 	xhr.responseType = "arraybuffer";            
 	xhr.send(null);
 
@@ -172,8 +171,8 @@ load : function(gl)
   }
   
   //texcoord refinements
-  texCoordURLs = ['bitbunny/bitbunnyLG_0_level8.bin',  'bitbunny/bitbunnyLG_0_level9.bin',
-                  'bitbunny/bitbunnyLG_0_level10.bin', 'bitbunny/bitbunnyLG_0_level11.bin'];
+  texCoordURLs = ['bitbunny_aopt/LG_0_level8.bin',  'bitbunny_aopt/LG_0_level9.bin',
+                  'bitbunny_aopt/LG_0_level10.bin', 'bitbunny_aopt/LG_0_level11.bin'];
   for (i = 0; i < 4; ++i) {
     refinementManager.addRefinementJob(1,                           //attributeId / resultBufferId
                                        i,                           //download priority

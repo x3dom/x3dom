@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <link rel='stylesheet' type='text/css' href='../files/x3dom.css'></link>
+    <script type='text/javascript' src='../files/x3dom.js'></script>
+  </head>
+  <body>
+    <div style="width:300px;float:right;">
+      <fieldset style="margin:4px;">
+        <legend><strong>Viewer Settings</strong></legend>        
+        <table>          
+          <tr>
+            <td>
+              Navigation Mode:
+            </td>
+            <td align="right">
+              <select style="float:right;"
+                onchange="if (typeof this.selectedIndex != 'undefined') { var e = document.getElementById('x3dElement');
+                            if (this.options[this.selectedIndex].value === 'examine'){ e.runtime.examine(); }
+                            else if (this.options[this.selectedIndex].value === 'lookat'){ e.runtime.lookAt(); }
+                            else if (this.options[this.selectedIndex].value === 'walk'){ e.runtime.speed(1.0); e.runtime.walk(); }                            
+                            else if (this.options[this.selectedIndex].value === 'fly'){  e.runtime.speed(1.0); e.runtime.fly();  }
+                            else if (this.options[this.selectedIndex].value === 'walkfast'){ e.runtime.speed(40.0); e.runtime.walk(); }                            
+                            else if (this.options[this.selectedIndex].value === 'flyfast'){  e.runtime.speed(40.0); e.runtime.fly();  } }">
+                <option value="examine">Examine</option>
+                <option value="lookat">LookAt</option>
+                <option value="walk">Walk</option>                
+                <option value="fly">Fly</option>
+                <option value="walkfast">Walk (fast)</option>                
+                <option value="flyfast">Fly (fast)</option>
+              <select>
+            </td>
+          </tr>          
+          <tr>
+            <td>
+              Debug Display:
+            </td>
+            <td align="right">              
+              <input type="checkbox" onclick="if (this.checked){ document.getElementById('x3dElement').runtime.statistics(true); }
+                                                          else { document.getElementById('x3dElement').runtime.statistics(false); }">
+                Stats
+              </input>              
+              <input type="checkbox" onclick="var x3dElem=document.getElementById('x3dElement');
+                                              if (this.checked){ x3dElem.style.height='50%'; } else { x3dElem.style.height='60%'; }
+                                              x3dElem.runtime.debug();">
+                Console
+              </input>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button onclick="document.getElementById('x3dElement').runtime.showAll();">Show Everything</button>            
+            </td>
+            <td>
+              <button onclick="document.getElementById('x3dElement').runtime.resetView();">Reset View</button>            
+            </td>          
+          </tr>        
+        </table>        
+      </fieldset>
+    </div>
+    <div>
+      <h1>BitLOD Geometry, Indexed</h1>      
+      This example uses 16 bit position and 8 bit normal information.
+      Position and normal information of each patch are stored in eight chunks.
+      Each downloaded chunk adds more precision to the rendered result, allowing for a progressive reconstruction.
+      <p>
+        A comparison of different binary containers can be found <a href="index.html" target="_blank">here</a>.
+      </p>
+    </div>    
+    <div style="clear:both;"></div>
+    <br/>
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:75%'>
+      <scene DEF='scene'>        
+        <shape>
+          <appearance DEF='App_0'>
+            <material diffuseColor='0.9 0.9 0.9' shininess='0.5' specularColor='0.1 0.1 0.1'></material>
+          </appearance>
+          <bitLODGeometry DEF='G0' vertexCount='72884 2730' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0150144994259 0.235128998756 -0.0129659995437' size='0.0393669977784 0.0253019928932 0.033886000514' index='lodPatches/G0_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G0_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G0_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G0_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G0_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G0_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G0_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G0_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G0_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_1'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G1' vertexCount='90528 3444' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0150395017117 0.21044999361 -0.00991200096905' size='0.0397630035877 0.0262499898672 0.0456780008972' index='lodPatches/G1_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G1_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G1_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G1_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G1_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G1_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G1_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G1_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G1_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_0'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G15' vertexCount='99968 3642' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.0170029997826 0.222592502832 -0.0113889984787' size='0.0258460007608 0.0500349998474 0.042732000351' index='lodPatches/G15_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G15_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G15_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G15_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G15_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G15_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G15_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G15_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G15_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_2'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G2' vertexCount='92007 3462' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0150015000254 0.185926496983 -0.00905999913812' size='0.0402889996767 0.026203006506 0.0477060005069' index='lodPatches/G2_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G2_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G2_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G2_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G2_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G2_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G2_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G2_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G2_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_3'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G3' vertexCount='84212 3147' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.015164501965 0.161074995995 -0.00654399953783' size='0.0401150025427 0.026000007987 0.0588600002229' index='lodPatches/G3_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G3_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G3_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G3_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G3_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G3_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G3_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G3_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G3_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_4'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G4' vertexCount='63917 2367' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.0170179996639 0.185856491327 -0.00910650007427' size='0.0262500010431 0.0259370058775 0.0464130006731' index='lodPatches/G4_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G4_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G4_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G4_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G4_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G4_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G4_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G4_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G4_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_5'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G5' vertexCount='68877 2580' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.0182349998504 0.160950005054 -0.00737849995494' size='0.028684001416 0.0257499963045 0.055789001286' index='lodPatches/G5_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G5_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G5_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G5_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G5_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G5_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G5_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G5_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G5_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_6'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G6' vertexCount='80033 2904' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.014450000599 0.136440992355 -0.0082370005548' size='0.039186000824 0.0257679969072 0.0577640011907' index='lodPatches/G6_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G6_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G6_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G6_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G6_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G6_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G6_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G6_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G6_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_7'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G7' vertexCount='92117 3324' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0130889993161 0.111671000719 -0.0116869993508' size='0.0364639982581 0.0258079990745 0.0491700023413' index='lodPatches/G7_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G7_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G7_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G7_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G7_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G7_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G7_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G7_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G7_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_8'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G8' vertexCount='108251 3816' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.0200204998255 0.136252000928 -0.00875150039792' size='0.0327550023794 0.0256460011005 0.0563910007477' index='lodPatches/G8_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G8_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G8_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G8_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G8_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G8_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G8_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G8_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G8_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_9'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G9' vertexCount='91844 3438' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.0212794989347 0.111699998379 -0.0122699998319' size='0.0347729995847 0.0257499963045 0.0470580011606' index='lodPatches/G9_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G9_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G9_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G9_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G9_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G9_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G9_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G9_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G9_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_10'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G10' vertexCount='107469 3783' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0133754983544 0.0869500041008 -0.00683899968863' size='0.0375829972327 0.0257500037551 0.0748319998384' index='lodPatches/G10_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G10_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G10_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G10_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G10_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G10_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G10_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G10_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G10_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_12'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G11' vertexCount='97880 3981' primType='"TRIANGLESTRIP" "TRIANGLES"' position='0.0149069987237 0.062527500093 -0.0066795013845' size='0.0405999980867 0.0245949961245 0.0813969969749' index='lodPatches/G11_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G11_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G11_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G11_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G11_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G11_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G11_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G11_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G11_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_13'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G12' vertexCount='67513 2601' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.01427350007 0.0870749950409 -0.0068469978869' size='0.0212609991431 0.0260000005364 0.0748520046473' index='lodPatches/G12_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G12_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G12_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G12_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G12_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G12_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G12_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G12_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G12_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_14'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G13' vertexCount='61274 2430' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.0330730006099 0.0868249982595 -0.00686400011182' size='0.0193519983441 0.0254999995232 0.0648780018091' index='lodPatches/G13_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G13_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G13_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G13_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G13_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G13_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G13_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G13_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G13_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <shape DEF='SP_15'>
+          <appearance USE='App_0'></appearance>
+          <bitLODGeometry DEF='G14' vertexCount='104126 4386' primType='"TRIANGLESTRIP" "TRIANGLES"' position='-0.024871500209 0.0622909963131 -0.00668999925256' size='0.0424570031464 0.0250679962337 0.0814180001616' index='lodPatches/G14_indexBinary.bin'>
+            <bitLODGeoComponent src='lodPatches/G14_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G14_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G14_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G14_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G14_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G14_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G14_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+            <bitLODGeoComponent src='lodPatches/G14_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+          </bitLODGeometry>
+        </shape>
+        <viewpoint DEF='cam' centerOfRotation='-0.005439 0.148768 -0.00669' position='-0.005439 0.148768 0.222341'></viewpoint>
+        <background id='sceneBackground' skyColor='0.4 0.4 0.5'></background>
+      </scene>
+    </x3d>
+  </body>
+</html>
