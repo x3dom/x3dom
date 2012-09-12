@@ -27,7 +27,6 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
         renderTextures: [],
         viewarea: []
     };
-    //this.animNode = [];
     this.downloadCount = 0;
     this.onload = function () {};
     this.onerror = function () {};
@@ -86,7 +85,6 @@ x3dom.findScene = function(x3dElem) {
     }
     return null;
 };
-
 
 
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
@@ -176,29 +174,22 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
-    var that;
+    var that = this;
     var i;
 
     if (this._nodeBag.timer.length) {
         this.needRender = true;
         for (i=0; i < this._nodeBag.timer.length; i++) { this._nodeBag.timer[i].onframe(t); }
-//        Array.forEach( this._nodeBag.timer, function (node) { node.onframe(t); } );
     }
     if (this._nodeBag.followers.length) {
-        that = this;
         for (i=0; i < this._nodeBag.followers.length; i++) { this.needRender |= this._nodeBag.followers[i].tick(t); }
-//        Array.forEach( this._nodeBag.followers, function (node) { that.needRender |= node.tick(t); } );
     }
     // just a temporary tricker solution to update the CSS-trans
     if (this._nodeBag.trans.length) {
-        that = this;
         for (i=0; i < this._nodeBag.trans.length; i++) { this.needRender |= this._nodeBag.trans[i].tick(t); }
-//        Array.forEach( this._nodeBag.trans, function (node) { that.needRender |= node.tick(t); } );
     }
     if (this._nodeBag.viewarea.length) {
-        that = this;
         for (i=0; i < this._nodeBag.viewarea.length; i++) { this.needRender |= this._nodeBag.viewarea[i].tick(t); }
-//        Array.forEach( this._nodeBag.viewarea, function (node) { that.needRender |= node.tick(t); } );
     }
 };
 
@@ -216,6 +207,14 @@ x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
     }
 	
     ctx.pickValue(this._viewarea, x, y);
+};
+
+x3dom.X3DDocument.prototype.onPickRect = function (ctx, x1, y1, x2, y2) {
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+	
+    return ctx.pickRect(this._viewarea, x1, y1, x2, y2);
 };
 
 x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
@@ -300,19 +299,9 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
 };
 
 
-// touch events
-x3dom.X3DDocument.prototype.onTouchMove = function (ctx, touch) {
-    if (!ctx || !this._viewarea) {
-        return;
-    }
-
-    x3dom.debug.logWarning("onTouchMove not implemented");
-};
-
 x3dom.X3DDocument.prototype.onKeyDown = function(keyCode)
 {
-    //x3dom.debug.logInfo("presses key " + keyCode);
-
+    //x3dom.debug.logInfo("pressed key " + keyCode);
     switch (keyCode) {
         case 37: /* left */
             this._viewarea.strafeLeft();
@@ -526,7 +515,3 @@ x3dom.X3DDocument.prototype.shutdown = function(ctx)
     }
     ctx.shutdown(this._viewarea);
 };
-
-
-
-

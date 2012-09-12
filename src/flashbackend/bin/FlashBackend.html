@@ -1,10 +1,11 @@
-<?xml version='1.0' encoding='UTF-8'?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns='http://www.w3.org/1999/xhtml'>
-	<head>
-		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-		<meta http-equiv="X-UA-Compatible" content="chrome=1" />
-		<link rel="stylesheet" type="text/css" href="../../x3dom.css" />
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../../x3dom.css">
+
+    <!-- BEGIN:X3DOM -->
+	<link rel="stylesheet" type="text/css" href="../../x3dom.css" />
 	<script type="text/javascript" src="../../lang/Array.js"></script>
 	<script type="text/javascript" src="../../Internals.js"></script>
 	<script type="text/javascript" src="../../debug.js"></script>
@@ -12,6 +13,9 @@
 	<script type="text/javascript" src="../../util/Properties.js"></script>
 	<script type="text/javascript" src="../../util/DoublyLinkedList.js"></script>
 	<script type="text/javascript" src="../../util/EarClipping.js"></script>
+	<script type="text/javascript" src="../../util/DownloadManager.js"></script>
+	<script type="text/javascript" src="../../util/BitLODWorker.js"></script>
+	<script type="text/javascript" src="../../util/BitLODComposer.js"></script>
 	<script type="text/javascript" src="../../X3DCanvas.js"></script>
 	<script type="text/javascript" src="../../Runtime.js"></script>
 	<script type="text/javascript" src="../../Main.js"></script>
@@ -44,45 +48,21 @@
 	<script type="text/javascript" src="../../nodes/Geometry2D.js"></script>
 	<script type="text/javascript" src="../../nodes/VolumeRendering.js"></script>
 	<script type="text/javascript" src="../../Docs.js"></script>
-
-	</head>
-	<body>
-		<x3d x="0px" y="0px" width="1024px" height="512px" backend="flash">
-		  <Scene DEF='scene'>
-		  	<Background skyColor='1 1 1'></Background>
-				<Transform translation='0 0 0'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='0 0 1' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box></Box>
-					</Shape>
-				</Transform>
-				<Transform translation='0 0 -3'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='0 0 1' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box></Box>
-					</Shape>
-				</Transform>
-				<Transform translation='0 0 -6'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box size='1 1 1'></Box>
-					</Shape>
-				</Transform>
-				<Transform translation='0 0 -9'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box size='1 1 1'></Box>
-					</Shape>
-				</Transform>
-			</Scene>
-      </x3d>
-	</body>
+	<!-- END:X3DOM -->
+  </head>
+  <body>
+    <x3d showStat='false' showLog='true' width='800px' height='400px' backend='flash'>
+      <scene>
+        <background skyColor='1 1 1'></background>
+      	<Transform DEF='Teapot001' >
+			<Shape>
+				<Appearance DEF='WireColor' >
+					<Material diffuseColor='0.894 0.722 0.600' />
+				</Appearance>
+				<BinaryGeometry DEF='Teapot001-GEOMETRY' solid='false' primType='"TRIANGLES"' vertexCount='9408' index='index.Teapot001-GEOMETRY.bin' coord='coord.Teapot001-GEOMETRY.bin' normal='normal.Teapot001-GEOMETRY.bin'></BinaryGeometry>
+			</Shape>
+		</Transform>
+	  </scene>
+    </x3d>
+  </body>
 </html>

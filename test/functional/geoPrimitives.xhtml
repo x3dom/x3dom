@@ -55,7 +55,8 @@
 	<p>Geometric primitive types with picking</p>
     <div class="group">
 	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" 
-	        showStat="true" showLog="true" width="500px" height="500px" style="float:left;">
+	        showStat="true" showLog="true" width="500px" height="500px" style="float:left;"
+	        onmousedown="start(event);" onmouseup="stop(event);" onmousemove="move(event);">
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
@@ -99,7 +100,7 @@
 						<Sphere DEF="sphere" />
 					</Shape>
                     <Transform scale=".5 .5 .5" translation="0 0 1">
-                        <Shape>
+                        <Shape DEF="txtShape">
                           <Appearance>
                             <Material DEF="txtMat" diffuseColor="olivedrab" specularColor="peachpuff" />
                           </Appearance>
@@ -190,7 +191,11 @@
 	<p id="ausgabe" class="case">&nbsp;</p>
     <p id="posOut" class="case">&nbsp;</p>
     <p><input type="button" value="removeEventListener" onclick="delIt();"/>&nbsp;
-	<input type="button" value="set view" onclick="setView();"/></p>
+	<input type="button" value="set view" onclick="setView();"/>&nbsp;
+    <input type="button" value="toggle pickRect test" onclick="setMode();"/></p>
+	
+	<span id="rubberBand"
+    style="background-color:blue; color:yellow; position:absolute; border:yellow solid 1px; z-index:10; visibility:hidden; opacity:0.3; pointer-events: none;"> &nbsp; </span>
     
 	<script type="text/javascript">
 	<![CDATA[
@@ -280,6 +285,65 @@
         				'orientation', rot[0].x+' '+rot[0].y+' '+rot[0].z+' '+rot[1]);
         };
         
+        var rubberBandTest = false;
+        var runtime = null;
+        var pos1, pos2;
+        var startPosX, startPosY;
+        var rb = null;
+        var drag = false;
+        
+        function start(event) 
+        {
+            if (rubberBandTest && !drag) {
+                drag = true;
+                startPosX = event.pageX;
+                startPosY = event.pageY;
+                
+                pos1 = runtime.mousePosition(event);
+                
+                rb.style.visibility = "visible";
+                rb.style.left = startPosX + "px";
+                rb.style.top = startPosY + "px";
+                rb.style.width = "1px";
+                rb.style.height = "1px";
+            }
+        }
+        
+        //
+        // ACHTUNG: Rubber-Band Darstellung ist nur ein HACK und lässt sich 
+        // derzeit nur von *links oben* nach *rechts unten* aufziehen!!!
+        //
+        function move(event) 
+        {
+            if (drag) {
+                var pos = runtime.mousePosition(event);
+                
+                rb.style.left = startPosX + "px";
+                rb.style.top = startPosY + "px";
+                rb.style.width = Math.abs(event.pageX-startPosX) + "px";
+                rb.style.height = Math.abs(event.pageY-startPosY) + "px";
+            }
+        }
+        
+        function stop(event)
+        {
+            if (drag) {
+                drag = false;
+                
+                pos2 = runtime.mousePosition(event);
+                
+                rb.style.visibility = "hidden";
+            
+                var objs = runtime.pickRect(pos1[0], pos1[1], pos2[0], pos2[1]);
+            
+                var str = "";
+                for (var i=0; i<objs.length; i++) {
+                    str += objs[i].getAttribute('DEF') + ", ";
+                }
+                x3dom.debug.logInfo(str);
+            }
+        }
+        
         function addIt() {
             document.getElementById('ausgabe').innerHTML = "test";
             document.getElementById('blubb').addEventListener('click', funcPtr, false);
@@ -287,6 +351,18 @@
             document.getElementById('kloppe').addEventListener('click', funcPtr2, false);
             
             document.getElementById('aView').addEventListener('viewpointChanged', viewFunc, false);
+            
+            runtime = document.getElementById("boxes").runtime;
+            rb = document.getElementById('rubberBand');
+        }
+        
+        function setMode() {
+            rubberBandTest = !rubberBandTest;
+            
+            if (rubberBandTest)
+                runtime.noNav();
+            else
+                runtime.examine();
         }
         
         document.onload = addIt;

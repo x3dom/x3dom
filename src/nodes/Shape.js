@@ -316,6 +316,14 @@ x3dom.registerNodeType(
 				this._dirty.material = true;
 				this._dirty.text = true;
 				this._dirty.shader = true;
+            },
+            
+            setGeoDirty: function () {
+				this._dirty.positions = true;
+				this._dirty.normals = true;
+				this._dirty.texcoords = true;
+				this._dirty.colors =  true;
+				this._dirty.indexes = true;
             }
         }
     )

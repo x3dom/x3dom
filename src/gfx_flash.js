@@ -74,6 +74,12 @@ x3dom.bridge = {
 			x3dCanvas.doc.onKeyPress(charCode);
 		}
 		x3dCanvas.doc.needRender = true;
+	},
+	
+	setBBox: function(id, center, size) {
+		var shape = x3dom.nodeTypes.Shape.idMap.nodeID[id];
+		shape._vf.bboxCenter.setValues( new x3dom.fields.SFVec3f(center.x,center.y,center.z) );
+        shape._vf.bboxSize.setValues( new x3dom.fields.SFVec3f(size.x,size.y,size.z) );
 	}
 };
 
@@ -211,13 +217,13 @@ x3dom.gfx_flash = (function() {
         
         viewarea._last_mat_view = mat_view;
 		
-		
-		//Set View-Matrix
-		this.object.setViewMatrix( { viewMatrix: mat_view.toGL() });
-		
-		//Set Projection-Matrix
         var mat_proj = viewarea.getProjectionMatrix();
-		this.object.setProjectionMatrix( { projectionMatrix: mat_proj.toGL() });
+		var viewpoint = scene.getViewpoint();
+		this.object.setViewpoint( { fov: viewpoint._vf.fov,
+									zFar: viewpoint._vf.zFar,
+									zNear: viewpoint._vf.zNear,
+									viewMatrix: mat_view.toGL(),
+									projectionMatrix: mat_proj.toGL() });
 		
 		//Set HeadLight
 		var nav = scene.getNavigationInfo();
@@ -243,7 +249,6 @@ x3dom.gfx_flash = (function() {
 				
 				if( x3dom.isa(lights[i], x3dom.nodeTypes.DirectionalLight) ) 
 				{
-					x3dom.debug.logInfo(lights[i]._lightID);
 					/*this.object.setDirectionalLight( { id: lights[i]._lightID,
 													   on: lights[i]._vf.on,
 													   color: lights[i]._vf.color.toGL(),
@@ -329,6 +334,7 @@ x3dom.gfx_flash = (function() {
 			//Check if is ImageGeometry or BinaryGeometry
 			var isImageGeometry  = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry);
 			var isBinaryGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry);
+			var isBitLODGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry);
 		
 			//Set Mesh Properties
 			if( isImageGeometry ) {
@@ -339,16 +345,29 @@ x3dom.gfx_flash = (function() {
 												 solid: shape.isSolid(),
 												 bboxMin: shape._cf.geometry.node.getMin().toGL(),
 												 bboxMax: shape._cf.geometry.node.getMax().toGL(),
-												 bboxCenter: shape._cf.geometry.node.getCenter(),
+												 bboxCenter: shape._cf.geometry.node.getCenter().toGL(),
 												 primType: shape._cf.geometry.node._vf.primType,
-												 vertexCount: shape._cf.geometry.node._vf.vertexCount,
-												} );
+												 vertexCount: shape._cf.geometry.node._vf.vertexCount } );
 			} else if( isBinaryGeometry ) {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "BinaryGeometry",
 												 sortType: shape._cf.appearance.node._vf.sortType,
 												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid(),
+												 bgCenter: shape._cf.geometry.node._vf.position.toGL(),
+												 bgSize: shape._cf.geometry.node._vf.size.toGL(),
+												 bboxCenter: shape._cf.geometry.node.getCenter().toGL(),
+												 primType: shape._cf.geometry.node._vf.primType,
+												 vertexCount: shape._cf.geometry.node._vf.vertexCount } );
+			} else if( isBitLODGeometry ) {
+				this.object.setMeshProperties( { id: shape._objectID,
+												 type: "BitLODGeometry",
+												 sortType: shape._cf.appearance.node._vf.sortType,
+												 sortKey: shape._cf.appearance.node._vf.sortKey,
+												 solid: shape.isSolid(),
+												 bboxMin: shape._cf.geometry.node.getMin().toGL(),
+												 bboxMax: shape._cf.geometry.node.getMax().toGL(),
+												 bboxCenter: shape._cf.geometry.node.getCenter().toGL(),
 												 primType: shape._cf.geometry.node._vf.primType,
 												 vertexCount: shape._cf.geometry.node._vf.vertexCount } );
 			} else {
@@ -368,6 +387,11 @@ x3dom.gfx_flash = (function() {
 												  idx: 0, 
 												  indices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.index) } ); 
 						
+				
+				} else if(isBitLODGeometry) {
+					this.object.setMeshIndices( { id: shape._objectID,
+												  idx: 0, 
+												  indices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.index) } );
 				} else {
 					for( var i=0; i<shape._cf.geometry.node._mesh._indices.length; i++ ) {
 						this.object.setMeshIndices( { id: shape._objectID,
@@ -386,9 +410,34 @@ x3dom.gfx_flash = (function() {
 												   coordinateTexture0: shape._cf.geometry.node.getCoordinateTextureURL(0),
 												   coordinateTexture1: shape._cf.geometry.node.getCoordinateTextureURL(1) } );
 				} else if(isBinaryGeometry) {
+					if(!shape._cf.geometry.node._hasStrideOffset) {
+						this.object.setMeshVertices( { id: shape._objectID,
+													   idx: 0, 
+													   vertices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.coord) } );
+					} else {
+						this.object.setMeshVertices( { id: shape._objectID,
+													   idx: 0,
+													   interleaved: shape._cf.geometry.node._hasStrideOffset,
+													   vertices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.coord),
+													   normals: shape._nameSpace.getURL(shape._cf.geometry.node._vf.normal),
+													   texCoords: shape._nameSpace.getURL(shape._cf.geometry.node._vf.texCoord),
+													   colors: shape._nameSpace.getURL(shape._cf.geometry.node._vf.color),
+													   components: shape._cf.geometry.node._mesh._numColComponents, 
+													   vertexType: shape._cf.geometry.node._vf.coordType,
+													   normalType: shape._cf.geometry.node._vf.normalType,
+													   texCoordType: shape._cf.geometry.node._vf.texCoordType,
+													   colorType: shape._cf.geometry.node._vf.colorType,
+													   vertexStrideOffset: shape._coordStrideOffset,
+													   normalStrideOffset: shape._normalStrideOffset,
+													   texCoordStrideOffset: shape._texCoordStrideOffset,
+													   colorStrideOffset: shape._colorStrideOffset } );
+					}
+				
+				} else if(isBitLODGeometry) {
 					this.object.setMeshVertices( { id: shape._objectID,
-												   idx: 0, 
-												   vertices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.coord) } );
+												   componentURLs: shape._cf.geometry.node.getComponentsURLs(),
+												   componentFormats: shape._cf.geometry.node.getComponentFormats(),
+												   componentAttribs: shape._cf.geometry.node.getComponentAttribs()} );
 				} else {
 					for( var i=0; i<shape._cf.geometry.node._mesh._positions.length; i++ ) {
 						this.object.setMeshVertices( { id: shape._objectID,
@@ -406,9 +455,13 @@ x3dom.gfx_flash = (function() {
 												  idx: 0, 
 												  normalTexture: shape._cf.geometry.node.getNormalTextureURL(0) } );
 				} else if(isBinaryGeometry) {
-					this.object.setMeshNormals( { id: shape._objectID,
-												  idx: 0, 
-												  normals: shape._nameSpace.getURL(shape._cf.geometry.node._vf.normal) } );
+					if(!shape._cf.geometry.node._hasStrideOffset) {
+						this.object.setMeshNormals( { id: shape._objectID,
+													  idx: 0, 
+													  normals: shape._nameSpace.getURL(shape._cf.geometry.node._vf.normal) } );
+					}
+				} else if(isBitLODGeometry) {
+					//Nothing todo
 				} else {
 					if(shape._cf.geometry.node._mesh._normals[0].length) {
 						for( var i=0; i<shape._cf.geometry.node._mesh._normals.length; i++ ) {
@@ -429,10 +482,14 @@ x3dom.gfx_flash = (function() {
 												 colorTexture: shape._cf.geometry.node.getColorTextureURL(),
 												 components: shape._cf.geometry.node._mesh._numColComponents } );
 				} else if(isBinaryGeometry) {
-					this.object.setMeshColors( { id: shape._objectID,
-												 idx: 0, 
-												 colors: shape._nameSpace.getURL(shape._cf.geometry.node._vf.color),
-												 components: shape._cf.geometry.node._mesh._numColComponents } );
+					if(!shape._cf.geometry.node._hasStrideOffset) {
+						this.object.setMeshColors( { id: shape._objectID,
+													 idx: 0, 
+													 colors: shape._nameSpace.getURL(shape._cf.geometry.node._vf.color),
+													 components: shape._cf.geometry.node._mesh._numColComponents } );
+					}
+				} else if(isBitLODGeometry) {
+					//Nothing todo
 				} else {
 					if(shape._cf.geometry.node._mesh._colors[0].length) {
 						for( var i=0; i<shape._cf.geometry.node._mesh._colors.length; i++ ) {
@@ -453,9 +510,13 @@ x3dom.gfx_flash = (function() {
 													idx: 0, 
 													texCoordTexture: shape._cf.geometry.node.getTexCoordTextureURL() } );
 				} else if(isBinaryGeometry) {
-					this.object.setMeshTexCoords( { id: shape._objectID,
-												    idx: 0, 
-												    texCoords: shape._nameSpace.getURL(shape._cf.geometry.node._vf.texCoord) } );
+					if(!shape._cf.geometry.node._hasStrideOffset) {
+						this.object.setMeshTexCoords( { id: shape._objectID,
+														idx: 0, 
+														texCoords: shape._nameSpace.getURL(shape._cf.geometry.node._vf.texCoord) } );
+					}
+				} else if(isBitLODGeometry) {
+					//Nothing todo
 				} else {
 					if(shape._cf.geometry.node._mesh._texCoords[0].length) {
 						for( var i=0; i<shape._cf.geometry.node._mesh._texCoords.length; i++ ) {
@@ -547,9 +608,9 @@ x3dom.gfx_flash = (function() {
 		if(refID == 0)
 		{
 		
-			this.object.setMeshProperties( { id: shape._objectID,
+			/*this.object.setMeshProperties( { id: shape._objectID,
 											 type: "Text",
-											 solid: shape.isSolid() } );
+											 solid: shape.isSolid() } );*/
 	
 			if( shape._dirty.text === true ) {
 				var fontStyleNode = shape._cf.geometry.node._cf.fontStyle.node;

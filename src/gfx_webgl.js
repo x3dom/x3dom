@@ -28,20 +28,17 @@ x3dom.gfx_webgl = (function () {
     };
 
     function setupContext(canvas, forbidMobileShaders) {
-        // TODO: add experimental-webgl, webgl test    
-        // x3dom.debug.logInfo("setupContext: canvas=" + canvas);
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
-        // Context creation params (not yet working)
-        // https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/doc/spec/WebGL-spec.html#5.2.1
+        // Context creation params
         var ctxAttribs = { alpha: true,
                            depth: true,
                            stencil: true,
                            antialias: true,
-                           premultipliedAlpha: false 
+                           premultipliedAlpha: false,
+                           preserveDrawingBuffer: true
                          };
-        // FIXME; do we need to handle context lost events?
-        // https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/doc/spec/WebGL-spec.html#5.16.1
+        
         for (var i=0; i<validContextNames.length; i++) {
             try {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
@@ -350,22 +347,6 @@ x3dom.gfx_webgl = (function () {
         };
 
     // http://www.gamedev.net/topic/442138-packing-a-float-into-a-a8r8g8b8-texture-shader/
-    // TODO: use same method for shadows!
-    /*
-    encode (fDist is the normalized distance):
-    	const float4 bitSh	= float4(256*256*256, 256*256, 256, 1);
-    	const float4 bitMsk = float4(0, 1.0/256.0, 1.0/256.0, 1.0/256.0);
-    	float4 comp;
-    	comp	= fDist * bitSh;
-    	comp	= frac(comp);
-    	comp	-= comp.xxyz * bitMsk;
-    	return comp;
-
-    decode (vec is the rgba encoded value):
-    	const float4 bitShifts = float4(1.0/(256.0*256.0*256.0), 1.0/(256.0*256.0), 1.0/256.0, 1);
-    	return dot(vec.xyzw , bitShifts);
-    */
-
     g_shaders['fs-x3d-pick'] = { type: "fragment", data:
         "#ifdef GL_ES             \n" +
         "  precision highp float; \n" +
@@ -412,7 +393,20 @@ x3dom.gfx_webgl = (function () {
         "    gl_FragColor = outVal;" +
         "}"
         };
-        
+    
+    g_shaders['fs-x3d-shadow-floatExt'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
+        "varying vec4 projCoord;" +
+        "void main(void) {" +
+        "    vec3 proj = (projCoord.xyz / projCoord.w);" +
+        //"    gl_FragColor = vec4(proj.z, proj.z, proj.z, 1.0);" +
+        "    gl_FragColor = vec4(proj, 1.0);" +
+        "}"
+        };
+    
     function getDefaultShaderProgram(gl, suffix) 
     {
         var prog = gl.createProgram();
@@ -1051,7 +1045,7 @@ x3dom.gfx_webgl = (function () {
 				}
 			} else {
 				if(polarNormal) {
-					shader += "float PI = 2.0 * asin(1.0);\n";
+					shader += "float PI = 3.14159265358979;\n";
 					shader += "float theta = normal.x*PI;\n";
 					shader += "float phi   = normal.y*PI*2.0 - PI;\n";
 				
@@ -1417,16 +1411,12 @@ x3dom.gfx_webgl = (function () {
 				if(iG_Indexed) {
 					shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n";
 					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_indexTextureWidth), position.y*(IG_implicitMeshSize/IG_indexTextureHeight)) + halfPixel;\n";
-					//shader += "vec2 IG_texCoord = vec2(1.0/(2.0*IG_indexTextureWidth)+position.x*(IG_indexTextureWidth-1.0)/IG_indexTextureWidth, 1.0/(2.0*IG_indexTextureHeight)+position.y*(IG_indexTextureHeight-1.0)/IG_indexTextureHeight);";
 					shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;\n";
-					
 					shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);\n";
 					shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;\n";
-					//shader += "IG_texCoord = vec2(1.0/(2.0*IG_coordTextureWidth)+position.x*(IG_coordTextureWidth-1.0)/IG_coordTextureWidth, 1.0/(2.0*IG_coordTextureHeight)+position.y*(IG_coordTextureHeight-1.0)/IG_coordTextureHeight);";
 				} else {
 					shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n";
 					shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_coordTextureWidth), position.y*(IG_implicitMeshSize/IG_coordTextureHeight)) + halfPixel;\n";
-					//shader += "vec2 IG_texCoord = vec2(position.x*(256.0/IG_coordTextureWidth)*(IG_coordTextureWidth-1.0)/(IG_coordTextureWidth), position.y*(256.0/IG_coordTextureHeight)*(IG_coordTextureHeight-1.0)/(IG_coordTextureHeight)) + halfPixel;";
 				}
 				
 				//Coordinates
@@ -1466,7 +1456,7 @@ x3dom.gfx_webgl = (function () {
 				shader += "gl_PointSize = 2.0;\n";
 			} else {
 				if(polarNormal) {
-					shader += "float PI = 2.0 * asin(1.0);\n";
+					shader += "float PI = 3.14159265358979;\n";
 					shader += "float theta = normal.x*PI;\n";
 					shader += "float phi   = normal.y*PI*2.0 - PI;\n";
 				
@@ -1662,13 +1652,20 @@ x3dom.gfx_webgl = (function () {
                             "        {" +
                             "            projectiveBiased.x += (j*stepSize);" +
                             "            projectiveBiased.y += (i*stepSize);" +
-                            "            vec4 zCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);" +
-                            "            float fromFixed = 256.0 / 255.0;" +
+                            "            vec4 zCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);";
+                            
+            if (!this._fpTexSupport) {
+                shadow +=   "            float fromFixed = 256.0 / 255.0;" +
                             "            float z = zCol.r * fromFixed;" +
                             "            z += zCol.g * fromFixed / (255.0);" +
                             "            z += zCol.b * fromFixed / (255.0 * 255.0);" +
-                            "            z += zCol.a * fromFixed / (255.0 * 255.0 * 255.0);" +
-                            "            if (z < projectiveBiased.z) blockerCount += 1.0;" +
+                            "            z += zCol.a * fromFixed / (255.0 * 255.0 * 255.0);";
+            }
+            else {
+                shadow +=   "            float z = zCol.b;";
+            }
+                            
+            shadow +=       "            if (z < projectiveBiased.z) blockerCount += 1.0;" +
                             "            projectiveBiased.x -= (j*stepSize);" +
                             "            projectiveBiased.y -= (i*stepSize);" +
                             "        }" +
@@ -2892,6 +2889,7 @@ x3dom.gfx_webgl = (function () {
 
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
+
                 xmlhttp.send(null);
 
                 xmlhttp.onload = function()
@@ -3038,7 +3036,7 @@ x3dom.gfx_webgl = (function () {
                     shape._nameSpace.doc.downloadCount -= 1;
 					shape._webgl.internalDownloadCount -= 1;
                     if(shape._webgl.internalDownloadCount == 0)
-						shape._webgl.shape._nameSpace.doc.needRender = true;
+						shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
                     x3dom.debug.logInfo("XHR1/ coord load time: " + t11 + " ms"); 
@@ -3226,17 +3224,17 @@ x3dom.gfx_webgl = (function () {
 				//Check if there are indices avaible
 				if(bitLODGeometry.hasIndex())
 				{
-					var xmlhttp0 = new XMLHttpRequest();
-					xmlhttp0.open("GET", encodeURI(shape._nameSpace.getURL(bitLODGeometry._vf.index)) , true);
-					xmlhttp0.responseType = "arraybuffer";
+					var xmlhttpLOD = new XMLHttpRequest();
+					xmlhttpLOD.open("GET", encodeURI(shape._nameSpace.getURL(bitLODGeometry._vf.index)) , true);
+					xmlhttpLOD.responseType = "arraybuffer";
             
 					shape._nameSpace.doc.downloadCount += 1;
             
-					xmlhttp0.send(null);
+					xmlhttpLOD.send(null);
             
-					xmlhttp0.onload = function() 
+					xmlhttpLOD.onload = function()
 					{
-						var XHR_buffer = xmlhttp0.response;
+						var XHR_buffer = xmlhttpLOD.response;
 
 						var indicesBuffer = gl.createBuffer();
 						shape._webgl.buffers[0] = indicesBuffer;
@@ -3270,8 +3268,6 @@ x3dom.gfx_webgl = (function () {
 				//If there is still no BitComposer create a new one 
 				shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
 				
-				var that = this;
-				
 				function callBack(refinedBuffer)
 				{	
 					var attribTypeStr 		= bitLODGeometry._vf.coordType;
@@ -3297,8 +3293,7 @@ x3dom.gfx_webgl = (function () {
 					gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
 										   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 					gl.enableVertexAttribArray(sp.position);
-          
-          
+
 					//Normals
 					shape._webgl.buffers[2] = buffer;
 					
@@ -3315,7 +3310,7 @@ x3dom.gfx_webgl = (function () {
 				    shape._nameSpace.doc.needRender = true;
 					
 					shape._webgl.bitLODComposer.refine(refinedBuffer);
-				};
+				}
 
 				shape._webgl.bitLODComposer.run([3, 2], 					 	//components
 									    [16, 16], 					 			//attribute bits for each component
@@ -3627,7 +3622,7 @@ x3dom.gfx_webgl = (function () {
                     sky[i+1] = bgnd._vf.skyAngle[i];
                 }
                 
-                if (n > 0) {
+                if (n > 0 || bgnd._vf.groundColor.length == 1) {
                     if (sky[sky.length-1] < Math.PI / 2) {
                         sky[sky.length] = Math.PI / 2 - x3dom.fields.Eps;
                         colors[colors.length] = colors[colors.length - 1];
@@ -3642,6 +3637,10 @@ x3dom.gfx_webgl = (function () {
                         colors[colors.length] = bgnd._vf.groundColor[i + 1];
                     }
                     
+                    if (n == 0 && bgnd._vf.groundColor.length == 1) {
+                        sky[sky.length] = Math.PI / 2;
+                        colors[colors.length] = bgnd._vf.groundColor[0];
+                    }
                     sky[sky.length] = Math.PI;
                     colors[colors.length] = bgnd._vf.groundColor[0];
                 }
@@ -4084,7 +4083,7 @@ x3dom.gfx_webgl = (function () {
  */
 //----------------------------------------------------------------------------
     Context.prototype.renderPickingPass = function(gl, scene, mat_view, mat_scene, 
-                                                   from, sceneSize, pickMode, lastX, lastY)
+                            from, sceneSize, pickMode, lastX, lastY, width, height)
     {
         gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
         
@@ -4319,9 +4318,9 @@ x3dom.gfx_webgl = (function () {
         try {
             var x = lastX * scene._webgl.pickScale,
                 y = scene._webgl.fboPick.height - 1 - lastY * scene._webgl.pickScale;
-            var data = new Uint8Array(16);    // 4 = 1 * 1 * 4; then take 2x2 window
+            var data = new Uint8Array(4 * width * height);    // 4 = 1 * 1 * 4; then take width x height window
             
-            gl.readPixels(x, y, 2, 2, gl.RGBA, gl.UNSIGNED_BYTE, data);
+            gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
             
             scene._webgl.fboPick.pixelData = data;
         }
@@ -5061,34 +5060,32 @@ x3dom.gfx_webgl = (function () {
         var from = mat_view.inverse().e3();
 
         // get bbox of scene bbox and camera position
-        {
-            var _min = x3dom.fields.SFVec3f.copy(from);
-            var _max = x3dom.fields.SFVec3f.copy(from);
+        var _min = x3dom.fields.SFVec3f.copy(from);
+        var _max = x3dom.fields.SFVec3f.copy(from);
 
-            if (_min.x > min.x) { _min.x = min.x; }
-            if (_min.y > min.y) { _min.y = min.y; }
-            if (_min.z > min.z) { _min.z = min.z; }
+        if (_min.x > min.x) { _min.x = min.x; }
+        if (_min.y > min.y) { _min.y = min.y; }
+        if (_min.z > min.z) { _min.z = min.z; }
 
-            if (_max.x < max.x) { _max.x = max.x; }
-            if (_max.y < max.y) { _max.y = max.y; }
-            if (_max.z < max.z) { _max.z = max.z; }
+        if (_max.x < max.x) { _max.x = max.x; }
+        if (_max.y < max.y) { _max.y = max.y; }
+        if (_max.z < max.z) { _max.z = max.z; }
 
-            min.setValues(_min);
-            max.setValues(_max);
-        }
+        min.setValues(_min);
+        max.setValues(_max);
 
-        var sceneSize = max.subtract(min).length(); // + x3dom.fields.Eps;
+        var sceneSize = max.subtract(min).length();
         
         // render to texture for reading pixel values
-        this.renderPickingPass(gl, scene, 
-                               mat_view, mat_scene, 
-                               from, sceneSize,
-                               pickMode, x, y);
+        this.renderPickingPass(gl, scene, mat_view, mat_scene, 
+                               from, sceneSize, pickMode, x, y, 2, 2);
         
         //var index = ( (scene._webgl.fboPick.height - 1 - scene._lastY) * 
         //               scene._webgl.fboPick.width + scene._lastX ) * 4;
         var index = 0;
-        if (index >= 0 && index < scene._webgl.fboPick.pixelData.length) {
+        if (index >= 0 && scene._webgl.fboPick.pixelData && 
+            index < scene._webgl.fboPick.pixelData.length)
+        {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
             var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
             var objId = scene._webgl.fboPick.pixelData[index + 3];
@@ -5153,6 +5150,76 @@ x3dom.gfx_webgl = (function () {
         
         return true;
     };
+
+//----------------------------------------------------------------------------
+/*! render color-buf pass for picking sub-window
+ */
+//----------------------------------------------------------------------------
+    Context.prototype.pickRect = function (viewarea, x1, y1, x2, y2)
+    {
+        var gl = this.ctx3d;
+        var scene = viewarea ? viewarea._scene : null;
+        
+        // method requires that scene has already been rendered at least once
+        if (gl === null || scene === null || !scene._webgl || !scene.drawableObjects)
+            return false;
+        
+        // values not fully correct but unnecessary anyway, just to feed the shader
+        var from = viewarea._last_mat_view.inverse().e3();
+        var sceneSize = scene._lastMax.subtract(scene._lastMin).length();
+        
+        var x = (x1 <= x2) ? x1 : x2;
+        var y = (y1 >= y2) ? y1 : y2;
+        var width  = (1 + Math.abs(x2 - x1)) * scene._webgl.pickScale;
+        var height = (1 + Math.abs(y2 - y1)) * scene._webgl.pickScale;
+        
+        // render to texture for reading pixel values
+        this.renderPickingPass(gl, scene, viewarea._last_mat_view, viewarea._last_mat_scene, 
+                    from, sceneSize, 0, x, y, (width<1) ? 1:width, (height<1) ? 1:height);
+        
+        var index = 0;
+        var pickedObjects = [];
+        
+        // get objects in rectangle
+        for (index = 0; scene._webgl.fboPick.pixelData && 
+             index < scene._webgl.fboPick.pixelData.length; index += 4)
+        {
+            var objId = scene._webgl.fboPick.pixelData[index + 3] + 
+                        scene._webgl.fboPick.pixelData[index + 2] * 256;
+            
+            if (objId > 0)
+                pickedObjects.push(objId);
+        }
+        pickedObjects.sort();
+        
+        // make found object IDs unique
+        pickedObjects = ( function(arr) {
+                var a = [], l = arr.length;
+                for (var i=0; i<l; i++) {
+                    for (var j=i+1; j<l; j++) {
+                        if (arr[i] === arr[j])
+                            j = ++i;
+                    }
+                    a.push(arr[i]);
+                }
+                return a;
+            } )(pickedObjects);
+        
+        var pickedNodes = [];
+        
+        for (index = 0; index < pickedObjects.length; index++)
+        {
+            var obj = pickedObjects[index];
+            
+            obj = x3dom.nodeTypes.Shape.idMap.nodeID[obj];
+            obj = (obj && obj._xmlNode) ? obj._xmlNode : null;
+            
+            if (obj)
+                pickedNodes.push(obj);
+        }
+        
+        return pickedNodes;
+    };
     
 //----------------------------------------------------------------------------
 /*! render scene (main pass)
@@ -5204,8 +5271,11 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
-            scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false, gl.UNSIGNED_BYTE); // type);  TODO: fp shadows
-            scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
+            scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false, type);
+            if (this._fpTexSupport)
+                scene._webgl.shadowShader = this.getShaderProgram(gl, ['vs-x3d-shadow', 'fs-x3d-shadow-floatExt']);
+            else
+                scene._webgl.shadowShader = getDefaultShaderProgram(gl, 'shadow');
             
             // TODO; for testing do it on init, but must be refreshed on node change!
             for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
@@ -5245,8 +5315,7 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl.fboPick = this.initFbo(gl, fboWidth, fboHeight, true, scene._webgl.fboPick.typ);
                 scene._webgl.fboPick.pixelData = null;
                 
-                x3dom.debug.logInfo("Refreshed picking FBO to size (" + 
-                                    (fboWidth) + ", " + (fboHeight) + ")");
+                x3dom.debug.logInfo("Refreshed picking FBO to size (" + fboWidth + ", " + fboHeight + ")");
             }
         }
         
@@ -5266,7 +5335,7 @@ x3dom.gfx_webgl = (function () {
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
 
-            // remote rendering stuff XXX
+            // TODO; remove remote rendering stuff XXX
             scene.drawableObjects.useIdList = false;
             scene.drawableObjects.collect = false;
             scene.drawableObjects.idList = [];
@@ -5356,8 +5425,10 @@ x3dom.gfx_webgl = (function () {
             center = trafo.multMatrixPnt(center);
             center = mat_view.multMatrixPnt(center);
 
-            var sortType = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortType : "opaque";
-            var sortKey = (obj3d._cf.appearance.node !== undefined) ? obj3d._cf.appearance.node._vf.sortKey : 0;
+            var sortType = (obj3d._cf.appearance.node !== undefined) ? 
+                            obj3d._cf.appearance.node._vf.sortType : "opaque";
+            var sortKey  = (obj3d._cf.appearance.node !== undefined) ? 
+                            obj3d._cf.appearance.node._vf.sortKey : 0;
 
             if (sortType.toLowerCase() === "opaque") {
                 zPos.push([i, center.z, sortKey]);
@@ -5396,8 +5467,6 @@ x3dom.gfx_webgl = (function () {
             var zPosTranspArr = zPosTransp[sortKeyProp];
             
             zPosTranspArr.sort(function(a, b) { return a[1] - b[1]; });
-
-            //zPos = zPos.concat(zPosTransp[sortKeyProp]);
             zPos.push.apply(zPos, zPosTranspArr);
         }
         
@@ -5483,10 +5552,6 @@ x3dom.gfx_webgl = (function () {
         gl.enable(gl.DEPTH_TEST);
         gl.enable(gl.CULL_FACE);
         
-        //gl.enable(gl.SAMPLE_ALPHA_TO_COVERAGE);
-        //gl.enable(gl.SAMPLE_COVERAGE);
-        //gl.sampleCoverage(0.5, false);
-
         //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         //Workaround for WebKit & Co.
         gl.blendFuncSeparate(
@@ -5548,24 +5613,24 @@ x3dom.gfx_webgl = (function () {
         
         gl.disable(gl.DEPTH_TEST);
         
-        /*
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
+            /*
             if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
                 scene._vf.pickMode.toLowerCase() === "color" ||
                 scene._vf.pickMode.toLowerCase() === "texcoord") {
-                gl.viewport(0, 3*this.canvas.height/4, 
+                gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
-            
+            */
             if (oneShadowExistsAlready) {
-                gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
+                gl.viewport(0, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }
         }
-        */
+        
         gl.flush();
         
         t1 = new Date().getTime() - t0;
@@ -5731,7 +5796,7 @@ x3dom.gfx_webgl = (function () {
         {
             locScene.drawableObjects = [];
 
-            // remote rendering stuff XXX
+            // TODO; remove remote rendering stuff XXX
             locScene.drawableObjects.useIdList = false;
             locScene.drawableObjects.collect = false;
             locScene.drawableObjects.idList = [];
@@ -5745,8 +5810,6 @@ x3dom.gfx_webgl = (function () {
             {
                 transform = locScene.drawableObjects[i][0];
                 shape = locScene.drawableObjects[i][1];
-                
-                //x3dom.debug.logWarning(i + "\n" + transform);
                 
                 if (shape._vf.render !== undefined && shape._vf.render === false) {
                    continue;
@@ -6025,14 +6088,7 @@ x3dom.gfx_webgl = (function () {
     {
         var fbo = gl.createFramebuffer();
         var rb = gl.createRenderbuffer();
-
-        /*
-        var type = gl.UNSIGNED_BYTE;
-        if (gl.getExtension("OES_texture_float")) {
-            type = gl.FLOAT;
-            x3dom.debug.logInfo("Using fp extension...");
-        }
-        */
+        
         var tex = this.initTex(gl, w, h, nearest, type);
 
         gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
@@ -6063,4 +6119,3 @@ x3dom.gfx_webgl = (function () {
     return setupContext;
 
 })();
-

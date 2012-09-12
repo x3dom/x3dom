@@ -1533,6 +1533,16 @@ x3dom.registerNodeType(
 			getSrc: function()
 			{
 				return this._vf.src;
+			},
+			
+			getFormat: function()
+			{
+				return this._vf.format;
+			},
+			
+			getAttrib: function()
+			{
+				return this._vf.attrib;
 			}
 		}
 	)
@@ -1714,6 +1724,26 @@ x3dom.registerNodeType(
 				return URLs;
 			},
 			
+			getComponentFormats: function()
+			{
+				var formats = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					formats[c] = this._cf.components.nodes[c].getFormat();
+					
+				return formats;
+			},
+			
+			getComponentAttribs: function()
+			{
+				var attribs = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					attribs[c] = this._cf.components.nodes[c].getAttrib();
+					
+				return attribs;
+			},
+
 			getType: function(bits)
 			{
     			switch(bits)
@@ -2604,8 +2634,6 @@ x3dom.registerNodeType(
 					this._mesh._numColComponents = numColComponents;
 
 
-
-
 					var i, t, cnt, faceCnt;
 					var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 					
@@ -2942,7 +2970,7 @@ x3dom.registerNodeType(
 					}
 	
 					Array.forEach(this._parentNodes, function (node) {
-						node.setAllDirty();
+						node.setGeoDirty();
 					});	 
                 } 
 				else {
