@@ -2414,8 +2414,6 @@ x3dom.gfx_webgl = (function () {
                 }
                 else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
                 {
-                    var pixels = new Uint8Array(tex._vf.image.toGL());
-                    
                     var format = gl.NONE;
                     switch (tex._vf.image.comp)
                     {
@@ -2424,6 +2422,15 @@ x3dom.gfx_webgl = (function () {
                         case 3: format = gl.RGB; break;
                         case 4: format = gl.RGBA; break;
                     }
+                    
+                    var pixelArr = tex._vf.image.toGL();
+                    var pixelArrSize = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
+                    
+                    while (pixelArr.length < pixelArrSize) {
+                        pixelArr.push(0);
+                    }
+                    
+                    var pixels = new Uint8Array(pixelArr);
                     
                     texture = gl.createTexture();
                     that._webgl.texture[unit] = texture;
