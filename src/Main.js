@@ -330,12 +330,25 @@ x3dom.userAgentFeature = {
             }
         })('load');
     };
-    x3dom.reload = onload
     
     var onunload = function() {
-        for (var i=0; i<x3dom.canvases.length; i++) {
-            x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+        if (x3dom.canvases) {
+            for (var i=0; i<x3dom.canvases.length; i++) {
+                x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+            }
+            x3dom.canvases = [];
         }
+    };
+    
+    /** Initializes an <x3d> root element that was added after document load.
+     *
+     *  If there already was an <x3d> element, it needs to be removed before:
+     *  var x3d = document.getElementsByTagName("x3d")[0];
+	 *	x3d.parentNode.removeChild(x3d);
+     */
+    x3dom.reload = function() {
+        onunload();
+        onload();
     };
 	
     /* FIX PROBLEM IN CHROME - HACK - searching for better solution !!! */
