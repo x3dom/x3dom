@@ -330,6 +330,7 @@ x3dom.userAgentFeature = {
             }
         })('load');
     };
+    x3dom.reload = onload
     
     var onunload = function() {
         for (var i=0; i<x3dom.canvases.length; i++) {
