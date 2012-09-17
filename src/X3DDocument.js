@@ -498,7 +498,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     			x3dom.debug.logInfo('Viewpoint position="' + translation.x.toFixed(5) + ' ' 
     			                    + translation.y.toFixed(5) + ' ' + translation.z.toFixed(5) + '" ' +
     								'orientation="' + rot[0].x.toFixed(5) + ' ' + rot[0].y.toFixed(5) + ' ' 
-    								+ rot[0].z.toFixed(5) + ' ' + rot[1].toFixed(5) + '"');
+    								+ rot[0].z.toFixed(5) + ' ' + rot[1].toFixed(5) + '" \n' +
+                                    'zNear="' + e_viewpoint.getNear().toFixed(6) + '" ' +
+    								'zFar="' + e_viewpoint.getFar().toFixed(6) + '"');
             })();
             break;
         case 119: /* w, walk mode */

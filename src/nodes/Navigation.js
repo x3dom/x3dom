@@ -60,6 +60,8 @@ x3dom.registerNodeType(
 
             this._projMatrix = null;
             this._lastAspect = 1.0;
+            this._zNear = this._vf.zNear;
+            this._zFar = this._vf.zFar;
         },
         {
             fieldChanged: function (fieldName) {
@@ -71,6 +73,8 @@ x3dom.registerNodeType(
                          fieldName == "zNear" || 
 						 fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
+                    this._zNear = this._vf.zNear;
+                    this._zFar = this._vf.zFar;
                 }
                 else if (fieldName === "set_bind") {
                     // FIXME; call parent.fieldChanged();
@@ -119,6 +123,14 @@ x3dom.registerNodeType(
 
             getTransformation: function() {
                 return this.getCurrentTransform();
+            },
+            
+            getNear: function() {
+                return this._zNear;
+            },
+            
+            getFar: function() {
+                return this._zFar;
             },
 
             getProjectionMatrix: function(aspect)
@@ -179,6 +191,10 @@ x3dom.registerNodeType(
                         this._projMatrix._23 = 2 * znear * zfar / div;
                     }
                 }
+                
+                // needed for being able to ask for near and far
+                this._zNear = znear;
+                this._zFar = zfar;
 
                 if (this._projMatrix == null)
                 {
