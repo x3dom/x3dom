@@ -47,6 +47,7 @@ x3dom.Mesh.prototype._indices   = [];*/
 
 x3dom.Mesh.prototype._numTexComponents = 2;
 x3dom.Mesh.prototype._numColComponents = 3;
+x3dom.Mesh.prototype._numNormComponents = 3;
 x3dom.Mesh.prototype._lit = true;
 x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};

@@ -1364,11 +1364,13 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'colorType', "Float32");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
+            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
             
             // workaround
             this._hasStrideOffset = false;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
+			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
@@ -1522,12 +1524,10 @@ x3dom.registerNodeType(
 		{
 			nodeChanged: function()
             {		
-				
 			},
 
             fieldChanged: function(fieldName)
             {
-                
             },
 			
 			getSrc: function()
@@ -1576,20 +1576,19 @@ x3dom.registerNodeType(
 			this.numBitsPerCoord  = 0;
 			this.numBitsPerNormal = 0;
 			
-			
 			// workaround
-            this._hasStrideOffset = false;
+			this._hasStrideOffset = false;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
+			this._mesh._numNormComponents = 2;
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
 		    this._mesh._numFaces = 0;
-			
 		},
 		{
 			nodeChanged: function()
-      {	 
+            {	 
 				var components = this._cf.components.nodes;
 				var numComponents = components.length;
 				if(numComponents)
@@ -1641,7 +1640,7 @@ x3dom.registerNodeType(
             
 		    fieldChanged: function(fieldName)
 		    {
-			    
+			    // TODO
 		    },
 			
 			getMin: function()
