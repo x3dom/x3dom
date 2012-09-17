@@ -124,7 +124,7 @@ load : function(gl)
     gl.generateMipmap(gl.TEXTURE_2D);
     gl.bindTexture(gl.TEXTURE_2D, null);
   };
-  img.src = "bitbunny/fractal.png";
+  img.src = "bitbunny_aopt/fractal.png";
   //END GET TEXTURE
   
 	//BEGIN GET INDICES
@@ -152,6 +152,8 @@ load : function(gl)
   
   var tBuf = new ArrayBuffer(4 * numVerts);  
   var texCoordBuffer = new Uint16Array(tBuf);
+  
+  x3dom.RefinementJobManager.suppressOnTransferablesNotSupported = true;
   
   refinementManager.addResultBuffer(0, interleavedCoordNormalBuffer);
   refinementManager.addResultBuffer(1, texCoordBuffer);
@@ -212,12 +214,13 @@ draw : function(gl)
     this.xform.projection.perspective(sglDegToRad(60.0), w/h, 0.1, 100.0);
 
     this.xform.view.loadIdentity();
-    this.xform.view.lookAt(0.0, 2.0, 3.0,
+    //this.xform.view.lookAt(0.0, 2.0, 3.0,
+    this.xform.view.lookAt(0.0, 0.5, 1.0,
                            0.0, 0.0, 0.0,
                            0.0, 1.0, 0.0);
 
     this.xform.model.loadIdentity();	
-    this.xform.model.rotate(sglDegToRad(this.angle), 0.0, 1.0, 0.0);
+    //this.xform.model.rotate(sglDegToRad(this.angle), 0.0, 1.0, 0.0);
     this.xform.model.rotate(sglDegToRad(90.0), 1.0, 0.0, 0.0);
 
     gl.uniformMatrix4fv(this.program.set_uniform["u_mvp"], false,
