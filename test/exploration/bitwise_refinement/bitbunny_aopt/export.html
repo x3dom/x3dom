@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'></link>
+    <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
+  </head>
+  <body>
+    <xml>
+      <div style='width:300px;float:right;'>
+        <fieldset style='margin:4px;'>
+          <legend>
+            <strong>Viewer Settings
+            </strong>
+          </legend>
+          <table>
+            <tr>
+              <td>Navigation Mode:
+              </td>
+              <td align='right'>
+                <select style='float:right;' onchange='if (typeof this.selectedIndex != &apos;undefined&apos;) { var e = document.getElementById(&apos;x3dElement&apos;);if (this.options[this.selectedIndex].value === &apos;examine&apos;){ e.runtime.examine(); }else if (this.options[this.selectedIndex].value === &apos;lookat&apos;){ e.runtime.lookAt(); }else if (this.options[this.selectedIndex].value === &apos;walk&apos;){ e.runtime.speed(1.0); e.runtime.walk(); }else if (this.options[this.selectedIndex].value === &apos;fly&apos;){  e.runtime.speed(1.0); e.runtime.fly();  }else if (this.options[this.selectedIndex].value === &apos;walkfast&apos;){ e.runtime.speed(40.0); e.runtime.walk(); }else if (this.options[this.selectedIndex].value === &apos;flyfast&apos;){  e.runtime.speed(40.0); e.runtime.fly();  } }'>
+                  <option value='examine'>Examine
+                  </option>
+                  <option value='lookat'>LookAt
+                  </option>
+                  <option value='walk'>Walk
+                  </option>
+                  <option value='fly'>Fly
+                  </option>
+                  <option value='walkfast'>Walk (fast)
+                  </option>
+                  <option value='flyfast'>Fly (fast)
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Debug Display:
+              </td>
+              <td align='right'>
+                <input type='checkbox' onclick='if (this.checked){ document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); }else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'>Stats
+                </input>
+                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;50%&apos;; } else { x3dElem.style.height=&apos;60%&apos;; }x3dElem.runtime.debug();'>Console
+                </input>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.showAll();'>Show Everything
+                </button>
+              </td>
+              <td>
+                <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.resetView();'>Reset View
+                </button>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+      </div>
+      <div>
+        <h1>Minimalistic X3DOM Viewer
+        </h1>
+        <p>
+          <a href='http://www.x3dom.org'>X3DOM
+          </a> output created with 
+          <a href='http://www.instantreality.org'>InstantReality
+          </a> aopt tool.
+        </p>
+      </div>
+      <div style='clear:both;'></div>
+      <br></br>
+    </xml>
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:75%;'>
+      <scene DEF='scene'>
+        <group>
+          <group>
+            <group>
+              <shape DEF='SP_0'>
+                <appearance DEF='Material.001'>
+                  <material diffuseColor='0.64 0.64 0.64' shininess='3.00245' specularColor='0.5 0.5 0.5'></material>
+                  <imageTexture url='"fractal.png"'></imageTexture>
+                </appearance>
+                <bitLODGeometry DEF='LG_0' vertexCount='208353' primType='"TRIANGLES"' position='0.298177599907 -0.282734036446 -0.417162418365' size='4.45790719986 3.45508599281 4.41882514954' index='LG_0_indexBinary.bin'>
+                  <bitLODGeoComponent src='LG_0_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level8.bin' attrib='"texcoord2"' format='4'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level9.bin' attrib='"texcoord2"' format='4'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level10.bin' attrib='"texcoord2"' format='4'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level11.bin' attrib='"texcoord2"' format='4'></bitLODGeoComponent>
+                </bitLODGeometry>
+              </shape>
+            </group>
+          </group>
+        </group>
+      </scene>
+    </x3d>
+  </body>
+</html>
