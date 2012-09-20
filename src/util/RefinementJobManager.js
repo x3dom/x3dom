@@ -22,7 +22,7 @@ x3dom.RefinementJobManager = function() {
  
 
 //global flags to avoid multiple popups with the same warning
-x3dom.RefinementJobManager.suppressOnTransferablesNotSupported = false;
+x3dom.RefinementJobManager.suppressOnTransferablesNotSupported = true;
 x3dom.RefinementJobManager.suppressOnWorkersNotSupported       = false;
  
  
