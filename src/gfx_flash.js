@@ -117,6 +117,8 @@ x3dom.gfx_flash = (function() {
 		//Get Scene from Viewarea
         var scene = viewarea._scene;
 		
+		
+		
 		if(viewarea._last_mat_view == undefined) {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
 		}
@@ -172,6 +174,7 @@ x3dom.gfx_flash = (function() {
 	*
 	*/
 	Context.prototype.setupScene = function(scene, viewarea) {
+	
 		//Set View-Matrix
 		var mat_view = viewarea.getViewMatrix();
 		
@@ -217,8 +220,13 @@ x3dom.gfx_flash = (function() {
         
         viewarea._last_mat_view = mat_view;
 		
-        var mat_proj = viewarea.getProjectionMatrix();
+		//Dirty HACK
 		var viewpoint = scene.getViewpoint();
+		viewpoint._vf.zFar = 10000;
+		viewpoint._vf.zNear = 0.1;
+		
+        var mat_proj = viewarea.getProjectionMatrix();
+		
 		this.object.setViewpoint( { fov: viewpoint._vf.fov,
 									zFar: viewpoint._vf.zFar,
 									zNear: viewpoint._vf.zNear,
