@@ -804,7 +804,7 @@ x3dom.gfx_webgl = (function () {
 		var sphereMapping		= (shape._cf.geometry.node._cf.texCoord !== undefined && shape._cf.geometry.node._cf.texCoord.node !== null && shape._cf.geometry.node._cf.texCoord.node._vf.mode) ? (shape._cf.geometry.node._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0 : 0;
 		var cubeMap				= (shape._cf.appearance.node._cf.texture.node) ? x3dom.isa(shape._cf.appearance.node._cf.texture.node, x3dom.nodeTypes.X3DEnvironmentTextureNode) ? 1 : 0 : 0;
 		var blending			= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) || cubeMap || (shape._cf.appearance.node._cf.texture.node && (shape._cf.appearance.node._cf.texture.node._vf.origChannelCount == 1 || shape._cf.appearance.node._cf.texture.node._vf.origChannelCount == 2))) ? 1 : 0;
-		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || shape._cf.geometry.node.hasColor() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
+		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry) && shape._cf.geometry.node.hasColor()) || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
 		var lights				= (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight);
 		var solid				= (shape.isSolid()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
@@ -1290,7 +1290,7 @@ x3dom.gfx_webgl = (function () {
 		var textureTransform 	= (shape._cf.appearance.node._cf.textureTransform.node !== null) ? 1 : 0;
 		var sphereMapping		= (shape._cf.geometry.node._cf.texCoord !== undefined && shape._cf.geometry.node._cf.texCoord.node !== null && shape._cf.geometry.node._cf.texCoord.node._vf.mode) ? (shape._cf.geometry.node._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0 : 0;
 		var cubeMap				= (shape._cf.appearance.node._cf.texture.node) ? x3dom.isa(shape._cf.appearance.node._cf.texture.node, x3dom.nodeTypes.X3DEnvironmentTextureNode) ? 1 : 0 : 0;
-		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || shape._cf.geometry.node.hasColor() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
+		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry) && shape._cf.geometry.node.hasColor()) || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
 		var lights				= (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight);
 		var shadow				= (viewarea.getLightsShadow()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
@@ -1573,7 +1573,7 @@ x3dom.gfx_webgl = (function () {
 //----------------------------------------------------------------------------
     Context.prototype.generateFS = function (viewarea, shape)
     {
-		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || shape._cf.geometry.node.hasColor() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
+		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry) && shape._cf.geometry.node.hasColor()) || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
 		var lights				= (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight);
 		var shadows				= (viewarea.getLightsShadow()) ? 1 : 0;
         var fogs				= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
