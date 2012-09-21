@@ -1520,10 +1520,41 @@ x3dom.registerNodeType(
 			this.addField_SFString(ctx, 'src', "");
 			this.addField_MFInt32(ctx, 'format', []);
 			this.addField_MFString(ctx, 'attrib', []);
+			
+			this._attribShift = [];
+			this._attribShiftDec = [];
+			this._mask = [];
+			
+			this._bitsPerComponent = 0;
 		},
 		{
 			nodeChanged: function()
             {		
+				//Get Bits per component
+				for(var f=0; f<this._vf.format.length; f++) {
+					this._bitsPerComponent += this._vf.format[f];
+				}
+				
+				/*for(var a=0; a<this._vf.attrib.length; a++) {
+					if(this._vf.attrib[a] == "coord3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "normal2") {
+						this._attribShiftDec[a] = this._vf.format[a]/2;
+					} else if(this._vf.attrib[a] == "normal3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "texcoord2") {
+						this._attribShiftDec[a] = this._vf.format[a]/2;
+					} else if(this._vf.attrib[a] == "texcoord3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "color3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "color4") {
+						this._attribShiftDec[a] = this._vf.format[a]/4;
+					}
+					
+					this._attribShift[a] = this._bitsPerComponent - ((a) ? this._vf.format[a-1] : 0);
+					this._mask[a] = Math.pow(2, this._attribShiftDec[a]) - 1;
+				}*/
 			},
 
             fieldChanged: function(fieldName)
@@ -1540,9 +1571,14 @@ x3dom.registerNodeType(
 				return this._vf.format;
 			},
 			
-			getAttrib: function()
+			getAttrib: function(idx)
 			{
-				return this._vf.attrib;
+				return this._vf.attrib[idx];
+			},
+			
+			getNumAttribs: function()
+			{
+				return this._vf.attrib.length;
 			}
 		}
 	)
@@ -1563,18 +1599,38 @@ x3dom.registerNodeType(
 			this.addField_SFString(ctx, 'index', "");   // Uint16		
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
 			
+			
 			// Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
             //this.addField_SFString(ctx, 'indexType', "Uint16");
             this.addField_SFString(ctx, 'coordType', "Uint16");
-            this.addField_SFString(ctx, 'normalType', "Uint8");
-            this.addField_SFString(ctx, 'texCoordType', "Float32");
-            this.addField_SFString(ctx, 'colorType', "Float32");
+            this.addField_SFString(ctx, 'normalType', "Uint16");
+            this.addField_SFString(ctx, 'texCoordType', "Uint16");
+            this.addField_SFString(ctx, 'colorType', "Uint16");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
 			
-			this.numBitsPerCoord  = 0;
-			this.numBitsPerNormal = 0;
+			/*this._actComponent = -1;
+			
+			this._bitsPerVertex		= 0;
+			this._bitsPerNormal		= 0;
+			this._bitsPerTexCoord 	= 0;
+			this._bitsPerColor 		= 0;
+			
+			this._componentsPerVertex 	= 0;
+			this._componentsPerNormal 	= 0;
+			this._componentsPerTexCoord = 0;
+			this._componentsPerColor 	= 0;
+			
+			this._vertexShift 	= 0;
+			this._normalShift 	= 0;
+			this._texCoordShift = 0;
+			this._colorShift 	= 0;	
+			
+			this._vertexShiftDec 	= 0;
+			this._normalShiftDec 	= 0;
+			this._texCoordShiftDec 	= 0;	
+			this._colorShiftDec 	= 0;*/
 			
 			// workaround
 			this._hasStrideOffset = false;
@@ -1589,53 +1645,58 @@ x3dom.registerNodeType(
 		{
 			nodeChanged: function()
             {	 
-				var components = this._cf.components.nodes;
-				var numComponents = components.length;
-				if(numComponents)
-				{
-					var attribs = components[0]._vf.attrib;
-					var format  = components[0]._vf.format;
-					
-					var numAttribs = attribs.length;
-					var numFormats  = format.length;
-					
-					if(numAttribs == numFormats)
-					{
-						for(var a=0; a<numAttribs; a++)
-						{
-							switch(attribs[a])
-							{
-								case "coord3":
-									this.numBitsPerCoord = (format[a] * numComponents) / 3;
-									this._vf.coordType = this.getType(this.numBitsPerCoord);
-								break;
-								
-								case "normal3":
-									this.numBitsPerNormal = (format[a] * numComponents) / 3;
-									this._vf.normalType = this.getType(this.numBitsPerNormal);
-								break;
-								
-								case "normal2":
-									this.numBitsPerNormal = (format[a] * numComponents) / 2;
-									this._vf.normalType = this.getType(this.numBitsPerNormal);
-								break;
-								
-								default:
-								break;
-							}	
+				/*for(var i=0; i<this._cf.components.nodes.length; i++) {
+					for(var j=0; j<this._cf.components.nodes[i]._vf.attrib.length; j++) {
+						if(this._cf.components.nodes[i]._vf.attrib[j] == "coord3") {
+							this._bitsPerVertex += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerVertex++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "normal2") {
+							this._bitsPerNormal += (this._cf.components.nodes[i]._vf.format[j] / 2);
+							this._componentsPerNormal++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "normal3") {
+							this._bitsPerNormal += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerNormal++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "texcoord2") {
+							this._bitsPerTexCoord += (this._cf.components.nodes[i]._vf.format[j] / 2);
+							this._componentsPerTexCoord++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "texcoord3") {
+							this._bitsPerTexCoord += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerTexCoord++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "color3") {
+							this._bitsPerColor += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerColor++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "color4") {
+							this._bitsPerColor += (this._cf.components.nodes[i]._vf.format[j] / 4);
+							this._componentsPerColor++;
 						}
 					}
-					else
-					{
-						x3dom.debug.logError("[BitLODGeometry] attrib and format have different size");
-					}
 				}
+				
+				//Calculate attribute left shift decrement value
+				this._vertexShiftDec	= this._bitsPerVertex   / this._componentsPerVertex;
+				this._normalShiftDec 	= this._bitsPerNormal   / this._componentsPerNormal;
+				this._texCoordShiftDec	= this._bitsPerTexCoord / this._componentsPerTexCoord;
+				this._colorShiftDec 	= this._bitsPerColor    / this._componentsPerColor;
+				
+				//Set attribute left shift value
+				this._vertexShift		= this._bitsPerVertex   - this._vertexShiftDec;
+				this._normalShift		= this._bitsPerNormal   - this._normalShiftDec;
+				this._texCoordShift		= this._bitsPerTexCoord - this._texCoordShiftDec;
+				this._colorShift		= this._bitsPerColor    - this._colorShiftDec;
+				
+				//Set attribute types
+				this._vf.coordType		= this.getAttribType(this._bitsPerVertex);
+				this._vf.normalType		= this.getAttribType(this._bitsPerNormal);
+				this._vf.texCoordType	= this.getAttribType(this._bitsPerTexCoord);
+				this._vf.colorType		= this.getAttribType(this._bitsPerColor);*/
 			},
       
 		    parentAdded: function()
 		    {
 			  this._parentNodes[0]._coordStrideOffset = [12, 0];
 			  this._parentNodes[0]._normalStrideOffset = [12, 8];
+			  this._parentNodes[0]._texCoordStrideOffset = [4, 0];
+			  this._parentNodes[0]._colorStrideOffset = [6, 0];
 		    },
             
 		    fieldChanged: function(fieldName)
@@ -1674,6 +1735,62 @@ x3dom.registerNodeType(
 			hasPolarNormals: function()
 			{
 				return true; //TODO
+			},
+			
+			hasColor: function()
+			{
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "color3") return true;
+					}
+				}
+				return false;
+			},
+			
+			hasTexCoord: function()
+			{
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "texcoord2") return true;
+					}
+				}
+				return false;
+			},
+			
+			getCoordNormalURLs: function() {
+				var coordNormalURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "coord3") {
+							coordNormalURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return coordNormalURLs;
+			},
+			
+			getTexCoordURLs: function() {
+				var texCoordURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "texcoord2") {
+							texCoordURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return texCoordURLs;
+			},
+			
+			getColorURLs: function() {
+				var colorURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "color3") {
+							colorURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return colorURLs;
 			},
 			
 			getNumPrimTypes: function()
@@ -1728,7 +1845,7 @@ x3dom.registerNodeType(
 				var formats = [];
 				
 				for(var c=0; c<this._cf.components.nodes.length; c++)
-					formats[c] = this._cf.components.nodes[c].getFormat();
+					formats[c] = this._cf.components.nodes[c]._vf.format;
 					
 				return formats;
 			},
@@ -1738,12 +1855,22 @@ x3dom.registerNodeType(
 				var attribs = [];
 				
 				for(var c=0; c<this._cf.components.nodes.length; c++)
-					attribs[c] = this._cf.components.nodes[c].getAttrib();
+					attribs[c] = this._cf.components.nodes[c]._vf.attrib;
 					
 				return attribs;
 			},
+			
+			getNumVertices: function()
+			{
+				var count = 0;
+				for(var i=0; i<this._vf.vertexCount.length; i++) {
+					count += this._vf.vertexCount[i];
+				}
+				
+				return count;
+			},
 
-			getType: function(bits)
+			getAttribType: function(bits)
 			{
     			switch(bits)
                 {

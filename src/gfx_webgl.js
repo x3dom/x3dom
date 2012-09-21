@@ -804,7 +804,7 @@ x3dom.gfx_webgl = (function () {
 		var sphereMapping		= (shape._cf.geometry.node._cf.texCoord !== undefined && shape._cf.geometry.node._cf.texCoord.node !== null && shape._cf.geometry.node._cf.texCoord.node._vf.mode) ? (shape._cf.geometry.node._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0 : 0;
 		var cubeMap				= (shape._cf.appearance.node._cf.texture.node) ? x3dom.isa(shape._cf.appearance.node._cf.texture.node, x3dom.nodeTypes.X3DEnvironmentTextureNode) ? 1 : 0 : 0;
 		var blending			= (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) || cubeMap || (shape._cf.appearance.node._cf.texture.node && (shape._cf.appearance.node._cf.texture.node._vf.origChannelCount == 1 || shape._cf.appearance.node._cf.texture.node._vf.origChannelCount == 2))) ? 1 : 0;
-		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
+		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || shape._cf.geometry.node.hasColor() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
 		var lights				= (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight);
 		var solid				= (shape.isSolid()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
@@ -894,6 +894,11 @@ x3dom.gfx_webgl = (function () {
 					shader += "uniform float IG_indexTextureWidth;";
 					shader += "uniform float IG_indexTextureHeight;";
 				}
+			}
+			
+			if(bitLODGeometry) {
+				shader += "uniform vec3 BLG_bboxMin;\n";
+				shader += "uniform vec3 BLG_bboxMax;\n";
 			}
 			
 			if(fog) {
@@ -1075,12 +1080,14 @@ x3dom.gfx_webgl = (function () {
 				
 				shader += "vec3 vertPosition = position;";
 				
-				if(bitLODGeometry){
-				  shader += "vertPosition = (vertPosition / bgPrecisionMax) * 2.0 - 1.0;\n";
-				  shader += "vertPosition = bgCenter + bgSize * vertPosition;\n";
-				} else if(requireBBox) {
+				if(bitLODGeometry)
+				{			  
+				  shader += "vertPosition = vertPosition / bgPrecisionMax;\n";			  
+				  shader += "vertPosition = vertPosition * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;\n";
+				}
+				else if(requireBBox) {
 				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
-			    }
+				}
 				
 				if(vertexColor == 3){
 					shader += "vec3 vertColor = color;";
@@ -1283,7 +1290,7 @@ x3dom.gfx_webgl = (function () {
 		var textureTransform 	= (shape._cf.appearance.node._cf.textureTransform.node !== null) ? 1 : 0;
 		var sphereMapping		= (shape._cf.geometry.node._cf.texCoord !== undefined && shape._cf.geometry.node._cf.texCoord.node !== null && shape._cf.geometry.node._cf.texCoord.node._vf.mode) ? (shape._cf.geometry.node._cf.texCoord.node._vf.mode.toLowerCase() == "sphere") ? 1 : 0 : 0;
 		var cubeMap				= (shape._cf.appearance.node._cf.texture.node) ? x3dom.isa(shape._cf.appearance.node._cf.texture.node, x3dom.nodeTypes.X3DEnvironmentTextureNode) ? 1 : 0 : 0;
-		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
+		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || shape._cf.geometry.node.hasColor() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
 		var lights				= (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight);
 		var shadow				= (viewarea.getLightsShadow()) ? 1 : 0;
 		var fog					= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
@@ -1566,7 +1573,7 @@ x3dom.gfx_webgl = (function () {
 //----------------------------------------------------------------------------
     Context.prototype.generateFS = function (viewarea, shape)
     {
-		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
+		var vertexColor 		= (shape._cf.geometry.node._mesh._colors[0].length > 0 || shape._cf.geometry.node.getColorTexture() || shape._cf.geometry.node.hasColor() || (shape._cf.geometry.node._vf.color !== undefined && shape._cf.geometry.node._vf.color.length > 0)) ? shape._cf.geometry.node._mesh._numColComponents : 0;
 		var lights				= (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight);
 		var shadows				= (viewarea.getLightsShadow()) ? 1 : 0;
         var fogs				= (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
@@ -3223,6 +3230,8 @@ x3dom.gfx_webgl = (function () {
         }
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry))
 		{	
+			var that = this;
+		
 			shape._webgl.bitLODGeometry = -1;
 		
 			var bitLODGeometry = shape._cf.geometry.node;
@@ -3299,63 +3308,146 @@ x3dom.gfx_webgl = (function () {
 						shape._nameSpace.doc.needRender = true;
 					};
 				}
-			
-				//If there is still no BitComposer create a new one 
-				shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
 				
-				function callBack(refinedBuffer)
+				//If there is still no BitComposer create a new one 
+				//shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
+				shape._webgl.refinementJobManager = new x3dom.RefinementJobManager();
+				
+				function callBack(attributeId, bufferView)
 				{	
-					var attribTypeStr 		= bitLODGeometry._vf.coordType;
-					  
-					shape._webgl.coordType    = getVertexAttribType(attribTypeStr, gl);
-					shape._webgl.normalType   = shape._webgl.coordType;
-					
-					var attributes = getArrayBufferView(attribTypeStr, refinedBuffer);
-          
-					// calculate number of single data packages by including stride and type size
-					var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
-					if (dataLen)
-						bitLODGeometry._mesh._numCoords = attributes.length / dataLen;
-					
+					x3dom.debug.logError(attributeId);
 					var buffer = gl.createBuffer();
-					
-					//Vertices
-					shape._webgl.buffers[1] = buffer;
-					
-					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-					gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
-					
-					gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
-										   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-					gl.enableVertexAttribArray(sp.position);
+				
+					if (attributeId === 0) {
+						var attribTypeStr 		= bitLODGeometry._vf.coordType;
+						  
+						shape._webgl.coordType  = getVertexAttribType(attribTypeStr, gl);
+						shape._webgl.normalType = shape._webgl.coordType;
+			  
+						// calculate number of single data packages by including stride and type size					
+						var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
+						//@todo: we need numCoords before this callback is invoked
+						if (dataLen)
+							bitLODGeometry._mesh._numCoords = bufferView.length / dataLen;
+						
+						//Positions
+						shape._webgl.buffers[1] = buffer;
+						
+						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+						
+						gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
+											   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
+						gl.enableVertexAttribArray(sp.position);
 
-					//Normals
-					shape._webgl.buffers[2] = buffer;
+						//Normals
+						shape._webgl.buffers[2] = buffer;
+						
+						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+						
+						gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, 
+											shape._webgl.normalType, false, 
+											shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+						gl.enableVertexAttribArray(sp.normal);
+					} 
+					else if (attributeId === 1) 
+					{
+						x3dom.debug.logError("Here")
+						shape._webgl.texCoordType = shape._webgl.coordType;
+						shape._webgl.buffers[3] = buffer;
+						
+						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+						
+						gl.vertexAttribPointer(sp.texcoord, shape._cf.geometry.node._mesh._numTexComponents, 
+											   shape._webgl.texCoordType, false, 
+											   shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+						gl.enableVertexAttribArray(sp.texcoord);
+					} 
+					else if (attributeId === 2) 
+					{
+						shape._webgl.colorType = shape._webgl.coordType;
+						shape._webgl.buffers[4] = buffer;
+						
+						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+						
+						gl.vertexAttribPointer(sp.color, shape._cf.geometry.node._mesh._numColComponents, 
+											   shape._webgl.colorType, false, 
+											   shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
+						gl.enableVertexAttribArray(sp.color);
+					}
 					
-					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-					gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
-					
-					gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, 
-					                    shape._webgl.normalType, false, 
-					                    shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
-					gl.enableVertexAttribArray(sp.normal);
-					
-					attributes = null;
+					bufferView = null;
 					
 				    //shape._nameSpace.doc.downloadCount -= 1;
 				    shape._nameSpace.doc.needRender = true;
 					
-					shape._webgl.bitLODComposer.refine(refinedBuffer);
+					shape._webgl.refinementJobManager.continueProcessing(attributeId);
 				}
 
-				shape._webgl.bitLODComposer.run([3, 2], 					 	//components
-									    [16, 16], 					 			//attribute bits for each component
-									    [6, 2], 					 			//bits per refinement level for all components
-									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
-									    callBack,
-										[0, 64],					            //write offset in bits (interleaved output)
-										96);			                        //write stride in bits (interleaved output)
-     
+				//allocate buffers, pass them to the refinement manager
+				//@todo: get number of vertices
+				const numVerts = bitLODGeometry.getNumVertices();
+		  
+				var buf = new ArrayBuffer(12 * numVerts);  
+				var interleavedCoordNormalBuffer = new Uint16Array(buf);
+				
+				shape._webgl.refinementJobManager.addResultBuffer(0, interleavedCoordNormalBuffer);    
+
+				for (var i = 0; i < bitLODGeometry.getCoordNormalURLs().length; ++i) {
+					shape._webgl.refinementJobManager.addRefinementJob(0,                                     //attributeId / resultBufferId
+																	   i,                                     //download priority
+																	   bitLODGeometry.getCoordNormalURLs()[i],//data file url
+																	   i,                                     //refinement level (-> important for bit shift)
+																	   callBack,                              //'job finished'-callback
+																	   96,                                    //stride in bits (size of a single result element)
+																	   [3, 2],                                //number of components information array
+																	   [6, 2],                                //bits per refinement level information array
+																	   [0, 6],                                //read offset (bits) information array
+																	   [0, 64]);                              //write offset (bits) information array                                       
+				}
+				
+				if(bitLODGeometry.hasTexCoord()) {
+					var tBuf = new ArrayBuffer(4 * numVerts);  
+					var texCoordBuffer = new Uint16Array(tBuf);
+					
+					shape._webgl.refinementJobManager.addResultBuffer(1, texCoordBuffer);
+					
+					for (i = 0; i < bitLODGeometry.getTexCoordURLs().length; ++i) {
+						shape._webgl.refinementJobManager.addRefinementJob(1,                           		//attributeId / resultBufferId
+																		   i,                           		//download priority
+																		   bitLODGeometry.getTexCoordURLs()[i], //data file url
+																		   i,                           		//refinement level (-> important for bit shift)
+																		   callBack,  							//'job finished'-callback
+																		   32,                          		//stride in bits (size of a single result element)
+																		   [2],                         		//number of components information array
+																		   [8],                         		//bits per refinement level information array
+																		   [0],                         		//read offset (bits) information array
+																		   [0]);                        		//write offset (bits) information array                                       
+					}
+				}
+				
+				if(bitLODGeometry.hasColor()) {
+					var cBuf = new ArrayBuffer(6 * numVerts);  
+					var colorBuffer = new Uint16Array(cBuf);
+					
+					shape._webgl.refinementJobManager.addResultBuffer(2, colorBuffer);
+					
+					for (i = 0; i < bitLODGeometry.getColorURLs().length; ++i) {
+						shape._webgl.refinementJobManager.addRefinementJob(2,                           		//attributeId / resultBufferId
+																		   i,                           		//download priority
+																		   bitLODGeometry.getColorURLs()[i],	//data file url
+																		   i,                           		//refinement level (-> important for bit shift)
+																		   callBack,  							//'job finished'-callback
+																		   48,                          		//stride in bits (size of a single result element)
+																		   [3],                         		//number of components information array
+																		   [6],                         		//bits per refinement level information array
+																		   [0],                         		//read offset (bits) information array
+																		   [0]);                        		//write offset (bits) information array                                       
+					}
+				}
 			}
 		}		
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
