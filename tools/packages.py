@@ -48,12 +48,12 @@ NODES = [
     'nodes/Texturing.js',
     'nodes/Shaders.js',
     'nodes/Geometry3D.js',
+    'nodes/Texturing3D.js'
 ]
 
 COMPONENTS = [
   'nodes/Geospatial.js',
   'nodes/Geometry2D.js',
-  'nodes/Texturing3D.js',
   'nodes/VolumeRendering.js',
   'Docs.js'                    # interactive documentation
 ]

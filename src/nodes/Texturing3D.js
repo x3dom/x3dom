@@ -70,6 +70,19 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### TextureCoordinate3D ### */
+x3dom.registerNodeType(
+    "TextureCoordinate3D",
+    "Texturing3D",
+    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
+        function (ctx) {
+            x3dom.nodeTypes.TextureCoordinate3D.superClass.call(this, ctx);
+
+            this.addField_MFVec3f(ctx, 'point', []);
+        }
+    )
+);
+
 /* ### TextureCoordinate4D ### */
 x3dom.registerNodeType(
     "TextureCoordinate4D",
@@ -139,7 +152,7 @@ x3dom.registerNodeType(
                 this.addField_SFInt32(ctx, 'numberOfSlices', 0);
                 this.addField_SFInt32(ctx, 'slicesOverX', 0);
                 this.addField_SFInt32(ctx, 'slicesOverY', 0);
-                x3dom.debug.logWarning('ImageTextureAtlas New Node!!!');
+                // Special node to represent tiles for volume rendering
         },
         {
             nodeChanged: function() {},

@@ -159,7 +159,21 @@ x3dom.gfx_webgl = (function () {
         "\n" +
         "void main(void) {\n" +
         "    gl_FragColor = texture2D(tex, fragTexCoord);\n" +
-        //"    gl_FragColor = vec4(texture2D(tex, fragTexCoord).rg, 0.0, 1.0);\n" +
+        "}"
+        };
+        
+    // foreground shader for debugging buffers
+    g_shaders['fs-x3d-bg-texture-fgnd'] = { type: "fragment", data:
+        "#ifdef GL_ES             \n" +
+        "  precision highp float; \n" +
+        "#endif                   \n" +
+        "\n" +
+        "uniform sampler2D tex;\n" +
+        "varying vec2 fragTexCoord;\n" +
+        "\n" +
+        "void main(void) {\n" +
+        "    vec4 col = texture2D(tex, fragTexCoord);\n" +
+        "    gl_FragColor = vec4(col.rgb, 1.0);\n" +
         "}"
         };
         
@@ -4098,7 +4112,7 @@ x3dom.gfx_webgl = (function () {
 
         scene._fgnd._webgl.primType = gl.TRIANGLE_STRIP;
         scene._fgnd._webgl.shader = this.getShaderProgram(gl, 
-                ['vs-x3d-bg-texture', 'fs-x3d-bg-texture']);
+                ['vs-x3d-bg-texture', 'fs-x3d-bg-texture-fgnd']);
         
         var sp = scene._fgnd._webgl.shader;
         
@@ -5800,17 +5814,15 @@ x3dom.gfx_webgl = (function () {
         
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
-            /*
             if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
                 scene._vf.pickMode.toLowerCase() === "color" ||
                 scene._vf.pickMode.toLowerCase() === "texcoord") {
-                gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
+                gl.viewport(0, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
-            */
             if (oneShadowExistsAlready) {
-                gl.viewport(0, 3*this.canvas.height/4, 
+                gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }

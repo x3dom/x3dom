@@ -561,19 +561,6 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### TextureCoordinate3D ### */
-x3dom.registerNodeType(
-    "TextureCoordinate3D",
-    "Texturing3D",
-    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
-        function (ctx) {
-            x3dom.nodeTypes.TextureCoordinate3D.superClass.call(this, ctx);
-
-            this.addField_MFVec3f(ctx, 'point', []);
-        }
-    )
-);
-
 /* ### TextureCoordinate ### */
 x3dom.registerNodeType(
     "TextureCoordinate",
@@ -597,6 +584,19 @@ x3dom.registerNodeType(
 
             this.addField_SFString(ctx, 'mode', "SPHERE");
             this.addField_MFFloat(ctx, 'parameter', []);
+        }
+    )
+);
+
+/* ### MultiTextureCoordinate ### */
+x3dom.registerNodeType(
+    "MultiTextureCoordinate",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
+        function (ctx) {
+            x3dom.nodeTypes.MultiTextureCoordinate.superClass.call(this, ctx);
+
+            this.addField_MFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
         }
     )
 );

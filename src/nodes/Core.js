@@ -301,10 +301,16 @@ x3dom.registerNodeType(
                     try {
                         switch ((typeof(this._vf[field])).toString()) {
                             case "number":
-                                this._vf[field] = +msg;
+                                if (typeof(msg) == "number")
+                                    this._vf[field] = msg;
+                                else
+                                    this._vf[field] = +msg;
                                 break;
                             case "boolean":
-                                this._vf[field] = (msg==true) || (msg.toLowerCase() === "true");
+                                if (typeof(msg) == "boolean")
+                                    this._vf[field] = msg;
+                                else
+                                    this._vf[field] = (msg.toLowerCase() == "true");
                                 break;
                             case "string":
                                 this._vf[field] = msg;

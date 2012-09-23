@@ -201,10 +201,17 @@ x3dom.registerNodeType(
                 }
 
                 var numTexComponents = 2;
-                if (this._cf.texCoord.node) {
-                    if (this._cf.texCoord.node._vf.point) {
-                        texCoords = this._cf.texCoord.node._vf.point;
-                        if (x3dom.isa(this._cf.texCoord.node, x3dom.nodeTypes.TextureCoordinate3D)) {
+                
+                var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
+                
+                if (texCoordNode) {
+                    if (texCoordNode._vf.point) {
+                        texCoords = texCoordNode._vf.point;
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
                             numTexComponents = 3;
                         }
                     }
@@ -2208,6 +2215,10 @@ x3dom.registerNodeType(
 
                 var texMode = "", numTexComponents = 2;
                 var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
                 if (texCoordNode)
                 {
                     if (texCoordNode._vf.point) {
@@ -2675,9 +2686,15 @@ x3dom.registerNodeType(
                 var pnts = this._cf.coord.node._vf.point;
                 var n = pnts.length;
                 
+                var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
+                
                 if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > 65535) ||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
-                    (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
+                    (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
                     (this._vf.colorIndex.length > 0 && this._cf.color.node))
                 {
 					this._mesh._positions[0] = [];
@@ -2727,7 +2744,11 @@ x3dom.registerNodeType(
 					}
 
 					var texMode = "", numTexComponents = 2;
-					var texCoordNode = this._cf.texCoord.node;
+                    var texCoordNode = this._cf.texCoord.node;
+                    if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                        if (texCoordNode._cf.texCoord.nodes.length)
+                            texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                    }
 					if (texCoordNode)
 					{
 						if (texCoordNode._vf.point) {
@@ -3138,7 +3159,12 @@ x3dom.registerNodeType(
 					}
 					else if (fieldName == "texCoord")
 					{
-						pnts = this._cf.texCoord.node._vf.point;
+                        var texCoordNode = this._cf.texCoord.node;
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                            if (texCoordNode._cf.texCoord.nodes.length)
+                                texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                        }
+						pnts = texCoordNode._vf.point;
 						
 						this._mesh._texCoords[0] = pnts.toGL();
 						
