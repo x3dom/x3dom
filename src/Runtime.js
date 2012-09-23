@@ -102,7 +102,7 @@ x3dom.Runtime.prototype.enterFrame = function() {
  *   > var element, bindable;
  *   > element = doucment.getElementById('the_x3delement');
  *   > bindable = element.runtime.getActiveBindable('background');
- *   > bindable.setAttribute('set_bind', 'false');
+ *   > bindable.setAttribute('bind', 'false');
  *
  * Parameters:
  * 		typeName - bindable type name

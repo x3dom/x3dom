@@ -1368,6 +1368,7 @@ x3dom.registerNodeType(
             
             // workaround
             this._hasStrideOffset = false;
+            this._mesh._numPosComponents = this._vf.normalAsSphericalCoordinates ? 4 : 3;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
 			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
@@ -1393,6 +1394,9 @@ x3dom.registerNodeType(
                     stride = +this._vf.coord.substring(strideInd);
                     this._parentNodes[0]._coordStrideOffset = [stride, offset];
                     this._hasStrideOffset = true;
+                    if ((offset / 8) - Math.floor(offset / 8) == 0) {
+                        this._mesh._numPosComponents = 4;
+                    }
                     x3dom.debug.logInfo("coord stride/offset:" + stride + ", " + offset);
                 }
 

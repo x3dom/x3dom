@@ -95,8 +95,8 @@ x3dom.registerNodeType(
                     fieldName.search("ground") >= 0) {
                     this._dirty = true;
                 }
-                else if (fieldName === "set_bind") {
-                    this.bind(this._vf.set_bind);
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
                 }
             },
 

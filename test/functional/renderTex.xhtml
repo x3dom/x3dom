@@ -100,7 +100,7 @@
                 <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' repeatS='false' repeatT='false'>
                   <Shape USE='aNode' containerField='excludeNodes'/>
                   <Background USE='back' containerField='background'/>
-                  <Viewpoint id='view2' containerField='viewpoint'
+                  <Viewpoint id='view2' containerField='viewpoint' zNear="0.1" zFar="10000"
                              position="0 0 -20" orientation="0 1 0 3.1415926" />
                   <Group>
                      <Shape DEF="sphereShape">
@@ -130,8 +130,8 @@
     </X3D>
 	</div>
     <div class="group">    
-	    <input type="button" value=" view1.set_bind "  onclick="document.getElementById('view1').setAttribute('set_bind','true');" />
-		<input type="button" value=" view2.set_bind "  onclick="document.getElementById('view2').setAttribute('set_bind','true');" />
+	    <input type="button" value=" view1.bind "  onclick="document.getElementById('view1').setAttribute('bind','true');" />
+		<input type="button" value=" view2.bind "  onclick="document.getElementById('view2').setAttribute('bind','true');" />
     </div>
   </body>
 </html>

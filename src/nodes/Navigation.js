@@ -76,9 +76,9 @@ x3dom.registerNodeType(
                     this._zNear = this._vf.zNear;
                     this._zFar = this._vf.zFar;
                 }
-                else if (fieldName === "set_bind") {
+                else if (fieldName.indexOf("bind") >= 0) {
                     // FIXME; call parent.fieldChanged();
-                    this.bind(this._vf.set_bind);
+                    this.bind(this._vf.bind);
                 }
             },
 
@@ -249,8 +249,8 @@ x3dom.registerNodeType(
                 else if (fieldName == "projection") {
                     this._projMatrix = this._vf.projection;
                 }
-                else if (fieldName === "set_bind") {
-                    this.bind(this._vf.set_bind);
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
                 }
             },
 

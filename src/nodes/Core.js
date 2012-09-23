@@ -279,8 +279,18 @@ x3dom.registerNodeType(
             var f = this._vf[field];
 
             if (f === undefined) {
-                f = {};
-                this._vf[field] = f;
+                var pre = "set_";
+                if (field.indexOf(pre) == 0) {
+                    var fieldName = field.substr(pre.length, field.length - 1);
+                    if (this._vf[fieldName] !== undefined) {
+                        field = fieldName;
+                        f = this._vf[field];
+                    }
+                }
+                if (f === undefined) {
+                    f = {};
+                    this._vf[field] = f;
+                }
             }
 
             if (f !== null) {
@@ -294,7 +304,7 @@ x3dom.registerNodeType(
                                 this._vf[field] = +msg;
                                 break;
                             case "boolean":
-                                this._vf[field] = (msg.toLowerCase() === "true");
+                                this._vf[field] = (msg==true) || (msg.toLowerCase() === "true");
                                 break;
                             case "string":
                                 this._vf[field] = msg;
@@ -740,7 +750,7 @@ x3dom.registerNodeType(
         function (ctx) {
           x3dom.nodeTypes.X3DBindableNode.superClass.call(this, ctx);
 
-          this.addField_SFBool(ctx, 'set_bind', false);
+          this.addField_SFBool(ctx, 'bind', false);
           this.addField_SFString(ctx, 'description', "");
           this.addField_SFBool(ctx, 'isActive', false);
 
@@ -772,18 +782,18 @@ x3dom.registerNodeType(
             },
 
             activate: function (prev) {
-                x3dom.debug.logInfo ('activate Bindable ' + this._DEF);
                 this.postMessage('isActive', true);
+                x3dom.debug.logInfo('activate Bindable ' + this._DEF);
             },
 
             deactivate: function (prev) {
-                x3dom.debug.logInfo ('deactivate Bindable ' + this._DEF);
                 this.postMessage('isActive', false);
+                x3dom.debug.logInfo('deactivate Bindable ' + this._DEF);
             },
 
             fieldChanged: function(fieldName) {
-                if (fieldName === "set_bind") {
-                    this.bind(this._vf.set_bind);
+                if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
                 }
             },
 

@@ -159,6 +159,7 @@ x3dom.gfx_webgl = (function () {
         "\n" +
         "void main(void) {\n" +
         "    gl_FragColor = texture2D(tex, fragTexCoord);\n" +
+        //"    gl_FragColor = vec4(texture2D(tex, fragTexCoord).rg, 0.0, 1.0);\n" +
         "}"
         };
         
@@ -283,23 +284,6 @@ x3dom.gfx_webgl = (function () {
         "varying vec3 worldCoord;" +
         "void main(void) {" +
         "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;" +
-        "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;" +
-        "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
-        "}"
-        };
-		
-	g_shaders['vs-x3d-pickBLG'] = { type: "vertex", data:
-        "attribute vec3 position;" +
-        "uniform vec3 BLG_bboxMin;" +
-		"uniform vec3 BLG_bboxMax;" +
-		"uniform float bgPrecisionMax;" +
-        "uniform mat4 modelMatrix;" +
-        "uniform mat4 modelViewProjectionMatrix;" +
-        "uniform vec3 from;" +
-        "varying vec3 worldCoord;" +
-        "void main(void) {" +
-        "	 vec3 pos = position / bgPrecisionMax;" +
-		"	 pos = pos * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;" +
         "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;" +
         "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);" +
         "}"
@@ -835,14 +819,19 @@ x3dom.gfx_webgl = (function () {
 												  requireBBoxCol + 
 												  requireBBoxTex +
 												  bitLODGeometry +
-												  polarNormal;
+												  polarNormal +
+												  shape._cf.geometry.node._mesh._numPosComponents;
 		
 		if(!g_shaders[shaderIdentifier]) {
 		
 			var shader = "";
             
-            //Set Attributes +Uniforms + Varyings
-            shader += "attribute vec3 position;\n";
+            //Set Attributes + Uniforms + Varyings
+            if (shape._cf.geometry.node._mesh._numPosComponents == 4)
+                shader += "attribute vec4 position;\n";
+            else
+                shader += "attribute vec3 position;\n";
+            
 			if(polarNormal) {
 				shader += "attribute vec2 normal;\n";
 			} else {
@@ -894,11 +883,6 @@ x3dom.gfx_webgl = (function () {
 					shader += "uniform float IG_indexTextureWidth;";
 					shader += "uniform float IG_indexTextureHeight;";
 				}
-			}
-			
-			if(bitLODGeometry) {
-				shader += "uniform vec3 BLG_bboxMin;\n";
-				shader += "uniform vec3 BLG_bboxMax;\n";
 			}
 			
 			if(fog) {
@@ -1058,15 +1042,22 @@ x3dom.gfx_webgl = (function () {
 					if (requireBBoxNor && !bitLODGeometry) {
 						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
 					}
+					else if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
+					    // (theta, phi) encoded in low/high byte of position.w
+					    shader += "float val1 = floor(position.w / 256.0); \n";
+                        shader += "float val2 = fract(position.w / 256.0) * 256.0; \n";
+                        shader += "vertNormal = vec3(val1, val2, 0.0) / 255.0; \n";
+					}
 					else {
 					    shader += "vertNormal = vec3(normal.xy, 0.0);\n";
 					}
 					shader += "float PI    = 3.14159265358979; \n";
 					shader += "float theta = vertNormal.x * PI;\n";
 					shader += "float phi   = vertNormal.y * PI * 2.0 - PI;\n";
+					shader += "float sin_theta = sin(theta);\n";
 
-					shader += "vertNormal.x = sin(theta) * cos(phi);\n";
-					shader += "vertNormal.y = sin(theta) * sin(phi);\n";
+					shader += "vertNormal.x = sin_theta * cos(phi);\n";
+					shader += "vertNormal.y = sin_theta * sin(phi);\n";
 					shader += "vertNormal.z = cos(theta);\n";
 				}
 				else {
@@ -1078,14 +1069,9 @@ x3dom.gfx_webgl = (function () {
 					}
 				}
 				
-				shader += "vec3 vertPosition = position;";
+				shader += "vec3 vertPosition = position.xyz;";
 				
-				if(bitLODGeometry)
-				{			  
-				  shader += "vertPosition = vertPosition / bgPrecisionMax;\n";			  
-				  shader += "vertPosition = vertPosition * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;\n";
-				}
-				else if(requireBBox) {
+				if(requireBBox || bitLODGeometry) {
 				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 				}
 				
@@ -1321,15 +1307,20 @@ x3dom.gfx_webgl = (function () {
 											requireBBoxNor +
 											requireBBoxCol +
 											requireBBoxTex +
-											polarNormal;
+											polarNormal +
+											shape._cf.geometry.node._mesh._numPosComponents;
 
         if(!g_shaders[shaderIdentifier]) {
             //x3dom.debug.logInfo("generate new Vertex Shader: " + shaderIdentifier);
             
             var shader = "";
             
-            //Set Attributes +Uniforms + Varyings
-            shader += "attribute vec3 position;\n";
+            //Set Attributes + Uniforms + Varyings
+            if (shape._cf.geometry.node._mesh._numPosComponents == 4)
+                shader += "attribute vec4 position;\n";
+            else
+                shader += "attribute vec3 position;\n";
+            
 			if(polarNormal) {
 				shader += "attribute vec2 normal;\n";
 			} else {
@@ -1375,11 +1366,6 @@ x3dom.gfx_webgl = (function () {
 				shader += "uniform sampler2D IG_normalTexture;\n";
 				shader += "uniform sampler2D IG_texCoordTexture;\n";
 				shader += "uniform sampler2D IG_colorTexture;\n";	
-			}
-			
-			if(bitLODGeometry) {
-				shader += "uniform vec3 BLG_bboxMin;\n";
-				shader += "uniform vec3 BLG_bboxMax;\n";
 			}
 
             if(vertexColor){
@@ -1482,15 +1468,22 @@ x3dom.gfx_webgl = (function () {
 					if (requireBBoxNor && !bitLODGeometry) {
 						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
 					}
+					else if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
+					    // (theta, phi) encoded in low/high byte of position.w
+					    shader += "float val1 = floor(position.w / 256.0); \n";
+                        shader += "float val2 = fract(position.w / 256.0) * 256.0; \n";
+                        shader += "vertNormal = vec3(val1, val2, 0.0) / 255.0; \n";
+					}
 					else {
 					    shader += "vertNormal = vec3(normal.xy, 0.0);\n";
 					}
 					shader += "float PI    = 3.14159265358979; \n";
 					shader += "float theta = vertNormal.x * PI;\n";
 					shader += "float phi   = vertNormal.y * PI * 2.0 - PI;\n";
-				    
-					shader += "vertNormal.x = sin(theta) * cos(phi);\n";
-					shader += "vertNormal.y = sin(theta) * sin(phi);\n";
+					shader += "float sin_theta = sin(theta);\n";
+
+					shader += "vertNormal.x = sin_theta * cos(phi);\n";
+					shader += "vertNormal.y = sin_theta * sin(phi);\n";
 					shader += "vertNormal.z = cos(theta);\n";
 				}
 				else {
@@ -1508,17 +1501,13 @@ x3dom.gfx_webgl = (function () {
 					    shader += "vertTexCoord = vertTexCoord / bgPrecisionTexMax;\n";
 				    }
 				}
-				shader += "vec3 vertPosition = position;\n";
+				shader += "vec3 vertPosition = position.xyz;\n";
 				
-				if(bitLODGeometry)
-				{			  
-				  shader += "vertPosition = vertPosition / bgPrecisionMax;\n";			  
-				  shader += "vertPosition = vertPosition * (BLG_bboxMax - BLG_bboxMin) + BLG_bboxMin;\n";
-				}
-				else if(requireBBox) {
+				if(requireBBox || bitLODGeometry) {
 				    shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 				}
 				shader += "gl_PointSize = 2.0;\n";
+				
 				if(vertexColor){
     				if(requireBBoxCol) {
     				    shader += "fragColor = color / bgPrecisionColMax;\n";
@@ -2005,7 +1994,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.position, 3, shape._webgl.coordType, false,
+                    gl.vertexAttribPointer(shape._webgl.shader.position, 
+                        shape._cf.geometry.node._mesh._numPosComponents, 
+                        shape._webgl.coordType, false,
                         shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 
                     vertices = null;
@@ -2029,7 +2020,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.color, 3, shape._webgl.colorType, false,
+                    gl.vertexAttribPointer(shape._webgl.shader.color, 
+                        shape._cf.geometry.node._mesh._numColComponents, 
+                        shape._webgl.colorType, false,
                         shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     
                     colors = null;
@@ -2053,7 +2046,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.normal, 3, shape._webgl.normalType, false,
+                    gl.vertexAttribPointer(shape._webgl.shader.normal, 
+                        shape._cf.geometry.node._mesh._numNormComponents, 
+                        shape._webgl.normalType, false,
                         shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                     
                     normals = null;
@@ -2077,7 +2072,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);             
                     
-                    gl.vertexAttribPointer(shape._webgl.shader.texCoord, 3, shape._webgl.texCoordType, false,
+                    gl.vertexAttribPointer(shape._webgl.shader.texCoord, 
+                        shape._cf.geometry.node._mesh._numTexComponents, 
+                        shape._webgl.texCoordType, false,
                         shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                     
                     texCoords = null;
@@ -2650,8 +2647,8 @@ x3dom.gfx_webgl = (function () {
 			}
 
 			//Needed for right picking shader
+			//TODO: remove HACK since this is exclusive to normal pick shader
 			viewarea._scene._webgl.imageGeometry = numCoordinateTextures;
-			viewarea._scene._webgl.bitLODGeometry = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry);
             
             shape._webgl = {
                 positions: shape._cf.geometry.node._mesh._positions,
@@ -2957,7 +2954,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
                     gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
 
-                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                    gl.vertexAttribPointer(sp.position, geoNode._mesh._numPosComponents, 
+                        shape._webgl.coordType, false,
                         shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.position);
 
@@ -3041,14 +3039,17 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
-                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                    gl.vertexAttribPointer(sp.position, 
+                        shape._cf.geometry.node._mesh._numPosComponents, 
+                        shape._webgl.coordType, false,
                         shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.position);
-
+                    
+                    shape._cf.geometry.node._mesh._numCoords = vertices.length / 
+                                            shape._cf.geometry.node._mesh._numPosComponents;
+                    
                     // Test reading Data
                     //x3dom.debug.logWarning("arraybuffer[0].vx="+vertices[0]);
-                    
-                    shape._cf.geometry.node._mesh._numCoords = vertices.length / 3;
 
                     if ((attribTypeStr == "Float32") &&
                         (shape._vf.bboxSize.x < 0 || shape._vf.bboxSize.y < 0 || shape._vf.bboxSize.z < 0))
@@ -3071,6 +3072,40 @@ x3dom.gfx_webgl = (function () {
                         shape._vf.bboxCenter.setValues(min.add(max).multiply(0.5));
                         shape._vf.bboxSize.setValues(max.subtract(min));
                     }
+                    
+                    /*
+                    if (shape._cf.geometry.node._mesh._numPosComponents == 4 &&
+                        shape._cf.geometry.node._mesh._numNormComponents == 2) 
+                    {
+                        var buf = [];
+                        for (var i=3, j=0; i<vertices.length; i+=4) {
+                            var theta = (vertices[i] >>> 8) / 255;
+                            var phi   = (vertices[i] & 255) / 255;
+                        
+                            theta = theta * Math.PI;
+        					phi   = phi   * Math.PI * 2.0 - Math.PI;
+                            var sin_theta = Math.sin(theta);
+
+        					buf[j++] = sin_theta * Math.cos(phi);
+        					buf[j++] = sin_theta * Math.sin(phi);
+        					buf[j++] = Math.cos(theta);
+                        }
+                        shape._cf.geometry.node._mesh._numNormComponents = 3;
+                    
+                        var normalBuffer = gl.createBuffer();
+                        shape._webgl.buffers[2] = normalBuffer;
+                        shape._webgl.normalType = getVertexAttribType("Float32", gl);
+                    
+                        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buf), gl.STATIC_DRAW);                
+
+                        gl.vertexAttribPointer(sp.normal, 
+                            shape._cf.geometry.node._mesh._numNormComponents, 
+                            shape._webgl.normalType, false,
+                            shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+                        gl.enableVertexAttribArray(sp.normal);
+                    }
+                    */
                     
                     vertices = null;
 
@@ -3112,7 +3147,8 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
 
-                    gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, 
+                    gl.vertexAttribPointer(sp.normal, 
+                        shape._cf.geometry.node._mesh._numNormComponents, 
                         shape._webgl.normalType, false,
                         shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.normal);
@@ -3160,7 +3196,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
 
-                    gl.vertexAttribPointer(sp.texcoord, 2, shape._webgl.texCoordType, false,
+                    gl.vertexAttribPointer(sp.texcoord, 
+                        shape._cf.geometry.node._mesh._numTexComponents, 
+                        shape._webgl.texCoordType, false,
                         shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.texcoord);
 
@@ -3207,7 +3245,9 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
 
-                    gl.vertexAttribPointer(sp.color, 3, shape._webgl.colorType, false,
+                    gl.vertexAttribPointer(sp.color, 
+                        shape._cf.geometry.node._mesh._numColComponents, 
+                        shape._webgl.colorType, false,
                         shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.color);
 
@@ -3336,7 +3376,8 @@ x3dom.gfx_webgl = (function () {
 						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
 						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
 						
-						gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
+						gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents, 
+						                       shape._webgl.coordType, false, 
 											   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.position);
 
@@ -3397,16 +3438,17 @@ x3dom.gfx_webgl = (function () {
 				shape._webgl.refinementJobManager.addResultBuffer(0, interleavedCoordNormalBuffer);    
 
 				for (var i = 0; i < bitLODGeometry.getCoordNormalURLs().length; ++i) {
-					shape._webgl.refinementJobManager.addRefinementJob(0,                                     //attributeId / resultBufferId
-																	   i,                                     //download priority
-																	   bitLODGeometry.getCoordNormalURLs()[i],//data file url
-																	   i,                                     //refinement level (-> important for bit shift)
-																	   callBack,                              //'job finished'-callback
-																	   96,                                    //stride in bits (size of a single result element)
-																	   [3, 2],                                //number of components information array
-																	   [6, 2],                                //bits per refinement level information array
-																	   [0, 6],                                //read offset (bits) information array
-																	   [0, 64]);                              //write offset (bits) information array                                       
+					shape._webgl.refinementJobManager.addRefinementJob(
+					    0,                                     //attributeId / resultBufferId
+						i,                                     //download priority
+						bitLODGeometry.getCoordNormalURLs()[i],//data file url
+						i,                                     //refinement level (-> important for bit shift)
+						callBack,                              //'job finished'-callback
+						96,                                    //stride in bits (size of a single result element)
+						[3, 2],                                //number of components information array
+						[6, 2],                                //bits per refinement level information array
+						[0, 6],                                //read offset (bits) information array
+						[0, 64]);                              //write offset (bits) information array                                       
 				}
 				
 				if(bitLODGeometry.hasTexCoord()) {
@@ -3416,16 +3458,17 @@ x3dom.gfx_webgl = (function () {
 					shape._webgl.refinementJobManager.addResultBuffer(1, texCoordBuffer);
 					
 					for (i = 0; i < bitLODGeometry.getTexCoordURLs().length; ++i) {
-						shape._webgl.refinementJobManager.addRefinementJob(1,                           		//attributeId / resultBufferId
-																		   i,                           		//download priority
-																		   bitLODGeometry.getTexCoordURLs()[i], //data file url
-																		   i,                           		//refinement level (-> important for bit shift)
-																		   callBack,  							//'job finished'-callback
-																		   32,                          		//stride in bits (size of a single result element)
-																		   [2],                         		//number of components information array
-																		   [8],                         		//bits per refinement level information array
-																		   [0],                         		//read offset (bits) information array
-																		   [0]);                        		//write offset (bits) information array                                       
+						shape._webgl.refinementJobManager.addRefinementJob(
+						    1,                           		//attributeId / resultBufferId
+							i,                           		//download priority
+							bitLODGeometry.getTexCoordURLs()[i], //data file url
+							i,                           		//refinement level (-> important for bit shift)
+							callBack,  							//'job finished'-callback
+							32,                          		//stride in bits (size of a single result element)
+							[2],                         		//number of components information array
+							[8],                         		//bits per refinement level information array
+							[0],                         		//read offset (bits) information array
+							[0]);                        		//write offset (bits) information array                                       
 					}
 				}
 				
@@ -3436,23 +3479,24 @@ x3dom.gfx_webgl = (function () {
 					shape._webgl.refinementJobManager.addResultBuffer(2, colorBuffer);
 					
 					for (i = 0; i < bitLODGeometry.getColorURLs().length; ++i) {
-						shape._webgl.refinementJobManager.addRefinementJob(2,                           		//attributeId / resultBufferId
-																		   i,                           		//download priority
-																		   bitLODGeometry.getColorURLs()[i],	//data file url
-																		   i,                           		//refinement level (-> important for bit shift)
-																		   callBack,  							//'job finished'-callback
-																		   48,                          		//stride in bits (size of a single result element)
-																		   [3],                         		//number of components information array
-																		   [6],                         		//bits per refinement level information array
-																		   [0],                         		//read offset (bits) information array
-																		   [0]);                        		//write offset (bits) information array                                       
+						shape._webgl.refinementJobManager.addRefinementJob(
+						    2,                           		//attributeId / resultBufferId
+							i,                           		//download priority
+							bitLODGeometry.getColorURLs()[i],	//data file url
+							i,                           		//refinement level (-> important for bit shift)
+							callBack,  							//'job finished'-callback
+							48,                          		//stride in bits (size of a single result element)
+							[3],                         		//number of components information array
+							[6],                         		//bits per refinement level information array
+							[0],                         		//read offset (bits) information array
+							[0]);                        		//write offset (bits) information array                                       
 					}
 				}
 			}
 		}		
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
 		{
-			if(this.IG_PositionBuffer == null) {
+			if (this.IG_PositionBuffer == null) {
 				this.IG_PositionBuffer = gl.createBuffer();
 			}
             shape._webgl.buffers[1] = this.IG_PositionBuffer;
@@ -3463,7 +3507,8 @@ x3dom.gfx_webgl = (function () {
             gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
             gl.bindBuffer(gl.ARRAY_BUFFER, this.IG_PositionBuffer);
             
-            gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+            gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents, 
+                shape._webgl.coordType, false,
                 shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
             gl.enableVertexAttribArray(sp.position);
 
@@ -3496,7 +3541,9 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-                gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                gl.vertexAttribPointer(sp.position, 
+                    shape._cf.geometry.node._mesh._numPosComponents, 
+                    shape._webgl.coordType, false,
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.position);
 
@@ -3512,7 +3559,9 @@ x3dom.gfx_webgl = (function () {
                 gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
             
-                gl.vertexAttribPointer(sp.normal, 3, shape._webgl.normalType, false,
+                gl.vertexAttribPointer(sp.normal, 
+                    shape._cf.geometry.node._mesh._numNormComponents, 
+                    shape._webgl.normalType, false,
                     shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.normal);
 
@@ -3529,7 +3578,8 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
             
                 gl.vertexAttribPointer(sp.texcoord, 
-                    shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false,
+                    shape._cf.geometry.node._mesh._numTexComponents, 
+                    shape._webgl.texCoordType, false,
                     shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.texcoord);
                 
@@ -3546,7 +3596,8 @@ x3dom.gfx_webgl = (function () {
                 gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
             
                 gl.vertexAttribPointer(sp.color, 
-                    shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false,
+                    shape._cf.geometry.node._mesh._numColComponents, 
+                    shape._webgl.colorType, false,
                     shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.color);
                 
@@ -4160,7 +4211,8 @@ x3dom.gfx_webgl = (function () {
                 {
                     gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
                     
-                    gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+                    gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents, 
+                        shape._webgl.coordType, false,
                         shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.position);
                 }
@@ -4229,17 +4281,19 @@ x3dom.gfx_webgl = (function () {
         var sp = null;
         if (pickMode === 0)
 		{
-			if (scene._webgl.imageGeometry > 0 && !x3dom.caps.MOBILE)   // Do mobile devices with vertex textures exist?
+			//TODO: remove HACK since this is exclusive to normal pick shader
+			//      but since binding another one for each shape is expensive
+			//      perhaps just sort both types (IG and not) and bind twice.
+			if (scene._webgl.imageGeometry > 0 && !x3dom.caps.MOBILE)
 				{ sp = scene._webgl.pickShaderIG; }
-			else if (scene._webgl.bitLODGeometry != 0)
-				{ sp = scene._webgl.pickShaderBLG; }
 			else
 				{ sp = scene._webgl.pickShader; }
 		}
-        else if (pickMode === 1)
-            { sp = scene._webgl.pickColorShader; }
-        else if (pickMode === 2)
-            { sp = scene._webgl.pickTexCoordShader; }
+        else if (pickMode === 1) { 
+            sp = scene._webgl.pickColorShader; 
+        }
+        else if (pickMode === 2) { sp = scene._webgl.pickTexCoordShader; 
+        }
         sp.bind();
         
         var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
@@ -4278,10 +4332,16 @@ x3dom.gfx_webgl = (function () {
 			
 			if (shape._webgl.coordType != gl.FLOAT)
 			{
-			    sp.bgCenter       = shape._cf.geometry.node._vf.position.toGL();
-			    sp.bgSize         = shape._cf.geometry.node._vf.size.toGL();
+			    if ( shape._webgl.bitLODGeometry != 0 || (shape._webgl.coordType != gl.FLOAT &&
+        		     shape._cf.geometry.node._mesh._numPosComponents == 4 && 
+        		     shape._cf.geometry.node._mesh._numNormComponents == 2) )
+        		    sp.bgCenter = shape._cf.geometry.node.getMin().toGL();
+        		else
+			        sp.bgCenter = shape._cf.geometry.node._vf.position.toGL();
+			    sp.bgSize = shape._cf.geometry.node._vf.size.toGL();
     		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');
-    		} else {
+    		}
+    		else {
 			    sp.bgCenter = bgCenter;
 			    sp.bgSize   = bgSize;
     		    sp.bgPrecisionMax = 1;
@@ -4293,13 +4353,7 @@ x3dom.gfx_webgl = (function () {
 			    sp.bgPrecisionTexMax = shape._cf.geometry.node.getPrecisionMax('texCoordType');
 			}
 			
-			if(shape._webgl.bitLODGeometry != 0)
-			{
-				sp.BLG_bboxMin = shape._cf.geometry.node.getMin().toGL();
-				sp.BLG_bboxMax = shape._cf.geometry.node.getMax().toGL();
-			}
-			
-			if (shape._webgl.imageGeometry)  // FIXME: mobile errors
+			if (shape._webgl.imageGeometry && !x3dom.caps.MOBILE)  // FIXME: mobile errors
 			{
 				sp.imageGeometry    		= 1.0;
 				sp.IG_bboxMin 				= shape._cf.geometry.node.getMin().toGL();
@@ -4357,7 +4411,9 @@ x3dom.gfx_webgl = (function () {
 					{	
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 						
-						gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+						gl.vertexAttribPointer(sp.position, 
+						    shape._cf.geometry.node._mesh._numPosComponents, 
+						    shape._webgl.coordType, false,
                             shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.position);
 					}
@@ -4366,7 +4422,8 @@ x3dom.gfx_webgl = (function () {
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 						
 						gl.vertexAttribPointer(sp.color, 
-							shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false,
+							shape._cf.geometry.node._mesh._numColComponents, 
+							shape._webgl.colorType, false,
                             shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.color);
 					}
@@ -4375,7 +4432,8 @@ x3dom.gfx_webgl = (function () {
 						gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 
 						gl.vertexAttribPointer(sp.texcoord, 
-							shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false,
+							shape._cf.geometry.node._mesh._numTexComponents, 
+							shape._webgl.texCoordType, false,
                             shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
 						gl.enableVertexAttribArray(sp.texcoord);
 					}
@@ -4498,8 +4556,13 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
 		if (shape._webgl.coordType != gl.FLOAT)
 		{
-		    sp.bgCenter       = shape._cf.geometry.node._vf.position.toGL();
-		    sp.bgSize         = shape._cf.geometry.node._vf.size.toGL();
+		    if ( shape._webgl.bitLODGeometry != 0 || (shape._webgl.coordType != gl.FLOAT &&
+    		     shape._cf.geometry.node._mesh._numPosComponents == 4 && 
+    		     shape._cf.geometry.node._mesh._numNormComponents == 2) )
+    		    sp.bgCenter = shape._cf.geometry.node.getMin().toGL();
+    		else
+		        sp.bgCenter = shape._cf.geometry.node._vf.position.toGL();
+		    sp.bgSize       = shape._cf.geometry.node._vf.size.toGL();
 		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');
 		}
 		if (shape._webgl.colorType != gl.FLOAT) {
@@ -4509,7 +4572,7 @@ x3dom.gfx_webgl = (function () {
 			sp.bgPrecisionTexMax = shape._cf.geometry.node.getPrecisionMax('texCoordType');
 		}
 		if (shape._webgl.normalType != gl.FLOAT) {
-    		    sp.bgPrecisionNorMax = shape._cf.geometry.node.getPrecisionMax('normalType');
+    		sp.bgPrecisionNorMax = shape._cf.geometry.node.getPrecisionMax('normalType');
 		}
 		
 		if (shape._webgl.imageGeometry) {
@@ -4548,12 +4611,6 @@ x3dom.gfx_webgl = (function () {
 			if(shape._cf.geometry.node.getColorTexture()) {
 				sp.IG_colorTexture = IG_texUnit++;
 			}
-		}
-		
-		if(shape._webgl.bitLODGeometry != 0)
-		{
-			sp.BLG_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
-			sp.BLG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
 		}
 
         //===========================================================================
@@ -4960,7 +5017,9 @@ x3dom.gfx_webgl = (function () {
 			  {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 				
-				gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false,
+				gl.vertexAttribPointer(sp.position, 
+				    shape._cf.geometry.node._mesh._numPosComponents, 
+				    shape._webgl.coordType, false,
                     shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.position);
 			  }
@@ -4969,8 +5028,8 @@ x3dom.gfx_webgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+2]);            
 				
 				gl.vertexAttribPointer(sp.normal, 
-				    shape._cf.geometry.node._mesh._numNormComponents, shape._webgl.normalType, 
-				    (shape._webgl.bitLODGeometry != 0), 
+				    shape._cf.geometry.node._mesh._numNormComponents, 
+				    shape._webgl.normalType, (shape._webgl.bitLODGeometry != 0), 
 				    shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.normal);
 			  }
@@ -4979,7 +5038,8 @@ x3dom.gfx_webgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
 				
 				gl.vertexAttribPointer(sp.texcoord, 
-					shape._cf.geometry.node._mesh._numTexComponents, shape._webgl.texCoordType, false,
+					shape._cf.geometry.node._mesh._numTexComponents, 
+					shape._webgl.texCoordType, false,
                     shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.texcoord);
 			  }
@@ -4988,7 +5048,8 @@ x3dom.gfx_webgl = (function () {
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
 				
 				gl.vertexAttribPointer(sp.color, 
-					shape._cf.geometry.node._mesh._numColComponents, shape._webgl.colorType, false,
+					shape._cf.geometry.node._mesh._numColComponents, 
+					shape._webgl.colorType, false,
                     shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
 				gl.enableVertexAttribArray(sp.color);
 			  }
@@ -5391,7 +5452,6 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.pickShader = getDefaultShaderProgram(gl, 'pick');
             if (!x3dom.caps.MOBILE)    // TODO: mobile + fp
 			    scene._webgl.pickShaderIG = this.getShaderProgram(gl, ['vs-x3d-pickIG', 'fs-x3d-pick']);
-			scene._webgl.pickShaderBLG = this.getShaderProgram(gl, ['vs-x3d-pickBLG', 'fs-x3d-pick']);
             scene._webgl.pickColorShader = getDefaultShaderProgram(gl, 'vertexcolorUnlit');
             scene._webgl.pickTexCoordShader = getDefaultShaderProgram(gl, 'texcoordUnlit');
             
@@ -5649,6 +5709,7 @@ x3dom.gfx_webgl = (function () {
                 var lightMatrix = viewarea.getLightMatrix()[0];
                 mat_light = viewarea.getWCtoLCMatrix(lightMatrix);
                 
+                // TODO; handle shadows for BG, LOD and IG
                 this.renderShadowPass(gl, scene, lightMatrix, mat_light);
                 t1 = new Date().getTime() - t0;
                 
