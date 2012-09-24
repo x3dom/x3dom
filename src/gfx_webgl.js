@@ -3366,8 +3366,6 @@ x3dom.gfx_webgl = (function () {
 
 						shape._nameSpace.doc.downloadCount -= 1;
 						shape._nameSpace.doc.needRender = true;
-						
-						loadRefinments();
 					};
 				}
 				
@@ -3446,75 +3444,73 @@ x3dom.gfx_webgl = (function () {
 					shape._webgl.refinementJobManager.continueProcessing(attributeId);
 				}
 
-				function loadRefinments()
-				{
-					//If there is still no BitComposer create a new one 
-					//shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
-					shape._webgl.refinementJobManager = new x3dom.RefinementJobManager();
-				
-					//allocate buffers, pass them to the refinement manager
-					//@todo: get number of vertices
-					const numVerts = bitLODGeometry.getNumVertices();
-			  
-					var buf = new ArrayBuffer(12 * numVerts);  
-					var interleavedCoordNormalBuffer = new Uint16Array(buf);
-					
-					shape._webgl.refinementJobManager.addResultBuffer(0, interleavedCoordNormalBuffer);    
 
-					for (var i = 0; i < bitLODGeometry.getCoordNormalURLs().length; ++i) {
+				//If there is still no BitComposer create a new one 
+				//shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
+				shape._webgl.refinementJobManager = new x3dom.RefinementJobManager();
+			
+				//allocate buffers, pass them to the refinement manager
+				//@todo: get number of vertices
+				const numVerts = bitLODGeometry.getNumVertices();
+		  
+				var buf = new ArrayBuffer(12 * numVerts);  
+				var interleavedCoordNormalBuffer = new Uint16Array(buf);
+				
+				shape._webgl.refinementJobManager.addResultBuffer(0, interleavedCoordNormalBuffer);    
+
+				for (var i = 0; i < bitLODGeometry.getCoordNormalURLs().length; ++i) {
+					shape._webgl.refinementJobManager.addRefinementJob(
+						0,                                     //attributeId / resultBufferId
+						i,                                     //download priority
+						bitLODGeometry.getCoordNormalURLs()[i],//data file url
+						i,                                     //refinement level (-> important for bit shift)
+						callBack,                              //'job finished'-callback
+						96,                                    //stride in bits (size of a single result element)
+						[3, 2],                                //number of components information array
+						[6, 2],                                //bits per refinement level information array
+						[0, 6],                                //read offset (bits) information array
+						[0, 64]);                              //write offset (bits) information array                                       
+				}
+				
+				if(bitLODGeometry.hasTexCoord()) {
+					var tBuf = new ArrayBuffer(4 * numVerts);  
+					var texCoordBuffer = new Uint16Array(tBuf);
+					
+					shape._webgl.refinementJobManager.addResultBuffer(1, texCoordBuffer);
+					
+					for (i = 0; i < bitLODGeometry.getTexCoordURLs().length; ++i) {
 						shape._webgl.refinementJobManager.addRefinementJob(
-							0,                                     //attributeId / resultBufferId
-							i,                                     //download priority
-							bitLODGeometry.getCoordNormalURLs()[i],//data file url
-							i,                                     //refinement level (-> important for bit shift)
-							callBack,                              //'job finished'-callback
-							96,                                    //stride in bits (size of a single result element)
-							[3, 2],                                //number of components information array
-							[6, 2],                                //bits per refinement level information array
-							[0, 6],                                //read offset (bits) information array
-							[0, 64]);                              //write offset (bits) information array                                       
+							1,                           		//attributeId / resultBufferId
+							i,                           		//download priority
+							bitLODGeometry.getTexCoordURLs()[i], //data file url
+							i,                           		//refinement level (-> important for bit shift)
+							callBack,  							//'job finished'-callback
+							32,                          		//stride in bits (size of a single result element)
+							[2],                         		//number of components information array
+							[8],                         		//bits per refinement level information array
+							[0],                         		//read offset (bits) information array
+							[0]);                        		//write offset (bits) information array                                       
 					}
+				}
+				
+				if(bitLODGeometry.hasColor()) {
+					var cBuf = new ArrayBuffer(6 * numVerts);  
+					var colorBuffer = new Uint16Array(cBuf);
 					
-					if(bitLODGeometry.hasTexCoord()) {
-						var tBuf = new ArrayBuffer(4 * numVerts);  
-						var texCoordBuffer = new Uint16Array(tBuf);
-						
-						shape._webgl.refinementJobManager.addResultBuffer(1, texCoordBuffer);
-						
-						for (i = 0; i < bitLODGeometry.getTexCoordURLs().length; ++i) {
-							shape._webgl.refinementJobManager.addRefinementJob(
-								1,                           		//attributeId / resultBufferId
-								i,                           		//download priority
-								bitLODGeometry.getTexCoordURLs()[i], //data file url
-								i,                           		//refinement level (-> important for bit shift)
-								callBack,  							//'job finished'-callback
-								32,                          		//stride in bits (size of a single result element)
-								[2],                         		//number of components information array
-								[8],                         		//bits per refinement level information array
-								[0],                         		//read offset (bits) information array
-								[0]);                        		//write offset (bits) information array                                       
-						}
-					}
+					shape._webgl.refinementJobManager.addResultBuffer(2, colorBuffer);
 					
-					if(bitLODGeometry.hasColor()) {
-						var cBuf = new ArrayBuffer(6 * numVerts);  
-						var colorBuffer = new Uint16Array(cBuf);
-						
-						shape._webgl.refinementJobManager.addResultBuffer(2, colorBuffer);
-						
-						for (i = 0; i < bitLODGeometry.getColorURLs().length; ++i) {
-							shape._webgl.refinementJobManager.addRefinementJob(
-								2,                           		//attributeId / resultBufferId
-								i,                           		//download priority
-								bitLODGeometry.getColorURLs()[i],	//data file url
-								i,                           		//refinement level (-> important for bit shift)
-								callBack,  							//'job finished'-callback
-								48,                          		//stride in bits (size of a single result element)
-								[3],                         		//number of components information array
-								[6],                         		//bits per refinement level information array
-								[0],                         		//read offset (bits) information array
-								[0]);                        		//write offset (bits) information array                                       
-						}
+					for (i = 0; i < bitLODGeometry.getColorURLs().length; ++i) {
+						shape._webgl.refinementJobManager.addRefinementJob(
+							2,                           		//attributeId / resultBufferId
+							i,                           		//download priority
+							bitLODGeometry.getColorURLs()[i],	//data file url
+							i,                           		//refinement level (-> important for bit shift)
+							callBack,  							//'job finished'-callback
+							48,                          		//stride in bits (size of a single result element)
+							[3],                         		//number of components information array
+							[6],                         		//bits per refinement level information array
+							[0],                         		//read offset (bits) information array
+							[0]);                        		//write offset (bits) information array                                       
 					}
 				}
 			}
@@ -5034,12 +5030,11 @@ x3dom.gfx_webgl = (function () {
 			//check prev, act
 			if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 			{
-			  if(shape._webgl.buffers[5*q+0])
+			  //Here we need complete Indices and Vertices before Bind. 
+			  //A single If-statement only for indices produces some display errors
+			  if (sp.position !== undefined && shape._webgl.buffers[5*q+1] && shape._webgl.buffers[5*q+0])
 			  {
-			  	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
-			  }
-			  if (sp.position !== undefined && shape._webgl.buffers[5*q+1])
-			  {
+				gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
 				gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+1]);
 				
 				gl.vertexAttribPointer(sp.position, 
