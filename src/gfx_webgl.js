@@ -846,11 +846,13 @@ x3dom.gfx_webgl = (function () {
             else
                 shader += "attribute vec3 position;\n";
             
-			if(polarNormal) {
-				shader += "attribute vec2 normal;\n";
+			if (polarNormal) {
+			    if (shape._cf.geometry.node._mesh._numPosComponents < 4)
+				    shader += "attribute vec2 normal;\n";
 			} else {
 				shader += "attribute vec3 normal;\n";
 			}
+			
             shader += "uniform mat4 modelViewMatrix;\n";
             shader += "uniform mat4 normalMatrix;\n";
             shader += "uniform mat4 modelViewProjectionMatrix;\n";
@@ -1053,18 +1055,19 @@ x3dom.gfx_webgl = (function () {
 				shader += "vec3 vertNormal;\n";
 
 				if (polarNormal) {
-					if (requireBBoxNor && !bitLODGeometry) {
-						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
-					}
-					else if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
+					if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
 					    // (theta, phi) encoded in low/high byte of position.w
 					    shader += "float val1 = floor(position.w / 256.0); \n";
                         shader += "float val2 = fract(position.w / 256.0) * 256.0; \n";
                         shader += "vertNormal = vec3(val1, val2, 0.0) / 255.0; \n";
 					}
+					else if (requireBBoxNor && !bitLODGeometry) {
+						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
+					}
 					else {
 					    shader += "vertNormal = vec3(normal.xy, 0.0);\n";
 					}
+					
 					shader += "float PI    = 3.14159265358979; \n";
 					shader += "float theta = vertNormal.x * PI;\n";
 					shader += "float phi   = vertNormal.y * PI * 2.0 - PI;\n";
@@ -1335,11 +1338,13 @@ x3dom.gfx_webgl = (function () {
             else
                 shader += "attribute vec3 position;\n";
             
-			if(polarNormal) {
-				shader += "attribute vec2 normal;\n";
+			if (polarNormal) {
+			    if (shape._cf.geometry.node._mesh._numPosComponents < 4)
+				    shader += "attribute vec2 normal;\n";
 			} else {
 				shader += "attribute vec3 normal;\n";
 			}
+			
             shader += "uniform mat4 modelViewMatrix;\n";
             shader += "uniform mat4 normalMatrix;\n";
             shader += "uniform mat4 modelViewProjectionMatrix;\n";
@@ -1479,18 +1484,19 @@ x3dom.gfx_webgl = (function () {
 				shader += "vec3 vertNormal;\n";
 				
 				if (polarNormal) {
-					if (requireBBoxNor && !bitLODGeometry) {
-						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
-					}
-					else if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
+					if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
 					    // (theta, phi) encoded in low/high byte of position.w
 					    shader += "float val1 = floor(position.w / 256.0); \n";
                         shader += "float val2 = fract(position.w / 256.0) * 256.0; \n";
                         shader += "vertNormal = vec3(val1, val2, 0.0) / 255.0; \n";
 					}
+					else if (requireBBoxNor && !bitLODGeometry) {
+						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
+					}
 					else {
 					    shader += "vertNormal = vec3(normal.xy, 0.0);\n";
 					}
+					
 					shader += "float PI    = 3.14159265358979; \n";
 					shader += "float theta = vertNormal.x * PI;\n";
 					shader += "float phi   = vertNormal.y * PI * 2.0 - PI;\n";
