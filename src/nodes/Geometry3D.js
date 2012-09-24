@@ -1394,44 +1394,67 @@ x3dom.registerNodeType(
             {
                 var offsetInd, strideInd, offset, stride;
 
-                offsetInd = this._vf.coord.lastIndexOf('#') + 1;
+                offsetInd = this._vf.coord.lastIndexOf('#');
                 strideInd = this._vf.coord.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.coord.substring(offsetInd, strideInd);
+                    offset = +this._vf.coord.substring(++offsetInd, strideInd);
                     stride = +this._vf.coord.substring(strideInd);
                     this._parentNodes[0]._coordStrideOffset = [stride, offset];
                     this._hasStrideOffset = true;
                     if ((offset / 8) - Math.floor(offset / 8) == 0) {
                         this._mesh._numPosComponents = 4;
                     }
-                    x3dom.debug.logInfo("coord stride/offset:" + stride + ", " + offset);
+                    x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.coord.substring(strideInd);
+                    this._parentNodes[0]._coordStrideOffset = [stride, 0];
+                    if ((stride / 8) - Math.floor(stride / 8) == 0) {
+                        this._mesh._numPosComponents = 4;   // ???
+                    }
+                    x3dom.debug.logInfo("coord stride: " + stride);
                 }
 
-                offsetInd = this._vf.normal.lastIndexOf('#') + 1;
+                offsetInd = this._vf.normal.lastIndexOf('#');
                 strideInd = this._vf.normal.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.normal.substring(offsetInd, strideInd);
+                    offset = +this._vf.normal.substring(++offsetInd, strideInd);
                     stride = +this._vf.normal.substring(strideInd);
                     this._parentNodes[0]._normalStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("normal stride/offset:" + stride + ", " + offset);
+                    x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.normal.substring(strideInd);
+                    this._parentNodes[0]._normalStrideOffset = [stride, 0];
+                    x3dom.debug.logInfo("normal stride: " + stride);
                 }
 
-                offsetInd = this._vf.texCoord.lastIndexOf('#') + 1;
+                offsetInd = this._vf.texCoord.lastIndexOf('#');
                 strideInd = this._vf.texCoord.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.texCoord.substring(offsetInd, strideInd);
+                    offset = +this._vf.texCoord.substring(++offsetInd, strideInd);
                     stride = +this._vf.texCoord.substring(strideInd);
                     this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("texCoord stride/offset:" + stride + ", " + offset);
+                    x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.texCoord.substring(strideInd);
+                    this._parentNodes[0]._texCoordStrideOffset = [stride, 0];
+                    x3dom.debug.logInfo("texCoord stride: " + stride);
                 }
 
-                offsetInd = this._vf.color.lastIndexOf('#') + 1;
+                offsetInd = this._vf.color.lastIndexOf('#');
                 strideInd = this._vf.color.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.color.substring(offsetInd, strideInd);
+                    offset = +this._vf.color.substring(++offsetInd, strideInd);
                     stride = +this._vf.color.substring(strideInd);
                     this._parentNodes[0]._colorStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("color stride/offset:" + stride + ", " + offset);
+                    x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.color.substring(strideInd);
+                    this._parentNodes[0]._colorStrideOffset = [stride, 0];
+                    x3dom.debug.logInfo("color stride: " + stride);
                 }
             },
             
