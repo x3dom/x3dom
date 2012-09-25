@@ -42,6 +42,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		node.appendChild( param );
 	};
 	
+	this.fileExists = function(url) {
+		var xhr = new XMLHttpRequest();
+		xhr.open("HEAD", url, false);
+		xhr.send(null);
+		return (xhr.status==404) ? false : true;
+	};
+	
 	this.detectFlash = function(required, max)
 	{
 		var required_version = required;
@@ -118,6 +125,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			var swf_path = x3dElem.getAttribute("swfpath");
 			if (swf_path === null) {
 				swf_path = "x3dom.swf";
+			}
+			
+			if( !this.fileExists(swf_path) )
+			{
+				swf_path = "http://www.x3dom.org/download/x3dom.swf";
+				x3dom.debug.logWarning("Can't find local x3dom.swf. X3DOM now using the online version from x3dom.org."); 
 			}
 
 			//Get width from x3d-Element or set default
