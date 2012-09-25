@@ -1067,12 +1067,32 @@ x3dom.gfx_webgl = (function () {
 					}
 					
 					shader += "vec2 thetaPhi = 3.14159265358979 * vec2(vertNormal.x, vertNormal.y*2.0-1.0); \n";
-					shader += "vec2 sinThetaPhi = sin(thetaPhi); \n";
-					shader += "vec2 cosThetaPhi = cos(thetaPhi); \n";
-                    
-					shader += "vertNormal.x = sinThetaPhi.x * cosThetaPhi.y;\n";
-					shader += "vertNormal.y = sinThetaPhi.x * sinThetaPhi.y;\n";
-					shader += "vertNormal.z = cosThetaPhi.x;\n";
+					
+					//shader += "vec2 sinThetaPhi = sin(thetaPhi); \n";
+					//shader += "vec2 cosThetaPhi = cos(thetaPhi); \n";
+
+					//shader += "vertNormal.x = sinThetaPhi.x * cosThetaPhi.y;\n";
+					//shader += "vertNormal.y = sinThetaPhi.x * sinThetaPhi.y;\n";
+					//shader += "vertNormal.z = cosThetaPhi.x;\n";
+
+                    // Doing approximation with Taylor series and using cos(x) = sin(x+PI/2)
+                    shader += "vec4 sinCosThetaPhi = vec4(thetaPhi, thetaPhi + 1.5707963267949); \n";
+                    shader += "vec4 sinDenom = vec4(-0.166666667, 0.00833333333, -0.000198412698, 0.00000275573192); \n";
+
+                    shader += "vec4 thetaPhiPow2 = sinCosThetaPhi * sinCosThetaPhi; \n";
+                    shader += "vec4 thetaPhiPow3 = thetaPhiPow2 * sinCosThetaPhi; \n";
+                    shader += "vec4 thetaPhiPow5 = thetaPhiPow3 * thetaPhiPow2; \n";
+                    shader += "vec4 thetaPhiPow7 = thetaPhiPow5 * thetaPhiPow2; \n";
+                    shader += "vec4 thetaPhiPow9 = thetaPhiPow7 * thetaPhiPow2; \n";
+
+                    shader += "sinCosThetaPhi += thetaPhiPow3 * sinDenom.x; \n";
+                    shader += "sinCosThetaPhi += thetaPhiPow5 * sinDenom.y; \n";
+                    shader += "sinCosThetaPhi += thetaPhiPow7 * sinDenom.z; \n";
+                    shader += "sinCosThetaPhi += thetaPhiPow9 * sinDenom.w; \n";
+
+                    shader += "vertNormal.x = sinCosThetaPhi.x * sinCosThetaPhi.w; \n";
+                    shader += "vertNormal.y = sinCosThetaPhi.x * sinCosThetaPhi.y; \n";
+                    shader += "vertNormal.z = sinCosThetaPhi.z; \n";
 				}
 				else {
 					if (requireBBoxNor) {
