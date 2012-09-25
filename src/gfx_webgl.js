@@ -6187,6 +6187,8 @@ x3dom.gfx_webgl = (function () {
         texture.pendingTextureLoads = -1;
         texture.textureCubeReady = false;
         
+        var width = 0, height = 0;
+        
         for (var i=0; i<faces.length; i++) {
             var face = faces[i];
             var image = new Image();
@@ -6196,6 +6198,15 @@ x3dom.gfx_webgl = (function () {
             
             image.onload = function(texture, face, image, swap) {
                 return function() {
+                    if (width == 0 && height == 0) {
+                        width = image.width;
+                        height = image.height;
+                    }
+                    else if (width != image.width || height != image.height) {
+                        x3dom.debug.logWarning("Rescaling CubeMap images, which are of different size!");
+                        image = rescaleImage(image, width, height);
+                    }
+                    
                     gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
                     gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
@@ -6225,6 +6236,16 @@ x3dom.gfx_webgl = (function () {
         
         return texture;
     };
+    
+    function rescaleImage(image, width, height)
+    {
+        var canvas = document.createElement("canvas");
+        canvas.width = width; canvas.height = height;
+        canvas.getContext("2d").drawImage(image,
+                    0, 0, image.width, image.height,
+                    0, 0, canvas.width, canvas.height);
+        return canvas;
+    }
     
 //----------------------------------------------------------------------------
 /*! start of fbo init stuff
