@@ -1518,12 +1518,11 @@ x3dom.gfx_webgl = (function () {
 					}
 
 					shader += "vec2 thetaPhi = 3.14159265358979 * vec2(vertNormal.x, vertNormal.y*2.0-1.0); \n";
-					shader += "vec2 sinThetaPhi = sin(thetaPhi); \n";
-					shader += "vec2 cosThetaPhi = cos(thetaPhi); \n";
+					shader += "vec4 sinCosThetaPhi = sin( vec4(thetaPhi, thetaPhi + 1.5707963267949) ); \n";
 
-					shader += "vertNormal.x = sinThetaPhi.x * cosThetaPhi.y;\n";
-					shader += "vertNormal.y = sinThetaPhi.x * sinThetaPhi.y;\n";
-					shader += "vertNormal.z = cosThetaPhi.x;\n";
+					shader += "vertNormal.x = sinCosThetaPhi.x * sinCosThetaPhi.w; \n";
+					shader += "vertNormal.y = sinCosThetaPhi.x * sinCosThetaPhi.y; \n";
+					shader += "vertNormal.z = sinCosThetaPhi.z; \n";
 				}
 				else {
 					if (requireBBoxNor) {
