@@ -1052,37 +1052,34 @@ x3dom.gfx_webgl = (function () {
 					shader += "vec4 vertColor = texture2D( IG_colorTexture, IG_texCoord ).rgba;";
 				}
 			} else {
-				shader += "vec3 vertNormal;\n";
-
 				if (polarNormal) {
 					if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
 					    // (theta, phi) encoded in low/high byte of position.w
-					    shader += "float val1 = floor(position.w / 256.0); \n";
-                        shader += "float val2 = fract(position.w / 256.0) * 256.0; \n";
-                        shader += "vertNormal = vec3(val1, val2, 0.0) / 255.0; \n";
+					    shader += "vec3 vertNormal = vec3(position.w / 256.0); \n";
+					    shader += "vertNormal.x = floor(vertNormal.x) / 255.0; \n";
+					    shader += "vertNormal.y = fract(vertNormal.y) * 1.00392156862745; \n"; //256.0 / 255.0
 					}
 					else if (requireBBoxNor && !bitLODGeometry) {
-						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
+						shader += "vec3 vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
 					}
 					else {
-					    shader += "vertNormal = vec3(normal.xy, 0.0);\n";
+					    shader += "vec3 vertNormal = vec3(normal.xy, 0.0);\n";
 					}
 					
-					shader += "float PI    = 3.14159265358979; \n";
-					shader += "float theta = vertNormal.x * PI;\n";
-					shader += "float phi   = vertNormal.y * PI * 2.0 - PI;\n";
-					shader += "float sin_theta = sin(theta);\n";
-
-					shader += "vertNormal.x = sin_theta * cos(phi);\n";
-					shader += "vertNormal.y = sin_theta * sin(phi);\n";
-					shader += "vertNormal.z = cos(theta);\n";
+					shader += "vec2 thetaPhi = 3.14159265358979 * vec2(vertNormal.x, vertNormal.y*2.0-1.0); \n";
+					shader += "vec2 sinThetaPhi = sin(thetaPhi); \n";
+					shader += "vec2 cosThetaPhi = cos(thetaPhi); \n";
+                    
+					shader += "vertNormal.x = sinThetaPhi.x * cosThetaPhi.y;\n";
+					shader += "vertNormal.y = sinThetaPhi.x * sinThetaPhi.y;\n";
+					shader += "vertNormal.z = cosThetaPhi.x;\n";
 				}
 				else {
 					if (requireBBoxNor) {
-						shader += "vertNormal = normal / bgPrecisionNorMax;\n";
+						shader += "vec3 vertNormal = normal / bgPrecisionNorMax;\n";
 					}
 					else {
-					    shader += "vertNormal = normal;\n";
+					    shader += "vec3 vertNormal = normal;\n";
 					}
 				}
 				
@@ -1116,14 +1113,19 @@ x3dom.gfx_webgl = (function () {
 			
 			shader += "vec3 eye = -positionMV;\n";
 			
-			shader += "vec3 rgb = diffuseColor;\n";
-			shader += "float alpha = 1.0 - transparency;\n";
-			
-			if(vertexColor) {
-				shader += "rgb = vertColor.rgb;\n";
-				if(vertexColor == 4) {
-					shader += "alpha = vertColor.a;\n";
+			if (vertexColor) {
+				shader += "vec3 rgb = vertColor.rgb;\n";
+				
+				if (vertexColor == 4) {
+					shader += "float alpha = vertColor.a;\n";
 				}
+				else {
+				    shader += "float alpha = 1.0 - transparency;\n";
+				}
+			}
+			else {
+			    shader += "vec3 rgb = diffuseColor;\n";
+			    shader += "float alpha = 1.0 - transparency;\n";
 			}
 			
 			//Calc TexCoords
@@ -1481,37 +1483,34 @@ x3dom.gfx_webgl = (function () {
 				shader += "gl_PointSize = 2.0;\n";
 			}
 			else {
-				shader += "vec3 vertNormal;\n";
-				
 				if (polarNormal) {
 					if (shape._cf.geometry.node._mesh._numPosComponents == 4) {
 					    // (theta, phi) encoded in low/high byte of position.w
-					    shader += "float val1 = floor(position.w / 256.0); \n";
-                        shader += "float val2 = fract(position.w / 256.0) * 256.0; \n";
-                        shader += "vertNormal = vec3(val1, val2, 0.0) / 255.0; \n";
+					    shader += "vec3 vertNormal = vec3(position.w / 256.0); \n";
+					    shader += "vertNormal.x = floor(vertNormal.x) / 255.0; \n";
+					    shader += "vertNormal.y = fract(vertNormal.y) * 1.00392156862745; \n"; //256.0 / 255.0
 					}
 					else if (requireBBoxNor && !bitLODGeometry) {
-						shader += "vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
+						shader += "vec3 vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";
 					}
 					else {
-					    shader += "vertNormal = vec3(normal.xy, 0.0);\n";
+					    shader += "vec3 vertNormal = vec3(normal.xy, 0.0);\n";
 					}
-					
-					shader += "float PI    = 3.14159265358979; \n";
-					shader += "float theta = vertNormal.x * PI;\n";
-					shader += "float phi   = vertNormal.y * PI * 2.0 - PI;\n";
-					shader += "float sin_theta = sin(theta);\n";
 
-					shader += "vertNormal.x = sin_theta * cos(phi);\n";
-					shader += "vertNormal.y = sin_theta * sin(phi);\n";
-					shader += "vertNormal.z = cos(theta);\n";
+					shader += "vec2 thetaPhi = 3.14159265358979 * vec2(vertNormal.x, vertNormal.y*2.0-1.0); \n";
+					shader += "vec2 sinThetaPhi = sin(thetaPhi); \n";
+					shader += "vec2 cosThetaPhi = cos(thetaPhi); \n";
+
+					shader += "vertNormal.x = sinThetaPhi.x * cosThetaPhi.y;\n";
+					shader += "vertNormal.y = sinThetaPhi.x * sinThetaPhi.y;\n";
+					shader += "vertNormal.z = cosThetaPhi.x;\n";
 				}
 				else {
 					if (requireBBoxNor) {
-						shader += "vertNormal = normal / bgPrecisionNorMax;\n";
+						shader += "vec3 vertNormal = normal / bgPrecisionNorMax;\n";
 					}
 					else {
-					    shader += "vertNormal = normal;\n";
+					    shader += "vec3 vertNormal = normal;\n";
 					}
 				}
 				
