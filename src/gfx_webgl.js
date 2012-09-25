@@ -1077,18 +1077,17 @@ x3dom.gfx_webgl = (function () {
 
                     // Doing approximation with Taylor series and using cos(x) = sin(x+PI/2)
                     shader += "vec4 sinCosThetaPhi = vec4(thetaPhi, thetaPhi + 1.5707963267949); \n";
-                    shader += "vec4 sinDenom = vec4(-0.166666667, 0.00833333333, -0.000198412698, 0.00000275573192); \n";
 
                     shader += "vec4 thetaPhiPow2 = sinCosThetaPhi * sinCosThetaPhi; \n";
-                    shader += "vec4 thetaPhiPow3 = thetaPhiPow2 * sinCosThetaPhi; \n";
-                    shader += "vec4 thetaPhiPow5 = thetaPhiPow3 * thetaPhiPow2; \n";
-                    shader += "vec4 thetaPhiPow7 = thetaPhiPow5 * thetaPhiPow2; \n";
-                    shader += "vec4 thetaPhiPow9 = thetaPhiPow7 * thetaPhiPow2; \n";
+                    shader += "vec4 thetaPhiPow3 =  thetaPhiPow2  * sinCosThetaPhi; \n";
+                    shader += "vec4 thetaPhiPow5 =  thetaPhiPow3  * thetaPhiPow2; \n";
+                    shader += "vec4 thetaPhiPow7 =  thetaPhiPow5  * thetaPhiPow2; \n";
+                    shader += "vec4 thetaPhiPow9 =  thetaPhiPow7  * thetaPhiPow2; \n";
 
-                    shader += "sinCosThetaPhi += thetaPhiPow3 * sinDenom.x; \n";
-                    shader += "sinCosThetaPhi += thetaPhiPow5 * sinDenom.y; \n";
-                    shader += "sinCosThetaPhi += thetaPhiPow7 * sinDenom.z; \n";
-                    shader += "sinCosThetaPhi += thetaPhiPow9 * sinDenom.w; \n";
+                    shader += "sinCosThetaPhi +=  -0.16666666667   * thetaPhiPow3; \n";
+                    shader += "sinCosThetaPhi +=   0.00833333333   * thetaPhiPow5; \n";
+                    shader += "sinCosThetaPhi +=  -0.000198412698  * thetaPhiPow7; \n";
+                    shader += "sinCosThetaPhi +=   0.0000027557319 * thetaPhiPow9; \n";
 
                     shader += "vertNormal.x = sinCosThetaPhi.x * sinCosThetaPhi.w; \n";
                     shader += "vertNormal.y = sinCosThetaPhi.x * sinCosThetaPhi.y; \n";
