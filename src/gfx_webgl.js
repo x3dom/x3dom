@@ -2966,6 +2966,15 @@ x3dom.gfx_webgl = (function () {
                     var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
                     if (dataLen)
                         geoNode._mesh._numCoords = attributes.length / dataLen;
+                    
+                    if (geoNode._vf.index.length == 0) {
+                        for (var i=0; i<geoNode._vf.vertexCount.length; i++) {
+                            if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP)
+                                geoNode._mesh._numFaces += geoNode._vf.vertexCount[i] - 2;
+                            else
+                                geoNode._mesh._numFaces += geoNode._vf.vertexCount[i] / 3;
+                        }
+                    }
 
                     var buffer = gl.createBuffer();
 
@@ -3049,9 +3058,11 @@ x3dom.gfx_webgl = (function () {
 
                     positionBuffer = gl.createBuffer();
                     shape._webgl.buffers[1] = positionBuffer;
-                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);               
+                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);   
+                    
+                    var geoNode = shape._cf.geometry.node;            
 
-                    var attribTypeStr = shape._cf.geometry.node._vf.coordType;
+                    var attribTypeStr = geoNode._vf.coordType;
                     shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
 
                     var vertices = getArrayBufferView(attribTypeStr, XHR_buffer);
@@ -3060,13 +3071,21 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
                     gl.vertexAttribPointer(sp.position, 
-                        shape._cf.geometry.node._mesh._numPosComponents, 
+                        geoNode._mesh._numPosComponents, 
                         shape._webgl.coordType, false,
                         shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.position);
                     
-                    shape._cf.geometry.node._mesh._numCoords = vertices.length / 
-                                            shape._cf.geometry.node._mesh._numPosComponents;
+                    geoNode._mesh._numCoords = vertices.length / geoNode._mesh._numPosComponents;
+                    
+                    if (geoNode._vf.index.length == 0) {
+                        for (var i=0; i<geoNode._vf.vertexCount.length; i++) {
+                            if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP)
+                                geoNode._mesh._numFaces += geoNode._vf.vertexCount[i] - 2;
+                            else
+                                geoNode._mesh._numFaces += geoNode._vf.vertexCount[i] / 3;
+                        }
+                    }
                     
                     // Test reading Data
                     //x3dom.debug.logWarning("arraybuffer[0].vx="+vertices[0]);
@@ -3094,8 +3113,8 @@ x3dom.gfx_webgl = (function () {
                     }
                     
                     /*
-                    if (shape._cf.geometry.node._mesh._numPosComponents == 4 &&
-                        shape._cf.geometry.node._mesh._numNormComponents == 2) 
+                    if (geoNode._mesh._numPosComponents == 4 &&
+                        geoNode._mesh._numNormComponents == 2) 
                     {
                         var buf = [];
                         for (var i=3, j=0; i<vertices.length; i+=4) {
@@ -3110,7 +3129,7 @@ x3dom.gfx_webgl = (function () {
         					buf[j++] = sin_theta * Math.sin(phi);
         					buf[j++] = Math.cos(theta);
                         }
-                        shape._cf.geometry.node._mesh._numNormComponents = 3;
+                        geoNode._mesh._numNormComponents = 3;
                     
                         var normalBuffer = gl.createBuffer();
                         shape._webgl.buffers[2] = normalBuffer;
@@ -3120,7 +3139,7 @@ x3dom.gfx_webgl = (function () {
                         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buf), gl.STATIC_DRAW);                
 
                         gl.vertexAttribPointer(sp.normal, 
-                            shape._cf.geometry.node._mesh._numNormComponents, 
+                            geoNode._mesh._numNormComponents, 
                             shape._webgl.normalType, false,
                             shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                         gl.enableVertexAttribArray(sp.normal);
@@ -5029,7 +5048,6 @@ x3dom.gfx_webgl = (function () {
 			//check prev, act
 			if(!prev_shape || (prev_shape && prev_shape._cf.geometry.node._mesh !== shape._cf.geometry.node._mesh)) 
 			{
-				
 			  if(shape._webgl.buffers[5*q+0])
 			  {
 			  	gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
