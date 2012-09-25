@@ -3468,7 +3468,7 @@ x3dom.gfx_webgl = (function () {
 			
 				//allocate buffers, pass them to the refinement manager
 				//@todo: get number of vertices
-				const numVerts = bitLODGeometry.getNumVertices();
+				var numVerts = bitLODGeometry.getNumVertices();
 		  
 				var buf = new ArrayBuffer(12 * numVerts);  
 				var interleavedCoordNormalBuffer = new Uint16Array(buf);

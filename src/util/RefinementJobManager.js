@@ -1,7 +1,7 @@
-const JOB_WAITING_FOR_DATA  = 0;
-const JOB_DATA_AVAILABLE    = 1;
-const JOB_GETTING_PROCESSED = 2;
-const JOB_FINISHED          = 3;
+var JOB_WAITING_FOR_DATA  = 0;
+var JOB_DATA_AVAILABLE    = 1;
+var JOB_GETTING_PROCESSED = 2;
+var JOB_FINISHED          = 3;
 
 
 x3dom.RefinementJobManager = function() {

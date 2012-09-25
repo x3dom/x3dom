@@ -44,10 +44,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	
 	this.fileExists = function(url) {
 		var xhr = new XMLHttpRequest();
-		xhr.open("HEAD", url, false);
-		xhr.send(null);
-		return (xhr.status==404) ? false : true;
-	};
+		try {
+			xhr.open("HEAD", url, false);
+			xhr.send(null);
+			return (xhr.status==404) ? false : true;
+		} catch(e) { return true; }
+	};		
 	
 	this.detectFlash = function(required, max)
 	{
