@@ -5,6 +5,9 @@ package x3dom
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
+	import flash.system.LoaderContext;
+	import flash.system.SecurityDomain;
 	
 	import mx.flash.UIMovieClip;
 	
@@ -22,6 +25,7 @@ package x3dom
 		private var _coords1:Bitmap = null;
 		private var _primType:Array = new Array();
 		private var _vertexCount:Array = new Array();
+		private var _context:LoaderContext;
 		
 		/**
 		 * 
@@ -30,6 +34,10 @@ package x3dom
 		{
 			super();
 			this._ready = false;
+			
+			//Create CLoaderContext for crossdomain loading
+			this._context = new LoaderContext();
+			this._context.checkPolicyFile = true;
 		}
 		
 		/**
@@ -114,7 +122,7 @@ package x3dom
 				
 				var coordinateLoader0:Loader = new Loader();
 				coordinateLoader0.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate0Complete);
-				coordinateLoader0.load(new URLRequest(value.coordinateTexture0));
+				coordinateLoader0.load(new URLRequest(value.coordinateTexture0), this._context);
 			}
 			else
 			{
@@ -146,7 +154,7 @@ package x3dom
 				
 				var normalLoader:Loader = new Loader();
 				normalLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleNormalComplete);
-				normalLoader.load(new URLRequest(value.normalTexture));
+				normalLoader.load(new URLRequest(value.normalTexture), this._context);
 			}
 			else
 			{
@@ -165,7 +173,7 @@ package x3dom
 				
 				var coordinateLoader:Loader = new Loader();
 				coordinateLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleTexCoordComplete);
-				coordinateLoader.load(new URLRequest(value.texCoordTexture));
+				coordinateLoader.load(new URLRequest(value.texCoordTexture), this._context);
 			}
 			else
 			{
@@ -185,7 +193,7 @@ package x3dom
 				
 				var colorLoader:Loader = new Loader();
 				colorLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleColorComplete);
-				colorLoader.load(new URLRequest(value.colorTexture));
+				colorLoader.load(new URLRequest(value.colorTexture), this._context);
 			}
 			else
 			{
