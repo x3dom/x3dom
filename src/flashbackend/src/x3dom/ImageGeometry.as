@@ -122,7 +122,7 @@ package x3dom
 				
 				var coordinateLoader0:Loader = new Loader();
 				coordinateLoader0.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate0Complete);
-				coordinateLoader0.load(new URLRequest(value.coordinateTexture0), this._context);
+				coordinateLoader0.load(new URLRequest(value.coordinateTexture0), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -135,7 +135,7 @@ package x3dom
 				
 				var coordinateLoader1:Loader = new Loader();
 				coordinateLoader1.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate1Complete);
-				coordinateLoader1.load(new URLRequest(value.coordinateTexture1));
+				coordinateLoader1.load(new URLRequest(value.coordinateTexture1), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -154,7 +154,7 @@ package x3dom
 				
 				var normalLoader:Loader = new Loader();
 				normalLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleNormalComplete);
-				normalLoader.load(new URLRequest(value.normalTexture), this._context);
+				normalLoader.load(new URLRequest(value.normalTexture), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -173,7 +173,7 @@ package x3dom
 				
 				var coordinateLoader:Loader = new Loader();
 				coordinateLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleTexCoordComplete);
-				coordinateLoader.load(new URLRequest(value.texCoordTexture), this._context);
+				coordinateLoader.load(new URLRequest(value.texCoordTexture), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -193,7 +193,7 @@ package x3dom
 				
 				var colorLoader:Loader = new Loader();
 				colorLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleColorComplete);
-				colorLoader.load(new URLRequest(value.colorTexture), this._context);
+				colorLoader.load(new URLRequest(value.colorTexture), FlashBackend.getLoaderContext());
 			}
 			else
 			{

@@ -5,6 +5,7 @@ package x3dom
 	import flash.events.*;
 	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
+	import flash.system.LoaderContext;
 	import flash.system.Security;
 	
 	[SWF(backgroundColor="#000000", width="550", height="400", frameRate="120")]
@@ -74,6 +75,11 @@ package x3dom
 		private static var _mousePosY:Number = 0;
 		
 		/**
+		 * LoaderContext for loading cross-domain images
+		 */
+		private static var _loaderContext:LoaderContext;
+		
+		/**
 		 * The current pressed mouse button 0=None, 1=Left, 2=Middle, 4=Right
 		 */
 		private var _mouseButton:Number = 0;
@@ -122,6 +128,10 @@ package x3dom
 			
 			//Create Context3D
 			this.createContext3D();
+			
+			//Create LoaderContext for crossdomain loading
+			_loaderContext = new LoaderContext();
+			_loaderContext.checkPolicyFile = true;
 		}
 		
 		private function initLoadingScreen() : void
@@ -186,6 +196,11 @@ package x3dom
 		public static function stage() : Stage 
 		{
 			return _stage;
+		}
+		
+		public static function getLoaderContext() : LoaderContext 
+		{
+			return _loaderContext;
 		}
 		
 		/**
