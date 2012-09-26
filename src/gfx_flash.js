@@ -387,7 +387,10 @@ x3dom.gfx_flash = (function() {
 			//Set indices			
 			if( shape._dirty.indexes === true ) {
 				if(isImageGeometry) {
-				
+					//TODO new flash IG implementation 
+					/*this.object.setMeshIndices( { id: shape._objectID,
+												  idx: 0, 
+												  indices: shape._cf.geometry.node.getIndexTextureURL() } );*/
 				} else if(isBinaryGeometry) {
 					this.object.setMeshIndices( { id: shape._objectID,
 												  idx: 0, 
@@ -413,6 +416,7 @@ x3dom.gfx_flash = (function() {
 				if(isImageGeometry) {
 					this.object.setMeshVertices( { id: shape._objectID,
 												   idx: 0,
+												   //TODO new flash IG implementation coords: shape._cf.geometry.node.getCoordinateTextureURLs(),
 												   coordinateTexture0: shape._cf.geometry.node.getCoordinateTextureURL(0),
 												   coordinateTexture1: shape._cf.geometry.node.getCoordinateTextureURL(1) } );
 				} else if(isBinaryGeometry) {
@@ -452,7 +456,8 @@ x3dom.gfx_flash = (function() {
 			if( shape._dirty.normals === true ) {
 				if(isImageGeometry) {
 					this.object.setMeshNormals( { id: shape._objectID,
-												  idx: 0, 
+												  idx: 0,
+												  //TODO new flash IG implementation normals: shape._cf.geometry.node.getNormalTextureURLs(),
 												  normalTexture: shape._cf.geometry.node.getNormalTextureURL(0) } );
 				} else if(isBinaryGeometry) {
 					if(!shape._cf.geometry.node._hasStrideOffset) {

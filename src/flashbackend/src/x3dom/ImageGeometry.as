@@ -25,7 +25,6 @@ package x3dom
 		private var _coords1:Bitmap = null;
 		private var _primType:Array = new Array();
 		private var _vertexCount:Array = new Array();
-		private var _context:LoaderContext;
 		
 		/**
 		 * 
@@ -34,10 +33,6 @@ package x3dom
 		{
 			super();
 			this._ready = false;
-			
-			//Create CLoaderContext for crossdomain loading
-			this._context = new LoaderContext();
-			this._context.checkPolicyFile = true;
 		}
 		
 		/**

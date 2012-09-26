@@ -2114,6 +2114,16 @@ x3dom.registerNodeType(
                     return null;
                 }
             },
+			
+			getCoordinateTextureURLs: function()
+            {
+                var urls = [];
+				for(var i=0; i<this._cf.coord.nodes.length; i++)
+				{
+					urls.push(this._cf.coord.nodes[i]._vf.url);
+				}
+                return urls;
+            },
 
             getNormalTexture: function(pos)
             {
@@ -2131,6 +2141,16 @@ x3dom.registerNodeType(
                 } else {
                     return null;
                 }
+            },
+			
+			getNormalTextureURLs: function()
+            {
+                var urls = [];
+				for(var i=0; i<this._cf.normal.nodes.length; i++)
+				{
+					urls.push(this._cf.normal.nodes[i]._vf.url);
+				}
+                return urls;
             },
 
             getTexCoordTexture: function()
