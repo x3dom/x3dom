@@ -91,40 +91,34 @@ package x3dom
 			if( String(value.vertices) != "" ) 
 			{
 				var urlLoader:URLLoader = new URLLoader();
-				if( !Boolean(value.interleaved) ) 
-				{
-					this._verticesComplete = false;
 
-					urlLoader.addEventListener(Event.COMPLETE, verticesCompleteHandler);
-					urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-					urlLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-					urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
-					urlLoader.load (new URLRequest( String(value.vertices) ) );
-				} else {
-					this._verticesComplete	= Boolean(value.vertices == "");
-					this._normalsComplete	= Boolean(value.normals == "");
-					this._texCoordsComplete = Boolean(value.texCoords == "");
-					this._colorsComplete	= Boolean(value.colors == "");
-					
-					this._vertexType	= value.vertexType;
-					this._normalType	= value.normalType;
-					this._texCoordType	= value.texCoordType;
-					this._colorType		= value.colorType;
-					
-					this._vertexStrideOffset	= value.vertexStrideOffset;
-					this._normalStrideOffset	= value.normalStrideOffset;
-					this._texCoordStrideOffset	= value.texCoordStrideOffset;
-					this._colorStrideOffset		= value.colorStrideOffset;
-					
-					this._numColorComponents	= value.components;
-					
+				this._verticesComplete	= Boolean(value.vertices == "");
+				this._normalsComplete	= Boolean(value.normals == "");
+				this._texCoordsComplete = Boolean(value.texCoords == "");
+				this._colorsComplete	= Boolean(value.colors == "");
+				
+				this._vertexType	= value.vertexType;
+				this._normalType	= value.normalType;
+				this._texCoordType	= value.texCoordType;
+				this._colorType		= value.colorType;
+				
+				this._vertexStrideOffset	= value.vertexStrideOffset;
+				this._normalStrideOffset	= value.normalStrideOffset;
+				this._texCoordStrideOffset	= value.texCoordStrideOffset;
+				this._colorStrideOffset		= value.colorStrideOffset;
+				
+				this._numColorComponents	= value.numColorComponents;
+				this._numNormalComponents   = value.numNormalComponents;
+				
+				if(value.interleaved) {
 					urlLoader.addEventListener(Event.COMPLETE, interleavedCompleteHandler);
-					urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
-					urlLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
-					urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
-					urlLoader.load (new URLRequest( String(value.vertices) ) );
-					
+				} else {
+					urlLoader.addEventListener(Event.COMPLETE, verticesCompleteHandler);
 				}
+				urlLoader.addEventListener(SecurityErrorEvent.SECURITY_ERROR, securityErrorHandler);
+				urlLoader.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+				urlLoader.dataFormat = URLLoaderDataFormat.BINARY;
+				urlLoader.load (new URLRequest( String(value.vertices) ) );
 			} else {
 				this._verticesComplete = true;
 			}
@@ -271,13 +265,32 @@ package x3dom
 		private function normalsCompleteHandler(e:Event) : void {
 			var byteArray:ByteArray = ByteArray(e.target.data);
 			
+			var phi:Number = 0;
+			var theta:Number = 0;
+			var value:Vector3D = new Vector3D();
 			var normals:Vector.<Number> = new Vector.<Number>();
 			
 			byteArray.position = 0;
 			byteArray.endian = Endian.LITTLE_ENDIAN;
 			
 			while(byteArray.bytesAvailable) {
-				normals.push( Utils.readType(byteArray, this._normalType, true) );
+				if(this._numNormalComponents == 3)
+				{
+					normals.push( Utils.readType(byteArray, this._normalType, true) );
+				}
+				else if(this._numNormalComponents == 2)
+				{
+					theta = Utils.readType(byteArray, this._normalType, true);
+					phi   = Utils.readType(byteArray, this._normalType, true);
+					
+					theta = theta * Math.PI;
+					phi   = phi * Math.PI * 2.0 - Math.PI;
+					
+					value.x = Math.sin(theta) * Math.cos(phi);
+					value.y = Math.sin(theta) * Math.sin(phi);
+					value.z = Math.cos(theta);
+					normals.push(value.x, value.y, value.z);
+				}
 			}
 			
 			super.setNormals(0, normals);
@@ -326,6 +339,8 @@ package x3dom
 			var byteArray:ByteArray = ByteArray(e.target.data);
 			
 			var position:Number = 0;
+			var phi:Number = 0;
+			var theta:Number = 0;
 			var value:Vector3D = new Vector3D();
 			
 			var vertices:Vector.<Number>	= new Vector.<Number>();
@@ -360,12 +375,30 @@ package x3dom
 			if(!this._normalsComplete) {
 				byteArray.position = position = this._normalStrideOffset[1];
 				while(byteArray.bytesAvailable) {
-					value.x = Utils.readType(byteArray, this._vertexType, true);
-					value.y = Utils.readType(byteArray, this._vertexType, true);
-					value.z = Utils.readType(byteArray, this._vertexType, true);
-					normals.push(value.x, value.y, value.z);
-					position += this._normalStrideOffset[0];
-					byteArray.position = position;
+					if(this._numNormalComponents == 3)
+					{
+						value.x = Utils.readType(byteArray, this._normalType, true);
+						value.y = Utils.readType(byteArray, this._normalType, true);
+						value.z = Utils.readType(byteArray, this._normalType, true);
+						normals.push(value.x, value.y, value.z);
+						position += this._normalStrideOffset[0];
+						byteArray.position = position;
+					} 
+					else if(this._numNormalComponents == 2)
+					{
+						theta = Utils.readType(byteArray, this._normalType, true);
+						phi   = Utils.readType(byteArray, this._normalType, true);
+						
+						theta = theta * Math.PI;
+						phi   = phi * Math.PI * 2.0 - Math.PI;
+						
+						value.x = Math.sin(theta) * Math.cos(phi);
+						value.y = Math.sin(theta) * Math.sin(phi);
+						value.z = Math.cos(theta);
+						normals.push(value.x, value.y, value.z);
+						position += this._normalStrideOffset[0];
+						byteArray.position = position;
+					}
 				}
 				super.setNormals(0, normals);
 				this._normalsComplete = true;
@@ -374,9 +407,9 @@ package x3dom
 			if(!this._texCoordsComplete) {
 				byteArray.position = position = this._texCoordStrideOffset[1];
 				while(byteArray.bytesAvailable) {
-					value.x = Utils.readType(byteArray, this._vertexType, true);
-					value.y = Utils.readType(byteArray, this._vertexType, true);
-					value.z = Utils.readType(byteArray, this._vertexType, true);
+					value.x = Utils.readType(byteArray, this._texCoordType, true);
+					value.y = Utils.readType(byteArray, this._texCoordType, true);
+					value.z = Utils.readType(byteArray, this._texCoordType, true);
 					texCoords.push(value.x, value.y);
 					position += this._texCoordStrideOffset[0];
 					byteArray.position = position;
@@ -388,13 +421,13 @@ package x3dom
 			if(!this._colorsComplete) {
 				byteArray.position = position = this._colorStrideOffset[1];
 				while(byteArray.bytesAvailable) {
-					value.x = Utils.readType(byteArray, this._vertexType, true);
-					value.y = Utils.readType(byteArray, this._vertexType, true);
-					value.z = Utils.readType(byteArray, this._vertexType, true);
+					value.x = Utils.readType(byteArray, this._colorType, true);
+					value.y = Utils.readType(byteArray, this._colorType, true);
+					value.z = Utils.readType(byteArray, this._colorType, true);
 					if(this.numColorComponents == 3) {
 						colors.push(value.x, value.y, value.z);
 					} else {
-						value.w = Utils.readType(byteArray, this._vertexType, true);
+						value.w = Utils.readType(byteArray, this._colorType, true);
 						colors.push(value.x, value.y, value.z, value.w);
 					}
 					position += this._colorStrideOffset[0];

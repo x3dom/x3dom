@@ -117,8 +117,6 @@ x3dom.gfx_flash = (function() {
 		//Get Scene from Viewarea
         var scene = viewarea._scene;
 		
-		
-		
 		if(viewarea._last_mat_view == undefined) {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
 		}
@@ -222,8 +220,8 @@ x3dom.gfx_flash = (function() {
 		
 		//Dirty HACK
 		var viewpoint = scene.getViewpoint();
-		viewpoint._vf.zFar = 10000;
-		viewpoint._vf.zNear = 0.1;
+		viewpoint._vf.zFar = 100000;
+		viewpoint._vf.zNear = 0.01;
 		
         var mat_proj = viewarea.getProjectionMatrix();
 		
@@ -418,29 +416,23 @@ x3dom.gfx_flash = (function() {
 												   coordinateTexture0: shape._cf.geometry.node.getCoordinateTextureURL(0),
 												   coordinateTexture1: shape._cf.geometry.node.getCoordinateTextureURL(1) } );
 				} else if(isBinaryGeometry) {
-					if(!shape._cf.geometry.node._hasStrideOffset) {
-						this.object.setMeshVertices( { id: shape._objectID,
-													   idx: 0, 
-													   vertices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.coord) } );
-					} else {
-						this.object.setMeshVertices( { id: shape._objectID,
-													   idx: 0,
-													   interleaved: shape._cf.geometry.node._hasStrideOffset,
-													   vertices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.coord),
-													   normals: shape._nameSpace.getURL(shape._cf.geometry.node._vf.normal),
-													   texCoords: shape._nameSpace.getURL(shape._cf.geometry.node._vf.texCoord),
-													   colors: shape._nameSpace.getURL(shape._cf.geometry.node._vf.color),
-													   components: shape._cf.geometry.node._mesh._numColComponents, 
-													   vertexType: shape._cf.geometry.node._vf.coordType,
-													   normalType: shape._cf.geometry.node._vf.normalType,
-													   texCoordType: shape._cf.geometry.node._vf.texCoordType,
-													   colorType: shape._cf.geometry.node._vf.colorType,
-													   vertexStrideOffset: shape._coordStrideOffset,
-													   normalStrideOffset: shape._normalStrideOffset,
-													   texCoordStrideOffset: shape._texCoordStrideOffset,
-													   colorStrideOffset: shape._colorStrideOffset } );
-					}
-				
+					this.object.setMeshVertices( { id: shape._objectID,
+												   idx: 0,
+												   interleaved: shape._cf.geometry.node._hasStrideOffset,
+												   vertices: shape._nameSpace.getURL(shape._cf.geometry.node._vf.coord),
+												   normals: shape._nameSpace.getURL(shape._cf.geometry.node._vf.normal),
+												   texCoords: shape._nameSpace.getURL(shape._cf.geometry.node._vf.texCoord),
+												   colors: shape._nameSpace.getURL(shape._cf.geometry.node._vf.color),
+												   numColorComponents: shape._cf.geometry.node._mesh._numColComponents,
+												   numNormalComponents: shape._cf.geometry.node._mesh._numNormComponents,
+												   vertexType: shape._cf.geometry.node._vf.coordType,
+												   normalType: shape._cf.geometry.node._vf.normalType,
+												   texCoordType: shape._cf.geometry.node._vf.texCoordType,
+												   colorType: shape._cf.geometry.node._vf.colorType,
+												   vertexStrideOffset: shape._coordStrideOffset,
+												   normalStrideOffset: shape._normalStrideOffset,
+												   texCoordStrideOffset: shape._texCoordStrideOffset,
+												   colorStrideOffset: shape._colorStrideOffset } );
 				} else if(isBitLODGeometry) {
 					this.object.setMeshVertices( { id: shape._objectID,
 												   componentURLs: shape._cf.geometry.node.getComponentsURLs(),
