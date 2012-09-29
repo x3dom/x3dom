@@ -19,6 +19,23 @@ BASICS = [
   'Main.js'
 ]
 
+SHADER = [
+	'shader/Shader.js',
+	'shader/ShaderParts.js',
+	'shader/ShaderDynamic.js',
+	'shader/ShaderDynamicMobile.js',
+	'shader/ShaderComposed.js',
+	'shader/ShaderPicking.js',
+	'shader/ShaderPickingColor.js',
+	'shader/ShaderPickingTexcoord.js',
+	'shader/ShaderFrontgroundTexture.js',
+	'shader/ShaderBackgroundTexture.js',
+	'shader/ShaderBackgroundSkyTexture.js',
+	'shader/ShaderBackgroundCubeTexture.js',
+	'shader/ShaderShadow.js',
+	'shader/ShaderCache.js'
+]
+
 GFX = [
   'gfx_webgl.js',
   'gfx_flash.js'
@@ -58,7 +75,7 @@ COMPONENTS = [
   'Docs.js'                    # interactive documentation
 ]
 
-CORE_PROFILE = BASICS + GFX + NODES
+CORE_PROFILE = BASICS + SHADER + GFX + NODES
 MORE_PROFILE = COMPONENTS
 
 FULL_PROFILE = CORE_PROFILE + MORE_PROFILE

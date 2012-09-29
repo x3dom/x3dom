@@ -116,6 +116,8 @@ x3dom.registerNodeType(
 			//this._image = new Image();
 			//this._complete = false;
 			
+			this._blending = (this._vf.origChannelCount == 1 || this._vf.origChannelCount == 2);
+			
 			//x3dom.ImageLoadManager.push( this );
         },
         {
