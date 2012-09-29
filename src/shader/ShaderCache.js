@@ -72,7 +72,7 @@ x3dom.shader.ShaderCache.prototype.getDynamicShader = function (viewarea, shape)
 	//Generate Properties
 	var properties = this.generateProperties(viewarea, shape);
 	
-	x3dom.debug.logInfo(properties.toString());
+	//x3dom.debug.logInfo(properties.toString());
 	
 	if( this.cache[properties.toIdentifier()] == undefined ) 
 	{
