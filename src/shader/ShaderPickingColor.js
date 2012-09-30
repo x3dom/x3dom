@@ -63,11 +63,11 @@ x3dom.shader.PickingColorShader.prototype.generateFragmentShader = function(gl)
 					"  precision highp float;\n" +
 					"#endif\n" +
 					"\n" +
-					"uniform float transparency;\n" +
+					"uniform float lowBit;\n" +
 					"varying vec3 fragColor;\n" +
 					"\n" +
 					"void main(void) {\n" +
-					"    gl_FragColor = vec4(fragColor, transparency);\n" +
+					"    gl_FragColor = vec4(fragColor, lowBit);\n" +
 					"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
