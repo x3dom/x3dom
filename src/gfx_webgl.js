@@ -919,7 +919,7 @@ x3dom.gfx_webgl = (function () {
                         if (!singleTex) {
                             break;
                         }
-                        that.updateTexture(singleTex, cnt, "diffuse");
+                        that.updateTexture(singleTex, cnt, "multi");
                     }
                 }
                 else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
@@ -3193,6 +3193,8 @@ x3dom.gfx_webgl = (function () {
 				case "specular":
 					if(!sp.spec) sp.spec = cnt;
 				break;
+				case "multi":
+				break;
 				case "IG_index":
 					if(!sp.IG_indexTexture) sp.IG_indexTexture = cnt;
 				break;
@@ -3212,7 +3214,7 @@ x3dom.gfx_webgl = (function () {
 					if(!sp.IG_colorTexture) sp.IG_colorTexture = cnt;
 				break;
 				default:
-					x3dom.debug.logError("[Context|RenderShape] Missing TextureType");
+					x3dom.debug.logError("[Context|RenderShape] Missing TextureType ("+shape._webgl.textureType[cnt]+")");
 			}
           }
         }
