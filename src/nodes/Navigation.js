@@ -60,6 +60,8 @@ x3dom.registerNodeType(
 
             this._projMatrix = null;
             this._lastAspect = 1.0;
+            // z-ratio: a value around 5000 would be better...
+            this._zRatio = 10000;
             this._zNear = this._vf.zNear;
             this._zFar = this._vf.zFar;
         },
@@ -141,8 +143,6 @@ x3dom.registerNodeType(
 
                 if (znear <= 0 || zfar <= 0)
                 {
-                    // z-ratio: a value around 5000 would be better...
-                    var zRatio = 100000;
                     var nearScale = 0.8, farScale = 1.2;
                     var viewarea = this._nameSpace.doc._viewarea;
                     
@@ -174,7 +174,7 @@ x3dom.registerNodeType(
                         zfar = 100000;
                     }
                     
-                    var zNearLimit = zfar / zRatio;
+                    var zNearLimit = zfar / this._zRatio;
                     znear = Math.max(znear, Math.max(x3dom.fields.Eps, zNearLimit));
                     //x3dom.debug.logInfo("near: " + znear + " -> far:" + zfar);
                     
