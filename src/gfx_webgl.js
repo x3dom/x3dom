@@ -2067,12 +2067,12 @@ x3dom.gfx_webgl = (function () {
             {
                 gl.deleteTexture(bgnd._webgl.texture);
             }
-            if (bgnd._webgl.shader.position !== undefined) 
+            if (bgnd._webgl.shader && bgnd._webgl.shader.position !== undefined)
             {
                 gl.deleteBuffer(bgnd._webgl.buffers[1]);
                 gl.deleteBuffer(bgnd._webgl.buffers[0]);
             }
-            if (bgnd._webgl.shader.texcoord !== undefined) 
+            if (bgnd._webgl.shader && bgnd._webgl.shader.texcoord !== undefined)
             {
                 gl.deleteBuffer(bgnd._webgl.buffers[2]);
             }
