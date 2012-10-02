@@ -2617,8 +2617,10 @@ x3dom.registerNodeType(
 									data.colors =  colors[colorInd[i]];
 								} else if (hasColorInd && !colPerVert) {
 									data.colors =  colors[colorInd[faceCnt]];
-								} else {
+								} else if (colPerVert) {
 									data.colors =  colors[indexes[i]];
+								} else {
+									data.colors =  colors[faceCnt];
 								}
 							}
 							if (hasTexCoord) {
