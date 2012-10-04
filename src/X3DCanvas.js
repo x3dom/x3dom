@@ -470,6 +470,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
     this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
     //this.showTouchpoints = this.showTouchpoints ? (this.showTouchpoints.toLowerCase() == "true") : false;
+
+    this.disableTouch = x3dElem.getAttribute("disableTouch");
+    this.disableTouch = this.disableTouch ? (this.disableTouch.toLowerCase() == "true") : false;
     
     
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
@@ -551,7 +554,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				
 				evt.returnValue = true;
 			}
-			
         }, false);
 
         this.canvas.addEventListener('mouseout', function (evt) {
@@ -689,7 +691,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
               
             return rotation;
           },
-          
+
+          disableTouch: this.disableTouch,
           // set a mark in HTML so we can track the position of the finger visually
           visMarker: this.showTouchpoints,
           visMarkerBag: new Array(),
@@ -960,17 +963,20 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           
 			touchEndHandler(mozilla_touches, this.parent.doc);
         };
-        
-        // mozilla touch events
-        this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
-        this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
-        this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
 
-        // w3c / apple touch events (in Chrome via chrome://flags)
-        this.canvas.addEventListener('touchstart',    touchStartHandler, true);
-        this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
-        this.canvas.addEventListener('touchend',      touchEndHandler,   true);
-    };
+        if (!this.disableTouch)
+        {
+            // mozilla touch events
+            this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
+            this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
+            this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
+
+            // w3c / apple touch events (in Chrome via chrome://flags)
+            this.canvas.addEventListener('touchstart',    touchStartHandler, true);
+            this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
+            this.canvas.addEventListener('touchend',      touchEndHandler,   true);
+        }
+    }
     
     /** Helper that converts a point from node coordinates to page coordinates 
         FIXME: does NOT work when x3dom.css is not included so that x3d element is not floating
