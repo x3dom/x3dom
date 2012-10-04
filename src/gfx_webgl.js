@@ -853,8 +853,10 @@ x3dom.gfx_webgl = (function () {
                 
 				if(this._webgl.textureFilter === undefined) {
 					that._webgl.textureFilter = [];
-					that._webgl.textureFilter[unit] = gl.LINEAR;
 				}
+				
+				//Set Texture Filter
+				that._webgl.textureFilter[unit] = gl.LINEAR;
 
                 if (tex._isCanvas && tex._canvas) {
                     texture = gl.createTexture();
@@ -1009,24 +1011,19 @@ x3dom.gfx_webgl = (function () {
                 }
                 else
                 {
-                    var t00 = new Date().getTime();
+                    //var t00 = new Date().getTime();
                     
                     texture = gl.createTexture();
 					
-					//Old Loading
+					//Load Texture
 					var image = new Image();
 					image.crossOrigin = '';
                     image.src = tex._nameSpace.getURL(tex._vf.url[0]);
 					
                     that._nameSpace.doc.downloadCount += 1;					
 
-					//var image = tex._image;
-                    //var load = function()
 					image.onload = function()
-                    {    
-						x3dom.ImageLoadManager.activeDownloads--;
-						
-						that._nameSpace.doc.needRender = true;
+                    {    					
                         that._nameSpace.doc.downloadCount -= 1;
 						
                         if(tex._vf.scale){
@@ -1058,9 +1055,9 @@ x3dom.gfx_webgl = (function () {
                         //gl.generateMipmap(gl.TEXTURE_2D);
                         gl.bindTexture(gl.TEXTURE_2D, null);
 						
-						tex._complete = true;
+						that._nameSpace.doc.needRender = true;
 						
-                        var t11 = new Date().getTime() - t00;
+                        //var t11 = new Date().getTime() - t00;
                         //x3dom.debug.logInfo(texture + " bound tex url " + tex._vf.url[0] + " at unit " + unit +
                         //                    " with img load time " + t11 + " ms.");
                     };
@@ -1071,8 +1068,6 @@ x3dom.gfx_webgl = (function () {
 
                         x3dom.debug.logError("Can't load tex url: " + tex._vf.url[0] + " (at unit " + unit + ").");
                     };
-					
-					//(tex._complete || image.complete) ? load() : image.addEventListener('ImageLoadManager_Load', load, true);
                 }
             };
             
