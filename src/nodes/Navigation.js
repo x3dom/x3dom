@@ -340,6 +340,12 @@ x3dom.registerNodeType(
                 return [theta, height];
             },
 
+            setTypeParams: function(params) {
+                for (var i=0; i<params.length; i++) {
+                    this._vf.typeParams[i] = params[i];
+                }
+            },
+
             setType: function(type, viewarea) {
                 var navType = type.toLowerCase();
                 switch (navType) {
