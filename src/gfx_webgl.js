@@ -3176,40 +3176,42 @@ x3dom.gfx_webgl = (function () {
                 sp.texTrafoMatrix = texTrafo.toGL();
             }
             
-			
-			switch(shape._webgl.textureType[cnt])
+			if(shader && !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) 
 			{
-				case "diffuse":
-					if (!sp.tex) sp.tex = cnt;
-				break;
-				case "normal":
-					 if(!sp.bump) sp.bump = cnt;
-				break;
-				case "specular":
-					if(!sp.spec) sp.spec = cnt;
-				break;
-				case "multi":
-				break;
-				case "IG_index":
-					if(!sp.IG_indexTexture) sp.IG_indexTexture = cnt;
-				break;
-				case "IG_coord0":
-					if(!sp.IG_coordinateTexture0) sp.IG_coordinateTexture0 = cnt;
-				break;
-				case "IG_coord1":
-					if(!sp.IG_coordinateTexture1) sp.IG_coordinateTexture1 = cnt;
-				break;
-				case "IG_normal":
-					if(!sp.IG_normalTexture) sp.IG_normalTexture = cnt;
-				break;
-				case "IG_texCoord":
-					if(!sp.IG_texCoordTexture) sp.IG_texCoordTexture = cnt;
-				break;
-				case "IG_color":
-					if(!sp.IG_colorTexture) sp.IG_colorTexture = cnt;
-				break;
-				default:
-					x3dom.debug.logError("[Context|RenderShape] Missing TextureType ("+shape._webgl.textureType[cnt]+")");
+				switch(shape._webgl.textureType[cnt])
+				{
+					case "diffuse":
+						if (!sp.tex) sp.tex = cnt;
+					break;
+					case "normal":
+						 if(!sp.bump) sp.bump = cnt;
+					break;
+					case "specular":
+						if(!sp.spec) sp.spec = cnt;
+					break;
+					case "multi":
+					break;
+					case "IG_index":
+						if(!sp.IG_indexTexture) sp.IG_indexTexture = cnt;
+					break;
+					case "IG_coord0":
+						if(!sp.IG_coordinateTexture0) sp.IG_coordinateTexture0 = cnt;
+					break;
+					case "IG_coord1":
+						if(!sp.IG_coordinateTexture1) sp.IG_coordinateTexture1 = cnt;
+					break;
+					case "IG_normal":
+						if(!sp.IG_normalTexture) sp.IG_normalTexture = cnt;
+					break;
+					case "IG_texCoord":
+						if(!sp.IG_texCoordTexture) sp.IG_texCoordTexture = cnt;
+					break;
+					case "IG_color":
+						if(!sp.IG_colorTexture) sp.IG_colorTexture = cnt;
+					break;
+					default:
+						x3dom.debug.logError("[Context|RenderShape] Missing TextureType ("+shape._webgl.textureType[cnt]+")");
+				}
 			}
           }
         }
