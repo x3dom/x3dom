@@ -3176,7 +3176,7 @@ x3dom.gfx_webgl = (function () {
                 sp.texTrafoMatrix = texTrafo.toGL();
             }
             
-			if(shader && !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) 
+			if(!shader || shader && !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) 
 			{
 				switch(shape._webgl.textureType[cnt])
 				{
