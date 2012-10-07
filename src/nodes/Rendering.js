@@ -147,11 +147,6 @@ x3dom.registerNodeType(
                         numColComponents = 4;
                     }
                 }
-                else {
-                    for (var i=0, n=positions.length; i<n; i++) {
-                        colors.push(1.0);
-                    }
-                }
 
                 this._mesh._numColComponents = numColComponents;
                 this._mesh._indices[0] = [];
