@@ -1,0 +1,438 @@
+<html>
+	<meta charset="UTF-8">
+	<head>
+		<title>Progressive bitwise LOD</title>
+	</head>	
+	<body onload="main();">
+		<h1 id="myHeading">Detail Level 0 / 8</h1>		
+		<i>FPS: </i><i id='fpsElement'></i><br />
+		<canvas id="myCanvas" width="400" height="400"></canvas>
+		<br/>
+		<strong id="webGLSetupTimestampDisplayElement">[WebGL setup time not measured]</strong>
+		<br/>
+		<strong id="workerTimerElement">[Worker time not measured]</strong>
+		<br/>
+		<strong id="interleavedOutputFlagElement">[Interleaved output flag not tested]</strong>
+		<br/>
+		(For debug messages, see javascript console)
+		
+		<script type="text/javascript">
+			//begin hack
+			 var x3dom = {};			 
+			 x3dom.debug = {};
+			 x3dom.debug.logError = function(msg) {
+				console.log(msg);
+			 };			 
+			 x3dom.debug.logInfo = function(msg) {
+				console.log(msg);
+			 };
+			 //end hack
+		</script>
+		
+		<!--matrix math utilities-->
+		<script src="3rdParty/J3DI.js" 	type="text/javascript"> </script>
+		<script src="3rdParty/J3DIMath.js" type="text/javascript"> </script>
+		
+		<!--vertex shader source-->
+		<script id="myVS" type="x-vertex/x-vertex">
+			attribute vec3 a_VertexPosition;			
+			attribute vec2 a_VertexNormal;
+			
+			uniform mat4 u_MVPMat;
+			
+			varying vec3 v_VertexNormal;			
+			
+			void main()
+			{
+				gl_Position = u_MVPMat * vec4(a_VertexPosition - vec3(0.5), 1.0);							
+				
+				float Pi = 2.0 * asin(1.0);
+				
+				float theta = a_VertexNormal.x*Pi;
+				float phi   = a_VertexNormal.y*Pi*2.0 - Pi;
+				
+				vec3 normal;
+				normal.x = sin(theta) * cos(phi);
+				normal.y = sin(theta) * sin(phi);
+				normal.z = cos(theta);
+				
+				v_VertexNormal = normal * 0.5 + vec3(0.5, 0.5, 0.5);		
+			}
+		</script>
+
+		<!--fragment shader source-->
+		<script id="myFS" type="x-shader/x-fragment">			
+			precision highp float;
+			
+			varying vec3 v_VertexNormal;
+			
+			uniform vec3 u_Viewpoint;
+			
+			void main()
+			{
+				//1: color-coded normals
+				gl_FragColor = vec4(v_VertexNormal, 1.0);
+				
+				//2: simple directional diffuse lighting
+				/*
+				const vec3 lightDir = vec3(0.577);
+				const vec3 viewDir = vec3(0.577);
+				
+				float amb  = 0.0;
+				float diff = 0.7 * max(dot(v_VertexNormal, lightDir), 0.0);
+				
+				gl_FragColor = vec4(amb * vec3(1.0) + diff * vec3(1.0), 1.0);
+				*/
+			}
+		</script>		
+		
+    <script type="text/javascript" src='../../../src/util/DownloadManager.js'></script>
+		<script type="text/javascript" src='../../../src/util/BitLODWorker.js'></script>	
+    <script type="text/javascript" src='../../../src/util/BitLODComposer.js'></script>    	
+		<script type="text/javascript">
+			var bitComposer;
+			var refinedLevels = 0;
+			
+			var loadingTimer;
+			
+			const UseBitComposerSync   = false;
+			const UseInterleavedOutput = true;
+			
+			const StrideInBits = 96;
+						
+			var canvas;	 //WebGL canvas
+			var gl;		 //WebGL context
+			
+			var fpsElement;
+			
+			var mouseDown 	 = false;
+			var mouseDiffX = 0, mouseDiffY = 0;
+			var lastMouseX = 0, lastMouseY = 0;
+			
+			var angleX = 0, angleY = 0;
+			
+			const msUntilFPSRefresh 	= 100;
+			var countedFrames       	= 0;
+			var timestampLastFPSUpdate	= 0;
+			
+			var program; //main GPU program (shaders)
+			
+			var positionAttribLocation;
+			var normalAttribLocation;
+			
+			var mvMat;     //modelView matrix
+			var projMat;   //projection matrix
+			var mvProjMat; //modelViewProjection matrix
+			
+			var numArrayElements;
+			
+			var glBuffers = {	//object data buffers on the gpu
+				positions: {},
+				normals:   {}
+			};
+			
+
+			//debug function
+			function sleep(milliseconds) {
+				var start = new Date().getTime();
+				var newDate;
+				do {
+					newDate = new Date();
+				}
+				while ((newDate.getTime() - start) < milliseconds);
+			}
+
+
+			function setupWebGL() {
+				canvas = document.getElementById("myCanvas");
+				
+				gl = canvas.getContext("experimental-webgl");
+				
+				gl.enable(gl.DEPTH_TEST);
+				gl.disable(gl.CULL_FACE);
+				
+				gl.enableVertexAttribArray(0);
+				gl.enableVertexAttribArray(1);
+				
+				//initialize VBOs
+				glBuffers.positions = gl.createBuffer();
+				glBuffers.normals   = gl.createBuffer();
+				
+				gl.clearColor(0.3, 0.3, 0.3, 1.0);
+				
+				gl.viewport(0, 0, canvas.width, canvas.height);
+				
+				mvMat 	  = new J3DIMatrix4();
+				projMat   = new J3DIMatrix4();				
+				mvProjMat = new J3DIMatrix4();
+								
+				projMat.makeIdentity();
+				projMat.perspective(30, canvas.width / canvas.height, 0.1, 100)
+				
+				initProgram();
+			}
+			
+			
+			function refinementFinishedCallback(attributeData) {				
+				var refinementCallbackStart = Date.now();
+				
+				console.log('=> Client received refined data for level ' + refinedLevels + '!');
+								
+				var normalBuffer,
+					coordBuffer;
+				
+				if (UseInterleavedOutput) {					
+					coordBuffer  = new Uint16Array(attributeData);
+				}
+        //@todo: check
+				else {
+					normalBuffer = new Uint16Array(attributeData.attributeArrayBuffers[0]);
+					coordBuffer  = new Uint16Array(attributeData.attributeArrayBuffers[1]);
+				}
+				
+				if (UseInterleavedOutput) {
+					numArrayElements = (coordBuffer.length * Uint16Array.BYTES_PER_ELEMENT * 8) / StrideInBits;
+				}
+				else {
+					numArrayElements = coordBuffer.length / 3;
+				}
+
+				++refinedLevels;
+				
+				//upload the VBO data to the GPU
+				gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
+				gl.bufferData(gl.ARRAY_BUFFER, coordBuffer, gl.STATIC_DRAW);
+				
+				if (!UseInterleavedOutput) {
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normals);
+					gl.bufferData(gl.ARRAY_BUFFER, normalBuffer, gl.STATIC_DRAW);
+				}
+
+				//enjoy it for a few secs :-)
+				//sleep(1000);
+
+				if (refinedLevels === 1) {
+					//requestAnimFrame(animate);
+				}
+        
+        
+        ///
+        var viewpoint = [0.0, 0.0, 2.5];
+				
+				var vLoc = gl.getUniformLocation(program, "u_Viewpoint");
+				gl.uniform3fv(vLoc, viewpoint);
+				
+				mvMat.makeIdentity();				
+				mvMat.translate(-viewpoint[0], -viewpoint[1], -viewpoint[2]);				
+				mvMat.rotate(angleY, 0, 1, 0);
+				mvMat.rotate(angleX, 1, 0, 0);
+				
+				if (mouseDown) {
+					angleY += mouseDiffX;
+					angleX += mouseDiffY;
+				}
+				
+				mouseDiffX = 0;
+				mouseDiffY = 0;
+				
+				mvProjMat.load(projMat);
+				mvProjMat.multiply(mvMat);				
+				
+				mvProjMat.setUniform(gl, gl.getUniformLocation(program, "u_MVPMat"), false)
+				
+				renderScene();
+        //
+        
+        
+				document.getElementById('myHeading').textContent = 'Detail Level ' + refinedLevels + ' / 8';
+
+				if (refinedLevels === 8) {
+					document.getElementById('myHeading').textContent += ', after  ' + (Date.now() - loadingTimer) + ' ms';
+				}
+
+				if (!UseBitComposerSync) {
+					bitComposer.refine(attributeData);
+				}
+				
+				console.log('=> Refined data GPU upload (incl. communication with Worker) took ' + (Date.now() - refinementCallbackStart) + ' ms!');				
+			}
+			
+			
+			function initProgram(){
+				var vs, fs;
+				
+				program = gl.createProgram();
+				
+				vs = gl.createShader(gl.VERTEX_SHADER);
+				fs = gl.createShader(gl.FRAGMENT_SHADER);
+				
+				var vsStr = document.getElementById("myVS").textContent;
+				var fsStr = document.getElementById("myFS").textContent;
+				
+				gl.shaderSource(vs, vsStr);
+				gl.shaderSource(fs, fsStr);
+				
+				gl.compileShader(vs);
+				gl.compileShader(fs);
+				
+				gl.attachShader(program, vs);
+				gl.attachShader(program, fs);
+				
+				gl.linkProgram(program);
+							
+				if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+					alert("Could not initialize GPU program.\n" +
+						  "-----------------------------------\n" +
+						  "Program valid: " + (gl.isProgram(program) ? "yes" : "no") + "\n" +
+						  "VS valid: " + (gl.isShader(vs) ? "yes" : "no") + "\n" +
+						  "FS valid: " + (gl.isShader(fs) ? "yes" : "no") + "\n" +
+						  "-----------------------------------\n" +
+						  "Program info log:\n" + gl.getProgramInfoLog(program) + "\n" +
+						  "-----------------------------------\n" +
+						  "VS info log:\n" + gl.getShaderInfoLog(vs) + "\n" +
+						  "-----------------------------------\n" +
+						  "FS info log:\n" + gl.getShaderInfoLog(fs) + "\n");
+				}
+				
+				gl.validateProgram(program);
+				console.log("Program validation result: \"" + gl.getProgramInfoLog(program) + "\"");
+				
+				gl.useProgram(program);
+				
+				positionAttribLocation = gl.getAttribLocation(program, "a_VertexPosition");
+				normalAttribLocation   = gl.getAttribLocation(program, "a_VertexNormal");
+			}
+			
+			
+			function animate(){
+				requestAnimFrame(animate);
+				
+				var viewpoint = [0.0, 0.0, 2.5];
+				
+				var vLoc = gl.getUniformLocation(program, "u_Viewpoint");
+				gl.uniform3fv(vLoc, viewpoint);
+				
+				mvMat.makeIdentity();				
+				mvMat.translate(-viewpoint[0], -viewpoint[1], -viewpoint[2]);				
+				mvMat.rotate(angleY, 0, 1, 0);
+				mvMat.rotate(angleX, 1, 0, 0);
+				
+				if (mouseDown) {
+					angleY += mouseDiffX;
+					angleX += mouseDiffY;
+				}
+				
+				mouseDiffX = 0;
+				mouseDiffY = 0;
+				
+				mvProjMat.load(projMat);
+				mvProjMat.multiply(mvMat);				
+				
+				mvProjMat.setUniform(gl, gl.getUniformLocation(program, "u_MVPMat"), false)
+				
+				renderScene();
+			}
+			
+			
+			function renderScene(){
+				var currentTime = Date.now();
+				if ((currentTime - timestampLastFPSUpdate) > msUntilFPSRefresh) {
+					fpsElement.textContent = (1000 * (countedFrames / (currentTime - timestampLastFPSUpdate))).toFixed(2);
+					countedFrames 		   = 0;
+					timestampLastFPSUpdate = Date.now();
+				}
+				
+				gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+				
+				//specify the VBOs as vertex attributes
+				if (UseInterleavedOutput) {
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
+					gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true, 6*2, 0  );
+					gl.vertexAttribPointer(normalAttribLocation,   2, gl.UNSIGNED_SHORT, true, 6*2, 4*2);							
+				}
+				else {
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.positions);
+					gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true, 0, 0);
+					
+					gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normals);
+					gl.vertexAttribPointer(normalAttribLocation, 2, gl.UNSIGNED_SHORT, true, 0, 0);
+				}
+				
+				//draw VBO content
+				gl.drawArrays(gl.TRIANGLES, 0, numArrayElements);
+				
+				++countedFrames;
+			}
+			
+			
+			function main() {
+				loadingTimer = Date.now();
+				
+				document.getElementById('interleavedOutputFlagElement').textContent = UseInterleavedOutput 			?
+																						'Using interleaved Output.' :
+																						'Using separated Output';
+				
+				setupWebGL();
+				
+				document.getElementById('webGLSetupTimestampDisplayElement').textContent = 'WebGL set up after ' +
+																						   (Date.now() - loadingTimer) + ' ms';
+				
+				canvas.addEventListener('mousedown', mouseDownCallback, false);
+				canvas.addEventListener('mouseup',   mouseUpCallback,   false);
+				canvas.addEventListener('mousemove', mouseMoveCallback, false);
+				
+				window.requestAnimFrame = (function(){
+				  return  window.requestAnimationFrame       || 
+						  window.webkitRequestAnimationFrame || 
+						  window.mozRequestAnimationFrame    || 
+						  window.oRequestAnimationFrame      || 
+						  window.msRequestAnimationFrame     || 
+						  function( callback ){
+							window.setTimeout(callback, 1000 / 60);
+						  };
+				})();
+				
+				fpsElement = document.getElementById('fpsElement');
+				
+				//... get some URLs of files with refinement data ...
+				var i, refinementURLs = [];
+				for (i = 0; i < 8; ++i) {          
+					refinementURLs.push('data/refinement' + (i <= 9 ? '0' : '') + i + '.bin');
+				}
+				
+				//... and feed a BitComposer object with the data		
+				bitComposer = new x3dom.BitLODComposer();
+				
+				//bitComposer.toggleDebugOutput(true);
+				//x3dom.DownloadManager.toggleDebugOutput(true);				
+
+        bitComposer.run([3, 2], 					          //components
+                        [16, 16], 					        //attribute bits for each component
+                        [6,   2], 					        //bits per refinement level for all components
+                        refinementURLs,			        //URLs for the files of the refinement levels
+                        refinementFinishedCallback, //callback, executed on refinement
+                        [0, 64],					          //write offset in bits (interleaved output)
+                        StrideInBits);			        //write stride in bits (interleaved output)
+			}
+
+
+			function mouseDownCallback(event) {
+				mouseDown = true;
+			}
+			
+			
+			function mouseUpCallback(event) {
+				mouseDown = false;
+			}
+			
+			
+			function mouseMoveCallback(event) {				
+				mouseDiffX = event.clientX - lastMouseX;
+				mouseDiffY = event.clientY - lastMouseY;
+				
+				lastMouseX = event.clientX;
+				lastMouseY = event.clientY;
+			}			
+		</script>
+	</body>
+</html>

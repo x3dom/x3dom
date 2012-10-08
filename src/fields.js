@@ -519,6 +519,8 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
  *  and scale orientation. Any projection information is discarded.
  *  The decomposition depends upon choice of center point for
  *  rotation and scaling, which is optional as the last parameter.
+ *  (Note that quaternions need to be converted via .toAxisAngle()
+ *  to an axis/angle pair for being used in the x3d dom tree.)
  */
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 				translation, rotation, scaleFactor, scaleOrientation, center) 
@@ -538,7 +540,7 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 	
 	var flip = m.decompose(translation, rotation, scaleFactor, scaleOrientation);
 	
-	scaleFactor = scaleFactor.multiply(flip);
+	scaleFactor.setValues(scaleFactor.multiply(flip));
 };
 
 x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
@@ -585,7 +587,7 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so)
 
 x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
 {
-    var TOL = 1.0e-6;
+    var TOL = 0.000001;  //1.0e-6
 	
     var Mk = this.transpose();
     
@@ -620,31 +622,28 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
         
         // compute update factors
         var gamma = Math.sqrt( Math.sqrt((MkAdjT_one * MkAdjT_inf) / 
-							(Mk_one * Mk_inf)) / Math.abs(Mk_det) );
+							  (Mk_one * Mk_inf)) / Math.abs(Mk_det) );
         
         var g1 = 0.5 * gamma;
         var g2 = 0.5 / (gamma * Mk_det);
            
         Ek.setValues(Mk);
-        Mk = Mk.multiply (g1         ); // this does:
-        Mk = Mk.addScaled(MkAdjT, g2 ); // Mk = g1 * Mk + g2 * MkAdjT
-        Ek = Ek.addScaled(Mk,    -1.0); // Ek -= Mk;
+        Mk = Mk.multiply (g1);         // this does:
+        Mk = Mk.addScaled(MkAdjT, g2); // Mk = g1 * Mk + g2 * MkAdjT
+        Ek = Ek.addScaled(Mk, -1.0);   // Ek -= Mk;
         
-        Ek_one = Ek.norm1_3x3  ();
-        Mk_one = Mk.norm1_3x3  ();
+        Ek_one = Ek.norm1_3x3();
+        Mk_one = Mk.norm1_3x3();
         Mk_inf = Mk.normInf_3x3();
         
     } while (Ek_one > (Mk_one * TOL));
     
-    var Q = Mk.transpose();
-    
-	var S = Mk.mult(this);
-	
-	var i, j;
-    
-    for (i = 0; i < 3; ++i)
+    Q.setValues(Mk.transpose());
+    S.setValues(Mk.mult(this));
+
+    for (var i = 0; i < 3; ++i)
     {
-        for (j = i; j < 3; ++j)
+        for (var j = i; j < 3; ++j)
         {
             S['_'+j+i] = 0.5 * (S['_'+j+i] + S['_'+i+j]);
 			S['_'+i+j] = 0.5 * (S['_'+j+i] + S['_'+i+j]);
@@ -1219,7 +1218,7 @@ x3dom.fields.Quaternion.prototype.multiply = function (that) {
 };
 
 x3dom.fields.Quaternion.parseAxisAngle = function (str) {
-    var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+    var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
     return x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
 };
 
@@ -1804,13 +1803,9 @@ x3dom.fields.MFColor = function(colorArray) {
 x3dom.fields.MFColor.prototype = x3dom.extend([]);
 
 x3dom.fields.MFColor.parse = function(str) {
-    //var mc = str.match(/([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?\s*){3},?\s*/g);
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var colors = [];
-    for (var i=0, n=mc.length; i<n; i+=3) {
-        /*var c = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*$/.exec(mc[i]);
-        if (c[0])
-            colors.push( new x3dom.fields.SFColor(+c[1], +c[2], +c[3]) );*/
+    for (var i=0, n=mc?mc.length:0; i<n; i+=3) {
         colors.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2]) );
     }
     
@@ -1822,7 +1817,7 @@ x3dom.fields.MFColor.prototype.setValueByStr = function(str) {
         this.pop();
     }
     var mc = str.match(/([+\-0-9eE\.]+)/g);
-    for (var i=0, n=mc.length; i<n; i+=3) {
+    for (var i=0, n=mc?mc.length:0; i<n; i+=3) {
         this.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2]) );
     }
 };
@@ -1923,7 +1918,7 @@ x3dom.fields.MFColorRGBA.prototype = x3dom.extend([]);
 x3dom.fields.MFColorRGBA.parse = function(str) {
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var colors = [];
-    for (var i=0, n=mc.length; i<n; i+=4) {
+    for (var i=0, n=mc?mc.length:0; i<n; i+=4) {
         colors.push( new x3dom.fields.SFColorRGBA(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
     }
     
@@ -1935,7 +1930,7 @@ x3dom.fields.MFColorRGBA.prototype.setValueByStr = function(str) {
         this.pop();
     }
     var mc = str.match(/([+\-0-9eE\.]+)/g);
-    for (var i=0, n=mc.length; i<n; i+=4) {
+    for (var i=0, n=mc?mc.length:0; i<n; i+=4) {
         this.push( new x3dom.fields.SFColor(+mc[i+0], +mc[i+1], +mc[i+2], +mc[i+3]) );
     }
 };
@@ -1969,13 +1964,9 @@ x3dom.fields.MFRotation = function(rotArray) {
 x3dom.fields.MFRotation.prototype = x3dom.extend([]);
 
 x3dom.fields.MFRotation.parse = function(str) {
-    //var mc = str.match(/([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?\s*){4},?\s*/g);
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vecs = [];
-    for (var i=0, n=mc.length; i<n; i+=4) {
-        /*var c = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*$/.exec(mc[i]);
-        if (c[0])
-            vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]), +c[4]) );*/
+    for (var i=0, n=mc?mc.length:0; i<n; i+=4) {
         vecs.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]), +mc[i+3]) );
     }
     
@@ -1988,7 +1979,7 @@ x3dom.fields.MFRotation.prototype.setValueByStr = function(str) {
         this.pop();
     }
     var mc = str.match(/([+\-0-9eE\.]+)/g);
-    for (var i=0, n=mc.length; i<n; i+=4) {
+    for (var i=0, n=mc?mc.length:0; i<n; i+=4) {
         this.push( x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]), +mc[i+3]) );
     }
 };
@@ -2029,13 +2020,9 @@ x3dom.fields.MFVec3f.copy = function(vec3Array) {
 x3dom.fields.MFVec3f.prototype = x3dom.extend([]);
 
 x3dom.fields.MFVec3f.parse = function(str) {
-    //var mc = str.match(/([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?\s*){3},?\s*/g);
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vecs = [];
-    for (var i=0, n=mc.length; i<n; i+=3) {
-        /*var c = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*$/.exec(mc[i]);
-        if (c[0])
-            vecs.push( new x3dom.fields.SFVec3f(+c[1], +c[2], +c[3]) );*/
+    for (var i=0, n=mc?mc.length:0; i<n; i+=3) {
         vecs.push( new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]) );
     }
     
@@ -2047,7 +2034,7 @@ x3dom.fields.MFVec3f.prototype.setValueByStr = function(str) {
         this.pop();
     }
     var mc = str.match(/([+\-0-9eE\.]+)/g);
-    for (var i=0, n=mc.length; i<n; i+=3) {
+    for (var i=0, n=mc?mc.length:0; i<n; i+=3) {
         this.push( new x3dom.fields.SFVec3f(+mc[i+0], +mc[i+1], +mc[i+2]) );
     }
 };
@@ -2081,13 +2068,9 @@ x3dom.fields.MFVec2f = function(vec2Array) {
 x3dom.fields.MFVec2f.prototype = x3dom.extend([]);
 
 x3dom.fields.MFVec2f.parse = function(str) {
-    //var mc = str.match(/([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?\s*){2},?\s*/g);
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vecs = [];
-    for (var i=0, n=mc.length; i<n; i+=2) {
-        /*var c = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*$/.exec(mc[i]);
-        if (c[0])
-            vecs.push( new x3dom.fields.SFVec2f(+c[1], +c[2]) );*/
+    for (var i=0, n=mc?mc.length:0; i<n; i+=2) {
         vecs.push( new x3dom.fields.SFVec2f(+mc[i+0], +mc[i+1]) );
     }
 
@@ -2099,7 +2082,7 @@ x3dom.fields.MFVec2f.prototype.setValueByStr = function(str) {
         this.pop();
     }
     var mc = str.match(/([+\-0-9eE\.]+)/g);
-    for (var i=0, n=mc.length; i<n; i+=2) {
+    for (var i=0, n=mc?mc.length:0; i<n; i+=2) {
         this.push( new x3dom.fields.SFVec2f(+mc[i+0], +mc[i+1]) );
     }
 };
@@ -2133,7 +2116,7 @@ x3dom.fields.MFInt32.prototype = x3dom.extend([]);
 x3dom.fields.MFInt32.parse = function(str) {
     var mc = str.match(/([+\-]?\d+\s*){1},?\s*/g);
     var vals = [];
-    for (var i=0, n=mc.length; i<n; ++i) {
+    for (var i=0, n=mc?mc.length:0; i<n; ++i) {
         vals.push( parseInt(mc[i], 10) );
     }
     
@@ -2145,7 +2128,7 @@ x3dom.fields.MFInt32.prototype.setValueByStr = function(str) {
         this.pop();
     }
     var mc = str.match(/([+\-]?\d+\s*){1},?\s*/g);
-    for (var i=0, n=mc.length; i<n; ++i) {
+    for (var i=0, n=mc?mc.length:0; i<n; ++i) {
         this.push( parseInt(mc[i], 10) );
     }
 };
@@ -2176,13 +2159,9 @@ x3dom.fields.MFFloat = function(array) {
 x3dom.fields.MFFloat.prototype = x3dom.extend([]);
 
 x3dom.fields.MFFloat.parse = function(str) {
-    //var mc = str.match(/([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?\s*){1},?\s*/g);
     var mc = str.match(/([+\-0-9eE\.]+)/g);
     var vals = [];
-    for (var i=0, n=mc.length; i<n; i++) {
-        /*var c = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*$/.exec(mc[i]);
-        if (c[0])
-            vals.push( +c[1] );*/
+    for (var i=0, n=mc?mc.length:0; i<n; i++) {
         vals.push( +mc[i] );
     }
     
@@ -2194,7 +2173,7 @@ x3dom.fields.MFFloat.prototype.setValueByStr = function(str) {
         this.pop();
     }
     var mc = str.match(/([+\-0-9eE\.]+)/g);
-    for (var i=0, n=mc.length; i<n; i++) {
+    for (var i=0, n=mc?mc.length:0; i<n; i++) {
         this.push( +mc[i] );
     }
 };
@@ -2267,9 +2246,6 @@ x3dom.fields.MFString.prototype.toString = function () {
     var str = "";
     for (var i=0; i<this.length; i++) {
 		 str = str + this[i] + " ";
-        /*str = str + this[i];
-        if (i<this.length-1)
-            str += " ";*/
     }
     return str;
 };

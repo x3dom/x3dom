@@ -27,9 +27,9 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby+'-'+this._vf.center.x+'-'+this._vf.center.y+'-'+this._vf.center.z;
 
-			if( ctx && x3dom.geoCache[geoCacheID] != undefined )
+			if( ctx && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Plane from Cache");
+				//x3dom.debug.logInfo("Using Plane from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -201,10 +201,17 @@ x3dom.registerNodeType(
                 }
 
                 var numTexComponents = 2;
-                if (this._cf.texCoord.node) {
-                    if (this._cf.texCoord.node._vf.point) {
-                        texCoords = this._cf.texCoord.node._vf.point;
-                        if (x3dom.isa(this._cf.texCoord.node, x3dom.nodeTypes.TextureCoordinate3D)) {
+                
+                var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
+                
+                if (texCoordNode) {
+                    if (texCoordNode._vf.point) {
+                        texCoords = texCoordNode._vf.point;
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
                             numTexComponents = 3;
                         }
                     }
@@ -328,9 +335,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Box_'+sx+'-'+sy+'-'+sz;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Box from Cache");
+				//x3dom.debug.logInfo("Using Box from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -419,8 +426,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Sphere_'+r;
 
-			if (x3dom.geoCache[geoCacheID] != undefined) {
-				x3dom.debug.logInfo("Using Sphere from Cache");
+			if (x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Sphere from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				if(ctx) {
@@ -643,9 +650,9 @@ x3dom.registerNodeType(
 					
 			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Torus from Cache");
+				//x3dom.debug.logInfo("Using Torus from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -807,9 +814,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Cone_'+this._vf.bottomRadius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.side;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Cone from Cache");
+				//x3dom.debug.logInfo("Using Cone from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -1045,9 +1052,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Cylinder from Cache");
+				//x3dom.debug.logInfo("Using Cylinder from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -1364,10 +1371,14 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'colorType', "Float32");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
+            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
             
             // workaround
+            this._hasStrideOffset = false;
+            this._mesh._numPosComponents = this._vf.normalAsSphericalCoordinates ? 4 : 3;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
+			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
@@ -1377,6 +1388,74 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 // TODO: handle field updates and retrigger XHR
+            },
+
+            parentAdded: function()
+            {
+                var offsetInd, strideInd, offset, stride;
+
+                offsetInd = this._vf.coord.lastIndexOf('#');
+                strideInd = this._vf.coord.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.coord.substring(++offsetInd, strideInd);
+                    stride = +this._vf.coord.substring(strideInd);
+                    this._parentNodes[0]._coordStrideOffset = [stride, offset];
+                    this._hasStrideOffset = true;
+                    if ((offset / 8) - Math.floor(offset / 8) == 0) {
+                        this._mesh._numPosComponents = 4;
+                    }
+                    x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.coord.substring(strideInd);
+                    this._parentNodes[0]._coordStrideOffset = [stride, 0];
+                    if ((stride / 8) - Math.floor(stride / 8) == 0) {
+                        this._mesh._numPosComponents = 4;   // ???
+                    }
+                    x3dom.debug.logInfo("coord stride: " + stride);
+                }
+
+                offsetInd = this._vf.normal.lastIndexOf('#');
+                strideInd = this._vf.normal.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.normal.substring(++offsetInd, strideInd);
+                    stride = +this._vf.normal.substring(strideInd);
+                    this._parentNodes[0]._normalStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.normal.substring(strideInd);
+                    this._parentNodes[0]._normalStrideOffset = [stride, 0];
+                    x3dom.debug.logInfo("normal stride: " + stride);
+                }
+
+                offsetInd = this._vf.texCoord.lastIndexOf('#');
+                strideInd = this._vf.texCoord.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.texCoord.substring(++offsetInd, strideInd);
+                    stride = +this._vf.texCoord.substring(strideInd);
+                    this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.texCoord.substring(strideInd);
+                    this._parentNodes[0]._texCoordStrideOffset = [stride, 0];
+                    x3dom.debug.logInfo("texCoord stride: " + stride);
+                }
+
+                offsetInd = this._vf.color.lastIndexOf('#');
+                strideInd = this._vf.color.lastIndexOf('+');
+                if (offsetInd >= 0 && strideInd >= 0) {
+                    offset = +this._vf.color.substring(++offsetInd, strideInd);
+                    stride = +this._vf.color.substring(strideInd);
+                    this._parentNodes[0]._colorStrideOffset = [stride, offset];
+                    x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.color.substring(strideInd);
+                    this._parentNodes[0]._colorStrideOffset = [stride, 0];
+                    x3dom.debug.logInfo("color stride: " + stride);
+                }
             },
             
             getMin: function()
@@ -1464,6 +1543,410 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### BitLODGeoComponent ### */
+x3dom.registerNodeType(
+    "BitLODGeoComponent",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {	
+            x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
+			
+			this.addField_SFString(ctx, 'src', "");
+			this.addField_MFInt32(ctx, 'format', []);
+			this.addField_MFString(ctx, 'attrib', []);
+			
+			this._attribShift = [];
+			this._attribShiftDec = [];
+			this._mask = [];
+			
+			this._bitsPerComponent = 0;
+		},
+		{
+			nodeChanged: function()
+            {		
+				//Get Bits per component
+				for(var f=0; f<this._vf.format.length; f++) {
+					this._bitsPerComponent += this._vf.format[f];
+				}
+				
+				/*for(var a=0; a<this._vf.attrib.length; a++) {
+					if(this._vf.attrib[a] == "coord3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "normal2") {
+						this._attribShiftDec[a] = this._vf.format[a]/2;
+					} else if(this._vf.attrib[a] == "normal3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "texcoord2") {
+						this._attribShiftDec[a] = this._vf.format[a]/2;
+					} else if(this._vf.attrib[a] == "texcoord3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "color3") {
+						this._attribShiftDec[a] = this._vf.format[a]/3;
+					} else if(this._vf.attrib[a] == "color4") {
+						this._attribShiftDec[a] = this._vf.format[a]/4;
+					}
+					
+					this._attribShift[a] = this._bitsPerComponent - ((a) ? this._vf.format[a-1] : 0);
+					this._mask[a] = Math.pow(2, this._attribShiftDec[a]) - 1;
+				}*/
+			},
+
+            fieldChanged: function(fieldName)
+            {
+            },
+			
+			getSrc: function()
+			{
+				return this._vf.src;
+			},
+			
+			getFormat: function()
+			{
+				return this._vf.format;
+			},
+			
+			getAttrib: function(idx)
+			{
+				return this._vf.attrib[idx];
+			},
+			
+			getNumAttribs: function()
+			{
+				return this._vf.attrib.length;
+			}
+		}
+	)
+);
+
+/* ### BitLODGeometry ### */
+x3dom.registerNodeType(
+    "BitLODGeometry",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {	
+            x3dom.nodeTypes.BitLODGeometry.superClass.call(this, ctx);
+			
+			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
+			this.addField_MFInt32(ctx, 'vertexCount', [0]);
+			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+			this.addField_SFString(ctx, 'index', "");   // Uint16		
+			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
+			
+			
+			// Typed Array View Types
+            // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
+            //this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString(ctx, 'coordType', "Uint16");
+            this.addField_SFString(ctx, 'normalType', "Uint16");
+            this.addField_SFString(ctx, 'texCoordType', "Uint16");
+            this.addField_SFString(ctx, 'colorType', "Uint16");
+            //this.addField_SFString(ctx, 'tangentType', "Float32");
+            //this.addField_SFString(ctx, 'binormalType', "Float32");
+			
+			/*this._actComponent = -1;
+			
+			this._bitsPerVertex		= 0;
+			this._bitsPerNormal		= 0;
+			this._bitsPerTexCoord 	= 0;
+			this._bitsPerColor 		= 0;
+			
+			this._componentsPerVertex 	= 0;
+			this._componentsPerNormal 	= 0;
+			this._componentsPerTexCoord = 0;
+			this._componentsPerColor 	= 0;
+			
+			this._vertexShift 	= 0;
+			this._normalShift 	= 0;
+			this._texCoordShift = 0;
+			this._colorShift 	= 0;	
+			
+			this._vertexShiftDec 	= 0;
+			this._normalShiftDec 	= 0;
+			this._texCoordShiftDec 	= 0;	
+			this._colorShiftDec 	= 0;*/
+			
+			// workaround
+			this._hasStrideOffset = false;
+			this._mesh._numTexComponents = 2;
+			this._mesh._numColComponents = 3;
+			this._mesh._numNormComponents = 2;
+			
+			this._mesh._invalidate = false;
+			this._mesh._numCoords = 0;
+		    this._mesh._numFaces = 0;
+		},
+		{
+			nodeChanged: function()
+            {	 
+				/*for(var i=0; i<this._cf.components.nodes.length; i++) {
+					for(var j=0; j<this._cf.components.nodes[i]._vf.attrib.length; j++) {
+						if(this._cf.components.nodes[i]._vf.attrib[j] == "coord3") {
+							this._bitsPerVertex += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerVertex++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "normal2") {
+							this._bitsPerNormal += (this._cf.components.nodes[i]._vf.format[j] / 2);
+							this._componentsPerNormal++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "normal3") {
+							this._bitsPerNormal += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerNormal++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "texcoord2") {
+							this._bitsPerTexCoord += (this._cf.components.nodes[i]._vf.format[j] / 2);
+							this._componentsPerTexCoord++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "texcoord3") {
+							this._bitsPerTexCoord += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerTexCoord++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "color3") {
+							this._bitsPerColor += (this._cf.components.nodes[i]._vf.format[j] / 3);
+							this._componentsPerColor++;
+						} else if(this._cf.components.nodes[i]._vf.attrib[j] == "color4") {
+							this._bitsPerColor += (this._cf.components.nodes[i]._vf.format[j] / 4);
+							this._componentsPerColor++;
+						}
+					}
+				}
+				
+				//Calculate attribute left shift decrement value
+				this._vertexShiftDec	= this._bitsPerVertex   / this._componentsPerVertex;
+				this._normalShiftDec 	= this._bitsPerNormal   / this._componentsPerNormal;
+				this._texCoordShiftDec	= this._bitsPerTexCoord / this._componentsPerTexCoord;
+				this._colorShiftDec 	= this._bitsPerColor    / this._componentsPerColor;
+				
+				//Set attribute left shift value
+				this._vertexShift		= this._bitsPerVertex   - this._vertexShiftDec;
+				this._normalShift		= this._bitsPerNormal   - this._normalShiftDec;
+				this._texCoordShift		= this._bitsPerTexCoord - this._texCoordShiftDec;
+				this._colorShift		= this._bitsPerColor    - this._colorShiftDec;
+				
+				//Set attribute types
+				this._vf.coordType		= this.getAttribType(this._bitsPerVertex);
+				this._vf.normalType		= this.getAttribType(this._bitsPerNormal);
+				this._vf.texCoordType	= this.getAttribType(this._bitsPerTexCoord);
+				this._vf.colorType		= this.getAttribType(this._bitsPerColor);*/
+			},
+      
+		    parentAdded: function()
+		    {
+			  this._parentNodes[0]._coordStrideOffset = [12, 0];
+			  this._parentNodes[0]._normalStrideOffset = [12, 8];
+			  this._parentNodes[0]._texCoordStrideOffset = [4, 0];
+			  this._parentNodes[0]._colorStrideOffset = [6, 0];
+		    },
+            
+		    fieldChanged: function(fieldName)
+		    {
+			    // TODO
+		    },
+			
+			getMin: function()
+			{
+				return this._vf.position.subtract( this._vf.size.multiply(0.5) );
+			},
+			
+			getMax: function()
+			{
+				return this._vf.position.add( this._vf.size.multiply(0.5) );
+			},
+			
+			getVolume: function(min, max, invalidate)
+			{
+				min.setValues(this.getMin());
+				max.setValues(this.getMax());
+				
+				return true;
+			},
+			
+			getCenter: function()
+			{
+				return this._vf.position;
+			},
+			
+			hasIndex: function()
+			{
+				return (this._vf.index.length) ? true : false;
+			},
+			
+			hasPolarNormals: function()
+			{
+				return true; //TODO
+			},
+			
+			hasColor: function()
+			{
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "color3") return true;
+					}
+				}
+				return false;
+			},
+			
+			hasTexCoord: function()
+			{
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "texcoord2") return true;
+					}
+				}
+				return false;
+			},
+			
+			getCoordNormalURLs: function() {
+				var coordNormalURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "coord3") {
+							coordNormalURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return coordNormalURLs;
+			},
+			
+			getTexCoordURLs: function() {
+				var texCoordURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "texcoord2") {
+							texCoordURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return texCoordURLs;
+			},
+			
+			getColorURLs: function() {
+				var colorURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "color3") {
+							colorURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return colorURLs;
+			},
+			
+			getNumPrimTypes: function()
+			{
+				return this._vf.primType.length;
+			},
+			
+			getPrimType: function(idx)
+			{
+				if( idx < this.getNumPrimTypes() )
+					return this._vf.primType[idx].toUpperCase();
+			},
+			
+			getNumVertexCounts: function()
+			{
+				return this._vf.vertexCount.length;
+			},
+			
+			getVertexCount: function(idx)
+			{
+				if( idx < this.getNumVertexCounts() ) 
+					return this._vf.vertexCount[idx];
+			},
+			
+			setVertexCount: function(idx, value)
+			{
+				this._vf.vertexCount[idx] = value;
+			},
+			
+			getNumComponents: function()
+			{
+				return this._cf.components.nodes.length;
+			},
+			
+			getComponent: function(idx)
+			{
+				return this._cf.components.nodes[idx];
+			},
+			
+			getComponentsURLs: function()
+			{
+				var URLs = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					URLs[c] = this._cf.components.nodes[c].getSrc();
+					
+				return URLs;
+			},
+			
+			getComponentFormats: function()
+			{
+				var formats = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					formats[c] = this._cf.components.nodes[c]._vf.format;
+					
+				return formats;
+			},
+			
+			getComponentAttribs: function()
+			{
+				var attribs = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					attribs[c] = this._cf.components.nodes[c]._vf.attrib;
+					
+				return attribs;
+			},
+			
+			getNumVertices: function()
+			{
+				var count = 0;
+				for(var i=0; i<this._vf.vertexCount.length; i++) {
+					count += this._vf.vertexCount[i];
+				}
+				
+				return count;
+			},
+
+			getAttribType: function(bits)
+			{
+    			switch(bits)
+                {
+                    case 8:
+                        return "Uint8";
+                    case 16:
+                        return "Uint16";
+                    case 32:
+                        return "Float32";
+                    default:
+                        return 0;
+                }
+			},
+			
+			getPrecisionMax: function(type)
+			{
+    			switch(this._vf[type])
+                {
+                    case "Int8":
+                        return 127.0;
+                    case "Uint8":
+                        return 255.0;
+                    case "Int16":
+                        return 32767.0;
+                    case "Uint16":
+                        return 65535.0;
+                    case "Int32":
+                        return 2147483647.0;
+                    case "Uint32":
+                        return 4294967295.0;
+                    case "Float32":
+                    case "Float64":
+                    default:
+                        return 1.0;
+                }
+			}
+		}
+	)
+);
+
+
+
 /* ### ImageGeometry ### */
 x3dom.registerNodeType(
     "ImageGeometry",
@@ -1519,7 +2002,7 @@ x3dom.registerNodeType(
 
 				if( x3dom.geoCache[geoCacheID] !== undefined )
 				{
-					x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
+					//x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
 					this._mesh = x3dom.geoCache[geoCacheID];
 				}
 				else
@@ -1631,6 +2114,16 @@ x3dom.registerNodeType(
                     return null;
                 }
             },
+			
+			getCoordinateTextureURLs: function()
+            {
+                var urls = [];
+				for(var i=0; i<this._cf.coord.nodes.length; i++)
+				{
+					urls.push(this._cf.coord.nodes[i]._vf.url);
+				}
+                return urls;
+            },
 
             getNormalTexture: function(pos)
             {
@@ -1648,6 +2141,16 @@ x3dom.registerNodeType(
                 } else {
                     return null;
                 }
+            },
+			
+			getNormalTextureURLs: function()
+            {
+                var urls = [];
+				for(var i=0; i<this._cf.normal.nodes.length; i++)
+				{
+					urls.push(this._cf.normal.nodes[i]._vf.url);
+				}
+                return urls;
             },
 
             getTexCoordTexture: function()
@@ -1755,6 +2258,10 @@ x3dom.registerNodeType(
 
                 var texMode = "", numTexComponents = 2;
                 var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
                 if (texCoordNode)
                 {
                     if (texCoordNode._vf.point) {
@@ -2110,8 +2617,10 @@ x3dom.registerNodeType(
 									data.colors =  colors[colorInd[i]];
 								} else if (hasColorInd && !colPerVert) {
 									data.colors =  colors[colorInd[faceCnt]];
-								} else {
+								} else if (colPerVert) {
 									data.colors =  colors[indexes[i]];
+								} else {
+									data.colors =  colors[faceCnt];
 								}
 							}
 							if (hasTexCoord) {
@@ -2222,73 +2731,493 @@ x3dom.registerNodeType(
                 var pnts = this._cf.coord.node._vf.point;
                 var n = pnts.length;
                 
+                var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
+                
                 if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > 65535) ||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
-                    (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
+                    (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
                     (this._vf.colorIndex.length > 0 && this._cf.color.node))
                 {
-					// TODO; implement
-                    x3dom.debug.logWarning("IndexedFaceSet: fieldChanged with creaseAngle == 0, " + 
-                                           "with too many coordinates or multi-index mesh is SLOW!");
-
-                    // HACK: FIXME
-                    this.nodeChanged();
-
-                    Array.forEach(this._parentNodes, function (node) {
-                        if (fieldName == "coord")
-        				    node._dirty.positions = true;
-        				if (fieldName == "normal")
-        				    node._dirty.normals = true;
-        				if (fieldName == "texCoord")
-        				    node._dirty.texcoords = true;
-        				if (fieldName == "color")
-        				    node._dirty.colors  =  true;
-                    });
-                    
-                    return;
-                }
-
-                if (fieldName == "coord")
-                {
-                    this._mesh._positions[0] = pnts.toGL();
-                    
-                    // tells the mesh that its bbox requires update
-                    this._mesh._invalidate = true;
-
-                    Array.forEach(this._parentNodes, function (node) {					
-                         node._dirty.positions = true;
-                    });
-                }
-                else if (fieldName == "color")
-                { 
-                    pnts = this._cf.color.node._vf.color;
-                    
-                    this._mesh._colors[0] = pnts.toGL();
-
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.colors = true;
-                    });
-                }
-				else if (fieldName == "normal")
-                {
-                    pnts = this._cf.normal.node._vf.vector;
+					this._mesh._positions[0] = [];
+					this._mesh._indices[0] =[];
+					this._mesh._normals[0] = [];
+					this._mesh._texCoords[0] =[];
+					this._mesh._colors[0] = [];
 					
-                    this._mesh._normals[0] = pnts.toGL();
+					var indexes = this._vf.coordIndex;
+					var normalInd = this._vf.normalIndex;
+					var texCoordInd = this._vf.texCoordIndex;
+					var colorInd = this._vf.colorIndex;
+					var hasNormal = false, hasNormalInd = false;
+					var hasTexCoord = false, hasTexCoordInd = false;
+					var hasColor = false, hasColorInd = false;
+
+					var colPerVert = this._vf.colorPerVertex;
+					var normPerVert = this._vf.normalPerVertex;
+
+					if (normalInd.length > 0)
+					{
+						hasNormalInd = true;
+					}
+					if (texCoordInd.length > 0)
+					{
+						hasTexCoordInd = true;
+					}
+					if (colorInd.length > 0)
+					{
+						hasColorInd = true;
+					}
+
+					var positions, normals, texCoords, colors;
+
+					var coordNode = this._cf.coord.node;
+					x3dom.debug.assert(coordNode);
+					positions = coordNode.getPoints();
+
+					var normalNode = this._cf.normal.node;
+					if (normalNode)
+					{
+						hasNormal = true;
+						normals = normalNode._vf.vector;
+					}
+					else {
+						hasNormal = false;
+					}
+
+					var texMode = "", numTexComponents = 2;
+                    var texCoordNode = this._cf.texCoord.node;
+                    if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                        if (texCoordNode._cf.texCoord.nodes.length)
+                            texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                    }
+					if (texCoordNode)
+					{
+						if (texCoordNode._vf.point) {
+							hasTexCoord = true;
+							texCoords = texCoordNode._vf.point;
+
+							if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
+								numTexComponents = 3;
+							}
+						}
+						else if (texCoordNode._vf.mode) {
+							texMode = texCoordNode._vf.mode;
+						}
+					}
+					else {
+						hasTexCoord = false;
+					}
+					this._mesh._numTexComponents = numTexComponents;
+
+					var numColComponents = 3;
+					var colorNode = this._cf.color.node;
+					if (colorNode)
+					{
+						hasColor = true;
+						colors = colorNode._vf.color;
+
+						if (x3dom.isa(colorNode, x3dom.nodeTypes.ColorRGBA)) {
+							numColComponents = 4;
+						}
+					}
+					else {
+						hasColor = false;
+					}
+					this._mesh._numColComponents = numColComponents;
+
+
+					var i, t, cnt, faceCnt;
+					var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 					
-                    Array.forEach(this._parentNodes, function (node) {
-                         node._dirty.normals = true;
-                    });
-                }
-				else if (fieldName == "texCoord")
-                {
-                    pnts = this._cf.texCoord.node._vf.point;
-                    
-                    this._mesh._texCoords[0] = pnts.toGL();
-                    
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.texcoords = true;
-                    });
-                }
+					if(this._vf.convex) {
+						t = 0;
+						cnt = 0;
+						faceCnt = 0;
+						this._mesh._multiIndIndices = [];
+						this._mesh._posSize = positions.length;
+
+						for (i=0; i < indexes.length; ++i)
+						{
+							if (indexes[i] == -1) {
+								t = 0;
+								faceCnt++;
+								continue;
+							}
+
+							if (hasNormalInd) {
+								x3dom.debug.assert(normalInd[i] != -1);
+							}
+							if (hasTexCoordInd) {
+								x3dom.debug.assert(texCoordInd[i] != -1);
+							}
+							if (hasColorInd) {
+								x3dom.debug.assert(colorInd[i] != -1);
+							}
+
+							switch (t)
+							{
+								case 0:
+									p0 = +indexes[i];
+									if (hasNormalInd && normPerVert) { n0 = +normalInd[i]; }
+									else if (hasNormalInd && !normPerVert) { n0 = +normalInd[faceCnt]; }
+									else { n0 = p0; }
+									if (hasTexCoordInd) { t0 = +texCoordInd[i]; }
+									else { t0 = p0; }
+									if (hasColorInd && colPerVert) { c0 = +colorInd[i]; }
+									else if (hasColorInd && !colPerVert) { c0 = +colorInd[faceCnt]; }
+									else { c0 = p0; }
+									t = 1;
+								break;
+								case 1:
+									p1 = +indexes[i];
+									if (hasNormalInd && normPerVert) { n1 = +normalInd[i]; }
+									else if (hasNormalInd && !normPerVert) { n1 = +normalInd[faceCnt]; }
+									else { n1 = p1; }
+									if (hasTexCoordInd) { t1 = +texCoordInd[i]; }
+									else { t1 = p1; }
+									if (hasColorInd && colPerVert) { c1 = +colorInd[i]; }
+									else if (hasColorInd && !colPerVert) { c1 = +colorInd[faceCnt]; }
+									else { c1 = p1; }
+									t = 2;
+								break;
+								case 2:
+									p2 = +indexes[i];
+									if (hasNormalInd && normPerVert) { n2 = +normalInd[i]; }
+									else if (hasNormalInd && !normPerVert) { n2 = +normalInd[faceCnt]; }
+									else { n2 = p2; }
+									if (hasTexCoordInd) { t2 = +texCoordInd[i]; }
+									else { t2 = p2; }
+									if (hasColorInd && colPerVert) { c2 = +colorInd[i]; }
+									else if (hasColorInd && !colPerVert) { c2 = +colorInd[faceCnt]; }
+									else { c2 = p2; }
+									t = 3;
+
+									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
+
+									this._mesh._positions[0].push(positions[p0].x);
+									this._mesh._positions[0].push(positions[p0].y);
+									this._mesh._positions[0].push(positions[p0].z);
+									this._mesh._positions[0].push(positions[p1].x);
+									this._mesh._positions[0].push(positions[p1].y);
+									this._mesh._positions[0].push(positions[p1].z);
+									this._mesh._positions[0].push(positions[p2].x);
+									this._mesh._positions[0].push(positions[p2].y);
+									this._mesh._positions[0].push(positions[p2].z);
+
+									if (hasNormal) {
+										this._mesh._normals[0].push(normals[n0].x);
+										this._mesh._normals[0].push(normals[n0].y);
+										this._mesh._normals[0].push(normals[n0].z);
+										this._mesh._normals[0].push(normals[n1].x);
+										this._mesh._normals[0].push(normals[n1].y);
+										this._mesh._normals[0].push(normals[n1].z);
+										this._mesh._normals[0].push(normals[n2].x);
+										this._mesh._normals[0].push(normals[n2].y);
+										this._mesh._normals[0].push(normals[n2].z);
+									}
+									else {
+										this._mesh._multiIndIndices.push(p0, p1, p2);
+									}
+
+									if (hasColor) {
+										this._mesh._colors[0].push(colors[c0].r);
+										this._mesh._colors[0].push(colors[c0].g);
+										this._mesh._colors[0].push(colors[c0].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(colors[c0].a);
+										}
+										this._mesh._colors[0].push(colors[c1].r);
+										this._mesh._colors[0].push(colors[c1].g);
+										this._mesh._colors[0].push(colors[c1].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(colors[c1].a);
+										}
+										this._mesh._colors[0].push(colors[c2].r);
+										this._mesh._colors[0].push(colors[c2].g);
+										this._mesh._colors[0].push(colors[c2].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(colors[c2].a);
+										}
+									}
+
+									if (hasTexCoord) {
+										this._mesh._texCoords[0].push(texCoords[t0].x);
+										this._mesh._texCoords[0].push(texCoords[t0].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(texCoords[t0].z);
+										}
+										this._mesh._texCoords[0].push(texCoords[t1].x);
+										this._mesh._texCoords[0].push(texCoords[t1].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(texCoords[t1].z);
+										}
+										this._mesh._texCoords[0].push(texCoords[t2].x);
+										this._mesh._texCoords[0].push(texCoords[t2].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(texCoords[t2].z);
+										}
+									}
+
+									//faceCnt++;
+								break;
+								case 3:
+									p1 = p2;
+									t1 = t2;
+									if (normPerVert) {
+										n1 = n2;
+									}
+									if (colPerVert) {
+										c1 = c2;
+									}
+									p2 = +indexes[i];
+
+									if (hasNormalInd && normPerVert) {
+										n2 = +normalInd[i];
+									} else if (hasNormalInd && !normPerVert) {
+										/*n2 = +normalInd[faceCnt];*/
+									} else {
+										n2 = p2;
+									}
+
+									if (hasTexCoordInd) {
+										t2 = +texCoordInd[i];
+									} else {
+										t2 = p2;
+									}
+
+									if (hasColorInd && colPerVert) {
+										c2 = +colorInd[i];
+									} else if (hasColorInd && !colPerVert) {
+										/*c2 = +colorInd[faceCnt];*/
+									} else {
+										c2 = p2;
+									}
+
+									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
+
+									this._mesh._positions[0].push(positions[p0].x);
+									this._mesh._positions[0].push(positions[p0].y);
+									this._mesh._positions[0].push(positions[p0].z);
+									this._mesh._positions[0].push(positions[p1].x);
+									this._mesh._positions[0].push(positions[p1].y);
+									this._mesh._positions[0].push(positions[p1].z);
+									this._mesh._positions[0].push(positions[p2].x);
+									this._mesh._positions[0].push(positions[p2].y);
+									this._mesh._positions[0].push(positions[p2].z);
+
+									if (hasNormal) {
+										this._mesh._normals[0].push(normals[n0].x);
+										this._mesh._normals[0].push(normals[n0].y);
+										this._mesh._normals[0].push(normals[n0].z);
+										this._mesh._normals[0].push(normals[n1].x);
+										this._mesh._normals[0].push(normals[n1].y);
+										this._mesh._normals[0].push(normals[n1].z);
+										this._mesh._normals[0].push(normals[n2].x);
+										this._mesh._normals[0].push(normals[n2].y);
+										this._mesh._normals[0].push(normals[n2].z);
+									}
+									else {
+										this._mesh._multiIndIndices.push(p0, p1, p2);
+										//this._mesh._multiIndIndices.push(cnt-3, cnt-2, cnt-1);
+									}
+
+									if (hasColor) {
+										this._mesh._colors[0].push(colors[c0].r);
+										this._mesh._colors[0].push(colors[c0].g);
+										this._mesh._colors[0].push(colors[c0].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(colors[c0].a);
+										}
+										this._mesh._colors[0].push(colors[c1].r);
+										this._mesh._colors[0].push(colors[c1].g);
+										this._mesh._colors[0].push(colors[c1].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(colors[c1].a);
+										}
+										this._mesh._colors[0].push(colors[c2].r);
+										this._mesh._colors[0].push(colors[c2].g);
+										this._mesh._colors[0].push(colors[c2].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(colors[c2].a);
+										}
+									}
+
+									if (hasTexCoord) {
+										this._mesh._texCoords[0].push(texCoords[t0].x);
+										this._mesh._texCoords[0].push(texCoords[t0].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(texCoords[t0].z);
+										}
+										this._mesh._texCoords[0].push(texCoords[t1].x);
+										this._mesh._texCoords[0].push(texCoords[t1].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(texCoords[t1].z);
+										}
+										this._mesh._texCoords[0].push(texCoords[t2].x);
+										this._mesh._texCoords[0].push(texCoords[t2].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(texCoords[t2].z);
+										}
+									}
+
+									//faceCnt++;
+								break;
+								default:
+							}
+						}
+					} 
+					else {
+						var linklist = new x3dom.DoublyLinkedList();
+						var data = new Object();
+						cnt = 0, faceCnt = 0;
+												
+						for (var i = 0; i < indexes.length; ++i)
+						{	
+							if (indexes[i] == -1) {
+								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
+								
+								for (var j = 0; j < multi_index_data.indices.length; j++)
+								{	
+									this._mesh._indices[0].push(cnt);
+									cnt++;
+									
+									this._mesh._positions[0].push(multi_index_data.point[j].x,
+																  multi_index_data.point[j].y,
+																  multi_index_data.point[j].z);
+									if (hasNormal) { 
+										this._mesh._normals[0].push(multi_index_data.normals[j].x,
+																	multi_index_data.normals[j].y,
+																	multi_index_data.normals[j].z);
+									}
+									if (hasColor) { 
+										this._mesh._colors[0].push(multi_index_data.colors[j].r, 
+																   multi_index_data.colors[j].g, 
+																   multi_index_data.colors[j].b);
+										if (numColComponents === 4) {
+											this._mesh._colors[0].push(multi_index_data.colors[j].a);
+										}
+									} 
+									if (hasTexCoord) {	
+										this._mesh._texCoords[0].push(multi_index_data.texCoords[j].x,
+																	  multi_index_data.texCoords[j].y);
+										if (numTexComponents === 3) {
+											this._mesh._texCoords[0].push(multi_index_data.texCoords[j].z);
+										}
+									}
+								}
+									
+								linklist = new x3dom.DoublyLinkedList();
+								faceCnt++;
+								continue;
+							}
+										
+							if (hasNormal) {
+								if (hasNormalInd && normPerVert) {
+									data.normals =  normals[normalInd[i]];	
+								} else if (hasNormalInd && !normPerVert) {
+									data.normals =  normals[normalInd[faceCnt]];
+								} else {
+									data.normals =  normals[indexes[i]];
+								}		
+							}
+							
+							if (hasColor) {
+								if (hasColorInd && colPerVert) {
+									data.colors =  colors[colorInd[i]];
+								} else if (hasColorInd && !colPerVert) {
+									data.colors =  colors[colorInd[faceCnt]];
+								} else {
+									data.colors =  colors[indexes[i]];
+								}
+							}
+							if (hasTexCoord) {
+								if (hasTexCoordInd) {
+									data.texCoords =  texCoords[texCoordInd[i]];
+								} else {
+									data.texCoords =  texCoords[indexes[i]];
+								}			
+							}
+							
+							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(
+								positions[indexes[i]], indexes[i], data.normals, data.colors, data.texCoords));						
+						}		
+					}
+
+					if (!hasNormal) {
+						this._mesh.calcNormals(this._vf.creaseAngle);
+					}
+					if (!hasTexCoord) {
+						this._mesh.calcTexCoords(texMode);
+					}
+
+					this._mesh.splitMesh();
+					
+					this._mesh._invalidate = true;
+					this._mesh._numFaces = 0;
+					this._mesh._numCoords = 0;
+					
+					for (i=0; i<this._mesh._indices.length; i++) {
+						this._mesh._numFaces += this._mesh._indices[i].length / 3;
+						this._mesh._numCoords += this._mesh._positions[i].length / 3;
+					}
+	
+					Array.forEach(this._parentNodes, function (node) {
+						node.setGeoDirty();
+					});	 
+                } 
+				else {
+
+					if (fieldName == "coord")
+					{
+						this._mesh._positions[0] = pnts.toGL();
+						
+						// tells the mesh that its bbox requires update
+						this._mesh._invalidate = true;
+
+						Array.forEach(this._parentNodes, function (node) {					
+							 node._dirty.positions = true;
+						});
+					}
+					else if (fieldName == "color")
+					{ 
+						pnts = this._cf.color.node._vf.color;
+						
+						this._mesh._colors[0] = pnts.toGL();
+
+						Array.forEach(this._parentNodes, function (node) {
+							node._dirty.colors = true;
+						});
+					}
+					else if (fieldName == "normal")
+					{
+						pnts = this._cf.normal.node._vf.vector;
+						
+						this._mesh._normals[0] = pnts.toGL();
+						
+						Array.forEach(this._parentNodes, function (node) {
+							 node._dirty.normals = true;
+						});
+					}
+					else if (fieldName == "texCoord")
+					{
+                        var texCoordNode = this._cf.texCoord.node;
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                            if (texCoordNode._cf.texCoord.nodes.length)
+                                texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                        }
+						pnts = texCoordNode._vf.point;
+						
+						this._mesh._texCoords[0] = pnts.toGL();
+						
+						Array.forEach(this._parentNodes, function (node) {
+							node._dirty.texcoords = true;
+						});
+					}
+				}
             }
         }
     )

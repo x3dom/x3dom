@@ -10,12 +10,29 @@
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
 <script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
 <script type="text/javascript" src="../../src/util/Properties.js"></script>
 <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
 <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
 <script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderCache.js"></script>
 <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 <script type="text/javascript" src="../../src/gfx_flash.js"></script>
 <script type="text/javascript" src="../../src/X3DDocument.js"></script>
@@ -41,6 +58,7 @@
 <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
@@ -54,13 +72,16 @@
 	
 	<p>Geometric primitive types with picking</p>
     <div class="group">
-	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="true" showLog="true" width="500px" height="500px" style="float:left;">
+	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" 
+	        showStat="true" showLog="true" width="500px" height="500px" style="float:left;"
+	        onmousedown="start(event);" onmouseup="stop(event);" onmousemove="move(event);">
 			<Scene DEF="scene">
 				<Background skyColor='0.7 0.7 0.7' />
 				
                 <Group id='kloppe'
-                       onmousemove="document.getElementById('bar').setAttribute('translation', event.hitPnt);
-                                document.getElementById('pc').setAttribute('set_destination', event.hitPnt);"
+                       onmousemove="/*document.getElementById('bar').setAttribute('translation', event.hitPnt);*/
+                                document.getElementById('pc').setAttribute('set_destination', event.hitPnt);
+                                updateStuff(event);"
                        onclick="document.getElementById('oc').setAttribute('set_destination', '0 1 0 0');
                                 document.getElementById('cc').setAttribute('set_destination', '0 1 0');">
                                 
@@ -86,7 +107,7 @@
 					</Shape>
 				</Transform>
                 
-                <Anchor url="http://www.igd.fraunhofer.de/vcst/">
+                <Anchor url="http://www.igd.fraunhofer.de/vcst/"  parameter="target = _self">
 				<Transform DEF="sphereTrafo" translation="1.5 0 0"
                     onmouseover="document.getElementById('ausgabe').innerHTML='sphere.isOver=TRUE';"
                     onmouseout="document.getElementById('ausgabe').innerHTML='sphere.isOver=FALSE';">
@@ -97,7 +118,7 @@
 						<Sphere DEF="sphere" />
 					</Shape>
                     <Transform scale=".5 .5 .5" translation="0 0 1">
-                        <Shape>
+                        <Shape DEF="txtShape">
                           <Appearance>
                             <Material DEF="txtMat" diffuseColor="olivedrab" specularColor="peachpuff" />
                           </Appearance>
@@ -122,14 +143,28 @@
                 
                 </Group>
                 
-                <Transform id="bar" DEF="foo" scale=".15 .15 .15">
-					<Shape>
+                <Transform id="bar" DEF="foo" scale=".15 .4 .15">
+					<Shape isPickable="false" DEF="float">
 						<Appearance>
 							<Material USE="txtMat" />
 						</Appearance>
-						<Sphere />
+						<Cone />
 					</Shape>
                 </Transform>
+                
+                
+              <Transform translation="0 0 0">
+                  <Shape isPickable="false" DEF="line">
+                      <!--IndexedLineSet coordIndex="0 1 -1 0 2 -1 0 3 -1">
+                          <Coordinate id="cpnt" point="0.0 0.0 0.0, 0.0 0.0 1.0, 1.0 0.0 0.0, 0.0 1.0 0.0"/>
+                          <Color color="1 1 1, 1 1 0, 1 0 1, 0 1 1"/>
+                      </IndexedLineSet-->
+                    <IndexedLineSet coordIndex="0 1 -1">
+                        <Coordinate id="cpnt" point="0.0 0.0 0.0, 0.0 1.0 0.0"/>
+                        <Color color="0 1 1, 1 0 1"/>
+                    </IndexedLineSet>
+                  </Shape>
+              </Transform>
                 
 				<Viewpoint id="aView" centerOfRotation="0 0 0" position="0 0 15" orientation="0 1 0 0" />
                 <!--
@@ -141,14 +176,15 @@
                 <PositionDamper id="pc" DEF="pchaser" tau="1.0" order="1" initialDestination="-2 3 2" initialValue="0 0 0" />
                 <ScalarDamper id="sc" DEF="sdamper" tau="1.0" order="1" initialDestination="0" initialValue="1" />
                 <ColorDamper id="cc" DEF="cdamper" tau="1.0" order="1" initialDestination="1 1 0" initialValue="0 1 0" />
-                <ROUTE fromNode='pchaser' fromField='value_changed' toNode='foo' toField='translation'/>
+                <!--ROUTE fromNode='pchaser' fromField='value_changed' toNode='foo' toField='translation'/-->
                 <ROUTE fromNode='ochaser' fromField='value_changed' toNode='coneTrafo' toField='rotation'/>
                 <ROUTE fromNode='cdamper' fromField='value_changed' toNode='coneMat' toField='diffuseColor'/>
                 <ROUTE fromNode='sdamper' fromField='value_changed' toNode='coneMat' toField='transparency'/>
 			</Scene>
         </X3D>
         
-        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" showStat="true" width="300px" height="300px" style="float:left;">
+        <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="spheres" 
+            showStat="true" width="300px" height="300px" style="float:left;">
 			<Scene>
 				<Shape>
 					<Appearance>
@@ -171,8 +207,13 @@
 	</div>
 	
 	<p id="ausgabe" class="case">&nbsp;</p>
+    <p id="posOut" class="case">&nbsp;</p>
     <p><input type="button" value="removeEventListener" onclick="delIt();"/>&nbsp;
-	<input type="button" value="set view" onclick="setView();"/></p>
+	<input type="button" value="set view" onclick="setView();"/>&nbsp;
+    <input type="button" value="toggle pickRect test" onclick="setMode();"/></p>
+	
+	<span id="rubberBand"
+    style="background-color:blue; color:yellow; position:absolute; border:yellow solid 1px; z-index:10; visibility:hidden; opacity:0.3; pointer-events: none;"> &nbsp; </span>
     
 	<script type="text/javascript">
 	<![CDATA[
@@ -187,6 +228,34 @@
             document.getElementById('blubbMat').setAttribute('diffuseColor', '1 0.5 0');
         };
         */
+        
+        function updateStuff(event)
+        {
+            document.getElementById('posOut').innerHTML = event.worldX.toFixed(4) + ", " + 
+                                                          event.worldY.toFixed(4) + ", " + 
+                                                          event.worldZ.toFixed(4) + " | " + 
+                                                          event.normalX.toFixed(4) + ", " + 
+                                                          event.normalY.toFixed(4) + ", " + 
+                                                          event.normalZ.toFixed(4);
+            
+            var l = document.getElementById('cpnt');
+            var t = document.getElementById('bar');
+            
+            var norm = new x3dom.fields.SFVec3f(event.normalX, event.normalY, event.normalZ);
+            
+            l.setAttribute('point', event.worldX+' '+event.worldY+' '+event.worldZ+', '+
+                            (event.worldX+2.5*norm.x)+' '+(event.worldY+2.5*norm.y)+' '+(event.worldZ+2.5*norm.z));
+            
+            var qDir = x3dom.fields.Quaternion.rotateFromTo(new x3dom.fields.SFVec3f(0, 1, 0), 
+                                                            norm);
+                                                            //new x3dom.fields.SFVec3f(0, 0, -1));
+            var rot = qDir.toAxisAngle();
+            
+            //x3dom.debug.logWarning(rot);  
+            t.setAttribute('rotation', rot[0].x+' '+rot[0].y+' '+rot[0].z+' '+rot[1]);
+            //t.setAttribute('translation', (event.worldX+norm.x)+' '+(event.worldY+norm.y)+' '+(event.worldZ+norm.z));
+            t.setAttribute('translation', event.worldX+' '+event.worldY+' '+event.worldZ);
+        }
         
         var funcPtr = function (event) {
             document.getElementById('ausgabe').innerHTML = event.type + " (" + 
@@ -234,6 +303,65 @@
         				'orientation', rot[0].x+' '+rot[0].y+' '+rot[0].z+' '+rot[1]);
         };
         
+        var rubberBandTest = false;
+        var runtime = null;
+        var pos1, pos2;
+        var startPosX, startPosY;
+        var rb = null;
+        var drag = false;
+        
+        function start(event) 
+        {
+            if (rubberBandTest && !drag) {
+                drag = true;
+                startPosX = event.pageX;
+                startPosY = event.pageY;
+                
+                pos1 = runtime.mousePosition(event);
+                
+                rb.style.visibility = "visible";
+                rb.style.left = startPosX + "px";
+                rb.style.top = startPosY + "px";
+                rb.style.width = "1px";
+                rb.style.height = "1px";
+            }
+        }
+        
+        //
+        // ACHTUNG: Rubber-Band Darstellung ist nur ein HACK und lässt sich 
+        // derzeit nur von *links oben* nach *rechts unten* aufziehen!!!
+        //
+        function move(event) 
+        {
+            if (drag) {
+                var pos = runtime.mousePosition(event);
+                
+                rb.style.left = startPosX + "px";
+                rb.style.top = startPosY + "px";
+                rb.style.width = Math.abs(event.pageX-startPosX) + "px";
+                rb.style.height = Math.abs(event.pageY-startPosY) + "px";
+            }
+        }
+        
+        function stop(event)
+        {
+            if (drag) {
+                drag = false;
+                
+                pos2 = runtime.mousePosition(event);
+                
+                rb.style.visibility = "hidden";
+            
+                var objs = runtime.pickRect(pos1[0], pos1[1], pos2[0], pos2[1]);
+            
+                var str = "";
+                for (var i=0; i<objs.length; i++) {
+                    str += objs[i].getAttribute('DEF') + ", ";
+                }
+                x3dom.debug.logInfo(str);
+            }
+        }
+        
         function addIt() {
             document.getElementById('ausgabe').innerHTML = "test";
             document.getElementById('blubb').addEventListener('click', funcPtr, false);
@@ -241,6 +369,18 @@
             document.getElementById('kloppe').addEventListener('click', funcPtr2, false);
             
             document.getElementById('aView').addEventListener('viewpointChanged', viewFunc, false);
+            
+            runtime = document.getElementById("boxes").runtime;
+            rb = document.getElementById('rubberBand');
+        }
+        
+        function setMode() {
+            rubberBandTest = !rubberBandTest;
+            
+            if (rubberBandTest)
+                runtime.noNav();
+            else
+                runtime.examine();
         }
         
         document.onload = addIt;

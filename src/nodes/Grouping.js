@@ -422,12 +422,16 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
 
             this.addField_MFString(ctx, 'url', []);             // address for WebSocket connection
-            this.addField_MFString(ctx, 'idNameMap', []);       // list of subsequent id/name pairs (TODO)
+            this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
+            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
+            this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
+
+            this._nameObjMap = {};
 
             this.initializeSocket();    // init socket connection
         },
@@ -446,6 +450,7 @@ x3dom.registerNodeType(
                     this._websocket = new WebSocket(wsUrl);
 
                     this._websocket._lastMsg = null;
+                    this._websocket._lastData = "";
 
                     this._websocket.onopen = function(evt)
                     {
@@ -461,6 +466,7 @@ x3dom.registerNodeType(
                         x3dom.debug.logInfo("WS Sent: " + this._lastMsg);
                         
                         this._lastMsg = "";     // triggers first update
+                        this._lastData = "";
                     };
 
                     this._websocket.onclose = function(evt) 
@@ -487,16 +493,18 @@ x3dom.registerNodeType(
                             // render #maxRenderedIds items
                             that._idList = [];
                             var arr = x3dom.fields.MFString.parse(evt.data);
-                            for (var i=0; i<that._vf.maxRenderedIds; ++i) {
+                            var n = Math.min(arr.length, Math.abs(that._vf.maxRenderedIds));
+
+                            for (var i=0; i<n; ++i) {
                                 that._idList[i] = arr[i];
                             }
                         }
                         
-                        // TODO: if oldList != newList then...
-                        if (that._vf.maxRenderedIds != 0) 
+                        if (that._vf.maxRenderedIds != 0 && this._lastData != evt.data)
                         {
-                            x3dom.debug.logInfo("WS Response: " + evt.data);
+                            this._lastData = evt.data;
                             that._nameSpace.doc.needRender = true;
+                            //x3dom.debug.logInfo("WS Response: " + evt.data);
                         }
                     };
 
@@ -518,7 +526,7 @@ x3dom.registerNodeType(
                         {
                             this._lastMsg = message;
                             this.send(message);
-                            x3dom.debug.logInfo("WS Sent: " + message);
+                            //x3dom.debug.logInfo("WS Sent: " + message);
                         }
                     };
 
@@ -530,7 +538,21 @@ x3dom.registerNodeType(
                     x3dom.debug.logError("Browser has no WebSocket support!");
                 }
             },
-            
+
+            nodeChanged: function ()
+            {
+                this._nameObjMap = {};
+
+                for (var i= 0, n=this._vf.label.length; i<n; ++i)
+                {
+                    var shape = this._childNodes[i];
+                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode))
+                        this._nameObjMap[this._vf.label[i]] = shape;
+					else
+						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+                }
+            },
+
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "url")
@@ -550,21 +572,59 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
-                
+
+                if (!this._vf.enableCulling)
+                {
+                    for (var j=0; j<this._childNodes.length; j++) {
+                        if (this._childNodes[j]) {
+                            var childTrafo = this._childNodes[j].transformMatrix(transform);
+                            this._childNodes[j].collectDrawableObjects(childTrafo, out);
+                        }
+                    }
+                    return;
+                }
+
                 if (this._websocket)
                     this._websocket.updateCamera();
 
-                out.useIdList = true;
-                out.collect = false;
-                out.idList = this._idList;
+                // TODO; fully remove idList in collect, but for now...
+                var i, n, maxCnt;
 
-                if (out.idList.indexOf(this._DEF) >= 0)
-                    out.collect = true;
+                if (this._vf.label.length)
+                {
+                    n = this._idList.length;
+                    maxCnt = this._vf.maxRenderedIds;
+					
+                    if ((this._nameSpace.doc._viewarea._lastButton > 0 || 
+                         this._nameSpace.doc._viewarea._isAnimating) && maxCnt > 0) {
+                        var num = Math.max(maxCnt, 16);
+                        num = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnMove, 1.0) * num), 0.0);
+                        n = Math.min(n, num);
+                    }
+                    
+                    for (i=0; i<n; i++)
+                    {
+                        var obj = this._nameObjMap[this._idList[i]];
+                        if (obj)
+                            obj.collectDrawableObjects(transform, out);
+						else
+							x3dom.debug.logError("Invalid label: " + this._idList[i]);
+                    }
+                }
+                else
+                {
+                    out.useIdList = true;
+                    out.collect = false;
+                    out.idList = this._idList;
 
-                for (var i=0; i<this._childNodes.length; i++) {
-                    if (this._childNodes[i]) {
-                        var childTransform = this._childNodes[i].transformMatrix(transform);
-                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                    if (out.idList.indexOf(this._DEF) >= 0)
+                        out.collect = true;
+
+                    for (i=0; i<this._childNodes.length; i++) {
+                        if (this._childNodes[i]) {
+                            var childTransform = this._childNodes[i].transformMatrix(transform);
+                            this._childNodes[i].collectDrawableObjects(childTransform, out);
+                        }
                     }
                 }
                 
@@ -590,6 +650,11 @@ x3dom.registerNodeType(
             // define the experimental picking mode:
             // box, exact (NYI), idBuf, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
+            // experimental field to switch off picking
+            this.addField_SFBool(ctx, 'doPickPass', true);
+            
+            this._lastMin = null;
+            this._lastMax = null;
         },
         {
             /* bindable getter (e.g. getViewpoint) are added automatically */

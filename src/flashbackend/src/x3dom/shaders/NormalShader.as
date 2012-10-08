@@ -50,7 +50,17 @@ package x3dom.shaders
 			var shader:String = "";
 			
 			//Build shader
-			shader += "m44 v0, va1, vc4\n";	//Normal*MV-Matrix -> (v0)
+			//shader += "m44 v0, va1, vc4\n";	//Normal*MV-Matrix -> (v0)
+			
+			shader += "dp3 vt0.x, va1, vc4\n";	//Normal*MV-Matrix -> (v0)
+			shader += "dp3 vt0.y, va1, vc5\n";	//Normal*MV-Matrix -> (v0)
+			shader += "dp3 vt0.z, va1, vc6\n";	//Normal*MV-Matrix -> (v0)
+			
+			shader += "add vt0.xyz, vt0.xyz, vc8.y\n";
+			shader += "mul vt0.xyz, vt0.xyz, vc8.x\n";
+			
+			shader += "mov v0, vt0.xyz\n";	//Normal*MV-Matrix -> (v0)
+			
 			shader += "m44 op, va0, vc0\n";	//Position*MVP-Matrix -> (op)
 			
 			//Generate AGALMiniAssembler from generated Shader
@@ -69,10 +79,8 @@ package x3dom.shaders
 			//Init shader string
 			var shader:String = "";
 			
-			//Build shader
-			shader += "add ft0, v0, fc0.y\n";
-			shader += "mul ft0, ft0, fc0.x\n";
-			shader += "mov ft0.w, fc0.y\n";
+			shader += "mov ft0.xyz, v0\n";
+			shader += "mov ft0.w, fc0.x\n";
 			shader += "mov oc, ft0\n"; 					//Output color*/
 			
 			//Generate AGALMiniAssembler from generated Shader

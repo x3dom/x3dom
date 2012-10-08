@@ -5,6 +5,9 @@ package x3dom
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import flash.net.URLRequest;
+	import flash.system.ApplicationDomain;
+	import flash.system.LoaderContext;
+	import flash.system.SecurityDomain;
 	
 	import mx.flash.UIMovieClip;
 	
@@ -114,7 +117,7 @@ package x3dom
 				
 				var coordinateLoader0:Loader = new Loader();
 				coordinateLoader0.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate0Complete);
-				coordinateLoader0.load(new URLRequest(value.coordinateTexture0));
+				coordinateLoader0.load(new URLRequest(value.coordinateTexture0), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -127,7 +130,7 @@ package x3dom
 				
 				var coordinateLoader1:Loader = new Loader();
 				coordinateLoader1.contentLoaderInfo.addEventListener(Event.COMPLETE, handleCoordinate1Complete);
-				coordinateLoader1.load(new URLRequest(value.coordinateTexture1));
+				coordinateLoader1.load(new URLRequest(value.coordinateTexture1), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -146,7 +149,7 @@ package x3dom
 				
 				var normalLoader:Loader = new Loader();
 				normalLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleNormalComplete);
-				normalLoader.load(new URLRequest(value.normalTexture));
+				normalLoader.load(new URLRequest(value.normalTexture), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -165,7 +168,7 @@ package x3dom
 				
 				var coordinateLoader:Loader = new Loader();
 				coordinateLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleTexCoordComplete);
-				coordinateLoader.load(new URLRequest(value.texCoordTexture));
+				coordinateLoader.load(new URLRequest(value.texCoordTexture), FlashBackend.getLoaderContext());
 			}
 			else
 			{
@@ -185,7 +188,7 @@ package x3dom
 				
 				var colorLoader:Loader = new Loader();
 				colorLoader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleColorComplete);
-				colorLoader.load(new URLRequest(value.colorTexture));
+				colorLoader.load(new URLRequest(value.colorTexture), FlashBackend.getLoaderContext());
 			}
 			else
 			{

@@ -27,7 +27,6 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
         renderTextures: [],
         viewarea: []
     };
-    //this.animNode = [];
     this.downloadCount = 0;
     this.onload = function () {};
     this.onerror = function () {};
@@ -88,7 +87,6 @@ x3dom.findScene = function(x3dElem) {
 };
 
 
-
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
 
     var doc = this;
@@ -120,7 +118,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             }
         },
         onNodeInserted: function(e) {
-			
             // only act on x3dom nodes, ignore regular HTML
             if ('_x3domNode' in e.target.parentNode) {
 				if(e.target.parentNode.tagName == 'Inline' 
@@ -132,10 +129,12 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 					var child = e.target;
 	
 					//x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
-	
 					if (parent._nameSpace) {
 						var newNode = parent._nameSpace.setupTree(child);
-						parent.addChild(newNode, child.getAttribute("containerField"));
+                        if (e.target instanceof Element)
+						    parent.addChild(newNode, child.getAttribute("containerField"));
+                        else
+                            parent.nodeChanged();
 						doc.needRender = true;
 					}
 					else {
@@ -143,7 +142,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 					}
 				}
             }
-			
         }
     };
 
@@ -176,29 +174,22 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
-    var that;
+    var that = this;
     var i;
 
     if (this._nodeBag.timer.length) {
         this.needRender = true;
         for (i=0; i < this._nodeBag.timer.length; i++) { this._nodeBag.timer[i].onframe(t); }
-//        Array.forEach( this._nodeBag.timer, function (node) { node.onframe(t); } );
     }
     if (this._nodeBag.followers.length) {
-        that = this;
         for (i=0; i < this._nodeBag.followers.length; i++) { this.needRender |= this._nodeBag.followers[i].tick(t); }
-//        Array.forEach( this._nodeBag.followers, function (node) { that.needRender |= node.tick(t); } );
     }
     // just a temporary tricker solution to update the CSS-trans
     if (this._nodeBag.trans.length) {
-        that = this;
         for (i=0; i < this._nodeBag.trans.length; i++) { this.needRender |= this._nodeBag.trans[i].tick(t); }
-//        Array.forEach( this._nodeBag.trans, function (node) { that.needRender |= node.tick(t); } );
     }
     if (this._nodeBag.viewarea.length) {
-        that = this;
         for (i=0; i < this._nodeBag.viewarea.length; i++) { this.needRender |= this._nodeBag.viewarea[i].tick(t); }
-//        Array.forEach( this._nodeBag.viewarea, function (node) { that.needRender |= node.tick(t); } );
     }
 };
 
@@ -218,12 +209,21 @@ x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
     ctx.pickValue(this._viewarea, x, y);
 };
 
+x3dom.X3DDocument.prototype.onPickRect = function (ctx, x1, y1, x2, y2) {
+    if (!ctx || !this._viewarea) {
+        return;
+    }
+	
+    return ctx.pickRect(this._viewarea, x1, y1, x2, y2);
+};
+
 x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
     if (!ctx || !this._viewarea) {
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y);
+    if (this._viewarea._scene._vf.doPickPass)
+        ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMove(x, y, buttonState);
 };
 
@@ -240,7 +240,8 @@ x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y);
+    if (this._viewarea._scene._vf.doPickPass)
+        ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onDrag(x, y, buttonState);
 };
 
@@ -298,19 +299,9 @@ x3dom.X3DDocument.prototype.onDoubleClick = function (ctx, x, y) {
 };
 
 
-// touch events
-x3dom.X3DDocument.prototype.onTouchMove = function (ctx, touch) {
-    if (!ctx || !this._viewarea) {
-        return;
-    }
-
-    x3dom.debug.logWarning("onTouchMove not implemented");
-};
-
 x3dom.X3DDocument.prototype.onKeyDown = function(keyCode)
 {
-    //x3dom.debug.logInfo("presses key " + keyCode);
-
+    //x3dom.debug.logInfo("pressed key " + keyCode);
     switch (keyCode) {
         case 37: /* left */
             this._viewarea.strafeLeft();
@@ -385,7 +376,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
                                 "m: toggle render mode | p: intersect type | r: reset view | " +
-                                "e: examine mode | f: fly mode | w: walk mode | " +
+                                "e: examine mode | f: fly mode | w: walk mode | h: helicopter mode | " +
                                 "l: lookAt mode | g: game mode | u: upright position");
             break;
         case  43: /* + (incr. speed) */
@@ -395,6 +386,26 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case  45: /* - (decr. speed) */
             nav._vf.speed = 0.5 * nav._vf.speed;
             x3dom.debug.logInfo("Changed navigation speed to " + nav._vf.speed);
+            break;
+        case  54: /* 6 (incr height) */
+            nav._vf.typeParams[1] += 1.0;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter height to " + nav._vf.typeParams[1]);
+            break;
+        case  55: /* 7 (decr height) */
+            nav._vf.typeParams[1] -= 1.0;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter height to " + nav._vf.typeParams[1]);
+            break;
+        case  56: /* 8 (decr height) */
+            nav._vf.typeParams[0] -= 0.02;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter angle to " + nav._vf.typeParams[0]);
+            break;
+        case  57: /* 9 (incr angle) */
+            nav._vf.typeParams[0] += 0.02;
+            nav._heliUpdated = false;
+            x3dom.debug.logInfo("Changed helicopter angle to " + nav._vf.typeParams[0]);
             break;
         case  97: /* a, view all */
             this._viewarea.showAll();
@@ -418,6 +429,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case 103: /* g, game mode */
             nav.setType("game", this._viewarea);
+            break;
+        case 104: /* h, helicopter mode */
+            nav.setType("helicopter", this._viewarea);
             break;
         case 108: /* l, lookAt mode */
             nav.setType("lookat", this._viewarea);
@@ -446,7 +460,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                 default:
                     this._scene._vf.pickMode = "idBuf";
                     break;
-            };
+            }
 
             x3dom.debug.logInfo("Switch pickMode to '" +
                                 this._scene._vf.pickMode + "'.");
@@ -464,6 +478,31 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 117: /* u, upright position */
             this._viewarea.uprightView();
             break;
+        case 118: /* v, print viewpoint position/orientation */
+            var that = this;
+            (function() {
+                var mat_view = that._viewarea.getViewMatrix();
+                var e_viewpoint = that._viewarea._scene.getViewpoint();
+                
+    			var e_viewtrafo = e_viewpoint.getCurrentTransform();
+    			e_viewtrafo = e_viewtrafo.inverse().mult(mat_view);
+    			
+    			var e_mat = e_viewtrafo.inverse();
+    			
+    			var rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
+    			rotation.setValue(e_mat);
+    			
+    			var translation = e_mat.e3();
+				var rot = rotation.toAxisAngle();
+    			
+    			x3dom.debug.logInfo('Viewpoint position="' + translation.x.toFixed(5) + ' ' 
+    			                    + translation.y.toFixed(5) + ' ' + translation.z.toFixed(5) + '" ' +
+    								'orientation="' + rot[0].x.toFixed(5) + ' ' + rot[0].y.toFixed(5) + ' ' 
+    								+ rot[0].z.toFixed(5) + ' ' + rot[1].toFixed(5) + '" \n' +
+                                    'zNear="' + e_viewpoint.getNear().toFixed(6) + '" ' +
+    								'zFar="' + e_viewpoint.getFar().toFixed(6) + '"');
+            })();
+            break;
         case 119: /* w, walk mode */
             nav.setType("walk", this._viewarea);
             break;
@@ -478,7 +517,3 @@ x3dom.X3DDocument.prototype.shutdown = function(ctx)
     }
     ctx.shutdown(this._viewarea);
 };
-
-
-
-

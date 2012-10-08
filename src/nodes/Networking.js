@@ -19,6 +19,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Anchor.superClass.call(this, ctx);
 
             this.addField_MFString(ctx, 'url', []);
+            this.addField_MFString(ctx, 'parameter', []);
         },
         {
             doIntersect: function(line) {
@@ -32,9 +33,28 @@ x3dom.registerNodeType(
             },
 
             handleTouch: function() {
-                // fixme; window.open usually gets blocked
-                // but this way the current page is lost?!
-                window.location = this._nameSpace.getURL(this._vf.url[0]);
+                var url = this._vf.url.length ? this._vf.url[0] : "";
+                var aPos = url.search("#");
+                var anchor = "";
+                if (aPos >= 0)
+                    anchor = url.slice(aPos+1);
+                
+                var param = this._vf.parameter.length ? this._vf.parameter[0] : "";
+                var tPos = param.search("target=");
+                var target = "";
+                if (tPos >= 0)
+                    target = param.slice(tPos+7);
+                
+                // TODO: implement #Viewpoint bind 
+                // http://www.web3d.org/files/specifications/19775-1/V3.2/Part01/components/networking.html#Anchor
+                x3dom.debug.logInfo("Anchor url=" + url + ", target=" + target + ", #viewpoint=" + anchor);
+                
+                if (target.length == 0 || target == "_blank") {
+                    window.open(this._nameSpace.getURL(url), target);
+                }
+                else {
+                    window.location = this._nameSpace.getURL(url);
+                }
             }
         }
     )
@@ -198,8 +218,13 @@ x3dom.registerNodeType(
                     if (inlScene)
                     {
                         nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
-                        nameSpace.setBaseURL(that._vf.url[0]);
-
+                        
+                        var url = that._vf.url.length ? that._vf.url[0] : "";
+                        if ((url[0] === '/') || (url.indexOf(":") >= 0))
+                            nameSpace.setBaseURL(url);
+                        else
+                            nameSpace.setBaseURL(that._nameSpace.baseURL + url);
+                        
                         newScene = nameSpace.setupTree(inlScene);
                         
                         if(that._vf.nameSpaceName.length != 0)
@@ -213,8 +238,6 @@ x3dom.registerNodeType(
                                 }
                             } );
                         }
-
-						that.fireEvents("load");
                     }
                     else {
                         x3dom.debug.logError('No Scene in ' + xml.localName);
@@ -235,6 +258,8 @@ x3dom.registerNodeType(
                         that._nameSpace.doc.downloadCount -= 1;
                         that._nameSpace.doc.needRender = true;
                         x3dom.debug.logInfo('Inline: added '+that._vf.url[0]+' to scene.');
+                        
+                        that.fireEvents("load");
                     }
                     
                     newScene = null;
@@ -243,13 +268,16 @@ x3dom.registerNodeType(
                     xml = null;
                 };
 
-                xhr.open('GET', encodeURI(this._nameSpace.getURL(this._vf.url[0])), true);
-                try {
-                    xhr.send(null);
-                }
-                catch(ex) {
-                    that.fireEvents("error");
-                    x3dom.debug.logError(ex);
+                if (this._vf.url.length && this._vf.url[0].length)
+                {
+                    xhr.open('GET', encodeURI(this._nameSpace.getURL(this._vf.url[0])), true);
+                    try {
+                        xhr.send(null);
+                    }
+                    catch(ex) {
+                        this.fireEvents("error");
+                        x3dom.debug.logError(this._vf.url[0] + ": " + ex);
+                    }
                 }
                 return xhr;
             }

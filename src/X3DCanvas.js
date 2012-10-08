@@ -17,9 +17,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     var that = this;
 	this.canvasIdx = canvasIdx;
-    this.initContext = function(canvas) {
+	
+    this.initContext = function(canvas, forbidMobileShaders) {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
-        var gl = x3dom.gfx_webgl(canvas);
+        var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders);
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
             this.x3dElem.removeChild(canvas);
@@ -40,6 +41,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		param.setAttribute('value', value);
 		node.appendChild( param );
 	};
+	
+	this.fileExists = function(url) {
+		var xhr = new XMLHttpRequest();
+		try {
+			xhr.open("HEAD", url, false);
+			xhr.send(null);
+			return (xhr.status==404) ? false : true;
+		} catch(e) { return true; }
+	};		
 	
 	this.detectFlash = function(required, max)
 	{
@@ -132,6 +142,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			var swf_path = x3dElem.getAttribute("swfpath");
 			if (swf_path === null) {
 				swf_path = "x3dom.swf";
+			}
+			
+			if( !this.fileExists(swf_path) )
+			{
+				swf_path = "http://www.x3dom.org/download/x3dom.swf";
+				x3dom.debug.logWarning("Can't find local x3dom.swf. X3DOM now using the online version from x3dom.org."); 
 			}
 
 			//Get width from x3d-Element or set default
@@ -227,7 +243,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // TODO; handle attribute event handlers dynamically during runtime
         for (var i=0; i < evtArr.length; i++)
         {
-//            var evtName = "on" + evtArr[i];
             var evtName = evtArr[i];
             var userEvt = x3dElem.getAttribute(evtName);
             if (userEvt) {
@@ -293,17 +308,22 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         }
 
         // Apply the width and height of the X3D element to the canvas
-        var w = 2;
-        var h = 2;
+        var w = 2, h = 2;
 
         if ((w = x3dElem.getAttribute("width")) !== null) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
+            if (w.indexOf("%") >= 0) {
+				x3dom.debug.logWarning("The width attribute is to be specified in pixels.");
+			}
             canvas.style.width = w;
             canvas.setAttribute("width", w);
         }
 
         if ((h = x3dElem.getAttribute("height")) !== null) {
             //Attention: pbuffer dim is _not_ derived from style attribs!
+            if (h.indexOf("%") >= 0) {
+				x3dom.debug.logWarning("The height attribute is to be specified in pixels.");
+			}
             canvas.style.height = h;
             canvas.setAttribute("height", h);
         }
@@ -324,8 +344,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         ];
 
         if ((_old_dim[0] != new_dim[0]) || (_old_dim[1] != new_dim[1])) {
-            //x3dom.debug.logInfo("Resize detected w/h: " +
-            //    _old_dim[0] + "/" + _old_dim[1] + " => " + new_dim[0] + "/" + new_dim[1]);
             _old_dim = new_dim;
             that.x3dElem.setAttribute("width", new_dim[0]);
             that.x3dElem.setAttribute("height", new_dim[1]);
@@ -336,7 +354,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         var statDiv = document.createElement('div');
         statDiv.setAttribute("class", "x3dom-statdiv");
         statDiv.innerHTML = "0 fps";
-        this.x3dElem.appendChild(statDiv);
 
         statDiv.oncontextmenu = statDiv.onmousedown = function(evt) {
             evt.preventDefault();
@@ -360,8 +377,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         _inner.appendChild(document.createTextNode(' '));  // this needs to be a protected whitespace
         progressDiv.appendChild(_inner);
 
-        this.x3dElem.appendChild(progressDiv);
-
         progressDiv.oncontextmenu = progressDiv.onmousedown = function(evt) {
             evt.preventDefault();
             evt.stopPropagation();
@@ -377,29 +392,33 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     this.x3dElem = x3dElem;
 	
-	this.backend = 'none';
+	this.backend = this.x3dElem.getAttribute('backend');
+	if (this.backend)
+	    this.backend = this.backend.toLowerCase()
+	else
+	    this.backend = 'none';
 
-    if(this.x3dElem.getAttribute('backend') == 'flash') {
+    if (this.backend == 'flash') {
 		this.backend = 'flash';
 		this.canvas = this.createFlashObject(x3dElem);
-		if(this.canvas != null) {
+		if (this.canvas != null) {
 			this.canvas.parent = this;
 			this.gl = this.initFlashContext(this.canvas);
 		} else {
 			this.createInitFailedDiv(x3dElem);
 			return null;
 		}
-	}else{
-		this.backend = 'webgl';
+	} else {
 		this.canvas = this.createHTMLCanvas(x3dElem);
 		this.canvas.parent = this;
-		this.gl = this.initContext(this.canvas);
-		if(this.gl == null)
+		this.gl = this.initContext(this.canvas, (this.backend.search("desktop") >= 0));
+		this.backend = 'webgl';
+		if (this.gl == null)
 		{
 			x3dom.debug.logInfo("Fallback to Flash Renderer");
 			this.backend = 'flash';
 			this.canvas = this.createFlashObject(x3dElem);
-			if(this.canvas != null) {
+			if (this.canvas != null) {
 				this.canvas.parent = this;
 				this.gl = this.initFlashContext(this.canvas);
 			} else {
@@ -417,7 +436,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     // allow listening for (size) changes
     x3dElem.__setAttribute = x3dElem.setAttribute;
     x3dElem.setAttribute = function(attrName, newVal) {
-        //var prevVal = this.getAttribute(attrName);
         this.__setAttribute(attrName, newVal);
 
         switch(attrName) {
@@ -426,7 +444,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 that.canvas.setAttribute("width", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._width = parseInt(that.canvas.getAttribute("width"), 0);
-                    //x3dom.debug.logInfo("width: " + that.doc._viewarea._width);
                 }
                 break;
 
@@ -434,7 +451,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
                 that.canvas.setAttribute("height", newVal);
                 if (that.doc._viewarea) {
                     that.doc._viewarea._height = parseInt(that.canvas.getAttribute("height"), 0);
-                    //x3dom.debug.logInfo("height: " + that.doc._viewarea._height);
                 }
                 break;
 
@@ -459,14 +475,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     this.showStat = x3dElem.getAttribute("showStat");
     this.statDiv = this.createStatDiv();
     this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
-
+    this.x3dElem.appendChild(this.statDiv);
+    
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this.createProgressDiv();
-    this.progressDiv.style.display = (this.showProgress == null || this.showProgress == "true") ? "inline" : "none";
+    this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "inline" : "none";
+    this.x3dElem.appendChild(this.progressDiv);
     
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
     this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
     //this.showTouchpoints = this.showTouchpoints ? (this.showTouchpoints.toLowerCase() == "true") : false;
+
+    this.disableTouch = x3dElem.getAttribute("disableTouch");
+    this.disableTouch = this.disableTouch ? (this.disableTouch.toLowerCase() == "true") : false;
     
     
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
@@ -484,7 +505,20 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             evt.returnValue = false;
             return false;
         };
-
+        
+        // TODO: handle context lost events properly
+        this.canvas.addEventListener("webglcontextlost", function(event) {
+            x3dom.debug.logWarning("WebGL context lost");
+            event.preventDefault();
+        }, false);
+        
+        this.canvas.addEventListener("webglcontextrestored", function(event) {
+            x3dom.debug.logError("recover WebGL state and resources on context lost NYI");
+            event.preventDefault();
+        }, false);
+        
+        
+        // Mouse Events
         this.canvas.addEventListener('mousedown', function (evt) {
 			if(!this.isMulti) {
 				this.focus();
@@ -496,24 +530,19 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 					default: this.mouse_button = 0; break;
 				}
 				
-				var pos = mousePosition(evt);
+				if (evt.shiftKey) { this.mouse_button = 1; }
+				if (evt.ctrlKey)  { this.mouse_button = 4; }
+				if (evt.altKey)   { this.mouse_button = 2; }
+				
+				var pos = this.parent.mousePosition(evt);
 				this.mouse_drag_x = pos.x;
 				this.mouse_drag_y = pos.y;
 				
 				this.mouse_dragging = true;
-
-				if (evt.shiftKey) { this.mouse_button = 1; }
-				if (evt.ctrlKey)  { this.mouse_button = 4; }
-				if (evt.altKey)   { this.mouse_button = 2; }
-
+				
 				this.parent.doc.onMousePress(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				window.status=this.id+' DOWN: '+ pos.x +", "+ pos.y;
 				
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
 				evt.returnValue = true;
 			}
         }, false);
@@ -525,10 +554,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
@@ -540,13 +566,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onMouseOver(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
-			
         }, false);
 
         this.canvas.addEventListener('mouseout', function (evt) {
@@ -556,10 +578,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onMouseOut(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
@@ -568,7 +587,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			if(!this.isMulti) {
 				this.mouse_button = 0;
 				
-				var pos = mousePosition(evt);
+				var pos = this.parent.mousePosition(evt);
 				this.mouse_drag_x = pos.x;
 				this.mouse_drag_y = pos.y;
 				
@@ -576,47 +595,35 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onDoubleClick(that.gl, this.mouse_drag_x, this.mouse_drag_y);
 				this.parent.doc.needRender = true;
-
 				
-				window.status=this.id+' DBL: '+ pos.x +", "+ pos.y;
-				
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
 				evt.returnValue = true;
 			}
         }, false);
 
         this.canvas.addEventListener('mousemove', function (evt) {
 			if(!this.isMulti) {
-				/*
-				if (!this.mouse_dragging) {
-					return;
-				}
-				*/
 
 				if (evt.shiftKey) { this.mouse_button = 1; }
 				if (evt.ctrlKey)  { this.mouse_button = 4; }
 				if (evt.altKey)   { this.mouse_button = 2; }
            
-				var pos = mousePosition(evt);
+				var pos = this.parent.mousePosition(evt);
 				this.mouse_drag_x = pos.x;
               	this.mouse_drag_y = pos.y; 
 				
-				  if (this.mouse_dragging) {
+				if (this.mouse_dragging) {
 					this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-				  }
-				  else {
+				}
+				else {
 					this.parent.doc.onMove(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
-				  }
-			   
-
+				}
+			    
 				this.parent.doc.needRender = true;
-
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
-				evt.returnValue = true;
+				
+				// deliberately different for performance reasons
+				evt.preventDefault();
+				evt.stopPropagation();
+				evt.returnValue = false;
 			}
         }, false);
 
@@ -626,11 +633,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-
-				window.status=this.id+' SCROLL: '+evt.detail;
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
@@ -641,18 +644,16 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 				this.parent.doc.onDrag(that.gl, this.mouse_drag_x, this.mouse_drag_y, 2);
 				this.parent.doc.needRender = true;
-
-				window.status=this.id+' SCROLL: '+evt.detail;
-				//evt.preventDefault();
-				//evt.stopPropagation();
-				//evt.returnValue = false;
+				
 				evt.returnValue = true;
 			}
         }, false);
 
+
+        // Key Events
         this.canvas.addEventListener('keypress', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
                 this.parent.doc.onKeyPress(evt.charCode);
             }
             this.parent.doc.needRender = true;
@@ -662,7 +663,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // in webkit special keys are only handled on key-up
         this.canvas.addEventListener('keyup', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
                 this.parent.doc.onKeyUp(evt.keyCode);
             }
             this.parent.doc.needRender = true;
@@ -671,17 +672,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('keydown', function (evt) {
             var keysEnabled = this.parent.x3dElem.getAttribute("keysEnabled");
-            if (!keysEnabled || keysEnabled.toLowerCase() === "true") {
+            if (!keysEnabled || keysEnabled.toLowerCase() == "true") {
                 this.parent.doc.onKeyDown(evt.keyCode);
             }
             this.parent.doc.needRender = true;
             evt.returnValue = true;
         }, true);
-        
 
-        // http://developer.apple.com/library/safari/#documentation/AppleApplications/Reference/SafariWebContent/HandlingEvents/HandlingEvents.html
-        // http://backtothecode.blogspot.com/2009/10/javascript-touch-and-gesture-events.html
-        // http://www.sitepen.com/blog/2008/07/10/touching-and-gesturing-on-the-iphone/
 
         // Multitouch Events
         var touches =
@@ -709,7 +706,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
               
             return rotation;
           },
-          
+
+          disableTouch: this.disableTouch,
           // set a mark in HTML so we can track the position of the finger visually
           visMarker: this.showTouchpoints,
           visMarkerBag: new Array(),
@@ -724,16 +722,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
               
               for (var i=0; i<evt.touches.length; i++) {
                   var id = evt.touches[i].identifier || evt.touches[i].streamId;
+                  if (!id) id = 0;
+                  
                   var index = this.visMarkerBag.indexOf(id);
                   
-                  if (this.visMarkerBag.indexOf(id) >= 0) {
+                  if (index >= 0) {
                       marker = document.getElementById("visMarker" + id);
 
-                      marker.style.left = (evt.touches[i].clientX) + "px";
-                      marker.style.top  = (evt.touches[i].clientY) + "px";
-
-                      //marker.style.left = (evt.touches[i].screenX) + "px";
-                      //marker.style.top  = (evt.touches[i].screenY) + "px";
+                      marker.style.left = (evt.touches[i].pageX) + "px";
+                      marker.style.top  = (evt.touches[i].pageY) + "px";
                   }
                   else {
                       marker = document.createElement("div");
@@ -774,18 +771,17 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch Start ===
         var touchStartHandler = function(evt, doc)
         {
-            //x3dom.debug.logWarning("start");
             this.isMulti = true;
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
-			if(doc == null)
-				doc  = this.parent.doc;
+			if (doc == null)
+				doc = this.parent.doc;
 			
 			touches.lastLayer = [];
 		
 			for(var i = 0; i < evt.touches.length; i++) {
-				var pos = mousePosition(evt.touches[i]);
+				var pos = this.parent.mousePosition(evt.touches[i]);
 				touches.lastLayer.push(new Array(evt.touches[i].identifier, new x3dom.fields.SFVec2f(pos.x,pos.y)));
 			}
            
@@ -819,7 +815,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			}
 			
 			for(var i = 0; i < evt.touches.length; i++) {
-				var pos = mousePosition(evt.touches[i]);
+				var pos = this.parent.mousePosition(evt.touches[i]);
 				doc.onPick(that.gl, pos.x, pos.y);
 				doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
 				doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
@@ -829,7 +825,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchStartHandlerMoz = function(evt)
         {
-            //x3dom.debug.logWarning("start moz");
 			this.isMulti = true;
 			evt.preventDefault();
           
@@ -844,28 +839,16 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				mozilla_touches.touches.push(evt);
 			}
 			touchStartHandler(mozilla_touches, this.parent.doc);
-          
         };
         
         // === Touch Move ===
         var touchMoveHandler = function(evt, doc)
         {
-            //x3dom.debug.logWarning("move");
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
 			
-			if(doc == null)
-				doc  = this.parent.doc;
-		
-			/*for(var i = 0; i < evt.touches.length; i++) {
-				for(var i = 0; i < touches.lastLayer.length; i++) {
-					if(evt.touches[i].identifier == touches.lastLayer[i][0])
-					{
-						var pos = mousePosition(evt.touches[i]);
-						touches.lastLayer[i] = new Array(evt.touches[i].identifier, new x3dom.fields.SFVec2f(pos.x,pos.y));
-					}
-				}
-			}*/
+			if (doc == null)
+				doc = this.parent.doc;
 
 			// one finger: x/y rotation
 			if(evt.touches.length == 1) {
@@ -880,7 +863,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				
 				doc.onMoveView(that.gl, null, rotMatrix);
 				doc.needRender = true;
-			} else if(evt.touches.length >= 2) { // two fingers: scale, translation, rotation around view (z) axis
+			}
+			// two fingers: scale, translation, rotation around view (z) axis
+			else if(evt.touches.length >= 2) {
 				var touch0 = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
 				var touch1 = new x3dom.fields.SFVec2f(evt.touches[1].screenX, evt.touches[1].screenY);
             
@@ -913,7 +898,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchMoveHandlerMoz = function(evt)
         {
-            //x3dom.debug.logWarning("move moz");
 			evt.preventDefault();
           
 			for(var i=0; i<mozilla_ids.length; ++i)
@@ -926,7 +910,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         // === Touch end ===
         var touchEndHandler = function(evt, doc)
         {
-            //x3dom.debug.logWarning("end");
             this.isMulti = false;
 			evt.preventDefault();
 			touches.visualizeTouches(evt);
@@ -979,7 +962,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         
         var touchEndHandlerMoz = function(evt)
         {
-            //x3dom.debug.logWarning("end moz");
 			this.isMulti = false;
 			evt.preventDefault();
           
@@ -996,21 +978,57 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           
 			touchEndHandler(mozilla_touches, this.parent.doc);
         };
-        
-        // mozilla touch events
-        this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
-        this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
-        this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
 
-        // w3c / apple touch events
-        // in Chrome via chrome://flags/
-        this.canvas.addEventListener('touchstart',    touchStartHandler, true);
-        this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
-        this.canvas.addEventListener('touchend',      touchEndHandler,   true);
-        //this.canvas.addEventListener('touchcancel',   touchCancelHandler,   true);
-        //this.canvas.addEventListener('touchleave',    touchLeaveHandler,    true);
-		//this.canvas.addEventListener('touchenter',    touchEnterHandler,    true);
+        if (!this.disableTouch)
+        {
+            // mozilla touch events
+            this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
+            this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
+            this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
+
+            // w3c / apple touch events (in Chrome via chrome://flags)
+            this.canvas.addEventListener('touchstart',    touchStartHandler, true);
+            this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
+            this.canvas.addEventListener('touchend',      touchEndHandler,   true);
+        }
     }
+    
+    /** Helper that converts a point from node coordinates to page coordinates 
+        FIXME: does NOT work when x3dom.css is not included so that x3d element is not floating
+    */
+    this.mousePosition = function(evt)
+    {
+        var convertPoint = window.webkitConvertPointFromNodeToPage;
+        var x = 0, y = 0;
+
+        if ( "getBoundingClientRect" in document.documentElement ) {
+            var elem = evt.target.offsetParent;    // should be x3dElem
+    		var box = elem.getBoundingClientRect();
+    		
+    		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
+    		var scrolltop =  window.pageYOffset || document.body.scrollTop;
+            
+    		var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
+    		var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
+            
+    		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
+    		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
+    		
+    		x = Math.round(evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft));
+    		y = Math.round(evt.pageY - (box.top + paddingTop + borderTopWidth + scrolltop));
+        }
+        else if (convertPoint) {
+            var point = convertPoint(evt.target, new WebKitPoint(0, 0));
+
+            x = Math.round(point.x);
+            y = Math.round(point.y);
+        }
+        else {
+    		x3dom.debug.logError('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
+    	}
+    	
+    	return new x3dom.fields.SFVec2f(x, y);
+    };
 };
 
 x3dom.X3DCanvas.prototype.tick = function()
@@ -1067,9 +1085,6 @@ x3dom.X3DCanvas.prototype.tick = function()
 
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
                 if (this.progressDiv) {
-                    // TODO: In order to display a bar we need a max value to determine where we are
-                    // 100 / total * this.doc.downloadCount
-                    // this.progressDiv.childNodes[1].setAttribute("style", "width: " + progressPercent + "%");
                     this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);
                     if (this.doc.downloadCount > 0) {
                         this.progressDiv.style.display = 'inline';
@@ -1137,64 +1152,3 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
 
     this.doc.load(uri, sceneElemPos);
 };
-
-
-function mousePosition(evt) {
-
-    var convertPoint = window.webkitConvertPointFromNodeToPage;
-    var x = 0, y = 0;
-
-    if ( "getBoundingClientRect" in document.documentElement ) {
-		var box =  evt.target.offsetParent.getBoundingClientRect();				
-		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		var scrolltop = 	window.pageYOffset || document.body.scrollTop;
-		
-		var elem = evt.target.offsetParent;
-		
-		var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
-		var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
-		
-		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
-		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
-							
-		x = evt.pageX - (box.left + paddingLeft + borderLeftWidth + scrolleft);
-		y = evt.pageY - (box.top + paddingTop + borderTopWidth + scrolltop);
-
-        return new x3dom.fields.SFVec2f(x, y);
-
-    } else if (convertPoint) {
-
-        var zeroPoint = new WebKitPoint(0,0);
-        var point = convertPoint(evt.target, zeroPoint);
-
-        x = Math.round(point.x);
-        y = Math.round(point.y);
-
-        return new x3dom.fields.SFVec2f(x, y);
-
-    } else {
-		x3dom.debug.logError('NO getBoundingClientRect, NO webkitConvertPointFromNodeToPage');
-		/*TODO Für den Fall das es keine Funktion getBoundingClientRect() gibt
-		
-		var left = evt.target.offsetParent.offsetLeft; //sollte in eine schleife addiert werden, immer relativ zum offsetParent
-		var right = evt.target.offsetParent.offsetRight; //sollte in eine schleife addiert werden, immer relativ zum offsetParent
-
-		//probleme bei xhtml und  firefox wegen x3d element
-		
-		var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-		var scrolltop = 	window.pageYOffset || document.body.scrollTop;
-		
-		var elem = evt.target.offsetParent;
-		
-		var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
-		var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
-		
-		var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
-		var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
-							
-		var x = evt.pageX - (left + paddingLeft + borderLeftWidth);
-		var y =  evt.pageY - (right + paddingTop + borderTopWidth);	*/
-	}
-
-	return new x3dom.fields.SFVec2f(x, y);
-}

@@ -36,9 +36,9 @@ x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
 
-    // place to hold configuration data, i.e. fash backend path, etc.
+    // place to hold configuration data, i.e. flash backend path, etc.
     // format and structure needs to be decided.
-    this.config = { };
+    this.config = {};
     this.isReady = false;
 };
 
@@ -102,7 +102,7 @@ x3dom.Runtime.prototype.enterFrame = function() {
  *   > var element, bindable;
  *   > element = doucment.getElementById('the_x3delement');
  *   > bindable = element.runtime.getActiveBindable('background');
- *   > bindable.setAttribute('set_bind', 'false');
+ *   > bindable.setAttribute('bind', 'false');
  *
  * Parameters:
  * 		typeName - bindable type name
@@ -127,11 +127,9 @@ x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
 
     for (i=0; i < stacks.length; i++) {
         current = stacks[i].getActive();
-//			if (x3dom.isa(current, x3dom.nodeTypes.X3DBindableNode)) {
             if (current._xmlNode !== undefined && x3dom.isa(current, type) ) {
                 result.push(current);
             }
-//			}
     }
     return result[0] ? result[0]._xmlNode : null;
 };
@@ -257,6 +255,18 @@ x3dom.Runtime.prototype.getHeight = function() {
 };
 
 /**
+ * Function: mousePosition
+ *
+ * Returns the 2d canvas layer position [x, y] for a given mouse event, i.e.,
+ * the mouse cursor's x and y positions relative to the canvas (x3d) element.
+ */
+x3dom.Runtime.prototype.mousePosition = function(event) {
+    var pos = this.canvas.mousePosition(event);
+    
+    return [pos.x, pos.y];
+};
+
+/**
  * Function: calcCanvasPos
  *
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
@@ -283,25 +293,28 @@ x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
  * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
+    var elem = this.canvas.canvas.offsetParent;
 
-	var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
+    if (!elem) {
+        x3dom.debug.logError("Can't calc page pos without offsetParent.");
+        return [0, 0];
+    }
+    
+	var canvasPos = elem.getBoundingClientRect();
 	var mousePos = this.calcCanvasPos(wx, wy, wz);
 	
-	var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-	var scroltop = 	window.pageYOffset || document.body.scrollTop;
-	
-	var elem = this.canvas.canvas.offsetParent;
+	var scrollLeft =  window.pageXOffset || document.body.scrollLeft;
+	var scrollTop = 	window.pageYOffset || document.body.scrollTop;
 	
 	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
 	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
 		
 	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
-	
-	var mousePos = this.calcCanvasPos(wx, wy, wz);
 		
-	var x = cavasPos.left + paddingLeft + borderLeftWidth + scrolleft + mousePos[0];
-    var y = cavasPos.top + paddingTop + borderTopWidth + scroltop + mousePos[1];
+	var x = canvasPos.left + paddingLeft + borderLeftWidth + scrollLeft + mousePos[0];
+    var y = canvasPos.top + paddingTop + borderTopWidth + scrollTop + mousePos[1];
+    
     return [x, y];
 };
 
@@ -312,9 +325,15 @@ x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
  * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
-    var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
-	
-	var elem = this.canvas.canvas.offsetParent;
+    var elem = this.canvas.canvas.offsetParent;
+
+    if (!elem) {
+        x3dom.debug.logError("Can't calc client pos without offsetParent.");
+        return [0, 0];
+    }
+
+    var canvasPos = elem.getBoundingClientRect();
+    var mousePos = this.calcCanvasPos(wx, wy, wz);
 	
 	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
 	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
@@ -322,10 +341,9 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
 	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
 	
-	var mousePos = this.calcCanvasPos(wx, wy, wz);
-	
-	var x = cavasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
-    var y = cavasPos.top + paddingTop + borderTopWidth + mousePos[1];
+	var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
+    var y = canvasPos.top + paddingTop + borderTopWidth + mousePos[1];
+    
     return [x, y];
 };
 
@@ -418,28 +436,6 @@ x3dom.Runtime.prototype.showObject = function(obj) {
                         this.canvas.doc._viewarea._width : this.canvas.doc._viewarea._height;
 
         var n0 = new x3dom.fields.SFVec3f(0, 0, 1);    // facingDir
-        var percArea = 1.0;     // for full shot size (::= shotSizes[shotType])
-
-        // needed if we want to generalize that according to CinematographicViewpoint
-        //var SHOT_BOUNDARY = 0.4;
-        //if (percArea < SHOT_BOUNDARY) percArea += 1.0;
-        //if (shotSize < SHOT_BOUNDARY) node = objCloseUp;
-        //else node = objFull;
-        /*
-         // shotSizes/shotType
-         4.00f, // extremeLong
-         2.00f, // long
-         1.00f, // full (default)
-         0.70f, // mediumFull
-         0.50f, // medium
-         0.45f, // mediumClose
-         0.20f, // close
-         0.10f, // wideCloseup
-         0.00f, // closeup
-         -0.10f, // mediumCloseup
-         -0.35f, // extremeCloseup
-         */
-
         var viewpoint = this.canvas.doc._scene.getViewpoint();
         var fov = viewpoint.getFieldOfView() / 2.0;
         var ta = Math.tan(fov);
@@ -472,7 +468,7 @@ x3dom.Runtime.prototype.showObject = function(obj) {
         }
 
         n0 = mat.multMatrixVec(n0).normalize();
-        n0 = n0.multiply(percArea * dist);
+        n0 = n0.multiply(dist);
         var p0 = pc.add(n0);
 
         var qDir = x3dom.fields.Quaternion.rotateFromTo(new x3dom.fields.SFVec3f(0, 0, 1), n0);
@@ -575,6 +571,14 @@ x3dom.Runtime.prototype.navigationType = function() {
     return this.canvas.doc._scene.getNavigationInfo().getType();
 };
 
+/**
+ * APIFunction: noNav
+ *
+ * Switches to noNav mode
+ */
+x3dom.Runtime.prototype.noNav = function() {
+    this.canvas.doc._scene.getNavigationInfo().setType("none");
+};
 
 /**
  * APIFunction: examine
@@ -630,6 +634,15 @@ x3dom.Runtime.prototype.game = function() {
 };
 
 /**
+ * APIFunction: helicopter
+ *
+ * Switches to helicopter mode
+ */
+x3dom.Runtime.prototype.helicopter = function() {
+    this.canvas.doc._scene.getNavigationInfo().setType("helicopter");
+};
+
+/**
  * Function: resetExamin
  *
  * Resets all variables required by examin mode to init state
@@ -651,6 +664,16 @@ x3dom.Runtime.prototype.togglePoints = function() {
         this.canvas.doc._viewarea._points = 0;
     this.canvas.doc._viewarea._points = ++this.canvas.doc._viewarea._points % 2; // % 3;
     this.canvas.doc.needRender = true;
+};
+
+/**
+ * Function: pickRect
+ *
+ * Returns an array of all shape elements that are within the picked rectangle 
+ * defined by (x1, y1) and (x2, y2) in canvas coordinates
+ */
+x3dom.Runtime.prototype.pickRect = function(x1, y1, x2, y2) {
+    return this.canvas.doc.onPickRect(this.canvas.gl, x1, y1, x2, y2);
 };
 
 /**
@@ -703,7 +726,6 @@ x3dom.Runtime.prototype.changePickMode = function(type, options) {
         case 'box':
             type = 'box';
             break;
-
         default:
             x3dom.debug.logWarning("Switch pickMode to "+ type + ' unknown intersect type');
             type = undefined;
@@ -795,8 +817,7 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
         // if no parameter is given return current status (false = not visible, true = visible)
         return processDiv.style.display != 'none'
     }
-},
-
+};
 
 x3dom.Runtime.prototype.properties = function() {
     return this.canvas.doc.properties;
@@ -805,7 +826,6 @@ x3dom.Runtime.prototype.properties = function() {
 x3dom.Runtime.prototype.backendName = function() {
     return this.canvas.backend;
 };
-
 
 /**
  * APIMethod isA

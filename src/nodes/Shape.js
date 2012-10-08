@@ -197,6 +197,7 @@ x3dom.registerNodeType(
             // FIXME: X3DShapeNode inherits from X3DChildNode and X3DBoundedObject
             // (at least according to spec), therefore impl. "render" field there.
             this.addField_SFBool(ctx, 'render', true);
+            this.addField_SFBool(ctx, 'isPickable', true);
             // same thing for bbox
             this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
@@ -220,6 +221,12 @@ x3dom.registerNodeType(
                 text: true,
                 shader: true
             };
+
+            // FIXME; move somewhere else and allow generic values!!!
+            this._coordStrideOffset = [0, 0];
+            this._normalStrideOffset = [0, 0];
+            this._texCoordStrideOffset = [0, 0];
+            this._colorStrideOffset = [0, 0];
         },
         {
             collectDrawableObjects: function (transform, out)
@@ -309,6 +316,14 @@ x3dom.registerNodeType(
 				this._dirty.material = true;
 				this._dirty.text = true;
 				this._dirty.shader = true;
+            },
+            
+            setGeoDirty: function () {
+				this._dirty.positions = true;
+				this._dirty.normals = true;
+				this._dirty.texcoords = true;
+				this._dirty.colors =  true;
+				this._dirty.indexes = true;
             }
         }
     )

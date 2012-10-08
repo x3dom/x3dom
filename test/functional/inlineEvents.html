@@ -11,12 +11,29 @@
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
 <script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
 <script type="text/javascript" src="../../src/util/Properties.js"></script>
 <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
 <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
 <script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderCache.js"></script>
 <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 <script type="text/javascript" src="../../src/gfx_flash.js"></script>
 <script type="text/javascript" src="../../src/X3DDocument.js"></script>
@@ -42,6 +59,7 @@
 <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
@@ -58,14 +76,17 @@
 	
 	var changeColor = function() {	
 		document.getElementById('test__color1').setAttribute('diffuseColor', '1 0 1');
+		//alert('load');
 	}
 	var showError = function(event) {	
-		//alert('error');
 		alert('the ERROR ' + event.error);
 	}
 	var init = function() {	
 		document.getElementById('inline1').addEventListener('load',changeColor, false );
+		document.getElementById('inline1').setAttribute('url', "media/data/inlineTest.x3d");
+		
 		document.getElementById('inline2').addEventListener('error',showError, false );
+		document.getElementById('inline2').setAttribute('url', "media/data/error.x3d");
 	}
 	
 </script>
@@ -73,8 +94,8 @@
 <body onload="init();">       
     <x3d width="700px" height="700px" showStat="true" showLog="true">
 		<scene>
-			<inline id="inline1" nameSpaceName='test' url='media/data/inlineTest.x3d'></inline>
-            <inline id="inline2" nameSpaceName='error' url='media/data/error.x3d'></inline>
+			<inline id="inline1" nameSpaceName='test' url=''></inline>
+            <inline id="inline2" nameSpaceName='error' url=''></inline>
 			<!--inline onload="changeColor();" nameSpaceName='test' url='media/data/inlineTest.x3d'></inline-->
 			<!--inline onerror="showError();" nameSpaceName='showError' url='media/data/error.x3d'></inline-->
 		</scene>

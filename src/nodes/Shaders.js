@@ -345,7 +345,7 @@ x3dom.registerNodeType(
             {
                 var ctx = {};
                 ctx.xmlNode = this._xmlNode;
-                
+
                 if (ctx.xmlNode !== undefined && ctx.xmlNode !== null) 
                 {
                     var that = this;
@@ -370,6 +370,10 @@ x3dom.registerNodeType(
                     }
                 }
                 // else hope that url field was already set somehow
+
+                Array.forEach(this._parentNodes, function (shader) {
+                    shader.nodeChanged();
+                });
 			},
 			
 			fieldChanged: function(fieldName)

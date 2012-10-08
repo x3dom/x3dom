@@ -3,6 +3,7 @@ package x3dom
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.geom.Matrix;
+	import flash.utils.ByteArray;
 	
 	public class Utils
 	{
@@ -82,6 +83,70 @@ package x3dom
 			}
 			
 			return a;
+		}
+		
+		/**
+		 * 
+		 */
+		public static function getPrecisionMax(type:String) : Number
+		{
+			switch(type)
+			{
+				case "Int8":
+					return 127.0;
+				case "Uint8":
+					return 255.0;
+				case "Int16":
+					return 32767.0;
+				case "Uint16":
+					return 65535.0;
+				case "Int32":
+					return 2147483647.0;
+				case "Uint32":
+					return 4294967295.0;
+				case "Float32":
+				case "Float64":
+				default:
+					return 0.0;
+			}
+		}
+		
+		/**
+		 * 
+		 */
+		public static function readType(byteArray:ByteArray, type:String, normalize:Boolean = false) : Number
+		{
+			var value:Number;
+			switch(type)
+			{
+				case "Int8":
+					value = byteArray.readByte();
+					break;
+				case "Uint8":
+					value = byteArray.readUnsignedByte();
+					break;
+				case "Int16":
+					value = byteArray.readShort();
+					break;
+				case "Uint16":
+					value = byteArray.readUnsignedShort();
+					break;
+				case "Int32":
+					value = byteArray.readInt();
+					break;
+				case "Uint32":
+					value = byteArray.readUnsignedInt();
+					break;
+				case "Float32":
+					value = byteArray.readFloat();
+					break;
+				default:
+					value = 0.0;
+			}
+			if(normalize && type != "Float32") 
+				value /= Utils.getPrecisionMax(type);
+			
+			return value;
 		}
 	}
 }

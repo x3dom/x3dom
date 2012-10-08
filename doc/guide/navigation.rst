@@ -3,10 +3,9 @@
 
 Camera Navigation
 =================
-The current WebGL/JS implementation of X3DOM provides some generic
-interaction and navigation methods. Interactive objects will be handled
-by HTML-like events. Navigation can be user-defined or controlled by
-specific predefined modes.
+X3DOM provides some generic interaction and navigation methods. 
+Interactive objects will be handled by HTML-like events. 
+Navigation can be user-defined or controlled by specific predefined modes.
 
 Currently X3DOM supports the following interactive navigation modes:
 
@@ -14,7 +13,9 @@ Currently X3DOM supports the following interactive navigation modes:
 * Walk
 * Fly
 * Look-at
+* Look-around
 * Game
+* Helicopter
 
 Non-Interactive movement encompasses the functionality of:
 
@@ -64,6 +65,19 @@ Move backward               Right
 ========================    ==============================
 
 
+Helicopter
+~~~~~~~~~~
+Activate this mode by pressing the ``"h"`` key.
+
+To look downwards/upwards and to move higher/lower use the keys (8/9 and 6/7).
+
+========================    ==============================
+Function                    Mouse Button
+========================    ==============================
+Move forward                Left
+========================    ==============================
+
+
 Look at
 ~~~~~~~
 Activate this mode by pressing the ``"l"`` key.
@@ -109,7 +123,7 @@ Mid-Button troubleshooting
 --------------------------
 
 If the web page has scroll bars and autoscrolling is enabled, Mid-Button
-currently does not work yet. As a workaround, you can disable autoscrolling
+currently does not work correctly. As a workaround, you can disable autoscrolling
 by unchecking the **Use autoscrolling** checkbox in the Firefox browser
 options, as is shown in the screenshot below (for the Firefox case).
 

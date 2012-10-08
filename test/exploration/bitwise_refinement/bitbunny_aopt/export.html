@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <link rel='stylesheet' type='text/css' href='http://dosenrock.de/bitlod/../../x3dom.css'></link>
+    <script type='text/javascript' src='http://dosenrock.de/bitlod/x3dom.js'></script>
+  </head>
+  <body>
+    BitLOD with texcoords, exported with aopt
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:75%;' backend='flash'>
+      <scene DEF='scene'>
+        <group>
+          <group>
+            <group>
+              <transform translation='-3 0 0' rotation='1 0 0 1.57'>
+              <shape DEF='SP_0'>
+                <appearance DEF='Material.001'>
+                  <material diffuseColor='0.64 0.64 0.64' shininess='3.00245' specularColor='0.5 0.5 0.5'></material>
+                  <imageTexture url='"fractal.png"'></imageTexture>
+                </appearance>
+                <bitLODGeometry DEF='LG_0' vertexCount='208353' primType='"TRIANGLES"' position='0.298177599907 -0.282734036446 -0.417162418365' size='4.45790719986 3.45508599281 4.41882514954' index='LG_0_indexBinary.bin'>
+                  <bitLODGeoComponent src='LG_0_level0.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level1.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level2.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level3.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level4.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level5.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level6.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level7.bin' attrib='"coord3" "normal2"' format='6 2'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level8.bin' attrib='"texcoord2"' format='8'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level9.bin' attrib='"texcoord2"' format='8'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level10.bin' attrib='"texcoord2"' format='8'></bitLODGeoComponent>
+                  <bitLODGeoComponent src='LG_0_level11.bin' attrib='"texcoord2"' format='8'></bitLODGeoComponent>
+                </bitLODGeometry>
+              </shape>
+              </transform>
+            </group>
+          </group>
+        </group>
+      </scene>
+    </x3d>
+  </body>
+</html>

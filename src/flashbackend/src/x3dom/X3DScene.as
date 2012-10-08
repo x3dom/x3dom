@@ -23,6 +23,22 @@
 		
 		private var _background:Background = new Background();;
 		
+		
+		/**
+		 * Scenes viewing matrix
+		 */
+		private var _zNear:Number = 0.1;
+		
+		/**
+		 * Scenes viewing matrix
+		 */
+		private var _zFar:Number = 1000.0;
+		
+		/**
+		 * Scenes viewing matrix
+		 */
+		private var _fov:Number = 0.785;
+		
 		/**
 		 * Scenes viewing matrix
 		 */
@@ -166,6 +182,54 @@
 				} 
 			}
 			this._drawableObjects = tmp;
+		}
+		
+		/**
+		 * Scenes near plane
+		 */
+		public function get zNear() : Number
+		{
+			return this._zNear;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set zNear(zNear:Number) : void
+		{
+			this._zNear = zNear;
+		}
+		
+		/**
+		 * Scenes far plane
+		 */
+		public function get zFar() : Number
+		{
+			return this._zFar;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set zFar(zFar:Number) : void
+		{
+			this._zFar = zFar;
+		}
+		
+		/**
+		 * Scenes field of view
+		 */
+		public function get fov() : Number
+		{
+			return this._fov;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set fov(fov:Number) : void
+		{
+			this._fov = fov;
 		}
 		
 		/**

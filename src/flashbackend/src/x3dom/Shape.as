@@ -25,6 +25,11 @@ package x3dom
 		public var _ready:Boolean = true;
 		
 		/**
+		 * Holds the shape id
+		 */
+		protected var _id:uint;
+		
+		/**
 		 * Specifiying the Material used by geometry.
 		 * @default Default Material
 		 */
@@ -59,6 +64,12 @@ package x3dom
 		 * @default 3
 		 */
 		protected var _numColorComponents:uint = 3;
+		
+		/**
+		 * Specifiying the number of normal components. 2 means polar normals.
+		 * @default 3
+		 */
+		protected var _numNormalComponents:uint = 3;
 		
 		/**
 		 * Specifiying the colors used by the geometry.
@@ -96,6 +107,26 @@ package x3dom
 		 */
 		private var _vertexBuffer:Array = null;
 		
+		protected var _vertexType:String = "Float32";
+		
+		/**
+		  * Hold the data type of the normals.
+		 * @default null
+		 */
+		protected var _normalType:String = "Float32";
+		
+		/**
+		 * Hold the data type of the texture coordinates.
+		 * @default null
+		 */
+		protected var _texCoordType:String = "Float32";
+		
+		/**
+		  * Hold the data type of the colors.
+		 * @default null
+		 */
+		protected var _colorType:String = "Float32";
+		
 		/**
 		 * Create a new Shape Instance
 		 */
@@ -110,6 +141,7 @@ package x3dom
 		 */
 		public function setProperties(value:Object) : void
 		{
+			this._id = uint( value.id );
 			this._solid = Boolean( value.solid );
 		}
 		
@@ -143,6 +175,7 @@ package x3dom
 			this._boundingBox.min = min;
 			this._boundingBox.max = max;
 			this._boundingBox.center = center;
+			this._boundingBox.size = max.subtract(min);
 		}
 		
 		/**
@@ -279,6 +312,43 @@ package x3dom
 		}
 		
 		/**
+		 * Hold the data type of the vertices.
+		 * @default null
+		 */
+		public function get vertexType():String
+		{
+			return this._vertexType;
+		}
+
+		/**
+		 * Hold the data type of the normals.
+		 * @default null
+		 */
+		public function get normalType():String
+		{
+			return this._normalType;
+		}
+		
+		/**
+		 * Hold the data type of the texture coordinates.
+		 * @default null
+		 */
+		public function get texCoordType():String
+		{
+			return this._texCoordType;
+		}
+		
+		/**
+		 * Hold the data type of the colors.
+		 * @default null
+		 */
+		public function get colorType():String
+		{
+			return this._colorType;
+		}
+
+
+		/**
 		 * Fill the colors-Array and create the colors-Buffer for rendering
 		 * @param idx Index of the Array where colors are saved
 		 * @param colors Vector with the colors 
@@ -304,9 +374,10 @@ package x3dom
 		 * @param idx Index of the Array where indices are saved
 		 * @param colors Vector with the indices 
 		 */
-		public function setIndices(idx:uint, indices:Object) : void 
+		public function setIndices(idx:uint, indices:Object, calcNumTris:Boolean = true) : void 
 		{
-			this._numTriangles[ idx ] = indices.length/3;
+			if(calcNumTris)
+				this._numTriangles[ idx ] = indices.length/3;
 			
 			//Init indices Buffer if not done yet
 			if( !this._indexBuffer) this._indexBuffer = new Array();
