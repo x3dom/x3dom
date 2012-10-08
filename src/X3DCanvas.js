@@ -69,6 +69,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	
 	this.createInitFailedDiv = function(x3dElem) {
 		var div = document.createElement('div');
+        div.setAttribute("id", "x3dom-create-init-failed");
 		div.style.width = x3dElem.getAttribute("width");;
 		div.style.height = x3dElem.getAttribute("height");;
 		div.style.backgroundColor = "#C00";
@@ -89,9 +90,23 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		link.setAttribute('href', 'http://www.x3dom.org/?page_id=9');
 		link.appendChild( document.createTextNode('X3DOM | Browser Support'));
 		div.appendChild(link);
-		x3dElem.appendChild(div);
-		
-		x3dom.debug.logError("Your Browser does not support X3DOM!");
+
+        // check if "altImg" is specified on x3d element and if so use it as background
+        altImg = x3dElem.getAttribute("altImg") || null;
+        if (altImg) {
+            altImgObj = new Image();
+            altImgObj.src = altImg;
+            div.style.backgroundImage = "url("+altImg+")";
+            div.style.backgroundRepeat = "no-repeat"
+            div.style.backgroundPosition = "50% 50%"
+        }
+
+        x3dElem.appendChild(div);
+
+
+
+
+        x3dom.debug.logError("Your Browser does not support X3DOM!");
 	}
 
 	this.createFlashObject = function(x3dElem) {
