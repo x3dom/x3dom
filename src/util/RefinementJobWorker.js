@@ -6,6 +6,25 @@ x3dom.RefinementJobWorker = function() {
 };
 
 
+x3dom.RefinementJobWorker.prototype.subtract = function(v0, v1) {
+  return [v0[0] - v1[0],
+          v0[1] - v1[1],
+          v0[2] - v1[2]];
+};
+
+x3dom.RefinementJobWorker.prototype.normalize = function(v) {
+  var l = Math.sqrt(v[0]*v[0] + v[1]*v[1] + v[2]*v[2]);
+  l = 1.0 / l;
+  return [v[0]*l, v[1]*l, v[2]*l];
+};
+
+x3dom.RefinementJobWorker.prototype.cross = function(v0, v1) {
+  return [v0[1]*v1[2] - v0[2]*v1[1],
+          v0[2]*v1[0] - v0[0]*v1[2],
+          v0[0]*v1[1] - v0[1]*v1[0]];
+};
+
+
 x3dom.RefinementJobWorker.prototype.log = function(logMessage) {
   postMessage({msg : 'log', txt : logMessage});
 };
@@ -31,6 +50,19 @@ x3dom.RefinementJobWorker.prototype.processJob = function(attributeId, level, st
     bPrecOff = resultBufferView.BYTES_PER_ELEMENT * 8 - 1 - (level * 1);  //2 bit per component per level
     
     addBits_3x2_2x1(dataBufferView, resultBufferView, aPrecOff, bPrecOff);
+  }  
+  //---------------------------------------------------------------------------------------------
+  //Attrib. A (e.g. positions)        : 3 x 2  bit
+  //Attrib. B (e.g. normals)          : 3 x 16 bit -> COMPUTED ON-THE-FLY PER FACE
+  //Result Buffer Alignment / Padding : a1 a2 a3 0 b1 b2 b3 0
+  else if (numComponentsList.length === 2 &&
+           numComponentsList[0]     === 3 &&
+           numComponentsList[1]     === 3 &&
+           bitsPerLevelList[0]      === 6 &&
+           bitsPerLevelList[1]      === 0   ) {      
+    aPrecOff = resultBufferView.BYTES_PER_ELEMENT * 8 - 2 - (level * 2);  //2 bits per component per level
+    
+    addBits_3x2_3x2_computeNormals(dataBufferView, resultBufferView, aPrecOff);
   } 
   //---------------------------------------------------------------------------------------------
   // else if (...) {
@@ -130,6 +162,72 @@ x3dom.RefinementJobWorker.prototype.addBits_3x2_2x1 = function(dataBufferView, r
 			
 			resultBufferView[idx++] |= b1;
 			resultBufferView[idx++] |= b2;
+		}
+	//}
+};
+
+
+x3dom.RefinementJobWorker.prototype.addBits_3x2_3x2_computeNormals = function(dataBufferView, resultBufferView, aPrecOff) {  
+  //Optimized Decoding
+
+  //Attrib. A (positions)             : 3 x 2 bit  
+  //Attrib. B (normals)               : 16 bit, computed per triangle via dot product
+  //Result Buffer Alignment / Padding : a1 a2 a3 0  b1 b2 b3 0
+  
+	//{
+    var idx   	     = 0;
+    var n            = dataBufferView.length;
+    
+		var i, dataChunk, a1, a2, a3, b1, b2, b3,
+        points = 0, p = [], e1, e2, nor;
+		
+		for (i = 0; i < n; ++i) {		
+			dataChunk = dataBufferView[i];
+			
+			a1   = (dataChunk & 0xC0) >>> 6;
+			a1 <<= aPrecOff; 
+			
+			a2   = (dataChunk & 0x30) >>> 4;
+			a2 <<= aPrecOff;
+			
+			a3 	 = (dataChunk & 0x0C) >>> 2;
+			a3 <<= aPrecOff;
+			
+			resultBufferView[idx++] |= a1;
+			resultBufferView[idx++] |= a2
+			resultBufferView[idx++] |= a3;
+      
+      p[points] = [resultBufferView[idx-3],
+                   resultBufferView[idx-2],
+                   resultBufferView[idx-1]];
+      
+      ++idx;
+      
+      if (++points === 3) {
+        points = 0;
+        
+        e1  = this.normalize(this.subtract(p[1], p[0]));
+        e2  = this.normalize(this.subtract(p[2], p[0]));        
+        nor = this.normalize(this.cross(e1, e2));
+          
+        b1 = nor[0] * 32767 + 32767;
+        b2 = nor[1] * 32767 + 32767;
+        b3 = nor[2] * 32767 + 32767;
+        
+        resultBufferView[idx        ] = b1;
+        resultBufferView[idx+1      ] = b2;
+        resultBufferView[idx+2      ] = b3;
+                                 
+        resultBufferView[idx   - 8  ] = b1;
+        resultBufferView[idx+1 - 8  ] = b2;
+        resultBufferView[idx+2 - 8  ] = b3;
+                                 
+        resultBufferView[idx   - 8*2] = b1;
+        resultBufferView[idx+1 - 8*2] = b2;
+        resultBufferView[idx+2 - 8*2] = b3;
+      }
+      
+      idx+=4;
 		}
 	//}
 };

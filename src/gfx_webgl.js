@@ -3301,29 +3301,33 @@ x3dom.gfx_webgl = (function () {
 				}
 			
 				//If there is still no BitComposer create a new one 
-				shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
+				//shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
+        shape._webgl.refinementJobManager = new x3dom.RefinementJobManager();
 				
-				function callBack(refinedBuffer)
+				function callBack(attributeId, bufferView)
 				{	
 					var attribTypeStr 		= bitLODGeometry._vf.coordType;
 					  
-					shape._webgl.coordType    = getVertexAttribType(attribTypeStr, gl);
-					shape._webgl.normalType   = shape._webgl.coordType;
+					shape._webgl.coordType  = getVertexAttribType(attribTypeStr, gl);
+					shape._webgl.normalType = shape._webgl.coordType;
 					
-					var attributes = getArrayBufferView(attribTypeStr, refinedBuffer);
+          //@todo: do we still need this function now?
+          //var attributes = getArrayBufferView(attribTypeStr, refinedBuffer);
           
-					// calculate number of single data packages by including stride and type size
-					var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
-					if (dataLen)
-						bitLODGeometry._mesh._numCoords = attributes.length / dataLen;
+					// calculate number of single data packages by including stride and type size					
+          var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
+					//@todo: we need numCoords before this callback is invoked
+          if (dataLen)
+						bitLODGeometry._mesh._numCoords = bufferView.length / dataLen;
 					
+          //@todo: can we create this webgl buffers once when initializing the corresponding ArrayBuffer objects?
 					var buffer = gl.createBuffer();
 					
-					//Vertices
+					//Positions
 					shape._webgl.buffers[1] = buffer;
 					
 					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-					gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
+					gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
 					
 					gl.vertexAttribPointer(sp.position, 3, shape._webgl.coordType, false, 
 										   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
@@ -3333,29 +3337,44 @@ x3dom.gfx_webgl = (function () {
 					shape._webgl.buffers[2] = buffer;
 					
 					gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-					gl.bufferData(gl.ARRAY_BUFFER, attributes, gl.STATIC_DRAW);
+					gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
 					
 					gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, 
 					                    shape._webgl.normalType, false, 
 					                    shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
 					gl.enableVertexAttribArray(sp.normal);
 					
-					attributes = null;
+					bufferView = null;
 					
 				    //shape._nameSpace.doc.downloadCount -= 1;
 				    shape._nameSpace.doc.needRender = true;
 					
-					shape._webgl.bitLODComposer.refine(refinedBuffer);
+					shape._webgl.refinementJobManager.continueProcessing(attributeId);
 				}
 
-				shape._webgl.bitLODComposer.run([3, 2], 					 	//components
-									    [16, 16], 					 			//attribute bits for each component
-									    [6, 2], 					 			//bits per refinement level for all components
-									    bitLODGeometry.getComponentsURLs(),		//URLs for the files of the refinement levels
-									    callBack,
-										[0, 64],					            //write offset in bits (interleaved output)
-										96);			                        //write stride in bits (interleaved output)
-     
+        //allocate buffers, pass them to the refinement manager
+        //@todo: get number of vertices
+        const numVerts = 600000;
+  
+        var buf = new ArrayBuffer(12 * numVerts);  
+        var interleavedCoordNormalBuffer = new Uint16Array(buf);
+        
+        shape._webgl.refinementJobManager.addResultBuffer(0, interleavedCoordNormalBuffer);        
+        
+        const NumLevels = 8;
+        var i;
+        for (i = 0; i < NumLevels; ++i) {
+            shape._webgl.refinementJobManager.addRefinementJob(0,                                     //attributeId / resultBufferId
+                                                               i,                                     //download priority
+                                                               bitLODGeometry.getComponentsURLs()[i], //data file url
+                                                               i,                                     //refinement level (-> important for bit shift)
+                                                               callBack,                              //'job finished'-callback
+                                                               96,                                    //stride in bits (size of a single result element)
+                                                               [3, 2],                                //number of components information array
+                                                               [6, 2],                                //bits per refinement level information array
+                                                               [0, 6],                                //read offset (bits) information array
+                                                               [0, 64]);                              //write offset (bits) information array                                       
+        }
 			}
 		}		
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
