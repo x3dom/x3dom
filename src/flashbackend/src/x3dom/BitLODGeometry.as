@@ -172,8 +172,8 @@ package x3dom
 		/**
 		 * 
 		 */
-		override public function setIndices(idx:uint, indices:Object, calcNumTris:Boolean = true) : void {
-			
+		override public function setIndices(idx:uint, indices:Object, calcNumTris:Boolean = true) : void 
+		{			
 			if( String(indices) != "") {
 				
 				this._indicesComplete = false;

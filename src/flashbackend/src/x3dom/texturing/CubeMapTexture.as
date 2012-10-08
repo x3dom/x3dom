@@ -10,6 +10,7 @@ package x3dom.texturing
 	import flash.geom.Matrix;
 	import flash.net.URLRequest;
 	
+	import x3dom.*;
 	import x3dom.Debug;
 	import x3dom.Utils;
 
@@ -67,7 +68,7 @@ package x3dom.texturing
 			this._texLoader[face].contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
 			
 			//Load image from url
-			this._texLoader[face].load( new URLRequest( url ) );
+			this._texLoader[face].load( new URLRequest( url ), FlashBackend.getLoaderContext() );
 		}
 		
 		/**

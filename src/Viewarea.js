@@ -225,11 +225,25 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         {
             var typeParams = navi.getTypeParams();
 
+            if (this._lastButton & 2)
+            {
+                var stepUp = this._deltaT * this._deltaT * navi._vf.speed;
+                stepUp *= 0.1 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+                typeParams[1] += stepUp;
+
+                navi.setTypeParams(typeParams);
+            }
+
+            if (this._lastButton & 1) {
+                step *= this._deltaT * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+            }
+            else {
+                step = 0;
+            }
+
             theta = typeParams[0];
             this._from.y = typeParams[1];
             this._at.y = this._from.y;
-
-            step *= this._deltaT * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
 
             // rotate around the up vector
             q = x3dom.fields.Quaternion.axisAngle(this._up, phi);

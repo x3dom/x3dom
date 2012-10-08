@@ -102,7 +102,7 @@ x3dom.Runtime.prototype.enterFrame = function() {
  *   > var element, bindable;
  *   > element = doucment.getElementById('the_x3delement');
  *   > bindable = element.runtime.getActiveBindable('background');
- *   > bindable.setAttribute('set_bind', 'false');
+ *   > bindable.setAttribute('bind', 'false');
  *
  * Parameters:
  * 		typeName - bindable type name
@@ -294,23 +294,26 @@ x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
  */
 x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
     var elem = this.canvas.canvas.offsetParent;
+
+    if (!elem) {
+        x3dom.debug.logError("Can't calc page pos without offsetParent.");
+        return [0, 0];
+    }
     
-	var cavasPos = elem.getBoundingClientRect();
+	var canvasPos = elem.getBoundingClientRect();
 	var mousePos = this.calcCanvasPos(wx, wy, wz);
 	
-	var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-	var scroltop = 	window.pageYOffset || document.body.scrollTop;
+	var scrollLeft =  window.pageXOffset || document.body.scrollLeft;
+	var scrollTop = 	window.pageYOffset || document.body.scrollTop;
 	
 	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
 	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
 		
 	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
-	
-	var mousePos = this.calcCanvasPos(wx, wy, wz);
 		
-	var x = cavasPos.left + paddingLeft + borderLeftWidth + scrolleft + mousePos[0];
-    var y = cavasPos.top + paddingTop + borderTopWidth + scroltop + mousePos[1];
+	var x = canvasPos.left + paddingLeft + borderLeftWidth + scrollLeft + mousePos[0];
+    var y = canvasPos.top + paddingTop + borderTopWidth + scrollTop + mousePos[1];
     
     return [x, y];
 };
@@ -323,7 +326,14 @@ x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
  */
 x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
     var elem = this.canvas.canvas.offsetParent;
-    var cavasPos = elem.getBoundingClientRect();
+
+    if (!elem) {
+        x3dom.debug.logError("Can't calc client pos without offsetParent.");
+        return [0, 0];
+    }
+
+    var canvasPos = elem.getBoundingClientRect();
+    var mousePos = this.calcCanvasPos(wx, wy, wz);
 	
 	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
 	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
@@ -331,10 +341,8 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
 	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
 	
-	var mousePos = this.calcCanvasPos(wx, wy, wz);
-	
-	var x = cavasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
-    var y = cavasPos.top + paddingTop + borderTopWidth + mousePos[1];
+	var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
+    var y = canvasPos.top + paddingTop + borderTopWidth + mousePos[1];
     
     return [x, y];
 };

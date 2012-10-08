@@ -42,6 +42,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		node.appendChild( param );
 	};
 	
+	this.fileExists = function(url) {
+		var xhr = new XMLHttpRequest();
+		try {
+			xhr.open("HEAD", url, false);
+			xhr.send(null);
+			return (xhr.status==404) ? false : true;
+		} catch(e) { return true; }
+	};		
+	
 	this.detectFlash = function(required, max)
 	{
 		var required_version = required;
@@ -70,6 +79,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	
 	this.createInitFailedDiv = function(x3dElem) {
 		var div = document.createElement('div');
+        div.setAttribute("id", "x3dom-create-init-failed");
 		div.style.width = x3dElem.getAttribute("width");;
 		div.style.height = x3dElem.getAttribute("height");;
 		div.style.backgroundColor = "#C00";
@@ -90,9 +100,23 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		link.setAttribute('href', 'http://www.x3dom.org/?page_id=9');
 		link.appendChild( document.createTextNode('X3DOM | Browser Support'));
 		div.appendChild(link);
-		x3dElem.appendChild(div);
-		
-		x3dom.debug.logError("Your Browser does not support X3DOM!");
+
+        // check if "altImg" is specified on x3d element and if so use it as background
+        altImg = x3dElem.getAttribute("altImg") || null;
+        if (altImg) {
+            altImgObj = new Image();
+            altImgObj.src = altImg;
+            div.style.backgroundImage = "url("+altImg+")";
+            div.style.backgroundRepeat = "no-repeat"
+            div.style.backgroundPosition = "50% 50%"
+        }
+
+        x3dElem.appendChild(div);
+
+
+
+
+        x3dom.debug.logError("Your Browser does not support X3DOM!");
 	}
 
 	this.createFlashObject = function(x3dElem) {
@@ -118,6 +142,12 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			var swf_path = x3dElem.getAttribute("swfpath");
 			if (swf_path === null) {
 				swf_path = "x3dom.swf";
+			}
+			
+			if( !this.fileExists(swf_path) )
+			{
+				swf_path = "http://www.x3dom.org/download/x3dom.swf";
+				x3dom.debug.logWarning("Can't find local x3dom.swf. X3DOM now using the online version from x3dom.org."); 
 			}
 
 			//Get width from x3d-Element or set default
@@ -455,6 +485,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
     this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
     //this.showTouchpoints = this.showTouchpoints ? (this.showTouchpoints.toLowerCase() == "true") : false;
+
+    this.disableTouch = x3dElem.getAttribute("disableTouch");
+    this.disableTouch = this.disableTouch ? (this.disableTouch.toLowerCase() == "true") : false;
     
     
     if (this.canvas !== null && this.gl !== null && this.hasRuntime && this.backend !== "flash") {
@@ -536,7 +569,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				
 				evt.returnValue = true;
 			}
-			
         }, false);
 
         this.canvas.addEventListener('mouseout', function (evt) {
@@ -674,7 +706,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
               
             return rotation;
           },
-          
+
+          disableTouch: this.disableTouch,
           // set a mark in HTML so we can track the position of the finger visually
           visMarker: this.showTouchpoints,
           visMarkerBag: new Array(),
@@ -945,17 +978,20 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           
 			touchEndHandler(mozilla_touches, this.parent.doc);
         };
-        
-        // mozilla touch events
-        this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
-        this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
-        this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
 
-        // w3c / apple touch events (in Chrome via chrome://flags)
-        this.canvas.addEventListener('touchstart',    touchStartHandler, true);
-        this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
-        this.canvas.addEventListener('touchend',      touchEndHandler,   true);
-    };
+        if (!this.disableTouch)
+        {
+            // mozilla touch events
+            this.canvas.addEventListener('MozTouchDown',  touchStartHandlerMoz, true);
+            this.canvas.addEventListener('MozTouchMove',  touchMoveHandlerMoz,  true);
+            this.canvas.addEventListener('MozTouchUp',    touchEndHandlerMoz,   true);
+
+            // w3c / apple touch events (in Chrome via chrome://flags)
+            this.canvas.addEventListener('touchstart',    touchStartHandler, true);
+            this.canvas.addEventListener('touchmove',     touchMoveHandler,  true);
+            this.canvas.addEventListener('touchend',      touchEndHandler,   true);
+        }
+    }
     
     /** Helper that converts a point from node coordinates to page coordinates 
         FIXME: does NOT work when x3dom.css is not included so that x3d element is not floating

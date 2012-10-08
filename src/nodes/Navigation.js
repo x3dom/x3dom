@@ -50,8 +50,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
-            this.addField_SFFloat(ctx, 'zNear', 0.1);
-            this.addField_SFFloat(ctx, 'zFar', 100000);
+            this.addField_SFFloat(ctx, 'zNear', -1); //0.1);
+            this.addField_SFFloat(ctx, 'zFar', -1);  //100000);
 
             //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
             //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
@@ -60,6 +60,8 @@ x3dom.registerNodeType(
 
             this._projMatrix = null;
             this._lastAspect = 1.0;
+            // z-ratio: a value around 5000 would be better...
+            this._zRatio = 10000;
             this._zNear = this._vf.zNear;
             this._zFar = this._vf.zFar;
         },
@@ -76,9 +78,9 @@ x3dom.registerNodeType(
                     this._zNear = this._vf.zNear;
                     this._zFar = this._vf.zFar;
                 }
-                else if (fieldName === "set_bind") {
+                else if (fieldName.indexOf("bind") >= 0) {
                     // FIXME; call parent.fieldChanged();
-                    this.bind(this._vf.set_bind);
+                    this.bind(this._vf.bind);
                 }
             },
 
@@ -141,8 +143,6 @@ x3dom.registerNodeType(
 
                 if (znear <= 0 || zfar <= 0)
                 {
-                    // z-ratio: a value around 5000 would be better...
-                    var zRatio = 100000;
                     var nearScale = 0.8, farScale = 1.2;
                     var viewarea = this._nameSpace.doc._viewarea;
                     
@@ -174,7 +174,7 @@ x3dom.registerNodeType(
                         zfar = 100000;
                     }
                     
-                    var zNearLimit = zfar / zRatio;
+                    var zNearLimit = zfar / this._zRatio;
                     znear = Math.max(znear, Math.max(x3dom.fields.Eps, zNearLimit));
                     //x3dom.debug.logInfo("near: " + znear + " -> far:" + zfar);
                     
@@ -249,8 +249,8 @@ x3dom.registerNodeType(
                 else if (fieldName == "projection") {
                     this._projMatrix = this._vf.projection;
                 }
-                else if (fieldName === "set_bind") {
-                    this.bind(this._vf.set_bind);
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
                 }
             },
 
@@ -338,6 +338,12 @@ x3dom.registerNodeType(
                 var height = (this._vf.typeParams.length >= 2) ? this._vf.typeParams[1] : 0;
 
                 return [theta, height];
+            },
+
+            setTypeParams: function(params) {
+                for (var i=0; i<params.length; i++) {
+                    this._vf.typeParams[i] = params[i];
+                }
             },
 
             setType: function(type, viewarea) {

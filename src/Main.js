@@ -254,13 +254,6 @@ x3dom.userAgentFeature = {
                     x3d_element.removeChild(x3dcanvas.statDiv);
                 }
 
-                // check if "altImg" is specified on x3d element and if so use it as background
-                altImg = x3ds[i].getAttribute("altImg") || null;
-                if (altImg) {
-                    altImgObj = new Image();
-                    altImgObj.src = altImg;                    
-                    x3d_element.style.backgroundImage = "url("+altImg+")";                    
-                }
                 continue;
             }
             
