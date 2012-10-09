@@ -173,6 +173,19 @@ x3dom.shader.ShaderCache.prototype.generateProperties = function (viewarea, shap
 /**
  * Returns "shader" such that "shader.foo = [1,2,3]" magically sets the appropriate uniform
  */
+
+/*
+ * Passing a MFFloat type into uniform.
+ * by Sofiane Benchaa, 2012.
+ * 
+ * Based on OpenGL specification.
+ * url: http://www.opengl.org/sdk/docs/man/xhtml/glGetUniformLocation.xml 
+ *
+ * excerpt : Except if the last part of name indicates a uniform variable array, 
+ * the location of the first element of an array can be retrieved by using the name of the array, 
+ * or by using the name appended by "[0]".
+ * 
+ */
 x3dom.shader.ShaderCache.prototype.wrapProgram = function (gl, program)
 {
 	var shader = {};
@@ -216,8 +229,13 @@ x3dom.shader.ShaderCache.prototype.wrapProgram = function (gl, program)
 					(function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
 				break;
 			case gl.FLOAT:
-				shader.__defineSetter__(obj.name, 
-					(function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
+				// Detecting the float array and extracting his uniform name without the brackets.
+				if(obj.name.indexOf("[0]")!=-1)
+					shader.__defineSetter__(obj.name.substring(0,obj.name.length-3), 
+						(function (loc) { return function (val) { gl.uniform1fv(loc, new Float32Array(val)); }; })(loc));
+				else
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
 				break;
 			case gl.FLOAT_VEC2:
 				shader.__defineSetter__(obj.name, 
