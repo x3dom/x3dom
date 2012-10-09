@@ -51,14 +51,14 @@ function UpdateTotal(ms) {
 }
 
 
-var refinementURLs = [ 'buddha_nonindexed/refinement00.bin',
-                       'buddha_nonindexed/refinement01.bin',
-                       'buddha_nonindexed/refinement02.bin',
-                       'buddha_nonindexed/refinement03.bin',
-                       'buddha_nonindexed/refinement04.bin',
-                       'buddha_nonindexed/refinement05.bin',
-                       'buddha_nonindexed/refinement06.bin',
-                       'buddha_nonindexed/refinement07.bin' ];
+var refinementURLs = [ 'nonindexed/refinement00.bin',
+                       'nonindexed/refinement01.bin',
+                       'nonindexed/refinement02.bin',
+                       'nonindexed/refinement03.bin',
+                       'nonindexed/refinement04.bin',
+                       'nonindexed/refinement05.bin',
+                       'nonindexed/refinement06.bin',
+                       'nonindexed/refinement07.bin' ];
              
              
 function LoaderExample() { }
@@ -110,7 +110,7 @@ load : function(gl)
     };    
   })(refinementManager);
                                  //3263148
-  var buf = new ArrayBuffer(16 * 3254172);
+  var buf = new ArrayBuffer(16 * 233103);
   
   var interleavedCoordNormalBuffer = new Uint16Array(buf);
   
@@ -154,12 +154,13 @@ draw : function(gl)
     this.xform.projection.perspective(sglDegToRad(60.0), w/h, 0.1, 100.0);
 
     this.xform.view.loadIdentity();
-    this.xform.view.lookAt(0.0, 2.0, 3.0,
-                           0.0, 0.0, 0.0,
+    this.xform.view.lookAt(0.0, 2.0, 4.0,
+                           0.0, 1.0, 0.0,
                            0.0, 1.0, 0.0);
 
-    this.xform.model.loadIdentity();
+    this.xform.model.loadIdentity();    
     this.xform.model.rotate(sglDegToRad(this.angle), 0.0, 1.0, 0.0);
+    this.xform.model.translate(-0.2, 0.0, -0.6);
 
     gl.uniformMatrix4fv(this.program.set_uniform["u_mvp"], false,
                         this.xform.modelViewProjectionMatrix);
@@ -169,7 +170,7 @@ draw : function(gl)
     gl.vertexAttribPointer(normalAttribLocation,   3, gl.UNSIGNED_SHORT, true, 8*2, 4*2);
 
     //3263148    
-    gl.drawArrays(gl.TRIANGLES, 0, 3254172);
+    gl.drawArrays(gl.TRIANGLES, 0, 233103);
     
     //-  
     if (refinedLevels !== NumLevels) {        
