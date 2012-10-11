@@ -13,6 +13,7 @@ const StrideInBits = 48;
 var indexArray;
 
 var triangleBuffer = 'undefined';
+var normalBuffer;
 
 var glContext;
 
@@ -97,6 +98,7 @@ load : function(gl)
   
   glBuffers             = {};    
   glBuffers.vertex_data = gl.createBuffer();  
+  glBuffers.normal_data = gl.createBuffer();  
   
   var xhr = new XMLHttpRequest();
   xhr.open("GET", 'indexed_tris/indices.bin', true);
@@ -174,8 +176,9 @@ draw : function(gl)
                         this.xform.modelViewProjectionMatrix);
    
     gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.vertex_data);
-    gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true, 8*2, 0);
-    gl.vertexAttribPointer(normalAttribLocation,   3, gl.UNSIGNED_SHORT, true, 8*2, 4*2);
+    gl.vertexAttribPointer(positionAttribLocation, 3, gl.UNSIGNED_SHORT, true,  4*2, 0);
+    gl.bindBuffer(gl.ARRAY_BUFFER, glBuffers.normal_data);
+    gl.vertexAttribPointer(normalAttribLocation,   3, gl.FLOAT,        false, 3*4, 0);
 
     gl.drawArrays(gl.TRIANGLES, 0, 3254172);
     
@@ -186,6 +189,13 @@ draw : function(gl)
   
   }  
 }
+};
+
+
+function add(v0, v1) {
+  return [v0[0] + v1[0],
+          v0[1] + v1[1],
+          v0[2] + v1[2]];
 };
 
 
@@ -211,8 +221,7 @@ function cross(v0, v1) {
 
 
 function refinementFinishedCallback(attributeId, buffer, refinementJobManager) {
-  var normalBuffer,
-      coordBuffer, i, idx, t_idx,
+  var coordBuffer, i, idx, t_idx, n_idx,
       point_idx, points, e1, e2, nor;
 
   coordBuffer  = new Uint16Array(buffer);
@@ -226,8 +235,10 @@ function refinementFinishedCallback(attributeId, buffer, refinementJobManager) {
   //if (refinedLevels === NumLevels)
   { 
     if (triangleBuffer === 'undefined') {
-      //8 entries per element -> xyz + one zero byte as padding, same for normals
-      triangleBuffer = new Uint16Array(indexArray.length * 8);
+      //4 entries per element -> xyz + one zero byte as padding
+      triangleBuffer = new Uint16Array(indexArray.length  * 4);
+      
+      normalBuffer   = new Float32Array(indexArray.length * 3);
     }
     
     //create VBO data, using downloaded indices, create normals on-the-fly
@@ -240,7 +251,7 @@ function refinementFinishedCallback(attributeId, buffer, refinementJobManager) {
       points[point_idx][1] = coordBuffer[idx + 1];
       points[point_idx][2] = coordBuffer[idx + 2];
       
-      t_idx = i*8;
+      t_idx = i*4;
       
       triangleBuffer[t_idx    ] = points[point_idx][0];
       triangleBuffer[t_idx + 1] = points[point_idx][1];
@@ -249,31 +260,31 @@ function refinementFinishedCallback(attributeId, buffer, refinementJobManager) {
       if (++point_idx === 3) {
         point_idx = 0;
       
-        e1  = normalize(subtract(points[1], points[0]));
-        e2  = normalize(subtract(points[2], points[0]));
-        nor = cross(e1, e2);
+        e1  = subtract(points[1], points[0]);
+        e2  = subtract(points[2], points[0]);
+        nor = normalize(cross(e1, e2));
+      
+        n_idx = i*3;
         
-        nor[0] = nor[0] * 32767 + 32767;
-        nor[1] = nor[1] * 32767 + 32767;
-        nor[2] = nor[2] * 32767 + 32767;
+        normalBuffer[n_idx    ]  = nor[0];
+        normalBuffer[n_idx + 1]  = nor[1];
+        normalBuffer[n_idx + 2]  = nor[2];
         
-        triangleBuffer[t_idx + 4] = nor[0];
-        triangleBuffer[t_idx + 5] = nor[1];
-        triangleBuffer[t_idx + 6] = nor[2];
+        normalBuffer[n_idx - 3 ] = nor[0]; 
+        normalBuffer[n_idx - 2 ] = nor[1]; 
+        normalBuffer[n_idx - 1 ] = nor[2]; 
         
-        triangleBuffer[t_idx - 4 ] = nor[0]; 
-        triangleBuffer[t_idx - 3 ] = nor[1]; 
-        triangleBuffer[t_idx - 2 ] = nor[2]; 
-                               
-        triangleBuffer[t_idx - 12] = nor[0];
-        triangleBuffer[t_idx - 11] = nor[1];
-        triangleBuffer[t_idx - 10] = nor[2];
+        normalBuffer[n_idx - 6]  = nor[0];
+        normalBuffer[n_idx - 5]  = nor[1];
+        normalBuffer[n_idx - 4]  = nor[2];
       }
     }
   
     //upload the VBO data to the GPU
     glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.vertex_data);  
     glContext.bufferData(glContext.ARRAY_BUFFER, triangleBuffer, glContext.STATIC_DRAW);
+    glContext.bindBuffer(glContext.ARRAY_BUFFER, glBuffers.normal_data);  
+    glContext.bufferData(glContext.ARRAY_BUFFER, normalBuffer, glContext.STATIC_DRAW);
   }
   
   var allFinished = true;
