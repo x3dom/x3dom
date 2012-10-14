@@ -432,6 +432,7 @@ x3dom.registerNodeType(
             this._websocket = null;     // pointer to socket
 
             this._nameObjMap = {};
+            //this._createTime = [];
 
             this.initializeSocket();    // init socket connection
         },
@@ -542,14 +543,17 @@ x3dom.registerNodeType(
             nodeChanged: function ()
             {
                 this._nameObjMap = {};
+                //this._createTime = [];
 
-                for (var i= 0, n=this._vf.label.length; i<n; ++i)
+                for (var i=0, n=this._vf.label.length; i<n; ++i)
                 {
                     var shape = this._childNodes[i];
                     if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode))
-                        this._nameObjMap[this._vf.label[i]] = shape;
+                        this._nameObjMap[this._vf.label[i]] = { shape: shape, pos: i };
 					else
 						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+					// init list that holds creation time of gl object
+					//this._createTime[i] = { pos: i, time: 0, id: this._vf.label[i] };
                 }
             },
 
@@ -564,6 +568,26 @@ x3dom.registerNodeType(
                     this.initializeSocket();
                 }
             },
+            
+            getNumRenderedObjects: function(len)
+            {
+                var n = len;
+				
+                if (this._vf.maxRenderedIds > 0)
+                {
+                    var num = Math.max(this._vf.maxRenderedIds, 16);  // set lower bound
+                    var scale = 1;
+                    
+                    if (this._nameSpace.doc._viewarea._lastButton > 0 || 
+                        this._nameSpace.doc._viewarea._isAnimating)
+                        scale = Math.min(this._vf.scaleRenderedIdsOnMove, 1);
+                    
+                    num = Math.max(Math.round(scale * num), 0);
+                    n = Math.min(n, num);
+                }
+                
+                return n;
+            },
 
             // Collects array of [matrix, node] for all objects with given id that should be drawn
             // out is drawableObjects array
@@ -573,12 +597,16 @@ x3dom.registerNodeType(
                     return;
                 }
 
+                var i, n;
+                
                 if (!this._vf.enableCulling)
                 {
-                    for (var j=0; j<this._childNodes.length; j++) {
-                        if (this._childNodes[j]) {
-                            var childTrafo = this._childNodes[j].transformMatrix(transform);
-                            this._childNodes[j].collectDrawableObjects(childTrafo, out);
+                    n = this.getNumRenderedObjects(this._childNodes.length);
+                    
+                    for (i=0; i<n; i++) {
+                        if (this._childNodes[i]) {
+                            var childTrafo = this._childNodes[i].transformMatrix(transform);
+                            this._childNodes[i].collectDrawableObjects(childTrafo, out);
                         }
                     }
                     return;
@@ -588,25 +616,15 @@ x3dom.registerNodeType(
                     this._websocket.updateCamera();
 
                 // TODO; fully remove idList in collect, but for now...
-                var i, n, maxCnt;
-
                 if (this._vf.label.length)
                 {
-                    n = this._idList.length;
-                    maxCnt = this._vf.maxRenderedIds;
-					
-                    if ((this._nameSpace.doc._viewarea._lastButton > 0 || 
-                         this._nameSpace.doc._viewarea._isAnimating) && maxCnt > 0) {
-                        var num = Math.max(maxCnt, 16);
-                        num = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnMove, 1.0) * num), 0.0);
-                        n = Math.min(n, num);
-                    }
+                    n = this.getNumRenderedObjects(this._idList.length);
                     
                     for (i=0; i<n; i++)
                     {
                         var obj = this._nameObjMap[this._idList[i]];
-                        if (obj)
-                            obj.collectDrawableObjects(transform, out);
+                        if (obj && obj.shape)
+                            obj.shape.collectDrawableObjects(transform, out);
 						else
 							x3dom.debug.logError("Invalid label: " + this._idList[i]);
                     }
