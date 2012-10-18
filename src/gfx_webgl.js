@@ -1203,6 +1203,9 @@ x3dom.gfx_webgl = (function () {
             
                 xmlhttp0.onload = function() 
                 {
+                    if (!shape._webgl)
+                        return;
+                    
                     var XHR_buffer = xmlhttp0.response;
 
                     var indicesBuffer = gl.createBuffer();
@@ -1259,6 +1262,9 @@ x3dom.gfx_webgl = (function () {
 
                 xmlhttp.onload = function()
                 {
+                    if (!shape._webgl)
+                        return;
+                    
                     var XHR_buffer = xmlhttp.response;
 
                     var geoNode = shape._cf.geometry.node;
@@ -1364,6 +1370,9 @@ x3dom.gfx_webgl = (function () {
             
                 xmlhttp1.onload = function() 
                 {
+                    if (!shape._webgl)
+                        return;
+                    
                     var XHR_buffer = xmlhttp1.response;
 
                     positionBuffer = gl.createBuffer();
@@ -1483,6 +1492,9 @@ x3dom.gfx_webgl = (function () {
             
                 xmlhttp2.onload = function() 
                 {
+                    if (!shape._webgl)
+                        return;
+                    
                     var XHR_buffer = xmlhttp2.response;
 
                     var normalBuffer = gl.createBuffer();
@@ -1532,6 +1544,9 @@ x3dom.gfx_webgl = (function () {
             
                 xmlhttp3.onload = function() 
                 {
+                    if (!shape._webgl)
+                        return;
+                    
                     var XHR_buffer = xmlhttp3.response;
 
                     var texcBuffer = gl.createBuffer();
@@ -1581,6 +1596,9 @@ x3dom.gfx_webgl = (function () {
             
                 xmlhttp4.onload = function() 
                 {
+                    if (!shape._webgl)
+                        return;
+                    
                     var XHR_buffer = xmlhttp4.response;
 
                     var colorBuffer = gl.createBuffer();

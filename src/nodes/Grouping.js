@@ -427,12 +427,14 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
             this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
+            this.addField_MFString(ctx, 'invisibleNodes', []);  // allows disabling nodes with given label name (incl. prefix*)
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
 
             this._nameObjMap = {};
             //this._createTime = [];
+            this._visibleList = [];
 
             this.initializeSocket();    // init socket connection
         },
@@ -544,14 +546,19 @@ x3dom.registerNodeType(
             {
                 this._nameObjMap = {};
                 //this._createTime = [];
+                this._visibleList = [];
 
                 for (var i=0, n=this._vf.label.length; i<n; ++i)
                 {
                     var shape = this._childNodes[i];
-                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode))
+                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
                         this._nameObjMap[this._vf.label[i]] = { shape: shape, pos: i };
-					else
+                        this._visibleList[i] = true;
+                    }
+					else {
 						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+						this._visibleList[i] = false;
+					}
 					// init list that holds creation time of gl object
 					//this._createTime[i] = { pos: i, time: 0, id: this._vf.label[i] };
                 }
@@ -566,6 +573,34 @@ x3dom.registerNodeType(
                         this._websocket = null;
                     }
                     this.initializeSocket();
+                }
+                else if (fieldName == "invisibleNodes")
+                {
+                    for (var i=0, n=this._vf.label.length; i<n; ++i)
+                    {
+                        var shape = this._childNodes[i];
+                        
+                        if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) 
+                        {
+                            this._visibleList[i] = true;
+                            
+                            for (var j=0; j<this._vf.invisibleNodes.length; ++j)
+                            {
+                                var nodeName = this._vf.invisibleNodes[j];
+                                var starInd = nodeName.lastIndexOf('*');
+                                if (starInd > 0)
+                                    nodeName = nodeName.substring(0, starInd) + "_";
+                                
+                                if (this._vf.label[i].indexOf(nodeName) >= 0) {
+                                    this._visibleList[i] = false;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            this._visibleList[i] = false;
+                        }
+                    }
                 }
             },
             
@@ -603,10 +638,16 @@ x3dom.registerNodeType(
                 {
                     n = this.getNumRenderedObjects(this._childNodes.length);
                     
-                    for (i=0; i<n; i++) {
+                    for (i=0, cnt=0; i<this._childNodes.length; i++) {
                         if (this._childNodes[i]) {
-                            var childTrafo = this._childNodes[i].transformMatrix(transform);
-                            this._childNodes[i].collectDrawableObjects(childTrafo, out);
+                            if (this._visibleList[i] && cnt < n) {
+                                this._childNodes[i].collectDrawableObjects(transform, out);
+                                cnt++;
+                            }
+                            else {
+                                if (this._childNodes[i]._cleanupGLObjects)
+                                    this._childNodes[i]._cleanupGLObjects(true);
+                            }
                         }
                     }
                     return;
