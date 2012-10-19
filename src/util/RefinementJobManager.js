@@ -9,6 +9,7 @@ x3dom.RefinementJobManager = function() {
   
   if (typeof Worker !== 'undefined') {
     this.worker = new Worker(new x3dom.RefinementJobWorker().toBlob());
+    console.log(this.worker);
     this.worker.postMessage = this.worker.webkitPostMessage || this.worker.postMessage;  
     this.worker.addEventListener('message', function(event){return self.messageFromWorker(event);}, false);
   }
