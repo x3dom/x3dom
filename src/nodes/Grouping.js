@@ -433,7 +433,7 @@ x3dom.registerNodeType(
             this._websocket = null;     // pointer to socket
 
             this._nameObjMap = {};
-            //this._createTime = [];
+            this._createTime = [];
             this._visibleList = [];
 
             this.initializeSocket();    // init socket connection
@@ -545,7 +545,7 @@ x3dom.registerNodeType(
             nodeChanged: function ()
             {
                 this._nameObjMap = {};
-                //this._createTime = [];
+                this._createTime = [];
                 this._visibleList = [];
 
                 for (var i=0, n=this._vf.label.length; i<n; ++i)
@@ -560,7 +560,7 @@ x3dom.registerNodeType(
 						this._visibleList[i] = false;
 					}
 					// init list that holds creation time of gl object
-					//this._createTime[i] = { pos: i, time: 0, id: this._vf.label[i] };
+					this._createTime[i] = 0;
                 }
             },
 
@@ -588,8 +588,11 @@ x3dom.registerNodeType(
                             {
                                 var nodeName = this._vf.invisibleNodes[j];
                                 var starInd = nodeName.lastIndexOf('*');
+                                
                                 if (starInd > 0)
                                     nodeName = nodeName.substring(0, starInd) + "_";
+                                if (nodeName.length <= 1)
+                                    continue;
                                 
                                 if (this._vf.label[i].indexOf(nodeName) >= 0) {
                                     this._visibleList[i] = false;
@@ -604,17 +607,16 @@ x3dom.registerNodeType(
                 }
             },
             
-            getNumRenderedObjects: function(len)
+            getNumRenderedObjects: function(len, isMoving)
             {
                 var n = len;
 				
                 if (this._vf.maxRenderedIds > 0)
                 {
                     var num = Math.max(this._vf.maxRenderedIds, 16);  // set lower bound
-                    var scale = 1;
                     
-                    if (this._nameSpace.doc._viewarea._lastButton > 0 || 
-                        this._nameSpace.doc._viewarea._isAnimating)
+                    var scale = 1;  // scale down on move
+                    if (isMoving)
                         scale = Math.min(this._vf.scaleRenderedIdsOnMove, 1);
                     
                     num = Math.max(Math.round(scale * num), 0);
@@ -631,22 +633,29 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
-
+                
+                var isMoving = (this._nameSpace.doc._viewarea._lastButton > 0 || 
+                                this._nameSpace.doc._viewarea._isAnimating);
+                var ts = new Date().getTime();
                 var i, n;
                 
                 if (!this._vf.enableCulling)
                 {
-                    n = this.getNumRenderedObjects(this._childNodes.length);
+                    n = this.getNumRenderedObjects(this._childNodes.length, isMoving);
                     
                     for (i=0, cnt=0; i<this._childNodes.length; i++) {
                         if (this._childNodes[i]) {
                             if (this._visibleList[i] && cnt < n) {
                                 this._childNodes[i].collectDrawableObjects(transform, out);
+                                this._createTime[i] = ts;
                                 cnt++;
                             }
                             else {
-                                if (this._childNodes[i]._cleanupGLObjects)
+                                if (this._createTime[i] > 0 && ts - this._createTime[i] > 10000 &&
+                                    this._childNodes[i]._cleanupGLObjects && !isMoving) {
                                     this._childNodes[i]._cleanupGLObjects(true);
+                                    this._createTime[i] = 0;
+                                }
                             }
                         }
                     }
@@ -659,7 +668,7 @@ x3dom.registerNodeType(
                 // TODO; fully remove idList in collect, but for now...
                 if (this._vf.label.length)
                 {
-                    n = this.getNumRenderedObjects(this._idList.length);
+                    n = this.getNumRenderedObjects(this._idList.length, isMoving);
                     
                     for (i=0; i<n; i++)
                     {
