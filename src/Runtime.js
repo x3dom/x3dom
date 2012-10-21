@@ -359,8 +359,20 @@ x3dom.Runtime.prototype.getScreenshot = function() {
 	var url = "";
 	var canvas = this.canvas.canvas;
 
-	if (canvas)
-		url = canvas.toDataURL();
+	if (canvas) {
+	    // first flip along y axis
+        var canvas2d = document.createElement("canvas");
+        canvas2d.width = canvas.width;
+        canvas2d.height = canvas.height;
+
+        var ctx = canvas2d.getContext("2d");
+        ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+        ctx.scale(1, -1);
+        ctx.translate(0, -canvas.height);
+
+        url = canvas2d.toDataURL();
+		//url = canvas.toDataURL();
+	}
 
 	return url;
 };
