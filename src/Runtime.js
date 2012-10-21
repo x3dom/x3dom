@@ -348,6 +348,24 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
 };
 
 /**
+ * Function: getScreenshot
+ *
+ * Returns a Base64 encoded png image consisting of the current rendering.
+ *
+ * Returns:
+ * 		The Base64 encoded PNG image string
+ */
+x3dom.Runtime.prototype.getScreenshot = function() {
+	var url = "";
+	var canvas = this.canvas.canvas;
+
+	if (canvas)
+		url = canvas.toDataURL();
+
+	return url;
+};
+
+/**
  * Function: lightMatrix
  *
  * Returns the current light matrix.
