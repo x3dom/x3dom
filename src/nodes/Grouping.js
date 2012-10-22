@@ -637,6 +637,7 @@ x3dom.registerNodeType(
                 var isMoving = (this._nameSpace.doc._viewarea._lastButton > 0 || 
                                 this._nameSpace.doc._viewarea._isAnimating);
                 var ts = new Date().getTime();
+                var maxLiveTime = 10000;
                 var i, n;
                 
                 if (!this._vf.enableCulling)
@@ -651,7 +652,7 @@ x3dom.registerNodeType(
                                 cnt++;
                             }
                             else {
-                                if (this._createTime[i] > 0 && ts - this._createTime[i] > 10000 &&
+                                if (this._createTime[i] > 0 && ts - this._createTime[i] > maxLiveTime &&
                                     this._childNodes[i]._cleanupGLObjects && !isMoving) {
                                     this._childNodes[i]._cleanupGLObjects(true);
                                     this._createTime[i] = 0;
@@ -673,10 +674,22 @@ x3dom.registerNodeType(
                     for (i=0; i<n; i++)
                     {
                         var obj = this._nameObjMap[this._idList[i]];
-                        if (obj && obj.shape)
+                        if (obj && obj.shape) {
                             obj.shape.collectDrawableObjects(transform, out);
+                            this._createTime[obj.pos] = ts;
+                        }
 						else
 							x3dom.debug.logError("Invalid label: " + this._idList[i]);
+                    }
+                    
+                    for (i=0; i<this._childNodes.length; i++)
+                    {
+                        if (this._childNodes[i] && !isMoving &&
+                            this._createTime[i] > 0 && ts - this._createTime[i] > maxLiveTime &&
+                            this._childNodes[i]._cleanupGLObjects) {
+                            this._childNodes[i]._cleanupGLObjects(true);
+                            this._createTime[i] = 0;
+                        }
                     }
                 }
                 else
