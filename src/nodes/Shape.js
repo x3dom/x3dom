@@ -307,7 +307,7 @@ x3dom.registerNodeType(
 			    // vertex attributes
 				this._dirty.positions = true;
 				this._dirty.normals = true;
-				this._dirty.texcoords = true;
+				this._dirty.texCoords = true;
 				this._dirty.colors =  true;
 				// indices/topology
 				this._dirty.indexes = true;
@@ -324,7 +324,39 @@ x3dom.registerNodeType(
 				this._dirty.texcoords = true;
 				this._dirty.colors =  true;
 				this._dirty.indexes = true;
-            }
+            },
+			
+			getTextures: function() {
+				var textures = [];
+			
+				var tex = this._cf.appearance.node._cf.texture.node;
+				//alert(tex._video);
+				if(tex) {
+					if(x3dom.isa(tex, x3dom.nodeTypes.MultiTexture)) {
+						textures = textures.concat(tex.getTextures());
+					} else {
+						textures.push(tex);
+					}
+				}
+
+				var shader = this._cf.appearance.node._cf.shaders.nodes[0];
+				if(shader) {	
+					if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
+						textures = textures.concat(shader.getTextures());
+					}
+				}
+				
+				var geometry = this._cf.geometry.node;
+				if(geometry) {
+					if(x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry)) {
+						textures = textures.concat(geometry.getTextures());
+					}else if(x3dom.isa(geometry, x3dom.nodeTypes.Text)) {
+						textures = textures.concat(geometry);
+					}
+				}
+				
+				return textures;
+			}
         }
     )
 );

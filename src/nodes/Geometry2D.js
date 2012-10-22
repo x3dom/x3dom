@@ -823,7 +823,7 @@ x3dom.registerNodeType(
 				   this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				   
 				   Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                        node.setAllDirty();
                    });
 					
                 } else {

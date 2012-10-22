@@ -91,7 +91,21 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureCompression', "FASTEST");
             this.addField_SFFloat(ctx, 'texturePriority', 0);
             this.addField_SFBool(ctx, 'generateMipMaps', false);
-        }
+        },
+		{
+			fieldChanged: function(fieldName)
+			{
+				Array.forEach(this._parentNodes, function (texture) {
+					Array.forEach(texture._parentNodes, function (app) {
+						Array.forEach(app._parentNodes, function (shape) {
+							shape._dirty.texture = true;
+						});
+					});
+				});
+
+				this._nameSpace.doc.needRender = true;
+			}
+		}
     )
 );
 
@@ -109,16 +123,12 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
             this.addField_SFBool(ctx, 'scale', true);
-			this.addField_SFInt32(ctx, 'priority', 10);
 
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
-			//this._image = new Image();
-			//this._complete = false;
+			this._type = "diffuseMap";
 			
 			this._blending = (this._vf.origChannelCount == 1 || this._vf.origChannelCount == 2);
-			
-			//x3dom.ImageLoadManager.push( this );
         },
         {
             invalidateGLObject: function ()
@@ -153,12 +163,10 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "url")
+                if (fieldName == "url" || fieldName ==  "origChannelCount" ||
+				    fieldName == "repeatS" || fieldName == "repeatT")
                 {
                     var that = this;
-
-					//x3dom.ImageLoadManager.push( this );
-					this._complete = false;
 
                     Array.forEach(this._parentNodes, function (app) {
                         if (x3dom.isa(app, x3dom.nodeTypes.X3DAppearanceNode)) {
@@ -209,6 +217,10 @@ x3dom.registerNodeType(
                 }
                 return null;
             },
+			
+			getTextures: function() {
+				return this._cf.texture.nodes;
+			},
 
             size: function() {
                 return this._cf.texture.nodes.length;
@@ -488,6 +500,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('top',    x3dom.nodeTypes.Texture);
             this.addField_SFNode('left',   x3dom.nodeTypes.Texture);
             this.addField_SFNode('right',  x3dom.nodeTypes.Texture);
+			this._type = "cubeMap";
         },
         {
             getTexUrl: function() {
@@ -524,6 +537,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'size', 128);
             this.addField_SFString(ctx, 'update', 'NONE');  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
 
+			this._type = "cubeMap";
             x3dom.debug.logWarning("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx
         },
         {

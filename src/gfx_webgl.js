@@ -20,10 +20,8 @@ x3dom.gfx_webgl = (function () {
         this.ctx3d = ctx3d;
         this.canvas = canvas;
         this.name = name;
-        this.cached_shader_programs = {};
-        this.cached_shaders = {};
 		this.IG_PositionBuffer = null;
-		this.shaderCache = new x3dom.shader.ShaderCache(this.ctx3d);
+		this.cache = new x3dom.Cache();
     }
 
 	
@@ -96,7 +94,7 @@ x3dom.gfx_webgl = (function () {
 							x3dom.caps.FP_TEXTURES 						= ctx.getExtension("OES_texture_float");
 							x3dom.caps.EXTENSIONS						= ctx.getSupportedExtensions();
 																							
-							x3dom.caps.MOBILE							= (function(a){if(/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))){return true}else{return false}})(navigator.userAgent||navigator.vendor||window.opera);
+							x3dom.caps.MOBILE							= true;//(function(a){if(/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))){return true}else{return false}})(navigator.userAgent||navigator.vendor||window.opera);
                             // explicitly disable for iPad and the like
                             if (x3dom.caps.RENDERER.indexOf("PowerVR") >= 0 ||
                                 navigator.appVersion.indexOf("Mobile") > -1 ||
@@ -135,210 +133,19 @@ x3dom.gfx_webgl = (function () {
         }
         return null;
     }
-    
-	
-	/*****************************************************************************
-    * Rescale image to given size
-    *****************************************************************************/
-	function rescaleImage(image, width, height)
-    {
-        var canvas = document.createElement("canvas");
-        canvas.width = width; canvas.height = height;
-        canvas.getContext("2d").drawImage(image,
-                    0, 0, image.width, image.height,
-                    0, 0, canvas.width, canvas.height);
-        return canvas;
-    }
-	
-	
-	/*****************************************************************************
-    * Scale image to next best power of two
-    *****************************************************************************/
-    function scaleImage(image)
-    {
-        if (!isPowerOfTwo(image.width) || !isPowerOfTwo(image.height)) {
-            var canvas = document.createElement("canvas");
-            canvas.width = nextHighestPowerOfTwo(image.width);
-            canvas.height = nextHighestPowerOfTwo(image.height);
-            var ctx = canvas.getContext("2d");
-            ctx.drawImage(image,
-                          0, 0, image.width, image.height,
-                          0, 0, canvas.width, canvas.height);
-            image = canvas;
-        }
-        return image;
-    }
-    
-	
-	/*****************************************************************************
-    * Check if value is power of two
-    *****************************************************************************/
-    function isPowerOfTwo(x) 
-    {
-        return ((x & (x - 1)) === 0);
-    }
-    
-	
-	/*****************************************************************************
-    * Return next highest power of two
-    *****************************************************************************/
-    function nextHighestPowerOfTwo(x) 
-    {
-        --x;
-        for (var i = 1; i < 32; i <<= 1) {
-            x = x | x >> i;
-        }
-        return (x + 1);
-    }
-    
-	
-	/*****************************************************************************
-    * Return next best power of two
-    *****************************************************************************/
-    function nextBestPowerOfTwo(x)
-    {
-        var log2x = Math.log(x) / Math.log(2);
-        return Math.pow(2, Math.round(log2x));
-    }
-
-	
-	/*****************************************************************************
-    * Return TypedArray View
-    *****************************************************************************/
-    function getArrayBufferView(type, buffer)
-    {
-        var array = null;
-        
-        switch(type)
-        {
-            case "Int8":
-                array = new Int8Array(buffer);
-                break;
-            case "Uint8":
-                array = new Uint8Array(buffer);
-                break;
-            case "Int16":
-                array = new Int16Array(buffer);
-                break;
-            case "Uint16":
-                array = new Uint16Array(buffer);
-                break;
-            case "Int32":
-                array = new Int32Array(buffer);
-                break;
-            case "Uint32":
-                array = new Uint32Array(buffer);
-                break;
-            case "Float32":
-                array = new Float32Array(buffer);
-                break;
-            case "Float64":
-                array = new Float64Array(buffer);
-                break;
-            default:
-                x3dom.debug.logError("Can't create typed array view of type " + type + ", trying Float32...");
-                array = new Float32Array(buffer);
-                break;
-        }
-
-        return array;
-    }
-
-	
-	/*****************************************************************************
-    * Return GL-Type
-    *****************************************************************************/
-    function getVertexAttribType(type, gl)
-    {
-        var dataType = gl.NONE;
-
-        switch(type)
-        {
-            case "Int8":
-                dataType = gl.BYTE;
-                break;
-            case "Uint8":
-                dataType = gl.UNSIGNED_BYTE;
-                break;
-            case "Int16":
-                dataType = gl.SHORT;
-                break;
-            case "Uint16":
-                dataType = gl.UNSIGNED_SHORT;
-                break;
-            case "Int32":
-                dataType = gl.INT;
-                break;
-            case "Uint32":
-                dataType = gl.UNSIGNED_INT;
-                break;
-            case "Float32":
-                dataType = gl.FLOAT;
-                break;
-            case "Float64":
-            default:
-                x3dom.debug.logError("Can't find GL data type for " + type + ", getting FLOAT...");
-                dataType = gl.FLOAT;
-                break;
-        }
-
-        return dataType;
-    }
-	
-	
-	/*****************************************************************************
-    * Checks for lighting and shadowing
-    *****************************************************************************/
-    function useLightingFunc(viewarea)
-    {
-        return [viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight,
-				viewarea.getLightsShadow()];
-    }
-
-	
-	/*****************************************************************************
-    * Return data type size in byte
-    *****************************************************************************/
-    function getDataTypeSize(type)
-    {
-        switch(type)
-        {
-            case "Int8":
-            case "Uint8":
-                return 1;
-            case "Int16":
-            case "Uint16":
-                return 2;
-            case "Int32":
-            case "Uint32":
-            case "Float32":
-                return 4;
-            case "Float64":
-            default:
-                return 8;
-        }
-    }
-  
-
+		
 	/*****************************************************************************
     * Setup GL objects for given shape
     *****************************************************************************/
     Context.prototype.setupShape = function (gl, shape, viewarea) 
     {
         var i, q = 0;
-        var tex = null;
-        var IG_texUnit = 1;
         var vertices, positionBuffer;
-        
+		
         if (shape._webgl !== undefined)
         {
-            var oldLightsAndShadow = shape._webgl.lightsAndShadow;
-            shape._webgl.lightsAndShadow = useLightingFunc(viewarea);
-            
-            var needFullReInit = (shape._webgl.lightsAndShadow[0] != oldLightsAndShadow[0] || 
-                                  shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1] ||
-                                  shape._dirty.shader);
-
+			var needFullReInit = false;
+		
             // TODO; do same for texcoords etc.!
             if (shape._dirty.colors === true &&
                 shape._webgl.shader.color === undefined &&
@@ -348,69 +155,93 @@ x3dom.gfx_webgl = (function () {
                 // and thus the wrong shader will be chosen although there are colors
                 needFullReInit = true;
             }
-                    
-            if (shape._dirty.texture === true || needFullReInit)
+            
+            if (needFullReInit)
             {   
-                tex = shape._cf.appearance.node._cf.texture.node;
-                
-                if ((shape._webgl.texture !== undefined && tex) && !needFullReInit)
-                {
-                    shape.updateTexture(tex, 0, "diffuse");
-                    
-                    shape._dirty.texture = false;
-                }
-                else
-                {
-                    needFullReInit = true;
-                    
-                    // clean-up old state before creating new shader
-                    var spOld = shape._webgl.shader;
-                    var inc = 0;
-                    
-                    for (inc=0; shape._webgl.texture !== undefined && 
-                         inc < shape._webgl.texture.length; inc++)
-                    {
-                        if (shape._webgl.texture[inc])
-                        {
-                            gl.deleteTexture(shape._webgl.texture[inc]);
-                        }
-                    }
-                    
-                    for (q=0; q<shape._webgl.positions.length; q++)
-                    {
-                        if (spOld.position !== undefined) 
-                        {
-                            gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
-                            gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
-                        }
-                        
-                        if (spOld.normal !== undefined) 
-                        {
-                            gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
-                        }
-                        
-                        if (spOld.texcoord !== undefined) 
-                        {
-                            gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
-                        }
-                        
-                        if (spOld.color !== undefined)
-                        {
-                            gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
-                        }
-                    }
-                    
-                    for (inc=0; inc<shape._webgl.dynamicFields.length; inc++)
-                    {
-                        var h_attrib = shape._webgl.dynamicFields[inc];
-                        
-                        if (spOld[h_attrib.name] !== undefined)
-                        {
-                            gl.deleteBuffer(h_attrib.buf);
-                        }
-                    }
-                }
+				//Save old shader
+				var spOld = shape._webgl.shader;
+				
+				for (q=0; q<shape._webgl.positions.length; q++)
+				{
+					if (spOld.position !== undefined) 
+					{
+						gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
+						gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
+					}
+					
+					if (spOld.normal !== undefined) 
+					{
+						gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
+					}
+					
+					if (spOld.texcoord !== undefined) 
+					{
+						gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
+					}
+					
+					if (spOld.color !== undefined)
+					{
+						gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
+					}
+				}
+				
+				for (var inc=0; inc<shape._webgl.dynamicFields.length; inc++)
+				{
+					var h_attrib = shape._webgl.dynamicFields[inc];
+					
+					if (spOld[h_attrib.name] !== undefined)
+					{
+						gl.deleteBuffer(h_attrib.buf);
+					}
+				}
             }
+			
+			//Check for dirty Textures
+			if (shape._dirty.texture === true)
+			{
+				//Check for Texture add or remove
+				if (shape._webgl.texture.length != shape.getTextures().length)
+				{
+					//Delete old Textures
+					for ( var t=0; t<shape._webgl.texture.length; ++t )
+					{
+						shape._webgl.texture.pop();
+					}
+					
+					//Generate new Textures
+					var textures = shape.getTextures();
+					for( var t=0; t<textures.length; ++t )
+					{		
+						shape._webgl.texture.push( new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]) );		
+					}
+					
+					//Set dirty shader
+					shape._dirty.shader = true;
+					
+					//Set dirty texture Coordinates
+					shape._dirty.texCoords = true;
+				}
+				else
+				{
+					for ( var t=0; t<shape._webgl.texture.length; ++t )
+					{
+						shape._webgl.texture[t].update();
+					}
+				}
+				shape._dirty.texture = false;
+			}
+			
+			//Check if we need a new shader
+            var oldLightsAndShadow 		 = shape._webgl.lightsAndShadow;
+            shape._webgl.lightsAndShadow = x3dom.Utils.checkDirtyLighting(viewarea);
+			
+			if ( shape._webgl.lightsAndShadow[0] != oldLightsAndShadow[0] || 
+                 shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1] ||
+				 shape._dirty.shader )
+			{
+				shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
+				shape._dirty.shader = false;
+			}		
             
             for (q=0; q<shape._webgl.positions.length; q++)
             {
@@ -418,6 +249,20 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.position !== undefined) 
                 {
+					shape._webgl.indexes[q] = shape._cf.geometry.node._mesh._indices[q];
+					
+					gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
+
+					var indicesBuffer = gl.createBuffer();
+					shape._webgl.buffers[5*q+0] = indicesBuffer;
+            
+					var indexArray = new Uint16Array(shape._webgl.indexes[q]);
+				
+					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+					gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+				
+					indexArray = null;
+				
                     shape._webgl.positions[q] = shape._cf.geometry.node._mesh._positions[q];
                     
                     // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
@@ -526,37 +371,11 @@ x3dom.gfx_webgl = (function () {
 
 		    if (shape._webgl.imageGeometry != 0)
             {
-                var texNode = null;
-
-                IG_texUnit = 1;     //Associate GeometryImage texture units
-
-                if ((texNode = shape._cf.geometry.node.getIndexTexture()) &&
-                    shape._cf.geometry.node._dirty.index == true) {
-                    shape.updateTexture(texNode, IG_texUnit++, 'IG_index');
-                }
-
-                for (i=0; i<shape._webgl.imageGeometry != 0 &&
-                          shape._cf.geometry.node._dirty.coord == true; i++) {
-                    if ((texNode = shape._cf.geometry.node.getCoordinateTexture(i))) {
-                        shape.updateTexture(texNode, IG_texUnit++, 'IG_coord');
-                    }
-                }
-
-                if ((texNode = shape._cf.geometry.node.getNormalTexture(0)) &&
-                    shape._cf.geometry.node._dirty.normal == true) {
-                    shape.updateTexture(texNode, IG_texUnit++, 'IG_normal');
-                }
-
-                if ((texNode = shape._cf.geometry.node.getTexCoordTexture()) &&
-                    shape._cf.geometry.node._dirty.texCoord == true) {
-                    shape.updateTexture(texNode, IG_texUnit++, 'IG_texCoord');
-                }
-
-                if ((texNode = shape._cf.geometry.node.getColorTexture()) &&
-                    shape._cf.geometry.node._dirty.color == true) {
-                    shape.updateTexture(texNode, IG_texUnit++, 'IG_color');
-                }
-
+				for ( var t=0; t<shape._webgl.texture.length; ++t )
+				{
+					shape._webgl.texture[t].updateTexture();
+				} 
+			
                 shape._cf.geometry.node._dirty.coord = false;
                 shape._cf.geometry.node._dirty.normal = false;
                 shape._cf.geometry.node._dirty.texCoord = false;
@@ -612,8 +431,8 @@ x3dom.gfx_webgl = (function () {
                 for (var cnt=0; this._webgl.texture !== undefined &&
                                 cnt < this._webgl.texture.length; cnt++)
                 {
-                    if (this._webgl.texture[cnt]) {
-                        gl.deleteTexture(this._webgl.texture[cnt]);
+                    if (this._webgl.texture[cnt].texture) {
+                        gl.deleteTexture(this._webgl.texture[cnt].texture);
                     }
                 }
 
@@ -650,478 +469,38 @@ x3dom.gfx_webgl = (function () {
             }
           };  // shape._cleanupGLObjects()
         }
-        
-        
-        // TODO; finish text!
-        // CANVAS only supports: font, textAlign, textBaseline, fillText, strokeText, measureText, width
-        if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) 
-        {
-            var fontStyleNode = shape._cf.geometry.node._cf.fontStyle.node;
-
-            // defaults
-            var font_family = ['SERIF'];
-            var font_size = 32;
-            var font_style = "PLAIN";
-
-            var font_spacing = 1.0;
-            var font_horizontal = true;
-            var font_justify = 'BEGIN';
-            var font_language = "";
-            var font_leftToRight = true;
-            var font_topToBottom = true;
-
-            if (fontStyleNode !== null) {
-
-                var fonts = fontStyleNode._vf.family.toString();
-
-                // clean attribute values and split in array
-                fonts = fonts.trim().replace(/\'/g,'').replace(/\,/, ' ');
-                fonts = fonts.split(" ");
-                
-                font_family = Array.map(fonts, function(s) {
-                    if (s == 'SANS') { return 'sans-serif'; }
-                    else if (s == 'SERIF') { return 'serif'; }
-                    else if (s == 'TYPEWRITER') { return 'monospace'; }
-                    else { return ''+s+''; }  //'Verdana' 
-                }).join(",");
-                
-                font_style = fontStyleNode._vf.style.toString().replace(/\'/g,'');
-                switch (font_style.toUpperCase()) {
-                    case 'PLAIN': font_style = 'normal'; break;
-                    case 'BOLD': font_style = 'bold'; break;
-                    case 'ITALIC': font_style = 'italic'; break;
-                    case 'BOLDITALIC': font_style = 'italic bold'; break;
-                    default: font_style = 'normal';
-                }
-                
-                font_leftToRight = fontStyleNode._vf.leftToRight ? 'ltr' : 'rtl';
-                font_topToBottom = fontStyleNode._vf.topToBottom;
-                
-                // TODO: make it possible to use mutiple values
-                font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
-				
-                switch (font_justify.toUpperCase()) {
-                    case 'BEGIN': font_justify = 'left'; break;
-                    case 'END': font_justify = 'right'; break;
-                    case 'FIRST': font_justify = 'left'; break; // not clear what to do with this one
-                    case 'MIDDLE': font_justify = 'center'; break;
-                    default: font_justify = 'left'; break;
-                }
-
-                font_size = fontStyleNode._vf.size;
-                font_spacing = fontStyleNode._vf.spacing;
-                font_horizontal = fontStyleNode._vf.horizontal;
-                font_language = fontStyleNode._vf.language;
-            }
-
-            			
-			/* ***** */
-			var paragraph = shape._cf.geometry.node._vf.string;
-            var textX, textY;
-
-            var text_canvas = document.createElement('canvas');
-            text_canvas.dir = font_leftToRight;
-			var textHeight = font_size;
-            var textAlignment = font_justify;			
-			
-            // needed to make webfonts work
-            document.body.appendChild(text_canvas);
-
-            var text_ctx = text_canvas.getContext('2d');
-			
-            // calculate font size in px
-            text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
-			
-			
-			var maxWidth = text_ctx.measureText(paragraph[0]).width;
-			// calculate maxWidth
-			for(var i = 1; i < paragraph.length; i++) {  
-				if(text_ctx.measureText(paragraph[i]).width > maxWidth)
-					maxWidth = text_ctx.measureText(paragraph[i]).width;
-            }
-			
-			text_canvas.width = maxWidth;
-		    text_canvas.height = textHeight * paragraph.length; 
-
-            switch(textAlignment) {
-                case "left":
-                    textX = 0;
-                    break;
-                case "center":
-                    textX = text_canvas.width/2;
-                    break;
-                case "right":
-                    textX = text_canvas.width;
-                    break;
-            }
-
-			var txtW =  text_canvas.width;
-            var txtH = text_canvas.height;
-
-            text_ctx.fillStyle = 'rgba(0,0,0,0)';
-            text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
-            
-            // write white text with black border
-            text_ctx.fillStyle = 'white';			
-            text_ctx.lineWidth = 2.5;
-            text_ctx.strokeStyle = 'grey';
-            text_ctx.textBaseline = 'top';
-
-            text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
-            text_ctx.textAlign = textAlignment;
-
-            // create the multiline text
-            for(var i = 0; i < paragraph.length; i++) {  
-                textY = i*textHeight;          
-                text_ctx.fillText(paragraph[i], textX,  textY);
-            }
-            
-            var ids = gl.createTexture();
-            gl.bindTexture(gl.TEXTURE_2D, ids);
-            gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, text_canvas);
-			
-			//remove canvas after Texture creation
-			document.body.removeChild(text_canvas);
-            /* ****** */
-			
-            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR);
-            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE);
-            gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE);
-            gl.bindTexture(gl.TEXTURE_2D, null);
-
-            var w = txtW/100.0; 
-            var h = txtH/100.0;
-            
-            // prevent distortion
-            var v0 = 1, u0 = 0;
-            var u = 1, v = 0;
-			
-            shape._cf.geometry.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
-            shape._cf.geometry.node._mesh._normals[0] = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
-            shape._cf.geometry.node._mesh._texCoords[0] = [u0,v, u,v, u,v0, u0,v0];
-            shape._cf.geometry.node._mesh._colors[0] = [];
-            shape._cf.geometry.node._mesh._indices[0] = [0,1,2, 2,3,0];
-            shape._cf.geometry.node._mesh._invalidate = true;
-            shape._cf.geometry.node._mesh._numFaces = 2;
-            shape._cf.geometry.node._mesh._numCoords = 4;
-
-            shape._webgl = {
-                positions: shape._cf.geometry.node._mesh._positions,
-                normals: shape._cf.geometry.node._mesh._normals,
-                texcoords: shape._cf.geometry.node._mesh._texCoords,
-                colors: shape._cf.geometry.node._mesh._colors,
-                indexes: shape._cf.geometry.node._mesh._indices,
-                texture: [ids],
-				textureFilter: [gl.LINEAR],
-				textureType: ['diffuse'],
-                //buffers: [{},{},{},{},{}],
-                coordType: gl.FLOAT,
-                normalType: gl.FLOAT,
-                texCoordType: gl.FLOAT,
-                colorType: gl.FLOAT,
-                lightsAndShadow: useLightingFunc(viewarea),
-				imageGeometry: 0,
-                binaryGeometry: 0,   // 0 := no BG
-				bitLODGeometry: 0
-            };	
-        }
-        else 
-        {
-            var context = this;
-            tex = shape._cf.appearance.node._cf.texture.node;
-            
-            shape.updateTexture = function(tex, unit, type)
-            {
-                var that = this;
-                var texture;
-                var childTex = (tex._video !== undefined && 
-                                tex._video !== null && 
-                                tex._needPerFrameUpdate !== undefined && 
-                                tex._needPerFrameUpdate === true);
-				
-                if (this._webgl.texture === undefined) {
-                    this._webgl.texture = [];
-                }
-				
-				if (this._webgl.textureType === undefined) {
-                    this._webgl.textureType = [];
-                }
-				
-				//Set Texture Type
-				that._webgl.textureType[unit] = type;
-                
-				if(this._webgl.textureFilter === undefined) {
-					that._webgl.textureFilter = [];
-				}
-				
-				//Set Texture Filter
-				that._webgl.textureFilter[unit] = gl.LINEAR;
-
-                if (tex._isCanvas && tex._canvas) {
-                    texture = gl.createTexture();
-                    that._webgl.texture[unit] = texture;
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex._canvas);
-                    
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                else if (x3dom.isa(tex, x3dom.nodeTypes.RenderedTexture))
-                {
-                    that._webgl.texture[unit] = tex._webgl.fbo.tex;
-                    gl.bindTexture(gl.TEXTURE_2D, tex._webgl.fbo.tex);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
-                {
-                    var format = gl.NONE;
-                    switch (tex._vf.image.comp)
-                    {
-                        case 1: format = gl.LUMINANCE; break;
-                        case 2: format = gl.LUMINANCE_ALPHA; break;
-                        case 3: format = gl.RGB; break;
-                        case 4: format = gl.RGBA; break;
-                    }
-                    
-                    var pixelArr = tex._vf.image.toGL();
-                    var pixelArrSize = tex._vf.image.width * tex._vf.image.height * tex._vf.image.comp;
-                    
-                    while (pixelArr.length < pixelArrSize) {
-                        pixelArr.push(0);
-                    }
-                    
-                    var pixels = new Uint8Array(pixelArr);
-                    
-                    texture = gl.createTexture();
-                    that._webgl.texture[unit] = texture;
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    
-                    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, format, 
-                            tex._vf.image.width, tex._vf.image.height, 0, 
-                            format, gl.UNSIGNED_BYTE, pixels);
-                }
-                else if (x3dom.isa(tex, x3dom.nodeTypes.MultiTexture))
-                {
-                    for (var cnt=0; cnt<tex.size(); cnt++)
-                    {
-                        var singleTex = tex.getTexture(cnt);
-                        if (!singleTex) {
-                            break;
-                        }
-                        that.updateTexture(singleTex, cnt, "multi");
-                    }
-                }
-                else if (x3dom.isa(tex, x3dom.nodeTypes.MovieTexture) || childTex)
-                {
-                    texture = gl.createTexture();
-
-                    if (!childTex)
-                    {
-                        tex._video = document.createElement('video');
-                        tex._video.setAttribute('autobuffer', 'true');
-                        var p = document.getElementsByTagName('body')[0];
-                        p.appendChild(tex._video);
-                        //tex._video.style.display = "none";
-                        //tex._video.style.display = "inline";
-                        tex._video.style.visibility = "hidden";
-                    }
-                    
-                    for (var i=0; i<tex._vf.url.length; i++)
-                    {
-                        var videoUrl = tex._nameSpace.getURL(tex._vf.url[i]);
-                        x3dom.debug.logInfo('Adding video file: ' + videoUrl);
-                        var src = document.createElement('source');
-                        src.setAttribute('src', videoUrl);
-                        tex._video.appendChild(src);
-                    }
-
-                    var updateMovie = function()
-                    {
-                        that._nameSpace.doc.needRender = true;
-
-						if (type == "IG_index" || type == "IG_coord0" || type == "IG_coord1" || 
-						    type == "IG_normal" || type == "IG_texCoord" || type == "IG_color") {
-							that._webgl.textureFilter[unit] = gl.NEAREST;
-						}					
-    
-                        gl.bindTexture(gl.TEXTURE_2D, texture);
-                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, tex._video);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, that._webgl.textureFilter[unit]);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, that._webgl.textureFilter[unit]);
-                        //gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_NEAREST);
-                        //gl.generateMipmap(gl.TEXTURE_2D);
-                        gl.bindTexture(gl.TEXTURE_2D, null);
-                    };
-                    
-                    var startVideo = function()
-                    {
-                        that._nameSpace.doc.needRender = true;          
-                        
-                        that._webgl.texture[unit] = texture;
-						
-                        if(type == "IG_coord0" || type == "IG_coord1") {
-							that._webgl.coordTextureWidth  = tex._video.clientWidth;
-							that._webgl.coordTextureHeight = tex._video.clientHeight;
-						} else if(type == "IG_index"){
-							that._webgl.indexTextureWidth  = tex._video.clientWidth;
-							that._webgl.indexTextureHeight = tex._video.clientHeight;
-						}
-                        x3dom.debug.logInfo(texture + " video tex url: " + tex._vf.url[0]);
-                        
-                        tex._video.play();
-                        tex._intervalID = setInterval(updateMovie, 16);
-                    };
-                    
-                    var videoDone = function()
-                    {
-                        clearInterval(tex._intervalID);
-                        
-                        if (tex._vf.loop === true)
-                        {
-                            tex._video.play();
-                            tex._intervalID = setInterval(updateMovie, 16);
-                        }
-                    };
-                    
-                    // Start listening for the canplaythrough event, so we do not
-                    // start playing the video until we can do so without stuttering
-                    tex._video.addEventListener("canplaythrough", startVideo, true);
-
-                    // Start listening for the ended event, so we can stop the
-                    // texture update when the video is finished playing
-                    tex._video.addEventListener("ended", videoDone, true);
-                }
-                else if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
-                {
-                    texture = context.loadCubeMap(gl, tex.getTexUrl(), that._nameSpace.doc, false);
-                    that._webgl.texture[unit] = texture;
-                }
-                else
-                {
-                    //var t00 = new Date().getTime();
-                    
-                    texture = gl.createTexture();
-					
-					//Load Texture
-					var image = new Image();
-					image.crossOrigin = '';
-                    image.src = tex._nameSpace.getURL(tex._vf.url[0]);
-					
-                    that._nameSpace.doc.downloadCount += 1;					
-
-					image.onload = function()
-                    {    					
-                        that._nameSpace.doc.downloadCount -= 1;
-						
-                        if(tex._vf.scale){
-                            image = scaleImage(image);
-                        }
-                        
-						that._webgl.texture[unit] = texture;
-						
-						if (type == "IG_coord0" || type == "IG_coord1") {
-							that._webgl.coordTextureWidth  = image.width;
-							that._webgl.coordTextureHeight = image.height;
-						} else if(type == "IG_index"){
-							that._webgl.indexTextureWidth  = image.width;
-							that._webgl.indexTextureHeight = image.height;
-						}
-						
-						if (type == "IG_index" || type == "IG_coord0" || type == "IG_coord1" || 
-							type == "IG_normal" || type == "IG_texCoord" || type == "IG_color") {
-							that._webgl.textureFilter[unit] = gl.NEAREST;
-						} else{
-							that._webgl.textureFilter[unit] = gl.LINEAR;
-						}
-						
-                        gl.bindTexture(gl.TEXTURE_2D, texture);
-                        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, that._webgl.textureFilter[unit]);
-                        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, that._webgl.textureFilter[unit]);
-                        //gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR_MIPMAP_LINEAR);
-                        //gl.generateMipmap(gl.TEXTURE_2D);
-                        gl.bindTexture(gl.TEXTURE_2D, null);
-						
-						that._nameSpace.doc.needRender = true;
-						
-                        //var t11 = new Date().getTime() - t00;
-                        //x3dom.debug.logInfo(texture + " bound tex url " + tex._vf.url[0] + " at unit " + unit +
-                        //                    " with img load time " + t11 + " ms.");
-                    };
-
-                    image.onerror = function()
-                    {
-                        that._nameSpace.doc.downloadCount -= 1;
-
-                        x3dom.debug.logError("Can't load tex url: " + tex._vf.url[0] + " (at unit " + unit + ").");
-                    };
-                }
-            };
-            
-            shape._webgl = {
-                positions: shape._cf.geometry.node._mesh._positions,
-                normals: shape._cf.geometry.node._mesh._normals,
-                texcoords: shape._cf.geometry.node._mesh._texCoords,
-                colors: shape._cf.geometry.node._mesh._colors,
-                indexes: shape._cf.geometry.node._mesh._indices,
-                //indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
-                //buffers: [{},{},{},{},{}],
-                coordType: gl.FLOAT,
-                normalType: gl.FLOAT,
-                texCoordType: gl.FLOAT,
-                colorType: gl.FLOAT,
-                lightsAndShadow: useLightingFunc(viewarea),
-				imageGeometry: 0,	// 0 := no IG, 1 := indexed IG, -1 := non-indexed IG
-				binaryGeometry: 0,  // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
-				bitLODGeometry: 0	// 0 := no BLG, 1 := indexed BLG, -1 := non-indexed BLG
-            };
-            
-			//Update Textures
-            if (tex) {
-                shape.updateTexture(tex, 0, "diffuse");
-            }
-
-			//Update Common Surface Shader Textures
-			if (shape._cf.appearance.node._shader !== null) {
-				if(x3dom.isa(shape._cf.appearance.node._shader, x3dom.nodeTypes.CommonSurfaceShader)) {                    
-					var texCnt = 0;
-					var cssShader = shape._cf.appearance.node._shader;
-					
-					var diffuseTex  = cssShader.getDiffuseMap();
-					var normalTex   = cssShader.getNormalMap(); 
-					var specularTex = cssShader.getSpecularMap(); 
-					
-					if(diffuseTex != null){
-						shape.updateTexture(diffuseTex, texCnt++, "diffuse");
-					}
-					if(normalTex != null){
-						shape.updateTexture(normalTex, texCnt++, "normal");
-					}
-					if(specularTex != null){
-						shape.updateTexture(specularTex, texCnt++, "specular");
-					}
-					if(x3dom.caps.MOBILE) {
-						x3dom.debug.logWarning("No mobile shader for CommonSurfaceShader! Using high quality shader!");
-					}									
-				}
-			} 
-        }
+		
+		
+		shape._webgl = {
+			positions: shape._cf.geometry.node._mesh._positions,
+			normals: shape._cf.geometry.node._mesh._normals,
+			texcoords: shape._cf.geometry.node._mesh._texCoords,
+			colors: shape._cf.geometry.node._mesh._colors,
+			indexes: shape._cf.geometry.node._mesh._indices,
+			//indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
+			//buffers: [{},{},{},{},{}],
+			coordType: gl.FLOAT,
+			normalType: gl.FLOAT,
+			texCoordType: gl.FLOAT,
+			colorType: gl.FLOAT,
+			texture: [],
+			lightsAndShadow: x3dom.Utils.checkDirtyLighting(viewarea),
+			imageGeometry: 0,	// 0 := no IG, 1 := indexed IG, -1 := non-indexed IG
+			binaryGeometry: 0,  // 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
+			bitLODGeometry: 0	// 0 := no BLG, 1 := indexed BLG, -1 := non-indexed BLG
+		};
+		
+		//Set Textures		
+		var textures = shape.getTextures();
+		for( var t=0; t<textures.length; ++t )
+		{		
+			shape._webgl.texture.push( new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]) );		
+		}
+		
+		shape._webgl.positions = shape._cf.geometry.node._mesh._positions,
 		
 		//Set Shader
-		shape._webgl.shader = this.shaderCache.getDynamicShader(viewarea, shape);
+		shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
 		
 		// init vertex attribs
         var sp = shape._webgl.shader;
@@ -1211,7 +590,7 @@ x3dom.gfx_webgl = (function () {
                     var indicesBuffer = gl.createBuffer();
                     shape._webgl.buffers[0] = indicesBuffer;
 
-                    var indexArray = getArrayBufferView("Uint16", XHR_buffer);
+                    var indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -1271,15 +650,15 @@ x3dom.gfx_webgl = (function () {
                     var attribTypeStr = geoNode._vf.coordType;
 
                     // assume same data type for all attributes (but might be wrong)
-                    shape._webgl.coordType    = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.coordType    = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
                     shape._webgl.normalType   = shape._webgl.coordType;
                     shape._webgl.texCoordType = shape._webgl.coordType;
                     shape._webgl.colorType    = shape._webgl.coordType;
 
-                    var attributes = getArrayBufferView(attribTypeStr, XHR_buffer);
+                    var attributes = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     // calculate number of single data packages by including stride and type size
-                    var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
+                    var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(attribTypeStr);
                     if (dataLen)
                         geoNode._mesh._numCoords = attributes.length / dataLen;
                     
@@ -1382,9 +761,9 @@ x3dom.gfx_webgl = (function () {
                     var geoNode = shape._cf.geometry.node;            
 
                     var attribTypeStr = geoNode._vf.coordType;
-                    shape._webgl.coordType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.coordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
-                    var vertices = getArrayBufferView(attribTypeStr, XHR_buffer);
+                    var vertices = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
                     
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -1452,7 +831,7 @@ x3dom.gfx_webgl = (function () {
                     
                         var normalBuffer = gl.createBuffer();
                         shape._webgl.buffers[2] = normalBuffer;
-                        shape._webgl.normalType = getVertexAttribType("Float32", gl);
+                        shape._webgl.normalType = x3dom.Utils.getVertexAttribType("Float32", gl);
                     
                         gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                         gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buf), gl.STATIC_DRAW);                
@@ -1501,9 +880,9 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[2] = normalBuffer;
 
                     var attribTypeStr = shape._cf.geometry.node._vf.normalType;
-                    shape._webgl.normalType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.normalType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
-                    var normals = getArrayBufferView(attribTypeStr, XHR_buffer);
+                    var normals = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
@@ -1553,9 +932,9 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[3] = texcBuffer;
 
                     var attribTypeStr = shape._cf.geometry.node._vf.texCoordType;
-                    shape._webgl.texCoordType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.texCoordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
-                    var texCoords = getArrayBufferView(attribTypeStr, XHR_buffer);
+                    var texCoords = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
@@ -1605,9 +984,9 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.buffers[4] = colorBuffer;
 
                     var attribTypeStr = shape._cf.geometry.node._vf.colorType;
-                    shape._webgl.colorType = getVertexAttribType(attribTypeStr, gl);
+                    shape._webgl.colorType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
-                    var colors = getArrayBufferView(attribTypeStr, XHR_buffer);
+                    var colors = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
@@ -1668,7 +1047,7 @@ x3dom.gfx_webgl = (function () {
 						var indicesBuffer = gl.createBuffer();
 						shape._webgl.buffers[0] = indicesBuffer;
 
-						var indexArray = getArrayBufferView("Uint16", XHR_buffer);
+						var indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
 
 						gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
 						gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -1701,11 +1080,11 @@ x3dom.gfx_webgl = (function () {
 					if (attributeId === 0) {
 						var attribTypeStr 		= bitLODGeometry._vf.coordType;
 						  
-						shape._webgl.coordType  = getVertexAttribType(attribTypeStr, gl);
+						shape._webgl.coordType  = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 						shape._webgl.normalType = shape._webgl.coordType;
 			  
 						// calculate number of single data packages by including stride and type size					
-						var dataLen = shape._coordStrideOffset[0] / getDataTypeSize(attribTypeStr);
+						var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(attribTypeStr);
 						//@todo: we need numCoords before this callback is invoked
 						if (dataLen)
 							bitLODGeometry._mesh._numCoords = bufferView.length / dataLen;
@@ -1843,43 +1222,10 @@ x3dom.gfx_webgl = (function () {
 			//Get ImageGeometry
 			var imageGeometry = shape._cf.geometry.node;
 		
-			//Set unindexed
-			shape._webgl.imageGeometry = -1;
-		
-			//init texture unit counter
-			var IG_texUnit = 1;
-			
-			//Load Index texture
-			var indexTexture = imageGeometry.getIndexTexture();
-			if(indexTexture) {
+			if ( imageGeometry.getIndexTexture() ) {
 				shape._webgl.imageGeometry = 1;
-				shape.updateTexture(indexTexture, IG_texUnit++, 'IG_index');
-			}
-			
-			//Load Coordinate textures
-			for(i=0; i<imageGeometry.numCoordinateTextures(); i++) {
-				var coordinateTexture = imageGeometry.getCoordinateTexture(i);
-				if(coordinateTexture) {
-					shape.updateTexture(coordinateTexture, IG_texUnit++, 'IG_coord'+i);
-				}
-			}
-			
-			//Load Normal texture			
-			var normalTexture = imageGeometry.getNormalTexture(0);
-			if(normalTexture) {
-				shape.updateTexture(normalTexture, IG_texUnit++, 'IG_normal');
-			}
-			
-			//Load TexCoord texture
-			var texCoordTexture = imageGeometry.getTexCoordTexture();
-			if(texCoordTexture) {
-				shape.updateTexture(texCoordTexture, IG_texUnit++, "IG_texCoord");
-			}
-			
-			//Load Color texture
-			var colorTexture = imageGeometry.getColorTexture();
-			if(colorTexture) {
-				shape.updateTexture(colorTexture, IG_texUnit++, "IG_color");
+			} else {
+				shape._webgl.imageGeometry = -1;
 			}
 
 			shape._cf.geometry.node._dirty.coord = false;
@@ -2022,44 +1368,6 @@ x3dom.gfx_webgl = (function () {
             }
             
         } // No BinaryGeometry -- FIXME
-        
-        shape._webgl._minFilterDic = {
-             NEAREST:                      gl.NEAREST                ,
-             LINEAR:                       gl.LINEAR                 ,
-             NEAREST_MIPMAP_NEAREST:       gl.NEAREST_MIPMAP_NEAREST ,
-             NEAREST_MIPMAP_LINEAR:        gl.NEAREST_MIPMAP_LINEAR  ,
-             LINEAR_MIPMAP_NEAREST:        gl.LINEAR_MIPMAP_NEAREST  ,
-             LINEAR_MIPMAP_LINEAR:         gl.LINEAR_MIPMAP_LINEAR   ,
-             AVG_PIXEL:                    gl.LINEAR                 ,
-             AVG_PIXEL_AVG_MIPMAP:         gl.LINEAR_MIPMAP_LINEAR   ,
-             AVG_PIXEL_NEAREST_MIPMAP:     gl.LINEAR_MIPMAP_NEAREST  ,
-             DEFAULT:                      gl.LINEAR_MIPMAP_LINEAR   ,
-             FASTEST:                      gl.NEAREST                ,
-             NEAREST_PIXEL:                gl.NEAREST                ,
-             NEAREST_PIXEL_AVG_MIPMAP:     gl.NEAREST_MIPMAP_LINEAR  ,
-             NEAREST_PIXEL_NEAREST_MIPMAP: gl.NEAREST_MIPMAP_NEAREST ,
-             NICEST:                       gl.LINEAR_MIPMAP_LINEAR   
-        };
-
-        shape._webgl._magFilterDic = {
-             NEAREST:          gl.NEAREST  ,
-             LINEAR:           gl.LINEAR   ,
-             AVG_PIXEL:        gl.LINEAR   ,
-             DEFAULT:          gl.LINEAR   ,
-             FASTEST:          gl.NEAREST  ,
-             NEAREST_PIXEL:    gl.NEAREST  ,
-             NICEST:           gl.LINEAR   
-        };
-
-       shape._webgl._boundaryModesDic = {
-             //CLAMP:             gl.CLAMP,             // NO PART OF WebGL
-             CLAMP:             gl.CLAMP_TO_EDGE,
-             CLAMP_TO_EDGE:     gl.CLAMP_TO_EDGE,
-             //CLAMP_TO_BOUNDARY: gl.CLAMP_TO_BORDER,
-             CLAMP_TO_BOUNDARY: gl.CLAMP_TO_EDGE,       // NO PART OF WebGL
-             MIRRORED_REPEAT:   gl.MIRRORED_REPEAT,
-             REPEAT:            gl.REPEAT 
-        };
     };
     
 	
@@ -2113,9 +1421,9 @@ x3dom.gfx_webgl = (function () {
                 
                 bgnd._webgl.primType = gl.TRIANGLES;
 						
-				bgnd._webgl.shader = this.shaderCache.getShader(x3dom.shader.BACKGROUND_CUBETEXTURE);
+				bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);
                 
-                bgnd._webgl.texture = this.loadCubeMap(gl, url, bgnd._nameSpace.doc, true);
+                bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url, true);
             }
             else {
                 texture = gl.createTexture();
@@ -2157,7 +1465,7 @@ x3dom.gfx_webgl = (function () {
 
                 bgnd._webgl.primType = gl.TRIANGLE_STRIP;
 
-				bgnd._webgl.shader = this.shaderCache.getShader(x3dom.shader.BACKGROUND_TEXTURE);
+				bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_TEXTURE);
             }
         }
         else 
@@ -2176,7 +1484,7 @@ x3dom.gfx_webgl = (function () {
                     primType: gl.TRIANGLES
                 };
                 
-                var N = nextHighestPowerOfTwo(
+                var N = x3dom.Utils.nextHighestPowerOfTwo(
                             bgnd.getSkyColor().length + bgnd.getGroundColor().length + 2);
                 N = (N < 512) ? 512 : N;
                 
@@ -2262,7 +1570,7 @@ x3dom.gfx_webgl = (function () {
                 gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 0, format, gl.UNSIGNED_BYTE, pixels);
             	gl.bindTexture(gl.TEXTURE_2D, null);
 										
-				bgnd._webgl.shader = this.shaderCache.getShader(x3dom.shader.BACKGROUND_SKYTEXTURE);
+				bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_SKYTEXTURE);
             }
             else 
             {
@@ -2489,7 +1797,7 @@ x3dom.gfx_webgl = (function () {
 
         scene._fgnd._webgl.primType = gl.TRIANGLE_STRIP;
 		
-		scene._fgnd._webgl.shader = this.shaderCache.getShader(x3dom.shader.FRONTGROUND_TEXTURE);
+		scene._fgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.FRONTGROUND_TEXTURE);
         
         var sp = scene._fgnd._webgl.shader;
         
@@ -2733,22 +2041,29 @@ x3dom.gfx_webgl = (function () {
 			{
 				sp.IG_bboxMin 				= shape._cf.geometry.node.getMin().toGL();
 				sp.IG_bboxMax				= shape._cf.geometry.node.getMax().toGL();
-				sp.IG_coordTextureWidth	 	= shape._webgl.coordTextureWidth;
-				sp.IG_coordTextureHeight 	= shape._webgl.coordTextureHeight;
 				sp.IG_implicitMeshSize		= shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
 				
+				var tex = x3dom.Utils.findTextureByName(shape._webgl.texture, "IG_coords0");
+				if(tex) {
+					sp.IG_coordTextureWidth = tex.texture.width;
+					sp.IG_coordTextureHeight = tex.texture.height;
+				}
+				
 				if(shape._webgl.imageGeometry == 1) {
-					sp.IG_indexTextureWidth	 = shape._webgl.indexTextureWidth;
-					sp.IG_indexTextureHeight = shape._webgl.indexTextureHeight;
+					tex = x3dom.Utils.findTextureByName(shape._webgl.texture, "IG_index");
+					if(tex) {
+						sp.IG_indexTextureWidth	 = tex.texture.width;
+						sp.IG_indexTextureHeight = tex.texture.height;
+					}
 					
 					gl.activeTexture(gl.TEXTURE0);
-					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1]);
+					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1].texture);
 					
 					gl.activeTexture(gl.TEXTURE1);
-					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[2]);
+					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[2].texture);
 				} else {
 					gl.activeTexture(gl.TEXTURE0);
-					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1]);
+					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1].texture);
 				}
 				
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -2947,13 +2262,20 @@ x3dom.gfx_webgl = (function () {
 		if (shape._webgl.imageGeometry != 0) {
 			sp.IG_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
 			sp.IG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
-			sp.IG_coordTextureWidth	 = shape._webgl.coordTextureWidth;
-			sp.IG_coordTextureHeight = shape._webgl.coordTextureHeight;
 			sp.IG_implicitMeshSize	 = shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
 			
+			var tex = x3dom.Utils.findTextureByName( shape._webgl.texture, "IG_coords0" );			
+			if(tex) {
+				sp.IG_coordTextureWidth  = tex.texture.width;
+				sp.IG_coordTextureHeight = tex.texture.height;
+			}
+			
 			if(shape._webgl.imageGeometry == 1) {
-				sp.IG_indexTextureWidth	 = shape._webgl.indexTextureWidth;
-				sp.IG_indexTextureHeight = shape._webgl.indexTextureHeight;
+				tex = x3dom.Utils.findTextureByName( shape._webgl.texture, "IG_index" );		
+				if(tex) {
+					sp.IG_indexTextureWidth	 = tex.texture.width;
+					sp.IG_indexTextureHeight = tex.texture.height;
+				}
 			}
 		}
 
@@ -3069,6 +2391,7 @@ x3dom.gfx_webgl = (function () {
                 }
             }
         }
+		
         //===========================================================================
         // Set HeadLight
         //===========================================================================
@@ -3101,138 +2424,33 @@ x3dom.gfx_webgl = (function () {
         sp.modelViewMatrixInverse = model_view.inverse().toGL();
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
 
-        for (var cnt=0; shape._webgl.texture !== undefined && 
-                        cnt < shape._webgl.texture.length; cnt++)
-        {
-          if (shape._webgl.texture[cnt])
-          {
-            if (shape._cf.appearance.node._cf.texture.node) {
-                tex = shape._cf.appearance.node._cf.texture.node.getTexture(cnt);
-            }
-
-            var wrapS = gl.REPEAT, wrapT = gl.REPEAT;
-            var minFilter = gl.LINEAR, magFilter = gl.LINEAR;
-            var genMipMaps = false;
-
-            if (shape._webgl.textureFilter) {
-                minFilter = shape._webgl.textureFilter[cnt];
-                magFilter = shape._webgl.textureFilter[cnt];
-            }
-
-            if (tex && tex._cf.textureProperties.node !== null)
-            {
-                var texProp = tex._cf.textureProperties.node;
-
-                wrapS = shape._webgl._boundaryModesDic[texProp._vf.boundaryModeS.toUpperCase()];
-                wrapT = shape._webgl._boundaryModesDic[texProp._vf.boundaryModeT.toUpperCase()];
-
-                minFilter = shape._webgl._minFilterDic[texProp._vf.minificationFilter.toUpperCase()];
-                magFilter = shape._webgl._magFilterDic[texProp._vf.magnificationFilter.toUpperCase()];
-
-                if ( texProp._vf.generateMipMaps === true )
-                {
-                    if (minFilter == gl.NEAREST)
-                        minFilter  = gl.NEAREST_MIPMAP_NEAREST;
-                    if (minFilter == gl.LINEAR)
-                        minFilter  = gl.LINEAR_MIPMAP_LINEAR;
-                    genMipMaps = true;
-                }
-                else
-                {
-                    if ( (minFilter == gl.LINEAR_MIPMAP_LINEAR) ||
-                         (minFilter == gl.LINEAR_MIPMAP_NEAREST) )
-                        minFilter  = gl.LINEAR;
-                    if ( (minFilter == gl.NEAREST_MIPMAP_LINEAR) ||
-                         (minFilter == gl.NEAREST_MIPMAP_NEAREST) )
-                        minFilter  = gl.NEAREST;
-                }
-            }
-            else
-            {
-				if (!tex || tex._vf.repeatS == false) {
-                    wrapS = gl.CLAMP_TO_EDGE;
-                }
-                if (!tex || tex._vf.repeatT == false) {
-                    wrapT = gl.CLAMP_TO_EDGE;
-                }
-            }
-            
-            if (shape._webgl.texture[cnt].textureCubeReady && tex && 
-                x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
-            {
-                //gl.enable(gl.TEXTURE_CUBE_MAP);
-                gl.activeTexture(gl.TEXTURE0 + cnt);
-                gl.bindTexture(gl.TEXTURE_CUBE_MAP, shape._webgl.texture[cnt]);
-                
-                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, wrapS);
-                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, wrapT);
-                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, magFilter);
-                gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, minFilter);
-                if (genMipMaps) {
-                    gl.generateMipmap(gl.TEXTURE_CUBE_MAP);
-                }
-            }
-            else if(!x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode))
-            {
-                //gl.enable(gl.TEXTURE_2D);
-                gl.activeTexture(gl.TEXTURE0 + cnt);
-                gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[cnt]);
-
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, wrapS);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, wrapT);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, magFilter);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, minFilter);
-                if (genMipMaps) {
-                    gl.generateMipmap(gl.TEXTURE_2D);
-                }
-            }
-            
-            if (shape._cf.appearance.node._cf.textureTransform.node !== null)
-            {
-                // use shader/ calculation due to performance issues
-                var texTrafo = shape._cf.appearance.node.texTransformMatrix();
-                sp.texTrafoMatrix = texTrafo.toGL();
-            }
-            
+		for (var cnt=0; cnt<shape._webgl.texture.length; cnt++)
+		{
+			var tex = shape._webgl.texture[cnt];
+			
+			gl.activeTexture(gl.TEXTURE0 + cnt);
+			gl.bindTexture(tex.type, tex.texture);
+			gl.texParameteri(tex.type, gl.TEXTURE_WRAP_S, tex.wrapS);
+			gl.texParameteri(tex.type, gl.TEXTURE_WRAP_T, tex.wrapT);
+			gl.texParameteri(tex.type, gl.TEXTURE_MAG_FILTER, tex.magFilter);
+			gl.texParameteri(tex.type, gl.TEXTURE_MIN_FILTER, tex.minFilter);
+			if (tex.genMipMaps) {
+				gl.generateMipmap(tex.type);
+			}
+			
 			if(!shader || shader && !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) 
 			{
-				switch(shape._webgl.textureType[cnt])
-				{
-					case "diffuse":
-						if (!sp.tex) sp.tex = cnt;
-					break;
-					case "normal":
-						 if(!sp.bump) sp.bump = cnt;
-					break;
-					case "specular":
-						if(!sp.spec) sp.spec = cnt;
-					break;
-					case "multi":
-					break;
-					case "IG_index":
-						if(!sp.IG_indexTexture) sp.IG_indexTexture = cnt;
-					break;
-					case "IG_coord0":
-						if(!sp.IG_coordinateTexture0) sp.IG_coordinateTexture0 = cnt;
-					break;
-					case "IG_coord1":
-						if(!sp.IG_coordinateTexture1) sp.IG_coordinateTexture1 = cnt;
-					break;
-					case "IG_normal":
-						if(!sp.IG_normalTexture) sp.IG_normalTexture = cnt;
-					break;
-					case "IG_texCoord":
-						if(!sp.IG_texCoordTexture) sp.IG_texCoordTexture = cnt;
-					break;
-					case "IG_color":
-						if(!sp.IG_colorTexture) sp.IG_colorTexture = cnt;
-					break;
-					default:
-						x3dom.debug.logError("[Context|RenderShape] Missing TextureType ("+shape._webgl.textureType[cnt]+")");
-				}
+				if(!sp[tex.samplerName]) 
+					sp[tex.samplerName] = cnt;
 			}
-          }
-        }
+		}
+		
+		if (shape._cf.appearance.node._cf.textureTransform.node !== null)
+		{
+			// use shader/ calculation due to performance issues
+			var texTrafo = shape._cf.appearance.node.texTransformMatrix();
+			sp.texTrafoMatrix = texTrafo.toGL();
+		}
         
         if (oneShadowExistsAlready) 
         {
@@ -3447,8 +2665,7 @@ x3dom.gfx_webgl = (function () {
                     tex = shape._cf.appearance.node._cf.texture.node.getTexture(cnt);
                 }
                 
-                if (shape._webgl.texture[cnt].textureCubeReady && tex && 
-                    x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
+                if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
                 {
                     gl.activeTexture(gl.TEXTURE0 + cnt);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
@@ -3713,12 +2930,12 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.fboPick.pixelData = null;
 			
 			//Set picking shaders
-			scene._webgl.pickShader = this.shaderCache.getShader(x3dom.shader.PICKING);
-			scene._webgl.pickColorShader = this.shaderCache.getShader(x3dom.shader.PICKING_COLOR);
-            scene._webgl.pickTexCoordShader = this.shaderCache.getShader(x3dom.shader.PICKING_TEXCOORD);
+			scene._webgl.pickShader = this.cache.getShader(gl, x3dom.shader.PICKING);
+			scene._webgl.pickColorShader = this.cache.getShader(gl, x3dom.shader.PICKING_COLOR);
+            scene._webgl.pickTexCoordShader = this.cache.getShader(gl, x3dom.shader.PICKING_TEXCOORD);
             
             scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false, type);
-			scene._webgl.shadowShader = this.shaderCache.getShader(x3dom.shader.SHADOW);
+			scene._webgl.shadowShader = this.cache.getShader(gl, x3dom.shader.SHADOW);
             
             // TODO; for testing do it on init, but must be refreshed on node change!
             for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
@@ -4321,9 +3538,9 @@ x3dom.gfx_webgl = (function () {
             for (var cnt=0; shape._webgl.texture !== undefined && 
                             cnt < shape._webgl.texture.length; cnt++)
             {
-                if (shape._webgl.texture[cnt])
+                if (shape._webgl.texture[cnt].texture)
                 {
-                    gl.deleteTexture(shape._webgl.texture[cnt]);
+                    gl.deleteTexture(shape._webgl.texture[cnt].texture);
                 }
             }
             
@@ -4364,87 +3581,6 @@ x3dom.gfx_webgl = (function () {
             shape._webgl = null;
         }
     };
-    
-	/*****************************************************************************
-    * Loading Cubemaps
-    *****************************************************************************/
-    Context.prototype.loadCubeMap = function(gl, url, doc, bgnd)
-    {
-        var texture = gl.createTexture();
-
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-        gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-
-        var faces;
-        if (bgnd) {
-            faces = [gl.TEXTURE_CUBE_MAP_POSITIVE_Z, gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, 
-                     gl.TEXTURE_CUBE_MAP_POSITIVE_Y, gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, 
-                     gl.TEXTURE_CUBE_MAP_POSITIVE_X, gl.TEXTURE_CUBE_MAP_NEGATIVE_X];
-        }
-        else
-        {
-            //       back, front, bottom, top, left, right
-            faces = [gl.TEXTURE_CUBE_MAP_NEGATIVE_Z, gl.TEXTURE_CUBE_MAP_POSITIVE_Z,
-                     gl.TEXTURE_CUBE_MAP_NEGATIVE_Y, gl.TEXTURE_CUBE_MAP_POSITIVE_Y,
-                     gl.TEXTURE_CUBE_MAP_NEGATIVE_X, gl.TEXTURE_CUBE_MAP_POSITIVE_X];
-        }
-        texture.pendingTextureLoads = -1;
-        texture.textureCubeReady = false;
-        
-        var width = 0, height = 0;
-        
-        for (var i=0; i<faces.length; i++) {
-            var face = faces[i];
-            var image = new Image();
-            image.crossOrigin = '';
-            texture.pendingTextureLoads++;
-            doc.downloadCount += 1;
-            
-            image.onload = function(texture, face, image, swap) {
-                return function() {
-                    if (width == 0 && height == 0) {
-                        width = image.width;
-                        height = image.height;
-                    }
-                    else if (width != image.width || height != image.height) {
-                        x3dom.debug.logWarning("[Context|LoadCubeMap] Rescaling CubeMap images, which are of different size!");
-                        image = rescaleImage(image, width, height);
-                    }
-                    
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, swap);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
-                    gl.texImage2D(face, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-                    
-                    texture.pendingTextureLoads--;
-                    doc.downloadCount -= 1;
-                    if (texture.pendingTextureLoads < 0) {
-                        texture.textureCubeReady = true;
-                        x3dom.debug.logInfo("[Context|LoadCubeMap] Loading CubeMap finished...");
-                        doc.needRender = true;
-                    }
-                };
-            }( texture, face, image, bgnd );
-
-            image.onerror = function()
-            {
-                doc.downloadCount -= 1;
-
-                x3dom.debug.logError("[Context|LoadCubeMap] Can't load CubeMap!");
-            };
-            
-            // backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
-            image.src = url[i];
-        }
-        
-        return texture;
-    };
-    
     
 	/*****************************************************************************
     * Start of fbo init stuff

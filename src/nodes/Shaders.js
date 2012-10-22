@@ -140,6 +140,7 @@ x3dom.registerNodeType(
             getDiffuseMap: function()
             {
                 if(this._cf.diffuseTexture.node) {
+					this._cf.diffuseTexture.node._cf.texture.node._type = "diffuseMap";
                     return this._cf.diffuseTexture.node._cf.texture.node;
                 } else {
                     return null;
@@ -149,6 +150,7 @@ x3dom.registerNodeType(
             getNormalMap: function()
             {
                 if(this._cf.normalTexture.node) {
+					this._cf.normalTexture.node._cf.texture.node._type = "normalMap";
                     return this._cf.normalTexture.node._cf.texture.node;
                 } else {
                     return null;
@@ -158,6 +160,7 @@ x3dom.registerNodeType(
             getAmbientMap: function()
             {
                 if(this._cf.ambientTexture.node) {
+					this._cf.ambientTexture.node._cf.texture.node._type = "ambientMap";
                     return this._cf.ambientTexture.node._cf.texture.node;
                 } else {
                     return null;
@@ -167,6 +170,7 @@ x3dom.registerNodeType(
             getSpecularMap: function()
             {
                 if(this._cf.specularTexture.node) {
+					this._cf.specularTexture.node._cf.texture.node._type = "specularMap";
                     return this._cf.specularTexture.node._cf.texture.node;
                 } else {
                     return null;
@@ -176,6 +180,7 @@ x3dom.registerNodeType(
             getShininessMap: function()
             {
                 if(this._cf.shininessTexture.node) {
+					this._cf.shininessTexture.node._cf.texture.node._type = "shininessMap";
                     return this._cf.shininessTexture.node._cf.texture.node;
                 } else {
                     return null;
@@ -185,11 +190,28 @@ x3dom.registerNodeType(
             getAlphaMap: function()
             {
                 if(this._cf.alphaTexture.node) {
+					this._cf.alphaTexture.node._cf.texture.node._type = "alphaMap";
                     return this._cf.alphaTexture.node._cf.texture.node;
                 } else {
                     return null;
                 }
-            }
+            },
+			
+			getTextures: function()
+			{
+				var textures = [];
+				
+				var diff = this.getDiffuseMap();
+				if(diff) textures.push(diff);
+				
+				var norm = this.getNormalMap();
+				if(norm) textures.push(norm);
+				
+				var spec = this.getSpecularMap();
+				if(spec) textures.push(spec);
+				
+				return textures;
+			}
         }
     )
 );

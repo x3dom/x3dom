@@ -61,11 +61,11 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		shader += "uniform float IG_implicitMeshSize;\n";
 		
 		for( var i = 0; i < properties.IG_PRECISION; i++ ) {
-			shader += "uniform sampler2D IG_coordinateTexture" + i + "\n;";
+			shader += "uniform sampler2D IG_coords" + i + "\n;";
 		}
 		
 		if(properties.IG_INDEXED) {
-			shader += "uniform sampler2D IG_indexTexture;\n";
+			shader += "uniform sampler2D IG_index;\n";
 			shader += "uniform float IG_indexTextureWidth;\n";
 			shader += "uniform float IG_indexTextureHeight;\n";
 		}
@@ -74,7 +74,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	//Normals
 	if(!properties.POINTLINE2D) {
 		if(properties.IMAGEGEOMETRY) {		
-			shader += "uniform sampler2D IG_normalTexture;\n";	
+			shader += "uniform sampler2D IG_normals;\n";	
 		} else {
 			if(properties.NORCOMPONENTS == 2) {
 				if(properties.POSCOMPONENTS != 4) {
@@ -90,7 +90,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	shader += "varying vec4 fragColor;\n";
 	if(properties.VERTEXCOLOR){
 		if(properties.IMAGEGEOMETRY) {
-			shader += "uniform sampler2D IG_colorTexture;";
+			shader += "uniform sampler2D IG_colors;";
 		} else {
 			if(properties.COLCOMPONENTS == 3){
 				shader += "attribute vec3 color;";
@@ -104,7 +104,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	if(properties.TEXTURED) {
 		shader += "varying vec2 fragTexcoord;\n";
 		if(properties.IMAGEGEOMETRY) {
-			shader += "uniform sampler2D IG_texCoordTexture;";
+			shader += "uniform sampler2D IG_texCoords;";
 		} else {
 			shader += "attribute vec2 texcoord;\n";
 		}
@@ -164,9 +164,9 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		if(properties.IG_INDEXED) {
 			shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n";
 			shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_indexTextureWidth), position.y*(IG_implicitMeshSize/IG_indexTextureHeight)) + halfPixel;\n";
-			shader += "vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;\n";
+			shader += "vec2 IG_indices = texture2D( IG_index, IG_texCoord ).rg;\n";
 			shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);\n";
-			shader += "IG_texCoord = (IG_index * 0.996108948) + halfPixel;\n";
+			shader += "IG_texCoord = (IG_indices * 0.996108948) + halfPixel;\n";
 		} else {
 			shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n";
 			shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_coordTextureWidth), position.y*(IG_implicitMeshSize/IG_coordTextureHeight)) + halfPixel;\n";
@@ -177,7 +177,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		shader += "vec3 vertPosition = vec3(0.0, 0.0, 0.0);\n";
 		
 		for(var i=0; i<properties.IG_PRECISION; i++) {
-			shader += "temp = 255.0 * texture2D( IG_coordinateTexture" + i + ", IG_texCoord ).rgb;\n";
+			shader += "temp = 255.0 * texture2D( IG_coords" + i + ", IG_texCoord ).rgb;\n";
 			shader += "vertPosition *= 256.0;\n";
 			shader += "vertPosition += temp;\n";
 		}
@@ -189,22 +189,22 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	
 		//Normals
 		if(!properties.POINTLINE2D) {
-			shader += "vec3 vertNormal = texture2D( IG_normalTexture, IG_texCoord ).rgb;\n";
+			shader += "vec3 vertNormal = texture2D( IG_normals, IG_texCoord ).rgb;\n";
 			shader += "vertNormal = vertNormal * 2.0 - 1.0;\n";
 		}
 		
 		//Colors
 		if(properties.VERTEXCOLOR) {
 			if(properties.COLCOMPONENTS == 3) {
-				shader += "vec3 vertColor = texture2D( IG_colorTexture, IG_texCoord ).rgb;";
+				shader += "vec3 vertColor = texture2D( IG_colors, IG_texCoord ).rgb;";
 			} else if(properties.COLCOMPONENTS  == 4) {
-				shader += "vec4 vertColor = texture2D( IG_colorTexture, IG_texCoord ).rgba;";
+				shader += "vec4 vertColor = texture2D( IG_colors, IG_texCoord ).rgba;";
 			}
 		}
 		
 		//TexCoords
 		if(properties.TEXTURED) {
-			shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoordTexture, IG_texCoord );\n";
+			shader += "vec4 IG_doubleTexCoords = texture2D( IG_texCoords, IG_texCoord );\n";
 			shader += "vec2 vertTexCoord;";
 			shader += "vertTexCoord.r = (IG_doubleTexCoords.r * 0.996108948) + (IG_doubleTexCoords.b * 0.003891051);\n";
 			shader += "vertTexCoord.g = (IG_doubleTexCoords.g * 0.996108948) + (IG_doubleTexCoords.a * 0.003891051);\n";
@@ -409,12 +409,12 @@ x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl,
 	//Textures
 	if(properties.TEXTURED) {
 		if(properties.CUBEMAP) {
-			shader += "uniform samplerCube tex;\n";
+			shader += "uniform samplerCube cubeMap;\n";
 			shader += "varying vec3 fragViewDir;\n";
 			shader += "varying vec3 fragNormal;\n";
 			shader += "uniform mat4 modelViewMatrixInverse;\n";
 		} else {
-			shader += "uniform sampler2D tex;           \n";
+			shader += "uniform sampler2D diffuseMap;           \n";
 			shader += "varying vec2 fragTexcoord;       \n";
 		}
 		if(!properties.BLENDING) {
@@ -438,9 +438,9 @@ x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl,
 			shader += "vec3 viewDir = normalize(fragViewDir);\n";
 			shader += "vec3 reflected = reflect(viewDir, normal);\n"
 			shader += "reflected = (modelViewMatrixInverse * vec4(reflected,0.0)).xyz;\n"
-			shader += "vec4 texColor = textureCube(tex, reflected);\n";
+			shader += "vec4 texColor = textureCube(cubeMap, reflected);\n";
 		} else {
-			shader += "vec4 texColor = texture2D(tex, vec2(fragTexcoord.s, 1.0-fragTexcoord.t));\n";
+			shader += "vec4 texColor = texture2D(diffuseMap, vec2(fragTexcoord.s, 1.0-fragTexcoord.t));\n";
 		}
 		if(properties.BLENDING) {
 			if(properties.CUBEMAP) {
