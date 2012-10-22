@@ -1021,16 +1021,83 @@ x3dom.gfx_webgl = (function () {
 			shape._webgl.bitLODGeometry = -1;
 		
 			var bitLODGeometry = shape._cf.geometry.node;
-			
+
 			//Get number of components
 			var numComponents = bitLODGeometry.getNumComponents();
 
 			//Check if components avaible
 			if(numComponents)
-			{	
+			{
 				//Check if there are indices avaible
 				if(bitLODGeometry.hasIndex())
 				{
+          //this function generates a triangle buffer out of
+          //  - an index buffer containing indices of TRIANGLES
+          //  - a set of data buffers containing the triangle data
+          //@todo: make this flexible          
+          shape._webgl.generateTriangleBuffer = function() {
+            if (typeof shape._webgl.dataBuffers[0] != 'undefined' &&
+                typeof shape._webgl.dataBuffers[1] != 'undefined'   ) {
+
+                var indexArray = shape._webgl.dataBuffers[0];
+                var read_idx;
+                var write_idx;
+                var i;
+                
+                if (typeof shape._webgl.triangleBuffer == 'undefined') {
+                  //6 entries per element -> px py pz + 0 + nt np
+                  shape._webgl.triangleBuffer = new Uint16Array(indexArray.length  * 6);
+                }
+                
+                for (i = 0; i < indexArray.length; ++i) {
+                  write_idx = i * 6;
+                  read_idx  = indexArray[i] * 6;
+                  
+                  shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[1][read_idx    ];
+                  shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[1][read_idx + 1];
+                  shape._webgl.triangleBuffer[write_idx + 2] = shape._webgl.dataBuffers[1][read_idx + 2];
+                  shape._webgl.triangleBuffer[write_idx + 3] = 0;
+                  shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx + 4];
+                  shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx + 5];
+                  
+                  //on-the-fly normal computation
+                  //...
+                }
+
+                var attribTypeStr 		  = bitLODGeometry._vf.coordType;                
+                shape._webgl.coordType  = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+                shape._webgl.normalType = shape._webgl.coordType;
+                
+                //upload triangle buffer to the gpu
+                var glBuf = gl.createBuffer();
+                
+                gl.bindBuffer(gl.ARRAY_BUFFER, glBuf);
+                gl.bufferData(gl.ARRAY_BUFFER, shape._webgl.triangleBuffer, gl.STATIC_DRAW);
+                
+                gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents, 
+                                       shape._webgl.coordType, false, shape._coordStrideOffset[0], shape._coordStrideOffset[1]);                
+
+                gl.enableVertexAttribArray(sp.position);
+
+                gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, 
+                                       shape._webgl.normalType, false, shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+                gl.enableVertexAttribArray(sp.normal);
+              
+                shape._webgl.buffers[1] = glBuf;
+                shape._webgl.buffers[2] = glBuf;
+                          
+                // calculate number of single data packages by including stride and type size
+                var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(attribTypeStr);
+                
+                //shape._cf.geometry.node._vf.vertexCount[1] = bitLODGeometry._mesh._numCoords = shape._webgl.triangleBuffer.length / 3;
+                
+                //@todo: we need numCoords before this function is invoked
+                if (dataLen)
+                  //bitLODGeometry._mesh._numCoords = shape._webgl.triangleBuffer.byteLength / dataLen;
+                  bitLODGeometry._mesh._numCoords = shape._webgl.triangleBuffer.length / 3;
+            }      
+          };
+
 					shape._webgl.bitLODGeometry = 1;    // indexed BLG
 					var xmlhttpLOD = new XMLHttpRequest();
 					xmlhttpLOD.open("GET", encodeURI(shape._nameSpace.getURL(bitLODGeometry._vf.index)) , true);
@@ -1044,74 +1111,73 @@ x3dom.gfx_webgl = (function () {
 					{
 						var XHR_buffer = xmlhttpLOD.response;
 
-						var indicesBuffer = gl.createBuffer();
-						shape._webgl.buffers[0] = indicesBuffer;
-
             var indexArray;
             
 						//variable-length decoding
             //@todo: make this flexible
-            if (false)
-            {
-             // function () {
-                var decoded_values = [];
+            if (true) {              
+             (function(){
+                if (typeof shape._webgl.dataBuffers == 'undefined')
+                  shape._webgl.dataBuffers = [];
+                
+                shape._webgl.dataBuffers[0] = [];
+                
                 var codes = x3dom.Utils.getArrayBufferView("Uint8", XHR_buffer);
                 var i = 0;
                 var b;
-                var delta = 0;
-                var magic_number = 128;
+                var delta;
+                var magic_number;
                 var value = 0;
-                
+
                 while (i < codes.length) {
                   b = codes[i++];
                   
+                  delta        = 0;
+                  magic_number = 128
+                  
                   //read bytes while the marker bit (first one) is set
-                  while (b >= 256) {
-                    delta |= b - 256;
+                  while (b >= 128) {
+                    delta |= b - 128;
                     delta <<= 7;
-                                        
-                    magic_number *= 2;
+                    
+                    magic_number <<= 7;
                     
                     b = codes[i++];
                   }
-                  
-                  delta |= b - 256;
-                  
+
+                  delta |= b;
+
                   magic_number /= 2;                  
                   delta -= magic_number;
                   
                   value = value + delta;
-                  decoded_values.push(value);
-                }
-                
-                indexArray = new Uint32Array(decoded_values.length);
-                
-                for (i = 0; i < decoded_values.length; ++i) {
-                  indexArray[i] = decoded_values[i];
-                }
-              //}();
-            }
-            else
-            {
-              indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
-            }
-            
-            //@todo: make this flexible
-            if (false)
-            {
+                  shape._webgl.dataBuffers[0].push(value);
+                }                
+              }());
+
               //switch to non-indexed rendering
               shape._webgl.bitLODGeometry = -1;
-              
+
               //create triangle render buffer with normals computed on-the-fly
-              //(as soon as the data is available ...)
-              //...
+              //(if data is already available ...)              
+              shape._webgl.generateTriangleBuffer();
+
+              if (bitLODGeometry.getVertexCount(0) == 0)
+                bitLODGeometry.setVertexCount(0, shape._webgl.triangleBuffer.length);
             }
-            
-						gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-						gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
-						
-						if (bitLODGeometry.getVertexCount(0) == 0)
-							bitLODGeometry.setVertexCount(0, indexArray.length);
+            else
+            {            
+              var indicesBuffer = gl.createBuffer();
+              shape._webgl.buffers[0] = indicesBuffer;
+              
+              indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
+              
+              gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+              gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+              
+              if (bitLODGeometry.getVertexCount(0) == 0)
+                bitLODGeometry.setVertexCount(0, indexArray.length);
+            }
 						
 						bitLODGeometry._mesh._numFaces = 0;
 						
@@ -1129,73 +1195,87 @@ x3dom.gfx_webgl = (function () {
 					};
 				}
 				
-				function callBack(attributeId, bufferView)
-				{	
-					var buffer = gl.createBuffer();
-				
-					if (attributeId === 0) {
-						var attribTypeStr 		= bitLODGeometry._vf.coordType;
-						  
-						shape._webgl.coordType  = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
-						shape._webgl.normalType = shape._webgl.coordType;
-			  
-						// calculate number of single data packages by including stride and type size					
-						var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(attribTypeStr);
-						//@todo: we need numCoords before this callback is invoked
-						if (dataLen)
-							bitLODGeometry._mesh._numCoords = bufferView.length / dataLen;
-						
-						//Positions
-						shape._webgl.buffers[1] = buffer;
-						
-						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
-						
-						gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents, 
-						                       shape._webgl.coordType, false, 
-											   shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
-						gl.enableVertexAttribArray(sp.position);
+        function callBack(attributeId, bufferView)
+        {	
+          //@todo: make this flexible
+          if (bitLODGeometry.hasIndex() && true) {
+            if (typeof shape._webgl.dataBuffers == 'undefined')
+                  shape._webgl.dataBuffers = [];
+                  
+            if (attributeId === 0) {
+              shape._webgl.dataBuffers[1] = bufferView;
+            
+              shape._webgl.generateTriangleBuffer();
+            }
+          }
+          else
+          {
+            var buffer = gl.createBuffer();
+          
+            if (attributeId === 0) {
+              var attribTypeStr 		= bitLODGeometry._vf.coordType;
+                
+              shape._webgl.coordType  = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+              shape._webgl.normalType = shape._webgl.coordType;
+          
+              // calculate number of single data packages by including stride and type size					
+              var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(attribTypeStr);
+              //@todo: we need numCoords before this callback is invoked
+              if (dataLen)
+                bitLODGeometry._mesh._numCoords = bufferView.length / dataLen;
+              
+              //Positions
+              shape._webgl.buffers[1] = buffer;
+              
+              gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+              gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+              
+              gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents, 
+                                     shape._webgl.coordType, false, 
+                           shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
+              gl.enableVertexAttribArray(sp.position);
 
-						//Normals
-						shape._webgl.buffers[2] = buffer;
-						
-						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
-						
-						gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, 
-											shape._webgl.normalType, false, 
-											shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
-						gl.enableVertexAttribArray(sp.normal);
-					} 
-					else if (attributeId === 1) 
-					{
-						shape._webgl.texCoordType = shape._webgl.coordType;
-						shape._webgl.buffers[3] = buffer;
-						
-						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
-						
-						gl.vertexAttribPointer(sp.texcoord, shape._cf.geometry.node._mesh._numTexComponents, 
-											   shape._webgl.texCoordType, false, 
-											   shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
-						gl.enableVertexAttribArray(sp.texcoord);
-					} 
-					else if (attributeId === 2) 
-					{
-						shape._webgl.colorType = shape._webgl.coordType;
-						shape._webgl.buffers[4] = buffer;
-						
-						gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-						gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
-						
-						gl.vertexAttribPointer(sp.color, shape._cf.geometry.node._mesh._numColComponents, 
-											   shape._webgl.colorType, false, 
-											   shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
-						gl.enableVertexAttribArray(sp.color);
+              //Normals
+              shape._webgl.buffers[2] = buffer;
+              
+              gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+              gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+              
+              gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, 
+                        shape._webgl.normalType, false, 
+                        shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+              gl.enableVertexAttribArray(sp.normal);
+            } 
+            else if (attributeId === 1) 
+            {
+              shape._webgl.texCoordType = shape._webgl.coordType;
+              shape._webgl.buffers[3] = buffer;
+              
+              gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+              gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+              
+              gl.vertexAttribPointer(sp.texcoord, shape._cf.geometry.node._mesh._numTexComponents, 
+                           shape._webgl.texCoordType, false, 
+                           shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+              gl.enableVertexAttribArray(sp.texcoord);
+            } 
+            else if (attributeId === 2) 
+            {
+              shape._webgl.colorType = shape._webgl.coordType;
+              shape._webgl.buffers[4] = buffer;
+              
+              gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+              gl.bufferData(gl.ARRAY_BUFFER, bufferView, gl.STATIC_DRAW);
+              
+              gl.vertexAttribPointer(sp.color, shape._cf.geometry.node._mesh._numColComponents, 
+                           shape._webgl.colorType, false, 
+                           shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
+              gl.enableVertexAttribArray(sp.color);
+            }
+            
+            bufferView = null;
 					}
-					
-					bufferView = null;
-					
+          
 				    //shape._nameSpace.doc.downloadCount -= 1;
 					shape._nameSpace.doc.needRender = true;
 					
