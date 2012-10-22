@@ -1668,12 +1668,68 @@ x3dom.gfx_webgl = (function () {
 						var indicesBuffer = gl.createBuffer();
 						shape._webgl.buffers[0] = indicesBuffer;
 
-						var indexArray = getArrayBufferView("Uint16", XHR_buffer);
-
+            var indexArray;
+            
+						//variable-length decoding
+            //@todo: make this flexible
+            if (false)
+            {
+             // function () {
+                var decoded_values = [];
+                var codes = getArrayBufferView("Uint8", XHR_buffer);
+                var i = 0;
+                var b;
+                var delta = 0;
+                var magic_number = 128;
+                var value = 0;
+                
+                while (i < codes.length) {
+                  b = codes[i++];
+                  
+                  //read bytes while the marker bit (first one) is set
+                  while (b >= 256) {
+                    delta |= b - 256;
+                    delta <<= 7;
+                                        
+                    magic_number *= 2;
+                    
+                    b = codes[i++];
+                  }
+                  
+                  delta |= b - 256;
+                  
+                  magic_number /= 2;                  
+                  delta -= magic_number;
+                  
+                  value = value + delta;
+                  decoded_values.push(value);
+                }
+                
+                indexArray = new Uint32Array(decoded_values.length);
+                
+                for (i = 0; i < decoded_values.length; ++i) {
+                  indexArray[i] = decoded_values[i];
+                }
+              //}();
+            }
+            else
+            {
+              indexArray = getArrayBufferView("Uint16", XHR_buffer);
+            }
+            
+            //@todo: make this flexible
+            if (false)
+            {
+              //switch to non-indexed rendering
+              shape._webgl.bitLODGeometry = -1;
+              
+              //create triangle render buffer with normals computed on-the-fly
+              //(as soon as the data is available ...)
+              //...
+            }
+            
 						gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
 						gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
-						
-
 						
 						if (bitLODGeometry.getVertexCount(0) == 0)
 							bitLODGeometry.setVertexCount(0, indexArray.length);
