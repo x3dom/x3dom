@@ -10,7 +10,7 @@ The X3DOM API is currently split into two parts:
 
 The runtime api provides progrmmatic live access to the system. The
 Documnetation API allows to dynamically generate documentation
-artifacts embedded dreived from the souce code (e.g. a list of
+artifacts embedded derived from the source code (e.g. a list of
 loaded nodes).
 
 
@@ -203,6 +203,21 @@ the X3D element they are working on as first parameter::
     Takes world coordinates (x,y,z) of the scene and calculates
     the relating 2D X/Y coordinates relative to the window the
     scene is rendered in.
+
+
+..  js:function:: getScreenshot()
+
+    :return: URL to image
+
+    Returns a URL to a Base64 encoded png image consisting of
+    the current rendering.
+
+
+..  js:function:: lightMatrix()
+
+    :return: The current light matrix
+
+    Returns the current light matrix.
 
 
 ..  js:function:: resetView()
