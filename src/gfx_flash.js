@@ -458,7 +458,7 @@ x3dom.gfx_flash = (function() {
 					this.object.setMeshNormals( { id: shape._objectID,
 												  idx: 0,
 												  //TODO new flash IG implementation normals: shape._cf.geometry.node.getNormalTextureURLs(),
-												  normalTexture: shape._cf.geometry.node.getNormalTextureURL(0) } );
+												  normalTexture: shape._cf.geometry.node.getNormalTextureURL() } );
 				} else if(isBinaryGeometry) {
 					if(!shape._cf.geometry.node._hasStrideOffset) {
 						this.object.setMeshNormals( { id: shape._objectID,

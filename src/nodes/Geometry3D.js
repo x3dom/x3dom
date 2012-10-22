@@ -1955,25 +1955,6 @@ x3dom.registerNodeType(
         function (ctx) {	
             x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
 			
-			var coordPrio = -5;
-			var normalPrio = -4;
-			
-			for (var i=0; i<ctx.xmlNode.childNodes.length; i++) {
-				if ('imagetexture' == ctx.xmlNode.childNodes[i].localName) {
-					if ('coord' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', coordPrio);
-						coordPrio += 10;
-					} else if ('normal' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', normalPrio);
-						normalPrio += 10;
-					} else if ('texCoord' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', '-3');
-					} else if ('color' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', '-2');
-					}
-				}
-			}
-			
 			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
 			this.addField_MFInt32(ctx, 'vertexCount', [0]);
@@ -1983,7 +1964,7 @@ x3dom.registerNodeType(
 			
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
-			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_SFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
 			
@@ -2082,6 +2063,7 @@ x3dom.registerNodeType(
 			getIndexTexture: function()
             {
                 if(this._cf.index.node) {
+					this._cf.index.node._type = "IG_index";
                     return this._cf.index.node;
                 } else {
                     return null;
@@ -2100,6 +2082,7 @@ x3dom.registerNodeType(
 			getCoordinateTexture: function(pos)
             {
                 if(this._cf.coord.nodes[pos]) {
+					this._cf.coord.nodes[pos]._type = "IG_coords" + pos;
                     return this._cf.coord.nodes[pos];
                 } else {
                     return null;
@@ -2125,37 +2108,29 @@ x3dom.registerNodeType(
                 return urls;
             },
 
-            getNormalTexture: function(pos)
+            getNormalTexture: function()
             {
-                if(this._cf.normal.nodes[pos]) {
-                    return this._cf.normal.nodes[pos];
+                if(this._cf.normal.node) {
+					this._cf.normal.node._type = "IG_normals";
+                    return this._cf.normal.node;
                 } else {
                     return null;
                 }
             },
 			
-			getNormalTextureURL: function(pos)
+			getNormalTextureURL: function()
             {
-                if(this._cf.normal.nodes[pos]) {
-                    return this._cf.normal.nodes[pos]._vf.url;
+                if(this._cf.normal.node) {
+                    return this._cf.normal.node._vf.url;
                 } else {
                     return null;
                 }
-            },
-			
-			getNormalTextureURLs: function()
-            {
-                var urls = [];
-				for(var i=0; i<this._cf.normal.nodes.length; i++)
-				{
-					urls.push(this._cf.normal.nodes[i]._vf.url);
-				}
-                return urls;
             },
 
             getTexCoordTexture: function()
             {
                 if(this._cf.texCoord.node) {
+					this._cf.texCoord.node._type = "IG_texCoords";
                     return this._cf.texCoord.node;
                 } else {
                     return null;
@@ -2174,6 +2149,7 @@ x3dom.registerNodeType(
 			getColorTexture: function()
             {
                 if(this._cf.color.node) {
+					this._cf.color.node._type = "IG_colors";
                     return this._cf.color.node;
                 } else {
                     return null;
@@ -2187,7 +2163,31 @@ x3dom.registerNodeType(
                 } else {
                     return null;
                 }
-            }
+			},
+			
+			getTextures: function()
+			{
+				var textures = [];
+				
+				var index = this.getIndexTexture();
+				if(index) textures.push(index);
+				
+				for(i=0; i<this.numCoordinateTextures(); i++) {
+					var coord = this.getCoordinateTexture(i);
+					if(coord) textures.push(coord);
+				}
+				
+				var normal = this.getNormalTexture();
+				if(normal) textures.push(normal);
+				
+				var texCoord = this.getTexCoordTexture();
+				if(texCoord) textures.push(texCoord);
+				
+				var color = this.getColorTexture();
+				if(color) textures.push(color);
+				
+				return textures;
+			}
 		}
 	)
 );

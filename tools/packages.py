@@ -7,16 +7,18 @@ BASICS = [
   'lang/Array.js',
   'Internals.js',
   'debug.js',
-  'ImageLoadManager.js',
   'util/DownloadManager.js',
   'util/RefinementJobManager.js',
   'util/RefinementJobWorker.js',
   'util/Properties.js',
   'util/DoublyLinkedList.js',
   'util/EarClipping.js',
+  'util/Utils.js',
   'X3DCanvas.js',
   'Runtime.js',
-  'Main.js'
+  'Main.js',
+  'Cache.js',
+  'Texture.js',
 ]
 
 SHADER = [
@@ -33,7 +35,6 @@ SHADER = [
 	'shader/ShaderBackgroundSkyTexture.js',
 	'shader/ShaderBackgroundCubeTexture.js',
 	'shader/ShaderShadow.js',
-	'shader/ShaderCache.js'
 ]
 
 GFX = [

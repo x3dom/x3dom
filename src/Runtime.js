@@ -348,6 +348,36 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
 };
 
 /**
+ * Function: getScreenshot
+ *
+ * Returns a Base64 encoded png image consisting of the current rendering.
+ *
+ * Returns:
+ * 		The Base64 encoded PNG image string
+ */
+x3dom.Runtime.prototype.getScreenshot = function() {
+	var url = "";
+	var canvas = this.canvas.canvas;
+
+	if (canvas) {
+	    // first flip along y axis
+        var canvas2d = document.createElement("canvas");
+        canvas2d.width = canvas.width;
+        canvas2d.height = canvas.height;
+
+        var ctx = canvas2d.getContext("2d");
+        ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+        ctx.scale(1, -1);
+        ctx.translate(0, -canvas.height);
+
+        url = canvas2d.toDataURL();
+		//url = canvas.toDataURL();
+	}
+
+	return url;
+};
+
+/**
  * Function: lightMatrix
  *
  * Returns the current light matrix.
