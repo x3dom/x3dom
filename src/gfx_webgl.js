@@ -1025,16 +1025,15 @@ x3dom.gfx_webgl = (function () {
 			//Get number of components
 			var numComponents = bitLODGeometry.getNumComponents();
 
-			//Check if components avaible
+			//Check if components available
 			if(numComponents)
 			{
 				//Check if there are indices avaible
 				if(bitLODGeometry.hasIndex())
 				{
-          //this function generates a triangle buffer out of
+          //this function generates a single, large triangle buffer out of
           //  - an index buffer containing indices of TRIANGLES
-          //  - a set of data buffers containing the triangle data
-          //@todo: make this flexible          
+          //  - a set of data buffers containing the triangle data          
           shape._webgl.generateTriangleBuffer = function() {
             if (typeof shape._webgl.dataBuffers[0] != 'undefined' &&
                 (typeof shape._webgl.dataBuffers[1] != 'undefined' || //positions & normals
@@ -1068,9 +1067,10 @@ x3dom.gfx_webgl = (function () {
                 
                 for (i = 0; i < indexArray.length; ++i) {
                   write_idx        = i * stride;
-                  read_idx_pos_nor = indexArray[i] * 6;
                   
                   if (coordsNormalsAvailable) {
+                    read_idx_pos_nor = indexArray[i] * 6;
+                  
                     //write coords                    
                     shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
                     shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
@@ -1089,21 +1089,21 @@ x3dom.gfx_webgl = (function () {
                       n_theta = n_theta / 3;
                       n_phi   = n_phi   / 3;
                       
-                      shape._webgl.triangleBuffer[write_idx + 4 - stride] = n_theta;
-                      shape._webgl.triangleBuffer[write_idx + 5 - stride] = n_phi;
+                      shape._webgl.triangleBuffer[write_idx + 4 - 2*stride] = n_theta;
+                      shape._webgl.triangleBuffer[write_idx + 5 - 2*stride] = n_phi;
                       
-                      shape._webgl.triangleBuffer[write_idx + 4 - stride] = n_theta;
-                      shape._webgl.triangleBuffer[write_idx + 5 - stride] = n_phi;
+                      shape._webgl.triangleBuffer[write_idx + 4 - stride  ] = n_theta;
+                      shape._webgl.triangleBuffer[write_idx + 5 - stride  ] = n_phi;
                       
-                      shape._webgl.triangleBuffer[write_idx + 4         ] = n_theta;
-                      shape._webgl.triangleBuffer[write_idx + 5         ] = n_phi;
+                      shape._webgl.triangleBuffer[write_idx + 4           ] = n_theta;
+                      shape._webgl.triangleBuffer[write_idx + 5           ] = n_phi;
                       
                       n_theta = n_phi = accum_cnt = 0;
                     }
                   }
-                  
+
                   write_idx += 6;
-                  
+
                   if (texCoordsAvailable) {                    
                     read_idx_tc = indexArray[i] * 2;
                     
@@ -1185,7 +1185,7 @@ x3dom.gfx_webgl = (function () {
                 }
             }      
           };
-
+           
 					shape._webgl.bitLODGeometry = 1;    // indexed BLG
 					var xmlhttpLOD = new XMLHttpRequest();
 					xmlhttpLOD.open("GET", encodeURI(shape._nameSpace.getURL(bitLODGeometry._vf.index)) , true);
@@ -1201,9 +1201,8 @@ x3dom.gfx_webgl = (function () {
 
             var indexArray;
             
-						//variable-length decoding
-            //@todo: make this flexible
-            if (true) {              
+						//variable-length decoding            
+            if (bitLODGeometry.usesVLCIndices()) {              
              (function(){
                 if (typeof shape._webgl.dataBuffers == 'undefined')
                   shape._webgl.dataBuffers = [];
@@ -1282,11 +1281,10 @@ x3dom.gfx_webgl = (function () {
 						shape._nameSpace.doc.needRender = true;
 					};
 				}
-				
+				        
         function callBack(attributeId, bufferView)
-        {	
-          //@todo: make this flexible
-          if (bitLODGeometry.hasIndex() && true) {
+        {	          
+          if (bitLODGeometry.hasIndex() && bitLODGeometry.usesVLCIndices()) {
             if (typeof shape._webgl.dataBuffers == 'undefined')
                   shape._webgl.dataBuffers = [];
 
@@ -1370,7 +1368,7 @@ x3dom.gfx_webgl = (function () {
             bufferView = null;
 					}
           
-				    //shape._nameSpace.doc.downloadCount -= 1;
+				  //shape._nameSpace.doc.downloadCount -= 1;
 					shape._nameSpace.doc.needRender = true;
 					
 					shape._webgl.refinementJobManager.continueProcessing(attributeId);

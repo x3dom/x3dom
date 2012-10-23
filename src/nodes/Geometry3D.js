@@ -1630,10 +1630,10 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
 			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
-			this.addField_SFString(ctx, 'index', "");   // Uint16		
+			this.addField_SFString(ctx, 'index', "");   // Uint16
+      this.addField_SFBool(ctx, 'usesVLCIndices', "false");  // variable-length coding
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
-			
-			
+
 			// Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
             //this.addField_SFString(ctx, 'indexType', "Uint16");
@@ -1765,7 +1765,12 @@ x3dom.registerNodeType(
 			{
 				return (this._vf.index.length) ? true : false;
 			},
-			
+
+      usesVLCIndices: function()
+			{
+				return this._vf.usesVLCIndices == true;
+			},
+
 			hasPolarNormals: function()
 			{
 				return true; //TODO
