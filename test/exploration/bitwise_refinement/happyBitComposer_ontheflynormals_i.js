@@ -243,7 +243,7 @@ function refinementFinishedCallback(attributeId, buffer, refinementJobManager) {
     
     //create VBO data, using downloaded indices, create normals on-the-fly
     point_idx = 0;
-    points    = [[0,0,0],[0,0,0],[0,0,0]];
+    points    = [[0,0,0], [0,0,0], [0,0,0]];
     for (i = 0; i < indexArray.length; ++i) {
       idx = indexArray[i] * 3;
       
