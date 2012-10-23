@@ -88,7 +88,11 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	if(properties.VERTEXCOLOR) {	
 		if(properties.IMAGEGEOMETRY) {
 			shader += "uniform sampler2D IG_colors;\n";
-			shader += "varying vec4 fragColor;\n";
+			if(properties.COLCOMPONENTS == 3) {
+				shader += "varying vec3 fragColor;\n";
+			} else if(properties.COLCOMPONENTS == 4) {
+				shader += "varying vec4 fragColor;\n";
+			}
 		} else {
 			if(properties.COLCOMPONENTS == 3) {
 				shader += "attribute vec3 color;\n";
@@ -201,7 +205,12 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		
 		//Colors
 		if(properties.VERTEXCOLOR) {
-			shader += "fragColor = texture2D( IG_colors, IG_texCoord ).rgb;\n";
+			if(properties.COLCOMPONENTS == 3) {
+				shader += "fragColor = texture2D( IG_colors, IG_texCoord ).rgb;\n";
+			} else if(properties.COLCOMPONENTS == 4) {
+				shader += "fragColor = texture2D( IG_colors, IG_texCoord ).rgba;\n";
+			}
+			
 		}
 		
 		//TexCoords
