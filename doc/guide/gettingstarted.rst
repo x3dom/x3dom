@@ -7,7 +7,7 @@ Getting started
 Downloading X3DOM
 -----------------
 The recommended way of using X3DOM in your application is linking the online
-version in your HTML document like this:
+version within your HTML document like this:
 
     <script type='text/javascript' src='http://www.x3dom.org/release/x3dom.js'></script>
     <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'>
