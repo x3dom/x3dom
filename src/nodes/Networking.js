@@ -259,6 +259,14 @@ x3dom.registerNodeType(
                         that._nameSpace.doc.needRender = true;
                         x3dom.debug.logInfo('Inline: added '+that._vf.url[0]+' to scene.');
                         
+                        // recalc changed scene bounding box
+                        var min = x3dom.fields.SFVec3f.MAX();
+                        var max = x3dom.fields.SFVec3f.MIN();
+                        if (that._nameSpace.doc._viewarea._scene.getVolume(min, max, true)) {
+                            that._nameSpace.doc._viewarea._scene._lastMin = min;
+                            that._nameSpace.doc._viewarea._scene._lastMax = max;
+                        }
+                        
                         that.fireEvents("load");
                     }
                     
