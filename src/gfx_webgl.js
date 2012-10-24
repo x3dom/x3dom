@@ -1066,11 +1066,11 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 for (i = 0; i < indexArray.length; ++i) {
-                  write_idx        = i * stride;
+                  write_idx = i * stride;
                   
                   if (coordsNormalsAvailable) {
                     read_idx_pos_nor = indexArray[i] * 6;
-                  
+                    
                     //write coords                    
                     shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
                     shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
@@ -1078,12 +1078,18 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.triangleBuffer[write_idx + 3] = 0;
 
                     //write normals                    
-                    //use this for per-vertex-normals
-                    //shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
-                    //shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
+                    //A: use transmitted per-vertex-normals
+                    shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
+                    shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
 
-                    //on-the-fly normal computation (by averaging) for per-face normals
-                    n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
+                    //B: on-the-fly normal computation for per-face normals (by cross product)
+                    /*if (++accum_cnt === 3) {
+                      //@todo: problem: at the moment, we use a shader for polar coordinate normals ...
+                      //...                      
+                    }      */ 
+                    
+                    //C: on-the-fly normal computation for per-face normals (by averaging)
+                    /*n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
                     n_phi   += shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
                     if (++accum_cnt === 3) {
                       n_theta = n_theta / 3;
@@ -1099,7 +1105,7 @@ x3dom.gfx_webgl = (function () {
                       shape._webgl.triangleBuffer[write_idx + 5           ] = n_phi;
                       
                       n_theta = n_phi = accum_cnt = 0;
-                    }
+                    }*/
                   }
 
                   write_idx += 6;
@@ -1201,9 +1207,9 @@ x3dom.gfx_webgl = (function () {
 
             var indexArray;
             
-						//variable-length decoding            
             if (bitLODGeometry.usesVLCIndices()) {              
-             (function(){
+              //variable-length decoding
+              (function(){
                 if (typeof shape._webgl.dataBuffers == 'undefined')
                   shape._webgl.dataBuffers = [];
                 
@@ -1380,7 +1386,8 @@ x3dom.gfx_webgl = (function () {
 				shape._webgl.refinementJobManager = new x3dom.RefinementJobManager();
 			
 				//allocate buffers, pass them to the refinement manager
-				//@todo: get number of vertices
+				//@todo: method returns number of index entries - at the moment, we have no mechanism to get the 
+        //       real number of vertices here, so we usually allocate too much memory
 				var numVerts = bitLODGeometry.getNumVertices();
 		  
 				var buf = new ArrayBuffer(12 * numVerts);  
