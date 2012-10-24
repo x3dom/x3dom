@@ -23,7 +23,7 @@ safe for cross site requests. For example::
     Access-Control-Allow-Origin: http://yoursite.org
 
 If you don't care and want to allow access to all users, you can add e.g.
-the following to your httpd.conf (given you are using Apache2):
+the following to your httpd.conf (given you are using Apache2)::
 
     <Directory />
         Header set Access-Control-Allow-Origin "*"
