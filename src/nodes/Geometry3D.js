@@ -240,11 +240,6 @@ x3dom.registerNodeType(
                             this._mesh._normals[0].push(normals[c].y);
                             this._mesh._normals[0].push(normals[c].z);
                         }
-                        else {
-                            //this._mesh._normals[0].push(0);
-                            //this._mesh._normals[0].push(1);
-                            //this._mesh._normals[0].push(0);
-                        }
 
                         if (texCoords) {
                             this._mesh._texCoords[0].push(texCoords[c].x);
@@ -286,7 +281,8 @@ x3dom.registerNodeType(
                 // TODO; handle at least per quad normals
                 //       (corresponds to creaseAngle = 0)
                 //this._mesh.calcNormals(this._vf.creaseAngle);
-                this._mesh.calcNormals(Math.PI);
+                if (!normals)
+                    this._mesh.calcNormals(Math.PI);
 
 				this._mesh._invalidate = true;
                 this._mesh._numTexComponents = numTexComponents;
@@ -297,6 +293,12 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
+                var normals = null;
+                
+                if (this._cf.normal.node) {
+                    normals = this._cf.normal.node._vf.vector;
+                }
+                
                 if (fieldName == "height")
                 {
                     var i, n = this._mesh._positions[0].length / 3;
@@ -305,14 +307,20 @@ x3dom.registerNodeType(
                     for (i=0; i<n; i++) {
                         this._mesh._positions[0][3*i+1] = h[i];
                     }
+                    
+                    if (!normals) {
+                        this._mesh._normals[0] = [];
+                        this._mesh.calcNormals(Math.PI);
+                    }
 
                     this._mesh._invalidate = true;
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        if (!normals)
+                            node._dirty.normals = true;
                     });
                 }
-
                 // TODO: handle other cases!
             }
         }

@@ -6,15 +6,17 @@ Getting started
 
 Downloading X3DOM
 -----------------
-The recommended way of using X3DOM in your application is downloading a
-released version to your local machine or server. The code of a released
-version should be usable in all modern browsers.
+The recommended way of using X3DOM in your application is linking the online
+version in your HTML document like this:
 
-X3DOM itself depends on no external libraries. All you need in order to make
-it work are the following files:
+    <script type='text/javascript' src='http://www.x3dom.org/release/x3dom.js'></script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'>
+
+X3DOM should be usable in all modern browser and depends on no external libraries. 
+All you need in order to make it work are the following files:
 
 ===================  =====================================================
-``x3dom.js``         The minified X3DOM library in a given version
+``x3dom.js``         The minified X3DOM library in a given version.
 ``x3dom.css``        Stylesheets for X3DOM, you need to include this file
                      in your webpage in order for X3DOM to display.
                      However you can also take it as template to
@@ -34,13 +36,13 @@ to the latest released version.
 Development builds
 ------------------
 If you want to work with the latest development build of X3DOM (which in fact 
-is recommended) `download the latest builds from the X3DOM server at
+is recommended), then `download the latest builds from the X3DOM server here
 <http://x3dom.org/download/dev/>`_.
 
-The development build automatically created every night and will contain
+The development build is automatically created every night and will contain
 many fixes and features not available to the released versions. We try to
 keep the development build at a working stage and not break compatibility
-with released versions. However a working dev build can not be guaranteed
+with released versions. However, a working dev build can not be guaranteed
 all the time.
 
 
