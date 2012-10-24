@@ -22,6 +22,15 @@ safe for cross site requests. For example::
 
     Access-Control-Allow-Origin: http://yoursite.org
 
+If you don't care and want to allow access to all users, you can add e.g.
+the following to your httpd.conf (given you are using Apache2):
+
+    <Directory />
+        Header set Access-Control-Allow-Origin "*"
+        Header set Access-Control-Allow-Headers "Content-Type"
+        Header set Access-Control-Allow-Methods "GET, PUT, OPTIONS, DELETE, POST"
+    </Directory>
+
 An alternative to adhering to the CORS protocol, is to setting
 up a proxy server forwarding requests to the foreign server in the background.
 If you can do away with the benefits CDN provides this technique may be
@@ -126,6 +135,7 @@ you loading resources from disk. Use the following startup parameters::
 
     --allow-file-access-from-files
     --allow-file-access
+    --disable-web-security
 
 
 Firefox

@@ -25,7 +25,7 @@ it work are the following files:
 
 You can `download the files from the X3DOM server <http://x3dom.org/download/>`_
 and put them on your harddisk or your webserver. The released versions reside
-in subdirectories with version numbers, for exmaple version 1.3 is available
+in subdirectories with version numbers, for example version 1.3 is available
 at `1.3/ <http://x3dom.org/download/1.3/>`_. For the current release you can use
 the shortcut `current/ <http://x3dom.org/download/current/>`_ it will always point
 to the latest released version.
@@ -33,8 +33,8 @@ to the latest released version.
 
 Development builds
 ------------------
-If you are adventurous and want to work with the latest development build of
-X3DOM `download the latest builds from the X3DOM server at
+If you want to work with the latest development build of X3DOM (which in fact 
+is recommended) `download the latest builds from the X3DOM server at
 <http://x3dom.org/download/dev/>`_.
 
 The development build automatically created every night and will contain
@@ -63,7 +63,7 @@ You can also check out a specific release from GitHub::
 
     git clone https://github.com/x3dom/x3dom.git
     git checkout <version>
-    e.g. git checkout 1.2.0
+    e.g. git checkout 1.3.0
 
 If you want to build your own copy of X3DOM from the Git repository, you
 need to build it from the sources.
