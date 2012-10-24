@@ -553,6 +553,8 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.LOD.superClass.call(this, ctx);
 
             this.addField_MFFloat(ctx, "range", []);
+            
+            this._needReRender = true;
         },
         {
             visitChildren: function(transform, out)
@@ -580,6 +582,20 @@ x3dom.registerNodeType(
                     var childTransform = this._childNodes[i].transformMatrix(transform);
                     this._childNodes[i].collectDrawableObjects(childTransform, out);
                 }
+                
+                // eye position invalid in first frame
+                if (this._needReRender) {
+                    this._needReRender = false;
+                    this._nameSpace.doc.needRender = true;
+                }
+            },
+            
+            nodeChanged: function() {
+                this._needReRender = true;
+            },
+            
+            fieldChanged: function(fieldName) {
+                this._needReRender = true;
             }
         }
     )

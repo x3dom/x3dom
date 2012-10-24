@@ -73,9 +73,10 @@
 </head>
   <body>
   <h1>Simple LOD</h1>
-    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='true' x='0px' y='0px' width='400px' height='400px'>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' showStat='true' showLog='true' width='500px' height='400px'>
       <Scene DEF='scene'>
-        <LOD center='0 0 10' range='12'>
+         
+        <LOD center='0 0 0' range='12'>
           <Transform>
             <Shape>
               <Appearance>
@@ -93,6 +94,7 @@
             </Shape>
           </Transform>
         </LOD>
+        
         <Transform translation='0 0 -5'>
           <Shape>
             <Appearance>
@@ -101,8 +103,9 @@
             <Box size='10 10 0.1'/>
           </Shape>
         </Transform>
+        
         <DirectionalLight intensity='0.6' shadowIntensity='0.8' direction='0 0.1 -0.9'/>
-		<Viewpoint zNear="0.5" zFar="1000" />
+		<Viewpoint position="0 0 15" zNear="0.5" zFar="1000" />
         <Background/>
       </Scene>
     </X3D>
