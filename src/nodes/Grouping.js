@@ -590,7 +590,7 @@ x3dom.registerNodeType(
                                 var starInd = nodeName.lastIndexOf('*');
                                 
                                 if (starInd > 0)
-                                    nodeName = nodeName.substring(0, starInd) + "_";
+                                    nodeName = nodeName.substring(0, starInd);
                                 if (nodeName.length <= 1)
                                     continue;
                                 
