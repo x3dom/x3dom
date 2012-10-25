@@ -332,8 +332,13 @@ x3dom.registerNodeType(
                     else
                         rl = tb * aspect;
                     
-                    left = -rl; right = rl;
-                    bottom = -tb; top = tb;
+                    left = -rl;
+                    right = rl;
+                    bottom = -tb;
+                    top = tb;
+                    
+                    rl *= 2;
+                    tb *= 2;
                     
                     this._projMatrix = new x3dom.fields.SFMatrix4f(
                                         2 / rl, 0, 0,  -(right+left) / rl,
