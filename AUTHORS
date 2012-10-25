@@ -1,15 +1,16 @@
-X3DOM has been developed by Fraunhofer IGD. 
+X3DOM has been developed by Fraunhofer IGD (VCST group).
 
 The PRIMARY AUTHORS are (and/or have been):
 
     * Johannes Behr
     * Yvonne Jung
-    * Peter Eschler
-    * Timm Drevensek 
-    * Tobias Franke
     * Timo Sturm
     * Andreas Aderhold
     * Katarzyna Wilkosinska
+    * Max Limper
+    * Tobias Franke
+    * Peter Eschler
+    * Timm Drevensek
 
 And here is an inevitably incomplete list of MUCH-APPRECIATED CONTRIBUTORS --
 people who have submitted patches, reported bugs, added translations, helped
@@ -17,8 +18,9 @@ answer newbie questions, and generally made X3DOM that much better:
 
    x3domer
    James Sweet
+   John Congote
+   ...
    Your Name <couldbe@here.com>
-
 
 A big thank you to Philip Taylor. X3DOM is based on code originally written
 by him. http://philip.html5.org

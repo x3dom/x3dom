@@ -2951,7 +2951,7 @@ x3dom.gfx_webgl = (function () {
 				}
               }
               else {
-                if (shape._webgl.primType == gl.POINTS) {
+                if (shape._webgl.primType == gl.POINTS && (typeof shape._webgl.primType).toString() != "object") {
 					gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
                 }
                 else {

@@ -590,7 +590,7 @@ x3dom.registerNodeType(
                                 var starInd = nodeName.lastIndexOf('*');
                                 
                                 if (starInd > 0)
-                                    nodeName = nodeName.substring(0, starInd) + "_";
+                                    nodeName = nodeName.substring(0, starInd);
                                 if (nodeName.length <= 1)
                                     continue;
                                 
@@ -739,6 +739,17 @@ x3dom.registerNodeType(
         },
         {
             /* bindable getter (e.g. getViewpoint) are added automatically */
+            
+            updateVolume: function()
+            {
+                var min = x3dom.fields.SFVec3f.MAX();
+                var max = x3dom.fields.SFVec3f.MIN();
+                
+                if (this.getVolume(min, max, true)) {
+                    this._lastMin = min;
+                    this._lastMax = max;
+                }
+            }
         }
     )
 );
