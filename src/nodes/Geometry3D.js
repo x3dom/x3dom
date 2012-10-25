@@ -1543,6 +1543,222 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### PopGeometryLevel ### */
+x3dom.registerNodeType(
+    "PopGeometryLevel",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+      function (ctx) {	
+          x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
+    
+          this.addField_SFString(ctx, 'src', "");
+          this.addField_SFInt32(ctx, 'numIndices', 0);			
+      },
+      {
+        nodeChanged: function() {	
+          //TODO: implement
+        },
+
+        fieldChanged: function(fieldName) {
+        },
+			
+        getSrc: function() {
+          return this._vf.src;
+        },
+			
+        getNumIndices: function() {
+          return this._vf.numIndices;
+        }
+		}
+	)
+);
+
+/* ### PopGeometry ### */
+x3dom.registerNodeType(
+    "PopGeometry",
+    "Rendering",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {        
+            x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
+
+            this.addField_MFInt32 (ctx, 'vertexCount', [0]);
+            this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+            this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
+            this.addField_SFVec3f (ctx, 'size',     1, 1, 1);            
+            
+            this.addField_MFNode('levels', x3dom.nodeTypes.PopGeometryLevel);
+            
+            this.addField_SFInt32(ctx, 'attributeStride', 0);
+            this.addField_SFInt32(ctx, 'positionOffset',  0);
+            this.addField_SFInt32(ctx, 'normalOffset',    0);
+            this.addField_SFInt32(ctx, 'texcoordOffset',  0);
+            this.addField_SFInt32(ctx, 'colorOffset',     0);
+            this.addField_SFInt32(ctx, 'positionPrecision', 2);
+            this.addField_SFInt32(ctx, 'normalPrecision',   1);
+            this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
+            this.addField_SFInt32(ctx, 'colorPrecision',    1);            
+            this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
+            
+            this.addField_SFBool(ctx, 'indexedRendering', false);
+            
+            // workaround            
+            this._hasStrideOffset = false;
+            this._mesh._numPosComponents  = 3;
+            this._mesh._numNormComponents = 3;
+            this._mesh._numTexComponents  = 2;
+            this._mesh._numColComponents  = 3;
+            
+            this._mesh._invalidate = false;
+            this._mesh._numCoords  = 0;
+            this._mesh._numFaces   = 0;
+        
+            this._mesh._invalidate = false;
+            this._mesh._numCoords  = 0;
+            this._mesh._numFaces   = 0;
+        },
+        {
+            nodeChanged: function() {
+              // TODO: handle field updates and retrigger XHR
+            },
+
+            parentAdded: function() {
+              //TODO: implement 
+            },
+            
+            getMin: function() {
+              return this._vf.position.subtract( this._vf.size.multiply(0.5) );
+            },
+            
+            getMax: function() {
+              return this._vf.position.add( this._vf.size.multiply(0.5) );
+            },
+            
+            getVolume: function(min, max, invalidate) {
+              min.setValues(this.getMin());
+              max.setValues(this.getMax());
+              
+              return true;
+            },
+            
+            getCenter: function() {
+              return this._vf.position;
+            },
+            
+            hasIndex: function() {
+              return (this._vf.indexedRendering) ? true : false;
+            },
+            
+            getTotalNumberOfIndices: function() {
+              if (this._vf.indexedRendering) {
+                return this._vf.vertexCount;
+              }
+              else  {
+                return 0;
+              }              
+            },
+            
+            hasNormal: function() {
+              return (this._vf.normalOffset != 0);
+            },
+            
+            hasTexCoord: function() {
+              return (this._vf.texcoordOffset != 0);
+            },
+            
+            hasColor: function() {
+              return (this._vf.colorOffset != 0);
+            },
+            
+            getPositionPrecision : function() {
+              return this._vf.positionPrecision;
+            },
+            
+            getNormalPrecision : function() {
+              return this._vf.normalPrecision;
+            },
+            
+            getTexCoordPrecision : function() {
+              return this._vf.texcoordPrecision;
+            },
+            
+            getColorPrecision : function() {
+              return this._vf.colorPrecision;
+            },
+            
+            getAttributeStride : function() {
+              return this._vf.attributeStride;
+            },
+            
+            getPositionOffset : function() {
+              return this._vf.positionOffset;
+            },
+            
+            getNormalOffset : function() {
+              return this._vf.normalOffset;
+            },
+            
+            getTexCoordOffset : function() {
+              return this._vf.texcoordOffset;
+            },
+            
+            getColorOffset : function() {
+              return this._vf.colorOffset;
+            },
+            
+            getBufferTypeStringFromByteCount: function(bytes) {
+                switch(bytes)
+                {
+                    case 1:
+                        return "Uint8";
+                    case 2:
+                        return "Uint16";              
+                    //case 4: //currently not supported by PopGeometry
+                    //    return "Float32";
+                    default:
+                        return 0;
+                }
+            },            
+            
+            getDataURLs : function() {
+              var urls = [];
+                                  
+              for (var i = 0; i < this._cf.levels.nodes.length; ++i) {
+                urls.push(this._cf.levels.nodes[i].getSrc());                          
+              }
+              
+              return urls;
+            },
+            
+            getNumIndicesByLevel : function(lvl) {
+              return this._cf.levels.nodes[lvl].getNumIndices();
+            },
+            
+            getPrecisionMax: function(type) {
+              switch(this._vf[type])
+              {
+                  //currently, only Uint8 and Uint16 are supported
+                  //case "Int8":
+                  //    return 127.0;
+                  case "Uint8":
+                      return 255.0;
+                  //case "Int16":
+                  //    return 32767.0;
+                  case "Uint16":
+                      return 65535.0;
+                  //case "Int32":
+                     //return 2147483647.0;
+                  //case "Uint32":
+                     //return 4294967295.0;
+                  //case "Float32":
+                  //case "Float64":
+                  deault:
+                      return 1.0;
+              }
+            }
+        }
+    )
+);
+
 /* ### BitLODGeoComponent ### */
 x3dom.registerNodeType(
     "BitLODGeoComponent",
