@@ -206,7 +206,7 @@ x3dom.registerNodeType(
                         0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
                         0, 0, -1, 0
                     );
-
+                    
                     this._lastAspect = aspect;
                 }
                 else if (this._lastAspect !== aspect)
@@ -220,6 +220,138 @@ x3dom.registerNodeType(
         }
     )
 );
+
+/* ### OrthoViewpoint ### */
+/*
+x3dom.registerNodeType(
+        "OrthoViewpoint",
+        "Navigation",
+        defineClass(x3dom.nodeTypes.X3DViewpointNode,
+                function (ctx) {
+                    x3dom.nodeTypes.OrthoViewpoint.superClass.call(this, ctx);
+                    
+                    this.addField_MFFloat(ctx, 'fieldOfView', [-1, -1, 1, 1]);
+                    this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
+                    this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
+                    this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
+                    this.addField_SFFloat(ctx, 'zNear', 0.0001);
+                    this.addField_SFFloat(ctx, 'zFar', 10);
+                    
+                    this._viewMatrix = null;
+                    this._projMatrix = null;
+                    this._lastAspect = 1.0;
+                    
+                    this.resetView();
+                },
+        {
+            fieldChanged: function (fieldName) {
+                if (fieldName == "position" || 
+					fieldName == "orientation") {
+                    this.resetView();
+                }
+                else if (fieldName == "fieldOfView" ||
+                         fieldName == "zNear" || 
+						 fieldName == "zFar") {
+                    this._projMatrix = null;   // trigger refresh
+                    this.resetView();
+                }
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
+                }
+            },
+
+            activate: function (prev) {
+                if (prev) {
+                    this._nameSpace.doc._viewarea.animateTo(this, prev);
+                }
+                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this, prev);
+                this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
+            },
+
+            deactivate: function (prev) {
+                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this, prev);
+            },
+
+            getCenterOfRotation: function() {
+                return this._vf.centerOfRotation;
+            },
+            
+            getViewMatrix: function() {
+                return this._viewMatrix;
+            },
+            
+            getFieldOfView: function() {
+                return 1.57079633;
+            },
+
+            setView: function(newView) {
+                var mat = this.getCurrentTransform();
+                mat = mat.inverse();
+                this._viewMatrix = mat.mult(newView);
+            },
+            
+            resetView: function() {
+                var offset = x3dom.fields.SFMatrix4f.translation(
+                                (this._vf.fieldOfView[0] + this._vf.fieldOfView[2]) / 2, 
+                                (this._vf.fieldOfView[1] + this._vf.fieldOfView[3]) / 2, 0);
+                
+                this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
+                                    mult(this._vf.orientation.toMatrix()).inverse();
+                this._viewMatrix = this._viewMatrix.mult(offset);
+            },
+
+            getTransformation: function() {
+                return this.getCurrentTransform();
+            },
+            
+            getNear: function() {
+                return this._vf.zNear;
+            },
+            
+            getFar: function() {
+                return this._vf.zFar;
+            },
+            
+            getProjectionMatrix: function(aspect)
+            {
+                if (this._projMatrix == null)
+                {
+                    var near = this.getNear();
+                    var far = this.getFar();
+                    
+                    var left = this._vf.fieldOfView[0];
+                    var bottom = this._vf.fieldOfView[1];
+                    var right = this._vf.fieldOfView[2];
+                    var top = this._vf.fieldOfView[3];
+                    
+                    var rl = (right - left) / 2;    // hs
+                    var tb = (top - bottom) / 2;    // vs
+                    var fn = far - near;
+                    
+                    var camAspect = rl / tb;
+                    if (aspect < camAspect)
+                        tb = rl / aspect;
+                    else
+                        rl = tb * aspect;
+                    
+                    left = -rl; right = rl;
+                    bottom = -tb; top = tb;
+                    
+                    this._projMatrix = new x3dom.fields.SFMatrix4f(
+                                        2 / rl, 0, 0,  -(right+left) / rl,
+                                        0, 2 / tb, 0,  -(top+bottom) / tb,
+                                        0, 0, -2 / fn, -(far+near) / fn,
+                                        0, 0, 0, 1).transpose();
+                    x3dom.debug.logInfo(this._projMatrix)
+                }
+                this._lastAspect = aspect;
+                
+                return this._projMatrix;
+            }
+        }
+    )
+);
+*/
 
 /* ### Viewfrustum ### */
 x3dom.registerNodeType(

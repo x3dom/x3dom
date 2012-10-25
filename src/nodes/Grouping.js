@@ -739,6 +739,17 @@ x3dom.registerNodeType(
         },
         {
             /* bindable getter (e.g. getViewpoint) are added automatically */
+            
+            updateVolume: function()
+            {
+                var min = x3dom.fields.SFVec3f.MAX();
+                var max = x3dom.fields.SFVec3f.MIN();
+                
+                if (this.getVolume(min, max, true)) {
+                    this._lastMin = min;
+                    this._lastMax = max;
+                }
+            }
         }
     )
 );

@@ -806,13 +806,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				touches.lastAngle = touches.calcAngle(distance);
 			}
 			
-			var min = x3dom.fields.SFVec3f.MAX();
-			var max = x3dom.fields.SFVec3f.MIN();
-		
-			if (doc._scene.getVolume(min, max, true)) {
-				doc._scene._lastMin = min;
-				doc._scene._lastMax = max;
-			}
+			// update scene bbox
+			doc._scene.updateVolume();
 			
 			for(var i = 0; i < evt.touches.length; i++) {
 				var pos = this.parent.mousePosition(evt.touches[i]);

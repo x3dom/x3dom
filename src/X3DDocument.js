@@ -105,34 +105,45 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 doc.needRender = true;
             }
         },
+        
         onNodeRemoved: function(e) {
             if ('_x3domNode' in e.target.parentNode && '_x3domNode' in e.target) {
                 var parent = e.target.parentNode._x3domNode;
                 var child = e.target._x3domNode;
 
-                //x3dom.debug.logInfo("Child: " + e.target.type + ", MUTATION: " + e + ", " + e.type + ", removed node=" + e.target.tagName);
-                if (parent) {
+                //x3dom.debug.logInfo("Child: " + e.target.type + ", removed node=" + e.target.tagName);
+                if (parent && child) {
                     parent.removeChild(child);
+                    
+                    if (doc._viewarea && doc._viewarea._scene)
+                        doc._viewarea._scene.updateVolume();
                     doc.needRender = true;
                 }
             }
         },
+        
         onNodeInserted: function(e) {
+            var child = e.target;
+            
             // only act on x3dom nodes, ignore regular HTML
-            if ('_x3domNode' in e.target.parentNode) {
-				if(e.target.parentNode.tagName == 'Inline' 
-				   || e.target.parentNode.tagName == 'INLINE' 
-				   || e.target.parentNode.tagName == 'inline') {
+            if ('_x3domNode' in child.parentNode) {
+				if (child.parentNode.tagName && 
+				    child.parentNode.tagName.toLowerCase() == 'inline') {
 					return;
-				} else {
-					var parent = e.target.parentNode._x3domNode;
-					var child = e.target;
-	
-					//x3dom.debug.logInfo("INSERT: " + e + ", " + e.type + ", inserted node=" + child.tagName + ", " + child.parentNode.tagName);
-					if (parent._nameSpace) {
+				}
+				else {
+					var parent = child.parentNode._x3domNode;
+					
+					//x3dom.debug.logInfo("Inserted node=" + child.tagName + ", " + child.parentNode.tagName);
+					if (parent && parent._nameSpace) {
 						var newNode = parent._nameSpace.setupTree(child);
-                        if (e.target instanceof Element)
+						
+                        if (child instanceof Element) {
 						    parent.addChild(newNode, child.getAttribute("containerField"));
+						    
+                            if (doc._viewarea && doc._viewarea._scene)
+                                doc._viewarea._scene.updateVolume();
+                        }
                         else
                             parent.nodeChanged();
 						doc.needRender = true;
@@ -179,17 +190,21 @@ x3dom.X3DDocument.prototype.advanceTime = function (t) {
 
     if (this._nodeBag.timer.length) {
         this.needRender = true;
-        for (i=0; i < this._nodeBag.timer.length; i++) { this._nodeBag.timer[i].onframe(t); }
+        for (i=0; i < this._nodeBag.timer.length; i++)
+            { this._nodeBag.timer[i].onframe(t); }
     }
     if (this._nodeBag.followers.length) {
-        for (i=0; i < this._nodeBag.followers.length; i++) { this.needRender |= this._nodeBag.followers[i].tick(t); }
+        for (i=0; i < this._nodeBag.followers.length; i++)
+            { this.needRender |= this._nodeBag.followers[i].tick(t); }
     }
     // just a temporary tricker solution to update the CSS-trans
     if (this._nodeBag.trans.length) {
-        for (i=0; i < this._nodeBag.trans.length; i++) { this.needRender |= this._nodeBag.trans[i].tick(t); }
+        for (i=0; i < this._nodeBag.trans.length; i++)
+            { this.needRender |= this._nodeBag.trans[i].tick(t); }
     }
     if (this._nodeBag.viewarea.length) {
-        for (i=0; i < this._nodeBag.viewarea.length; i++) { this.needRender |= this._nodeBag.viewarea[i].tick(t); }
+        for (i=0; i < this._nodeBag.viewarea.length; i++)
+            { this.needRender |= this._nodeBag.viewarea[i].tick(t); }
     }
 };
 
@@ -251,13 +266,7 @@ x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
     }
 
     // update volume only on click since expensive!
-    var min = x3dom.fields.SFVec3f.MAX();
-    var max = x3dom.fields.SFVec3f.MIN();
-
-    if (this._viewarea._scene.getVolume(min, max, true)) {
-        this._viewarea._scene._lastMin = min;
-        this._viewarea._scene._lastMax = max;
-    }
+    this._viewarea._scene.updateVolume();
 
     ctx.pickValue(this._viewarea, x, y);
     this._viewarea.onMousePress(x, y, buttonState);
