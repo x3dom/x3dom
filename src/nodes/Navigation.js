@@ -222,7 +222,6 @@ x3dom.registerNodeType(
 );
 
 /* ### OrthoViewpoint ### */
-/*
 x3dom.registerNodeType(
         "OrthoViewpoint",
         "Navigation",
@@ -234,8 +233,8 @@ x3dom.registerNodeType(
                     this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
                     this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
                     this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
-                    this.addField_SFFloat(ctx, 'zNear', 0.0001);
-                    this.addField_SFFloat(ctx, 'zFar', 10);
+                    this.addField_SFFloat(ctx, 'zNear', 0.1);
+                    this.addField_SFFloat(ctx, 'zFar', 100000);
                     
                     this._viewMatrix = null;
                     this._projMatrix = null;
@@ -291,13 +290,13 @@ x3dom.registerNodeType(
             },
             
             resetView: function() {
-                var offset = x3dom.fields.SFMatrix4f.translation(
+                var offset = x3dom.fields.SFMatrix4f.translation(new x3dom.fields.SFVec3f(
                                 (this._vf.fieldOfView[0] + this._vf.fieldOfView[2]) / 2, 
-                                (this._vf.fieldOfView[1] + this._vf.fieldOfView[3]) / 2, 0);
+                                (this._vf.fieldOfView[1] + this._vf.fieldOfView[3]) / 2, 0));
                 
                 this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
-                                    mult(this._vf.orientation.toMatrix()).inverse();
-                this._viewMatrix = this._viewMatrix.mult(offset);
+                                                    mult(this._vf.orientation.toMatrix());
+                this._viewMatrix = this._viewMatrix.mult(offset).inverse();
             },
 
             getTransformation: function() {
@@ -328,8 +327,7 @@ x3dom.registerNodeType(
                     var tb = (top - bottom) / 2;    // vs
                     var fn = far - near;
                     
-                    var camAspect = rl / tb;
-                    if (aspect < camAspect)
+                    if (aspect < (rl / tb))
                         tb = rl / aspect;
                     else
                         rl = tb * aspect;
@@ -341,8 +339,7 @@ x3dom.registerNodeType(
                                         2 / rl, 0, 0,  -(right+left) / rl,
                                         0, 2 / tb, 0,  -(top+bottom) / tb,
                                         0, 0, -2 / fn, -(far+near) / fn,
-                                        0, 0, 0, 1).transpose();
-                    x3dom.debug.logInfo(this._projMatrix)
+                                        0, 0, 0, 1);
                 }
                 this._lastAspect = aspect;
                 
@@ -351,7 +348,6 @@ x3dom.registerNodeType(
         }
     )
 );
-*/
 
 /* ### Viewfrustum ### */
 x3dom.registerNodeType(
