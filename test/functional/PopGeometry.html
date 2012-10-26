@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+  </head>
+  <body>
+    <xml>
+      <div style='width:300px;float:right;'>
+        <fieldset style='margin:4px;'>
+          <legend>
+            <strong>Viewer Settings
+            </strong>
+          </legend>
+          <table>
+            <tr>
+              <td>Navigation Mode:
+              </td>
+              <td align='right'>
+                <select style='float:right;' onchange='if (typeof this.selectedIndex != &apos;undefined&apos;) { var e = document.getElementById(&apos;x3dElement&apos;);if (this.options[this.selectedIndex].value === &apos;examine&apos;){ e.runtime.examine(); }else if (this.options[this.selectedIndex].value === &apos;lookat&apos;){ e.runtime.lookAt(); }else if (this.options[this.selectedIndex].value === &apos;walk&apos;){ e.runtime.speed(1.0); e.runtime.walk(); }else if (this.options[this.selectedIndex].value === &apos;fly&apos;){  e.runtime.speed(1.0); e.runtime.fly();  }else if (this.options[this.selectedIndex].value === &apos;walkfast&apos;){ e.runtime.speed(40.0); e.runtime.walk(); }else if (this.options[this.selectedIndex].value === &apos;flyfast&apos;){  e.runtime.speed(40.0); e.runtime.fly();  } }'>
+                  <option value='examine'>Examine
+                  </option>
+                  <option value='lookat'>LookAt
+                  </option>
+                  <option value='walk'>Walk
+                  </option>
+                  <option value='fly'>Fly
+                  </option>
+                  <option value='walkfast'>Walk (fast)
+                  </option>
+                  <option value='flyfast'>Fly (fast)
+                  </option>
+                </select>
+              </td>
+            </tr>
+            <tr>
+              <td>Debug Display:
+              </td>
+              <td align='right'>
+                <input type='checkbox' onclick='if (this.checked){ document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); }else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'>Stats
+                </input>
+                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;50%&apos;; } else { x3dElem.style.height=&apos;60%&apos;; }x3dElem.runtime.debug();'>Console
+                </input>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.showAll();'>Show Everything
+                </button>
+              </td>
+              <td>
+                <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.resetView();'>Reset View
+                </button>
+              </td>
+            </tr>
+          </table>
+        </fieldset>
+      </div>
+      <div>
+        <h1>Minimalistic X3DOM Viewer
+        </h1>
+        <p>
+          <a href='http://www.x3dom.org'>X3DOM
+          </a> output created with 
+          <a href='http://www.instantreality.org'>InstantReality
+          </a> aopt tool.
+        </p>
+      </div>
+      <div style='clear:both;'></div>
+      <br></br>
+    </xml>
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:75%;'>
+      <scene>
+        <shape DEF='SP_0'>
+          <popGeometry DEF='PG_0' vertexCount='208353' primType='"TRIANGLES"' position='-0.0168403983116 0.110154204071 -0.00153695046902' size='0.155698999763 0.154333606362 0.120673298836' attributeStride='10' normalOffset='6' vertexBufferSize='208353' indexedRendering='false'>
+            <popGeometryLevel src='popGeo/PG_0_level0.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level1.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level2.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level3.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level4.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level5.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level6.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level7.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level8.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level9.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level10.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level11.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level12.bin' numIndices='0'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+      </scene>
+    </x3d>
+  </body>
+</html>
