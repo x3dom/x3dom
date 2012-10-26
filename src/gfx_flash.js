@@ -346,6 +346,7 @@ x3dom.gfx_flash = (function() {
 			if( isImageGeometry ) {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "ImageGeometry",
+												 render: shape._vf.render,
 												 sortType: shape._cf.appearance.node._vf.sortType,
 												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid(),
@@ -357,6 +358,7 @@ x3dom.gfx_flash = (function() {
 			} else if( isBinaryGeometry ) {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "BinaryGeometry",
+												 render: shape._vf.render,
 												 sortType: shape._cf.appearance.node._vf.sortType,
 												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid(),
@@ -368,6 +370,7 @@ x3dom.gfx_flash = (function() {
 			} else if( isBitLODGeometry ) {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "BitLODGeometry",
+												 render: shape._vf.render,
 												 sortType: shape._cf.appearance.node._vf.sortType,
 												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid(),
@@ -379,6 +382,7 @@ x3dom.gfx_flash = (function() {
 			} else {
 				this.object.setMeshProperties( { id: shape._objectID,
 												 type: "Default",
+												 render: shape._vf.render,
 												 sortType: shape._cf.appearance.node._vf.sortType,
 												 sortKey: shape._cf.appearance.node._vf.sortKey,
 												 solid: shape.isSolid() } );
@@ -622,6 +626,7 @@ x3dom.gfx_flash = (function() {
 				if (fontStyleNode === null) {
 					this.object.setMeshProperties( { id: shape._objectID,
 													 type: "Text",
+													 render: shape._vf.render,
 													 sortType: shape._cf.appearance.node._vf.sortType,
 												     sortKey: shape._cf.appearance.node._vf.sortKey,
 													 solid: shape.isSolid(),
