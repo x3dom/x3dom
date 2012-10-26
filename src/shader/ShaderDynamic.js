@@ -455,6 +455,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 								"light"+l+"_Direction, " +
 								"light"+l+"_Color, " + 
 								"light"+l+"_Attenuation, " +
+								"light"+l+"_Radius, " +
 								"light"+l+"_Intensity, " + 
 								"light"+l+"_AmbientIntensity, " +
 								"light"+l+"_BeamWidth, " +

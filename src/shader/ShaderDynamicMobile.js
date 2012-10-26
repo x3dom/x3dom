@@ -338,6 +338,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 								"light"+i+"_Direction," +
 								"light"+i+"_Color," + 
 								"light"+i+"_Attenuation," +
+								"light"+i+"_Radius," +
 								"light"+i+"_Intensity," + 
 								"light"+i+"_AmbientIntensity," +
 								"light"+i+"_BeamWidth," +
