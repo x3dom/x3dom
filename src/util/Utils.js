@@ -424,7 +424,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 		property.CSHADER			= -1;
 		property.SOLID				= (shape.isSolid()) ? 1 : 0;
 		property.TEXT				= (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
-		property.BITLODGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;    
+		property.POPGEOMETRY  	= (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
+    property.BITLODGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;    
 		property.IMAGEGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
 		property.IG_PRECISION		= (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
 		property.IG_INDEXED			= (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
