@@ -481,7 +481,8 @@ x3dom.registerNodeType(
                             var n = Math.min(arr.length, Math.abs(that._vf.maxRenderedIds));
 
                             for (var i=0; i<n; ++i) {
-                                that._idList[i] = arr[i];
+                                if (arr[i])
+                                    that._idList[i] = arr[i];
                             }
                         }
                         
@@ -538,8 +539,9 @@ x3dom.registerNodeType(
                         this._visibleList[i] = true;
                     }
 					else {
-						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+						this._nameObjMap[this._vf.label[i]] = { shape: null, pos: i };
 						this._visibleList[i] = false;
+						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
 					}
 					// init list that holds creation time of gl object
 					this._createTime[i] = 0;
