@@ -3394,11 +3394,6 @@ x3dom.gfx_webgl = (function () {
             scene.drawableObjects = [];
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
-
-            // TODO; remove remote rendering stuff XXX
-            scene.drawableObjects.useIdList = false;
-            scene.drawableObjects.collect = false;
-            scene.drawableObjects.idList = [];
             
             t0 = new Date().getTime();
             
@@ -3835,12 +3830,7 @@ x3dom.gfx_webgl = (function () {
         else
         {
             locScene.drawableObjects = [];
-
-            // TODO; remove remote rendering stuff XXX
-            locScene.drawableObjects.useIdList = false;
-            locScene.drawableObjects.collect = false;
-            locScene.drawableObjects.idList = [];
-
+            
             locScene.collectDrawableObjects(
                 locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()), locScene.drawableObjects);
             

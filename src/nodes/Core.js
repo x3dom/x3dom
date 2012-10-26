@@ -237,21 +237,12 @@ x3dom.registerNodeType(
         // Collects array of [transform matrix, node] for all objects that should be drawn.
         // TODO: culling etc.
         collectDrawableObjects: function (transform, out) {
-            var collectNeedsReset = false;
-            if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                out.collect = true;
-                collectNeedsReset = true;
-            }
-
             for (var i=0; i<this._childNodes.length; i++) {
                 if (this._childNodes[i]) {
                     var childTransform = this._childNodes[i].transformMatrix(transform);
                     this._childNodes[i].collectDrawableObjects(childTransform, out);
                 }
             }
-            
-            if (collectNeedsReset)
-                out.collect = false;
         },
 
         doIntersect: function(line) {
