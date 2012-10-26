@@ -234,7 +234,7 @@ x3dom.registerNodeType(
                     this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
                     this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
                     this.addField_SFFloat(ctx, 'zNear', 0.1);
-                    this.addField_SFFloat(ctx, 'zFar', 100000);
+                    this.addField_SFFloat(ctx, 'zFar', 10000);
                     
                     this._viewMatrix = null;
                     this._projMatrix = null;
@@ -458,7 +458,20 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName) {
                 if (fieldName == "typeParams") {
                     this._heliUpdated = false;
-                    alert(this._heliUpdated)
+                }
+                else if (fieldName == "type") {
+                    var type = this._vf.type[0].toLowerCase();
+                    switch (type) {
+                        case 'game':
+                            this._nameSpace.doc._viewarea.initMouseState();
+                            break;
+                        case 'helicopter':
+                            this._heliUpdated = false;
+                            break;
+                        default:
+                            break;
+                    }
+                    x3dom.debug.logInfo("Switch to " + type + " mode.");
                 }
             },
 

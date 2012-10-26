@@ -318,13 +318,26 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         // forward along view vector
         if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
         {
-            this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
+            var currProjMat = this.getProjectionMatrix();
+
+            if (step < 0) {
+                // backwards: negate viewing direction
+                tmpMat = new x3dom.fields.SFMatrix4f();
+                tmpMat.setValue(this._last_mat_view.e0(), this._last_mat_view.e1(), 
+                                this._last_mat_view.e2().negate(), this._last_mat_view.e3());
+                
+                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
+                            tmpMat, currProjMat.mult(tmpMat));
+            }
+            else {
+                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
+            }
 
             if (this._pickingInfo.pickObj)
             {
                 dist = this._pickingInfo.pickPos.subtract(this._from).length();
 
-                if (step > 0 && dist <= avatarRadius) {
+                if (dist <= avatarRadius) {
                     step = 0;
                 }
             }
@@ -344,7 +357,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 tmpMat = tmpMat.inverse();
 
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                            tmpMat, this.getProjectionMatrix().mult(tmpMat));
+                            tmpMat, currProjMat.mult(tmpMat));
 
                 if (this._pickingInfo.pickObj)
                 {
