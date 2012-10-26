@@ -1601,10 +1601,20 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'normalOffset',    0);
             this.addField_SFInt32(ctx, 'texcoordOffset',  0);
             this.addField_SFInt32(ctx, 'colorOffset',     0);
+            
+            
             this.addField_SFInt32(ctx, 'positionPrecision', 2);
             this.addField_SFInt32(ctx, 'normalPrecision',   1);
             this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
             this.addField_SFInt32(ctx, 'colorPrecision',    1);            
+           
+            //those four fields are read by the x3dom renderer,
+            //and they are updated with the actual values on "nodeChanged"
+            this.addField_SFString(ctx, 'coordType',    "Uint16");
+            this.addField_SFString(ctx, 'normalType',   "Uint8");
+            this.addField_SFString(ctx, 'texCoordType', "Uint16");
+            this.addField_SFString(ctx, 'colorType',    "Uint8");           
+            
             this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
             
             this.addField_SFBool(ctx, 'indexedRendering', false);
@@ -1626,7 +1636,10 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {
-              // TODO: handle field updates and retrigger XHR
+              this._vf.coordType    = this.getBufferTypeStringFromByteCount(this._vf.positionPrecision);
+              this._vf.normalType   = this.getBufferTypeStringFromByteCount(this._vf.normalPrecision);
+              this._vf.texCoordType = this.getBufferTypeStringFromByteCount(this._vf.texcoordPrecision);
+              this._vf.colorType    = this.getBufferTypeStringFromByteCount(this._vf.colorPrecision);
             },
 
             parentAdded: function() {

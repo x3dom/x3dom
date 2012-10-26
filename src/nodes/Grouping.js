@@ -30,21 +30,12 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                var collectNeedsReset = false;
-                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
                         var childTransform = this._childNodes[i].transformMatrix(transform);
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             }
         }
     )
@@ -124,19 +115,10 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                var collectNeedsReset = false;
-                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 if (this._childNodes[this._vf.whichChoice]) {
                     var childTransform = this._childNodes[this._vf.whichChoice].transformMatrix(transform);
                     this._childNodes[this._vf.whichChoice].collectDrawableObjects(childTransform, out);
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             },
 
             doIntersect: function(line)
@@ -499,7 +481,8 @@ x3dom.registerNodeType(
                             var n = Math.min(arr.length, Math.abs(that._vf.maxRenderedIds));
 
                             for (var i=0; i<n; ++i) {
-                                that._idList[i] = arr[i];
+                                if (arr[i])
+                                    that._idList[i] = arr[i];
                             }
                         }
                         
@@ -556,8 +539,9 @@ x3dom.registerNodeType(
                         this._visibleList[i] = true;
                     }
 					else {
-						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+						this._nameObjMap[this._vf.label[i]] = { shape: null, pos: i };
 						this._visibleList[i] = false;
+						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
 					}
 					// init list that holds creation time of gl object
 					this._createTime[i] = 0;
@@ -666,7 +650,6 @@ x3dom.registerNodeType(
                 if (this._websocket)
                     this._websocket.updateCamera();
 
-                // TODO; fully remove idList in collect, but for now...
                 if (this._vf.label.length)
                 {
                     n = this.getNumRenderedObjects(this._idList.length, isMoving);
@@ -692,34 +675,12 @@ x3dom.registerNodeType(
                         }
                     }
                 }
-                else
-                {
-                    out.useIdList = true;
-                    out.collect = false;
-                    out.idList = this._idList;
-
-                    if (out.idList.indexOf(this._DEF) >= 0)
-                        out.collect = true;
-
-                    for (i=0; i<this._childNodes.length; i++) {
-                        if (this._childNodes[i]) {
-                            var childTransform = this._childNodes[i].transformMatrix(transform);
-                            this._childNodes[i].collectDrawableObjects(childTransform, out);
-                        }
-                    }
-                }
-                
-                // assumes that this node can't be nested...
-                out.useIdList = false;
-                out.collect = false;
             }
         }
     )
 );
 
 // Not a real X3D node type
-// TODO; refactor to Scene + Viewarea node --> via Layering component?
-
 // ### Scene ###
 x3dom.registerNodeType(
     "Scene",
@@ -729,7 +690,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
 
             // define the experimental picking mode:
-            // box, exact (NYI), idBuf, color, texCoord
+            // box, idBuf, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
@@ -754,4 +715,3 @@ x3dom.registerNodeType(
     )
 );
 /* ### END OF NODES ###*/
-

@@ -224,7 +224,12 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		//Positions
 		shader += "vec3 vertPosition = position.xyz;\n";
 		if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
-			shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
+      if (properties.HASUNSIGNEDPOS) {
+        shader += "vertPosition = bgCenter + bgSize * ((vertPosition - vec3(bgPrecisionMax)*0.5)/ bgPrecisionMax);\n";
+      }
+      else{
+        shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
+      }
 		}
 		
 		//Normals
@@ -252,7 +257,13 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			} else {
 				shader += "vec3 vertNormal = normal;\n";
 				if (properties.REQUIREBBOXNOR) {
-					shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
+          if (properties.HASUNSIGNEDNOR) {
+            shader += "vertNormal = (vertNormal - vec3(bgPrecisionNorMax)*0.5) / bgPrecisionNorMax;\n";
+          }
+          else
+          {
+            shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
+          }
 				}
 			}
 		}
@@ -261,7 +272,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		if(properties.VERTEXCOLOR){
 			shader += "fragColor = color;\n";
 			if(properties.REQUIREBBOXCOL) {
-				shader += "fragColor = fragColor / bgPrecisionColMax;\n";
+        shader += "fragColor = fragColor / bgPrecisionColMax;\n";
 			}
 		}
 		
