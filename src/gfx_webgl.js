@@ -2932,14 +2932,16 @@ x3dom.gfx_webgl = (function () {
               if (viewarea._points !== undefined && viewarea._points > 0) {
                 var polyMode = (viewarea._points == 1) ? gl.POINTS : gl.LINES;  // FIXME
                 
-				if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || shape._webgl.popGeometry < 0 ||shape._webgl.bitLODGeometry < 0) {
+				if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
+				    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
 					
 					for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
 						gl.drawArrays(polyMode, offset, shape._cf.geometry.node._vf.vertexCount[i]);
 						offset += shape._cf.geometry.node._vf.vertexCount[i];
 					}
 				}    
-				else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || shape._webgl.bitLODGeometry > 0) {
+				else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || 
+				         shape._webgl.bitLODGeometry > 0) {
 			        for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
 				        gl.drawElements(polyMode, shape._cf.geometry.node._vf.vertexCount[i], 
 				                        gl.UNSIGNED_SHORT, 2*offset);
@@ -2956,15 +2958,16 @@ x3dom.gfx_webgl = (function () {
                 }
                 else {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
-						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 ||
-                shape._webgl.popGeometry < 0    || shape._webgl.bitLODGeometry < 0) {
+						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
+						    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
 							
 							for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
 								gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
 								offset += shape._cf.geometry.node._vf.vertexCount[i];
 							}
 						}
-						else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || shape._webgl.bitLODGeometry > 0) {
+						else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || 
+						         shape._webgl.bitLODGeometry > 0) {
                             for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
 						        gl.drawElements(shape._webgl.primType[i], shape._cf.geometry.node._vf.vertexCount[i], 
 						                        gl.UNSIGNED_SHORT, 2*offset);
@@ -2986,7 +2989,7 @@ x3dom.gfx_webgl = (function () {
               }
             }
             catch (e) {
-                x3dom.debug.logException(shape._DEF + " renderScene(): " + e);
+                x3dom.debug.logException(shape._DEF + " renderShape(): " + e);
             }
 
 			if (sp.position !== undefined) {
@@ -3022,7 +3025,8 @@ x3dom.gfx_webgl = (function () {
 				this.numCoords += shape._cf.geometry.node._vf.vertexCount[i];
 			this.numDrawCalls += shape._cf.geometry.node._vf.vertexCount.length;
 		}
-		else if (shape._webgl.binaryGeometry != 0 || shape._webgl.popGeometry != 0 || shape._webgl.bitLODGeometry != 0) {
+		else if (shape._webgl.binaryGeometry != 0 || shape._webgl.popGeometry != 0 || 
+		         shape._webgl.bitLODGeometry != 0) {
 		    this.numCoords += shape._cf.geometry.node._mesh._numCoords;
 		    this.numDrawCalls += shape._cf.geometry.node._vf.vertexCount.length;
 		}
@@ -3034,7 +3038,7 @@ x3dom.gfx_webgl = (function () {
 			    this.numDrawCalls += shape._cf.geometry.node._indexOffset.length;
 			}
 			else {
-			    this.numDrawCalls += 1;
+			    this.numDrawCalls += shape._webgl.positions.length;
 		    }
 		}
 		

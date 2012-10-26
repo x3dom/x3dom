@@ -2536,7 +2536,7 @@ x3dom.registerNodeType(
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
                 if ( (this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
-                     (positions.length / 3 > 65535) ||
+                     (positions.length > 65535) ||
                      (hasNormal && hasNormalInd) ||
                      (hasTexCoord && hasTexCoordInd) ||
                      (hasColor && hasColorInd) )
@@ -2551,7 +2551,7 @@ x3dom.registerNodeType(
 						faceCnt = 0;
 						this._mesh._multiIndIndices = [];
 						this._mesh._posSize = positions.length;
-	
+						
 						for (i=0; i < indexes.length; ++i)
 						{
 							// Convert non-triangular polygons to a triangle fan
