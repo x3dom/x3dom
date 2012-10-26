@@ -1042,7 +1042,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         shape._webgl.buffers[1] = gl.createBuffer();
-
+        
         gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
         gl.bufferData(gl.ARRAY_BUFFER, (popGeo._vf.attributeStride * popGeo._vf.vertexBufferSize), gl.STATIC_DRAW);
 
@@ -1065,6 +1065,8 @@ x3dom.gfx_webgl = (function () {
           shape._normalStrideOffset[0] = popGeo.getAttributeStride();
           shape._normalStrideOffset[1] = popGeo.getNormalOffset();           
           
+          shape._webgl.buffers[2] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
+          
           gl.vertexAttribPointer(sp.normal, shape._cf.geometry.node._mesh._numNormComponents, shape._webgl.normalType,
                                  false, shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
           gl.enableVertexAttribArray(sp.normal);
@@ -1072,6 +1074,8 @@ x3dom.gfx_webgl = (function () {
         if (popGeo.hasTexCoord()) {
           attribTypeStr             = popGeo.getBufferTypeStringFromByteCount(popGeo.getTexCoordPrecision());
           shape._webgl.texCoordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+          
+          shape._webgl.buffers[3] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
           
           shape._texCoordStrideOffset[0] = popGeo.getAttributeStride();
           shape._texCoordStrideOffset[1] = popGeo.getTexCoordOffset();    
@@ -1083,6 +1087,8 @@ x3dom.gfx_webgl = (function () {
         if (popGeo.hasColor()) {
           attribTypeStr          = popGeo.getBufferTypeStringFromByteCount(popGeo.getColorPrecision());
           shape._webgl.colorType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);  
+          
+          shape._webgl.buffers[4] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
           
           shape._colorStrideOffset[0] = popGeo.getAttributeStride();
           shape._colorStrideOffset[1] = popGeo.getColorOffset();           
@@ -1117,7 +1123,7 @@ x3dom.gfx_webgl = (function () {
           
           gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
           gl.bufferSubData(gl.ARRAY_BUFFER, shape._webgl.currentNumVertices * popGeo.getAttributeStride(), attributeDataView);
-                    
+                   
           
           //adjust render settings
           shape._webgl.currentNumIndices  += indexDataLengthInBytes  / 2;
