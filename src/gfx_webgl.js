@@ -1134,6 +1134,11 @@ x3dom.gfx_webgl = (function () {
           
           //@todo: the most important setting is 'vertexCount', which unfortunately has a different sematic here a.t.m.
           //...          
+
+                    
+          x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
+                              popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
+                              (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests");
           
           
           //request redraw
@@ -1144,6 +1149,8 @@ x3dom.gfx_webgl = (function () {
         
         var downloadCallbacks = [];
         var priorities        = [];     
+        
+        shape._webgl.downloadStartTimer = new Date().getTime();
         
         for (var i = 0; i < dataURLs.length; ++i) {
           shape._nameSpace.doc.downloadCount += 1;
