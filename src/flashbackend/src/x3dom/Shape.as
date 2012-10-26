@@ -53,11 +53,6 @@ package x3dom
 		 */
 		private var _solid:Boolean = true;
 		
-		/**
-		 * Specifiying if the Mesh is rendered
-		 * @default true
-		 */
-		public var _render:Boolean = true;
 		
 		/**
 		 * Specifiying if texture coordinates in SPHERE-Mode.
@@ -149,7 +144,6 @@ package x3dom
 		{
 			this._id = uint( value.id );
 			this._solid = Boolean( value.solid );
-			this._render = Boolean( value.render );
 		}
 		
 		/**
