@@ -111,6 +111,7 @@ x3dom.shader.light = function(numLights) {
 						"uniform vec3  light"+l+"_Direction;\n" +
 						"uniform vec3  light"+l+"_Color;\n" +
 						"uniform vec3  light"+l+"_Attenuation;\n" +
+						"uniform float light"+l+"_Radius;\n" +
 						"uniform float light"+l+"_Intensity;\n" +
 						"uniform float light"+l+"_AmbientIntensity;\n" +
 						"uniform float light"+l+"_BeamWidth;\n" +
@@ -118,19 +119,22 @@ x3dom.shader.light = function(numLights) {
 						"uniform float light"+l+"_ShadowIntensity;\n";
 	}
 	
-	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation," + 
-					" 			   in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, in float lCutOffAngle," +
-					" 			   in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, inout vec3 specular) {" +
+	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
+					" 			   in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
+					" 			   in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
+					"			   inout vec3 specular) {" +
 					"   vec3 L;\n" +
-					"   float spot = 1.0, attentuation = 1.0;\n" +
+					"   float spot = 1.0, attentuation = 0.0;\n" +
 					"   if(lType == 0.0) {\n" +
 					"       L = -normalize(lDirection);\n" +
+					"		attentuation = 1.0;\n" +
 					"   }else{\n" +
-					"       L = normalize(lLocation - (-V));\n" +
+					"       L = (lLocation - (-V));\n" +
 					"       float d = length(L);\n" +
-					"       L /= d;\n" +
-					"       attentuation = 1.0 / (lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d));\n" +
-					"       attentuation *= max(0.0, dot(N, L));\n" +
+					"		L = normalize(L);\n" +
+					"       if(lRadius == 0.0 || d <= lRadius) {\n" +
+					"       	attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
+					"		}\n" +
 					"       if(lType == 2.0) {\n" +
 					"           float spotAngle = acos(max(0.0, dot(-L, normalize(lDirection))));\n" +
 					"           if(spotAngle >= lCutOffAngle) spot = 0.0;\n" +
