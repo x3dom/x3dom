@@ -541,12 +541,6 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                var collectNeedsReset = false;
-                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 // TODO; optimize getting volume
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
@@ -605,9 +599,6 @@ x3dom.registerNodeType(
                     //optimization, exploit coherence and do it for next frame (see LOD)
                     out.Billboards.push( [transform, this] );
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             }
         }
     )
@@ -629,12 +620,6 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
-                var collectNeedsReset = false;
-                if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 for (var i=0; i<this._childNodes.length; i++)
                 {
                     if (this._childNodes[i] && (this._childNodes[i] !== this._cf.proxy.node))
@@ -643,9 +628,6 @@ x3dom.registerNodeType(
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             }
         }
     )
@@ -667,12 +649,6 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function(transform, out)
             {
-                var collectNeedsReset = false;
-                if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-                
                 this.visitChildren(transform, out);
 
                 if (out !== null)
@@ -680,9 +656,6 @@ x3dom.registerNodeType(
                     //optimization, exploit coherence and do it for next frame
                     out.LODs.push( [transform, this] );
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             },
             
             visitChildren: function(transform, out) {}

@@ -231,22 +231,11 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
-                var collectNeedsReset = false;
-                if ( out && !out.collect && out.useIdList && this._cf.geometry.node !== null && 
-                    (out.idList.indexOf(this._DEF) >= 0 || out.idList.indexOf(this._cf.geometry.node._DEF) >= 0) ) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 // TODO: culling etc
-                if ( out !== null && this._vf.render &&
-                    (!out.useIdList || out.collect) )
+                if (out && this._vf.render && this._cf.geometry.node)
                 {
                     out.push( [transform, this] );
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             },
             
             transformMatrix: function(transform)
