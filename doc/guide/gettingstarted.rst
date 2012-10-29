@@ -4,16 +4,26 @@ Getting started
 ===============
 
 
-Downloading X3DOM
------------------
-The recommended way of using X3DOM in your application is linking the online
-version within your HTML document like this::
+Using X3DOM
+------------
+The recommended way of using X3DOM during the development of your
+application is linking the online version within your HTML
+document like this::
 
-    <script type='text/javascript' src='http://www.x3dom.org/release/x3dom.js'></script>
-    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/x3dom.css'>
+    <script type='text/javascript' src='http://www.x3dom.org/download/dev/x3dom.js'></script>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/dev/x3dom.css'>
 
-X3DOM should be usable in all modern browser and depends on no external libraries. 
-All you need in order to make it work are the following files:
+X3DOM should be usable in all modern browser and depends on no external
+libraries. Please be aware that hot-linking the X3DOM library as outlined
+above will give you the cutting-edge build of the library with all pros
+and cons. You will recieve the latestest fixes and features, but also
+a potentially unstable or temporarliy broken version. We try to maintain
+a unbroken dev build, but that can't be guaranteed all the time.
+
+Once you finished developing your application, you should download
+the necessary snapshot build and deploy the files with your application
+on your server or a CDN. All you need in order to make it work are the
+following files:
 
 ===================  =====================================================
 ``x3dom.js``         The minified X3DOM library in a given version.
@@ -27,10 +37,35 @@ All you need in order to make it work are the following files:
 
 You can `download the files from the X3DOM server <http://x3dom.org/download/>`_
 and put them on your harddisk or your webserver. The released versions reside
-in subdirectories with version numbers, for example version 1.3 is available
-at `1.3/ <http://x3dom.org/download/1.3/>`_. For the current release you can use
-the shortcut `current/ <http://x3dom.org/download/current/>`_ it will always point
+in subdirectories with version numbers, for example version 1.4 is available
+at `1.4/ <http://x3dom.org/download/1.4/>`_. For the current development build
+you can use the shortcut `dev/ <http://x3dom.org/download/dev/>`_ it will always point
 to the latest released version.
+
+
+Releases, dev builds and library maintenance strategy
+-----------------------------------------------------
+Since X3DOM is a research project our official release cycle is fairly long.
+In order to keep your application up-to date with any browser related
+incompatibilities, you need to manage a local copy of the X3DOM development
+build along with your application. In other words: the released versions are
+not maintained. Therefore the following release/library management on your
+side might be one sensible approach:
+
+  * Use the dev build during development of your application
+  * Use the released version if you deploy in a controlled environment
+    (Browser and OS versions)
+  * Freeze the dev build (or use a release in a controlled environment) and
+    deploy that freezed version anlongside your application on your server or CDN
+  * If browser issues occur, use the latest X3DOM dev build and test your
+    application thourougly.
+  * Monitor your environment regulary and perform your own tests with all
+    browser versions and OS combinations your application is targed for as
+    soon as a X3DOM or browser changes occur
+
+It should be stressed that X3DOM as well as browser development is a moving
+target. It is only sensible to adjust your development and library management
+processes to this environment.
 
 
 Development builds
@@ -48,9 +83,10 @@ all the time.
 
 Build your own
 --------------
-**Note:** The following is for advanced developers. If you wish to use a rather
-recent version of X3DOM and do not want to tinker with Python, just
-use the development build.
+**Note:** If you wish to use a rather recent version of X3DOM and do not want
+to tinker with the build process, just use the development build. If you
+like to work on X3DOM itself, use the instructions set forth in this
+chapter.
 
 All source code to X3DOM is kept under the Git revision control and you can
 `browse the repository <http://github.com/x3dom/x3dom/>`_ online. There is a
@@ -91,5 +127,3 @@ The resulting build will be written to the ``dist/`` directory.
 
 Fore more detailed information on working with the source, please see
 the `developer wiki <http://github.com/x3dom/x3dom/wiki>`_.
-
-
