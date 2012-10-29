@@ -161,7 +161,6 @@ package x3dom
 					this.cleanBuffers();
 				
 				}
-				
 			}
 			
 			//Swap Back- and Frontbuffer

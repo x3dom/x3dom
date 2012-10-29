@@ -80,6 +80,11 @@ x3dom.bridge = {
 		var shape = x3dom.nodeTypes.Shape.idMap.nodeID[id];
 		shape._vf.bboxCenter.setValues( new x3dom.fields.SFVec3f(center.x,center.y,center.z) );
         shape._vf.bboxSize.setValues( new x3dom.fields.SFVec3f(size.x,size.y,size.z) );
+	},
+	
+	setShapeDirty: function(id) {
+		var shape = x3dom.nodeTypes.Shape.idMap.nodeID[id];
+		shape.setAllDirty();
 	}
 };
 
@@ -121,6 +126,8 @@ x3dom.gfx_flash = (function() {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
 		}
 		
+		var mat_view = viewarea.getViewMatrix();
+		
 		//Setup the flash scene
 		this.setupScene(scene, viewarea);
 		
@@ -139,6 +146,7 @@ x3dom.gfx_flash = (function() {
 		
 		//Get Number of drawableObjects
 		var numDrawableObjects = scene.drawableObjects.length;
+		
 		
 		if(numDrawableObjects > 0)
 		{
@@ -160,7 +168,38 @@ x3dom.gfx_flash = (function() {
 				
 				this.setupShape(obj3d, trafo, RefList[obj3d._objectID]);
 			}	
-		}		
+		}
+		
+        var numLOD 			= scene.drawableObjects.LODs.length;
+		var numBillboard 	= scene.drawableObjects.Billboards.length;
+		
+        if (numLOD || numBillboard) {
+            center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
+            center = mat_view.inverse().multMatrixPnt(center);
+        }
+        
+        for (var i=0; i<numLOD; i++)
+        {
+            trafo = scene.drawableObjects.LODs[i][0];
+            obj3d = scene.drawableObjects.LODs[i][1];
+            
+            if (obj3d) {
+                obj3d._eye = trafo.inverse().multMatrixPnt(center);
+            }
+        }
+		
+		for (i=0; i<numBillboard; i++)
+        {
+            trafo = scene.drawableObjects.Billboards[i][0];
+            obj3d = scene.drawableObjects.Billboards[i][1];
+            
+            if (obj3d) {
+                var mat_view_model = mat_view.mult(trafo);
+                obj3d._eye = trafo.inverse().multMatrixPnt(center);
+                obj3d._eyeViewUp = new x3dom.fields.SFVec3f(mat_view_model._10, mat_view_model._11, mat_view_model._12);
+                obj3d._eyeLook = new x3dom.fields.SFVec3f(mat_view_model._20, mat_view_model._21, mat_view_model._22);
+            }
+        }
 			
 		//Render the flash scene
 		this.object.renderScene();

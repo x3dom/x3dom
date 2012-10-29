@@ -489,7 +489,7 @@ x3dom.gfx_webgl = (function () {
 			imageGeometry:  0, // 0 := no IG,  1 := indexed IG, -1  := non-indexed IG
 			binaryGeometry: 0, // 0 := no BG,  1 := indexed BG, -1  := non-indexed BG
 			popGeometry:    0, // 0 := no PG,  1 := indexed PG, -1  := non-indexed PG
-      bitLODGeometry: 0	 // 0 := no BLG, 1 := indexed BLG, -1 := non-indexed BLG      
+			bitLODGeometry: 0  // 0 := no BLG, 1 := indexed BLG, -1 := non-indexed BLG      
 		};
 		
 		//Set Textures		
@@ -531,7 +531,7 @@ x3dom.gfx_webgl = (function () {
 		} 
 		else if ( x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ||
 				  x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry) ||
-          x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry) ||
+                  x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry) ||
 				  x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry) )
 		{
 			shape._webgl.primType = [];				
@@ -2318,13 +2318,14 @@ x3dom.gfx_webgl = (function () {
                 try {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 ||
-                shape._webgl.popGeometry < 0    || shape._webgl.bitLODGeometry < 0) {
+                            shape._webgl.popGeometry < 0    || shape._webgl.bitLODGeometry < 0) {
 							for (var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
 								gl.drawArrays(shape._webgl.primType[v], offset, shape._cf.geometry.node._vf.vertexCount[v]);
 								offset += shape._cf.geometry.node._vf.vertexCount[v];
 							}
 						}
-						else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || shape._webgl.bitLODGeometry > 0) {
+						else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || 
+						         shape._webgl.bitLODGeometry > 0) {
 					        for (var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
 						        gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], 
 						                        gl.UNSIGNED_SHORT, 2*offset);
@@ -2540,13 +2541,14 @@ x3dom.gfx_webgl = (function () {
 				try {
 					if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 ||
-                shape._webgl.popGeometry < 0    || shape._webgl.bitLODGeometry < 0) {
+                            shape._webgl.popGeometry < 0    || shape._webgl.bitLODGeometry < 0) {
 							for (var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
 								gl.drawArrays(shape._webgl.primType[v], offset, shape._cf.geometry.node._vf.vertexCount[v]);
 								offset += shape._cf.geometry.node._vf.vertexCount[v];
 							}
 						}
-						else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || shape._webgl.bitLODGeometry > 0) {
+						else if (shape._webgl.binaryGeometry > 0 || shape._webgl.popGeometry > 0 || 
+						         shape._webgl.bitLODGeometry > 0) {
 					        for (var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
 						        gl.drawElements(shape._webgl.primType[v], shape._cf.geometry.node._vf.vertexCount[v], 
 						                        gl.UNSIGNED_SHORT, 2*offset);
@@ -2953,7 +2955,6 @@ x3dom.gfx_webgl = (function () {
                 
 				if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
 				    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
-					
 					for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
 						gl.drawArrays(polyMode, offset, shape._cf.geometry.node._vf.vertexCount[i]);
 						offset += shape._cf.geometry.node._vf.vertexCount[i];
@@ -2979,7 +2980,6 @@ x3dom.gfx_webgl = (function () {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
 						    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
-							
 							for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
 								gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
 								offset += shape._cf.geometry.node._vf.vertexCount[i];

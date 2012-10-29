@@ -179,7 +179,9 @@
 				if(this._drawableObjects[i].updated) {
 					this._drawableObjects[i].updated = false;
 					tmp.push(this._drawableObjects[i]);
-				} 
+				} else {
+					ExternalInterface.call("x3dom.bridge.setShapeDirty", this._drawableObjects[i].id);
+				}
 			}
 			this._drawableObjects = tmp;
 		}

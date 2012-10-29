@@ -53,6 +53,7 @@ package x3dom
 		 */
 		private var _solid:Boolean = true;
 		
+		
 		/**
 		 * Specifiying if texture coordinates in SPHERE-Mode.
 		 * @default false
