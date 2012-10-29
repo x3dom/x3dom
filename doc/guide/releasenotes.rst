@@ -3,6 +3,12 @@
 Release notes
 =============
 
+Version 1.4
+-----------
+  Three years X3DOM and still going...
+
+  * Fixes a lot of bugs
+
 Version 1.3
 -----------
 
