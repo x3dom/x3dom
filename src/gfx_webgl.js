@@ -1136,17 +1136,17 @@ x3dom.gfx_webgl = (function () {
           //@todo: the most important setting is 'vertexCount', which unfortunately has a different sematic here a.t.m.
           //...          
 
+          //inform the shader about the current level of precision
+          if (typeof shape._webgl.precisionLevel == 'undefined')
+            shape._webgl.precisionLevel = 0;
+          shape._webgl.precisionLevel++;
+          sp.PG_precisionLevel = shape._webgl.precisionLevel;
                     
           x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                               popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
-                              (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests");
-          
-          
-          //inform the shader about the current level of precision
-          shape._webgl.precisionLevel++;
-          sp.PG_precisionLevel = shape._webgl.precisionLevel;
-          
-          
+                              (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
+                              "displaying with " + shape._webgl.precisionLevel + " bits prec.");
+                    
           //request redraw
           shape._nameSpace.doc.needRender = true;
         };
