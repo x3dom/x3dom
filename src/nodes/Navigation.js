@@ -620,6 +620,10 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
+                if (!this._vf.render || !out) {
+                    return;
+                }
+                
                 for (var i=0; i<this._childNodes.length; i++)
                 {
                     if (this._childNodes[i] && (this._childNodes[i] !== this._cf.proxy.node))
@@ -649,13 +653,15 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function(transform, out)
             {
-                this.visitChildren(transform, out);
-
-                if (out !== null)
-                {
-                    //optimization, exploit coherence and do it for next frame
-                    out.LODs.push( [transform, this] );
+                
+                if (!this._vf.render || !out) {
+                    return;
                 }
+                
+                this.visitChildren(transform, out);
+                
+                //optimization, exploit coherence and do it for next frame
+                out.LODs.push( [transform, this] );
             },
             
             visitChildren: function(transform, out) {}

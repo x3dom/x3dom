@@ -232,7 +232,7 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, out)
             {
                 // TODO: culling etc
-                if (out && this._vf.render && this._cf.geometry.node)
+                if (out && this._vf.render) //&& this._cf.geometry.node)
                 {
                     out.push( [transform, this] );
                 }

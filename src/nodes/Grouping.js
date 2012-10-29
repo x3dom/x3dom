@@ -481,8 +481,7 @@ x3dom.registerNodeType(
                             var n = Math.min(arr.length, Math.abs(that._vf.maxRenderedIds));
 
                             for (var i=0; i<n; ++i) {
-                                if (arr[i])
-                                    that._idList[i] = arr[i];
+                                that._idList[i] = arr[i];
                             }
                         }
                         
@@ -541,7 +540,10 @@ x3dom.registerNodeType(
 					else {
 						this._nameObjMap[this._vf.label[i]] = { shape: null, pos: i };
 						this._visibleList[i] = false;
-						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+						if (this._vf.label[i])
+						    x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+						else
+						    x3dom.debug.logError("Invalid children at position " + i);
 					}
 					// init list that holds creation time of gl object
 					this._createTime[i] = 0;
@@ -661,8 +663,10 @@ x3dom.registerNodeType(
                             obj.shape.collectDrawableObjects(transform, out);
                             this._createTime[obj.pos] = ts;
                         }
-						else
+						else if (this._idList[i])
 							x3dom.debug.logError("Invalid label: " + this._idList[i]);
+						else
+						    x3dom.debug.logError("Invalid label at position " + i);
                     }
                     
                     for (i=0; i<this._childNodes.length; i++)

@@ -567,7 +567,7 @@ x3dom.gfx_webgl = (function () {
             
 			// 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
 			shape._webgl.binaryGeometry = -1;
-			
+			shape._webgl.precisionLevel = 0;
 			shape._webgl.internalDownloadCount = 0;
 			
             // index
@@ -1138,12 +1138,13 @@ x3dom.gfx_webgl = (function () {
 
           shape._webgl.precisionLevel++;          
           
-          x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
+          if (shape._webgl.downloadStartTimer) {
+            x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                               popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
                               (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
                               "displaying with " + shape._webgl.precisionLevel + " bits prec.");
-                   
-                    
+          }
+
           //request redraw
           shape._nameSpace.doc.needRender = true;
         };
