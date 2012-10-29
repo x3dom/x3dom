@@ -249,10 +249,10 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
       shader += "vertPosition = applyPrecisionLevelMask(vertPosition, PG_precisionLevel);\n"
     }
 		if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
-      if (properties.HASUNSIGNEDPOS) {
+      /*if (properties.HASUNSIGNEDPOS) {
         shader += "vertPosition = bgCenter + bgSize * ((vertPosition - vec3(bgPrecisionMax)*0.5)/ bgPrecisionMax);\n";
       }
-      else {
+      else*/ {
         shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
       }			
 		}

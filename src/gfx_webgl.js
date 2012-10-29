@@ -567,7 +567,7 @@ x3dom.gfx_webgl = (function () {
             
 			// 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
 			shape._webgl.binaryGeometry = -1;
-			shape._webgl.precisionLevel = 0;
+			
 			shape._webgl.internalDownloadCount = 0;
 			
             // index
