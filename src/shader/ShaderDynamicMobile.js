@@ -53,6 +53,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		shader += "attribute vec4 position;\n";
 	}
 	
+  //IG stuff
 	if(properties.IMAGEGEOMETRY) {
 		shader += "uniform vec3 IG_bboxMin;\n";
 		shader += "uniform vec3 IG_bboxMax;\n";
@@ -71,6 +72,11 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		}
 	}
 	
+  //PG stuff
+  if (properties.POPGEOMETRY) {
+    shader += "uniform float PG_precisionLevel;\n"
+  }
+  
 	//Normals
 	if(!properties.POINTLINE2D) {
 		if(properties.IMAGEGEOMETRY) {		
@@ -148,6 +154,33 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		shader += "uniform float bgPrecisionTexMax;\n";
 	}
 
+  /*******************************************************************************
+	* Generate helper functions, if necessary
+	********************************************************************************/
+  if (properties.POPGEOMETRY) {
+    shader += "vec3 leftShift(vec3 v, float bits) {\n"    
+    shader += "  float p = pow(2.0, bits);\n"
+    shader += "  v = vec3(floor(v.x) * p, floor(v.y) * p, floor(v.z) * p);\n"
+    shader += "  return v;\n"
+    shader += "}\n"
+  }
+  
+  if (properties.POPGEOMETRY) {
+    shader += "vec3 rightShift(vec3 v, float bits) {\n"    
+    shader += "  float p = pow(2.0, bits);\n"
+    shader += "  v = vec3(floor(v.x / p), floor(v.y / p), floor(v.z / p));\n"    
+    shader += "  return v;\n"    
+    shader += "}\n"
+  }
+  
+  if (properties.POPGEOMETRY) {
+    shader += "vec3 applyPrecisionLevelMask(vec3 pos, float level) {\n"    
+    shader += "  pos = rightShift(pos, 16.0 - level);\n"    
+    shader += "  pos = leftShift(pos, 16.0 - level);\n"
+    shader += "  return pos;\n";
+    shader += "}\n"
+  }
+      
 	/*******************************************************************************
 	* Generate main function
 	********************************************************************************/
@@ -212,6 +245,9 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	} else {
 		//Positions
 		shader += "vec3 vertPosition = position.xyz;\n";
+    if (properties.POPGEOMETRY) {
+      shader += "vertPosition = applyPrecisionLevelMask(vertPosition, PG_precisionLevel);\n"
+    }
 		if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
 			shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}

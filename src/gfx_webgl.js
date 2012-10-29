@@ -1136,9 +1136,8 @@ x3dom.gfx_webgl = (function () {
           //@todo: the most important setting is 'vertexCount', which unfortunately has a different sematic here a.t.m.
           //...          
 
-          //inform the shader about the current level of precision
           shape._webgl.precisionLevel++;          
-                    
+          
           x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                               popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
                               (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
@@ -1154,12 +1153,32 @@ x3dom.gfx_webgl = (function () {
         var downloadCallbacks = [];
         var priorities        = [];     
         
-        //it tells the download manager to return data only if there are no pending requests of higher priority left
-        //this way, we ensure can guarantee to get all levels in the correct order, which is visually more satisfying
-        //however, one may decide to leave this option out to allow for a random refinement processing order
-        //x3dom.DownloadManager.toggleStrictReturnOrder(true);
-  
         shape._webgl.downloadStartTimer = new Date().getTime();
+        
+        //CODE WITHOUT DL MANAGER
+        /*
+        for (var i = 0; i < dataURLs.length; ++i) {
+          shape._nameSpace.doc.downloadCount += 1;
+          
+          var xhrequest = new XMLHttpRequest();
+          
+          (function(xhr, idx){          
+            xhr.open("GET", dataURLs[i], true);
+            xhr.responseType = "arraybuffer";
+            
+            xhr.onload = function() {
+              shape._nameSpace.doc.downloadCount -= 1;              
+              return uploadDataToGPU(xhr.response, idx);
+            };
+          
+            xhr.send(null);            
+          })(xhrequest, i);
+        }
+        */        
+        //END CODE WITHOUT DL MANAGER
+        
+        //CODE WITH DL MANAGER
+        x3dom.DownloadManager.toggleStrictReturnOrder(true);
                 
         for (var i = 0; i < dataURLs.length; ++i) {
           shape._nameSpace.doc.downloadCount += 1;
@@ -1175,7 +1194,7 @@ x3dom.gfx_webgl = (function () {
         }        
         
         x3dom.DownloadManager.get(dataURLs, downloadCallbacks, priorities);
-        
+        //END CODE WITH DL MANAGER
       }());
     }
     //################
