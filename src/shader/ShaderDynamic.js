@@ -184,10 +184,10 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
   }
   
   if (properties.POPGEOMETRY) {
-    shader += "vec3 applyPrecisionLevelMask(vec3 pos, float level) {\n"
+    shader += "vec3 applyPrecisionLevelMask(vec3 pos, float level) {\n"    
     shader += "  pos = rightShift(pos, 16.0 - level);\n"    
     shader += "  pos = leftShift(pos, 16.0 - level);\n"
-    shader += "  return pos;\n";
+    shader += "  return 16.0*pos;\n";
     shader += "}\n"
   }
       

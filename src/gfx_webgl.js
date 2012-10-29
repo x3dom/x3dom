@@ -1137,15 +1137,13 @@ x3dom.gfx_webgl = (function () {
           //...          
 
           //inform the shader about the current level of precision
-          if (typeof shape._webgl.precisionLevel == 'undefined')
-            shape._webgl.precisionLevel = 0;
-          shape._webgl.precisionLevel++;
-          sp.PG_precisionLevel = shape._webgl.precisionLevel;
+          shape._webgl.precisionLevel++;          
                     
           x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                               popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
                               (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
                               "displaying with " + shape._webgl.precisionLevel + " bits prec.");
+                   
                     
           //request redraw
           shape._nameSpace.doc.needRender = true;
@@ -2641,6 +2639,13 @@ x3dom.gfx_webgl = (function () {
         }
         sp.bind();
 		
+      //===========================================================================
+      // Set PopGeometry variables
+      //===========================================================================
+        if (shape._webgl.popGeometry) {
+          sp.PG_precisionLevel = shape._webgl.precisionLevel;          
+        }
+        
 		//===========================================================================
         // Set GeometryImage variables
         //===========================================================================
