@@ -5,21 +5,36 @@ Release notes
 
 Version 1.4
 -----------
-  Three years X3DOM and still going...
+Three years X3DOM and still going strong. After almost one year in the making
+we are proud to announce a new X3DOM release. This latest and greatest version
+of the JavasSript libarary that marriages HTML with 3D features a great many
+fixes and enhancements. For example:
 
-  * Fixed a lot of bugs (see changelog), e.g.
-    in skybox background, added attribute setters, viewpointChanged event, ...
-  * New - experimental - geometry nodes that externalize vertex data in binary containers: 
-    ImageGeometry (which holds vertex attributes in images), 
-    BinaryGeometry (which holds vertex data in binary files, 
-    where attributes can have - besides standard 32-bit - 8-bit and 16-bit),
-    BitLODGeometry (which also holds vertex attributes in external files, 
-    though here the containers can consist of variable bit precision for JPEG-like effects)
+  * NEW - Experimental - geometry nodes that externalize vertex data in binary containers:
+      - ImageGeometry (which holds vertex attributes in images),
+      - BinaryGeometry (which holds vertex data in binary files,
+        where attributes can have - besides standard 32-bit - 8-bit and 16-bit),
+      - BitLODGeometry (which also holds vertex attributes in external files,
+        though here the containers can consist of variable bit precision for JPEG-like effects)
   * OrthoViewpoint
   * LOD now also in Flash renderer
   * Enhanced picking with a max. of 65,535 objects, while the corresponding mouse event
     also provides picked position and normal
-  * 
+  * NEW Programmatic documentation API
+  * Enhanced JavaScript API now with a plenthora of additional methods
+  * NEW Support for iOS devices
+  * NEW MultiTouch integration now supporting iOS devices and Mozilla
+  * New tutorial for image geometry generation
+  * Multiline Text support per Specification
+  * Lots of Flash backend fixes
+  * Many more bugfixes in skybox background, added attribute setters,
+    viewpointChanged event, etc. Refer to the CHANGELOG file for a complete
+    list
+
+You can get the this X3DOM release from:
+
+    `http://x3dom.org/download/1.4/ <http://x3dom.org/download/1.4/>`
+
 
 Version 1.3
 -----------
