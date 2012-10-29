@@ -449,9 +449,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 		property.REQUIREBBOX		= (geometry._vf.coordType !== undefined && geometry._vf.coordType != "Float32") ? 1 : 0;
 		property.REQUIREBBOXNOR   = (geometry._vf.normalType !== undefined && geometry._vf.normalType != "Float32") ? 1 : 0;
 		property.REQUIREBBOXCOL   = (geometry._vf.colorType !== undefined && geometry._vf.colorType != "Float32") ? 1 : 0;
-		property.REQUIREBBOXTEX   = (geometry._vf.texCoordType !== undefined && geometry._vf.texCoordType != "Float32") ? 1 : 0;
-    property.HASUNSIGNEDPOS   = (geometry._vf.normalType !== undefined && this.isUnsignedType(geometry._vf.coordType)) ? 1 : 0;
-    property.HASUNSIGNEDNOR   = (geometry._vf.normalType !== undefined && this.isUnsignedType(geometry._vf.normalType)) ? 1 : 0;    
+		property.REQUIREBBOXTEX   = (geometry._vf.texCoordType !== undefined && geometry._vf.texCoordType != "Float32") ? 1 : 0;    
 		property.COLCOMPONENTS		= geometry._mesh._numColComponents;
 		property.NORCOMPONENTS		= geometry._mesh._numNormComponents;
 		property.POSCOMPONENTS		= geometry._mesh._numPosComponents;

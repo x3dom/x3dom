@@ -168,27 +168,23 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	* Generate helper functions, if necessary
 	********************************************************************************/
   if (properties.POPGEOMETRY) {
-    shader += "vec3 leftShift(vec3 v, float bits) {\n"    
-    shader += "  float p = pow(2.0, bits);\n"
-    shader += "  v = vec3(floor(v.x) * p, floor(v.y) * p, floor(v.z) * p);\n"
-    shader += "  return v;\n"
-    shader += "}\n"
-  }
-  
-  if (properties.POPGEOMETRY) {
-    shader += "vec3 rightShift(vec3 v, float bits) {\n"    
-    shader += "  float p = pow(2.0, bits);\n"
-    shader += "  v = vec3(floor(v.x / p), floor(v.y / p), floor(v.z / p));\n"    
-    shader += "  return v;\n"    
-    shader += "}\n"
-  }
-  
-  if (properties.POPGEOMETRY) {
-    shader += "vec3 applyPrecisionLevelMask(vec3 pos, float level) {\n"    
-    shader += "  pos = rightShift(pos, 16.0 - level);\n"    
-    shader += "  pos = leftShift(pos, 16.0 - level);\n"
+    shader += "vec3 leftShift(vec3 v, float bits) {\n";   
+    shader += "  float p = pow(2.0, bits);\n";
+    shader += "  v = vec3(floor(v.x) * p, floor(v.y) * p, floor(v.z) * p);\n";
+    shader += "  return v;\n";
+    shader += "}\n";
+    
+    shader += "vec3 rightShift(vec3 v, float bits) {\n";
+    shader += "  float p = pow(2.0, bits);\n";
+    shader += "  v = vec3(floor(v.x / p), floor(v.y / p), floor(v.z / p));\n";
+    shader += "  return v;\n";
+    shader += "}\n";
+    
+    shader += "vec3 applyPrecisionLevelMask(vec3 pos, float level) {\n";
+    shader += "  pos = rightShift(pos, 16.0 - level);\n";
+    shader += "  pos = leftShift(pos, 16.0 - level);\n";
     shader += "  return pos;\n";
-    shader += "}\n"
+    shader += "}\n";
   }
       
       
@@ -260,13 +256,8 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     if (properties.POPGEOMETRY) {
       shader += "vertPosition = applyPrecisionLevelMask(vertPosition, PG_precisionLevel);\n"
     }
-		if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
-      /*if (properties.HASUNSIGNEDPOS) {
-        shader += "vertPosition = bgCenter + bgSize * ((vertPosition - vec3(bgPrecisionMax)*0.5)/ bgPrecisionMax);\n";
-      }
-      else*/ {
-        shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
-      }
+		if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
+      shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}
     
 		//Normals
@@ -294,13 +285,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			} else {
 				shader += "vec3 vertNormal = normal;\n";
 				if (properties.REQUIREBBOXNOR) {
-          if (properties.HASUNSIGNEDNOR) {
-            shader += "vertNormal = (vertNormal - vec3(bgPrecisionNorMax)*0.5) / bgPrecisionNorMax;\n";           
-          }
-          else
-          {
-            shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
-          }
+          shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
 				}
 			}
 		}

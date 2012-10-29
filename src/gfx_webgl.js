@@ -1021,7 +1021,7 @@ x3dom.gfx_webgl = (function () {
     // PopGeometry
     //################
     else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry))
-		{
+	{
       (function() {
       
         var popGeo = shape._cf.geometry.node;
