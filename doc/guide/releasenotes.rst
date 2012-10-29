@@ -7,7 +7,19 @@ Version 1.4
 -----------
   Three years X3DOM and still going...
 
-  * Fixes a lot of bugs
+  * Fixed a lot of bugs (see changelog), e.g.
+    in skybox background, added attribute setters, viewpointChanged event, ...
+  * New - experimental - geometry nodes that externalize vertex data in binary containers: 
+    ImageGeometry (which holds vertex attributes in images), 
+    BinaryGeometry (which holds vertex data in binary files, 
+    where attributes can have - besides standard 32-bit - 8-bit and 16-bit),
+    BitLODGeometry (which also holds vertex attributes in external files, 
+    though here the containers can consist of variable bit precision for JPEG-like effects)
+  * OrthoViewpoint
+  * LOD now also in Flash renderer
+  * Enhanced picking with a max. of 65,535 objects, while the corresponding mouse event
+    also provides picked position and normal
+  * 
 
 Version 1.3
 -----------
