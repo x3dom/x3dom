@@ -8,13 +8,21 @@ Using X3DOM
 ------------
 The recommended way of using X3DOM during the development of your
 application is linking the online version within your HTML
-document like this::
+document like this:
 
-    <script type='text/javascript' src='http://www.x3dom.org/download/dev/x3dom.js'></script>
-    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/download/dev/x3dom.css'>
+.. code-block:: html
+
+    <!doctype html>
+    <head>
+    <meta encoding="utf-8">
+    <script src="http://www.x3dom.org/download/dev/x3dom.js"></script>
+    <link rel="stylesheet" href="http://www.x3dom.org/download/dev/x3dom.css">
+    </head>
 
 X3DOM should be usable in all modern browser and depends on no external
-libraries. Please be aware that hot-linking the X3DOM library as outlined
+libraries.
+
+Please be aware that hot-linking the X3DOM library as outlined
 above will give you the cutting-edge build of the library with all pros
 and cons. You will recieve the latestest fixes and features, but also
 a potentially unstable or temporarliy broken version. We try to maintain
@@ -43,8 +51,8 @@ you can use the shortcut `dev/ <http://x3dom.org/download/dev/>`_ it will always
 to the latest released version.
 
 
-Releases, dev builds and library maintenance strategy
------------------------------------------------------
+Releases, dev builds and library maintenance
+--------------------------------------------
 Since X3DOM is a research project our official release cycle is fairly long.
 In order to keep your application up-to date with any browser related
 incompatibilities, you need to manage a local copy of the X3DOM development
