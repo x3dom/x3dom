@@ -51,8 +51,8 @@ you can use the shortcut `dev/ <http://x3dom.org/download/dev/>`_ it will always
 to the latest released version.
 
 
-Releases, dev builds and library maintenance
---------------------------------------------
+Releases, dev builds and library management
+-------------------------------------------
 Since X3DOM is a research project our official release cycle is fairly long.
 In order to keep your application up-to date with any browser related
 incompatibilities, you need to manage a local copy of the X3DOM development
