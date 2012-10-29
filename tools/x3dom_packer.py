@@ -22,13 +22,14 @@ usage = \
 """
   %prog [options] <files> """
   
-version_string = "/** X3DOM Runtime, http://www.x3dom.org */"
 
 tools_path = os.path.abspath(__file__)
 tools_path = os.path.dirname(tools_path)
 #os.chdir(os.path.abspath(tools_path + "/../src"))
 
-class packer():
+class packer(object):
+
+  VERSION_STRING = "/** X3DOM Runtime, http://www.x3dom.org */"
 
   # Create the version.js and fill in the git revision
   def generate_version_file(self, version_in):
@@ -71,8 +72,7 @@ class packer():
     version_js_file.write(VERSION_TEMPLATE % (version, git_revision, git_date))
     version_js_file.close()
     
-    version_string = "/** X3DOM Runtime, http://www.x3dom.org/ %s - %s - %s */" % (version, git_revision, git_date)
-    
+    self.VERSION_STRING = "/** X3DOM Runtime, http://www.x3dom.org/ %s - %s - %s */" % (version, git_revision, git_date)
     return version_out
   
   # Packaging
@@ -119,6 +119,7 @@ class packer():
     
     # Packaging
     print "Packaging"
+    print self.VERSION_STRING
     print "  Algo    " + packaging_module
     print "  Output  " + os.path.abspath(output_file)
     
@@ -133,7 +134,7 @@ class packer():
       
       # Write the minified output file
       outfile = open(output_file, 'w')
-      outfile.write(version_string)
+      outfile.write(self.VERSION_STRING)
       outfile.write(out_stream.getvalue())
       outfile.close()
     
@@ -144,6 +145,7 @@ class packer():
       result = p.pack(concatenated_file, compaction=True, encoding=62, fastDecode=False)
       out_len = len(result)
       outfile = open(output_file, 'w')
+      outfile.write(self.VERSION_STRING)
       outfile.write(result)
       outfile.close()
     
@@ -161,7 +163,7 @@ class packer():
     # NONE
     elif packaging_module == 'none':
       outfile = open(output_file, 'w')
-      outfile.write(version_string)
+      outfile.write(self.VERSION_STRING)
       outfile.write(concatenated_file)
       outfile.close()
 

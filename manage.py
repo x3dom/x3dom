@@ -103,8 +103,8 @@ def build(mode='production'):
     packer = x3dom_packer.packer()
     
     # building compressed files
-    packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.js", "jsmin")
-    packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.js", "jsmin")
+    packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.js", "jsmin", include_version=True)
+    packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.js", "jsmin", include_version=True)
         
     if mode == 'debug':
         # building plain files (debug)
