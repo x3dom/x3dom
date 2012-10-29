@@ -1157,7 +1157,7 @@ x3dom.gfx_webgl = (function () {
         //it tells the download manager to return data only if there are no pending requests of higher priority left
         //this way, we ensure can guarantee to get all levels in the correct order, which is visually more satisfying
         //however, one may decide to leave this option out to allow for a random refinement processing order
-        x3dom.DownloadManager.toggleStrictReturnOrder(true);
+        //x3dom.DownloadManager.toggleStrictReturnOrder(true);
   
         shape._webgl.downloadStartTimer = new Date().getTime();
                 
