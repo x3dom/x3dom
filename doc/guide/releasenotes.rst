@@ -7,7 +7,7 @@ Version 1.4
 -----------
 Three years X3DOM and still going strong. After almost one year in the making
 we are proud to announce a new X3DOM release. This latest and greatest version
-of the JavasSript libarary that marriages HTML with 3D features a great many
+of the JavasSript library that marriages HTML with 3D features a great many
 fixes and enhancements. For example:
 
   * NEW - Experimental - geometry nodes that externalize vertex data in binary containers:
@@ -25,7 +25,7 @@ fixes and enhancements. For example:
   * NEW Support for iOS devices
   * NEW MultiTouch integration now supporting iOS devices and Mozilla
   * New tutorial for image geometry generation
-  * Multiline Text support per Specification
+  * Multiline Text support per specification
   * Lots of Flash backend fixes
   * Many more bugfixes in skybox background, added attribute setters,
     viewpointChanged event, etc. Refer to the CHANGELOG file for a complete
