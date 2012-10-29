@@ -49,6 +49,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		shader += "attribute vec4 position;\n";
 	}
 	
+  //IG stuff
 	if(properties.IMAGEGEOMETRY) {
 		shader += "uniform vec3 IG_bboxMin;\n";
 		shader += "uniform vec3 IG_bboxMax;\n";
@@ -66,7 +67,12 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "uniform float IG_indexTextureHeight;\n";
 		}
 	}
-	
+     
+  //PG stuff
+  if (properties.POPGEOMETRY) {
+    shader += "uniform float PG_precisionLevel;\n"
+  }
+		
 	//Normals
 	if(properties.LIGHTS) {
 		shader += "varying vec3 fragNormal;\n";
@@ -158,14 +164,42 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		shader += "uniform float bgPrecisionTexMax;\n";
 	}
 	
+  /*******************************************************************************
+	* Generate helper functions, if necessary
+	********************************************************************************/
+  if (properties.POPGEOMETRY) {
+    shader += "vec3 leftShift(vec3 v, float bits) {\n"    
+    shader += "  float p = pow(2.0, bits);\n"
+    shader += "  v = vec3(floor(v.x) * p, floor(v.y) * p, floor(v.z) * p);\n"
+    shader += "  return v;\n"
+    shader += "}\n"
+  }
+  
+  if (properties.POPGEOMETRY) {
+    shader += "vec3 rightShift(vec3 v, float bits) {\n"    
+    shader += "  float p = pow(2.0, bits);\n"
+    shader += "  v = vec3(floor(v.x / p), floor(v.y / p), floor(v.z / p));\n"    
+    shader += "  return v;\n"    
+    shader += "}\n"
+  }
+  
+  if (properties.POPGEOMETRY) {
+    shader += "vec3 applyPrecisionLevelMask(vec3 pos, float level) {\n"
+    shader += "  pos = rightShift(pos, 16.0 - level);\n"    
+    shader += "  pos = leftShift(pos, 16.0 - level);\n"
+    shader += "  return pos;\n";
+    shader += "}\n"
+  }
+      
+      
 	/*******************************************************************************
 	* Generate main function
 	********************************************************************************/
 	shader += "void main(void) {\n";
 	
 	//Set point size
-	shader += "gl_PointSize = 2.0;\n";
-	
+	shader += "gl_PointSize = 2.0;\n";	
+  
 	/*******************************************************************************
 	* Start of ImageGeometry switch
 	********************************************************************************/
@@ -223,6 +257,9 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	} else {
 		//Positions
 		shader += "vec3 vertPosition = position.xyz;\n";
+    if (properties.POPGEOMETRY) {
+      shader += "vertPosition = applyPrecisionLevelMask(vertPosition, PG_precisionLevel);\n"
+    }
 		if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
       if (properties.HASUNSIGNEDPOS) {
         shader += "vertPosition = bgCenter + bgSize * ((vertPosition - vec3(bgPrecisionMax)*0.5)/ bgPrecisionMax);\n";
@@ -231,7 +268,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
         shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
       }
 		}
-		
+    
 		//Normals
 		if(properties.LIGHTS) {
 			if(properties.NORCOMPONENTS == 2) {
@@ -258,7 +295,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 				shader += "vec3 vertNormal = normal;\n";
 				if (properties.REQUIREBBOXNOR) {
           if (properties.HASUNSIGNEDNOR) {
-            shader += "vertNormal = (vertNormal - vec3(bgPrecisionNorMax)*0.5) / bgPrecisionNorMax;\n";
+            shader += "vertNormal = (vertNormal - vec3(bgPrecisionNorMax)*0.5) / bgPrecisionNorMax;\n";           
           }
           else
           {
@@ -325,7 +362,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	
 	//Positions
 	shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
-	
+  
 	//END OF SHADER
 	shader += "}\n";
 	
@@ -404,7 +441,8 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += x3dom.shader.shadow();
 		}
 	}
-	
+ 
+ 
 	/*******************************************************************************
 	* Generate main function
 	********************************************************************************/

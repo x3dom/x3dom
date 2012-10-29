@@ -1608,16 +1608,16 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
             this.addField_SFInt32(ctx, 'colorPrecision',    1);            
            
+           this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
+            
+            this.addField_SFBool(ctx, 'indexedRendering', false);
+            
             //those four fields are read by the x3dom renderer,
             //and they are updated with the actual values on "nodeChanged"
             this.addField_SFString(ctx, 'coordType',    "Uint16");
             this.addField_SFString(ctx, 'normalType',   "Uint8");
             this.addField_SFString(ctx, 'texCoordType', "Uint16");
             this.addField_SFString(ctx, 'colorType',    "Uint8");           
-            
-            this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
-            
-            this.addField_SFBool(ctx, 'indexedRendering', false);
             
             // workaround            
             this._hasStrideOffset = false;

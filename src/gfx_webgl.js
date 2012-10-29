@@ -1100,8 +1100,9 @@ x3dom.gfx_webgl = (function () {
         
         shape._webgl.currentNumIndices  = 0;
         shape._webgl.currentNumVertices = 0;
-
-
+        shape._webgl.precisionLevel     = 0;
+        
+        
         //post XHRs, using the DownloadManager to prioritize loading        
         var uploadDataToGPU = function(data, lvl) {
           //perform gpu data upload
@@ -1139,6 +1140,11 @@ x3dom.gfx_webgl = (function () {
           x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                               popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
                               (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests");
+          
+          
+          //inform the shader about the current level of precision
+          shape._webgl.precisionLevel++;
+          sp.PG_precisionLevel = shape._webgl.precisionLevel;
           
           
           //request redraw
