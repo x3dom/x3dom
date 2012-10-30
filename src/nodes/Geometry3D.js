@@ -1868,7 +1868,9 @@ x3dom.registerNodeType(
 			this.addField_MFInt32(ctx, 'vertexCount', [0]);
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 			this.addField_SFString(ctx, 'index', "");   // Uint16
-      this.addField_SFBool(ctx, 'usesVLCIndices', "false");  // variable-length coding
+            this.addField_SFBool(ctx, 'usesVLCIndices', false);  // variable-length coding
+            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', true);
+            this.addField_SFBool(ctx, 'normalPerVertex', false);
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
 
 			// Typed Array View Types
@@ -1907,7 +1909,7 @@ x3dom.registerNodeType(
 			this._hasStrideOffset = false;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
-			this._mesh._numNormComponents = 2;
+			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
@@ -2003,7 +2005,7 @@ x3dom.registerNodeType(
 				return (this._vf.index.length) ? true : false;
 			},
 
-      usesVLCIndices: function()
+            usesVLCIndices: function()
 			{
 				return this._vf.usesVLCIndices == true;
 			},
