@@ -1869,7 +1869,7 @@ x3dom.registerNodeType(
 			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
 			this.addField_SFString(ctx, 'index', "");   // Uint16
             this.addField_SFBool(ctx, 'usesVLCIndices', false);  // variable-length coding
-            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', true);
+            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
             this.addField_SFBool(ctx, 'normalPerVertex', false);
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
 
@@ -1909,7 +1909,9 @@ x3dom.registerNodeType(
 			this._hasStrideOffset = false;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
-			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
+            
+            this._vf.normalAsSphericalCoordinates = this._vf.normalPerVertex;
+			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
@@ -2010,9 +2012,14 @@ x3dom.registerNodeType(
 				return this._vf.usesVLCIndices == true;
 			},
 
+            hasNormalPerVertex : function()
+            {
+                return this._vf.normalPerVertex;
+            },
+            
 			hasPolarNormals: function()
 			{
-				return true; //TODO
+				return _vf.normalAsSphericalCoordinates; //TODO
 			},
 			
 			hasColor: function()
