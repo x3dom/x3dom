@@ -1219,7 +1219,7 @@ x3dom.gfx_webgl = (function () {
 				if(bitLODGeometry.hasIndex())
 				{
                   //this function generates a single, large triangle buffer out of
-                  //  - an index buffer containing indices of TRIANGLES
+                  //  - an index buffer containing indices of TRIANGLES / TRIANGLE STRIPS
                   //  - a set of data buffers containing the triangle data          
                   shape._webgl.generateTriangleBuffer = function() {
                     if (typeof shape._webgl.dataBuffers[0] != 'undefined' &&
@@ -1227,7 +1227,7 @@ x3dom.gfx_webgl = (function () {
                          typeof shape._webgl.dataBuffers[3] != 'undefined' || //texcoords
                          typeof shape._webgl.dataBuffers[4] != 'undefined'    //colors
                          )) {
-
+                
                 var indexArray = shape._webgl.dataBuffers[0];
                 
                 var read_idx_pos_nor;
@@ -1261,104 +1261,104 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 for (i = 0; i < indexArray.length; ++i) {
-                  write_idx = i * stride;
-                  
-                  if (coordsNormalsAvailable) {
-                    read_idx_pos_nor = indexArray[i] * 6;
+                    write_idx = i * stride;
 
-                    //write coords                    
-                    shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
-                    shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
-                    shape._webgl.triangleBuffer[write_idx + 2] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 2];
-                    shape._webgl.triangleBuffer[write_idx + 3] = 0;
+                    if (coordsNormalsAvailable) {
+                        read_idx_pos_nor = indexArray[i] * 6;
 
-                    //write normals                    
-                    //A: use transmitted per-vertex-normals
-                    if (bitLODGeometry.hasNormalPerVertex()) {
-                        shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
-                        shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
-                    }
-                    else if (shape._webgl.loadedLevels === 8) {                        
-                        //B: on-the-fly normal computation for per-face normals (by cross product)
+                        //write coords                    
+                        shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
+                        shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
+                        shape._webgl.triangleBuffer[write_idx + 2] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 2];
+                        shape._webgl.triangleBuffer[write_idx + 3] = 0;
 
-                        points[accum_cnt].x = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
-                        points[accum_cnt].y = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
-                        points[accum_cnt].z = shape._webgl.dataBuffers[1][read_idx_pos_nor + 2];
-
-                        if (++accum_cnt === 3) {
-                            v1 = points[1].subtract(points[0]);
-                            v2 = points[2].subtract(points[0]);
-                            
-                            nor = v1.cross(v2);
-                            
-                            nor = nor.normalize();
-                            
-                            //map to positive integers
-                            nor = nor.add(new x3dom.fields.SFVec3f(1.0, 1.0, 1.0));
-                            nor = nor.multiply(0.5);
-                            nor = nor.multiply(shape._cf.geometry.node.getPrecisionMax('normalType'));
-                            
-                            shape._webgl.triangleBuffer[write_idx + 4 - stride*2] = nor.x.toFixed(0);
-                            shape._webgl.triangleBuffer[write_idx + 5 - stride*2] = nor.y.toFixed(0);
-                            shape._webgl.triangleBuffer[write_idx + 6 - stride*2] = nor.z.toFixed(0);
-                            
-                            shape._webgl.triangleBuffer[write_idx + 4 - stride  ] = nor.x.toFixed(0);
-                            shape._webgl.triangleBuffer[write_idx + 5 - stride  ] = nor.y.toFixed(0);
-                            shape._webgl.triangleBuffer[write_idx + 6 - stride  ] = nor.z.toFixed(0);
-                            
-                            shape._webgl.triangleBuffer[write_idx + 4           ] = nor.x.toFixed(0);
-                            shape._webgl.triangleBuffer[write_idx + 5           ] = nor.y.toFixed(0);
-                            shape._webgl.triangleBuffer[write_idx + 6           ] = nor.z.toFixed(0);
-                            
-                            accum_cnt = 0;
+                        //write normals                    
+                        //A: use transmitted per-vertex-normals
+                        if (bitLODGeometry.hasNormalPerVertex()) {
+                            shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
+                            shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
                         }
-                        
-                        //C: on-the-fly normal computation for per-face normals (by averaging)
-                        /*
-                        n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
-                        n_phi   += shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
-                        if (++accum_cnt === 3) {
-                          n_theta = n_theta / 3;
-                          n_phi   = n_phi   / 3;
-                          
-                          shape._webgl.triangleBuffer[write_idx + 4 - 2*stride] = n_theta;
-                          shape._webgl.triangleBuffer[write_idx + 5 - 2*stride] = n_phi;
-                          
-                          shape._webgl.triangleBuffer[write_idx + 4 - stride  ] = n_theta;
-                          shape._webgl.triangleBuffer[write_idx + 5 - stride  ] = n_phi;
-                          
-                          shape._webgl.triangleBuffer[write_idx + 4           ] = n_theta;
-                          shape._webgl.triangleBuffer[write_idx + 5           ] = n_phi;
-                          
-                          n_theta = n_phi = accum_cnt = 0;
+                        else if (shape._webgl.loadedLevels === 8) {                        
+                            //B: on-the-fly normal computation for per-face normals (by cross product)
+
+                            points[accum_cnt].x = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
+                            points[accum_cnt].y = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
+                            points[accum_cnt].z = shape._webgl.dataBuffers[1][read_idx_pos_nor + 2];
+
+                            if (++accum_cnt === 3) {
+                                v1 = points[1].subtract(points[0]);
+                                v2 = points[2].subtract(points[0]);
+                                
+                                nor = v1.cross(v2);
+                                
+                                nor = nor.normalize();
+                                
+                                //map to positive integers
+                                nor = nor.add(new x3dom.fields.SFVec3f(1.0, 1.0, 1.0));
+                                nor = nor.multiply(0.5);
+                                nor = nor.multiply(shape._cf.geometry.node.getPrecisionMax('normalType'));
+                                
+                                shape._webgl.triangleBuffer[write_idx + 4 - stride*2] = nor.x.toFixed(0);
+                                shape._webgl.triangleBuffer[write_idx + 5 - stride*2] = nor.y.toFixed(0);
+                                shape._webgl.triangleBuffer[write_idx + 6 - stride*2] = nor.z.toFixed(0);
+                                
+                                shape._webgl.triangleBuffer[write_idx + 4 - stride  ] = nor.x.toFixed(0);
+                                shape._webgl.triangleBuffer[write_idx + 5 - stride  ] = nor.y.toFixed(0);
+                                shape._webgl.triangleBuffer[write_idx + 6 - stride  ] = nor.z.toFixed(0);
+                                
+                                shape._webgl.triangleBuffer[write_idx + 4           ] = nor.x.toFixed(0);
+                                shape._webgl.triangleBuffer[write_idx + 5           ] = nor.y.toFixed(0);
+                                shape._webgl.triangleBuffer[write_idx + 6           ] = nor.z.toFixed(0);
+                                
+                                accum_cnt = 0;
+                            }
+                            
+                            //C: on-the-fly normal computation for per-face normals (by averaging)
+                            /*
+                            n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
+                            n_phi   += shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
+                            if (++accum_cnt === 3) {
+                              n_theta = n_theta / 3;
+                              n_phi   = n_phi   / 3;
+                              
+                              shape._webgl.triangleBuffer[write_idx + 4 - 2*stride] = n_theta;
+                              shape._webgl.triangleBuffer[write_idx + 5 - 2*stride] = n_phi;
+                              
+                              shape._webgl.triangleBuffer[write_idx + 4 - stride  ] = n_theta;
+                              shape._webgl.triangleBuffer[write_idx + 5 - stride  ] = n_phi;
+                              
+                              shape._webgl.triangleBuffer[write_idx + 4           ] = n_theta;
+                              shape._webgl.triangleBuffer[write_idx + 5           ] = n_phi;
+                              
+                              n_theta = n_phi = accum_cnt = 0;
+                            }
+                            */
                         }
-                        */
                     }
-                  }
 
-                  write_idx += posNorEntriesPerElement;
+                    write_idx += posNorEntriesPerElement;
 
-                  if (texCoordsAvailable) {                    
-                    read_idx_tc = indexArray[i] * 2;
-                    
-                    //write texcoords
-                    shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[3][read_idx_tc    ];
-                    shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[3][read_idx_tc + 1];
-                    
-                    write_idx += 2;
-                  }
-                  
-                  if (colorsAvailable) {                     
-                    read_idx_col = indexArray[i] * 4;
-                    
-                    //write colors
-                    shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[4][read_idx_col    ];
-                    shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[4][read_idx_col + 1];
-                    shape._webgl.triangleBuffer[write_idx + 2] = shape._webgl.dataBuffers[4][read_idx_col + 2];
-                    shape._webgl.triangleBuffer[write_idx + 3] = 0;
-                    
-                    write_idx += 4;
-                  }                  
+                    if (texCoordsAvailable) {                    
+                        read_idx_tc = indexArray[i] * 2;
+
+                        //write texcoords
+                        shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[3][read_idx_tc    ];
+                        shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[3][read_idx_tc + 1];
+
+                        write_idx += 2;
+                    }
+
+                    if (colorsAvailable) {                     
+                        read_idx_col = indexArray[i] * 4;
+
+                        //write colors
+                        shape._webgl.triangleBuffer[write_idx    ] = shape._webgl.dataBuffers[4][read_idx_col    ];
+                        shape._webgl.triangleBuffer[write_idx + 1] = shape._webgl.dataBuffers[4][read_idx_col + 1];
+                        shape._webgl.triangleBuffer[write_idx + 2] = shape._webgl.dataBuffers[4][read_idx_col + 2];
+                        shape._webgl.triangleBuffer[write_idx + 3] = 0;
+
+                        write_idx += 4;
+                    }                    
                 }
 
                 //upload triangle buffer to the gpu and configure attributes
@@ -1386,12 +1386,7 @@ x3dom.gfx_webgl = (function () {
                                        shape._webgl.normalType, false, shape._coordStrideOffset[0],
                                        shape._coordStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.normal);
-
-                // calculate number of single data packages by including stride
-                bitLODGeometry._mesh._numCoords = shape._webgl.triangleBuffer.length / stride;
-                    
-                //shape._cf.geometry.node._vf.vertexCount[1] = bitLODGeometry._mesh._numCoords = shape._webgl.triangleBuffer.length / 3;                
-                
+                                
                 if (bitLODGeometry.hasTexCoord()) {
                   shape._webgl.texCoordType = shape._webgl.coordType;
                   shape._webgl.buffers[3] = glBuf;
@@ -1435,8 +1430,9 @@ x3dom.gfx_webgl = (function () {
 
             var indexArray;
             
-            if (bitLODGeometry.usesVLCIndices()) {              
-              //variable-length decoding
+            if (bitLODGeometry.usesVLCIndices()) {
+                          
+              //variable-length decoding, indexed triangle strips are converted to indexed triangles
               (function(){
                 if (typeof shape._webgl.dataBuffers == 'undefined')
                   shape._webgl.dataBuffers = [];
@@ -1450,29 +1446,62 @@ x3dom.gfx_webgl = (function () {
                 var magic_number;
                 var value = 0;
 
+                var vertexIdx = 0;
+                var primIdx   = 0;
+                var lastVal   = -1, preLastVal = -1;
+              
                 while (i < codes.length) {
-                  b = codes[i++];
-                  
-                  delta        = 0;
-                  magic_number = 128
-                  
-                  //read bytes while the marker bit (first one) is set
-                  while (b >= 128) {
-                    delta |= b - 128;
-                    delta <<= 7;
-                    
-                    magic_number <<= 7;
-                    
+                    if (vertexIdx >= shape._cf.geometry.node._vf.vertexCount[primIdx]) {
+                        ++primIdx;
+                        vertexIdx = 0;                        
+                    }
+                                
                     b = codes[i++];
-                  }
 
-                  delta |= b;
+                    delta        = 0;
+                    magic_number = 128
 
-                  magic_number /= 2;                  
-                  delta -= magic_number;
-                  
-                  value = value + delta;
-                  shape._webgl.dataBuffers[0].push(value);
+                    //read bytes while the marker bit (first one) is set
+                    while (b >= 128) {
+                        delta |= b - 128;
+                        delta <<= 7;
+
+                        magic_number <<= 7;
+
+                        b = codes[i++];
+                    }
+
+                    delta |= b;
+
+                    magic_number /= 2;                  
+                    delta -= magic_number;
+
+                    value = value + delta;
+                    
+                    if (shape._webgl.primType[primIdx] == gl.TRIANGLE_STRIP) {
+                        if (vertexIdx < 3) {
+                            shape._webgl.dataBuffers[0].push(value);
+                        }
+                        else if ((vertexIdx % 2) == 0) {                            
+                            shape._webgl.dataBuffers[0].push(preLastVal);
+                            shape._webgl.dataBuffers[0].push(lastVal);
+                            shape._webgl.dataBuffers[0].push(value);
+                        }
+                        else {
+                            l = shape._webgl.dataBuffers[0].length;                            
+                            shape._webgl.dataBuffers[0].push(lastVal);
+                            shape._webgl.dataBuffers[0].push(preLastVal);
+                            shape._webgl.dataBuffers[0].push(value);
+                        }
+                        
+                        preLastVal = lastVal;
+                        lastVal    = value;
+                    }
+                    else {
+                        shape._webgl.dataBuffers[0].push(value);                        
+                    }
+                    
+                    ++vertexIdx;                    
                 }                
               }());
 
@@ -1482,40 +1511,39 @@ x3dom.gfx_webgl = (function () {
               //create triangle render buffer with normals computed on-the-fly
               //(if data is already available ...)              
               shape._webgl.generateTriangleBuffer();
-
-              if (bitLODGeometry.getVertexCount(0) == 0)
-                bitLODGeometry.setVertexCount(0, shape._webgl.triangleBuffer.length);
+              
+              bitLODGeometry._mesh._numFaces  = shape._webgl.dataBuffers[0].length / 3;
+              bitLODGeometry._mesh._numCoords = shape._webgl.dataBuffers[0].length;
             }
             else
             {            
-              var indicesBuffer = gl.createBuffer();
-              shape._webgl.buffers[0] = indicesBuffer;
+                var indicesBuffer = gl.createBuffer();
+                shape._webgl.buffers[0] = indicesBuffer;
+
+                indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
+
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+                gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
               
-              indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
-              
-              gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
-              gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
-              
-              if (bitLODGeometry.getVertexCount(0) == 0)
-                bitLODGeometry.setVertexCount(0, indexArray.length);
+                if (bitLODGeometry.getVertexCount(0) == 0)
+                    bitLODGeometry.setVertexCount(0, indexArray.length);
+                
+                bitLODGeometry._mesh._numFaces = 0;
+            
+                for (var p=0; p<bitLODGeometry.getNumPrimTypes(); p++) {
+                    if (shape._webgl.primType[p] == gl.TRIANGLE_STRIP)
+                        bitLODGeometry._mesh._numFaces += bitLODGeometry.getVertexCount(p) - 2;
+                    else
+                        bitLODGeometry._mesh._numFaces += bitLODGeometry.getVertexCount(p) / 3;
+                }            
             }
-						
-						bitLODGeometry._mesh._numFaces = 0;
-						
-						for (var p=0; p<bitLODGeometry.getNumPrimTypes(); p++) {
-							if (shape._webgl.primType[p] == gl.TRIANGLE_STRIP)
-								bitLODGeometry._mesh._numFaces += bitLODGeometry.getVertexCount(p) - 2;
-							else
-								bitLODGeometry._mesh._numFaces += bitLODGeometry.getVertexCount(p) / 3;
-						}
 
-						indexArray = null;
+            indexArray = null;
 
-						shape._nameSpace.doc.downloadCount -= 1;
-						shape._nameSpace.doc.needRender = true;
-					};
-				}
-				        
+            shape._nameSpace.doc.downloadCount -= 1;
+            shape._nameSpace.doc.needRender = true;
+        };
+        }  	        
         function callBack(attributeId, bufferView)
         {	          
           if (typeof shape._webgl.loadedLevels == 'undefined')
@@ -1552,7 +1580,7 @@ x3dom.gfx_webgl = (function () {
               // calculate number of single data packages by including stride and type size					
               var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(attribTypeStr);
               //@todo: we need numCoords before this callback is invoked
-              if (dataLen)
+              if (dataLen && bitLODGeometry.hasNormalPerVertex())
                 bitLODGeometry._mesh._numCoords = bufferView.length / dataLen;
               
               //Positions
@@ -3058,6 +3086,21 @@ x3dom.gfx_webgl = (function () {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
 						    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
+                            if (shape._webgl.bitLODGeometry != 0 && !shape._cf.geometry.node.hasNormalPerVertex()) {
+                                
+                                (function(){
+                                    var totalVertexCount = 0;
+                                    for (var i = 0; i < shape._cf.geometry.node._vf.vertexCount.length; i++) {                                    
+                                        if (shape._webgl.primType[i] == gl.TRIANGLES) {
+                                            totalVertexCount += shape._cf.geometry.node._vf.vertexCount[i];
+                                        }
+                                        else if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP) {
+                                            totalVertexCount += (shape._cf.geometry.node._vf.vertexCount[i] - 2) * 3;
+                                        }
+                                    }
+                                    gl.drawArrays(gl.TRIANGLES, 0, totalVertexCount);
+                                })();
+                            }
 							for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
 								gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
 								offset += shape._cf.geometry.node._vf.vertexCount[i];
