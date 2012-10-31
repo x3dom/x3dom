@@ -822,15 +822,15 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
 
     try {
         var anObj = obj;
-
-        if ( anObj && anObj._xmlNode &&
+        
+        if ( anObj && anObj._xmlNode && anObj._cf.geometry &&
              !anObj._xmlNode[eventType] &&
              !anObj._xmlNode.hasAttribute(eventType) &&
              !anObj._listeners[event.type]) {
             anObj = anObj._cf.geometry.node;
         }
-
-        if (that.callEvtHandler(anObj, eventType, event) === true) {
+        
+        if (anObj && that.callEvtHandler(anObj, eventType, event) === true) {
             needRecurse = false;
         }
     }
