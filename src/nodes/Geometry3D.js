@@ -1870,7 +1870,7 @@ x3dom.registerNodeType(
 			this.addField_SFString(ctx, 'index', "");   // Uint16
             this.addField_SFBool(ctx, 'usesVLCIndices', false);  // variable-length coding
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
-            this.addField_SFBool(ctx, 'normalPerVertex', false);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
 
 			// Typed Array View Types
