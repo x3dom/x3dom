@@ -1910,6 +1910,10 @@ x3dom.registerNodeType(
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
             
+            //a chain of assumptions, not very beautiful yet:
+            //- using vlc indices leads to per-face-normals, which use 3 components
+            //- for all other cases, per-vertex-normals are used, with 2 components
+            this._vf.normalPerVertex              = !this._vf.usesVLCIndices;
             this._vf.normalAsSphericalCoordinates = this._vf.normalPerVertex;
 			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
