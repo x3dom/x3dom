@@ -1459,7 +1459,7 @@ x3dom.gfx_webgl = (function () {
                     b = codes[i++];
 
                     delta        = 0;
-                    magic_number = 128
+                    magic_number = 128;
 
                     //read bytes while the marker bit (first one) is set
                     while (b >= 128) {
@@ -3605,7 +3605,7 @@ x3dom.gfx_webgl = (function () {
         // sorting and stuff
         t0 = new Date().getTime();
         
-        // do z-sorting for transparency (currently no separate transparency list)
+        // do z-sorting for transparency
         var zPos = [], sortKeyArr = [], zPosTransp = {};
         var sortKeyProp = "";
         var i, m, n = scene.drawableObjects.length;

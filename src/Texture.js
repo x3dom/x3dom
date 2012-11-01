@@ -106,7 +106,7 @@ x3dom.Texture.prototype.updateTexture = function()
 			
 			if ( (this.minFilter == gl.LINEAR_MIPMAP_LINEAR) ||
 				 (this.minFilter == gl.LINEAR_MIPMAP_NEAREST) ) {
-				minFilter  = gl.LINEAR;
+				this.minFilter  = gl.LINEAR;
 			} else if ( (this.minFilter == gl.NEAREST_MIPMAP_LINEAR) ||
 					    (this.minFilter == gl.NEAREST_MIPMAP_NEAREST) ) {
 				this.minFilter  = gl.NEAREST;
@@ -260,7 +260,7 @@ x3dom.Texture.prototype.updateText = function()
 		var leftToRight = fontStyleNode._vf.leftToRight ? 'ltr' : 'rtl';
 		var topToBottom = fontStyleNode._vf.topToBottom;
 		
-		// TODO: make it possible to use mutiple values
+		// TODO: make it possible to use multiple values
 		var font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
 		
 		switch (font_justify.toUpperCase()) {
@@ -281,7 +281,7 @@ x3dom.Texture.prototype.updateText = function()
 	var paragraph = this.node._vf.string;
 	var text_canvas = document.createElement('canvas');
 	text_canvas.dir = leftToRight;
-	var textHeight = font_size * 42; //muss man die px größe berechnen relativ zu lokalen Koordinatensystem 
+	var textHeight = font_size * 42; // pixel size relative to local coordinate system
 	var textAlignment = font_justify;			
 	
 	// needed to make webfonts work
@@ -347,6 +347,4 @@ x3dom.Texture.prototype.updateText = function()
 	
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
 	//this.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
-	
-
 };
