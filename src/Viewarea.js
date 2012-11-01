@@ -815,7 +815,8 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         hitPnt: that._pick.toGL(), // for convenience
         hitObject: obj._xmlNode ? obj._xmlNode : null,
         cancelBubble: false,
-        stopPropagation: function() { this.cancelBubble = true; }
+        stopPropagation: function() { this.cancelBubble = true; },
+		preventDefault: function() { this.cancelBubble = true;}
     };
     //x3dom.debug.logInfo(event.type + ", " + event.worldX.toFixed(2) + ", " +
     //    event.worldY.toFixed(2) + ", " + event.worldZ.toFixed(2) + ", " + event.button);
