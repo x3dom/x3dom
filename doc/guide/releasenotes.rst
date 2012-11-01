@@ -26,6 +26,7 @@ fixes and enhancements. For example:
   * NEW MultiTouch integration now supporting iOS devices and Mozilla
   * New tutorial for image geometry generation
   * Multiline Text support per specification
+      - changed FontStyle size field to X3D default behavior 
   * Lots of Flash backend fixes
   * Many more bugfixes in skybox background, added attribute setters,
     viewpointChanged event, etc. Refer to the CHANGELOG file for a complete

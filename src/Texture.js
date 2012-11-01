@@ -281,7 +281,7 @@ x3dom.Texture.prototype.updateText = function()
 	var paragraph = this.node._vf.string;
 	var text_canvas = document.createElement('canvas');
 	text_canvas.dir = leftToRight;
-	var textHeight = font_size;
+	var textHeight = font_size * 42; //muss man die px größe berechnen relativ zu lokalen Koordinatensystem 
 	var textAlignment = font_justify;			
 	
 	// needed to make webfonts work
@@ -290,7 +290,7 @@ x3dom.Texture.prototype.updateText = function()
 	var text_ctx = text_canvas.getContext('2d');
 	
 	// calculate font font_size in px
-	text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+	text_ctx.font = font_style + " " + textHeight + "px " + font_family;  //bold 
 
 	var maxWidth = text_ctx.measureText(paragraph[0]).width;
 	// calculate maxWidth
@@ -315,12 +315,13 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
 	
 	// write white text with black border
-	text_ctx.fillStyle = 'white';			
+	text_ctx.fillStyle = 'white';	
+    //text_ctx.fillRect(0, 0, text_canvas.width, text_canvas.height);	
 	text_ctx.lineWidth = 2.5;
 	text_ctx.strokeStyle = 'grey';
 	text_ctx.textBaseline = 'top';
 
-	text_ctx.font = font_style + " " + font_size + "px " + font_family;  //bold 
+	text_ctx.font = font_style + " " + textHeight + "px " + font_family;  //bold 
 	text_ctx.textAlign = textAlignment;
 
 	// create the multiline text
@@ -344,6 +345,8 @@ x3dom.Texture.prototype.updateText = function()
 	var w  = txtW/100.0; 
     var h  = txtH/100.0;
 	
-	this.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
+	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
+	//this.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
+	
 
 };
