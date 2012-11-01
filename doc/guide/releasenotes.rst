@@ -7,30 +7,31 @@ Version 1.4
 -----------
 Three years X3DOM and still going strong. After almost one year in the making
 we are proud to announce a new X3DOM release. This latest and greatest version
-of the JavasSript library that marriages HTML with 3D features a great many
+of the JavasSript library that marriages HTML with 3D features provides many
 fixes and enhancements. For example:
 
   * NEW - Experimental - geometry nodes that externalize vertex data in binary containers:
       - ImageGeometry (which holds vertex attributes in images),
       - BinaryGeometry (which holds vertex data in binary files,
-        where attributes can have - besides standard 32-bit - 8-bit and 16-bit),
+        where attributes can have - besides standard 32-bit - 8-bit and 16-bit precision),
       - BitLODGeometry (which also holds vertex attributes in external files,
         though here the containers can consist of variable bit precision for JPEG-like effects)
-  * OrthoViewpoint
+  * OrthoViewpoint and Viewfrustum
   * LOD now also in Flash renderer
   * Enhanced picking with a max. of 65,535 objects, while the corresponding mouse event
-    also provides picked position and normal
+    also provides the picked position and normal
   * NEW Programmatic documentation API
   * Enhanced JavaScript API now with a plenthora of additional methods
-  * NEW Support for iOS devices
-  * NEW MultiTouch integration now supporting iOS devices and Mozilla
+  * NEW MultiTouch integration now supporting iOS devices, Chrome, and Mozilla
   * New tutorial for image geometry generation
   * Multiline Text support per specification
       - changed FontStyle size field to X3D default behavior 
   * Lots of Flash backend fixes
-  * Many more bugfixes in skybox background, added attribute setters,
-    viewpointChanged event, etc. Refer to the CHANGELOG file for a complete
-    list
+  * More rendering features like the sortKey/sortType Appearance fields for defining the
+    rendering order, or the DepthMode (App. child) to define if an object shall be readOnly
+  * Added attribute setters, viewpointChanged event, helicopter mode etc.
+  * Many more bugfixes in IndexedFaceSet, skybox background node etc. 
+    Refer to the CHANGELOG file for a complete list
 
 You can get the this X3DOM release from:
 
