@@ -60,6 +60,9 @@ x3dom.registerNodeType(
                         if (this._cf.texture.node._vf.url[0].toLowerCase().indexOf('.'+'png') >= 0) {
                             this._vf.sortType = 'transparent';
                         }
+                        else {
+                            this._vf.sortType = 'opaque';
+                        }
                     }
                     else {
 						this._vf.sortType = 'opaque';
