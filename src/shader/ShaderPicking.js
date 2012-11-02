@@ -32,7 +32,10 @@ x3dom.shader.PickingShader = function(gl)
  */
 x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 {
-	var shader = 	"attribute vec3 position;\n" +
+	var shader = "";
+
+    if (!x3dom.caps.MOBILE) {
+        shader =    "attribute vec3 position;\n" +
 					"uniform vec3 bgCenter;\n" +
 					"uniform vec3 bgSize;\n" +
 					"uniform float bgPrecisionMax;\n" +
@@ -72,6 +75,22 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"		gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
 					"	}\n" +
 					"}\n";
+    }
+    else {
+        shader =    "attribute vec3 position;\n" +
+                    "uniform vec3 bgCenter;\n" +
+                    "uniform vec3 bgSize;\n" +
+                    "uniform float bgPrecisionMax;\n" +
+                    "uniform mat4 modelMatrix;\n" +
+                    "uniform mat4 modelViewProjectionMatrix;\n" +
+                    "uniform vec3 from;\n" +
+                    "varying vec3 worldCoord;\n" +
+                    "void main(void) {\n" +
+                    "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
+                    "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n" +
+                    "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
+                    "}\n";
+    }
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, shader);
