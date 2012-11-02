@@ -315,8 +315,7 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.fillRect(0, 0, text_ctx.canvas.width, text_ctx.canvas.height);
 	
 	// write white text with black border
-	text_ctx.fillStyle = 'white';	
-    //text_ctx.fillRect(0, 0, text_canvas.width, text_canvas.height);	
+	text_ctx.fillStyle = 'white';		
 	text_ctx.lineWidth = 2.5;
 	text_ctx.strokeStyle = 'grey';
 	text_ctx.textBaseline = 'top';
@@ -346,7 +345,5 @@ x3dom.Texture.prototype.updateText = function()
     var h  = txtH/100.0;
 	
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
-	//this.node._mesh._positions[0] = [-w,-h,0, w,-h,0, w,h,0, -w,h,0];
-	
 
 };
