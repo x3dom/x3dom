@@ -581,7 +581,7 @@ x3dom.gfx_webgl = (function () {
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp0.send();
+                xmlhttp0.send(null);
             
                 xmlhttp0.onload = function() 
                 {
@@ -640,7 +640,7 @@ x3dom.gfx_webgl = (function () {
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
 
-                xmlhttp.send();
+                xmlhttp.send(null);
 
                 xmlhttp.onload = function()
                 {
@@ -748,7 +748,7 @@ x3dom.gfx_webgl = (function () {
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp1.send();
+                xmlhttp1.send(null);
             
                 xmlhttp1.onload = function() 
                 {
@@ -836,7 +836,7 @@ x3dom.gfx_webgl = (function () {
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp2.send();
+                xmlhttp2.send(null);
             
                 xmlhttp2.onload = function() 
                 {
@@ -888,7 +888,7 @@ x3dom.gfx_webgl = (function () {
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp3.send();
+                xmlhttp3.send(null);
             
                 xmlhttp3.onload = function() 
                 {
@@ -940,7 +940,7 @@ x3dom.gfx_webgl = (function () {
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp4.send();
+                xmlhttp4.send(null);
             
                 xmlhttp4.onload = function() 
                 {
