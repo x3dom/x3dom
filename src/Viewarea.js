@@ -18,8 +18,8 @@ x3dom.Viewarea = function (document, scene) {
     document._nodeBag.viewarea.push(this);
 
     this._pickingInfo = {
-        pickPos: {},
-        pickNorm: {},
+        pickPos: new x3dom.fields.SFVec3f(0, 0, 0),
+        pickNorm: new x3dom.fields.SFVec3f(0, 0, 1),
         pickObj: null,
         lastObj: null,
         lastClickObj: null
@@ -52,9 +52,6 @@ x3dom.Viewarea = function (document, scene) {
     this._isAnimating = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
-
-	//Geometry cache for primitives (Sphere, Box, etc.)
-	this._geoCache = [];
 };
 
 x3dom.Viewarea.prototype.tick = function(timeStamp)

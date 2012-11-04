@@ -29,8 +29,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Arc2D_'+ r + start + end;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using Arc2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Arc2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				
@@ -118,8 +118,8 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'ArcClose2D_'+r+start+end+this._vf.closureType;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using ArcClose2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using ArcClose2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				var anzahl = this._vf.subdivision;
@@ -383,8 +383,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Circle2D_'+r;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using Circle2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Circle2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				
@@ -474,8 +474,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Disk2D_'+ir+or;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using Disk2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Disk2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				
@@ -627,9 +627,9 @@ x3dom.registerNodeType(
          	
 			var geoCacheID = 'Polyline2D_'+x+'-'+y;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Polyline2D from Cache");
+				//x3dom.debug.logInfo("Using Polyline2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -697,9 +697,9 @@ x3dom.registerNodeType(
          	
 			var geoCacheID = 'Polypoint2D_'+x+'-'+y;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Polypoint2D from Cache");
+				//x3dom.debug.logInfo("Using Polypoint2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -758,9 +758,9 @@ x3dom.registerNodeType(
          	
 			var geoCacheID = 'Rectangle2D_'+sx+'-'+sy;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Rectangle2D from Cache");
+				//x3dom.debug.logInfo("Using Rectangle2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -890,9 +890,9 @@ x3dom.registerNodeType(
          	
 			var geoCacheID = 'TriangleSet2D_'+x+'-'+y;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using TriangleSet2D from Cache");
+				//x3dom.debug.logInfo("Using TriangleSet2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else

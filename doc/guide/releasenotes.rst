@@ -17,21 +17,21 @@ fixes and enhancements. For example:
       - BitLODGeometry (which also holds vertex attributes in external files,
         though here the containers can consist of variable bit precision for JPEG-like effects)
   * OrthoViewpoint and Viewfrustum
-  * LOD now also in Flash renderer
-  * Enhanced picking with a max. of 65,535 objects, while the corresponding mouse event
-    also provides the picked position and normal
+  * Basic support for VolumeRendering component (VolumeData node, OpacityMapVolumeStyle, MPRVolumeStyle)
+  * Enhanced picking with a max. of 65,535 objects, while the corresponding mouse or touch event
+    also provides the picked position with 16-bit precision and the object normal at this position
   * NEW Programmatic documentation API
-  * Enhanced JavaScript API now with a plenthora of additional methods
+  * Enhanced JavaScript runtime API now with a plenthora of additional methods
   * NEW MultiTouch integration now supporting iOS devices, Chrome, and Mozilla
-  * New tutorial for image geometry generation
+  * New tutorial for image and binary geometry generation
   * Multiline Text support per specification
       - changed FontStyle size field to X3D default behavior 
-  * Lots of Flash backend fixes
+  * Lots of Flash backend fixes (e.g., LOD now also in Flash renderer supported)
   * More rendering features like the sortKey/sortType Appearance fields for defining the
     rendering order, or the DepthMode (App. child) to define if an object shall be readOnly
   * Added attribute setters, viewpointChanged event, helicopter mode etc.
   * Many more bugfixes in IndexedFaceSet, skybox background node etc. 
-    Refer to the CHANGELOG file for a complete list
+    Refer to the CHANGELOG file for a complete list...
 
 You can get the this X3DOM release from:
 

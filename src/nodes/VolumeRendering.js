@@ -612,7 +612,7 @@ x3dom.registerNodeType(
 
                 var geoCacheID = 'ColorBox_'+sx+'-'+sy+'-'+sz;
 
-                if( x3dom.geoCache[geoCacheID] !== undefined )
+                if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
                 {
                       this._mesh = x3dom.geoCache[geoCacheID];
                 }

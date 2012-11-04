@@ -26,7 +26,7 @@ x3dom.Cache.prototype.getTexture2D = function(gl, doc, url)
 {
 	var textureIdentifier = x3dom.Utils.getFileName( url );
 	
-	if( this.textures[textureIdentifier] == undefined )
+	if( this.textures[textureIdentifier] === undefined )
 	{
 		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url);
 	} 
@@ -50,7 +50,7 @@ x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd)
 		textureIdentifier += x3dom.Utils.getFileName( url[i] );
 	}
 	
-	if( this.textures[textureIdentifier] == undefined )
+	if( this.textures[textureIdentifier] === undefined )
 	{
 		this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd);
 	}
@@ -67,39 +67,41 @@ x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd)
  */
 x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
 {
+	var program = null;
+
 	//Check if shader is in cache
-	if( this.shaders[shaderIdentifier] == undefined ) 
+	if( this.shaders[shaderIdentifier] === undefined )
 	{
 		//Choose shader based on identifier
 		if(shaderIdentifier == x3dom.shader.PICKING) {
-			var program = new x3dom.shader.PickingShader(gl);
+			program = new x3dom.shader.PickingShader(gl);
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);			
 		} else if(shaderIdentifier == x3dom.shader.PICKING_COLOR) {
-			var program = new x3dom.shader.PickingColorShader(gl);
+			program = new x3dom.shader.PickingColorShader(gl);
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.PICKING_TEXCOORD) {
-			var program = new x3dom.shader.PickingTexcoordShader(gl);
+			program = new x3dom.shader.PickingTexcoordShader(gl);
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.FRONTGROUND_TEXTURE) {
-			var program = new x3dom.shader.FrontgroundTextureShader(gl);
+			program = new x3dom.shader.FrontgroundTextureShader(gl);
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.BACKGROUND_TEXTURE) {
-			var program = new x3dom.shader.BackgroundTextureShader(gl);
+			program = new x3dom.shader.BackgroundTextureShader(gl);
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.BACKGROUND_SKYTEXTURE) {
-			var program = new x3dom.shader.BackgroundSkyTextureShader(gl);
+			program = new x3dom.shader.BackgroundSkyTextureShader(gl);
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.BACKGROUND_CUBETEXTURE) {
-			var program = new x3dom.shader.BackgroundCubeTextureShader(gl);
+			program = new x3dom.shader.BackgroundCubeTextureShader(gl);
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.SHADOW) {
-			var program = new x3dom.shader.ShadowShader(gl)
+			program = new x3dom.shader.ShadowShader(gl)
 			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.DEPTH) {
-			//var program = new x3dom.shader.DepthShader(gl);
+			//program = new x3dom.shader.DepthShader(gl);
 			//this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		} else if(shaderIdentifier == x3dom.shader.NORMAL) {
-			//var program = new x3dom.shader.new NormalShader(gl);
+			//program = new x3dom.shader.new NormalShader(gl);
 			//this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 		}
 	}
@@ -117,7 +119,7 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
 	
 	//x3dom.debug.logInfo(properties.toString());
 	
-	if( this.shaders[properties.toIdentifier()] == undefined ) 
+	if( this.shaders[properties.toIdentifier()] === undefined )
 	{
 		if(properties.CSHADER >= 0) {
 			var program = new x3dom.shader.ComposedShader(gl, shape);
@@ -127,9 +129,10 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
 																		new x3dom.shader.DynamicShader(gl, properties);
 			this.shaders[properties.toIdentifier()] = x3dom.Utils.wrapProgram(gl, program);
 		}
-	} else {
-		x3dom.debug.logInfo("[Cache] Using Shader from Cache");
 	}
+	/* else {
+		x3dom.debug.logInfo("[Cache] Using Shader from Cache");
+	} */
 	
 	return this.shaders[properties.toIdentifier()];
 };

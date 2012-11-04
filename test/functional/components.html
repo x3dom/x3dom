@@ -7,15 +7,37 @@
     // enable execution of potentially insecure code
     X3DOM_SECURITY_OFF = true;
 </script>
+
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
-<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
 <script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
 <script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
 <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 <script type="text/javascript" src="../../src/gfx_flash.js"></script>
 <script type="text/javascript" src="../../src/X3DDocument.js"></script>
@@ -38,11 +60,14 @@
 <script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
 <script type="text/javascript" src="../../src/nodes/Text.js"></script>
 <script type="text/javascript" src="../../src/nodes/Sound.js"></script>
-<!--<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>-->
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
-<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
-<!--<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>-->
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!--script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script-->
 
 <script>
     X3DOM_DOCS_LINK = "components.html";
@@ -60,13 +85,13 @@
 <div class="group">
     <h1>Component load test</h1>
     <p>Documentation</p>
-    <p>The 2D primitives and Texturing are loaded using the components functionality:</p>
+    <p>The 2D primitives and geospatial are loaded using the components functionality:</p>
 <pre><code>
-    &lt;x3d components="Texturing,Geometry2D" loadpath="../../src/nodes/" &gt;
+    &lt;x3d components="Geospatial,Geometry2D" loadpath="../../src/nodes/" &gt;
     ...
 </code></pre>
 
-<p> The statements above dynamically load the files <code>../../src/nodes/Texturing.js</code> and <code>../../src/nodes/Geometry2D.js</code>.
+<p> The statements above dynamically load the files <code>../../src/nodes/Geospatial.js</code> and <code>../../src/nodes/Geometry2D.js</code>.
     The following options are added:</p>
     <dl>
         <dt><code>components</code></dt>
@@ -77,7 +102,7 @@
 
 
     <x3d id="rotate-box" width='1000px' height='700px'>
-        <param name="components" value="Texturing,Geometry2D"></param>
+        <param name="components" value="Geospatial,Geometry2D"></param>
         <param name="loadpath" value="../../src/nodes/"></param>
 
 		<scene>
@@ -97,7 +122,8 @@
                       <material id="colorArcClosePIE" diffuseColor='yellow'></material>
                       <imageTexture url='media/img/igd_main.png'></imageTexture>
                     </appearance>
-                    <ArcClose2D id="testArcClosePIE" radius ='1' subdivision='20' startAngle ='1.57' endAngle='3.14' closureType='PIE'"></ArcClose2D>
+                    <ArcClose2D id="testArcClosePIE" radius ='1' subdivision='20' 
+                        startAngle ='1.57' endAngle='3.14' closureType='PIE'></ArcClose2D>
                   </shape>
                 </transform>
 
@@ -107,7 +133,8 @@
                       <material id="colorArcCloseCHORD" diffuseColor='yellow'></material>
                       <imageTexture url='media/img/igd_main.png'></imageTexture>
                     </appearance>
-                    <ArcClose2D id="testArcCloseCHORD" radius ='1' subdivision='20' startAngle ='0' endAngle='1.57' closureType='CHORD';"></ArcClose2D>
+                    <ArcClose2D id="testArcCloseCHORD" radius ='1' subdivision='20' 
+                        startAngle ='0' endAngle='1.57' closureType='CHORD'></ArcClose2D>
                   </shape>
                 </transform>
 

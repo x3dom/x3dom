@@ -425,7 +425,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 		property.SOLID				= (shape.isSolid()) ? 1 : 0;
 		property.TEXT				= (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
 		property.POPGEOMETRY  	= (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;    
-    property.BITLODGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;    
+		property.BITLODGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;    
 		property.IMAGEGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
 		property.IG_PRECISION		= (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
 		property.IG_INDEXED			= (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
@@ -533,9 +533,28 @@ x3dom.Utils.wrapProgram = function (gl, program)
 					(function (loc) { return function (val) { gl.uniform1i(loc, val); }; })(loc));
 				break;
 			case gl.FLOAT:
-				shader.__defineSetter__(obj.name, 
-					(function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
-				break;
+				//shader.__defineSetter__(obj.name, 
+				//	(function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
+                /*
+                 * Passing a MFFloat type into uniform.
+                 * by Sofiane Benchaa, 2012.
+                 * 
+                 * Based on OpenGL specification.
+                 * url: http://www.opengl.org/sdk/docs/man/xhtml/glGetUniformLocation.xml 
+                 *
+                 * excerpt : Except if the last part of name indicates a uniform variable array, 
+                 * the location of the first element of an array can be retrieved by using the name of the array, 
+                 * or by using the name appended by "[0]".
+                 * 
+                 * Detecting the float array and extracting its uniform name without the brackets.
+                 */
+				if (obj.name.indexOf("[0]") != -1)
+					shader.__defineSetter__(obj.name.substring(0, obj.name.length-3), 
+						(function (loc) { return function (val) { gl.uniform1fv(loc, new Float32Array(val)); }; })(loc));
+				else
+					shader.__defineSetter__(obj.name, 
+						(function (loc) { return function (val) { gl.uniform1f(loc, val); }; })(loc));
+                break;
 			case gl.FLOAT_VEC2:
 				shader.__defineSetter__(obj.name, 
 					(function (loc) { return function (val) { gl.uniform2f(loc, val[0], val[1]); }; })(loc));           

@@ -20,6 +20,9 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'solid', true);
             this.addField_SFBool(ctx, 'ccw', true);
+            // All geo primitives use geo cache and others might later on,
+            // but one should be able to disable cache per geometry node.
+            this.addField_SFBool(ctx, 'useGeoCache', true);
 
             this._mesh = new x3dom.Mesh(this);
             this._pickable = true;

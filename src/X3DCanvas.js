@@ -929,16 +929,31 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				
 				doc.onPick(that.gl, pos.x, pos.y);
 				
-				doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmouseup");
-				doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
-				
-				// click means that mousedown _and_ mouseup were detected on same element
-				if (doc._viewarea._pickingInfo.pickObj &&
-					doc._viewarea._pickingInfo.pickObj ===
-					doc._viewarea._pickingInfo.lastClickObj) {
-					
-					doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onclick");	
-				}
+				if (doc._scene._vf.pickMode.toLowerCase() !== "box") {
+                    doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmouseup");
+                    doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
+
+                    // click means that mousedown _and_ mouseup were detected on same element
+                    if (doc._viewarea._pickingInfo.pickObj &&
+                    	doc._viewarea._pickingInfo.pickObj ===
+                    	doc._viewarea._pickingInfo.lastClickObj) {
+    
+                    	doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onclick");
+                    }
+			    }
+			    else {
+                    var line = doc._viewarea.calcViewRay(pos.x, pos.y);
+                    var isect = doc._scene.doIntersect(line);
+                    var obj = line.hitObject;
+                    
+                    if (isect && obj) {
+                        doc._viewarea._pick.setValues(line.hitPoint);
+                        doc._viewarea.checkEvents(obj, pos.x, pos.y, 1, "onclick");
+                        
+                        x3dom.debug.logInfo("Hit '" + obj._xmlNode.localName + "/ " +
+                                            obj._DEF + "' at pos " + doc._viewarea._pick);
+                    }
+			    }
 			}
 			
             if (dblClick) {

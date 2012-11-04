@@ -575,13 +575,13 @@ x3dom.gfx_webgl = (function () {
             {
                 var xmlhttp0 = new XMLHttpRequest();
                 xmlhttp0.open("GET", encodeURI(shape._nameSpace.getURL(
-                                        shape._cf.geometry.node._vf.index)) , true);
+                                        shape._cf.geometry.node._vf.index)), true);
                 xmlhttp0.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp0.send(null);
+                xmlhttp0.send();
             
                 xmlhttp0.onload = function() 
                 {
@@ -634,13 +634,13 @@ x3dom.gfx_webgl = (function () {
             {
                 var xmlhttp = new XMLHttpRequest();
                 xmlhttp.open("GET", encodeURI(shape._nameSpace.getURL(
-                                        shape._cf.geometry.node._vf.coord)) , true);
+                                        shape._cf.geometry.node._vf.coord)), true);
                 xmlhttp.responseType = "arraybuffer";
 
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
 
-                xmlhttp.send(null);
+                xmlhttp.send();
 
                 xmlhttp.onload = function()
                 {
@@ -742,13 +742,13 @@ x3dom.gfx_webgl = (function () {
             {
                 var xmlhttp1 = new XMLHttpRequest();
                 xmlhttp1.open("GET", encodeURI(shape._nameSpace.getURL(
-                                        shape._cf.geometry.node._vf.coord)) , true);
+                                        shape._cf.geometry.node._vf.coord)), true);
                 xmlhttp1.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp1.send(null);
+                xmlhttp1.send();
             
                 xmlhttp1.onload = function() 
                 {
@@ -813,40 +813,6 @@ x3dom.gfx_webgl = (function () {
                         shape._vf.bboxSize.setValues(max.subtract(min));
                     }
                     
-                    /*
-                    if (geoNode._mesh._numPosComponents == 4 &&
-                        geoNode._mesh._numNormComponents == 2) 
-                    {
-                        var buf = [];
-                        for (var i=3, j=0; i<vertices.length; i+=4) {
-                            var theta = (vertices[i] >>> 8) / 255;
-                            var phi   = (vertices[i] & 255) / 255;
-                        
-                            theta = theta * Math.PI;
-        					phi   = phi   * Math.PI * 2.0 - Math.PI;
-                            var sin_theta = Math.sin(theta);
-
-        					buf[j++] = sin_theta * Math.cos(phi);
-        					buf[j++] = sin_theta * Math.sin(phi);
-        					buf[j++] = Math.cos(theta);
-                        }
-                        geoNode._mesh._numNormComponents = 3;
-                    
-                        var normalBuffer = gl.createBuffer();
-                        shape._webgl.buffers[2] = normalBuffer;
-                        shape._webgl.normalType = x3dom.Utils.getVertexAttribType("Float32", gl);
-                    
-                        gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
-                        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(buf), gl.STATIC_DRAW);                
-
-                        gl.vertexAttribPointer(sp.normal, 
-                            geoNode._mesh._numNormComponents, 
-                            shape._webgl.normalType, false,
-                            shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
-                        gl.enableVertexAttribArray(sp.normal);
-                    }
-                    */
-                    
                     vertices = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
@@ -864,13 +830,13 @@ x3dom.gfx_webgl = (function () {
             {
                 var xmlhttp2 = new XMLHttpRequest();
                 xmlhttp2.open("GET", encodeURI(shape._nameSpace.getURL(
-                                        shape._cf.geometry.node._vf.normal)) , true);
+                                        shape._cf.geometry.node._vf.normal)), true);
                 xmlhttp2.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp2.send(null);
+                xmlhttp2.send();
             
                 xmlhttp2.onload = function() 
                 {
@@ -916,13 +882,13 @@ x3dom.gfx_webgl = (function () {
             {
                 var xmlhttp3 = new XMLHttpRequest();
                 xmlhttp3.open("GET", encodeURI(shape._nameSpace.getURL(
-                                        shape._cf.geometry.node._vf.texCoord)) , true);
+                                        shape._cf.geometry.node._vf.texCoord)), true);
                 xmlhttp3.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp3.send(null);
+                xmlhttp3.send();
             
                 xmlhttp3.onload = function() 
                 {
@@ -968,13 +934,13 @@ x3dom.gfx_webgl = (function () {
             {
                 var xmlhttp4 = new XMLHttpRequest();
                 xmlhttp4.open("GET", encodeURI(shape._nameSpace.getURL(
-                                        shape._cf.geometry.node._vf.color)) , true);
+                                        shape._cf.geometry.node._vf.color)), true);
                 xmlhttp4.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
 				shape._webgl.internalDownloadCount += 1;
             
-                xmlhttp4.send(null);
+                xmlhttp4.send();
             
                 xmlhttp4.onload = function() 
                 {
