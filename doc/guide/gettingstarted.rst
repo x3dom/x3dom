@@ -8,16 +8,22 @@ Using X3DOM
 ------------
 The recommended way of using X3DOM during the development of your
 application is linking the online version within your HTML
-document like this:
+document. You can use the following boiler-plate to kick-start
+development:
 
 .. code-block:: html
 
     <!doctype html>
+    <html>
     <head>
-    <meta encoding="utf-8">
-    <script src="http://www.x3dom.org/download/dev/x3dom.js"></script>
-    <link rel="stylesheet" href="http://www.x3dom.org/download/dev/x3dom.css">
+      <meta encoding="utf-8">
+      <script src="http://www.x3dom.org/download/dev/x3dom.js"></script>
+      <link rel="stylesheet" href="http://www.x3dom.org/download/dev/x3dom.css">
     </head>
+    <body>
+      <x3d> ...</x3d>
+    </body>
+    </html>
 
 X3DOM should be usable in all modern browser and depends on no external
 libraries.

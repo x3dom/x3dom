@@ -5,37 +5,51 @@ Release notes
 
 Version 1.4
 -----------
-Three years X3DOM and still going strong. After almost one year in the making
-we are proud to announce a new X3DOM release. This latest and greatest version
-of the JavasSript library that marriages HTML with 3D features provides many
-fixes and enhancements. For example:
 
-  * NEW - Experimental - geometry nodes that externalize vertex data in binary containers:
+Welcome to X3DOM 1.4!
+
+After almost one year in the making we are proud to announce a new X3DOM release.
+With this latest installment of our defacto standard JavasSript library that marries
+HTML with declarative 3D content, we provide many fixes and enhancements.
+
+New in 1.4
+++++++++++
+
+  * Experimental geometry nodes that externalize vertex data in binary containers:
       - ImageGeometry (which holds vertex attributes in images),
       - BinaryGeometry (which holds vertex data in binary files,
         where attributes can have - besides standard 32-bit - 8-bit and 16-bit precision),
       - BitLODGeometry (which also holds vertex attributes in external files,
         though here the containers can consist of variable bit precision for JPEG-like effects)
+      - Tutorial for image and binary geometry generation (:ref:`aopt`)
   * OrthoViewpoint and Viewfrustum
   * Basic support for VolumeRendering component (VolumeData node, OpacityMapVolumeStyle, MPRVolumeStyle)
+  * Programmatic documentation API (:ref:`runtime_api`)
+  * MultiTouch integration now supporting iOS devices, Chrome, and Mozilla
+  * Added attribute setters, viewpointChanged event, helicopter mode etc.
+
+
+Enhancements and Fixes
+++++++++++++++++++++++
   * Enhanced picking with a max. of 65,535 objects, while the corresponding mouse or touch event
     also provides the picked position with 16-bit precision and the object normal at this position
-  * NEW Programmatic documentation API
-  * Enhanced JavaScript runtime API now with a plenthora of additional methods
-  * NEW MultiTouch integration now supporting iOS devices, Chrome, and Mozilla
-  * New tutorial for image and binary geometry generation
-  * Multiline Text support per specification
-      - changed FontStyle size field to X3D default behavior 
-  * Lots of Flash backend fixes (e.g., LOD now also in Flash renderer supported)
   * More rendering features like the sortKey/sortType Appearance fields for defining the
     rendering order, or the DepthMode (App. child) to define if an object shall be readOnly
-  * Added attribute setters, viewpointChanged event, helicopter mode etc.
-  * Many more bugfixes in IndexedFaceSet, skybox background node etc. 
-    Refer to the CHANGELOG file for a complete list...
+  * Multiline Text support per specification
+      - changed FontStyle size field to X3D default behavior
+  * Enhanced JavaScript runtime API now with a plenthora of additional methods  (:ref:`runtime_api`)
+  * Lots of Flash backend fixes (e.g., LOD now also in Flash renderer supported)
+  * Many more bugfixes in IndexedFaceSet, skybox background node etc.
+
+
+For a complete and exhaustive list of changes, please refer to the `CHANGELOG <http://x3dom.org/download/1.4/CHANGELOG>`_
+file or `GitHub Issue Tracker <https://github.com/x3dom/x3dom/issues?page=1&sort=updated&state=closed>`_.
 
 You can get the this X3DOM release from:
 
-    `http://x3dom.org/download/1.4/ <http://x3dom.org/download/1.4/>`
+    `http://x3dom.org/download/1.4/ <http://x3dom.org/download/1.4/>`_
+
+
 
 
 Version 1.3

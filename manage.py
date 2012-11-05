@@ -34,8 +34,9 @@ from __future__ import with_statement
 #   x3dom-debug.js        the core x3dom profile, un-minified with comments
 #   x3dom-full.js         the full x3dom profile, minified
 #   x3dom-full.debug.js   the full x3dom profile, un-minified with comments
+#   ...
 #
-# The unminified versions are for local development and debugging. This is 
+# The concatenated versions are for local development and debugging. This is
 # what people should use locally when they develop their app with X3DOM.
 #
 # RELEASE
@@ -47,28 +48,23 @@ from __future__ import with_statement
 #   x3dom-x.x.x.zip
 #
 # Once this is done, the Git repository is tagged with the release version 
-# x.x.x. Then the files should be uploaded to the webserver (this is also 
-# accomplised by this file). We want to provide the tarball|zip in the 
+# x.x.x. Then the files should be uploaded to the webserver (this is should
+# also b accomplished by this file). We want to provide the tarball|zip in the
 # download directory, but also the unzipped version. 
 # The structure should look like this:
 
 #   x3dom.org/download/
 #      dev/              -> development build x3dom/dist/
-#      latest/           -> symlink@x3dom-y.y.y/
-#      x3dom-x.x.x/
+#      x.x.x/
 #        <unzipped contents>
-#      x3dom-y.y.y/
-#        <unzipped contents>
-#      x3dom-x.x.x.tar.gz
-#      x3dom-x.x.x.zip
-#      x3dom-y.y.y.tar.gz
-#      x3dom-y.y.y.zip
+#        x3dom-x.x.x.zip
 #
-# Basically we have the zipped versions in one directory and a directory
-# with the unzipped ones as well as a symlink "latest" pointing to the 
-# latest stable version
-# 
-# ----- 
+#      y.y.y/
+#        <unzipped contents>
+#        x3dom-y.y.y.zip
+#
+#
+# -----
 try:
     import argparse
 except:
@@ -98,6 +94,7 @@ GUIDE_ROOT = os.path.join(DOC_ROOT, 'guide')
 
 
 def build(mode='production'):
+    prepare()
     print("\n-- [ BUILD STARTED ] --------------------------------------")
 
     packer = x3dom_packer.packer()
@@ -106,7 +103,7 @@ def build(mode='production'):
     packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.js", "jsmin", include_version=True)
     packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.js", "jsmin", include_version=True)
         
-    if mode == 'debug':
+    if not mode == 'no-debug':
         # building plain files (debug)
         packer.build(prefix_path(FULL_PROFILE, SRC_ROOT), "dist/x3dom-full.debug.js", 'none')
         packer.build(prefix_path(CORE_PROFILE, SRC_ROOT), "dist/x3dom.debug.js", 'none')
@@ -236,8 +233,15 @@ def clean():
         os.remove("src/version.js")
         
 
+def prepare():
+    print("Preparing build...")
+    if not os.path.exists(DIST_ROOT):
+        os.mkdir(DIST_ROOT)
+
+
 def rebuild():
     clean()
+    prepare()
     build()
     docs()
 
@@ -290,6 +294,7 @@ help='clean up build and remove all generated files')
     # method calling. Or better yet a dict with help messages and 
     # parameter names and then building  parser stuff dynamically as well
     if args.build:
+        prepare()
         build(mode=args.build)
     elif args.release:
         release(version=args.release)
@@ -306,6 +311,7 @@ help='clean up build and remove all generated files')
     elif args.changelog:
         changelog()
     elif args.docs:
+        prepare()
         docs()
     elif args.rebuild:
         rebuild()
