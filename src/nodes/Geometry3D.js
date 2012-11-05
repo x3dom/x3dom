@@ -2005,6 +2005,8 @@ x3dom.registerNodeType(
 				return this._vf.position;
 			},
 			
+			// ATTENTION: the following accessor methods are NOT shared 
+			// by all Geometry nodes, so be careful when using them!!!
 			hasIndex: function()
 			{
 				return (this._vf.index.length) ? true : false;
@@ -2013,16 +2015,6 @@ x3dom.registerNodeType(
             usesVLCIndices: function()
 			{
 				return this._vf.usesVLCIndices == true;
-			},
-
-            hasNormalPerVertex : function()
-            {
-                return this._vf.normalPerVertex;
-            },
-            
-			hasPolarNormals: function()
-			{
-				return _vf.normalAsSphericalCoordinates; //TODO
 			},
 			
 			hasColor: function()

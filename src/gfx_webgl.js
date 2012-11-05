@@ -1240,7 +1240,7 @@ x3dom.gfx_webgl = (function () {
 
                         //write normals                    
                         //A: use transmitted per-vertex-normals
-                        if (bitLODGeometry.hasNormalPerVertex()) {
+                        if (bitLODGeometry._vf.normalPerVertex) {
                             shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
                             shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
                         }
@@ -1546,7 +1546,7 @@ x3dom.gfx_webgl = (function () {
               // calculate number of single data packages by including stride and type size					
               var dataLen = shape._coordStrideOffset[0] / x3dom.Utils.getDataTypeSize(attribTypeStr);
               //@todo: we need numCoords before this callback is invoked
-              if (dataLen && bitLODGeometry.hasNormalPerVertex())
+              if (dataLen && bitLODGeometry._vf.normalPerVertex)
                 bitLODGeometry._mesh._numCoords = bufferView.length / dataLen;
               
               //Positions
@@ -2602,27 +2602,26 @@ x3dom.gfx_webgl = (function () {
 					gl.disable(gl.CULL_FACE);
 				}
 				
-				try {                        
+				try {
 					if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 ||
-                            shape._webgl.popGeometry < 0    || shape._webgl.bitLODGeometry < 0) {
-							if (shape._webgl.bitLODGeometry != 0 && !shape._cf.geometry.node.hasNormalPerVertex()) {                                
-                                (function(){
-                                    var totalVertexCount = 0;
-                                    for (var i = 0; i < shape._cf.geometry.node._vf.vertexCount.length; i++) {                                    
-                                        if (shape._webgl.primType[i] == gl.TRIANGLES) {
-                                            totalVertexCount += shape._cf.geometry.node._vf.vertexCount[i];
-                                        }
-                                        else if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP) {
-                                            totalVertexCount += (shape._cf.geometry.node._vf.vertexCount[i] - 2) * 3;
-                                        }
+                            shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
+							if (shape._webgl.bitLODGeometry != 0 && shape._cf.geometry.node._vf.normalPerVertex === false) {                                
+                                var totalVertexCount = 0;
+                                for (var v=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {                                    
+                                    if (shape._webgl.primType[v] == gl.TRIANGLES) {
+                                        totalVertexCount += shape._cf.geometry.node._vf.vertexCount[v];
                                     }
-                                    gl.drawArrays(gl.TRIANGLES, 0, totalVertexCount);
-                                })();
-                            } else {
-                                for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
-                                    gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
-                                    offset += shape._cf.geometry.node._vf.vertexCount[i];
+                                    else if (shape._webgl.primType[v] == gl.TRIANGLE_STRIP) {
+                                        totalVertexCount += (shape._cf.geometry.node._vf.vertexCount[v] - 2) * 3;
+                                    }
+                                }
+                                gl.drawArrays(gl.TRIANGLES, 0, totalVertexCount);
+                            }
+                            else {
+                                for (var v=0, offset=0; v<shape._cf.geometry.node._vf.vertexCount.length; v++) {
+                                    gl.drawArrays(shape._webgl.primType[v], offset, shape._cf.geometry.node._vf.vertexCount[v]);
+                                    offset += shape._cf.geometry.node._vf.vertexCount[v];
                                 }
                             }
 						}
@@ -3067,21 +3066,19 @@ x3dom.gfx_webgl = (function () {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
 						    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
-                            if (shape._webgl.bitLODGeometry != 0 && !shape._cf.geometry.node.hasNormalPerVertex()) {
-                                
-                                (function(){
-                                    var totalVertexCount = 0;
-                                    for (var i = 0; i < shape._cf.geometry.node._vf.vertexCount.length; i++) {                                    
-                                        if (shape._webgl.primType[i] == gl.TRIANGLES) {
-                                            totalVertexCount += shape._cf.geometry.node._vf.vertexCount[i];
-                                        }
-                                        else if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP) {
-                                            totalVertexCount += (shape._cf.geometry.node._vf.vertexCount[i] - 2) * 3;
-                                        }
+                            if (shape._webgl.bitLODGeometry != 0 && shape._cf.geometry.node._vf.normalPerVertex === false) {
+                                var totalVertexCount = 0;
+                                for (var i = 0; i < shape._cf.geometry.node._vf.vertexCount.length; i++) {                                    
+                                    if (shape._webgl.primType[i] == gl.TRIANGLES) {
+                                        totalVertexCount += shape._cf.geometry.node._vf.vertexCount[i];
                                     }
-                                    gl.drawArrays(gl.TRIANGLES, 0, totalVertexCount);
-                                })();
-                            } else {
+                                    else if (shape._webgl.primType[i] == gl.TRIANGLE_STRIP) {
+                                        totalVertexCount += (shape._cf.geometry.node._vf.vertexCount[i] - 2) * 3;
+                                    }
+                                }
+                                gl.drawArrays(gl.TRIANGLES, 0, totalVertexCount);
+                            }
+                            else {
                                 for (var i=0, offset=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++) {
                                     gl.drawArrays(shape._webgl.primType[i], offset, shape._cf.geometry.node._vf.vertexCount[i]);
                                     offset += shape._cf.geometry.node._vf.vertexCount[i];
