@@ -1,3 +1,51 @@
+2012-10-29  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : some cleanups and fixed broken binGeo
+
+  * : some cleanups and fixed broken binGeo
+
+2012-10-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Typo in releasenotes
+
+  * : Build system: re-added version information
+
+  * : Doc fixes
+
+  * : Doc fixes
+
+  * : Documentation flag remove
+
+  * : More release notes
+
+2012-10-29  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Improved PopGeo support for mobile
+
+2012-10-29  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : started rel-notes
+
+2012-10-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Version bump and updated documentation
+
+2012-10-29  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Minor changes (PopGeo)
+
+2012-10-29  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Regen Changeliog
+
+2012-10-29  mlimper <max.limper@gris.tu-darmstadt.de>
+
+  * : Use strict download order (PopGeo)
+
+2012-10-29  aha <andi@dockwerk.com>
+
+  * : Started release notes 1.4
+
 2012-10-29  mlimper <max.limper@gris.tu-darmstadt.de>
 
   * : small test (PopGeometry)
