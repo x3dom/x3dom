@@ -238,6 +238,7 @@ x3dom.userAgentFeature = {
 
                 altDiv = document.createElement("div");
                 altDiv.setAttribute("class", "x3dom-nox3d");
+                altDiv.setAttribute("id", "x3dom-nox3d")
                 altP = document.createElement("p");
                 altP.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
                 aLnk = document.createElement("a");
