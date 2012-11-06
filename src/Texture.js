@@ -232,8 +232,16 @@ x3dom.Texture.prototype.updateText = function()
 	this.wrapT			= gl.CLAMP_TO_EDGE;
 	
 	var fontStyleNode = this.node._cf.fontStyle.node;
-	
-	if ( fontStyleNode !== null )
+
+    var font_family = 'serif';
+    var font_style = 'normal';
+    var font_justify = 'left';
+    var font_size = 1.0;
+    var font_spacing = 1.0;
+    var font_horizontal = true;
+    var font_language = "";
+
+    if ( fontStyleNode !== null )
 	{
 		var fonts = fontStyleNode._vf.family.toString();
 
@@ -241,14 +249,14 @@ x3dom.Texture.prototype.updateText = function()
 		fonts = fonts.trim().replace(/\'/g,'').replace(/\,/, ' ');
 		fonts = fonts.split(" ");
 		
-		var font_family = Array.map(fonts, function(s) {
+		font_family = Array.map(fonts, function(s) {
 			if (s == 'SANS') { return 'sans-serif'; }
 			else if (s == 'SERIF') { return 'serif'; }
 			else if (s == 'TYPEWRITER') { return 'monospace'; }
 			else { return ''+s+''; }  //'Verdana' 
 		}).join(",");
 		
-		var font_style = fontStyleNode._vf.style.toString().replace(/\'/g,'');
+		font_style = fontStyleNode._vf.style.toString().replace(/\'/g,'');
 		switch (font_style.toUpperCase()) {
 			case 'PLAIN': 		font_style = 'normal'; 		break;
 			case 'BOLD': 		font_style = 'bold'; 		break;
@@ -261,7 +269,7 @@ x3dom.Texture.prototype.updateText = function()
 		var topToBottom = fontStyleNode._vf.topToBottom;
 		
 		// TODO: make it possible to use multiple values
-		var font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
+		font_justify = fontStyleNode._vf.justify[0].toString().replace(/\'/g,'');
 		
 		switch (font_justify.toUpperCase()) {
 			case 'BEGIN': 	font_justify = 'left'; 		break;
@@ -271,10 +279,13 @@ x3dom.Texture.prototype.updateText = function()
 			default: 		font_justify = 'left'; 		break;
 		}
 
-		var font_size 		= fontStyleNode._vf.size;
-		var font_spacing 	= fontStyleNode._vf.spacing;
-		var font_horizontal = fontStyleNode._vf.horizontal;
-		var font_language 	= fontStyleNode._vf.language;
+		font_size 		= fontStyleNode._vf.size;
+		font_spacing 	= fontStyleNode._vf.spacing;
+		font_horizontal = fontStyleNode._vf.horizontal;
+		font_language 	= fontStyleNode._vf.language;
+
+        if (font_size < 0.1) font_size = 0.1;
+        if (font_size > 2.3) font_size = 2.3;
 	}
 	
 	var textX, textY;
@@ -345,6 +356,5 @@ x3dom.Texture.prototype.updateText = function()
     var h  = txtH/100.0;
 	
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
-
 };
 
