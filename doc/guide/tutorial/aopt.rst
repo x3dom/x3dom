@@ -23,6 +23,7 @@ Or to HTML:
 	aopt –i <input.foo> -N <output>.html
 
 For a general introduction to data conversion with aopt `check here <http://x3dom.org/docs/dev/tutorial/dataconversion.html>`_.
+Generelly, you get some more advice calling `aopt -h` and `aopt -H`.
 
 Analyzing your 3D model
 -----------------------
@@ -81,7 +82,10 @@ For ``BinaryGeometry`` the available parameters are:
 * s: trianglestrip
 * a: autoIndex (only index data with less than 16 bit indices)
 * c: compact (use 16 bit representation for vertex attributes)
+* p: normal in spherical coordinates
 * I: interleaved (use 16 bit interleaved vertex data)
+
+The most compact option for ``BinaryGeometry`` is using "sacp".
 
 Mesh restructuring
 ------------------
