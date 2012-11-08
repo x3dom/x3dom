@@ -1071,6 +1071,9 @@ x3dom.gfx_webgl = (function () {
         
         //post XHRs, using the DownloadManager to prioritize loading        
         var uploadDataToGPU = function(data, lvl) {
+          
+          x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
+          
           if (data) {            
               //perform gpu data upload
               var indexDataLengthInBytes = 0;
