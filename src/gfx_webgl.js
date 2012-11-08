@@ -1093,10 +1093,14 @@ x3dom.gfx_webgl = (function () {
                     var indexDataView = new Uint8Array(data, 0, indexDataLengthInBytes);
                 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
-                    //index data is just appended - the order of index data packages doesn't matter
-                    gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.currentNumIndices*2, indexDataView);
-                     
-                    shape._webgl.currentNumIndices  += indexDataLengthInBytes  / 2;
+                    //index data is always placed where it belongs, as we have to keep the order of rendering
+                    (function() {
+                        var indexDataOffset = 0;
+                        
+                        for (var i = 0; i < lvl; ++i) { indexDataOffset += popGeo.getNumIndicesByLevel(i); }
+                        
+                        gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, indexDataOffset*2, indexDataView);
+                    })();
                 }
               }
               
@@ -1114,13 +1118,16 @@ x3dom.gfx_webgl = (function () {
                   }
                   else {
                     //on indexed rendering, vertex data is always placed where it belongs, as we have to keep the indexed order
-                    gl.bufferSubData(gl.ARRAY_BUFFER, popGeo.getVertexDataBufferOffset(lvl) * popGeo.getAttributeStride(), attributeDataView);
+                    gl.bufferSubData(gl.ARRAY_BUFFER,popGeo.getVertexDataBufferOffset(lvl) * popGeo.getAttributeStride(), attributeDataView);
                   }
                   
+                  //adjust render settings: vertex data
                   shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
               }
               
-              //update the shader's precision masking                 
+              numValidIndices = 0;
+              
+              //update the shader's precision masking and compute number of valid indices
               (function() {
                 var allLoaded = true;
                 
@@ -1130,11 +1137,17 @@ x3dom.gfx_webgl = (function () {
                         shape._webgl.precisionLevel = i; //precision in bits
                         break;
                     }
+                    else {
+                        numValidIndices += popGeo.getNumIndicesByLevel(i);
+                    }
                 }
                 
                 if (allLoaded) {
                     shape._webgl.precisionLevel = 16;
                 }
+                
+                //adjust render settings: 
+                shape._webgl.currentNumIndices = numValidIndices;
               })();
               
               //update X3DOM about the number of vertices / triangles
