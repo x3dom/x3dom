@@ -1068,11 +1068,14 @@ x3dom.gfx_webgl = (function () {
         shape._webgl.currentNumVertices = 0;
         shape._webgl.precisionLevel     = 0;
         
+        shape._webgl.levelLoaded = [];        
+        (function(){ for (var i = 0; i < popGeo.getNumLevels(); ++i) shape._webgl.levelLoaded.push(false); })();
         
-        //post XHRs, using the DownloadManager to prioritize loading        
+        //download callback, used to simply upload received vertex data to the GPU
         var uploadDataToGPU = function(data, lvl) {
           
           x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
+          shape._webgl.levelLoaded[lvl] = true;
           
           if (data) {            
               //perform gpu data upload
@@ -1121,13 +1124,22 @@ x3dom.gfx_webgl = (function () {
               //@todo: this assumes pure TRIANGLES data
               popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
             
-              //update the shader's precision masking
-              shape._webgl.precisionLevel++;
-              
-              //if all data has been downloaded, go to full precision!
-              if (shape._webgl.precisionLevel === popGeo.getNumLevels()) {
-                  shape._webgl.precisionLevel = 16;
-              }
+              //update the shader's precision masking                   
+              (function() {
+                var allLoaded = true;
+                
+                for (var i = 0; i < popGeo.getNumLevels(); ++i) {                                
+                    if (shape._webgl.levelLoaded[i] === false) {
+                        allLoaded = false;
+                        shape._webgl.precisionLevel = i; //precision in bits
+                        break;
+                    }
+                }
+                
+                if (allLoaded) {
+                    shape._webgl.precisionLevel = 16;
+                }
+              })();
                   
               //request redraw, if necessary
               if (redrawNeeded) {
@@ -1135,16 +1147,17 @@ x3dom.gfx_webgl = (function () {
               }
           }
         };
-        
+                
+        //post XHRs
         var dataURLs = popGeo.getDataURLs();
         
         var downloadCallbacks = [];
         var priorities        = [];     
         
         shape._webgl.downloadStartTimer = new Date().getTime();
-        
+                
         //CODE WITHOUT DL MANAGER
-        /*
+      
         for (var i = 0; i < dataURLs.length; ++i) {
           shape._nameSpace.doc.downloadCount += 1;
           
@@ -1162,10 +1175,11 @@ x3dom.gfx_webgl = (function () {
             xhr.send(null);            
           })(xhrequest, i);
         }
-        */        
+    
         //END CODE WITHOUT DL MANAGER
-        
+        /*
         //CODE WITH DL MANAGER
+        //use the DownloadManager to prioritize loading
         x3dom.DownloadManager.toggleStrictReturnOrder(true);
                 
         for (var i = 0; i < dataURLs.length; ++i) {
@@ -1182,6 +1196,7 @@ x3dom.gfx_webgl = (function () {
         }        
         
         x3dom.DownloadManager.get(dataURLs, downloadCallbacks, priorities);
+        */
         //END CODE WITH DL MANAGER
       }());
     }
