@@ -1088,6 +1088,9 @@ x3dom.gfx_webgl = (function () {
                 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
                     gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.currentNumIndices*2, indexDataView);
+                    
+                    //adjust render settings   
+                    shape._webgl.currentNumIndices  += indexDataLengthInBytes  / 2;
                 }
               }
               
@@ -1100,10 +1103,8 @@ x3dom.gfx_webgl = (function () {
                   
                   gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
                   gl.bufferSubData(gl.ARRAY_BUFFER, shape._webgl.currentNumVertices * popGeo.getAttributeStride(), attributeDataView);
-                           
-                  
-                  //adjust render settings
-                  shape._webgl.currentNumIndices  += indexDataLengthInBytes  / 2;
+                       
+                  //adjust render settings                  
                   shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
                   popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
                   //@todo: this assumes pure TRIANGLES data
