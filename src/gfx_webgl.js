@@ -1106,25 +1106,25 @@ x3dom.gfx_webgl = (function () {
                        
                   //adjust render settings                  
                   shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
-                  popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
-                  //@todo: this assumes pure TRIANGLES data
-                  popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
-            
-                  if (shape._webgl.downloadStartTimer) {
-                    x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
+                  
+                  x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                                       popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
                                       (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
                                       "displaying with " + shape._webgl.precisionLevel + " bits prec.");
-                  }
-                
               }
+              
+              //update X3DOM about the number of vertices / triangles
+              popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
+              //@todo: this assumes pure TRIANGLES data
+              popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
             
               //update the shader's precision masking
               shape._webgl.precisionLevel++;
               
               //if all data has been downloaded, go to full precision!
-              if (shape._webgl.precisionLevel === popGeo.getNumLevels())
+              if (shape._webgl.precisionLevel === popGeo.getNumLevels()) {
                   shape._webgl.precisionLevel = 16;
+              }
                   
               //request redraw, if necessary
               if (redrawNeeded) {
