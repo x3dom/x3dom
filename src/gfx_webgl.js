@@ -1071,48 +1071,69 @@ x3dom.gfx_webgl = (function () {
         
         //post XHRs, using the DownloadManager to prioritize loading        
         var uploadDataToGPU = function(data, lvl) {
-          //perform gpu data upload
-          var indexDataLengthInBytes = 0;
-          var vertexDataLengthInBytes;
+          
+          x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
+          
+          if (data) {            
+              //perform gpu data upload
+              var indexDataLengthInBytes = 0;
+              var vertexDataLengthInBytes;
+              
+              var redrawNeeded = false;
+              
+              if (popGeo.hasIndex()) {
+                indexDataLengthInBytes = popGeo.getNumIndicesByLevel(lvl)*2;
+              
+                if (indexDataLengthInBytes > 0) {
+                    redrawNeeded = true;
                     
-          if (popGeo.hasIndex()) {
-            indexDataLengthInBytes = popGeo.getNumIndicesByLevel(lvl)*2;
-          
-            var indexDataView = new Uint8Array(data, 0, indexDataLengthInBytes);
+                    var indexDataView = new Uint8Array(data, 0, indexDataLengthInBytes);
+                
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
+                    gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.currentNumIndices*2, indexDataView);
+                    
+                    //adjust render settings   
+                    shape._webgl.currentNumIndices  += indexDataLengthInBytes  / 2;
+                }
+              }
+              
+              vertexDataLengthInBytes = data.byteLength - indexDataLengthInBytes;
+              
+              if (vertexDataLengthInBytes > 0) {
+                  redrawNeeded = true;
+                  
+                  var attributeDataView = new Uint8Array(data, indexDataLengthInBytes, vertexDataLengthInBytes);
+                  
+                  gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
+                  gl.bufferSubData(gl.ARRAY_BUFFER, shape._webgl.currentNumVertices * popGeo.getAttributeStride(), attributeDataView);
+                       
+                  //adjust render settings                  
+                  shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
+                  
+                  x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
+                                      popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
+                                      (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
+                                      "displaying with " + shape._webgl.precisionLevel + " bits prec.");
+              }
+              
+              //update X3DOM about the number of vertices / triangles
+              popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
+              //@todo: this assumes pure TRIANGLES data
+              popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
             
-            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
-            gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.currentNumIndices*2, indexDataView);
+              //update the shader's precision masking
+              shape._webgl.precisionLevel++;
+              
+              //if all data has been downloaded, go to full precision!
+              if (shape._webgl.precisionLevel === popGeo.getNumLevels()) {
+                  shape._webgl.precisionLevel = 16;
+              }
+                  
+              //request redraw, if necessary
+              if (redrawNeeded) {
+                shape._nameSpace.doc.needRender = true;
+              }
           }
-          
-          vertexDataLengthInBytes = data.byteLength - indexDataLengthInBytes;
-          
-          var attributeDataView = new Uint8Array(data, indexDataLengthInBytes, vertexDataLengthInBytes);
-          
-          gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
-          gl.bufferSubData(gl.ARRAY_BUFFER, shape._webgl.currentNumVertices * popGeo.getAttributeStride(), attributeDataView);
-                   
-          
-          //adjust render settings
-          shape._webgl.currentNumIndices  += indexDataLengthInBytes  / 2;
-          shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
-          popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
-          //@todo: this assumes pure TRIANGLES data
-          popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
-          
-          //@todo: the most important setting is 'vertexCount', which unfortunately has a different sematic here a.t.m.
-          //...          
-
-          shape._webgl.precisionLevel++;          
-          
-          if (shape._webgl.downloadStartTimer) {
-            x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
-                              popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
-                              (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
-                              "displaying with " + shape._webgl.precisionLevel + " bits prec.");
-          }
-
-          //request redraw
-          shape._nameSpace.doc.needRender = true;
         };
         
         var dataURLs = popGeo.getDataURLs();
@@ -1244,9 +1265,9 @@ x3dom.gfx_webgl = (function () {
                             shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
                             shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
                         }
-                        else if (shape._webgl.loadedLevels === 8) {                        
+                        else if (true || shape._webgl.loadedLevels === 8) {                        
                             //B: on-the-fly normal computation for per-face normals (by cross product)
-
+/*
                             points[accum_cnt].x = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
                             points[accum_cnt].y = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
                             points[accum_cnt].z = shape._webgl.dataBuffers[1][read_idx_pos_nor + 2];
@@ -1278,9 +1299,9 @@ x3dom.gfx_webgl = (function () {
                                 
                                 accum_cnt = 0;
                             }
-                            
+                            */
                             //C: on-the-fly normal computation for per-face normals (by averaging)
-                            /*
+                            
                             n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
                             n_phi   += shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
                             if (++accum_cnt === 3) {
@@ -1298,7 +1319,7 @@ x3dom.gfx_webgl = (function () {
                               
                               n_theta = n_phi = accum_cnt = 0;
                             }
-                            */
+                            
                         }
                     }
 

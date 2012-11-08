@@ -3,8 +3,68 @@
   <head>
     <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
-    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'></link>
-    <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
   </head>
   <body>
     <xml>
@@ -74,20 +134,130 @@
     <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:75%;'>
       <scene>
         <shape DEF='SP_0'>
-          <popGeometry DEF='PG_0' vertexCount='208353' primType='"TRIANGLES"' position='-0.0168403983116 0.110154204071 -0.00153695046902' size='0.155698999763 0.154333606362 0.120673298836' attributeStride='10' normalOffset='6' vertexBufferSize='34834' indexedRendering='true'>
-            <popGeometryLevel src='popGeo/PG_0_level0.bin' numIndices='36'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level1.bin' numIndices='264'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level2.bin' numIndices='1086'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level3.bin' numIndices='4371'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level4.bin' numIndices='16398'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level5.bin' numIndices='56289'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level6.bin' numIndices='111444'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level7.bin' numIndices='18333'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level8.bin' numIndices='126'></popGeometryLevel>
-            <popGeometryLevel src='popGeo/PG_0_level9.bin' numIndices='6'></popGeometryLevel>
+          <popGeometry DEF='PG_0' vertexCount='130200' primType='"TRIANGLES"' position='44.4545974731 65.84425354 15.3386497498' size='38.0909996033 37.1617012024 84.751701355' attributeStride='10' normalOffset='6' vertexBufferSize='21858' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_0_level0.bin' numIndices='42'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level1.bin' numIndices='153'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level2.bin' numIndices='798'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level3.bin' numIndices='3213'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level4.bin' numIndices='12036'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level5.bin' numIndices='40146'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level6.bin' numIndices='56223'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level7.bin' numIndices='17397'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level8.bin' numIndices='162'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_0_level9.bin' numIndices='30'></popGeometryLevel>
           </popGeometry>
         </shape>
-        <viewpoint DEF='AOPT_CAM' centerOfRotation='-0.0168404 0.110154 -0.00153695' position='-0.0168404 0.110154 0.246745'></viewpoint>
+        <shape DEF='SP_2'>
+          <popGeometry DEF='PG_2' vertexCount='129681' primType='"TRIANGLES"' position='40.6321487427 -3.13209915161 -8.29219055176' size='30.4461021423 101.471405029 35.7152175903' attributeStride='10' normalOffset='6' vertexBufferSize='21923' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_2_level0.bin' numIndices='60'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level1.bin' numIndices='216'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level2.bin' numIndices='804'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level3.bin' numIndices='3261'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level4.bin' numIndices='13437'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level5.bin' numIndices='45546'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level6.bin' numIndices='46140'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level7.bin' numIndices='19890'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level8.bin' numIndices='306'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level9.bin' numIndices='6'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level10.bin' numIndices='6'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level11.bin' numIndices='3'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_2_level12.bin' numIndices='6'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+        <shape DEF='SP_3'>
+          <popGeometry DEF='PG_3' vertexCount='129750' primType='"TRIANGLES"' position='13.6604747772 70.3006515503 4.51115036011' size='24.6832504272 53.5594978333 87.8470993042' attributeStride='10' normalOffset='6' vertexBufferSize='22014' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_3_level0.bin' numIndices='24'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level1.bin' numIndices='222'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level2.bin' numIndices='912'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level3.bin' numIndices='3585'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level4.bin' numIndices='14508'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level5.bin' numIndices='44943'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level6.bin' numIndices='52632'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level7.bin' numIndices='12723'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level8.bin' numIndices='183'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level9.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_3_level10.bin' numIndices='18'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+        <shape DEF='SP_1'>
+          <popGeometry DEF='PG_1' vertexCount='129348' primType='"TRIANGLES"' position='13.7057647705 -4.81999969482 -21.3198013306' size='24.6208686829 97.9199981689 72.7883987427' attributeStride='10' normalOffset='6' vertexBufferSize='22046' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_1_level0.bin' numIndices='12'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level1.bin' numIndices='120'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level2.bin' numIndices='603'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level3.bin' numIndices='2808'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level4.bin' numIndices='10623'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level5.bin' numIndices='35310'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level6.bin' numIndices='48960'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level7.bin' numIndices='30102'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level8.bin' numIndices='765'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level9.bin' numIndices='27'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_1_level10.bin' numIndices='18'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+        <shape DEF='SP_5'>
+          <popGeometry DEF='PG_5' vertexCount='130230' primType='"TRIANGLES"' position='-30.8379745483 81.9001464844 2.89640045166' size='65.3242492676 29.5884933472 81.6248016357' attributeStride='10' normalOffset='6' vertexBufferSize='22020' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_5_level0.bin' numIndices='6'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level1.bin' numIndices='192'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level2.bin' numIndices='594'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level3.bin' numIndices='2844'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level4.bin' numIndices='10686'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level5.bin' numIndices='36759'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level6.bin' numIndices='55302'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level7.bin' numIndices='23379'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level8.bin' numIndices='444'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level9.bin' numIndices='18'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_5_level10.bin' numIndices='6'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+        <shape DEF='SP_7'>
+          <popGeometry DEF='PG_7' vertexCount='129825' primType='"TRIANGLES"' position='-30.5414276123 56.9981498718 4.72560119629' size='64.7311477661 21.4103012085 88.2760009766' attributeStride='10' normalOffset='6' vertexBufferSize='22077' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_7_level0.bin' numIndices='24'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level1.bin' numIndices='168'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level2.bin' numIndices='912'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level3.bin' numIndices='3639'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level4.bin' numIndices='14613'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level5.bin' numIndices='40863'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level6.bin' numIndices='48789'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level7.bin' numIndices='20238'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level8.bin' numIndices='519'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level9.bin' numIndices='30'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level10.bin' numIndices='12'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level11.bin' numIndices='12'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_7_level12.bin' numIndices='6'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+        <shape DEF='SP_4'>
+          <popGeometry DEF='PG_4' vertexCount='129612' primType='"TRIANGLES"' position='-8.89632511139 -3.41865158081 -20.1697998047' size='21.4409503937 100.233093262 69.4812011719' attributeStride='10' normalOffset='6' vertexBufferSize='22123' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_4_level0.bin' numIndices='12'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level1.bin' numIndices='165'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level2.bin' numIndices='660'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level3.bin' numIndices='3063'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level4.bin' numIndices='11889'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level5.bin' numIndices='35472'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level6.bin' numIndices='48615'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level7.bin' numIndices='29103'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level8.bin' numIndices='591'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level9.bin' numIndices='24'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level10.bin' numIndices='6'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level11.bin' numIndices='0'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_4_level12.bin' numIndices='12'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+        <shape DEF='SP_6'>
+          <popGeometry DEF='PG_6' vertexCount='129186' primType='"TRIANGLES"' position='-30.9617500305 -3.64500045776 -10.9780902863' size='23.9261016846 101.193000793 41.5522193909' attributeStride='10' normalOffset='6' vertexBufferSize='21891' indexedRendering='true'>
+            <popGeometryLevel src='popGeo/PG_6_level0.bin' numIndices='42'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level1.bin' numIndices='210'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level2.bin' numIndices='909'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level3.bin' numIndices='3864'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level4.bin' numIndices='14925'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level5.bin' numIndices='46032'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level6.bin' numIndices='46275'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level7.bin' numIndices='16662'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level8.bin' numIndices='255'></popGeometryLevel>
+            <popGeometryLevel src='popGeo/PG_6_level9.bin' numIndices='12'></popGeometryLevel>
+          </popGeometry>
+        </shape>
+        <viewpoint DEF='AOPT_CAM' centerOfRotation='0 21.4194 0.000247955' position='0 21.4194 240.376'></viewpoint>
       </scene>
     </x3d>
   </body>
