@@ -1093,9 +1093,9 @@ x3dom.gfx_webgl = (function () {
                     var indexDataView = new Uint8Array(data, 0, indexDataLengthInBytes);
                 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
+                    //index data is just appended - the order of index data packages doesn't matter
                     gl.bufferSubData(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.currentNumIndices*2, indexDataView);
-                    
-                    //adjust render settings   
+                     
                     shape._webgl.currentNumIndices  += indexDataLengthInBytes  / 2;
                 }
               }
@@ -1108,9 +1108,15 @@ x3dom.gfx_webgl = (function () {
                   var attributeDataView = new Uint8Array(data, indexDataLengthInBytes, vertexDataLengthInBytes);
                   
                   gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[1]);
-                  gl.bufferSubData(gl.ARRAY_BUFFER, shape._webgl.currentNumVertices * popGeo.getAttributeStride(), attributeDataView);
-                       
-                  //adjust render settings                  
+                  if (!popGeo.hasIndex()) {
+                    //on non-indexed rendering, vertex data is just appended - the order of vertex data packages doesn't matter
+                    gl.bufferSubData(gl.ARRAY_BUFFER, shape._webgl.currentNumVertices       * popGeo.getAttributeStride(), attributeDataView);
+                  }
+                  else {
+                    //on indexed rendering, vertex data is always placed where it belongs, as we have to keep the indexed order
+                    gl.bufferSubData(gl.ARRAY_BUFFER, popGeo.getVertexDataBufferOffset(lvl) * popGeo.getAttributeStride(), attributeDataView);
+                  }
+                  
                   shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
               }
               

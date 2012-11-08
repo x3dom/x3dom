@@ -1560,6 +1560,7 @@ x3dom.registerNodeType(
     
           this.addField_SFString(ctx, 'src', "");
           this.addField_SFInt32(ctx, 'numIndices', 0);			
+          this.addField_SFInt32(ctx, 'vertexDataBufferOffset', 0);
       },
       {
         nodeChanged: function() {	
@@ -1575,6 +1576,10 @@ x3dom.registerNodeType(
 			
         getNumIndices: function() {
           return this._vf.numIndices;
+        },
+        
+        getVertexDataBufferOffset: function() {
+            return this._vf.vertexDataBufferOffset;
         }
 		}
 	)
@@ -1755,6 +1760,10 @@ x3dom.registerNodeType(
             
             getNumLevels : function(lvl) {
               return this._cf.levels.nodes.length;
+            },
+            
+            getVertexDataBufferOffset : function(lvl) {
+              return this._cf.levels.nodes[lvl].getVertexDataBufferOffset();
             },
             
             getPrecisionMax: function(type) {
