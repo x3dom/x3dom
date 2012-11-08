@@ -1112,19 +1112,9 @@ x3dom.gfx_webgl = (function () {
                        
                   //adjust render settings                  
                   shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
-                  
-                  x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
-                                      popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
-                                      (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
-                                      "displaying with " + shape._webgl.precisionLevel + " bits prec.");
               }
               
-              //update X3DOM about the number of vertices / triangles
-              popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
-              //@todo: this assumes pure TRIANGLES data
-              popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
-            
-              //update the shader's precision masking                   
+              //update the shader's precision masking                 
               (function() {
                 var allLoaded = true;
                 
@@ -1140,7 +1130,18 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.precisionLevel = 16;
                 }
               })();
-                  
+              
+              //update X3DOM about the number of vertices / triangles
+              popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
+              //@todo: this assumes pure TRIANGLES data
+              popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
+            
+              x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
+                                  popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
+                                  (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
+                                  "displaying with " + shape._webgl.precisionLevel + " bits prec.");                                  
+             
+             
               //request redraw, if necessary
               if (redrawNeeded) {
                 shape._nameSpace.doc.needRender = true;
