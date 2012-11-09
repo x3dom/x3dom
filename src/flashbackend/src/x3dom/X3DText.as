@@ -27,16 +27,34 @@ package x3dom
 			this._textFormat = new TextFormat();
 		}
 		
-		override public function setProperties(value:Object) : void
-		{		
-			//Set Text
-			this._textField.text = value.text;
-			
-			//Set text size
-			this._textFormat.size = Number( value.fontSize );
-			
-			this._textField.multiline = true;
-			
+                override public function setProperties(value:Object) : void
+                {
+                        //Set Text
+          {
+                        //Set Text
+"";
+      {
+                        //Set Text
+"";
+ue.text.length; i++)
+           //Set Text
+"";
+ue.text.length; i++)
+           //Set Text
+"";
+.appendText(value.text[i]);
+    //Set Text
+"";
+.appendText(value.text[i]);
+.appendText("\n");
+.appendText(value.text[i])
+                        //Set text size
+ppendText(value.text[i])
+                        //Set text size
+tSize ) * 42;
+
+                        this._textField.multiline = true;
+
 			//Set text font family
 			this._textFormat.font = String( value.fontFamily ).replace(/\'/g,'').split(" ")[0];
 			
