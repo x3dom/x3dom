@@ -209,9 +209,22 @@ the X3D element they are working on as first parameter::
 
     :return: URL to image
 
-    Returns a URL to a Base64 encoded png image consisting of
-    the current rendering.
+    Returns a Base64 encoded `data URI <http://tools.ietf.org/html/rfc2397>`_
+    containing png image consisting of the current rendering. The resulting
+    URL will look similar to this::
 
+        data:image/png;base64,iVBORw0KGgo...
+
+    The browser will interpret this as a PNG image and display it.
+    A list of browsers which support data URI can be
+    `found here <http://en.wikipedia.org/wiki/Data_URI_scheme>`_.
+
+    The following example illustrates the usage::
+
+        var url = ...runtime.getScreenshot();
+        var img = document.createElement("img");
+        img.src = url;
+        ...
 
 ..  js:function:: lightMatrix()
 
