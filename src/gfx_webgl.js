@@ -1180,7 +1180,7 @@ x3dom.gfx_webgl = (function () {
         shape._webgl.downloadStartTimer = new Date().getTime();
                 
         //CODE WITHOUT DL MANAGER
-      
+      /*
         for (var i = 0; i < dataURLs.length; ++i) {        
           shape._nameSpace.doc.downloadCount += 1;
           
@@ -1200,7 +1200,7 @@ x3dom.gfx_webgl = (function () {
           //})(xhrequest, i);
           })(xhrequest, order[i]);
         }
-    
+    */
         //END CODE WITHOUT DL MANAGER
         
         //CODE WITH DL MANAGER
