@@ -1074,7 +1074,6 @@ x3dom.gfx_webgl = (function () {
         //download callback, used to simply upload received vertex data to the GPU
         var uploadDataToGPU = function(data, lvl) {        
         
-          //if (shape._webgl.precisionLevel > 4) return;
           x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
           shape._webgl.levelLoaded[lvl] = true;
           
@@ -2796,7 +2795,8 @@ x3dom.gfx_webgl = (function () {
 		        sp.bgCenter = shape._cf.geometry.node._vf.position.toGL();
 			}
 		    sp.bgSize       = shape._cf.geometry.node._vf.size.toGL();
-		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');
+		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');            
+            console.log("It's " + sp.bgPrecisionMax + "! (" + shape._cf.geometry.node._vf.coordType + ")");
 		}
 		if (shape._webgl.colorType != gl.FLOAT) {
 		    sp.bgPrecisionColMax = shape._cf.geometry.node.getPrecisionMax('colorType');

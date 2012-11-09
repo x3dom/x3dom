@@ -163,30 +163,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	if(properties.REQUIREBBOXTEX) {
 		shader += "uniform float bgPrecisionTexMax;\n";
 	}
-	
-  /*******************************************************************************
-	* Generate helper functions, if necessary
-	********************************************************************************/
-  if (properties.POPGEOMETRY) {
-    shader += "vec3 leftShift(vec3 v, float bits) {\n";   
-    shader += "  float p = pow(2.0, bits);\n";
-    shader += "  v = vec3(floor(v.x) * p, floor(v.y) * p, floor(v.z) * p);\n";
-    shader += "  return v;\n";
-    shader += "}\n";
-    
-    shader += "vec3 rightShift(vec3 v, float bits) {\n";
-    shader += "  float p = pow(2.0, bits);\n";
-    shader += "  v = vec3(floor(v.x / p), floor(v.y / p), floor(v.z / p));\n";
-    shader += "  return v;\n";
-    shader += "}\n";
-    
-    shader += "vec3 applyPrecisionLevelMask(vec3 pos, float level) {\n";
-    shader += "  pos = rightShift(pos, 16.0 - level);\n";
-    shader += "  pos = leftShift(pos, 16.0 - level);\n";
-    shader += "  return pos;\n";
-    shader += "}\n";
-  }
-      
+
       
 	/*******************************************************************************
 	* Generate main function
@@ -254,9 +231,16 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		//Positions
 		shader += "vec3 vertPosition = position.xyz;\n";
         if (properties.POPGEOMETRY) {
-          shader += "vertPosition = applyPrecisionLevelMask(vertPosition, PG_precisionLevel);\n"
+          shader += "float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
+          
+          shader += "vertPosition = floor(vertPosition / p);\n";
+          shader += "vertPosition = floor(vertPosition)* p;\n";
+                    
+          shader += "float precisionMax       = 65535.0 - (pow(2.0, 16.0 - PG_precisionLevel) - 1.0);\n";
+          
+          shader += "vertPosition = bgCenter + bgSize * vertPosition / precisionMax;\n";
         }
-		if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
+		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
             shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}
     
