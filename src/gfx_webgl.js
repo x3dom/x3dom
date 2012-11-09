@@ -1185,10 +1185,10 @@ x3dom.gfx_webgl = (function () {
           shape._nameSpace.doc.downloadCount += 1;
           
           var xhrequest = new XMLHttpRequest();
-          var order = [0,4,2,8,1,3,7,5,6,9,10,11,12];          
+          //var order = [0,4,2,8,1,3,7,5,6,9,10,11,12];
           (function(xhr, idx){          
-            //xhr.open("GET", dataURLs[i], true);
-            xhr.open("GET", dataURLs[order[i]], true);
+            xhr.open("GET", dataURLs[i], true);
+            //xhr.open("GET", dataURLs[order[i]], true);
             xhr.responseType = "arraybuffer";
             
             xhr.onload = function() {
@@ -1197,15 +1197,15 @@ x3dom.gfx_webgl = (function () {
             };
           
             xhr.send(null);            
-          //})(xhrequest, i);
-          })(xhrequest, order[i]);
+          })(xhrequest, i);
+          //})(xhrequest, order[i]);
         }
     */
         //END CODE WITHOUT DL MANAGER
         
         //CODE WITH DL MANAGER
         //use the DownloadManager to prioritize loading        
-                
+           
         for (var i = 0; i < dataURLs.length; ++i) {
           shape._nameSpace.doc.downloadCount += 1;
           
@@ -1220,7 +1220,7 @@ x3dom.gfx_webgl = (function () {
         }        
         
         x3dom.DownloadManager.get(dataURLs, downloadCallbacks, priorities);
-        
+    
         //END CODE WITH DL MANAGER
       })();      
     }
