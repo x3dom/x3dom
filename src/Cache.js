@@ -24,7 +24,7 @@ x3dom.Cache = function()
  */
 x3dom.Cache.prototype.getTexture2D = function(gl, doc, url)
 {
-	var textureIdentifier = x3dom.Utils.getFileName( url );
+        var textureIdentifier = url;
 	
 	if( this.textures[textureIdentifier] === undefined )
 	{
@@ -47,7 +47,7 @@ x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd)
 
 	for ( var i=0; i<url.length; ++i )
 	{
-		textureIdentifier += x3dom.Utils.getFileName( url[i] );
+                textureIdentifier += url[i] + "|";
 	}
 	
 	if( this.textures[textureIdentifier] === undefined )
