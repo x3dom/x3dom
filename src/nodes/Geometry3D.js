@@ -1592,8 +1592,8 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGeometryNode,
         function (ctx) {        
             x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
-
-            this.addField_MFInt32 (ctx, 'vertexCount', [0]);
+            
+            this.addField_MFInt32 (ctx, 'vertexCount', [0]);            
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
             this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
             this.addField_SFVec3f (ctx, 'size',     1, 1, 1);            
@@ -1612,7 +1612,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
             this.addField_SFInt32(ctx, 'colorPrecision',    1);            
            
-           this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
+            this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
             
             this.addField_SFBool(ctx, 'indexedRendering', false);
             
@@ -1622,6 +1622,9 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalType',   "Uint8");
             this.addField_SFString(ctx, 'texCoordType', "Uint16");
             this.addField_SFString(ctx, 'colorType',    "Uint8");           
+            
+            //needed as we manipulate vertexCount during loading
+            this.addField_MFInt32(ctx, 'originalVertexCount', [0]);
             
             // workaround            
             this._hasStrideOffset = false;
@@ -1644,6 +1647,10 @@ x3dom.registerNodeType(
               this._vf.normalType   = this.getBufferTypeStringFromByteCount(this._vf.normalPrecision);
               this._vf.texCoordType = this.getBufferTypeStringFromByteCount(this._vf.texcoordPrecision);
               this._vf.colorType    = this.getBufferTypeStringFromByteCount(this._vf.colorPrecision);
+              
+              for (var i = 0; i < this._vf.vertexCount.length; ++i) {
+                this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
+              }
             },
 
             parentAdded: function() {
@@ -1673,13 +1680,33 @@ x3dom.registerNodeType(
               return (this._vf.indexedRendering) ? true : false;
             },
             
-            getTotalNumberOfIndices: function() {
+            getTotalNumberOfIndices: function() {                
               if (this._vf.indexedRendering) {
-                return this._vf.vertexCount;
+                var sum = 0;
+                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
+                    sum += this._vf.originalVertexCount[i];
+                }
+                return sum;
               }
               else  {
                 return 0;
               }              
+            },
+            
+            //adapts the vertex count according to the given total number of indices / vertices
+            //which is used by X3DOM's renderer
+            adaptVertexCount: function(numVerts) {
+                var verts = 0;
+                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
+                    if ((this._vf.originalVertexCount[i] + verts) <= numVerts) {
+                        this._vf.vertexCount[i] = this._vf.originalVertexCount[i];
+                        verts += this._vf.originalVertexCount[i];
+                    }
+                    else {
+                        this._vf.vertexCount[i] = (numVerts-verts);
+                        break;
+                    }                    
+                }
             },
             
             hasNormal: function() {

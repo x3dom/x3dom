@@ -89,7 +89,9 @@ toggleDebugOutput : function(flag) {
 
 
 toggleStrictReturnOrder : function(flag) {
-  this.stallToKeepOrder = flag;
+  //@todo: this is not working properly yet!
+  this.stallToKeepOrder = false;
+  //this.stallToKeepOrder = flag;
 },
 
 

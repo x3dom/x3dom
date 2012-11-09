@@ -987,13 +987,13 @@ x3dom.gfx_webgl = (function () {
     // PopGeometry
     //################
     else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry))
-	{
+	{ 
       (function() {
       
         var popGeo = shape._cf.geometry.node;
         
         //reserve space for vertex buffer (and index buffer if any) on the gpu        
-        if (popGeo.hasIndex()) {
+        if (popGeo.hasIndex()) {        
           shape._webgl.popGeometry = 1;
           
           shape._webgl.buffers[0] = gl.createBuffer();
@@ -1063,7 +1063,7 @@ x3dom.gfx_webgl = (function () {
                                  false, shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
           gl.enableVertexAttribArray(sp.color);          
         }
-        
+
         shape._webgl.currentNumIndices  = 0;
         shape._webgl.currentNumVertices = 0;
         shape._webgl.precisionLevel     = 0;
@@ -1072,12 +1072,13 @@ x3dom.gfx_webgl = (function () {
         (function(){ for (var i = 0; i < popGeo.getNumLevels(); ++i) shape._webgl.levelLoaded.push(false); })();
         
         //download callback, used to simply upload received vertex data to the GPU
-        var uploadDataToGPU = function(data, lvl) {
-          
+        var uploadDataToGPU = function(data, lvl) {        
+        
+          //if (shape._webgl.precisionLevel > 4) return;
           x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
           shape._webgl.levelLoaded[lvl] = true;
           
-          if (data) {            
+          if (data) {
               //perform gpu data upload
               var indexDataLengthInBytes = 0;
               var vertexDataLengthInBytes;
@@ -1125,10 +1126,10 @@ x3dom.gfx_webgl = (function () {
                   shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
               }
               
-              numValidIndices = 0;
-              
               //update the shader's precision masking and compute number of valid indices
               (function() {
+                var numValidIndices = 0;
+                
                 var allLoaded = true;
                 
                 for (var i = 0; i < popGeo.getNumLevels(); ++i) {                                
@@ -1154,20 +1155,22 @@ x3dom.gfx_webgl = (function () {
               popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
               //@todo: this assumes pure TRIANGLES data
               popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
-            
+              
+              popGeo.adaptVertexCount(popGeo.hasIndex() ? shape._webgl.currentNumIndices : shape._webgl.currentNumVertices);
+                            
               x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                                   popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
                                   (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
                                   "displaying with " + shape._webgl.precisionLevel + " bits prec.");                                  
-             
-             
+              
+                
               //request redraw, if necessary
               if (redrawNeeded) {
                 shape._nameSpace.doc.needRender = true;
               }
-          }
+          }          
         };
-                
+         
         //post XHRs
         var dataURLs = popGeo.getDataURLs();
         
@@ -1178,13 +1181,14 @@ x3dom.gfx_webgl = (function () {
                 
         //CODE WITHOUT DL MANAGER
       
-        for (var i = 0; i < dataURLs.length; ++i) {
+        for (var i = 0; i < dataURLs.length; ++i) {        
           shape._nameSpace.doc.downloadCount += 1;
           
           var xhrequest = new XMLHttpRequest();
-          
+          var order = [0,4,2,8,1,3,7,5,6,9,10,11,12];          
           (function(xhr, idx){          
-            xhr.open("GET", dataURLs[i], true);
+            //xhr.open("GET", dataURLs[i], true);
+            xhr.open("GET", dataURLs[order[i]], true);
             xhr.responseType = "arraybuffer";
             
             xhr.onload = function() {
@@ -1193,14 +1197,14 @@ x3dom.gfx_webgl = (function () {
             };
           
             xhr.send(null);            
-          })(xhrequest, i);
+          //})(xhrequest, i);
+          })(xhrequest, order[i]);
         }
     
         //END CODE WITHOUT DL MANAGER
-        /*
+        
         //CODE WITH DL MANAGER
-        //use the DownloadManager to prioritize loading
-        x3dom.DownloadManager.toggleStrictReturnOrder(true);
+        //use the DownloadManager to prioritize loading        
                 
         for (var i = 0; i < dataURLs.length; ++i) {
           shape._nameSpace.doc.downloadCount += 1;
@@ -1216,9 +1220,9 @@ x3dom.gfx_webgl = (function () {
         }        
         
         x3dom.DownloadManager.get(dataURLs, downloadCallbacks, priorities);
-        */
+        
         //END CODE WITH DL MANAGER
-      }());
+      })();      
     }
     //################
     //(end PopGeometry)

@@ -3,7 +3,7 @@
   <head>
     <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
-    <!-- BEGIN:X3DOM -->
+   <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
@@ -101,7 +101,7 @@
               <td align='right'>
                 <input type='checkbox' onclick='if (this.checked){ document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); }else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'>Stats
                 </input>
-                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;50%&apos;; } else { x3dElem.style.height=&apos;60%&apos;; }x3dElem.runtime.debug();'>Console
+                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;50%&apos;; } else { x3dElem.style.height=&apos;75%&apos;; }x3dElem.runtime.debug();'>Console
                 </input>
               </td>
             </tr>
@@ -131,7 +131,7 @@
       <div style='clear:both;'></div>
       <br></br>
     </xml>
-    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:75%;'>
+    <x3d id='x3dElement' showStat='true' showLog='false' style='width:95%;height:75%;'>
       <scene>
         <shape DEF='SP_0'>
           <popGeometry DEF='PG_0' vertexCount='130200' primType='"TRIANGLES"' position='44.4545974731 65.84425354 15.3386497498' size='38.0909996033 37.1617012024 84.751701355' attributeStride='10' normalOffset='6' vertexBufferSize='21858' indexedRendering='true'>
