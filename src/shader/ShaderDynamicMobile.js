@@ -271,7 +271,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 				if (properties.REQUIREBBOXNOR && !properties.BITLODGEOMETRY) {
                     shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";
 				}   
-                else if (properties.BITLODGEOMETRY) {                    
+                if (properties.BITLODGEOMETRY || properties.POPGEOMETRY) {                    
                     shader += "vertNormal = 2.0*vertNormal - 1.0;\n";                    
                 }                
 			}
