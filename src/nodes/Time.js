@@ -52,11 +52,11 @@ x3dom.registerNodeType(
             this._backupCycleInterval = this._vf.cycleInterval;
         },
         {
-            onframe: function (time)
+            tick: function (time)
             {
                 if (!this._vf.enabled) {
                     this._lastTime = time;
-                    return;
+                    return false;
                 }
 
                 var isActive = ( this._vf.cycleInterval > 0 &&
@@ -69,9 +69,7 @@ x3dom.registerNodeType(
                     this._activatedTime = time;
                 }
 
-                // Checking for this._vf.isActive allows the dispatch of 'final events' (before
-                // deactivation)
-
+                // Checking for this._vf.isActive allows the dispatch of 'final events' (before deactivation)
                 if (isActive || this._vf.isActive) {
                     this.postMessage('elapsedTime', time - this._activatedTime);
 
@@ -121,6 +119,8 @@ x3dom.registerNodeType(
                     this.postMessage('isActive', false);
 
                 this._lastTime = time;
+                
+                return true;
             },
 
             fieldChanged: function(fieldName)

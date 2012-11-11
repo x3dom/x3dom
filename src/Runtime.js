@@ -556,6 +556,29 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
 };
 
 /**
+ * APIMethod getSceneBBox
+ *
+ * Returns the bounding box of the scene.
+ *
+ * Parameters:
+ *    domNode: the node for which its transformation shall be returned
+ *
+ *  Returns:
+ *    The min and max positions of the scene's bbox.
+ */
+x3dom.Runtime.prototype.getSceneBBox = function() {
+    var scene = this.canvas.doc._scene;
+    
+    if ( !(scene._lastMin && scene._lastMax) )
+        scene.updateVolume();
+    
+    return {
+        min: x3dom.fields.SFVec3f.copy(scene._lastMin),
+        max: x3dom.fields.SFVec3f.copy(scene._lastMax)
+    }
+};
+
+/**
  * APIFunction: debug
  *
  * Displays or hides the debug window. If parameter is omitted,

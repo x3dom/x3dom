@@ -993,6 +993,10 @@ x3dom.fields.SFVec2f = function(x, y) {
     }
 };
 
+x3dom.fields.SFVec2f.copy = function(v) {
+    return new x3dom.fields.SFVec2f(v.x, v.y);
+};
+
 x3dom.fields.SFVec2f.parse = function (str) {
     var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
     return new x3dom.fields.SFVec2f(+m[1], +m[2]);
@@ -1001,6 +1005,14 @@ x3dom.fields.SFVec2f.parse = function (str) {
 x3dom.fields.SFVec2f.prototype.setValues = function (that) {
     this.x = that.x;
     this.y = that.y;
+};
+
+x3dom.fields.SFVec2f.prototype.at = function (i) {
+	switch(i) {
+	    case 0:  return this.x;
+	    case 1:  return this.y;
+	    default: return this.x;
+	}
 };
 
 x3dom.fields.SFVec2f.prototype.add = function (that) {
@@ -1110,6 +1122,15 @@ x3dom.fields.SFVec3f.prototype.setValues = function (that) {
     this.x = that.x;
     this.y = that.y;
     this.z = that.z;   
+};
+
+x3dom.fields.SFVec3f.prototype.at = function (i) {
+	switch(i) {
+	    case 0:  return this.x;
+	    case 1:  return this.y;
+	    case 2:  return this.z;
+	    default: return this.x;
+	}
 };
 
 x3dom.fields.SFVec3f.prototype.add = function (that) {
