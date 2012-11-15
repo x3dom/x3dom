@@ -223,9 +223,30 @@ x3dom.gfx_webgl = (function () {
 				}
 				else
 				{
-					for ( var t=0; t<shape._webgl.texture.length; ++t )
-					{
-						shape._webgl.texture[t].update();
+                                        //If someone remove and append at the same time, texture count don't change
+                                        //and we have to check if all nodes the same as before
+                                        var textures = shape.getTextures();
+                                        for( var t=0; t<textures.length; ++t )
+                                        {
+                                                if(textures[t] === shape._webgl.texture[t])
+                                                {
+                                                        //only update the texture
+                                                        shape._webgl.texture[t].update();
+                                                }
+                                                else
+                                                {
+                                                        //delete old Texture
+                                                        gl.deleteTexture( shape._webgl.texture[t].texture );
+
+                                                        //Set texture to null for recreation
+                                                        shape._webgl.texture[t].texture = null;
+
+                                                        //Set new node
+                                                        shape._webgl.texture[t].node = textures[t];
+
+                                                        //Update new node
+                                                        shape._webgl.texture[t].update();
+                                                }
 					}
 				}
 				shape._dirty.texture = false;
