@@ -236,6 +236,17 @@
         
         return translationOffset;
     }
+    
+    function over(event)
+    {
+        runtime.getCanvas().style.cursor = "crosshair";
+    }
+    
+    function out(event)
+    {
+        if (!drag)
+            runtime.getCanvas().style.cursor = "pointer";
+    }
 
     function start(event) 
     {
@@ -261,6 +272,8 @@
 				translationOffset = x3dom.fields.SFVec3f.parse(mTrans);
 			else
 				translationOffset = new x3dom.fields.SFVec3f(0, 0, 0);
+			
+			runtime.getCanvas().style.cursor = "crosshair";
         }
     }
 
@@ -298,6 +311,8 @@
             isect = null;
             drag = false;
             runtime.examine();    // enable navigation
+            
+            runtime.getCanvas().style.cursor = "pointer";
         }
     }
     
@@ -313,6 +328,8 @@
         
         redBox = document.getElementById("box_2_id");
         redBox.addEventListener('mousedown', start, false);
+        redBox.addEventListener('mouseover', over, false);
+        redBox.addEventListener('mouseout', out, false);
         
         boxes.addEventListener('mouseup', stop, false);
         boxes.addEventListener('mouseout', stop, false);
