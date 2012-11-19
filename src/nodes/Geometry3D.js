@@ -1371,20 +1371,24 @@ x3dom.registerNodeType(
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
-            //this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString(ctx, 'indexType', "Uint16");
             this.addField_SFString(ctx, 'coordType', "Float32");
             this.addField_SFString(ctx, 'normalType', "Float32");
             this.addField_SFString(ctx, 'texCoordType', "Float32");
             this.addField_SFString(ctx, 'colorType', "Float32");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
+            
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
+            this.addField_SFBool(ctx, 'rgbaColors', false);
+            this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
             
             // workaround
             this._hasStrideOffset = false;
             this._mesh._numPosComponents = this._vf.normalAsSphericalCoordinates ? 4 : 3;
-			this._mesh._numTexComponents = 2;
-			this._mesh._numColComponents = 3;
+			this._mesh._numTexComponents = this._vf.numTexCoordComponents;
+			this._mesh._numColComponents = this._vf.rgbaColors ? 4 : 3;
 			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
 			this._mesh._invalidate = false;
@@ -1463,6 +1467,9 @@ x3dom.registerNodeType(
                     this._parentNodes[0]._colorStrideOffset = [stride, 0];
                     x3dom.debug.logInfo("color stride: " + stride);
                 }
+                
+                if (this._vf.indexType != "Uint16") //Uint32
+    		        x3dom.debug.logWarning("Index type " + this._vf.indexType + " problematic");
             },
             
             getMin: function()
