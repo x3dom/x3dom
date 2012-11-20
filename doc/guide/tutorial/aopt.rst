@@ -14,13 +14,15 @@ aopt is a powerful command line tool that comes bundled with InstantReality. If 
 
 .. code-block:: none
 
-	aopt –i <input.foo> -x <output>.x3d
+	aopt –i [input.foo] -x [output].x3d
 
+(Note: leave out "[" and "]" for the actual command line with your files.)
+	
 Or to HTML:
 
 .. code-block:: none
 
-	aopt –i <input.foo> -N <output>.html
+	aopt –i [input.foo] -N [output].html
 
 For a general introduction to data conversion with aopt `check here <http://x3dom.org/docs/dev/tutorial/dataconversion.html>`_.
 Generelly, you get some more advice calling `aopt -h` and `aopt -H`.
@@ -32,7 +34,7 @@ You can get some basic statistics for your file using the "-p" parameter:
 
 .. code-block:: none
 
-	aopt -i <input.foo> -p
+	aopt -i [input.foo] -p
 
 This will give you some basic information like the number of nodes and the numbers of various types of nodes. For example, a scene that is static but heavy on the number of nodes might be suited for automatic restructuring (see below).
 
@@ -44,7 +46,7 @@ If you want to retain the basic structure of your scene-graphs (i.e. not change 
 .. code-block:: none
 
 	mkdir imggeo
-	aopt -i <input.foo> -g imggeo/:s -x <output>.x3d
+	aopt -i [input.foo] -g imggeo/:s -x [output].x3d
 
 Note: currently it is import that "imggeo" (or any folder you choose) does exist. Please also note that the "/" is NOT optional, it needs to be added at the end of the path.
 
@@ -55,14 +57,14 @@ As an alternative you can convert to ``BinaryGeometry`` instead of ``ImageGeomet
 .. code-block:: none
 
 	mkdir bingeo
-	aopt -i <input.foo> -G bingeo/:is -x <output>.x3d
+	aopt -i [input.foo] -G "bingeo/:is" -x [output].x3d
 
 Or convert to HTML using 16 bit interleaved attribute buffers:
 
 .. code-block:: none
 
 	mkdir bingeo
-	aopt -i <input.foo> -G bingeo/:saI -N <output>.html
+	aopt -i [input.foo] -G "bingeo/:saI" -N [output].html
 
 This conversion leads to geometry nodes that look like the one shown next:
 
@@ -94,7 +96,7 @@ If you are willing to completely restructure the scene-graph to increase perform
 
 .. code-block:: none
 
-	aopt -i <input.foo> -F Scene:opt(1),maxtris(20000) -x <output>.x3d
+	aopt -i [input.foo] -F "Scene:opt(1),maxtris(20000)" -x [output].x3d
 
 This will try to automatically optimize your scene, for example it might try to merge (flatten) your whole scene, generate one or more texture atlases on the way or split all geometry nodes so they can be indexed with 16 bits.
 
@@ -130,6 +132,6 @@ Example:
 
 .. code-block:: none
 
-	aopt -i <input.foo> -F Scene:maxtris(5000),flat(true),calcnormals(false),centerBB(50) -x <output>.x3d
+	aopt -i [input.foo] -F "Scene:maxtris(5000),flat(true),calcnormals(false),centerBB(50)" -x [output].x3d
 
 Note: Depending on the operation the internal tree optimization method chooses, not all parameters are used! Boolean values can be both, 0/1 and false/true.
