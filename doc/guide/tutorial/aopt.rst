@@ -7,6 +7,13 @@ The InstantReality platform provides its users tools to help them better underst
 
 `Get the aopt tool <http://www.instantreality.org/downloads/>`_
 
+While on Windows and Linux the aopt tool is simply located in Instant Reality's `bin` folder, on Mac it is sort of hidden here:
+
+.. code-block:: none
+
+	/Applications/Instant Player.app/Contents/MacOS/aopt 
+
+
 aopt
 ----
 
