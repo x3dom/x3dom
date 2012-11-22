@@ -1415,7 +1415,7 @@ x3dom.registerNodeType(
                     if ((offset / 8) - Math.floor(offset / 8) == 0) {
                         this._mesh._numPosComponents = 4;
                     }
-                    x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.coord.substring(strideInd);
@@ -1423,7 +1423,7 @@ x3dom.registerNodeType(
                     if ((stride / 8) - Math.floor(stride / 8) == 0) {
                         this._mesh._numPosComponents = 4;   // ???
                     }
-                    x3dom.debug.logInfo("coord stride: " + stride);
+                    //x3dom.debug.logInfo("coord stride: " + stride);
                 }
 
                 offsetInd = this._vf.normal.lastIndexOf('#');
@@ -1432,12 +1432,12 @@ x3dom.registerNodeType(
                     offset = +this._vf.normal.substring(++offsetInd, strideInd);
                     stride = +this._vf.normal.substring(strideInd);
                     this._parentNodes[0]._normalStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.normal.substring(strideInd);
                     this._parentNodes[0]._normalStrideOffset = [stride, 0];
-                    x3dom.debug.logInfo("normal stride: " + stride);
+                    //x3dom.debug.logInfo("normal stride: " + stride);
                 }
 
                 offsetInd = this._vf.texCoord.lastIndexOf('#');
@@ -1446,12 +1446,12 @@ x3dom.registerNodeType(
                     offset = +this._vf.texCoord.substring(++offsetInd, strideInd);
                     stride = +this._vf.texCoord.substring(strideInd);
                     this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.texCoord.substring(strideInd);
                     this._parentNodes[0]._texCoordStrideOffset = [stride, 0];
-                    x3dom.debug.logInfo("texCoord stride: " + stride);
+                    //x3dom.debug.logInfo("texCoord stride: " + stride);
                 }
 
                 offsetInd = this._vf.color.lastIndexOf('#');
@@ -1460,15 +1460,15 @@ x3dom.registerNodeType(
                     offset = +this._vf.color.substring(++offsetInd, strideInd);
                     stride = +this._vf.color.substring(strideInd);
                     this._parentNodes[0]._colorStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.color.substring(strideInd);
                     this._parentNodes[0]._colorStrideOffset = [stride, 0];
-                    x3dom.debug.logInfo("color stride: " + stride);
+                    //x3dom.debug.logInfo("color stride: " + stride);
                 }
                 
-                if (this._vf.indexType != "Uint16") //Uint32
+                if (this._vf.indexType != "Uint16")
     		        x3dom.debug.logWarning("Index type " + this._vf.indexType + " problematic");
             },
             
