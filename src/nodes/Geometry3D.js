@@ -445,7 +445,7 @@ x3dom.registerNodeType(
 				if(ctx) {
 					qfactor = ctx.doc.properties.getProperty("PrimitiveQuality", "Medium");
 				}
-                if (!x3dom.isNumber(qfactor)) {
+                if (!x3dom.Utils.isNumber(qfactor)) {
                     switch (qfactor.toLowerCase()) {
                         case "low":
                             qfactor = 0.3;

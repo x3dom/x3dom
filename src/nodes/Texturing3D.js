@@ -91,7 +91,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.TextureCoordinate4D.superClass.call(this, ctx);
 
-            this.addField_MFVec4f(ctx, 'point', []);
+            //this.addField_MFVec4f(ctx, 'point', []);  // MFVec4f NYI!!!
         },
         {
             nodeChanged: function() {},

@@ -72,7 +72,6 @@ x3dom.docs.getNodeTreeInfo = function() {
         return false;
     };
 
-
     var dump = function(t, indent) {
         for (var i=0; i<indent; i++) {
             types += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -99,7 +98,7 @@ x3dom.docs.getNodeTreeInfo = function() {
 
          while (t.superClass) {
              if (t.superClass.childTypes[t.superClass._typeName] === undefined) {
-                  t.superClass.childTypes[t.superClass._typeName] = [];
+                 t.superClass.childTypes[t.superClass._typeName] = [];
              }
              if (!objInArray(t.superClass.childTypes[t.superClass._typeName], t._typeName)) {
                  t.superClass.childTypes[t.superClass._typeName].push(t._typeName);
@@ -121,7 +120,6 @@ x3dom.docs.getComponentInfo = function() {
     var component;
     var result = "";
     var c, cn;
-
 
     for (c in x3dom.components) {
         components.push(c);

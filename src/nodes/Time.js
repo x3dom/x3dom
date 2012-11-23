@@ -18,7 +18,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.TimeSensor.superClass.call(this, ctx);
 
-            ctx.doc._nodeBag.timer.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.timer.push(this);
+            else
+                x3dom.debug.logWarning("TimeSensor: No runtime context found!");
 
             this.addField_SFTime(ctx, 'cycleInterval', 1);
             this.addField_SFBool(ctx, 'enabled', true);

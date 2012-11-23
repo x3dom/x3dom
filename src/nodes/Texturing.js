@@ -300,7 +300,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RenderedTexture.superClass.call(this, ctx);
 
-            ctx.doc._nodeBag.renderTextures.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.renderTextures.push(this);
+            else
+                x3dom.debug.logWarning("RenderedTexture: No runtime context found!");
 
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);

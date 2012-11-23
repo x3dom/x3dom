@@ -3165,12 +3165,14 @@ x3dom.gfx_webgl = (function () {
 				for (var fName in shader._vf) {
 					if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
 						var field = shader._vf[fName];
-						try {
-							sp[fName] = field.toGL();
-						}
-						catch(noToGl) {
-							sp[fName] = field;
-						}
+						if (field) {
+    						if (field.toGL) {
+    							sp[fName] = field.toGL();
+    						}
+    						else {
+    							sp[fName] = field;
+    						}
+    					}
 					}
 				}
 			} else if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {

@@ -1709,7 +1709,7 @@ x3dom.fields.SFImage = function(w, h, c, arr) {
         this.width = this.height = this.comp = 0;
         this.array = [];
     }
-    else {
+    else if (arr && arr.map) {
         this.width = w;
         this.height = h;
         this.comp = c;
@@ -2126,7 +2126,7 @@ x3dom.fields.MFVec2f.prototype.toGL = function() {
 x3dom.fields.MFInt32 = function(array) {
     if (arguments.length === 0) {
     }
-    else {
+    else if (array && array.map) {
         var that = this;
         array.map( function(v) { that.push(v); }, this );
     }
@@ -2171,7 +2171,7 @@ x3dom.fields.MFInt32.prototype.toGL = function() {
 x3dom.fields.MFFloat = function(array) {
     if (arguments.length === 0) {
     }
-    else {
+    else if (array && array.map) {
         var that = this;
         array.map( function(v) { that.push(v); }, this );
     }
@@ -2216,7 +2216,7 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
 x3dom.fields.MFString = function(strArray) {
     if (arguments.length === 0) {
     }
-    else {
+    else if (strArray && strArray.map) {
         var that = this;
         strArray.map( function(v) { that.push(v); }, this );
     }

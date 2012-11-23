@@ -18,7 +18,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DFollowerNode.superClass.call(this, ctx);
             
-            ctx.doc._nodeBag.followers.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.followers.push(this);
+            else
+                x3dom.debug.logWarning("X3DFollowerNode: No runtime context found!");
             
             this.addField_SFBool(ctx, 'isActive', false);
             

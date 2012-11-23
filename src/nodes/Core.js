@@ -41,6 +41,7 @@ x3dom.registerNodeType(
         type: function () {
             return this.constructor;
         },
+        
         typeName: function () {
             return this.constructor._typeName;
         },
@@ -426,12 +427,13 @@ x3dom.registerNodeType(
 		},
         
         initSetter: function (xmlNode, name) {
-			 //IE has no __defineSetter__ !!!
 			if (xmlNode.__defineSetter__ !== undefined) {
 				xmlNode.__defineSetter__(name, function(value) {
 					xmlNode.setAttribute(name, value);
 				});
-			} else {
+			}
+			else {
+			    //IE has no __defineSetter__ !!!
 				Object.defineProperty(xmlNode, name, { 
 					set: function(value) { 
 						xmlNode.setAttribute(name, value); 
@@ -440,17 +442,20 @@ x3dom.registerNodeType(
       		}
       		
 			if (!xmlNode.attributes[name]) {
-			    var str = "";
-			    try {
-			        str = this._vf[name].toGL().toString();
-			        if (!str) { str = "\0"; }
-			        xmlNode.setAttribute(name, str);
-		        }
-		        catch(e) {
-		            str = this._vf[name].toString();
-		            if (!str) { str = "\0"; }
-		            xmlNode.setAttribute(name, str);
-		        }
+			    if (this._vf[name]) {
+    			    var str = "";
+    			    try {
+    			        if (this._vf[name].toGL)
+    			            str = this._vf[name].toGL().toString();
+    			        else
+    			            str = this._vf[name].toString();
+    		        }
+    		        catch(e) {
+    		            str = this._vf[name].toString();
+    		        }    
+    		        if (!str) { str = ""; }
+    		        xmlNode.setAttribute(name, str);
+    	        }
 		    }
         },
 
@@ -466,7 +471,7 @@ x3dom.registerNodeType(
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
         },
-        addField_SFDouble: function (ctx, name, n) {    // is double anyway
+        addField_SFDouble: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 +ctx.xmlNode.getAttribute(name) : n;
                 
@@ -519,7 +524,6 @@ x3dom.registerNodeType(
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
         },
         addField_SFVec3d: function(ctx, name, x, y, z) {
-            // JS always float precision, no double
             this.addField_SFVec3f(ctx, name, x, y, z);
         },
         addField_SFRotation: function (ctx, name, x, y, z, a) {
@@ -754,7 +758,7 @@ x3dom.registerNodeType(
           this.addField_SFString(ctx, 'description', "");
           this.addField_SFBool(ctx, 'isActive', false);
 
-          this._autoGen = (ctx.autoGen ? true : false);
+          this._autoGen = (ctx && ctx.autoGen ? true : false);
 
           if (ctx && ctx.doc._bindableBag) {
             this._stack = ctx.doc._bindableBag.addBindable(this);

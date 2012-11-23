@@ -146,7 +146,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTransformNode.superClass.call(this, ctx);
 
-            ctx.doc._nodeBag.trans.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.trans.push(this);
+            else
+                x3dom.debug.logWarning("X3DTransformNode: No runtime context found!");
 
             // holds the current matrix (local space transform)
             this._trafo = null;
