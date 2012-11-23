@@ -630,8 +630,8 @@ x3dom.gfx_webgl = (function () {
                         return;
                     }
                     
-                    for (var j=0; j<shape._webgl.primType.length; j++) {
-                        if (shape._webgl.primType[j] == gl.TRIANGLE_STRIP) {
+                    for (var k=0; k<shape._webgl.primType.length; k++) {
+                        if (shape._webgl.primType[k] == gl.TRIANGLE_STRIP) {
                             x3dom.debug.logError("Triangle strips not yet supported for per-face normals.");
                             return;
                         }
@@ -664,6 +664,7 @@ x3dom.gfx_webgl = (function () {
                     // check types
                     var dataLen = shape._coordStrideOffset[0] / 
                                     x3dom.Utils.getDataTypeSize(geoNode._vf.coordType);
+                    dataLen = (dataLen == 0) ? 3 : dataLen;
                     
                     x3dom.debug.logInfo("makeSeparateTris.createMesh called with coord length " + dataLen);
                     
@@ -1831,13 +1832,12 @@ x3dom.gfx_webgl = (function () {
                         if (vertexIdx < 3) {
                             shape._webgl.dataBuffers[0].push(value);
                         }
-                        else if ((vertexIdx % 2) == 0) {                            
+                        else if ((vertexIdx % 2) == 0) {
                             shape._webgl.dataBuffers[0].push(preLastVal);
                             shape._webgl.dataBuffers[0].push(lastVal);
                             shape._webgl.dataBuffers[0].push(value);
                         }
                         else {
-                            l = shape._webgl.dataBuffers[0].length;                            
                             shape._webgl.dataBuffers[0].push(lastVal);
                             shape._webgl.dataBuffers[0].push(preLastVal);
                             shape._webgl.dataBuffers[0].push(value);
@@ -2781,7 +2781,7 @@ x3dom.gfx_webgl = (function () {
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
         				    var indOff = shape._cf.geometry.node._indexOffset;
         				    for (var io=1; io<indOff.length; io++) {
-             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             					gl.drawElements(shape._webgl.primType, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
              				}
         				}
 						else {
@@ -2823,14 +2823,14 @@ x3dom.gfx_webgl = (function () {
         gl.disable(gl.BLEND);
         
         var sp = null;
-        if (pickMode === 0)
-		{
+        if (pickMode === 0) {
 			sp = scene._webgl.pickShader;
 		}
         else if (pickMode === 1) { 
             sp = scene._webgl.pickColorShader; 
         }
-        else if (pickMode === 2) { sp = scene._webgl.pickTexCoordShader; 
+        else if (pickMode === 2) {
+            sp = scene._webgl.pickTexCoordShader; 
         }
         sp.bind();
         
@@ -3018,7 +3018,7 @@ x3dom.gfx_webgl = (function () {
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
         				    var indOff = shape._cf.geometry.node._indexOffset;
         				    for (var io=1; io<indOff.length; io++) {
-             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             					gl.drawElements(shape._webgl.primType, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
              				}
         				}
 						else {
@@ -3476,7 +3476,7 @@ x3dom.gfx_webgl = (function () {
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
         				    var indOff = shape._cf.geometry.node._indexOffset;
         				    for (var io=1; io<indOff.length; io++) {
-             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             					gl.drawElements(shape._webgl.primType, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
              				}
         				}
 						else {
