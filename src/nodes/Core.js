@@ -861,11 +861,22 @@ x3dom.registerNodeType(
 );
 
 
+/* ### X3DInfoNode ### */
+x3dom.registerNodeType(
+    "X3DInfoNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DInfoNode.superClass.call(this, ctx);
+        }
+    )
+);
+
 /* ### WorldInfo ### */
 x3dom.registerNodeType(
     "WorldInfo",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass(x3dom.nodeTypes.X3DInfoNode,
         function (ctx) {
             x3dom.nodeTypes.WorldInfo.superClass.call(this, ctx);
 
@@ -893,17 +904,17 @@ x3dom.registerNodeType(
     )
 );
 
-// deprecated, will be removed in 1.4
+// deprecated, will be removed in 1.5
+// ### Param ###
 x3dom.registerNodeType(
     "Param",
     "Core",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.Param.superClass.call(this, ctx);
-        },{
-            nodeChanged: function() {
-                  x3dom.debug.logWarning('DEPRECATED 1.3: Param element needs to be child of X3D element [<a href="http://x3dom.org/docs/latest/configuration.html">DOCS</a>]');
-            }
+            
+            x3dom.debug.logWarning('DEPRECATED: Param element needs to be child of X3D element '
+                      + '[<a href="http://x3dom.org/docs/latest/configuration.html">DOCS</a>]');
         }
     )
 );

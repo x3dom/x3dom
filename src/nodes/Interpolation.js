@@ -48,11 +48,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.OrientationInterpolator.superClass.call(this, ctx);
 
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
-                this._vf.keyValue = x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute('keyValue'));
-            } else {
-                this._vf.keyValue = new x3dom.fields.MFRotation();
-            }
+            this.addField_MFRotation(ctx, 'keyValue', []);
         },
         {
             fieldChanged: function(fieldName)
@@ -77,11 +73,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.PositionInterpolator.superClass.call(this, ctx);
 
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
-                this._vf.keyValue = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
-            } else {
-                this._vf.keyValue = new x3dom.fields.MFVec3f();
-            }
+            this.addField_MFVec3f(ctx, 'keyValue', []);
         },
         {
             fieldChanged: function(fieldName)
@@ -107,11 +99,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.NormalInterpolator.superClass.call(this, ctx);
 
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
-                this._vf.keyValue = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
-            } else {
-                this._vf.keyValue = new x3dom.fields.MFVec3f();
-            }
+            this.addField_MFVec3f(ctx, 'keyValue', []);
         },
         {
             fieldChanged: function(fieldName)
@@ -137,11 +125,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.ColorInterpolator.superClass.call(this, ctx);
 
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
-                this._vf.keyValue = x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute('keyValue'));
-            } else {
-                this._vf.keyValue = new x3dom.fields.MFColor();
-            }
+            this.addField_MFColor(ctx, 'keyValue', []);
         },
         {
             fieldChanged: function(fieldName)
@@ -168,12 +152,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.ScalarInterpolator.superClass.call(this, ctx);
 
-            if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
-                this._vf.keyValue = Array.map(ctx.xmlNode.getAttribute('keyValue').split(/\s+/),
-                                                                    function (n) { return +n; });
-            } else {
-                this._vf.keyValue = new x3dom.fields.MFFloat();
-            }
+            this.addField_MFFloat(ctx, 'keyValue', []);
         },
         {
             fieldChanged: function(fieldName)
@@ -199,8 +178,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.CoordinateInterpolator.superClass.call(this, ctx);
 
-            this._vf.keyValue = [];
+            this.addField_MFVec3f(ctx, 'keyValue', []);
+            
             if (ctx && ctx.xmlNode.hasAttribute('keyValue')) {
+                this._vf.keyValue = [];     // FIXME!!!
+                
                 var arr = x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute('keyValue'));
                 var key = this._vf.key.length > 0 ? this._vf.key.length : 1;
                 var len = arr.length / key;
