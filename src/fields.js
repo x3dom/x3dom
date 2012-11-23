@@ -1705,11 +1705,11 @@ x3dom.fields.SFColor.colorParse = function(color) {
     @class Represents a SFColor
   */
 x3dom.fields.SFImage = function(w, h, c, arr) {
-    if (arguments.length === 0) {
+    if (arguments.length === 0 || !(arr && arr.map)) {
         this.width = this.height = this.comp = 0;
         this.array = [];
     }
-    else if (arr && arr.map) {
+    else {
         this.width = w;
         this.height = h;
         this.comp = c;

@@ -147,6 +147,27 @@
                 "' style='color:black; text-decoration:none; font-style:italic;'>" + 
                 x3dom.nodeTypes[t]._compName + "</a><br/>");
             
+            var instance = new x3dom.nodeTypes[t];
+            for (var fieldName in instance._vf) {
+    			var fieldValue = " ";
+    			if (instance._vf[fieldName].toGL)
+		            fieldValue = instance._vf[fieldName].toGL().toString();
+		        else
+		            fieldValue = instance._vf[fieldName].toString();
+		        
+		        for (var i=0; i<indent; i++) {
+                    $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                }
+		        $("#types").append(fieldName + ": " + fieldValue + " (" + instance._vfFieldTypes[fieldName] + ")<br/>");
+    		}
+            for (var fieldName in instance._cf) {
+    			for (var i=0; i<indent; i++) {
+                    $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
+                }
+		        $("#types").append(fieldName + " (" + instance._cfFieldTypes[fieldName] + ")<br/>");
+    		}
+            
+            
             for (var i in x3dom.nodeTypes[t].childTypes[t]) {
                 dumpType(x3dom.nodeTypes[t].childTypes[t][i], indent+1); 
             }
@@ -173,12 +194,13 @@
             }            
             
             var iexplore = (navigator.userAgent.indexOf("MSIE") != -1);
-            
+            /*
             if (iexplore) {
                 document.write("Sorry, but Internet Explorer does not yet support advanced scripting.");
                 document.write("<br\>Please use a WebKit or Gecko based web browser like Firefox etc.");
             }
-            else {
+            else */
+            {
                 // Dump the nodetype hierachy
                 dumpType("X3DNode", 0); 
                 

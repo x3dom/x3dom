@@ -406,7 +406,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'url', []);             // address for WebSocket connection
+            this.addField_MFString(ctx, 'url', ["ws://localhost:35668/cstreams/0"]);  // address for WebSocket connection
             this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
@@ -421,7 +421,10 @@ x3dom.registerNodeType(
             this._createTime = [];
             this._visibleList = [];
 
-            this.initializeSocket();    // init socket connection
+            if (ctx)
+                this.initializeSocket();    // init socket connection
+            else
+                x3dom.debug.logWarning("RemoteSelectionGroup: No runtime context found!");
         },
         {
             initializeSocket: function() 
