@@ -49,13 +49,9 @@ x3dom.caps = { PLATFORM: navigator.platform, AGENT: navigator.userAgent };
     @param nodeDef the definition of the nodetype
  */
 x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
-    x3dom.debug.logInfo("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
+    //console.log("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
     if (x3dom.components[componentName] === undefined) {
-        x3dom.debug.logInfo("Adding new component [" + componentName + "]");
         x3dom.components[componentName] = {};
-    }
-    else {
-        x3dom.debug.logInfo("Using component [" + componentName + "]");
     }
     nodeDef._typeName = nodeTypeName;
     nodeDef._compName = componentName;
@@ -64,6 +60,7 @@ x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
     x3dom.nodeTypesLC[nodeTypeName.toLowerCase()] = nodeDef;
 };
 
+/** Test if node is registered X3D element */
 x3dom.isX3DElement = function(node) {
     // x3dom.debug.logInfo("node=" + node + "node.nodeType=" + node.nodeType + ", node.localName=" + node.localName + ", ");
     return (node.nodeType === Node.ELEMENT_NODE && node.localName &&
@@ -152,6 +149,12 @@ function defineClass(parent, ctor, methods) {
     return ctor;
 }
 
+/** Utility function for testing a node type.
+
+    @param object the object to test
+    @param clazz the type of the class
+    @return true or false
+  */
 x3dom.isa = function(object, clazz) {
 	if (!object) {
 		return false;
@@ -176,12 +179,9 @@ x3dom.isa = function(object, clazz) {
 };
 
 
+/// helper
 x3dom.getGlobal = function() { return (function(){ return this;}).call(null); };
 
-// move to Util.isNumber or something
-x3dom.isNumber = function(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-};
 
 /**
  * Load javascript file either by performing an syncronous jax request
@@ -243,13 +243,15 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
     }
 };
 
+// helper
 function array_to_object(a) {
-      var o = {};
-      for(var i=0;i<a.length;i++) {
-        o[a[i]]='';
-      }
-      return o;
-    }
+  var o = {};
+  for(var i=0;i<a.length;i++) {
+    o[a[i]]='';
+  }
+  return o;
+}
+
 /**
  * Provides requestAnimationFrame in a cross browser way.
  * https://cvs.khronos.org/svn/repos/registry/trunk/public/webgl/sdk/demos/common/webgl-utils.js
@@ -264,5 +266,4 @@ window.requestAnimFrame = (function() {
              window.setTimeout(callback, 16);
            };
 })();
-
 

@@ -303,8 +303,8 @@ x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
 	var canvasPos = elem.getBoundingClientRect();
 	var mousePos = this.calcCanvasPos(wx, wy, wz);
 	
-	var scrollLeft =  window.pageXOffset || document.body.scrollLeft;
-	var scrollTop = 	window.pageYOffset || document.body.scrollTop;
+	var scrollLeft = window.pageXOffset || document.body.scrollLeft;
+	var scrollTop = window.pageYOffset || document.body.scrollTop;
 	
 	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
 	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
@@ -375,6 +375,18 @@ x3dom.Runtime.prototype.getScreenshot = function() {
 	}
 
 	return url;
+};
+
+/**
+ * Function: getCanvas
+ *
+ * Returns the internal canvas element (only valid for WebGL backend)
+ *
+ * Returns:
+ * 		The internal canvas element
+ */
+x3dom.Runtime.prototype.getCanvas = function() {
+    return this.canvas.canvas;
 };
 
 /**
@@ -553,6 +565,29 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
     }
     
     return null;
+};
+
+/**
+ * APIMethod getSceneBBox
+ *
+ * Returns the bounding box of the scene.
+ *
+ * Parameters:
+ *    domNode: the node for which its transformation shall be returned
+ *
+ *  Returns:
+ *    The min and max positions of the scene's bbox.
+ */
+x3dom.Runtime.prototype.getSceneBBox = function() {
+    var scene = this.canvas.doc._scene;
+    
+    if ( !(scene._lastMin && scene._lastMax) )
+        scene.updateVolume();
+    
+    return {
+        min: x3dom.fields.SFVec3f.copy(scene._lastMin),
+        max: x3dom.fields.SFVec3f.copy(scene._lastMax)
+    }
 };
 
 /**

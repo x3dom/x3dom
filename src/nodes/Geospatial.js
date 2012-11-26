@@ -51,6 +51,7 @@ x3dom.registerNodeType(
             },
           
             nodeChanged: function() {},
+            
             fieldChanged: function(fieldName) {
                 Array.forEach(this._parentNodes, function (node) {
                     node.fieldChanged("coord");
@@ -137,7 +138,8 @@ x3dom.registerNodeType(
                 var clat = Math.cos(source_lat);
 
                 /* square root approximation for Rn */
-                var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
+                var Rn = A / ( (0.25 - Eps25 * slat2 + 0.9999944354799/4.0) + 
+                         (0.25-Eps25 * slat2)/(0.25 - Eps25 * slat2 + 0.9999944354799/4.0));
 
                 var RnPh = Rn + coords[i].z;
                 
@@ -317,7 +319,8 @@ x3dom.registerNodeType(
 
               // check for no height == dimensions
               if(height.length !== (xDimension * zDimension))
-                x3dom.debug.logError('GeoElevationGrid: height.length(' + height.length + ') != x/zDimension(' + xDimension + '*' + zDimension + ')');
+                x3dom.debug.logError('GeoElevationGrid: height.length(' + height.length + 
+                                ') != x/zDimension(' + xDimension + '*' + zDimension + ')');
               
               var longitude_first = x3dom.nodeTypes.GeoCoordinate.prototype.isLogitudeFirst(geoSystem);
               var ccw = this._vf.ccw;
@@ -512,43 +515,6 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_MFVec3d(ctx, 'keyValue', []);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.LinearInterpolator);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
-        }
-    )
-);
-
-/* ### GeoProximitySensor ### */
-x3dom.registerNodeType(
-    "GeoProximitySensor",
-    "Geospatial",
-    defineClass(x3dom.nodeTypes.X3DEnvironmentalSensorNode,
-        function (ctx) {
-            x3dom.nodeTypes.GeoProximitySensor.superClass.call(this, ctx);
-
-            this.addField_SFVec3d(ctx, 'geoCenter', 0, 0, 0);
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.EnvironmentSensor);
-            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
-        }
-    )
-);
-
-/* ### GeoTouchSensor ### */
-x3dom.registerNodeType(
-    "GeoTouchSensor",
-    "Geospatial",
-    defineClass(x3dom.nodeTypes.X3DTouchSensorNode,
-        function (ctx) {
-            x3dom.nodeTypes.GeoTouchSensor.superClass.call(this, ctx);
-
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.TouchSensor);
-            this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
         },
         {
             nodeChanged: function() {},

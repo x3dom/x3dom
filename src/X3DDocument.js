@@ -188,19 +188,17 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 };
 
 x3dom.X3DDocument.prototype.advanceTime = function (t) {
-    var that = this;
-    var i;
+    var i = 0;
 
     if (this._nodeBag.timer.length) {
-        this.needRender = true;
         for (i=0; i < this._nodeBag.timer.length; i++)
-            { this._nodeBag.timer[i].onframe(t); }
+            { this.needRender |= this._nodeBag.timer[i].tick(t); }
     }
     if (this._nodeBag.followers.length) {
         for (i=0; i < this._nodeBag.followers.length; i++)
             { this.needRender |= this._nodeBag.followers[i].tick(t); }
     }
-    // just a temporary tricker solution to update the CSS-trans
+    // just a temporary tricker solution to update the CSS transforms
     if (this._nodeBag.trans.length) {
         for (i=0; i < this._nodeBag.trans.length; i++)
             { this.needRender |= this._nodeBag.trans[i].tick(t); }

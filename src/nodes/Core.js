@@ -24,8 +24,11 @@ x3dom.registerNodeType(
 
         // holds all value fields (e.g. SFFloat, MFVec3f, ...)
         this._vf = {};
+        this._vfFieldTypes = {};
+        
         // holds all child fields ( SFNode and MFNode )
         this._cf = {};
+        this._cfFieldTypes = {};
 
         this._fieldWatchers = {};
         this._parentNodes = [];
@@ -41,6 +44,7 @@ x3dom.registerNodeType(
         type: function () {
             return this.constructor;
         },
+        
         typeName: function () {
             return this.constructor._typeName;
         },
@@ -426,12 +430,13 @@ x3dom.registerNodeType(
 		},
         
         initSetter: function (xmlNode, name) {
-			 //IE has no __defineSetter__ !!!
 			if (xmlNode.__defineSetter__ !== undefined) {
 				xmlNode.__defineSetter__(name, function(value) {
 					xmlNode.setAttribute(name, value);
 				});
-			} else {
+			}
+			else {
+			    //IE has no __defineSetter__ !!!
 				Object.defineProperty(xmlNode, name, { 
 					set: function(value) { 
 						xmlNode.setAttribute(name, value); 
@@ -440,95 +445,122 @@ x3dom.registerNodeType(
       		}
       		
 			if (!xmlNode.attributes[name]) {
-			    var str = "";
-			    try {
-			        str = this._vf[name].toGL().toString();
-			        if (!str) { str = "\0"; }
-			        xmlNode.setAttribute(name, str);
-		        }
-		        catch(e) {
-		            str = this._vf[name].toString();
-		            if (!str) { str = "\0"; }
-		            xmlNode.setAttribute(name, str);
-		        }
+			    if (this._vf[name]) {
+    			    var str = "";
+    			    try {
+    			        if (this._vf[name].toGL)
+    			            str = this._vf[name].toGL().toString();
+    			        else
+    			            str = this._vf[name].toString();
+    		        }
+    		        catch(e) {
+    		            str = this._vf[name].toString();
+    		        }    
+    		        if (!str) { str = ""; }
+    		        xmlNode.setAttribute(name, str);
+    	        }
 		    }
         },
 
+        // single fields
         addField_SFInt32: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode.hasAttribute(name) ?
                 parseInt(ctx.xmlNode.getAttribute(name),10) : n;
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFInt32";
         },
+        
         addField_SFFloat: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 +ctx.xmlNode.getAttribute(name) : n;
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFFloat";
         },
-        addField_SFDouble: function (ctx, name, n) {    // is double anyway
+        
+        addField_SFDouble: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 +ctx.xmlNode.getAttribute(name) : n;
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFDouble";
         },
+        
         addField_SFTime: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 +ctx.xmlNode.getAttribute(name) : n;
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFTime";
         },
+        
         addField_SFBool: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 ctx.xmlNode.getAttribute(name).toLowerCase() === "true" : n;
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFBool";
         },
+        
         addField_SFString: function (ctx, name, n) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 ctx.xmlNode.getAttribute(name) : n;
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFString";
         },
+        
         addField_SFColor: function (ctx, name, r, g, b) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.SFColor.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.SFColor(r, g, b);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFColor";
         },
+        
         addField_SFColorRGBA: function (ctx, name, r, g, b, a) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.SFColorRGBA.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.SFColorRGBA(r, g, b, a);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFColorRGBA";
         },
+        
         addField_SFVec2f: function (ctx, name, x, y) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.SFVec2f.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.SFVec2f(x, y);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFVec2f";
         },
+        
         addField_SFVec3f: function (ctx, name, x, y, z) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.SFVec3f.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.SFVec3f(x, y, z);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFVec3f";
         },
+        
         addField_SFVec3d: function(ctx, name, x, y, z) {
-            // JS always float precision, no double
             this.addField_SFVec3f(ctx, name, x, y, z);
+            this._vfFieldTypes[name] = "SFVec3d";
         },
+        
         addField_SFRotation: function (ctx, name, x, y, z, a) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.Quaternion.parseAxisAngle(ctx.xmlNode.getAttribute(name)) :
                 x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(x, y, z), a);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFRotation";
         },
+        
         addField_SFMatrix4f: function (ctx, name, _00, _01, _02, _03,
                                                   _10, _11, _12, _13,
                                                   _20, _21, _22, _23,
@@ -541,87 +573,113 @@ x3dom.registerNodeType(
                                             _30, _31, _32, _33);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFMatrix4f";
         },
+        
         addField_SFImage: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.SFImage.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.SFImage(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "SFImage";
         },
 
+        // multi fields
         addField_MFString: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFString.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFString(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFString";
         },
+        
         addField_MFInt32: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFInt32.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFInt32(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFInt32";
         },
+        
         addField_MFFloat: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFFloat(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFFloat";
         },
-        addField_MFDouble: function (ctx, name, def) {  // is double anyway
+        
+        addField_MFDouble: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFFloat.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFFloat(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFDouble";
         },
+        
         addField_MFColor: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFColor.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFColor(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFColor";
         },
+        
         addField_MFColorRGBA: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFColorRGBA.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFColorRGBA(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFColorRGBA";
         },
+        
         addField_MFVec2f: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFVec2f.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFVec2f(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFVec2f";
         },
+        
         addField_MFVec3f: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFVec3f.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFVec3f(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFVec3f";
         },
+        
         addField_MFVec3d: function (ctx, name, def) {
             this.addField_MFVec3f(ctx, name, def);
+            this._vfFieldTypes[name] = "MFVec3d";
         },
+        
         addField_MFRotation: function (ctx, name, def) {
             this._vf[name] = ctx && ctx.xmlNode && ctx.xmlNode.hasAttribute(name) ?
                 x3dom.fields.MFRotation.parse(ctx.xmlNode.getAttribute(name)) :
                 new x3dom.fields.MFRotation(def);
                 
             if (ctx && ctx.xmlNode) { this.initSetter(ctx.xmlNode, name); }
+            this._vfFieldTypes[name] = "MFRotation";
         },
-
+        
+        // child node fields
         addField_SFNode: function (name, type) {
             this._cf[name] = new x3dom.fields.SFNode(type);
+            this._cfFieldTypes[name] = "SFNode";
         },
         addField_MFNode: function (name, type) {
             this._cf[name] = new x3dom.fields.MFNode(type);
+            this._cfFieldTypes[name] = "MFNode";
         }
     }
 ));
@@ -754,7 +812,7 @@ x3dom.registerNodeType(
           this.addField_SFString(ctx, 'description', "");
           this.addField_SFBool(ctx, 'isActive', false);
 
-          this._autoGen = (ctx.autoGen ? true : false);
+          this._autoGen = (ctx && ctx.autoGen ? true : false);
 
           if (ctx && ctx.doc._bindableBag) {
             this._stack = ctx.doc._bindableBag.addBindable(this);
@@ -803,11 +861,22 @@ x3dom.registerNodeType(
 );
 
 
+/* ### X3DInfoNode ### */
+x3dom.registerNodeType(
+    "X3DInfoNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DInfoNode.superClass.call(this, ctx);
+        }
+    )
+);
+
 /* ### WorldInfo ### */
 x3dom.registerNodeType(
     "WorldInfo",
     "Core",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass(x3dom.nodeTypes.X3DInfoNode,
         function (ctx) {
             x3dom.nodeTypes.WorldInfo.superClass.call(this, ctx);
 
@@ -835,17 +904,17 @@ x3dom.registerNodeType(
     )
 );
 
-// deprecated, will be removed in 1.4
+// deprecated, will be removed in 1.5
+// ### Param ###
 x3dom.registerNodeType(
     "Param",
     "Core",
     defineClass(x3dom.nodeTypes.X3DNode,
         function (ctx) {
             x3dom.nodeTypes.Param.superClass.call(this, ctx);
-        },{
-            nodeChanged: function() {
-                  x3dom.debug.logWarning('DEPRECATED 1.3: Param element needs to be child of X3D element [<a href="http://x3dom.org/docs/latest/configuration.html">DOCS</a>]');
-            }
+            
+            x3dom.debug.logWarning('DEPRECATED: Param element needs to be child of X3D element '
+                      + '[<a href="http://x3dom.org/docs/latest/configuration.html">DOCS</a>]');
         }
     )
 );

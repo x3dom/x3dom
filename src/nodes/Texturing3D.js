@@ -83,23 +83,6 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### TextureCoordinate4D ### */
-x3dom.registerNodeType(
-    "TextureCoordinate4D",
-    "Texturing3D",
-    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
-        function (ctx) {
-            x3dom.nodeTypes.TextureCoordinate4D.superClass.call(this, ctx);
-
-            this.addField_MFVec4f(ctx, 'point', []);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
-        }
-    )
-);
-
 /* ### TextureTransform3D ### */
 x3dom.registerNodeType(
     "TextureTransform3D",

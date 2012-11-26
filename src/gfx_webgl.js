@@ -223,9 +223,30 @@ x3dom.gfx_webgl = (function () {
 				}
 				else
 				{
-					for ( var t=0; t<shape._webgl.texture.length; ++t )
-					{
-						shape._webgl.texture[t].update();
+					//If someone remove and append at the same time, texture count don't change
+					//and we have to check if all nodes the same as before
+					var textures = shape.getTextures();
+					for( var t=0; t<textures.length; ++t )
+					{	
+						if(textures[t] === shape._webgl.texture[t])
+						{
+							//only update the texture
+							shape._webgl.texture[t].update();
+						} 
+						else 
+						{
+							//delete old Texture
+							gl.deleteTexture( shape._webgl.texture[t].texture );
+							
+							//Set texture to null for recreation
+							shape._webgl.texture[t].texture = null;
+							
+							//Set new node
+							shape._webgl.texture[t].node = textures[t];
+							
+							//Update new node
+							shape._webgl.texture[t].update();
+						}
 					}
 				}
 				shape._dirty.texture = false;
@@ -565,10 +586,294 @@ x3dom.gfx_webgl = (function () {
         {
             var t00 = new Date().getTime();
             
+            var thisContext = this;
+            
 			// 0 := no BG, 1 := indexed BG, -1 := non-indexed BG
 			shape._webgl.binaryGeometry = -1;
 			
-			shape._webgl.internalDownloadCount = 0;
+			shape._webgl.internalDownloadCount = ((shape._cf.geometry.node._vf.index.length > 0) ? 1 : 0) +
+                ((shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.coord.length > 0) ? 1 : 0) +
+                ((!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.coord.length > 0) ? 1 : 0) +
+                ((!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.normal.length > 0) ? 1 : 0) +
+                ((!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.texCoord.length > 0) ? 1 : 0) +
+                ((!shape._cf.geometry.node._hasStrideOffset && shape._cf.geometry.node._vf.color.length > 0) ? 1 : 0);
+			
+			var createTriangleSoup = (shape._cf.geometry.node._vf.normalPerVertex == false) ||
+			                        ((shape._cf.geometry.node._vf.indexType == "Uint32") &&
+			                         (shape._cf.geometry.node._vf.index.length > 0));
+
+            shape._webgl.makeSeparateTris = {
+                index: null,
+                coord: null,
+                normal: null,
+                texCoord: null,
+                color: null,
+
+                pushBuffer: function(name, buf) {
+                    this[name] = buf;
+                    
+                    if (--shape._webgl.internalDownloadCount == 0) {
+                        if (this.coord)
+                            this.createMesh();
+                        shape._nameSpace.doc.needRender = true;
+                    }
+                    if (--shape._nameSpace.doc.downloadCount == 0)
+                        shape._nameSpace.doc.needRender = true;
+                },
+
+                createMesh: function() {
+                    var geoNode = shape._cf.geometry.node;
+                    
+                    if (geoNode._hasStrideOffset) {
+                        x3dom.debug.logError(geoNode._vf.indexType + 
+                            " index type and per-face normals not supported for interleaved arrays.");
+                        return;
+                    }
+                    
+                    for (var k=0; k<shape._webgl.primType.length; k++) {
+                        if (shape._webgl.primType[k] == gl.TRIANGLE_STRIP) {
+                            x3dom.debug.logError("Triangle strips not yet supported for per-face normals.");
+                            return;
+                        }
+                    }
+                    
+                    var attribTypeStr = geoNode._vf.coordType;
+                    shape._webgl.coordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
+                    
+                    // remap vertex data
+                    var bgCenter, bgSize, bgPrecisionMax;
+                    
+                    if (shape._webgl.coordType != gl.FLOAT)
+                    {
+                        if (geoNode._mesh._numPosComponents == 4 && 
+                            x3dom.Utils.isUnsignedType(geoNode._vf.coordType))
+                            bgCenter = x3dom.fields.SFVec3f.copy(geoNode.getMin());
+                        else
+                            bgCenter = x3dom.fields.SFVec3f.copy(geoNode._vf.position);
+
+                        bgSize = x3dom.fields.SFVec3f.copy(geoNode._vf.size);
+                        bgPrecisionMax = geoNode.getPrecisionMax('coordType');
+                    }
+                    else
+                    {
+                        bgCenter = new x3dom.fields.SFVec3f(0, 0, 0);
+                        bgSize = new x3dom.fields.SFVec3f(1, 1, 1);
+                        bgPrecisionMax = 1.0;
+                    }
+                    
+                    // check types
+                    var dataLen = shape._coordStrideOffset[0] / 
+                                    x3dom.Utils.getDataTypeSize(geoNode._vf.coordType);
+                    dataLen = (dataLen == 0) ? 3 : dataLen;
+                    
+                    x3dom.debug.logInfo("makeSeparateTris.createMesh called with coord length " + dataLen);
+                    
+                    if (this.color && dataLen != shape._colorStrideOffset[0] / 
+                                x3dom.Utils.getDataTypeSize(geoNode._vf.colorType))
+                    {
+                        this.color = null;
+                        x3dom.debug.logWarning("Color format not supported.");
+                    }
+                    
+                    if (this.texCoord && dataLen != shape._texCoordStrideOffset[0] / 
+                                x3dom.Utils.getDataTypeSize(geoNode._vf.texCoordType))
+                    {
+                        this.texCoord = null;
+                        x3dom.debug.logWarning("TexCoord format not supported.");
+                    }
+
+                    // set data types
+                    //geoNode._vf.coordType = "Float32";
+                    geoNode._vf.normalType = "Float32";
+                    
+                    //shape._webgl.coordType = gl.FLOAT;
+                    shape._webgl.normalType = gl.FLOAT;
+                    
+                    //geoNode._mesh._numPosComponents = 3;
+                    geoNode._mesh._numNormComponents = 3;
+                    
+                    //shape._coordStrideOffset = [0, 0];
+                    shape._normalStrideOffset = [0, 0];
+                    
+                    // create non-indexed mesh
+                    var posBuf = [], normBuf = [], texcBuf = [], colBuf = [];
+                    var i, j, n = this.index ? (this.index.length - 2) : (this.coord.length / 3 - 2);
+                    
+                    for (i=0; i<n; i+=3)
+                    {
+                        j = dataLen * (this.index ? this.index[i] : i);
+                        var p0 = new x3dom.fields.SFVec3f(bgSize.x * this.coord[j  ] / bgPrecisionMax, 
+                                                          bgSize.y * this.coord[j+1] / bgPrecisionMax, 
+                                                          bgSize.z * this.coord[j+2] / bgPrecisionMax);
+                        // offset irrelevant for normal calculation
+                        //p0 = bgCenter.add(p0);
+                        
+                        posBuf.push(this.coord[j  ]);
+                        posBuf.push(this.coord[j+1]);
+                        posBuf.push(this.coord[j+2]);
+                        if (dataLen > 3) posBuf.push(this.coord[j+3]);
+                        
+                        if (this.color) {
+                            colBuf.push(this.color[j  ]);
+                            colBuf.push(this.color[j+1]);
+                            colBuf.push(this.color[j+2]);
+                            if (dataLen > 3) colBuf.push(this.color[j+3]);
+                        }
+                        
+                        if (this.texCoord) {
+                            texcBuf.push(this.texCoord[j  ]);
+                            texcBuf.push(this.texCoord[j+1]);
+                            texcBuf.push(this.texCoord[j+2]);
+                            if (dataLen > 3) texcBuf.push(this.texCoord[j+3]);
+                        }
+                        
+                        j = dataLen * (this.index ? this.index[i+1] : i+1);
+                        var p1 = new x3dom.fields.SFVec3f(bgSize.x * this.coord[j  ] / bgPrecisionMax, 
+                                                          bgSize.y * this.coord[j+1] / bgPrecisionMax, 
+                                                          bgSize.z * this.coord[j+2] / bgPrecisionMax);
+                        //p1 = bgCenter.add(p1);
+                        
+                        posBuf.push(this.coord[j  ]);
+                        posBuf.push(this.coord[j+1]);
+                        posBuf.push(this.coord[j+2]);
+                        if (dataLen > 3) posBuf.push(this.coord[j+3]);
+                        
+                        if (this.color) {
+                            colBuf.push(this.color[j  ]);
+                            colBuf.push(this.color[j+1]);
+                            colBuf.push(this.color[j+2]);
+                            if (dataLen > 3) colBuf.push(this.color[j+3]);
+                        }
+                        
+                        if (this.texCoord) {
+                            texcBuf.push(this.texCoord[j  ]);
+                            texcBuf.push(this.texCoord[j+1]);
+                            texcBuf.push(this.texCoord[j+2]);
+                            if (dataLen > 3) texcBuf.push(this.texCoord[j+3]);
+                        }
+                        
+                        j = dataLen * (this.index ? this.index[i+2] : i+2);
+                        var p2 = new x3dom.fields.SFVec3f(bgSize.x * this.coord[j  ] / bgPrecisionMax, 
+                                                          bgSize.y * this.coord[j+1] / bgPrecisionMax, 
+                                                          bgSize.z * this.coord[j+2] / bgPrecisionMax);
+                        //p2 = bgCenter.add(p2);
+                        
+                        posBuf.push(this.coord[j  ]);
+                        posBuf.push(this.coord[j+1]);
+                        posBuf.push(this.coord[j+2]);
+                        if (dataLen > 3) posBuf.push(this.coord[j+3]);
+                        
+                        if (this.color) {
+                            colBuf.push(this.color[j  ]);
+                            colBuf.push(this.color[j+1]);
+                            colBuf.push(this.color[j+2]);
+                            if (dataLen > 3) colBuf.push(this.color[j+3]);
+                        }
+                        
+                        if (this.texCoord) {
+                            texcBuf.push(this.texCoord[j  ]);
+                            texcBuf.push(this.texCoord[j+1]);
+                            texcBuf.push(this.texCoord[j+2]);
+                            if (dataLen > 3) texcBuf.push(this.texCoord[j+3]);
+                        }
+
+                        var a = p0.subtract(p1);
+                        var b = p1.subtract(p2);
+                        var norm = a.cross(b).normalize();
+                        
+                        for (var j=0; j<3; j++) {
+                            normBuf.push(norm.x);
+                            normBuf.push(norm.y);
+                            normBuf.push(norm.z);
+                        }
+                    }
+                    
+                    // coordinates
+                    var buffer = gl.createBuffer();
+                    shape._webgl.buffers[1] = buffer;
+                    
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, 
+                        x3dom.Utils.getArrayBufferView(geoNode._vf.coordType, posBuf), gl.STATIC_DRAW);
+
+                    gl.vertexAttribPointer(sp.position, geoNode._mesh._numPosComponents, 
+                        shape._webgl.coordType, false,
+                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.position);
+                    
+                    // normals
+                    buffer = gl.createBuffer();
+                    shape._webgl.buffers[2] = buffer;
+
+                    gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(normBuf), gl.STATIC_DRAW);
+
+                    gl.vertexAttribPointer(sp.normal, geoNode._mesh._numNormComponents, 
+                        shape._webgl.normalType, false,
+                        shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.normal);
+                    
+                    // tex coords
+                    if (this.texCoord) 
+                    {
+                        buffer = gl.createBuffer();
+                        shape._webgl.buffers[3] = buffer;
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, 
+                            x3dom.Utils.getArrayBufferView(geoNode._vf.texCoordType, texcBuf), 
+                            gl.STATIC_DRAW);
+                        
+                        gl.vertexAttribPointer(sp.texcoord, geoNode._mesh._numTexComponents, 
+                            shape._webgl.texCoordType, false,
+                            shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
+                        gl.enableVertexAttribArray(sp.texcoord);
+                    }
+                    
+                    // colors
+                    if (this.color) 
+                    {
+                        buffer = gl.createBuffer();
+                        shape._webgl.buffers[4] = buffer;
+
+                        gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
+                        gl.bufferData(gl.ARRAY_BUFFER, 
+                            x3dom.Utils.getArrayBufferView(geoNode._vf.colorType, colBuf), 
+                            gl.STATIC_DRAW);
+                        
+                        gl.vertexAttribPointer(sp.color, geoNode._mesh._numColComponents, 
+                            shape._webgl.colorType, false,
+                            shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
+                        gl.enableVertexAttribArray(sp.color);
+                    }
+                    
+                    // adjust sizes
+                    geoNode._vf.vertexCount = [];
+                    geoNode._vf.vertexCount[0] = posBuf.length / dataLen;
+                    
+                    geoNode._mesh._numCoords = geoNode._vf.vertexCount[0];
+                    geoNode._mesh._numFaces = geoNode._vf.vertexCount[0] / 3;
+                    
+                    shape._webgl.primType = [];
+                    shape._webgl.primType[0] = gl.TRIANGLES;
+                    
+                    // cleanup
+                    posBuf = null;
+                    normBuf = null;
+                    texcBuf = null;
+                    colBuf = null;
+                    
+                    this.index = null;
+                    this.coord = null;
+                    this.normal = null;
+                    this.texCoord = null;
+                    this.color = null;
+                    
+                    // recreate shader
+                    delete shape._webgl.shader;
+                    shape._webgl.shader = thisContext.cache.getDynamicShader(gl, viewarea, shape);
+                }
+            };
 			
             // index
             if (shape._cf.geometry.node._vf.index.length > 0)
@@ -579,7 +884,6 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp0.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp0.send(null);
             
@@ -589,12 +893,20 @@ x3dom.gfx_webgl = (function () {
                         return;
                     
                     var XHR_buffer = xmlhttp0.response;
+                    
+                    var geoNode = shape._cf.geometry.node;            
+                    var attribTypeStr = geoNode._vf.indexType;  //"Uint16"
+        		    
+        		    var indexArray = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+
+                    if (createTriangleSoup) {
+                        shape._webgl.makeSeparateTris.pushBuffer("index", indexArray);
+                        return;
+                    }
 
                     var indicesBuffer = gl.createBuffer();
                     shape._webgl.buffers[0] = indicesBuffer;
-
-                    var indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
-
+                    
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
 
@@ -603,8 +915,6 @@ x3dom.gfx_webgl = (function () {
                     
                     shape._webgl.binaryGeometry = 1;    // indexed BG
                     
-        		    var geoNode = shape._cf.geometry.node;
-        		    
                     if (geoNode._vf.vertexCount[0] == 0)
                         geoNode._vf.vertexCount[0] = indexArray.length;
                     
@@ -638,7 +948,6 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp.responseType = "arraybuffer";
 
                 shape._nameSpace.doc.downloadCount += 1;
-				shape._webgl.internalDownloadCount += 1;
 
                 xmlhttp.send(null);
 
@@ -746,7 +1055,6 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp1.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp1.send(null);
             
@@ -756,10 +1064,6 @@ x3dom.gfx_webgl = (function () {
                         return;
                     
                     var XHR_buffer = xmlhttp1.response;
-
-                    positionBuffer = gl.createBuffer();
-                    shape._webgl.buffers[1] = positionBuffer;
-                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);   
                     
                     var geoNode = shape._cf.geometry.node;            
 
@@ -767,6 +1071,15 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.coordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
                     var vertices = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+                    
+                    if (createTriangleSoup) {
+                        shape._webgl.makeSeparateTris.pushBuffer("coord", vertices);
+                        return;
+                    }
+                    
+                    var positionBuffer = gl.createBuffer();
+                    shape._webgl.buffers[1] = positionBuffer;
+                    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -834,7 +1147,6 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp2.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp2.send(null);
             
@@ -845,13 +1157,18 @@ x3dom.gfx_webgl = (function () {
                     
                     var XHR_buffer = xmlhttp2.response;
 
-                    var normalBuffer = gl.createBuffer();
-                    shape._webgl.buffers[2] = normalBuffer;
-
                     var attribTypeStr = shape._cf.geometry.node._vf.normalType;
                     shape._webgl.normalType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
                     var normals = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+                    
+                    if (createTriangleSoup) {
+                        shape._webgl.makeSeparateTris.pushBuffer("normal", normals);
+                        return;
+                    }
+                    
+                    var normalBuffer = gl.createBuffer();
+                    shape._webgl.buffers[2] = normalBuffer;
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
@@ -886,7 +1203,6 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp3.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp3.send(null);
             
@@ -897,13 +1213,18 @@ x3dom.gfx_webgl = (function () {
                     
                     var XHR_buffer = xmlhttp3.response;
 
-                    var texcBuffer = gl.createBuffer();
-                    shape._webgl.buffers[3] = texcBuffer;
-
                     var attribTypeStr = shape._cf.geometry.node._vf.texCoordType;
                     shape._webgl.texCoordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
                     var texCoords = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+                    
+                    if (createTriangleSoup) {
+                        shape._webgl.makeSeparateTris.pushBuffer("texCoord", texCoords);
+                        return;
+                    }
+
+                    var texcBuffer = gl.createBuffer();
+                    shape._webgl.buffers[3] = texcBuffer;
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
@@ -938,7 +1259,6 @@ x3dom.gfx_webgl = (function () {
                 xmlhttp4.responseType = "arraybuffer";
             
                 shape._nameSpace.doc.downloadCount += 1;
-				shape._webgl.internalDownloadCount += 1;
             
                 xmlhttp4.send(null);
             
@@ -949,13 +1269,18 @@ x3dom.gfx_webgl = (function () {
                     
                     var XHR_buffer = xmlhttp4.response;
 
-                    var colorBuffer = gl.createBuffer();
-                    shape._webgl.buffers[4] = colorBuffer;
-
                     var attribTypeStr = shape._cf.geometry.node._vf.colorType;
                     shape._webgl.colorType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
                     var colors = x3dom.Utils.getArrayBufferView(attribTypeStr, XHR_buffer);
+                    
+                    if (createTriangleSoup) {
+                        shape._webgl.makeSeparateTris.pushBuffer("color", colors);
+                        return;
+                    }
+
+                    var colorBuffer = gl.createBuffer();
+                    shape._webgl.buffers[4] = colorBuffer;
 
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
@@ -1556,13 +1881,12 @@ x3dom.gfx_webgl = (function () {
                         if (vertexIdx < 3) {
                             shape._webgl.dataBuffers[0].push(value);
                         }
-                        else if ((vertexIdx % 2) == 0) {                            
+                        else if ((vertexIdx % 2) == 0) {
                             shape._webgl.dataBuffers[0].push(preLastVal);
                             shape._webgl.dataBuffers[0].push(lastVal);
                             shape._webgl.dataBuffers[0].push(value);
                         }
                         else {
-                            l = shape._webgl.dataBuffers[0].length;                            
                             shape._webgl.dataBuffers[0].push(lastVal);
                             shape._webgl.dataBuffers[0].push(preLastVal);
                             shape._webgl.dataBuffers[0].push(value);
@@ -2351,7 +2675,6 @@ x3dom.gfx_webgl = (function () {
     *****************************************************************************/
     Context.prototype.setupFgnds = function (gl, scene)
     {
-		
         if (scene._fgnd !== undefined) {
             return;
         }
@@ -2507,7 +2830,7 @@ x3dom.gfx_webgl = (function () {
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
         				    var indOff = shape._cf.geometry.node._indexOffset;
         				    for (var io=1; io<indOff.length; io++) {
-             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             					gl.drawElements(shape._webgl.primType, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
              				}
         				}
 						else {
@@ -2549,14 +2872,14 @@ x3dom.gfx_webgl = (function () {
         gl.disable(gl.BLEND);
         
         var sp = null;
-        if (pickMode === 0)
-		{
+        if (pickMode === 0) {
 			sp = scene._webgl.pickShader;
 		}
         else if (pickMode === 1) { 
             sp = scene._webgl.pickColorShader; 
         }
-        else if (pickMode === 2) { sp = scene._webgl.pickTexCoordShader; 
+        else if (pickMode === 2) {
+            sp = scene._webgl.pickTexCoordShader; 
         }
         sp.bind();
         
@@ -2589,9 +2912,8 @@ x3dom.gfx_webgl = (function () {
 			if (shape._webgl.coordType != gl.FLOAT)
 			{
 			    if ( shape._webgl.bitLODGeometry != 0 || shape._webgl.popGeometry != 0 ||
-                    (shape._webgl.coordType != gl.FLOAT &&
-        		     shape._cf.geometry.node._mesh._numPosComponents == 4 && 
-        		     shape._cf.geometry.node._mesh._numNormComponents == 2) )
+                    (shape._cf.geometry.node._mesh._numPosComponents == 4 &&
+        		     x3dom.Utils.isUnsignedType(shape._cf.geometry.node._vf.coordType)) )
         		    sp.bgCenter = shape._cf.geometry.node.getMin().toGL();
         		else
 			        sp.bgCenter = shape._cf.geometry.node._vf.position.toGL();
@@ -2745,7 +3067,7 @@ x3dom.gfx_webgl = (function () {
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
         				    var indOff = shape._cf.geometry.node._indexOffset;
         				    for (var io=1; io<indOff.length; io++) {
-             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             					gl.drawElements(shape._webgl.primType, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
              				}
         				}
 						else {
@@ -2819,31 +3141,29 @@ x3dom.gfx_webgl = (function () {
 
         if (!sp) {
             x3dom.debug.logError("[Context|RenderShape] No Shader is set!");
+            return;
         }
         sp.bind();
 		
-      //===========================================================================
-      // Set PopGeometry variables
-      //===========================================================================
+        //===========================================================================
+        // Set special Geometry variables
+        //===========================================================================
         if (shape._webgl.popGeometry) {
           sp.PG_precisionLevel = shape._webgl.precisionLevel;          
         }
         
-		//===========================================================================
-        // Set GeometryImage variables
-        //===========================================================================
 		if (shape._webgl.coordType != gl.FLOAT)
 		{
 		    if ( shape._webgl.bitLODGeometry != 0 ||  shape._webgl.popGeometry != 0 ||
-                (shape._webgl.coordType != gl.FLOAT &&
-    		     shape._cf.geometry.node._mesh._numPosComponents == 4 && 
-    		     shape._cf.geometry.node._mesh._numNormComponents == 2) )
+                (shape._cf.geometry.node._mesh._numPosComponents == 4 &&
+    		     x3dom.Utils.isUnsignedType(shape._cf.geometry.node._vf.coordType)) )
 			{
     		    sp.bgCenter = shape._cf.geometry.node.getMin().toGL();
-    		} else {
+    		}
+    		else {
 		        sp.bgCenter = shape._cf.geometry.node._vf.position.toGL();
 			}
-		    sp.bgSize       = shape._cf.geometry.node._vf.size.toGL();
+		    sp.bgSize = shape._cf.geometry.node._vf.size.toGL();
 		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');            
 		}
 		if (shape._webgl.colorType != gl.FLOAT) {
@@ -2894,12 +3214,14 @@ x3dom.gfx_webgl = (function () {
 				for (var fName in shader._vf) {
 					if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
 						var field = shader._vf[fName];
-						try {
-							sp[fName] = field.toGL();
-						}
-						catch(noToGl) {
-							sp[fName] = field;
-						}
+						if (field) {
+    						if (field.toGL) {
+    							sp[fName] = field.toGL();
+    						}
+    						else {
+    							sp[fName] = field;
+    						}
+    					}
 					}
 				}
 			} else if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
@@ -3205,7 +3527,7 @@ x3dom.gfx_webgl = (function () {
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
         				    var indOff = shape._cf.geometry.node._indexOffset;
         				    for (var io=1; io<indOff.length; io++) {
-             					gl.drawElements(gl.TRIANGLE_STRIP, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
+             					gl.drawElements(shape._webgl.primType, indOff[io]-indOff[io-1], gl.UNSIGNED_SHORT, 2*indOff[io-1]);
              				}
         				}
 						else {

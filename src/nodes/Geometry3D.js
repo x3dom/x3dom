@@ -445,7 +445,7 @@ x3dom.registerNodeType(
 				if(ctx) {
 					qfactor = ctx.doc.properties.getProperty("PrimitiveQuality", "Medium");
 				}
-                if (!x3dom.isNumber(qfactor)) {
+                if (!x3dom.Utils.isNumber(qfactor)) {
                     switch (qfactor.toLowerCase()) {
                         case "low":
                             qfactor = 0.3;
@@ -1371,20 +1371,24 @@ x3dom.registerNodeType(
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
-            //this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString(ctx, 'indexType', "Uint16");
             this.addField_SFString(ctx, 'coordType', "Float32");
             this.addField_SFString(ctx, 'normalType', "Float32");
             this.addField_SFString(ctx, 'texCoordType', "Float32");
             this.addField_SFString(ctx, 'colorType', "Float32");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
+            
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
+            this.addField_SFBool(ctx, 'rgbaColors', false);
+            this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
             
             // workaround
             this._hasStrideOffset = false;
             this._mesh._numPosComponents = this._vf.normalAsSphericalCoordinates ? 4 : 3;
-			this._mesh._numTexComponents = 2;
-			this._mesh._numColComponents = 3;
+			this._mesh._numTexComponents = this._vf.numTexCoordComponents;
+			this._mesh._numColComponents = this._vf.rgbaColors ? 4 : 3;
 			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
 			this._mesh._invalidate = false;
@@ -1411,7 +1415,7 @@ x3dom.registerNodeType(
                     if ((offset / 8) - Math.floor(offset / 8) == 0) {
                         this._mesh._numPosComponents = 4;
                     }
-                    x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.coord.substring(strideInd);
@@ -1419,7 +1423,7 @@ x3dom.registerNodeType(
                     if ((stride / 8) - Math.floor(stride / 8) == 0) {
                         this._mesh._numPosComponents = 4;   // ???
                     }
-                    x3dom.debug.logInfo("coord stride: " + stride);
+                    //x3dom.debug.logInfo("coord stride: " + stride);
                 }
 
                 offsetInd = this._vf.normal.lastIndexOf('#');
@@ -1428,12 +1432,12 @@ x3dom.registerNodeType(
                     offset = +this._vf.normal.substring(++offsetInd, strideInd);
                     stride = +this._vf.normal.substring(strideInd);
                     this._parentNodes[0]._normalStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.normal.substring(strideInd);
                     this._parentNodes[0]._normalStrideOffset = [stride, 0];
-                    x3dom.debug.logInfo("normal stride: " + stride);
+                    //x3dom.debug.logInfo("normal stride: " + stride);
                 }
 
                 offsetInd = this._vf.texCoord.lastIndexOf('#');
@@ -1442,12 +1446,12 @@ x3dom.registerNodeType(
                     offset = +this._vf.texCoord.substring(++offsetInd, strideInd);
                     stride = +this._vf.texCoord.substring(strideInd);
                     this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.texCoord.substring(strideInd);
                     this._parentNodes[0]._texCoordStrideOffset = [stride, 0];
-                    x3dom.debug.logInfo("texCoord stride: " + stride);
+                    //x3dom.debug.logInfo("texCoord stride: " + stride);
                 }
 
                 offsetInd = this._vf.color.lastIndexOf('#');
@@ -1456,13 +1460,16 @@ x3dom.registerNodeType(
                     offset = +this._vf.color.substring(++offsetInd, strideInd);
                     stride = +this._vf.color.substring(strideInd);
                     this._parentNodes[0]._colorStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
+                    //x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.color.substring(strideInd);
                     this._parentNodes[0]._colorStrideOffset = [stride, 0];
-                    x3dom.debug.logInfo("color stride: " + stride);
+                    //x3dom.debug.logInfo("color stride: " + stride);
                 }
+                
+                if (this._vf.indexType != "Uint16")
+    		        x3dom.debug.logWarning("Index type " + this._vf.indexType + " problematic");
             },
             
             getMin: function()

@@ -30,10 +30,15 @@ package x3dom
 		override public function setProperties(value:Object) : void
 		{		
 			//Set Text
-			this._textField.text = value.text;
+			this._textField.text = "";
+			for(var i:uint=0; i<value.text.length; i++)
+			{
+				this._textField.appendText(value.text[i]);
+				this._textField.appendText("\n");
+			}
 			
 			//Set text size
-			this._textFormat.size = Number( value.fontSize );
+			this._textFormat.size = Number( value.fontSize ) * 42;
 			
 			this._textField.multiline = true;
 			

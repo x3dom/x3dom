@@ -19,11 +19,13 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
 
-            ctx.doc._nodeBag.lights.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.lights.push(this);
+            else
+                x3dom.debug.logWarning("X3DLightNode: No runtime context found!");
 
 			this._lightID = 0;
 			this._dirty = true;
-			
 			
             this.addField_SFFloat(ctx, 'ambientIntensity', 0);
             this.addField_SFColor(ctx, 'color', 1, 1, 1);

@@ -73,7 +73,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
 
-            var trans = ctx.autoGen ? 1 : 0;
+            var trans = (ctx && ctx.autoGen) ? 1 : 0;
 
             this.addField_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
             this.addField_MFFloat(ctx, 'skyAngle', []);

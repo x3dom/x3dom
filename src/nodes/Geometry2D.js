@@ -622,8 +622,11 @@ x3dom.registerNodeType(
 
             this.addField_MFVec2f(ctx, 'lineSegments', []);
 			
-			var x = this._vf.lineSegments[0].x;
-			var y = this._vf.lineSegments[0].y;
+			var x = 0, y = 0;
+			if (this._vf.lineSegments.length) {
+			    x = this._vf.lineSegments[0].x;
+			    y = this._vf.lineSegments[0].y;
+		    }
          	
 			var geoCacheID = 'Polyline2D_'+x+'-'+y;
 
@@ -692,8 +695,11 @@ x3dom.registerNodeType(
 
             this.addField_MFVec2f(ctx, 'point', []);
 			
-			var x = this._vf.point[0].x;
-			var y = this._vf.point[0].y;
+			var x = 0, y = 0;
+			if (this._vf.point.length) {
+    			x = this._vf.point[0].x;
+    			y = this._vf.point[0].y;
+    		}
          	
 			var geoCacheID = 'Polypoint2D_'+x+'-'+y;
 
@@ -885,8 +891,11 @@ x3dom.registerNodeType(
             this.addField_MFVec2f(ctx, 'vertices', []);
 			this.addField_MFVec2f(ctx, 'lineSegments', []);
 			
-			var x = this._vf.vertices[0].x;
-			var y = this._vf.vertices[0].y;
+			var x = 0, y = 0;
+			if (this._vf.vertices.length) {
+    			x = this._vf.vertices[0].x;
+    			y = this._vf.vertices[0].y;
+    		}
          	
 			var geoCacheID = 'TriangleSet2D_'+x+'-'+y;
 
@@ -897,10 +906,14 @@ x3dom.registerNodeType(
 			}
 			else
 			{
-				var minx = this._vf.vertices[0].x;
-				var miny = this._vf.vertices[0].y;
-				var maxx = this._vf.vertices[0].x;
-				var maxy = this._vf.vertices[0].y;
+			    var minx = 0, miny = 0, maxx = 0, maxy = 0;
+				
+				if (this._vf.vertices.length) {
+    				minx = this._vf.vertices[0].x;
+    				miny = this._vf.vertices[0].y;
+    				maxx = this._vf.vertices[0].x;
+    				maxy = this._vf.vertices[0].y;
+			    }
 					
 				for (var i = 0; i < this._vf.vertices.length ; i++) {
 					if(this._vf.vertices[i].x < minx) { minx=this._vf.vertices[i].x }
