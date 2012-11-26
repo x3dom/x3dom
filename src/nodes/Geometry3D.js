@@ -1665,6 +1665,10 @@ x3dom.registerNodeType(
               return this._vf.position.add( this._vf.size.multiply(0.5) );
             },
             
+            getBBoxSize: function() {
+              return this._vf.size;
+            },
+            
             getVolume: function(min, max, invalidate) {
               min.setValues(this.getMin());
               max.setValues(this.getMax());

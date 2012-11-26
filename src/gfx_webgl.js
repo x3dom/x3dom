@@ -1066,18 +1066,23 @@ x3dom.gfx_webgl = (function () {
 
         shape._webgl.currentNumIndices  = 0;
         shape._webgl.currentNumVertices = 0;
+        shape._webgl.numVerticesAtLevel = [];
         shape._webgl.precisionLevel     = 0;
+        shape._webgl.levelsAvailable    = 0;
         
         shape._webgl.levelLoaded = [];        
         (function(){ for (var i = 0; i < popGeo.getNumLevels(); ++i) shape._webgl.levelLoaded.push(false); })();
         
         //download callback, used to simply upload received vertex data to the GPU
         var uploadDataToGPU = function(data, lvl) {        
-        
+          //if (lvl > 4) return;
+          
           x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
           shape._webgl.levelLoaded[lvl] = true;
           
-          if (data) {
+          shape._webgl.numVerticesAtLevel[lvl] = 0;
+          
+          if (data) {          
               //perform gpu data upload
               var indexDataLengthInBytes = 0;
               var vertexDataLengthInBytes;
@@ -1122,7 +1127,8 @@ x3dom.gfx_webgl = (function () {
                   }
                   
                   //adjust render settings: vertex data
-                  shape._webgl.currentNumVertices += vertexDataLengthInBytes / popGeo.getAttributeStride();          
+                  shape._webgl.numVerticesAtLevel[lvl] = vertexDataLengthInBytes / popGeo.getAttributeStride();
+                  shape._webgl.currentNumVertices += shape._webgl.numVerticesAtLevel[lvl];
               }
               
               //update the shader's precision masking and compute number of valid indices
@@ -1131,7 +1137,7 @@ x3dom.gfx_webgl = (function () {
                 
                 var allLoaded = true;
                 
-                for (var i = 0; i < popGeo.getNumLevels(); ++i) {                                
+                for (var i = shape._webgl.levelsAvailable; i < popGeo.getNumLevels(); ++i) {                                
                     if (shape._webgl.levelLoaded[i] === false) {
                         allLoaded = false;
                         shape._webgl.precisionLevel = i; //precision in bits
@@ -1139,6 +1145,7 @@ x3dom.gfx_webgl = (function () {
                     }
                     else {
                         numValidIndices += popGeo.getNumIndicesByLevel(i);
+                        ++shape._webgl.levelsAvailable;
                     }
                 }
                 
@@ -1146,17 +1153,18 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.precisionLevel = 16;
                 }
                 
-                //adjust render settings: 
+                //adjust render settings: index data
                 shape._webgl.currentNumIndices = numValidIndices;
               })();
               
-              //update X3DOM about the number of vertices / triangles
+              //here, we tell X3DOM how many faces / vertices get displayed in the stats
               popGeo._mesh._numCoords = shape._webgl.currentNumVertices;
               //@todo: this assumes pure TRIANGLES data
               popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices / 3 : shape._webgl.currentNumVertices / 3);
               
-              popGeo.adaptVertexCount(popGeo.hasIndex() ? shape._webgl.currentNumIndices : shape._webgl.currentNumVertices);
-                            
+              //here, we tell X3DOM how many vertices get rendered
+              //@todo: this assumes pure TRIANGLES data
+              popGeo.adaptVertexCount(popGeo.hasIndex() ? popGeo._mesh._numFaces * 3 : popGeo._mesh._numCoords); 
               x3dom.debug.logInfo("PopGeometry: Loaded level " + lvl + " data to gpu, model has now " +
                                   popGeo._mesh._numCoords + " vertices and " + popGeo._mesh._numFaces + " triangles, " +
                                   (new Date().getTime() - shape._webgl.downloadStartTimer) + " ms after posting download requests, " +
@@ -1339,13 +1347,54 @@ x3dom.gfx_webgl = (function () {
                             }
                             */
                             //C: on-the-fly normal computation for per-face normals (by averaging)
+                            //**
+                            //AVERAGING WITH SPHERICAL COORDS
+                            n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];                            
+                            n_phi   += shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];                            
+                            //**
                             
-                            n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
-                            n_phi   += shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
+                            //--
+                            //AVERAGING WITH CARTESIAN COORDS
+                            /*
+                            n_theta = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
+                            n_phi   = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
+                            
+                            n_theta /= 65535.0;
+                            n_phi   /= 65535.0;                            
+                            n_theta *= Math.PI;
+                            n_phi    = n_phi * Math.PI * 2.0 - Math.PI;
+                            
+                            points[0].x += Math.sin(n_theta) * Math.cos(n_phi);
+                            points[0].y += Math.sin(n_theta) * Math.sin(n_phi);
+                            points[0].z += Math.cos(n_theta);
+                            */
+                            //--
+                            
                             if (++accum_cnt === 3) {
-                              n_theta = n_theta / 3;
-                              n_phi   = n_phi   / 3;
+                              //**
+                              //AVERAGING WITH SPHERICAL COORDS
+                              n_theta /= 3.0;
+                              n_phi   /= 3.0;
+                              //**
                               
+                              //--
+                              //AVERAGING WITH CARTESIAN COORDS
+                              /*
+                              points[0].x /= 3.0;
+                              points[0].y /= 3.0;
+                              points[0].z /= 3.0;
+                                                            
+                              n_theta = Math.acos(points[0].z);
+                              n_phi   = Math.atan2(points[0].y, points[0].x);
+                            
+                              points[0].x = 0;
+                              points[0].y = 0;
+                              points[0].z = 0;
+                              
+                              n_theta = (n_theta		  /         Math.PI ) * (256 - 1) * 256;
+                              n_phi   = ((n_phi + Math.PI) / (2.0 * Math.PI)) * (256 - 1) * 256;
+                              */
+                              //--
                               shape._webgl.triangleBuffer[write_idx + 4 - 2*stride] = n_theta;
                               shape._webgl.triangleBuffer[write_idx + 5 - 2*stride] = n_phi;
                               
@@ -2796,7 +2845,6 @@ x3dom.gfx_webgl = (function () {
 			}
 		    sp.bgSize       = shape._cf.geometry.node._vf.size.toGL();
 		    sp.bgPrecisionMax = shape._cf.geometry.node.getPrecisionMax('coordType');            
-            console.log("It's " + sp.bgPrecisionMax + "! (" + shape._cf.geometry.node._vf.coordType + ")");
 		}
 		if (shape._webgl.colorType != gl.FLOAT) {
 		    sp.bgPrecisionColMax = shape._cf.geometry.node.getPrecisionMax('colorType');
@@ -3661,6 +3709,56 @@ x3dom.gfx_webgl = (function () {
 
                 zPosTransp[sortKeyProp].push([i, center.z, sortKey]);
                 sortKeyArr.push(sortKey);
+            }
+            
+            //PopGeometry: adapt LOD
+            if (x3dom.isa(obj3d._cf.geometry.node, x3dom.nodeTypes.PopGeometry))
+            {                
+                (function() {                
+                    var popGeo = obj3d._cf.geometry.node;
+                    
+                    //compute distance-based LOD                    
+                    var fov         = (180.0 * viewarea._scene.getViewpoint().getFieldOfView()) / Math.PI;
+                    
+                    var pixelLength = center.length() * (2.0 * Math.tan(fov / 2.0) / viewarea._width);
+                    
+                    var computeLOD = function(bboxComponentSize) {
+                        return Math.ceil(Math.log(bboxComponentSize / pixelLength) / Math.log(2.0));
+                    };
+                    
+                    //compute LOD according to x, y, z
+                    var bboxSize = popGeo.getBBoxSize();
+                    
+                    //bboxSize = bboxSize.multiply(0.5); //artificial LOD coarsening for demonstration
+                    
+                    var currentLOD  = computeLOD(bboxSize.x);
+                        currentLOD  = Math.max(computeLOD(bboxSize.y));
+                        currentLOD  = Math.max(computeLOD(bboxSize.z));
+                    
+                    currentLOD = Math.max(currentLOD, 1);
+                    currentLOD = Math.min(currentLOD, 16);
+                    
+                    //assign rendering resolution, according to currently loaded data and LOD
+                    //if (currentLOD >= 8) currentLOD = 16;
+                    
+                    obj3d._webgl.precisionLevel = Math.min(obj3d._webgl.levelsAvailable, currentLOD);                    
+                    obj3d._webgl.precisionLevel = (obj3d._webgl.precisionLevel === popGeo.getNumLevels()) ? 16 : obj3d._webgl.precisionLevel;
+                    
+                    //here, we tell X3DOM how many faces / vertices get displayed in the stats                
+                    popGeo._mesh._numCoords = 0;
+                    popGeo._mesh._numFaces  = 0;
+                    
+                    //@todo: this assumes pure TRIANGLES data
+                    for (var i = 0; (i < currentLOD) && (i < obj3d._webgl.levelsAvailable); ++i) {                        
+                        popGeo._mesh._numCoords += obj3d._webgl.numVerticesAtLevel[i];
+                        //@todo: this assumes pure TRIANGLES data
+                        popGeo._mesh._numFaces  += (popGeo.hasIndex() ? popGeo.getNumIndicesByLevel(i) / 3 : obj3d._webgl.numVerticesAtLevel[i] / 3);
+                    }
+
+                    //here, we tell X3DOM how many vertices get rendered
+                    //@todo: this assumes pure TRIANGLES data
+                    popGeo.adaptVertexCount(popGeo.hasIndex() ? popGeo._mesh._numFaces * 3 : popGeo._mesh._numCoords); 
+                })();
             }
         }
 
