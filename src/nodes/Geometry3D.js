@@ -1704,6 +1704,14 @@ x3dom.registerNodeType(
               }              
             },
             
+            getVertexCount: function() {
+                var sum = 0;
+                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
+                    sum += this._vf.originalVertexCount[i];
+                }
+                return sum;
+            },
+            
             //adapts the vertex count according to the given total number of indices / vertices
             //which is used by X3DOM's renderer
             adaptVertexCount: function(numVerts) {

@@ -99,9 +99,9 @@
               <td>Debug Display:
               </td>
               <td align='right'>
-                <input type='checkbox' onclick='if (this.checked){ document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); }else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'>Stats
+                <input type='checkbox' checked='true' onclick='if (this.checked){ document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); }else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'>Stats
                 </input>
-                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;50%&apos;; } else { x3dElem.style.height=&apos;75%&apos;; }x3dElem.runtime.debug();'>Console
+                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;auto%&apos;; } else { x3dElem.style.height=&apos;auto%&apos;; }x3dElem.runtime.debug();'>Console
                 </input>
               </td>
             </tr>
@@ -119,13 +119,11 @@
         </fieldset>
       </div>
       <div>
-        <h1>Minimalistic X3DOM Viewer
+        <h1>Ultra-Lightweight Progressive LOD
         </h1>
         <p>
-          <a href='http://www.x3dom.org'>X3DOM
-          </a> output created with 
-          <a href='http://www.instantreality.org'>InstantReality
-          </a> aopt tool.
+          This <a href='http://www.x3dom.org'>X3DOM</a> content was created with the
+          <a href='http://www.instantreality.org'>InstantReality</a> aopt tool.
         </p>
       </div>
       <div style='clear:both;'></div>
@@ -263,6 +261,6 @@
         <!--directionalLight direction="0.0 0.7 0.7" color="0.5 1.0 0.5" intensity="1.0" shadowIntensity="0.0"-->
         <background skyColor='0.0 0.4 0.7'/>
       </scene>
-    </x3d>
+    </x3d>    
   </body>
 </html>

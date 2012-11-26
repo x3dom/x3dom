@@ -65,6 +65,18 @@
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
+<!-- BEGIN:JQUERY -->
+<link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
+<script src="http://code.jquery.com/jquery-1.8.2.js"></script>
+<script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
+<script>
+$(function() {
+    $( "#triangles_progressbar" ).progressbar({
+        value: 0
+    });
+});
+</script>
+<!-- END: JQUERY -->
   </head>
   <body>
     <xml>
@@ -99,9 +111,9 @@
               <td>Debug Display:
               </td>
               <td align='right'>
-                <input type='checkbox' onclick='if (this.checked){ document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); }else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'>Stats
+                <input type='checkbox' checked='true' onclick='if (this.checked){ document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); }else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'>Stats
                 </input>
-                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;50%&apos;; } else { x3dElem.style.height=&apos;75%&apos;; }x3dElem.runtime.debug();'>Console
+                <input type='checkbox' onclick='var x3dElem=document.getElementById(&apos;x3dElement&apos;);if (this.checked){ x3dElem.style.height=&apos;auto%&apos;; } else { x3dElem.style.height=&apos;auto%&apos;; }x3dElem.runtime.debug();'>Console
                 </input>
               </td>
             </tr>
@@ -119,19 +131,19 @@
         </fieldset>
       </div>
       <div>
-        <h1>Minimalistic X3DOM Viewer
+        <h1>Ultra-Lightweight Progressive LOD
         </h1>
         <p>
-          <a href='http://www.x3dom.org'>X3DOM
-          </a> output created with 
-          <a href='http://www.instantreality.org'>InstantReality
-          </a> aopt tool.
+          This <a href='http://www.x3dom.org'>X3DOM</a> content was created with the
+          <a href='http://www.instantreality.org'>InstantReality</a> aopt tool.
         </p>
       </div>
       <div style='clear:both;'></div>
-      <br></br>
     </xml>
-    <x3d id='x3dElement' showStat='true' showLog='false' style='width:95%;height:50%;'>
+    <h3>Rendered Triangles:</h3>
+    <div id="triangles_progressbar" style='width:95%;height:30px;background:#555555'></div>
+    <br></br>
+    <x3d id='x3dElement' showStat='true' showLog='false' style='width:95%;height:auto;'>
       <scene>
         <shape DEF='SP_0'>
           <popGeometry DEF='PG_0' vertexCount='163737' primType='"TRIANGLES"' position='-0.00789915025234 0.179374009371 -0.019709514454' size='0.0778829008341 0.0355979949236 0.0494803674519' attributeStride='10' normalOffset='6' vertexBufferSize='27692' indexedRendering='true'>
