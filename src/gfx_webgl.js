@@ -1388,18 +1388,7 @@ x3dom.gfx_webgl = (function () {
                                  false, shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
           gl.enableVertexAttribArray(sp.color);          
         }
-
-        //if we have a fancy jquery UI progressbar, update it!                    
-        if (document.getElementById("triangles_progressbar")) {                                                
-            (function() {
-                var pbar = $("#triangles_progressbar");
-                var progressMax = pbar.progressbar("option", "max");
-                //@todo: this assumes pure TRIANGLES data
-                progressMax += popGeo.getVertexCount() / 3;
-                pbar.progressbar("option", "max", progressMax);
-            })();
-        }
-                
+        
         shape._webgl.currentNumIndices  = 0;
         shape._webgl.currentNumVertices = 0;
         shape._webgl.numVerticesAtLevel = [];
@@ -4004,16 +3993,7 @@ x3dom.gfx_webgl = (function () {
         
         var mat_scene = mat_proj.mult(mat_view);  //viewarea.getWCtoCCMatrix();
         viewarea._last_mat_scene = mat_scene;
-
-                
-        //if we have a fancy jquery UI progressbar, initialize it!   
-        if (document.getElementById("triangles_progressbar")) {                                                
-            (function() {
-                var pbar = $("#triangles_progressbar");                            
-                var numFaces = pbar.progressbar("option", "value", 0);
-            })();
-        }
-                            
+                      
                             
         // sorting and stuff
         t0 = new Date().getTime();
@@ -4100,16 +4080,6 @@ x3dom.gfx_webgl = (function () {
                     //here, we tell X3DOM how many vertices get rendered
                     //@todo: this assumes pure TRIANGLES data
                     popGeo.adaptVertexCount(popGeo.hasIndex() ? popGeo._mesh._numFaces * 3 : popGeo._mesh._numCoords); 
-                    
-                    //if we have a fancy jquery UI progressbar, update it!                    
-                    if (document.getElementById("triangles_progressbar")) {                                                
-                        (function() {
-                            var pbar = $("#triangles_progressbar");                            
-                            var numFaces = pbar.progressbar("option", "value");
-                            numFaces += popGeo._mesh._numFaces;
-                            pbar.progressbar("option", "value", numFaces);                            
-                        })();
-                    }
                 })();
             }
         }

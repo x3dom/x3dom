@@ -65,7 +65,7 @@
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
-<!-- BEGIN:JQUERY -->
+<!-- BEGIN:JQUERY --> 
 <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
 <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
 <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
@@ -75,6 +75,37 @@ $(function() {
         value: 0
     });
 });
+
+(function() {
+    x3dom.Runtime.prototype.enterFrame = function() {
+        //initialize progressbar's value to zero         
+        $("#triangles_progressbar").progressbar("option", "value", 0);
+        
+        //update the max value of the progressbar
+        var popGeos = document.getElementsByTagName("popGeometry");
+        var sum = 0;
+        for (var i = 0; i < popGeos.length; ++i) {
+            sum += popGeos[i]._x3domNode.getVertexCount();
+        }
+        
+        //@todo: this assumes pure TRIANGLES data
+        sum /= 3;
+        
+        $("#triangles_progressbar").progressbar("option", "max", sum);
+    };
+    
+    x3dom.Runtime.prototype.exitFrame = function() {
+        //update the current value of the progressbar, computed during rendering
+        var popGeos = document.getElementsByTagName("popGeometry");
+        var numRenderedTris = 0;
+        for (var i = 0; i < popGeos.length; ++i) {            
+            numRenderedTris += popGeos[i]._x3domNode._mesh._numFaces;
+        }
+        
+        $("#triangles_progressbar").progressbar("option", "value", numRenderedTris);
+    };
+})();
+
 </script>
 <!-- END: JQUERY -->
   </head>
@@ -468,5 +499,5 @@ $(function() {
         <background skyColor='0.0 0.4 0.7'/>
       </scene>
     </x3d>
-  </body>
+  </body> 
 </html>

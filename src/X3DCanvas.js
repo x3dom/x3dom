@@ -1078,7 +1078,9 @@ x3dom.X3DCanvas.prototype.tick = function()
 				this.doc.needRender = false;    // picking might require another pass
 				this.doc.render(this.gl);
 			}
-
+            
+            this.x3dElem.runtime.exitFrame();
+            
 		}
 
         if (this.statDiv || this.progressDiv) {

@@ -92,6 +92,26 @@ x3dom.Runtime.prototype.enterFrame = function() {
 },
 
 /**
+ * APIFunction: exitFrame
+ *
+ * This method is called just after the current frame was
+ * rendered. It is therefore possible to execute custom
+ * action by overriding this method in your code:
+ *
+ * > var element = document.getElementById('my_element');
+ * > element.runtime.exitFrame = function() {
+ *     alert('hello custom exit frame');
+ * };
+ *
+ * Parameters:
+ * 		element - The x3d element this handler is acting upon
+ */
+x3dom.Runtime.prototype.exitFrame = function() {
+    //x3dom.debug.logInfo('Render frame finished');
+    // to be overwritten by user
+},
+
+/**
  * APIFunction: getActiveBindable
  *
  * Returns the currently active bindable DOM element of the given type.
