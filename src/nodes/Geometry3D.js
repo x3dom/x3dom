@@ -1833,6 +1833,57 @@ x3dom.registerNodeType(
                   deault:
                       return 1.0;
               }
+            },
+            
+            insideViewFrustum : function(bboxCenter, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne) {
+                //test our bounding box against the frustum's separating planes
+                //return true;
+                
+                var bboxHigh = bboxCenter.add(bboxSize);
+                var bboxLow  = bboxCenter.subtract(bboxSize);
+               
+                //near
+                if (bboxLow.z - near > 0)
+                    return false;
+                
+                //far
+                if (bboxHigh.z - far > 0)
+                    return false;
+                
+                //we could multiply by near here, but that's not necessary
+                var top    = 0.5 * imgPlaneHeightAtDistOne;
+                var bottom = -top;
+                var left   = bottom * ratio;
+                var right  = -left;
+                
+                var bl = new x3dom.fields.SFVec3f(left,  bottom, 1.0).normalize();
+                var br = new x3dom.fields.SFVec3f(right, bottom, 1.0).normalize();
+                var tl = new x3dom.fields.SFVec3f(left,  top,    1.0).normalize();
+                var tr = new x3dom.fields.SFVec3f(right, top,    1.0).normalize();
+                
+                //@todo: take bounding box size into account!
+                
+                //left
+                var vleft = tl.cross(bl);                
+                if (vleft.dot(bboxCenter) > 0) 
+                    return false;
+                
+                //right
+                var vright = br.cross(tr);                
+                if (vright.dot(bboxCenter) > 0) 
+                    return false;
+                
+                //bottom
+                var vbottom = bl.cross(br);                
+                if (vbottom.dot(bboxCenter) > 0) 
+                    return false;
+                
+                //top
+                var vtop = tr.cross(tl);                
+                if (vtop.dot(bboxCenter) > 0) 
+                    return false;
+                
+                return true;
             }
         }
     )

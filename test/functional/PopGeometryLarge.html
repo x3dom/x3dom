@@ -103,6 +103,11 @@ $(function() {
         }
         
         $("#triangles_progressbar").progressbar("option", "value", numRenderedTris);
+        
+        var str = 'Rendered Triangles: ' + numRenderedTris + ' / ';
+        str    += $("#triangles_progressbar").progressbar("option", "max");
+        
+        document.getElementById("number_of_triangles").textContent = str;
     };
 })();
 
@@ -118,25 +123,7 @@ $(function() {
             </strong>
           </legend>
           <table>
-            <tr>
-              <td>Navigation Mode:
-              </td>
-              <td align='right'>
-                <select style='float:right;' onchange='if (typeof this.selectedIndex != &apos;undefined&apos;) { var e = document.getElementById(&apos;x3dElement&apos;);if (this.options[this.selectedIndex].value === &apos;examine&apos;){ e.runtime.examine(); }else if (this.options[this.selectedIndex].value === &apos;lookat&apos;){ e.runtime.lookAt(); }else if (this.options[this.selectedIndex].value === &apos;walk&apos;){ e.runtime.speed(1.0); e.runtime.walk(); }else if (this.options[this.selectedIndex].value === &apos;fly&apos;){  e.runtime.speed(1.0); e.runtime.fly();  }else if (this.options[this.selectedIndex].value === &apos;walkfast&apos;){ e.runtime.speed(40.0); e.runtime.walk(); }else if (this.options[this.selectedIndex].value === &apos;flyfast&apos;){  e.runtime.speed(40.0); e.runtime.fly();  } }'>
-                  <option value='examine'>Examine
-                  </option>
-                  <option value='lookat'>LookAt
-                  </option>
-                  <option value='walk'>Walk
-                  </option>
-                  <option value='fly'>Fly
-                  </option>
-                  <option value='walkfast'>Walk (fast)
-                  </option>
-                  <option value='flyfast'>Fly (fast)
-                  </option>
-                </select>
-              </td>
+            <tr>              
             </tr>
             <tr>
               <td>Debug Display:
@@ -171,7 +158,7 @@ $(function() {
       </div>
       <div style='clear:both;'></div>
     </xml>
-    <h3>Rendered Triangles:</h3>
+    <h3 id="number_of_triangles">Rendered Triangles: x / x</h3>
     <div id="triangles_progressbar" style='width:95%;height:30px;background:#555555'></div>
     <br></br>
     <x3d id='x3dElement' showStat='true' showLog='false' style='width:95%;height:auto;'>

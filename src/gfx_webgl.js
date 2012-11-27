@@ -4035,46 +4035,61 @@ x3dom.gfx_webgl = (function () {
             
             //PopGeometry: adapt LOD
             if (x3dom.isa(obj3d._cf.geometry.node, x3dom.nodeTypes.PopGeometry))
-            {                
+            {   
                 (function() {                
                     var popGeo = obj3d._cf.geometry.node;
                     
-                    //compute distance-based LOD                    
-                    var fov         = (180.0 * viewarea._scene.getViewpoint().getFieldOfView()) / Math.PI;
-                    
-                    var pixelLength = center.length() * (2.0 * Math.tan(fov / 2.0) / viewarea._width);
-                    
-                    var computeLOD = function(bboxComponentSize) {
-                        return Math.ceil(Math.log(bboxComponentSize / pixelLength) / Math.log(2.0));
-                    };
-                    
-                    //compute LOD according to x, y, z
-                    var bboxSize = popGeo.getBBoxSize();
-                    
-                    //bboxSize = bboxSize.multiply(0.5); //artificial LOD coarsening for demonstration
-                    
-                    var currentLOD  = computeLOD(bboxSize.x);
-                        currentLOD  = Math.max(computeLOD(bboxSize.y));
-                        currentLOD  = Math.max(computeLOD(bboxSize.z));
-                    
-                    currentLOD = Math.max(currentLOD, 1);
-                    currentLOD = Math.min(currentLOD, 16);
-                    
-                    //assign rendering resolution, according to currently loaded data and LOD
-                    //if (currentLOD >= 8) currentLOD = 16;
-                    
-                    obj3d._webgl.precisionLevel = Math.min(obj3d._webgl.levelsAvailable, currentLOD);                    
-                    obj3d._webgl.precisionLevel = (obj3d._webgl.precisionLevel === popGeo.getNumLevels()) ? 16 : obj3d._webgl.precisionLevel;
-                    
-                    //here, we tell X3DOM how many faces / vertices get displayed in the stats                
                     popGeo._mesh._numCoords = 0;
                     popGeo._mesh._numFaces  = 0;
                     
-                    //@todo: this assumes pure TRIANGLES data
-                    for (var i = 0; (i < currentLOD) && (i < obj3d._webgl.levelsAvailable); ++i) {                        
-                        popGeo._mesh._numCoords += obj3d._webgl.numVerticesAtLevel[i];
+                    //@todo: Check wheter this is really fov_y
+                    var fov_y = (180.0 * viewarea._scene.getViewpoint().getFieldOfView()) / Math.PI;
+                    
+                    var bboxSize = trafo.multMatrixPnt(popGeo.getBBoxSize());
+                    
+                    var near  = viewarea._scene.getViewpoint().getNear();
+                    var far   = viewarea._scene.getViewpoint().getFar();
+                    var ratio = viewarea._width / viewarea._height;
+                        
+                    var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
+                    
+                    //view frustum culling (without near / far clipping plane yet)
+                    if (popGeo.insideViewFrustum(center, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne)) {
+                    
+                        //compute distance-based LOD
+                        //@todo: check this again
+                        var dist = -center.z;
+                        
+                        var projectedPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
+                                                
+                        var computeLOD = function(bboxComponentSize) {
+                            const ErrorToleranceFactor = 0.5;
+                            return Math.ceil(Math.log(bboxComponentSize / (ErrorToleranceFactor * projectedPixelLength)) / Math.log(2.0));
+                        };
+                        
+                        //compute LOD according to x, y, z                        
+                        var currentLOD  = computeLOD(bboxSize.x);
+                            currentLOD  = Math.max(computeLOD(bboxSize.y));
+                            currentLOD  = Math.max(computeLOD(bboxSize.z));
+                        
+                        currentLOD = Math.max(currentLOD, 1);
+                        currentLOD = Math.min(currentLOD, 16);
+                        
+                        //assign rendering resolution, according to currently loaded data and LOD
+                        //@todo: fix cracks and throw away the next line
+                        //if (currentLOD >= 8) currentLOD = 16;
+                        
+                        obj3d._webgl.precisionLevel = Math.min(obj3d._webgl.levelsAvailable, currentLOD);                    
+                        obj3d._webgl.precisionLevel = (obj3d._webgl.precisionLevel === popGeo.getNumLevels()) ? 16 : obj3d._webgl.precisionLevel;
+                        
+                        //here, we tell X3DOM how many faces / vertices get displayed in the stats                
+                                            
                         //@todo: this assumes pure TRIANGLES data
-                        popGeo._mesh._numFaces  += (popGeo.hasIndex() ? popGeo.getNumIndicesByLevel(i) / 3 : obj3d._webgl.numVerticesAtLevel[i] / 3);
+                        for (var i = 0; (i < currentLOD) && (i < obj3d._webgl.levelsAvailable); ++i) {                        
+                            popGeo._mesh._numCoords += obj3d._webgl.numVerticesAtLevel[i];
+                            //@todo: this assumes pure TRIANGLES data
+                            popGeo._mesh._numFaces  += (popGeo.hasIndex() ? popGeo.getNumIndicesByLevel(i) / 3 : obj3d._webgl.numVerticesAtLevel[i] / 3);
+                        }                   
                     }
                     
                     //here, we tell X3DOM how many vertices get rendered
