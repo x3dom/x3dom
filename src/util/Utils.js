@@ -465,6 +465,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 		property.VERTEXCOLOR		= (geometry._mesh._colors[0].length > 0 || 
 									  (property.IMAGEGEOMETRY && geometry.getColorTexture()) || 
 									  (property.BITLODGEOMETRY && geometry.hasColor()) || 
+                                      (property.POPGEOMETRY    && geometry.hasColor()) ||
 									  (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
 	}
 	

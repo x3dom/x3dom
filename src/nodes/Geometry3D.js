@@ -1830,7 +1830,7 @@ x3dom.registerNodeType(
                      //return 4294967295.0;
                   //case "Float32":
                   //case "Float64":
-                  deault:
+                  default:
                       return 1.0;
               }
             },

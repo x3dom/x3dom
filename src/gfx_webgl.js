@@ -3467,6 +3467,7 @@ x3dom.gfx_webgl = (function () {
             try {
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
               if (viewarea._points !== undefined && viewarea._points > 0) {
+                //@todo: shouldn't this be POINT and LINE?
                 var polyMode = (viewarea._points == 1) ? gl.POINTS : gl.LINES;  // FIXME
                 
 				if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
@@ -4046,6 +4047,10 @@ x3dom.gfx_webgl = (function () {
                     var fov_y = (180.0 * viewarea._scene.getViewpoint().getFieldOfView()) / Math.PI;
                     
                     var bboxSize = trafo.multMatrixPnt(popGeo.getBBoxSize());
+                    //@todo: CHECK THIS AGAIN!
+                    bboxSize.x = bboxSize.x < 0.0 ? bboxSize.x * -1.0 : bboxSize.x;
+                    bboxSize.y = bboxSize.y < 0.0 ? bboxSize.y * -1.0 : bboxSize.y;
+                    bboxSize.z = bboxSize.z < 0.0 ? bboxSize.z * -1.0 : bboxSize.z;
                     
                     var near  = viewarea._scene.getViewpoint().getNear();
                     var far   = viewarea._scene.getViewpoint().getFar();
@@ -4072,6 +4077,7 @@ x3dom.gfx_webgl = (function () {
                             currentLOD  = Math.max(computeLOD(bboxSize.y));
                             currentLOD  = Math.max(computeLOD(bboxSize.z));
                         
+                        //currentLOD = 16;
                         currentLOD = Math.max(currentLOD, 1);
                         currentLOD = Math.min(currentLOD, 16);
                         
