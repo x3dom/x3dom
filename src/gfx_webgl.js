@@ -667,13 +667,9 @@ x3dom.gfx_webgl = (function () {
                         x3dom.debug.logWarning("Color format not supported.");
                     }
                     
-                    if (this.texCoord && dataLen != shape._texCoordStrideOffset[0] / 
-                                x3dom.Utils.getDataTypeSize(geoNode._vf.texCoordType))
-                    {
-                        this.texCoord = null;
-                        x3dom.debug.logWarning("TexCoord format not supported.");
-                    }
-
+                    var texDataLen = this.texCoord ? (shape._texCoordStrideOffset[0] / 
+                                          x3dom.Utils.getDataTypeSize(geoNode._vf.texCoordType)) : 0;
+                    
                     // set data types
                     //geoNode._vf.coordType = "Float32";
                     geoNode._vf.normalType = "Float32";
@@ -689,7 +685,7 @@ x3dom.gfx_webgl = (function () {
                     
                     // create non-indexed mesh
                     var posBuf = [], normBuf = [], texcBuf = [], colBuf = [];
-                    var i, j, n = this.index ? (this.index.length - 2) : (this.coord.length / 3 - 2);
+                    var i, j, l, n = this.index ? (this.index.length - 2) : (this.coord.length / 3 - 2);
                     
                     for (i=0; i<n; i+=3)
                     {
@@ -713,10 +709,14 @@ x3dom.gfx_webgl = (function () {
                         }
                         
                         if (this.texCoord) {
-                            texcBuf.push(this.texCoord[j  ]);
-                            texcBuf.push(this.texCoord[j+1]);
-                            texcBuf.push(this.texCoord[j+2]);
-                            if (dataLen > 3) texcBuf.push(this.texCoord[j+3]);
+                            l = texDataLen * (this.index ? this.index[i] : i);
+                            
+                            texcBuf.push(this.texCoord[l  ]);
+                            texcBuf.push(this.texCoord[l+1]);
+                            if (texDataLen > 3) {
+                                texcBuf.push(this.texCoord[l+2]);
+                                texcBuf.push(this.texCoord[l+3]);
+                            }
                         }
                         
                         j = dataLen * (this.index ? this.index[i+1] : i+1);
@@ -738,10 +738,14 @@ x3dom.gfx_webgl = (function () {
                         }
                         
                         if (this.texCoord) {
-                            texcBuf.push(this.texCoord[j  ]);
-                            texcBuf.push(this.texCoord[j+1]);
-                            texcBuf.push(this.texCoord[j+2]);
-                            if (dataLen > 3) texcBuf.push(this.texCoord[j+3]);
+                            l = texDataLen * (this.index ? this.index[i+1] : i+1);
+                            
+                            texcBuf.push(this.texCoord[l  ]);
+                            texcBuf.push(this.texCoord[l+1]);
+                            if (texDataLen > 3) {
+                                texcBuf.push(this.texCoord[l+2]);
+                                texcBuf.push(this.texCoord[l+3]);
+                            }
                         }
                         
                         j = dataLen * (this.index ? this.index[i+2] : i+2);
@@ -763,10 +767,14 @@ x3dom.gfx_webgl = (function () {
                         }
                         
                         if (this.texCoord) {
-                            texcBuf.push(this.texCoord[j  ]);
-                            texcBuf.push(this.texCoord[j+1]);
-                            texcBuf.push(this.texCoord[j+2]);
-                            if (dataLen > 3) texcBuf.push(this.texCoord[j+3]);
+                            l = texDataLen * (this.index ? this.index[i+2] : i+2);
+                            
+                            texcBuf.push(this.texCoord[l  ]);
+                            texcBuf.push(this.texCoord[l+1]);
+                            if (texDataLen > 3) {
+                                texcBuf.push(this.texCoord[l+2]);
+                                texcBuf.push(this.texCoord[l+3]);
+                            }
                         }
 
                         var a = p0.subtract(p1);
