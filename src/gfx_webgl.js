@@ -2899,8 +2899,7 @@ x3dom.gfx_webgl = (function () {
             sp.modelMatrix = trafo.toGL();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
 
-            sp.lowBit = (shape._objectID & 255) / 255.0;
-            sp.alpha = sp.lowBit;   // FIXME (pick unlit colors mode)
+            sp.lowBit  = (shape._objectID & 255) / 255.0;
             sp.highBit = (shape._objectID >>> 8) / 255.0;
 
             sp.from = from.toGL();
@@ -3467,8 +3466,7 @@ x3dom.gfx_webgl = (function () {
             try {
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
               if (viewarea._points !== undefined && viewarea._points > 0) {
-                //@todo: shouldn't this be POINT and LINE?
-                var polyMode = (viewarea._points == 1) ? gl.POINTS : gl.LINES;  // FIXME
+                var polyMode = (viewarea._points == 1) ? gl.POINTS : gl.LINES;
                 
 				if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
 				    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
