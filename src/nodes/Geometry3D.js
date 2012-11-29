@@ -1863,24 +1863,26 @@ x3dom.registerNodeType(
                 
                 //@todo: take bounding box size into account!
                 
+                var halfBBDiag = bboxSize.length()* 0.5;
+                
                 //left
                 var vleft = tl.cross(bl);                
-                if (vleft.dot(bboxCenter) > 0) 
+                if ((vleft.dot(bboxCenter) - halfBBDiag) > 0) 
                     return false;
                 
                 //right
                 var vright = br.cross(tr);                
-                if (vright.dot(bboxCenter) > 0) 
+                if ((vright.dot(bboxCenter) - halfBBDiag) > 0) 
                     return false;
                 
                 //bottom
                 var vbottom = bl.cross(br);                
-                if (vbottom.dot(bboxCenter) > 0) 
+                if ((vbottom.dot(bboxCenter) - halfBBDiag) > 0) 
                     return false;
                 
                 //top
                 var vtop = tr.cross(tl);                
-                if (vtop.dot(bboxCenter) > 0) 
+                if ((vtop.dot(bboxCenter) - halfBBDiag) > 0) 
                     return false;
                 
                 return true;

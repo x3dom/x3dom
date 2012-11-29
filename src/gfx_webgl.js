@@ -4038,12 +4038,21 @@ x3dom.gfx_webgl = (function () {
                     //@todo: Check wheter this is really fov_y
                     var fov_y = (180.0 * viewarea._scene.getViewpoint().getFieldOfView()) / Math.PI;
                     
-                    var bboxSize = trafo.multMatrixPnt(popGeo.getBBoxSize());
+                    //var bboxSize = popGeo.getBBoxSize();
                     //@todo: CHECK THIS AGAIN!
-                    bboxSize.x = bboxSize.x < 0.0 ? bboxSize.x * -1.0 : bboxSize.x;
-                    bboxSize.y = bboxSize.y < 0.0 ? bboxSize.y * -1.0 : bboxSize.y;
-                    bboxSize.z = bboxSize.z < 0.0 ? bboxSize.z * -1.0 : bboxSize.z;
                     
+                    mat_model_view = mat_view.mult(trafo);
+                    
+                    var bbxScaleFactor = new x3dom.fields.SFVec3f(0,0,0);
+                    (function(){
+                        var translation = new x3dom.fields.SFVec3f(0,0,0);
+                        var rotation    = new x3dom.fields.Quaternion(0,0,1,0);
+                        var scaleOrientation = new x3dom.fields.Quaternion(0,0,1,0);
+                        mat_model_view.getTransform(translation, rotation, bbxScaleFactor, scaleOrientation);
+                    })();
+                    
+                    var bboxSize = popGeo.getBBoxSize().multComponents(bbxScaleFactor);
+                                     
                     var near  = viewarea._scene.getViewpoint().getNear();
                     var far   = viewarea._scene.getViewpoint().getFar();
                     var ratio = viewarea._width / viewarea._height;
@@ -4055,19 +4064,23 @@ x3dom.gfx_webgl = (function () {
                     
                         //compute distance-based LOD
                         //@todo: check this again
-                        var dist = -center.z;
+                        var dist = -center.z + bboxSize.length();
                         
                         var projectedPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                                                 
                         var computeLOD = function(bboxComponentSize) {
-                            const ErrorToleranceFactor = 0.5;
-                            return Math.ceil(Math.log(bboxComponentSize / (ErrorToleranceFactor * projectedPixelLength)) / Math.log(2.0));
+                            if (typeof x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor === 'undefined')
+                                x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = 1.0;
+                            return Math.ceil(Math.log( bboxComponentSize /
+                                                      (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * 0.5 * projectedPixelLength)
+                                                      )
+                                             / Math.log(2.0));
                         };
                         
                         //compute LOD according to x, y, z                        
                         var currentLOD  = computeLOD(bboxSize.x);
-                            currentLOD  = Math.max(computeLOD(bboxSize.y));
-                            currentLOD  = Math.max(computeLOD(bboxSize.z));
+                            currentLOD  = Math.max(computeLOD(bboxSize.y), currentLOD);
+                            currentLOD  = Math.max(computeLOD(bboxSize.z), currentLOD);
                         
                         //currentLOD = 16;
                         currentLOD = Math.max(currentLOD, 1);
