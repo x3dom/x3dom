@@ -79,7 +79,7 @@ $(function() {
 $(function() {
     $( "#error_slider" ).slider({
         value: 1,
-        min: 1,
+        min: 0,
         max: 10,
         change: function(event, ui) {
            document.getElementById("x3dElement").render();
@@ -177,8 +177,8 @@ $(function() {
       </div>
       <div style='clear:both;'></div>
     </xml>
-    <h3 id="error_bound">Error Bound (pixels): x</h3>
-    <div id="error_slider"></div>
+    <h3 id="error_bound">Error Bound (pixels): x</h3>    
+    <div id="error_slider" style="width:30%"></div>
     <h3 id="number_of_triangles">Rendered Triangles: x / x</h3>
     <div id="triangles_progressbar" style='width:95%;height:30px;background:#555555'></div>
     <br></br>
