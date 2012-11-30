@@ -4065,12 +4065,12 @@ x3dom.gfx_webgl = (function () {
                         
                     var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
                     
-                    //view frustum culling (without near / far clipping plane yet)
+                    //view frustum culling, using bounding sphere (without near / far clipping plane yet)
                     if (popGeo.insideViewFrustum(center, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne)) {
                     
                         //compute distance-based LOD
-                        //@todo: check this again
-                        var dist = -center.z + bboxSize.length();
+                        //distance is estimated conservatively using the bounding sphere
+                        var dist = Math.max(-center.z - (bboxSize.length() * 0.5), near);
                         
                         var projectedPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                                                 
@@ -4078,20 +4078,21 @@ x3dom.gfx_webgl = (function () {
                             // TODO: is ErrorToleranceFactor really per node type or per node instance?
                             if (typeof x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor === 'undefined')
                                 x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = 1.0;
-                            return Math.ceil(Math.log( bboxComponentSize /
-                                                      (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * 0.5 * projectedPixelLength)
-                                                      ) / Math.log(2.0));
+                            else if (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor == 0.0)
+                                return 16;
+                            else
+                                return Math.ceil(Math.log( bboxComponentSize /
+                                                          (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * 0.5 * projectedPixelLength)
+                                                          ) / Math.log(2.0));
                         };
                         
-                        //compute LOD according to x, y, z                        
-                        var currentLOD  = computeLOD(bboxSize.x);
-                            currentLOD  = Math.max(computeLOD(bboxSize.y), currentLOD);
-                            currentLOD  = Math.max(computeLOD(bboxSize.z), currentLOD);
+                        //compute LOD using bounding sphere
+                        var currentLOD  = computeLOD(bboxSize.length());
                         
                         //currentLOD = 16;
                         currentLOD = Math.max(currentLOD, 1);
                         currentLOD = Math.min(currentLOD, 16);
-                        console.log(currentLOD);
+                        
                         //assign rendering resolution, according to currently loaded data and LOD
                         //@todo: fix cracks and throw away the next line
                         //if (currentLOD >= 8) currentLOD = 16;
