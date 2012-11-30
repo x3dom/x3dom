@@ -4065,6 +4065,8 @@ x3dom.gfx_webgl = (function () {
                         
                     var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
                     
+                    var currentLOD = 0;
+                    
                     //view frustum culling, using bounding sphere (without near / far clipping plane yet)
                     if (popGeo.insideViewFrustum(center, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne)) {
                     
@@ -4087,14 +4089,11 @@ x3dom.gfx_webgl = (function () {
                         };
                         
                         //compute LOD using bounding sphere
-                        var currentLOD  = computeLOD(bboxSize.length());
+                        currentLOD  = computeLOD(bboxSize.length());
                         
                         //currentLOD = 16;
                         currentLOD = Math.max(currentLOD, 1);
                         currentLOD = Math.min(currentLOD, 16);
-                        
-                        //this field is mainly thought for the use with external statistics
-                        popGeo._mesh.currentLOD = currentLOD;             
                         
                         //assign rendering resolution, according to currently loaded data and LOD
                         //@todo: fix cracks and throw away the next line
@@ -4112,6 +4111,9 @@ x3dom.gfx_webgl = (function () {
                             popGeo._mesh._numFaces  += (popGeo.hasIndex() ? popGeo.getNumIndicesByLevel(i) / 3 : obj3d._webgl.numVerticesAtLevel[i] / 3);
                         }                   
                     }
+                    
+                    //this field is mainly thought for the use with external statistics
+                    popGeo._mesh.currentLOD = currentLOD;  
                     
                     //here, we tell X3DOM how many vertices get rendered
                     //@todo: this assumes pure TRIANGLES data
