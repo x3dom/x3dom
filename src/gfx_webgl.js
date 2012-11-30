@@ -4091,7 +4091,7 @@ x3dom.gfx_webgl = (function () {
                         //currentLOD = 16;
                         currentLOD = Math.max(currentLOD, 1);
                         currentLOD = Math.min(currentLOD, 16);
-                        
+                        console.log(currentLOD);
                         //assign rendering resolution, according to currently loaded data and LOD
                         //@todo: fix cracks and throw away the next line
                         //if (currentLOD >= 8) currentLOD = 16;

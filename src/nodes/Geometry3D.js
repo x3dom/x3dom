@@ -1839,15 +1839,14 @@ x3dom.registerNodeType(
                 //test our bounding box against the frustum's separating planes
                 //return true;
                 
-                var bboxHigh = bboxCenter.add(bboxSize);
-                var bboxLow  = bboxCenter.subtract(bboxSize);
+                var halfBBDiag = bboxSize.length()* 0.5;
                
                 //near
-                if (bboxLow.z - near > 0)
+                if ((bboxCenter.z - near) - halfBBDiag > 0)
                     return false;
                 
                 //far
-                if (bboxHigh.z - far > 0)
+                if ((bboxCenter.z - far) - halfBBDiag > 0)
                     return false;
                 
                 //we could multiply by near here, but that's not necessary
@@ -1863,7 +1862,7 @@ x3dom.registerNodeType(
                 
                 //@todo: take bounding box size into account!
                 
-                var halfBBDiag = bboxSize.length()* 0.5;
+                
                 
                 //left
                 var vleft = tl.cross(bl);                
