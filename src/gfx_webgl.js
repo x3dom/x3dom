@@ -4075,12 +4075,12 @@ x3dom.gfx_webgl = (function () {
                         var projectedPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                                                 
                         var computeLOD = function(bboxComponentSize) {
+                            // TODO: is ErrorToleranceFactor really per node type or per node instance?
                             if (typeof x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor === 'undefined')
                                 x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = 1.0;
                             return Math.ceil(Math.log( bboxComponentSize /
                                                       (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * 0.5 * projectedPixelLength)
-                                                      )
-                                             / Math.log(2.0));
+                                                      ) / Math.log(2.0));
                         };
                         
                         //compute LOD according to x, y, z                        
