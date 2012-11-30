@@ -4109,7 +4109,7 @@ x3dom.gfx_webgl = (function () {
                             popGeo._mesh._numCoords += obj3d._webgl.numVerticesAtLevel[i];
                             //@todo: this assumes pure TRIANGLES data
                             popGeo._mesh._numFaces  += (popGeo.hasIndex() ? popGeo.getNumIndicesByLevel(i) / 3 : obj3d._webgl.numVerticesAtLevel[i] / 3);
-                        }                   
+                        }
                     }
                     
                     //this field is mainly thought for the use with external statistics
