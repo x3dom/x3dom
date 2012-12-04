@@ -2907,6 +2907,11 @@ x3dom.gfx_webgl = (function () {
 			
 			//Set ImageGeometry switch
             sp.imageGeometry = shape._webgl.imageGeometry;
+            
+            // Set IDs perVertex switch
+            sp.writeShadowIDs = (shape._webgl.binaryGeometry != 0 && 
+                                 shape._cf.geometry.node._vf.idsPerVertex) ? 
+                                (x3dom.nodeTypes.Shape.objectID + 2) : 0;
 			
 			if (shape._webgl.coordType != gl.FLOAT)
 			{
@@ -2982,7 +2987,7 @@ x3dom.gfx_webgl = (function () {
 
 			for (var q=0; q<shape._webgl.positions.length; q++)
 			{
-				if(shape._webgl.buffers[5*q+0])
+				if (shape._webgl.buffers[5*q+0])
 				{
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
 				}
