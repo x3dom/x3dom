@@ -3635,7 +3635,7 @@ x3dom.gfx_webgl = (function () {
 	/*****************************************************************************
     * Render ColorBuffer-Pass for picking
     *****************************************************************************/
-    Context.prototype.pickValue = function (viewarea, x, y, viewMat, sceneMat)
+    Context.prototype.pickValue = function (viewarea, x, y, buttonState, viewMat, sceneMat)
     {
         var gl = this.ctx3d;
         var scene = viewarea._scene;
@@ -3740,7 +3740,56 @@ x3dom.gfx_webgl = (function () {
             }
             //x3dom.debug.logInfo(pickPos + " / " + objId);
             
-            if (objId > 0) {
+            var baseID = x3dom.nodeTypes.Shape.objectID + 2;
+            
+            if (objId >= baseID) {
+                objId -= baseID;
+                
+                viewarea._pickingInfo.pickPos = pickPos;
+                viewarea._pick.setValues(pickPos);
+                
+                viewarea._pickingInfo.pickNorm = pickNorm;
+                viewarea._pickNorm.setValues(pickNorm);
+                
+                viewarea._pickingInfo.pickObj = null;
+                viewarea._pickingInfo.lastClickObj = null;
+                
+                //x3dom.debug.logInfo(baseID + " + " + objId);
+                var eventType = "shadowObjectIdChanged";
+
+            	try {
+    				if ( scene._xmlNode && 
+    					(scene._xmlNode["on"+eventType] ||
+    					 scene._xmlNode.hasAttribute("on"+eventType) ||
+    					 scene._listeners[eventType]) ) {
+    				    var event = {
+    						target: scene._xmlNode,
+    						type: eventType,
+                            button: buttonState,
+                            layerX: x,
+                            layerY: y,
+                            shadowObjectId: objId,
+                            worldX: pickPos.x,
+                            worldY: pickPos.y,
+                            worldZ: pickPos.z,
+                            normalX: pickNorm.x,
+                            normalY: pickNorm.y,
+                            normalZ: pickNorm.z,
+                            hitPnt: pickPos.toGL(),
+                            hitObject: scene._xmlNode,
+                            cancelBubble: false,
+                            stopPropagation: function() { this.cancelBubble = true; },
+                        	preventDefault:  function() { this.cancelBubble = true; }
+    					};
+    					
+    					scene.callEvtHandler(eventType, event);
+    				}
+    			}
+    			catch(e) {
+    				x3dom.debug.logException(e);
+    			}
+            }
+            else if (objId > 0) {
                 //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
                 //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
                 viewarea._pickingInfo.pickPos = pickPos;
@@ -3979,7 +4028,8 @@ x3dom.gfx_webgl = (function () {
 						position: e_translation,
 						orientation: e_rotation.toAxisAngle(),
 						cancelBubble: false,
-						stopPropagation: function() { this.cancelBubble = true; }
+						stopPropagation: function() { this.cancelBubble = true; },
+						preventDefault: function() { this.cancelBubble = true; }
 					};
 					
 					e_viewpoint.callEvtHandler(e_eventType, e_event);

@@ -198,7 +198,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             tmpMat = tmpMat.inverse();
 
             this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                        tmpMat, this.getProjectionMatrix().mult(tmpMat));
+                        this._lastButton, tmpMat, this.getProjectionMatrix().mult(tmpMat));
 
             if (this._pickingInfo.pickObj)
             {
@@ -324,10 +324,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                                 this._last_mat_view.e2().negate(), this._last_mat_view.e3());
                 
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                            tmpMat, currProjMat.mult(tmpMat));
+                            this._lastButton, tmpMat, currProjMat.mult(tmpMat));
             }
             else {
-                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
+                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
             }
 
             if (this._pickingInfo.pickObj)
@@ -354,7 +354,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 tmpMat = tmpMat.inverse();
 
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                            tmpMat, currProjMat.mult(tmpMat));
+                            this._lastButton, tmpMat, currProjMat.mult(tmpMat));
 
                 if (this._pickingInfo.pickObj)
                 {
@@ -397,7 +397,7 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var fMat = this._flyMat.inverse();
 
         // check front for collisions
-        this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
+        this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
 
         if (this._pickingInfo.pickObj)
         {
@@ -813,7 +813,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         hitObject: obj._xmlNode ? obj._xmlNode : null,
         cancelBubble: false,
         stopPropagation: function() { this.cancelBubble = true; },
-		preventDefault: function() { this.cancelBubble = true;}
+		preventDefault: function() { this.cancelBubble = true; }
     };
     //x3dom.debug.logInfo(event.type + ", " + event.worldX.toFixed(2) + ", " +
     //    event.worldY.toFixed(2) + ", " + event.worldZ.toFixed(2) + ", " + event.button);

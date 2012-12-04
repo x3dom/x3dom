@@ -222,7 +222,7 @@ x3dom.X3DDocument.prototype.onPick = function (ctx, x, y) {
         return;
     }
 	
-    ctx.pickValue(this._viewarea, x, y);
+    ctx.pickValue(this._viewarea, x, y, 1);
 };
 
 x3dom.X3DDocument.prototype.onPickRect = function (ctx, x1, y1, x2, y2) {
@@ -239,7 +239,7 @@ x3dom.X3DDocument.prototype.onMove = function (ctx, x, y, buttonState) {
     }
 
     if (this._viewarea._scene._vf.doPickPass)
-        ctx.pickValue(this._viewarea, x, y);
+        ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onMove(x, y, buttonState);
 };
 
@@ -257,7 +257,7 @@ x3dom.X3DDocument.prototype.onDrag = function (ctx, x, y, buttonState) {
     }
 
     if (this._viewarea._scene._vf.doPickPass)
-        ctx.pickValue(this._viewarea, x, y);
+        ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onDrag(x, y, buttonState);
 };
 
@@ -269,7 +269,7 @@ x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
     // update volume only on click since expensive!
     this._viewarea._scene.updateVolume();
 
-    ctx.pickValue(this._viewarea, x, y);
+    ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onMousePress(x, y, buttonState);
 };
 
@@ -278,7 +278,7 @@ x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState) {
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y);
+    ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onMouseRelease(x, y, buttonState);
 };
 
@@ -287,7 +287,7 @@ x3dom.X3DDocument.prototype.onMouseOver = function (ctx, x, y, buttonState) {
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y);
+    ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onMouseOver(x, y, buttonState);
 };
 
@@ -296,7 +296,7 @@ x3dom.X3DDocument.prototype.onMouseOut = function (ctx, x, y, buttonState) {
         return;
     }
 
-    ctx.pickValue(this._viewarea, x, y);
+    ctx.pickValue(this._viewarea, x, y, buttonState);
     this._viewarea.onMouseOut(x, y, buttonState);
 };
 
