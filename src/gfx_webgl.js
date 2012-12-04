@@ -3782,7 +3782,7 @@ x3dom.gfx_webgl = (function () {
                         	preventDefault:  function() { this.cancelBubble = true; }
     					};
     					
-    					scene.callEvtHandler(eventType, event);
+    					scene.callEvtHandler(("on"+eventType), event);
     				}
     			}
     			catch(e) {
@@ -4032,7 +4032,7 @@ x3dom.gfx_webgl = (function () {
 						preventDefault: function() { this.cancelBubble = true; }
 					};
 					
-					e_viewpoint.callEvtHandler(e_eventType, e_event);
+					e_viewpoint.callEvtHandler(("on"+e_eventType), e_event);
 
                     this._calledViewpointChangedHandler = true;
 				}
