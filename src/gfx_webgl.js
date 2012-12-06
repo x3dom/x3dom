@@ -190,7 +190,7 @@ x3dom.gfx_webgl = (function () {
 			
 			//Check for dirty Textures
 			if (shape._dirty.texture === true)
-			{
+			{	
 				//Check for Texture add or remove
 				if (shape._webgl.texture.length != shape.getTextures().length)
 				{
@@ -220,16 +220,13 @@ x3dom.gfx_webgl = (function () {
 					var textures = shape.getTextures();
 					for( var t=0; t<textures.length; ++t )
 					{	
-						if(textures[t] === shape._webgl.texture[t])
+						if(textures[t] === shape._webgl.texture[t].node)
 						{
 							//only update the texture
 							shape._webgl.texture[t].update();
 						} 
 						else 
 						{
-							//delete old Texture
-							gl.deleteTexture( shape._webgl.texture[t].texture );
-							
 							//Set texture to null for recreation
 							shape._webgl.texture[t].texture = null;
 							
