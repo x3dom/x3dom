@@ -998,7 +998,7 @@ x3dom.fields.SFVec2f.copy = function(v) {
 };
 
 x3dom.fields.SFVec2f.parse = function (str) {
-    var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+    var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
     return new x3dom.fields.SFVec2f(+m[1], +m[2]);
 };
 
@@ -1073,7 +1073,7 @@ x3dom.fields.SFVec2f.prototype.toString = function () {
 };
 
 x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
-    var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+    var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
     this.x = +m[1];
     this.y = +m[2];
     return this;
@@ -1108,7 +1108,7 @@ x3dom.fields.SFVec3f.MAX = function() {
 
 x3dom.fields.SFVec3f.parse = function (str) {
     try {
-        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+        var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
         return new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]);
     }
     catch (e) {
@@ -1203,7 +1203,7 @@ x3dom.fields.SFVec3f.prototype.toString = function () {
 
 x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
     try {
-        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+        var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
         this.x = +m[1];
         this.y = +m[2];
         this.z = +m[3];
@@ -1529,7 +1529,7 @@ x3dom.fields.Quaternion.prototype.toString = function () {
 };
 
 x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
-    var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+    var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
     var quat = x3dom.fields.Quaternion.axisAngle(new x3dom.fields.SFVec3f(+m[1], +m[2], +m[3]), +m[4]);
     this.x = quat.x;
     this.y = quat.y;
@@ -1555,7 +1555,7 @@ x3dom.fields.SFColor = function(r, g, b) {
 
 x3dom.fields.SFColor.parse = function(str) {
     try {
-        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+        var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
         return new x3dom.fields.SFColor( +m[1], +m[2], +m[3] );
     }
     catch (e) {
@@ -1607,7 +1607,7 @@ x3dom.fields.SFColor.prototype.toString = function() {
 
 x3dom.fields.SFColor.prototype.setValueByStr = function(str) {
     try {
-        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+        var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
         this.r = +m[1];
         this.g = +m[2];
         this.b = +m[3];
