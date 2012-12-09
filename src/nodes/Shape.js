@@ -309,6 +309,21 @@ x3dom.registerNodeType(
                     this._cleanupGLObjects();
                 }
             },
+            
+            unsetDirty: function () {
+				// vertex attributes
+				this._dirty.positions = false;
+				this._dirty.normals = false;
+				this._dirty.texCoords = false;
+				this._dirty.colors =  false;
+				// indices/topology
+				this._dirty.indexes = false;
+				// appearance properties
+				this._dirty.texture = false;
+				this._dirty.material = false;
+				this._dirty.text = false;
+				this._dirty.shader = false;
+            },
 			
 			setAllDirty: function () {
 			    // vertex attributes
