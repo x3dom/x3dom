@@ -52,6 +52,13 @@ x3dom.registerNodeType(
 
             getColorTextureURL: function() {
                 return null;
+            },
+
+            parentAdded: function(parent) {
+                if (parent._cleanupGLObjects) {
+                    parent._cleanupGLObjects(true);
+                }
+                parent.setAllDirty();
             }
         }
     )
