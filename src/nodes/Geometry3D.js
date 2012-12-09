@@ -1562,7 +1562,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "PopGeometryLevel",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
       function (ctx) {	
           x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
     
@@ -1589,7 +1589,7 @@ x3dom.registerNodeType(
         getVertexDataBufferOffset: function() {
             return this._vf.vertexDataBufferOffset;
         }
-		}
+	  }
 	)
 );
 
@@ -1613,7 +1613,6 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'normalOffset',    0);
             this.addField_SFInt32(ctx, 'texcoordOffset',  0);
             this.addField_SFInt32(ctx, 'colorOffset',     0);
-            
             
             this.addField_SFInt32(ctx, 'positionPrecision', 2);
             this.addField_SFInt32(ctx, 'normalPrecision',   1);
@@ -1895,8 +1894,8 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "BitLODGeoComponent",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        function (ctx) {	
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
             x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
 			
 			this.addField_SFString(ctx, 'src', "");
