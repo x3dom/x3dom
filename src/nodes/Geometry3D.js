@@ -1617,50 +1617,42 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'positionPrecision', 2);
             this.addField_SFInt32(ctx, 'normalPrecision',   1);
             this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
-            this.addField_SFInt32(ctx, 'colorPrecision',    1);            
+            this.addField_SFInt32(ctx, 'colorPrecision',    1); 
+
+            //those four fields are read by the x3dom renderer            
+            this.addField_SFString(ctx, 'coordType',    "Uint16");
+            this.addField_SFString(ctx, 'normalType',   "Uint8");
+            this.addField_SFString(ctx, 'texCoordType', "Uint16");
+            this.addField_SFString(ctx, 'colorType',    "Uint8");            
            
             this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
             
             this.addField_SFBool(ctx, 'indexedRendering', false);
+            //ATTENTION: Although it might be supported by aopt,
+            //           X3DOM does not accept 16 bit spherical normals yet,
+            //           spherical normals are assumed to be 8 bit and get
+            //           encoded as the 4th 16 bit position component
             this.addField_SFBool(ctx, 'sphericalNormals', false);
-            
-            //those four fields are read by the x3dom renderer,
-            //and they are updated with the actual values on "nodeChanged"
-            this.addField_SFString(ctx, 'coordType',    "Uint16");
-            this.addField_SFString(ctx, 'normalType',   "Uint8");
-            this.addField_SFString(ctx, 'texCoordType', "Uint16");
-            this.addField_SFString(ctx, 'colorType',    "Uint8");           
             
             //needed as we manipulate vertexCount during loading
             this.addField_MFInt32(ctx, 'originalVertexCount', [0]);
             
+            for (var i = 0; i < this._vf.vertexCount.length; ++i) {
+                this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
+            }
+            
             // workaround            
-            this._hasStrideOffset = false;
-            this._mesh._numPosComponents  = 3;
+            this._mesh._numPosComponents  = this._vf.sphericalNormals ? 4 : 3;
             this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;
             this._mesh._numTexComponents  = 2;
             this._mesh._numColComponents  = 3;
-            
-            this._mesh._invalidate = false;
-            this._mesh._numCoords  = 0;
-            this._mesh._numFaces   = 0;
-        
+                 
             this._mesh._invalidate = false;
             this._mesh._numCoords  = 0;
             this._mesh._numFaces   = 0;
         },
         {
-            nodeChanged: function() {
-              this._vf.coordType    = this.getBufferTypeStringFromByteCount(this._vf.positionPrecision);
-              this._vf.normalType   = this.getBufferTypeStringFromByteCount(this._vf.normalPrecision);
-              this._vf.texCoordType = this.getBufferTypeStringFromByteCount(this._vf.texcoordPrecision);
-              this._vf.colorType    = this.getBufferTypeStringFromByteCount(this._vf.colorPrecision);
-              
-              for (var i = 0; i < this._vf.vertexCount.length; ++i) {
-                this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
-              }
-              
-              this._vf.sphericalNormals ? 2 : 3;
+            nodeChanged: function() {              
             },
 
             parentAdded: function() {
@@ -1716,7 +1708,7 @@ x3dom.registerNodeType(
             },
             
             //adapts the vertex count according to the given total number of indices / vertices
-            //which is used by X3DOM's renderer
+            //which is used by the renderer
             adaptVertexCount: function(numVerts) {
                 var verts = 0;
                 for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
@@ -1732,7 +1724,7 @@ x3dom.registerNodeType(
             },
             
             hasNormal: function() {
-              return (this._vf.normalOffset != 0);
+              return (this._vf.normalOffset != 0) && !this._vf.sphericalNormals;
             },
             
             hasTexCoord: function() {
