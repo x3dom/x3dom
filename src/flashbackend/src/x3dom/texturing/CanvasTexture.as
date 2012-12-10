@@ -2,17 +2,19 @@ package x3dom.texturing
 {
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
+	import flash.display.Loader;
 	import flash.display3D.*;
 	import flash.display3D.textures.*;
 	import flash.events.Event;
 	import flash.utils.ByteArray;
 	
+	import mx.utils.Base64Decoder;
 	import x3dom.Debug;
 	import x3dom.Utils;
 	
 	public class CanvasTexture extends BaseTexture
 	{
-		public function CanvasTexture(width:Number, height:Number, pixels:Object, 
+		public function CanvasTexture(width:Number, height:Number, dataURL:String, 
 									  blending:Boolean=false, repeatS:Boolean=true, repeatT:Boolean=true)
 		{
 			//Init super class
@@ -22,7 +24,7 @@ package x3dom.texturing
 			this.defaultTexture();
 			
 			//Generate Pixel texture
-			this.generateTexture(width, height, pixels);
+			this.generateTexture(width, height, dataURL);
 		}
 		
 		/**
@@ -34,42 +36,23 @@ package x3dom.texturing
 			Texture(_texture).uploadFromBitmapData( new BitmapData(1, 1, true, 0xFF000000) );
 		}
 		
-		private function generateTexture(width:Number, height:Number, pixels:Object) : void
+		private function generateTexture(width:Number, height:Number, dataURL:String) : void
 		{
-			//Set ready false
-			this._ready = false;
+			var data:Array = dataURL.split(',');
 			
-			//Create new ByteArray for pixels
-			var byteArray:ByteArray = new ByteArray();
+			var decoder:Base64Decoder = new Base64Decoder();
+			decoder.decode(data[1]);
 			
-			var red:Number, green:Number, blue:Number, alpha:Number;
-			var counter:uint = 0;
+			var byteArray:ByteArray = decoder.toByteArray();
 			
-			for(var c:Object in pixels) {
-				if(counter==0) {
-					red = pixels[c];
-					counter++;
-				} else if(counter==1) {
-					green = pixels[c];
-					counter++;
-				} else if(counter==2) {
-					blue = pixels[c];
-					counter++;
-				} else if(counter==3) {
-					alpha = pixels[c];
-					byteArray.writeInt( Utils.rgba2Hex(red, green, blue, alpha) );
-					counter = 0;
-				}
-			}
-			
-			//Create new Bitmap
-			var bitmap:Bitmap = new Bitmap( new BitmapData(width, height) );
-			
-			//Set ByteArray position to start
-			byteArray.position = 0;
-			
-			//Set Pixels
-			bitmap.bitmapData.setPixels(bitmap.bitmapData.rect, byteArray);
+			var loader:Loader = new Loader;
+			loader.loadBytes(byteArray);
+			loader.contentLoaderInfo.addEventListener(Event.COMPLETE, handleComplete);
+		}
+		
+		private function handleComplete(e:Event) : void
+		{
+			var bitmap:Bitmap = Bitmap(e.target.content); 
 			
 			//Scale Bitmap
 			bitmap = Utils.scaleBitmap(bitmap);
@@ -79,6 +62,7 @@ package x3dom.texturing
 			
 			//Upload texture from BitmapData
 			Texture(this._texture).uploadFromBitmapData(bitmap.bitmapData);
+			//Texture(this._texture).uploadFromByteArray(byteArray, 0);
 			
 			//Set ready true
 			_ready = true;
