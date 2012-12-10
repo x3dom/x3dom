@@ -602,8 +602,14 @@ x3dom.gfx_flash = (function() {
 					} else if (x3dom.isa(texture, x3dom.nodeTypes.ComposedCubeMapTexture)) {
 						this.object.setCubeTexture( { id: shape._objectID,
 													  texURLs: texture.getTexUrl() } );
-					} else if(texture._isCanvas && texture._canvas) {			
-						x3dom.debug.logError("Flash backend don't support CanvasTextures yet");
+					} else if(texture._isCanvas && texture._canvas) {
+						var ctx = texture._canvas.getContext("2d");
+						var imgData = ctx.getImageData(0,0,texture._canvas.width,texture._canvas.height);
+
+						this.object.setCanvasTexture( { id: shape._objectID,
+													    width: texture._canvas.width,
+													    height: texture._canvas.height,
+													    pixels: imgData.data } );
 					} else if (x3dom.isa(texture, x3dom.nodeTypes.MultiTexture)) {
 						x3dom.debug.logError("Flash backend don't support MultiTextures yet");
 					} else if (x3dom.isa(texture, x3dom.nodeTypes.MovieTexture)) { 
