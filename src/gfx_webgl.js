@@ -1332,7 +1332,7 @@ x3dom.gfx_webgl = (function () {
 
 
         //setup general render settings
-        var attribTypeStr      = popGeo.getBufferTypeStringFromByteCount(popGeo.getPositionPrecision());        
+        var attribTypeStr      = popGeo._vf.coordType;        
         shape._webgl.coordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
 
         shape._coordStrideOffset[0] = popGeo.getAttributeStride();
@@ -1341,9 +1341,9 @@ x3dom.gfx_webgl = (function () {
         gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents, shape._webgl.coordType,
                                false, shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
         gl.enableVertexAttribArray(sp.position);
-
+        
         if (popGeo.hasNormal()) {
-          attribTypeStr           = popGeo.getBufferTypeStringFromByteCount(popGeo.getNormalPrecision());
+          attribTypeStr           = popGeo._vf.normalType;
           shape._webgl.normalType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
           
           shape._normalStrideOffset[0] = popGeo.getAttributeStride();
@@ -1356,7 +1356,7 @@ x3dom.gfx_webgl = (function () {
           gl.enableVertexAttribArray(sp.normal);
         }
         if (popGeo.hasTexCoord()) {
-          attribTypeStr             = popGeo.getBufferTypeStringFromByteCount(popGeo.getTexCoordPrecision());
+          attribTypeStr             = popGeo._vf.texCoordType;
           shape._webgl.texCoordType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);
           
           shape._webgl.buffers[3] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
@@ -1369,7 +1369,7 @@ x3dom.gfx_webgl = (function () {
           gl.enableVertexAttribArray(sp.texcoord);
         }
         if (popGeo.hasColor()) {
-          attribTypeStr          = popGeo.getBufferTypeStringFromByteCount(popGeo.getColorPrecision());
+          attribTypeStr          = popGeo._vf.colorType;
           shape._webgl.colorType = x3dom.Utils.getVertexAttribType(attribTypeStr, gl);  
           
           shape._webgl.buffers[4] = shape._webgl.buffers[1]; //use interleaved vertex data buffer
@@ -1629,9 +1629,8 @@ x3dom.gfx_webgl = (function () {
                             shape._webgl.triangleBuffer[write_idx + 4] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
                             shape._webgl.triangleBuffer[write_idx + 5] = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
                         }
-                        else if (true || shape._webgl.loadedLevels === 8) {                        
+                        else if (shape._webgl.loadedLevels === 8) {                        
                             //B: on-the-fly normal computation for per-face normals (by cross product)
-/*
                             points[accum_cnt].x = shape._webgl.dataBuffers[1][read_idx_pos_nor    ];
                             points[accum_cnt].y = shape._webgl.dataBuffers[1][read_idx_pos_nor + 1];
                             points[accum_cnt].z = shape._webgl.dataBuffers[1][read_idx_pos_nor + 2];
@@ -1662,69 +1661,7 @@ x3dom.gfx_webgl = (function () {
                                 shape._webgl.triangleBuffer[write_idx + 6           ] = nor.z.toFixed(0);
                                 
                                 accum_cnt = 0;
-                            }
-                            */
-                            //C: on-the-fly normal computation for per-face normals (by averaging)
-                            //**
-                            //AVERAGING WITH SPHERICAL COORDS
-                            n_theta += shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];                            
-                            n_phi   += shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];                            
-                            //**
-                            
-                            //--
-                            //AVERAGING WITH CARTESIAN COORDS
-                            /*
-                            n_theta = shape._webgl.dataBuffers[1][read_idx_pos_nor + 4];
-                            n_phi   = shape._webgl.dataBuffers[1][read_idx_pos_nor + 5];
-                            
-                            n_theta /= 65535.0;
-                            n_phi   /= 65535.0;                            
-                            n_theta *= Math.PI;
-                            n_phi    = n_phi * Math.PI * 2.0 - Math.PI;
-                            
-                            points[0].x += Math.sin(n_theta) * Math.cos(n_phi);
-                            points[0].y += Math.sin(n_theta) * Math.sin(n_phi);
-                            points[0].z += Math.cos(n_theta);
-                            */
-                            //--
-                            
-                            if (++accum_cnt === 3) {
-                              //**
-                              //AVERAGING WITH SPHERICAL COORDS
-                              n_theta /= 3.0;
-                              n_phi   /= 3.0;
-                              //**
-                              
-                              //--
-                              //AVERAGING WITH CARTESIAN COORDS
-                              /*
-                              points[0].x /= 3.0;
-                              points[0].y /= 3.0;
-                              points[0].z /= 3.0;
-                                                            
-                              n_theta = Math.acos(points[0].z);
-                              n_phi   = Math.atan2(points[0].y, points[0].x);
-                            
-                              points[0].x = 0;
-                              points[0].y = 0;
-                              points[0].z = 0;
-                              
-                              n_theta = (n_theta		  /         Math.PI ) * (256 - 1) * 256;
-                              n_phi   = ((n_phi + Math.PI) / (2.0 * Math.PI)) * (256 - 1) * 256;
-                              */
-                              //--
-                              shape._webgl.triangleBuffer[write_idx + 4 - 2*stride] = n_theta;
-                              shape._webgl.triangleBuffer[write_idx + 5 - 2*stride] = n_phi;
-                              
-                              shape._webgl.triangleBuffer[write_idx + 4 - stride  ] = n_theta;
-                              shape._webgl.triangleBuffer[write_idx + 5 - stride  ] = n_phi;
-                              
-                              shape._webgl.triangleBuffer[write_idx + 4           ] = n_theta;
-                              shape._webgl.triangleBuffer[write_idx + 5           ] = n_phi;
-                              
-                              n_theta = n_phi = accum_cnt = 0;
-                            }
-                            
+                            } 
                         }
                     }
 
