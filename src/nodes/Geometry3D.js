@@ -1622,6 +1622,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
             
             this.addField_SFBool(ctx, 'indexedRendering', false);
+            this.addField_SFBool(ctx, 'sphericalNormals', false);
             
             //those four fields are read by the x3dom renderer,
             //and they are updated with the actual values on "nodeChanged"
@@ -1636,7 +1637,7 @@ x3dom.registerNodeType(
             // workaround            
             this._hasStrideOffset = false;
             this._mesh._numPosComponents  = 3;
-            this._mesh._numNormComponents = 3;
+            this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;
             this._mesh._numTexComponents  = 2;
             this._mesh._numColComponents  = 3;
             
@@ -1658,6 +1659,8 @@ x3dom.registerNodeType(
               for (var i = 0; i < this._vf.vertexCount.length; ++i) {
                 this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
               }
+              
+              this._vf.sphericalNormals ? 2 : 3;
             },
 
             parentAdded: function() {

@@ -222,12 +222,11 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
         if (properties.POPGEOMETRY) {
             shader += "float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
           
-            shader += "vertPosition = floor(vertPosition / p);\n";
-            shader += "vertPosition = floor(vertPosition)* p;\n";
-                    
-            shader += "float precisionMax       = 65535.0 - (pow(2.0, 16.0 - PG_precisionLevel) - 1.0);\n";
-          
-            shader += "vertPosition = bgCenter + bgSize * vertPosition / precisionMax;\n";
+            shader += "vertPosition = floor(vertPosition / p) * p;\n";
+
+            shader += "float precisionMax = 65536.0 - p;\n";
+
+            shader += "vertPosition = (vertPosition / precisionMax) * bgSize + bgCenter;\n";
         }
 		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
             shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
