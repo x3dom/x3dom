@@ -77,6 +77,15 @@ x3dom.registerNodeType(
                 else {
                     return this._cf.textureTransform.node.texTransformMatrix();
                 }
+            },
+
+            parentAdded: function(parent) {
+                if (this != x3dom.nodeTypes.Appearance._defaultNode) {
+                    if (parent._cleanupGLObjects) {
+                        parent._cleanupGLObjects(true);
+                    }
+                    parent.setAllDirty();
+                }
             }
         }
     )
@@ -235,7 +244,7 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, out)
             {
                 // TODO: culling etc
-                if (out && this._vf.render) //&& this._cf.geometry.node)
+                if (out && this._vf.render && this._cf.geometry.node)
                 {
                     out.push( [transform, this] );
                 }
@@ -289,10 +298,31 @@ x3dom.registerNodeType(
             },
 
             parentRemoved: function(parent) {
+                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                    if (this._childNodes[i]) {
+                        this._childNodes[i].parentRemoved(this);
+                    }
+                }
+
                 // Cleans all GL objects for WebGL-based renderer
                 if (this._cleanupGLObjects) {
                     this._cleanupGLObjects();
                 }
+            },
+            
+            unsetDirty: function () {
+				// vertex attributes
+				this._dirty.positions = false;
+				this._dirty.normals = false;
+				this._dirty.texCoords = false;
+				this._dirty.colors =  false;
+				// indices/topology
+				this._dirty.indexes = false;
+				// appearance properties
+				this._dirty.texture = false;
+				this._dirty.material = false;
+				this._dirty.text = false;
+				this._dirty.shader = false;
             },
 			
 			setAllDirty: function () {
@@ -320,29 +350,30 @@ x3dom.registerNodeType(
 			
 			getTextures: function() {
 				var textures = [];
-			
-				var tex = this._cf.appearance.node._cf.texture.node;
-				//alert(tex._video);
-				if(tex) {
-					if(x3dom.isa(tex, x3dom.nodeTypes.MultiTexture)) {
-						textures = textures.concat(tex.getTextures());
-					} else {
-						textures.push(tex);
-					}
-				}
 
-				var shader = this._cf.appearance.node._cf.shaders.nodes[0];
-				if(shader) {	
-					if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
-						textures = textures.concat(shader.getTextures());
-					}
-				}
-				
+                if (this._cf.appearance.node) {
+                    var tex = this._cf.appearance.node._cf.texture.node;
+                    if(tex) {
+                        if(x3dom.isa(tex, x3dom.nodeTypes.MultiTexture)) {
+                            textures = textures.concat(tex.getTextures());
+                        } else {
+                            textures.push(tex);
+                        }
+                    }
+
+                    var shader = this._cf.appearance.node._cf.shaders.nodes[0];
+                    if(shader) {
+                        if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
+                            textures = textures.concat(shader.getTextures());
+                        }
+                    }
+                }
+
 				var geometry = this._cf.geometry.node;
-				if(geometry) {
+				if (geometry) {
 					if(x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry)) {
 						textures = textures.concat(geometry.getTextures());
-					}else if(x3dom.isa(geometry, x3dom.nodeTypes.Text)) {
+					} else if(x3dom.isa(geometry, x3dom.nodeTypes.Text)) {
 						textures = textures.concat(geometry);
 					}
 				}
@@ -368,7 +399,7 @@ x3dom.registerNodeType(
                 }
                 if (!this._cf.geometry.node) {
                     if (this._DEF)
-                    x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
+                        x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
                 }
                 else if (!this._objectID && this._cf.geometry.node._pickable) {
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;

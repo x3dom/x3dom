@@ -190,7 +190,7 @@ x3dom.gfx_webgl = (function () {
 			
 			//Check for dirty Textures
 			if (shape._dirty.texture === true)
-			{
+			{	
 				//Check for Texture add or remove
 				if (shape._webgl.texture.length != shape.getTextures().length)
 				{
@@ -220,16 +220,13 @@ x3dom.gfx_webgl = (function () {
 					var textures = shape.getTextures();
 					for( var t=0; t<textures.length; ++t )
 					{	
-						if(textures[t] === shape._webgl.texture[t])
+						if(textures[t] === shape._webgl.texture[t].node)
 						{
 							//only update the texture
 							shape._webgl.texture[t].update();
 						} 
 						else 
 						{
-							//delete old Texture
-							gl.deleteTexture( shape._webgl.texture[t].texture );
-							
 							//Set texture to null for recreation
 							shape._webgl.texture[t].texture = null;
 							
@@ -420,15 +417,11 @@ x3dom.gfx_webgl = (function () {
         }
         
         // we're on init, thus reset all dirty flags
-        shape._dirty.positions = false;
-        shape._dirty.normals   = false;
-        shape._dirty.texcoords = false;
-        shape._dirty.colors    = false;
-        shape._dirty.indexes   = false;
-        shape._dirty.texture   = false;
-		shape._dirty.material  = false;
-        shape._dirty.shader    = false;
+        shape.unsetDirty();
         
+        if (!shape._cf.appearance.node) {
+            shape.addChild(x3dom.nodeTypes.Appearance.defaultNode());
+        }
         
         // dynamically attach clean-up method for GL objects
         if (shape._cleanupGLObjects == null)
@@ -781,7 +774,7 @@ x3dom.gfx_webgl = (function () {
                         var b = p1.subtract(p2);
                         var norm = a.cross(b).normalize();
                         
-                        for (var j=0; j<3; j++) {
+                        for (j=0; j<3; j++) {
                             normBuf.push(norm.x);
                             normBuf.push(norm.y);
                             normBuf.push(norm.z);
@@ -2435,8 +2428,8 @@ x3dom.gfx_webgl = (function () {
                 interp._vf.keyValue = new x3dom.fields.MFColor(colors);
                 
                 for (i=0; i<N; i++) {
-                    var fract = i / (N - 1.0);
-                    interp._vf.set_fraction = fract;
+                    interp._vf.set_fraction = i / (N - 1.0);
+
                     interp.fieldChanged("set_fraction");
                     tmp[i] = interp._vf.value_changed;
                 }
@@ -2891,8 +2884,7 @@ x3dom.gfx_webgl = (function () {
             var trafo = scene.drawableObjects[i][0];
             var shape = scene.drawableObjects[i][1];
             
-            if (shape._objectID < 1 || shape._webgl === undefined ||
-                shape._vf.isPickable == false) {
+            if (shape._objectID < 1 || !shape._webgl || !shape._vf.isPickable) {
                 continue;
             }
             
@@ -2907,6 +2899,11 @@ x3dom.gfx_webgl = (function () {
 			
 			//Set ImageGeometry switch
             sp.imageGeometry = shape._webgl.imageGeometry;
+            
+            // Set IDs perVertex switch
+            sp.writeShadowIDs = (shape._webgl.binaryGeometry != 0 && 
+                                 shape._cf.geometry.node._vf.idsPerVertex) ? 
+                                (x3dom.nodeTypes.Shape.objectID + 2) : 0;
 			
 			if (shape._webgl.coordType != gl.FLOAT)
 			{
@@ -2933,13 +2930,13 @@ x3dom.gfx_webgl = (function () {
 			
 			if (shape._webgl.imageGeometry != 0 && !x3dom.caps.MOBILE)  // FIXME: mobile errors
 			{
-				sp.IG_bboxMin 				= shape._cf.geometry.node.getMin().toGL();
-				sp.IG_bboxMax				= shape._cf.geometry.node.getMax().toGL();
-				sp.IG_implicitMeshSize		= shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
+				sp.IG_bboxMin 			= shape._cf.geometry.node.getMin().toGL();
+				sp.IG_bboxMax			= shape._cf.geometry.node.getMax().toGL();
+				sp.IG_implicitMeshSize  = shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
 				
 				var tex = x3dom.Utils.findTextureByName(shape._webgl.texture, "IG_coords0");
 				if(tex) {
-					sp.IG_coordTextureWidth = tex.texture.width;
+					sp.IG_coordTextureWidth  = tex.texture.width;
 					sp.IG_coordTextureHeight = tex.texture.height;
 				}
 				
@@ -2982,7 +2979,7 @@ x3dom.gfx_webgl = (function () {
 
 			for (var q=0; q<shape._webgl.positions.length; q++)
 			{
-				if(shape._webgl.buffers[5*q+0])
+				if (shape._webgl.buffers[5*q+0])
 				{
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
 				}
@@ -3104,7 +3101,8 @@ x3dom.gfx_webgl = (function () {
         try {
             var x = lastX * scene._webgl.pickScale,
                 y = scene._webgl.fboPick.height - 1 - lastY * scene._webgl.pickScale;
-            var data = new Uint8Array(4 * width * height);    // 4 = 1 * 1 * 4; then take width x height window
+            // 4 = 1 * 1 * 4; then take width x height window
+            var data = new Uint8Array(4 * width * height);
             
             gl.readPixels(x, y, width, height, gl.RGBA, gl.UNSIGNED_BYTE, data);
             
@@ -3113,8 +3111,7 @@ x3dom.gfx_webgl = (function () {
         catch(se) {
             scene._webgl.fboPick.pixelData = [];
             //No Exception on file:// when starting with additional flags:
-            //chrome.exe --enable-webgl --use-gl=desktop --log-level=0 
-            //           --allow-file-access-from-files --allow-file-access --disable-web-security
+            //  chrome.exe --disable-web-security
             x3dom.debug.logException(se + " (cannot pick)");
         }
         
@@ -3180,7 +3177,7 @@ x3dom.gfx_webgl = (function () {
 			sp.IG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
 			sp.IG_implicitMeshSize	 = shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
 			
-			var tex = x3dom.Utils.findTextureByName( shape._webgl.texture, "IG_coords0" );			
+			tex = x3dom.Utils.findTextureByName( shape._webgl.texture, "IG_coords0" );
 			if(tex) {
 				sp.IG_coordTextureWidth  = tex.texture.width;
 				sp.IG_coordTextureHeight = tex.texture.height;
@@ -3193,6 +3190,7 @@ x3dom.gfx_webgl = (function () {
 					sp.IG_indexTextureHeight = tex.texture.height;
 				}
 			}
+            tex = null;
 		}
 
         //===========================================================================
@@ -3206,9 +3204,10 @@ x3dom.gfx_webgl = (function () {
         }
         
 		//Look for shaders
-		var shader = shape._cf.appearance.node._shader;
+		var shader = shape._cf.appearance.node ?
+                     shape._cf.appearance.node._shader : null;
 		
-		if(shader) {
+		if (shader) {
 			if(x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
 				for (var fName in shader._vf) {
 					if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
@@ -3232,7 +3231,8 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Set Material
         //===========================================================================
-		var mat = shape._cf.appearance.node._cf.material.node;
+		var mat = shape._cf.appearance.node ?
+                  shape._cf.appearance.node._cf.material.node : null;
         if (shape._webgl.csshader) {
 			sp.diffuseColor      = shader._vf.diffuseFactor.toGL();
 			sp.specularColor     = shader._vf.specularFactor.toGL();
@@ -3242,7 +3242,7 @@ x3dom.gfx_webgl = (function () {
 									shader._vf.ambientFactor.y + 
 									shader._vf.ambientFactor.z)/3;
 			sp.transparency      = 1.0 - shader._vf.alphaFactor;
-        } else {
+        } else if (mat) {
 			sp.diffuseColor		= mat._vf.diffuseColor.toGL();
 			sp.specularColor	= mat._vf.specularColor.toGL();
 			sp.emissiveColor	= mat._vf.emissiveColor.toGL();
@@ -3250,9 +3250,10 @@ x3dom.gfx_webgl = (function () {
 			sp.ambientIntensity	= mat._vf.ambientIntensity;
 			sp.transparency		= mat._vf.transparency;
         }
-        
-        //FIXME Only set for VertexColorUnlit and ColorPicking
-        sp.alpha = 1.0 - mat._vf.transparency;
+        if (mat) {
+            //FIXME Only set for VertexColorUnlit and ColorPicking
+            sp.alpha = 1.0 - mat._vf.transparency;
+        }
         
         //===========================================================================
         // Set Lights
@@ -3344,7 +3345,7 @@ x3dom.gfx_webgl = (function () {
 
 		for (var cnt=0; cnt<shape._webgl.texture.length; cnt++)
 		{
-			var tex = shape._webgl.texture[cnt];
+			tex = shape._webgl.texture[cnt];
 			
 			gl.activeTexture(gl.TEXTURE0 + cnt);
 			gl.bindTexture(tex.type, tex.texture);
@@ -3363,7 +3364,8 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-		if (shape._cf.appearance.node._cf.textureTransform.node !== null)
+		if (shape._cf.appearance.node &&
+            shape._cf.appearance.node._cf.textureTransform.node)
 		{
 			// use shader/ calculation due to performance issues
 			var texTrafo = shape._cf.appearance.node.texTransformMatrix();
@@ -3630,7 +3632,7 @@ x3dom.gfx_webgl = (function () {
 	/*****************************************************************************
     * Render ColorBuffer-Pass for picking
     *****************************************************************************/
-    Context.prototype.pickValue = function (viewarea, x, y, viewMat, sceneMat)
+    Context.prototype.pickValue = function (viewarea, x, y, buttonState, viewMat, sceneMat)
     {
         var gl = this.ctx3d;
         var scene = viewarea._scene;
@@ -3735,7 +3737,56 @@ x3dom.gfx_webgl = (function () {
             }
             //x3dom.debug.logInfo(pickPos + " / " + objId);
             
-            if (objId > 0) {
+            var baseID = x3dom.nodeTypes.Shape.objectID + 2;
+            
+            if (objId >= baseID) {
+                objId -= baseID;
+                
+                viewarea._pickingInfo.pickPos = pickPos;
+                viewarea._pick.setValues(pickPos);
+                
+                viewarea._pickingInfo.pickNorm = pickNorm;
+                viewarea._pickNorm.setValues(pickNorm);
+                
+                viewarea._pickingInfo.pickObj = null;
+                viewarea._pickingInfo.lastClickObj = null;
+                
+                //x3dom.debug.logInfo(baseID + " + " + objId);
+                var eventType = "shadowObjectIdChanged";
+
+            	try {
+    				if ( scene._xmlNode && 
+    					(scene._xmlNode["on"+eventType] ||
+    					 scene._xmlNode.hasAttribute("on"+eventType) ||
+    					 scene._listeners[eventType]) ) {
+    				    var event = {
+    						target: scene._xmlNode,
+    						type: eventType,
+                            button: buttonState,
+                            layerX: x,
+                            layerY: y,
+                            shadowObjectId: objId,
+                            worldX: pickPos.x,
+                            worldY: pickPos.y,
+                            worldZ: pickPos.z,
+                            normalX: pickNorm.x,
+                            normalY: pickNorm.y,
+                            normalZ: pickNorm.z,
+                            hitPnt: pickPos.toGL(),
+                            hitObject: scene._xmlNode,
+                            cancelBubble: false,
+                            stopPropagation: function() { this.cancelBubble = true; },
+                        	preventDefault:  function() { this.cancelBubble = true; }
+    					};
+    					
+    					scene.callEvtHandler(("on"+eventType), event);
+    				}
+    			}
+    			catch(e) {
+    				x3dom.debug.logException(e);
+    			}
+            }
+            else if (objId > 0) {
                 //x3dom.debug.logInfo(x3dom.nodeTypes.Shape.idMap.nodeID[objId]._DEF + " // " +
                 //                    x3dom.nodeTypes.Shape.idMap.nodeID[objId]._xmlNode.localName);
                 viewarea._pickingInfo.pickPos = pickPos;
@@ -3974,10 +4025,11 @@ x3dom.gfx_webgl = (function () {
 						position: e_translation,
 						orientation: e_rotation.toAxisAngle(),
 						cancelBubble: false,
-						stopPropagation: function() { this.cancelBubble = true; }
+						stopPropagation: function() { this.cancelBubble = true; },
+						preventDefault: function() { this.cancelBubble = true; }
 					};
 					
-					e_viewpoint.callEvtHandler(e_eventType, e_event);
+					e_viewpoint.callEvtHandler(("on"+e_eventType), e_event);
 
                     this._calledViewpointChangedHandler = true;
 				}
@@ -4015,9 +4067,9 @@ x3dom.gfx_webgl = (function () {
             center = trafo.multMatrixPnt(center);
             center = mat_view.multMatrixPnt(center);
 
-            var sortType = (obj3d._cf.appearance.node !== undefined) ? 
+            var sortType = (obj3d._cf.appearance.node) ?
                             obj3d._cf.appearance.node._vf.sortType : "opaque";
-            var sortKey  = (obj3d._cf.appearance.node !== undefined) ? 
+            var sortKey  = (obj3d._cf.appearance.node) ? 
                             obj3d._cf.appearance.node._vf.sortKey : 0;
 
             if (sortType.toLowerCase() === "opaque") {
@@ -4251,14 +4303,14 @@ x3dom.gfx_webgl = (function () {
             var shapeApp = obj[1]._cf.appearance.node;
 
             // HACK; fully impl. BlendMode and DepthMode
-            if (shapeApp._cf.blendMode.node &&
+            if (shapeApp && shapeApp._cf.blendMode.node &&
                 shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
                 shapeApp._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
             {
                 needEnableBlending = true;
                 gl.disable(gl.BLEND);
             }
-            if (shapeApp._cf.depthMode.node &&
+            if (shapeApp && shapeApp._cf.depthMode.node &&
                 shapeApp._cf.depthMode.node._vf.readOnly === true)
             {
                 needEnableDepthMask = true;

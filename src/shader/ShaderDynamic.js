@@ -174,7 +174,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	shader += "gl_PointSize = 2.0;\n";	
   
 	/*******************************************************************************
-	* Start of ImageGeometry switch
+	* Start of special Geometry switch
 	********************************************************************************/
 	if(properties.IMAGEGEOMETRY) {
 		//Indices
@@ -232,17 +232,15 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		shader += "vec3 vertPosition = position.xyz;\n";
         if (properties.POPGEOMETRY) {
           shader += "float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
-
           shader += "vertPosition = floor(vertPosition / p) * p;\n";
-
           shader += "float precisionMax = 65536.0 - p;\n";
-
-          shader += "vertPosition = (vertPosition / precisionMax) * bgSize + bgCenter;\n";
+          
+          shader += "vertPosition = bgCenter + bgSize * vertPosition / precisionMax;\n";
         }
 		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
             shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}
-    
+        
 		//Normals
 		if(properties.LIGHTS) {
 			if(properties.NORCOMPONENTS == 2) {
@@ -280,7 +278,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		if(properties.VERTEXCOLOR){
 			shader += "fragColor = color;\n";
 			if(properties.REQUIREBBOXCOL) {
-        shader += "fragColor = fragColor / bgPrecisionColMax;\n";
+                shader += "fragColor = fragColor / bgPrecisionColMax;\n";
 			}
 		}
 		
@@ -294,7 +292,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	}
 	
 	/*******************************************************************************
-	* End of ImageGeometry switch
+	* End of special Geometry switch
 	********************************************************************************/
 	
 	

@@ -36,6 +36,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 
     if (!x3dom.caps.MOBILE) {
         shader =    "attribute vec3 position;\n" +
+                    "attribute vec2 texcoord;\n" +
 					"uniform vec3 bgCenter;\n" +
 					"uniform vec3 bgSize;\n" +
 					"uniform float bgPrecisionMax;\n" +
@@ -43,6 +44,8 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"uniform mat4 modelViewProjectionMatrix;\n" +
 					"uniform vec3 from;\n" +
 					"varying vec3 worldCoord;\n" +
+					"varying vec2 idCoord;\n" +
+					"uniform float writeShadowIDs;\n" +
 					"uniform float imageGeometry;\n" +
 					"uniform vec3 IG_bboxMin;\n" +
 					"uniform vec3 IG_bboxMax;\n" +
@@ -53,8 +56,14 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"uniform sampler2D IG_indexTexture;\n" +
 					"uniform sampler2D IG_coordinateTexture;\n" +
 					"uniform float IG_implicitMeshSize;\n" +
+					
 					"void main(void) {\n" +
-					"	if(imageGeometry != 0.0) {\n" +
+					"   if (writeShadowIDs > 0.0) {\n" +
+					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
+    				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
+    				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
+					"	}\n" +
+					"	if (imageGeometry != 0.0) {\n" +
 					"		vec2 IG_texCoord;\n" +
 					"		if(imageGeometry == 1.0) {\n" +
 					"			vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n" +
@@ -78,14 +87,23 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
     }
     else {
         shader =    "attribute vec3 position;\n" +
+                    "attribute vec2 texcoord;\n" +
                     "uniform vec3 bgCenter;\n" +
                     "uniform vec3 bgSize;\n" +
                     "uniform float bgPrecisionMax;\n" +
+					"uniform float writeShadowIDs;\n" +
                     "uniform mat4 modelMatrix;\n" +
                     "uniform mat4 modelViewProjectionMatrix;\n" +
                     "uniform vec3 from;\n" +
                     "varying vec3 worldCoord;\n" +
+                    "varying vec2 idCoord;\n" +
+                    
                     "void main(void) {\n" +
+					"    if (writeShadowIDs > 0.0) {\n" +
+					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
+    				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
+    				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
+					"	 }\n" +
                     "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
                     "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n" +
                     "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
@@ -112,13 +130,19 @@ x3dom.shader.PickingShader.prototype.generateFragmentShader = function(gl)
 					"  precision highp float;\n" +
 					"#endif\n" +
 					"\n" +
+					"uniform float writeShadowIDs;\n" +
 					"uniform float highBit;\n" +
 					"uniform float lowBit;\n" +
 					"uniform float sceneSize;\n" +
 					"varying vec3 worldCoord;\n" +
+					"varying vec2 idCoord;\n" +
+					
 					"void main(void) {\n" +
-					"    float d = length(worldCoord) / sceneSize;\n" +
 					"    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
+					"    if (writeShadowIDs > 0.0) {\n" +
+    				"       col.ba = idCoord;\n" +
+					"	 }\n" +
+					"    float d = length(worldCoord) / sceneSize;\n" +
 					"    vec2 comp = fract(d * vec2(256.0, 1.0));\n" +
 					"    col.rg = comp - (comp.rr * vec2(0.0, 1.0/256.0));\n" +
 					"    gl_FragColor = col;\n" +

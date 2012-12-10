@@ -47,15 +47,15 @@ x3dom.Utils.createTexture2D = function(gl, doc, src)
 		
 		doc.downloadCount--;
 		doc.needRender = true;
-	}
+	};
 	
 	image.onerror = function() {
 		x3dom.debug.logError("[Utils|createTexture2D] Can't load Image: " + src);
 		doc.downloadCount--;
-	}
+	};
 	
 	return texture;
-}
+};
 
 /*****************************************************************************
 * 
@@ -129,7 +129,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd)
 	}
 	
 	return texture;
-}
+};
 
 /*****************************************************************************
 * 
@@ -149,7 +149,7 @@ x3dom.Utils.getFileName = function(url)
 	}
 
 	return filename;
-}
+};
 
 /*****************************************************************************
 * 
@@ -162,7 +162,7 @@ x3dom.Utils.findTextureByName = function(texture, name)
 			return texture[i];
 	}
 	return false;
-}
+};
 
 /*****************************************************************************
 * Rescale image to given size
@@ -175,7 +175,7 @@ x3dom.Utils.rescaleImage = function(image, width, height)
 				0, 0, image.width, image.height,
 				0, 0, canvas.width, canvas.height);
 	return canvas;
-}
+};
 
 
 /*****************************************************************************
@@ -203,7 +203,7 @@ x3dom.Utils.scaleImage = function(image)
 x3dom.Utils.isPowerOfTwo = function(x) 
 {
 	return ((x & (x - 1)) === 0);
-}
+};
 
 
 /*****************************************************************************
@@ -216,7 +216,7 @@ x3dom.Utils.nextHighestPowerOfTwo = function(x)
 		x = x | x >> i;
 	}
 	return (x + 1);
-}
+};
 
 
 /*****************************************************************************
@@ -226,7 +226,7 @@ x3dom.Utils.nextBestPowerOfTwo = function(x)
 {
 	var log2x = Math.log(x) / Math.log(2);
 	return Math.pow(2, Math.round(log2x));
-}
+};
 
 /*****************************************************************************
 * Return data type size in byte
@@ -249,7 +249,7 @@ x3dom.Utils.getDataTypeSize = function(type)
 		default:
 			return 8;
 	}
-}
+};
 
 /*****************************************************************************
 * Return this.gl-Type
@@ -289,7 +289,7 @@ x3dom.Utils.getVertexAttribType = function(type, gl)
 	}
 
 	return dataType;
-}
+};
 
 /*****************************************************************************
 * Return TypedArray View
@@ -331,15 +331,15 @@ x3dom.Utils.getArrayBufferView = function(type, buffer)
 	}
 
 	return array;
-}
+};
 
 /*****************************************************************************
 * Checks whether a TypedArray View Type with the given name string is unsigned
 *****************************************************************************/
 x3dom.Utils.isUnsignedType = function (str)
 {
-  return ((str == "Uint8" || str == "Uint16" || str == "Uint16" ||str == "Uint32") ? true : false);
-}
+  return ((str == "Uint8" || str == "Uint16" || str == "Uint16" || str == "Uint32") ? true : false);
+};
 
 
 /*****************************************************************************
@@ -349,7 +349,7 @@ x3dom.Utils.checkDirtyLighting = function (viewarea)
 {
 	return [viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight,
 			viewarea.getLightsShadow()];
-}
+};
 
 /*****************************************************************************
 * Get GL min filter
@@ -375,7 +375,7 @@ x3dom.Utils.minFilterDic = function(gl, minFilter)
 		case "NICEST":                       return gl.LINEAR_MIPMAP_LINEAR;
 		default:							 return gl.LINEAR;
 	}
-}
+};
 
 /*****************************************************************************
 * Get GL mag filter
@@ -393,7 +393,7 @@ x3dom.Utils.magFilterDic = function(gl, magFilter)
 		case "NICEST":			return gl.LINEAR;
 		default:				return gl.LINEAR;
 	}
-}
+};
 
 /*****************************************************************************
 * Get GL boundary mode
@@ -409,7 +409,7 @@ x3dom.Utils.boundaryModesDic = function(gl, mode)
 		case "REPEAT":            return gl.REPEAT;
 		default:				  return gl.REPEAT;
 	}
-}
+};
 
 /*****************************************************************************
 * 
@@ -420,18 +420,21 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	
 	var geometry 	= shape._cf.geometry.node;
 	var appearance 	= shape._cf.appearance.node;
-	var texture		= appearance._cf.texture.node;
-	
+
 	//Check if it's a composed shader
-	if(appearance._shader && x3dom.isa(appearance._shader, x3dom.nodeTypes.ComposedShader)) {
+	if (appearance && appearance._shader &&
+        x3dom.isa(appearance._shader, x3dom.nodeTypes.ComposedShader)) {
 		property.CSHADER			= shape._objectID;
-	} else {
+	}
+    else if (geometry && appearance) {
+        var texture = appearance._cf.texture.node;
+        
 		property.CSHADER			= -1;
 		property.SOLID				= (shape.isSolid()) ? 1 : 0;
 		property.TEXT				= (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
-		property.POPGEOMETRY  	= (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;    
-		property.BITLODGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;    
-		property.IMAGEGEOMETRY	= (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
+		property.POPGEOMETRY  	    = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
+		property.BITLODGEOMETRY	    = (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
+		property.IMAGEGEOMETRY	    = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
 		property.IG_PRECISION		= (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
 		property.IG_INDEXED			= (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
 		property.POINTLINE2D		= x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet) ||
@@ -490,7 +493,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	};
 
 	return property;
-}
+};
 
 /*****************************************************************************
 * Returns "shader" such that "shader.foo = [1,2,3]" magically sets the 
@@ -613,4 +616,4 @@ x3dom.Utils.wrapProgram = function (gl, program)
 	}
 	
 	return shader;
-}
+};

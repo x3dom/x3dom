@@ -1366,8 +1366,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normal', "");
             this.addField_SFString(ctx, 'texCoord', "");
             this.addField_SFString(ctx, 'color', "");
-            this.addField_SFString(ctx, 'tangent', "");     //TODO
-            this.addField_SFString(ctx, 'binormal', "");    //TODO
+            this.addField_SFString(ctx, 'tangent', "");     // TODO
+            this.addField_SFString(ctx, 'binormal', "");    // TODO
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
@@ -1376,13 +1376,14 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalType', "Float32");
             this.addField_SFString(ctx, 'texCoordType', "Float32");
             this.addField_SFString(ctx, 'colorType', "Float32");
-            //this.addField_SFString(ctx, 'tangentType', "Float32");
-            //this.addField_SFString(ctx, 'binormalType', "Float32");
+            this.addField_SFString(ctx, 'tangentType', "Float32");
+            this.addField_SFString(ctx, 'binormalType', "Float32");
             
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
             this.addField_SFBool(ctx, 'rgbaColors', false);
             this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
             this.addField_SFBool(ctx, 'normalPerVertex', true);
+            this.addField_SFBool(ctx, 'idsPerVertex', false);     // Experimental flag to decide if IDs are in texCoords
             
             // workaround
             this._hasStrideOffset = false;
@@ -1561,7 +1562,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "PopGeometryLevel",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
       function (ctx) {	
           x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
     
@@ -1588,7 +1589,7 @@ x3dom.registerNodeType(
         getVertexDataBufferOffset: function() {
             return this._vf.vertexDataBufferOffset;
         }
-		}
+	  }
 	)
 );
 
@@ -1612,7 +1613,6 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'normalOffset',    0);
             this.addField_SFInt32(ctx, 'texcoordOffset',  0);
             this.addField_SFInt32(ctx, 'colorOffset',     0);
-            
             
             this.addField_SFInt32(ctx, 'positionPrecision', 2);
             this.addField_SFInt32(ctx, 'normalPrecision',   1);
@@ -1897,8 +1897,8 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "BitLODGeoComponent",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        function (ctx) {	
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
             x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
 			
 			this.addField_SFString(ctx, 'src', "");
