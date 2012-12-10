@@ -287,7 +287,9 @@ package x3dom {
 		
 		private function setCanvasTexture(value:Object) : void 
 		{	
-
+			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new CanvasTexture( Number(value.width),
+																							   Number(value.height),
+																							   value.pixels );
 		}
 
 	}
