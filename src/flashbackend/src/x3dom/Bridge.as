@@ -32,6 +32,7 @@ package x3dom {
 			
 			//Register JS callback functions
 			ExternalInterface.addCallback("renderScene", renderScene);
+			ExternalInterface.addCallback("getScreenshot", getScreenshot);
 			ExternalInterface.addCallback("pickValue", pickValue);
 			ExternalInterface.addCallback("setViewpoint", setViewpoint);
 			ExternalInterface.addCallback("setBackground", setBackground);
@@ -60,6 +61,11 @@ package x3dom {
 			FlashBackend.getLoadingScreen().visible = false;
 			this._scene.checkForRemovedNodes();
 			this._renderer.render();
+		}
+		
+		private function getScreenshot() : String
+		{	
+			return this._renderer.screenURL;
 		}
 		
 		private function pickValue(value:Object) : Object
@@ -287,9 +293,10 @@ package x3dom {
 		
 		private function setCanvasTexture(value:Object) : void 
 		{	
+
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new CanvasTexture( Number(value.width),
 																							   Number(value.height),
-																							   value.pixels );
+																							   value.dataURL );
 		}
 
 	}

@@ -75,10 +75,21 @@
 	    		document.getElementById('box').setAttribute('render', 'TRUE');
 	    	}
 	    }
+	    function captureScreen()
+	    {
+	    	var elm = document.getElementById('x3dElement');
+	    
+	    	var url = elm.runtime.getScreenshot();
+	    
+	    	var img = document.getElementById('test');
+	    	
+	    	img.src = url;
+	    }
     </script>
 	
   </head>
   <body>
+    <div><img id="test" src=""></div>
     <x3d id='x3dElement' showStat='false' showLog='false' backend='flash'>
       <scene DEF='scene'>
         <Viewpoint position='0 0 20'></Viewpoint>
@@ -100,6 +111,7 @@
 		</Transform>
       </scene>
     </x3d>
-    <input type='button' value='switch render' onclick='switchRender();' />  
+    <input type='button' value='switch render' onclick='switchRender();'>
+    <input type='button' value='capture screen' onclick='captureScreen();'>  
   </body>
 </html>

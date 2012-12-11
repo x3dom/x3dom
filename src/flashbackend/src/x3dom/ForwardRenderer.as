@@ -163,6 +163,11 @@ package x3dom
 				}
 			}
 			
+			//Capture Screen if needed
+			if(this._captureScreen) {
+				this.captureScreen();
+			}
+			
 			//Swap Back- and Frontbuffer
 			this._context3D.present();
 		}

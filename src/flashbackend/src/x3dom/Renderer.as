@@ -1,11 +1,17 @@
 package x3dom
 {
+	import com.adobe.images.PNGEncoder;
+	
 	import flash.display.BitmapData;
+	import flash.display.PNGEncoderOptions;
 	import flash.display3D.*;
 	import flash.display3D.textures.Texture;
 	import flash.events.Event;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
+	import flash.utils.ByteArray;
+	
+	import mx.utils.Base64Encoder;
 	
 	import x3dom.shaders.*;
 	import x3dom.texturing.CubeMapTexture;
@@ -20,15 +26,20 @@ package x3dom
 		
 		protected var _mvpMatrix:Matrix3D = new Matrix3D();
 		
+		protected var _captureScreen:Boolean;
+		
 		protected var _bitmapBuffer:BitmapData;
+		protected var _screenURL:String;
+		protected var _base64Encoder:Base64Encoder;
 		
 		public function Renderer(scene:X3DScene)
 		{
 			this._scene = scene;
 			this._context3D = FlashBackend.getContext();
 			this._shaderCache = new ShaderCache();
-			
+			this._captureScreen = false;
 			this._bitmapBuffer = new BitmapData(FlashBackend.getWidth(), FlashBackend.getHeight());
+			this._base64Encoder = new Base64Encoder();
 		}
 		
 		public function render() : void
@@ -114,6 +125,39 @@ package x3dom
 				//Clean all Buffers
 				this.cleanBuffers();
 			}
+		}
+		
+		protected function captureScreen() : void
+		{
+			//Set mime type
+			this._screenURL = "data:image/png;base64,";
+			
+			//Draw scene to BitmapDate
+			this._context3D.drawToBitmapData(_bitmapBuffer);
+			
+			//Encode BitmapData to PNG
+			var png:ByteArray = PNGEncoder.encode(_bitmapBuffer);
+			
+			//Encode PNG to Base64
+			this._base64Encoder.encodeBytes(png);
+			
+			//Apppend encoded string
+			this._screenURL += this._base64Encoder.toString();
+		}
+		
+		public function get screenURL() : String
+		{
+			//Enable screen capturing
+			this._captureScreen = true;
+			
+			//Render scene
+			this.render();
+			
+			//Disable screen capturing
+			this._captureScreen = false;
+			
+			//Return screen URL
+			return _screenURL;
 		}
 		
 		protected function handleComplete(e:Event) : void

@@ -377,23 +377,28 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
  */
 x3dom.Runtime.prototype.getScreenshot = function() {
 	var url = "";
+	var backend = this.canvas.backend;
 	var canvas = this.canvas.canvas;
 
-	if (canvas) {
-	    // first flip along y axis
-        var canvas2d = document.createElement("canvas");
-        canvas2d.width = canvas.width;
-        canvas2d.height = canvas.height;
+	if(canvas) {
+		if(backend == "flash") {
+			url = canvas.getScreenshot();
+		} else {
+			// first flip along y axis
+			var canvas2d = document.createElement("canvas");
+			canvas2d.width = canvas.width;
+			canvas2d.height = canvas.height;
 
-        var ctx = canvas2d.getContext("2d");
-        ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
-        ctx.scale(1, -1);
-        ctx.translate(0, -canvas.height);
+			var ctx = canvas2d.getContext("2d");
+			ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+			ctx.scale(1, -1);
+			ctx.translate(0, -canvas.height);
 
-        url = canvas2d.toDataURL();
-		//url = canvas.toDataURL();
+			url = canvas2d.toDataURL();
+			//url = canvas.toDataURL();
+		}
 	}
-
+	
 	return url;
 };
 
