@@ -698,12 +698,27 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
+            // yet another exp. field for shadow dom remapping
+            this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
             
             this._lastMin = null;
             this._lastMax = null;
+            
+            this._shadowIdMap = null;
         },
         {
             /* bindable getter (e.g. getViewpoint) are added automatically */
+            
+            nodeChanged: function()
+            {
+                this.loadMapping();
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "shadowObjectIdMapping")
+                    this.loadMapping();
+            },
             
             updateVolume: function()
             {
@@ -714,6 +729,26 @@ x3dom.registerNodeType(
                     this._lastMin = min;
                     this._lastMax = max;
                 }
+            },
+            
+            loadMapping: function()
+            {
+                this._shadowIdMap = null;
+                
+                if (this._vf.shadowObjectIdMapping.length == 0) {
+                    return;
+                }
+                
+                var that = this;
+                var xhr = new XMLHttpRequest();
+                
+                xhr.open("GET", encodeURI(this._nameSpace.getURL(this._vf.shadowObjectIdMapping)), true);
+                xhr.send();
+                
+                xhr.onload = function()
+                {
+                    that._shadowIdMap = eval("(" + xhr.response + ")");
+                };
             }
         }
     )

@@ -3650,18 +3650,18 @@ x3dom.gfx_webgl = (function () {
                 dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
                        (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
                 
-                line = viewarea.calcViewRay(x + pixelOffset, y);
+                var lineoff = viewarea.calcViewRay(x + pixelOffset, y);
                 
-                var right = line.pos.add(line.dir.multiply(dist * sceneSize));
+                var right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
                 
                 index = 8;      // get top pixel
                 dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
                        (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
                 
-                line = viewarea.calcViewRay(x, y - pixelOffset);
+                lineoff = viewarea.calcViewRay(x, y - pixelOffset);
                 
-                var up = line.pos.add(line.dir.multiply(dist * sceneSize));
+                var up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
                 
                 pickNorm = right.cross(up).normalize();
@@ -3721,6 +3721,19 @@ x3dom.gfx_webgl = (function () {
     			}
     			catch(e) {
     				x3dom.debug.logException(e);
+    			}
+    			
+    			if (scene._shadowIdMap && scene._shadowIdMap.mapping) {
+    			    var shIds = scene._shadowIdMap.mapping[objId].usage;
+    			    // find corresponding dom tree object
+    			    for (var c=0; c<shIds.length; c++) {
+    			        var shObj = scene._nameSpace.defMap[shIds[c]];
+    			        // FIXME; bbox test too coarse (+ should include trafo)
+    			        if (shObj.doIntersect(line)) {
+    			            viewarea._pickingInfo.pickObj = shObj;
+    			            break;
+			            }
+			        }
     			}
             }
             else if (objId > 0) {
