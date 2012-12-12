@@ -298,11 +298,11 @@ x3dom.registerNodeType(
             },
 
             parentRemoved: function(parent) {
-                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                /*for (var i=0, n=this._childNodes.length; i<n; i++) {
                     if (this._childNodes[i]) {
                         this._childNodes[i].parentRemoved(this);
                     }
-                }
+                }*/
 
                 // Cleans all GL objects for WebGL-based renderer
                 if (this._cleanupGLObjects) {
