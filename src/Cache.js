@@ -136,3 +136,17 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
 	
 	return this.shaders[properties.toIdentifier()];
 };
+
+/**
+ * Release texture and shader resources
+ */
+x3dom.Cache.prototype.Release = function ()
+{
+	for(var texture in this.textures) { 
+		gl.deleteTexture(this.textures[texture]);
+	}
+
+	for(var shader in this.textures) { 
+		gl.deleteProgram(this.shaders[shader]);
+	}
+};

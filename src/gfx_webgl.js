@@ -435,13 +435,14 @@ x3dom.gfx_webgl = (function () {
                 //var gl = doc.ctx.ctx3d;
                 var sp = this._webgl.shader;
 
-                for (var cnt=0; this._webgl.texture !== undefined &&
+				//Textures cleanup handled by TextureCache
+                /*for (var cnt=0; this._webgl.texture !== undefined &&
                                 cnt < this._webgl.texture.length; cnt++)
                 {
                     if (this._webgl.texture[cnt].texture) {
                         gl.deleteTexture(this._webgl.texture[cnt].texture);
                     }
-                }
+                }*/
 
                 for (var q=0; q<this._webgl.positions.length; q++)
                 {
@@ -4531,6 +4532,9 @@ x3dom.gfx_webgl = (function () {
             return;
         }
         scene = viewarea._scene;
+		
+		//Release Texture and Shader Resources
+		this.cache.Release();
         
         // TODO; optimize traversal, matrices are not needed for cleanup
         scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
@@ -4551,14 +4555,15 @@ x3dom.gfx_webgl = (function () {
             var shape = scene.drawableObjects[i][1];
             var sp = shape._webgl.shader;
             
-            for (var cnt=0; shape._webgl.texture !== undefined && 
+			//Textures cleanup handled by TextureCache
+            /*for (var cnt=0; shape._webgl.texture !== undefined && 
                             cnt < shape._webgl.texture.length; cnt++)
             {
                 if (shape._webgl.texture[cnt].texture)
                 {
                     gl.deleteTexture(shape._webgl.texture[cnt].texture);
                 }
-            }
+            }*/
             
             for (var q=0; q<shape._webgl.positions.length; q++)
             {
