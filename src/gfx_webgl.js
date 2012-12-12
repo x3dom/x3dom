@@ -2202,7 +2202,7 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.setupScene = function(gl, bgnd) {
         var sphere;
         var texture;
-        
+		
         if (bgnd._webgl !== undefined)
         {
             if (!bgnd._dirty) {
@@ -2250,43 +2250,16 @@ x3dom.gfx_webgl = (function () {
                 
                 bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url, true);
             }
-            else {
-                texture = gl.createTexture();
-                
-                var image = new Image();
-                image.crossOrigin = '';
-                
-                image.onload = function() {
-                    bgnd._nameSpace.doc.needRender = true;
-                    bgnd._nameSpace.doc.downloadCount -= 1;
-                    
-                    bgnd._webgl.texture = texture;
-                    //x3dom.debug.logInfo(texture + " load tex url: " + url[0]);
-                    
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
-                    gl.bindTexture(gl.TEXTURE_2D, texture);
-                    gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, image);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                    gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
-                };
-
-                image.onerror = function()
-                {
-                    bgnd._nameSpace.doc.downloadCount -= 1;
-
-                    x3dom.debug.logError("Can't load tex url: " + url[0]);
-                };
-                
-                image.src = bgnd._nameSpace.getURL(url[0]);
-                bgnd._nameSpace.doc.downloadCount += 1;
-                
+            else {      
                 bgnd._webgl = {
                     positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
                     indexes: [0, 1, 2, 3],
                     buffers: [{}, {}]
                 };
+				
+				url = bgnd._nameSpace.getURL(url[0]);
+				
+				bgnd._webgl.texture = x3dom.Utils.createTexture2D(gl, bgnd._nameSpace.doc, url, true);
 
                 bgnd._webgl.primType = gl.TRIANGLE_STRIP;
 

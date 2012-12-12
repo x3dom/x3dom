@@ -22,13 +22,13 @@ x3dom.Cache = function()
 /**
  * Returns a Texture 2D
  */
-x3dom.Cache.prototype.getTexture2D = function(gl, doc, url)
+x3dom.Cache.prototype.getTexture2D = function(gl, doc, url, bgnd)
 {
 	var textureIdentifier = url;
 	
 	if( this.textures[textureIdentifier] === undefined )
 	{
-		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url);
+		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd);
 	} 
 	else 
 	{
