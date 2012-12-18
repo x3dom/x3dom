@@ -132,6 +132,7 @@ x3dom.shader.light = function(numLights) {
 					"       L = (lLocation - (-V));\n" +
 					"       float d = length(L);\n" +
 					"		L = normalize(L);\n" +
+					"		V = normalize(V);\n" +
 					"       if(lRadius == 0.0 || d <= lRadius) {\n" +
 					"       	attentuation = 1.0 / max(lAttenuation.x + lAttenuation.y * d + lAttenuation.z * (d * d), 1.0);\n" +
 					"		}\n" +
@@ -144,8 +145,8 @@ x3dom.shader.light = function(numLights) {
 					"   }\n" +
 					
 					"   vec3  H = normalize( L + V );\n" +
-					"   float NdotL = max(0.0, dot(N, L));\n" +
-					"   float NdotH = max(0.0, dot(N, H));\n" +
+					"   float NdotL = max(0.0, dot(L, N));\n" +
+					"   float NdotH = max(0.0, dot(H, N));\n" +
 					
 					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;" +

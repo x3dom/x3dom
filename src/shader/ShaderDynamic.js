@@ -536,7 +536,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 				shader += "color = texColor;\n";
 			}
 		} else if(!properties.VERTEXCOLOR){
-			shader += "color.rgb += emissiveColor;\n";
+			shader += "color.rgb = emissiveColor;\n";
 		}
 	}
 	

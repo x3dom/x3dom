@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<!-- HTML5 -->
+<html>
+<head>
+	<meta charset="utf-8">
+    <link rel="stylesheet" type="text/css" href="../../src/x3dom.css">
+
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+
+		<title>Specular Direction?</title>
+		<script type="text/javascript">
+		function toggleLight(light)
+		{ // "on" should be used instead of "intensity", but is not working
+			var Light = document.getElementById(light)
+			if (Light.getAttribute("intensity") == 0)
+				Light.setAttribute("intensity", "1")
+			else
+				Light.setAttribute("intensity", "0")
+		}
+
+		function toggleHead(light)
+		{
+			var Light = document.getElementById(light)
+			if (Light.getAttribute("headlight") == "false")
+				Light.setAttribute("headlight", "true")
+			else
+				Light.setAttribute("headlight", "false")
+		}
+		</script>
+	</head>
+
+<body>
+<h1>Specular-Direction?</h1>
+
+<p>
+<strong>HeadLight:</strong> Specular-Direction is on Z-Axis.
+</p>
+<p>
+<strong>PointLight:</strong> Specular-Direction is also on Z-Axis, but should be on some angle between light-source and viewer.
+</p>
+
+<X3D id="x3delement" xmlns="http://www.web3d.org/specifications/x3d-namespace" showStat="false" showLog="false" x="0px" y="0px" width="400px" height="400px">	
+<Scene>
+	<background groundAngle="1.57079" groundColor="0.8 0.8 0.8, 0.4 0.4 0.4"
+			skyAngle="0.78 1.57" skyColor="1 1 1, 0.2 0.5 1, 0.2 0.2 1"></background>
+
+	<NavigationInfo id="HeadLight" headlight="false"></NavigationInfo>
+	
+<!-- Sphere -->
+	<Shape>
+		<Appearance>
+			<Material diffuseColor="1.0 0.0 0.0"
+			  		  ambientIntensity="0.2"
+			  		  specularColor="1.0 1.0 1.0"
+			  		  shininess="0.5"></Material>
+		</Appearance>
+		<Sphere radius="1"></Sphere>
+	</Shape>
+
+<!-- Pointlight -->
+	<Transform DEF="Orbit">
+	<Transform translation="3 0 0">
+		<PointLight id="Point"></PointLight>
+		<Shape>
+			<Appearance>
+				<Material diffuseColor="0.9 0.9 0.9" emissiveColor="1 1 1"></Material>
+			</Appearance>
+			<Sphere radius="0.1"></Sphere>				
+		</Shape>
+	</Transform>
+	</Transform>
+
+<!-- Orbit -->
+		<TimeSensor DEF="TimeOrbit" cycleInterval="10" loop="true"></TimeSensor>
+		<OrientationInterpolator DEF="OrbitInterpolator" key="0.0 0.5 1.0" keyValue="0 1 0 0.0, 0 1 0 3.14, 0 1 0 6.28"></OrientationInterpolator>
+		<ROUTE fromNode="TimeOrbit" fromField="fraction_changed" toNode="OrbitInterpolator" toField="set_fraction"></ROUTE>
+		<ROUTE fromNode="OrbitInterpolator" fromField="value_changed" toNode="Orbit" toField="rotation"></ROUTE>
+
+</Scene>
+</X3D>
+
+Light:<br>
+<input type="button" value="HeadLight" onclick="toggleHead('HeadLight')">
+<input type="button" value="PointLight" onclick="toggleLight('Point')">
+
+</body>
+</html>
