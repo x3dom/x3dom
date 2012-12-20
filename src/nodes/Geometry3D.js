@@ -1626,8 +1626,19 @@ x3dom.registerNodeType(
             this.addField_MFInt32 (ctx, 'vertexCount', [0]);            
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
             this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
-            this.addField_SFVec3f (ctx, 'size',     1, 1, 1);            
-            
+            this.addField_SFVec3f (ctx, 'size',     1, 1, 1);
+            this.addField_SFVec3f (ctx, 'bbMinModF',  0, 0, 0);
+            this.addField_SFVec3f (ctx, 'bbMaxModF',  1, 1, 1);
+            this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
+            this.addField_SFVec3f (ctx, 'bbShiftVec', 0, 0, 0);
+                        
+            if (this._vf.bbMinModF.x >= this._vf.bbMaxModF.x)
+                this._vf.bbShiftVec.x = 1.0;
+            if (this._vf.bbMinModF.y >= this._vf.bbMaxModF.y)
+                this._vf.bbShiftVec.y = 1.0;
+            if (this._vf.bbMinModF.z >= this._vf.bbMaxModF.z)
+                this._vf.bbShiftVec.z = 1.0;
+      
             this.addField_MFNode('levels', x3dom.nodeTypes.PopGeometryLevel);
             
             this.addField_SFInt32(ctx, 'attributeStride', 0);
@@ -1662,7 +1673,7 @@ x3dom.registerNodeType(
             for (var i = 0; i < this._vf.vertexCount.length; ++i) {
                 this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
             }
-            
+                        
             // workaround            
             this._mesh._numPosComponents  = this._vf.sphericalNormals ? 4 : 3;
             this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;
@@ -1689,6 +1700,10 @@ x3dom.registerNodeType(
               return this._vf.position.add( this._vf.size.multiply(0.5) );
             },
             
+            getBBoxShiftVec: function() {
+              return this._vf.bbShiftVec;
+            },
+         
             getBBoxSize: function() {
               return this._vf.size;
             },

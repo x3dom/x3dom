@@ -3082,14 +3082,18 @@ x3dom.gfx_webgl = (function () {
         // Set special Geometry variables
         //===========================================================================
         if (shape._webgl.popGeometry) {
-          sp.PG_precisionLevel = shape._webgl.precisionLevel;          
+          sp.PG_precisionLevel = shape._webgl.precisionLevel;
+          sp.PG_bbMin          = shape._cf.geometry.node._vf.bbMin.toGL();
+          sp.PG_bbMaxModF      = shape._cf.geometry.node._vf.bbMaxModF.toGL();          
+          sp.PG_bboxShiftVec   = shape._cf.geometry.node.getBBoxShiftVec().toGL();
         }
         
 		if (shape._webgl.coordType != gl.FLOAT)
 		{
-		    if ( shape._webgl.bitLODGeometry != 0 ||  shape._webgl.popGeometry != 0 ||
-                (shape._cf.geometry.node._mesh._numPosComponents == 4 &&
-    		     x3dom.Utils.isUnsignedType(shape._cf.geometry.node._vf.coordType)) )
+		    if ( shape._webgl.popGeometry === 0 &&
+                (shape._webgl.bitLODGeometry != 0 ||  
+                 (shape._cf.geometry.node._mesh._numPosComponents == 4 &&
+    		      x3dom.Utils.isUnsignedType(shape._cf.geometry.node._vf.coordType))) )
 			{
     		    sp.bgCenter = shape._cf.geometry.node.getMin().toGL();
     		}
@@ -4091,9 +4095,9 @@ x3dom.gfx_webgl = (function () {
                         };
                         
                         //compute LOD using bounding sphere
-                        currentLOD  = computeLOD(bboxSize.length());
+                        currentLOD  = computeLOD(0.3);
                         
-                        //currentLOD = 16;
+                        //currentLOD = 6;
                         currentLOD = Math.max(currentLOD, 1);
                         currentLOD = Math.min(currentLOD, 16);
                         

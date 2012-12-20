@@ -71,6 +71,9 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
   //PG stuff
   if (properties.POPGEOMETRY) {
     shader += "uniform float PG_precisionLevel;\n"
+    shader += "uniform vec3 PG_bbMin;\n";
+    shader += "uniform vec3 PG_bbMaxModF;\n"
+    shader += "uniform vec3 PG_bboxShiftVec;\n";
   }
 		
 	//Normals
@@ -231,11 +234,22 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		//Positions
 		shader += "vec3 vertPosition = position.xyz;\n";
         if (properties.POPGEOMETRY) {
+          shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF);\n"; //test if vertPosition <= PG_bbMaxModF 
+          shader += "offsetVec *= PG_bboxShiftVec;\n";
+        
+          //coordinate truncation, computation of current maximum possible value
           shader += "float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
           shader += "vertPosition = floor(vertPosition / p) * p;\n";
           shader += "float precisionMax = 65536.0 - p;\n";
+          shader += "vertPosition /= precisionMax;\n";
           
-          shader += "vertPosition = bgCenter + bgSize * vertPosition / precisionMax;\n";
+          //use this line instead of above code to disable vertex clustering
+          //shader += "vertPosition /= bgPrecisionMax;\n";
+          
+          //de-normalize and translate coordinates
+          shader += "vertPosition += offsetVec;\n";
+          shader += "vertPosition = vertPosition * bgSize + floor(PG_bbMin / bgSize) * bgSize;\n";          
+         
         }
 		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
             shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
@@ -279,7 +293,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "fragColor = color;\n";
 			if(properties.REQUIREBBOXCOL) {
                 shader += "fragColor = fragColor / bgPrecisionColMax;\n";
-			}
+			}            
 		}
 		
 		//TexCoords
