@@ -151,7 +151,6 @@ x3dom.registerNodeType(
 
             parentRemoved: function(parent)
             {
-                parent._cf.texture.node = null;
                 Array.forEach(parent._parentNodes, function (shape) {
                     shape._dirty.texture = true;
                 });

@@ -39,7 +39,7 @@
 				<Transform id='bar' DEF='t2' translation='2 0 0'>
 				  <Shape USE='obj'/>
 				</Transform>
-				<TimeSensor id='ts' cycleInterval='5' />
+				<TimeSensor id='ts' loop="true" cycleInterval='5' />
 				<PositionInterpolator id='p1' key='0 0.5 1' keyValue='0.5 0.5 0.5 2 2 2 0.5 0.5 0.5' />
 				<PositionInterpolator id='p2' key='0 0.5 1' keyValue='2 2 2 0.5 0.5 0.5 2 2 2' />
 				<ROUTE fromNode='ts' fromField='fraction_changed' toNode='p1' toField='set_fraction' />

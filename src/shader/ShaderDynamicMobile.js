@@ -381,6 +381,9 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "fragDiffuse = vec3(1.0);\n";
 			shader += "fragColor.rgb = vec3(0.0);\n";
 			shader += "fragColor.a = alpha;\n";
+		} else if(!properties.VERTEXCOLOR && properties.POINTLINE2D){
+			shader += "fragColor.rgb = emissiveColor;\n";
+			shader += "fragColor.a = alpha;\n";
 		} else {
 			shader += "fragColor.rgb = rgb + emissiveColor;\n;\n";
 			shader += "fragColor.a = alpha;\n";

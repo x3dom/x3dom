@@ -220,7 +220,7 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 	else 
 	{
-		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]));
+		this.texture = this.cache.getTexture2D(gl, doc, tex._nameSpace.getURL(tex._vf.url[0]), false);
 	}
 };
 

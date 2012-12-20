@@ -22,13 +22,13 @@ x3dom.Cache = function()
 /**
  * Returns a Texture 2D
  */
-x3dom.Cache.prototype.getTexture2D = function(gl, doc, url)
+x3dom.Cache.prototype.getTexture2D = function(gl, doc, url, bgnd)
 {
 	var textureIdentifier = url;
 	
 	if( this.textures[textureIdentifier] === undefined )
 	{
-		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url);
+		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd);
 	} 
 	else 
 	{
@@ -135,4 +135,18 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
 	} */
 	
 	return this.shaders[properties.toIdentifier()];
+};
+
+/**
+ * Release texture and shader resources
+ */
+x3dom.Cache.prototype.Release = function ()
+{
+	for(var texture in this.textures) { 
+		gl.deleteTexture(this.textures[texture]);
+	}
+
+	for(var shader in this.textures) { 
+		gl.deleteProgram(this.shaders[shader]);
+	}
 };
