@@ -4078,9 +4078,9 @@ x3dom.gfx_webgl = (function () {
                         };
                         
                         //compute LOD using bounding sphere
-                        currentLOD  = computeLOD(0.3);
+                        currentLOD  = computeLOD(bboxSize.length());
                         
-                        //currentLOD = 6;
+                        //currentLOD = 16;
                         currentLOD = Math.max(currentLOD, 1);
                         currentLOD = Math.min(currentLOD, 16);
                         
