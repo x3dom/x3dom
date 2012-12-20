@@ -36,7 +36,7 @@ x3dom.gfx_webgl = (function () {
 	/*****************************************************************************
     * Setup the 3D context and init some things
     *****************************************************************************/
-    function setupContext(canvas, forbidMobileShaders) {
+    function setupContext(canvas, forbidMobileShaders, forceMobileShaders) {
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
         // Context creation params
@@ -97,6 +97,7 @@ x3dom.gfx_webgl = (function () {
                         {
                             x3dom.caps.MOBILE = true;
                         }
+                        
                         if (x3dom.caps.MOBILE)
                         {
                             if (forbidMobileShaders) {
@@ -107,6 +108,14 @@ x3dom.gfx_webgl = (function () {
                             else {
 							    x3dom.debug.logWarning("Detected mobile graphics card! " + 
 							        "Using low quality shaders without ImageGeometry support!");
+						    }
+						}
+						else
+						{
+						    if (forceMobileShaders) {
+						        x3dom.caps.MOBILE = true;
+                                x3dom.debug.logWarning("Detected desktop graphics card! " + 
+							        "But being forced to mobile shaders with lower quality!");
 						    }
 						}
                     }
