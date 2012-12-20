@@ -234,6 +234,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		//Positions
 		shader += "vec3 vertPosition = position.xyz;\n";
         if (properties.POPGEOMETRY) {
+          //compute offset using bounding box
           shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF);\n"; //test if vertPosition <= PG_bbMaxModF 
           shader += "offsetVec *= PG_bboxShiftVec;\n";
         
@@ -246,7 +247,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
           //use this line instead of above code to disable vertex clustering
           //shader += "vertPosition /= bgPrecisionMax;\n";
           
-          //de-normalize and translate coordinates
+          //translate coordinates
           shader += "vertPosition += offsetVec;\n";
           shader += "vertPosition = vertPosition * bgSize + floor(PG_bbMin / bgSize) * bgSize;\n";          
          
