@@ -179,9 +179,9 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
-                var ctx = { doc: this.doc, xmlNode: domNode };
+                var ctx = { doc: this.doc, xmlNode: domNode, nameSpace: this };
                 n = new nodeType(ctx);
-                n._nameSpace = this;
+                //n._nameSpace = this;
                 
                 //active workaround for missing DOMAttrModified support
                 if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false)

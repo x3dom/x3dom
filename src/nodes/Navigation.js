@@ -86,16 +86,16 @@ x3dom.registerNodeType(
 
             activate: function (prev) {
                 if (prev) {
-                    this._nameSpace.doc._viewarea.animateTo(this, prev);
+                    this._nameSpace.doc._viewarea.animateTo(this, prev._autoGen ? null : prev);
                 }
-                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
+                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this, prev);
                 this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
-                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
+                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             deactivate: function (prev) {
-                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
-                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
+                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this, prev);
+                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             getCenterOfRotation: function() {

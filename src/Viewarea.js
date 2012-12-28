@@ -78,6 +78,9 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
             }
         }
         else {
+            this._mixer._beginTime = 0;
+            this._mixer._endTime = 0;
+            
             this._scene.getViewpoint().setView(this._mixer._beginMat);
         }
     }
@@ -472,24 +475,25 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
             prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
                          mult(this._transMat).mult(this._rotMat);
+            
+            this._mixer._beginTime = this._lastTS;
+
+            if (arguments.length >= 3) {
+                 // for lookAt to assure travel speed of 1 m/s
+                this._mixer._endTime = this._lastTS + dur;
+            }
+            else {
+                this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+            }
+
+            this._mixer.setBeginMatrix (prev);
+            this._mixer.setEndMatrix (target);
+            
+            this._scene.getViewpoint().setView(prev);
         }
         else {
-            //prev = x3dom.fields.SFMatrix4f.identity();
-            return;
+            this._scene.getViewpoint().setView(target);
         }
-
-        this._mixer._beginTime = this._lastTS;
-
-        if (arguments.length >= 3) {
-            // for lookAt to assure travel speed of 1 m/s
-            this._mixer._endTime = this._lastTS + dur;
-        }
-        else {
-            this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
-        }
-
-        this._mixer.setBeginMatrix (prev);
-        this._mixer.setEndMatrix (target);
     }
     else
     {

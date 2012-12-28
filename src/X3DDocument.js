@@ -169,11 +169,12 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
     // sceneDoc is the X3D element here...
     var sceneElem = x3dom.findScene(sceneDoc);
 
-    // create and add BindableBag
+    // create and add BindableBag that holds all bindable stacks
     this._bindableBag = new x3dom.BindableBag(this);
 
     // create and add the NodeNameSpace
     var nameSpace = new x3dom.NodeNameSpace("scene", doc);
+    
     var scene = nameSpace.setupTree(sceneElem);
 
     // link scene
@@ -505,12 +506,13 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     			var translation = e_mat.e3();
 				var rot = rotation.toAxisAngle();
     			
-    			x3dom.debug.logInfo('Viewpoint position="' + translation.x.toFixed(5) + ' ' 
+    			x3dom.debug.logInfo('&lt;Viewpoint position="' + translation.x.toFixed(5) + ' ' 
     			                    + translation.y.toFixed(5) + ' ' + translation.z.toFixed(5) + '" ' +
     								'orientation="' + rot[0].x.toFixed(5) + ' ' + rot[0].y.toFixed(5) + ' ' 
-    								+ rot[0].z.toFixed(5) + ' ' + rot[1].toFixed(5) + '" \n' +
+    								+ rot[0].z.toFixed(5) + ' ' + rot[1].toFixed(5) + '" \n\t' +
                                     'zNear="' + e_viewpoint.getNear().toFixed(6) + '" ' +
-    								'zFar="' + e_viewpoint.getFar().toFixed(6) + '"');
+    								'zFar="' + e_viewpoint.getFar().toFixed(6) + '" ' +
+    								'description="' + e_viewpoint._vf.description + '"&gt;');
             })();
             break;
         case 119: /* w, walk mode */

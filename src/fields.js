@@ -10,14 +10,21 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
 /** @namespace The x3dom.fields namespace. */
 x3dom.fields = {};
 
 x3dom.fields.Eps = 0.000001;
 
+
+///////////////////////////////////////////////////////////////////////////////
+// Single-Field Definitions
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 /** SFMatrix4f constructor. 
     @class Represents a SFMatrix4f
-    //TODO; use 2-dim array instead of _xx
+    @TODO: use 2-dim array instead of _xx
   */
 x3dom.fields.SFMatrix4f = function(	_00, _01, _02, _03, 
 									_10, _11, _12, _13, 
@@ -61,6 +68,16 @@ x3dom.fields.SFMatrix4f.prototype.e3 = function () {
     return new x3dom.fields.SFVec3f(this._03, this._13, this._23);
 };
 
+/** Returns a copy of the argument matrix */
+x3dom.fields.SFMatrix4f.copy = function(that) {
+    return new x3dom.fields.SFMatrix4f(
+        that._00, that._01, that._02, that._03,
+        that._10, that._11, that._12, that._13,
+        that._20, that._21, that._22, that._23,
+        that._30, that._31, that._32, that._33
+    );
+};
+
 /** Returns a SFMatrix4f identity matrix. */
 x3dom.fields.SFMatrix4f.identity = function () {
     return new x3dom.fields.SFMatrix4f(
@@ -71,6 +88,7 @@ x3dom.fields.SFMatrix4f.identity = function () {
     );
 };
 
+/** Returns a new null matrix */
 x3dom.fields.SFMatrix4f.zeroMatrix = function () {
     return new x3dom.fields.SFMatrix4f(
         0, 0, 0, 0,
@@ -131,6 +149,7 @@ x3dom.fields.SFMatrix4f.scale = function (vec) {
     );
 };
 
+//! Calculates look-at/camera matrix
 x3dom.fields.SFMatrix4f.lookAt = function (from, at, up)
 {
     var view = from.subtract(at).normalize();
@@ -165,15 +184,17 @@ x3dom.fields.SFMatrix4f.prototype.setScale = function (vec) {
 x3dom.fields.SFMatrix4f.parseRotation = function (str) {
     var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
     var x = +m[1], y = +m[2], z = +m[3], a = +m[4];
+    
     var d = Math.sqrt(x*x + y*y + z*z);
     if (d === 0) {
         x = 1; y = z = 0;
     } else {
         x /= d; y /= d; z /= d;
     }
+    
     var c = Math.cos(a);
     var s = Math.sin(a);
-    var t  = 1-c;
+    var t = 1 - c;
 
     return new x3dom.fields.SFMatrix4f(
         t*x*x+c,   t*x*y+s*z, t*x*z-s*y, 0,
@@ -224,6 +245,7 @@ x3dom.fields.SFMatrix4f.parse = function (str) {
     }
 };
 
+//! Performs matrix multiplication
 x3dom.fields.SFMatrix4f.prototype.mult = function (that)  {
     return new x3dom.fields.SFMatrix4f(
         this._00*that._00+this._01*that._10+this._02*that._20+this._03*that._30, 
@@ -289,6 +311,7 @@ x3dom.fields.SFMatrix4f.prototype.negate = function () {
     );
 };
 
+// scales matrix with factor s
 x3dom.fields.SFMatrix4f.prototype.multiply = function (s) {
     return new x3dom.fields.SFMatrix4f(
         s*this._00, s*this._01, s*this._02, s*this._03,
@@ -351,22 +374,20 @@ x3dom.fields.SFMatrix4f.prototype.at = function (i, j) {
 	return this[field];
 };
 
+/** Computes the square root of the matrix, assumes det > 0 */
 x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
-    var iX = x3dom.fields.SFMatrix4f.identity(), 
-         Y = x3dom.fields.SFMatrix4f.identity(), 
-        iY = x3dom.fields.SFMatrix4f.identity(), 
-        result = x3dom.fields.SFMatrix4f.identity();
-    var i, g, ig;
+    var Y = x3dom.fields.SFMatrix4f.identity();
+    var result = x3dom.fields.SFMatrix4f.copy(this);
     
-    result.setValues(this);
-    
-    for (i=0; i<6; i++)
+    for (var i=0; i<6; i++)
     {
-        iX = result.inverse();
-        iY = Y.inverse();
+        var iX = result.inverse();
+        var iY = (i == 0) ? x3dom.fields.SFMatrix4f.identity() : Y.inverse();
         
-        g = Math.abs( Math.pow(result.det() * Y.det(), -0.125) );
-        ig = 1.0 / g;
+        var rd = result.det(), yd = Y.det();
+        
+        var g = Math.abs( Math.pow(rd * yd, -0.125) );
+        var ig = 1.0 / g;
         
         result = result.multiply(g);
         result = result.addScaled(iY, ig);
@@ -380,6 +401,7 @@ x3dom.fields.SFMatrix4f.prototype.sqrt = function () {
     return result;
 };
 
+/** Returns the largest absolute value of all entries in the matrix */
 x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
     var t = 0, m = 0;
 
@@ -408,6 +430,7 @@ x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
     if ((t = Math.abs(this._13)) > m) {
         m = t;
     }
+    
     if ((t = Math.abs(this._20)) > m) {
         m = t;
     }
@@ -437,48 +460,48 @@ x3dom.fields.SFMatrix4f.prototype.normInfinity = function () {
     return m;
 };
 
+/** Returns the 1-norm of the upper left 3x3 part of this matrix.
+    The 1-norm is also known as maximum absolute column sum norm.
+ */
 x3dom.fields.SFMatrix4f.prototype.norm1_3x3 = function() {
-    var max, t = 0;
+    var max = Math.abs(this._00) + 
+              Math.abs(this._10) +
+              Math.abs(this._20);
+    var t = 0;
     
-    max = Math.abs(this._00) + 
-          Math.abs(this._10) +
-          Math.abs(this._20);
-    
-    if((t = Math.abs(this._01) +
-            Math.abs(this._11) +
-            Math.abs(this._21)  ) > max)
-    {
+    if ((t = Math.abs(this._01) +
+             Math.abs(this._11) +
+             Math.abs(this._21)) > max) {
         max = t;
     }
     
-    if((t = Math.abs(this._02) +
-            Math.abs(this._12) +
-            Math.abs(this._22)  ) > max)
-    {
+    if ((t = Math.abs(this._02) +
+             Math.abs(this._12) +
+             Math.abs(this._22)) > max) {
         max = t;
     }
     
     return max;
 };
 
+/** Returns the infinity-norm of the upper left 3x3 part of this matrix.
+    The infinity-norm is also known as maximum absolute row sum norm.
+ */
 x3dom.fields.SFMatrix4f.prototype.normInf_3x3 = function() {
-    var max, t = 0;
+    var max = Math.abs(this._00) + 
+              Math.abs(this._01) +
+              Math.abs(this._02);
+    var t = 0;
     
-    max = Math.abs(this._00) + 
-          Math.abs(this._01) +
-          Math.abs(this._02);
-    
-    if((t = Math.abs(this._10) +
-            Math.abs(this._11) +
-            Math.abs(this._12)  ) > max)
-    {
+    if ((t = Math.abs(this._10) +
+             Math.abs(this._11) +
+             Math.abs(this._12)) > max) {
         max = t;
     }
     
-    if((t = Math.abs(this._20) +
-            Math.abs(this._21) +
-            Math.abs(this._22)  ) > max)
-    {
+    if ((t = Math.abs(this._20) +
+             Math.abs(this._21) +
+             Math.abs(this._22)) > max) {
         max = t;
     }
     
@@ -523,9 +546,9 @@ x3dom.fields.SFMatrix4f.prototype.equals = function (that) {
  *  to an axis/angle pair for being used in the x3d dom tree.)
  */
 x3dom.fields.SFMatrix4f.prototype.getTransform = function(
-				translation, rotation, scaleFactor, scaleOrientation, center) 
+				        translation, rotation, scaleFactor, scaleOrientation, center) 
 {
-	var m = x3dom.fields.SFMatrix4f.identity();
+	var m = null;
 	
 	if (arguments.length > 4) {
 		m = x3dom.fields.SFMatrix4f.translation(center.negate());
@@ -535,7 +558,7 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 		m = m.mult(c);
 	}
 	else {
-		m.setValues(this);
+	    m = x3dom.fields.SFMatrix4f.copy(this);
 	}
 	
 	var flip = m.decompose(translation, rotation, scaleFactor, scaleOrientation);
@@ -545,8 +568,7 @@ x3dom.fields.SFMatrix4f.prototype.getTransform = function(
 
 x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so) 
 {
-	var A = x3dom.fields.SFMatrix4f.identity();
-	A.setValues(this);
+	var A = x3dom.fields.SFMatrix4f.copy(this);
 	
     var Q  = x3dom.fields.SFMatrix4f.identity(),
 		S  = x3dom.fields.SFMatrix4f.identity(),
@@ -565,15 +587,11 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so)
     A._32 = 0.0;
 	
 	var det = A.polarDecompose(Q, S);
-	   
     var f = 1.0;
 
     if (det < 0.0) {
         Q = Q.negate();
         f = -1.0;
-    }
-    else {
-        f = 1.0;
     }
     
     r.setValue(Q);
@@ -587,16 +605,15 @@ x3dom.fields.SFMatrix4f.prototype.decompose = function(t, r, s, so)
 
 x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
 {
-    var TOL = 0.000001;  //1.0e-6
+    var TOL = 0.000000000001;
 	
     var Mk = this.transpose();
-    
-    var Ek = x3dom.fields.SFMatrix4f.identity(); 
-	var MkAdjT;
+    var Ek = x3dom.fields.SFMatrix4f.identity();
 	
     var Mk_one = Mk.norm1_3x3();
     var Mk_inf = Mk.normInf_3x3();
     
+	var MkAdjT;
     var MkAdjT_one, MkAdjT_inf;
     var Ek_one, Mk_det;
        
@@ -611,7 +628,7 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
                  Mk._02 * MkAdjT._02;
         
         // should this be a close to zero test ?
-        if(Mk_det === 0)
+        if (Mk_det == 0.0)
         {
             x3dom.debug.logWarning("polarDecompose: Mk_det == 0.0");
             break;
@@ -626,8 +643,9 @@ x3dom.fields.SFMatrix4f.prototype.polarDecompose = function(Q, S)
         
         var g1 = 0.5 * gamma;
         var g2 = 0.5 / (gamma * Mk_det);
-           
+        
         Ek.setValues(Mk);
+        
         Mk = Mk.multiply (g1);         // this does:
         Mk = Mk.addScaled(MkAdjT, g2); // Mk = g1 * Mk + g2 * MkAdjT
         Ek = Ek.addScaled(Mk, -1.0);   // Ek -= Mk;
@@ -657,26 +675,18 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
 {
     var next = [1, 2, 0];
     var maxIterations = 20;
-    var iter, i, j;
-    var diag = [], offDiag = [];
+    var diag = [this._00, this._11, this._22];
+    var offDiag = [this._12, this._20, this._01];
     
-    diag[0] = this._00;
-    diag[1] = this._11;
-    diag[2] = this._22;
-    
-    offDiag[0] = this._12;
-    offDiag[1] = this._20;
-    offDiag[2] = this._01;
-    
-    for (iter = 0; iter < maxIterations; ++iter)
+    for (var iter = 0; iter < maxIterations; ++iter)
     {
-        var sm = Math.abs(offDiag[0]) +  Math.abs(offDiag[1]) +  Math.abs(offDiag[2]);
+        var sm = Math.abs(offDiag[0]) + Math.abs(offDiag[1]) + Math.abs(offDiag[2]);
         
-        if (sm === 0) {        
+        if (sm == 0) {        
             break;
         }
         
-        for (i = 2; i >= 0; --i)
+        for (var i = 2; i >= 0; --i)
         {
             var p = next[i];
             var q = next[p];
@@ -686,7 +696,7 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
             
             if (absOffDiag > 0.0)
             {
-                var t, h = diag[q] - diag[p];
+                var t = 0, h = diag[q] - diag[p];
                 var absh = Math.abs(h);
                 
                 if (absh + g == absh)
@@ -717,7 +727,7 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
                 offDiag[q] -= s * (offDiag[p] + tau * offDiagq);
                 offDiag[p] += s * (offDiagq - tau * offDiag[p]);
                 
-                for (j = 2; j >= 0; --j)
+                for (var j = 2; j >= 0; --j)
                 {
                     var a = SO['_'+j+p];
                     var b = SO['_'+j+q];
@@ -734,26 +744,25 @@ x3dom.fields.SFMatrix4f.prototype.spectralDecompose = function(SO, k)
     k.z = diag[2];
 };
 
+/** Computes the logarithm of this matrix, assumes det > 0 */
 x3dom.fields.SFMatrix4f.prototype.log = function () {
     var maxiter = 12;
-    var k = 0, i = 0;
-    var eps = 0.000000000001;
-    var A = x3dom.fields.SFMatrix4f.identity(), 
-        Z = x3dom.fields.SFMatrix4f.identity(), 
-        result = x3dom.fields.SFMatrix4f.identity();
+    var eps = 1e-12;
+    
+    var A = x3dom.fields.SFMatrix4f.copy(this),
+        Z = x3dom.fields.SFMatrix4f.copy(this);
 
     // Take repeated square roots to reduce spectral radius
-    A.setValues(this);
-    Z.setValues(this);
-
     Z._00 -= 1;
     Z._11 -= 1;
     Z._22 -= 1;
     Z._33 -= 1;
+    
+    var k = 0;
 
     while (Z.normInfinity() > 0.5)
     {
-        A = A.sqrt( );
+        A = A.sqrt();
         Z.setValues(A);
 
         Z._00 -= 1;
@@ -770,36 +779,33 @@ x3dom.fields.SFMatrix4f.prototype.log = function () {
     A._33 -= 1;
 
     A = A.negate();
-    result.setValues(A);
     Z.setValues(A);
-
-    i = 1;
+    
+    var result = x3dom.fields.SFMatrix4f.copy(A);
+    var i = 1;
 
     while (Z.normInfinity() > eps && i < maxiter)
     {
         Z = Z.mult(A);
-
         i++;
 
-        result = result.addScaled(Z, (1.0 / i));
+        result = result.addScaled(Z, 1.0 / i);
     }
-
-    result = result.multiply((-1.0) * (1 << k));
     
-    return result;
+    return result.multiply( -(1 << k) );
 };
 
+/** Computes the exponential of this matrix */
 x3dom.fields.SFMatrix4f.prototype.exp = function () {
     var q = 6;
-    var A = x3dom.fields.SFMatrix4f.identity(), 
+    var A = x3dom.fields.SFMatrix4f.copy(this), 
         D = x3dom.fields.SFMatrix4f.identity(), 
         N = x3dom.fields.SFMatrix4f.identity(), 
         result = x3dom.fields.SFMatrix4f.identity();
-    var j = 1, k = 0, c = 1.0;
-    
-    A.setValues(this);
+    var k = 0, c = 1.0;
 
-    j += Math.floor(Math.log(A.normInfinity() / 0.693));
+    var j = 1.0 + parseInt(Math.log(A.normInfinity() / 0.693));
+    //var j = 1.0 + (Math.log(A.normInfinity() / 0.693) | 0);
     
     if (j < 0) {
         j = 0;
@@ -815,12 +821,10 @@ x3dom.fields.SFMatrix4f.prototype.exp = function () {
 
         N = N.addScaled(result, c);
 
-        if (k % 2) 
-        {
+        if (k % 2) {
             D = D.addScaled(result, -c);
         }
-        else
-        {
+        else {
             D = D.addScaled(result, c);
         }
     }
@@ -835,76 +839,65 @@ x3dom.fields.SFMatrix4f.prototype.exp = function () {
     return result;
 };
 
-x3dom.fields.SFMatrix4f.prototype.det3 = function (
-                a1, a2, a3, b1, b2, b3, c1, c2, c3) {
-    var d = (a1 * b2 * c3) + (a2 * b3 * c1) + (a3 * b1 * c2) -
-            (a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1);
-    return d;
+//! helper to calculate a 3x3 determinant
+x3dom.fields.SFMatrix4f.prototype.det3 = function (a1, a2, a3, b1, b2, b3, c1, c2, c3) {
+    return ((a1 * b2 * c3) + (a2 * b3 * c1) + (a3 * b1 * c2) -
+            (a1 * b3 * c2) - (a2 * b1 * c3) - (a3 * b2 * c1));
 };
 
+//! Returns the determinat of the whole 4x4 matrix
 x3dom.fields.SFMatrix4f.prototype.det = function () {
-    var a1, a2, a3, a4,
-        b1, b2, b3, b4,
-        c1, c2, c3, c4,
-        d1, d2, d3, d4;
+    var a1 = this._00;
+    var b1 = this._10;
+    var c1 = this._20;
+    var d1 = this._30;
 
-    a1 = this._00;
-    b1 = this._10;
-    c1 = this._20;
-    d1 = this._30;
+    var a2 = this._01;
+    var b2 = this._11;
+    var c2 = this._21;
+    var d2 = this._31;
 
-    a2 = this._01;
-    b2 = this._11;
-    c2 = this._21;
-    d2 = this._31;
+    var a3 = this._02;
+    var b3 = this._12;
+    var c3 = this._22;
+    var d3 = this._32;
 
-    a3 = this._02;
-    b3 = this._12;
-    c3 = this._22;
-    d3 = this._32;
-
-    a4 = this._03;
-    b4 = this._13;
-    c4 = this._23;
-    d4 = this._33;
+    var a4 = this._03;
+    var b4 = this._13;
+    var c4 = this._23;
+    var d4 = this._33;
     
-    var d = + a1 * this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) - 
-        b1 * this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4) + 
-        c1 * this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) - 
-        d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4);
-    return d;
+    return (a1 * this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) - 
+            b1 * this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4) + 
+            c1 * this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) - 
+            d1 * this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4));
 };
 
+/** Method to inverts the matrix, given that matrix is not singular */
 x3dom.fields.SFMatrix4f.prototype.inverse = function () {
-    var a1, a2, a3, a4,
-        b1, b2, b3, b4,
-        c1, c2, c3, c4,
-        d1, d2, d3, d4;
+    var a1 = this._00;
+    var b1 = this._10;
+    var c1 = this._20;
+    var d1 = this._30;
 
-    a1 = this._00;
-    b1 = this._10;
-    c1 = this._20;
-    d1 = this._30;
+    var a2 = this._01;
+    var b2 = this._11;
+    var c2 = this._21;
+    var d2 = this._31;
 
-    a2 = this._01;
-    b2 = this._11;
-    c2 = this._21;
-    d2 = this._31;
+    var a3 = this._02;
+    var b3 = this._12;
+    var c3 = this._22;
+    var d3 = this._32;
 
-    a3 = this._02;
-    b3 = this._12;
-    c3 = this._22;
-    d3 = this._32;
-
-    a4 = this._03;
-    b4 = this._13;
-    c4 = this._23;
-    d4 = this._33;
+    var a4 = this._03;
+    var b4 = this._13;
+    var c4 = this._23;
+    var d4 = this._33;
 
     var rDet = this.det();
 
-    //if (Math.abs(rDet) < x3dom.fields.Eps)
-    if (Math.abs(rDet) === 0)
+    if (Math.abs(rDet) < 1e-30)
     {
         x3dom.debug.logWarning("Invert matrix: singular matrix, no inverse!");
         return x3dom.fields.SFMatrix4f.identity();
@@ -913,23 +906,23 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
     rDet = 1.0 / rDet;
 
     return new x3dom.fields.SFMatrix4f(
-    +this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) * rDet,
-    -this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4) * rDet,
-    +this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) * rDet,
-    -this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4) * rDet,
-    -this.det3(b1, b3, b4, c1, c3, c4, d1, d3, d4) * rDet,
-    +this.det3(a1, a3, a4, c1, c3, c4, d1, d3, d4) * rDet,
-    -this.det3(a1, a3, a4, b1, b3, b4, d1, d3, d4) * rDet,
-    +this.det3(a1, a3, a4, b1, b3, b4, c1, c3, c4) * rDet,
-    +this.det3(b1, b2, b4, c1, c2, c4, d1, d2, d4) * rDet,
-    -this.det3(a1, a2, a4, c1, c2, c4, d1, d2, d4) * rDet,
-    +this.det3(a1, a2, a4, b1, b2, b4, d1, d2, d4) * rDet,
-    -this.det3(a1, a2, a4, b1, b2, b4, c1, c2, c4) * rDet,
-    -this.det3(b1, b2, b3, c1, c2, c3, d1, d2, d3) * rDet,
-    +this.det3(a1, a2, a3, c1, c2, c3, d1, d2, d3) * rDet,
-    -this.det3(a1, a2, a3, b1, b2, b3, d1, d2, d3) * rDet,
-    +this.det3(a1, a2, a3, b1, b2, b3, c1, c2, c3) * rDet
-    );
+                +this.det3(b2, b3, b4, c2, c3, c4, d2, d3, d4) * rDet,
+                -this.det3(a2, a3, a4, c2, c3, c4, d2, d3, d4) * rDet,
+                +this.det3(a2, a3, a4, b2, b3, b4, d2, d3, d4) * rDet,
+                -this.det3(a2, a3, a4, b2, b3, b4, c2, c3, c4) * rDet,
+                -this.det3(b1, b3, b4, c1, c3, c4, d1, d3, d4) * rDet,
+                +this.det3(a1, a3, a4, c1, c3, c4, d1, d3, d4) * rDet,
+                -this.det3(a1, a3, a4, b1, b3, b4, d1, d3, d4) * rDet,
+                +this.det3(a1, a3, a4, b1, b3, b4, c1, c3, c4) * rDet,
+                +this.det3(b1, b2, b4, c1, c2, c4, d1, d2, d4) * rDet,
+                -this.det3(a1, a2, a4, c1, c2, c4, d1, d2, d4) * rDet,
+                +this.det3(a1, a2, a4, b1, b2, b4, d1, d2, d4) * rDet,
+                -this.det3(a1, a2, a4, b1, b2, b4, c1, c2, c4) * rDet,
+                -this.det3(b1, b2, b3, c1, c2, c3, d1, d2, d3) * rDet,
+                +this.det3(a1, a2, a3, c1, c2, c3, d1, d2, d3) * rDet,
+                -this.det3(a1, a2, a3, b1, b2, b3, d1, d2, d3) * rDet,
+                +this.det3(a1, a2, a3, b1, b2, b3, c1, c2, c3) * rDet
+            );
 };
 
 x3dom.fields.SFMatrix4f.prototype.toString = function () {
@@ -980,6 +973,7 @@ x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** SFVec2f constructor.
     @class Represents a SFVec2f
   */
@@ -1080,6 +1074,7 @@ x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** SFVec3f constructor.
     @class Represents a SFVec3f
   */
@@ -1219,6 +1214,7 @@ x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** Quaternion constructor.
     @class Represents a Quaternion
   */
@@ -1291,7 +1287,7 @@ x3dom.fields.Quaternion.prototype.toAxisAngle = function()
     a = 2 * Math.acos( that.w );
     s = Math.sqrt( 1 - that.w * that.w );
     
-    if ( s === 0 ) //< x3dom.fields.Eps )
+    if ( s == 0 ) //< x3dom.fields.Eps )
     {
         x = that.x;
         y = that.y;
@@ -1539,6 +1535,7 @@ x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** SFColor constructor.
     @class Represents a SFColor
   */
@@ -1701,8 +1698,76 @@ x3dom.fields.SFColor.colorParse = function(color) {
 };
 
 
-/** SFColor constructor.
-    @class Represents a SFColor
+///////////////////////////////////////////////////////////////////////////////
+/** SFColorRGBA constructor.
+    @class Represents a SFColorRGBA
+  */
+x3dom.fields.SFColorRGBA = function(r, g, b, a) {
+    if (arguments.length === 0) {
+        this.r = this.g = this.b = this.a = 0;
+    }
+    else {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
+    }    
+};
+
+x3dom.fields.SFColorRGBA.parse = function(str) {
+    try {
+        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+        return new x3dom.fields.SFColorRGBA( +m[1], +m[2], +m[3], +m[4] );
+    }
+    catch (e) {
+        return x3dom.fields.SFColorRGBA.colorParse(str);
+    }
+};
+
+x3dom.fields.SFColorRGBA.prototype.setValues = function (color) {
+    this.r = color.r;
+    this.g = color.g;
+    this.b = color.b;   
+    this.a = color.a;   
+};
+
+x3dom.fields.SFColorRGBA.prototype.equals = function (that, eps) {
+    return Math.abs(this.r - that.r) < eps && 
+           Math.abs(this.g - that.g) < eps &&
+           Math.abs(this.b - that.b) < eps &&
+           Math.abs(this.a - that.a) < eps;
+};
+
+x3dom.fields.SFColorRGBA.prototype.toGL = function () {
+    return [ this.r, this.g, this.b, this.a ];
+};
+
+x3dom.fields.SFColorRGBA.prototype.toString = function() {
+    return "{ r " + this.r + " g " + this.g + " b " + this.b + " a " + this.a + " }";
+};
+
+x3dom.fields.SFColorRGBA.prototype.setValueByStr = function(str) {
+    try {
+        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
+        this.r = +m[1];
+        this.g = +m[2];
+        this.b = +m[3];
+        this.a = +m[4];
+    }
+    catch (e) {
+        var c = x3dom.fields.SFColorRGBA.colorParse(str);
+        this.r = c.r;
+        this.g = c.g;
+        this.b = c.b;
+        this.a = c.a;
+    }
+    return this;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+/** SFImage constructor.
+    @class Represents an SFImage
   */
 x3dom.fields.SFImage = function(w, h, c, arr) {
     if (arguments.length === 0 || !(arr && arr.map)) {
@@ -1809,6 +1874,12 @@ x3dom.fields.SFImage.prototype.toGL = function() {
 };
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+// Multi-Field Definitions
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 /** MFColor constructor.
     @class Represents a MFColor
   */
@@ -1856,72 +1927,7 @@ x3dom.fields.MFColor.prototype.toGL = function() {
 };
 
 
-/** SFColorRGBA constructor.
-    @class Represents a SFColorRGBA
-  */
-x3dom.fields.SFColorRGBA = function(r, g, b, a) {
-    if (arguments.length === 0) {
-        this.r = this.g = this.b = this.a = 0;
-    }
-    else {
-        this.r = r;
-        this.g = g;
-        this.b = b;
-        this.a = a;
-    }    
-};
-
-x3dom.fields.SFColorRGBA.parse = function(str) {
-    try {
-        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
-        return new x3dom.fields.SFColorRGBA( +m[1], +m[2], +m[3], +m[4] );
-    }
-    catch (e) {
-        return x3dom.fields.SFColorRGBA.colorParse(str);
-    }
-};
-
-x3dom.fields.SFColorRGBA.prototype.setValues = function (color) {
-    this.r = color.r;
-    this.g = color.g;
-    this.b = color.b;   
-    this.a = color.a;   
-};
-
-x3dom.fields.SFColorRGBA.prototype.equals = function (that, eps) {
-    return Math.abs(this.r - that.r) < eps && 
-           Math.abs(this.g - that.g) < eps &&
-           Math.abs(this.b - that.b) < eps &&
-           Math.abs(this.a - that.a) < eps;
-};
-
-x3dom.fields.SFColorRGBA.prototype.toGL = function () {
-    return [ this.r, this.g, this.b, this.a ];
-};
-
-x3dom.fields.SFColorRGBA.prototype.toString = function() {
-    return "{ r " + this.r + " g " + this.g + " b " + this.b + " a " + this.a + " }";
-};
-
-x3dom.fields.SFColorRGBA.prototype.setValueByStr = function(str) {
-    try {
-        var m = /^([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)$/.exec(str);
-        this.r = +m[1];
-        this.g = +m[2];
-        this.b = +m[3];
-        this.a = +m[4];
-    }
-    catch (e) {
-        var c = x3dom.fields.SFColorRGBA.colorParse(str);
-        this.r = c.r;
-        this.g = c.g;
-        this.b = c.b;
-        this.a = c.a;
-    }
-    return this;
-};
-
-
+///////////////////////////////////////////////////////////////////////////////
 /** MFColorRGBA constructor.
     @class Represents a MFColorRGBA
   */
@@ -1970,6 +1976,7 @@ x3dom.fields.MFColorRGBA.prototype.toGL = function() {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** MFRotation constructor.
     @class Represents a MFRotation
   */
@@ -2020,6 +2027,7 @@ x3dom.fields.MFRotation.prototype.toGL = function() {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** MFVec3f constructor.
     @class Represents a MFVec3f
   */
@@ -2073,7 +2081,7 @@ x3dom.fields.MFVec3f.prototype.toGL = function() {
 };
 
 
-
+///////////////////////////////////////////////////////////////////////////////
 /** MFVec2f constructor.
     @class Represents a MFVec2f
   */
@@ -2120,6 +2128,7 @@ x3dom.fields.MFVec2f.prototype.toGL = function() {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** MFInt32 constructor.
     @class Represents a MFInt32
   */
@@ -2165,6 +2174,7 @@ x3dom.fields.MFInt32.prototype.toGL = function() {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** MFFloat constructor.
     @class Represents a MFFloat
   */
@@ -2210,6 +2220,7 @@ x3dom.fields.MFFloat.prototype.toGL = function() {
 };
 
 
+///////////////////////////////////////////////////////////////////////////////
 /** MFString constructor.
     @class Represents a MFString
   */
@@ -2272,6 +2283,12 @@ x3dom.fields.MFString.prototype.toString = function () {
 };
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+// Single-/Multi-Field Node Definitions
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 /** SFNode constructor.
     @class Represents a SFNode
   */
@@ -2299,6 +2316,8 @@ x3dom.fields.SFNode.prototype.rmLink = function(node) {
     }
 };
 
+
+///////////////////////////////////////////////////////////////////////////////
 /** MFNode constructor.
     @class Represents a MFNode
   */
@@ -2341,6 +2360,12 @@ x3dom.fields.MFNode.prototype.length = function() {
 };
 
 
+
+///////////////////////////////////////////////////////////////////////////////
+// Math Helper Node Definitions
+///////////////////////////////////////////////////////////////////////////////
+
+///////////////////////////////////////////////////////////////////////////////
 /** Line constructor.
     @class Represents a Line (as internal helper).
   */
