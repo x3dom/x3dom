@@ -862,20 +862,20 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
  * 		The current visibility of the statistics info (true = visible, false = invisible)
  */
 x3dom.Runtime.prototype.statistics = function(mode) {
-    var statDiv = this.canvas.statDiv;
-    if (statDiv) {
+    var stateCanvas = this.canvas.stateCanvas;
+    if (stateCanvas) {
 
         if (mode === true) {
-            statDiv.style.display = 'inline';
+            stateCanvas.display(mode);
             return true;
         }
         if (mode === false) {
-            statDiv.style.display = 'none';
+            stateCanvas.display(mode);
             return false;
         }
 
         // if no parameter is given return current status (false = not visible, true = visible)
-        return statDiv.style.display != 'none'
+        return stateCanvas.active;
     }
 };
 

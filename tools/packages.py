@@ -14,6 +14,7 @@ BASICS = [
   'util/DoublyLinkedList.js',
   'util/EarClipping.js',
   'util/Utils.js',
+  'util/States.js',
   'X3DCanvas.js',
   'Runtime.js',
   'Main.js',

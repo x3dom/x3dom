@@ -379,11 +379,11 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     switch (charCode)
     {
         case  32: /* space */
-            var statDiv = this.canvas.parent.statDiv;
-
-            if (statDiv) {
-                statDiv.style.display = ((statDiv.style.display == 'none') ? 'inline' : 'none');
-            }
+            var stateCanvas = this.canvas.parent.stateCanvas;
+			
+			if (stateCanvas) {
+				stateCanvas.display();
+			}
 
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
                                 "m: toggle render mode | p: intersect type | r: reset view | " +

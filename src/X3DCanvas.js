@@ -350,20 +350,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         }
     };
 
-    this.createStatDiv = function() {
-        var statDiv = document.createElement('div');
-        statDiv.setAttribute("class", "x3dom-statdiv");
-        statDiv.innerHTML = "0 fps";
-
-        statDiv.oncontextmenu = statDiv.onmousedown = function(evt) {
-            evt.preventDefault();
-            evt.stopPropagation();
-            evt.returnValue = false;
-            return false;
-        };
-        return statDiv;
-    };
-
     this.createProgressDiv = function() {
         var progressDiv = document.createElement('div');
         progressDiv.setAttribute("class", "x3dom-progress");
@@ -474,10 +460,15 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.hasRuntime = false;
     }
 
-    this.showStat = x3dElem.getAttribute("showStat");
-    this.statDiv = this.createStatDiv();
-    this.statDiv.style.display = (this.showStat !== null && this.showStat == "true") ? "inline" : "none";
-    this.x3dElem.appendChild(this.statDiv);
+	//States only needed for the webgl backend. flash has his own.
+	if (this.backend != "flash") {
+		this.showStat = x3dElem.getAttribute("showStat");
+		this.stateCanvas = new x3dom.States();
+		if (this.showStat !== null && this.showStat == "true") {
+			this.stateCanvas.display(true);
+		}
+		this.x3dElem.appendChild(this.stateCanvas.canvas);
+	}
     
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this.createProgressDiv();
@@ -1064,10 +1055,11 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.x3dElem.runtime.enterFrame();
             }
 
-            if (this.statDiv) {
-                this.statDiv.textContent = fps.toFixed(2) + ' fps';
-                this.statDiv.appendChild(document.createElement("br"));
-                this.statDiv.appendChild(document.createTextNode("anim: " + animD));
+			
+            if (this.stateCanvas) {
+                this.stateCanvas.addState("FPS", fps);
+				this.stateCanvas.addState("ANIM", animD);
+				this.stateCanvas.update();
             }
 
             if (this.backend == 'flash') {
@@ -1077,26 +1069,25 @@ x3dom.X3DCanvas.prototype.tick = function()
 					this.doc.render(this.gl);
 				}
 			} else{
-				this.doc.needRender = false;    // picking might require another pass
+				//this.doc.needRender = false;    // picking might require another pass
 				this.doc.render(this.gl);
 			}
             
             this.x3dElem.runtime.exitFrame();
             
 		}
-
-        if (this.statDiv || this.progressDiv) {
-            if (this.statDiv && this.doc.downloadCount) {
-                if (this.doc.needRender)
-                {
-                    this.statDiv.appendChild(document.createElement("br"));
-                    this.statDiv.appendChild(document.createTextNode("#Loading: " + this.doc.downloadCount));
-                }
-                else {
-                    this.statDiv.textContent = "#Loading: " + this.doc.downloadCount;
-                }
-            }
-
+		
+        if (this.stateCanvas || this.progressDiv) {
+			if (this.stateCanvas) {
+				if (this.doc.downloadCount > 0) { 
+					this.stateCanvas.addInfo("#LOADS:", this.doc.downloadCount);
+				} else {
+					this.stateCanvas.removeInfo("#LOADS:");
+				}
+				//If states are active we need a real render loop
+				this.doc.needRender = this.stateCanvas.active;
+			}
+		
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
                 if (this.progressDiv) {
                     this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);

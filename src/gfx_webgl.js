@@ -3050,6 +3050,8 @@ x3dom.gfx_webgl = (function () {
         if (shape._webgl === undefined) {
             return;
         }
+		
+		var t0 = new Date().getTime();
         
         var tex = null;
         var scene = viewarea._scene;
@@ -3389,7 +3391,7 @@ x3dom.gfx_webgl = (function () {
 		    }
         
             // render object
-            try {
+            try {			
               // fixme; viewarea._points is dynamic and doesn't belong there!!!
               if (viewarea._points !== undefined && viewarea._points > 0) {
                 var polyMode = (viewarea._points == 1) ? gl.POINTS : gl.LINES;
@@ -3550,6 +3552,8 @@ x3dom.gfx_webgl = (function () {
                 gl.disableVertexAttribArray(sp[attrib.name]);
             }
         }
+
+		return new Date().getTime() - t0;
     };
     
 
@@ -3924,9 +3928,8 @@ x3dom.gfx_webgl = (function () {
             
             t1 = new Date().getTime() - t0;
             
-            if (this.canvas.parent.statDiv) {
-                this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-                this.canvas.parent.statDiv.appendChild(document.createTextNode("traverse: " + t1));
+            if (this.canvas.parent.stateCanvas) {
+                this.canvas.parent.stateCanvas.addState("TRAVERSE", t1);
             }
         //}
         
@@ -4169,10 +4172,9 @@ x3dom.gfx_webgl = (function () {
         }
         
         t1 = new Date().getTime() - t0;
-        
-        if (this.canvas.parent.statDiv) {
-            this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("sort: " + t1));
+		
+        if (this.canvas.parent.stateCanvas) {
+            this.canvas.parent.stateCanvas.addState("SORT", t1);
         }
         
         //===========================================================================
@@ -4197,11 +4199,14 @@ x3dom.gfx_webgl = (function () {
                 this.renderShadowPass(gl, scene, lightMatrix, mat_light);
                 t1 = new Date().getTime() - t0;
                 
-                if (this.canvas.parent.statDiv) {
-                    this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-                    this.canvas.parent.statDiv.appendChild(document.createTextNode("shadow: " + t1));
+                if (this.canvas.parent.stateCanvas) {
+                    this.canvas.parent.stateCanvas.addState("SHADOW", t1);
                 }   
-            }
+            } else {
+				if (this.canvas.parent.stateCanvas) {
+					this.canvas.parent.stateCanvas.removeState("SHADOW");
+				}
+			}
         }
         
         for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
@@ -4230,6 +4235,8 @@ x3dom.gfx_webgl = (function () {
                     //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
                 );
         gl.enable(gl.BLEND);
+		
+		var drawTime = 0;
 
         for (i=0, n=zPos.length; i<n; i++)
         {
@@ -4254,8 +4261,9 @@ x3dom.gfx_webgl = (function () {
                 gl.depthMask(false);
             }
 
-            this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
-                mat_view, mat_scene, mat_light, mat_proj, gl, oneShadowExistsAlready);
+            drawTime += this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
+										 mat_view, mat_scene, mat_light, mat_proj, gl,
+										 oneShadowExistsAlready);
 
             if (needEnableBlending) {
                 gl.enable(gl.BLEND);
@@ -4264,6 +4272,12 @@ x3dom.gfx_webgl = (function () {
                 gl.depthMask(true);
             }
         }
+
+		this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
+	
+		if (this.canvas.parent.stateCanvas) {
+			this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
+		}
 
         gl.disable(gl.BLEND);
         /*gl.blendFuncSeparate( // just multiply dest RGB by its A
@@ -4292,16 +4306,12 @@ x3dom.gfx_webgl = (function () {
         gl.flush();
         
         t1 = new Date().getTime() - t0;
-            
-        if (this.canvas.parent.statDiv) {
-            this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("render: " + t1));
-            this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-			this.canvas.parent.statDiv.appendChild(document.createTextNode("#Tris: " + this.numFaces));
-            this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Pnts: " + this.numCoords));
-            this.canvas.parent.statDiv.appendChild(document.createElement("br"));
-            this.canvas.parent.statDiv.appendChild(document.createTextNode("#Draws: " + this.numDrawCalls));
+		
+        if (this.canvas.parent.stateCanvas) {
+            this.canvas.parent.stateCanvas.addState("RENDER", t1);
+			this.canvas.parent.stateCanvas.addInfo("#DRAWS:", this.numDrawCalls);
+			this.canvas.parent.stateCanvas.addInfo("#POINTS:", this.numCoords);
+			this.canvas.parent.stateCanvas.addInfo("#TRIS:", this.numFaces);
         }
         
         //scene.drawableObjects = null;
