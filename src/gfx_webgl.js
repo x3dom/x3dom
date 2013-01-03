@@ -3069,6 +3069,28 @@ x3dom.gfx_webgl = (function () {
         if (shape._webgl.popGeometry) {
           sp.PG_precisionLevel = shape._webgl.precisionLevel;
           sp.PG_bbMin          = shape._cf.geometry.node._vf.bbMin.toGL();
+		  
+          (function(){          
+            var bbMin  = shape._cf.geometry.node._vf.bbMin;
+            var bbSize = shape._cf.geometry.node._vf.size;
+            
+            var bbMax = new x3dom.fields.SFVec3f(0, 0, 0);
+            
+            bbMax = bbMax.add(shape._cf.geometry.node._vf.bbMaxModF);
+            
+            bbMax = bbMax.add(shape._cf.geometry.node.getBBoxShiftVec());
+            
+            bbMax = bbMax.multComponents(bbSize);
+            
+            var fl = new x3dom.fields.SFVec3f(Math.floor(bbMin.x / bbSize.x),
+                                              Math.floor(bbMin.y / bbSize.y),
+                                              Math.floor(bbMin.z / bbSize.z));
+                      
+            bbMax = bbMax.add(bbSize.multComponents(fl));
+
+            sp.PG_bbMax = bbMax.toGL();
+          })();
+		
           sp.PG_bbMaxModF      = shape._cf.geometry.node._vf.bbMaxModF.toGL();          
           sp.PG_bboxShiftVec   = shape._cf.geometry.node.getBBoxShiftVec().toGL();
         }
