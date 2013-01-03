@@ -4030,18 +4030,17 @@ x3dom.gfx_webgl = (function () {
                     popGeo._mesh._numCoords = 0;
                     popGeo._mesh._numFaces  = 0;
                     
+                    //@todo: all this stuff below is pretty expensive (many unnecessary matrix and quaternion computations)
                     //@todo: Check wheter this is really fov_y
                     var fov_y = (180.0 * viewarea._scene.getViewpoint().getFieldOfView()) / Math.PI;
-                    
-                    //var bboxSize = popGeo.getBBoxSize();
-                    //@todo: CHECK THIS AGAIN!
+                    var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
                     
                     mat_model_view = mat_view.mult(trafo);
                     
                     var bbxScaleFactor = new x3dom.fields.SFVec3f(0,0,0);
                     (function(){
-                        var translation = new x3dom.fields.SFVec3f(0,0,0);
-                        var rotation    = new x3dom.fields.Quaternion(0,0,1,0);
+                        var translation      = new x3dom.fields.SFVec3f(0,0,0);
+                        var rotation         = new x3dom.fields.Quaternion(0,0,1,0);
                         var scaleOrientation = new x3dom.fields.Quaternion(0,0,1,0);
                         mat_model_view.getTransform(translation, rotation, bbxScaleFactor, scaleOrientation);
                     })();
@@ -4052,27 +4051,24 @@ x3dom.gfx_webgl = (function () {
                     var far   = viewarea._scene.getViewpoint().getFar();
                     var ratio = viewarea._width / viewarea._height;
                         
-                    var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
-                    
                     var currentLOD = 0;
                     
                     //view frustum culling, using bounding sphere (without near / far clipping plane yet)
-                    if (popGeo.insideViewFrustum(center, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne)) {
-                    
+                    if (popGeo.insideViewFrustum(center, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne)) {                    
                         //compute distance-based LOD
                         //distance is estimated conservatively using the bounding sphere
                         var dist = Math.max(-center.z - (bboxSize.length() * 0.5), near);
                         
                         var projectedPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
-                                                
-                        var computeLOD = function(bboxComponentSize) {
+
+                        var computeLOD = function(bboxDiag) {
                             // TODO: is ErrorToleranceFactor really per node type or per node instance?
                             if (typeof x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor === 'undefined')
                                 x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = 1.0;
                             else if (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor == 0.0)
                                 return 16;
                             else
-                                return Math.ceil(Math.log( bboxComponentSize /
+                                return Math.ceil(Math.log( bboxDiag /
                                                           (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * 0.5 * projectedPixelLength)
                                                           ) / Math.log(2.0));
                         };
@@ -4084,10 +4080,7 @@ x3dom.gfx_webgl = (function () {
                         currentLOD = Math.max(currentLOD, 1);
                         currentLOD = Math.min(currentLOD, 16);
                         
-                        //assign rendering resolution, according to currently loaded data and LOD
-                        //@todo: fix cracks and throw away the next line
-                        //if (currentLOD >= 8) currentLOD = 16;
-                        
+                        //assign rendering resolution, according to currently loaded data and LOD                        
                         obj3d._webgl.precisionLevel = Math.min(obj3d._webgl.levelsAvailable, currentLOD);                    
                         obj3d._webgl.precisionLevel = (obj3d._webgl.precisionLevel === popGeo.getNumLevels()) ? 16 : obj3d._webgl.precisionLevel;
                         
