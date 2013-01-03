@@ -95,6 +95,14 @@ x3d:hover,
     border: 0px;
 }
 
+#x3dom-state-canvas {
+    margin: 2px;
+    padding: 0;
+    right: 0%;
+    top: 0%;
+    position: absolute;
+}
+
 .x3dom-touch-marker {
 	display: inline;
     padding: 5px;

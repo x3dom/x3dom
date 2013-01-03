@@ -18,6 +18,7 @@
 <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
 <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
 <script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/util/States.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
 <script type="text/javascript" src="../../src/Main.js"></script>
@@ -81,6 +82,8 @@
     <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' width='512px' height='512px'>
       <Scene DEF='scene'>
         <Viewpoint id='view1' position='0 0 12'/>
+        <Viewpoint id='view2' containerField='viewpoint' zNear="0.1" zFar="10000"
+                   DEF='view2' position="0 0 -20" orientation="0 1 0 3.14159265" />
         <Background id='back' 
             backUrl="media/texture/generic/ocean_3_back.jpg"
             bottomUrl="media/texture/generic/ocean_3_bottom.jpg"
@@ -117,10 +120,9 @@
               </IndexedFaceSet>
               <Appearance DEF='rtApp'>
                 <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' repeatS='false' repeatT='false'>
-                  <Shape USE='aNode' containerField='excludeNodes'/>
-                  <Background USE='back' containerField='background'/>
-                  <Viewpoint id='view2' containerField='viewpoint' zNear="0.1" zFar="10000"
-                             position="0 0 -20" orientation="0 1 0 3.1415926" />
+                  <Shape USE='aNode' containerField='excludeNodes' />
+                  <Background USE='back' containerField='background' />
+                  <Viewpoint DEF='view3' containerField='viewpoint' />
                   <Group>
                      <Shape DEF="sphereShape">
 						<Appearance>

@@ -20,7 +20,7 @@ x3dom.registerNodeType(
         this._DEF = null;
 
         // links the nameSpace
-        this._nameSpace = null;
+        this._nameSpace = (ctx && ctx.nameSpace) ? ctx.nameSpace : null;
 
         // holds all value fields (e.g. SFFloat, MFVec3f, ...)
         this._vf = {};
@@ -813,18 +813,13 @@ x3dom.registerNodeType(
           this.addField_SFBool(ctx, 'isActive', false);
 
           this._autoGen = (ctx && ctx.autoGen ? true : false);
-
-          if (ctx && ctx.doc._bindableBag) {
-            this._stack = ctx.doc._bindableBag.addBindable(this);
-          }
-          else {
-            this._stack = null;
-            x3dom.debug.logError('Could not find bindableBag for registration ' + this.typeName());
-          }
+          if (this._autoGen)
+              this._vf.description = "default" + this.constructor.superClass._typeName;
+          
+          // Bindable stack to register node later on 
+          this._stack = null;
         },
         {
-            initDefault: function() {},
-
             bind: function (value) {
                 if (this._stack) {
                     if (value) {
@@ -835,18 +830,20 @@ x3dom.registerNodeType(
                     }
                 }
                 else {
-                    x3dom.debug.logError ('No BindStack in Bindable\n');
+                    x3dom.debug.logError ('No BindStack in ' + this.typeName() + 'Bindable');
                 }
             },
 
             activate: function (prev) {
                 this.postMessage('isActive', true);
-                x3dom.debug.logInfo('activate Bindable ' + this._DEF);
+                x3dom.debug.logInfo('activate ' + this.typeName() + 'Bindable ' + 
+                                    this._DEF + '/' + this._vf.description);
             },
 
             deactivate: function (prev) {
                 this.postMessage('isActive', false);
-                x3dom.debug.logInfo('deactivate Bindable ' + this._DEF);
+                x3dom.debug.logInfo('deactivate ' + this.typeName() + 'Bindable ' + 
+                                    this._DEF + '/' + this._vf.description);
             },
 
             fieldChanged: function(fieldName) {
@@ -855,7 +852,9 @@ x3dom.registerNodeType(
                 }
             },
 
-            nodeChanged: function() {}
+            nodeChanged: function() {
+                this._stack = this._nameSpace.doc._bindableBag.addBindable(this);
+            }
         }
     )
 );
@@ -885,9 +884,6 @@ x3dom.registerNodeType(
 
             x3dom.debug.logInfo(this._vf.info);
             x3dom.debug.logInfo(this._vf.title);
-        },
-        {
-            // methods
         }
     )
 );

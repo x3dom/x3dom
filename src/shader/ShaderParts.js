@@ -127,6 +127,7 @@ x3dom.shader.light = function(numLights) {
 					"   float spot = 1.0, attentuation = 0.0;\n" +
 					"   if(lType == 0.0) {\n" +
 					"       L = -normalize(lDirection);\n" +
+					"		V = normalize(V);\n" +
 					"		attentuation = 1.0;\n" +
 					"   }else{\n" +
 					"       L = (lLocation - (-V));\n" +

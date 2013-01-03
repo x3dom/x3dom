@@ -1,7 +1,8 @@
 <X3D xmlns:xsd='http://www.w3.org/2001/XMLSchema-instance' profile='Full' version='3.0' xsd:noNamespaceSchemaLocation='http://www.web3d.org/specifications/x3d-3.0.xsd'>
   <Scene DEF='scene'>
-	<Viewpoint position='16.0328 13.056 34.2417' orientation='-0.624839 0.780206 0.0292506 0.543473' />
-    <Background skyColor='1 1 1'/>
+	 <Viewpoint position='16.0328 13.056 34.2417' orientation='-0.624839 0.780206 0.0292506 0.543473' DEF="V0" description="V0" />
+	 <Viewpoint position='0 0 50' orientation='0 0 0 1' DEF="V1" description="V1" zNear="0.1" zFar="100000" />
+     <Background skyColor='0.05 0.12 0.23' DEF="B1" description="B1" />
      <Transform scale='2.5 2.5 2.5'>
       <Shape DEF='CUBE1'>
         <Appearance>
