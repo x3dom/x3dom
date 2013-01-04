@@ -1054,7 +1054,6 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.x3dElem.runtime.isReady = true;
                 this.x3dElem.runtime.enterFrame();
             }
-
 			
             if (this.stateCanvas) {
                 this.stateCanvas.addState("FPS", fps);
@@ -1069,7 +1068,7 @@ x3dom.X3DCanvas.prototype.tick = function()
 					this.doc.render(this.gl);
 				}
 			} else{
-				//this.doc.needRender = false;    // picking might require another pass
+				this.doc.needRender = false;    // picking might require another pass
 				this.doc.render(this.gl);
 			}
             
