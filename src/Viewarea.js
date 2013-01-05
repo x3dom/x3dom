@@ -1163,7 +1163,6 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
 			else
 			{
@@ -1177,10 +1176,8 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 }
 				
 				d = ok ? (max.subtract(min)).length() : 10;
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
-            //x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
-            //x3dom.debug.logInfo("w="+this._width+", h="+this._height);
+			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
             this._movement = this._movement.add(vec);
@@ -1195,7 +1192,6 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
 			else
 			{
@@ -1209,10 +1205,8 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
                 }
 				
 				d = ok ? (max.subtract(min)).length() : 10;
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
-            //x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
-            //x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
+			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
             this._movement = this._movement.add(vec);
