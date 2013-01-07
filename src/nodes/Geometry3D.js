@@ -1754,7 +1754,7 @@ x3dom.registerNodeType(
                         verts += this._vf.originalVertexCount[i];
                     }
                     else {
-                        this._vf.vertexCount[i] = (numVerts-verts);
+                        this._vf.vertexCount[i] = numVerts - verts;
                         break;
                     }                    
                 }
@@ -1867,6 +1867,7 @@ x3dom.registerNodeType(
               }
             },
             
+            // TODO: doesn't belong here and requires improvements...
             insideViewFrustum : function(bboxCenter, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne) {
                 //test our bounding box against the frustum's separating planes
                 //return true;
@@ -1893,8 +1894,6 @@ x3dom.registerNodeType(
                 var tr = new x3dom.fields.SFVec3f(right, top,    1.0).normalize();
                 
                 //@todo: take bounding box size into account!
-                
-                
                 
                 //left
                 var vleft = tl.cross(bl);                
