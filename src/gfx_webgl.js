@@ -1330,6 +1330,16 @@ x3dom.gfx_webgl = (function () {
           //(note that 16 bit indices are the only possibility by now)
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
           gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, popGeo.getTotalNumberOfIndices()*2, gl.STATIC_DRAW);
+          
+          //this is a workaround to mimic gl_VertexID
+          shape._webgl.buffers[5] = gl.createBuffer();
+          
+          var idBuffer = new Float32Array(popGeo._vf.vertexBufferSize);
+          
+          (function(){ for (var i = 0; i < idBuffer.length; ++i) idBuffer[i] = i; })();
+          
+          gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5]);
+          gl.bufferData(gl.ARRAY_BUFFER, idBuffer, gl.STATIC_DRAW);
         }
         else {
           shape._webgl.popGeometry = -1;
@@ -3331,9 +3341,7 @@ x3dom.gfx_webgl = (function () {
                     currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
                     //currentLOD = 16;
                     
-                    //assign rendering resolution, according to currently loaded data and LOD
-                    //@todo: fix cracks and throw away the next line
-                    
+                    //assign rendering resolution, according to currently loaded data and LOD                                       
                     precisionLevel = Math.min(shape._webgl.levelsAvailable, currentLOD);                    
                     precisionLevel = (precisionLevel == popGeo.getNumLevels()) ? 16 : precisionLevel;
                     
@@ -3355,21 +3363,25 @@ x3dom.gfx_webgl = (function () {
                 //@todo: this assumes pure TRIANGLES data
                 popGeo.adaptVertexCount(hasIndex ? popGeo._mesh._numFaces * 3 : popGeo._mesh._numCoords);
                 
-                // finally set shader variables...
+                // finally set shader variables...                
                 var bbMin  = popGeo._vf.bbMin;
                 var bbSize = popGeo._vf.size;
-                var fl = new x3dom.fields.SFVec3f(Math.floor(bbMin.x / bbSize.x),
+                /*var fl = new x3dom.fields.SFVec3f(Math.floor(bbMin.x / bbSize.x),
                                                   Math.floor(bbMin.y / bbSize.y),
                                                   Math.floor(bbMin.z / bbSize.z));
+                                              
                 
                 var bbMax = popGeo._vf.bbMaxModF.add(popGeo.getBBoxShiftVec());
                 bbMax = bbMax.multComponents(bbSize);
                 bbMax = bbMax.add(bbSize.multComponents(fl));
+                */
                 
                 sp.PG_bbMin = bbMin.toGL();
-                sp.PG_bbMax = bbMax.toGL();
+                //sp.PG_bbMax = bbMax.toGL();
                 
-                sp.PG_bbMaxModF = popGeo._vf.bbMaxModF.toGL();          
+                sp.PG_numAnchorVertices = popGeo._vf.numAnchorVertices; 
+                
+                sp.PG_bbMaxModF    = popGeo._vf.bbMaxModF.toGL();          
                 sp.PG_bboxShiftVec = popGeo.getBBoxShiftVec().toGL();
                 
                 sp.PG_precisionLevel = precisionLevel;
@@ -3499,6 +3511,14 @@ x3dom.gfx_webgl = (function () {
 			  	shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
 			  gl.enableVertexAttribArray(sp.color);
 		    }
+            //special case: mimic gl_VertexID
+            if (shape._webgl.popGeometry !== 0 && shape._webgl.buffers[5*q+5])
+		    {
+			  gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+5]);
+			  
+			  gl.vertexAttribPointer(sp.PG_vertexID, 1, gl.FLOAT, false, 4, 0);
+			  gl.enableVertexAttribArray(sp.PG_vertexID);
+		    }
         
             // render object
             try {			
@@ -3519,7 +3539,7 @@ x3dom.gfx_webgl = (function () {
 				        gl.drawElements(polyMode, shape._cf.geometry.node._vf.vertexCount[i], 
 				                        gl.UNSIGNED_SHORT, 2*offset);
 				        offset += shape._cf.geometry.node._vf.vertexCount[i];
-			        }
+			        }                    
 				}
 				else {
 					gl.drawElements(polyMode, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
