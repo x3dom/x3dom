@@ -72,9 +72,11 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
   if (properties.POPGEOMETRY) {
     shader += "uniform float PG_precisionLevel;\n"
     shader += "uniform vec3 PG_bbMin;\n";
-	shader += "uniform vec3 PG_bbMax;\n";
+	//shader += "uniform vec3 PG_bbMax;\n";
     shader += "uniform vec3 PG_bbMaxModF;\n"
     shader += "uniform vec3 PG_bboxShiftVec;\n";
+    shader += "uniform float PG_numAnchorVertices;\n";
+    shader += "attribute float PG_vertexID;\n";
   }
 		
 	//Normals
@@ -239,27 +241,20 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
       shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF);\n"; //test if vertPosition <= PG_bbMaxModF 
       shader += "offsetVec *= PG_bboxShiftVec;\n";
 
-      //coordinate truncation, computation of current maximum possible value
-      shader += "float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
-      shader += "vertPosition = floor(vertPosition / p) * p;\n";
-      shader += "float precisionMax = 65536.0 - p;\n";
-      shader += "vertPosition /= precisionMax;\n";
-  
-      //use this line instead of above code to disable vertex clustering
-      //shader += "vertPosition /= bgPrecisionMax;\n";
+      //coordinate truncation, computation of current maximum possible value      
+      shader += "if (PG_vertexID >= PG_numAnchorVertices){\n"; //currently mimics use of gl_VertexID      
+      shader += "   float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
+      shader += "   vertPosition = floor(vertPosition / p) * p;\n";
+      shader += "   float precisionMax = 65536.0 - p;\n";
+      shader += "   vertPosition /= precisionMax;\n";
+      shader += "}\n";
+      shader += "else {\n";
+      shader += "   vertPosition /= bgPrecisionMax;\n";
+      shader += "}\n";
 
       //translate coordinates
       shader += "vertPosition += offsetVec;\n";
-      shader += "vertPosition = vertPosition * bgSize + floor(PG_bbMin / bgSize) * bgSize;\n";         
-  
-      //snap to borders to avoid cracks
-      shader += "vec3 snapRange = (bgSize / pow(2.0, PG_precisionLevel));\n";		  
-      shader += "if ((PG_bbMax.x      - vertPosition.x) <= snapRange.x) vertPosition.x = PG_bbMax.x;\n";
-      shader += "if ((vertPosition.x  - PG_bbMin.x) 	<= snapRange.x) vertPosition.x = PG_bbMin.x;\n";
-      shader += "if ((PG_bbMax.y      - vertPosition.y) <= snapRange.y) vertPosition.y = PG_bbMax.y;\n";
-      shader += "if ((vertPosition.y  - PG_bbMin.y) 	<= snapRange.y) vertPosition.y = PG_bbMin.y;\n";
-      shader += "if ((PG_bbMax.z      - vertPosition.z) <= snapRange.z) vertPosition.z = PG_bbMax.z;\n";
-      shader += "if ((vertPosition.z  - PG_bbMin.z) 	<= snapRange.z) vertPosition.z = PG_bbMin.z;\n";
+      shader += "vertPosition = vertPosition * bgSize + floor(PG_bbMin / bgSize) * bgSize;\n";
     }
 		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
             shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
@@ -301,9 +296,10 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		//Colors
 		if(properties.VERTEXCOLOR){
 			shader += "fragColor = color;\n";
+            
 			if(properties.REQUIREBBOXCOL) {
                 shader += "fragColor = fragColor / bgPrecisionColMax;\n";
-			}            
+			}                              
 		}
 		
 		//TexCoords

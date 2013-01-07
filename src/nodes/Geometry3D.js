@@ -1641,11 +1641,12 @@ x3dom.registerNodeType(
       
             this.addField_MFNode('levels', x3dom.nodeTypes.PopGeometryLevel);
             
-            this.addField_SFInt32(ctx, 'attributeStride', 0);
-            this.addField_SFInt32(ctx, 'positionOffset',  0);
-            this.addField_SFInt32(ctx, 'normalOffset',    0);
-            this.addField_SFInt32(ctx, 'texcoordOffset',  0);
-            this.addField_SFInt32(ctx, 'colorOffset',     0);
+            this.addField_SFInt32(ctx, 'attributeStride',   0);
+            this.addField_SFInt32(ctx, 'positionOffset',    0);
+            this.addField_SFInt32(ctx, 'normalOffset',      0);
+            this.addField_SFInt32(ctx, 'texcoordOffset',    0);
+            this.addField_SFInt32(ctx, 'colorOffset',       0);
+            this.addField_SFInt32(ctx, 'numAnchorVertices', 0);
             
             this.addField_SFInt32(ctx, 'positionPrecision', 2);
             this.addField_SFInt32(ctx, 'normalPrecision',   1);
