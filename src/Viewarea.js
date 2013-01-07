@@ -47,6 +47,8 @@ x3dom.Viewarea = function (document, scene) {
     this._pressY = -1;
     this._lastButton = 0;
     
+    this._numRenderedNodes = 0;
+    
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
     this._pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
     

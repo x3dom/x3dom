@@ -3306,54 +3306,47 @@ x3dom.gfx_webgl = (function () {
                 var ratio = viewarea._width / viewarea._height;
                 var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
                 
+                //compute distance-based LOD
                 var precisionLevel = shape._webgl.precisionLevel;
-                var currentLOD = 0;
                 
-                //view frustum culling, using bounding sphere (without near / far clipping plane yet)
-                if (popGeo.insideViewFrustum(center, bboxSize, near, far, ratio, imgPlaneHeightAtDistOne))
-                {
-                    //compute distance-based LOD
-                    var len = bboxSize.length();
-                    
-                    //distance is estimated conservatively using the bounding sphere
-                    var dist = Math.max(-center.z - len / 2, near);
-                    
-                    var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
-                    
-                    //compute LOD using bounding sphere          
-                    currentLOD = ( function(bboxCompSize) {
-                        //@todo: is ErrorToleranceFactor really per node type or per node instance?
-                        if (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor === undefined) {
-                            x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = 1;
-                        }
-                        
-                        var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
-                        if (tol <= 0) {
-                            return 16;
-                        }
-                        else {
-                            var arg = (2 * bboxCompSize) / (tol * projPixelLength);
-                            // use precomputed log(2.0) = 0.693147180559945
-                            return Math.ceil(Math.log(arg) / 0.693147180559945);
-                        }
-                    } )(len);
-                    
-                    currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
-                    //currentLOD = 16;
-                    
-                    //assign rendering resolution, according to currently loaded data and LOD                                       
-                    precisionLevel = Math.min(shape._webgl.levelsAvailable, currentLOD);                    
-                    precisionLevel = (precisionLevel == popGeo.getNumLevels()) ? 16 : precisionLevel;
-                    
-                    //here, we tell X3DOM how many faces / vertices get displayed in the stats
-                    var hasIndex = popGeo.hasIndex();
-                    
-                    //@todo: this assumes pure TRIANGLES data
-                    for (var i = 0; (i < currentLOD) && (i < shape._webgl.levelsAvailable); ++i) {                        
-                        popGeo._mesh._numCoords += shape._webgl.numVerticesAtLevel[i];
-                        popGeo._mesh._numFaces  += (hasIndex ? popGeo.getNumIndicesByLevel(i) :
-                                                               shape._webgl.numVerticesAtLevel[i]) / 3;
+                //distance is estimated conservatively using the bounding sphere
+                var len = bboxSize.length();
+                var dist = Math.max(-center.z - len / 2, near);
+                
+                var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
+                
+                //compute LOD using bounding sphere          
+                var currentLOD = ( function(bboxCompSize) {
+                    //@todo: is ErrorToleranceFactor really per node type or per node instance?
+                    if (x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor === undefined) {
+                        x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = 1;
                     }
+                    
+                    var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
+                    if (tol <= 0) {
+                        return 16;
+                    }
+                    else {
+                        var arg = (2 * bboxCompSize) / (tol * projPixelLength);
+                        // use precomputed log(2.0) = 0.693147180559945
+                        return Math.ceil(Math.log(arg) / 0.693147180559945);
+                    }
+                } )(len);
+                
+                currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
+                
+                //assign rendering resolution, according to currently loaded data and LOD                                       
+                precisionLevel = Math.min(shape._webgl.levelsAvailable, currentLOD);                    
+                precisionLevel = (precisionLevel == popGeo.getNumLevels()) ? 16 : precisionLevel;
+                
+                //here, we tell X3DOM how many faces / vertices get displayed in the stats
+                var hasIndex = popGeo.hasIndex();
+                
+                //@todo: this assumes pure TRIANGLES data
+                for (var i = 0; (i < currentLOD) && (i < shape._webgl.levelsAvailable); ++i) {                        
+                    popGeo._mesh._numCoords += shape._webgl.numVerticesAtLevel[i];
+                    popGeo._mesh._numFaces  += (hasIndex ? popGeo.getNumIndicesByLevel(i) :
+                                                           shape._webgl.numVerticesAtLevel[i]) / 3;
                 }
                 
                 //this field is mainly thought for the use with external statistics
@@ -3366,7 +3359,9 @@ x3dom.gfx_webgl = (function () {
                 // finally set shader variables...                
                 var bbMin  = popGeo._vf.bbMin;
                 var bbSize = popGeo._vf.size;
-                /*var fl = new x3dom.fields.SFVec3f(Math.floor(bbMin.x / bbSize.x),
+                
+                /*
+                var fl = new x3dom.fields.SFVec3f(Math.floor(bbMin.x / bbSize.x),
                                                   Math.floor(bbMin.y / bbSize.y),
                                                   Math.floor(bbMin.z / bbSize.z));
                                               
@@ -4332,11 +4327,13 @@ x3dom.gfx_webgl = (function () {
             }
         }
 		
+		if (view_frustum)
+		    viewarea._numRenderedNodes = unculledObjects;
+		else
+		    viewarea._numRenderedNodes = zPos.length;
+		
 		if (this.canvas.parent.stateCanvas) {
 			this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
-			
-			//if (view_frustum)
-			//    x3dom.debug.logInfo("Objects rendered: " + unculledObjects + "/" + zPos.length);
 		}
 
         gl.disable(gl.BLEND);
