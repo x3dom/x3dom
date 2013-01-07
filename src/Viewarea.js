@@ -38,6 +38,7 @@ x3dom.Viewarea = function (document, scene) {
 
     this._width = 400;
     this._height = 300;
+    
     this._dx = 0;
     this._dy = 0;
     this._lastX = -1;
@@ -48,7 +49,7 @@ x3dom.Viewarea = function (document, scene) {
     
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
     this._pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
-
+    
     this._isAnimating = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
@@ -636,6 +637,19 @@ x3dom.Viewarea.prototype.getProjectionMatrix = function()
     var viewpoint = this._scene.getViewpoint();
 
     return viewpoint.getProjectionMatrix(this._width/this._height);
+};
+
+x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
+{
+    if (arguments.length == 0) {
+        var proj = this.getProjectionMatrix();
+        var view = this.getViewMatrix();
+    
+        return new x3dom.fields.FrustumVolume(proj.mult(view));
+    }
+    else {
+        return new x3dom.fields.FrustumVolume(clipMat);
+    }
 };
 
 x3dom.Viewarea.prototype.getWCtoCCMatrix = function()

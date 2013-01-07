@@ -4094,8 +4094,7 @@ x3dom.gfx_webgl = (function () {
         
         var mat_scene = mat_proj.mult(mat_view);  //viewarea.getWCtoCCMatrix();
         viewarea._last_mat_scene = mat_scene;
-                      
-                            
+        
         // sorting and stuff
         t0 = new Date().getTime();
         
@@ -4258,10 +4257,29 @@ x3dom.gfx_webgl = (function () {
         gl.enable(gl.BLEND);
 		
 		var drawTime = 0;
+		
+		// update view frustum
+        var view_frustum = viewarea.getViewfrustum(mat_scene);
+        
+		if (view_frustum)
+        {
+            var box = new x3dom.fields.BoxVolume();
+            var unculledObjects = 0;
+        }
 
         for (i=0, n=zPos.length; i<n; i++)
         {
             var obj = scene.drawableObjects[zPos[i][0]];
+            
+            if (view_frustum)
+            {
+                obj[1].getVolume(box.min, box.max, false);
+                box.transform(obj[0]);
+                
+                if (!view_frustum.intersect(box))
+                    continue;
+                unculledObjects++;
+            }
 			
             var needEnableBlending = false;
             var needEnableDepthMask = false;
@@ -4293,11 +4311,12 @@ x3dom.gfx_webgl = (function () {
                 gl.depthMask(true);
             }
         }
-
-		this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
-	
+		
 		if (this.canvas.parent.stateCanvas) {
 			this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
+			
+			//if (view_frustum)
+			//    x3dom.debug.logInfo("Objects rendered: " + unculledObjects + "/" + zPos.length);
 		}
 
         gl.disable(gl.BLEND);

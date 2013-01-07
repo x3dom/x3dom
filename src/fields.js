@@ -1215,6 +1215,49 @@ x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
 
 
 ///////////////////////////////////////////////////////////////////////////////
+/** SFVec4f constructor.
+    @class Represents a SFVec4f
+  */
+x3dom.fields.SFVec4f = function(x, y, z, w) {
+    if (arguments.length === 0) {
+        this.x = this.y = this.z = this.w = 0;
+    }
+    else {
+        this.x = x;
+        this.y = y;
+        this.z = z;
+        this.w = w;
+    }
+};
+
+x3dom.fields.SFVec4f.copy = function(v) {
+    return new x3dom.fields.SFVec4f(v.x, v.y, v.z, v.w);
+};
+
+x3dom.fields.SFVec4f.parse = function (str) {
+    var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    return new x3dom.fields.SFVec4f(+m[1], +m[2], +m[3], +m[4]);
+};
+
+x3dom.fields.SFVec4f.prototype.setValueByStr = function(str) {
+    var m = /^\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*,?\s*([+\-]?\d*\.*\d*[eE]?[+\-]?\d*?)\s*$/.exec(str);
+    this.x = +m[1];
+    this.y = +m[2];
+    this.z = +m[3];
+    this.w = +m[4];
+    return this;
+};
+
+x3dom.fields.SFVec4f.prototype.toGL = function () {
+    return [ this.x, this.y, this.z, this.w ];
+};
+
+x3dom.fields.SFVec4f.prototype.toString = function () {
+    return "{ x " + this.x + " y " + this.y + " z " + this.z + " w " + this.w + " }";
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
 /** Quaternion constructor.
     @class Represents a Quaternion
   */
@@ -2522,4 +2565,298 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
     this.exit  = out;
 
     return (isect-out < x3dom.fields.Eps);
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+/** BoxVolume constructor.
+    @class Represents a box (as internal helper).
+  */
+x3dom.fields.BoxVolume = function(min, max)
+{
+    if (arguments.length < 2) {
+        this.min = new x3dom.fields.SFVec3f(0, 0, 0);
+        this.max = new x3dom.fields.SFVec3f(0, 0, 0);
+    }
+    else {
+        this.min = min;
+        this.max = max;
+    }
+};
+
+x3dom.fields.BoxVolume.prototype.transform = function(m)
+{
+    var xmin, ymin, zmin;
+    var xmax, ymax, zmax;
+
+    xmin = xmax = m._03;
+    ymin = ymax = m._13;
+    zmin = zmax = m._23;
+
+    // calculate xmin and xmax of new tranformed BBox
+    var a = this.max.x * m._00;
+    var b = this.min.x * m._00;
+
+    if (a >= b) {
+        xmax += a;
+        xmin += b;
+    }
+    else {
+        xmax += b;
+        xmin += a;
+    }
+
+    a = this.max.y * m._01;
+    b = this.min.y * m._01;
+
+    if (a >= b) {
+        xmax += a;
+        xmin += b;
+    }
+    else {
+        xmax += b;
+        xmin += a;
+    }
+    
+    a = this.max.z * m._02;
+    b = this.min.z * m._02;
+
+    if (a >= b) {
+        xmax += a;
+        xmin += b;
+    }
+    else {
+        xmax += b;
+        xmin += a;
+    }
+
+    // calculate ymin and ymax of new tranformed BBox
+    a = this.max.x * m._10;
+    b = this.min.x * m._10;
+
+    if (a >= b) {
+        ymax += a;
+        ymin += b;
+    }
+    else {
+        ymax += b;
+        ymin += a;
+    }
+
+    a = this.max.y * m._11;
+    b = this.min.y * m._11;
+
+    if (a >= b) {
+        ymax += a;
+        ymin += b;
+    }
+    else {
+        ymax += b;
+        ymin += a;
+    }
+
+    a = this.max.z * m._12;
+    b = this.min.z * m._12;
+
+    if (a >= b) {
+        ymax += a;
+        ymin += b;
+    }
+    else {
+        ymax += b;
+        ymin += a;
+    }
+
+    // calculate zmin and zmax of new tranformed BBox
+    a = this.max.x * m._20;
+    b = this.min.x * m._20;
+
+    if (a >= b) {
+        zmax += a;
+        zmin += b;
+    }
+    else {
+        zmax += b;
+        zmin += a;
+    }
+
+    a = this.max.y * m._21;
+    b = this.min.y * m._21;
+
+    if (a >= b) {
+        zmax += a;
+        zmin += b;
+    }
+    else {
+        zmax += b;
+        zmin += a;
+    }
+
+    a = this.max.z * m._22;
+    b = this.min.z * m._22;
+
+    if (a >= b) {
+        zmax += a;
+        zmin += b;
+    }
+    else {
+        zmax += b;
+        zmin += a;
+    }
+
+    this.min.x = xmin;
+    this.min.y = ymin;
+    this.min.z = zmin;
+    
+    this.max.x = xmax;
+    this.max.y = ymax;
+    this.max.z = zmax;
+};
+
+
+///////////////////////////////////////////////////////////////////////////////
+/** FrustumVolume constructor.
+    @class Represents a frustum (as internal helper).
+  */
+x3dom.fields.FrustumVolume = function(clipMat)
+{
+    this.planeNormals = [];
+    this.planeDistances = [];
+    this.directionIndex = [];
+    
+    if (arguments.length === 0) {
+        return;
+    }
+    
+    var planeEquation = [];
+    
+    for (var i=0; i<6; i++) {
+        this.planeNormals[i] = new x3dom.fields.SFVec3f(0, 0, 0);
+        this.planeDistances[i] = 0;
+        this.directionIndex[i] = 0;
+        
+        planeEquation[i] = new x3dom.fields.SFVec4f(0, 0, 0, 0);
+    }
+    
+    planeEquation[0].x = clipMat._30 - clipMat._00;
+    planeEquation[0].y = clipMat._31 - clipMat._01;
+    planeEquation[0].z = clipMat._32 - clipMat._02;
+    planeEquation[0].w = clipMat._33 - clipMat._03;
+
+    planeEquation[1].x = clipMat._30 + clipMat._00;
+    planeEquation[1].y = clipMat._31 + clipMat._01;
+    planeEquation[1].z = clipMat._32 + clipMat._02;
+    planeEquation[1].w = clipMat._33 + clipMat._03;
+
+    planeEquation[2].x = clipMat._30 + clipMat._10;
+    planeEquation[2].y = clipMat._31 + clipMat._11;
+    planeEquation[2].z = clipMat._32 + clipMat._12;
+    planeEquation[2].w = clipMat._33 + clipMat._13;
+
+    planeEquation[3].x = clipMat._30 - clipMat._10;
+    planeEquation[3].y = clipMat._31 - clipMat._11;
+    planeEquation[3].z = clipMat._32 - clipMat._12;
+    planeEquation[3].w = clipMat._33 - clipMat._13;
+
+    planeEquation[4].x = clipMat._30 + clipMat._20;
+    planeEquation[4].y = clipMat._31 + clipMat._21;
+    planeEquation[4].z = clipMat._32 + clipMat._22;
+    planeEquation[4].w = clipMat._33 + clipMat._23;
+
+    planeEquation[5].x = clipMat._30 - clipMat._20;
+    planeEquation[5].y = clipMat._31 - clipMat._21;
+    planeEquation[5].z = clipMat._32 - clipMat._22;
+    planeEquation[5].w = clipMat._33 - clipMat._23;
+    
+    for (i=0; i<6; i++) {
+        var vectorLength = Math.sqrt(planeEquation[i].x * planeEquation[i].x +
+                                     planeEquation[i].y * planeEquation[i].y +
+                                     planeEquation[i].z * planeEquation[i].z);
+        
+        planeEquation[i].x /=  vectorLength;
+        planeEquation[i].y /=  vectorLength;
+        planeEquation[i].z /=  vectorLength;
+        planeEquation[i].w /= -vectorLength;
+    }
+    
+    var updateDirectionIndex = function(normalVec) {
+        var ind = 0;
+        if (normalVec.x > 0) ind |= 1;
+        if (normalVec.y > 0) ind |= 2;
+        if (normalVec.z > 0) ind |= 4;
+        return ind;
+    };
+    
+    // right
+    this.planeNormals[3].setValues(planeEquation[0]);
+    this.planeDistances[3] = planeEquation[0].w;
+    this.directionIndex[3] = updateDirectionIndex(this.planeNormals[3]);
+
+    // left
+    this.planeNormals[2].setValues(planeEquation[1]);
+    this.planeDistances[2] = planeEquation[1].w;
+    this.directionIndex[2] = updateDirectionIndex(this.planeNormals[2]);
+
+    // bottom
+    this.planeNormals[5].setValues(planeEquation[2]);
+    this.planeDistances[5] = planeEquation[2].w;
+    this.directionIndex[5] = updateDirectionIndex(this.planeNormals[5]);
+
+    // top
+    this.planeNormals[4].setValues(planeEquation[3]);
+    this.planeDistances[4] = planeEquation[3].w;
+    this.directionIndex[4] = updateDirectionIndex(this.planeNormals[4]);
+
+    // near
+    this.planeNormals[0].setValues(planeEquation[4]);
+    this.planeDistances[0] = planeEquation[4].w;
+    this.directionIndex[0] = updateDirectionIndex(this.planeNormals[0]);
+
+    // far
+    this.planeNormals[1].setValues(planeEquation[5]);
+    this.planeDistances[1] = planeEquation[5].w;
+    this.directionIndex[1] = updateDirectionIndex(this.planeNormals[1]);
+};
+
+/** Check the volume against the frustum. */
+x3dom.fields.FrustumVolume.prototype.intersect = function(vol)
+{
+    if (this.planeNormals.length < 6) {
+        x3dom.debug.logWarning("FrustumVolume not initialized!");
+        return false;
+    }
+    
+    var that = this;
+    var min = vol.min, max = vol.max;
+    
+    var setDirectionIndexPoint = function(index) {
+        var pnt = new x3dom.fields.SFVec3f(0, 0, 0);
+        if (index & 1) { pnt.x = min.x; }
+        else           { pnt.x = max.x; }
+        if (index & 2) { pnt.y = min.y; }
+        else           { pnt.y = max.y; }
+        if (index & 4) { pnt.z = min.z; }
+        else           { pnt.z = max.z; }
+        return pnt;
+    };
+    
+    //Check if the point is in the halfspace
+    var isInHalfSpace = function(i, pnt) {
+        var s = that.planeNormals[i].dot(pnt) - that.planeDistances[i];
+        return (s >= 0) ? true : false;
+    };
+    
+    //Check if the box formed by min/max is fully outside the halfspace
+    var isOutHalfSpace = function(i) {
+        var p = setDirectionIndexPoint(that.directionIndex[i] ^ 7);
+        return !isInHalfSpace(i, p);
+    };
+    
+    //Check each point of the box to the 6 planes
+    for (var i=0; i<6; i++) {
+        if (isOutHalfSpace(i))
+            return false;
+    }
+
+    return true;
 };
