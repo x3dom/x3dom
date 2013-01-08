@@ -4369,6 +4369,7 @@ x3dom.gfx_webgl = (function () {
 			this.canvas.parent.stateCanvas.addInfo("#DRAWS:", this.numDrawCalls);
 			this.canvas.parent.stateCanvas.addInfo("#POINTS:", this.numCoords);
 			this.canvas.parent.stateCanvas.addInfo("#TRIS:", this.numFaces);
+			this.canvas.parent.stateCanvas.addInfo("#NODES:", viewarea._numRenderedNodes);
         }
         
         //scene.drawableObjects = null;
