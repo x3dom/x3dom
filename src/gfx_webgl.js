@@ -2813,7 +2813,8 @@ x3dom.gfx_webgl = (function () {
             var trafo = scene.drawableObjects[i][0];
             var shape = scene.drawableObjects[i][1];
             
-            if (shape._objectID < 1 || !shape._webgl || !shape._vf.isPickable) {
+            if (shape._objectID < 1 || !shape._webgl || !shape._vf.isPickable || 
+                shape._webgl.culled === true) {
                 continue;
             }
             
@@ -4291,8 +4292,14 @@ x3dom.gfx_webgl = (function () {
                 obj[1].getVolume(box.min, box.max, false);
                 box.transform(obj[0]);
                 
-                if (!view_frustum.intersect(box))
+                if (!view_frustum.intersect(box)) {
+                    // remember culled state for pick pass
+                    obj[1]._webgl.culled = true;
                     continue;
+                }
+                else {
+                    obj[1]._webgl.culled = false;
+                }
                 unculledObjects++;
             }
 			
@@ -4366,10 +4373,10 @@ x3dom.gfx_webgl = (function () {
 		
         if (this.canvas.parent.stateCanvas) {
             this.canvas.parent.stateCanvas.addState("RENDER", t1);
+			this.canvas.parent.stateCanvas.addInfo("#NODES:", viewarea._numRenderedNodes);
 			this.canvas.parent.stateCanvas.addInfo("#DRAWS:", this.numDrawCalls);
 			this.canvas.parent.stateCanvas.addInfo("#POINTS:", this.numCoords);
 			this.canvas.parent.stateCanvas.addInfo("#TRIS:", this.numFaces);
-			this.canvas.parent.stateCanvas.addInfo("#NODES:", viewarea._numRenderedNodes);
         }
         
         //scene.drawableObjects = null;

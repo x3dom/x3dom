@@ -67,18 +67,18 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "uniform float IG_indexTextureHeight;\n";
 		}
 	}
-     
-  //PG stuff
-  if (properties.POPGEOMETRY) {
-    shader += "uniform float PG_precisionLevel;\n"
-    shader += "uniform vec3 PG_bbMin;\n";
-	//shader += "uniform vec3 PG_bbMax;\n";
-    shader += "uniform vec3 PG_bbMaxModF;\n"
-    shader += "uniform vec3 PG_bboxShiftVec;\n";
-    shader += "uniform float PG_numAnchorVertices;\n";
-    shader += "attribute float PG_vertexID;\n";
-  }
-		
+    
+    //PG stuff
+    if (properties.POPGEOMETRY) {
+        shader += "uniform float PG_precisionLevel;\n"
+        shader += "uniform vec3 PG_bbMin;\n";
+        //shader += "uniform vec3 PG_bbMax;\n";
+        shader += "uniform vec3 PG_bbMaxModF;\n"
+        shader += "uniform vec3 PG_bboxShiftVec;\n";
+        shader += "uniform float PG_numAnchorVertices;\n";
+        shader += "attribute float PG_vertexID;\n";
+    }
+	
 	//Normals
 	if(properties.LIGHTS) {
 		shader += "varying vec3 fragNormal;\n";
@@ -223,7 +223,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			} else if(properties.COLCOMPONENTS == 4) {
 				shader += "fragColor = texture2D( IG_colors, IG_texCoord ).rgba;\n";
 			}
-			
 		}
 		
 		//TexCoords
@@ -236,30 +235,31 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	} else {
 		//Positions
 		shader += "vec3 vertPosition = position.xyz;\n";
-    if (properties.POPGEOMETRY) {
-      //compute offset using bounding box
-      shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF);\n"; //test if vertPosition <= PG_bbMaxModF 
-      shader += "offsetVec *= PG_bboxShiftVec;\n";
+		
+        if (properties.POPGEOMETRY) {
+          //compute offset using bounding box and test if vertPosition <= PG_bbMaxModF 
+          shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF);\n";
+          shader += "offsetVec *= PG_bboxShiftVec;\n";
+          
+          //coordinate truncation, computation of current maximum possible value      
+          shader += "if (PG_vertexID >= PG_numAnchorVertices) {\n"; //currently mimics use of gl_VertexID      
+          shader += "   float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
+          shader += "   vertPosition = floor(vertPosition / p) * p;\n";
+          shader += "   float precisionMax = 65536.0 - p;\n";
+          shader += "   vertPosition /= precisionMax;\n";
+          shader += "}\n";
+          shader += "else {\n";
+          shader += "   vertPosition /= bgPrecisionMax;\n";
+          shader += "}\n";
 
-      //coordinate truncation, computation of current maximum possible value      
-      shader += "if (PG_vertexID >= PG_numAnchorVertices){\n"; //currently mimics use of gl_VertexID      
-      shader += "   float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
-      shader += "   vertPosition = floor(vertPosition / p) * p;\n";
-      shader += "   float precisionMax = 65536.0 - p;\n";
-      shader += "   vertPosition /= precisionMax;\n";
-      shader += "}\n";
-      shader += "else {\n";
-      shader += "   vertPosition /= bgPrecisionMax;\n";
-      shader += "}\n";
-
-      //translate coordinates
-      shader += "vertPosition += offsetVec;\n";
-      shader += "vertPosition = vertPosition * bgSize + floor(PG_bbMin / bgSize) * bgSize;\n";
-    }
+          //translate coordinates
+          shader += "vertPosition += offsetVec;\n";
+          shader += "vertPosition = vertPosition * bgSize + floor(PG_bbMin / bgSize) * bgSize;\n";
+        }
 		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
             shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}
-        
+
 		//Normals
 		if(properties.LIGHTS) {
 			if(properties.NORCOMPONENTS == 2) {
@@ -331,8 +331,14 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += " fragTexcoord = (texTrafoMatrix * vec4(vertTexCoord, 1.0, 1.0)).xy;\n";
 		} else {
 			shader += " fragTexcoord = vertTexCoord;\n";
+			
+			// LOD LUT HACK ###
+			if (properties.POPGEOMETRY && x3dom.debug.usePrecisionLevelAsTexCoord === true)
+			    // remap texCoords to texel middle with w = 16 and tc' := 1 / (2 * w) + tc * (w - 1) / w
+                shader += "fragTexcoord = vec2(0.03125 + 0.9375 * (PG_precisionLevel / 16.0), 1.0);"
+			// LOD LUT HACK ###
 		}
-		if(properties.NORMALMAP){
+		if(properties.NORMALMAP) {
 			shader += "fragTangent  = (normalMatrix * vec4(tangent, 0.0)).xyz;\n";
 			shader += "fragBinormal = (normalMatrix * vec4(binormal, 0.0)).xyz;\n";
 		}
