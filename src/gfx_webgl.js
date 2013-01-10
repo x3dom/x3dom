@@ -3309,8 +3309,8 @@ x3dom.gfx_webgl = (function () {
                 currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
                 
                 //assign rendering resolution, according to currently loaded data and LOD                                       
-                var precisionLevel = Math.min(shape._webgl.levelsAvailable, currentLOD);                    
-                precisionLevel     = (precisionLevel == popGeo.getNumLevels()) ? 16 : precisionLevel;
+                var currentLOD = Math.min(shape._webgl.levelsAvailable, currentLOD);
+                currentLOD     = (currentLOD == popGeo.getNumLevels()) ? 16 : currentLOD;
                 
                 //here, we tell X3DOM how many faces / vertices get displayed in the stats
                 var hasIndex = popGeo.hasIndex();
@@ -3329,6 +3329,7 @@ x3dom.gfx_webgl = (function () {
                 x3dom.nodeTypes.PopGeometry.numRenderedTris  += popGeo._mesh._numFaces;
         
                 //this field is mainly thought for the use with external statistics
+                //@todo: seems like this does not work with instances (?)
                 popGeo._mesh.currentLOD = currentLOD;  
                 
                 //here, we tell X3DOM how many vertices get rendered
@@ -3346,7 +3347,7 @@ x3dom.gfx_webgl = (function () {
                 sp.PG_bbMaxModF    = popGeo._vf.bbMaxModF.toGL();          
                 sp.PG_bboxShiftVec = popGeo.getBBoxShiftVec().toGL();
                 
-                sp.PG_precisionLevel = precisionLevel;
+                sp.PG_precisionLevel = currentLOD;
             })();
         }
         ///////////////////////////////////////////////////////////////////////
