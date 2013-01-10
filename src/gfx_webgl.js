@@ -3308,9 +3308,9 @@ x3dom.gfx_webgl = (function () {
                 
                 currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
                 
-                //assign rendering resolution, according to currently loaded data and LOD                                       
-                var currentLOD = Math.min(shape._webgl.levelsAvailable, currentLOD);
-                currentLOD     = (currentLOD == popGeo.getNumLevels()) ? 16 : currentLOD;
+                //assign rendering resolution, according to currently loaded data and LOD                                                       
+                currentLOD = Math.min(shape._webgl.levelsAvailable, currentLOD);
+                currentLOD = (currentLOD == popGeo.getNumLevels()) ? 16 : currentLOD;                
                 
                 //here, we tell X3DOM how many faces / vertices get displayed in the stats
                 var hasIndex = popGeo.hasIndex();
