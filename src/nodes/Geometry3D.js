@@ -1871,6 +1871,15 @@ x3dom.registerNodeType(
     )
 );
 
+
+/** Static class members (needed for stats) */
+x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = 1;
+x3dom.nodeTypes.PopGeometry.numRenderedVerts     = 0;
+x3dom.nodeTypes.PopGeometry.numRenderedTris      = 0;
+x3dom.nodeTypes.PopGeometry.numTotalVerts        = 0;
+x3dom.nodeTypes.PopGeometry.numTotalTris         = 0;
+
+
 /* ### BitLODGeoComponent ### */
 x3dom.registerNodeType(
     "BitLODGeoComponent",
