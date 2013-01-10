@@ -3299,7 +3299,8 @@ x3dom.gfx_webgl = (function () {
                     else {
                         var arg = (2 * r) / (tol * projPixelLength);
                         // use precomputed log(2.0) = 0.693147180559945
-                        return Math.ceil(Math.log(arg) / 0.693147180559945);
+                        // add 1 for doubled sampling frequency...
+                        return Math.ceil(1 + Math.log(arg) / 0.693147180559945);
                     }
                 } )(len);
                 
