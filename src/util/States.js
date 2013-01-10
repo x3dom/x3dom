@@ -100,9 +100,10 @@ x3dom.States.prototype.update = function()
 {
 	if (this.active)
 	{
-		//Clear the canvas
-		this.canvas.width	= this.stateWidth + (this.statePadding * 2);
-		this.canvas.height  = this.stateHeigth + (this.statePadding * 2) + (this.numInfos * 15);
+		//Clear the canvas and update context
+		this.canvas.width  = this.stateWidth  + (this.statePadding * 2);
+		this.canvas.height = this.stateHeigth + (this.statePadding * 2) + (this.numInfos * 15);
+		this.ctx = this.canvas.getContext("2d");
 		
 		//Draw background rect
 		this.ctx.fillStyle = "rgba(50, 50, 50, 0.85)";
@@ -185,7 +186,7 @@ x3dom.States.prototype.addInfo = function(info, value)
 	if (this.infos[info] === undefined)
 	{
 		this.numInfos++;	
-		this.infos[info]			= {};
+		this.infos[info] = {};
 	}
 	
 	this.infos[info].data = value;

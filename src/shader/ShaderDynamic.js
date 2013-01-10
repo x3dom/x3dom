@@ -72,7 +72,6 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     if (properties.POPGEOMETRY) {
         shader += "uniform float PG_precisionLevel;\n"
         shader += "uniform vec3 PG_bbMin;\n";
-        //shader += "uniform vec3 PG_bbMax;\n";
         shader += "uniform vec3 PG_bbMaxModF;\n"
         shader += "uniform vec3 PG_bboxShiftVec;\n";
         shader += "uniform float PG_numAnchorVertices;\n";
