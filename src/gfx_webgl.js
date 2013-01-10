@@ -3272,35 +3272,32 @@ x3dom.gfx_webgl = (function () {
             (function() { 
                 var popGeo = shape._cf.geometry.node;
                 
-                var center = model_view.multMatrixPnt(popGeo._vf.position);
-                var bboxSize = popGeo._vf.size;
-
+                //compute distance-based LOD
                 var viewpoint = scene.getViewpoint();
                 
                 var fov_y = viewpoint.getFieldOfView();
                 var near  = viewpoint.getNear();
-                var far   = viewpoint.getFar();
-               
-                var ratio = viewarea._width / viewarea._height;
-                var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
                 
-                //compute distance-based LOD
+                var center = model_view.multMatrixPnt(popGeo._vf.position);
+                var len    = popGeo._vf.size.length() / 2;   // radius
                 
                 //distance is estimated conservatively using the bounding sphere
-                var len = bboxSize.length();
-                var dist = Math.max(-center.z - len / 2, near);
+                var dist = Math.max(-center.z - len, near);
+                
+                // TODO; only calc once when fov changes
+                var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
                 
                 var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                 
                 //compute LOD using bounding sphere          
-                var currentLOD = ( function(bboxCompSize) {
+                var currentLOD = ( function(r) {
                 
                     var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
                     if (tol <= 0) {
                         return 16;
                     }
                     else {
-                        var arg = (2 * bboxCompSize) / (tol * projPixelLength);
+                        var arg = (2 * r) / (tol * projPixelLength);
                         // use precomputed log(2.0) = 0.693147180559945
                         return Math.ceil(Math.log(arg) / 0.693147180559945);
                     }
@@ -3329,18 +3326,15 @@ x3dom.gfx_webgl = (function () {
                 x3dom.nodeTypes.PopGeometry.numRenderedTris  += popGeo._mesh._numFaces;
         
                 //this field is mainly thought for the use with external statistics
-                //@todo: seems like this does not work with instances (?)
+                //@todo: does not work with instances
                 popGeo._mesh.currentLOD = currentLOD;  
                 
                 //here, we tell X3DOM how many vertices get rendered
                 //@todo: this assumes pure TRIANGLES data
                 popGeo.adaptVertexCount(hasIndex ? popGeo._mesh._numFaces * 3 : popGeo._mesh._numCoords);
                 
-                // finally set shader variables...                
-                var bbMin  = popGeo._vf.bbMin;
-                var bbSize = popGeo._vf.size;
-                                
-                sp.PG_bbMin = bbMin.toGL();
+                // finally set shader variables...        
+                sp.PG_bbMin = popGeo._vf.bbMin.toGL();
                 
                 sp.PG_numAnchorVertices = popGeo._vf.numAnchorVertices; 
                 
@@ -4244,6 +4238,9 @@ x3dom.gfx_webgl = (function () {
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris  = 0;
         
+        //this.prevRenderedAppearance = null;
+        //this.nextRenderedAppearance = null;
+        
 		// update view frustum
         var view_frustum = viewarea.getViewfrustum(mat_scene);
         
@@ -4302,6 +4299,8 @@ x3dom.gfx_webgl = (function () {
             if (needEnableDepthMask) {
                 gl.depthMask(true);
             }
+            
+            //this.prevRenderedAppearance = shapeApp;
         }
 		
 		if (view_frustum)
@@ -4312,6 +4311,9 @@ x3dom.gfx_webgl = (function () {
 		if (this.canvas.parent.stateCanvas) {
 			this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
 		}
+
+        //this.prevRenderedAppearance = null;
+        //this.nextRenderedAppearance = null;
 
         gl.disable(gl.BLEND);
         /*gl.blendFuncSeparate( // just multiply dest RGB by its A
