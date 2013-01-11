@@ -4513,7 +4513,7 @@ x3dom.gfx_webgl = (function () {
                 // HACK; fully impl. BlendMode and DepthMode
                 appearance = shape._cf.appearance.node;
                 
-                var stateSwitchMode = STATE_SWITCH_NONE; // TODO; impl.
+                var stateSwitchMode = STATE_SWITCH_BOTH; // TODO; impl.
 
                 if (appearance._cf.blendMode.node &&
                     appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
@@ -4567,7 +4567,7 @@ x3dom.gfx_webgl = (function () {
                 // HACK; fully impl. BlendMode and DepthMode
                 appearance = shape._cf.appearance.node;
                 
-                stateSwitchMode = STATE_SWITCH_NONE; // TODO; impl.
+                stateSwitchMode = STATE_SWITCH_BOTH; // TODO; impl.
 
                 if (appearance._cf.blendMode.node &&
                     appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
