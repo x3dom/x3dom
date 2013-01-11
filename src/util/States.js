@@ -103,7 +103,7 @@ x3dom.States.prototype.update = function()
 		//Clear the canvas and update context
 		this.canvas.width  = this.stateWidth  + (this.statePadding * 2);
 		this.canvas.height = this.stateHeigth + (this.statePadding * 2) + (this.numInfos * 15);
-		this.ctx = this.canvas.getContext("2d");
+		//this.ctx = this.canvas.getContext("2d");
 		
 		//Draw background rect
 		this.ctx.fillStyle = "rgba(50, 50, 50, 0.85)";
@@ -161,6 +161,9 @@ x3dom.States.prototype.update = function()
 			this.ctx.globalAlpha = 1.0;
 			this.ctx.font = "bold 12px Arial";
 			this.ctx.fillText("Calculating...", offsetX+38, offsetY+18);
+			
+			// workaround for broken Mac stats since forcing redraw kills Mac Browser
+			this.states[state].calc = false;
 		}
 		
 		//Draw infos
@@ -241,7 +244,7 @@ x3dom.States.prototype.addState = function(state, value, fixed, color)
 	
 	if (this.states[state].average.length > this.stateWidth) {
 		this.states[state].average.shift();
-		this.states[state].calc = false;
+    	this.states[state].calc = false;
 	}
 	
 	if(!this.states[state].calc) {

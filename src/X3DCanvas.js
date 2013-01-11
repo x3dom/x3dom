@@ -1084,7 +1084,8 @@ x3dom.X3DCanvas.prototype.tick = function()
 					this.stateCanvas.removeInfo("#LOADS:");
 				}
 				//If states are active we need a real render loop
-				this.doc.needRender = this.stateCanvas.active;
+				// this kills browser on Mac...
+				//this.doc.needRender = this.stateCanvas.active;
 			}
 		
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
@@ -1096,13 +1097,12 @@ x3dom.X3DCanvas.prototype.tick = function()
                         this.progressDiv.style.display = 'none';
                     }
 
-                    // TODO: fix these strange window-bound scope issues!
-                    window.myThat = this;
-                    window.myStopProgress = function stopProgress() {
-                        window.myThat.doc.downloadCount = 0;
-                        window.myThat.progressDiv.style.display = 'none';
-                    };
-                    window.setTimeout("window.myStopProgress()", 1500);
+                    var myThat = this;
+                    
+                    window.setTimeout( function() { 
+                           myThat.doc.downloadCount = 0;
+                           myThat.progressDiv.style.display = 'none';
+						}, 1500 );
                 }
             } else {
                 this.progressDiv.style.display = 'none';

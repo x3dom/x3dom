@@ -134,6 +134,15 @@ x3dom.gfx_webgl = (function () {
         }
         return null;
     }
+    
+    /*****************************************************************************
+    * THINKABOUTME; Some globals consts/defines for state switches
+    *****************************************************************************/
+    var STATE_SWITCH_NONE   = 0;
+    var STATE_SWITCH_BIND   = 1;
+    var STATE_SWITCH_UNBIND = 2;
+    var STATE_SWITCH_BOTH   = 3;
+    
 		
 	/*****************************************************************************
     * Setup GL objects for given shape
@@ -2438,6 +2447,7 @@ x3dom.gfx_webgl = (function () {
             var mat_scene = null;
             var projMatrix_22 = mat_proj._22,
                 projMatrix_23 = mat_proj._23;
+            var camPos = mat_view.e3();
             
             if ((sp !== undefined && sp !== null) &&
                 (sp.texcoord !== undefined && sp.texcoord !== null) &&
@@ -2461,9 +2471,17 @@ x3dom.gfx_webgl = (function () {
                 // adapt projection matrix to better near/far
                 mat_proj._22 = 100001 / 99999;
                 mat_proj._23 = 200000 / 99999;
+                // center viewpoint
+                mat_view._03 = 0;
+                mat_view._13 = 0;
+                mat_view._23 = 0;
                 
                 mat_scene = mat_proj.mult(mat_view);
                 sp.modelViewProjectionMatrix = mat_scene.toGL();
+                
+                mat_view._03 = camPos.x;
+                mat_view._13 = camPos.y;
+                mat_view._23 = camPos.z;
                 
                 mat_proj._22 = projMatrix_22;
                 mat_proj._23 = projMatrix_23;
@@ -2531,10 +2549,18 @@ x3dom.gfx_webgl = (function () {
                     // adapt projection matrix to better near/far
                     mat_proj._22 = 100001 / 99999;
                     mat_proj._23 = 200000 / 99999;
+                    // center viewpoint
+                    mat_view._03 = 0;
+                    mat_view._13 = 0;
+                    mat_view._23 = 0;
 
                     mat_scene = mat_proj.mult(mat_view);
                     sp.modelViewProjectionMatrix = mat_scene.toGL();
 
+                    mat_view._03 = camPos.x;
+                    mat_view._13 = camPos.y;
+                    mat_view._23 = camPos.z;
+                    
                     mat_proj._22 = projMatrix_22;
                     mat_proj._23 = projMatrix_23;
                     
@@ -3047,8 +3073,10 @@ x3dom.gfx_webgl = (function () {
     *****************************************************************************/
     Context.prototype.renderShape = function (transform, shape, viewarea, 
                                               slights, numLights, 
-                                              mat_view, mat_scene, mat_light, mat_proj,
-                                              gl, oneShadowExistsAlready)
+                                              mat_view, mat_scene, 
+                                              mat_light, mat_proj,
+                                              gl, oneShadowExistsAlready, 
+                                              stateSwitchMode)
     {
         if (shape._webgl === undefined) {
             return;
@@ -3064,7 +3092,10 @@ x3dom.gfx_webgl = (function () {
             x3dom.debug.logError("[Context|RenderShape] No Shader is set!");
             return;
         }
-        sp.bind();
+        
+        if (stateSwitchMode & STATE_SWITCH_BIND) {
+            sp.bind();
+        }
 		
         //===========================================================================
         // Set special Geometry variables
@@ -3119,7 +3150,8 @@ x3dom.gfx_webgl = (function () {
         // Set fog
         //===========================================================================
         var fog = scene.getFog();
-        if(fog){
+        
+        if (fog && (stateSwitchMode & STATE_SWITCH_BIND)) {
 			sp.fogColor = fog._vf.color.toGL();
 			sp.fogRange = fog._vf.visibilityRange;
 			sp.fogType	= (fog._vf.fogType == "LINEAR") ? 0.0 : 1.0;
@@ -3129,7 +3161,7 @@ x3dom.gfx_webgl = (function () {
 		var shader = shape._cf.appearance.node ?
                      shape._cf.appearance.node._shader : null;
 		
-		if (shader) {
+		if (shader && (stateSwitchMode & STATE_SWITCH_BIND)) {
 			if(x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
 				for (var fName in shader._vf) {
 					if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
@@ -3149,38 +3181,39 @@ x3dom.gfx_webgl = (function () {
 			}
 		}
 		
-
         //===========================================================================
         // Set Material
         //===========================================================================
 		var mat = shape._cf.appearance.node ?
                   shape._cf.appearance.node._cf.material.node : null;
-        if (shape._webgl.csshader) {
+        
+        // no state switch, but requires more fine grained comparison than if app is shared
+        if (mat && (stateSwitchMode & STATE_SWITCH_BIND))
+        {
+          if (shape._webgl.csshader) {
 			sp.diffuseColor      = shader._vf.diffuseFactor.toGL();
 			sp.specularColor     = shader._vf.specularFactor.toGL();
 			sp.emissiveColor     = shader._vf.emissiveFactor.toGL();
 			sp.shininess         = shader._vf.shininessFactor;
 			sp.ambientIntensity	 = (shader._vf.ambientFactor.x + 
 									shader._vf.ambientFactor.y + 
-									shader._vf.ambientFactor.z)/3;
+									shader._vf.ambientFactor.z) / 3;
 			sp.transparency      = 1.0 - shader._vf.alphaFactor;
-        } else if (mat) {
+          }
+          else {
 			sp.diffuseColor		= mat._vf.diffuseColor.toGL();
 			sp.specularColor	= mat._vf.specularColor.toGL();
 			sp.emissiveColor	= mat._vf.emissiveColor.toGL();
 			sp.shininess        = mat._vf.shininess;
 			sp.ambientIntensity	= mat._vf.ambientIntensity;
 			sp.transparency		= mat._vf.transparency;
-        }
-        if (mat) {
-            //FIXME Only set for VertexColorUnlit and ColorPicking
-            sp.alpha = 1.0 - mat._vf.transparency;
+          }
         }
         
         //===========================================================================
         // Set Lights
         //===========================================================================
-        if (numLights > 0)
+        if (numLights > 0 && (stateSwitchMode & STATE_SWITCH_BIND))
         {        
             for(var p=0; p<numLights; p++) {
                 var light_transform = mat_view.mult(slights[p].getCurrentTransform());
@@ -3237,7 +3270,8 @@ x3dom.gfx_webgl = (function () {
         // Set HeadLight
         //===========================================================================
         var nav = scene.getNavigationInfo();
-        if(nav._vf.headlight){
+        
+        if (nav._vf.headlight && (stateSwitchMode & STATE_SWITCH_BIND)) {
 			numLights = (numLights) ? numLights : 0;
 			sp['light'+numLights+'_Type']             = 0.0;
 			sp['light'+numLights+'_On']               = 1.0;
@@ -3275,40 +3309,34 @@ x3dom.gfx_webgl = (function () {
                 //compute distance-based LOD
                 var viewpoint = scene.getViewpoint();
                 
-                var fov_y = viewpoint.getFieldOfView();
-                var near  = viewpoint.getNear();
+                var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
+                var near = viewpoint.getNear();
                 
                 var center = model_view.multMatrixPnt(popGeo._vf.position);
                 var len    = popGeo._vf.size.length() / 2;   // radius
                 
                 //distance is estimated conservatively using the bounding sphere
                 var dist = Math.max(-center.z - len, near);
-                
-                // TODO; only calc once when fov changes
-                var imgPlaneHeightAtDistOne = 2.0 * Math.tan(fov_y / 2.0);
-                
                 var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                 
-                //compute LOD using bounding sphere          
-                var currentLOD = ( function(r) {
+                var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
+                var currentLOD = 16;
                 
-                    var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
-                    if (tol <= 0) {
-                        return 16;
-                    }
-                    else {
-                        var arg = (2 * r) / (tol * projPixelLength);
-                        // use precomputed log(2.0) = 0.693147180559945
-                        // add 1 for doubled sampling frequency...
-                        return Math.ceil(1 + Math.log(arg) / 0.693147180559945);
-                    }
-                } )(len);
+                if (tol > 0)
+                {
+                    //compute LOD using bounding sphere 
+                    var arg = (2 * len) / (tol * projPixelLength);
+                    // use precomputed log(2.0) = 0.693147180559945
+                    // and add 1 for doubled sampling frequency...
+                    currentLOD = Math.ceil(1 + Math.log(arg) / 0.693147180559945);
+                }
                 
                 currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
                 
                 //assign rendering resolution, according to currently loaded data and LOD                                                       
-                currentLOD = Math.min(shape._webgl.levelsAvailable, currentLOD);
-                currentLOD = (currentLOD == popGeo.getNumLevels()) ? 16 : currentLOD;                
+                var currentLOD_min = (shape._webgl.levelsAvailable < currentLOD) ?
+                                      shape._webgl.levelsAvailable : currentLOD;
+                currentLOD = (currentLOD_min == popGeo.getNumLevels()) ? 16 : currentLOD_min;                
                 
                 //here, we tell X3DOM how many faces / vertices get displayed in the stats
                 var hasIndex = popGeo.hasIndex();
@@ -3317,7 +3345,7 @@ x3dom.gfx_webgl = (function () {
                 popGeo._mesh._numFaces  = 0;
                 
                 //@todo: this assumes pure TRIANGLES data
-                for (var i = 0; (i < currentLOD) && (i < shape._webgl.levelsAvailable); ++i) {                        
+                for (var i = 0; i < currentLOD_min; ++i) {
                     popGeo._mesh._numCoords += shape._webgl.numVerticesAtLevel[i];
                     popGeo._mesh._numFaces  += (hasIndex ? popGeo.getNumIndicesByLevel(i) :
                                                            shape._webgl.numVerticesAtLevel[i]) / 3;
@@ -3349,8 +3377,10 @@ x3dom.gfx_webgl = (function () {
         //PopGeometry: adapt LOD and set shader variables - END
         ///////////////////////////////////////////////////////////////////////
 
-		for (var cnt=0; cnt<shape._webgl.texture.length; cnt++)
-		{
+        if (stateSwitchMode & STATE_SWITCH_BIND)
+        {
+		  for (var cnt=0; cnt<shape._webgl.texture.length; cnt++)
+		  {
 			tex = shape._webgl.texture[cnt];
 			
 			gl.activeTexture(gl.TEXTURE0 + cnt);
@@ -3368,18 +3398,18 @@ x3dom.gfx_webgl = (function () {
 				if(!sp[tex.samplerName]) 
 					sp[tex.samplerName] = cnt;
 			}
-		}
+		  }
 		
-		if (shape._cf.appearance.node &&
+		  if (shape._cf.appearance.node &&
             shape._cf.appearance.node._cf.textureTransform.node)
-		{
+		  {
 			// use shader/ calculation due to performance issues
 			var texTrafo = shape._cf.appearance.node.texTransformMatrix();
 			sp.texTrafoMatrix = texTrafo.toGL();
-		}
+		  }
         
-        if (oneShadowExistsAlready) 
-        {
+          if (oneShadowExistsAlready) 
+          {
             if (!sp.sh_tex) {
                 sp.sh_tex = cnt;
             }
@@ -3394,10 +3424,12 @@ x3dom.gfx_webgl = (function () {
             //gl.generateMipmap(gl.TEXTURE_2D);
             
             sp.matPV = mat_light.mult(transform).toGL();
-        }
+          }
+        } // STATE_SWITCH_BIND
 
-        var attrib;
         // TODO; FIXME; what if geometry with split mesh has dynamic fields?
+        var attrib = null;
+        
         for (var df=0; df<shape._webgl.dynamicFields.length; df++)
         {
             attrib = shape._webgl.dynamicFields[df];
@@ -3411,7 +3443,9 @@ x3dom.gfx_webgl = (function () {
             }
         }
         
-        if (shape.isSolid()) {
+        if (stateSwitchMode & STATE_SWITCH_BIND)
+        {
+          if (shape.isSolid()) {
             gl.enable(gl.CULL_FACE);
             
             if (shape.isCCW()) {
@@ -3419,9 +3453,10 @@ x3dom.gfx_webgl = (function () {
             } else {
                 gl.frontFace(gl.CW);
             }
-        } else {
+          } else {
             gl.disable(gl.CULL_FACE);
-        }
+          }
+        } // STATE_SWITCH_BIND
         
         for (var q=0; q<shape._webgl.positions.length; q++)
         {
@@ -3584,8 +3619,8 @@ x3dom.gfx_webgl = (function () {
 			}
         }
 		
-		if(shape._webgl.imageGeometry != 0) {
-			for(var i=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++)
+		if (shape._webgl.imageGeometry != 0) {
+			for (var i=0; i<shape._cf.geometry.node._vf.vertexCount.length; i++)
 				this.numCoords += shape._cf.geometry.node._vf.vertexCount[i];
 			this.numDrawCalls += shape._cf.geometry.node._vf.vertexCount.length;
 		}
@@ -3606,9 +3641,19 @@ x3dom.gfx_webgl = (function () {
 		    }
 		}
 		
-        for (cnt=0; shape._webgl.texture !== undefined && 
+        for (df=0; df<shape._webgl.dynamicFields.length; df++) {
+            attrib = shape._webgl.dynamicFields[df];
+            
+            if (sp[attrib.name] !== undefined) {
+                gl.disableVertexAttribArray(sp[attrib.name]);
+            }
+        }
+		
+		if (stateSwitchMode & STATE_SWITCH_UNBIND)
+		{
+          for (cnt=0; shape._webgl.texture !== undefined && 
                     cnt < shape._webgl.texture.length; cnt++)
-        {
+          {
             if (shape._webgl.texture[cnt])
             {
                 tex = null;
@@ -3620,26 +3665,18 @@ x3dom.gfx_webgl = (function () {
                 {
                     gl.activeTexture(gl.TEXTURE0 + cnt);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    //gl.disable(gl.TEXTURE_CUBE_MAP);
-                } else if(!x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)){
+                }
+                else if(!x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)){
                     gl.activeTexture(gl.TEXTURE0 + cnt);
                     gl.bindTexture(gl.TEXTURE_2D, null);
                 }
             }
-        }
-        if (oneShadowExistsAlready) {
+          }
+          if (oneShadowExistsAlready) {
             gl.activeTexture(gl.TEXTURE0 + cnt);
             gl.bindTexture(gl.TEXTURE_2D, null);
-        }
-        //gl.disable(gl.TEXTURE_2D);
-        
-        for (df=0; df<shape._webgl.dynamicFields.length; df++) {
-            attrib = shape._webgl.dynamicFields[df];
-            
-            if (sp[attrib.name] !== undefined) {
-                gl.disableVertexAttribArray(sp[attrib.name]);
-            }
-        }
+          }
+        } // STATE_SWITCH_UNBIND
 
 		return new Date().getTime() - t0;
     };
@@ -4239,9 +4276,6 @@ x3dom.gfx_webgl = (function () {
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris  = 0;
         
-        //this.prevRenderedAppearance = null;
-        //this.nextRenderedAppearance = null;
-        
 		// update view frustum
         var view_frustum = viewarea.getViewfrustum(mat_scene);
         
@@ -4250,6 +4284,9 @@ x3dom.gfx_webgl = (function () {
             var box = new x3dom.fields.BoxVolume();
             var unculledObjects = 0;
         }
+        
+        var prevRenderedAppearance = null;
+        var nextRenderedAppearance = null;
 
         for (i=0, n=zPos.length; i<n; i++)
         {
@@ -4274,47 +4311,58 @@ x3dom.gfx_webgl = (function () {
             var needEnableBlending = false;
             var needEnableDepthMask = false;
             var shapeApp = obj[1]._cf.appearance.node;
+            
+            if (i < n - 1)
+                nextRenderedAppearance = scene.drawableObjects[zPos[i+1][0]][1]._cf.appearance.node;
+            else
+                nextRenderedAppearance = null;
+            
+            var stateSwitchMode = STATE_SWITCH_NONE;
+            
+            if (prevRenderedAppearance != shapeApp)
+                stateSwitchMode += STATE_SWITCH_BIND;
+            if (nextRenderedAppearance != shapeApp)
+                stateSwitchMode += STATE_SWITCH_UNBIND;
 
-            // HACK; fully impl. BlendMode and DepthMode
-            if (shapeApp && shapeApp._cf.blendMode.node &&
-                shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
-                shapeApp._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+            // HACK; fully impl. BlendMode and DepthMode & use stateSwitchMode
+            if (stateSwitchMode & STATE_SWITCH_BIND)
             {
-                needEnableBlending = true;
-                gl.disable(gl.BLEND);
-            }
-            if (shapeApp && shapeApp._cf.depthMode.node &&
-                shapeApp._cf.depthMode.node._vf.readOnly === true)
-            {
-                needEnableDepthMask = true;
-                gl.depthMask(false);
+                if (shapeApp && shapeApp._cf.blendMode.node &&
+                    shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
+                    shapeApp._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+                {
+                    needEnableBlending = true;
+                    gl.disable(gl.BLEND);
+                }
+                if (shapeApp && shapeApp._cf.depthMode.node &&
+                    shapeApp._cf.depthMode.node._vf.readOnly === true)
+                {
+                    needEnableDepthMask = true;
+                    gl.depthMask(false);
+                }
             }
 
             drawTime += this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
 										 mat_view, mat_scene, mat_light, mat_proj, gl,
-										 oneShadowExistsAlready);
+										 oneShadowExistsAlready, stateSwitchMode);
 
-            if (needEnableBlending) {
-                gl.enable(gl.BLEND);
-            }
-            if (needEnableDepthMask) {
-                gl.depthMask(true);
+            if (stateSwitchMode & STATE_SWITCH_UNBIND)
+            {
+                if (needEnableBlending) {
+                    gl.enable(gl.BLEND);
+                }
+                if (needEnableDepthMask) {
+                    gl.depthMask(true);
+                }
             }
             
-            //this.prevRenderedAppearance = shapeApp;
+            prevRenderedAppearance = shapeApp;
         }
 		
 		if (view_frustum)
 		    viewarea._numRenderedNodes = unculledObjects;
 		else
 		    viewarea._numRenderedNodes = zPos.length;
-		
-		if (this.canvas.parent.stateCanvas) {
-			this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
-		}
-
-        //this.prevRenderedAppearance = null;
-        //this.nextRenderedAppearance = null;
 
         gl.disable(gl.BLEND);
         /*gl.blendFuncSeparate( // just multiply dest RGB by its A
@@ -4345,6 +4393,8 @@ x3dom.gfx_webgl = (function () {
         t1 = new Date().getTime() - t0;
 		
         if (this.canvas.parent.stateCanvas) {
+            //this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
+            this.canvas.parent.stateCanvas.addState("DRAW", t1/zPos.length);
             this.canvas.parent.stateCanvas.addState("RENDER", t1);
 			this.canvas.parent.stateCanvas.addInfo("#NODES:", viewarea._numRenderedNodes);
 			this.canvas.parent.stateCanvas.addInfo("#DRAWS:", this.numDrawCalls);
@@ -4462,6 +4512,8 @@ x3dom.gfx_webgl = (function () {
 
                 // HACK; fully impl. BlendMode and DepthMode
                 appearance = shape._cf.appearance.node;
+                
+                var stateSwitchMode = STATE_SWITCH_NONE; // TODO; impl.
 
                 if (appearance._cf.blendMode.node &&
                     appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
@@ -4478,7 +4530,8 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 this.renderShape(transform, shape, viewarea, slights, numLights, 
-                        mat_view, mat_scene, mat_light, mat_proj, gl, oneShadowExistsAlready);
+                                 mat_view, mat_scene, mat_light, mat_proj, gl, 
+                                 oneShadowExistsAlready, stateSwitchMode);
 
                 if (needEnableBlending) {
                     gl.enable(gl.BLEND);
@@ -4513,6 +4566,8 @@ x3dom.gfx_webgl = (function () {
 
                 // HACK; fully impl. BlendMode and DepthMode
                 appearance = shape._cf.appearance.node;
+                
+                stateSwitchMode = STATE_SWITCH_NONE; // TODO; impl.
 
                 if (appearance._cf.blendMode.node &&
                     appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
@@ -4529,7 +4584,8 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 this.renderShape(transform, shape, viewarea, slights, numLights, 
-                        mat_view, mat_scene, mat_light, mat_proj, gl, oneShadowExistsAlready);
+                                 mat_view, mat_scene, mat_light, mat_proj, gl, 
+                                 oneShadowExistsAlready, stateSwitchMode);
 
                 if (needEnableBlending) {
                     gl.enable(gl.BLEND);

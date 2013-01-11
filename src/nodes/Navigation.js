@@ -64,6 +64,8 @@ x3dom.registerNodeType(
             this._zRatio = 10000;
             this._zNear = this._vf.zNear;
             this._zFar = this._vf.zFar;
+            // special stuff...
+            this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
         },
         {
             fieldChanged: function (fieldName) {
@@ -77,6 +79,7 @@ x3dom.registerNodeType(
                     this._projMatrix = null;   // only trigger refresh
                     this._zNear = this._vf.zNear;
                     this._zFar = this._vf.zFar;
+                    this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
                 }
                 else if (fieldName.indexOf("bind") >= 0) {
                     // FIXME; call parent.fieldChanged();
@@ -133,6 +136,10 @@ x3dom.registerNodeType(
             
             getFar: function() {
                 return this._zFar;
+            },
+            
+            getImgPlaneHeightAtDistOne: function() {
+                return this._imgPlaneHeightAtDistOne;
             },
 
             getProjectionMatrix: function(aspect)

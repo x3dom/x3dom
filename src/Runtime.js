@@ -864,7 +864,8 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
 x3dom.Runtime.prototype.statistics = function(mode) {
     var stateCanvas = this.canvas.stateCanvas;
     if (stateCanvas) {
-
+        
+        this.canvas.doc.needRender = true;
         if (mode === true) {
             stateCanvas.display(mode);
             return true;
