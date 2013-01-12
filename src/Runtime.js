@@ -29,7 +29,11 @@ x3dom.runtime = {};
 x3dom.Runtime = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
+    
+    this.config = {};
     this.isReady = false;
+    
+    this.fps = 0;
 };
 
 x3dom.Runtime.prototype.initialize = function(doc, canvas) {
@@ -40,6 +44,8 @@ x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     // format and structure needs to be decided.
     this.config = {};
     this.isReady = false;
+    
+    this.fps = 0;
 };
 
 
@@ -89,7 +95,7 @@ x3dom.Runtime.prototype.ready = function() {
 x3dom.Runtime.prototype.enterFrame = function() {
     //x3dom.debug.logInfo('Render frame imminent');
     // to be overwritten by user
-},
+};
 
 /**
  * APIFunction: exitFrame
@@ -109,7 +115,7 @@ x3dom.Runtime.prototype.enterFrame = function() {
 x3dom.Runtime.prototype.exitFrame = function() {
     //x3dom.debug.logInfo('Render frame finished');
     // to be overwritten by user
-},
+};
 
 /**
  * APIFunction: getActiveBindable
@@ -917,6 +923,12 @@ x3dom.Runtime.prototype.properties = function() {
 x3dom.Runtime.prototype.backendName = function() {
     return this.canvas.backend;
 };
+
+/** Get current framerate */
+x3dom.Runtime.prototype.getFPS = function() {
+    return this.fps;
+};
+
 
 /**
  * APIMethod isA

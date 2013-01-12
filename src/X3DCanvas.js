@@ -113,9 +113,6 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         x3dElem.appendChild(div);
 
-
-
-
         x3dom.debug.logError("Your Browser does not support X3DOM!");
 	}
 
@@ -1047,33 +1044,40 @@ x3dom.X3DCanvas.prototype.tick = function()
 
         if (this.doc.needRender) {
 
-            if (this.x3dElem.runtime.isReady == true) {
-                this.x3dElem.runtime.enterFrame();
-            } else {
+            if (this.x3dElem.runtime.isReady == false) {
                 this.x3dElem.runtime.ready();
                 this.x3dElem.runtime.isReady = true;
-                this.x3dElem.runtime.enterFrame();
             }
+            
+            this.x3dElem.runtime.enterFrame()
 			
             if (this.stateCanvas) {
                 this.stateCanvas.addState("FPS", fps);
 				this.stateCanvas.addState("ANIM", animD);
 				this.stateCanvas.update();
+				
+				var lastAF = this.stateCanvas.states["FPS"].average.length - 1;
+    			var avgFps = this.stateCanvas.states["FPS"].average[lastAF].toFixed(1);
+				this.x3dElem.runtime.fps = avgFps;
+            }
+            else {
+                this.x3dElem.runtime.fps = fps;
             }
 
             if (this.backend == 'flash') {
 				if (this.isFlashReady) {
 					this.canvas.setFPS({fps: fps});
-					this.doc.needRender = false;    // picking might require another pass
+					this.doc.needRender = false;
 					this.doc.render(this.gl);
 				}
-			} else{
-				this.doc.needRender = false;    // picking might require another pass
+			}
+			else {
+			    // picking might require another pass
+				this.doc.needRender = false;
 				this.doc.render(this.gl);
 			}
             
             this.x3dElem.runtime.exitFrame();
-            
 		}
 		
         if (this.stateCanvas || this.progressDiv) {
