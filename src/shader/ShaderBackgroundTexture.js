@@ -22,6 +22,10 @@ x3dom.shader.BackgroundTextureShader = function(gl)
 	
 	gl.attachShader(this.program, vertexShader);
     gl.attachShader(this.program, fragmentShader);
+    
+    // optional, but position should be at location 0 for performance reasons
+    gl.bindAttribLocation(this.program, 0, "position");
+    
 	gl.linkProgram(this.program);
 	
 	return this.program;

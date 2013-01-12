@@ -693,13 +693,21 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
 
-            // define the experimental picking mode:
-            // box, idBuf, color, texCoord
+            // define the experimental picking mode: box, idBuf, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
+            
             // yet another exp. field for shadow dom remapping
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
+            
+            // very experimental to avoid collect at each frame to update objects + trafos
+            this.addField_SFBool(ctx, 'isStaticHierarchy', false);
+            
+            // If TRUE, transparent objects are sorted from back to front
+            this.addField_SFBool(ctx, 'sortTrans', true);
+            // If TRUE, objects outside the viewing frustum are ignored
+            this.addField_SFBool(ctx, 'frustumCulling', true);
             
             this._lastMin = null;
             this._lastMax = null;

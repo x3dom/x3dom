@@ -22,6 +22,10 @@ x3dom.shader.DynamicShader = function(gl, properties)
 	
 	gl.attachShader(this.program, vertexShader);
     gl.attachShader(this.program, fragmentShader);
+    
+    // optional, but position should be at location 0 for performance reasons
+    gl.bindAttribLocation(this.program, 0, "position");
+    
 	gl.linkProgram(this.program);
 	
 	return this.program;
@@ -71,6 +75,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
     //PG stuff
     if (properties.POPGEOMETRY) {
         shader += "uniform float PG_precisionLevel;\n"
+        shader += "uniform float PG_powPrecision;\n"
         shader += "uniform vec3 PG_bbMin;\n";
         shader += "uniform vec3 PG_bbMaxModF;\n"
         shader += "uniform vec3 PG_bboxShiftVec;\n";
@@ -241,10 +246,9 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
           shader += "offsetVec *= PG_bboxShiftVec;\n";
           
           //coordinate truncation, computation of current maximum possible value      
-          shader += "if (PG_vertexID >= PG_numAnchorVertices) {\n"; //currently mimics use of gl_VertexID      
-          shader += "   float p = pow(2.0, 16.0 - PG_precisionLevel);\n";
-          shader += "   vertPosition = floor(vertPosition / p) * p;\n";
-          shader += "   float precisionMax = 65536.0 - p;\n";
+          shader += "if (PG_vertexID >= PG_numAnchorVertices) {\n"; //currently mimics use of gl_VertexID
+          shader += "   vertPosition = floor(vertPosition / PG_powPrecision) * PG_powPrecision;\n";
+          shader += "   float precisionMax = 65536.0 - PG_powPrecision;\n";
           shader += "   vertPosition /= precisionMax;\n";
           shader += "}\n";
           shader += "else {\n";
@@ -376,10 +380,9 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
  */
 x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, properties)
 {
-	shader = "#ifdef GL_ES\n" +
-			 "  precision highp float;\n" +
-			 "#endif\n\n";
-	
+	var shader = "#ifdef GL_ES\n" +
+    			 "  precision highp float;\n" +
+    			 "#endif\n\n";
 	
 	/*******************************************************************************
 	* Generate dynamic uniforms & varyings

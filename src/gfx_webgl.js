@@ -290,7 +290,8 @@ x3dom.gfx_webgl = (function () {
 					gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
 				
 					indexArray = null;
-				
+				    
+				    // vertex positions
                     shape._webgl.positions[q] = shape._cf.geometry.node._mesh._positions[q];
                     
                     // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
@@ -1335,8 +1336,6 @@ x3dom.gfx_webgl = (function () {
           
           shape._webgl.buffers[0] = gl.createBuffer();
           
-          //this call allocates some gpu memory and initializes it to 0
-          //(note that 16 bit indices are the only possibility by now)
           gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[0]);
           gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, popGeo.getTotalNumberOfIndices()*2, gl.STATIC_DRAW);
           
@@ -1573,6 +1572,7 @@ x3dom.gfx_webgl = (function () {
     //################
     //(end PopGeometry)
     //################
+    
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry))
 		{	
 			var that = this;
@@ -1594,7 +1594,7 @@ x3dom.gfx_webgl = (function () {
                   //  - an index buffer containing indices of TRIANGLES / TRIANGLE STRIPS
                   //  - a set of data buffers containing the triangle data          
                   shape._webgl.generateTriangleBuffer = function() {
-                    if (typeof shape._webgl.dataBuffers[0] != 'undefined' &&
+                    if ( typeof shape._webgl.dataBuffers[0] != 'undefined' &&
                         (typeof shape._webgl.dataBuffers[1] != 'undefined' || //positions & normals
                          typeof shape._webgl.dataBuffers[3] != 'undefined' || //texcoords
                          typeof shape._webgl.dataBuffers[4] != 'undefined'    //colors
@@ -1722,7 +1722,7 @@ x3dom.gfx_webgl = (function () {
 
                 shape._coordStrideOffset[0]  = shape._normalStrideOffset[0] = stride*2;
                 shape._coordStrideOffset[1]  = 0;
-                shape._normalStrideOffset[1] = 4*2;                
+                shape._normalStrideOffset[1] = 8; //4*2           
                 
                 shape._webgl.buffers[1] = glBuf;
                 shape._webgl.buffers[2] = glBuf;
@@ -1990,7 +1990,6 @@ x3dom.gfx_webgl = (function () {
 					shape._webgl.refinementJobManager.continueProcessing(attributeId);
 				}
 
-
 				//If there is still no BitComposer create a new one 
 				//shape._webgl.bitLODComposer = new x3dom.BitLODComposer();
 				shape._webgl.refinementJobManager = new x3dom.RefinementJobManager();
@@ -2061,7 +2060,8 @@ x3dom.gfx_webgl = (function () {
 					}
 				}
 			}
-		}		
+		} // END BITLOD
+			
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
 		{
 			//Get ImageGeometry
@@ -2822,6 +2822,10 @@ x3dom.gfx_webgl = (function () {
         else if (pickMode === 2) {
             sp = scene._webgl.pickTexCoordShader; 
         }
+        if (!sp) {
+            return;
+        }
+        
         sp.bind();
         
         var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
@@ -2942,16 +2946,6 @@ x3dom.gfx_webgl = (function () {
 						shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 					gl.enableVertexAttribArray(sp.position);
 				}
-				if (sp.color !== undefined && shape._webgl.buffers[5*q+4])
-				{
-					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
-					
-					gl.vertexAttribPointer(sp.color, 
-						shape._cf.geometry.node._mesh._numColComponents, 
-						shape._webgl.colorType, false,
-						shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
-					gl.enableVertexAttribArray(sp.color);
-				}
 				if (sp.texcoord !== undefined && shape._webgl.buffers[5*q+3])
 				{
 					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+3]);
@@ -2961,6 +2955,16 @@ x3dom.gfx_webgl = (function () {
 						shape._webgl.texCoordType, false,
 						shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
 					gl.enableVertexAttribArray(sp.texcoord);
+				}
+				if (sp.color !== undefined && shape._webgl.buffers[5*q+4])
+				{
+					gl.bindBuffer(gl.ARRAY_BUFFER, shape._webgl.buffers[5*q+4]);
+
+					gl.vertexAttribPointer(sp.color, 
+						shape._cf.geometry.node._mesh._numColComponents, 
+						shape._webgl.colorType, false,
+						shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
+					gl.enableVertexAttribArray(sp.color);
 				}
 				
 				if (shape.isSolid()) {
@@ -3034,14 +3038,14 @@ x3dom.gfx_webgl = (function () {
 					}
 				}
 				
-				if (sp.position !== undefined) {
+				if (sp.position !== undefined && shape._webgl.buffers[5*q+1]) {
 					gl.disableVertexAttribArray(sp.position);
 				}
-				if (sp.color !== undefined) {
-					gl.disableVertexAttribArray(sp.color);
-				}
-				if (sp.texcoord !== undefined) {
+				if (sp.texcoord !== undefined && shape._webgl.buffers[5*q+3]) {
 					gl.disableVertexAttribArray(sp.texcoord);
+				}
+				if (sp.color !== undefined && shape._webgl.buffers[5*q+4]) {
+					gl.disableVertexAttribArray(sp.color);
 				}
 			}
         }
@@ -3078,28 +3082,29 @@ x3dom.gfx_webgl = (function () {
                                               gl, oneShadowExistsAlready, 
                                               stateSwitchMode)
     {
-        if (shape._webgl === undefined) {
-            return;
+        if (!shape || !shape._webgl) {
+            return 0;
         }
-		
-		var t0 = new Date().getTime();
-        
-        var tex = null;
-        var scene = viewarea._scene;
+
         var sp = shape._webgl.shader;
 
         if (!sp) {
             x3dom.debug.logError("[Context|RenderShape] No Shader is set!");
-            return;
+            return 0;
         }
-        
+
+        var t0 = new Date().getTime();
+
         if (stateSwitchMode & STATE_SWITCH_BIND) {
             sp.bind();
         }
-		
+
         //===========================================================================
         // Set special Geometry variables
         //===========================================================================
+        var scene = viewarea._scene;
+        var tex = null;
+
 		if (shape._webgl.coordType != gl.FLOAT)
 		{
 		    if ( shape._webgl.popGeometry === 0 && (shape._webgl.bitLODGeometry != 0 ||  
@@ -3157,37 +3162,13 @@ x3dom.gfx_webgl = (function () {
 			sp.fogType	= (fog._vf.fogType == "LINEAR") ? 0.0 : 1.0;
         }
         
-		//Look for shaders
-		var shader = shape._cf.appearance.node ?
-                     shape._cf.appearance.node._shader : null;
-		
-		if (shader && (stateSwitchMode & STATE_SWITCH_BIND)) {
-			if(x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
-				for (var fName in shader._vf) {
-					if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
-						var field = shader._vf[fName];
-						if (field) {
-    						if (field.toGL) {
-    							sp[fName] = field.toGL();
-    						}
-    						else {
-    							sp[fName] = field;
-    						}
-    					}
-					}
-				}
-			} else if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
-				shape._webgl.csshader = shader;	
-			}
-		}
-		
         //===========================================================================
         // Set Material
         //===========================================================================
 		var mat = shape._cf.appearance.node ?
                   shape._cf.appearance.node._cf.material.node : null;
         
-        // no state switch, but requires more fine grained comparison than if app is shared
+        // no state switch, but requires more fine grained comparison than only if whole App. is shared
         if (mat && (stateSwitchMode & STATE_SWITCH_BIND))
         {
           if (shape._webgl.csshader) {
@@ -3209,6 +3190,31 @@ x3dom.gfx_webgl = (function () {
 			sp.transparency		= mat._vf.transparency;
           }
         }
+        
+        //Look for user-defined shaders
+		var shader = shape._cf.appearance.node ?
+                     shape._cf.appearance.node._shader : null;
+		
+		if (shader && (stateSwitchMode & STATE_SWITCH_BIND)) {
+			if (x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
+				for (var fName in shader._vf) {
+					if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
+						var field = shader._vf[fName];
+						if (field) {
+    						if (field.toGL) {
+    							sp[fName] = field.toGL();
+    						}
+    						else {
+    							sp[fName] = field;
+    						}
+    					}
+					}
+				}
+			}
+			else if (x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
+				shape._webgl.csshader = shader;	
+			}
+		}
         
         //===========================================================================
         // Set Lights
@@ -3371,6 +3377,8 @@ x3dom.gfx_webgl = (function () {
                 sp.PG_bboxShiftVec = popGeo.getBBoxShiftVec().toGL();
                 
                 sp.PG_precisionLevel = currentLOD;
+                
+                sp.PG_powPrecision = Math.pow(2.0, 16.0 - currentLOD);
             })();
         }
         ///////////////////////////////////////////////////////////////////////
@@ -3401,11 +3409,10 @@ x3dom.gfx_webgl = (function () {
 		  }
 		
 		  if (shape._cf.appearance.node &&
-            shape._cf.appearance.node._cf.textureTransform.node)
+              shape._cf.appearance.node._cf.textureTransform.node)
 		  {
-			// use shader/ calculation due to performance issues
-			var texTrafo = shape._cf.appearance.node.texTransformMatrix();
-			sp.texTrafoMatrix = texTrafo.toGL();
+		      var texTrafo = shape._cf.appearance.node.texTransformMatrix();
+		      sp.texTrafoMatrix = texTrafo.toGL();
 		  }
         
           if (oneShadowExistsAlready) 
@@ -3602,6 +3609,10 @@ x3dom.gfx_webgl = (function () {
 			}
 			if (sp.color !== undefined) {
 				gl.disableVertexAttribArray(sp.color);
+			}
+			//special case: mimic gl_VertexID
+            if (shape._webgl.popGeometry !== 0 && shape._webgl.buffers[5*q+5]) {
+			    gl.disableVertexAttribArray(sp.PG_vertexID);
 			}
         }
         
@@ -4064,7 +4075,7 @@ x3dom.gfx_webgl = (function () {
         // fire viewpointChanged event
         if ( !this._calledViewpointChangedHandler || !viewarea._last_mat_view.equals(mat_view) )
         {
-        	var e_viewpoint = viewarea._scene.getViewpoint();
+        	var e_viewpoint = scene.getViewpoint();
         	var e_eventType = "viewpointChanged";
 
         	try {
@@ -4116,6 +4127,11 @@ x3dom.gfx_webgl = (function () {
         // do z-sorting for transparency
         var zPos = [], sortKeyArr = [], zPosTransp = {};
         var sortKeyProp = "";
+        
+        var requireSortKeySort = false;
+        var requireTransparencySort = false;
+        var requireTransparencySortKeySort = false;
+        
         var i, m, n = scene.drawableObjects.length;
         var center, trafo, obj3d;
         
@@ -4127,54 +4143,77 @@ x3dom.gfx_webgl = (function () {
             // do also init of GL objects
             this.setupShape(gl, obj3d, viewarea);
             
-            center = obj3d.getCenter();
-            center = trafo.multMatrixPnt(center);
-            center = mat_view.multMatrixPnt(center);
+            if (scene._vf.sortTrans == true)
+            {
+                center = obj3d.getCenter();
+                center = trafo.multMatrixPnt(center);
+                center = mat_view.multMatrixPnt(center);
 
-            var sortType = (obj3d._cf.appearance.node) ?
-                            obj3d._cf.appearance.node._vf.sortType : "opaque";
-            var sortKey  = (obj3d._cf.appearance.node) ? 
-                            obj3d._cf.appearance.node._vf.sortKey : 0;
+                var sortType = (obj3d._cf.appearance.node) ?
+                                obj3d._cf.appearance.node._vf.sortType : "opaque";
+                var sortKey  = (obj3d._cf.appearance.node) ? 
+                                obj3d._cf.appearance.node._vf.sortKey : 0;
 
-            if (sortType.toLowerCase() === "opaque") {
-                zPos.push([i, center.z, sortKey]);
-            }
-            else {
-                sortKeyProp = sortKey.toString();
-                if (zPosTransp[sortKeyProp] === undefined)
-                    zPosTransp[sortKeyProp] = [];
-
-                zPosTransp[sortKeyProp].push([i, center.z, sortKey]);
-                sortKeyArr.push(sortKey);
-            }
-        }
-
-        // sort solid objects only according to sortKey
-        zPos.sort(function(a, b) { return a[2] - b[2]; });
-
-        // sort transparent objects along viewer distance and sortKey
-        sortKeyArr.sort(function(a, b) { return a - b; });
-        
-        sortKeyArr = (function (arr) {
-            var a = [], l = arr.length;
-            for (var i=0; i<l; i++) {
-                for (var j=i+1; j<l; j++) {
-                    if (arr[i] === arr[j])
-                      j = ++i;
+                if (sortType.toLowerCase() === "opaque") {
+                    zPos.push([i, center.z, sortKey]);
+                
+                    if (sortKey != 0)
+                        requireSortKeySort = true;
                 }
-                a.push(arr[i]);
-            }
-            return a;
-        })(sortKeyArr);
+                else {
+                    sortKeyProp = sortKey.toString();
+                    if (zPosTransp[sortKeyProp] === undefined)
+                        zPosTransp[sortKeyProp] = [];
 
-        for (var sortKeyArrIt=0, sortKeyArrN=sortKeyArr.length; 
-                 sortKeyArrIt<sortKeyArrN; ++sortKeyArrIt) {
-            sortKeyProp = sortKeyArr[sortKeyArrIt];
-            var zPosTranspArr = zPosTransp[sortKeyProp];
-            
-            zPosTranspArr.sort(function(a, b) { return a[1] - b[1]; });
-            zPos.push.apply(zPos, zPosTranspArr);
+                    zPosTransp[sortKeyProp].push([i, center.z, sortKey]);
+                    sortKeyArr.push(sortKey);
+                
+                    requireTransparencySort = true;
+                    if (sortKey != 0)
+                        requireTransparencySortKeySort = true;
+                }
+            } //sortTrans
+            else {
+                zPos.push([i]);
+            }
         }
+
+        if (scene._vf.sortTrans == true)
+        {
+            // sort solid objects only according to sortKey
+            if (requireSortKeySort)
+                zPos.sort(function(a, b) { return a[2] - b[2]; });
+
+            // sort transparent objects along viewer distance and sortKey
+            if (requireTransparencySortKeySort)
+            {
+                sortKeyArr.sort(function(a, b) { return a - b; });
+            
+                sortKeyArr = (function (arr) {
+                    var a = [], l = arr.length;
+                    for (var i=0; i<l; i++) {
+                        for (var j=i+1; j<l; j++) {
+                            if (arr[i] === arr[j])
+                              j = ++i;
+                        }
+                        a.push(arr[i]);
+                    }
+                    return a;
+                })(sortKeyArr);
+            }
+
+            for (var sortKeyArrIt=0, sortKeyArrN=sortKeyArr.length; 
+                     sortKeyArrIt<sortKeyArrN; ++sortKeyArrIt)
+            {
+                sortKeyProp = sortKeyArr[sortKeyArrIt];
+                var zPosTranspArr = zPosTransp[sortKeyProp];
+            
+                if (requireTransparencySort)
+                    zPosTranspArr.sort(function(a, b) { return a[1] - b[1]; });
+            
+                zPos.push.apply(zPos, zPosTranspArr);
+            }
+        } //sortTrans
         
         m = scene.drawableObjects.Billboards.length;
         n = scene.drawableObjects.LODs.length;

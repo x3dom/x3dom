@@ -643,14 +643,20 @@ x3dom.Viewarea.prototype.getProjectionMatrix = function()
 
 x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
 {
-    if (arguments.length == 0) {
-        var proj = this.getProjectionMatrix();
-        var view = this.getViewMatrix();
+    if (this._scene._vf.frustumCulling == true)
+    {
+        if (arguments.length == 0) {
+            var proj = this.getProjectionMatrix();
+            var view = this.getViewMatrix();
     
-        return new x3dom.fields.FrustumVolume(proj.mult(view));
+            return new x3dom.fields.FrustumVolume(proj.mult(view));
+        }
+        else {
+            return new x3dom.fields.FrustumVolume(clipMat);
+        }
     }
     else {
-        return new x3dom.fields.FrustumVolume(clipMat);
+        return null;
     }
 };
 
