@@ -1878,6 +1878,10 @@ x3dom.nodeTypes.PopGeometry.numRenderedVerts     = 0;
 x3dom.nodeTypes.PopGeometry.numRenderedTris      = 0;
 x3dom.nodeTypes.PopGeometry.numTotalVerts        = 0;
 x3dom.nodeTypes.PopGeometry.numTotalTris         = 0;
+x3dom.nodeTypes.PopGeometry.numTotalTris         = 0;
+/** Static LUT for LOD computation */
+x3dom.nodeTypes.PopGeometry.powLUT = [32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
+                                        128,   64,    32,   16,   8,    4,    2,   1 ];
 
 
 /* ### BitLODGeoComponent ### */

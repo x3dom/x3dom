@@ -3378,7 +3378,8 @@ x3dom.gfx_webgl = (function () {
                 
                 sp.PG_precisionLevel = currentLOD;
                 
-                sp.PG_powPrecision = Math.pow(2.0, 16.0 - currentLOD);
+                //mimics Math.pow(2.0, 16.0 - currentLOD);
+                sp.PG_powPrecision = x3dom.nodeTypes.PopGeometry.powLUT[currentLOD-1];
             })();
         }
         ///////////////////////////////////////////////////////////////////////
