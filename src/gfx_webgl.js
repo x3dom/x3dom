@@ -3579,7 +3579,7 @@ x3dom.gfx_webgl = (function () {
 						        gl.drawElements(shape._webgl.primType[i], shape._cf.geometry.node._vf.vertexCount[i], 
 						                        gl.UNSIGNED_SHORT, 2*offset);
 						        offset += shape._cf.geometry.node._vf.vertexCount[i];
-					        }
+					        }                           
     					}
     					else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
     					         shape._webgl.primType == gl.TRIANGLE_STRIP) {  // TODO; remove 2nd check
