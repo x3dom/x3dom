@@ -1031,9 +1031,32 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     };
 };
 
+var lastTimeFPSWasTaken = 0;
+var framesSinceLastTime = 0;
+
 x3dom.X3DCanvas.prototype.tick = function()
 {
     var d = new Date().getTime();
+    
+    //
+    if ((d - lastTimeFPSWasTaken) >= 1000)
+    {
+        var that = this;
+        (function(){
+        
+            var diff = d - lastTimeFPSWasTaken;
+            
+            that.x3dElem.runtime.fps = framesSinceLastTime / (diff / 1000);
+            
+            framesSinceLastTime = 0;
+        
+            lastTimeFPSWasTaken = d;
+            
+        })();
+    }    
+    ++framesSinceLastTime;
+    //
+    
     var fps = 1000.0 / (d - this.fps_t0);
 
     this.fps_t0 = d;
@@ -1058,10 +1081,10 @@ x3dom.X3DCanvas.prototype.tick = function()
 				
 				var lastAF = this.stateCanvas.states["FPS"].average.length - 1;
     			var avgFps = this.stateCanvas.states["FPS"].average[lastAF].toFixed(1);
-				this.x3dElem.runtime.fps = avgFps;
+				//this.x3dElem.runtime.fps = avgFps;
             }
             else {
-                this.x3dElem.runtime.fps = fps;
+                //this.x3dElem.runtime.fps = fps;
             }
 
             if (this.backend == 'flash') {
