@@ -3321,7 +3321,7 @@ x3dom.gfx_webgl = (function () {
                 var center = model_view.multMatrixPnt(popGeo._vf.position);
                 
                 //distance is estimated conservatively using the bounding sphere
-                var dist = Math.max(-center.z - popGeo._volDiameter, near);
+                var dist = Math.max(-center.z - popGeo._volRadius, near);
                 var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                 
                 var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
@@ -3330,7 +3330,7 @@ x3dom.gfx_webgl = (function () {
                 if (tol > 0)
                 {
                     //compute LOD using bounding sphere 
-                    var arg = (2 * popGeo._volDiameter) / (tol * projPixelLength);
+                    var arg = (2 * popGeo._volRadius) / (tol * projPixelLength);
                     // use precomputed log(2.0) = 0.693147180559945
                     // and add 1 for doubled sampling frequency...
                     currentLOD = Math.ceil(1 + Math.log(arg) / 0.693147180559945);
