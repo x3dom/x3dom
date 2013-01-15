@@ -3702,8 +3702,7 @@ x3dom.gfx_webgl = (function () {
         var scene = viewarea._scene;
         
         // method requires that scene has already been rendered at least once
-        if (gl === null || scene === null || !scene._webgl ||
-            scene.drawableObjects === undefined || !scene.drawableObjects ||
+        if (gl === null || scene === null || !scene._webgl || !scene.drawableObjects ||
             scene._vf.pickMode.toLowerCase() === "box")
         {
             return false;
@@ -4051,9 +4050,15 @@ x3dom.gfx_webgl = (function () {
         this.numDrawCalls = 0;
         
         // render traversal
-        scene.drawableObjects = null;
-        //if (scene.drawableObjects === undefined || !scene.drawableObjects)
-        //{
+        var needShapeSetup = false;
+        
+        if (!scene._vf.isStaticHierarchy)
+            scene.drawableObjects = null;
+        
+        if (!scene.drawableObjects)
+        {
+            needShapeSetup = true;
+            
             scene.drawableObjects = [];
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
@@ -4064,10 +4069,10 @@ x3dom.gfx_webgl = (function () {
             
             t1 = new Date().getTime() - t0;
             
-            if (this.canvas.parent.stateCanvas) {
+            if (this.canvas.parent.stateCanvas && !scene._vf.isStaticHierarchy) {
                 this.canvas.parent.stateCanvas.addState("TRAVERSE", t1);
             }
-        //}
+        }
         
         var mat_proj = viewarea.getProjectionMatrix();
         var mat_view = viewarea.getViewMatrix();

@@ -713,6 +713,7 @@ x3dom.registerNodeType(
             this._lastMax = null;
             
             this._shadowIdMap = null;
+            this.drawableObjects = null;    // webgl helper object
         },
         {
             /* bindable getter (e.g. getViewpoint) are added automatically */
