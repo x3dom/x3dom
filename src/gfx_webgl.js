@@ -3319,10 +3319,9 @@ x3dom.gfx_webgl = (function () {
                 var near = viewpoint.getNear();
                 
                 var center = model_view.multMatrixPnt(popGeo._vf.position);
-                var len    = popGeo._vf.size.length() / 2;   // radius
                 
                 //distance is estimated conservatively using the bounding sphere
-                var dist = Math.max(-center.z - len, near);
+                var dist = Math.max(-center.z - popGeo._volDiameter, near);
                 var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                 
                 var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
@@ -3331,7 +3330,7 @@ x3dom.gfx_webgl = (function () {
                 if (tol > 0)
                 {
                     //compute LOD using bounding sphere 
-                    var arg = (2 * len) / (tol * projPixelLength);
+                    var arg = (2 * popGeo._volDiameter) / (tol * projPixelLength);
                     // use precomputed log(2.0) = 0.693147180559945
                     // and add 1 for doubled sampling frequency...
                     currentLOD = Math.ceil(1 + Math.log(arg) / 0.693147180559945);
@@ -3368,8 +3367,8 @@ x3dom.gfx_webgl = (function () {
                 //@todo: this assumes pure TRIANGLES data
                 popGeo.adaptVertexCount(hasIndex ? popGeo._mesh._numFaces * 3 : popGeo._mesh._numCoords);
                 
-                // finally set shader variables...        
-                sp.PG_bbMin = popGeo._vf.bbMin.toGL();
+                // finally set shader variables...
+                sp.PG_bbMin = popGeo._bbMinBySize;  // floor(bbMin / size)
                 
                 sp.PG_numAnchorVertices = popGeo._vf.numAnchorVertices; 
                 

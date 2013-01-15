@@ -1674,7 +1674,12 @@ x3dom.registerNodeType(
             for (var i = 0; i < this._vf.vertexCount.length; ++i) {
                 this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
             }
-                        
+            
+            this._bbMinBySize = [ Math.floor(this._vf.bbMin.x / this._vf.size.x), 
+                                  Math.floor(this._vf.bbMin.y / this._vf.size.y), 
+                                  Math.floor(this._vf.bbMin.z / this._vf.size.z) ];
+            this._volDiameter = this._vf.size.length() / 2;
+            
             // workaround            
             this._mesh._numPosComponents  = this._vf.sphericalNormals ? 4 : 3;
             this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;

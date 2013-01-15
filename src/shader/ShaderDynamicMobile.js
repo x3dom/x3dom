@@ -232,25 +232,22 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
         
         if (properties.POPGEOMETRY) {
           //compute offset using bounding box and test if vertPosition <= PG_bbMaxModF 
-          shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF);\n";
-          shader += "offsetVec *= PG_bboxShiftVec;\n";
+          shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n";
           
           //coordinate truncation, computation of current maximum possible value      
           shader += "if (PG_vertexID >= PG_numAnchorVertices) {\n"; //currently mimics use of gl_VertexID
           shader += "   vertPosition = floor(vertPosition / PG_powPrecision) * PG_powPrecision;\n";
-          shader += "   float precisionMax = 65536.0 - PG_powPrecision;\n";
-          shader += "   vertPosition /= precisionMax;\n";
+          shader += "   vertPosition /= (65536.0 - PG_powPrecision);\n";
           shader += "}\n";
           shader += "else {\n";
           shader += "   vertPosition /= bgPrecisionMax;\n";
           shader += "}\n";
-
-          //translate coordinates
-          shader += "vertPosition += offsetVec;\n";
-          shader += "vertPosition = vertPosition * bgSize + floor(PG_bbMin / bgSize) * bgSize;\n";
+          
+          //translate coordinates, where PG_bbMin := floor(bbMin / size) 
+          shader += "vertPosition = (vertPosition + offsetVec + PG_bbMin) * bgSize;\n";
         }
 		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
-            shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
+          shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}
 	
 		//Normals
