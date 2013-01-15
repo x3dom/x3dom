@@ -3579,3 +3579,23 @@ x3dom.registerNodeType(
     )
 );
 
+
+/* ### SphereSegment ### */
+x3dom.registerNodeType(
+    "SphereSegment",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'radius', 1);
+            this.addField_MFFloat(ctx, 'longitude', []);
+            this.addField_MFFloat(ctx, 'latitude', []);
+            this.addField_SFVec2f(ctx, 'stepSize', 1, 1);
+        },
+        {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {}
+        }
+    )
+);
