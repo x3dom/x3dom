@@ -1047,7 +1047,7 @@ x3dom.X3DCanvas.prototype.tick = function()
             var diff = d - lastTimeFPSWasTaken;
             
             that.x3dElem.runtime.fps = framesSinceLastTime / (diff / 1000);
-            
+            console.log(that.x3dElem.runtime.fps);
             framesSinceLastTime = 0;
         
             lastTimeFPSWasTaken = d;

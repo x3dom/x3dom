@@ -398,6 +398,14 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             nav._vf.speed = 0.5 * nav._vf.speed;
             x3dom.debug.logInfo("Changed navigation speed to " + nav._vf.speed);
             break;
+        case  51: /* 3 (decr pg error tol) */
+            x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor += 0.5;
+            x3dom.debug.logInfo("Changed POP error tolerance to " + x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor);
+            break;
+        case  52: /* 4 (incr pg error tol) */
+            x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor -= 0.5;
+            x3dom.debug.logInfo("Changed POP error tolerance to " + x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor);
+            break;
         case  54: /* 6 (incr height) */
             nav._vf.typeParams[1] += 1.0;
             nav._heliUpdated = false;
