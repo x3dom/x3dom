@@ -245,7 +245,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
           shader += "vec3 offsetVec = step(vertPosition / bgPrecisionMax, PG_bbMaxModF) * PG_bboxShiftVec;\n";
           
           //coordinate truncation, computation of current maximum possible value      
-          shader += "if (PG_vertexID >= PG_numAnchorVertices) {\n"; //currently mimics use of gl_VertexID
+          shader += "if ((PG_precisionLevel <= 2.0) || PG_vertexID >= PG_numAnchorVertices) {\n"; //currently mimics use of gl_VertexID
           shader += "   vertPosition = floor(vertPosition / PG_powPrecision) * PG_powPrecision;\n";
           shader += "   vertPosition /= (65536.0 - PG_powPrecision);\n";
           shader += "}\n";
