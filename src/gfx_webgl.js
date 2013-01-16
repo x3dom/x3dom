@@ -3330,10 +3330,10 @@ x3dom.gfx_webgl = (function () {
                 if (tol > 0)
                 {
                     //compute LOD using bounding sphere 
-                    var arg = (2 * popGeo._volLargestRadius) / (tol * projPixelLength);
+                    var arg = (popGeo._volLargestRadius) / (tol * projPixelLength);
                     // use precomputed log(2.0) = 0.693147180559945
                     // and add 1 for doubled sampling frequency...
-                    currentLOD = Math.ceil(1 + Math.log(arg) / 0.693147180559945);
+                    currentLOD = Math.ceil(Math.log(arg) / 0.693147180559945);
                 }
                 
                 currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
