@@ -116,6 +116,39 @@
                 </button>
               </td>
             </tr>
+            <tr>
+              <td>
+               <strong id="FPS">
+    XX FPS
+    </strong>
+    
+              </td>              
+              <td>
+              <strong id="Error">
+    Error Bound: 1.0
+    </strong>
+              </td>
+            </tr>
+            <tr>
+              <td>
+                <button  onclick='document.getElementById("x3dElement").runtime.prevView();'>Prev View
+    </button>
+              </td>
+              <td>
+                <button  onclick='document.getElementById("x3dElement").runtime.nextView();'>Next View
+    </button>
+              </td>
+              </tr>
+            <tr>
+              <td>
+                 <button onclick='x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor += 2.0;document.getElementById("Error").innerHTML = "Error Bound: " + x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;'>Incr Error
+    </button>
+              </td>
+              <td>
+                <button  onclick='x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor -= 2.0;document.getElementById("Error").innerHTML = "Error Bound: " + x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;'>Decr Error
+    </button>
+              </td>
+            </tr>            
           </table>
         </fieldset>
       </div>
@@ -130,7 +163,7 @@
       <div style='clear:both;'></div>
       <br></br>
     </xml>
-    <x3d id='x3dElement' showStat='true' showLog='false' style='width:95%;height:auto;'>
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:512px;height:512px;'>
       <scene>       
         <shape DEF='SP_0'>
         <Appearance DEF="myApp">
@@ -481,6 +514,15 @@
         <!--directionalLight direction="0.0 0.7 0.7" color="0.5 1.0 0.5" intensity="1.0" shadowIntensity="0.0"-->
         <background skyColor='0.0 0.4 0.7'/>
       </scene>
-    </x3d>    
+    </x3d>
+ <script>
+        document.onload = function() {
+            document.getElementById('x3dElement').runtime.exitFrame = function() {
+                document.getElementById("FPS").innerHTML = this.getFPS().toFixed(2) + " FPS";
+                // force redraw
+                this.canvas.doc.needRender = true;
+            };
+        };
+    </script>    
   </body>
 </html>
