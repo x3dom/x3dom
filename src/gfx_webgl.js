@@ -3330,10 +3330,9 @@ x3dom.gfx_webgl = (function () {
                     var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                 
                     //compute LOD using bounding sphere 
-                    var arg = (2 * popGeo._volLargestRadius) / (tol * projPixelLength);
-                    // use precomputed log(2.0) = 0.693147180559945
-                    // and add 1 for doubled sampling frequency...
-                    currentLOD = Math.ceil(1 + Math.log(arg) / 0.693147180559945);
+                    var arg = (2*popGeo._volLargestRadius) / (tol * projPixelLength);
+                    // use precomputed log(2.0) = 0.693147180559945                    
+                    currentLOD = Math.ceil(Math.log(arg) / 0.693147180559945);
                 
                     currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
                 }
