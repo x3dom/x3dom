@@ -1627,6 +1627,7 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
             this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
             this.addField_SFVec3f (ctx, 'size',     1, 1, 1);
+            this.addField_SFVec3f (ctx, 'tightSize',  1, 1, 1);
             this.addField_SFVec3f (ctx, 'bbMinModF',  0, 0, 0);
             this.addField_SFVec3f (ctx, 'bbMaxModF',  1, 1, 1);
             this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
@@ -1678,7 +1679,8 @@ x3dom.registerNodeType(
             this._bbMinBySize = [ Math.floor(this._vf.bbMin.x / this._vf.size.x), 
                                   Math.floor(this._vf.bbMin.y / this._vf.size.y), 
                                   Math.floor(this._vf.bbMin.z / this._vf.size.z) ];
-            this._volRadius = this._vf.size.length() / 2;
+            this._volRadius        = this._vf.tightSize.length() / 2;
+            this._volLargestRadius = this._vf.size.length() / 2;
             
             // workaround            
             this._mesh._numPosComponents  = this._vf.sphericalNormals ? 4 : 3;
@@ -1883,7 +1885,7 @@ x3dom.nodeTypes.PopGeometry.numRenderedVerts     = 0;
 x3dom.nodeTypes.PopGeometry.numRenderedTris      = 0;
 x3dom.nodeTypes.PopGeometry.numTotalVerts        = 0;
 x3dom.nodeTypes.PopGeometry.numTotalTris         = 0;
-x3dom.nodeTypes.PopGeometry.numTotalTris         = 0;
+
 /** Static LUT for LOD computation */
 x3dom.nodeTypes.PopGeometry.powLUT = [32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
                                         128,   64,    32,   16,   8,    4,    2,   1 ];
