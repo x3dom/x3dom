@@ -1412,7 +1412,7 @@ x3dom.gfx_webgl = (function () {
         
         shape._webgl.currentNumIndices  = 0;
         shape._webgl.currentNumVertices = 0;
-        shape._webgl.numVerticesAtLevel = [];        
+        shape._webgl.numVerticesAtLevel = [];
         shape._webgl.levelsAvailable    = 0;
         
         shape._webgl.levelLoaded = [];        
@@ -1499,8 +1499,8 @@ x3dom.gfx_webgl = (function () {
               //@todo: this assumes pure TRIANGLES data
               popGeo._mesh._numFaces  = (popGeo.hasIndex() ? shape._webgl.currentNumIndices : shape._webgl.currentNumVertices) / 3;
               
-              x3dom.nodeTypes.PopGeometry.numTotalVerts += popGeo._mesh._numCoords;
-              x3dom.nodeTypes.PopGeometry.numTotalTris  += popGeo._mesh._numFaces;
+              //x3dom.nodeTypes.PopGeometry.numTotalVerts += popGeo._mesh._numCoords;
+              //x3dom.nodeTypes.PopGeometry.numTotalTris  += popGeo._mesh._numFaces;
               
               //here, we tell X3DOM how many vertices get rendered
               //@todo: this assumes pure TRIANGLES data

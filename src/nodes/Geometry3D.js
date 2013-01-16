@@ -1691,6 +1691,10 @@ x3dom.registerNodeType(
             this._mesh._invalidate = false;
             this._mesh._numCoords  = 0;
             this._mesh._numFaces   = 0;
+            
+            x3dom.nodeTypes.PopGeometry.numTotalVerts += this.getVertexCount();
+            x3dom.nodeTypes.PopGeometry.numTotalTris  += (this.hasIndex() ? 
+                         this.getTotalNumberOfIndices() : this.getVertexCount()) / 3;
         },
         {
             nodeChanged: function() {              
