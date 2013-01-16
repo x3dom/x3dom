@@ -1728,7 +1728,7 @@ x3dom.registerNodeType(
             },
             
             hasIndex: function() {
-              return (this._vf.indexedRendering) ? true : false;
+              return this._vf.indexedRendering;
             },
             
             getTotalNumberOfIndices: function() {                

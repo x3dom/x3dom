@@ -3312,31 +3312,30 @@ x3dom.gfx_webgl = (function () {
             (function() { 
                 var popGeo = shape._cf.geometry.node;
                 
-                //compute distance-based LOD
-                var viewpoint = scene.getViewpoint();
-                
-                var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
-                var near = viewpoint.getNear();
-                
-                var center = model_view.multMatrixPnt(popGeo._vf.position);
-                
-                //distance is estimated conservatively using the bounding sphere
-                var dist = Math.max(-center.z - popGeo._volRadius, near);
-                var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
-                
                 var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
                 var currentLOD = 16;
                 
                 if (tol > 0)
                 {
+                    //compute distance-based LOD
+                    var viewpoint = scene.getViewpoint();
+                
+                    var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
+                    var near = viewpoint.getNear();
+                
+                    var center = model_view.multMatrixPnt(popGeo._vf.position);
+                
+                    //distance is estimated conservatively using the bounding sphere
+                    var dist = Math.max(-center.z - popGeo._volRadius, near);
+                    var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
+                
                     //compute LOD using bounding sphere 
                     var arg = (popGeo._volLargestRadius) / (tol * projPixelLength);
-                    // use precomputed log(2.0) = 0.693147180559945
-                    // and add 1 for doubled sampling frequency...
+                    // use precomputed log(2.0) = 0.693147180559945                    
                     currentLOD = Math.ceil(Math.log(arg) / 0.693147180559945);
-                }
                 
-                currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
+                    currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
+                }
                 
                 //assign rendering resolution, according to currently loaded data and LOD                                                       
                 var currentLOD_min = (shape._webgl.levelsAvailable < currentLOD) ?
@@ -3344,7 +3343,7 @@ x3dom.gfx_webgl = (function () {
                 currentLOD = (currentLOD_min == popGeo.getNumLevels()) ? 16 : currentLOD_min;                
                 
                 //here, we tell X3DOM how many faces / vertices get displayed in the stats
-                var hasIndex = popGeo.hasIndex();
+                var hasIndex = popGeo._vf.indexedRendering;
                 
                 popGeo._mesh._numCoords = 0;
                 popGeo._mesh._numFaces  = 0;
@@ -3373,7 +3372,7 @@ x3dom.gfx_webgl = (function () {
                 sp.PG_numAnchorVertices = popGeo._vf.numAnchorVertices; 
                 
                 sp.PG_bbMaxModF    = popGeo._vf.bbMaxModF.toGL();          
-                sp.PG_bboxShiftVec = popGeo.getBBoxShiftVec().toGL();
+                sp.PG_bboxShiftVec = popGeo._vf.bbShiftVec.toGL();
                 
                 sp.PG_precisionLevel = currentLOD;
                 
