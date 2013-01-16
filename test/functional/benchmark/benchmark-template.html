@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <link rel='stylesheet' type='text/css' href='http://www.x3dom.org/x3dom/release/x3dom.css'></link>
+    <script type='text/javascript' src='http://www.x3dom.org/x3dom/release/x3dom.js'></script>
+  </head>
+  <body>    
+    <x3d id='x3dElement' showStat='false' showLog='false' width='512px' height='512px'>
+      <scene pickMode="box" doPickPass="false" frustumCulling="false" sortTrans="false" backend='mobile'>
+        <Inline nameSpaceName="modelpop" mapDEFToID="true" url="model-pop.x3d"></Inline>
+        <viewpoint DEF='CAM0' zNear="0.01" zFar="5000" position='0 0.14 0.25'></viewpoint>
+        <viewpoint DEF='CAM1' zNear="0.01" zFar="5000" position='0 0.14 0.65'></viewpoint>
+        <viewpoint DEF='CAM2' zNear="0.01" zFar="5000" position='0 0.14 1.2'></viewpoint>
+        <viewpoint DEF='CAM3' zNear="0.01" zFar="5000" position='0 0.14 1.8'></viewpoint>
+        <viewpoint DEF='CAM4' zNear="0.01" zFar="5000" position='0 0.14 2.5'></viewpoint>
+        <viewpoint DEF='CAM5' zNear="0.01" zFar="5000" position='0 0.14 8.0'></viewpoint>
+      </scene>      
+    </x3d>
+    <input type='button' value='Prev View' onclick='document.getElementById("x3dElement").runtime.prevView();'>
+    </input>
+    <input type='button' value='Next View' onclick='document.getElementById("x3dElement").runtime.nextView();'>
+    </input>
+    <br/>
+    <input type='button' value='Error Incr' onclick='x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor += 2.0;document.getElementById("Error").innerHTML = "Error Bound: " + x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;'>
+    </input>
+    <input type='button' value='Error Decr' onclick='x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor -= 2.0;document.getElementById("Error").innerHTML = "Error Bound: " + x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;'>
+    </input>
+    <br/>
+    <strong id="FPS">
+    XX FPS
+    </strong>
+    <br/>
+    <strong id="Error">
+    Error Bound: 1.0
+    </strong>
+    <script>
+        document.onload = function() {
+            document.getElementById('x3dElement').runtime.exitFrame = function() {
+                document.getElementById("FPS").innerHTML = this.getFPS().toFixed(2) + " FPS";
+                // force redraw
+                this.canvas.doc.needRender = true;
+            };
+        };
+    </script>
+  </body>
+</html>
