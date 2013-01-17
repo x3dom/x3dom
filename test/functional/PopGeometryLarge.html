@@ -66,194 +66,11 @@
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
-    <!-- BEGIN:DATGUI -->
-    <script type="text/javascript" src="http://dat-gui.googlecode.com/git/build/dat.gui.min.js"></script>
-    <script type="text/javascript">
-
-
-        function setLabelAndColors(oldLabel, newLabel)
-        {
-            $('span.property-name').each(function()
-            {
-                if(this.innerHTML == oldLabel)
-                {
-                    this.innerHTML = newLabel;
-                }
-            });
-
-        }
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        var ViewerDataSettings = function()
-        {
-            this.displayStatus = true;
-            this.displayConsole = false;
-
-            this.showEverything = function()
-            {
-                document.getElementById('x3dElement').runtime.showAll();
-            };
-
-            this.resetView = function ()
-            {
-                document.getElementById('x3dElement').runtime.resetView();
-            };
-        };
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        var RenderedTriangles = function()
-        {
-            this.min = 0;
-            this.max = 0;
-            this.value = 0;
-        }
-
-        PopGeoData = function()
-        {
-            this.editableColor = '#00FF00';
-            this.notEditableColor = '#FF0000';
-
-            this.renderedTriangles = new RenderedTriangles();
-            this.errorBound = 1;
-            this.minPrecBits = 16;
-            this.maxPrecBits = 0;
-            this.getPrecBitsString = function()
-            {
-                return (this.minPrecBits+ " - " + this.maxPrecBits);
-            };
-            this.precisionBitsString  = this.getPrecBitsString();
-        };
-
-
-        //--------------------------------------------------------------------------------------------------------------
-
-        //global popGeoData
-        popGeoData = new PopGeoData();
-
-        window.onload = function()
-        {
-            var viewerSettings = new ViewerDataSettings();
-            var gui = new dat.GUI(
-                    {
-                        autoPlace: false
-                    });
-
-            var guiContainer = document.getElementById('guiContainer');
-            guiContainer.appendChild(gui.domElement);
-
-            //viewerSettingsFolder
-            var viewerSettingsFolder = gui.addFolder("ViewerSettings");
-            viewerSettingsFolder.add(viewerSettings,'displayStatus')
-                    .onChange( function()
-                    {
-                        document.getElementById('x3dElement').runtime.statistics(viewerSettings.displayStatus);
-                    });
-
-            viewerSettingsFolder.add(viewerSettings,'displayConsole')
-                    .onChange(function()
-                    {
-                        var x3dElement = document.getElementById('x3dElement');
-                        x3dElement.style.height = 'auto%';
-                        x3dElement.runtime.debug();
-                    });
-
-
-            viewerSettingsFolder.add(viewerSettings,'showEverything');
-            viewerSettingsFolder.add(viewerSettings,'resetView');
-
-            //popGeoSettings
-            var popGeoSettings = gui.addFolder("LOD Settings");
-            popGeoSettings.add(popGeoData,'errorBound',0,20)                    
-                    .onChange(function()
-                    {                        
-                        document.getElementById('x3dElement').render();
-                    });
-
-            setLabelAndColors('errorBound','Error Bound',popGeoData.editableColor);
-
-
-
-            popGeoSettings.add(popGeoData.renderedTriangles,'value',popGeoData.renderedTriangles.min,popGeoData.renderedTriangles.max)
-                    .listen()
-                    .onChange(function()
-                    {
-                        document.getElementById('x3dElement').render();
-                    });
-            setLabelAndColors('value','Rendered Tris');
-
-
-            popGeoSettings.add(popGeoData,'precisionBitsString')
-                    .listen()
-                    .onChange(function()
-                    {
-                        popGeoData.precisionBitsString = popGeoData.getPrecBitsString();
-                    });
-
-           setLabelAndColors('precisionBitsString','Precision (Bits)');
-
-           popGeoSettings.open();
-        }
-
-
-    </script>
-    <!-- END:DATGUI -->
-    <!-- BEGIN:JQUERY -->
-    <link rel="stylesheet" href="http://code.jquery.com/ui/1.9.1/themes/base/jquery-ui.css" />
-    <script src="http://code.jquery.com/jquery-1.8.2.js"></script>
-    <script src="http://code.jquery.com/ui/1.9.1/jquery-ui.js"></script>
-    <script>
-
-        (function() {
-            x3dom.Runtime.prototype.enterFrame = function() {
-                //initialize progressbar's value to zero
-
-                //update the max value of the progressbar
-                var popGeos = document.getElementsByTagName("popGeometry");
-                var sum = 0;
-                for (var i = 0; i < popGeos.length; ++i) {
-                    sum += popGeos[i]._x3domNode.getVertexCount();
-                }
-
-                //@todo: this assumes pure TRIANGLES data
-                sum /= 3;
-
-                popGeoData.renderedTriangles.max = sum;
-
-                //setup error bound
-                x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = popGeoData.errorBound;
-};
-
-            x3dom.Runtime.prototype.exitFrame = function() {
-                //update the current value of the progressbar, computed during rendering
-                var popGeos = document.getElementsByTagName("popGeometry");
-                var numRenderedTris = 0;
-                popGeoData.minPrecBits = 16;
-                popGeoData.maxPrecBits = 0;
-                for (var i = 0; i < popGeos.length; ++i)
-                {
-                    numRenderedTris += popGeos[i]._x3domNode._mesh._numFaces;
-                    var lod = popGeos[i]._x3domNode._mesh.currentLOD;
-                    popGeoData.minPrecBits = lod <  popGeoData.minPrecBits ? lod : popGeoData.minPrecBits;
-                    popGeoData.maxPrecBits = lod > popGeoData.maxPrecBits ? lod : popGeoData.maxPrecBits;
-                }
-
-                popGeoData.precisionBitsString = popGeoData.getPrecBitsString();
-                popGeoData.renderedTriangles.value = numRenderedTris;
-            };
-        })();
-
-    </script>
-    <!-- END: JQUERY -->
 </head>
-<body style="padding: 0px; margin: 0px">
-<div id="3d_x3d" style="width: 100%; height: 100%">
-    <div id="gui" style="clear: both; z-index: 1; position: absolute; right:150px; ">
-        <div id="guiContainer" style=""></div>
-    </div>
-    <x3d id='x3dElement' showStat='true' showLog='false' style='width:100%;height:100%; border: 0px; '>
-        <scene pickMode='box' doPickPass='false'>
+<body style="padding: 0px; margin: 0px; border: 0px;">
+<div id="3d_x3d" style="width: 100%; height: 100%; border: 0px;">
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:100%; border: 0px;'>
+        <scene pickMode="box" doPickPass="false" frustumCulling="false" sortTrans="false">
             <transform rotation="0.0 1.0 0.0 0.7">
         <shape DEF='SP_0'>
           <appearance>
@@ -624,13 +441,30 @@
           </popGeometry>
         </shape>
         </transform>
-            <viewpoint DEF='AOPT_CAM' centerOfRotation='-0.0058789 0.124951 -0.0046034' position='-0.0158789 0.124951 0.288532'></viewpoint>
-            <!--background skyColor='0.0 0.4 0.7'/-->
-            <Background backUrl='"../../example/texture/generic/BK.png"' bottomUrl='"../../example/texture/generic/DN.png"' frontUrl='"../../example/texture/generic/FR.png"' leftUrl='"../../example/texture/generic/LF.png"' rightUrl='"../../example/texture/generic/RT.png"' topUrl='"../../example/texture/generic/UP.png"' />
-        <timeSensor></timeSensor>
+            <viewpoint DEF='AOPT_CAM' centerOfRotation='-0.0058789 0.124951 -0.0046034' position='-0.0158789 0.124951 0.288532'>
+            </viewpoint>
+            <Background backUrl='"media/texture/generic/ocean_3_back.jpg"' bottomUrl='"media/texture/generic/ocean_3_bottom.jpg"' 
+                frontUrl='"media/texture/generic/ocean_3_front.jpg"' leftUrl='"media/texture/generic/ocean_3_left.jpg"' 
+                rightUrl='"media/texture/generic/ocean_3_right.jpg"' topUrl='"media/texture/generic/ocean_3_top.jpg"'>
+            </Background>
+            <Background backUrl='"../../example/texture/generic/BK.png"' bottomUrl='"../../example/texture/generic/DN.png"' frontUrl='"../../example/texture/generic/FR.png"' leftUrl='"../../example/texture/generic/LF.png"' rightUrl='"../../example/texture/generic/RT.png"' topUrl='"../../example/texture/generic/UP.png"'>
+            </Background>
         </scene>
     </x3d>
-
 </div>
+    <script>
+       var hack = 0;
+       document.onload = function() {
+           document.getElementById('x3dElement').runtime.exitFrame = function() {
+               //document.getElementById("FPS").innerHTML = this.getFPS().toFixed(2) + " FPS";
+               // force redraw
+               //this.canvas.doc.needRender = true;
+               if (hack > 20)
+                   x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove = 16;
+               else
+                   hack++;
+           };
+       };
+   </script>
 </body>
 </html>
