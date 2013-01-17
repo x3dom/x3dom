@@ -3317,8 +3317,8 @@ x3dom.gfx_webgl = (function () {
                 
                 var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * popGeo._vf.precisionFactor;
                 
-                if (currFps <= 10 && viewarea.isMoving()) {
-                    tol *= 4;
+                if (currFps <= 1 || viewarea.isMoving()) {
+                    tol *= x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove;
                 }
                 
                 var currentLOD = 16;
