@@ -1654,6 +1654,10 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
             this.addField_SFInt32(ctx, 'colorPrecision',    1); 
 
+            this.addField_SFInt32(ctx, 'minPrecisionLevel', -1);
+            this.addField_SFInt32(ctx, 'maxPrecisionLevel', -1);
+            this.addField_SFFloat(ctx, 'precisionFactor',  1.0);
+
             //those four fields are read by the x3dom renderer            
             this.addField_SFString(ctx, 'coordType',    "Uint16");
             this.addField_SFString(ctx, 'normalType',   "Uint8");

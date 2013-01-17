@@ -3312,7 +3312,7 @@ x3dom.gfx_webgl = (function () {
             (function() { 
                 var popGeo = shape._cf.geometry.node;
                 
-                var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
+                var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * popGeo._vf.precisionFactor;
                 var currentLOD = 16;
                 
                 if (tol > 0)
@@ -3337,10 +3337,19 @@ x3dom.gfx_webgl = (function () {
                     currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
                 }
                 
+                //take care of user-controlled min and max values
+                currentLOD = (popGeo._vf.minPrecisionLevel !== -1 && currentLOD < popGeo._vf.minPrecisionLevel) ?
+                              popGeo._vf.minPrecisionLevel : currentLOD;
+                currentLOD = (popGeo._vf.maxPrecisionLevel !== -1 && currentLOD > popGeo._vf.maxPrecisionLevel) ?
+                              popGeo._vf.maxPrecisionLevel : currentLOD;
+                
                 //assign rendering resolution, according to currently loaded data and LOD                                                       
-                var currentLOD_min = (shape._webgl.levelsAvailable < currentLOD) ?
-                                      shape._webgl.levelsAvailable : currentLOD;
-                currentLOD = (currentLOD_min == popGeo.getNumLevels()) ? 16 : currentLOD_min;                
+                currentLOD = (shape._webgl.levelsAvailable < currentLOD) ?
+                              shape._webgl.levelsAvailable : currentLOD;
+                    
+                //@todo: only for demonstration purposes!!!
+                if (tol <= 1)
+                    currentLOD = (currentLOD == popGeo.getNumLevels()) ? 16 : currentLOD;                
                 
                 //here, we tell X3DOM how many faces / vertices get displayed in the stats
                 var hasIndex = popGeo._vf.indexedRendering;
@@ -3349,7 +3358,7 @@ x3dom.gfx_webgl = (function () {
                 popGeo._mesh._numFaces  = 0;
                 
                 //@todo: this assumes pure TRIANGLES data
-                for (var i = 0; i < currentLOD_min; ++i) {
+                for (var i = 0; i < currentLOD; ++i) {
                     popGeo._mesh._numCoords += shape._webgl.numVerticesAtLevel[i];
                     popGeo._mesh._numFaces  += (hasIndex ? popGeo.getNumIndicesByLevel(i) :
                                                            shape._webgl.numVerticesAtLevel[i]) / 3;
