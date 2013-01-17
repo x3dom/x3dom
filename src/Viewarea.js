@@ -46,6 +46,7 @@ x3dom.Viewarea = function (document, scene) {
     this._pressX = -1;
     this._pressY = -1;
     this._lastButton = 0;
+    this._hasTouches = false;
     
     this._numRenderedNodes = 0;
     
@@ -94,6 +95,11 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
     this._isAnimating = (needMixAnim || needNavAnim);
 
     return this._isAnimating;
+};
+
+x3dom.Viewarea.prototype.isMoving = function()
+{
+    return (this._lastButton > 0 || this._hasTouches || this._isAnimating);
 };
 
 x3dom.Viewarea.prototype.navigateTo = function(timeStamp)

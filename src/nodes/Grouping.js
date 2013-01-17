@@ -622,8 +622,8 @@ x3dom.registerNodeType(
                     return;
                 }
                 
-                var isMoving = (this._nameSpace.doc._viewarea._lastButton > 0 || 
-                                this._nameSpace.doc._viewarea._isAnimating);
+                var isMoving = this._nameSpace.doc._viewarea.isMoving();
+                
                 var ts = new Date().getTime();
                 var maxLiveTime = 10000;
                 var i, n;
@@ -702,6 +702,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
             
             // very experimental to avoid collect at each frame to update objects + trafos
+            // TODO; add onload update handler to make it work with inlines
             this.addField_SFBool(ctx, 'isStaticHierarchy', false);
             
             // If TRUE, transparent objects are sorted from back to front

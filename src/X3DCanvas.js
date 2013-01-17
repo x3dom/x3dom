@@ -18,14 +18,17 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     var that = this;
 	this.canvasIdx = canvasIdx;
 	
-    this.initContext = function(canvas, forbidMobileShaders, forceMobileShaders) {
+    this.initContext = function(canvas, forbidMobileShaders, forceMobileShaders)
+    {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
-        var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders, forceMobileShaders);
+        var gl = x3dom.gfx_webgl(canvas, forbidMobileShaders, forceMobileShaders, x3dElem);
+        
         if (!gl) {
             x3dom.debug.logError("No 3D context found...");
             this.x3dElem.removeChild(canvas);
             return null;
         }
+        
         return gl;
     };
 
@@ -779,7 +782,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 				touches.numTouches = 1;
 				touches.lastDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
-			} else if(touches.numTouches < 2 && evt.touches.length >= 2) {
+			}
+			else if(touches.numTouches < 2 && evt.touches.length >= 2) {
 			
 				touches.numTouches = 2;
             
@@ -798,6 +802,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 			// update scene bbox
 			doc._scene.updateVolume();
+			
+			doc._viewarea._hasTouches = true;
 			
 			for(var i = 0; i < evt.touches.length; i++) {
 				var pos = this.parent.mousePosition(evt.touches[i]);
@@ -913,6 +919,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			        dblClick = true;
 			    touches.numTouches = evt.touches.length;
 			}
+			
+			doc._viewarea._hasTouches = false;
 			
 			for(var i = 0; i < touches.lastLayer.length; i++) {
 				var pos = touches.lastLayer[i][1];
@@ -1049,7 +1057,7 @@ x3dom.X3DCanvas.prototype.tick = function()
             that.x3dElem.runtime.fps = framesSinceLastTime / (diff / 1000);
             
             framesSinceLastTime = 0;
-        
+            
             lastTimeFPSWasTaken = d;
             
         })();
@@ -1079,13 +1087,13 @@ x3dom.X3DCanvas.prototype.tick = function()
 				this.stateCanvas.addState("ANIM", animD);
 				this.stateCanvas.update();
 				
-				var lastAF = this.stateCanvas.states["FPS"].average.length - 1;
-    			var avgFps = this.stateCanvas.states["FPS"].average[lastAF].toFixed(1);
+				//var lastAF = this.stateCanvas.states["FPS"].average.length - 1;
+    			//var avgFps = this.stateCanvas.states["FPS"].average[lastAF].toFixed(1);
 				//this.x3dElem.runtime.fps = avgFps;
             }
-            else {
+            //else {
                 //this.x3dElem.runtime.fps = fps;
-            }
+            //}
 
             if (this.backend == 'flash') {
 				if (this.isFlashReady) {

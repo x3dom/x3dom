@@ -16,10 +16,11 @@ x3dom.gfx_webgl = (function () {
 	/*****************************************************************************
     * Context constructor
     *****************************************************************************/
-    function Context(ctx3d, canvas, name) {
+    function Context(ctx3d, canvas, name, x3dElem) {
         this.ctx3d = ctx3d;
         this.canvas = canvas;
         this.name = name;
+        this.x3dElem = x3dElem;
 		this.IG_PositionBuffer = null;
 		this.cache = new x3dom.Cache();
     }
@@ -36,7 +37,7 @@ x3dom.gfx_webgl = (function () {
 	/*****************************************************************************
     * Setup the 3D context and init some things
     *****************************************************************************/
-    function setupContext(canvas, forbidMobileShaders, forceMobileShaders) {
+    function setupContext(canvas, forbidMobileShaders, forceMobileShaders, x3dElem) {
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
         // Context creation params
@@ -52,7 +53,7 @@ x3dom.gfx_webgl = (function () {
             try {
                 ctx = canvas.getContext(validContextNames[i], ctxAttribs);
                 if (ctx) {
-                    var newCtx = new Context(ctx, canvas, 'webgl');
+                    var newCtx = new Context(ctx, canvas, 'webgl', x3dElem);
 
                     try {
 						x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " + 
@@ -1422,7 +1423,7 @@ x3dom.gfx_webgl = (function () {
         var uploadDataToGPU = function(data, lvl) {        
           //if (lvl > 4) return;
           
-          x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
+          //x3dom.debug.logInfo("PopGeometry: Received data for level " + lvl + " !\n");
           shape._webgl.levelLoaded[lvl] = true;
           
           shape._webgl.numVerticesAtLevel[lvl] = 0;
@@ -3309,10 +3310,17 @@ x3dom.gfx_webgl = (function () {
         ///////////////////////////////////////////////////////////////////////
         if (shape._webgl.popGeometry)
         {
+            var currFps = this.x3dElem.runtime.fps;
+            
             (function() { 
                 var popGeo = shape._cf.geometry.node;
                 
                 var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * popGeo._vf.precisionFactor;
+                
+                if (currFps <= 10 && viewarea.isMoving()) {
+                    tol *= 4;
+                }
+                
                 var currentLOD = 16;
                 
                 if (tol > 0)
@@ -3338,15 +3346,15 @@ x3dom.gfx_webgl = (function () {
                 }
                 
                 //take care of user-controlled min and max values
-                currentLOD = (popGeo._vf.minPrecisionLevel !== -1 && currentLOD < popGeo._vf.minPrecisionLevel) ?
+                currentLOD = (popGeo._vf.minPrecisionLevel != -1 && currentLOD < popGeo._vf.minPrecisionLevel) ?
                               popGeo._vf.minPrecisionLevel : currentLOD;
-                currentLOD = (popGeo._vf.maxPrecisionLevel !== -1 && currentLOD > popGeo._vf.maxPrecisionLevel) ?
+                currentLOD = (popGeo._vf.maxPrecisionLevel != -1 && currentLOD > popGeo._vf.maxPrecisionLevel) ?
                               popGeo._vf.maxPrecisionLevel : currentLOD;
                 
                 //assign rendering resolution, according to currently loaded data and LOD                                                       
                 currentLOD = (shape._webgl.levelsAvailable < currentLOD) ?
                               shape._webgl.levelsAvailable : currentLOD;
-                    
+                
                 //@todo: only for demonstration purposes!!!
                 if (tol <= 1)
                     currentLOD = (currentLOD == popGeo.getNumLevels()) ? 16 : currentLOD;                
