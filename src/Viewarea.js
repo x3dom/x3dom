@@ -90,11 +90,12 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
     }
 
     var needNavAnim = this.navigateTo(timeStamp);
+    var lastIsAnimating = this._isAnimating;
 
     this._lastTS = timeStamp;
     this._isAnimating = (needMixAnim || needNavAnim);
 
-    return this._isAnimating;
+    return (this._isAnimating || lastIsAnimating);
 };
 
 x3dom.Viewarea.prototype.isMoving = function()

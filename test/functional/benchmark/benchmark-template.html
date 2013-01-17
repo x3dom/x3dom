@@ -163,8 +163,8 @@
       <div style='clear:both;'></div>
       <br></br>
     </xml>
-    <x3d id='x3dElement' showStat='false' showLog='false' style='width:512px;height:512px;'>
-      <scene>       
+    <x3d id='x3dElement' showStat='false' showLog='false' width='512px' height='512px'>
+      <scene pickMode="box" doPickPass="false" frustumCulling="false" sortTrans="false">
         <shape DEF='SP_0'>
         <Appearance DEF="myApp">
           <Material diffuseColor='1 1 1'></Material>
@@ -515,7 +515,7 @@
         <background skyColor='0.0 0.4 0.7'/>
       </scene>
     </x3d>
- <script>
+    <script>
         document.onload = function() {
             document.getElementById('x3dElement').runtime.exitFrame = function() {
                 document.getElementById("FPS").innerHTML = this.getFPS().toFixed(2) + " FPS";
@@ -525,6 +525,6 @@
             
             x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove = 16;
         };
-    </script>    
+    </script>
   </body>
 </html>
