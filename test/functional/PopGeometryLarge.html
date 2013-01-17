@@ -69,7 +69,8 @@
 </head>
 <body style="padding: 0px; margin: 0px; border: 0px;">
 <div id="3d_x3d" style="width: 100%; height: 100%; border: 0px;">
-    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:100%; border: 0px;'>
+    <x3d id='x3dElement' showStat='false' showLog='false' showProgress="false" 
+        style='width:100%;height:100%; border: 0px;'>
         <scene pickMode="box" doPickPass="false" frustumCulling="false" sortTrans="false">
             <transform rotation="0.0 1.0 0.0 0.7">
         <shape DEF='SP_0'>
@@ -452,6 +453,7 @@
         </scene>
     </x3d>
 </div>
+<span id="triangles"></span>
     <script>
        var hack = 0;
        document.onload = function() {
@@ -460,11 +462,33 @@
                // force redraw
                //this.canvas.doc.needRender = true;
                if (hack > 20)
-                   x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove = 8;
+                   x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove = 2; //8;
                else
                    hack++;
+               
+               document.getElementById("triangles").innerHTML = "▲  " + 
+                            x3dom.nodeTypes.PopGeometry.numRenderedTris;
            };
        };
    </script>
+   <style>
+   #triangles {
+       position: absolute;
+       background-color: rgba(60, 60, 60, 0.4);
+       font-weight: bold;
+       font-size: 28pt;
+       top: 20px;
+       left: 20px;
+       z-index: 1;
+       color: white;
+       text-shadow: 3px 3px 3px black;
+       vertical-align: middle;
+       text-align: left;
+       min-width: 75px;
+       min-height: 35px;
+       padding: 5px;
+       display: table-cell;
+   }
+   </style>
 </body>
 </html>
