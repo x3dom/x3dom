@@ -3352,8 +3352,9 @@ x3dom.gfx_webgl = (function () {
                               popGeo._vf.maxPrecisionLevel : currentLOD;
                 
                 //assign rendering resolution, according to currently loaded data and LOD                                                       
-                currentLOD = (shape._webgl.levelsAvailable < currentLOD) ?
-                              shape._webgl.levelsAvailable : currentLOD;
+                var currentLOD_min = (shape._webgl.levelsAvailable < currentLOD) ?
+                                      shape._webgl.levelsAvailable : currentLOD;
+                currentLOD = currentLOD_min;
                 
                 //@todo: only for demonstration purposes!!!
                 if (tol <= 1)
@@ -3366,7 +3367,7 @@ x3dom.gfx_webgl = (function () {
                 popGeo._mesh._numFaces  = 0;
                 
                 //@todo: this assumes pure TRIANGLES data
-                for (var i = 0; i < currentLOD; ++i) {
+                for (var i = 0; i < currentLOD_min; ++i) {  // currentLOD breaks loop
                     popGeo._mesh._numCoords += shape._webgl.numVerticesAtLevel[i];
                     popGeo._mesh._numFaces  += (hasIndex ? popGeo.getNumIndicesByLevel(i) :
                                                            shape._webgl.numVerticesAtLevel[i]) / 3;
