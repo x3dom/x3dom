@@ -3609,7 +3609,6 @@ x3dom.registerNodeType(
             
 			var subx = longs.length, suby = lats.length;
 			
-//            
             var latNumber, longNumber;
 			var latitudeBands = suby;
 			var longitudeBands = subx;
@@ -3630,8 +3629,6 @@ x3dom.registerNodeType(
 					//phi = ((longs[longNumber]+90) * Math.PI) / -180;
 					//phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
 					phi = ((longs[longNumber]) * Math.PI) / 180;
-					
-					
 					
 					sinPhi = Math.sin(phi);
 					cosPhi = Math.cos(phi);
@@ -3675,8 +3672,6 @@ x3dom.registerNodeType(
 			this._mesh._invalidate = true;
 			this._mesh._numFaces = this._mesh._indices[0].length / 3;
 			this._mesh._numCoords = this._mesh._positions[0].length / 3;
-
-			//x3dom.geoCache[geoCacheID] = this._mesh;
         },
         {
             nodeChanged: function() {},

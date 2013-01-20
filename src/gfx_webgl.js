@@ -4378,12 +4378,16 @@ x3dom.gfx_webgl = (function () {
             else
                 nextRenderedAppearance = null;
             
+            var stateSwitchMode = STATE_SWITCH_BOTH;
+        // FIXME; even if app is the same, gl stuff could be different if geo has other properties!
+        /*
             var stateSwitchMode = STATE_SWITCH_NONE;
             
             if (prevRenderedAppearance != shapeApp)
                 stateSwitchMode += STATE_SWITCH_BIND;
             if (nextRenderedAppearance != shapeApp)
                 stateSwitchMode += STATE_SWITCH_UNBIND;
+        */
 
             // HACK; fully impl. BlendMode and DepthMode & use stateSwitchMode
             if (stateSwitchMode & STATE_SWITCH_BIND)

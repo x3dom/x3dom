@@ -30,10 +30,10 @@ x3dom.Cache.prototype.getTexture2D = function(gl, doc, url, bgnd)
 	{
 		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd);
 	} 
-	else 
+	/* else 
 	{
 		x3dom.debug.logInfo("[Cache] Using Texture from Cache");
-	}
+	}*/
 	
 	return this.textures[textureIdentifier];
 };
@@ -54,10 +54,10 @@ x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd)
 	{
 		this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd);
 	}
-	else 
+	/* else 
 	{
 		x3dom.debug.logInfo("[Cache] Using Texture from Cache");
-	}
+	}*/
 	
 	return this.textures[textureIdentifier];
 };
