@@ -189,6 +189,19 @@ def changelog():
 
 def docs():
     # TODO: call this directly with python
+    print("Generating JSDOC for Sphinx")
+    subprocess.call([
+        'java', 
+        '-jar',
+        'tools/jsdoc-toolkit/jsrun.jar',
+        'tools/jsdoc-toolkit/app/run.js',
+        'src',
+        '--template=doc/guide/_themes/jsdoc-for-sphinx',
+        '-x=js,jsx', 
+        '--directory=./doc/guide/api'
+        ])
+    
+    
     print("Generating Sphinx documentation ...")
     
     SPHINX_BUILD_DIR = os.path.join(DIST_ROOT, 'docs', 'html')
@@ -227,6 +240,8 @@ def clean():
     print("Cleaning up...")
     if os.path.exists(DIST_ROOT):
         shutil.rmtree(DIST_ROOT)
+    if os.path.exists(os.path.join(GUIDE_ROOT, 'api')):
+        shutil.rmtree(os.path.join(GUIDE_ROOT, 'api'))
     if os.path.exists("version.js"):
         os.remove("version.js")
     if os.path.exists("src/version.js"):

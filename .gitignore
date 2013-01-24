@@ -17,7 +17,11 @@ example/x3dom.css
 example/x3dom.js
 *~
 doc/guide/build
+# the api directory is created during build
+# and contains the JSDOC stuff
+doc/guide/api
 #*#
+
 
 # remove with new build system
 src/version.js
