@@ -572,12 +572,13 @@ x3dom.registerNodeType(
                 var i, t, cnt, faceCnt, posMax;
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
-                while ( positions.length % 3 > 0) {
+                // if positions array too short add degenerate triangle
+                while (positions.length % 3 > 0) {
                     positions.push(positions.length-1);
                 }
                 posMax = positions.length;
 
-                if ( positions.length > 65535)
+                if (!normPerVert || positions.length > 65535)
                 {
                     t = 0;
                     cnt = 0;
@@ -717,7 +718,7 @@ x3dom.registerNodeType(
                     }
 
                     if (!hasNormal) {
-                        this._mesh.calcNormals(Math.PI);
+                        this._mesh.calcNormals(normPerVert ? Math.PI : 0);
                     }
                     if (!hasTexCoord) {
                         this._mesh.calcTexCoords(texMode);
@@ -738,12 +739,12 @@ x3dom.registerNodeType(
 						
 						this._mesh._indices[0].push(indexes[i]);
 							
-						if(!normPerVert) {
+						if(!normPerVert && hasNormal) {
 							this._mesh._normals[0].push(normals[faceCnt].x);
 							this._mesh._normals[0].push(normals[faceCnt].y);
 							this._mesh._normals[0].push(normals[faceCnt].z);
 						}
-						if(!colPerVert) {								
+						if(!colPerVert && hasColor) {								
 							this._mesh._colors[0].push(colors[faceCnt].r);
 							this._mesh._colors[0].push(colors[faceCnt].g);
 							this._mesh._colors[0].push(colors[faceCnt].b);
@@ -754,13 +755,14 @@ x3dom.registerNodeType(
 					}
                
                     this._mesh._positions[0] = positions.toGL();
-
-                    if (hasNormal && normPerVert) {
+                    
+                    if (hasNormal) {
                         this._mesh._normals[0] = normals.toGL();
                     }
-                    else if(!hasNormal) {
-                        this._mesh.calcNormals(Math.PI);
+                    else {
+                        this._mesh.calcNormals(normPerVert ? Math.PI : 0);
                     }
+                    
                     if (hasTexCoord) {
                         this._mesh._texCoords[0] = texCoords.toGL();
                         this._mesh._numTexComponents = numTexComponents;
@@ -768,6 +770,7 @@ x3dom.registerNodeType(
                     else {
                         this._mesh.calcTexCoords(texMode);
                     }
+                    
                     if (hasColor && colPerVert) {
                         this._mesh._colors[0] = colors.toGL();
                         this._mesh._numColComponents = numColComponents;
