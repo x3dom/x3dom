@@ -190,15 +190,18 @@ def changelog():
 def docs():
     # TODO: call this directly with python
     print("Generating JSDOC for Sphinx")
+    
     subprocess.call([
         'java', 
         '-jar',
         'tools/jsdoc-toolkit/jsrun.jar',
         'tools/jsdoc-toolkit/app/run.js',
-        'src',
+        '--recurse=5',
         '--template=doc/guide/_themes/jsdoc-for-sphinx',
         '-x=js,jsx', 
-        '--directory=./doc/guide/api'
+        '--allfunctions',
+        '--directory=./doc/guide/api',
+        SRC_ROOT
         ])
     
     

@@ -11,9 +11,7 @@
  */
 
 /*
- * Namespace: x3dom
- *
- * Namepsace container for x3dom objects.
+ * @namespace Namepsace container for x3dom objects.
  */
 var x3dom = {
     canvases: []

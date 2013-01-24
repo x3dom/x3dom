@@ -11,7 +11,7 @@
  */
 
 /**
- * Cache namespace
+ * @namespace Cache namespace
  */
 x3dom.Cache = function()
 {
