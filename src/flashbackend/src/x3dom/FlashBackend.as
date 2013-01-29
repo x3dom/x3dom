@@ -324,7 +324,7 @@ package x3dom
 			//Update mouse properties
 			_mousePosX	 	= e.stageX;
 			_mousePosY  	= e.stageY;
-			_mouseButton 	= 4;
+			_mouseButton 	= 2;
 			_mouseDragging 	= true;
 			
 			//Check for special keys
@@ -344,7 +344,7 @@ package x3dom
 			//Update mouse properties
 			_mousePosX	 	= e.stageX;
 			_mousePosY  	= e.stageY;
-			_mouseButton 	= 2;
+			_mouseButton 	= 4;
 			_mouseDragging 	= true;
 			
 			//Check for special keys
