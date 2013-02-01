@@ -85,7 +85,7 @@ This conversion leads to geometry nodes that look like the one shown next:
     	color='binGeo/BG0_interleaveBinary.bin#16+24' colorType='Int16'>
     </binaryGeometry>
 
-For ``BinaryGeometry`` the available parameters are:
+For ``BinaryGeometry`` the available parameters are shown next.
 
 * i: index
 * s: trianglestrip
@@ -94,7 +94,15 @@ For ``BinaryGeometry`` the available parameters are:
 * p: normal in spherical coordinates
 * I: interleaved (use 16 bit interleaved vertex data)
 
-The most compact option for ``BinaryGeometry`` is using "sacp".
+The most compact option for ``BinaryGeometry`` is using "sacp". In the following little 
+example, first `creaseAngle` is set to a value greater Pi to avoid per face normals, then
+a suitable viewpoint is generated with the -V option, and finally binary meshes are created.
+
+.. code-block:: none
+
+    mkdir binGeo
+    aopt -i [input.foo] -f PrimitiveSet:creaseAngle:4 -V -G "binGeo/:sacp" -N [output].html
+
 
 Mesh restructuring
 ------------------
