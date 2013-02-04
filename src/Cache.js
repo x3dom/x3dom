@@ -22,13 +22,13 @@ x3dom.Cache = function()
 /**
  * Returns a Texture 2D
  */
-x3dom.Cache.prototype.getTexture2D = function(gl, doc, url, bgnd)
+x3dom.Cache.prototype.getTexture2D = function(gl, doc, url, bgnd, withCredentials)
 {
 	var textureIdentifier = url;
 	
 	if( this.textures[textureIdentifier] === undefined )
 	{
-		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd);
+		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd, withCredentials);
 	} 
 	/* else 
 	{
@@ -41,7 +41,7 @@ x3dom.Cache.prototype.getTexture2D = function(gl, doc, url, bgnd)
 /**
  * Returns a Cube Texture
  */
-x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd) 
+x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd, withCredentials) 
 {
 	var textureIdentifier = "";
 
@@ -52,7 +52,7 @@ x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd)
 	
 	if( this.textures[textureIdentifier] === undefined )
 	{
-		this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd);
+		this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd, withCredentials);
 	}
 	/* else 
 	{

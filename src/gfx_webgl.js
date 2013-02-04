@@ -2269,7 +2269,8 @@ x3dom.gfx_webgl = (function () {
 						
 				bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);
                 
-                bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url, true);
+                bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url, 
+                                                                    true, bgnd._vf.withCredentials);
             }
             else {      
                 bgnd._webgl = {
@@ -2280,7 +2281,8 @@ x3dom.gfx_webgl = (function () {
 				
 				url = bgnd._nameSpace.getURL(url[0]);
 				
-				bgnd._webgl.texture = x3dom.Utils.createTexture2D(gl, bgnd._nameSpace.doc, url, true);
+				bgnd._webgl.texture = x3dom.Utils.createTexture2D(gl, bgnd._nameSpace.doc, url, 
+				                                                    true, bgnd._vf.withCredentials);
 
                 bgnd._webgl.primType = gl.TRIANGLE_STRIP;
 

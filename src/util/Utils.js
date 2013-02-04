@@ -23,14 +23,14 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials)
 {
 	doc.downloadCount++;
 
 	var texture = gl.createTexture();
 	
 	var image = new Image();
-	image.crossOrigin = '';
+	image.crossOrigin = withCredentials ? 'use-credentials' : '';
 	image.src = src;
 	
 	image.onload = function() {
@@ -66,7 +66,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd)
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd) 
+x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials) 
 {
 	var texture = gl.createTexture();
 
@@ -92,7 +92,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd)
 	for (var i=0; i<faces.length; i++) {
 		var face = faces[i];
 		var image = new Image();
-		image.crossOrigin = '';
+		image.crossOrigin = withCredentials ? 'use-credentials' : '';
 		texture.pendingTextureLoads++;
 		doc.downloadCount++;
 		

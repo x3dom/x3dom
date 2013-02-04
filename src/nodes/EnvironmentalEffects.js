@@ -18,6 +18,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DBackgroundNode.superClass.call(this, ctx);
 
+            this.addField_SFBool(ctx, 'withCredentials', false);
+            
             this._dirty = true;
         },
         {
