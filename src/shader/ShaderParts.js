@@ -151,7 +151,7 @@ x3dom.shader.light = function(numLights) {
 					
 					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
 					"   float diffuseFactor  = lIntensity * NdotL;" +
-					"   float specularFactor = lIntensity * NdotL * pow(NdotH, shininess*128.0);\n" +
+					"   float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
 					"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
 					"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
 					"   specular += lColor * specularFactor * attentuation * spot;\n" +  
