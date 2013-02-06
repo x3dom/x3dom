@@ -4191,10 +4191,10 @@ x3dom.gfx_webgl = (function () {
 
                     zPosTransp[sortKeyProp].push([i, center.z, sortKey]);
                     sortKeyArr.push(sortKey);
-                
+
                     requireTransparencySort = true;
                     if (sortKey != 0)
-                        requireTransparencySortKeySort = true;
+                        requireTransparencySortKeySort = true; 
                 }
             } //sortTrans
             else {
@@ -4212,8 +4212,8 @@ x3dom.gfx_webgl = (function () {
             if (requireTransparencySortKeySort)
             {
                 sortKeyArr.sort(function(a, b) { return a - b; });
-            
-                sortKeyArr = (function (arr) {
+                
+                var sortKeyArrTemp = (function (arr) {
                     var a = [], l = arr.length;
                     for (var i=0; i<l; i++) {
                         for (var j=i+1; j<l; j++) {
@@ -4224,8 +4224,12 @@ x3dom.gfx_webgl = (function () {
                     }
                     return a;
                 })(sortKeyArr);
+                sortKeyArr = sortKeyArrTemp;
             }
-
+            else {
+                sortKeyArr = [0];
+            }
+            
             for (var sortKeyArrIt=0, sortKeyArrN=sortKeyArr.length; 
                      sortKeyArrIt<sortKeyArrN; ++sortKeyArrIt)
             {
