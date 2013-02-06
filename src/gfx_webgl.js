@@ -3171,6 +3171,10 @@ x3dom.gfx_webgl = (function () {
 		var mat = shape._cf.appearance.node ?
                   shape._cf.appearance.node._cf.material.node : null;
         
+
+		var shader = shape._cf.appearance.node ?
+                     shape._cf.appearance.node._shader : null;
+		
         // no state switch, but requires more fine grained comparison than only if whole App. is shared
         if (mat && (stateSwitchMode & STATE_SWITCH_BIND))
         {
@@ -3193,11 +3197,8 @@ x3dom.gfx_webgl = (function () {
 			sp.transparency		= mat._vf.transparency;
           }
         }
-        
-        //Look for user-defined shaders
-		var shader = shape._cf.appearance.node ?
-                     shape._cf.appearance.node._shader : null;
 		
+		//Look for user-defined shaders
 		if (shader && (stateSwitchMode & STATE_SWITCH_BIND)) {
 			if (x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
 				for (var fName in shader._vf) {
