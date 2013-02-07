@@ -2888,29 +2888,29 @@ x3dom.gfx_webgl = (function () {
 			{
 				sp.IG_bboxMin 			= shape._cf.geometry.node.getMin().toGL();
 				sp.IG_bboxMax			= shape._cf.geometry.node.getMax().toGL();
-				sp.IG_implicitMeshSize  = shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
+				sp.IG_implicitMeshSize  = shape._cf.geometry.node._vf.implicitMeshSize.toGL();  // FIXME
 				
-				var tex = x3dom.Utils.findTextureByName(shape._webgl.texture, "IG_coords0");
-				if(tex) {
-					sp.IG_coordTextureWidth  = tex.texture.width;
-					sp.IG_coordTextureHeight = tex.texture.height;
+				var coordTex = x3dom.Utils.findTextureByName(shape._webgl.texture, "IG_coords0");
+				if(coordTex) {
+					sp.IG_coordTextureWidth  = coordTex.texture.width;
+					sp.IG_coordTextureHeight = coordTex.texture.height;
 				}
 				
 				if(shape._webgl.imageGeometry == 1) {
-					tex = x3dom.Utils.findTextureByName(shape._webgl.texture, "IG_index");
-					if(tex) {
-						sp.IG_indexTextureWidth	 = tex.texture.width;
-						sp.IG_indexTextureHeight = tex.texture.height;
+					var indexTex = x3dom.Utils.findTextureByName(shape._webgl.texture, "IG_index");
+					if(indexTex) {
+						sp.IG_indexTextureWidth	 = indexTex.texture.width;
+						sp.IG_indexTextureHeight = indexTex.texture.height;
 					}
 					
 					gl.activeTexture(gl.TEXTURE0);
-					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1].texture);
+					gl.bindTexture(gl.TEXTURE_2D, index.texture);
 					
 					gl.activeTexture(gl.TEXTURE1);
-					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[2].texture);
+					gl.bindTexture(gl.TEXTURE_2D, coordTex.texture);
 				} else {
 					gl.activeTexture(gl.TEXTURE0);
-					gl.bindTexture(gl.TEXTURE_2D, shape._webgl.texture[1].texture);
+					gl.bindTexture(gl.TEXTURE_2D, coordTex.texture);
 				}
 				
                 gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
@@ -3136,7 +3136,7 @@ x3dom.gfx_webgl = (function () {
 		if (shape._webgl.imageGeometry != 0) {
 			sp.IG_bboxMin 			 = shape._cf.geometry.node.getMin().toGL();
 			sp.IG_bboxMax			 = shape._cf.geometry.node.getMax().toGL();
-			sp.IG_implicitMeshSize	 = shape._cf.geometry.node._vf.implicitMeshSize.x;  // FIXME
+			sp.IG_implicitMeshSize	 = shape._cf.geometry.node._vf.implicitMeshSize.toGL();  // FIXME
 			
 			tex = x3dom.Utils.findTextureByName( shape._webgl.texture, "IG_coords0" );
 			if(tex) {

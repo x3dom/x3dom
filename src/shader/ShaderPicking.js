@@ -59,7 +59,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"uniform float IG_indexTextureHeight;\n" +
 					"uniform sampler2D IG_indexTexture;\n" +
 					"uniform sampler2D IG_coordinateTexture;\n" +
-					"uniform float IG_implicitMeshSize;\n" +
+					"uniform vec2 IG_implicitMeshSize;\n" +
 					
 					"void main(void) {\n" +
 					"   if (writeShadowIDs > 0.0) {\n" +
@@ -71,12 +71,12 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"		vec2 IG_texCoord;\n" +
 					"		if(imageGeometry == 1.0) {\n" +
 					"			vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n" +
-					"			IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_indexTextureWidth), position.y*(IG_implicitMeshSize/IG_indexTextureHeight)) + halfPixel;\n" +
+					"			IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_indexTextureWidth), position.y*(IG_implicitMeshSize.y/IG_indexTextureHeight)) + halfPixel;\n" +
 					"			vec2 IG_index = texture2D( IG_indexTexture, IG_texCoord ).rg;\n" + 
 					"			IG_texCoord = IG_index * 0.996108948;\n" +
 					"		} else {\n" +
 					"			vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n" +
-					"			IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_coordTextureWidth), position.y*(IG_implicitMeshSize/IG_coordTextureHeight)) + halfPixel;\n" +
+					"			IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_coordTextureWidth), position.y*(IG_implicitMeshSize.y/IG_coordTextureHeight)) + halfPixel;\n" +
 					"		}\n" +
 					"		vec3 pos = texture2D( IG_coordinateTexture, IG_texCoord ).rgb;\n" +
 					"	 	pos = pos * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;\n" +

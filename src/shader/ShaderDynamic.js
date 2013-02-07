@@ -59,7 +59,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		shader += "uniform vec3 IG_bboxMax;\n";
 		shader += "uniform float IG_coordTextureWidth;\n";
 		shader += "uniform float IG_coordTextureHeight;\n";
-		shader += "uniform float IG_implicitMeshSize;\n";
+		shader += "uniform vec2 IG_implicitMeshSize;\n";
 		
 		for( var i = 0; i < properties.IG_PRECISION; i++ ) {
 			shader += "uniform sampler2D IG_coords" + i + "\n;";
@@ -190,13 +190,13 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		//Indices
 		if(properties.IG_INDEXED) {
 			shader += "vec2 halfPixel = vec2(0.5/IG_indexTextureWidth,0.5/IG_indexTextureHeight);\n";
-			shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_indexTextureWidth), position.y*(IG_implicitMeshSize/IG_indexTextureHeight)) + halfPixel;\n";
+			shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_indexTextureWidth), position.y*(IG_implicitMeshSize.y/IG_indexTextureHeight)) + halfPixel;\n";
 			shader += "vec2 IG_indices = texture2D( IG_index, IG_texCoord ).rg;\n";
 			shader += "halfPixel = vec2(0.5/IG_coordTextureWidth,0.5/IG_coordTextureHeight);\n";
 			shader += "IG_texCoord = (IG_indices * 0.996108948) + halfPixel;\n";
 		} else {
 			shader += "vec2 halfPixel = vec2(0.5/IG_coordTextureWidth, 0.5/IG_coordTextureHeight);\n";
-			shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize/IG_coordTextureWidth), position.y*(IG_implicitMeshSize/IG_coordTextureHeight)) + halfPixel;\n";
+			shader += "vec2 IG_texCoord = vec2(position.x*(IG_implicitMeshSize.x/IG_coordTextureWidth), position.y*(IG_implicitMeshSize.y/IG_coordTextureHeight)) + halfPixel;\n";
 		}
 		
 		//Positions
