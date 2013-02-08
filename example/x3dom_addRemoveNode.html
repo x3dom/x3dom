@@ -24,6 +24,7 @@
 				<background DEF='bgnd' transparency='0' skyColor='1 1 1' ></background>
 				<transform id="root" translation="0 0 0">
 					<shape>
+						<appearance><material></material></appearance>
 						<box ></box>
 					</shape>
 				</transform> 
@@ -47,6 +48,17 @@
         t.setAttribute("translation", x + " " + y + " " + z );
         t.setAttribute("scale", s0 + " " + s1 + " " + s2 );
         var s = document.createElement('Shape');
+		
+		// Appearance Node
+		var app = document.createElement('Appearance');
+		
+		// Material Node
+		var mat = document.createElement('Material');
+		
+		app.appendChild(mat);
+		
+		s.appendChild(app);
+		
         t.appendChild(s);
         var b = document.createElement('Box');
         s.appendChild(b);

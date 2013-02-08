@@ -74,12 +74,15 @@
 	<p>simple example which shows how to add/remove nodes using a simple DOM appendChild()/removeChild() function</p>
 	<div class="group">
     
-		<x3d id="boxes" showLog='true' showStat="true">
+		<x3d id="boxes" showLog='false' showStat="false">
 			<scene>
 				<viewpoint position='4.88104 4.59865 7.4181' orientation='-0.69017 0.723467 -0.0161809 0.735134' ></viewpoint>
 				<background DEF='bgnd' transparency='0' skyColor='1 1 1' ></background>
 				<transform id="root" translation="0 0 0">
 					<shape>
+						<appearance>
+							<material diffuseColor="0.8 0.8 0.8"></material>
+						</appearance>
 						<box></box>
 					</shape>
 				</transform> 
@@ -102,6 +105,15 @@
         t.setAttribute("translation", x + " " + y + " " + z );
         t.setAttribute("scale", s0 + " " + s1 + " " + s2 );
         var s = document.createElement('Shape');
+		
+		var app = document.createElement("Appearance");
+		var mat = document.createElement("Material");
+		
+		mat.setAttribute("diffuseColor", "0.8 0.8 0.8");
+		app.appendChild(mat);
+		s.appendChild(app);
+		
+		
         t.appendChild(s);
         var b = document.createElement('Box');
         s.appendChild(b);

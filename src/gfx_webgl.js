@@ -440,7 +440,8 @@ x3dom.gfx_webgl = (function () {
         shape.unsetDirty();
         
         if (!shape._cf.appearance.node) {
-            shape.addChild(x3dom.nodeTypes.Appearance.defaultNode());
+			//Unlit
+            //shape.addChild(x3dom.nodeTypes.Appearance.defaultNode());
         }
         
         // dynamically attach clean-up method for GL objects
@@ -3176,26 +3177,34 @@ x3dom.gfx_webgl = (function () {
                      shape._cf.appearance.node._shader : null;
 		
         // no state switch, but requires more fine grained comparison than only if whole App. is shared
-        if (mat && (stateSwitchMode & STATE_SWITCH_BIND))
+        if (stateSwitchMode & STATE_SWITCH_BIND)
         {
-          if (shape._webgl.csshader) {
-			sp.diffuseColor      = shader._vf.diffuseFactor.toGL();
-			sp.specularColor     = shader._vf.specularFactor.toGL();
-			sp.emissiveColor     = shader._vf.emissiveFactor.toGL();
-			sp.shininess         = shader._vf.shininessFactor;
-			sp.ambientIntensity	 = (shader._vf.ambientFactor.x + 
-									shader._vf.ambientFactor.y + 
-									shader._vf.ambientFactor.z) / 3;
-			sp.transparency      = 1.0 - shader._vf.alphaFactor;
-          }
-          else {
-			sp.diffuseColor		= mat._vf.diffuseColor.toGL();
-			sp.specularColor	= mat._vf.specularColor.toGL();
-			sp.emissiveColor	= mat._vf.emissiveColor.toGL();
-			sp.shininess        = mat._vf.shininess;
-			sp.ambientIntensity	= mat._vf.ambientIntensity;
-			sp.transparency		= mat._vf.transparency;
-          }
+		  if (mat || shape._webgl.csshader) {
+		    if (shape._webgl.csshader) {
+		      sp.diffuseColor      = shader._vf.diffuseFactor.toGL();
+			  sp.specularColor     = shader._vf.specularFactor.toGL();
+			  sp.emissiveColor     = shader._vf.emissiveFactor.toGL();
+			  sp.shininess         = shader._vf.shininessFactor;
+			  sp.ambientIntensity  = (shader._vf.ambientFactor.x + 
+										shader._vf.ambientFactor.y + 
+										shader._vf.ambientFactor.z) / 3;
+			  sp.transparency      = 1.0 - shader._vf.alphaFactor;
+			} else if (mat) {
+			  sp.diffuseColor		= mat._vf.diffuseColor.toGL();
+			  sp.specularColor	    = mat._vf.specularColor.toGL();
+			  sp.emissiveColor	    = mat._vf.emissiveColor.toGL();
+			  sp.shininess          = mat._vf.shininess;
+			  sp.ambientIntensity	= mat._vf.ambientIntensity;
+			  sp.transparency		= mat._vf.transparency;
+			}
+		  } else {
+			sp.diffuseColor		= [1.0, 1.0, 1.0];
+			sp.specularColor	= [0.0, 0.0, 0.0];
+			sp.emissiveColor	= [0.0, 0.0, 0.0];
+			sp.shininess        = 0.0;
+			sp.ambientIntensity	= 1.0;
+			sp.transparency		= 0.0;
+		  }
         }
 		
 		//Look for user-defined shaders
@@ -3688,19 +3697,19 @@ x3dom.gfx_webgl = (function () {
             if (shape._webgl.texture[cnt])
             {
                 tex = null;
-                if (shape._cf.appearance.node._cf.texture.node) {
+                if (shape._cf.appearance.node && shape._cf.appearance.node._cf.texture.node) {
                     tex = shape._cf.appearance.node._cf.texture.node.getTexture(cnt);
-                }
-                
-                if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
-                {
-                    gl.activeTexture(gl.TEXTURE0 + cnt);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                }
-                else if(!x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)){
-                    gl.activeTexture(gl.TEXTURE0 + cnt);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
+
+					if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) 
+					{
+						gl.activeTexture(gl.TEXTURE0 + cnt);
+						gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+					}
+					else if(!x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)){
+						gl.activeTexture(gl.TEXTURE0 + cnt);
+						gl.bindTexture(gl.TEXTURE_2D, null);
+					}
+				}
             }
           }
           if (oneShadowExistsAlready) {
@@ -4583,23 +4592,26 @@ x3dom.gfx_webgl = (function () {
                 needEnableDepthMask = false;
 
                 // HACK; fully impl. BlendMode and DepthMode
-                appearance = shape._cf.appearance.node;
-                
-                var stateSwitchMode = STATE_SWITCH_BOTH; // TODO; impl.
+				if(shape._cf.appearance.node)
+				{
+					appearance = shape._cf.appearance.node;
+					
+					var stateSwitchMode = STATE_SWITCH_BOTH; // TODO; impl.
 
-                if (appearance._cf.blendMode.node &&
-                    appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
-                    appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
-                {
-                    needEnableBlending = true;
-                    gl.disable(gl.BLEND);
-                }
-                if (appearance._cf.depthMode.node &&
-                    appearance._cf.depthMode.node._vf.readOnly === true)
-                {
-                    needEnableDepthMask = true;
-                    gl.depthMask(false);
-                }
+					if (appearance._cf.blendMode.node &&
+						appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
+						appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+					{
+						needEnableBlending = true;
+						gl.disable(gl.BLEND);
+					}
+					if (appearance._cf.depthMode.node &&
+						appearance._cf.depthMode.node._vf.readOnly === true)
+					{
+						needEnableDepthMask = true;
+						gl.depthMask(false);
+					}
+				}
 
                 this.renderShape(transform, shape, viewarea, slights, numLights, 
                                  mat_view, mat_scene, mat_light, mat_proj, gl, 
@@ -4637,23 +4649,25 @@ x3dom.gfx_webgl = (function () {
                 needEnableDepthMask = false;
 
                 // HACK; fully impl. BlendMode and DepthMode
-                appearance = shape._cf.appearance.node;
-                
-                stateSwitchMode = STATE_SWITCH_BOTH; // TODO; impl.
+				if(shape._cf.appearance.node) {
+					appearance = shape._cf.appearance.node;
+					
+					stateSwitchMode = STATE_SWITCH_BOTH; // TODO; impl.
 
-                if (appearance._cf.blendMode.node &&
-                    appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
-                    appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
-                {
-                    needEnableBlending = true;
-                    gl.disable(gl.BLEND);
-                }
-                if (appearance._cf.depthMode.node &&
-                    appearance._cf.depthMode.node._vf.readOnly === true)
-                {
-                    needEnableDepthMask = true;
-                    gl.depthMask(false);
-                }
+					if (appearance._cf.blendMode.node &&
+						appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
+						appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none")
+					{
+						needEnableBlending = true;
+						gl.disable(gl.BLEND);
+					}
+					if (appearance._cf.depthMode.node &&
+						appearance._cf.depthMode.node._vf.readOnly === true)
+					{
+						needEnableDepthMask = true;
+						gl.depthMask(false);
+					}
+				}
 
                 this.renderShape(transform, shape, viewarea, slights, numLights, 
                                  mat_view, mat_scene, mat_light, mat_proj, gl, 

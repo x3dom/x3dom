@@ -43,8 +43,11 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {
+			
+				//TODO delete this if all works fine
                 if (!this._cf.material.node) {
-                    this.addChild(x3dom.nodeTypes.Material.defaultNode());
+					//Unlit
+                    //this.addChild(x3dom.nodeTypes.Material.defaultNode());
                 }
 
                 if (this._cf.shaders.nodes.length) {
@@ -394,8 +397,10 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function () {
+				//TODO delete this if all works fine
                 if (!this._cf.appearance.node) {
-                    this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
+					//Unlit
+                    //this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
                 }
                 if (!this._cf.geometry.node) {
                     if (this._DEF)

@@ -53,7 +53,7 @@ package x3dom.shaders
 			//Build shader			
 			shader += "m44 op, va0, vc0\n";
 			
-			if( lights.length && shape.normalBuffer) {
+			if( lights.length && shape.normalBuffer && shape.material) {
 				shader += "dp3 vt0.x, va0, vc4\n";
 				shader += "dp3 vt0.y, va0, vc5\n";
 				shader += "dp3 vt0.z, va0, vc6\n";
@@ -124,7 +124,7 @@ package x3dom.shaders
 				}
 			}
 			
-			if( lights.length > 0) {
+			if( lights.length > 0 && shape.material) {
 				shader += "mov ft1, fc0\n";
 				shader += "nrm ft1.xyz, ft1\n";							//Normalize LightDir(ft1)
 				shader += "nrm ft2.xyz, v0 \n";							//Normalize Normal(ft2)

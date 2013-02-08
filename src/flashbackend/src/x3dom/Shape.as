@@ -33,7 +33,7 @@ package x3dom
 		 * Specifiying the Material used by geometry.
 		 * @default Default Material
 		 */
-		private var _material:Material = new Material();
+		private var _material:Material = null; //new Material();
 		
 		/**
 		 * Specifiying the Texture used by geometry.

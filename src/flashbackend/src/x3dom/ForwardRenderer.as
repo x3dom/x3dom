@@ -95,7 +95,7 @@ package x3dom
 					//Associate MV-Matrix
 					this._context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  4, this._mvMatrix, true );
 					
-					if(lights.length)
+					if(lights.length && shape.material != null)
 					{
 						//Associate EyePosition
 						this._context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  8, Vector.<Number>( [ -this._scene.viewMatrix.position.x, -this._scene.viewMatrix.position.y, -this._scene.viewMatrix.position.z, 1.0 ] ) );
@@ -104,9 +104,15 @@ package x3dom
 					}
 					
 					//Associate Material
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ shape.material.diffuseColor[0], shape.material.diffuseColor[1], shape.material.diffuseColor[2],1.0-shape.material.transparency ] ) );
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ shape.material.specularColor[0], shape.material.specularColor[1], shape.material.specularColor[2], shape.material.shininess*128.0 ] ) );
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ shape.material.emissiveColor[0], shape.material.emissiveColor[1], shape.material.emissiveColor[2], 1.0 ] ) );
+					if(shape.material == null) {
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ 1.0, 1.0, 1.0, 1.0] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.0 ] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ 0.0, 0.0, 0.0, 1.0 ] ) );
+					} else {
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ shape.material.diffuseColor[0], shape.material.diffuseColor[1], shape.material.diffuseColor[2],1.0-shape.material.transparency ] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ shape.material.specularColor[0], shape.material.specularColor[1], shape.material.specularColor[2], shape.material.shininess*128.0 ] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ shape.material.emissiveColor[0], shape.material.emissiveColor[1], shape.material.emissiveColor[2], 1.0 ] ) );
+					}
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.1 ] ) );
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  5, Vector.<Number>( [ 0.0, 0.5, 1.0, 2.0 ] ) );
 					
@@ -137,7 +143,7 @@ package x3dom
 						}
 						
 						//Associate normals
-						if(shape.normalBuffer && lights.length) {
+						if(shape.normalBuffer && lights.length && shape.material) {
 							_context3D.setVertexBufferAt( 2, shape.normalBuffer[j], 0, Context3DVertexBufferFormat.FLOAT_3 );
 						}
 						
