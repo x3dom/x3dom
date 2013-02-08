@@ -127,7 +127,8 @@ X3DOM currently requires the following components to be installed on your
 computer:
 
 * `Python <http://python.org>`_: The Python programming language is
-  available for all major platforms
+  available for all major platforms. The recommended version is 2.7,
+  but 2.6 works fine too.
 * `Sphinx <http://sphinx.pocoo.org/>`_: A documentation tool, you will
   need this in order to build the documentation. Sphinx is a Python
   package and can be installed by running ``easy_install sphinx``.
