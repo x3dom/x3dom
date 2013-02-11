@@ -2905,7 +2905,7 @@ x3dom.gfx_webgl = (function () {
 					}
 					
 					gl.activeTexture(gl.TEXTURE0);
-					gl.bindTexture(gl.TEXTURE_2D, index.texture);
+					gl.bindTexture(gl.TEXTURE_2D, indexTex.texture);
 					
 					gl.activeTexture(gl.TEXTURE1);
 					gl.bindTexture(gl.TEXTURE_2D, coordTex.texture);
