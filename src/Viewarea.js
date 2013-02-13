@@ -1050,9 +1050,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             this._movement = this._movement.add(vec);
 
             //TODO; move real distance along viewing plane
-            this._transMat = viewpoint.getViewMatrix().inverse().
+            this._transMat = this.getViewMatrix().inverse().
                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(viewpoint.getViewMatrix());
+                mult(this.getViewMatrix());
         }
         if (buttonState & 2) //right
         {
@@ -1077,9 +1077,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             this._movement = this._movement.add(vec);
 
             //TODO; move real distance along viewing ray
-            this._transMat = viewpoint.getViewMatrix().inverse().
+            this._transMat = this.getViewMatrix().inverse().
                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(viewpoint.getViewMatrix());
+                mult(this.getViewMatrix());
         }
     }
 
