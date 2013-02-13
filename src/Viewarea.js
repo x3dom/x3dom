@@ -1211,10 +1211,11 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
             this._movement = this._movement.add(vec);
 
+	    var mat = this.getViewpointMatrix().mult(this._transMat);
             //TODO; move real distance along viewing plane
-            this._transMat = this.getViewMatrix().inverse().
+            this._transMat = mat.inverse().
                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(this.getViewMatrix());
+                mult(mat);
         }
         if (buttonState & 2) //right
         {
@@ -1240,10 +1241,11 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
             vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
             this._movement = this._movement.add(vec);
 
+	    var mat = this.getViewpointMatrix().mult(this._transMat);
             //TODO; move real distance along viewing ray
-            this._transMat = this.getViewMatrix().inverse().
+            this._transMat = mat.inverse().
                 mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(this.getViewMatrix());
+                mult(mat);
         }
     }
 
