@@ -258,25 +258,31 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 
             return needNavAnim;
         }   // game
-        else if (navType === "helicopter")
-        {
+        else if (navType === "helicopter") {
             var typeParams = navi.getTypeParams();
 
-            if (this._lastButton & 2)
+            var humanAccelerationFunction = function(scale, diff) {
+                return ((diff < 0) ? -1 : 1 ) * Math.pow(scale * Math.abs(diff), 1.65 /*magic*/);
+            };
+
+            if (this._lastButton & 2) // up/down levelling
             {
-                var stepUp = this._deltaT * this._deltaT * navi._vf.speed;
-                stepUp *= 0.1 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+                var stepUp = this._deltaT * navi._vf.speed;	
+                stepUp *= humanAccelerationFunction(0.05, this._pressY - this._lastY);
                 typeParams[1] += stepUp;
 
                 navi.setTypeParams(typeParams);
             }
 
-            if (this._lastButton & 1) {
-                step *= 0.01 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+            if (this._lastButton & 1) {  // forward/backward motion
+                step *= humanAccelerationFunction(0.13, this._pressY - this._lastY);
             }
             else {
                 step = 0;
             }
+            
+            // humanize phi (rotation)
+            phi = humanAccelerationFunction(2.5, phi);
 
             theta = typeParams[0];
             this._from.y = typeParams[1];
