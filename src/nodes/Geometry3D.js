@@ -2582,6 +2582,13 @@ x3dom.registerNodeType(
                 this.handleAttribs();
 
                 var indexes = this._vf.coordIndex;
+                
+                if (indexes.length && indexes[indexes.length-1] != -1)
+                {
+                    indexes.push(-1);
+                    x3dom.debug.logWarning('Last index value should be -1.');
+                }
+                
                 var normalInd = this._vf.normalIndex;
                 var texCoordInd = this._vf.texCoordIndex;
                 var colorInd = this._vf.colorIndex;

@@ -4369,7 +4369,7 @@ x3dom.gfx_webgl = (function () {
         {
             var obj = scene.drawableObjects[zPos[i][0]];
             
-            if (view_frustum)
+            if (view_frustum && obj[1]._webgl)
             {
                 obj[1].getVolume(box.min, box.max, false);
                 box.transform(obj[0]);
