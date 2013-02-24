@@ -151,11 +151,11 @@ the X3D element they are working on as first parameter::
 
 ..  js:function:: getViewingRay(x,y)
 
-    :param x: World X position
-    :param y: World Y position
-    :return: Line object
+    :param x: Layer x position
+    :param y: Layer y position
+    :return: Line object, from camera origin through (x, y)
 
-    Returns the width of the canvas element.
+    Returns the viewing ray for a given (x, y) position on the canvas.
 
 
 ..  js:function:: getWidth()
