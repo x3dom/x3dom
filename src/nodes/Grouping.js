@@ -576,13 +576,17 @@ x3dom.registerNodeType(
                             {
                                 var nodeName = this._vf.invisibleNodes[j];
                                 var starInd = nodeName.lastIndexOf('*');
+                                var matchNameBegin = false;
                                 
-                                if (starInd > 0)
+                                if (starInd > 0) {
                                     nodeName = nodeName.substring(0, starInd);
+                                    matchNameBegin = true;
+                                }
                                 if (nodeName.length <= 1)
                                     continue;
                                 
-                                if (this._vf.label[i].indexOf(nodeName) >= 0) {
+                                if ((matchNameBegin && this._vf.label[i].indexOf(nodeName) == 0) ||
+                                    this._vf.label[i] == nodeName) {
                                     this._visibleList[i] = false;
                                     break;
                                 }
