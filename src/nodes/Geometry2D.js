@@ -9,12 +9,24 @@
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
+ 
+
+/* ### X3DPlanarGeometryNode ### */
+x3dom.registerNodeType(
+    "X3DPlanarGeometryNode",
+    "Geometry2D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DPlanarGeometryNode.superClass.call(this, ctx);   
+        }
+    )
+);
 
 /* ### Arc2D ### */
 x3dom.registerNodeType(
     "Arc2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Arc2D.superClass.call(this, ctx);
 
@@ -102,7 +114,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "ArcClose2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.ArcClose2D.superClass.call(this, ctx);
 
@@ -372,7 +384,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Circle2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Circle2D.superClass.call(this, ctx);
 
@@ -461,7 +473,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Disk2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Disk2D.superClass.call(this, ctx);
 
@@ -616,7 +628,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Polyline2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Polyline2D.superClass.call(this, ctx);
 
@@ -689,7 +701,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Polypoint2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Polypoint2D.superClass.call(this, ctx);
 
@@ -752,7 +764,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Rectangle2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Rectangle2D.superClass.call(this, ctx);
 			
@@ -884,7 +896,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "TriangleSet2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.TriangleSet2D.superClass.call(this, ctx);
 

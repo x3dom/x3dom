@@ -288,6 +288,15 @@ x3dom.registerNodeType(
 				}
             },
 
+            getDiameter: function() {
+				if (this._cf.geometry.node) {
+					return this._cf.geometry.node.getDiameter();
+				}
+				else {
+					return 0;
+				}
+            },
+
             doIntersect: function(line) {
                 return this._cf.geometry.node.doIntersect(line);
             },

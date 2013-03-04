@@ -36,6 +36,10 @@ x3dom.registerNodeType(
             getCenter: function() {
                 return this._mesh.getCenter();
             },
+            
+            getDiameter: function() {
+                return this._mesh.getDiameter();
+            },
 
             doIntersect: function(line) {
                 if (this._pickable) {

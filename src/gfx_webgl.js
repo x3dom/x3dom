@@ -3099,7 +3099,8 @@ x3dom.gfx_webgl = (function () {
 
         var t0 = new Date().getTime();
 
-        if (stateSwitchMode & STATE_SWITCH_BIND) {
+        //if (stateSwitchMode & STATE_SWITCH_BIND)
+        {
             sp.bind();
         }
 
@@ -3160,7 +3161,7 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         var fog = scene.getFog();
         
-        if (fog && (stateSwitchMode & STATE_SWITCH_BIND)) {
+        if (fog /*&& (stateSwitchMode & STATE_SWITCH_BIND)*/) {
 			sp.fogColor = fog._vf.color.toGL();
 			sp.fogRange = fog._vf.visibilityRange;
 			sp.fogType	= (fog._vf.fogType == "LINEAR") ? 0.0 : 1.0;
@@ -3172,12 +3173,11 @@ x3dom.gfx_webgl = (function () {
 		var mat = shape._cf.appearance.node ?
                   shape._cf.appearance.node._cf.material.node : null;
         
-
 		var shader = shape._cf.appearance.node ?
                      shape._cf.appearance.node._shader : null;
 		
         // no state switch, but requires more fine grained comparison than only if whole App. is shared
-        if (stateSwitchMode & STATE_SWITCH_BIND)
+        //if (stateSwitchMode & STATE_SWITCH_BIND)
         {
 		  if (mat || shape._webgl.csshader) {
 		    if (shape._webgl.csshader) {
@@ -3186,8 +3186,8 @@ x3dom.gfx_webgl = (function () {
 			  sp.emissiveColor     = shader._vf.emissiveFactor.toGL();
 			  sp.shininess         = shader._vf.shininessFactor;
 			  sp.ambientIntensity  = (shader._vf.ambientFactor.x + 
-										shader._vf.ambientFactor.y + 
-										shader._vf.ambientFactor.z) / 3;
+									  shader._vf.ambientFactor.y + 
+									  shader._vf.ambientFactor.z) / 3;
 			  sp.transparency      = 1.0 - shader._vf.alphaFactor;
 			} else if (mat) {
 			  sp.diffuseColor		= mat._vf.diffuseColor.toGL();
@@ -3208,7 +3208,7 @@ x3dom.gfx_webgl = (function () {
         }
 		
 		//Look for user-defined shaders
-		if (shader && (stateSwitchMode & STATE_SWITCH_BIND)) {
+		if (shader /*&& (stateSwitchMode & STATE_SWITCH_BIND)*/) {
 			if (x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
 				for (var fName in shader._vf) {
 					if (shader._vf.hasOwnProperty(fName) && fName !== 'language') {
@@ -3232,9 +3232,10 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Set Lights
         //===========================================================================
-        if (numLights > 0 && (stateSwitchMode & STATE_SWITCH_BIND))
+        if (numLights > 0 /*&& (stateSwitchMode & STATE_SWITCH_BIND)*/)
         {        
-            for(var p=0; p<numLights; p++) {
+            for (var p=0; p<numLights; p++)
+            {
                 var light_transform = mat_view.mult(slights[p].getCurrentTransform());
                 
                 if(x3dom.isa(slights[p], x3dom.nodeTypes.DirectionalLight))
@@ -3290,7 +3291,7 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         var nav = scene.getNavigationInfo();
         
-        if (nav._vf.headlight && (stateSwitchMode & STATE_SWITCH_BIND)) {
+        if (nav._vf.headlight /*&& (stateSwitchMode & STATE_SWITCH_BIND)*/) {
 			numLights = (numLights) ? numLights : 0;
 			sp['light'+numLights+'_Type']             = 0.0;
 			sp['light'+numLights+'_On']               = 1.0;
@@ -3308,13 +3309,15 @@ x3dom.gfx_webgl = (function () {
         
         // transformation matrices
         var model_view = mat_view.mult(transform);
+        var model_view_inv = model_view.inverse();
 
         sp.modelViewMatrix = model_view.toGL();
-        sp.normalMatrix = model_view.inverse().transpose().toGL();
+        sp.viewMatrix = mat_view.toGL();
+        
+        sp.normalMatrix = model_view_inv.transpose().toGL();
+        sp.modelViewMatrixInverse = model_view_inv.toGL();
         
         sp.projectionMatrix = mat_proj.toGL();
-        sp.viewMatrix = mat_view.toGL();
-        sp.modelViewMatrixInverse = model_view.inverse().toGL();
         sp.modelViewProjectionMatrix = mat_scene.mult(transform).toGL();
         
         ///////////////////////////////////////////////////////////////////////
@@ -3350,7 +3353,7 @@ x3dom.gfx_webgl = (function () {
                     var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
                 
                     //compute LOD using bounding sphere 
-                    var arg = (2*popGeo._volLargestRadius) / (tol * projPixelLength);
+                    var arg = (2 * popGeo._volLargestRadius) / (tol * projPixelLength);
                     // use precomputed log(2.0) = 0.693147180559945                    
                     currentLOD = Math.ceil(Math.log(arg) / 0.693147180559945);
                 
@@ -3414,7 +3417,7 @@ x3dom.gfx_webgl = (function () {
         //PopGeometry: adapt LOD and set shader variables - END
         ///////////////////////////////////////////////////////////////////////
 
-        if (stateSwitchMode & STATE_SWITCH_BIND)
+        //if (stateSwitchMode & STATE_SWITCH_BIND)
         {
 		  for (var cnt=0; cnt<shape._webgl.texture.length; cnt++)
 		  {
@@ -3479,7 +3482,7 @@ x3dom.gfx_webgl = (function () {
             }
         }
         
-        if (stateSwitchMode & STATE_SWITCH_BIND)
+        //if (stateSwitchMode & STATE_SWITCH_BIND)
         {
           if (shape.isSolid()) {
             gl.enable(gl.CULL_FACE);
@@ -3689,7 +3692,7 @@ x3dom.gfx_webgl = (function () {
             }
         }
 		
-		if (stateSwitchMode & STATE_SWITCH_UNBIND)
+		//if (stateSwitchMode & STATE_SWITCH_UNBIND)
 		{
           for (cnt=0; shape._webgl.texture !== undefined && 
                     cnt < shape._webgl.texture.length; cnt++)
@@ -4406,7 +4409,7 @@ x3dom.gfx_webgl = (function () {
         */
 
             // HACK; fully impl. BlendMode and DepthMode & use stateSwitchMode
-            if (stateSwitchMode & STATE_SWITCH_BIND)
+            //if (stateSwitchMode & STATE_SWITCH_BIND)
             {
                 if (shapeApp && shapeApp._cf.blendMode.node &&
                     shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
@@ -4427,7 +4430,7 @@ x3dom.gfx_webgl = (function () {
 										 mat_view, mat_scene, mat_light, mat_proj, gl,
 										 oneShadowExistsAlready, stateSwitchMode);
 
-            if (stateSwitchMode & STATE_SWITCH_UNBIND)
+            //if (stateSwitchMode & STATE_SWITCH_UNBIND)
             {
                 if (needEnableBlending) {
                     gl.enable(gl.BLEND);

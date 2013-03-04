@@ -600,7 +600,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "ColorBox",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.ColorBox.superClass.call(this, ctx);
 

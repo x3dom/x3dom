@@ -369,7 +369,8 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	if(!gl.getShaderParameter(vertexShader, gl.COMPILE_STATUS)){
 		x3dom.debug.logError("VertexShader " + gl.getShaderInfoLog(vertexShader));		
 	}
-	//x3dom.debug.logInfo(shader);
+	//x3dom.debug.logInfo("VERTEX:\n" + shader);
+	
 	return vertexShader;
 };
 
@@ -596,6 +597,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	if(!gl.getShaderParameter(fragmentShader, gl.COMPILE_STATUS)){
 		x3dom.debug.logError("FragmentShader " + gl.getShaderInfoLog(fragmentShader));		
 	}
+    //x3dom.debug.logInfo("FRAGMENT:\n" + shader);
 	
 	return fragmentShader;
 };

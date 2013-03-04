@@ -10,11 +10,23 @@
  * Philip Taylor: http://philip.html5.org
  */
 
+
+/* ### X3DSpatialGeometryNode ### */
+x3dom.registerNodeType(
+    "X3DSpatialGeometryNode",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DSpatialGeometryNode.superClass.call(this, ctx);   
+        }
+    )
+);
+
 /* ### Plane ### */
 x3dom.registerNodeType(
     "Plane",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Plane.superClass.call(this, ctx);
 
@@ -334,7 +346,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Box",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Box.superClass.call(this, ctx);
 
@@ -423,7 +435,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Sphere",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
 
@@ -649,7 +661,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Torus",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Torus.superClass.call(this, ctx);
 			this.addField_SFFloat(ctx, 'innerRadius', 0.5);
@@ -810,7 +822,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Cone",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
 
@@ -1045,7 +1057,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Cylinder",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
 
@@ -1348,11 +1360,22 @@ x3dom.registerNodeType(
 );
 
 
+/* ### X3DBinaryContainerGeometryNode ### */
+x3dom.registerNodeType(
+    "X3DBinaryContainerGeometryNode",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DBinaryContainerGeometryNode.superClass.call(this, ctx);   
+        }
+    )
+);
+
 /* ### BinaryGeometry ### */
 x3dom.registerNodeType(
     "BinaryGeometry",
-    "Rendering",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
 
@@ -1395,6 +1418,16 @@ x3dom.registerNodeType(
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
 		    this._mesh._numFaces = 0;
+		    
+		    this._min = null;
+		    this._max = null;
+		    
+		    // info helper members
+		    this._vertexCountSum = 0;
+		    for (var i=0; i<this._vf.vertexCount.length; ++i) {
+                this._vertexCountSum += this._vf.vertexCount[i];
+            }
+    		this._diameter = this._vf.size.length();
         },
         {
             nodeChanged: function()
@@ -1475,42 +1508,50 @@ x3dom.registerNodeType(
             
             getMin: function()
 			{
-			    var center, size;
+			    if (this._min == null)
+			    {
+    			    var center, size;
 			    
-				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
-                    center = this._parentNodes[0]._vf.bboxCenter;
-                    size = this._parentNodes[0]._vf.bboxSize;
-                }
-                else {
-                    center = this._vf.position;
-                    size = this._vf.size;
-                }
+    				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                        center = this._parentNodes[0]._vf.bboxCenter;
+                        size = this._parentNodes[0]._vf.bboxSize;
+                    }
+                    else {
+                        center = this._vf.position;
+                        size = this._vf.size;
+                    }
                 
-                if (size.x < 0 || size.y < 0 || size.z < 0) {
-                    return center;
-                }
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
                 
-                return center.subtract(size.multiply(0.5));
+                    this._min = center.subtract(size.multiply(0.5));
+                }
+                return this._min;
 			},
 			
 			getMax: function()
 			{
-			    var center, size;
+			    if (this._max == null)
+			    {
+    			    var center, size;
 			    
-				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
-                    center = this._parentNodes[0]._vf.bboxCenter;
-                    size = this._parentNodes[0]._vf.bboxSize;
-                }
-                else {
-                    center = this._vf.position;
-                    size = this._vf.size;
-                }
+    				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                        center = this._parentNodes[0]._vf.bboxCenter;
+                        size = this._parentNodes[0]._vf.bboxSize;
+                    }
+                    else {
+                        center = this._vf.position;
+                        size = this._vf.size;
+                    }
                 
-                if (size.x < 0 || size.y < 0 || size.z < 0) {
-                    return center;
-                }
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
                     
-                return center.add(size.multiply(0.5));
+                    this._max = center.add(size.multiply(0.5));
+                }
+                return this._max;
 			},
 			
 			getVolume: function(min, max, invalidate)
@@ -1531,6 +1572,10 @@ x3dom.registerNodeType(
                     return this._vf.position;
                 }
 			},
+			
+            getDiameter: function() {
+                return this._diameter;
+            },
 			
 			doIntersect: function(line) {
                 if (this._pickable) {
@@ -1618,8 +1663,8 @@ x3dom.registerNodeType(
 /* ### PopGeometry ### */
 x3dom.registerNodeType(
     "PopGeometry",
-    "Rendering",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
         function (ctx) {        
             x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
             
@@ -1696,6 +1741,9 @@ x3dom.registerNodeType(
             this._mesh._numCoords  = 0;
             this._mesh._numFaces   = 0;
             
+            this._min = null;
+		    this._max = null;
+            
             x3dom.nodeTypes.PopGeometry.numTotalVerts += this.getVertexCount();
             x3dom.nodeTypes.PopGeometry.numTotalTris  += (this.hasIndex() ? 
                          this.getTotalNumberOfIndices() : this.getVertexCount()) / 3;
@@ -1709,11 +1757,17 @@ x3dom.registerNodeType(
             },
             
             getMin: function() {
-              return this._vf.position.subtract( this._vf.size.multiply(0.5) );
+                if (this._min == null) {
+                    this._min = this._vf.position.subtract( this._vf.size.multiply(0.5) );
+                }
+                return this._min;
             },
             
             getMax: function() {
-              return this._vf.position.add( this._vf.size.multiply(0.5) );
+                if (this._max == null) {
+                    this._max = this._vf.position.add( this._vf.size.multiply(0.5) );
+                }
+                return this._max;
             },
             
             getBBoxShiftVec: function() {
@@ -1733,6 +1787,10 @@ x3dom.registerNodeType(
             
             getCenter: function() {
               return this._vf.position;
+            },
+			
+            getDiameter: function() {
+                return this._volLargestRadius * 2;
             },
             
             hasIndex: function() {
@@ -1978,7 +2036,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "BitLODGeometry",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
         function (ctx) {	
             x3dom.nodeTypes.BitLODGeometry.superClass.call(this, ctx);
 			
@@ -2035,6 +2093,8 @@ x3dom.registerNodeType(
             this._vf.normalPerVertex              = !this._vf.usesVLCIndices;
             this._vf.normalAsSphericalCoordinates = true;//this._vf.normalPerVertex;
 			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
+			
+			this._diameter = this._vf.size.length();
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
@@ -2124,6 +2184,10 @@ x3dom.registerNodeType(
 			{
 				return this._vf.position;
 			},
+
+            getDiameter: function() {
+                return this._diameter;
+            },
 			
 			// ATTENTION: the following accessor methods are NOT shared 
 			// by all Geometry nodes, so be careful when using them!!!
@@ -2141,7 +2205,8 @@ x3dom.registerNodeType(
 			{
 				for(var i=0; i<this.getNumComponents(); i++) {
 					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
-						if(this.getComponent(i).getAttrib(j) == "color3") return true;
+						if(this.getComponent(i).getAttrib(j) == "color3")
+						    return true;
 					}
 				}
 				return false;
@@ -2151,7 +2216,8 @@ x3dom.registerNodeType(
 			{
 				for(var i=0; i<this.getNumComponents(); i++) {
 					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
-						if(this.getComponent(i).getAttrib(j) == "texcoord2") return true;
+						if(this.getComponent(i).getAttrib(j) == "texcoord2")
+						    return true;
 					}
 				}
 				return false;
@@ -2317,7 +2383,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "ImageGeometry",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
         function (ctx) {	
             x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
 			
@@ -2369,6 +2435,7 @@ x3dom.registerNodeType(
 					x3dom.geoCache[geoCacheID] = this._mesh;
 				}
 			}
+			this._diameter = this._vf.size.length();
 
             this._dirty = {
                 coord: true,
@@ -2420,6 +2487,10 @@ x3dom.registerNodeType(
 			{
 				return this._vf.position;
 			},
+			
+            getDiameter: function() {
+                return this._diameter;
+            },
 			
 			numCoordinateTextures: function()
 			{
@@ -3601,7 +3672,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "SphereSegment",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
 

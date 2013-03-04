@@ -413,6 +413,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
             this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
             this.addField_MFString(ctx, 'invisibleNodes', []);  // allows disabling nodes with given label name (incl. prefix*)
+            this.addField_SFBool(ctx, 'internalCulling', false);    // experimental field to enable internal culling algos
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
@@ -636,22 +637,79 @@ x3dom.registerNodeType(
                 {
                     n = this.getNumRenderedObjects(this._childNodes.length, isMoving);
                     
-                    for (i=0, cnt=0; i<this._childNodes.length; i++) {
-                        if (this._childNodes[i]) {
-                            if (this._visibleList[i] && cnt < n) {
-                                this._childNodes[i].collectDrawableObjects(transform, out);
-                                this._createTime[i] = ts;
-                                cnt++;
-                            }
-                            else {
-                                if (this._createTime[i] > 0 && ts - this._createTime[i] > maxLiveTime &&
-                                    this._childNodes[i]._cleanupGLObjects && !isMoving) {
-                                    this._childNodes[i]._cleanupGLObjects(true);
-                                    this._createTime[i] = 0;
+                    // experimental
+                    var view_frustum = null;
+                    
+                    if (this._vf.internalCulling == true)
+                    {
+        		        var viewpoint = this._nameSpace.doc._viewarea._scene.getViewpoint();
+                        var near = viewpoint.getNear();
+                        
+                        var proj = this._nameSpace.doc._viewarea.getProjectionMatrix();
+                        var view = this._nameSpace.doc._viewarea.getViewMatrix();
+                        
+                        view_frustum = new x3dom.fields.FrustumVolume(proj.mult(view));
+                        
+                		var trafo = this.getCurrentTransform();
+                		var modelView = view.mult(trafo);
+                		
+                        var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
+                        imgPlaneHeightAtDistOne /= this._nameSpace.doc._viewarea._height;
+                        
+                		var box = new x3dom.fields.BoxVolume();
+        		    }
+        		    
+                    for (i=0, cnt=0; i<this._childNodes.length; i++)
+                    {
+                        var shape = this._childNodes[i];
+                        
+                        if (shape)
+                        {
+                            var needCleanup = true;
+                            
+                            if (this._visibleList[i] && cnt < n)
+                            {
+                                if (view_frustum)   // experimental
+                                {
+                                    shape.getVolume(box.min, box.max, false);
+                                    box.transform(trafo);
                                 }
+                                
+                                if (!view_frustum || view_frustum.intersect(box))
+                                {
+                                    var pxThreshold = 20, numPixel = pxThreshold;
+                                    
+                                    if (view_frustum)
+                                    {
+                                        var center = modelView.multMatrixPnt(shape.getCenter());
+                            		    var dia = shape.getDiameter();
+                            		    
+                                        var dist = Math.max(-center.z - dia / 2, near);
+                                        var projPixelLength = dist * imgPlaneHeightAtDistOne;
+                                        
+                                        numPixel = dia / projPixelLength;
+                                    }
+                                    
+                                    // collect drawables
+                                    if (numPixel > pxThreshold)
+                                    {
+                                        shape.collectDrawableObjects(transform, out);
+                                        this._createTime[i] = ts;
+                                        cnt++;
+                                        needCleanup = false;
+                                    }
+                                }
+                            }
+                            
+                            if (needCleanup && !isMoving && this._createTime[i] > 0 && 
+                                ts - this._createTime[i] > maxLiveTime && shape._cleanupGLObjects)
+                            {
+                                shape._cleanupGLObjects(true);
+                                this._createTime[i] = 0;
                             }
                         }
                     }
+                    
                     return;
                 }
 
@@ -675,9 +733,9 @@ x3dom.registerNodeType(
                     
                     for (i=0; i<this._childNodes.length; i++)
                     {
-                        if (this._childNodes[i] && !isMoving &&
-                            this._createTime[i] > 0 && ts - this._createTime[i] > maxLiveTime &&
-                            this._childNodes[i]._cleanupGLObjects) {
+                        if (this._childNodes[i] && !isMoving && this._createTime[i] > 0 && 
+                            ts - this._createTime[i] > maxLiveTime && this._childNodes[i]._cleanupGLObjects)
+                        {
                             this._childNodes[i]._cleanupGLObjects(true);
                             this._createTime[i] = 0;
                         }

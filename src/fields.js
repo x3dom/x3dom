@@ -2584,6 +2584,11 @@ x3dom.fields.BoxVolume = function(min, max)
     }
 };
 
+x3dom.fields.BoxVolume.prototype.getDiameter = function()
+{
+    return this.max.subtract(this.min).length();
+};
+
 x3dom.fields.BoxVolume.prototype.transform = function(m)
 {
     var xmin, ymin, zmin;

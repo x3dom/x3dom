@@ -118,6 +118,17 @@ x3dom.Mesh.prototype.getCenter = function()
     return center;
 };
 
+x3dom.Mesh.prototype.getDiameter = function() 
+{
+    var min = new x3dom.fields.SFVec3f(0,0,0);
+    var max = new x3dom.fields.SFVec3f(0,0,0);
+    
+    this.getBBox(min, max, true);
+    var size = max.subtract(min);
+    
+    return size.length();
+};
+
 x3dom.Mesh.prototype.doIntersect = function(line)
 {
     var min = new x3dom.fields.SFVec3f(0,0,0);

@@ -47,7 +47,7 @@ x3dom.shader.fog = function() {
 					 "   }\n" +
 					 "   f0 = clamp(f0, 0.0, 1.0);\n" +
 					 "   return f0;\n" +
-					 "}";
+					 "}\n";
 					 
 	return shaderPart;
 };
@@ -60,7 +60,7 @@ x3dom.shader.shadow = function() {
 	var shaderPart =    "uniform sampler2D sh_tex;\n" +
 						"varying vec4 projCoord;\n" +
 						"float PCF_Filter(float lShadowIntensity, vec3 projectiveBiased, float filterWidth)\n" +
-						"{" +
+						"{\n" +
 						"    float stepSize = 2.0 * filterWidth / 3.0;\n" +
 						"    float blockerCount = 0.0;\n" +
 						"    projectiveBiased.x -= filterWidth;\n" +
@@ -120,9 +120,10 @@ x3dom.shader.light = function(numLights) {
 	}
 	
 	shaderPart += 	"void lighting(in float lType, in vec3 lLocation, in vec3 lDirection, in vec3 lColor, in vec3 lAttenuation, " + 
-					" 			   in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
-					" 			   in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
-					"			   inout vec3 specular) {" +
+					"in float lRadius, in float lIntensity, in float lAmbientIntensity, in float lBeamWidth, " +
+					"in float lCutOffAngle, in vec3 N, in vec3 V, inout vec3 ambient, inout vec3 diffuse, " +
+					"inout vec3 specular)\n" +
+					"{\n" +
 					"   vec3 L;\n" +
 					"   float spot = 1.0, attentuation = 0.0;\n" +
 					"   if(lType == 0.0) {\n" +
@@ -150,7 +151,7 @@ x3dom.shader.light = function(numLights) {
 					"   float NdotH = max(0.0, dot(H, N));\n" +
 					
 					"   float ambientFactor  = lAmbientIntensity * ambientIntensity;\n" +
-					"   float diffuseFactor  = lIntensity * NdotL;" +
+					"   float diffuseFactor  = lIntensity * NdotL;\n" +
 					"   float specularFactor = lIntensity * pow(NdotH, shininess*128.0);\n" +
 					"   ambient  += lColor * ambientFactor * attentuation * spot;\n" +
 					"   diffuse  += lColor * diffuseFactor * attentuation * spot;\n" +
