@@ -463,11 +463,13 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	//States only needed for the webgl backend. flash has his own.
 	if (this.backend != "flash") {
 		this.showStat = x3dElem.getAttribute("showStat");
-		this.stateCanvas = new x3dom.States();
+
+    this.stateViewer = new x3dom.States(x3dElem);
 		if (this.showStat !== null && this.showStat == "true") {
-			this.stateCanvas.display(true);
+			this.stateViewer.display(true);
 		}
-		this.x3dElem.appendChild(this.stateCanvas.canvas);
+    
+    this.x3dElem.appendChild(this.stateViewer.viewer);
 	}
     
     this.showProgress = x3dElem.getAttribute("showProgress");
@@ -1056,6 +1058,8 @@ x3dom.X3DCanvas.prototype.tick = function()
             
             that.x3dElem.runtime.fps = framesSinceLastTime / (diff / 1000);
             
+            that.x3dElem.runtime.addMeasurement('FPS', framesSinceLastTime / (diff / 1000) );      
+            
             framesSinceLastTime = 0;
             
             lastTimeFPSWasTaken = d;
@@ -1082,25 +1086,14 @@ x3dom.X3DCanvas.prototype.tick = function()
             
             this.x3dElem.runtime.enterFrame()
 			
-            if (this.stateCanvas) {
-                this.stateCanvas.addState("FPS", fps);
-				this.stateCanvas.addState("ANIM", animD);
-				this.stateCanvas.update();
-				
-				//var lastAF = this.stateCanvas.states["FPS"].average.length - 1;
-    			//var avgFps = this.stateCanvas.states["FPS"].average[lastAF].toFixed(1);
-				//this.x3dElem.runtime.fps = avgFps;
-            }
-            //else {
-                //this.x3dElem.runtime.fps = fps;
-            //}
+            this.x3dElem.runtime.addMeasurement('ANIM', animD);
 
             if (this.backend == 'flash') {
-				if (this.isFlashReady) {
-					this.canvas.setFPS({fps: fps});
-					this.doc.needRender = false;
-					this.doc.render(this.gl);
-				}
+              if (this.isFlashReady) {
+                this.canvas.setFPS({fps: fps});
+                this.doc.needRender = false;
+                this.doc.render(this.gl);
+              }
 			}
 			else {
 			    // picking might require another pass
@@ -1111,17 +1104,12 @@ x3dom.X3DCanvas.prototype.tick = function()
             this.x3dElem.runtime.exitFrame();
 		}
 		
-        if (this.stateCanvas || this.progressDiv) {
-			if (this.stateCanvas) {
+    if (this.progressDiv) {
 				if (this.doc.downloadCount > 0) { 
-					this.stateCanvas.addInfo("#LOADS:", this.doc.downloadCount);
+					this.x3dElem.runtime.addInfo("#LOADS:", this.doc.downloadCount);
 				} else {
-					this.stateCanvas.removeInfo("#LOADS:");
+					this.x3dElem.runtime.removeInfo("#LOADS:");
 				}
-				//If states are active we need a real render loop
-				// this kills browser on Mac...
-				//this.doc.needRender = this.stateCanvas.active;
-			}
 		
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
                 if (this.progressDiv) {

@@ -37,6 +37,26 @@ x3dom.Runtime = function(doc, canvas) {
     this.isReady = false;
     
     this.fps = 0;
+      
+    this.states = { measurements: [], infos: [] };
+};
+
+x3dom.Runtime.prototype.addMeasurement = function(title, value) {
+  this.states.measurements[title] = value;
+};
+
+x3dom.Runtime.prototype.removeMeasurement = function(title) {
+  if ( this.states.measurements[title] ) {
+    delete this.states.measurements[title];
+  }
+};
+
+x3dom.Runtime.prototype.addInfo = function(title, value) {
+  this.states.infos[title] = value;
+};
+
+x3dom.Runtime.prototype.removeInfo = function(title) {
+  delete this.states.infos[title];
 };
 
 x3dom.Runtime.prototype.initialize = function(doc, canvas) {
@@ -871,21 +891,20 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
  * 		The current visibility of the statistics info (true = visible, false = invisible)
  */
 x3dom.Runtime.prototype.statistics = function(mode) {
-    var stateCanvas = this.canvas.stateCanvas;
-    if (stateCanvas) {
-        
+    var states = this.canvas.stateViewer;
+    if (states) {
         this.canvas.doc.needRender = true;
         if (mode === true) {
-            stateCanvas.display(mode);
+            states.display(mode);
             return true;
         }
         if (mode === false) {
-            stateCanvas.display(mode);
+            states.display(mode);
             return false;
         }
 
         // if no parameter is given return current status (false = not visible, true = visible)
-        return stateCanvas.active;
+        return states.active;
     }
 };
 

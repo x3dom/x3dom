@@ -103,6 +103,59 @@ x3d:hover,
     position: absolute;
 }
 
+#x3dom-state-viewer {
+  position: absolute;
+  margin: 2px;
+  padding: 5px;
+  width: 135px;
+  top: 0%;
+  right: 0%;
+  opacity: 0.9;
+  background-color: #323232;
+  z-index: 1000;
+  font-family: Arial;
+  color: #C8C8C8;
+  font-weight: bold;
+  text-transform: uppercase;
+  cursor: help;
+}
+
+.x3dom-states-head {
+  display: block;
+  font-size: 26px;
+}
+
+.x3dom-states-head2 {
+  font-size: 10px;
+}
+
+.x3dom-states-list {
+  float: left;
+  width: 100%;
+  border-top: 1px solid #C8C8C8;
+  list-style: none;
+  font-size: 9px;
+  line-height: 16px;
+  margin:0;
+  padding: 0;
+  padding-top: 2px;
+}
+
+.x3dom-states-item  {
+  width: 100%;
+  float: left;
+}
+
+.x3dom-states-item-title {
+  float: left;
+  margin-left: 2px;
+}
+
+.x3dom-states-item-value {
+  float: right;
+  margin-right: 2px;
+}
+
 .x3dom-touch-marker {
 	display: inline;
     padding: 5px;

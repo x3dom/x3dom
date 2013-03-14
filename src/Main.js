@@ -251,8 +251,8 @@ x3dom.userAgentFeature = {
                 x3dcanvas.x3dElem.appendChild(altDiv);
 
                 // remove the stats div (it's not added when WebGL doesn't work)
-                if (x3dcanvas.stateCanvas) { 
-                    x3d_element.removeChild(x3dcanvas.stateCanvas.canvas);
+                if (x3dcanvas.stateViewer) { 
+                    x3d_element.removeChild(x3dcanvas.stateViewer.viewer);
                 }
 
                 continue;

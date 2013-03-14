@@ -945,9 +945,9 @@ x3dom.gfx_webgl = (function () {
                     indexArray = null;
 
                     shape._nameSpace.doc.downloadCount -= 1;
-					shape._webgl.internalDownloadCount -= 1;
+                    shape._webgl.internalDownloadCount -= 1;
                     if(shape._webgl.internalDownloadCount == 0)
-						shape._nameSpace.doc.needRender = true;
+                      shape._nameSpace.doc.needRender = true;
 
                     var t11 = new Date().getTime() - t00;   
                     x3dom.debug.logInfo("XHR0/ index load time: " + t11 + " ms"); 
@@ -3097,8 +3097,6 @@ x3dom.gfx_webgl = (function () {
             return 0;
         }
 
-        var t0 = new Date().getTime();
-
         //if (stateSwitchMode & STATE_SWITCH_BIND)
         {
             sp.bind();
@@ -3720,8 +3718,6 @@ x3dom.gfx_webgl = (function () {
             gl.bindTexture(gl.TEXTURE_2D, null);
           }
         } // STATE_SWITCH_UNBIND
-
-		return new Date().getTime() - t0;
     };
     
 
@@ -4076,7 +4072,6 @@ x3dom.gfx_webgl = (function () {
         var bgnd = scene.getBackground();
         this.setupScene(gl, bgnd);
         
-        var t0, t1;
         this.numFaces = 0;
         this.numCoords = 0;
         this.numDrawCalls = 0;
@@ -4095,15 +4090,12 @@ x3dom.gfx_webgl = (function () {
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
             
-            t0 = new Date().getTime();
+            x3dom.Utils.startMeasure('traverse');
             
             scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
             
-            t1 = new Date().getTime() - t0;
-            
-            if (this.canvas.parent.stateCanvas && !scene._vf.isStaticHierarchy) {
-                this.canvas.parent.stateCanvas.addState("TRAVERSE", t1);
-            }
+            var traverseTime = x3dom.Utils.stopMeasure('traverse');
+            this.x3dElem.runtime.addMeasurement('TRAVERSE', traverseTime);
         }
         
         var mat_proj = viewarea.getProjectionMatrix();
@@ -4158,8 +4150,8 @@ x3dom.gfx_webgl = (function () {
         var mat_scene = mat_proj.mult(mat_view);  //viewarea.getWCtoCCMatrix();
         viewarea._last_mat_scene = mat_scene;
         
-        // sorting and stuff
-        t0 = new Date().getTime();
+        // sorting and stuff       
+        x3dom.Utils.startMeasure('sorting');
         
         // do z-sorting for transparency
         var zPos = [], sortKeyArr = [], zPosTransp = {};
@@ -4286,11 +4278,8 @@ x3dom.gfx_webgl = (function () {
             }
         }
         
-        t1 = new Date().getTime() - t0;
-		
-        if (this.canvas.parent.stateCanvas) {
-            this.canvas.parent.stateCanvas.addState("SORT", t1);
-        }
+        var sortTime = x3dom.Utils.stopMeasure('sorting');
+        this.x3dElem.runtime.addMeasurement('SORT', sortTime);
         
         //===========================================================================
         // Render Shadow Pass
@@ -4299,12 +4288,15 @@ x3dom.gfx_webgl = (function () {
         var numLights = slights.length;
         var oneShadowExistsAlready = false;
         var mat_light;
+        var hasShadow = false;
         
         for(var p=0; p<numLights; p++){
             //FIXME!!! Shadowing for only one Light
             if(slights[p]._vf.shadowIntensity > 0.0 && !oneShadowExistsAlready){
+                hasShadow = true;
                 oneShadowExistsAlready = true;
-                t0 = new Date().getTime();
+                
+                x3dom.Utils.startMeasure('shadow');
 
                 // FIXME; iterate over all lights
                 var lightMatrix = viewarea.getLightMatrix()[0];
@@ -4312,16 +4304,14 @@ x3dom.gfx_webgl = (function () {
                 
                 // TODO; handle shadows for BG, LOD and IG
                 this.renderShadowPass(gl, scene, lightMatrix, mat_light);
-                t1 = new Date().getTime() - t0;
                 
-                if (this.canvas.parent.stateCanvas) {
-                    this.canvas.parent.stateCanvas.addState("SHADOW", t1);
-                }   
-            } else {
-				if (this.canvas.parent.stateCanvas) {
-					this.canvas.parent.stateCanvas.removeState("SHADOW");
-				}
-			}
+                var shadowTime = x3dom.Utils.stopMeasure('shadow');
+                this.x3dElem.runtime.addMeasurement('SHADOW', shadowTime);  
+            } 
+        }
+        
+        if (!hasShadow) {
+          this.x3dElem.runtime.removeMeasurement('SHADOW');
         }
         
         for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
@@ -4329,7 +4319,7 @@ x3dom.gfx_webgl = (function () {
         }
         
         // rendering
-        t0 = new Date().getTime();
+        x3dom.Utils.startMeasure('render');
         
         gl.viewport(0, 0, this.canvas.width, this.canvas.height);
         
@@ -4350,8 +4340,6 @@ x3dom.gfx_webgl = (function () {
                     //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
                 );
         gl.enable(gl.BLEND);
-		
-		var drawTime = 0;
 		
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris  = 0;
@@ -4426,7 +4414,7 @@ x3dom.gfx_webgl = (function () {
                 }
             }
 
-            drawTime += this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
+            this.renderShape(obj[0], obj[1], viewarea, slights, numLights, 
 										 mat_view, mat_scene, mat_light, mat_proj, gl,
 										 oneShadowExistsAlready, stateSwitchMode);
 
@@ -4474,17 +4462,14 @@ x3dom.gfx_webgl = (function () {
         
         gl.flush();
         
-        t1 = new Date().getTime() - t0;
-		
-        if (this.canvas.parent.stateCanvas) {
-            //this.canvas.parent.stateCanvas.addState("DRAW", drawTime/zPos.length);
-            this.canvas.parent.stateCanvas.addState("DRAW", t1/zPos.length);
-            this.canvas.parent.stateCanvas.addState("RENDER", t1);
-			this.canvas.parent.stateCanvas.addInfo("#NODES:", viewarea._numRenderedNodes);
-			this.canvas.parent.stateCanvas.addInfo("#DRAWS:", this.numDrawCalls);
-			this.canvas.parent.stateCanvas.addInfo("#POINTS:", this.numCoords);
-			this.canvas.parent.stateCanvas.addInfo("#TRIS:", this.numFaces);
-        }
+        var renderTime = x3dom.Utils.stopMeasure('render');
+        
+        this.x3dElem.runtime.addMeasurement('RENDER', renderTime);
+        this.x3dElem.runtime.addMeasurement('DRAW', renderTime/zPos.length);
+        this.x3dElem.runtime.addInfo('#NODES:', viewarea._numRenderedNodes);
+        this.x3dElem.runtime.addInfo("#DRAWS:", this.numDrawCalls);
+        this.x3dElem.runtime.addInfo("#POINTS:", this.numCoords);
+        this.x3dElem.runtime.addInfo("#TRIS:", this.numFaces);
         
         //scene.drawableObjects = null;
     };

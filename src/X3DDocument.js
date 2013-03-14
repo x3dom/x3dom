@@ -379,10 +379,10 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     switch (charCode)
     {
         case  32: /* space */
-            var stateCanvas = this.canvas.parent.stateCanvas;
+            var states = this.canvas.parent.stateViewer;
 			
-			if (stateCanvas) {
-				stateCanvas.display();
+			if (states) {
+				states.display();
 			}
 
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +

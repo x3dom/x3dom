@@ -14,10 +14,32 @@
 * 
 *****************************************************************************/
 x3dom.Utils = {};
-
+x3dom.Utils.measurements = [];
 
 x3dom.Utils.isNumber = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
+};
+
+
+x3dom.Utils.startMeasure = function(name) {
+  if ( !x3dom.Utils.measurements[ name.toUpperCase() ] )
+    if ( performance.now ) {
+      x3dom.Utils.measurements[ name.toUpperCase() ] = performance.now();
+    } else {
+      x3dom.Utils.measurements[ name.toUpperCase() ] = new Date().getTime();
+    }
+};
+
+x3dom.Utils.stopMeasure = function(name) { 
+  if ( x3dom.Utils.measurements[ name.toUpperCase() ] ) {
+    var startTime = x3dom.Utils.measurements[ name.toUpperCase() ];
+    delete x3dom.Utils.measurements[ name.toUpperCase() ];
+    if ( performance.now ) {
+      return performance.now() - startTime;
+    } else {
+      return new Date().getTime() - startTime;
+    }
+  }
 };
 
 /*****************************************************************************
