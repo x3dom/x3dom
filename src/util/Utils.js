@@ -16,25 +16,38 @@
 x3dom.Utils = {};
 x3dom.Utils.measurements = [];
 
+
+// http://gent.ilcore.com/2012/06/better-timer-for-javascript.html
+window.performance = window.performance || {};
+performance.now = (function() {
+  return performance.now       ||
+         performance.mozNow    ||
+         performance.msNow     ||
+         performance.oNow      ||
+         performance.webkitNow ||
+         function() { return new Date().getTime(); };
+})();
+
 x3dom.Utils.isNumber = function(n) {
     return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
-
 x3dom.Utils.startMeasure = function(name) {
-  if ( !x3dom.Utils.measurements[ name.toUpperCase() ] )
-    if ( performance.now ) {
-      x3dom.Utils.measurements[ name.toUpperCase() ] = performance.now();
+  var uname = name.toUpperCase();
+  if ( !x3dom.Utils.measurements[uname] )
+    if ( performance && performance.now ) {
+      x3dom.Utils.measurements[uname] = performance.now();
     } else {
-      x3dom.Utils.measurements[ name.toUpperCase() ] = new Date().getTime();
+      x3dom.Utils.measurements[uname] = new Date().getTime();
     }
 };
 
 x3dom.Utils.stopMeasure = function(name) { 
-  if ( x3dom.Utils.measurements[ name.toUpperCase() ] ) {
-    var startTime = x3dom.Utils.measurements[ name.toUpperCase() ];
-    delete x3dom.Utils.measurements[ name.toUpperCase() ];
-    if ( performance.now ) {
+  var uname = name.toUpperCase();
+  if ( x3dom.Utils.measurements[uname] ) {
+    var startTime = x3dom.Utils.measurements[uname];
+    delete x3dom.Utils.measurements[uname];
+    if ( performance && performance.now ) {
       return performance.now() - startTime;
     } else {
       return new Date().getTime() - startTime;
