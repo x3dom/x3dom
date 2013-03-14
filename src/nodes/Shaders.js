@@ -380,7 +380,10 @@ x3dom.registerNodeType(
                         xhr.onload = function() {
                             that._vf.url = new x3dom.fields.MFString( [] );
                             that._vf.url.push(xhr.response);
-                        }
+                        };
+                        xhr.onerror = function() {
+                            x3dom.debug.logError("Could not load file '" + that._vf.url[0] + "'.");
+                        };
                         xhr.send(null);
                     }
                     else
