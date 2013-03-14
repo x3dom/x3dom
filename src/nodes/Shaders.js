@@ -20,6 +20,7 @@ x3dom.registerNodeType(
         }
     )
 );
+
 /* ### SurfaceShaderTexture ### */
 x3dom.registerNodeType(
     "SurfaceShaderTexture",
@@ -40,7 +41,6 @@ x3dom.registerNodeType(
         }
     )
 );
-
 
 /* ### X3DShaderNode ### */
 x3dom.registerNodeType(
@@ -126,7 +126,6 @@ x3dom.registerNodeType(
             this._dirty = {
                 // TODO; cp. Shape, allow for dynamic texture updates in gfx
             };
-
         },
         {
             nodeChanged: function()
@@ -266,18 +265,20 @@ x3dom.registerNodeType(
                 {
                     var fieldName = this._cf.fields.nodes[i]._vf.name;
                     ctx.xmlNode = this._cf.fields.nodes[i]._xmlNode;
-                    
+
+                    var funcName, func;
+
                     if (ctx.xmlNode !== undefined && ctx.xmlNode !== null) {
                         ctx.xmlNode.setAttribute(fieldName, this._cf.fields.nodes[i]._vf.value);
 
-                        var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
-                        var func = new Function('ctx', 'name', funcName);
+                        funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name);";
+                        func = new Function('ctx', 'name', funcName);
 
                         func.call(this, ctx, fieldName);
                     }
                     else {
-                        var funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name, n);";
-                        var func = new Function('ctx', 'name', 'n', funcName);
+                        funcName = "this.addField_" + this._cf.fields.nodes[i]._vf.type + "(ctx, name, n);";
+                        func = new Function('ctx', 'name', 'n', funcName);
 
                         func.call(this, null, fieldName, this._cf.fields.nodes[i]._vf.value);
                     }
@@ -371,24 +372,37 @@ x3dom.registerNodeType(
                 if (ctx.xmlNode !== undefined && ctx.xmlNode !== null) 
                 {
                     var that = this;
-                    
-                    if (that._vf.url.length) {
-                        that._vf.url = new x3dom.fields.MFString( [] );
+
+                    if (that._vf.url.length && that._vf.url[0].indexOf('\n') == -1)
+                    {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open("GET", encodeURI(that._nameSpace.getURL(that._vf.url[0])), false);
+                        xhr.onload = function() {
+                            that._vf.url = new x3dom.fields.MFString( [] );
+                            that._vf.url.push(xhr.response);
+                        }
+                        xhr.send(null);
                     }
-                    try {
-                        that._vf.url.push(ctx.xmlNode.childNodes[1].nodeValue);
-                        ctx.xmlNode.removeChild(ctx.xmlNode.childNodes[1]);
-                    }
-                    catch(e) {
-                        Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
-                            if (childDomNode.nodeType === 3) {
-                                that._vf.url.push(childDomNode.nodeValue);
-                            }
-                            else if (childDomNode.nodeType === 4) {
-                                that._vf.url.push(childDomNode.data);
-                            }
-                            childDomNode.parentNode.removeChild(childDomNode);
-                        } );
+                    else
+                    {
+                        if (that._vf.url.length) {
+                            that._vf.url = new x3dom.fields.MFString( [] );
+                        }
+                        try {
+                            that._vf.url.push(ctx.xmlNode.childNodes[1].nodeValue);
+                            ctx.xmlNode.removeChild(ctx.xmlNode.childNodes[1]);
+                        }
+                        catch(e) {
+                            Array.forEach( ctx.xmlNode.childNodes, function (childDomNode) {
+                                if (childDomNode.nodeType === 3) {
+                                    that._vf.url.push(childDomNode.nodeValue);
+                                }
+                                else if (childDomNode.nodeType === 4) {
+                                    that._vf.url.push(childDomNode.data);
+                                }
+                                childDomNode.parentNode.removeChild(childDomNode);
+                            } );
+                        }
                     }
                 }
                 // else hope that url field was already set somehow
