@@ -15,6 +15,7 @@ BASICS = [
   'util/EarClipping.js',
   'util/Utils.js',
   'util/States.js',
+  'util/BinaryContainerSetup.js',
   'X3DCanvas.js',
   'Runtime.js',
   'Main.js',
