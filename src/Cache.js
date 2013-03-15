@@ -73,37 +73,47 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
 	if( this.shaders[shaderIdentifier] === undefined )
 	{
 		//Choose shader based on identifier
-		if(shaderIdentifier == x3dom.shader.PICKING) {
-			program = new x3dom.shader.PickingShader(gl);
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);			
-		} else if(shaderIdentifier == x3dom.shader.PICKING_COLOR) {
-			program = new x3dom.shader.PickingColorShader(gl);
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.PICKING_TEXCOORD) {
-			program = new x3dom.shader.PickingTexcoordShader(gl);
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.FRONTGROUND_TEXTURE) {
-			program = new x3dom.shader.FrontgroundTextureShader(gl);
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.BACKGROUND_TEXTURE) {
-			program = new x3dom.shader.BackgroundTextureShader(gl);
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.BACKGROUND_SKYTEXTURE) {
-			program = new x3dom.shader.BackgroundSkyTextureShader(gl);
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.BACKGROUND_CUBETEXTURE) {
-			program = new x3dom.shader.BackgroundCubeTextureShader(gl);
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.SHADOW) {
-			program = new x3dom.shader.ShadowShader(gl)
-			this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.DEPTH) {
-			//program = new x3dom.shader.DepthShader(gl);
-			//this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		} else if(shaderIdentifier == x3dom.shader.NORMAL) {
-			//program = new x3dom.shader.new NormalShader(gl);
-			//this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-		}
+        switch(shaderIdentifier)
+        {
+            case x3dom.shader.PICKING:
+                program = new x3dom.shader.PickingShader(gl);
+                break;
+            case x3dom.shader.PICKING_24:
+                //program = new x3dom.shader.Picking24Shader(gl);
+                break;
+            case x3dom.shader.PICKING_COLOR:
+                program = new x3dom.shader.PickingColorShader(gl);
+                break;
+            case x3dom.shader.PICKING_TEXCOORD:
+                program = new x3dom.shader.PickingTexcoordShader(gl);
+                break;
+            case x3dom.shader.FRONTGROUND_TEXTURE:
+                program = new x3dom.shader.FrontgroundTextureShader(gl);
+                break;
+            case x3dom.shader.BACKGROUND_TEXTURE:
+                program = new x3dom.shader.BackgroundTextureShader(gl);
+                break;
+            case x3dom.shader.BACKGROUND_SKYTEXTURE:
+                program = new x3dom.shader.BackgroundSkyTextureShader(gl);
+                break;
+            case x3dom.shader.BACKGROUND_CUBETEXTURE:
+                program = new x3dom.shader.BackgroundCubeTextureShader(gl);
+                break;
+            case x3dom.shader.SHADOW:
+                program = new x3dom.shader.ShadowShader(gl);
+                break;
+            case x3dom.shader.DEPTH:
+                //program = new x3dom.shader.DepthShader(gl);
+                break;
+            case x3dom.shader.NORMAL:
+                //program = new x3dom.shader.new NormalShader(gl);
+                break;
+            default:
+                break;
+        }
+
+        if (program)
+            this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
 	}
 	
 	return this.shaders[shaderIdentifier];
@@ -116,19 +126,18 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
 {
 	//Generate Properties
 	var properties = x3dom.Utils.generateProperties(viewarea, shape);
-	
 	//x3dom.debug.logInfo(properties.toString());
 	
 	if( this.shaders[properties.toIdentifier()] === undefined )
 	{
-		if(properties.CSHADER >= 0) {
-			var program = new x3dom.shader.ComposedShader(gl, shape);
-			this.shaders[properties.toIdentifier()] =  x3dom.Utils.wrapProgram(gl, program);
+        var program;
+		if (properties.CSHADER >= 0) {
+			program = new x3dom.shader.ComposedShader(gl, shape);
 		} else {
-			var program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) : 
-																		new x3dom.shader.DynamicShader(gl, properties);
-			this.shaders[properties.toIdentifier()] = x3dom.Utils.wrapProgram(gl, program);
+			program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
+																	new x3dom.shader.DynamicShader(gl, properties);
 		}
+        this.shaders[properties.toIdentifier()] = x3dom.Utils.wrapProgram(gl, program);
 	}
 	/* else {
 		x3dom.debug.logInfo("[Cache] Using Shader from Cache");
@@ -142,11 +151,11 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
  */
 x3dom.Cache.prototype.Release = function ()
 {
-	for(var texture in this.textures) { 
+	for (var texture in this.textures) {
 		gl.deleteTexture(this.textures[texture]);
 	}
 
-	for(var shader in this.textures) { 
+	for (var shader in this.shaders) {
 		gl.deleteProgram(this.shaders[shader]);
 	}
 };
