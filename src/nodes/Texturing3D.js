@@ -1,15 +1,13 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
- 
 
 /* ### X3DTexture3DNode ### */
 x3dom.registerNodeType(
@@ -135,7 +133,7 @@ x3dom.registerNodeType(
                 this.addField_SFInt32(ctx, 'numberOfSlices', 0);
                 this.addField_SFInt32(ctx, 'slicesOverX', 0);
                 this.addField_SFInt32(ctx, 'slicesOverY', 0);
-                // Special node to represent tiles for volume rendering
+                // Special helper node to represent tiles for volume rendering
         },
         {
             nodeChanged: function() {},
@@ -143,4 +141,3 @@ x3dom.registerNodeType(
         }
     )
 );
-

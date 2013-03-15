@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -533,11 +532,13 @@ x3dom.registerNodeType(
 
             nodeChanged: function ()
             {
-                this._nameObjMap = {};
-                this._createTime = [];
-                this._visibleList = [];
+                var n = this._vf.label.length;
 
-                for (var i=0, n=this._vf.label.length; i<n; ++i)
+                this._nameObjMap = {};
+                this._createTime = new Array(n);
+                this._visibleList = new Array(n);
+
+                for (var i=0; i<n; ++i)
                 {
                     var shape = this._childNodes[i];
                     if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
@@ -755,7 +756,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
 
-            // define the experimental picking mode: box, idBuf, color, texCoord
+            // define the experimental picking mode: box, idBuf, idBuf24, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
@@ -764,7 +765,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
             
             // very experimental to avoid collect at each frame to update objects + trafos
-            // TODO; add onload update handler to make it work with inlines
+            // TODO; add onload update handler to make it work with inline nodes
             this.addField_SFBool(ctx, 'isStaticHierarchy', false);
             
             // If TRUE, transparent objects are sorted from back to front
@@ -779,7 +780,7 @@ x3dom.registerNodeType(
             this.drawableObjects = null;    // webgl helper object
         },
         {
-            /* bindable getter (e.g. getViewpoint) are added automatically */
+            /* Bindable getter (e.g. getViewpoint) are added automatically */
             
             nodeChanged: function()
             {
@@ -825,4 +826,3 @@ x3dom.registerNodeType(
         }
     )
 );
-/* ### END OF NODES ###*/

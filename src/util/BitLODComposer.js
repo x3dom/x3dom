@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -96,7 +95,7 @@ x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
 		//forward refined attribute data by invoking the initially set callback function  		
 		this.refinementCallback(event.data);
 	}
- }
+ };
  
 
  x3dom.BitLODComposer.prototype.run = function(numAttributeComponents, numAttributeBitsPerComponent,
@@ -175,4 +174,4 @@ x3dom.BitLODComposer.prototype.messageFromWorker = function(event) {
  x3dom.BitLODComposer.prototype.refinementDataLoaded = function(arrayBuffer, l) {  
   this.worker.postMessage({buffer : arrayBuffer, level : l},
                           [arrayBuffer]);
- }
+ };

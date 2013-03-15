@@ -1,14 +1,14 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
+
 
 /**
  * Class: x3dom.runtime
@@ -28,7 +28,7 @@
  */
 x3dom.runtime = {};
 
-
+/** c'tor */
 x3dom.Runtime = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
@@ -149,12 +149,12 @@ x3dom.Runtime.prototype.exitFrame = function() {
  * For example:
  *
  *   > var element, bindable;
- *   > element = doucment.getElementById('the_x3delement');
+ *   > element = document.getElementById('the_x3delement');
  *   > bindable = element.runtime.getActiveBindable('background');
  *   > bindable.setAttribute('bind', 'false');
  *
  * Parameters:
- * 		typeName - bindable type name
+ * 		typeName - Bindable type name
  *
  * Returns:
  * 		The active DOM element
@@ -170,7 +170,7 @@ x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
     type = x3dom.nodeTypesLC[typeName.toLowerCase()];
 
     if (!type) {
-        x3dom.debug.logError('No node of type "' + typeName + '" found');
+        x3dom.debug.logError('No node of type "' + typeName + '" found.');
         return null;
     }
 
@@ -424,7 +424,6 @@ x3dom.Runtime.prototype.getScreenshot = function() {
 			ctx.translate(0, -canvas.height);
 
 			url = canvas2d.toDataURL();
-			//url = canvas.toDataURL();
 		}
 	}
 	
@@ -479,7 +478,7 @@ x3dom.Runtime.prototype.lightView = function() {
                                             this.canvas.doc._scene.getViewpoint());
         return true;
     } else {
-        x3dom.debug.logInfo("No lights to navigate to");
+        x3dom.debug.logInfo("No lights to navigate to.");
         return false;
     }
 };
@@ -630,7 +629,7 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
  *    domNode: the node for which its transformation shall be returned
  *
  *  Returns:
- *    The min and max positions of the scene's bbox.
+ *    The min and max positions of the scene's bounding box.
  */
 x3dom.Runtime.prototype.getSceneBBox = function() {
     var scene = this.canvas.doc._scene;
@@ -798,7 +797,7 @@ x3dom.Runtime.prototype.pickRect = function(x1, y1, x2, y2) {
 /**
  * Function: pickMode
  *
- * Get the current pickmode intersect type
+ * Get the current pickMode intersect type
  *
  * Parameters:
  *		internal - true/false. If given return the internal representation.
@@ -818,26 +817,29 @@ x3dom.Runtime.prototype.pickMode = function(options) {
 /**
  * Function: changePickMode
  *
- * Alter the value of intersct type. Can be one of: idbuf, color, textcoord, box.
+ * Alter the value of intersect type. Can be one of: idBuf, idBuf24, color, texCoord, box.
  * Other values are ignored.
  *
  * Parameters:
- *		type - The new intersect type: idbuf, color, textcoord, or box.
+ *		type - The new intersect type: idBuf, idBuf24, color, texCoord, or box.
  *
  * Returns:
- * 		true if the type hase been changed, false otherwise
+ * 		true if the type has been changed, false otherwise
  */
 x3dom.Runtime.prototype.changePickMode = function(type, options) {
 
-    // type one of : idbuf, color, textcoord, box
+    // type one of : idbuf, color, texcoord, box
     type = type.toLowerCase();
 
     switch(type) {
         case 'idbuf':
             type = 'idBuf';
             break;
-        case 'textcoord':
-            type = 'textCoord';
+        case 'idbuf24':
+            type = 'idBuf24';
+            break;
+        case 'texcoord':
+            type = 'texCoord';
             break;
         case 'color':
             type = 'color';
@@ -938,10 +940,12 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
     }
 };
 
+/** Get properties */
 x3dom.Runtime.prototype.properties = function() {
     return this.canvas.doc.properties;
 };
 
+/** Get current backend name */
 x3dom.Runtime.prototype.backendName = function() {
     return this.canvas.backend;
 };

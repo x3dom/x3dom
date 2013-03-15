@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -83,4 +82,3 @@ x3dom.shader.BackgroundSkyTextureShader.prototype.generateFragmentShader = funct
 	
 	return fragmentShader;
 };
-

@@ -1,16 +1,15 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
 
-// NodeNameSpace constructor
+/// NodeNameSpace constructor
 x3dom.NodeNameSpace = function (name, document) {
     this.name = name;
     this.doc = document;
@@ -87,23 +86,6 @@ x3dom.setElementAttribute = function(attrName, newVal)
 
     this._x3domNode.updateField(attrName, newVal);
     this._x3domNode._nameSpace.doc.needRender = true;
-
-    /* construct and fire an event
-    if (newVal != prevVal) {
-        var evt = document.createEvent("MutationEvent");
-        evt.initMutationEvent(
-              "DOMAttrModified",
-              true,
-              false,
-              this,
-              prevVal || "",
-              newVal || "",
-              attrName,
-              (prevVal == null) ? evt.ADDITION : evt.MODIFICATION
-        );
-        this.dispatchEvent(evt);
-     }
-    */
 };
 
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
@@ -249,4 +231,3 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 
     return n;
 };
-

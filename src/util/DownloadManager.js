@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -21,7 +20,7 @@
  * 
  */
 
-//a small Request class
+/// a small Request class
 var Request = function(url, onloadCallback, priority){
 	this.url 	  		     = url;	
 	this.priority 		   = priority;
@@ -264,6 +263,5 @@ get : function(urls, onloadCallbacks, priorities) {
     this.tryNextDownload();    
   }
 }
-	
 	
 };

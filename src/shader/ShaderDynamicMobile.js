@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -78,10 +77,10 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 	
     //PG stuff
     if (properties.POPGEOMETRY) {
-        shader += "uniform float PG_precisionLevel;\n"
-        shader += "uniform float PG_powPrecision;\n"
+        shader += "uniform float PG_precisionLevel;\n";
+        shader += "uniform float PG_powPrecision;\n";
         shader += "uniform vec3 PG_bbMin;\n";
-        shader += "uniform vec3 PG_bbMaxModF;\n"
+        shader += "uniform vec3 PG_bbMaxModF;\n";
         shader += "uniform vec3 PG_bboxShiftVec;\n";
         shader += "uniform float PG_numAnchorVertices;\n";
         shader += "attribute float PG_vertexID;\n";
@@ -357,7 +356,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			// LOD LUT HACK ###
 			if (properties.POPGEOMETRY && x3dom.debug.usePrecisionLevelAsTexCoord === true)
 			    // remap texCoords to texel middle with w = 16 and tc' := 1 / (2 * w) + tc * (w - 1) / w
-                shader += "fragTexcoord = vec2(0.03125 + 0.9375 * (PG_precisionLevel / 16.0), 1.0);"
+                shader += "fragTexcoord = vec2(0.03125 + 0.9375 * (PG_precisionLevel / 16.0), 1.0);";
 			// LOD LUT HACK ###
 		}
 	}
@@ -483,8 +482,8 @@ x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl,
 		if(properties.CUBEMAP) {
 			shader += "vec3 normal = normalize(fragNormal);\n";
 			shader += "vec3 viewDir = normalize(fragViewDir);\n";
-			shader += "vec3 reflected = reflect(viewDir, normal);\n"
-			shader += "reflected = (modelViewMatrixInverse * vec4(reflected,0.0)).xyz;\n"
+			shader += "vec3 reflected = reflect(viewDir, normal);\n";
+			shader += "reflected = (modelViewMatrixInverse * vec4(reflected,0.0)).xyz;\n";
 			shader += "vec4 texColor = textureCube(cubeMap, reflected);\n";
 		} else {
 			shader += "vec4 texColor = texture2D(diffuseMap, vec2(fragTexcoord.s, 1.0-fragTexcoord.t));\n";

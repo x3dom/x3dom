@@ -1,5 +1,17 @@
-URL = (typeof URL       !== 'undefined') ? URL : 
-          (typeof webkitURL !== 'undefined') ? webkitURL : undefined;
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
+
+
+URL = (typeof URL       !== 'undefined') ? URL :
+      (typeof webkitURL !== 'undefined') ? webkitURL : undefined;
         
          
 x3dom.RefinementJobWorker = function() {
@@ -295,7 +307,7 @@ x3dom.RefinementJobWorker.prototype.addBits = function(level, stride,
 				component >>>= componentShifts[c];
 				component  <<= precisionOffset;
 				
-				idx 			             = baseIdx + c;
+				idx = baseIdx + c;
         //@todo: check this for non-interleaved output
 				resultBufferView[idx] |= component;
 			}
@@ -308,7 +320,7 @@ x3dom.RefinementJobWorker.prototype.addBits = function(level, stride,
 
 
 x3dom.RefinementJobWorker.prototype.toBlob = function () {
-	var str = '';
+  var str = '';
   
   str += 'postMessage = (typeof webkitPostMessage !== "undefined") ? webkitPostMessage : postMessage;\n';
 

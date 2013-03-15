@@ -1,19 +1,20 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
+
 x3dom.DoublyLinkedList = function() {
 	this.length = 0;
 	this.first = null;
 	this.last = null;
 };
+
 x3dom.DoublyLinkedList.ListNode = function(point, point_index, normals, colors, texCoords) {
 	this.point = point;
 	this.point_index = point_index;
@@ -39,6 +40,7 @@ x3dom.DoublyLinkedList.prototype.appendNode = function(node) {
   	}
   	this.length++;
 };
+
 x3dom.DoublyLinkedList.prototype.insertAfterNode = function(node, newNode) {
   	newNode.prev = node;
  	newNode.next = node.next;
@@ -68,6 +70,7 @@ x3dom.DoublyLinkedList.prototype.deleteNode = function(node) {
 	node.next = null;
 	this.length--;
 };
+
 x3dom.DoublyLinkedList.prototype.getNode = function(index) {
 	var node = null;
 	if(index > this.length) {
@@ -83,7 +86,9 @@ x3dom.DoublyLinkedList.prototype.getNode = function(index) {
 			return node;
 		}
 	}
+    return null;
 };
+
 x3dom.DoublyLinkedList.prototype.invert = function() {
 	var node = null;
 	var tmp = null;
@@ -99,7 +104,3 @@ x3dom.DoublyLinkedList.prototype.invert = function() {
 	this.first = this.last;
 	this.last = tmp;
 };
-
-
-
-
