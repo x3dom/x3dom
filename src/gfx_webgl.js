@@ -2454,7 +2454,7 @@ x3dom.gfx_webgl = (function () {
         pickedObjects.sort();
         
         // make found object IDs unique
-        pickedObjects = ( function(arr) {
+        var pickedObjectsTemp = ( function(arr) {
                 var a = [], l = arr.length;
                 for (var i=0; i<l; i++) {
                     for (var j=i+1; j<l; j++) {
@@ -2465,6 +2465,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 return a;
             } )(pickedObjects);
+        pickedObjects = pickedObjectsTemp;
         
         var pickedNodes = [];
         
@@ -2524,6 +2525,7 @@ x3dom.gfx_webgl = (function () {
 			
 			//Set picking shaders
 			scene._webgl.pickShader = this.cache.getShader(gl, x3dom.shader.PICKING);
+            scene._webgl.pickShader24 = this.cache.getShader(gl, x3dom.shader.PICKING_24);
 			scene._webgl.pickColorShader = this.cache.getShader(gl, x3dom.shader.PICKING_COLOR);
             scene._webgl.pickTexCoordShader = this.cache.getShader(gl, x3dom.shader.PICKING_TEXCOORD);
             

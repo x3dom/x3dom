@@ -79,7 +79,7 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
                 program = new x3dom.shader.PickingShader(gl);
                 break;
             case x3dom.shader.PICKING_24:
-                //program = new x3dom.shader.Picking24Shader(gl);
+                program = new x3dom.shader.Picking24Shader(gl);
                 break;
             case x3dom.shader.PICKING_COLOR:
                 program = new x3dom.shader.PickingColorShader(gl);
