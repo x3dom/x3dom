@@ -47,7 +47,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
 					"uniform mat4 modelViewProjectionMatrix;\n" +
 					"uniform vec3 from;\n" +
 					"varying vec3 worldCoord;\n" +
-					"varying vec2 idCoord;\n" +
+					"varying vec3 idCoord;\n" +
 					"uniform float writeShadowIDs;\n" +
 					"uniform float imageGeometry;\n" +
 					"uniform vec3 IG_bboxMin;\n" +
@@ -62,9 +62,14 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
 					
 					"void main(void) {\n" +
 					"   if (writeShadowIDs > 0.0) {\n" +
-					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
-    				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
-    				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
+                    //      composed id is at least 32 (= 2*16) bit + num bits for max-orig-shape-id
+                    "       float ID = (texcoord.y * 65536.0 + texcoord.x) + writeShadowIDs;\n" +
+                    //      however, let's ignore this and assume a maximum of 24 bits for all id's
+                    "       float h = floor(ID / 256.0);\n" +
+                    "       idCoord.x = ID - (h * 256.0);\n" +
+                    "       idCoord.z = floor(h / 256.0);\n" +
+                    "       idCoord.y = h - (idCoord.z * 256.0);\n" +
+                    "       idCoord = idCoord.zyx / 255.0;\n" +
 					"	}\n" +
 					"	if (imageGeometry != 0.0) {\n" +
 					"		vec2 IG_texCoord;\n" +
@@ -99,14 +104,19 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "uniform mat4 modelViewProjectionMatrix;\n" +
                     "uniform vec3 from;\n" +
                     "varying vec3 worldCoord;\n" +
-                    "varying vec2 idCoord;\n" +
+                    "varying vec3 idCoord;\n" +
                     
                     "void main(void) {\n" +
-					"    if (writeShadowIDs > 0.0) {\n" +
-					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
-    				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
-    				"       idCoord.y = fract(idCoord.y) * 1.00392156862745;\n" +
-					"	 }\n" +
+                    "    if (writeShadowIDs > 0.0) {\n" +
+                    //      composed id is at least 32 (= 2*16) bit + num bits for max-orig-shape-id
+                    "       float ID = (texcoord.y * 65536.0 + texcoord.x) + writeShadowIDs;\n" +
+                    //      however, let's ignore this and assume a maximum of 24 bits for all id's
+                    "       float h = floor(ID / 256.0);\n" +
+                    "       idCoord.x = ID - (h * 256.0);\n" +
+                    "       idCoord.z = floor(h / 256.0);\n" +
+                    "       idCoord.y = h - (idCoord.z * 256.0);\n" +
+                    "       idCoord = idCoord.zyx / 255.0;\n" +
+                    "	 }\n" +
                     "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
                     "    worldCoord = (modelMatrix * vec4(pos, 1.0)).xyz - from;\n" +
                     "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
@@ -138,16 +148,14 @@ x3dom.shader.Picking24Shader.prototype.generateFragmentShader = function(gl)
 					"uniform float lowBit;\n" +
 					"uniform float sceneSize;\n" +
 					"varying vec3 worldCoord;\n" +
-					"varying vec2 idCoord;\n" +
+					"varying vec3 idCoord;\n" +
 					
 					"void main(void) {\n" +
 					"    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
 					"    if (writeShadowIDs > 0.0) {\n" +
-    				"       col.ba = idCoord;\n" +
+    				"       col.gba = idCoord;\n" +
 					"	 }\n" +
-					"    float d = length(worldCoord) / sceneSize;\n" +
-					"    vec2 comp = fract(d * vec2(256.0, 1.0));\n" +
-					"    col.rg = comp - (comp.rr * vec2(0.0, 1.0/256.0));\n" +
+					"    col.r = length(worldCoord) / sceneSize;\n" +
 					"    gl_FragColor = col;\n" +
 					"}\n";
 

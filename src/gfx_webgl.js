@@ -1320,16 +1320,25 @@ x3dom.gfx_webgl = (function () {
         gl.disable(gl.BLEND);
         
         var sp = null;
-        if (pickMode === 0) {
-			sp = scene._webgl.pickShader;
-		}
-        else if (pickMode === 1) { 
-            sp = scene._webgl.pickColorShader; 
+
+        switch(pickMode) {
+            case 0:
+                sp = scene._webgl.pickShader;
+                break;
+            case 1:
+                sp = scene._webgl.pickColorShader;
+                break;
+            case 2:
+                sp = scene._webgl.pickTexCoordShader;
+                break;
+            case 3:
+                sp = scene._webgl.pickShader24;
+                break;
+            default:
+                break;
         }
-        else if (pickMode === 2) {
-            sp = scene._webgl.pickTexCoordShader; 
-        }
-        if (!sp) {
+
+        if (!sp) {  // error
             return;
         }
         
@@ -2253,8 +2262,9 @@ x3dom.gfx_webgl = (function () {
         }
         
         var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
-                        ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
-        
+                        ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 :
+                            ((scene._vf.pickMode.toLowerCase() === "idbuf24") ? 3 : 0));
+
         var min = scene._lastMin;
         var max = scene._lastMax;
         var from = mat_view.inverse().e3();
@@ -2290,16 +2300,18 @@ x3dom.gfx_webgl = (function () {
             var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
             var objId = scene._webgl.fboPick.pixelData[index + 3];
 
-            if (pickMode === 0)
+            var pixelOffset = 1.0 / scene._webgl.pickScale;
+            var denom = 1.0 / 256.0;
+            var dist, line, lineoff, right, up;
+
+            if (pickMode == 0)
             {
                 objId += 256 * scene._webgl.fboPick.pixelData[index + 2];
+
+                dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
+                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
                 
-                var pixelOffset = 1.0 / scene._webgl.pickScale, denom = 1.0 / 256.0;
-                
-                var dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
-                           (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
-                
-                var line = viewarea.calcViewRay(x, y);
+                line = viewarea.calcViewRay(x, y);
                 
                 pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
                 
@@ -2307,9 +2319,9 @@ x3dom.gfx_webgl = (function () {
                 dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
                        (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
                 
-                var lineoff = viewarea.calcViewRay(x + pixelOffset, y);
+                lineoff = viewarea.calcViewRay(x + pixelOffset, y);
                 
-                var right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 right = right.subtract(pickPos).normalize();
                 
                 index = 8;      // get top pixel
@@ -2318,9 +2330,38 @@ x3dom.gfx_webgl = (function () {
                 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset);
                 
-                var up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
                 up = up.subtract(pickPos).normalize();
                 
+                pickNorm = right.cross(up).normalize();
+            }
+            else if (pickMode == 3)
+            {
+                objId +=   256 * scene._webgl.fboPick.pixelData[index + 2] +
+                         65536 * scene._webgl.fboPick.pixelData[index + 1];
+
+                dist = scene._webgl.fboPick.pixelData[index + 0] / 255.0;
+
+                line = viewarea.calcViewRay(x, y);
+
+                pickPos = line.pos.add(line.dir.multiply(dist * sceneSize));
+
+                index = 4;      // get right pixel
+                dist = scene._webgl.fboPick.pixelData[index + 0] / 255.0;
+
+                lineoff = viewarea.calcViewRay(x + pixelOffset, y);
+
+                right = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                right = right.subtract(pickPos).normalize();
+
+                index = 8;      // get top pixel
+                dist = scene._webgl.fboPick.pixelData[index + 0] / 255.0;
+
+                lineoff = viewarea.calcViewRay(x, y - pixelOffset);
+
+                up = lineoff.pos.add(lineoff.dir.multiply(dist * sceneSize));
+                up = up.subtract(pickPos).normalize();
+
                 pickNorm = right.cross(up).normalize();
             }
             else
@@ -2951,9 +2992,9 @@ x3dom.gfx_webgl = (function () {
         
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
-            if (scene._vf.pickMode.toLowerCase() === "idbuf" || 
-                scene._vf.pickMode.toLowerCase() === "color" ||
-                scene._vf.pickMode.toLowerCase() === "texcoord") {
+            if (scene._vf.pickMode.toLowerCase().indexOf("idbuf") == 0 ||
+                scene._vf.pickMode.toLowerCase() == "color" ||
+                scene._vf.pickMode.toLowerCase() == "texcoord") {
                 gl.viewport(0, 3*this.canvas.height/4, 
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);

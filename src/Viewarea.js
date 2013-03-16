@@ -1257,7 +1257,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 {
-    var avoidTraversal = (this._scene._vf.pickMode.toLowerCase() === "idbuf" ||
+    var avoidTraversal = (this._scene._vf.pickMode.toLowerCase().indexOf("idbuf") == 0 ||
                           this._scene._vf.pickMode.toLowerCase() === "color" ||
                           this._scene._vf.pickMode.toLowerCase() === "texcoord");
 
