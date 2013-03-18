@@ -2091,7 +2091,7 @@ x3dom.gfx_webgl = (function () {
                 if (shape._webgl.primType == gl.POINTS && (typeof shape._webgl.primType).toString() != "object") {
 					gl.drawArrays(gl.POINTS, 0, shape._webgl.positions[q].length/3);
                 }
-                else {
+                else if (sp.position !== undefined && shape._webgl.buffers[5*q+1]) {
                     if (shape._webgl.indexes && shape._webgl.indexes[q]) {
 						if (shape._webgl.imageGeometry != 0 || shape._webgl.binaryGeometry < 0 || 
 						    shape._webgl.popGeometry < 0 || shape._webgl.bitLODGeometry < 0) {
