@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -18,15 +17,14 @@ x3dom.Viewarea = function (document, scene) {
     document._nodeBag.viewarea.push(this);
 
     this._pickingInfo = {
-        pickPos: {},
+        pickPos: new x3dom.fields.SFVec3f(0, 0, 0),
+        pickNorm: new x3dom.fields.SFVec3f(0, 0, 1),
         pickObj: null,
         lastObj: null,
         lastClickObj: null
     };
 
-    this._rotMat = x3dom.fields.SFMatrix4f.identity();
-    this._transMat = x3dom.fields.SFMatrix4f.identity();
-    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._relMat = x3dom.fields.SFMatrix4f.identity();
 
     this._needNavigationMatrixUpdate = true;
     this._deltaT = 0;
@@ -37,6 +35,7 @@ x3dom.Viewarea = function (document, scene) {
 
     this._width = 400;
     this._height = 300;
+    
     this._dx = 0;
     this._dy = 0;
     this._lastX = -1;
@@ -44,14 +43,16 @@ x3dom.Viewarea = function (document, scene) {
     this._pressX = -1;
     this._pressY = -1;
     this._lastButton = 0;
+    this._hasTouches = false;
+    
+    this._numRenderedNodes = 0;
+    
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
-
+    this._pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
+    
     this._isAnimating = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
-
-	//Geometry cache for primitives (Sphere, Box, etc.)
-	this._geoCache = [];
 };
 
 x3dom.Viewarea.prototype.tick = function(timeStamp)
@@ -78,16 +79,25 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
             }
         }
         else {
+            this._mixer._beginTime = 0;
+            this._mixer._endTime = 0;
+            
             this._scene.getViewpoint().setView(this._mixer._beginMat);
         }
     }
 
     var needNavAnim = this.navigateTo(timeStamp);
+    var lastIsAnimating = this._isAnimating;
 
     this._lastTS = timeStamp;
     this._isAnimating = (needMixAnim || needNavAnim);
 
-    return this._isAnimating;
+    return (this._isAnimating || lastIsAnimating);
+};
+
+x3dom.Viewarea.prototype.isMoving = function()
+{
+    return (this._lastButton > 0 || this._hasTouches || this._isAnimating);
 };
 
 x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
@@ -97,6 +107,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                         (this._lastButton > 0 &&
                         (navi._vf.type[0].toLowerCase() === "fly" ||
                          navi._vf.type[0].toLowerCase() === "walk" ||
+                         navi._vf.type[0].toLowerCase() === "helicopter" ||
                          navi._vf.type[0].toLowerCase().substr(0, 5) === "looka")) );
     
     this._deltaT = timeStamp - this._lastTS;
@@ -127,11 +138,9 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         if (this._needNavigationMatrixUpdate === true)
         {
             this._needNavigationMatrixUpdate = false;
-            
-            // reset examine matrices to identity
-            this._rotMat = x3dom.fields.SFMatrix4f.identity();
-            this._transMat = x3dom.fields.SFMatrix4f.identity();
-            this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+          
+            // reset examine matrix to identity
+            this._relMat = x3dom.fields.SFMatrix4f.identity();
 
             var angleX = 0;
             var angleY = Math.asin(currViewMat._02);
@@ -146,6 +155,9 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             
             this._from = this._flyMat.e3();
             this._at = this._from.subtract(this._flyMat.e2());
+
+            if (navi._vf.type[0].toLowerCase() === "helicopter")
+                this._at.y = this._from.y;
             
             if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
                 this._up = new x3dom.fields.SFVec3f(0, 1, 0);
@@ -158,6 +170,8 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         }
 
         var tmpAt = null, tmpUp = null, tmpMat = null;
+        var q, temp, fin;
+        var lv, sv, up;
 
         if (navi._vf.type[0].toLowerCase() === "game")
         {
@@ -192,7 +206,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             tmpMat = tmpMat.inverse();
 
             this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                        tmpMat, this.getProjectionMatrix().mult(tmpMat));
+                        this._lastButton, tmpMat, this.getProjectionMatrix().mult(tmpMat));
 
             if (this._pickingInfo.pickObj)
             {
@@ -211,13 +225,77 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             this._scene.getViewpoint().setView(this._flyMat);
 
             return needNavAnim;
-        }
+        }   // game
+        else if (navi._vf.type[0].toLowerCase() === "helicopter")
+        {
+            var typeParams = navi.getTypeParams();
+
+            if (this._lastButton & 2)
+            {
+                var stepUp = this._deltaT * this._deltaT * navi._vf.speed;
+                stepUp *= 0.1 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+                typeParams[1] += stepUp;
+
+                navi.setTypeParams(typeParams);
+            }
+
+            if (this._lastButton & 1) {
+                step *= this._deltaT * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+            }
+            else {
+                step = 0;
+            }
+
+            theta = typeParams[0];
+            this._from.y = typeParams[1];
+            this._at.y = this._from.y;
+
+            // rotate around the up vector
+            q = x3dom.fields.Quaternion.axisAngle(this._up, phi);
+            temp = q.toMatrix();
+
+            fin = x3dom.fields.SFMatrix4f.translation(this._from);
+            fin = fin.mult(temp);
+
+            temp = x3dom.fields.SFMatrix4f.translation(this._from.negate());
+            fin = fin.mult(temp);
+
+            this._at = fin.multMatrixPnt(this._at);
+
+            // rotate around the side vector
+            lv = this._at.subtract(this._from).normalize();
+            sv = lv.cross(this._up).normalize();
+            up = sv.cross(lv).normalize();
+
+            lv = lv.multiply(step);
+
+            this._from = this._from.add(lv);
+            this._at = this._at.add(lv);
+
+            // rotate around the side vector
+            q = x3dom.fields.Quaternion.axisAngle(sv, theta);
+            temp = q.toMatrix();
+
+            fin = x3dom.fields.SFMatrix4f.translation(this._from);
+            fin = fin.mult(temp);
+
+            temp = x3dom.fields.SFMatrix4f.translation(this._from.negate());
+            fin = fin.mult(temp);
+
+            var at = fin.multMatrixPnt(this._at);
+
+            this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, at, up);
+
+            this._scene.getViewpoint().setView(this._flyMat.inverse());
+
+            return needNavAnim;
+        }   // helicopter
 
         // rotate around the up vector
-        var q = x3dom.fields.Quaternion.axisAngle(this._up, phi);
-        var temp = q.toMatrix();
+        q = x3dom.fields.Quaternion.axisAngle(this._up, phi);
+        temp = q.toMatrix();
 
-        var fin = x3dom.fields.SFMatrix4f.translation(this._from);
+        fin = x3dom.fields.SFMatrix4f.translation(this._from);
         fin = fin.mult(temp);
 
         temp = x3dom.fields.SFMatrix4f.translation(this._from.negate());
@@ -226,9 +304,9 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._at = fin.multMatrixPnt(this._at);
 
         // rotate around the side vector
-        var lv = this._at.subtract(this._from).normalize();
-        var sv = lv.cross(this._up).normalize();
-        var up = sv.cross(lv).normalize();
+        lv = this._at.subtract(this._from).normalize();
+        sv = lv.cross(this._up).normalize();
+        up = sv.cross(lv).normalize();
         //this._up = up;
 
         q = x3dom.fields.Quaternion.axisAngle(sv, theta);
@@ -245,13 +323,26 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         // forward along view vector
         if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
         {
-            this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
+            var currProjMat = this.getProjectionMatrix();
+
+            if (step < 0) {
+                // backwards: negate viewing direction
+                tmpMat = new x3dom.fields.SFMatrix4f();
+                tmpMat.setValue(this._last_mat_view.e0(), this._last_mat_view.e1(), 
+                                this._last_mat_view.e2().negate(), this._last_mat_view.e3());
+                
+                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
+                            this._lastButton, tmpMat, currProjMat.mult(tmpMat));
+            }
+            else {
+                this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
+            }
 
             if (this._pickingInfo.pickObj)
             {
                 dist = this._pickingInfo.pickPos.subtract(this._from).length();
 
-                if (step > 0 && dist <= avatarRadius) {
+                if (dist <= avatarRadius) {
                     step = 0;
                 }
             }
@@ -271,7 +362,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
                 tmpMat = tmpMat.inverse();
 
                 this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2,
-                            tmpMat, this.getProjectionMatrix().mult(tmpMat));
+                            this._lastButton, tmpMat, currProjMat.mult(tmpMat));
 
                 if (this._pickingInfo.pickObj)
                 {
@@ -314,7 +405,7 @@ x3dom.Viewarea.prototype.moveFwd = function()
         var fMat = this._flyMat.inverse();
 
         // check front for collisions
-        this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2);
+        this._scene._nameSpace.doc.ctx.pickValue(this, this._width/2, this._height/2, this._lastButton);
 
         if (this._pickingInfo.pickObj)
         {
@@ -387,35 +478,33 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
-            prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
-                         mult(this._transMat).mult(this._rotMat);
+            prev = this._relMat.inverse().
+                     mult(prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()));
+            
+            this._mixer._beginTime = this._lastTS;
+
+            if (arguments.length >= 3) {
+                 // for lookAt to assure travel speed of 1 m/s
+                this._mixer._endTime = this._lastTS + dur;
+            }
+            else {
+                this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
+            }
+
+            this._mixer.setBeginMatrix (prev);
+            this._mixer.setEndMatrix (target);
+            
+            this._scene.getViewpoint().setView(prev);
         }
         else {
-            //prev = x3dom.fields.SFMatrix4f.identity();
-            return;
+            this._scene.getViewpoint().setView(target);
         }
-
-        this._mixer._beginTime = this._lastTS;
-
-        if (arguments.length >= 3) {
-            // for lookAt to assure travel speed of 1 m/s
-            this._mixer._endTime = this._lastTS + dur;
-        }
-        else {
-            this._mixer._endTime = this._lastTS + navi._vf.transitionTime;
-        }
-
-        this._mixer.setBeginMatrix (prev);
-        this._mixer.setEndMatrix (target);
     }
     else
     {
         this._scene.getViewpoint().setView(target);
     }
-
-    this._rotMat = x3dom.fields.SFMatrix4f.identity();
-    this._transMat = x3dom.fields.SFMatrix4f.identity();
-    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._relMat = x3dom.fields.SFMatrix4f.identity();
     this._needNavigationMatrixUpdate = true;
 };
 
@@ -432,18 +521,54 @@ x3dom.Viewarea.prototype.getLightsShadow = function () {
 	}
 };
 
+x3dom.Viewarea.prototype.updateSpecialNavigation = function (viewpoint, mat_viewpoint) {
+    var navi = this._scene.getNavigationInfo();
+    
+    // helicopter mode needs to manipulate view matrix specially
+    if (navi._vf.type[0].toLowerCase() == "helicopter" && !navi._heliUpdated)
+    {
+        var typeParams = navi.getTypeParams();
+        var theta = typeParams[0];
+        var currViewMat = viewpoint.getViewMatrix().mult(mat_viewpoint.inverse()).inverse();
+
+        this._from = currViewMat.e3();
+        this._at = this._from.subtract(currViewMat.e2());
+        this._up = new x3dom.fields.SFVec3f(0, 1, 0);
+
+        this._from.y = typeParams[1];
+        this._at.y = this._from.y;
+
+        var sv = currViewMat.e0();
+        var q = x3dom.fields.Quaternion.axisAngle(sv, theta);
+        var temp = q.toMatrix();
+
+        var fin = x3dom.fields.SFMatrix4f.translation(this._from);
+        fin = fin.mult(temp);
+
+        temp = x3dom.fields.SFMatrix4f.translation(this._from.negate());
+        fin = fin.mult(temp);
+
+        this._at = fin.multMatrixPnt(this._at);
+
+        this._flyMat = x3dom.fields.SFMatrix4f.lookAt(this._from, this._at, this._up);
+        this._scene.getViewpoint().setView(this._flyMat.inverse());
+
+        navi._heliUpdated = true;
+    }
+};
+
 x3dom.Viewarea.prototype.getViewpointMatrix = function () {
     var viewpoint = this._scene.getViewpoint();
     var mat_viewpoint = viewpoint.getCurrentTransform();
-
-    //return mat_viewpoint.mult(viewpoint.getViewMatrix());
+    
+    this.updateSpecialNavigation(viewpoint, mat_viewpoint);
+    
     return viewpoint.getViewMatrix().mult(mat_viewpoint.inverse());
 };
 
 x3dom.Viewarea.prototype.getViewMatrix = function () {
-    return this.getViewpointMatrix().
-            mult(this._transMat).
-            mult(this._rotMat);
+    return this._relMat.inverse().
+             mult(this.getViewpointMatrix());
 };
 
 x3dom.Viewarea.prototype.getLightMatrix = function ()
@@ -471,13 +596,14 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
 
             for (i=0; i<n; i++)
             {
-                //FIXME; lights might be influenced by parent transformation
                 if (x3dom.isa(lights[i], x3dom.nodeTypes.PointLight)) {
-                    dia = dia.subtract(lights[i]._vf.location).normalize();
+                    var wcLoc = lights[i].getCurrentTransform().multMatrixPnt(lights[i]._vf.location);
+                    dia = dia.subtract(wcLoc).normalize();
                 }
                 else {
-                    var dir = lights[i]._vf.direction.normalize().negate();
-                    dia = dia.add(dir.multiply(1.2*(dist1 > dist2 ? dist1 : dist2)));
+                    var dir = lights[i].getCurrentTransform().multMatrixVec(lights[i]._vf.direction);
+                    dir = dir.normalize().negate();
+                    dia = dia.add(dir.multiply(1.2 * (dist1 > dist2 ? dist1 : dist2)));
                 }
 
                 l_arr[i] = lights[i].getViewMatrix(dia);
@@ -511,6 +637,25 @@ x3dom.Viewarea.prototype.getProjectionMatrix = function()
     var viewpoint = this._scene.getViewpoint();
 
     return viewpoint.getProjectionMatrix(this._width/this._height);
+};
+
+x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
+{
+    if (this._scene._vf.frustumCulling == true)
+    {
+        if (arguments.length == 0) {
+            var proj = this.getProjectionMatrix();
+            var view = this.getViewMatrix();
+    
+            return new x3dom.fields.FrustumVolume(proj.mult(view));
+        }
+        else {
+            return new x3dom.fields.FrustumVolume(clipMat);
+        }
+    }
+    else {
+        return null;
+    }
 };
 
 x3dom.Viewarea.prototype.getWCtoCCMatrix = function()
@@ -613,11 +758,9 @@ x3dom.Viewarea.prototype.resetView = function()
     {
         this._scene.getViewpoint().resetView();
     }
-
-    this._rotMat = x3dom.fields.SFMatrix4f.identity();
-    this._transMat = x3dom.fields.SFMatrix4f.identity();
-    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._relMat = x3dom.fields.SFMatrix4f.identity();
     this._needNavigationMatrixUpdate = true;
+    navi._heliUpdated = false;
 };
 
 x3dom.Viewarea.prototype.uprightView = function()
@@ -663,8 +806,8 @@ x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
             }
         }
     }
-    catch(ex) {
-        x3dom.debug.logException(ex);
+    catch(e) {
+        x3dom.debug.logException(e);
     }
 
     return event.cancelBubble;
@@ -684,25 +827,29 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         worldX: that._pick.x,
         worldY: that._pick.y,
         worldZ: that._pick.z,
+        normalX: that._pickNorm.x,
+        normalY: that._pickNorm.y,
+        normalZ: that._pickNorm.z,
         hitPnt: that._pick.toGL(), // for convenience
         hitObject: obj._xmlNode ? obj._xmlNode : null,
         cancelBubble: false,
-        stopPropagation: function() { this.cancelBubble = true; }
+        stopPropagation: function() { this.cancelBubble = true; },
+		preventDefault: function() { this.cancelBubble = true; }
     };
     //x3dom.debug.logInfo(event.type + ", " + event.worldX.toFixed(2) + ", " +
     //    event.worldY.toFixed(2) + ", " + event.worldZ.toFixed(2) + ", " + event.button);
 
     try {
         var anObj = obj;
-
-        if ( anObj && anObj._xmlNode &&
+        
+        if ( anObj && anObj._xmlNode && anObj._cf.geometry &&
              !anObj._xmlNode[eventType] &&
              !anObj._xmlNode.hasAttribute(eventType) &&
              !anObj._listeners[event.type]) {
             anObj = anObj._cf.geometry.node;
         }
-
-        if (that.callEvtHandler(anObj, eventType, event) === true) {
+        
+        if (anObj && that.callEvtHandler(anObj, eventType, event) === true) {
             needRecurse = false;
         }
     }
@@ -734,6 +881,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         recurse(obj);
     }
 	
+	return needRecurse;
 };
 
 x3dom.Viewarea.prototype.initMouseState = function()
@@ -960,32 +1108,23 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 		{
 			var distance = 10;
 			
-			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
 				distance = (distance < x3dom.fields.Eps) ? 1 : distance;
 			}
 			
 			translation = translation.multiply(distance);
-			this._movement = this._movement.add(translation);
-			
-			this._transMat = viewpoint.getViewMatrix().inverse().
-				mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-				mult(viewpoint.getViewMatrix());
+			this._relMat = this_relMat.mult(x3dom.fields.SFMatrix4f.translation(translation));
+				
 		}
 		
 		if (rotation)
-        {
-            var center = viewpoint.getCenterOfRotation();
-            
-            var mat = this.getViewMatrix();
-            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
-            
-            this._rotMat = this._rotMat.
-                mult(x3dom.fields.SFMatrix4f.translation(center)).
-                mult(mat.inverse()).
+        {            
+            var center = viewpoint.getCenterOfRotation();           
+            this._relMat = this._relMat.
+                mult(x3dom.fields.SFMatrix4f.translation(center)).                
                 mult(rotation).
-                mult(mat).
                 mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
 		}
 	}
@@ -1004,82 +1143,61 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     var dx = x - this._lastX;
     var dy = y - this._lastY;
     var min, max, ok, d, vec;
-    var viewpoint = this._scene.getViewpoint();
 
     if (navi._vf.type[0].toLowerCase() === "examine")
     {
         if (buttonState & 1) //left
         {
-            var alpha = (dy * 2 * Math.PI) / this._width;
-            var beta = (dx * 2 * Math.PI) / this._height;
-            var mat = this.getViewMatrix();
-
-            var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
-            var my = x3dom.fields.SFMatrix4f.rotationY(beta);
-
-            var center = viewpoint.getCenterOfRotation();
-            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
-
-            this._rotMat = this._rotMat.
-                mult(x3dom.fields.SFMatrix4f.translation(center)).
-                mult(mat.inverse()).
-                mult(mx).mult(my).
-                mult(mat).
-                mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
+	  this.orbitH(dx);
+	  this.orbitV(dy);
         }
         if (buttonState & 4) //middle
         {
-			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
 			else
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, false);
+				
+				ok = this._scene.getVolume(min, max, true);
+				if (ok) {
+                    this._scene._lastMin = min;
+                    this._scene._lastMax = max;
+                }
 				
 				d = ok ? (max.subtract(min)).length() : 10;
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
-            //x3dom.debug.logInfo("PAN: " + min + " / " + max + " D=" + d);
-            //x3dom.debug.logInfo("w="+this._width+", h="+this._height);
+			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-            vec = new x3dom.fields.SFVec3f(d*dx/this._width,d*(-dy)/this._height,0);
-            this._movement = this._movement.add(vec);
-
-            //TODO; move real distance along viewing plane
-            this._transMat = this.getViewMatrix().inverse().
-                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(this.getViewMatrix());
+            vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
+            this.pan(vec);
         }
         if (buttonState & 2) //right
         {
-			if (this._scene._lastMin !== undefined && this._scene._lastMax !== undefined)
+			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
 			else
 			{
 				min = x3dom.fields.SFVec3f.MAX();
 				max = x3dom.fields.SFVec3f.MIN();
-				ok = this._scene.getVolume(min, max, false);
+				
+				ok = this._scene.getVolume(min, max, true);
+				if (ok) {
+                    this._scene._lastMin = min;
+                    this._scene._lastMax = max;
+                }
 				
 				d = ok ? (max.subtract(min)).length() : 10;
-				d = (d < x3dom.fields.Eps) ? 1 : d;
 			}
-            //x3dom.debug.logInfo("ZOOM: " + min + " / " + max + " D=" + d);
-            //x3dom.debug.logInfo((dx+dy)+" w="+this._width+", h="+this._height);
+			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
-            vec = new x3dom.fields.SFVec3f(0,0,d*(dx+dy)/this._height);
-            this._movement = this._movement.add(vec);
-
-            //TODO; move real distance along viewing ray
-            this._transMat = this.getViewMatrix().inverse().
-                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(this.getViewMatrix());
+            vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
+            this.zoom(vec);
         }
     }
 
@@ -1090,10 +1208,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     this._lastY = y;
 };
 
-
 x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 {
-    var avoidTraversal = (this._scene._vf.pickMode.toLowerCase() === "idbuf" ||
+    var avoidTraversal = (this._scene._vf.pickMode.toLowerCase().indexOf("idbuf") == 0 ||
                           this._scene._vf.pickMode.toLowerCase() === "color" ||
                           this._scene._vf.pickMode.toLowerCase() === "texcoord");
 
@@ -1102,6 +1219,7 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 
         if (obj) {
             this._pick.setValues(this._pickingInfo.pickPos);
+            this._pickNorm.setValues(this._pickingInfo.pickNorm);
 
             this.checkEvents(obj, x, y, buttonState, eventType);
 
@@ -1113,3 +1231,78 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
         }
     }
 };
+
+
+x3dom.Viewarea.prototype.rotateH = function(right)
+{
+  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.parseRotation("0, 1, 0," + ((right) ? "-0.05" : "0.05")));
+}
+
+x3dom.Viewarea.prototype.rotateV = function(down)
+{
+  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.parseRotation("1, 0, 0," + ((down) ? "-0.05" : "0.05")));			      
+}
+
+x3dom.Viewarea.prototype.pan = function(vec)
+{
+  this._relMat = this._relMat.
+                     mult(x3dom.fields.SFMatrix4f.translation(vec));      
+}
+
+x3dom.Viewarea.prototype.zoom = function(vec)
+{
+  this._relMat = this._relMat.
+		     mult(x3dom.fields.SFMatrix4f.translation(vec));
+}
+
+x3dom.Viewarea.prototype.orbitH = function(dx)
+{
+  var beta = - (dx * 2 * Math.PI) / this._height;
+  var mat = this.getViewMatrix().inverse();
+
+  var pos = mat.e3();
+  var at = pos.subtract(mat.e2());
+  var up = mat.e1();
+
+  var viewpoint = this._scene.getViewpoint();
+  var center = viewpoint.getCenterOfRotation();
+  var radius = center.subtract(pos);
+
+  var m = new x3dom.fields.SFMatrix4f.translation(radius);
+
+  m = m.mult(x3dom.fields.SFMatrix4f.parseRotation(up.x + ", " + up.y + ", " + up.z + ", " + beta));
+  m = m.mult(x3dom.fields.SFMatrix4f.translation(radius.negate()));
+
+  pos = center.subtract(m.multMatrixVec(radius));
+  at = m.multMatrixVec(at);
+  up = m.multMatrixVec(up);
+
+  m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
+  this._relMat = this.getViewpointMatrix().mult(m);
+}
+
+x3dom.Viewarea.prototype.orbitV = function(dy)
+{
+  var alpha = (dy * 2 * Math.PI) / this._width;
+
+  var mat = this.getViewMatrix().inverse();
+  var pos = mat.e3();
+  var at = pos.subtract(mat.e2());
+  var up = mat.e1();
+
+  var viewpoint = this._scene.getViewpoint();
+  var center = viewpoint.getCenterOfRotation();
+  var radius = center.subtract(pos);
+
+  var m = new x3dom.fields.SFMatrix4f.translation(radius);
+  var rotVec = at.cross(up);
+  m = m.mult(x3dom.fields.SFMatrix4f.parseRotation(rotVec.x + ", " + rotVec.y + ", " + rotVec.z + ", " + alpha));
+  m = m.mult(x3dom.fields.SFMatrix4f.translation(radius.negate()));
+
+  pos = center.subtract(m.multMatrixVec(radius));
+  at = m.multMatrixVec(at);
+  up = m.multMatrixVec(up);
+
+  m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
+  this._relMat = this.getViewpointMatrix().mult(m);
+}
