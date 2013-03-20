@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -35,7 +34,7 @@ x3dom.debug = {
     
     // the maximum number of lines to log in order to prevent
     // the browser to slow down
-    maxLinesToLog: 100000,
+    maxLinesToLog: 10000,
 
 	// the container div for the logging messages
 	logContainer: null,
@@ -66,6 +65,8 @@ x3dom.debug = {
         x3dom.debug.isSetup = true;
     },
 	
+	/** @brief Activates the log
+      */
 	activate: function(visible) {
 		x3dom.debug.isActive = true;
 		
@@ -94,18 +95,8 @@ x3dom.debug = {
 	setupLogContainer: function() {
 		x3dom.debug.logContainer = document.createElement("div");
 		x3dom.debug.logContainer.id = "x3dom_logdiv";
-		x3dom.debug.logContainer.style.border = "2px solid olivedrab";
-		x3dom.debug.logContainer.style.height = "200px";
-		x3dom.debug.logContainer.style.padding = "4px";
-		x3dom.debug.logContainer.style.overflow = "auto";
-		x3dom.debug.logContainer.style.whiteSpace = "pre-wrap";
-		x3dom.debug.logContainer.style.fontFamily = "sans-serif"; 
-		x3dom.debug.logContainer.style.fontSize = "x-small";
-        x3dom.debug.logContainer.style.color = "#00ff00";
-        x3dom.debug.logContainer.style.backgroundColor = "black";
-        x3dom.debug.logContainer.style.clear = "both";
-		x3dom.debug.logContainer.style.marginRight = "10px";
-        
+		x3dom.debug.logContainer.setAttribute("class", "x3dom-logContainer");
+		x3dom.debug.logContainer.style.clear = "both";
 		//document.body.appendChild(x3dom.debug.logContainer);
 	},
 
@@ -206,6 +197,7 @@ x3dom.debug = {
         x3dom.debug.doLog(msg, x3dom.debug.EXCEPTION);
     },
 
+    /** Log an assertion. */
 	assert: function(c, msg) {
 		if (!c) {
 			x3dom.debug.doLog("Assertion failed in " + 
@@ -221,7 +213,6 @@ x3dom.debug = {
 	 @returns one of; "boolean", "number", "string", "object",
 	  "function", or "null".
 	*/
-	
 	typeOf: function (obj) {
 		var type = typeof obj;
 		return type === "object" && !obj ? "null" : type;
@@ -236,7 +227,6 @@ x3dom.debug = {
 	 @returns true if the property exists and has the specified type,
 	  otherwise false.
 	*/
-	
 	exists: function (obj, name, type) {
 		type = type || "function";
 		return (obj ? this.typeOf(obj[name]) : "null") === type;
@@ -245,7 +235,6 @@ x3dom.debug = {
 	/**
 	 Dumps all members of the given object.
 	*/
-	
 	dumpFields: function (node) {
 		var str = "";
 		for (var fName in node) {

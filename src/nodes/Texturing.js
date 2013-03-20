@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -91,7 +90,21 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureCompression', "FASTEST");
             this.addField_SFFloat(ctx, 'texturePriority', 0);
             this.addField_SFBool(ctx, 'generateMipMaps', false);
-        }
+        },
+		{
+			fieldChanged: function(fieldName)
+			{
+				Array.forEach(this._parentNodes, function (texture) {
+					Array.forEach(texture._parentNodes, function (app) {
+						Array.forEach(app._parentNodes, function (shape) {
+							shape._dirty.texture = true;
+						});
+					});
+				});
+
+				this._nameSpace.doc.needRender = true;
+			}
+		}
     )
 );
 
@@ -109,14 +122,13 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'repeatT', true);
             this.addField_SFNode('textureProperties', x3dom.nodeTypes.TextureProperties);
             this.addField_SFBool(ctx, 'scale', true);
-			this.addField_SFInt32(ctx, 'priority', 10);
+            this.addField_SFBool(ctx, 'withCredentials', false);
 
             this._needPerFrameUpdate = false;
             this._isCanvas = false;
-			//this._image = new Image();
-			//this._complete = false;
+			this._type = "diffuseMap";
 			
-			//x3dom.ImageLoadManager.push( this );
+			this._blending = (this._vf.origChannelCount == 1 || this._vf.origChannelCount == 2);
         },
         {
             invalidateGLObject: function ()
@@ -139,7 +151,6 @@ x3dom.registerNodeType(
 
             parentRemoved: function(parent)
             {
-                parent._cf.texture.node = null;
                 Array.forEach(parent._parentNodes, function (shape) {
                     shape._dirty.texture = true;
                 });
@@ -151,12 +162,10 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "url")
+                if (fieldName == "url" || fieldName ==  "origChannelCount" ||
+				    fieldName == "repeatS" || fieldName == "repeatT")
                 {
                     var that = this;
-
-					//x3dom.ImageLoadManager.push( this );
-					this._complete = false;
 
                     Array.forEach(this._parentNodes, function (app) {
                         if (x3dom.isa(app, x3dom.nodeTypes.X3DAppearanceNode)) {
@@ -207,6 +216,10 @@ x3dom.registerNodeType(
                 }
                 return null;
             },
+			
+			getTextures: function() {
+				return this._cf.texture.nodes;
+			},
 
             size: function() {
                 return this._cf.texture.nodes.length;
@@ -286,7 +299,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RenderedTexture.superClass.call(this, ctx);
 
-            ctx.doc._nodeBag.renderTextures.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.renderTextures.push(this);
+            else
+                x3dom.debug.logWarning("RenderedTexture: No runtime context found!");
 
             this.addField_SFNode('viewpoint', x3dom.nodeTypes.X3DViewpointNode);
             this.addField_SFNode('background', x3dom.nodeTypes.X3DBackgroundNode);
@@ -486,6 +502,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('top',    x3dom.nodeTypes.Texture);
             this.addField_SFNode('left',   x3dom.nodeTypes.Texture);
             this.addField_SFNode('right',  x3dom.nodeTypes.Texture);
+			this._type = "cubeMap";
         },
         {
             getTexUrl: function() {
@@ -522,6 +539,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'size', 128);
             this.addField_SFString(ctx, 'update', 'NONE');  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
 
+			this._type = "cubeMap";
             x3dom.debug.logWarning("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx
         },
         {
@@ -561,19 +579,6 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### TextureCoordinate3D ### */
-x3dom.registerNodeType(
-    "TextureCoordinate3D",
-    "Texturing3D",
-    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
-        function (ctx) {
-            x3dom.nodeTypes.TextureCoordinate3D.superClass.call(this, ctx);
-
-            this.addField_MFVec3f(ctx, 'point', []);
-        }
-    )
-);
-
 /* ### TextureCoordinate ### */
 x3dom.registerNodeType(
     "TextureCoordinate",
@@ -597,6 +602,19 @@ x3dom.registerNodeType(
 
             this.addField_SFString(ctx, 'mode', "SPHERE");
             this.addField_MFFloat(ctx, 'parameter', []);
+        }
+    )
+);
+
+/* ### MultiTextureCoordinate ### */
+x3dom.registerNodeType(
+    "MultiTextureCoordinate",
+    "Texturing",
+    defineClass(x3dom.nodeTypes.X3DTextureCoordinateNode,
+        function (ctx) {
+            x3dom.nodeTypes.MultiTextureCoordinate.superClass.call(this, ctx);
+
+            this.addField_MFNode('texCoord', x3dom.nodeTypes.X3DTextureCoordinateNode);
         }
     )
 );

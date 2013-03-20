@@ -5,6 +5,7 @@ package x3dom
 	import flash.events.*;
 	import flash.external.ExternalInterface;
 	import flash.geom.Rectangle;
+	import flash.system.LoaderContext;
 	import flash.system.Security;
 	
 	[SWF(backgroundColor="#000000", width="550", height="400", frameRate="120")]
@@ -74,6 +75,11 @@ package x3dom
 		private static var _mousePosY:Number = 0;
 		
 		/**
+		 * LoaderContext for loading cross-domain images
+		 */
+		private static var _loaderContext:LoaderContext;
+		
+		/**
 		 * The current pressed mouse button 0=None, 1=Left, 2=Middle, 4=Right
 		 */
 		private var _mouseButton:Number = 0;
@@ -123,6 +129,9 @@ package x3dom
 			//Create Context3D
 			this.createContext3D();
 			
+			//Create LoaderContext for crossdomain loading
+			_loaderContext = new LoaderContext();
+			_loaderContext.checkPolicyFile = true;
 		}
 		
 		private function initLoadingScreen() : void
@@ -189,6 +198,11 @@ package x3dom
 			return _stage;
 		}
 		
+		public static function getLoaderContext() : LoaderContext 
+		{
+			return _loaderContext;
+		}
+		
 		/**
 		 * Get FlashVars from <object>-Tag
 		 */
@@ -212,6 +226,10 @@ package x3dom
 		{
 			stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
 			stage.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
+			stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, handleRightMouseDown);
+			stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, handleMouseUp);
+			stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, handleMiddleMouseDown);
+			stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, handleMouseUp);
 			stage.addEventListener(MouseEvent.ROLL_OVER, handleMouseOver);
 			stage.addEventListener(Event.MOUSE_LEAVE, handleMouseOut);
 			stage.addEventListener(MouseEvent.DOUBLE_CLICK, handleDoubleClick);
@@ -258,7 +276,7 @@ package x3dom
 			_context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA );
 			
 			// The back buffer size is in actual pixels
-			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 0, true );
+			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 4, true );
 			
 			//Create X3DScene for scene managing
 			this._scene = new X3DScene();
@@ -279,7 +297,7 @@ package x3dom
 		}
 		
 		/**
-		 * Handle MouseDown-Event and call the corresponding JS-Function
+		 * Handle LeftMouseDown-Event and call the corresponding JS-Function
 		 */
 		private function handleMouseDown(e:MouseEvent) : void
 		{
@@ -287,6 +305,46 @@ package x3dom
 			_mousePosX	 	= e.stageX;
 			_mousePosY  	= e.stageY;
 			_mouseButton 	= 1;
+			_mouseDragging 	= true;
+			
+			//Check for special keys
+			if (e.shiftKey) { _mouseButton = 1; }
+			if (e.ctrlKey)  { _mouseButton = 4; }
+			if (e.altKey)   { _mouseButton = 2; }
+			
+			//Call JS MouseDown function
+			ExternalInterface.call("x3dom.bridge.onMouseDown", _mousePosX, _mousePosY, _mouseButton, _canvasIdx);		
+		}
+		
+		/**
+		 * Handle RightMouseDown-Event and call the corresponding JS-Function
+		 */
+		private function handleRightMouseDown(e:MouseEvent) : void
+		{
+			//Update mouse properties
+			_mousePosX	 	= e.stageX;
+			_mousePosY  	= e.stageY;
+			_mouseButton 	= 2;
+			_mouseDragging 	= true;
+			
+			//Check for special keys
+			if (e.shiftKey) { _mouseButton = 1; }
+			if (e.ctrlKey)  { _mouseButton = 4; }
+			if (e.altKey)   { _mouseButton = 2; }
+			
+			//Call JS MouseDown function
+			ExternalInterface.call("x3dom.bridge.onMouseDown", _mousePosX, _mousePosY, _mouseButton, _canvasIdx);		
+		}
+		
+		/**
+		 * Handle MiddleMouseDown-Event and call the corresponding JS-Function
+		 */
+		private function handleMiddleMouseDown(e:MouseEvent) : void
+		{
+			//Update mouse properties
+			_mousePosX	 	= e.stageX;
+			_mousePosY  	= e.stageY;
+			_mouseButton 	= 4;
 			_mouseDragging 	= true;
 			
 			//Check for special keys

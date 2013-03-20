@@ -1,0 +1,248 @@
+﻿{! var ownProperties = data.properties.filter(function($){return $.memberOf == data.alias && !$.isNamespace}).sort(makeSortby("name")); !}
+{! var ownMethods = data.methods.filter(function($){return $.memberOf == data.alias  && !$.isNamespace}).sort(makeSortby("name")); !}
+{! var ownEvents = data.events.filter(function($){return $.memberOf == data.alias  && !$.isNamespace}).sort(makeSortby("name")); !}
+
+{! var global = data; !}
+
+..
+    Classes and methods
+
+{+ get_type(data) +}{+ data.alias +}
+================================================================================
+
+..
+   class-title
+
+<if test="!data.isBuiltin() && (data.isNamespace || data.is('CONSTRUCTOR'))">
+{+ data.desc +}
+
+<if test="data.deprecated">
+.. deprecated:: {+ data.deprecated +}
+</if>
+<if test="data.since">
+.. versionadded:: {+ data.since +}
+</if>
+
+<if test="data.requires.length">
+.. important::
+    **Requires:** <for each="item" in="data.requires">{+ item +}</for>
+</if>
+<if test="data.see.length">
+.. seealso::
+
+    <for each="item" in="data.see">{+ item +}</for>
+</if>
+
+<if test="data.author">
+.. codeauthor:: {+data.author+}
+</if>
+    
+<if test="data.example.length">
+Examples
+--------
+
+<for each="example" in="data.example">
+.. code-block:: javascript
+
+    {+ trim(example) +}
+</for>
+</if>
+
+Constructor
+-----------
+
+.. js:class:: {+ data.alias +}<if test="get_type(data) != 'Namespace '">{+ makeSignature(data.params) +}</if>
+
+<if test="data.augments.length">
+    Bases: <for each="item" in="data.augments">:js:class:`{+ item +}` </for>
+</if>
+<if test="data.params.length">
+    <for each="item" in="data.params">
+    :param {+ item.type +} {+ item.name +}: 
+        {+ item.desc +} <if test="item.defaultValue">(*Default*: {+item.defaultValue+})</if>
+    </for>
+</if>
+<if test="data.exceptions.length">
+    <for each="item" in="data.exceptions">
+    :throws {+ item.type +}:
+        {+ item.name +}: {+ item.desc +}
+    </for>
+</if>
+<if test="data.returns.length">
+    <for each="item" in="data.returns">
+    :returns {+ item.type +}:
+        {+ item.desc +} 
+    </for>
+</if>
+
+</if>
+
+<if test="defined(ownMethods) && ownMethods.length">
+Methods
+-------
+
+..
+   class-methods
+
+<for each="data" in="ownMethods">
+{+ data.name +}
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+.. js:function:: {+ data.alias +}<if test="get_type(data) != 'Namespace '">{+ makeSignature(data.params) +}</if>
+
+<if test="data.params.length">
+    <for each="item" in="data.params">
+    :param {+ item.type +} {+ item.name +}: 
+        {+ item.desc +} <if test="item.defaultValue">(*Default*: {+item.defaultValue+})</if>
+    </for>
+</if>
+<if test="data.exceptions.length">
+    <for each="item" in="data.exceptions">
+    :throws {+ item.type +}:
+        {+ item.name +}: {+ item.desc +}
+    </for>
+</if>
+<if test="data.returns.length">
+    <for each="item" in="data.returns">
+    :returns {+ item.type +}:
+        {+ item.desc +} 
+    </for>
+</if>
+
+{+ data.desc +}
+
+<if test="data.deprecated">
+.. deprecated:: {+ data.deprecated +}
+</if>
+
+<if test="data.since">
+.. versionadded:: {+ data.since +}
+</if>
+
+<if test="data.requires.length">
+.. important::
+    **Requires:** <for each="item" in="data.requires">{+ item +}</for>
+</if>
+<if test="data.see.length">
+.. seealso::
+
+    <for each="item" in="data.see">{+ item +}</for>
+</if>
+
+<if test="data.author">
+.. codeauthor:: {+data.author+}
+</if>
+    
+<if test="data.example.length">
+<for each="example" in="data.example">
+.. code-block:: javascript
+
+    {+ trim(example) +}
+</for>
+</if>
+
+</for>
+</if>
+    
+<if test="defined(ownProperties) && ownProperties.length">
+Attributes
+----------
+
+..
+   class-attributes
+
+<for each="member" in="ownProperties">
+{+ member.name +}
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+.. js:attribute:: {+ member.name +} {!
+            if (member.isPrivate) output += "(private)";
+            if (member.isInner) output += "(inner)";
+            if (member.isStatic) output += "(static)";
+            if (member.isConstant) output += "(constant)";
+        !}  
+<if test="member.defaultValue">(*Default*: {+ member.defaultValue +})</if>
+
+{+ member.desc +}
+
+<if test="member.deprecated">
+.. deprecated:: {+ member.deprecated +}
+</if>
+<if test="member.since">
+.. versionadded:: {+ member.since +}
+</if>
+
+<if test="member.requires.length">
+.. important::
+    **Requires:** <for each="item" in="member.requires">{+ item +}</for>
+</if>
+<if test="member.see.length">
+.. seealso::
+
+    <for each="item" in="member.see">{+ item +}</for>
+</if>
+
+<if test="member.author">
+.. codeauthor:: {+member.author+}
+</if>
+    
+<if test="member.example.length">
+<for each="example" in="member.example">
+.. code-block:: javascript
+
+    {+ trim(example) +}
+</for>
+</if>
+
+</for>
+</if>
+
+<if test="defined(ownEvents) && ownEvents.length">
+Events
+------
+
+{+ member.name +}
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+
+<for each="member" in="ownEvents">
+.. js:class:: {+ member.name +} {!
+            if (member.isPrivate) output += "(private)";
+            if (member.isInner) output += "(inner)";
+            if (member.isStatic) output += "(static)";
+            if (member.isConstant) output += "(constant)";
+        !}  
+<if test="member.defaultValue">(Default: {+ member.defaultValue +})</if>
+
+{+ data.desc +}
+
+<if test="data.deprecated">
+.. deprecated:: {+ data.deprecated +}
+</if>
+<if test="data.since">
+.. versionadded:: {+ data.since +}
+</if>
+
+<if test="data.requires.length">
+.. important::
+    **Requires:** <for each="item" in="data.requires">{+ item +}</for>
+</if>
+<if test="data.see.length">
+.. seealso::
+
+    <for each="item" in="data.see">{+ item +}</for>
+</if>
+
+<if test="data.author">
+.. codeauthor:: {+data.author+}
+</if>
+    
+<if test="data.example.length">
+<for each="example" in="data.example">
+.. code-block:: javascript
+
+    {+ trim(example) +}
+</for>
+</if>
+
+</for>
+</if>

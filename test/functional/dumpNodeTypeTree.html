@@ -8,13 +8,34 @@
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
-<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
 <script type="text/javascript" src="../../src/util/Properties.js"></script>
 <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
 <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/util/States.js"></script>
+<script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
 <script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
 <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 <script type="text/javascript" src="../../src/gfx_flash.js"></script>
 <script type="text/javascript" src="../../src/X3DDocument.js"></script>
@@ -40,6 +61,7 @@
 <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
@@ -49,18 +71,38 @@
     <!-- BEGIN:TEST -->
     <script type="text/javascript" src="media/js/tests.js"></script>
     <!-- END:TEST -->
+    
+    <style>
+    .FIELD {
+        font-size: small;
+        color: saddlebrown;
+        margin: 10px;
+    }
+    </style>
 	</head>
        
 <body>
 
-    <h1 style='color:darkblue;'>Nodetypes by component</h1>
-    <div id="components"></div>
+    <h1 style='color:darkblue;'>X3DOM Node Types</h1>
+	<div>
+	   The <a href="#_types">node type tree</a> shows the complete node hierarchy, 
+	   whereas the <a href="#_components">components</a> list below also shows the nodes' fields.
+	</div>
     <br />
-	
-    <h1 style='color:darkblue;'>X3DOM nodetype tree</h1>
+    <hr />
+    
+    <a name="_types"></a>
+    <h1 style='color:darkblue;'>X3DOM node type tree</h1>
 	<div id="types"></div>
     <br />
+    <hr />
     
+    <a name="_components"></a>
+    <h1 style='color:darkblue;'>Node types by component</h1>
+    <div id="components"></div>
+    <br />
+    <hr />
+  
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
     <script type="text/javascript">
     
@@ -132,6 +174,53 @@
                 dumpType(x3dom.nodeTypes[t].childTypes[t][i], indent+1); 
             }
         }        
+        
+        function dumpFields(t, elem) {
+            var instance = new x3dom.nodeTypes[t];
+            var isMultiField = false;
+            var fieldInfo = "<li><table cellspacing='1' cellpadding='1' border='1' class='FIELD'>";
+            
+            fieldInfo += "<tr align='left'><th>DataType</th><th>Name</th><th>DefaultValue</th></tr>";
+            
+            for (var fieldName in instance._vf) {
+                isMultiField = (instance._vfFieldTypes[fieldName].charAt(0) == "M");
+    			var fieldValue = isMultiField ? "[" : "";
+    			
+    			if (instance._vf[fieldName].toGL)
+		            fieldValue += instance._vf[fieldName].toGL().toString();
+		        else if (instance._vfFieldTypes[fieldName] == "MFString") {
+		            for (var k=0; k<instance._vf[fieldName].length; k++)
+		                if (k == instance._vf[fieldName].length - 1)
+		                    fieldValue += instance._vf[fieldName][k];
+		                else
+		                    fieldValue += (instance._vf[fieldName][k] + ", ");
+	            }
+		        else
+		            fieldValue += instance._vf[fieldName].toString();
+		        
+		        fieldValue += (isMultiField ? "]" : "");
+		        if (fieldValue.length == 0)
+		            fieldValue = "&nbsp;";
+		        
+		        fieldInfo += "<tr><td>" + instance._vfFieldTypes[fieldName] + "</td><td>" + 
+		                     fieldName + "</td><td>" + fieldValue + "</td></tr>";
+    		}
+    		
+            for (var fieldName in instance._cf) {
+                isMultiField = (instance._cfFieldTypes[fieldName].charAt(0) == "M");
+                if (isMultiField)
+                    fieldValue = "[]";
+                else
+                    fieldValue = "NULL";
+                
+		        fieldInfo += "<tr><td>" + instance._cfFieldTypes[fieldName] + "</td><td>" +  
+		                     fieldName + "</td><td>" + fieldValue + "</td></tr>";
+    		}
+    		
+    		fieldInfo += "</table></li>";
+    		
+    		elem.append(jQuery(fieldInfo));
+        }
                         
         $(document).ready( function() {
 
@@ -153,13 +242,15 @@
                 }
             }            
             
+            /*
             var iexplore = (navigator.userAgent.indexOf("MSIE") != -1);
             
             if (iexplore) {
                 document.write("Sorry, but Internet Explorer does not yet support advanced scripting.");
                 document.write("<br\>Please use a WebKit or Gecko based web browser like Firefox etc.");
             }
-            else {
+            else */
+            {
                 // Dump the nodetype hierachy
                 dumpType("X3DNode", 0); 
                 
@@ -172,13 +263,12 @@
                 }
                 components.sort();
                 
-                //for (var c in x3dom.components) {
                 for (var cn in components) {
                     var c = components[cn];
                     var component = x3dom.components[c];
-                    $("#components").append("<h2><a href='" + 
+                    $("#components").append("<h2 style='margin-top: 40px;'><a href='" + 
                         baseUrl + urlMap[c] +
-                        "' style='color:black; text-decoration:none; font-style:italic;'>" + 
+                        "' style='color:green; text-decoration:none; font-style:italic; font-weight:bold;'>" + 
                         c + "</a></h2>");
                     
                     $("#components").append("<ul style='list-style-type:circle;'>");
@@ -189,6 +279,8 @@
                             baseUrl + urlMap[c] + "#" + t + 
                             "' style='color:black; text-decoration:none; font-weight:bold;'>" + 
                             t + "</a></li>");
+                        
+                        dumpFields(t, $ul); 
                     }
                 }
             }

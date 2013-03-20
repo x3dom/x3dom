@@ -1,10 +1,12 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
  */
 
 
@@ -72,7 +74,6 @@ x3dom.docs.getNodeTreeInfo = function() {
         return false;
     };
 
-
     var dump = function(t, indent) {
         for (var i=0; i<indent; i++) {
             types += "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
@@ -99,7 +100,7 @@ x3dom.docs.getNodeTreeInfo = function() {
 
          while (t.superClass) {
              if (t.superClass.childTypes[t.superClass._typeName] === undefined) {
-                  t.superClass.childTypes[t.superClass._typeName] = [];
+                 t.superClass.childTypes[t.superClass._typeName] = [];
              }
              if (!objInArray(t.superClass.childTypes[t.superClass._typeName], t._typeName)) {
                  t.superClass.childTypes[t.superClass._typeName].push(t._typeName);
@@ -121,7 +122,6 @@ x3dom.docs.getComponentInfo = function() {
     var component;
     var result = "";
     var c, cn;
-
 
     for (c in x3dom.components) {
         components.push(c);

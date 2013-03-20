@@ -1,88 +1,101 @@
-<?xml version='1.0' encoding='UTF-8'?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns='http://www.w3.org/1999/xhtml'>
 	<head>
 		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-		<meta http-equiv="X-UA-Compatible" content="chrome=1" />
-		<link rel="stylesheet" type="text/css" href="../../x3dom.css" />
-	<script type="text/javascript" src="../../lang/Array.js"></script>
-	<script type="text/javascript" src="../../Internals.js"></script>
-	<script type="text/javascript" src="../../debug.js"></script>
-	<script type="text/javascript" src="../../ImageLoadManager.js"></script>
-	<script type="text/javascript" src="../../util/Properties.js"></script>
-	<script type="text/javascript" src="../../util/DoublyLinkedList.js"></script>
-	<script type="text/javascript" src="../../util/EarClipping.js"></script>
-	<script type="text/javascript" src="../../X3DCanvas.js"></script>
-	<script type="text/javascript" src="../../Runtime.js"></script>
-	<script type="text/javascript" src="../../Main.js"></script>
-	<script type="text/javascript" src="../../gfx_webgl.js"></script>
-	<script type="text/javascript" src="../../gfx_flash.js"></script>
-	<script type="text/javascript" src="../../X3DDocument.js"></script>
-	<script type="text/javascript" src="../../MatrixMixer.js"></script>
-	<script type="text/javascript" src="../../Viewarea.js"></script>
-	<script type="text/javascript" src="../../Mesh.js"></script>
-	<script type="text/javascript" src="../../fields.js"></script>
-	<script type="text/javascript" src="../../nodes/NodeNameSpace.js"></script>
-	<script type="text/javascript" src="../../nodes/Core.js"></script>
-	<script type="text/javascript" src="../../nodes/Grouping.js"></script>
-	<script type="text/javascript" src="../../nodes/Bindable.js"></script>
-	<script type="text/javascript" src="../../nodes/Rendering.js"></script>
-	<script type="text/javascript" src="../../nodes/Shape.js"></script>
-	<script type="text/javascript" src="../../nodes/Lighting.js"></script>
-	<script type="text/javascript" src="../../nodes/Followers.js"></script>
-	<script type="text/javascript" src="../../nodes/Interpolation.js"></script>
-	<script type="text/javascript" src="../../nodes/Time.js"></script>
-	<script type="text/javascript" src="../../nodes/Networking.js"></script>
-	<script type="text/javascript" src="../../nodes/EnvironmentalEffects.js"></script>
-	<script type="text/javascript" src="../../nodes/Navigation.js"></script>
-	<script type="text/javascript" src="../../nodes/Text.js"></script>
-	<script type="text/javascript" src="../../nodes/Sound.js"></script>
-	<script type="text/javascript" src="../../nodes/Texturing.js"></script>
-	<script type="text/javascript" src="../../nodes/Shaders.js"></script>
-	<script type="text/javascript" src="../../nodes/Geometry3D.js"></script>
-	<script type="text/javascript" src="../../nodes/Geospatial.js"></script>
-	<script type="text/javascript" src="../../nodes/Geometry2D.js"></script>
-	<script type="text/javascript" src="../../nodes/VolumeRendering.js"></script>
-	<script type="text/javascript" src="../../Docs.js"></script>
-
+		<title>X3DOM | Unlit Geometry</title>
+		
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../x3dom.css" />
+<script type="text/javascript" src="../../lang/Array.js"></script>
+<script type="text/javascript" src="../../Internals.js"></script>
+<script type="text/javascript" src="../../debug.js"></script>
+<script type="text/javascript" src="../../util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../util/RefinementJobWorker.js"></script>
+<script type="text/javascript" src="../../util/Properties.js"></script>
+<script type="text/javascript" src="../../util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../util/EarClipping.js"></script>
+<script type="text/javascript" src="../../util/Utils.js"></script>
+<script type="text/javascript" src="../../util/States.js"></script>
+<script type="text/javascript" src="../../X3DCanvas.js"></script>
+<script type="text/javascript" src="../../Runtime.js"></script>
+<script type="text/javascript" src="../../Main.js"></script>
+<script type="text/javascript" src="../../Cache.js"></script>
+<script type="text/javascript" src="../../Texture.js"></script>
+<script type="text/javascript" src="../../shader/Shader.js"></script>
+<script type="text/javascript" src="../../shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../gfx_webgl.js"></script>
+<script type="text/javascript" src="../../gfx_flash.js"></script>
+<script type="text/javascript" src="../../X3DDocument.js"></script>
+<script type="text/javascript" src="../../MatrixMixer.js"></script>
+<script type="text/javascript" src="../../Viewarea.js"></script>
+<script type="text/javascript" src="../../Mesh.js"></script>
+<script type="text/javascript" src="../../fields.js"></script>
+<script type="text/javascript" src="../../nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../nodes/Core.js"></script>
+<script type="text/javascript" src="../../nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../nodes/Shape.js"></script>
+<script type="text/javascript" src="../../nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../nodes/Followers.js"></script>
+<script type="text/javascript" src="../../nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../nodes/Time.js"></script>
+<script type="text/javascript" src="../../nodes/Networking.js"></script>
+<script type="text/javascript" src="../../nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../nodes/Text.js"></script>
+<script type="text/javascript" src="../../nodes/Sound.js"></script>
+<script type="text/javascript" src="../../nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../Docs.js"></script>
+<!-- END:X3DOM -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+		
 	</head>
 	<body>
-		<x3d x="0px" y="0px" width="1024px" height="512px" backend="flash">
-		  <Scene DEF='scene'>
-		  	<Background skyColor='1 1 1'></Background>
-				<Transform translation='0 0 0'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='0 0 1' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box></Box>
-					</Shape>
-				</Transform>
-				<Transform translation='0 0 -3'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='0 0 1' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box></Box>
-					</Shape>
-				</Transform>
-				<Transform translation='0 0 -6'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box size='1 1 1'></Box>
-					</Shape>
-				</Transform>
-				<Transform translation='0 0 -9'>
-					<Shape solid='false'>
-						<Appearance DEF='_01_-_Default' sortType='transparent'>
-							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' transparency='0.5'></Material>
-						</Appearance>
-						<Box size='1 1 1'></Box>
-					</Shape>
-				</Transform>
-			</Scene>
-      </x3d>
+		<h2>Unlit Geometry</h2>
+		<p>Render unlit if no Appearance or Material node is available.</p>
+		<X3D id='someUniqueId' showStat='false' showLog='false' width='400' height='400' backend='flash'>
+			<scene>
+				<navigationinfo headlight='true'></navigationinfo>
+				<background></background>
+				<transform>
+				  <shape>
+					<appearance>
+					  <material diffuseColor='1 1 1'></material>
+					</appearance>
+					<Box></Box>
+				  </shape>
+				</transform>
+			</scene>
+		</X3D>
+		<X3D id='someUniqueId2' showStat='false' showLog='false' width='400' height='400' backend='flash'>
+			<scene>
+				<background></background>
+				<transform>
+				  <shape>
+					<Box></Box>
+				  </shape>
+				</transform>
+			</scene>
+		</X3D>
 	</body>
 </html>

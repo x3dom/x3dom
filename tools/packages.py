@@ -7,16 +7,37 @@ BASICS = [
   'lang/Array.js',
   'Internals.js',
   'debug.js',
-  'ImageLoadManager.js',
   'util/DownloadManager.js',
-  'util/BitLODComposer.js',
-  'util/BitLODWorker.js',
+  'util/RefinementJobManager.js',
+  'util/RefinementJobWorker.js',
   'util/Properties.js',
   'util/DoublyLinkedList.js',
   'util/EarClipping.js',
+  'util/Utils.js',
+  'util/States.js',
+  'util/BinaryContainerSetup.js',
   'X3DCanvas.js',
   'Runtime.js',
-  'Main.js'
+  'Main.js',
+  'Cache.js',
+  'Texture.js',
+]
+
+SHADER = [
+	'shader/Shader.js',
+	'shader/ShaderParts.js',
+	'shader/ShaderDynamic.js',
+	'shader/ShaderDynamicMobile.js',
+	'shader/ShaderComposed.js',
+	'shader/ShaderPicking.js',
+	'shader/ShaderPicking24.js',
+	'shader/ShaderPickingColor.js',
+	'shader/ShaderPickingTexcoord.js',
+	'shader/ShaderFrontgroundTexture.js',
+	'shader/ShaderBackgroundTexture.js',
+	'shader/ShaderBackgroundSkyTexture.js',
+	'shader/ShaderBackgroundCubeTexture.js',
+	'shader/ShaderShadow.js',
 ]
 
 GFX = [
@@ -48,16 +69,17 @@ NODES = [
     'nodes/Texturing.js',
     'nodes/Shaders.js',
     'nodes/Geometry3D.js',
+    'nodes/Texturing3D.js'
 ]
 
 COMPONENTS = [
   'nodes/Geospatial.js',
   'nodes/Geometry2D.js',
   'nodes/VolumeRendering.js',
-  'Docs.js'                    # interactive documnetatation
+  'Docs.js'                    # interactive documentation
 ]
 
-CORE_PROFILE = BASICS + GFX + NODES
+CORE_PROFILE = BASICS + SHADER + GFX + NODES
 MORE_PROFILE = COMPONENTS
 
 FULL_PROFILE = CORE_PROFILE + MORE_PROFILE

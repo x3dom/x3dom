@@ -1,12 +1,18 @@
-BlobBuilder = (typeof BlobBuilder !== 'undefined') ? BlobBuilder : 
-			  (typeof WebKitBlobBuilder !== 'undefined') ? WebKitBlobBuilder : 
-			  (typeof MozBlobBuilder !== 'undefined') ? MozBlobBuilder : undefined;
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
+ */
 
-URL = (typeof URL !== 'undefined') ? URL : 
-	  (typeof webkitURL !== 'undefined') ? webkitURL : undefined;
+URL = (typeof URL !== 'undefined') ? URL :
+        (typeof webkitURL !== 'undefined') ? webkitURL : undefined;
 
-
-
+        
 x3dom.BitLODWorker = function()
 {
   //list of registered attribute arrays
@@ -57,7 +63,7 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 		attributeLeftShift 	   = (strideReading * 8) - attrib.readOffset - attrib.numBitsPerComponentPerLevel * nc;	
 		attrib.precisionOffset = attrib.numBitsPerComponent - attrib.numBitsPerComponentPerLevel -
                              (level * attrib.numBitsPerComponentPerLevel);
-							
+
 		for (c = 0; c < nc; ++c) {
 			attrib.componentLeftShift[c] = attributeLeftShift + (nc - c - 1) * attrib.numBitsPerComponentPerLevel;
 			
@@ -68,10 +74,7 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 	
 	var n = refinementBufferView.length;	
 		
-	var nc,
-      writeTarget,
-      baseIdx,
-      idx;
+	var writeTarget, baseIdx, idx;
 		
 	var component;
 	
@@ -125,8 +128,8 @@ x3dom.BitLODWorker.prototype.refineAttributeData = function (level)
 	//}
 	//END INLINED LOOP
 
-	//BEGIN OPTIMIZED LOOP
-	//{		
+	//BEGIN OPTIMIZED LOOP (pos: 3 x 2 bit, nor: 2 x 1 bit)
+	//{
   /*
 		var writeTargetNor = attribArrays[0].bufferView;
 		var writeTargetPos = attribArrays[1].bufferView;
@@ -316,7 +319,7 @@ x3dom.BitLODWorker.prototype.refinementDataLoaded = function(buffer, l) {
   }  
   
   tryNextRefinement();
-}
+};
 
 
 x3dom.BitLODWorker.prototype.tryNextRefinement = function() {
@@ -328,7 +331,7 @@ x3dom.BitLODWorker.prototype.tryNextRefinement = function() {
                 
     refineAttributeData(nextLevel);    
   }
-}
+};
 
 
 //a small AttributeArray wrapper class
@@ -336,7 +339,7 @@ x3dom.BitLODWorker.prototype.AttributeArray = function(numComponents, numBitsPer
 	//---------------------------------
 	//static general information
 	this.numComponents 	   	 = numComponents;	
-	this.numBitsPerComponent = numBitsPerComponent	
+	this.numBitsPerComponent = numBitsPerComponent;
 	this.strideWriting		   = numComponents; //default value, gets changed for interleaved data
 	//this.writeOffset set on demand
 		
@@ -381,10 +384,8 @@ x3dom.BitLODWorker.prototype.toBlob = function ()
 			  str += this[p] + ';\n';
 			}
 		}
-    }
+  }
   
-	var bb = new BlobBuilder();
-	bb.append(str);
-	
-	return URL.createObjectURL(bb.getBlob());
+  var blob = new Blob([str]);
+  return URL.createObjectURL(blob);
 };

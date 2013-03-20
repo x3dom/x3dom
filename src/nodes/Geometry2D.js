@@ -1,20 +1,31 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
+ 
+
+/* ### X3DPlanarGeometryNode ### */
+x3dom.registerNodeType(
+    "X3DPlanarGeometryNode",
+    "Geometry2D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DPlanarGeometryNode.superClass.call(this, ctx);   
+        }
+    )
+);
 
 /* ### Arc2D ### */
 x3dom.registerNodeType(
     "Arc2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Arc2D.superClass.call(this, ctx);
 
@@ -29,8 +40,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Arc2D_'+ r + start + end;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using Arc2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Arc2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				
@@ -102,7 +113,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "ArcClose2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.ArcClose2D.superClass.call(this, ctx);
 
@@ -118,8 +129,8 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'ArcClose2D_'+r+start+end+this._vf.closureType;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using ArcClose2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using ArcClose2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				var anzahl = this._vf.subdivision;
@@ -372,7 +383,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Circle2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Circle2D.superClass.call(this, ctx);
 
@@ -383,8 +394,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Circle2D_'+r;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using Circle2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Circle2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				
@@ -461,7 +472,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Disk2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Disk2D.superClass.call(this, ctx);
 
@@ -474,8 +485,8 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Disk2D_'+ir+or;
 
-			if (x3dom.geoCache[geoCacheID] !== undefined) {
-				x3dom.debug.logInfo("Using Disk2D from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Disk2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			} else {
 				
@@ -616,20 +627,23 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Polyline2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Polyline2D.superClass.call(this, ctx);
 
             this.addField_MFVec2f(ctx, 'lineSegments', []);
 			
-			var x = this._vf.lineSegments[0].x;
-			var y = this._vf.lineSegments[0].y;
+			var x = 0, y = 0;
+			if (this._vf.lineSegments.length) {
+			    x = this._vf.lineSegments[0].x;
+			    y = this._vf.lineSegments[0].y;
+		    }
          	
 			var geoCacheID = 'Polyline2D_'+x+'-'+y;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Polyline2D from Cache");
+				//x3dom.debug.logInfo("Using Polyline2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -686,20 +700,23 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Polypoint2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Polypoint2D.superClass.call(this, ctx);
 
             this.addField_MFVec2f(ctx, 'point', []);
 			
-			var x = this._vf.point[0].x;
-			var y = this._vf.point[0].y;
+			var x = 0, y = 0;
+			if (this._vf.point.length) {
+    			x = this._vf.point[0].x;
+    			y = this._vf.point[0].y;
+    		}
          	
 			var geoCacheID = 'Polypoint2D_'+x+'-'+y;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Polypoint2D from Cache");
+				//x3dom.debug.logInfo("Using Polypoint2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -746,7 +763,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Rectangle2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Rectangle2D.superClass.call(this, ctx);
 			
@@ -758,9 +775,9 @@ x3dom.registerNodeType(
          	
 			var geoCacheID = 'Rectangle2D_'+sx+'-'+sy;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Rectangle2D from Cache");
+				//x3dom.debug.logInfo("Using Rectangle2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -823,7 +840,7 @@ x3dom.registerNodeType(
 				   this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				   
 				   Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                        node.setAllDirty();
                    });
 					
                 } else {
@@ -878,29 +895,36 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "TriangleSet2D",
     "Geometry2D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DPlanarGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.TriangleSet2D.superClass.call(this, ctx);
 
             this.addField_MFVec2f(ctx, 'vertices', []);
 			this.addField_MFVec2f(ctx, 'lineSegments', []);
 			
-			var x = this._vf.vertices[0].x;
-			var y = this._vf.vertices[0].y;
+			var x = 0, y = 0;
+			if (this._vf.vertices.length) {
+    			x = this._vf.vertices[0].x;
+    			y = this._vf.vertices[0].y;
+    		}
          	
 			var geoCacheID = 'TriangleSet2D_'+x+'-'+y;
 
-			if( x3dom.geoCache[geoCacheID] !== undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using TriangleSet2D from Cache");
+				//x3dom.debug.logInfo("Using TriangleSet2D from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
 			{
-				var minx = this._vf.vertices[0].x;
-				var miny = this._vf.vertices[0].y;
-				var maxx = this._vf.vertices[0].x;
-				var maxy = this._vf.vertices[0].y;
+			    var minx = 0, miny = 0, maxx = 0, maxy = 0;
+				
+				if (this._vf.vertices.length) {
+    				minx = this._vf.vertices[0].x;
+    				miny = this._vf.vertices[0].y;
+    				maxx = this._vf.vertices[0].x;
+    				maxy = this._vf.vertices[0].y;
+			    }
 					
 				for (var i = 0; i < this._vf.vertices.length ; i++) {
 					if(this._vf.vertices[i].x < minx) { minx=this._vf.vertices[i].x }

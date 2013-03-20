@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -30,21 +29,12 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                var collectNeedsReset = false;
-                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 for (var i=0; i<this._childNodes.length; i++) {
                     if (this._childNodes[i]) {
                         var childTransform = this._childNodes[i].transformMatrix(transform);
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             }
         }
     )
@@ -124,19 +114,10 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                var collectNeedsReset = false;
-                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 if (this._childNodes[this._vf.whichChoice]) {
                     var childTransform = this._childNodes[this._vf.whichChoice].transformMatrix(transform);
                     this._childNodes[this._vf.whichChoice].collectDrawableObjects(childTransform, out);
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             },
 
             doIntersect: function(line)
@@ -164,7 +145,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DTransformNode.superClass.call(this, ctx);
 
-            ctx.doc._nodeBag.trans.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.trans.push(this);
+            else
+                x3dom.debug.logWarning("X3DTransformNode: No runtime context found!");
 
             // holds the current matrix (local space transform)
             this._trafo = null;
@@ -421,18 +405,26 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RemoteSelectionGroup.superClass.call(this, ctx);
 
-            this.addField_MFString(ctx, 'url', []);             // address for WebSocket connection
+            this.addField_MFString(ctx, 'url', ["ws://localhost:35668/cstreams/0"]);  // address for WebSocket connection
             this.addField_MFString(ctx, 'label', []);           // list for subsequent id/object pairs
             this.addField_SFInt32(ctx, 'maxRenderedIds', -1);   // max number of items to be rendered
             this.addField_SFBool(ctx, 'reconnect', true);       // if true, the node tries to reconnect
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
+            this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
+            this.addField_MFString(ctx, 'invisibleNodes', []);  // allows disabling nodes with given label name (incl. prefix*)
+            this.addField_SFBool(ctx, 'internalCulling', false);    // experimental field to enable internal culling algos
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
 
             this._nameObjMap = {};
+            this._createTime = [];
+            this._visibleList = [];
 
-            this.initializeSocket();    // init socket connection
+            if (ctx)
+                this.initializeSocket();    // init socket connection
+            else
+                x3dom.debug.logWarning("RemoteSelectionGroup: No runtime context found!");
         },
         {
             initializeSocket: function() 
@@ -540,15 +532,25 @@ x3dom.registerNodeType(
 
             nodeChanged: function ()
             {
-                this._nameObjMap = {};
+                var n = this._vf.label.length;
 
-                for (var i= 0, n=this._vf.label.length; i<n; ++i)
+                this._nameObjMap = {};
+                this._createTime = new Array(n);
+                this._visibleList = new Array(n);
+
+                for (var i=0; i<n; ++i)
                 {
                     var shape = this._childNodes[i];
-                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode))
-                        this._nameObjMap[this._vf.label[i]] = shape;
-					else
+                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
+                        this._nameObjMap[this._vf.label[i]] = { shape: shape, pos: i };
+                        this._visibleList[i] = true;
+                    }
+					else {
+						this._visibleList[i] = false;
 						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
+					}
+					// init list that holds creation time of gl object
+					this._createTime[i] = 0;
                 }
             },
 
@@ -562,6 +564,60 @@ x3dom.registerNodeType(
                     }
                     this.initializeSocket();
                 }
+                else if (fieldName == "invisibleNodes")
+                {
+                    for (var i=0, n=this._vf.label.length; i<n; ++i)
+                    {
+                        var shape = this._childNodes[i];
+                        
+                        if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) 
+                        {
+                            this._visibleList[i] = true;
+                            
+                            for (var j=0; j<this._vf.invisibleNodes.length; ++j)
+                            {
+                                var nodeName = this._vf.invisibleNodes[j];
+                                var starInd = nodeName.lastIndexOf('*');
+                                var matchNameBegin = false;
+                                
+                                if (starInd > 0) {
+                                    nodeName = nodeName.substring(0, starInd);
+                                    matchNameBegin = true;
+                                }
+                                if (nodeName.length <= 1)
+                                    continue;
+                                
+                                if ((matchNameBegin && this._vf.label[i].indexOf(nodeName) == 0) ||
+                                    this._vf.label[i] == nodeName) {
+                                    this._visibleList[i] = false;
+                                    break;
+                                }
+                            }
+                        }
+                        else {
+                            this._visibleList[i] = false;
+                        }
+                    }
+                }
+            },
+            
+            getNumRenderedObjects: function(len, isMoving)
+            {
+                var n = len;
+				
+                if (this._vf.maxRenderedIds > 0)
+                {
+                    var num = Math.max(this._vf.maxRenderedIds, 16);  // set lower bound
+                    
+                    var scale = 1;  // scale down on move
+                    if (isMoving)
+                        scale = Math.min(this._vf.scaleRenderedIdsOnMove, 1);
+                    
+                    num = Math.max(Math.round(scale * num), 0);
+                    n = Math.min(n, num);
+                }
+                
+                return n;
             },
 
             // Collects array of [matrix, node] for all objects with given id that should be drawn
@@ -572,61 +628,126 @@ x3dom.registerNodeType(
                     return;
                 }
                 
+                var isMoving = this._nameSpace.doc._viewarea.isMoving();
+                
+                var ts = new Date().getTime();
+                var maxLiveTime = 10000;
+                var i, n;
+                
+                if (!this._vf.enableCulling)
+                {
+                    n = this.getNumRenderedObjects(this._childNodes.length, isMoving);
+                    
+                    // experimental
+                    var view_frustum = null;
+                    
+                    if (this._vf.internalCulling == true)
+                    {
+        		        var viewpoint = this._nameSpace.doc._viewarea._scene.getViewpoint();
+                        var near = viewpoint.getNear();
+                        
+                        var proj = this._nameSpace.doc._viewarea.getProjectionMatrix();
+                        var view = this._nameSpace.doc._viewarea.getViewMatrix();
+                        
+                        view_frustum = new x3dom.fields.FrustumVolume(proj.mult(view));
+                        
+                		var trafo = this.getCurrentTransform();
+                		var modelView = view.mult(trafo);
+                		
+                        var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
+                        imgPlaneHeightAtDistOne /= this._nameSpace.doc._viewarea._height;
+                        
+                		var box = new x3dom.fields.BoxVolume();
+        		    }
+        		    
+                    for (i=0, cnt=0; i<this._childNodes.length; i++)
+                    {
+                        var shape = this._childNodes[i];
+                        
+                        if (shape)
+                        {
+                            var needCleanup = true;
+                            
+                            if (this._visibleList[i] && cnt < n)
+                            {
+                                if (view_frustum)   // experimental
+                                {
+                                    shape.getVolume(box.min, box.max, false);
+                                    box.transform(trafo);
+                                }
+                                
+                                if (!view_frustum || view_frustum.intersect(box))
+                                {
+                                    var pxThreshold = 20, numPixel = pxThreshold;
+                                    
+                                    if (view_frustum)
+                                    {
+                                        var center = modelView.multMatrixPnt(shape.getCenter());
+                            		    var dia = shape.getDiameter();
+                            		    
+                                        var dist = Math.max(-center.z - dia / 2, near);
+                                        var projPixelLength = dist * imgPlaneHeightAtDistOne;
+                                        
+                                        numPixel = dia / projPixelLength;
+                                    }
+                                    
+                                    // collect drawables
+                                    if (numPixel > pxThreshold)
+                                    {
+                                        shape.collectDrawableObjects(transform, out);
+                                        this._createTime[i] = ts;
+                                        cnt++;
+                                        needCleanup = false;
+                                    }
+                                }
+                            }
+                            
+                            if (needCleanup && !isMoving && this._createTime[i] > 0 && 
+                                ts - this._createTime[i] > maxLiveTime && shape._cleanupGLObjects)
+                            {
+                                shape._cleanupGLObjects(true);
+                                this._createTime[i] = 0;
+                            }
+                        }
+                    }
+                    
+                    return;
+                }
+
                 if (this._websocket)
                     this._websocket.updateCamera();
 
-                // TODO; fully remove idList in collect, but for now...
-                var i, n, maxCnt;
-
                 if (this._vf.label.length)
                 {
-                    n = this._idList.length;
-                    maxCnt = this._vf.maxRenderedIds;
-					
-                    if ((this._nameSpace.doc._viewarea._lastButton > 0 || 
-                         this._nameSpace.doc._viewarea._isAnimating) && maxCnt > 0) {
-                        var num = Math.max(maxCnt, 16);
-                        num = Math.max(Math.round(Math.min(this._vf.scaleRenderedIdsOnMove, 1.0) * num), 0.0);
-                        n = Math.min(n, num);
-                    }
+                    n = this.getNumRenderedObjects(this._idList.length, isMoving);
                     
                     for (i=0; i<n; i++)
                     {
                         var obj = this._nameObjMap[this._idList[i]];
-                        if (obj)
-                            obj.collectDrawableObjects(transform, out);
+                        if (obj && obj.shape) {
+                            obj.shape.collectDrawableObjects(transform, out);
+                            this._createTime[obj.pos] = ts;
+                        }
 						else
 							x3dom.debug.logError("Invalid label: " + this._idList[i]);
                     }
-                }
-                else
-                {
-                    out.useIdList = true;
-                    out.collect = false;
-                    out.idList = this._idList;
-
-                    if (out.idList.indexOf(this._DEF) >= 0)
-                        out.collect = true;
-
-                    for (i=0; i<this._childNodes.length; i++) {
-                        if (this._childNodes[i]) {
-                            var childTransform = this._childNodes[i].transformMatrix(transform);
-                            this._childNodes[i].collectDrawableObjects(childTransform, out);
+                    
+                    for (i=0; i<this._childNodes.length; i++)
+                    {
+                        if (this._childNodes[i] && !isMoving && this._createTime[i] > 0 && 
+                            ts - this._createTime[i] > maxLiveTime && this._childNodes[i]._cleanupGLObjects)
+                        {
+                            this._childNodes[i]._cleanupGLObjects(true);
+                            this._createTime[i] = 0;
                         }
                     }
                 }
-                
-                // assumes that this node can't be nested...
-                out.useIdList = false;
-                out.collect = false;
             }
         }
     )
 );
 
 // Not a real X3D node type
-// TODO; refactor to Scene + Viewarea node --> via Layering component?
-
 // ### Scene ###
 x3dom.registerNodeType(
     "Scene",
@@ -635,16 +756,73 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
 
-            // define the experimental picking mode:
-            // box, exact (NYI), idBuf, color, texCoord
+            // define the experimental picking mode: box, idBuf, idBuf24, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
+            
+            // yet another exp. field for shadow dom remapping
+            this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
+            
+            // very experimental to avoid collect at each frame to update objects + trafos
+            // TODO; add onload update handler to make it work with inline nodes
+            this.addField_SFBool(ctx, 'isStaticHierarchy', false);
+            
+            // If TRUE, transparent objects are sorted from back to front
+            this.addField_SFBool(ctx, 'sortTrans', true);
+            // If TRUE, objects outside the viewing frustum are ignored
+            this.addField_SFBool(ctx, 'frustumCulling', true);
+            
+            this._lastMin = null;
+            this._lastMax = null;
+            
+            this._shadowIdMap = null;
+            this.drawableObjects = null;    // webgl helper object
         },
         {
-            /* bindable getter (e.g. getViewpoint) are added automatically */
+            /* Bindable getter (e.g. getViewpoint) are added automatically */
+            
+            nodeChanged: function()
+            {
+                this.loadMapping();
+            },
+            
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "shadowObjectIdMapping")
+                    this.loadMapping();
+            },
+            
+            updateVolume: function()
+            {
+                var min = x3dom.fields.SFVec3f.MAX();
+                var max = x3dom.fields.SFVec3f.MIN();
+                
+                if (this.getVolume(min, max, true)) {
+                    this._lastMin = min;
+                    this._lastMax = max;
+                }
+            },
+            
+            loadMapping: function()
+            {
+                this._shadowIdMap = null;
+                
+                if (this._vf.shadowObjectIdMapping.length == 0) {
+                    return;
+                }
+                
+                var that = this;
+                var xhr = new XMLHttpRequest();
+                
+                xhr.open("GET", encodeURI(this._nameSpace.getURL(this._vf.shadowObjectIdMapping)), true);
+                xhr.send();
+                
+                xhr.onload = function()
+                {
+                    that._shadowIdMap = eval("(" + xhr.response + ")");
+                };
+            }
         }
     )
 );
-/* ### END OF NODES ###*/
-

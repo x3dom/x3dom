@@ -1,20 +1,31 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
 
+
+/* ### X3DSpatialGeometryNode ### */
+x3dom.registerNodeType(
+    "X3DSpatialGeometryNode",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DSpatialGeometryNode.superClass.call(this, ctx);   
+        }
+    )
+);
+
 /* ### Plane ### */
 x3dom.registerNodeType(
     "Plane",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Plane.superClass.call(this, ctx);
 
@@ -27,9 +38,12 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Plane_'+sx+'-'+sy+'-'+subx+'-'+suby+'-'+this._vf.center.x+'-'+this._vf.center.y+'-'+this._vf.center.z;
 
-			if( ctx && x3dom.geoCache[geoCacheID] != undefined )
+            // Attention: DynamicLOD node internally creates Plane nodes, but MUST NOT 
+            //            use geoCache, therefore only use cache if "ctx" is defined!
+            // TODO: move mesh generation of all primitives to nodeChanged()
+			if( ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Plane from Cache");
+				//x3dom.debug.logInfo("Using Plane from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -201,10 +215,17 @@ x3dom.registerNodeType(
                 }
 
                 var numTexComponents = 2;
-                if (this._cf.texCoord.node) {
-                    if (this._cf.texCoord.node._vf.point) {
-                        texCoords = this._cf.texCoord.node._vf.point;
-                        if (x3dom.isa(this._cf.texCoord.node, x3dom.nodeTypes.TextureCoordinate3D)) {
+                
+                var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
+                
+                if (texCoordNode) {
+                    if (texCoordNode._vf.point) {
+                        texCoords = texCoordNode._vf.point;
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.TextureCoordinate3D)) {
                             numTexComponents = 3;
                         }
                     }
@@ -232,11 +253,6 @@ x3dom.registerNodeType(
                             this._mesh._normals[0].push(normals[c].x);
                             this._mesh._normals[0].push(normals[c].y);
                             this._mesh._normals[0].push(normals[c].z);
-                        }
-                        else {
-                            //this._mesh._normals[0].push(0);
-                            //this._mesh._normals[0].push(1);
-                            //this._mesh._normals[0].push(0);
                         }
 
                         if (texCoords) {
@@ -279,7 +295,8 @@ x3dom.registerNodeType(
                 // TODO; handle at least per quad normals
                 //       (corresponds to creaseAngle = 0)
                 //this._mesh.calcNormals(this._vf.creaseAngle);
-                this._mesh.calcNormals(Math.PI);
+                if (!normals)
+                    this._mesh.calcNormals(Math.PI);
 
 				this._mesh._invalidate = true;
                 this._mesh._numTexComponents = numTexComponents;
@@ -290,6 +307,12 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
+                var normals = null;
+                
+                if (this._cf.normal.node) {
+                    normals = this._cf.normal.node._vf.vector;
+                }
+                
                 if (fieldName == "height")
                 {
                     var i, n = this._mesh._positions[0].length / 3;
@@ -298,14 +321,20 @@ x3dom.registerNodeType(
                     for (i=0; i<n; i++) {
                         this._mesh._positions[0][3*i+1] = h[i];
                     }
+                    
+                    if (!normals) {
+                        this._mesh._normals[0] = [];
+                        this._mesh.calcNormals(Math.PI);
+                    }
 
                     this._mesh._invalidate = true;
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        if (!normals)
+                            node._dirty.normals = true;
                     });
                 }
-
                 // TODO: handle other cases!
             }
         }
@@ -316,7 +345,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Box",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Box.superClass.call(this, ctx);
 
@@ -328,9 +357,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Box_'+sx+'-'+sy+'-'+sz;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Box from Cache");
+				//x3dom.debug.logInfo("Using Box from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -405,7 +434,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Sphere",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Sphere.superClass.call(this, ctx);
 
@@ -419,14 +448,15 @@ x3dom.registerNodeType(
 			
 			var geoCacheID = 'Sphere_'+r;
 
-			if (x3dom.geoCache[geoCacheID] != undefined) {
-				x3dom.debug.logInfo("Using Sphere from Cache");
+			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
+				//x3dom.debug.logInfo("Using Sphere from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
-			} else {
+			}
+			else {
 				if(ctx) {
 					qfactor = ctx.doc.properties.getProperty("PrimitiveQuality", "Medium");
 				}
-                if (!x3dom.isNumber(qfactor)) {
+                if (!x3dom.Utils.isNumber(qfactor)) {
                     switch (qfactor.toLowerCase()) {
                         case "low":
                             qfactor = 0.3;
@@ -630,7 +660,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Torus",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Torus.superClass.call(this, ctx);
 			this.addField_SFFloat(ctx, 'innerRadius', 0.5);
@@ -643,49 +673,48 @@ x3dom.registerNodeType(
 					
 			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Torus from Cache");
+				//x3dom.debug.logInfo("Using Torus from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
 			{
-
 				var ringDelta = 2.0 * Math.PI / rings;
 				var sideDelta = 2.0 * Math.PI / sides;
 				var p = [], n = [], t = [], i = [];
 				var a, b, theta, phi;
 
 				for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
+				{
+					var cosTheta = Math.cos(theta);
+					var sinTheta = Math.sin(theta);
+
+					for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
 					{
-						var cosTheta = Math.cos(theta);
-						var sinTheta = Math.sin(theta);
-	
-						for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
-						{
-							var cosPhi = Math.cos(phi);
-							var sinPhi = Math.sin(phi);
-							var dist = outerRadius + innerRadius * cosPhi;
-	
-							this._mesh._normals[0].push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
-							this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
-							this._mesh._texCoords[0].push(-a / rings, b / sides);
-						}
+						var cosPhi = Math.cos(phi);
+						var sinPhi = Math.sin(phi);
+						var dist = outerRadius + innerRadius * cosPhi;
+
+						this._mesh._normals[0].push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
+						this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
+						this._mesh._texCoords[0].push(-a / rings, b / sides);
 					}
-	
-					for (a=0; a<sides; a++)
+				}
+
+				for (a=0; a<sides; a++)
+				{
+					for (b=0; b<rings; b++)
 					{
-						for (b=0; b<rings; b++)
-						{
-							this._mesh._indices[0].push(b * (sides+1) + a);
-							this._mesh._indices[0].push(b * (sides+1) + a + 1);
-							this._mesh._indices[0].push((b + 1) * (sides+1) + a);
-	
-							this._mesh._indices[0].push(b * (sides+1) + a + 1);
-							this._mesh._indices[0].push((b + 1) * (sides+1) + a + 1);
-							this._mesh._indices[0].push((b + 1) * (sides+1) + a);
-						}
+						this._mesh._indices[0].push(b * (sides+1) + a);
+						this._mesh._indices[0].push(b * (sides+1) + a + 1);
+						this._mesh._indices[0].push((b + 1) * (sides+1) + a);
+
+						this._mesh._indices[0].push(b * (sides+1) + a + 1);
+						this._mesh._indices[0].push((b + 1) * (sides+1) + a + 1);
+						this._mesh._indices[0].push((b + 1) * (sides+1) + a);
 					}
+				}
 				
 				this._mesh._invalidate = true;
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
@@ -719,7 +748,6 @@ x3dom.registerNodeType(
 							var sinPhi = Math.sin(phi);
 							var dist = outerRadius + innerRadius * cosPhi;
 							this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
-							
 						}
 					}
 					
@@ -793,7 +821,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Cone",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
 
@@ -807,9 +835,9 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Cone_'+this._vf.bottomRadius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.side;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Cone from Cache");
+				//x3dom.debug.logInfo("Using Cone from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
@@ -914,7 +942,6 @@ x3dom.registerNodeType(
 						this._mesh._positions[0].push(0, height/2, 0);
 						this._mesh._positions[0].push(x * bottomRadius, -height/2, z * bottomRadius);
 					  }
-						
 					}
 	
 					if (this._vf.bottom && bottomRadius > 0)
@@ -930,7 +957,6 @@ x3dom.registerNodeType(
 							this._mesh._positions[0].push(x, -height/2, z);
 						}			
 					}
-					
 					
 					this._mesh._invalidate = true;
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
@@ -1030,7 +1056,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "Cylinder",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Cylinder.superClass.call(this, ctx);
 
@@ -1045,14 +1071,13 @@ x3dom.registerNodeType(
 
 			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
 
-			if( x3dom.geoCache[geoCacheID] != undefined )
+			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
-				x3dom.debug.logInfo("Using Cylinder from Cache");
+				//x3dom.debug.logInfo("Using Cylinder from Cache");
 				this._mesh = x3dom.geoCache[geoCacheID];
 			}
 			else
 			{
-
 				var radius = this._vf.radius;
 				var height = this._vf.height;
 
@@ -1199,16 +1224,16 @@ x3dom.registerNodeType(
 						}
 					}
 	
-						if (this._vf.bottom)
-						{
-						  for (j=sides-1; j>=0; j--)
-						  {
-							beta = j * delta;
-							x = radius * Math.sin(beta);
-							z = -radius * Math.cos(beta);
-	
-							this._mesh._positions[0].push(x, -height/2, z);
-						  }
+					if (this._vf.bottom)
+					{
+					  for (j=sides-1; j>=0; j--)
+					  {
+						beta = j * delta;
+						x = radius * Math.sin(beta);
+						z = -radius * Math.cos(beta);
+						
+						this._mesh._positions[0].push(x, -height/2, z);
+					  }
 					}
 				
 					this._mesh._invalidate = true;
@@ -1334,45 +1359,83 @@ x3dom.registerNodeType(
 );
 
 
+/* ### X3DBinaryContainerGeometryNode ### */
+x3dom.registerNodeType(
+    "X3DBinaryContainerGeometryNode",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DBinaryContainerGeometryNode.superClass.call(this, ctx);
+
+            this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
+            this.addField_MFInt32(ctx, 'vertexCount', [0]);
+            this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+        },
+        {
+            getMin: function() {
+                return null;
+            },
+
+            getMax: function() {
+                return null;
+            }
+        }
+    )
+);
+
 /* ### BinaryGeometry ### */
 x3dom.registerNodeType(
     "BinaryGeometry",
-    "Rendering",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.BinaryGeometry.superClass.call(this, ctx);
 
-            this.addField_SFVec3f (ctx, 'position', 0, 0, 0);
-            this.addField_SFVec3f (ctx, 'size', 1, 1, 1);
-            this.addField_MFInt32 (ctx, 'vertexCount', [0]);
-            this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
-            
             this.addField_SFString(ctx, 'index', "");   // Uint16
             this.addField_SFString(ctx, 'coord', "");   // Float32
             this.addField_SFString(ctx, 'normal', "");
             this.addField_SFString(ctx, 'texCoord', "");
             this.addField_SFString(ctx, 'color', "");
-            this.addField_SFString(ctx, 'tangent', "");     //TODO
-            this.addField_SFString(ctx, 'binormal', "");    //TODO
+            this.addField_SFString(ctx, 'tangent', "");     // TODO
+            this.addField_SFString(ctx, 'binormal', "");    // TODO
 
             // Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
-            //this.addField_SFString(ctx, 'indexType', "Uint16");
+            this.addField_SFString(ctx, 'indexType', "Uint16");
             this.addField_SFString(ctx, 'coordType', "Float32");
             this.addField_SFString(ctx, 'normalType', "Float32");
             this.addField_SFString(ctx, 'texCoordType', "Float32");
             this.addField_SFString(ctx, 'colorType', "Float32");
-            //this.addField_SFString(ctx, 'tangentType', "Float32");
-            //this.addField_SFString(ctx, 'binormalType', "Float32");
+            this.addField_SFString(ctx, 'tangentType', "Float32");
+            this.addField_SFString(ctx, 'binormalType', "Float32");
+            
+            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
+            this.addField_SFBool(ctx, 'rgbaColors', false);
+            this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
+            this.addField_SFBool(ctx, 'idsPerVertex', false);     // Experimental flag to decide if IDs are in texCoords
             
             // workaround
             this._hasStrideOffset = false;
-			this._mesh._numTexComponents = 2;
-			this._mesh._numColComponents = 3;
+            this._mesh._numPosComponents = this._vf.normalAsSphericalCoordinates ? 4 : 3;
+			this._mesh._numTexComponents = this._vf.numTexCoordComponents;
+			this._mesh._numColComponents = this._vf.rgbaColors ? 4 : 3;
+			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
 		    this._mesh._numFaces = 0;
+		    
+		    this._min = null;
+		    this._max = null;
+		    
+		    // info helper members
+		    this._vertexCountSum = 0;
+		    for (var i=0; i<this._vf.vertexCount.length; ++i) {
+                this._vertexCountSum += this._vf.vertexCount[i];
+            }
+    		this._diameter = this._vf.size.length();
         },
         {
             nodeChanged: function()
@@ -1384,82 +1447,119 @@ x3dom.registerNodeType(
             {
                 var offsetInd, strideInd, offset, stride;
 
-                offsetInd = this._vf.coord.lastIndexOf('#') + 1;
+                offsetInd = this._vf.coord.lastIndexOf('#');
                 strideInd = this._vf.coord.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.coord.substring(offsetInd, strideInd);
+                    offset = +this._vf.coord.substring(++offsetInd, strideInd);
                     stride = +this._vf.coord.substring(strideInd);
                     this._parentNodes[0]._coordStrideOffset = [stride, offset];
                     this._hasStrideOffset = true;
-                    x3dom.debug.logInfo("coord stride/offset:" + stride + ", " + offset);
+                    if ((offset / 8) - Math.floor(offset / 8) == 0) {
+                        this._mesh._numPosComponents = 4;
+                    }
+                    //x3dom.debug.logInfo("coord stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.coord.substring(strideInd);
+                    this._parentNodes[0]._coordStrideOffset = [stride, 0];
+                    if ((stride / 8) - Math.floor(stride / 8) == 0) {
+                        this._mesh._numPosComponents = 4;   // ???
+                    }
+                    //x3dom.debug.logInfo("coord stride: " + stride);
                 }
 
-                offsetInd = this._vf.normal.lastIndexOf('#') + 1;
+                offsetInd = this._vf.normal.lastIndexOf('#');
                 strideInd = this._vf.normal.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.normal.substring(offsetInd, strideInd);
+                    offset = +this._vf.normal.substring(++offsetInd, strideInd);
                     stride = +this._vf.normal.substring(strideInd);
                     this._parentNodes[0]._normalStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("normal stride/offset:" + stride + ", " + offset);
+                    //x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.normal.substring(strideInd);
+                    this._parentNodes[0]._normalStrideOffset = [stride, 0];
+                    //x3dom.debug.logInfo("normal stride: " + stride);
                 }
 
-                offsetInd = this._vf.texCoord.lastIndexOf('#') + 1;
+                offsetInd = this._vf.texCoord.lastIndexOf('#');
                 strideInd = this._vf.texCoord.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.texCoord.substring(offsetInd, strideInd);
+                    offset = +this._vf.texCoord.substring(++offsetInd, strideInd);
                     stride = +this._vf.texCoord.substring(strideInd);
                     this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("texCoord stride/offset:" + stride + ", " + offset);
+                    //x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
+                }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.texCoord.substring(strideInd);
+                    this._parentNodes[0]._texCoordStrideOffset = [stride, 0];
+                    //x3dom.debug.logInfo("texCoord stride: " + stride);
                 }
 
-                offsetInd = this._vf.color.lastIndexOf('#') + 1;
+                offsetInd = this._vf.color.lastIndexOf('#');
                 strideInd = this._vf.color.lastIndexOf('+');
                 if (offsetInd >= 0 && strideInd >= 0) {
-                    offset = +this._vf.color.substring(offsetInd, strideInd);
+                    offset = +this._vf.color.substring(++offsetInd, strideInd);
                     stride = +this._vf.color.substring(strideInd);
                     this._parentNodes[0]._colorStrideOffset = [stride, offset];
-                    x3dom.debug.logInfo("color stride/offset:" + stride + ", " + offset);
+                    //x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
                 }
+                else if (strideInd >= 0) {
+                    stride = +this._vf.color.substring(strideInd);
+                    this._parentNodes[0]._colorStrideOffset = [stride, 0];
+                    //x3dom.debug.logInfo("color stride: " + stride);
+                }
+                
+                if (this._vf.indexType != "Uint16")
+    		        x3dom.debug.logWarning("Index type " + this._vf.indexType + " problematic");
             },
             
             getMin: function()
 			{
-			    var center, size;
+			    if (this._min == null)
+			    {
+    			    var center, size;
 			    
-				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
-                    center = this._parentNodes[0]._vf.bboxCenter;
-                    size = this._parentNodes[0]._vf.bboxSize;
-                }
-                else {
-                    center = this._vf.position;
-                    size = this._vf.size;
-                }
+    				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                        center = this._parentNodes[0]._vf.bboxCenter;
+                        size = this._parentNodes[0]._vf.bboxSize;
+                    }
+                    else {
+                        center = this._vf.position;
+                        size = this._vf.size;
+                    }
                 
-                if (size.x < 0 || size.y < 0 || size.z < 0) {
-                    return center;
-                }
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
                 
-                return center.subtract(size.multiply(0.5));
+                    this._min = center.subtract(size.multiply(0.5));
+                }
+                return this._min;
 			},
 			
 			getMax: function()
 			{
-			    var center, size;
+			    if (this._max == null)
+			    {
+    			    var center, size;
 			    
-				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
-                    center = this._parentNodes[0]._vf.bboxCenter;
-                    size = this._parentNodes[0]._vf.bboxSize;
-                }
-                else {
-                    center = this._vf.position;
-                    size = this._vf.size;
-                }
+    				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
+                        center = this._parentNodes[0]._vf.bboxCenter;
+                        size = this._parentNodes[0]._vf.bboxSize;
+                    }
+                    else {
+                        center = this._vf.position;
+                        size = this._vf.size;
+                    }
                 
-                if (size.x < 0 || size.y < 0 || size.z < 0) {
-                    return center;
-                }
+                    if (size.x < 0 || size.y < 0 || size.z < 0) {
+                        return center;
+                    }
                     
-                return center.add(size.multiply(0.5));
+                    this._max = center.add(size.multiply(0.5));
+                }
+                return this._max;
 			},
 			
 			getVolume: function(min, max, invalidate)
@@ -1480,6 +1580,32 @@ x3dom.registerNodeType(
                     return this._vf.position;
                 }
 			},
+			
+            getDiameter: function() {
+                return this._diameter;
+            },
+			
+			doIntersect: function(line) {
+                if (this._pickable) {
+                    var min = this.getMin();
+                    var max = this.getMax();
+                    
+                    var isect = line.intersect(min, max);
+                    
+                    if (isect && line.enter < line.dist) {
+                        line.dist = line.enter;
+                        line.hitObject = this;
+                        line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
+                        return true;
+                    }
+                    else {
+                        return false;
+                    }
+                }
+                else {
+                    return false;
+                }
+            },
 			
 			getPrecisionMax: function(type)
 			{
@@ -1507,32 +1633,383 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### PopGeometryLevel ### */
+x3dom.registerNodeType(
+    "PopGeometryLevel",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+      function (ctx) {	
+          x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
+    
+          this.addField_SFString(ctx, 'src', "");
+          this.addField_SFInt32(ctx, 'numIndices', 0);			
+          this.addField_SFInt32(ctx, 'vertexDataBufferOffset', 0);
+      },
+      {
+        nodeChanged: function() {	
+          //TODO: implement
+        },
+
+        fieldChanged: function(fieldName) {
+        },
+			
+        getSrc: function() {
+          return this._vf.src;
+        },
+			
+        getNumIndices: function() {
+          return this._vf.numIndices;
+        },
+        
+        getVertexDataBufferOffset: function() {
+            return this._vf.vertexDataBufferOffset;
+        }
+	  }
+	)
+);
+
+/* ### PopGeometry ### */
+x3dom.registerNodeType(
+    "PopGeometry",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
+        function (ctx) {        
+            x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
+
+            this.addField_SFVec3f (ctx, 'tightSize',  1, 1, 1);
+            this.addField_SFVec3f (ctx, 'bbMinModF',  0, 0, 0);
+            this.addField_SFVec3f (ctx, 'bbMaxModF',  1, 1, 1);
+            this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
+            this.addField_SFVec3f (ctx, 'bbShiftVec', 0, 0, 0);
+
+            if (this._vf.bbMinModF.x >= this._vf.bbMaxModF.x)
+                this._vf.bbShiftVec.x = 1.0;
+            if (this._vf.bbMinModF.y >= this._vf.bbMaxModF.y)
+                this._vf.bbShiftVec.y = 1.0;
+            if (this._vf.bbMinModF.z >= this._vf.bbMaxModF.z)
+                this._vf.bbShiftVec.z = 1.0;
+      
+            this.addField_MFNode('levels', x3dom.nodeTypes.PopGeometryLevel);
+            
+            this.addField_SFInt32(ctx, 'attributeStride',   0);
+            this.addField_SFInt32(ctx, 'positionOffset',    0);
+            this.addField_SFInt32(ctx, 'normalOffset',      0);
+            this.addField_SFInt32(ctx, 'texcoordOffset',    0);
+            this.addField_SFInt32(ctx, 'colorOffset',       0);
+            this.addField_SFInt32(ctx, 'numAnchorVertices', 0);
+            
+            this.addField_SFInt32(ctx, 'positionPrecision', 2);
+            this.addField_SFInt32(ctx, 'normalPrecision',   1);
+            this.addField_SFInt32(ctx, 'texcoordPrecision', 2);
+            this.addField_SFInt32(ctx, 'colorPrecision',    1); 
+
+            this.addField_SFInt32(ctx, 'minPrecisionLevel', -1);
+            this.addField_SFInt32(ctx, 'maxPrecisionLevel', -1);
+            this.addField_SFFloat(ctx, 'precisionFactor',  1.0);
+
+            //those four fields are read by the x3dom renderer            
+            this.addField_SFString(ctx, 'coordType',    "Uint16");
+            this.addField_SFString(ctx, 'normalType',   "Uint8");
+            this.addField_SFString(ctx, 'texCoordType', "Uint16");
+            this.addField_SFString(ctx, 'colorType',    "Uint8");            
+           
+            this.addField_SFInt32(ctx, 'vertexBufferSize', 0);
+            
+            this.addField_SFBool(ctx, 'indexedRendering', false);
+            //ATTENTION: Although it might be supported by aopt,
+            //           X3DOM does not accept 16 bit spherical normals yet,
+            //           spherical normals are assumed to be 8 bit and get
+            //           encoded as the 4th 16 bit position component
+            this.addField_SFBool(ctx, 'sphericalNormals', false);
+            
+            //needed as we manipulate vertexCount during loading
+            this.addField_MFInt32(ctx, 'originalVertexCount', [0]);
+            
+            for (var i = 0; i < this._vf.vertexCount.length; ++i) {
+                this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
+            }
+            
+            this._bbMinBySize = [ Math.floor(this._vf.bbMin.x / this._vf.size.x), 
+                                  Math.floor(this._vf.bbMin.y / this._vf.size.y), 
+                                  Math.floor(this._vf.bbMin.z / this._vf.size.z) ];
+            this._volRadius        = this._vf.tightSize.length() / 2;
+            this._volLargestRadius = this._vf.size.length() / 2;
+            
+            // workaround            
+            this._mesh._numPosComponents  = this._vf.sphericalNormals ? 4 : 3;
+            this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;
+            this._mesh._numTexComponents  = 2;
+            this._mesh._numColComponents  = 3;
+
+            this._mesh._invalidate = false;
+            this._mesh._numCoords  = 0;
+            this._mesh._numFaces   = 0;
+            
+            this._min = null;
+		    this._max = null;
+            
+            x3dom.nodeTypes.PopGeometry.numTotalVerts += this.getVertexCount();
+            x3dom.nodeTypes.PopGeometry.numTotalTris  += (this.hasIndex() ? 
+                         this.getTotalNumberOfIndices() : this.getVertexCount()) / 3;
+        },
+        {
+            nodeChanged: function() {              
+            },
+
+            parentAdded: function() {
+              //TODO: implement 
+            },
+            
+            getMin: function() {
+                if (this._min == null) {
+                    this._min = this._vf.position.subtract( this._vf.size.multiply(0.5) );
+                }
+                return this._min;
+            },
+            
+            getMax: function() {
+                if (this._max == null) {
+                    this._max = this._vf.position.add( this._vf.size.multiply(0.5) );
+                }
+                return this._max;
+            },
+            
+            getBBoxShiftVec: function() {
+              return this._vf.bbShiftVec;
+            },
+         
+            getBBoxSize: function() {
+              return this._vf.size;
+            },
+            
+            getVolume: function(min, max, invalidate) {
+              min.setValues(this.getMin());
+              max.setValues(this.getMax());
+              
+              return true;
+            },
+            
+            getCenter: function() {
+              return this._vf.position;
+            },
+			
+            getDiameter: function() {
+                return this._volLargestRadius * 2;
+            },
+            
+            hasIndex: function() {
+              return this._vf.indexedRendering;
+            },
+            
+            getTotalNumberOfIndices: function() {                
+              if (this._vf.indexedRendering) {
+                var sum = 0;
+                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
+                    sum += this._vf.originalVertexCount[i];
+                }
+                return sum;
+              }
+              else  {
+                return 0;
+              }              
+            },
+            
+            getVertexCount: function() {
+                var sum = 0;
+                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
+                    sum += this._vf.originalVertexCount[i];
+                }
+                return sum;
+            },
+            
+            //adapts the vertex count according to the given total number of indices / vertices
+            //which is used by the renderer
+            adaptVertexCount: function(numVerts) {
+                var verts = 0;
+                for (var i = 0; i < this._vf.originalVertexCount.length; ++i) {
+                    if ((this._vf.originalVertexCount[i] + verts) <= numVerts) {
+                        this._vf.vertexCount[i] = this._vf.originalVertexCount[i];
+                        verts += this._vf.originalVertexCount[i];
+                    }
+                    else {
+                        this._vf.vertexCount[i] = numVerts - verts;
+                        break;
+                    }                    
+                }
+            },
+            
+            hasNormal: function() {
+              return (this._vf.normalOffset != 0) && !this._vf.sphericalNormals;
+            },
+            
+            hasTexCoord: function() {
+              return (this._vf.texcoordOffset != 0);
+            },
+            
+            hasColor: function() {
+              return (this._vf.colorOffset != 0);
+            },
+            
+            getPositionPrecision : function() {
+              return this._vf.positionPrecision;
+            },
+            
+            getNormalPrecision : function() {
+              return this._vf.normalPrecision;
+            },
+            
+            getTexCoordPrecision : function() {
+              return this._vf.texcoordPrecision;
+            },
+            
+            getColorPrecision : function() {
+              return this._vf.colorPrecision;
+            },
+            
+            getAttributeStride : function() {
+              return this._vf.attributeStride;
+            },
+            
+            getPositionOffset : function() {
+              return this._vf.positionOffset;
+            },
+            
+            getNormalOffset : function() {
+              return this._vf.normalOffset;
+            },
+            
+            getTexCoordOffset : function() {
+              return this._vf.texcoordOffset;
+            },
+            
+            getColorOffset : function() {
+              return this._vf.colorOffset;
+            },
+            
+            getBufferTypeStringFromByteCount: function(bytes) {
+                switch(bytes)
+                {
+                    case 1:
+                        return "Uint8";
+                    case 2:
+                        return "Uint16";              
+                    //case 4: //currently not supported by PopGeometry
+                    //    return "Float32";
+                    default:
+                        return 0;
+                }
+            },            
+            
+            getDataURLs : function() {
+              var urls = [];
+                                  
+              for (var i = 0; i < this._cf.levels.nodes.length; ++i) {
+                urls.push(this._cf.levels.nodes[i].getSrc());                          
+              }
+              
+              return urls;
+            },
+            
+            getNumIndicesByLevel : function(lvl) {
+              return this._cf.levels.nodes[lvl].getNumIndices();
+            },
+            
+            getNumLevels : function(lvl) {
+              return this._cf.levels.nodes.length;
+            },
+            
+            getVertexDataBufferOffset : function(lvl) {
+              return this._cf.levels.nodes[lvl].getVertexDataBufferOffset();
+            },
+            
+            getPrecisionMax: function(type) {
+              switch(this._vf[type])
+              {
+                  //currently, only Uint8 and Uint16 are supported
+                  //case "Int8":
+                  //    return 127.0;
+                  case "Uint8":
+                      return 255.0;
+                  //case "Int16":
+                  //    return 32767.0;
+                  case "Uint16":
+                      return 65535.0;
+                  //case "Int32":
+                     //return 2147483647.0;
+                  //case "Uint32":
+                     //return 4294967295.0;
+                  //case "Float32":
+                  //case "Float64":
+                  default:
+                      return 1.0;
+              }
+            }
+        }
+    )
+);
+
+/** Static class members (needed for stats) */
+x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor  = 1;
+x3dom.nodeTypes.PopGeometry.PrecisionFactorOnMove = 1;
+x3dom.nodeTypes.PopGeometry.numRenderedVerts      = 0;
+x3dom.nodeTypes.PopGeometry.numRenderedTris       = 0;
+x3dom.nodeTypes.PopGeometry.numTotalVerts         = 0;
+x3dom.nodeTypes.PopGeometry.numTotalTris          = 0;
+
+/** Static LUT for LOD computation */
+x3dom.nodeTypes.PopGeometry.powLUT = [32768, 16384, 8192, 4096, 2048, 1024, 512, 256,
+                                        128,    64,   32,   16,   8,    4,    2,   1];
+
+
 /* ### BitLODGeoComponent ### */
 x3dom.registerNodeType(
     "BitLODGeoComponent",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
-        function (ctx) {	
+    defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
+        function (ctx) {
             x3dom.nodeTypes.BitLODGeoComponent.superClass.call(this, ctx);
 			
 			this.addField_SFString(ctx, 'src', "");
 			this.addField_MFInt32(ctx, 'format', []);
 			this.addField_MFString(ctx, 'attrib', []);
+			
+			this._attribShift = [];
+			this._attribShiftDec = [];
+			this._mask = [];
+			
+			this._bitsPerComponent = 0;
 		},
 		{
 			nodeChanged: function()
             {		
-				
+				//Get Bits per component
+				for(var f=0; f<this._vf.format.length; f++) {
+					this._bitsPerComponent += this._vf.format[f];
+				}
 			},
 
             fieldChanged: function(fieldName)
             {
-                
             },
 			
 			getSrc: function()
 			{
 				return this._vf.src;
+			},
+			
+			getFormat: function()
+			{
+				return this._vf.format;
+			},
+			
+			getAttrib: function(idx)
+			{
+				return this._vf.attrib[idx];
+			},
+			
+			getNumAttribs: function()
+			{
+				return this._vf.attrib.length;
 			}
 		}
 	)
@@ -1542,96 +2019,61 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "BitLODGeometry",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
         function (ctx) {	
             x3dom.nodeTypes.BitLODGeometry.superClass.call(this, ctx);
-			
-			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
-			this.addField_MFInt32(ctx, 'vertexCount', [0]);
-			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
-			this.addField_SFString(ctx, 'index', "");   // Uint16		
+
+			this.addField_SFString(ctx, 'index', "");   // Uint16
+            this.addField_SFBool(ctx, 'usesVLCIndices', false);  // variable-length coding
+            this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
+            this.addField_SFBool(ctx, 'normalPerVertex', true);
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
-			
+
 			// Typed Array View Types
             // Int8, Uint8, Int16, Uint16, Int32, Uint32, Float32, Float64
             //this.addField_SFString(ctx, 'indexType', "Uint16");
             this.addField_SFString(ctx, 'coordType', "Uint16");
-            this.addField_SFString(ctx, 'normalType', "Uint8");
-            this.addField_SFString(ctx, 'texCoordType', "Float32");
-            this.addField_SFString(ctx, 'colorType', "Float32");
+            this.addField_SFString(ctx, 'normalType', "Uint16");
+            this.addField_SFString(ctx, 'texCoordType', "Uint16");
+            this.addField_SFString(ctx, 'colorType', "Uint16");
             //this.addField_SFString(ctx, 'tangentType', "Float32");
             //this.addField_SFString(ctx, 'binormalType', "Float32");
-			
-			this.numBitsPerCoord  = 0;
-			this.numBitsPerNormal = 0;
-			
-			
+
 			// workaround
-            this._hasStrideOffset = false;
+			this._hasStrideOffset = false;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
+            
+            //a chain of assumptions, not very beautiful yet:
+            //- using vlc indices leads to per-face-normals, which use 3 components
+            //- for all other cases, per-vertex-normals are used, with 2 components
+            this._vf.normalPerVertex              = !this._vf.usesVLCIndices;
+            this._vf.normalAsSphericalCoordinates = true;//this._vf.normalPerVertex;
+			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
+			
+			this._diameter = this._vf.size.length();
 			
 			this._mesh._invalidate = false;
 			this._mesh._numCoords = 0;
 		    this._mesh._numFaces = 0;
-			
 		},
 		{
 			nodeChanged: function()
-      {	 
-				var components = this._cf.components.nodes;
-				var numComponents = components.length;
-				if(numComponents)
-				{
-					var attribs = components[0]._vf.attrib;
-					var format  = components[0]._vf.format;
-					
-					var numAttribs = attribs.length;
-					var numFormats  = format.length;
-					
-					if(numAttribs == numFormats)
-					{
-						for(var a=0; a<numAttribs; a++)
-						{
-							switch(attribs[a])
-							{
-								case "coord3":
-									this.numBitsPerCoord = (format[a] * numComponents) / 3;
-									this._vf.coordType = this.getType(this.numBitsPerCoord);
-								break;
-								
-								case "normal3":
-									this.numBitsPerNormal = (format[a] * numComponents) / 3;
-									this._vf.normalType = this.getType(this.numBitsPerNormal);
-								break;
-								
-								case "normal2":
-									this.numBitsPerNormal = (format[a] * numComponents) / 2;
-									this._vf.normalType = this.getType(this.numBitsPerNormal);
-								break;
-								
-								default:
-								break;
-							}	
-						}
-					}
-					else
-					{
-						x3dom.debug.logError("[BitLODGeometry] attrib and format have different size");
-					}
-				}
+            {
+                // TODO
 			},
       
 		    parentAdded: function()
 		    {
 			  this._parentNodes[0]._coordStrideOffset = [12, 0];
 			  this._parentNodes[0]._normalStrideOffset = [12, 8];
+			  this._parentNodes[0]._texCoordStrideOffset = [4, 0];
+			  this._parentNodes[0]._colorStrideOffset = [6, 0];
 		    },
             
 		    fieldChanged: function(fieldName)
 		    {
-			    
+			    // TODO
 		    },
 			
 			getMin: function()
@@ -1656,15 +2098,79 @@ x3dom.registerNodeType(
 			{
 				return this._vf.position;
 			},
+
+            getDiameter: function() {
+                return this._diameter;
+            },
 			
+			// ATTENTION: the following accessor methods are NOT shared 
+			// by all Geometry nodes, so be careful when using them!!!
 			hasIndex: function()
 			{
 				return (this._vf.index.length) ? true : false;
 			},
-			
-			hasPolarNormals: function()
+
+            usesVLCIndices: function()
 			{
-				return true; //TODO
+				return this._vf.usesVLCIndices == true;
+			},
+			
+			hasColor: function()
+			{
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "color3")
+						    return true;
+					}
+				}
+				return false;
+			},
+			
+			hasTexCoord: function()
+			{
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "texcoord2")
+						    return true;
+					}
+				}
+				return false;
+			},
+			
+			getCoordNormalURLs: function() {
+				var coordNormalURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "coord3") {
+							coordNormalURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return coordNormalURLs;
+			},
+			
+			getTexCoordURLs: function() {
+				var texCoordURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "texcoord2") {
+							texCoordURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return texCoordURLs;
+			},
+			
+			getColorURLs: function() {
+				var colorURLs = [];
+				for(var i=0; i<this.getNumComponents(); i++) {
+					for(var j=0; j<this.getComponent(i).getNumAttribs(); j++) {
+						if(this.getComponent(i).getAttrib(j) == "color3") {
+							colorURLs.push(this.getComponent(i).getSrc());
+						}
+					}
+				}
+				return colorURLs;
 			},
 			
 			getNumPrimTypes: function()
@@ -1714,7 +2220,37 @@ x3dom.registerNodeType(
 				return URLs;
 			},
 			
-			getType: function(bits)
+			getComponentFormats: function()
+			{
+				var formats = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					formats[c] = this._cf.components.nodes[c]._vf.format;
+					
+				return formats;
+			},
+			
+			getComponentAttribs: function()
+			{
+				var attribs = [];
+				
+				for(var c=0; c<this._cf.components.nodes.length; c++)
+					attribs[c] = this._cf.components.nodes[c]._vf.attrib;
+					
+				return attribs;
+			},
+			
+			getNumVertices: function()
+			{
+				var count = 0;
+				for(var i=0; i<this._vf.vertexCount.length; i++) {
+					count += this._vf.vertexCount[i];
+				}
+				
+				return count;
+			},
+
+			getAttribType: function(bits)
 			{
     			switch(bits)
                 {
@@ -1756,49 +2292,26 @@ x3dom.registerNodeType(
 );
 
 
-
 /* ### ImageGeometry ### */
 x3dom.registerNodeType(
     "ImageGeometry",
     "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+    defineClass(x3dom.nodeTypes.X3DBinaryContainerGeometryNode,
         function (ctx) {	
             x3dom.nodeTypes.ImageGeometry.superClass.call(this, ctx);
-			
-			var coordPrio = -5;
-			var normalPrio = -4;
-			
-			for (var i=0; i<ctx.xmlNode.childNodes.length; i++) {
-				if ('imagetexture' == ctx.xmlNode.childNodes[i].localName) {
-					if ('coord' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', coordPrio);
-						coordPrio += 10;
-					} else if ('normal' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', normalPrio);
-						normalPrio += 10;
-					} else if ('texCoord' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', '-3');
-					} else if ('color' == ctx.xmlNode.childNodes[i].getAttribute('containerField')) {
-						ctx.xmlNode.childNodes[i].setAttribute('priority', '-2');
-					}
-				}
-			}
-			
-			this.addField_SFVec3f(ctx, 'position', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
-			this.addField_MFInt32(ctx, 'vertexCount', [0]);
-			this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+
 			this.addField_SFVec2f(ctx, 'implicitMeshSize', 256, 256);
 			this.addField_SFInt32(ctx, 'numColorComponents', 3);
-			
+            this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
+
 			this.addField_SFNode('index', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_MFNode('coord', x3dom.nodeTypes.X3DTextureNode);
-			this.addField_MFNode('normal', x3dom.nodeTypes.X3DTextureNode);
+			this.addField_SFNode('normal', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('texCoord', x3dom.nodeTypes.X3DTextureNode);
 			this.addField_SFNode('color', x3dom.nodeTypes.X3DTextureNode);
 			
-			// TODO: this._mesh._numTexComponents
 			this._mesh._numColComponents = this._vf.numColorComponents;
+			this._mesh._numTexComponents = this._vf.numTexCoordComponents;
 			
 			if (this._vf.implicitMeshSize.y == 0)
 			    this._vf.implicitMeshSize.y = this._vf.implicitMeshSize.x;
@@ -1808,11 +2321,11 @@ x3dom.registerNodeType(
 			
 			if(x3dom.caps.BACKEND == 'webgl' && x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS > 0) {
 			
-				var geoCacheID = 'ImageGeometry';   // TODO: implicitMeshSize may differ!!!
+				var geoCacheID = 'ImageGeometry';   // TODO: FIXME implicitMeshSize may differ!!!
 
-				if( x3dom.geoCache[geoCacheID] !== undefined )
+				if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 				{
-					x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
+					//x3dom.debug.logInfo("Using ImageGeometry-Mesh from Cache");
 					this._mesh = x3dom.geoCache[geoCacheID];
 				}
 				else
@@ -1821,7 +2334,8 @@ x3dom.registerNodeType(
 					{
 						for(var x=0; x<this._vf.implicitMeshSize.x; x++)
 						{
-							this._mesh._positions[0].push(x/this._vf.implicitMeshSize.x, y/this._vf.implicitMeshSize.y, 0);
+							this._mesh._positions[0].push(x / this._vf.implicitMeshSize.x,
+                                                          y / this._vf.implicitMeshSize.y, 0);
 						}
 					}
 					
@@ -1832,6 +2346,7 @@ x3dom.registerNodeType(
 					x3dom.geoCache[geoCacheID] = this._mesh;
 				}
 			}
+			this._diameter = this._vf.size.length();
 
             this._dirty = {
                 coord: true,
@@ -1884,6 +2399,10 @@ x3dom.registerNodeType(
 				return this._vf.position;
 			},
 			
+            getDiameter: function() {
+                return this._diameter;
+            },
+			
 			numCoordinateTextures: function()
 			{
 				return this._cf.coord.nodes.length;
@@ -1892,6 +2411,7 @@ x3dom.registerNodeType(
 			getIndexTexture: function()
             {
                 if(this._cf.index.node) {
+					this._cf.index.node._type = "IG_index";
                     return this._cf.index.node;
                 } else {
                     return null;
@@ -1910,6 +2430,7 @@ x3dom.registerNodeType(
 			getCoordinateTexture: function(pos)
             {
                 if(this._cf.coord.nodes[pos]) {
+					this._cf.coord.nodes[pos]._type = "IG_coords" + pos;
                     return this._cf.coord.nodes[pos];
                 } else {
                     return null;
@@ -1924,20 +2445,31 @@ x3dom.registerNodeType(
                     return null;
                 }
             },
-
-            getNormalTexture: function(pos)
+			
+			getCoordinateTextureURLs: function()
             {
-                if(this._cf.normal.nodes[pos]) {
-                    return this._cf.normal.nodes[pos];
+                var urls = [];
+				for(var i=0; i<this._cf.coord.nodes.length; i++)
+				{
+					urls.push(this._cf.coord.nodes[i]._vf.url);
+				}
+                return urls;
+            },
+
+            getNormalTexture: function()
+            {
+                if(this._cf.normal.node) {
+					this._cf.normal.node._type = "IG_normals";
+                    return this._cf.normal.node;
                 } else {
                     return null;
                 }
             },
 			
-			getNormalTextureURL: function(pos)
+			getNormalTextureURL: function()
             {
-                if(this._cf.normal.nodes[pos]) {
-                    return this._cf.normal.nodes[pos]._vf.url;
+                if(this._cf.normal.node) {
+                    return this._cf.normal.node._vf.url;
                 } else {
                     return null;
                 }
@@ -1946,6 +2478,7 @@ x3dom.registerNodeType(
             getTexCoordTexture: function()
             {
                 if(this._cf.texCoord.node) {
+					this._cf.texCoord.node._type = "IG_texCoords";
                     return this._cf.texCoord.node;
                 } else {
                     return null;
@@ -1964,6 +2497,7 @@ x3dom.registerNodeType(
 			getColorTexture: function()
             {
                 if(this._cf.color.node) {
+					this._cf.color.node._type = "IG_colors";
                     return this._cf.color.node;
                 } else {
                     return null;
@@ -1977,7 +2511,31 @@ x3dom.registerNodeType(
                 } else {
                     return null;
                 }
-            }
+			},
+			
+			getTextures: function()
+			{
+				var textures = [];
+				
+				var index = this.getIndexTexture();
+				if(index) textures.push(index);
+				
+				for(i=0; i<this.numCoordinateTextures(); i++) {
+					var coord = this.getCoordinateTexture(i);
+					if(coord) textures.push(coord);
+				}
+				
+				var normal = this.getNormalTexture();
+				if(normal) textures.push(normal);
+				
+				var texCoord = this.getTexCoordTexture();
+				if(texCoord) textures.push(texCoord);
+				
+				var color = this.getColorTexture();
+				if(color) textures.push(color);
+				
+				return textures;
+			}
 		}
 	)
 );
@@ -2006,6 +2564,13 @@ x3dom.registerNodeType(
                 this.handleAttribs();
 
                 var indexes = this._vf.coordIndex;
+                
+                if (indexes.length && indexes[indexes.length-1] != -1)
+                {
+                    indexes.push(-1);
+                    x3dom.debug.logWarning('Last index value should be -1.');
+                }
+                
                 var normalInd = this._vf.normalIndex;
                 var texCoordInd = this._vf.texCoordIndex;
                 var colorInd = this._vf.colorIndex;
@@ -2048,6 +2613,10 @@ x3dom.registerNodeType(
 
                 var texMode = "", numTexComponents = 2;
                 var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
                 if (texCoordNode)
                 {
                     if (texCoordNode._vf.point) {
@@ -2093,7 +2662,7 @@ x3dom.registerNodeType(
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
                 if ( (this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
-                     (positions.length / 3 > 65535) ||
+                     (positions.length > 65535) ||
                      (hasNormal && hasNormalInd) ||
                      (hasTexCoord && hasTexCoordInd) ||
                      (hasColor && hasColorInd) )
@@ -2108,7 +2677,7 @@ x3dom.registerNodeType(
 						faceCnt = 0;
 						this._mesh._multiIndIndices = [];
 						this._mesh._posSize = positions.length;
-	
+						
 						for (i=0; i < indexes.length; ++i)
 						{
 							// Convert non-triangular polygons to a triangle fan
@@ -2403,8 +2972,10 @@ x3dom.registerNodeType(
 									data.colors =  colors[colorInd[i]];
 								} else if (hasColorInd && !colPerVert) {
 									data.colors =  colors[colorInd[faceCnt]];
-								} else {
+								} else if (colPerVert) {
 									data.colors =  colors[indexes[i]];
+								} else {
+									data.colors =  colors[faceCnt];
 								}
 							}
 							if (hasTexCoord) {
@@ -2515,9 +3086,15 @@ x3dom.registerNodeType(
                 var pnts = this._cf.coord.node._vf.point;
                 var n = pnts.length;
                 
+                var texCoordNode = this._cf.texCoord.node;
+                if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                    if (texCoordNode._cf.texCoord.nodes.length)
+                        texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                }
+                
                 if ((this._vf.creaseAngle <= x3dom.fields.Eps) || (n > 65535) ||
                     (this._vf.normalIndex.length > 0 && this._cf.normal.node) ||
-                    (this._vf.texCoordIndex.length > 0 && this._cf.texCoord.node) ||
+                    (this._vf.texCoordIndex.length > 0 && texCoordNode) ||
                     (this._vf.colorIndex.length > 0 && this._cf.color.node))
                 {
 					this._mesh._positions[0] = [];
@@ -2567,7 +3144,11 @@ x3dom.registerNodeType(
 					}
 
 					var texMode = "", numTexComponents = 2;
-					var texCoordNode = this._cf.texCoord.node;
+                    var texCoordNode = this._cf.texCoord.node;
+                    if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                        if (texCoordNode._cf.texCoord.nodes.length)
+                            texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                    }
 					if (texCoordNode)
 					{
 						if (texCoordNode._vf.point) {
@@ -2602,8 +3183,6 @@ x3dom.registerNodeType(
 						hasColor = false;
 					}
 					this._mesh._numColComponents = numColComponents;
-
-
 
 
 					var i, t, cnt, faceCnt;
@@ -2942,7 +3521,7 @@ x3dom.registerNodeType(
 					}
 	
 					Array.forEach(this._parentNodes, function (node) {
-						node.setAllDirty();
+						node.setGeoDirty();
 					});	 
                 } 
 				else {
@@ -2980,7 +3559,12 @@ x3dom.registerNodeType(
 					}
 					else if (fieldName == "texCoord")
 					{
-						pnts = this._cf.texCoord.node._vf.point;
+                        var texCoordNode = this._cf.texCoord.node;
+                        if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
+                            if (texCoordNode._cf.texCoord.nodes.length)
+                                texCoordNode = texCoordNode._cf.texCoord.nodes[0];
+                        }
+						pnts = texCoordNode._vf.point;
 						
 						this._mesh._texCoords[0] = pnts.toGL();
 						
@@ -2994,3 +3578,93 @@ x3dom.registerNodeType(
     )
 );
 
+
+/* ### SphereSegment ### */
+x3dom.registerNodeType(
+    "SphereSegment",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'radius', 1);
+            this.addField_MFFloat(ctx, 'longitude', []);
+            this.addField_MFFloat(ctx, 'latitude', []);
+            this.addField_SFVec2f(ctx, 'stepSize', 1, 1);
+            
+            var r = this._vf.radius;
+            var longs = this._vf.longitude;
+            var lats = this._vf.latitude; 
+            
+			var subx = longs.length, suby = lats.length;
+			
+            var latNumber, longNumber;
+			var latitudeBands = suby;
+			var longitudeBands = subx;
+
+            //x3dom.debug.logInfo("Latitude bands:  "+ latitudeBands);
+            //x3dom.debug.logInfo("Longitude bands: "+ longitudeBands);
+
+			var theta, sinTheta, cosTheta;
+			var phi, sinPhi, cosPhi;
+			var x, y, z, u, v;
+
+			for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
+				theta = ((lats[latNumber]+90) * Math.PI) / 180;
+				sinTheta = Math.sin(theta);
+				cosTheta = Math.cos(theta);
+
+				for (longNumber = 0; longNumber <= longitudeBands; longNumber++) {
+					//phi = ((longs[longNumber]+90) * Math.PI) / -180;
+					//phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
+					phi = ((longs[longNumber]) * Math.PI) / 180;
+					
+					sinPhi = Math.sin(phi);
+					cosPhi = Math.cos(phi);
+
+					x = -cosPhi * sinTheta;
+					y = -cosTheta;
+					z = -sinPhi * sinTheta;
+
+					//u = 0.25 - ((1.0 * longNumber) / longitudeBands);
+					u = longNumber / (longitudeBands-1);
+					v = latNumber / (latitudeBands-1);
+
+					this._mesh._positions[0].push(r * x);
+					this._mesh._positions[0].push(r * y);
+					this._mesh._positions[0].push(r * z);
+					this._mesh._normals[0].push(x);
+					this._mesh._normals[0].push(y);
+					this._mesh._normals[0].push(z);
+					this._mesh._texCoords[0].push(u);
+					this._mesh._texCoords[0].push(v);
+				}
+			}
+
+			var first, second;
+
+			for (latNumber = 0; latNumber < latitudeBands; latNumber++) {
+				for (longNumber = 0; longNumber < longitudeBands; longNumber++) {
+					first = (latNumber * (longitudeBands + 1)) + longNumber;
+					second = first + longitudeBands + 1;
+
+					this._mesh._indices[0].push(first);
+					this._mesh._indices[0].push(second);
+					this._mesh._indices[0].push(first + 1);
+
+					this._mesh._indices[0].push(second);
+					this._mesh._indices[0].push(second + 1);
+					this._mesh._indices[0].push(first + 1);
+				}
+			}
+			
+			this._mesh._invalidate = true;
+			this._mesh._numFaces = this._mesh._indices[0].length / 3;
+			this._mesh._numCoords = this._mesh._positions[0].length / 3;
+        },
+        {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {}
+        }
+    )
+);

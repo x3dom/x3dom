@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -19,11 +18,13 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DLightNode.superClass.call(this, ctx);
 
-            ctx.doc._nodeBag.lights.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.lights.push(this);
+            else
+                x3dom.debug.logWarning("X3DLightNode: No runtime context found!");
 
 			this._lightID = 0;
 			this._dirty = true;
-			
 			
             this.addField_SFFloat(ctx, 'ambientIntensity', 0);
             this.addField_SFColor(ctx, 'color', 1, 1, 1);
@@ -66,6 +67,7 @@ x3dom.registerNodeType(
 
 /** Static class ID counter (needed for flash performance up) */
 x3dom.nodeTypes.X3DLightNode.lightID = 0;
+
 
 /* ### DirectionalLight ### */
 x3dom.registerNodeType(

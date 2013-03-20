@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -21,7 +20,7 @@
  * 
  */
 
-//a small Request class
+/// a small Request class
 var Request = function(url, onloadCallback, priority){
 	this.url 	  		     = url;	
 	this.priority 		   = priority;
@@ -89,7 +88,9 @@ toggleDebugOutput : function(flag) {
 
 
 toggleStrictReturnOrder : function(flag) {
-  this.stallToKeepOrder = flag;
+  //@todo: this is not working properly yet!
+  this.stallToKeepOrder = false;
+  //this.stallToKeepOrder = flag;
 },
 
 
@@ -121,7 +122,7 @@ tryNextDownload : function() {
 		//remove first queue element, if any
 		for (i = 0; i < this.requests.length && !firstRequest; ++i) {
 			//find the request queue with the highest priority
-			if (this.requests[i]){
+			if (this.requests[i]) {
 				//remove first unsent request from the queue, if any
 				for (j = 0; j < this.requests[i].length; ++j) {					
 					if (this.requests[i][j].xhr.readyState === XMLHttpRequest.UNSENT) {
@@ -196,17 +197,14 @@ updateStalledResults : function() {
  * The callback function will be invoked with a JSON object as parameter, where the
  * 'arrayBuffer' member contains a reference to the requested data and the 'url' member
  * contains the original user-given URL of the object.
- *
- * If a request to the given url has already been processed, the data is directly returned
- * by invoking the callback as usual.
  * 
- * If there is no data from the given url available, but there is already a running request
- * for it, the new callback is just appended to the old running request object. Note that,
+ * If there is no data from the given url available, but there is already a registered request
+ * for it, the new callback is just appended to the old registered request object. Note that,
  * in this special case, the priority of the old request is not changed, i.e. the priority
  * of the new request to the same url is ignored.
  */
 get : function(urls, onloadCallbacks, priorities) {
-  var i, j, k;
+  var i, j, k, r;
   var found = false;
   var url, onloadCallback, priority;
   
@@ -231,12 +229,13 @@ get : function(urls, onloadCallbacks, priorities) {
       
       //check if there is already an enqueued or sent request for the given url
       for (i = 0; i < this.requests.length && !found; ++i) {
-        if (this.requests[i]){			
+        if (this.requests[i]) {			
           for (j = 0; j < this.requests[i].length; ++j) {
-            if (this.requests[i][j].url === url) {							
+            if (this.requests[i][j].url === url) {
               this.requests[i][j].onloadCallbacks.push(onloadCallback);
+              
               if (x3dom.DownloadManager.debugOutput) {
-                x3dom.debug.logInfo('Download manager appended onload callback for URL \'' + url + '\' to a running request using the same URL.');
+                x3dom.debug.logInfo('Download manager appended onload callback for URL \'' + url + '\' to a registered request using the same URL.');
               }
               
               found = true;
@@ -247,7 +246,7 @@ get : function(urls, onloadCallbacks, priorities) {
       }
     
       if (!found) {
-        var r = new Request(url, onloadCallback, priority);
+        r = new Request(url, onloadCallback, priority);
         
         if (this.requests[priority]) {
           this.requests[priority].push(r);
@@ -260,10 +259,9 @@ get : function(urls, onloadCallbacks, priorities) {
   }
   
   //try to download data
-  while (this.activeDownloads < this.maxDownloads) {
-    this.tryNextDownload();
+  for (i = 0; i < urls.length && this.activeDownloads < this.maxDownloads; ++i) {
+    this.tryNextDownload();    
   }
 }
-	
 	
 };

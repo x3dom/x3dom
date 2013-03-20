@@ -31,6 +31,7 @@ package x3dom.lighting
 		public function set direction(direction:Vector.<Number>) : void
 		{
 			_direction = direction;
+			this._direction.push(0.0);
 		}
 	}
 }

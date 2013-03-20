@@ -11,13 +11,34 @@
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
-<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
 <script type="text/javascript" src="../../src/util/Properties.js"></script>
 <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
 <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/util/States.js"></script>
+<script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
 <script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
 <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 <script type="text/javascript" src="../../src/gfx_flash.js"></script>
 <script type="text/javascript" src="../../src/X3DDocument.js"></script>
@@ -43,6 +64,7 @@
 <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
@@ -60,14 +82,14 @@
 	<h1>Original Channel Count Test</h1>
 	<div class="group">
 		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' 
-            showStat='false' showLog='true' width='600px' height='400px' onmousemove="myEvent();">
+            showStat='true' showLog='true' width='600px' height='400px' onmousemove="myEvent(event);">
 			<Scene DEF='scene'>
 				<Background skyColor='0.500 0.500 0.500'/>
 				<Transform DEF='Box01' onclick="x3dom.debug.logInfo('Box clicked');">
 					<Shape>
 						<Appearance DEF='_01_-_Default' >
 							<Material diffuseColor='1 1 0' specularColor='0.2 0.2 0.2' shininess='0.15' />
-							<ImageTexture url='media/texture/generic/crate.gif' origChannelCount='1.0' />
+							<!--ImageTexture url='media/texture/generic/crate.gif' origChannelCount='1.0' /-->
 						</Appearance>
 						<IndexedFaceSet DEF='Box01-GEOMETRY' solid='false' coordIndex='0 2 3 -1   3 1 0 -1   4 5 7 -1   7 6 4 -1   0 1 5 -1   5 4 0 -1   1 3 7 -1   7 5 1 -1   3 2 6 -1   6 7 3 -1   2 0 4 -1   4 6 2 -1   ' normalIndex='4 4 4 -1   4 4 4 -1   2 2 2 -1   2 2 2 -1   3 3 3 -1   3 3 3 -1   0 0 0 -1   0 0 0 -1   5 5 5 -1   5 5 5 -1   1 1 1 -1   1 1 1 -1   ' texCoordIndex='9, 11, 10, -1,   10, 8, 9, -1,   8, 9, 11, -1,   11, 10, 8, -1,   4, 5, 7, -1,   7, 6, 4, -1,   0, 1, 3, -1,   3, 2, 0, -1,   4, 5, 7, -1,   7, 6, 4, -1,   0, 1, 3, -1,   3, 2, 0, -1,   ' >
 							<Coordinate point='-25.0000 -25.0000 25.0000, 25.0000 -25.0000 25.0000, -25.0000 -25.0000 -25.0000, 25.0000 -25.0000 -25.0000, -25.0000 25.0000 25.0000, 25.0000 25.0000 25.0000, -25.0000 25.0000 -25.0000, 25.0000 25.0000 -25.0000, '/>
@@ -80,16 +102,16 @@
 			</Scene>
 		</X3D>
         
-            <span id="ausgabe" style="color:red; position:absolute;"> &nbsp; </span>
+            <span id="ausgabe" style="color:red; position:absolute; z-index:10;"> &nbsp; </span>
             <span id="ausgabeButton" onclick="doIt();"
-                  style="background-color: blue; color:yellow; position:absolute; border: yellow solid 1px;">
+            style="background-color: blue; color:yellow; position:absolute; border: yellow solid 1px; z-index:10; visibility: hidden;">
                   &nbsp; </span>
         </div>
         <p><input type="button" value="addEventListener" onclick="addIt();"/>
         <input type="button" value="removeEventListener" onclick="delIt();"/></p>
         
         <script type="text/javascript" ><![CDATA[
-            //onclick="myEvent();"
+            var canvas = null;
             
             var evts = new Array(
                 "mousedown", "mousemove", "mouseout", "mouseover", "mouseup", 
@@ -99,27 +121,29 @@
                 var p = document.getElementById('ausgabe');
                 var s = document.getElementById('ausgabeButton');
                 
-                if (arguments.length === 0) {
+                var pos = canvas.parent.mousePosition(event);
+                
+                if (arguments.length == 0) {
                     p.innerHTML = "onclick was called";
                 }
                 else {
-                    p.innerHTML = event.type + ": " + event.layerX + ", " + event.layerY;
+                    p.innerHTML = event.type + ": " + pos.x + ", " + pos.y;
                     // add little offset, otherwise elem prevents navigation since on top
-                    p.style.left = (30+event.layerX) + "px";
-                    p.style.top = (30+event.layerY) + "px";
+                    p.style.left = (20+event.pageX) + "px";
+                    p.style.top = (20+event.pageY) + "px";
                     
-                    if (event.type === "mouseup" && event.button === 2) {
+                    if (event.type == "mouseup" && event.button == 2) {
                         s.isMenu = true;
                         s.innerHTML = "<p>CLICK ME!</p>";
                         s.style.visibility = "visible";
-                        s.style.left = (event.layerX) + "px";
-                        s.style.top = (event.layerY) + "px";
+                        s.style.left = (event.pageX) + "px";
+                        s.style.top = (event.pageY) + "px";
                     }
-                    else if (event.type === "mousemove" && s.isMenu === true) {
-                        s.style.left = (event.layerX) + "px";
-                        s.style.top = (event.layerY) + "px";
+                    else if (event.type === "mousemove" && s.isMenu == true) {
+                        s.style.left = (event.pageX) + "px";
+                        s.style.top = (event.pageY) + "px";
                     }
-                    event.cancelBubble = true;
+                    //event.cancelBubble = true;
                 }
             };
             
@@ -134,6 +158,8 @@
             }
             
             function addIt() {
+                canvas = document.getElementsByTagName('canvas')[0];
+                
                 document.getElementById('ausgabe').innerHTML = "test";
                 var s = document.getElementById('ausgabeButton');
                 
@@ -162,6 +188,25 @@
             }
             
             document.onload = addIt;
+            
+            /* 
+            var event = document.createEvent('MouseEvents');
+            //event.initMouseEvent( event.type, true, false, window, 1, 0, 0, 0, 0, false, false, false, false, buttonState, null );
+            //initMouseEvent( 'type', bubbles, cancelable, windowObject, detail, screenX, screenY, clientX, clientY, ctrlKey, altKey, shiftKey, metaKey, button, relatedTarget )
+            event.initEvent( event.type, true, true );
+
+            event.layerX= x;
+            event.layerY= y;
+            event.worldX= that._pick.x;
+            event.worldY= that._pick.y;
+            event.worldZ= that._pick.z;
+            event.normalX= that._pickNorm.x;
+            event.normalY= that._pickNorm.y;
+            event.normalZ= that._pickNorm.z;
+            event.hitPnt= that._pick.toGL(); // for convenience
+            event.hitObject= obj._xmlNode ? obj._xmlNode : null;
+            */
+            
         ]]></script>
 	</body>
 </html>

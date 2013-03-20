@@ -8,13 +8,34 @@
 <script type="text/javascript" src="../../src/lang/Array.js"></script>
 <script type="text/javascript" src="../../src/Internals.js"></script>
 <script type="text/javascript" src="../../src/debug.js"></script>
-<script type="text/javascript" src="../../src/ImageLoadManager.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
 <script type="text/javascript" src="../../src/util/Properties.js"></script>
 <script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
 <script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/util/States.js"></script>
+<script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
 <script type="text/javascript" src="../../src/X3DCanvas.js"></script>
 <script type="text/javascript" src="../../src/Runtime.js"></script>
 <script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
 <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 <script type="text/javascript" src="../../src/gfx_flash.js"></script>
 <script type="text/javascript" src="../../src/X3DDocument.js"></script>
@@ -40,6 +61,7 @@
 <script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
 <script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
@@ -53,12 +75,14 @@
 <script>
   var clicked = function(event)
   {
-    document.getElementById('mouseClickEvent').innerHTML = "Click: [" + event.hitPnt[0] + " | " + event.hitPnt[1] + " | " + event.hitPnt[2] + "]";
+    document.getElementById('mouseClickEvent').innerHTML = "Click: [" + event.worldX + 
+                                    " | " + event.worldY + " | " + event.worldZ + "]";
   };
   
   var transform = function(event)
   {
-    document.getElementById('transformEvent').innerHTML = "Transform: [" + event.worldX + " | " + event.worldY + " | " + event.worldZ + "]";
+    document.getElementById('transformEvent').innerHTML = "Transform: [" + event.worldX + 
+                                        " | " + event.worldY + " | " + event.worldZ + "]";
   };
   
   function init()
@@ -67,36 +91,40 @@
     document.getElementById('box_2_2_id').addEventListener('transform', transform, false);
   };
 </script>
-    
   </head>
+  
   <body onload="init();">
   
-  <x3d xmlns="http://www.x3dom.org/x3dom" id="boxes" showStat="true" showLog="true" width="500px" height="500px">
+  <x3d id="boxes" showStat="true" showLog="true" width="500px" height="500px">
     <scene DEF="scene">
-      <viewpoint position="16.0328 13.056 34.2417" orientation="-0.624839 0.780206 0.0292506 0.543473"></viewpoint>
+        
+      <viewpoint position="50.60778 18.60693 30.06995" orientation="-0.36193 0.93169 -0.03096 1.06264"
+        zNear="0.01" zFar="10000"></viewpoint>
+      <background groundAngle='0.9 1.5 1.57' groundColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.51 0.81 0.95' 
+        skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.51 0.81 0.95' 
+        groundTransparency='0.5 0.5 0.5 0.5' skyTransparency='0.5 0.5 0.5 0.5'></background>
       
       <transform scale="2.5 2.5 2.5">
-        
         <shape id="box_1_id" DEF="box_1">
-          <box size='0.5 0.5 0.5' />
+          <box size='0.5 0.5 0.5'></box>
         </shape>
-        
+      </transform>
+      
         <transform id="box_2_id" DEF="box_2">
-          <transform translation='0 0 5' id="box_2_2_id"
+          <transform scale="2.5 2.5 2.5" translation='0 0 5' id="box_2_2_id"
             onmouseover="document.getElementById('mouseOverEvent').innerHTML='Mouse: over';"
             onmouseout= "document.getElementById('mouseOverEvent').innerHTML='Mouse: out';">
             <shape>
               <appearance>
-                <material diffuseColor='1 0 0' />	
+                <material diffuseColor='1 0 0' specularColor='.5 .5 .5'></material>	
               </appearance>
-              <box />
+              <box size="2.5 2.5 2.5"></box>
             </shape>
           </transform>
         </transform>
-      </transform>
       
-      <timesensor DEF="TIMER" cycleInterval="30" loop="true"></timesensor>
-      <orientationinterpolator DEF="ROTOR_A" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14, 1 0 0 6.28"></orientationinterpolator>
+      <timeSensor id="TS" DEF="TIMER" cycleInterval="30" loop="true" enabled="false"></timeSensor>
+      <orientationInterpolator DEF="ROTOR_A" key="0 0.5 1" keyValue="1 0 0 0, 1 0 0 3.14, 1 0 0 6.28"></orientationInterpolator>
       
       <route fromNode="TIMER" fromField="fraction_changed" toNode="ROTOR_A" toField="set_fraction"></route>
       <route fromNode="ROTOR_A" fromField="value_changed" toNode="box_2" toField="rotation"></route>
@@ -104,9 +132,215 @@
     </scene>
   </x3d>
 
-  <p id="mouseOverEvent" class="case">Mouse: xxx</p>
-  <p id="mouseClickEvent" class="case">Click: xxx</p>
-  <p id="transformEvent" class="case">Transform: xxx</p>
+  <p id="moveEvent" class="case"> ==&gt; Move the red box! </p>
+  <p id="mouseOverEvent" class="case"> Mouse: xxx </p>
+  <p id="mouseClickEvent" class="case"> Click: xxx </p>
+  <p id="transformEvent" class="case"> Transform: xxx </p>
+  <p><input type="button" value="Toggle Timer" onclick="toggleTimer();"/></p>
+  
+  <script>
+    var runtime = null;
+    var tsEnabled = false;
+    
+    var redBox = null;
+    var drag = false;
+    
+    var w = 0, h = 0;
+    var uPlane, vPlane, pPlane;
+    
+    var isect = null;
+    var translationOffset = null;
+    
+    var lastX, lastY;
+    var firstRay = null;
+    var buttonState = 0;
+    
+    
+    function calcViewPlane(origin) 
+    {
+        var ray = null;
+        
+        // init width and height
+        w = runtime.getWidth();
+        h = runtime.getHeight();
+        
+        ray = runtime.getViewingRay(0, h-1);
+        var r = ray.pos.add(ray.dir);   //bottom left of viewarea
+
+        ray = runtime.getViewingRay(w-1, h-1);
+        var s = ray.pos.add(ray.dir);   //bottom right of viewarea
+
+        ray = runtime.getViewingRay(0, 0);
+        var t = ray.pos.add(ray.dir);   //top left of viewarea
+        
+        uPlane = s.subtract(r).normalize();
+		vPlane = t.subtract(r).normalize();
+		
+		if (arguments.length === 0)
+		    pPlane = r;
+		else
+		    pPlane = x3dom.fields.SFVec3f.copy(origin);
+    }
+    
+    function det(mat)
+    {
+        return 	mat[0][0]*mat[1][1]*mat[2][2] + mat[0][1]*mat[1][2]*mat[2][0] +
+        		mat[0][2]*mat[2][1]*mat[1][0] - mat[2][0]*mat[1][1]*mat[0][2] -
+    		    mat[0][0]*mat[2][1]*mat[1][2] - mat[1][0]*mat[0][1]*mat[2][2] ;
+    }
+    
+    // Translation along plane parallel to viewing plane E:x=p+t*u+s*v
+    function translateXY(l)
+    {
+        var track = null;
+        var z = [], n = [];
+
+        for (var i=0; i<3; i++) {
+            z[i] = [];
+            n[i] = [];
+            
+        	z[i][0] = uPlane.at(i);
+        	n[i][0] = z[i][0];
+        	
+            z[i][1] = vPlane.at(i);
+            n[i][1] = z[i][1]
+            
+            z[i][2] = (l.pos.subtract(pPlane)).at(i);
+            n[i][2] = -l.dir.at(i);
+        }
+        
+        // get intersection line-plane with cramer's rule
+        var s = det(n);
+        
+        if (s !== 0) {
+            var t = det(z) / s;
+            track = l.pos.addScaled(l.dir, t);
+        }
+        
+        if (track) {
+            if (isect) {
+                // calc offset from first click position
+                track = track.subtract(isect);
+            }
+            track = track.add(translationOffset);
+        }
+        
+        return track;
+    }
+    
+    // Translation along picking ray
+    function translateZ(l, currY)
+    {
+        var vol = runtime.getSceneBBox();
+        var sign = (currY < lastY) ? 1 : -1;
+        var fact = sign * (vol.max.subtract(vol.min)).length() / 100;
+        
+        translationOffset.setValues(translationOffset.addScaled(l.dir, fact));
+        
+        return translationOffset;
+    }
+    
+    function over(event)
+    {
+        runtime.getCanvas().style.cursor = "crosshair";
+    }
+    
+    function out(event)
+    {
+        if (!drag)
+            runtime.getCanvas().style.cursor = "pointer";
+    }
+
+    function start(event) 
+    {
+        if (!drag) 
+        {
+            document.getElementById('moveEvent').innerHTML = "Down: [" + event.layerX + " | " + event.layerY + "]";
+            lastX = event.layerX;
+            lastY = event.layerY;
+            
+            drag = true;
+            runtime.noNav();    // disable navigation
+            
+            // calc view-aligned plane through original pick position
+            isect = new x3dom.fields.SFVec3f(event.worldX, event.worldY, event.worldZ);
+            calcViewPlane(isect);
+            
+            firstRay = runtime.getViewingRay(event.layerX, event.layerY);
+            // to distinguish between parallel or orthogonal movement
+            buttonState = event.button;
+            
+            var mTrans = redBox.getAttribute("translation");
+			if (mTrans)
+				translationOffset = x3dom.fields.SFVec3f.parse(mTrans);
+			else
+				translationOffset = new x3dom.fields.SFVec3f(0, 0, 0);
+			
+			runtime.getCanvas().style.cursor = "crosshair";
+        }
+    }
+
+    function move(event) 
+    {
+        if (drag) 
+        {
+            var pos = runtime.mousePosition(event);
+            var ray = runtime.getViewingRay(pos[0], pos[1]);
+            
+            var track = null;
+            
+            if (buttonState == 2)   // right mouse button
+                track = translateZ(firstRay, pos[1]);
+            else
+                track = translateXY(ray);
+            
+            if (track)
+                redBox.setAttribute("translation", track.x + " " + track.y + " " + track.z);
+            
+            document.getElementById('moveEvent').innerHTML = "Move: [" + pos[0] + " | " + pos[1] + "]";
+            lastX = pos[0];
+            lastY = pos[1];
+        }
+    }
+
+    function stop(event)
+    {
+        if (drag) 
+        {
+            document.getElementById('moveEvent').innerHTML = "Up: [" + event.layerX + " | " + event.layerY + "]";
+            lastX = event.layerX;
+            lastY = event.layerY;
+            
+            isect = null;
+            drag = false;
+            runtime.examine();    // enable navigation
+            
+            runtime.getCanvas().style.cursor = "pointer";
+        }
+    }
+    
+    function toggleTimer()
+    {
+        tsEnabled = !tsEnabled;
+        document.getElementById('TS').setAttribute("enabled", tsEnabled);
+    }
+
+    document.onload = function() {
+        var boxes = document.getElementById("boxes");
+        runtime = boxes.runtime;
+        
+        redBox = document.getElementById("box_2_id");
+        redBox.addEventListener('mousedown', start, false);
+        redBox.addEventListener('mouseover', over, false);
+        redBox.addEventListener('mouseout', out, false);
+        
+        boxes.addEventListener('mouseup', stop, false);
+        boxes.addEventListener('mouseout', stop, false);
+        boxes.addEventListener('mousemove', move, true);
+        
+        x3dom.debug.logInfo("Drag the red box around with your mouse!");
+    }
+  </script>
   
   </body>
 </html>

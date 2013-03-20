@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -18,7 +17,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DFollowerNode.superClass.call(this, ctx);
             
-            ctx.doc._nodeBag.followers.push(this);
+            if (ctx)
+                ctx.doc._nodeBag.followers.push(this);
+            else
+                x3dom.debug.logWarning("X3DFollowerNode: No runtime context found!");
             
             this.addField_SFBool(ctx, 'isActive', false);
             

@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -18,6 +17,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DBackgroundNode.superClass.call(this, ctx);
 
+            this.addField_SFBool(ctx, 'withCredentials', false);
+            
             this._dirty = true;
         },
         {
@@ -60,7 +61,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'visibilityRange', 0);
         },
         {
-            // methods
         }
     )
 );
@@ -74,7 +74,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Background.superClass.call(this, ctx);
 
-            var trans = ctx.autoGen ? 1 : 0;
+            var trans = (ctx && ctx.autoGen) ? 1 : 0;
 
             this.addField_MFColor(ctx, 'skyColor', [new x3dom.fields.SFColor(0,0,0)]);
             this.addField_MFFloat(ctx, 'skyAngle', []);
@@ -91,11 +91,13 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName.indexOf("Url") > 0) {
+                if (fieldName.indexOf("Url") > 0 ||
+                    fieldName.search("sky") >= 0 || 
+                    fieldName.search("ground") >= 0) {
                     this._dirty = true;
                 }
-                else if (fieldName === "set_bind") {
-                    this.bind(this._vf.set_bind);
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
                 }
             },
 
@@ -119,14 +121,6 @@ x3dom.registerNodeType(
                     this._nameSpace.getURL(this._vf.topUrl[0]),
                     this._nameSpace.getURL(this._vf.leftUrl[0]),
                     this._nameSpace.getURL(this._vf.rightUrl[0])
-                    /*
-                    this._nameSpace.getURL(this._vf.rightUrl[0]),
-                    this._nameSpace.getURL(this._vf.leftUrl[0]),
-                    this._nameSpace.getURL(this._vf.topUrl[0]),
-                    this._nameSpace.getURL(this._vf.bottomUrl[0]),
-                    this._nameSpace.getURL(this._vf.frontUrl[0]),
-                    this._nameSpace.getURL(this._vf.backUrl[0])
-                    */
                 ];
             }
         }

@@ -9,6 +9,7 @@ package x3dom.texturing
 	import flash.events.IOErrorEvent;
 	import flash.net.URLRequest;
 	
+	import x3dom.*;
 	import x3dom.Debug;
 	import x3dom.Utils;
 
@@ -62,7 +63,7 @@ package x3dom.texturing
 			loader.contentLoaderInfo.addEventListener(IOErrorEvent.IO_ERROR, handleIOError);
 			
 			//Load image from url
-			loader.load( new URLRequest( this._url ) );
+			loader.load( new URLRequest( this._url ), FlashBackend.getLoaderContext() );
 		}
 		
 		/**

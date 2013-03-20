@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -45,8 +44,10 @@ x3dom.Mesh.prototype._texCoords = [];
 x3dom.Mesh.prototype._colors    = [];
 x3dom.Mesh.prototype._indices   = [];*/
 
+x3dom.Mesh.prototype._numPosComponents = 3;
 x3dom.Mesh.prototype._numTexComponents = 2;
 x3dom.Mesh.prototype._numColComponents = 3;
+x3dom.Mesh.prototype._numNormComponents = 3;
 x3dom.Mesh.prototype._lit = true;
 x3dom.Mesh.prototype._min = {};
 x3dom.Mesh.prototype._max = {};
@@ -114,6 +115,17 @@ x3dom.Mesh.prototype.getCenter = function()
     //x3dom.debug.logInfo("center: " + center + "; size: " + max.subtract(min));
     
     return center;
+};
+
+x3dom.Mesh.prototype.getDiameter = function() 
+{
+    var min = new x3dom.fields.SFVec3f(0,0,0);
+    var max = new x3dom.fields.SFVec3f(0,0,0);
+    
+    this.getBBox(min, max, true);
+    var size = max.subtract(min);
+    
+    return size.length();
 };
 
 x3dom.Mesh.prototype.doIntersect = function(line)

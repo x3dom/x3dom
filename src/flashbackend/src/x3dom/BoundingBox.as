@@ -15,6 +15,7 @@ package x3dom
 		private var _min:Vector3D = new Vector3D();
 		private var _max:Vector3D = new Vector3D();
 		private var _center:Vector3D = new Vector3D();
+		private var _size:Vector3D = new Vector3D();
 		
 		public function BoundingBox()
 		{
@@ -50,5 +51,16 @@ package x3dom
 		{
 			return this._center;
 		}
+
+		public function get size():Vector3D
+		{
+			return this._size;
+		}
+
+		public function set size(value:Vector3D):void
+		{
+			this._size = value;
+		}
+
 	}
 }

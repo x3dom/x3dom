@@ -50,10 +50,10 @@ package x3dom.shaders
 			//Init shader string
 			var shader:String = "";
 			
-			//Build shader							
+			//Build shader			
 			shader += "m44 op, va0, vc0\n";
 			
-			if( lights.length && shape.normalBuffer) {
+			if( lights.length && shape.normalBuffer && shape.material) {
 				shader += "dp3 vt0.x, va0, vc4\n";
 				shader += "dp3 vt0.y, va0, vc5\n";
 				shader += "dp3 vt0.z, va0, vc6\n";
@@ -69,14 +69,15 @@ package x3dom.shaders
 				shader += "mov v4, va2\n";
 			} 
 			
-			if( shape.colorBuffer )
+			if( shape.colorBuffer ) {
 				shader += "mov v1, va3\n";		 	//color -> Fragment(v1)
+			}
 			
-			if( shape.texture ) {
+			if( shape.texture && shape.texCoordBuffer) {			
 				if( shape.sphereMapping )
 				{
 					//fragTexcoord = 0.5 + fragNormal.xy / 2.0;";
-					shader += "mov vt2, va1\n";
+					shader += "mov vt2, va1\n";	
 					shader += "div vt2, vt1.xyz, vc9.y\n";
 					shader += "add vt2, vt2.xyz, vc9.x\n";
 					shader += "mov v2, vt2\n";
@@ -102,7 +103,7 @@ package x3dom.shaders
 			var shader:String = "";
 			
 			//Build shader
-			if( shape.texture ) {
+			if( shape.texCoordBuffer && shape.texture ) {
 				if(shape.texture is CubeMapTexture) {
 					shader += "nrm ft1.xyz, v0\n";							//Normalize Normal(ft2)
 					shader += "nrm ft7.xyz, v3\n";
@@ -123,7 +124,7 @@ package x3dom.shaders
 				}
 			}
 			
-			if( lights.length > 0) {
+			if( lights.length > 0 && shape.material) {
 				shader += "mov ft1, fc0\n";
 				shader += "nrm ft1.xyz, ft1\n";							//Normalize LightDir(ft1)
 				shader += "nrm ft2.xyz, v0 \n";							//Normalize Normal(ft2)
@@ -144,7 +145,7 @@ package x3dom.shaders
 				shader += "sat ft5, ft5\n";								//saturate(NdotH)
 				shader += "pow ft5, ft5, fc2.w\n";						//pow(NdotH, shininess)
 				shader += "mul ft5, ft3, ft5\n";						//NdotL * pow(NdotH, shininess);
-				if( shape.texture && !shape.texture.blending) {
+				if(shape.texCoordBuffer && shape.texture && !shape.texture.blending) {
 					shader += "mul ft3, ft3, ft0\n";
 				} else {
 					if( shape.colorBuffer ) {
@@ -156,7 +157,7 @@ package x3dom.shaders
 				shader += "mul ft5, ft5, fc2.xyz\n";
 				shader += "add ft3, ft3, ft5\n";
 				
-				if( shape.texture && shape.texture.blending) {
+				if(shape.texCoordBuffer && shape.texture && shape.texture.blending) {
 					if(shape.texture is CubeMapTexture) {
 						shader += "sub ft6, ft0, ft3)\n";				//lerp(diffColor, refColor, ratio)
 						shader += "mul ft6, ft6, fc10\n";
@@ -166,7 +167,7 @@ package x3dom.shaders
 					}
 				}
 				
-				if( shape.texture )
+				if(shape.texCoordBuffer && shape.texture )
 				{
 					shader += "mul ft3.w, fc1.w, ft0.w\n";
 				} else {
@@ -187,7 +188,7 @@ package x3dom.shaders
 					shader += "mov ft1, fc1\n";
 				}
 				
-				if( shape.texture && shape.texture.blending ) {
+				if(shape.texCoordBuffer && shape.texture && shape.texture.blending ) {
 					shader += "mul ft1, ft1, ft0\n";
 				}
 				

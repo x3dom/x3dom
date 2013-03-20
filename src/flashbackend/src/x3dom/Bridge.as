@@ -32,9 +32,9 @@ package x3dom {
 			
 			//Register JS callback functions
 			ExternalInterface.addCallback("renderScene", renderScene);
+			ExternalInterface.addCallback("getScreenshot", getScreenshot);
 			ExternalInterface.addCallback("pickValue", pickValue);
-			ExternalInterface.addCallback("setViewMatrix", setViewMatrix);
-			ExternalInterface.addCallback("setProjectionMatrix", setProjectionMatrix);
+			ExternalInterface.addCallback("setViewpoint", setViewpoint);
 			ExternalInterface.addCallback("setBackground", setBackground);
 			ExternalInterface.addCallback("setMeshTransform", setMeshTransform);
 			ExternalInterface.addCallback("setMeshMaterial", setMeshMaterial);
@@ -63,6 +63,11 @@ package x3dom {
 			this._renderer.render();
 		}
 		
+		private function getScreenshot() : String
+		{	
+			return this._renderer.screenURL;
+		}
+		
 		private function pickValue(value:Object) : Object
 		{						
 			return {objID: this._scene.pickedObj,
@@ -76,13 +81,12 @@ package x3dom {
 			FlashBackend.setFPS( Number(value.fps) );
 		}
 		
-		private function setViewMatrix(value:Object) : void
+		private function setViewpoint(value:Object) : void
 		{
+			this._scene.fov = Number(value.fov);
+			this._scene.zFar = Number(value.zFar);
+			this._scene.zNear = Number(value.zNear);
 			this._scene.viewMatrix = new Matrix3D( Vector.<Number>(value.viewMatrix) );
-		}
-		
-		private function setProjectionMatrix(value:Object) : void
-		{
 			this._scene.projectionMatrix = new Matrix3D( Vector.<Number>(value.projectionMatrix) );
 		}
 		
@@ -207,6 +211,9 @@ package x3dom {
 				case "BinaryGeometry":
 					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, value.indices );
 					break;
+				case "BitLODGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, value.indices );
+					break;
 				default:
 					this._scene.getDrawableObject( uint(value.id) ).shape.setIndices( value.idx, Vector.<uint>(value.indices) );
 					break;
@@ -250,7 +257,10 @@ package x3dom {
 					this._scene.getDrawableObject( uint(value.id) ).shape.setCoordinateTexture(value);
 					break;
 				case "BinaryGeometry":
-					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, value.vertices );
+					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, value );
+					break;
+				case "BitLODGeometry":
+					this._scene.getDrawableObject( uint(value.id) ).shape.setComponents(value);
 					break;
 				default:
 					this._scene.getDrawableObject( uint(value.id) ).shape.setVertices( value.idx, Vector.<Number>(value.vertices) );
@@ -284,6 +294,9 @@ package x3dom {
 		private function setCanvasTexture(value:Object) : void 
 		{	
 
+			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new CanvasTexture( Number(value.width),
+																							   Number(value.height),
+																							   value.dataURL );
 		}
 
 	}

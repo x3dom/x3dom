@@ -1,0 +1,69 @@
+<html>
+  <head>
+  </head>
+  <script type="text/javascript">
+    //begin hack
+    var x3dom = {};			 
+    x3dom.debug = {};
+    x3dom.debug.logError = function(msg) {
+      console.log(msg);
+    };			 
+    x3dom.debug.logInfo = function(msg) {
+      console.log(msg);
+    };
+    //end hack
+  </script>
+  <script type="text/javascript" src="RefinementJob.js"></script>
+  <script type="text/javascript" src="RefinementJobManager.js"></script>
+  <script type="text/javascript" src="RefinementJobWorker.js"></script>
+  <body onload="main();">
+    <script type="text/javascript">
+      function printContent(typedArray) {
+        var str = '[';
+        
+        var i = 0;
+        for (; i < typedArray.length - 1; ++i) {
+          str += typedArray[i] + ', ';
+        }
+        
+        if (i < typedArray.length) {
+          str += typedArray[i];
+        }
+        
+        str += ']';
+        
+        console.log(str);
+      }
+    
+    
+      function main(){
+        console.log('Hallo');
+        
+        var buffer     = new ArrayBuffer(4);        
+        var bufferView = new Uint8Array(buffer);
+        
+        var i = 0;        
+        for (; i < 4; ++i) {
+          bufferView[i] = i+1;
+        }
+        
+        console.log('Initialized Buffer:');
+        printContent(bufferView);
+        
+        var dataAvailable = function(attributeId, bufferView) {
+          console.log('Result available for attribute ' + attributeId + ':');          
+          printContent(bufferView);
+          
+          rm.continueProcessing(attributeId);
+        };
+        
+        var rm = new x3dom.RefinementJobManager();
+        
+        rm.addResultBuffer(0, bufferView);
+        
+        rm.addRefinementJob(0, 0, 2, dataAvailable);
+        rm.addRefinementJob(0, 1, 3, dataAvailable);
+      }
+    </script>
+  </body>  
+</html>

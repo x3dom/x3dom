@@ -14,7 +14,7 @@ package x3dom
 	{	
 		private var _mvMatrix:Matrix3D = new Matrix3D();
 		private var _mvInvMatrix:Matrix3D = new Matrix3D();
-		private var _mvpMatrix:Matrix3D = new Matrix3D();
+		
 		
 		public function ForwardRenderer(scene:X3DScene)
 		{
@@ -50,6 +50,8 @@ package x3dom
 			{
 				var shape:Shape = drawableObjects[i].shape;
 				var trafo:Matrix3D = drawableObjects[i].transform;
+				
+				shape.addEventListener(Event.RENDER, handleRender );
 				
 				if(!shape._ready) {
 					//Render scene again if shape is ready
@@ -93,7 +95,7 @@ package x3dom
 					//Associate MV-Matrix
 					this._context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  4, this._mvMatrix, true );
 					
-					if(lights.length)
+					if(lights.length && shape.material != null)
 					{
 						//Associate EyePosition
 						this._context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  8, Vector.<Number>( [ -this._scene.viewMatrix.position.x, -this._scene.viewMatrix.position.y, -this._scene.viewMatrix.position.z, 1.0 ] ) );
@@ -102,9 +104,15 @@ package x3dom
 					}
 					
 					//Associate Material
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ shape.material.diffuseColor[0], shape.material.diffuseColor[1], shape.material.diffuseColor[2],1.0-shape.material.transparency ] ) );
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ shape.material.specularColor[0], shape.material.specularColor[1], shape.material.specularColor[2], shape.material.shininess*128.0 ] ) );
-					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ shape.material.emissiveColor[0], shape.material.emissiveColor[1], shape.material.emissiveColor[2], 1.0 ] ) );
+					if(shape.material == null) {
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ 1.0, 1.0, 1.0, 1.0] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.0 ] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ 0.0, 0.0, 0.0, 1.0 ] ) );
+					} else {
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  1, Vector.<Number>( [ shape.material.diffuseColor[0], shape.material.diffuseColor[1], shape.material.diffuseColor[2],1.0-shape.material.transparency ] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  2, Vector.<Number>( [ shape.material.specularColor[0], shape.material.specularColor[1], shape.material.specularColor[2], shape.material.shininess*128.0 ] ) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  3, Vector.<Number>( [ shape.material.emissiveColor[0], shape.material.emissiveColor[1], shape.material.emissiveColor[2], 1.0 ] ) );
+					}
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.1 ] ) );
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  5, Vector.<Number>( [ 0.0, 0.5, 1.0, 2.0 ] ) );
 					
@@ -115,12 +123,11 @@ package x3dom
 					}
 					
 					//Associate texture
-					if(shape.texture) {
+					if(shape.texCoordBuffer && shape.texture) {
 						_context3D.setTextureAt(0, shape.texture.texture);
 						if(shape.texture is CubeMapTexture) {
 							_context3D.setProgramConstantsFromMatrix( Context3DProgramType.FRAGMENT,  6, this._mvInvMatrix, true );
 							_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  10, Vector.<Number>( [ 0.75, 0.75, 0.75, 1.0 ] ) );
-							
 						}
 					}
 					
@@ -130,8 +137,13 @@ package x3dom
 							_context3D.setVertexBufferAt( 0, shape.vertexBuffer[j],  0, Context3DVertexBufferFormat.FLOAT_3 );
 						}
 						
+						//Associate texture coordinates
+						if(shape.texCoordBuffer && shape.texture) {				
+							_context3D.setVertexBufferAt( 1, shape.texCoordBuffer[j],  0, Context3DVertexBufferFormat.FLOAT_2 );
+						}
+						
 						//Associate normals
-						if(shape.normalBuffer && lights.length) {
+						if(shape.normalBuffer && lights.length && shape.material) {
 							_context3D.setVertexBufferAt( 2, shape.normalBuffer[j], 0, Context3DVertexBufferFormat.FLOAT_3 );
 						}
 						
@@ -142,11 +154,6 @@ package x3dom
 							} else {
 								_context3D.setVertexBufferAt( 3, shape.colorBuffer[j],  0, Context3DVertexBufferFormat.FLOAT_3 );
 							}
-						}
-						
-						//Associate texture and texture coordinates
-						if(shape.texCoordBuffer && shape.texture) {				
-							_context3D.setVertexBufferAt( 1, shape.texCoordBuffer[j],  0, Context3DVertexBufferFormat.FLOAT_2 );
 						}
 						
 						//Draw the mesh
@@ -160,7 +167,11 @@ package x3dom
 					this.cleanBuffers();
 				
 				}
-				
+			}
+			
+			//Capture Screen if needed
+			if(this._captureScreen) {
+				this.captureScreen();
 			}
 			
 			//Swap Back- and Frontbuffer
@@ -246,101 +257,6 @@ package x3dom
 			
 			pixelValue = this._bitmapBuffer.getPixel32(FlashBackend.getMouseX(), FlashBackend.getMouseY());
 			this._scene.pickedObj = 255.0 - (pixelValue >> 24 & 0xFF);
-		}
-		
-		private function renderBackground() : void
-		{
-			//Get scenes Background
-			var background:Background = this._scene.background;
-			
-			//Clear buffers with Background color
-			this._context3D.clear(background.skyColor[0], background.skyColor[1], background.skyColor[2], background.transparency);
-			
-			//Check if there is a background texture
-			if(background.hasBackTexture() || background.hasSkyTexture() || background.hasCubeTexture())
-			{
-				//var for hoding geometry
-				var shape:Shape;
-				
-				//Check what geometry we need
-				if(background.hasBackTexture()) {
-					//Get the background Plane
-					shape = background.plane;
-					
-					//Set BackgroundTexture shader
-					this._context3D.setProgram( this._shaderCache.getShader(ShaderIdentifier.BACKGROUNDTEXTURE) );
-					
-				} else {
-					//Get the background Sphere
-					shape = background.sphere;
-					
-					//Build ModelViewProjection-Matrix
-					this._mvpMatrix.identity();
-					this._mvpMatrix.append(this._scene.viewMatrix);
-					this._mvpMatrix.append(this._scene.projectionMatrix);
-					
-					if(background.hasSkyTexture()) {
-						//Set BackgroundSkyTexture shader
-						this._context3D.setProgram( this._shaderCache.getShader(ShaderIdentifier.BACKGROUNDSKYTEXTURE) );
-						this._context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 0.5, 2.0, 0.0]) );
-					} else {
-						//Set BackgroundSkyTexture shader
-						this._context3D.setProgram( _shaderCache.getShader(ShaderIdentifier.BACKGROUNDCUBETEXTURE) );
-						this._context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([0.0, 0.0, 1.0, 0.0]) );
-					}
-					
-					//Associate MVP-Matrix
-					this._context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  0, this._mvpMatrix, true );
-				}
-				
-				//Check if shape is ready to render
-				if(shape.texture && !shape.texture.ready)
-				{
-					//Render scene again if shape is ready
-					shape.texture.addEventListener(Event.COMPLETE, handleComplete );
-				}
-				
-				//Disable DepthTest 
-				this._context3D.setDepthTest(false, Context3DCompareMode.LESS);
-				
-				//Disable backface culling
-				this._context3D.setCulling(Context3DTriangleFace.NONE);
-				
-				//Associate vertices
-				this._context3D.setVertexBufferAt( 0, shape.vertexBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_3 );
-				
-				if(!background.hasCubeTexture()) {
-					//Associate texture coordinates
-					this._context3D.setVertexBufferAt( 1, shape.texCoordBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_2 );
-				}
-				
-				//Associate texture
-				this._context3D.setTextureAt(0, shape.texture.texture);
-				
-				//Draw the mesh
-				this._context3D.drawTriangles( shape.indexBuffer[0], 0, shape.numTriangles[0] );
-				
-				//Enable DepthTest
-				this._context3D.setDepthTest(true, Context3DCompareMode.LESS);
-				
-				//Clean all Buffers
-				this.cleanBuffers();
-			}
-		}
-		
-		private function handleComplete(e:Event) : void
-		{
-			this.render();
-			e.target.removeEventListener(Event.COMPLETE, handleComplete);
-		}
-		
-		private function cleanBuffers() : void
-		{
-			this._context3D.setTextureAt(0, null);
-			this._context3D.setVertexBufferAt( 0, null );
-			this._context3D.setVertexBufferAt( 1, null );
-			this._context3D.setVertexBufferAt( 2, null );
-			this._context3D.setVertexBufferAt( 3, null );
 		}
 	}
 }

@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -43,8 +42,11 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {
+			
+				//TODO delete this if all works fine
                 if (!this._cf.material.node) {
-                    this.addChild(x3dom.nodeTypes.Material.defaultNode());
+					//Unlit
+                    //this.addChild(x3dom.nodeTypes.Material.defaultNode());
                 }
 
                 if (this._cf.shaders.nodes.length) {
@@ -60,6 +62,9 @@ x3dom.registerNodeType(
                         if (this._cf.texture.node._vf.url[0].toLowerCase().indexOf('.'+'png') >= 0) {
                             this._vf.sortType = 'transparent';
                         }
+                        else {
+                            this._vf.sortType = 'opaque';
+                        }
                     }
                     else {
 						this._vf.sortType = 'opaque';
@@ -73,6 +78,15 @@ x3dom.registerNodeType(
                 }
                 else {
                     return this._cf.textureTransform.node.texTransformMatrix();
+                }
+            },
+
+            parentAdded: function(parent) {
+                if (this != x3dom.nodeTypes.Appearance._defaultNode) {
+                    if (parent._cleanupGLObjects) {
+                        parent._cleanupGLObjects(true);
+                    }
+                    parent.setAllDirty();
                 }
             }
         }
@@ -197,6 +211,7 @@ x3dom.registerNodeType(
             // FIXME: X3DShapeNode inherits from X3DChildNode and X3DBoundedObject
             // (at least according to spec), therefore impl. "render" field there.
             this.addField_SFBool(ctx, 'render', true);
+            this.addField_SFBool(ctx, 'isPickable', true);
             // same thing for bbox
             this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
             this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
@@ -230,22 +245,11 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
-                var collectNeedsReset = false;
-                if ( out && !out.collect && out.useIdList && this._cf.geometry.node !== null && 
-                    (out.idList.indexOf(this._DEF) >= 0 || out.idList.indexOf(this._cf.geometry.node._DEF) >= 0) ) {
-                    out.collect = true;
-                    collectNeedsReset = true;
-                }
-
                 // TODO: culling etc
-                if ( out !== null && this._vf.render &&
-                    (!out.useIdList || out.collect) )
+                if (out && this._vf.render && this._cf.geometry.node)
                 {
                     out.push( [transform, this] );
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             },
             
             transformMatrix: function(transform)
@@ -283,6 +287,15 @@ x3dom.registerNodeType(
 				}
             },
 
+            getDiameter: function() {
+				if (this._cf.geometry.node) {
+					return this._cf.geometry.node.getDiameter();
+				}
+				else {
+					return 0;
+				}
+            },
+
             doIntersect: function(line) {
                 return this._cf.geometry.node.doIntersect(line);
             },
@@ -296,17 +309,38 @@ x3dom.registerNodeType(
             },
 
             parentRemoved: function(parent) {
+                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                    if (this._childNodes[i]) {
+                        this._childNodes[i].parentRemoved(this);
+                    }
+                }
+
                 // Cleans all GL objects for WebGL-based renderer
                 if (this._cleanupGLObjects) {
                     this._cleanupGLObjects();
                 }
+            },
+            
+            unsetDirty: function () {
+				// vertex attributes
+				this._dirty.positions = false;
+				this._dirty.normals = false;
+				this._dirty.texCoords = false;
+				this._dirty.colors =  false;
+				// indices/topology
+				this._dirty.indexes = false;
+				// appearance properties
+				this._dirty.texture = false;
+				this._dirty.material = false;
+				this._dirty.text = false;
+				this._dirty.shader = false;
             },
 			
 			setAllDirty: function () {
 			    // vertex attributes
 				this._dirty.positions = true;
 				this._dirty.normals = true;
-				this._dirty.texcoords = true;
+				this._dirty.texCoords = true;
 				this._dirty.colors =  true;
 				// indices/topology
 				this._dirty.indexes = true;
@@ -315,7 +349,48 @@ x3dom.registerNodeType(
 				this._dirty.material = true;
 				this._dirty.text = true;
 				this._dirty.shader = true;
-            }
+            },
+            
+            setGeoDirty: function () {
+				this._dirty.positions = true;
+				this._dirty.normals = true;
+				this._dirty.texcoords = true;
+				this._dirty.colors =  true;
+				this._dirty.indexes = true;
+            },
+			
+			getTextures: function() {
+				var textures = [];
+
+                if (this._cf.appearance.node) {
+                    var tex = this._cf.appearance.node._cf.texture.node;
+                    if(tex) {
+                        if(x3dom.isa(tex, x3dom.nodeTypes.MultiTexture)) {
+                            textures = textures.concat(tex.getTextures());
+                        } else {
+                            textures.push(tex);
+                        }
+                    }
+
+                    var shader = this._cf.appearance.node._cf.shaders.nodes[0];
+                    if(shader) {
+                        if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
+                            textures = textures.concat(shader.getTextures());
+                        }
+                    }
+                }
+
+				var geometry = this._cf.geometry.node;
+				if (geometry) {
+					if(x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry)) {
+						textures = textures.concat(geometry.getTextures());
+					} else if(x3dom.isa(geometry, x3dom.nodeTypes.Text)) {
+						textures = textures.concat(geometry);
+					}
+				}
+				
+				return textures;
+			}
         }
     )
 );
@@ -330,12 +405,14 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function () {
+				//TODO delete this if all works fine
                 if (!this._cf.appearance.node) {
-                    this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
+					//Unlit
+                    //this.addChild(x3dom.nodeTypes.Appearance.defaultNode());
                 }
                 if (!this._cf.geometry.node) {
                     if (this._DEF)
-                    x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
+                        x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
                 }
                 else if (!this._objectID && this._cf.geometry.node._pickable) {
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;

@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -50,8 +49,8 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
             this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
             this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
-            this.addField_SFFloat(ctx, 'zNear', 0.1);
-            this.addField_SFFloat(ctx, 'zFar', 100000);
+            this.addField_SFFloat(ctx, 'zNear', -1); //0.1);
+            this.addField_SFFloat(ctx, 'zFar', -1);  //100000);
 
             //this._viewMatrix = this._vf.orientation.toMatrix().transpose().
             //    mult(x3dom.fields.SFMatrix4f.translation(this._vf.position.negate()));
@@ -60,6 +59,12 @@ x3dom.registerNodeType(
 
             this._projMatrix = null;
             this._lastAspect = 1.0;
+            // z-ratio: a value around 5000 would be better...
+            this._zRatio = 10000;
+            this._zNear = this._vf.zNear;
+            this._zFar = this._vf.zFar;
+            // special stuff...
+            this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
         },
         {
             fieldChanged: function (fieldName) {
@@ -71,25 +76,28 @@ x3dom.registerNodeType(
                          fieldName == "zNear" || 
 						 fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
+                    this._zNear = this._vf.zNear;
+                    this._zFar = this._vf.zFar;
+                    this._imgPlaneHeightAtDistOne = 2.0 * Math.tan(this._vf.fieldOfView / 2.0);
                 }
-                else if (fieldName === "set_bind") {
+                else if (fieldName.indexOf("bind") >= 0) {
                     // FIXME; call parent.fieldChanged();
-                    this.bind(this._vf.set_bind);
+                    this.bind(this._vf.bind);
                 }
             },
 
             activate: function (prev) {
                 if (prev) {
-                    this._nameSpace.doc._viewarea.animateTo(this, prev);
+                    this._nameSpace.doc._viewarea.animateTo(this, prev._autoGen ? null : prev);
                 }
-                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this,prev);
+                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this, prev);
                 this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
-                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF);
+                //x3dom.debug.logInfo ('activate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             deactivate: function (prev) {
-                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this,prev);
-                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF);
+                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this, prev);
+                //x3dom.debug.logInfo ('deactivate ViewBindable ' + this._DEF + '/' + this._vf.description);
             },
 
             getCenterOfRotation: function() {
@@ -120,6 +128,18 @@ x3dom.registerNodeType(
             getTransformation: function() {
                 return this.getCurrentTransform();
             },
+            
+            getNear: function() {
+                return this._zNear;
+            },
+            
+            getFar: function() {
+                return this._zFar;
+            },
+            
+            getImgPlaneHeightAtDistOne: function() {
+                return this._imgPlaneHeightAtDistOne;
+            },
 
             getProjectionMatrix: function(aspect)
             {
@@ -129,8 +149,6 @@ x3dom.registerNodeType(
 
                 if (znear <= 0 || zfar <= 0)
                 {
-                    // z-ratio: a value around 5000 would be better...
-                    var zRatio = 100000;
                     var nearScale = 0.8, farScale = 1.2;
                     var viewarea = this._nameSpace.doc._viewarea;
                     
@@ -162,7 +180,7 @@ x3dom.registerNodeType(
                         zfar = 100000;
                     }
                     
-                    var zNearLimit = zfar / zRatio;
+                    var zNearLimit = zfar / this._zRatio;
                     znear = Math.max(znear, Math.max(x3dom.fields.Eps, zNearLimit));
                     //x3dom.debug.logInfo("near: " + znear + " -> far:" + zfar);
                     
@@ -179,6 +197,10 @@ x3dom.registerNodeType(
                         this._projMatrix._23 = 2 * znear * zfar / div;
                     }
                 }
+                
+                // needed for being able to ask for near and far
+                this._zNear = znear;
+                this._zFar = zfar;
 
                 if (this._projMatrix == null)
                 {
@@ -190,7 +212,7 @@ x3dom.registerNodeType(
                         0, 0, (znear+zfar)/(znear-zfar), 2*znear*zfar/(znear-zfar),
                         0, 0, -1, 0
                     );
-
+                    
                     this._lastAspect = aspect;
                 }
                 else if (this._lastAspect !== aspect)
@@ -199,6 +221,139 @@ x3dom.registerNodeType(
                     this._lastAspect = aspect;
                 }
 
+                return this._projMatrix;
+            }
+        }
+    )
+);
+
+/* ### OrthoViewpoint ### */
+x3dom.registerNodeType(
+        "OrthoViewpoint",
+        "Navigation",
+        defineClass(x3dom.nodeTypes.X3DViewpointNode,
+                function (ctx) {
+                    x3dom.nodeTypes.OrthoViewpoint.superClass.call(this, ctx);
+                    
+                    this.addField_MFFloat(ctx, 'fieldOfView', [-1, -1, 1, 1]);
+                    this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
+                    this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
+                    this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
+                    this.addField_SFFloat(ctx, 'zNear', 0.1);
+                    this.addField_SFFloat(ctx, 'zFar', 10000);
+                    
+                    this._viewMatrix = null;
+                    this._projMatrix = null;
+                    this._lastAspect = 1.0;
+                    
+                    this.resetView();
+                },
+        {
+            fieldChanged: function (fieldName) {
+                if (fieldName == "position" || 
+					fieldName == "orientation") {
+                    this.resetView();
+                }
+                else if (fieldName == "fieldOfView" ||
+                         fieldName == "zNear" || 
+						 fieldName == "zFar") {
+                    this._projMatrix = null;   // trigger refresh
+                    this.resetView();
+                }
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
+                }
+            },
+
+            activate: function (prev) {
+                if (prev) {
+                    this._nameSpace.doc._viewarea.animateTo(this, prev);
+                }
+                x3dom.nodeTypes.X3DViewpointNode.prototype.activate.call(this, prev);
+                this._nameSpace.doc._viewarea._needNavigationMatrixUpdate = true;
+            },
+
+            deactivate: function (prev) {
+                x3dom.nodeTypes.X3DViewpointNode.prototype.deactivate.call(this, prev);
+            },
+
+            getCenterOfRotation: function() {
+                return this._vf.centerOfRotation;
+            },
+            
+            getViewMatrix: function() {
+                return this._viewMatrix;
+            },
+            
+            getFieldOfView: function() {
+                return 1.57079633;
+            },
+
+            setView: function(newView) {
+                var mat = this.getCurrentTransform();
+                mat = mat.inverse();
+                this._viewMatrix = mat.mult(newView);
+            },
+            
+            resetView: function() {
+                var offset = x3dom.fields.SFMatrix4f.translation(new x3dom.fields.SFVec3f(
+                                (this._vf.fieldOfView[0] + this._vf.fieldOfView[2]) / 2, 
+                                (this._vf.fieldOfView[1] + this._vf.fieldOfView[3]) / 2, 0));
+                
+                this._viewMatrix = x3dom.fields.SFMatrix4f.translation(this._vf.position).
+                                                    mult(this._vf.orientation.toMatrix());
+                this._viewMatrix = this._viewMatrix.mult(offset).inverse();
+            },
+
+            getTransformation: function() {
+                return this.getCurrentTransform();
+            },
+            
+            getNear: function() {
+                return this._vf.zNear;
+            },
+            
+            getFar: function() {
+                return this._vf.zFar;
+            },
+            
+            getProjectionMatrix: function(aspect)
+            {
+                if (this._projMatrix == null)
+                {
+                    var near = this.getNear();
+                    var far = this.getFar();
+                    
+                    var left = this._vf.fieldOfView[0];
+                    var bottom = this._vf.fieldOfView[1];
+                    var right = this._vf.fieldOfView[2];
+                    var top = this._vf.fieldOfView[3];
+                    
+                    var rl = (right - left) / 2;    // hs
+                    var tb = (top - bottom) / 2;    // vs
+                    var fn = far - near;
+                    
+                    if (aspect < (rl / tb))
+                        tb = rl / aspect;
+                    else
+                        rl = tb * aspect;
+                    
+                    left = -rl;
+                    right = rl;
+                    bottom = -tb;
+                    top = tb;
+                    
+                    rl *= 2;
+                    tb *= 2;
+                    
+                    this._projMatrix = new x3dom.fields.SFMatrix4f(
+                                        2 / rl, 0, 0,  -(right+left) / rl,
+                                        0, 2 / tb, 0,  -(top+bottom) / tb,
+                                        0, 0, -2 / fn, -(far+near) / fn,
+                                        0, 0, 0, 1);
+                }
+                this._lastAspect = aspect;
+                
                 return this._projMatrix;
             }
         }
@@ -233,8 +388,8 @@ x3dom.registerNodeType(
                 else if (fieldName == "projection") {
                     this._projMatrix = this._vf.projection;
                 }
-                else if (fieldName === "set_bind") {
-                    this.bind(this._vf.set_bind);
+                else if (fieldName.indexOf("bind") >= 0) {
+                    this.bind(this._vf.bind);
                 }
             },
 
@@ -293,6 +448,7 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'type', ["EXAMINE","ANY"]);
+            this.addField_MFFloat(ctx, 'typeParams', [-0.4, 60]);   // view angle and height for helicopter mode
             this.addField_MFFloat(ctx, 'avatarSize', [0.25,1.6,0.75]);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             this.addField_SFFloat(ctx, 'visibilityLimit', 0.0);
@@ -301,13 +457,45 @@ x3dom.registerNodeType(
 
             //TODO; use avatarSize + visibilityLimit for projection matrix
             x3dom.debug.logInfo("NavType: " + this._vf.type[0].toLowerCase());
+
+            this._heliUpdated = false;
         },
         {
             fieldChanged: function(fieldName) {
+                if (fieldName == "typeParams") {
+                    this._heliUpdated = false;
+                }
+                else if (fieldName == "type") {
+                    var type = this._vf.type[0].toLowerCase();
+                    switch (type) {
+                        case 'game':
+                            this._nameSpace.doc._viewarea.initMouseState();
+                            break;
+                        case 'helicopter':
+                            this._heliUpdated = false;
+                            break;
+                        default:
+                            break;
+                    }
+                    x3dom.debug.logInfo("Switch to " + type + " mode.");
+                }
             },
 
             getType: function() {
                 return this._vf.type[0].toLowerCase();
+            },
+
+            getTypeParams: function() {
+                var theta  = (this._vf.typeParams.length >= 1) ? this._vf.typeParams[0] : 0;
+                var height = (this._vf.typeParams.length >= 2) ? this._vf.typeParams[1] : 0;
+
+                return [theta, height];
+            },
+
+            setTypeParams: function(params) {
+                for (var i=0; i<params.length; i++) {
+                    this._vf.typeParams[i] = params[i];
+                }
             },
 
             setType: function(type, viewarea) {
@@ -319,6 +507,11 @@ x3dom.registerNodeType(
                                 viewarea.initMouseState();
                             else
                                 this._nameSpace.doc._viewarea.initMouseState();
+                        }
+                        break;
+                    case 'helicopter':
+                        if (this._vf.type[0].toLowerCase() !== navType) {
+                            this._heliUpdated = false;
                         }
                         break;
                     default:
@@ -352,12 +545,6 @@ x3dom.registerNodeType(
             {
                 if (!this._vf.render || !out) {
                     return;
-                }
-
-                var collectNeedsReset = false;
-                if (!out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
                 }
 
                 // TODO; optimize getting volume
@@ -418,9 +605,6 @@ x3dom.registerNodeType(
                     //optimization, exploit coherence and do it for next frame (see LOD)
                     out.Billboards.push( [transform, this] );
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             }
         }
     )
@@ -442,12 +626,10 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, out)
             {
-                var collectNeedsReset = false;
-                if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
+                if (!this._vf.render || !out) {
+                    return;
                 }
-
+                
                 for (var i=0; i<this._childNodes.length; i++)
                 {
                     if (this._childNodes[i] && (this._childNodes[i] !== this._cf.proxy.node))
@@ -456,9 +638,6 @@ x3dom.registerNodeType(
                         this._childNodes[i].collectDrawableObjects(childTransform, out);
                     }
                 }
-                
-                if (collectNeedsReset)
-                    out.collect = false;
             }
         }
     )
@@ -480,22 +659,15 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function(transform, out)
             {
-                var collectNeedsReset = false;
-                if (out && !out.collect && out.useIdList && out.idList.indexOf(this._DEF) >= 0) {
-                    out.collect = true;
-                    collectNeedsReset = true;
+                
+                if (!this._vf.render || !out) {
+                    return;
                 }
                 
                 this.visitChildren(transform, out);
-
-                if (out !== null)
-                {
-                    //optimization, exploit coherence and do it for next frame
-                    out.LODs.push( [transform, this] );
-                }
                 
-                if (collectNeedsReset)
-                    out.collect = false;
+                //optimization, exploit coherence and do it for next frame
+                out.LODs.push( [transform, this] );
             },
             
             visitChildren: function(transform, out) {}
@@ -512,6 +684,8 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.LOD.superClass.call(this, ctx);
 
             this.addField_MFFloat(ctx, "range", []);
+            
+            this._needReRender = true;
         },
         {
             visitChildren: function(transform, out)
@@ -539,6 +713,20 @@ x3dom.registerNodeType(
                     var childTransform = this._childNodes[i].transformMatrix(transform);
                     this._childNodes[i].collectDrawableObjects(childTransform, out);
                 }
+                
+                // eye position invalid in first frame
+                if (this._needReRender) {
+                    this._needReRender = false;
+                    this._nameSpace.doc.needRender = true;
+                }
+            },
+            
+            nodeChanged: function() {
+                this._needReRender = true;
+            },
+            
+            fieldChanged: function(fieldName) {
+                this._needReRender = true;
             }
         }
     )

@@ -1,16 +1,15 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
 
-// NodeNameSpace constructor
+/// NodeNameSpace constructor
 x3dom.NodeNameSpace = function (name, document) {
     this.name = name;
     this.doc = document;
@@ -87,27 +86,10 @@ x3dom.setElementAttribute = function(attrName, newVal)
 
     this._x3domNode.updateField(attrName, newVal);
     this._x3domNode._nameSpace.doc.needRender = true;
-
-    /* construct and fire an event
-    if (newVal != prevVal) {
-        var evt = document.createEvent("MutationEvent");
-        evt.initMutationEvent(
-              "DOMAttrModified",
-              true,
-              false,
-              this,
-              prevVal || "",
-              newVal || "",
-              attrName,
-              (prevVal == null) ? evt.ADDITION : evt.MODIFICATION
-        );
-        this.dispatchEvent(evt);
-     }
-    */
 };
 
 x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
-    var n, t;
+    var n = null;
 
     if (x3dom.isX3DElement(domNode)) {
 
@@ -129,7 +111,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 }
                 this._x3domNode._listeners[type].push(func);
 
-                x3dom.debug.logInfo('addEventListener for ' + this.tagName + ".on" + type);
+                //x3dom.debug.logInfo('addEventListener for ' + this.tagName + ".on" + type);
                 this.__addEventListener(type, func, phase);
             };
 
@@ -140,8 +122,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     for (var it=0; it<list.length; it++) {
                         if (list[it] == func) {
                             list.splice(it, 1);
-                            x3dom.debug.logInfo('removeEventListener for ' +
-                                                this.tagName + ".on" + type);
+                            //x3dom.debug.logInfo('removeEventListener for ' +
+                            //                    this.tagName + ".on" + type);
                         }
                     }
                 }
@@ -149,7 +131,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             };
         }
 
-        // x3dom.debug.logInfo("=== node=" + domNode.localName);
         if (domNode.hasAttribute('USE')) {
             n = this.defMap[domNode.getAttribute('USE')];
             if (n === null) {
@@ -170,25 +151,23 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     return null;
                 }
                 fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
-//                 TODO: Store the routes of the scene - where should we store them?
-//                 scene._routes = Array.map(sceneRoutes, setupRoute);
+                // TODO: Store the routes of the scene - needed for being able to remove them later on!
                 return null;
             }
 
             // find the NodeType for the given dom-node
             var nodeType = x3dom.nodeTypesLC[domNode.localName.toLowerCase()];
             if (nodeType === undefined) {
-                x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
+                x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
             }
             else {
-                var ctx = { doc: this.doc, xmlNode: domNode };
+                var ctx = { doc: this.doc, xmlNode: domNode, nameSpace: this };
                 n = new nodeType(ctx);
-                n._nameSpace = this;
+                //n._nameSpace = this;
                 
                 //active workaround for missing DOMAttrModified support
                 if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false)
-						&& (domNode instanceof Element)
-					)
+						&& (domNode instanceof Element) )
                 {
                   if(domNode.setAttribute && !domNode.__setAttribute)
                   {
@@ -203,8 +182,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                   }
                 }
 
-                // x3dom.debug.logInfo("new node type: " + domNode.localName);
-
                 // find and store/link _DEF name
                 if (domNode.hasAttribute('DEF')) {
                    n._DEF = domNode.getAttribute('DEF');
@@ -217,6 +194,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                   }
                 }
                 
+                // add experimental highlighting functionality
                 if (domNode.highlight === undefined) 
                 {
                     domNode.highlight = function(enable, colorStr) {
@@ -231,11 +209,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                 domNode._x3domNode = n;
 
                 // call children
-                /*
-                Array.forEach( Array.map(domNode.childNodes,
-                                function (n) { return this.setupTree(n); }, this),
-                                function (c) { if (c) n.addChild(c); });
-                */
                 var that = this;
                 Array.forEach ( domNode.childNodes, function (childDomNode) {
                     var c = that.setupTree(childDomNode);
@@ -252,10 +225,9 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
     }
     else if (domNode.localName) {
         // be nice to users who use nodes not (yet) known to the system
-        x3dom.debug.logInfo("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
+        x3dom.debug.logWarning("Unrecognised X3D element &lt;" + domNode.localName + "&gt;.");
         n = null;
     }
 
     return n;
 };
-

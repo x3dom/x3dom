@@ -1,10 +1,9 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
@@ -119,7 +118,7 @@ x3dom.userAgentFeature = {
             'showStat',
             'showProgress', 
             'PrimitiveQuality', 
-            'component', 
+            'components', 
             'loadpath', 
             'disableDoubleClick',
             'maxActiveDownloads'
@@ -141,7 +140,7 @@ x3dom.userAgentFeature = {
             // add settings to properties object
             params = x3ds[i].getElementsByTagName('PARAM');
             for (j=0; j < params.length; j++) {
-                if (params[j].getAttribute('name') in  validParams) {
+                if (params[j].getAttribute('name') in validParams) {
                     settings.setProperty(params[j].getAttribute('name'), params[j].getAttribute('value'));
                 } else {
                     //x3dom.debug.logError("Unknown parameter: " + params[j].getAttribute('name'));
@@ -238,6 +237,7 @@ x3dom.userAgentFeature = {
 
                 altDiv = document.createElement("div");
                 altDiv.setAttribute("class", "x3dom-nox3d");
+                altDiv.setAttribute("id", "x3dom-nox3d");
                 altP = document.createElement("p");
                 altP.appendChild(document.createTextNode("WebGL is not yet supported in your browser. "));
                 aLnk = document.createElement("a");
@@ -250,17 +250,10 @@ x3dom.userAgentFeature = {
                 x3dcanvas.x3dElem.appendChild(altDiv);
 
                 // remove the stats div (it's not added when WebGL doesn't work)
-                if (x3dcanvas.statDiv) { 
-                    x3d_element.removeChild(x3dcanvas.statDiv);
+                if (x3dcanvas.stateViewer) { 
+                    x3d_element.removeChild(x3dcanvas.stateViewer.viewer);
                 }
 
-                // check if "altImg" is specified on x3d element and if so use it as background
-                altImg = x3ds[i].getAttribute("altImg") || null;
-                if (altImg) {
-                    altImgObj = new Image();
-                    altImgObj.src = altImg;                    
-                    x3d_element.style.backgroundImage = "url("+altImg+")";                    
-                }
                 continue;
             }
             
@@ -332,9 +325,23 @@ x3dom.userAgentFeature = {
     };
     
     var onunload = function() {
-        for (var i=0; i<x3dom.canvases.length; i++) {
-            x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+        if (x3dom.canvases) {
+            for (var i=0; i<x3dom.canvases.length; i++) {
+                x3dom.canvases[i].doc.shutdown(x3dom.canvases[i].gl);
+            }
+            x3dom.canvases = [];
         }
+    };
+    
+    /** Initializes an <x3d> root element that was added after document load.
+     *
+     *  If there already was an <x3d> element, it needs to be removed before:
+     *  var x3d = document.getElementsByTagName("x3d")[0];
+	 *	x3d.parentNode.removeChild(x3d);
+     */
+    x3dom.reload = function() {
+        onunload();
+        onload();
     };
 	
     /* FIX PROBLEM IN CHROME - HACK - searching for better solution !!! */

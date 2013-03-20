@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta http-equiv='X-UA-Compatible' content='chrome=1'></meta>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <link rel='stylesheet' type='text/css' href='http://examples.x3dom.org/files/x3dom.css'></link>
+    <script type='text/javascript' src='http://examples.x3dom.org/files/x3dom.js'></script>
+  </head>
+  <body>
+    <div style="width:300px;float:right;">
+      <fieldset style="margin:4px;">
+        <legend><strong>Viewer Settings</strong></legend>        
+        <table>          
+          <tr>
+            <td>
+              Navigation Mode:
+            </td>
+            <td align="right">
+              <select style="float:right;"
+                onchange="if (typeof this.selectedIndex != 'undefined') { var e = document.getElementById('x3dElement');
+                            if (this.options[this.selectedIndex].value === 'examine'){ e.runtime.examine(); }
+                            else if (this.options[this.selectedIndex].value === 'lookat'){ e.runtime.lookAt(); }
+                            else if (this.options[this.selectedIndex].value === 'walk'){ e.runtime.speed(1.0); e.runtime.walk(); }                            
+                            else if (this.options[this.selectedIndex].value === 'fly'){  e.runtime.speed(1.0); e.runtime.fly();  }
+                            else if (this.options[this.selectedIndex].value === 'walkfast'){ e.runtime.speed(40.0); e.runtime.walk(); }                            
+                            else if (this.options[this.selectedIndex].value === 'flyfast'){  e.runtime.speed(40.0); e.runtime.fly();  } }">
+                <option value="examine">Examine</option>
+                <option value="lookat">LookAt</option>
+                <option value="walk">Walk</option>                
+                <option value="fly">Fly</option>
+                <option value="walkfast">Walk (fast)</option>                
+                <option value="flyfast">Fly (fast)</option>
+              <select>
+            </td>
+          </tr>          
+          <tr>
+            <td>
+              Debug Display:
+            </td>
+            <td align="right">              
+              <input type="checkbox" onclick="if (this.checked){ document.getElementById('x3dElement').runtime.statistics(true); }
+                                                          else { document.getElementById('x3dElement').runtime.statistics(false); }">
+                Stats
+              </input>              
+              <input type="checkbox" onclick="var x3dElem=document.getElementById('x3dElement');
+                                              if (this.checked){ x3dElem.style.height='50%'; } else { x3dElem.style.height='60%'; }
+                                              x3dElem.runtime.debug();">
+                Console
+              </input>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <button onclick="document.getElementById('x3dElement').runtime.showAll();">Show Everything</button>            
+            </td>
+            <td>
+              <button onclick="document.getElementById('x3dElement').runtime.resetView();">Reset View</button>            
+            </td>          
+          </tr>        
+        </table>        
+      </fieldset>
+    </div>
+    <div>
+      <h1>Binary Geometry, Full Precision</h1>      
+      This example uses 32 bit position and 32 bit normal information.
+      <p>
+        A comparison of different binary containers can be found <a href="index.html" target="_blank">here</a>.
+      </p>
+    </div>    
+    <div style="clear:both;"></div>
+    <br/>
+    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%;height:75%'>
+      <scene DEF='scene'>
+        <group>
+          <shape bboxCenter='0.0265535 0.219195 -0.017158' bboxSize='0.016735 0.05524 0.030794'>
+            <appearance DEF='App_0'>
+              <material diffuseColor='0.9 0.9 0.9' shininess='0.5' specularColor='0.1 0.1 0.1'></material>
+            </appearance>
+            <binaryGeometry vertexCount='95775 3459' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43534816_indexBinary.bin' coord='binGeo/AOPT43534816_coordBinary.bin' normal='binGeo/AOPT43534816_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='0.007856 0.219678 -0.009993' bboxSize='0.0225 0.056205 0.04584'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95484 3723' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43529024_indexBinary.bin' coord='binGeo/AOPT43529024_coordBinary.bin' normal='binGeo/AOPT43529024_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='0.0157315 0.167325 0.0075565' bboxSize='0.037751 0.05 0.030659'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95721 3393' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43548448_indexBinary.bin' coord='binGeo/AOPT43548448_coordBinary.bin' normal='binGeo/AOPT43548448_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='0.016039 0.167325 -0.021866' bboxSize='0.038366 0.05 0.029898'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95560 3507' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43591328_indexBinary.bin' coord='binGeo/AOPT43591328_coordBinary.bin' normal='binGeo/AOPT43591328_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='0.0141505 0.117748 0.0059045' bboxSize='0.034589 0.0508 0.024591'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95529 3135' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43600640_indexBinary.bin' coord='binGeo/AOPT43600640_coordBinary.bin' normal='binGeo/AOPT43600640_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='0.014707 0.117639 -0.0217235' bboxSize='0.035846 0.051371 0.031813'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95192 3498' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43610112_indexBinary.bin' coord='binGeo/AOPT43610112_coordBinary.bin' normal='binGeo/AOPT43610112_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='0.0159065 0.0715295 0.0119585' bboxSize='0.038601 0.042599 0.043961'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95763 3630' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT42250304_indexBinary.bin' coord='binGeo/AOPT42250304_coordBinary.bin' normal='binGeo/AOPT42250304_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='0.015856 0.072461 -0.028022' bboxSize='0.0385 0.041272 0.0385'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95238 3546' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43560208_indexBinary.bin' coord='binGeo/AOPT43560208_coordBinary.bin' normal='binGeo/AOPT43560208_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0160315 0.227093 -0.011133' bboxSize='0.027789 0.041035 0.043244'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95608 3426' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT43571728_indexBinary.bin' coord='binGeo/AOPT43571728_coordBinary.bin' normal='binGeo/AOPT43571728_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0159975 0.190325 -0.009467' bboxSize='0.028209 0.034 0.046492'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95315 3633' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT58292320_indexBinary.bin' coord='binGeo/AOPT58292320_coordBinary.bin' normal='binGeo/AOPT58292320_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0192705 0.149849 0.005602' bboxSize='0.034255 0.048453 0.03175'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95274 3369' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT58301488_indexBinary.bin' coord='binGeo/AOPT58301488_coordBinary.bin' normal='binGeo/AOPT58301488_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0192705 0.150075 -0.023314' bboxSize='0.034255 0.0485 0.027582'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='94967 3357' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT58310784_indexBinary.bin' coord='binGeo/AOPT58310784_coordBinary.bin' normal='binGeo/AOPT58310784_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0217705 0.1047 0.0024985' bboxSize='0.039303 0.04375 0.024043'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95591 3249' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT58320080_indexBinary.bin' coord='binGeo/AOPT58320080_coordBinary.bin' normal='binGeo/AOPT58320080_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0239965 0.067307 0.012123' bboxSize='0.044207 0.033036 0.043792'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95490 3702' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT58329376_indexBinary.bin' coord='binGeo/AOPT58329376_coordBinary.bin' normal='binGeo/AOPT58329376_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0238385 0.091126 -0.0174115' bboxSize='0.044445 0.071398 0.018279'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='95311 3459' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT58338672_indexBinary.bin' coord='binGeo/AOPT58338672_coordBinary.bin' normal='binGeo/AOPT58338672_normalBinary.bin'></binaryGeometry>
+          </shape>
+          <shape bboxCenter='-0.0216535 0.088166 -0.0363355' bboxSize='0.039571 0.076818 0.022127'>
+            <appearance USE='App_0'></appearance>
+            <binaryGeometry vertexCount='94874 3525' primType='"TRIANGLESTRIP" "TRIANGLES"' index='binGeo/AOPT58347968_indexBinary.bin' coord='binGeo/AOPT58347968_coordBinary.bin' normal='binGeo/AOPT58347968_normalBinary.bin'></binaryGeometry>
+          </shape>
+        </group>
+        <viewpoint DEF='cam' zNear="-1" zFar="-1" centerOfRotation='-0.005439 0.148768 -0.00669' position='-0.005439 0.148768 0.282341'></viewpoint>
+        <background id='sceneBackground' skyColor='0.4 0.4 0.5'></background>
+      </scene>
+    </x3d>
+  </body>
+</html>
