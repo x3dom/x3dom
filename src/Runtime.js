@@ -1,14 +1,14 @@
 /*
  * X3DOM JavaScript Library
- * http://x3dom.org
+ * http://www.x3dom.org
  *
- * (C)2009 Fraunhofer Insitute for Computer
- *         Graphics Reseach, Darmstadt
- * Dual licensed under the MIT and GPL.
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
+
 
 /**
  * Class: x3dom.runtime
@@ -23,23 +23,52 @@
  */
 
 // Global runtime
+/**
+ * @namespace Namespace container for Runtime module
+ */
 x3dom.runtime = {};
 
-
+/** c'tor */
 x3dom.Runtime = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
+    
+    this.config = {};
     this.isReady = false;
+    
+    this.fps = 0;
+      
+    this.states = { measurements: [], infos: [] };
+};
+
+x3dom.Runtime.prototype.addMeasurement = function(title, value) {
+  this.states.measurements[title] = value;
+};
+
+x3dom.Runtime.prototype.removeMeasurement = function(title) {
+  if ( this.states.measurements[title] ) {
+    delete this.states.measurements[title];
+  }
+};
+
+x3dom.Runtime.prototype.addInfo = function(title, value) {
+  this.states.infos[title] = value;
+};
+
+x3dom.Runtime.prototype.removeInfo = function(title) {
+  delete this.states.infos[title];
 };
 
 x3dom.Runtime.prototype.initialize = function(doc, canvas) {
     this.doc = doc;
     this.canvas = canvas;
 
-    // place to hold configuration data, i.e. fash backend path, etc.
+    // place to hold configuration data, i.e. flash backend path, etc.
     // format and structure needs to be decided.
-    this.config = { };
+    this.config = {};
     this.isReady = false;
+    
+    this.fps = 0;
 };
 
 
@@ -89,7 +118,27 @@ x3dom.Runtime.prototype.ready = function() {
 x3dom.Runtime.prototype.enterFrame = function() {
     //x3dom.debug.logInfo('Render frame imminent');
     // to be overwritten by user
-},
+};
+
+/**
+ * APIFunction: exitFrame
+ *
+ * This method is called just after the current frame was
+ * rendered. It is therefore possible to execute custom
+ * action by overriding this method in your code:
+ *
+ * > var element = document.getElementById('my_element');
+ * > element.runtime.exitFrame = function() {
+ *     alert('hello custom exit frame');
+ * };
+ *
+ * Parameters:
+ * 		element - The x3d element this handler is acting upon
+ */
+x3dom.Runtime.prototype.exitFrame = function() {
+    //x3dom.debug.logInfo('Render frame finished');
+    // to be overwritten by user
+};
 
 /**
  * APIFunction: getActiveBindable
@@ -100,12 +149,12 @@ x3dom.Runtime.prototype.enterFrame = function() {
  * For example:
  *
  *   > var element, bindable;
- *   > element = doucment.getElementById('the_x3delement');
+ *   > element = document.getElementById('the_x3delement');
  *   > bindable = element.runtime.getActiveBindable('background');
- *   > bindable.setAttribute('set_bind', 'false');
+ *   > bindable.setAttribute('bind', 'false');
  *
  * Parameters:
- * 		typeName - bindable type name
+ * 		typeName - Bindable type name
  *
  * Returns:
  * 		The active DOM element
@@ -121,17 +170,15 @@ x3dom.Runtime.prototype.getActiveBindable = function(typeName) {
     type = x3dom.nodeTypesLC[typeName.toLowerCase()];
 
     if (!type) {
-        x3dom.debug.logError('No node of type "' + typeName + '" found');
+        x3dom.debug.logError('No node of type "' + typeName + '" found.');
         return null;
     }
 
     for (i=0; i < stacks.length; i++) {
         current = stacks[i].getActive();
-//			if (x3dom.isa(current, x3dom.nodeTypes.X3DBindableNode)) {
             if (current._xmlNode !== undefined && x3dom.isa(current, type) ) {
                 result.push(current);
             }
-//			}
     }
     return result[0] ? result[0]._xmlNode : null;
 };
@@ -257,6 +304,18 @@ x3dom.Runtime.prototype.getHeight = function() {
 };
 
 /**
+ * Function: mousePosition
+ *
+ * Returns the 2d canvas layer position [x, y] for a given mouse event, i.e.,
+ * the mouse cursor's x and y positions relative to the canvas (x3d) element.
+ */
+x3dom.Runtime.prototype.mousePosition = function(event) {
+    var pos = this.canvas.mousePosition(event);
+    
+    return [pos.x, pos.y];
+};
+
+/**
  * Function: calcCanvasPos
  *
  * Returns the 2d screen position [cx, cy] for a given point [wx, wy, wz] in world coordinates.
@@ -283,25 +342,28 @@ x3dom.Runtime.prototype.calcCanvasPos = function(wx, wy, wz) {
  * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
+    var elem = this.canvas.canvas.offsetParent;
 
-	var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
+    if (!elem) {
+        x3dom.debug.logError("Can't calc page pos without offsetParent.");
+        return [0, 0];
+    }
+    
+	var canvasPos = elem.getBoundingClientRect();
 	var mousePos = this.calcCanvasPos(wx, wy, wz);
 	
-	var scrolleft =  window.pageXOffset || document.body.scrollLeft;
-	var scroltop = 	window.pageYOffset || document.body.scrollTop;
-	
-	var elem = this.canvas.canvas.offsetParent;
+	var scrollLeft = window.pageXOffset || document.body.scrollLeft;
+	var scrollTop = window.pageYOffset || document.body.scrollTop;
 	
 	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
 	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
 		
 	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
-	
-	var mousePos = this.calcCanvasPos(wx, wy, wz);
 		
-	var x = cavasPos.left + paddingLeft + borderLeftWidth + scrolleft + mousePos[0];
-    var y = cavasPos.top + paddingTop + borderTopWidth + scroltop + mousePos[1];
+	var x = canvasPos.left + paddingLeft + borderLeftWidth + scrollLeft + mousePos[0];
+    var y = canvasPos.top + paddingTop + borderTopWidth + scrollTop + mousePos[1];
+    
     return [x, y];
 };
 
@@ -312,9 +374,15 @@ x3dom.Runtime.prototype.calcPagePos = function(wx, wy, wz) {
  * for a given point [wx, wy, wz] in world coordinates.
  */
 x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
-    var cavasPos = this.canvas.canvas.offsetParent.getBoundingClientRect();
-	
-	var elem = this.canvas.canvas.offsetParent;
+    var elem = this.canvas.canvas.offsetParent;
+
+    if (!elem) {
+        x3dom.debug.logError("Can't calc client pos without offsetParent.");
+        return [0, 0];
+    }
+
+    var canvasPos = elem.getBoundingClientRect();
+    var mousePos = this.calcCanvasPos(wx, wy, wz);
 	
 	var paddingLeft = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-left'));
 	var borderLeftWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-left-width'));
@@ -322,11 +390,56 @@ x3dom.Runtime.prototype.calcClientPos = function(wx, wy, wz) {
 	var paddingTop = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('padding-top'));
 	var borderTopWidth = parseFloat(document.defaultView.getComputedStyle(elem, null).getPropertyValue('border-top-width'));
 	
-	var mousePos = this.calcCanvasPos(wx, wy, wz);
-	
-	var x = cavasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
-    var y = cavasPos.top + paddingTop + borderTopWidth + mousePos[1];
+	var x = canvasPos.left + paddingLeft + borderLeftWidth + mousePos[0];
+    var y = canvasPos.top + paddingTop + borderTopWidth + mousePos[1];
+    
     return [x, y];
+};
+
+/**
+ * Function: getScreenshot
+ *
+ * Returns a Base64 encoded png image consisting of the current rendering.
+ *
+ * Returns:
+ * 		The Base64 encoded PNG image string
+ */
+x3dom.Runtime.prototype.getScreenshot = function() {
+	var url = "";
+	var backend = this.canvas.backend;
+	var canvas = this.canvas.canvas;
+
+	if(canvas) {
+		if(backend == "flash") {
+			url = canvas.getScreenshot();
+		} else {
+			// first flip along y axis
+			var canvas2d = document.createElement("canvas");
+			canvas2d.width = canvas.width;
+			canvas2d.height = canvas.height;
+
+			var ctx = canvas2d.getContext("2d");
+			ctx.drawImage(canvas, 0, 0, canvas.width, canvas.height);
+			ctx.scale(1, -1);
+			ctx.translate(0, -canvas.height);
+
+			url = canvas2d.toDataURL();
+		}
+	}
+	
+	return url;
+};
+
+/**
+ * Function: getCanvas
+ *
+ * Returns the internal canvas element (only valid for WebGL backend)
+ *
+ * Returns:
+ * 		The internal canvas element
+ */
+x3dom.Runtime.prototype.getCanvas = function() {
+    return this.canvas.canvas;
 };
 
 /**
@@ -365,7 +478,7 @@ x3dom.Runtime.prototype.lightView = function() {
                                             this.canvas.doc._scene.getViewpoint());
         return true;
     } else {
-        x3dom.debug.logInfo("No lights to navigate to");
+        x3dom.debug.logInfo("No lights to navigate to.");
         return false;
     }
 };
@@ -418,28 +531,6 @@ x3dom.Runtime.prototype.showObject = function(obj) {
                         this.canvas.doc._viewarea._width : this.canvas.doc._viewarea._height;
 
         var n0 = new x3dom.fields.SFVec3f(0, 0, 1);    // facingDir
-        var percArea = 1.0;     // for full shot size (::= shotSizes[shotType])
-
-        // needed if we want to generalize that according to CinematographicViewpoint
-        //var SHOT_BOUNDARY = 0.4;
-        //if (percArea < SHOT_BOUNDARY) percArea += 1.0;
-        //if (shotSize < SHOT_BOUNDARY) node = objCloseUp;
-        //else node = objFull;
-        /*
-         // shotSizes/shotType
-         4.00f, // extremeLong
-         2.00f, // long
-         1.00f, // full (default)
-         0.70f, // mediumFull
-         0.50f, // medium
-         0.45f, // mediumClose
-         0.20f, // close
-         0.10f, // wideCloseup
-         0.00f, // closeup
-         -0.10f, // mediumCloseup
-         -0.35f, // extremeCloseup
-         */
-
         var viewpoint = this.canvas.doc._scene.getViewpoint();
         var fov = viewpoint.getFieldOfView() / 2.0;
         var ta = Math.tan(fov);
@@ -472,7 +563,7 @@ x3dom.Runtime.prototype.showObject = function(obj) {
         }
 
         n0 = mat.multMatrixVec(n0).normalize();
-        n0 = n0.multiply(percArea * dist);
+        n0 = n0.multiply(dist);
         var p0 = pc.add(n0);
 
         var qDir = x3dom.fields.Quaternion.rotateFromTo(new x3dom.fields.SFVec3f(0, 0, 1), n0);
@@ -530,6 +621,29 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
 };
 
 /**
+ * APIMethod getSceneBBox
+ *
+ * Returns the bounding box of the scene.
+ *
+ * Parameters:
+ *    domNode: the node for which its transformation shall be returned
+ *
+ *  Returns:
+ *    The min and max positions of the scene's bounding box.
+ */
+x3dom.Runtime.prototype.getSceneBBox = function() {
+    var scene = this.canvas.doc._scene;
+    
+    if ( !(scene._lastMin && scene._lastMax) )
+        scene.updateVolume();
+    
+    return {
+        min: x3dom.fields.SFVec3f.copy(scene._lastMin),
+        max: x3dom.fields.SFVec3f.copy(scene._lastMax)
+    }
+};
+
+/**
  * APIFunction: debug
  *
  * Displays or hides the debug window. If parameter is omitted,
@@ -575,6 +689,14 @@ x3dom.Runtime.prototype.navigationType = function() {
     return this.canvas.doc._scene.getNavigationInfo().getType();
 };
 
+/**
+ * APIFunction: noNav
+ *
+ * Switches to noNav mode
+ */
+x3dom.Runtime.prototype.noNav = function() {
+    this.canvas.doc._scene.getNavigationInfo().setType("none");
+};
 
 /**
  * APIFunction: examine
@@ -630,14 +752,21 @@ x3dom.Runtime.prototype.game = function() {
 };
 
 /**
+ * APIFunction: helicopter
+ *
+ * Switches to helicopter mode
+ */
+x3dom.Runtime.prototype.helicopter = function() {
+    this.canvas.doc._scene.getNavigationInfo().setType("helicopter");
+};
+
+/**
  * Function: resetExamin
  *
  * Resets all variables required by examin mode to init state
  */
  x3dom.Runtime.prototype.resetExamin = function() {
-		this.canvas.doc._viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
-    	this.canvas.doc._viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
-    	this.canvas.doc._viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+		this.canvas.doc._viewarea._relMat = x3dom.fields.SFMatrix4f.identity();
 		this.canvas.doc.needRender = true;
  };
 
@@ -654,9 +783,19 @@ x3dom.Runtime.prototype.togglePoints = function() {
 };
 
 /**
+ * Function: pickRect
+ *
+ * Returns an array of all shape elements that are within the picked rectangle 
+ * defined by (x1, y1) and (x2, y2) in canvas coordinates
+ */
+x3dom.Runtime.prototype.pickRect = function(x1, y1, x2, y2) {
+    return this.canvas.doc.onPickRect(this.canvas.gl, x1, y1, x2, y2);
+};
+
+/**
  * Function: pickMode
  *
- * Get the current pickmode intersect type
+ * Get the current pickMode intersect type
  *
  * Parameters:
  *		internal - true/false. If given return the internal representation.
@@ -676,26 +815,29 @@ x3dom.Runtime.prototype.pickMode = function(options) {
 /**
  * Function: changePickMode
  *
- * Alter the value of intersct type. Can be one of: idbuf, color, textcoord, box.
+ * Alter the value of intersect type. Can be one of: idBuf, idBuf24, color, texCoord, box.
  * Other values are ignored.
  *
  * Parameters:
- *		type - The new intersect type: idbuf, color, textcoord, or box.
+ *		type - The new intersect type: idBuf, idBuf24, color, texCoord, or box.
  *
  * Returns:
- * 		true if the type hase been changed, false otherwise
+ * 		true if the type has been changed, false otherwise
  */
 x3dom.Runtime.prototype.changePickMode = function(type, options) {
 
-    // type one of : idbuf, color, textcoord, box
+    // type one of : idbuf, color, texcoord, box
     type = type.toLowerCase();
 
     switch(type) {
         case 'idbuf':
             type = 'idBuf';
             break;
-        case 'textcoord':
-            type = 'textCoord';
+        case 'idbuf24':
+            type = 'idBuf24';
+            break;
+        case 'texcoord':
+            type = 'texCoord';
             break;
         case 'color':
             type = 'color';
@@ -703,7 +845,6 @@ x3dom.Runtime.prototype.changePickMode = function(type, options) {
         case 'box':
             type = 'box';
             break;
-
         default:
             x3dom.debug.logWarning("Switch pickMode to "+ type + ' unknown intersect type');
             type = undefined;
@@ -750,20 +891,20 @@ x3dom.Runtime.prototype.speed = function(newSpeed) {
  * 		The current visibility of the statistics info (true = visible, false = invisible)
  */
 x3dom.Runtime.prototype.statistics = function(mode) {
-    var statDiv = this.canvas.statDiv;
-    if (statDiv) {
-
+    var states = this.canvas.stateViewer;
+    if (states) {
+        this.canvas.doc.needRender = true;
         if (mode === true) {
-            statDiv.style.display = 'inline';
+            states.display(mode);
             return true;
         }
         if (mode === false) {
-            statDiv.style.display = 'none';
+            states.display(mode);
             return false;
         }
 
         // if no parameter is given return current status (false = not visible, true = visible)
-        return statDiv.style.display != 'none'
+        return states.active;
     }
 };
 
@@ -795,15 +936,21 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
         // if no parameter is given return current status (false = not visible, true = visible)
         return processDiv.style.display != 'none'
     }
-},
+};
 
-
+/** Get properties */
 x3dom.Runtime.prototype.properties = function() {
     return this.canvas.doc.properties;
 };
 
+/** Get current backend name */
 x3dom.Runtime.prototype.backendName = function() {
     return this.canvas.backend;
+};
+
+/** Get current framerate */
+x3dom.Runtime.prototype.getFPS = function() {
+    return this.fps;
 };
 
 
