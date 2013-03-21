@@ -254,7 +254,7 @@ x3dom.registerNodeType(
             this.addField_MFDouble(ctx, 'height', 0, 0);
             this.addField_SFBool(ctx, 'ccw', true);
             //this.addField_SFBool(ctx, 'colorPerVertex', true);
-            //this.addField_SFDouble(ctx, 'creaseAngle', 0);
+            this.addField_SFDouble(ctx, 'creaseAngle', 0);
             //this.addField_SFBool(ctx, 'normalPerVertex', true);
             //this.addField_SFBool(ctx, 'solid', true);
             this.addField_SFInt32(ctx, 'xDimension', 0);
@@ -304,6 +304,26 @@ x3dom.registerNodeType(
           
             nodeChanged: function()
             {
+              /*
+              this._mesh._indices[0]   = [0,1,2,3,4,5];
+              this._mesh._positions[0] = [0,0,0, 1,0,0, 0,1,0, 0,1,0, 1,0,0, 1,1,0];              
+              this._mesh._normals[0]   = [0,0,1, 0,0,1, 0,0,1, 0,0,1, 0,0,1, 0,0,1];
+              
+              this._mesh._texCoords[0] = [];
+              this._mesh._colors[0]    = [];
+                
+              var numTexComponents = 2;
+              var numColComponents = 3;
+              
+              this._mesh._invalidate = true;
+              this._mesh._numTexComponents = numTexComponents;
+              this._mesh._numColComponents = numColComponents;
+			  this._mesh._numFaces  = this._mesh._indices[0].length / 3;
+			  this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                
+              return;
+              */
+              
               var geoSystem = this._vf.geoSystem;
               var geoOrigin = this._cf.geoOrigin;
 
@@ -393,14 +413,43 @@ x3dom.registerNodeType(
               // convert to x3dom coord system
               var transformed = x3dom.nodeTypes.GeoCoordinate.prototype.GEOtoX3D(geoSystem, geoOrigin, positions);
 
-              // calc normals
-              var normals = this.generateNormals(transformed, xDimension, zDimension);
+              //if we want flat shading, we have to duplicate some vertices here
+              //(as webgl does only support single-indexed rendering)
+              if (this._vf.creaseAngle <= x3dom.fields.Eps) {
 
-              // push to geometry
-              this._mesh._normals[0] = normals.toGL();
-              this._mesh._indices[0] = indices.toGL();
-              this._mesh._positions[0] = transformed.toGL();
-              this._mesh._texCoords[0] = texCoords.toGL();
+                var that = this;
+
+                (function (){
+                    var indicesFlat   = new x3dom.fields.MFInt32(),
+                        positionsFlat = new x3dom.fields.MFVec3f(),
+                        texCoordsFlat = new x3dom.fields.MFVec3f();
+
+                    x3dom.Utils.generateNonIndexedTriangleData(indices, transformed, null, texCoords, null,
+                                                               positionsFlat, null, texCoordsFlat, null);
+
+                    var i;
+                    for (i = 0; i < positionsFlat.length; ++i) {
+                        indicesFlat.push(i);
+                    }
+
+                    that._mesh._indices[0]   = indicesFlat.toGL();
+                    that._mesh._positions[0] = positionsFlat.toGL();
+                    that._mesh._texCoords[0] = texCoordsFlat.toGL();
+                })();
+
+                this._mesh.calcNormals(0);
+              }
+              //smooth shading
+              else {
+                this._mesh._indices[0]   = indices.toGL();
+                this._mesh._positions[0] = transformed.toGL();
+                this._mesh._texCoords[0] = texCoords.toGL();
+
+                this._mesh.calcNormals(Math.PI);
+              }
+
+
+              //this._mesh.calcNormals(this._vf.creaseAngle);
 
               this._mesh._invalidate = true;
               this._mesh._numFaces = this._mesh._indices[0].length / 3;

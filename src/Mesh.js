@@ -173,9 +173,10 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
     }
     
     num = idxs.length;
-
+        
     for (i = 0; i < num; i += 3) {
-        if (!multInd) {
+
+        if (!multInd) {        
             a = new x3dom.fields.SFVec3f(
                     coords[idxs[i  ]*3], coords[idxs[i  ]*3+1], coords[idxs[i  ]*3+2]).
                 subtract(new x3dom.fields.SFVec3f(

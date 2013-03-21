@@ -98,6 +98,78 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials)
 };
 
 /*****************************************************************************
+ *
+ *****************************************************************************/
+x3dom.Utils.generateNonIndexedTriangleData = function(indices, positions, normals, texCoords, colors,
+                                                      newPositions, newNormals, newTexCoords, newColors)
+{
+    //@todo: add support for RGBA colors and 3D texture coordinates
+    //@todo: if there is any need for that, add multi-index support
+
+    for (i = 0; i < indices.length; i+=3) {
+        var i0 = indices[i  ],
+            i1 = indices[i+1],
+            i2 = indices[i+2];
+
+        if (positions) {
+            var p0 = new x3dom.fields.SFVec3f(),
+                p1 = new x3dom.fields.SFVec3f(),
+                p2 = new x3dom.fields.SFVec3f();
+
+            p0.setValues(positions[i0]);
+            p1.setValues(positions[i1]);
+            p2.setValues(positions[i2]);
+
+            newPositions.push(p0);
+            newPositions.push(p1);
+            newPositions.push(p2);
+        }
+
+        if (normals) {
+            var n0 = new x3dom.fields.SFVec3f(),
+                n1 = new x3dom.fields.SFVec3f(),
+                n2 = new x3dom.fields.SFVec3f();
+
+            n0.setValues(normals[i0]);
+            n1.setValues(normals[i1]);
+            n2.setValues(normals[i2]);
+
+            newNormals.push(n0);
+            newNormals.push(n1);
+            newNormals.push(n2);
+        }
+
+        if (texCoords) {
+            var t0 = new x3dom.fields.SFVec2f(),
+                t1 = new x3dom.fields.SFVec2f(),
+                t2 = new x3dom.fields.SFVec2f();
+
+            t0.setValues(texCoords[i0]);
+            t1.setValues(texCoords[i1]);
+            t1.setValues(texCoords[i2]);
+
+            newTexCoords.push(t0);
+            newTexCoords.push(t1);
+            newTexCoords.push(t2);
+        }
+
+        if (colors) {
+            var c0 = new x3dom.fields.SFVec3f(),
+                c1 = new x3dom.fields.SFVec3f(),
+                c2 = new x3dom.fields.SFVec3f();
+
+            c0.setValues(texCoords[i0]);
+            c1.setValues(texCoords[i1]);
+            c1.setValues(texCoords[i2]);
+
+            newColors.push(c0);
+            newColors.push(c1);
+            newColors.push(c2);
+        }
+    }
+}
+
+/*****************************************************************************
 * 
 *****************************************************************************/
 x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials) 
