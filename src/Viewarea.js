@@ -24,9 +24,7 @@ x3dom.Viewarea = function (document, scene) {
         lastClickObj: null
     };
 
-    this._rotMat = x3dom.fields.SFMatrix4f.identity();
-    this._transMat = x3dom.fields.SFMatrix4f.identity();
-    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._relMat = x3dom.fields.SFMatrix4f.identity();
 
     this._needNavigationMatrixUpdate = true;
     this._deltaT = 0;
@@ -140,11 +138,9 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         if (this._needNavigationMatrixUpdate === true)
         {
             this._needNavigationMatrixUpdate = false;
-            
-            // reset examine matrices to identity
-            this._rotMat = x3dom.fields.SFMatrix4f.identity();
-            this._transMat = x3dom.fields.SFMatrix4f.identity();
-            this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+          
+            // reset examine matrix to identity
+            this._relMat = x3dom.fields.SFMatrix4f.identity();
 
             var angleX = 0;
             var angleY = Math.asin(currViewMat._02);
@@ -482,8 +478,8 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
     {
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
-            prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
-                         mult(this._transMat).mult(this._rotMat);
+            prev = this._relMat.inverse().
+                     mult(prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()));
             
             this._mixer._beginTime = this._lastTS;
 
@@ -508,10 +504,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     {
         this._scene.getViewpoint().setView(target);
     }
-
-    this._rotMat = x3dom.fields.SFMatrix4f.identity();
-    this._transMat = x3dom.fields.SFMatrix4f.identity();
-    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._relMat = x3dom.fields.SFMatrix4f.identity();
     this._needNavigationMatrixUpdate = true;
 };
 
@@ -574,9 +567,8 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function () {
 };
 
 x3dom.Viewarea.prototype.getViewMatrix = function () {
-    return this.getViewpointMatrix().
-            mult(this._transMat).
-            mult(this._rotMat);
+    return this._relMat.inverse().
+             mult(this.getViewpointMatrix());
 };
 
 x3dom.Viewarea.prototype.getLightMatrix = function ()
@@ -766,10 +758,7 @@ x3dom.Viewarea.prototype.resetView = function()
     {
         this._scene.getViewpoint().resetView();
     }
-
-    this._rotMat = x3dom.fields.SFMatrix4f.identity();
-    this._transMat = x3dom.fields.SFMatrix4f.identity();
-    this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this._relMat = x3dom.fields.SFMatrix4f.identity();
     this._needNavigationMatrixUpdate = true;
     navi._heliUpdated = false;
 };
@@ -1126,25 +1115,16 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 			}
 			
 			translation = translation.multiply(distance);
-			this._movement = this._movement.add(translation);
-			
-			this._transMat = viewpoint.getViewMatrix().inverse().
-				mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-				mult(viewpoint.getViewMatrix());
+			this._relMat = this_relMat.mult(x3dom.fields.SFMatrix4f.translation(translation));
+				
 		}
 		
 		if (rotation)
-        {
-            var center = viewpoint.getCenterOfRotation();
-            
-            var mat = this.getViewMatrix();
-            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
-            
-            this._rotMat = this._rotMat.
-                mult(x3dom.fields.SFMatrix4f.translation(center)).
-                mult(mat.inverse()).
+        {            
+            var center = viewpoint.getCenterOfRotation();           
+            this._relMat = this._relMat.
+                mult(x3dom.fields.SFMatrix4f.translation(center)).                
                 mult(rotation).
-                mult(mat).
                 mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
 		}
 	}
@@ -1163,28 +1143,13 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     var dx = x - this._lastX;
     var dy = y - this._lastY;
     var min, max, ok, d, vec;
-    var viewpoint = this._scene.getViewpoint();
 
     if (navi._vf.type[0].toLowerCase() === "examine")
     {
         if (buttonState & 1) //left
         {
-            var alpha = (dy * 2 * Math.PI) / this._width;
-            var beta = (dx * 2 * Math.PI) / this._height;
-            var mat = this.getViewMatrix();
-
-            var mx = x3dom.fields.SFMatrix4f.rotationX(alpha);
-            var my = x3dom.fields.SFMatrix4f.rotationY(beta);
-
-            var center = viewpoint.getCenterOfRotation();
-            mat.setTranslate(new x3dom.fields.SFVec3f(0,0,0));
-
-            this._rotMat = this._rotMat.
-                mult(x3dom.fields.SFMatrix4f.translation(center)).
-                mult(mat.inverse()).
-                mult(mx).mult(my).
-                mult(mat).
-                mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
+	  this.orbitH(dx);
+	  this.orbitV(dy);
         }
         if (buttonState & 4) //middle
         {
@@ -1208,13 +1173,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
-            this._movement = this._movement.add(vec);
-
-	    var mat = this.getViewpointMatrix().mult(this._transMat);
-            //TODO; move real distance along viewing plane
-            this._transMat = mat.inverse().
-                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(mat);
+            this.pan(vec);
         }
         if (buttonState & 2) //right
         {
@@ -1238,13 +1197,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
-            this._movement = this._movement.add(vec);
-
-	    var mat = this.getViewpointMatrix().mult(this._transMat);
-            //TODO; move real distance along viewing ray
-            this._transMat = mat.inverse().
-                mult(x3dom.fields.SFMatrix4f.translation(this._movement)).
-                mult(mat);
+            this.zoom(vec);
         }
     }
 
@@ -1278,3 +1231,78 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
         }
     }
 };
+
+
+x3dom.Viewarea.prototype.rotateH = function(right)
+{
+  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.parseRotation("0, 1, 0," + ((right) ? "-0.05" : "0.05")));
+}
+
+x3dom.Viewarea.prototype.rotateV = function(down)
+{
+  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.parseRotation("1, 0, 0," + ((down) ? "-0.05" : "0.05")));			      
+}
+
+x3dom.Viewarea.prototype.pan = function(vec)
+{
+  this._relMat = this._relMat.
+                     mult(x3dom.fields.SFMatrix4f.translation(vec));      
+}
+
+x3dom.Viewarea.prototype.zoom = function(vec)
+{
+  this._relMat = this._relMat.
+		     mult(x3dom.fields.SFMatrix4f.translation(vec));
+}
+
+x3dom.Viewarea.prototype.orbitH = function(dx)
+{
+  var beta = - (dx * 2 * Math.PI) / this._height;
+  var mat = this.getViewMatrix().inverse();
+
+  var pos = mat.e3();
+  var at = pos.subtract(mat.e2());
+  var up = mat.e1();
+
+  var viewpoint = this._scene.getViewpoint();
+  var center = viewpoint.getCenterOfRotation();
+  var radius = center.subtract(pos);
+
+  var m = new x3dom.fields.SFMatrix4f.translation(radius);
+
+  m = m.mult(x3dom.fields.SFMatrix4f.parseRotation(up.x + ", " + up.y + ", " + up.z + ", " + beta));
+  m = m.mult(x3dom.fields.SFMatrix4f.translation(radius.negate()));
+
+  pos = center.subtract(m.multMatrixVec(radius));
+  at = m.multMatrixVec(at);
+  up = m.multMatrixVec(up);
+
+  m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
+  this._relMat = this.getViewpointMatrix().mult(m);
+}
+
+x3dom.Viewarea.prototype.orbitV = function(dy)
+{
+  var alpha = (dy * 2 * Math.PI) / this._width;
+
+  var mat = this.getViewMatrix().inverse();
+  var pos = mat.e3();
+  var at = pos.subtract(mat.e2());
+  var up = mat.e1();
+
+  var viewpoint = this._scene.getViewpoint();
+  var center = viewpoint.getCenterOfRotation();
+  var radius = center.subtract(pos);
+
+  var m = new x3dom.fields.SFMatrix4f.translation(radius);
+  var rotVec = at.cross(up);
+  m = m.mult(x3dom.fields.SFMatrix4f.parseRotation(rotVec.x + ", " + rotVec.y + ", " + rotVec.z + ", " + alpha));
+  m = m.mult(x3dom.fields.SFMatrix4f.translation(radius.negate()));
+
+  pos = center.subtract(m.multMatrixVec(radius));
+  at = m.multMatrixVec(at);
+  up = m.multMatrixVec(up);
+
+  m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
+  this._relMat = this.getViewpointMatrix().mult(m);
+}
