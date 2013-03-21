@@ -149,8 +149,10 @@ x3dom.gfx_webgl = (function () {
     *****************************************************************************/
     Context.prototype.setupShape = function (gl, shape, viewarea) 
     {
-        var i, q = 0;
+        var i, q = 0, q5;
+        var textures, t;
         var vertices, positionBuffer;
+        var indicesBuffer, indexArray;
 		
         if (shape._webgl !== undefined)
         {
@@ -173,25 +175,27 @@ x3dom.gfx_webgl = (function () {
 				
 				for (q=0; q<shape._webgl.positions.length; q++)
 				{
+                    q5 = 5 * q;
+
 					if (spOld.position !== undefined) 
 					{
-						gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
-						gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
+						gl.deleteBuffer(shape._webgl.buffers[q5+1]);
+						gl.deleteBuffer(shape._webgl.buffers[q5  ]);
 					}
 					
 					if (spOld.normal !== undefined) 
 					{
-						gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
+						gl.deleteBuffer(shape._webgl.buffers[q5+2]);
 					}
 					
 					if (spOld.texcoord !== undefined) 
 					{
-						gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
+						gl.deleteBuffer(shape._webgl.buffers[q5+3]);
 					}
 					
 					if (spOld.color !== undefined)
 					{
-						gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
+						gl.deleteBuffer(shape._webgl.buffers[q5+4]);
 					}
 				}
 				
@@ -213,16 +217,16 @@ x3dom.gfx_webgl = (function () {
 				if (shape._webgl.texture.length != shape.getTextures().length)
 				{
 					//Delete old Textures
-					for ( var t=0; t<shape._webgl.texture.length; ++t )
+					for (t=0; t<shape._webgl.texture.length; ++t )
 					{
 						shape._webgl.texture.pop();
 					}
 					
 					//Generate new Textures
-					var textures = shape.getTextures();
-					for( var t=0; t<textures.length; ++t )
+					textures = shape.getTextures();
+					for (t=0; t<textures.length; ++t )
 					{		
-						shape._webgl.texture.push( new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]) );		
+						shape._webgl.texture.push(new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]));
 					}
 					
 					//Set dirty shader
@@ -235,8 +239,8 @@ x3dom.gfx_webgl = (function () {
 				{
 					//If someone remove and append at the same time, texture count don't change
 					//and we have to check if all nodes the same as before
-					var textures = shape.getTextures();
-					for( var t=0; t<textures.length; ++t )
+					textures = shape.getTextures();
+					for (t=0; t<textures.length; ++t )
 					{	
 						if(textures[t] === shape._webgl.texture[t].node)
 						{
@@ -273,18 +277,20 @@ x3dom.gfx_webgl = (function () {
             
             for (q=0; q<shape._webgl.positions.length; q++)
             {
+              q5 = 5 * q;
+
               if (!needFullReInit && shape._dirty.positions === true)
               {
-                if (shape._webgl.shader.position !== undefined) 
+                if (shape._webgl.shader.position !== undefined)
                 {
-					shape._webgl.indexes[q] = shape._cf.geometry.node._mesh._indices[q];
+					shape._webgl.indexes[q5] = shape._cf.geometry.node._mesh._indices[q5];
 					
-					gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
+					gl.deleteBuffer(shape._webgl.buffers[q5]);
 
-					var indicesBuffer = gl.createBuffer();
-					shape._webgl.buffers[5*q+0] = indicesBuffer;
+					indicesBuffer = gl.createBuffer();
+					shape._webgl.buffers[q5] = indicesBuffer;
             
-					var indexArray = new Uint16Array(shape._webgl.indexes[q]);
+					indexArray = new Uint16Array(shape._webgl.indexes[q5]);
 				
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
 					gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -292,18 +298,18 @@ x3dom.gfx_webgl = (function () {
 					indexArray = null;
 				    
 				    // vertex positions
-                    shape._webgl.positions[q] = shape._cf.geometry.node._mesh._positions[q];
+                    shape._webgl.positions[q5] = shape._cf.geometry.node._mesh._positions[q5];
                     
-                    // TODO; don't delete but use glMapBuffer() and DYNAMIC_DRAW
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
+                    // TODO; don't delete VBO but use glMapBuffer() and DYNAMIC_DRAW
+                    gl.deleteBuffer(shape._webgl.buffers[q5+1]);
                     
                     positionBuffer = gl.createBuffer();
-                    shape._webgl.buffers[5*q+1] = positionBuffer;
+                    shape._webgl.buffers[q5+1] = positionBuffer;
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
-                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[5*q+0]);
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[q5]);
                     
-                    vertices = new Float32Array(shape._webgl.positions[q]);
+                    vertices = new Float32Array(shape._webgl.positions[q5]);
                     
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -322,14 +328,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.color !== undefined)
                 {
-                    shape._webgl.colors[q] = shape._cf.geometry.node._mesh._colors[q];
+                    shape._webgl.colors[q5] = shape._cf.geometry.node._mesh._colors[q5];
                     
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+4]);
                     
                     colorBuffer = gl.createBuffer();
-                    shape._webgl.buffers[5*q+4] = colorBuffer;
+                    shape._webgl.buffers[q5+4] = colorBuffer;
                     
-                    colors = new Float32Array(shape._webgl.colors[q]);
+                    colors = new Float32Array(shape._webgl.colors[q5]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
@@ -348,14 +354,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.normal !== undefined)
                 {
-                    shape._webgl.normals[q] = shape._cf.geometry.node._mesh._normals[q];
+                    shape._webgl.normals[q5] = shape._cf.geometry.node._mesh._normals[q5];
                     
-					gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
+					gl.deleteBuffer(shape._webgl.buffers[q5+2]);
                     
                     normalBuffer = gl.createBuffer();
-                    shape._webgl.buffers[5*q+2] = normalBuffer;					
+                    shape._webgl.buffers[q5+2] = normalBuffer;
                     
-                    normals = new Float32Array(shape._webgl.normals[q]);
+                    normals = new Float32Array(shape._webgl.normals[q5]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);             
@@ -374,14 +380,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.texcoord !== undefined)
                 {
-                    shape._webgl.texcoords[q] =  shape._cf.geometry.node._mesh._texCoords[q];
+                    shape._webgl.texcoords[q5] =  shape._cf.geometry.node._mesh._texCoords[q5];
                     
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+3]);
 					         
                     texCoordBuffer = gl.createBuffer();
-                    shape._webgl.buffers[5*q+3] = texCoordBuffer;
+                    shape._webgl.buffers[q5+3] = texCoordBuffer;
                     
-                    texCoords = new Float32Array(shape._webgl.texcoords[q]);
+                    texCoords = new Float32Array(shape._webgl.texcoords[q5]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);             
@@ -400,7 +406,7 @@ x3dom.gfx_webgl = (function () {
 
 		    if (shape._webgl.imageGeometry != 0)
             {
-				for ( var t=0; t<shape._webgl.texture.length; ++t )
+				for (t=0; t<shape._webgl.texture.length; ++t )
 				{
 					shape._webgl.texture[t].updateTexture();
 				} 
@@ -451,36 +457,27 @@ x3dom.gfx_webgl = (function () {
             // FIXME; what if complete tree is removed? Then _parentNodes.length my be greater 0.
             if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
             {
-                //var doc = this.findX3DDoc();
-                //var gl = doc.ctx.ctx3d;
                 var sp = this._webgl.shader;
 
-				//Textures cleanup handled by TextureCache
-                /*for (var cnt=0; this._webgl.texture !== undefined &&
-                                cnt < this._webgl.texture.length; cnt++)
+                for (q=0; q<this._webgl.positions.length; q++)
                 {
-                    if (this._webgl.texture[cnt].texture) {
-                        gl.deleteTexture(this._webgl.texture[cnt].texture);
-                    }
-                }*/
+                    q5 = 5 * q;
 
-                for (var q=0; q<this._webgl.positions.length; q++)
-                {
                     if (sp.position !== undefined) {
-                        gl.deleteBuffer(this._webgl.buffers[5*q+1]);
-                        gl.deleteBuffer(this._webgl.buffers[5*q+0]);
+                        gl.deleteBuffer(this._webgl.buffers[q5+1]);
+                        gl.deleteBuffer(this._webgl.buffers[q5  ]);
                     }
 
                     if (sp.normal !== undefined) {
-                        gl.deleteBuffer(this._webgl.buffers[5*q+2]);
+                        gl.deleteBuffer(this._webgl.buffers[q5+2]);
                     }
 
                     if (sp.texcoord !== undefined) {
-                        gl.deleteBuffer(this._webgl.buffers[5*q+3]);
+                        gl.deleteBuffer(this._webgl.buffers[q5+3]);
                     }
 
                     if (sp.color !== undefined) {
-                        gl.deleteBuffer(this._webgl.buffers[5*q+4]);
+                        gl.deleteBuffer(this._webgl.buffers[q5+4]);
                     }
                 }
 
@@ -520,14 +517,12 @@ x3dom.gfx_webgl = (function () {
 		};
 		
 		//Set Textures		
-		var textures = shape.getTextures();
-		for( var t=0; t<textures.length; ++t )
+		textures = shape.getTextures();
+		for (t=0; t<textures.length; ++t )
 		{		
 			shape._webgl.texture.push( new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]) );		
 		}
-		
-		shape._webgl.positions = shape._cf.geometry.node._mesh._positions,
-		
+
 		//Set Shader
 		shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
 		
@@ -608,13 +603,15 @@ x3dom.gfx_webgl = (function () {
         {
             for (q=0; q<shape._webgl.positions.length; q++)
             {
+              q5 = 5 * q;
+
               if (sp.position !== undefined) 
               {
                 // bind indices for drawElements() call
-                var indicesBuffer = gl.createBuffer();
-                shape._webgl.buffers[5*q+0] = indicesBuffer;
+                indicesBuffer = gl.createBuffer();
+                shape._webgl.buffers[q5] = indicesBuffer;
             
-                var indexArray = new Uint16Array(shape._webgl.indexes[q]);
+                indexArray = new Uint16Array(shape._webgl.indexes[q5]);
             
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -622,10 +619,10 @@ x3dom.gfx_webgl = (function () {
                 indexArray = null;
             
                 positionBuffer = gl.createBuffer();
-                shape._webgl.buffers[5*q+1] = positionBuffer;
+                shape._webgl.buffers[q5+1] = positionBuffer;
                 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-                vertices = new Float32Array(shape._webgl.positions[q]);
+                vertices = new Float32Array(shape._webgl.positions[q5]);
             
                 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -641,9 +638,9 @@ x3dom.gfx_webgl = (function () {
               if (sp.normal !== undefined) 
               {
                 var normalBuffer = gl.createBuffer();
-                shape._webgl.buffers[5*q+2] = normalBuffer;
+                shape._webgl.buffers[q5+2] = normalBuffer;
             
-                var normals = new Float32Array(shape._webgl.normals[q]);
+                var normals = new Float32Array(shape._webgl.normals[q5]);
             
                 gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
@@ -659,9 +656,9 @@ x3dom.gfx_webgl = (function () {
               if (sp.texcoord !== undefined)
               {
                 var texcBuffer = gl.createBuffer();
-                shape._webgl.buffers[5*q+3] = texcBuffer;
+                shape._webgl.buffers[q5+3] = texcBuffer;
             
-                var texCoords = new Float32Array(shape._webgl.texcoords[q]);
+                var texCoords = new Float32Array(shape._webgl.texcoords[q5]);
             
                 gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
@@ -677,9 +674,9 @@ x3dom.gfx_webgl = (function () {
               if (sp.color !== undefined)
               {
                 var colorBuffer = gl.createBuffer();
-                shape._webgl.buffers[5*q+4] = colorBuffer;
+                shape._webgl.buffers[q5+4] = colorBuffer;
             
-                var colors = new Float32Array(shape._webgl.colors[q]);
+                var colors = new Float32Array(shape._webgl.colors[q5]);
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
@@ -697,6 +694,9 @@ x3dom.gfx_webgl = (function () {
             // TODO; FIXME; what if geometry with split mesh has dynamic fields?
             for (var df in shape._cf.geometry.node._mesh._dynamicFields)
             {
+                if (!shape._cf.geometry.node._mesh._dynamicFields.hasOwnProperty(df))
+                    continue;
+
                 var attrib = shape._cf.geometry.node._mesh._dynamicFields[df];
             
                 shape._webgl.dynamicFields[currAttribs] = {
