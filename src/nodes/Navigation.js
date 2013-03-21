@@ -874,3 +874,30 @@ x3dom.registerNodeType(
         }
     )
 );
+
+///experimental
+/* ### Environment ### */
+x3dom.registerNodeType(
+    "Environment",
+    "Navigation",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.Environment.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'globalShadowIntensity', 0);
+            this.addField_SFInt32(ctx, 'shadowMapSize', 512);
+            this.addField_SFString(ctx, 'shadowMode', "perspectiveHardShadow");
+            this.addField_SFFloat(ctx, 'shadowOffset', 4);
+            this.addField_SFFloat(ctx, 'shadowSmoothness', 0.5);
+            this.addField_SFBool(ctx, 'shadowExcludeTransparentObjects', true);
+            this.addField_MFNode('shadowExcludeObjects', x3dom.nodeTypes.X3DNode);
+            //this.addField_SFBool(ctx, 'sortTrans', true);
+            //this.addField_SFBool(ctx, 'frustumCulling', true);
+            //this.addField_SFBool(ctx, 'stateSorting', true);
+        },
+        {
+            nodeChanged: function() {},
+            fieldChanged: function(fieldName) {}
+        }
+    )
+);
