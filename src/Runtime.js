@@ -766,8 +766,12 @@ x3dom.Runtime.prototype.helicopter = function() {
  * Resets all variables required by examin mode to init state
  */
  x3dom.Runtime.prototype.resetExamin = function() {
-		this.canvas.doc._viewarea._relMat = x3dom.fields.SFMatrix4f.identity();
-		this.canvas.doc.needRender = true;
+    var viewarea = this.canvas.doc._viewarea;
+    viewarea._relMat = x3dom.fields.SFMatrix4f.identity();
+    viewarea._rotMat = x3dom.fields.SFMatrix4f.identity();
+    viewarea._transMat = x3dom.fields.SFMatrix4f.identity();
+    viewarea._movement = new x3dom.fields.SFVec3f(0, 0, 0);
+    this.canvas.doc.needRender = true;
  };
 
 /**
