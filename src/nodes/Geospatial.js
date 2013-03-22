@@ -269,61 +269,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'lit', true);
         },
         {
-            generateNormals: function(coords, xDimension, zDimension)
-            {
-              var normals = new x3dom.fields.MFVec3f();
-
-              for(var z=0; z<zDimension; ++z)
-                for(var x=0; x<xDimension; ++x)
-                {
-                  var current = coords[(z*xDimension)+x];
-                  var normal = new x3dom.fields.SFVec3f(0,0,0);
-
-                  var left   = (x > 0)            ? coords[(((z)*xDimension)+(x-1))].subtract(current) : null;
-                  var right  = (x < xDimension-1) ? coords[(((z)*xDimension)+(x+1))].subtract(current) : null;
-                  var lower  = (z > 0)            ? coords[(((z-1)*xDimension)+(x))].subtract(current) : null;
-                  var upper  = (z < zDimension-1) ? coords[(((z+1)*xDimension)+(x))].subtract(current) : null;
-
-                  if(lower && left)
-                    normal = normal.add(left.cross(lower));
-
-                  if(left && upper)
-                    normal = normal.add(upper.cross(left));
-
-                  if(upper && right)
-                    normal = normal.add(right.cross(upper));
-
-                  if(right && lower)
-                    normal = normal.add(lower.cross(right));
-
-                  normals.push(normal.normalize());
-                }
-
-              return normals;
-            },
-          
             nodeChanged: function()
             {
-              /*
-              this._mesh._indices[0]   = [0,1,2,3,4,5];
-              this._mesh._positions[0] = [0,0,0, 1,0,0, 0,1,0, 0,1,0, 1,0,0, 1,1,0];              
-              this._mesh._normals[0]   = [0,0,1, 0,0,1, 0,0,1, 0,0,1, 0,0,1, 0,0,1];
-              
-              this._mesh._texCoords[0] = [];
-              this._mesh._colors[0]    = [];
-                
-              var numTexComponents = 2;
-              var numColComponents = 3;
-              
-              this._mesh._invalidate = true;
-              this._mesh._numTexComponents = numTexComponents;
-              this._mesh._numColComponents = numColComponents;
-			  this._mesh._numFaces  = this._mesh._indices[0].length / 3;
-			  this._mesh._numCoords = this._mesh._positions[0].length / 3;
-                
-              return;
-              */
-              
               var geoSystem = this._vf.geoSystem;
               var geoOrigin = this._cf.geoOrigin;
 
@@ -447,9 +394,6 @@ x3dom.registerNodeType(
 
                 this._mesh.calcNormals(Math.PI);
               }
-
-
-              //this._mesh.calcNormals(this._vf.creaseAngle);
 
               this._mesh._invalidate = true;
               this._mesh._numFaces = this._mesh._indices[0].length / 3;
