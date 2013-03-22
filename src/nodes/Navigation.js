@@ -547,6 +547,8 @@ x3dom.registerNodeType(
                     return;
                 }
 
+                out.cnt++;
+
                 // TODO; optimize getting volume
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
@@ -594,10 +596,12 @@ x3dom.registerNodeType(
                             this._vf.axisOfRotation.z + ", " + degreesToRotate*(-1));
                 }
 
-                for (var i=0; i<this._childNodes.length; i++) {
-                    if (this._childNodes[i]) {
-                        var childTransform = this._childNodes[i].transformMatrix(transform.mult(rotMat));
-                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
+                {
+                    var cnode = this._childNodes[i];
+                    if (cnode) {
+                        var childTransform = cnode.transformMatrix(transform.mult(rotMat));
+                        cnode.collectDrawableObjects(childTransform, out);
                     }
                 }
 
@@ -629,13 +633,17 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
+
+                out.cnt++;
                 
-                for (var i=0; i<this._childNodes.length; i++)
+                for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
                 {
-                    if (this._childNodes[i] && (this._childNodes[i] !== this._cf.proxy.node))
+                    var cnode = this._childNodes[i];
+
+                    if (cnode && (cnode !== this._cf.proxy.node))
                     {
-                        var childTransform = this._childNodes[i].transformMatrix(transform);
-                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                        var childTransform = cnode.transformMatrix(transform);
+                        cnode.collectDrawableObjects(childTransform, out);
                     }
                 }
             }
@@ -663,7 +671,9 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
-                
+
+                out.cnt++;
+
                 this.visitChildren(transform, out);
                 
                 //optimization, exploit coherence and do it for next frame
@@ -708,10 +718,11 @@ x3dom.registerNodeType(
                     i = n - 1;
                 }
 
-                if (n && this._childNodes[i])
+                var cnode = this._childNodes[i];
+                if (n && cnode)
                 {
-                    var childTransform = this._childNodes[i].transformMatrix(transform);
-                    this._childNodes[i].collectDrawableObjects(childTransform, out);
+                    var childTransform = cnode.transformMatrix(transform);
+                    cnode.collectDrawableObjects(childTransform, out);
                 }
                 
                 // eye position invalid in first frame

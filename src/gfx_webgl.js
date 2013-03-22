@@ -2663,6 +2663,7 @@ x3dom.gfx_webgl = (function () {
             scene.drawableObjects = [];
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
+            scene.drawableObjects.cnt = 0;
             
             x3dom.Utils.startMeasure('traverse');
             
@@ -3033,14 +3034,17 @@ x3dom.gfx_webgl = (function () {
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }
         }
-        
-        gl.flush();
+
+        gl.finish();
+        //gl.flush();
         
         var renderTime = x3dom.Utils.stopMeasure('render');
         
         this.x3dElem.runtime.addMeasurement('RENDER', renderTime);
         this.x3dElem.runtime.addMeasurement('DRAW', renderTime/zPos.length);
-        this.x3dElem.runtime.addInfo('#NODES:', viewarea._numRenderedNodes);
+
+        this.x3dElem.runtime.addInfo('#NODES:', scene.drawableObjects.cnt);
+        this.x3dElem.runtime.addInfo('#SHAPES:', viewarea._numRenderedNodes);
         this.x3dElem.runtime.addInfo("#DRAWS:", this.numDrawCalls);
         this.x3dElem.runtime.addInfo("#POINTS:", this.numCoords);
         this.x3dElem.runtime.addInfo("#TRIS:", this.numFaces);
@@ -3190,6 +3194,7 @@ x3dom.gfx_webgl = (function () {
         else
         {
             locScene.drawableObjects = [];
+            locScene.drawableObjects.cnt = 0;
             
             locScene.collectDrawableObjects(
                 locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()), locScene.drawableObjects);
@@ -3293,37 +3298,29 @@ x3dom.gfx_webgl = (function () {
             var shape = scene.drawableObjects[i][1];
             var sp = shape._webgl.shader;
             
-			//Textures cleanup handled by TextureCache
-            /*for (var cnt=0; shape._webgl.texture !== undefined && 
-                            cnt < shape._webgl.texture.length; cnt++)
-            {
-                if (shape._webgl.texture[cnt].texture)
-                {
-                    gl.deleteTexture(shape._webgl.texture[cnt].texture);
-                }
-            }*/
-            
             for (var q=0; q<shape._webgl.positions.length; q++)
             {
+                var q5 = 5 * q;
+
                 if (sp.position !== undefined) 
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+1]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5  ]);
                 }
                 
                 if (sp.normal !== undefined) 
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+2]);
                 }
                 
                 if (sp.texcoord !== undefined) 
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+3]);
                 }
                 
                 if (sp.color !== undefined)
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+4]);
                 }
             }
 

@@ -242,11 +242,15 @@ x3dom.registerNodeType(
         collectDrawableObjects: function (transform, out) {
             if (!out)
                 return;
-            
-            for (var i=0; i<this._childNodes.length; i++) {
-                if (this._childNodes[i]) {
-                    var childTransform = this._childNodes[i].transformMatrix(transform);
-                    this._childNodes[i].collectDrawableObjects(childTransform, out);
+
+            out.cnt++;
+
+            for (var i=0, n=this._childNodes.length; i<n; i++)
+            {
+                var cnode = this._childNodes[i];
+                if (cnode) {
+                    var childTransform = cnode.transformMatrix(transform);
+                    cnode.collectDrawableObjects(childTransform, out);
                 }
             }
         },
@@ -693,6 +697,10 @@ x3dom.registerNodeType(
 
             this.addField_SFString(ctx, 'name', "");
             this.addField_SFString(ctx, 'reference', "");
+        },
+        {
+            // explicitly do nothing on collect traversal
+            collectDrawableObjects: function (transform, out) {}
         }
     )
 );

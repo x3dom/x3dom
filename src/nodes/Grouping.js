@@ -29,10 +29,13 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                for (var i=0; i<this._childNodes.length; i++) {
-                    if (this._childNodes[i]) {
-                        var childTransform = this._childNodes[i].transformMatrix(transform);
-                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                out.cnt++;
+
+                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                    var cnode = this._childNodes[i];
+                    if (cnode) {
+                        var childTransform = cnode.transformMatrix(transform);
+                        cnode.collectDrawableObjects(childTransform, out);
                     }
                 }
             }
@@ -114,9 +117,12 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if (this._childNodes[this._vf.whichChoice]) {
-                    var childTransform = this._childNodes[this._vf.whichChoice].transformMatrix(transform);
-                    this._childNodes[this._vf.whichChoice].collectDrawableObjects(childTransform, out);
+                out.cnt++;
+
+                var cnode = this._childNodes[this._vf.whichChoice];
+                if (cnode) {
+                    var childTransform = cnode.transformMatrix(transform);
+                    cnode.collectDrawableObjects(childTransform, out);
                 }
             },
 
@@ -555,7 +561,7 @@ x3dom.registerNodeType(
 					// init list that holds creation time of gl object
 					this._createTime[i] = 0;
                 }
-                
+
                 x3dom.debug.logInfo("RemoteSelectionGroup has " + n + " entries.");
             },
 
@@ -632,6 +638,8 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
+
+                out.cnt++;
 
                 var viewarea = this._nameSpace.doc._viewarea;
                 var isMoving = viewarea.isMoving();
