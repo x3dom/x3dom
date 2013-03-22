@@ -1083,7 +1083,7 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.x3dElem.runtime.isReady = true;
             }
             
-            this.x3dElem.runtime.enterFrame()
+            this.x3dElem.runtime.enterFrame();
 			
             this.x3dElem.runtime.addMeasurement('ANIM', animD);
 
@@ -1103,7 +1103,7 @@ x3dom.X3DCanvas.prototype.tick = function()
             this.x3dElem.runtime.exitFrame();
 		}
 		
-    if (this.progressDiv) {
+        if (this.progressDiv) {
 				if (this.doc.downloadCount > 0) { 
 					this.x3dElem.runtime.addInfo("#LOADS:", this.doc.downloadCount);
 				} else {
