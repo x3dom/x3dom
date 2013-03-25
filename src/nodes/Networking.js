@@ -144,35 +144,10 @@ x3dom.registerNodeType(
 				
                 xhr.onreadystatechange = function () 
                 {
-					/*if (xhr.readyState == xhr.DONE)
-					{
-						if (xhr.responseXML == null)
-							return xhr;
-						
-						delete xhr['onreadystatechange'];
-							
-						if(navigator.appName != "Microsoft Internet Explorer")
-						{
-							if (xhr.responseXML.documentElement.localName == 'parsererror')
-							{
-								that._nameSpace.doc.downloadCount -= 1;
-								x3dom.debug.logError('XML parser failed on ' + that._vf.url +
-											':\n' + xhr.responseXML.documentElement.textContent);
-								return xhr;
-							}
-						}
-					}
-					else
-					{
-                        // still loading
-						x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-						//if (xhr.readyState == 3) x3dom.debug.logInfo(xhr.responseText);
-						return xhr;
-					}*/
 					if (xhr.readyState != 4) {
 						// still loading
 						//x3dom.debug.logInfo('Loading inlined data... (readyState: ' + xhr.readyState + ')');
-						return;
+						return xhr;
 					}
 					
 					if (xhr.status === 202 && that.count < 10) {
@@ -197,7 +172,7 @@ x3dom.registerNodeType(
 					
                     x3dom.debug.logInfo('Inline: downloading '+that._vf.url[0]+' done.');
 
-                    var inlScene = null, newScene = null, nameSpace = null, xml = null
+                    var inlScene = null, newScene = null, nameSpace = null, xml = null;
 
                     if (navigator.appName != "Microsoft Internet Explorer")
                         xml = xhr.responseXML;
@@ -239,7 +214,10 @@ x3dom.registerNodeType(
                         }
                     }
                     else {
-                        x3dom.debug.logError('No Scene in ' + xml.localName);
+                        if (xml && xml.localName)
+                            x3dom.debug.logError('No Scene in ' + xml.localName);
+                        else
+                            x3dom.debug.logError('No Scene in resource');
                     }
 
                     // trick to free memory, assigning a property to global object, then deleting it
@@ -272,6 +250,8 @@ x3dom.registerNodeType(
                     nameSpace = null;
                     inlScene = null;
                     xml = null;
+
+                    return xhr;
                 };
 
                 if (this._vf.url.length && this._vf.url[0].length)
@@ -291,7 +271,8 @@ x3dom.registerNodeType(
     )
 );
 
-function setNamespace(prefix, childDomNode, mapDEFToID){
+function setNamespace(prefix, childDomNode, mapDEFToID)
+{
 	if(childDomNode instanceof Element && childDomNode.__setAttribute !== undefined) {
 	
 		if(childDomNode.hasAttribute('id') )	{
