@@ -2526,7 +2526,7 @@ x3dom.registerNodeType(
                 this._mesh._texCoords[0] = [];
                 this._mesh._colors[0] = [];
                 
-                var i, t, cnt, faceCnt;
+                var i, j, t, cnt, faceCnt;
                 var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 
                 if ( (this._vf.creaseAngle <= x3dom.fields.Eps) ||  // FIXME; what to do for ipols?
@@ -2785,12 +2785,12 @@ x3dom.registerNodeType(
 						var data = {};
 						cnt = 0; faceCnt = 0;
 												
-						for (var i = 0; i < indexes.length; ++i)
+						for (i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
 								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
 								
-								for (var j = 0; j < multi_index_data.indices.length; j++)
+								for (j = 0; j < multi_index_data.indices.length; j++)
 								{	
 									this._mesh._indices[0].push(cnt);
 									cnt++;
@@ -2892,16 +2892,16 @@ x3dom.registerNodeType(
 					} else {
 						//  Convert non-triangular convex polygons to a triangle fan					
 						linklist = new x3dom.DoublyLinkedList();
-						for (var i = 0; i < indexes.length; ++i)
+						for (i = 0; i < indexes.length; ++i)
 						{
 							if (indexes[i] == -1) {
-								var linklist_indces = x3dom.EarClipping.getIndexes(linklist);
+								var linklist_indices = x3dom.EarClipping.getIndexes(linklist);
 															
-								for (var j = 0; j < linklist_indces.length; j++) {
-									this._mesh._indices[0].push(linklist_indces[j]);
+								for (j = 0; j < linklist_indices.length; j++) {
+									this._mesh._indices[0].push(linklist_indices[j]);
 								}
 								linklist = new x3dom.DoublyLinkedList();
-							continue;
+							    continue;
 							}
 							
 							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[indexes[i]], indexes[i]));
@@ -3053,7 +3053,7 @@ x3dom.registerNodeType(
 					this._mesh._numColComponents = numColComponents;
 
 
-					var i, t, cnt, faceCnt;
+					var i, j, t, cnt, faceCnt;
 					var p0, p1, p2, n0, n1, n2, t0, t1, t2, c0, c1, c2;
 					
 					if(this._vf.convex) {
@@ -3298,12 +3298,12 @@ x3dom.registerNodeType(
 						var data = {};
 						cnt = 0; faceCnt = 0;
 												
-						for (var i = 0; i < indexes.length; ++i)
+						for (i = 0; i < indexes.length; ++i)
 						{	
 							if (indexes[i] == -1) {
 								var multi_index_data = x3dom.EarClipping.getMultiIndexes(linklist);
 								
-								for (var j = 0; j < multi_index_data.indices.length; j++)
+								for (j = 0; j < multi_index_data.indices.length; j++)
 								{	
 									this._mesh._indices[0].push(cnt);
 									cnt++;
