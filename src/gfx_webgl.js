@@ -2753,10 +2753,9 @@ x3dom.gfx_webgl = (function () {
                 center = trafo.multMatrixPnt(center);
                 center = mat_view.multMatrixPnt(center);
 
-                var sortType = (obj3d._cf.appearance.node) ?
-                                obj3d._cf.appearance.node._vf.sortType : "opaque";
-                var sortKey  = (obj3d._cf.appearance.node) ? 
-                                obj3d._cf.appearance.node._vf.sortKey : 0;
+                var obj3dApp = obj3d._cf.appearance.node;
+                var sortType = obj3dApp ? obj3dApp._vf.sortType : "opaque";
+                var sortKey  = obj3dApp ? obj3dApp._vf.sortKey  : 0;
 
                 if (sortType.toLowerCase() === "opaque") {
                     zPos.push([i, center.z, sortKey]);
@@ -2822,7 +2821,11 @@ x3dom.gfx_webgl = (function () {
                 zPos.push.apply(zPos, zPosTranspArr);
             }
         } //sortTrans
-        
+
+        var sortTime = x3dom.Utils.stopMeasure('sorting');
+        this.x3dElem.runtime.addMeasurement('SORT', sortTime);
+
+        // update billboards and lods
         m = scene.drawableObjects.Billboards.length;
         n = scene.drawableObjects.LODs.length;
         if (m || n) {
@@ -2852,9 +2855,6 @@ x3dom.gfx_webgl = (function () {
                 obj3d._eyeLook = new x3dom.fields.SFVec3f(mat_view_model._20, mat_view_model._21, mat_view_model._22);
             }
         }
-        
-        var sortTime = x3dom.Utils.stopMeasure('sorting');
-        this.x3dElem.runtime.addMeasurement('SORT', sortTime);
         
         //===========================================================================
         // Render Shadow Pass

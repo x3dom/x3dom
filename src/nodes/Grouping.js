@@ -23,6 +23,7 @@ x3dom.registerNodeType(
         },
         {
             // Collects array of [transform matrix, node] for all objects that should be drawn.
+            // TODO: culling etc.
             collectDrawableObjects: function (transform, out)
             {
                 if (!this._vf.render || !out) {
@@ -212,6 +213,7 @@ x3dom.registerNodeType(
                 return transform.mult(this._trafo);
             },
 
+            // TODO; always use BoxVolume instead of min/max
             getVolume: function(min, max, invalidate)
             {
                 var nMin = x3dom.fields.SFVec3f.MAX();
@@ -243,6 +245,14 @@ x3dom.registerNodeType(
 
                 if (valid)
                 {
+                    /* // TODO
+                    var boxVol = new x3dom.fields.BoxVolume(nMin, nMax);
+                    boxVol.transform(this._trafo);
+
+                    min.setValues(boxVol.min);
+                    max.setValues(boxVol.max);
+                    */
+
                     nMin = this._trafo.multMatrixPnt(nMin);
                     nMax = this._trafo.multMatrixPnt(nMax);
 

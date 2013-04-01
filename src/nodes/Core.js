@@ -238,21 +238,8 @@ x3dom.registerNodeType(
         },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
-        // TODO: culling etc.
         collectDrawableObjects: function (transform, out) {
-            if (!out)
-                return;
-
-            out.cnt++;
-
-            for (var i=0, n=this._childNodes.length; i<n; i++)
-            {
-                var cnode = this._childNodes[i];
-                if (cnode) {
-                    var childTransform = cnode.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, out);
-                }
-            }
+            // explicitly do nothing on collect traversal for (most) nodes
         },
 
         doIntersect: function(line) {
@@ -697,10 +684,6 @@ x3dom.registerNodeType(
 
             this.addField_SFString(ctx, 'name', "");
             this.addField_SFString(ctx, 'reference', "");
-        },
-        {
-            // explicitly do nothing on collect traversal
-            collectDrawableObjects: function (transform, out) {}
         }
     )
 );
