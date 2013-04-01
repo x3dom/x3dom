@@ -1371,14 +1371,52 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'size', 1, 1, 1);
             this.addField_MFInt32(ctx, 'vertexCount', [0]);
             this.addField_MFString(ctx, 'primType', ['TRIANGLES']);
+
+            // correct min/max of bounding volume set in BinaryContainerGeometry
+            this._mesh._invalidate = false;
+            this._mesh._numCoords = 0;
+            this._mesh._numFaces = 0;
+
+            this._diameter = this._vf.size.length();
         },
         {
             getMin: function() {
-                return null;
+                var vol = this._mesh._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+
+                return vol.min;
             },
 
             getMax: function() {
-                return null;
+                var vol = this._mesh._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+
+                return vol.max;
+            },
+
+            getVolume: function(min, max, invalidate) {
+                var vol = this._mesh._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+                vol.getBounds(min, max);
+
+                return true;
+            },
+
+            getCenter: function() {
+                return this._vf.position;
+            },
+
+            getDiameter: function() {
+                return this._diameter;
             }
         }
     )
@@ -1395,7 +1433,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'index', "");   // Uint16
             this.addField_SFString(ctx, 'coord', "");   // Float32
             this.addField_SFString(ctx, 'normal', "");
-            this.addField_SFString(ctx, 'texCoord', "");
+            this.addField_SFString(ctx, 'texCoord', "");    // THINKABOUTME: add texCoord1, texCoord2, ...?
             this.addField_SFString(ctx, 'color', "");
             this.addField_SFString(ctx, 'tangent', "");     // TODO
             this.addField_SFString(ctx, 'binormal', "");    // TODO
@@ -1414,7 +1452,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'rgbaColors', false);
             this.addField_SFInt32(ctx, 'numTexCoordComponents', 2);
             this.addField_SFBool(ctx, 'normalPerVertex', true);
-            this.addField_SFBool(ctx, 'idsPerVertex', false);     // Experimental flag to decide if IDs are in texCoords
+            this.addField_SFBool(ctx, 'idsPerVertex', false);    /// Experimental flag to decide if IDs are in texCoords
             
             // workaround
             this._hasStrideOffset = false;
@@ -1422,25 +1460,17 @@ x3dom.registerNodeType(
 			this._mesh._numTexComponents = this._vf.numTexCoordComponents;
 			this._mesh._numColComponents = this._vf.rgbaColors ? 4 : 3;
 			this._mesh._numNormComponents = this._vf.normalAsSphericalCoordinates ? 2 : 3;
-			
-			this._mesh._invalidate = false;
-			this._mesh._numCoords = 0;
-		    this._mesh._numFaces = 0;
-		    
-		    this._min = null;
-		    this._max = null;
-		    
+
 		    // info helper members
 		    this._vertexCountSum = 0;
 		    for (var i=0; i<this._vf.vertexCount.length; ++i) {
                 this._vertexCountSum += this._vf.vertexCount[i];
             }
-    		this._diameter = this._vf.size.length();
         },
         {
             nodeChanged: function()
             {
-                // TODO: handle field updates and retrigger XHR
+                // TODO: handle field updates and retrigger XHR call
             },
 
             parentAdded: function()
@@ -1513,79 +1543,9 @@ x3dom.registerNodeType(
                 if (this._vf.indexType != "Uint16")
     		        x3dom.debug.logWarning("Index type " + this._vf.indexType + " problematic");
             },
-            
-            getMin: function()
-			{
-			    if (this._min == null)
-			    {
-    			    var center, size;
-			    
-    				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
-                        center = this._parentNodes[0]._vf.bboxCenter;
-                        size = this._parentNodes[0]._vf.bboxSize;
-                    }
-                    else {
-                        center = this._vf.position;
-                        size = this._vf.size;
-                    }
-                
-                    if (size.x < 0 || size.y < 0 || size.z < 0) {
-                        return center;
-                    }
-                
-                    this._min = center.subtract(size.multiply(0.5));
-                }
-                return this._min;
-			},
 			
-			getMax: function()
-			{
-			    if (this._max == null)
-			    {
-    			    var center, size;
-			    
-    				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
-                        center = this._parentNodes[0]._vf.bboxCenter;
-                        size = this._parentNodes[0]._vf.bboxSize;
-                    }
-                    else {
-                        center = this._vf.position;
-                        size = this._vf.size;
-                    }
-                
-                    if (size.x < 0 || size.y < 0 || size.z < 0) {
-                        return center;
-                    }
-                    
-                    this._max = center.add(size.multiply(0.5));
-                }
-                return this._max;
-			},
-			
-			getVolume: function(min, max, invalidate)
-			{
-				min.setValues(this.getMin());
-				max.setValues(this.getMax());
-				
-				return true;
-			},
-			
-			getCenter: function()
-			{
-				if (this._parentNodes.length >= 1 && this._vf.coordType == "Float32") {
-				    // compatibility with old implementation and examples
-                    return this._parentNodes[0]._vf.bboxCenter;
-                }
-                else {
-                    return this._vf.position;
-                }
-			},
-			
-            getDiameter: function() {
-                return this._diameter;
-            },
-			
-			doIntersect: function(line) {
+			doIntersect: function(line)
+            {
                 if (this._pickable) {
                     var min = this.getMin();
                     var max = this.getMax();
@@ -1602,9 +1562,7 @@ x3dom.registerNodeType(
                         return false;
                     }
                 }
-                else {
-                    return false;
-                }
+                return false;
             },
 			
 			getPrecisionMax: function(type)
@@ -1740,13 +1698,6 @@ x3dom.registerNodeType(
             this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;
             this._mesh._numTexComponents  = 2;
             this._mesh._numColComponents  = 3;
-
-            this._mesh._invalidate = false;
-            this._mesh._numCoords  = 0;
-            this._mesh._numFaces   = 0;
-            
-            this._min = null;
-		    this._max = null;
             
             x3dom.nodeTypes.PopGeometry.numTotalVerts += this.getVertexCount();
             x3dom.nodeTypes.PopGeometry.numTotalTris  += (this.hasIndex() ? 
@@ -1760,37 +1711,12 @@ x3dom.registerNodeType(
               //TODO: implement 
             },
             
-            getMin: function() {
-                if (this._min == null) {
-                    this._min = this._vf.position.subtract( this._vf.size.multiply(0.5) );
-                }
-                return this._min;
-            },
-            
-            getMax: function() {
-                if (this._max == null) {
-                    this._max = this._vf.position.add( this._vf.size.multiply(0.5) );
-                }
-                return this._max;
-            },
-            
             getBBoxShiftVec: function() {
               return this._vf.bbShiftVec;
             },
          
             getBBoxSize: function() {
               return this._vf.size;
-            },
-            
-            getVolume: function(min, max, invalidate) {
-              min.setValues(this.getMin());
-              max.setValues(this.getMax());
-              
-              return true;
-            },
-            
-            getCenter: function() {
-              return this._vf.position;
             },
 			
             getDiameter: function() {
@@ -2050,12 +1976,6 @@ x3dom.registerNodeType(
             this._vf.normalPerVertex              = !this._vf.usesVLCIndices;
             this._vf.normalAsSphericalCoordinates = true;//this._vf.normalPerVertex;
 			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
-			
-			this._diameter = this._vf.size.length();
-			
-			this._mesh._invalidate = false;
-			this._mesh._numCoords = 0;
-		    this._mesh._numFaces = 0;
 		},
 		{
 			nodeChanged: function()
@@ -2075,33 +1995,6 @@ x3dom.registerNodeType(
 		    {
 			    // TODO
 		    },
-			
-			getMin: function()
-			{
-				return this._vf.position.subtract( this._vf.size.multiply(0.5) );
-			},
-			
-			getMax: function()
-			{
-				return this._vf.position.add( this._vf.size.multiply(0.5) );
-			},
-			
-			getVolume: function(min, max, invalidate)
-			{
-				min.setValues(this.getMin());
-				max.setValues(this.getMax());
-				
-				return true;
-			},
-			
-			getCenter: function()
-			{
-				return this._vf.position;
-			},
-
-            getDiameter: function() {
-                return this._diameter;
-            },
 			
 			// ATTENTION: the following accessor methods are NOT shared 
 			// by all Geometry nodes, so be careful when using them!!!
@@ -2182,6 +2075,7 @@ x3dom.registerNodeType(
 			{
 				if( idx < this.getNumPrimTypes() )
 					return this._vf.primType[idx].toUpperCase();
+                return "";
 			},
 			
 			getNumVertexCounts: function()
@@ -2193,6 +2087,7 @@ x3dom.registerNodeType(
 			{
 				if( idx < this.getNumVertexCounts() ) 
 					return this._vf.vertexCount[idx];
+                return 0;
 			},
 			
 			setVertexCount: function(idx, value)
@@ -2346,7 +2241,6 @@ x3dom.registerNodeType(
 					x3dom.geoCache[geoCacheID] = this._mesh;
 				}
 			}
-			this._diameter = this._vf.size.length();
 
             this._dirty = {
                 coord: true,
@@ -2374,33 +2268,6 @@ x3dom.registerNodeType(
                     fieldName == "index") {
                     this._dirty[fieldName] = true;
                 }
-            },
-			
-			getMin: function()
-			{
-				return this._vf.position.subtract( this._vf.size.multiply(0.5) );
-			},
-			
-			getMax: function()
-			{
-				return this._vf.position.add( this._vf.size.multiply(0.5) );
-			},
-			
-			getVolume: function(min, max, invalidate)
-			{
-				min.setValues(this.getMin());
-				max.setValues(this.getMax());
-				
-				return true;
-			},
-			
-			getCenter: function()
-			{
-				return this._vf.position;
-			},
-			
-            getDiameter: function() {
-                return this._diameter;
             },
 			
 			numCoordinateTextures: function()
@@ -2539,6 +2406,7 @@ x3dom.registerNodeType(
 		}
 	)
 );
+
 
 /* ### IndexedFaceSet ### */
 x3dom.registerNodeType(
@@ -2914,8 +2782,8 @@ x3dom.registerNodeType(
 					} 
 					else {
 						var linklist = new x3dom.DoublyLinkedList();
-						var data = new Object();
-						cnt = 0, faceCnt = 0;
+						var data = {};
+						cnt = 0; faceCnt = 0;
 												
 						for (var i = 0; i < indexes.length; ++i)
 						{	
@@ -3023,7 +2891,7 @@ x3dom.registerNodeType(
 						}
 					} else {
 						//  Convert non-triangular convex polygons to a triangle fan					
-						var linklist = new x3dom.DoublyLinkedList();					
+						linklist = new x3dom.DoublyLinkedList();
 						for (var i = 0; i < indexes.length; ++i)
 						{
 							if (indexes[i] == -1) {
@@ -3144,7 +3012,7 @@ x3dom.registerNodeType(
 					}
 
 					var texMode = "", numTexComponents = 2;
-                    var texCoordNode = this._cf.texCoord.node;
+                    texCoordNode = this._cf.texCoord.node;
                     if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
                         if (texCoordNode._cf.texCoord.nodes.length)
                             texCoordNode = texCoordNode._cf.texCoord.nodes[0];
@@ -3427,8 +3295,8 @@ x3dom.registerNodeType(
 					} 
 					else {
 						var linklist = new x3dom.DoublyLinkedList();
-						var data = new Object();
-						cnt = 0, faceCnt = 0;
+						var data = {};
+						cnt = 0; faceCnt = 0;
 												
 						for (var i = 0; i < indexes.length; ++i)
 						{	
@@ -3559,7 +3427,7 @@ x3dom.registerNodeType(
 					}
 					else if (fieldName == "texCoord")
 					{
-                        var texCoordNode = this._cf.texCoord.node;
+                        texCoordNode = this._cf.texCoord.node;
                         if (x3dom.isa(texCoordNode, x3dom.nodeTypes.MultiTextureCoordinate)) {
                             if (texCoordNode._cf.texCoord.nodes.length)
                                 texCoordNode = texCoordNode._cf.texCoord.nodes[0];
@@ -3577,7 +3445,6 @@ x3dom.registerNodeType(
         }
     )
 );
-
 
 /* ### SphereSegment ### */
 x3dom.registerNodeType(

@@ -15,9 +15,9 @@
 x3dom.Mesh = function(parent) 
 {
     this._parent = parent;
-    
-    this._min = new x3dom.fields.SFVec3f(0,0,0);
-    this._max = new x3dom.fields.SFVec3f(0,0,0);
+
+    this._vol = new x3dom.fields.BoxVolume();
+
     this._invalidate = true;
     this._numFaces = 0;
     this._numCoords = 0;
@@ -49,8 +49,7 @@ x3dom.Mesh.prototype._numTexComponents = 2;
 x3dom.Mesh.prototype._numColComponents = 3;
 x3dom.Mesh.prototype._numNormComponents = 3;
 x3dom.Mesh.prototype._lit = true;
-x3dom.Mesh.prototype._min = {};
-x3dom.Mesh.prototype._max = {};
+x3dom.Mesh.prototype._vol = null;
 x3dom.Mesh.prototype._invalidate = true;
 x3dom.Mesh.prototype._numFaces = 0;
 x3dom.Mesh.prototype._numCoords = 0;
@@ -74,34 +73,34 @@ x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
     {
         var coords = this._positions[0];
         var n = coords.length;
+        var initVal;
         
-        if (n > 3)
-        {
-            this._min = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
-            this._max = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
+        if (n > 3) {
+            initVal = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
         }
-        else
-        {
-            this._min = new x3dom.fields.SFVec3f(0,0,0);
-            this._max = new x3dom.fields.SFVec3f(0,0,0);
+        else {
+            // THINKABOUTME: bad init value, but need something valid here
+            initVal = new x3dom.fields.SFVec3f(0,0,0);
         }
+
+        this._vol.setBounds(initVal, initVal);
         
         for (var i=3; i<n; i+=3)
         {
-            if (this._min.x > coords[i+0]) { this._min.x = coords[i+0]; }
-            if (this._min.y > coords[i+1]) { this._min.y = coords[i+1]; }
-            if (this._min.z > coords[i+2]) { this._min.z = coords[i+2]; }
+            if (this._vol.min.x > coords[i+0]) { this._vol.min.x = coords[i+0]; }
+            if (this._vol.min.y > coords[i+1]) { this._vol.min.y = coords[i+1]; }
+            if (this._vol.min.z > coords[i+2]) { this._vol.min.z = coords[i+2]; }
             
-            if (this._max.x < coords[i+0]) { this._max.x = coords[i+0]; }
-            if (this._max.y < coords[i+1]) { this._max.y = coords[i+1]; }
-            if (this._max.z < coords[i+2]) { this._max.z = coords[i+2]; }
+            if (this._vol.max.x < coords[i+0]) { this._vol.max.x = coords[i+0]; }
+            if (this._vol.max.y < coords[i+1]) { this._vol.max.y = coords[i+1]; }
+            if (this._vol.max.z < coords[i+2]) { this._vol.max.z = coords[i+2]; }
         }
         
         this._invalidate = false;
     }
     
-    min.setValues(this._min);
-    max.setValues(this._max);
+    min.setValues(this._vol.min);
+    max.setValues(this._vol.max);
 };
 
 x3dom.Mesh.prototype.getCenter = function() 
@@ -111,7 +110,7 @@ x3dom.Mesh.prototype.getCenter = function()
     
     this.getBBox(min, max, true);
     
-    var center = min.add(max).multiply(0.5);
+    var center = (min.add(max)).multiply(0.5);
     //x3dom.debug.logInfo("center: " + center + "; size: " + max.subtract(min));
     
     return center;
@@ -266,7 +265,7 @@ x3dom.Mesh.prototype.splitMesh = function()
         this._colors[i]    = [];
         this._indices[i]   = [];
         
-        var k = ((indices.length - ((i + 1) * MAX) < 0) ? false : true);
+        var k = (indices.length - ((i + 1) * MAX) >= 0);
         
         if (k) {
             this._indices[i] = indices.slice(i * MAX, (i + 1) * MAX);
