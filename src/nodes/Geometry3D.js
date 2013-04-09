@@ -2166,17 +2166,20 @@ x3dom.registerNodeType(
 			},
 			
 			getPrecisionMax: function(type)
-			{
+			{                   
     			switch(this._vf[type])
-                {
+                {                
                     case "Int8":
                         return 127.0;
                     case "Uint8":
-                        return 255.0;
+                        return 255.0 - (Math.pow(2.0, 8.0 - this.loadedLevels) - 1.0);
                     case "Int16":
                         return 32767.0;
                     case "Uint16":
-                        return 65535.0;
+                        if (type === 'normalType')
+                            return 65535.0 - (Math.pow(2.0, 16.0 - this.loadedLevels) - 1.0);
+                        else
+                            return 65535.0 - (Math.pow(2.0, 16.0 - this.loadedLevels*2.0) - 1.0);
                     case "Int32":
                         return 2147483647.0;
                     case "Uint32":

@@ -269,11 +269,8 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 					shader += "vertNormal.x = floor(vertNormal.x) / 255.0; \n";
 					shader += "vertNormal.y = fract(vertNormal.y) * 1.00392156862745; \n"; //256.0 / 255.0
 				}
-				else if (properties.REQUIREBBOXNOR && !properties.BITLODGEOMETRY) {
+				else if (properties.REQUIREBBOXNOR) {
 					shader += "vec3 vertNormal = vec3(normal.xy, 0.0) / bgPrecisionNorMax;\n";                    
-				}
-				else {                
-					shader += "vec3 vertNormal = vec3(normal.xy, 0.0);\n";
 				}
 
 				shader += "vec2 thetaPhi = 3.14159265358979 * vec2(vertNormal.x, vertNormal.y*2.0-1.0); \n";
@@ -284,7 +281,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 				shader += "vertNormal.z = sinCosThetaPhi.z; \n";                
 			} else {
 				shader += "vec3 vertNormal = normal;\n";
-				if (properties.REQUIREBBOXNOR && !properties.BITLODGEOMETRY) {
+				if (properties.REQUIREBBOXNOR) {
                     shader += "vertNormal = vertNormal / bgPrecisionNorMax;\n";                    
 				}
                 if (properties.BITLODGEOMETRY || properties.POPGEOMETRY) {

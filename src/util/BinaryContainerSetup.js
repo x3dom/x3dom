@@ -1111,7 +1111,7 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, currContext
 
                     shape._webgl.buffers[1] = glBuf;
                     shape._webgl.buffers[2] = glBuf;
-
+                                      
                     gl.vertexAttribPointer(sp.position, shape._cf.geometry.node._mesh._numPosComponents,
                         shape._webgl.coordType, false, shape._coordStrideOffset[0],
                         shape._coordStrideOffset[1]);
@@ -1282,10 +1282,13 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, currContext
 
         function callBack(attributeId, bufferView)
         {
-            if (typeof shape._webgl.loadedLevels == 'undefined')
-                shape._webgl.loadedLevels = 0;
+            if (typeof shape._webgl.loadedLevels == 'undefined') {
+                shape._webgl.loadedLevels   = 0;
+                bitLODGeometry.loadedLevels = 0;
+            }
 
             shape._webgl.loadedLevels++;
+            bitLODGeometry.loadedLevels++;
 
             if (bitLODGeometry.hasIndex() && bitLODGeometry.usesVLCIndices()) {
                 if (typeof shape._webgl.dataBuffers == 'undefined')
