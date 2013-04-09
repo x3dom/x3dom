@@ -27,8 +27,16 @@ x3dom.registerNodeType(
             this._pickable = true;
         },
         {
-            getVolume: function(min, max, invalidate) {
-                this._mesh.getBBox(min, max, invalidate);
+            getVolume: function(min, max) {
+                var vol = this._mesh._vol;
+
+                if (!vol.isValid()) {
+                    this._mesh.getVolume(min, max);
+                }
+                else {
+                    vol.getBounds(min, max);
+                }
+
                 return true;
             },
 

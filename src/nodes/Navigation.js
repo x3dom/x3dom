@@ -552,7 +552,7 @@ x3dom.registerNodeType(
                 // TODO; optimize getting volume
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, false);
+                var ok = this.getVolume(min, max);
                 
                 var rotMat = x3dom.fields.SFMatrix4f.identity();
                 var mid = max.add(min).multiply(0.5);
@@ -704,7 +704,7 @@ x3dom.registerNodeType(
                 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, false);
+                var ok = this.getVolume(min, max);
                 
                 var mid = max.add(min).multiply(0.5).add(this._vf.center);
                 var len = mid.subtract(this._eye).length();
@@ -868,7 +868,7 @@ x3dom.registerNodeType(
                 }
             },
             
-            getVolume: function(min, max, invalidate)
+            getVolume: function(min, max)
             {
                 min.setValues(this._vf.center);
                 min.x -= 0.5 * this._vf.size.x;

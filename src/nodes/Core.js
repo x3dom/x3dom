@@ -127,32 +127,9 @@ x3dom.registerNodeType(
             return transform;
         },
 
-        getVolume: function (min, max, invalidate)
+        getVolume: function (min, max)
         {
-            var valid = false;
-            for (var i=0, n=this._childNodes.length; i<n; i++)
-            {
-                if (this._childNodes[i])
-                {
-                    var childMin = x3dom.fields.SFVec3f.MAX();
-                    var childMax = x3dom.fields.SFVec3f.MIN();
-
-                    valid = this._childNodes[i].getVolume(
-                                    childMin, childMax, invalidate) || valid;
-
-                    if (valid)  // values only set by Mesh.BBox()
-                    {
-                        if (min.x > childMin.x) { min.x = childMin.x; }
-                        if (min.y > childMin.y) { min.y = childMin.y; }
-                        if (min.z > childMin.z) { min.z = childMin.z; }
-
-                        if (max.x < childMax.x) { max.x = childMax.x; }
-                        if (max.y < childMax.y) { max.y = childMax.y; }
-                        if (max.z < childMax.z) { max.z = childMax.z; }
-                    }
-                }
-            }
-            return valid;
+            return false;
         },
         
         highlight: function(enable, color)
@@ -878,6 +855,44 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### X3DBoundedNode ### */
+x3dom.registerNodeType(
+    "X3DBoundedNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DBoundedNode.superClass.call(this, ctx);
+        },
+        {
+            getVolume: function (min, max)
+            {
+                var valid = false;
+                for (var i=0, n=this._childNodes.length; i<n; i++)
+                {
+                    if (this._childNodes[i])
+                    {
+                        var childMin = x3dom.fields.SFVec3f.MAX();
+                        var childMax = x3dom.fields.SFVec3f.MIN();
+
+                        valid = this._childNodes[i].getVolume(childMin, childMax) || valid;
+
+                        if (valid)  // values only set by Mesh.BBox()
+                        {
+                            if (min.x > childMin.x) { min.x = childMin.x; }
+                            if (min.y > childMin.y) { min.y = childMin.y; }
+                            if (min.z > childMin.z) { min.z = childMin.z; }
+
+                            if (max.x < childMax.x) { max.x = childMax.x; }
+                            if (max.y < childMax.y) { max.y = childMax.y; }
+                            if (max.z < childMax.z) { max.z = childMax.z; }
+                        }
+                    }
+                }
+                return valid;
+            }
+        }
+    )
+);
 
 // ### X3DSensorNode ###
 x3dom.registerNodeType(

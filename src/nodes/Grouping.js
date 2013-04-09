@@ -13,7 +13,7 @@
 x3dom.registerNodeType(
     "X3DGroupingNode",
     "Grouping",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass(x3dom.nodeTypes.X3DBoundedNode,
         function (ctx) {
             x3dom.nodeTypes.X3DGroupingNode.superClass.call(this, ctx);
 
@@ -55,7 +55,7 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'whichChoice', -1);
         },
         {
-            getVolume: function (min, max, invalidate)
+            getVolume: function (min, max)
             {
                 if (this._vf.whichChoice < 0 ||
                     this._vf.whichChoice >= this._childNodes.length) {
@@ -63,7 +63,7 @@ x3dom.registerNodeType(
                 }
 
                 if (this._childNodes[this._vf.whichChoice]) {
-                    return this._childNodes[this._vf.whichChoice].getVolume(min, max, invalidate);
+                    return this._childNodes[this._vf.whichChoice].getVolume(min, max);
                 }
 
                 return false;
@@ -214,7 +214,7 @@ x3dom.registerNodeType(
             },
 
             // TODO; always use BoxVolume instead of min/max
-            getVolume: function(min, max, invalidate)
+            getVolume: function(min, max)
             {
                 var nMin = x3dom.fields.SFVec3f.MAX();
                 var nMax = x3dom.fields.SFVec3f.MIN();
@@ -227,8 +227,7 @@ x3dom.registerNodeType(
                         var childMin = x3dom.fields.SFVec3f.MAX();
                         var childMax = x3dom.fields.SFVec3f.MIN();
 
-                        valid = this._childNodes[i].getVolume(
-                                        childMin, childMax, invalidate) || valid;
+                        valid = this._childNodes[i].getVolume(childMin, childMax) || valid;
 
                         if (valid)  // values only set by Mesh.BBox()
                         {
@@ -696,7 +695,7 @@ x3dom.registerNodeType(
                             {
                                 if (view_frustum)   // experimental
                                 {
-                                    shape.getVolume(box.min, box.max, false);
+                                    shape.getVolume(box.min, box.max);
                                     box.transform(trafo);
                                 }
                                 
@@ -822,7 +821,7 @@ x3dom.registerNodeType(
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
                 
-                if (this.getVolume(min, max, true)) {
+                if (this.getVolume(min, max)) {
                     this._lastMin = min;
                     this._lastMax = max;
                 }

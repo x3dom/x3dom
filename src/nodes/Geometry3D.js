@@ -1400,7 +1400,7 @@ x3dom.registerNodeType(
                 return vol.max;
             },
 
-            getVolume: function(min, max, invalidate) {
+            getVolume: function(min, max) {
                 var vol = this._mesh._vol;
 
                 if (!vol.isValid()) {
