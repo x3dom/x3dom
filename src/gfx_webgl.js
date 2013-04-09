@@ -283,14 +283,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.position !== undefined)
                 {
-					shape._webgl.indexes[q5] = shape._cf.geometry.node._mesh._indices[q5];
+					shape._webgl.indexes[q] = shape._cf.geometry.node._mesh._indices[q];
 					
 					gl.deleteBuffer(shape._webgl.buffers[q5]);
 
 					indicesBuffer = gl.createBuffer();
 					shape._webgl.buffers[q5] = indicesBuffer;
             
-					indexArray = new Uint16Array(shape._webgl.indexes[q5]);
+					indexArray = new Uint16Array(shape._webgl.indexes[q]);
 				
 					gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
 					gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -298,7 +298,7 @@ x3dom.gfx_webgl = (function () {
 					indexArray = null;
 				    
 				    // vertex positions
-                    shape._webgl.positions[q5] = shape._cf.geometry.node._mesh._positions[q5];
+                    shape._webgl.positions[q] = shape._cf.geometry.node._mesh._positions[q];
                     
                     // TODO; don't delete VBO but use glMapBuffer() and DYNAMIC_DRAW
                     gl.deleteBuffer(shape._webgl.buffers[q5+1]);
@@ -309,7 +309,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, shape._webgl.buffers[q5]);
                     
-                    vertices = new Float32Array(shape._webgl.positions[q5]);
+                    vertices = new Float32Array(shape._webgl.positions[q]);
                     
                     gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -328,14 +328,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.color !== undefined)
                 {
-                    shape._webgl.colors[q5] = shape._cf.geometry.node._mesh._colors[q5];
+                    shape._webgl.colors[q] = shape._cf.geometry.node._mesh._colors[q];
                     
                     gl.deleteBuffer(shape._webgl.buffers[q5+4]);
                     
                     colorBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5+4] = colorBuffer;
                     
-                    colors = new Float32Array(shape._webgl.colors[q5]);
+                    colors = new Float32Array(shape._webgl.colors[q]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
@@ -354,14 +354,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.normal !== undefined)
                 {
-                    shape._webgl.normals[q5] = shape._cf.geometry.node._mesh._normals[q5];
+                    shape._webgl.normals[q] = shape._cf.geometry.node._mesh._normals[q];
                     
 					gl.deleteBuffer(shape._webgl.buffers[q5+2]);
                     
                     normalBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5+2] = normalBuffer;
                     
-                    normals = new Float32Array(shape._webgl.normals[q5]);
+                    normals = new Float32Array(shape._webgl.normals[q]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);             
@@ -380,14 +380,14 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.texcoord !== undefined)
                 {
-                    shape._webgl.texcoords[q5] =  shape._cf.geometry.node._mesh._texCoords[q5];
+                    shape._webgl.texcoords[q] =  shape._cf.geometry.node._mesh._texCoords[q];
                     
                     gl.deleteBuffer(shape._webgl.buffers[q5+3]);
 					         
                     texCoordBuffer = gl.createBuffer();
                     shape._webgl.buffers[q5+3] = texCoordBuffer;
                     
-                    texCoords = new Float32Array(shape._webgl.texcoords[q5]);
+                    texCoords = new Float32Array(shape._webgl.texcoords[q]);
                     
                     gl.bindBuffer(gl.ARRAY_BUFFER, texCoordBuffer);
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);             
@@ -459,9 +459,9 @@ x3dom.gfx_webgl = (function () {
             {
                 var sp = this._webgl.shader;
 
-                for (q=0; q<this._webgl.positions.length; q++)
+                for (var q=0; q<this._webgl.positions.length; q++)
                 {
-                    q5 = 5 * q;
+                    var q5 = 5 * q;
 
                     if (sp.position !== undefined) {
                         gl.deleteBuffer(this._webgl.buffers[q5+1]);
@@ -611,7 +611,7 @@ x3dom.gfx_webgl = (function () {
                 indicesBuffer = gl.createBuffer();
                 shape._webgl.buffers[q5] = indicesBuffer;
             
-                indexArray = new Uint16Array(shape._webgl.indexes[q5]);
+                indexArray = new Uint16Array(shape._webgl.indexes[q]);
             
                 gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                 gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -622,7 +622,7 @@ x3dom.gfx_webgl = (function () {
                 shape._webgl.buffers[q5+1] = positionBuffer;
                 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
             
-                vertices = new Float32Array(shape._webgl.positions[q5]);
+                vertices = new Float32Array(shape._webgl.positions[q]);
             
                 gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
                 gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
@@ -640,7 +640,7 @@ x3dom.gfx_webgl = (function () {
                 var normalBuffer = gl.createBuffer();
                 shape._webgl.buffers[q5+2] = normalBuffer;
             
-                var normals = new Float32Array(shape._webgl.normals[q5]);
+                var normals = new Float32Array(shape._webgl.normals[q]);
             
                 gl.bindBuffer(gl.ARRAY_BUFFER, normalBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);                
@@ -658,7 +658,7 @@ x3dom.gfx_webgl = (function () {
                 var texcBuffer = gl.createBuffer();
                 shape._webgl.buffers[q5+3] = texcBuffer;
             
-                var texCoords = new Float32Array(shape._webgl.texcoords[q5]);
+                var texCoords = new Float32Array(shape._webgl.texcoords[q]);
             
                 gl.bindBuffer(gl.ARRAY_BUFFER, texcBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
@@ -676,7 +676,7 @@ x3dom.gfx_webgl = (function () {
                 var colorBuffer = gl.createBuffer();
                 shape._webgl.buffers[q5+4] = colorBuffer;
             
-                var colors = new Float32Array(shape._webgl.colors[q5]);
+                var colors = new Float32Array(shape._webgl.colors[q]);
 
                 gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
                 gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);             
@@ -1300,7 +1300,7 @@ x3dom.gfx_webgl = (function () {
                     }
                     else
                     {
-                        gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q5].length, gl.UNSIGNED_SHORT, 0);
+                        gl.drawElements(shape._webgl.primType, shape._webgl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                     }
                 }
                 
@@ -1512,7 +1512,7 @@ x3dom.gfx_webgl = (function () {
 					gl.disable(gl.CULL_FACE);
 				}
 
-                if (s_gl.indexes && s_gl.indexes[q5])
+                if (s_gl.indexes && s_gl.indexes[q])
                 {
                     if (s_gl.imageGeometry != 0 ||
                         s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0)
@@ -1559,7 +1559,7 @@ x3dom.gfx_webgl = (function () {
                     }
                     else
                     {
-                        gl.drawElements(s_gl.primType, s_gl.indexes[q5].length, gl.UNSIGNED_SHORT, 0);
+                        gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                     }
                 }
 				
@@ -2009,16 +2009,16 @@ x3dom.gfx_webgl = (function () {
                 }
                 else
                 {
-                    gl.drawElements(polyMode, s_gl.indexes[q5].length, gl.UNSIGNED_SHORT, 0);
+                    gl.drawElements(polyMode, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                 }
             }
             else if (sp.position !== undefined && s_gl.buffers[q5 + 1])
             {
                 if (s_gl.primType == gl.POINTS && (typeof s_gl.primType).toString() != "object")
                 {
-                    gl.drawArrays(gl.POINTS, 0, s_gl.positions[q5].length / 3);
+                    gl.drawArrays(gl.POINTS, 0, s_gl.positions[q].length / 3);
                 }
-                else if (s_gl.indexes && s_gl.indexes[q5])
+                else if (s_gl.indexes && s_gl.indexes[q])
                 {
                     if (s_gl.imageGeometry != 0 ||
                         s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0)
@@ -2065,7 +2065,7 @@ x3dom.gfx_webgl = (function () {
                     }
                     else
                     {
-                        gl.drawElements(s_gl.primType, s_gl.indexes[q5].length, gl.UNSIGNED_SHORT, 0);
+                        gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
                     }
                 }
             }
@@ -2663,6 +2663,7 @@ x3dom.gfx_webgl = (function () {
             scene.drawableObjects = [];
             scene.drawableObjects.LODs = [];
             scene.drawableObjects.Billboards = [];
+            scene.drawableObjects.cnt = 0;
             
             x3dom.Utils.startMeasure('traverse');
             
@@ -2752,10 +2753,9 @@ x3dom.gfx_webgl = (function () {
                 center = trafo.multMatrixPnt(center);
                 center = mat_view.multMatrixPnt(center);
 
-                var sortType = (obj3d._cf.appearance.node) ?
-                                obj3d._cf.appearance.node._vf.sortType : "opaque";
-                var sortKey  = (obj3d._cf.appearance.node) ? 
-                                obj3d._cf.appearance.node._vf.sortKey : 0;
+                var obj3dApp = obj3d._cf.appearance.node;
+                var sortType = obj3dApp ? obj3dApp._vf.sortType : "opaque";
+                var sortKey  = obj3dApp ? obj3dApp._vf.sortKey  : 0;
 
                 if (sortType.toLowerCase() === "opaque") {
                     zPos.push([i, center.z, sortKey]);
@@ -2821,7 +2821,11 @@ x3dom.gfx_webgl = (function () {
                 zPos.push.apply(zPos, zPosTranspArr);
             }
         } //sortTrans
-        
+
+        var sortTime = x3dom.Utils.stopMeasure('sorting');
+        this.x3dElem.runtime.addMeasurement('SORT', sortTime);
+
+        // update billboards and lods
         m = scene.drawableObjects.Billboards.length;
         n = scene.drawableObjects.LODs.length;
         if (m || n) {
@@ -2851,9 +2855,6 @@ x3dom.gfx_webgl = (function () {
                 obj3d._eyeLook = new x3dom.fields.SFVec3f(mat_view_model._20, mat_view_model._21, mat_view_model._22);
             }
         }
-        
-        var sortTime = x3dom.Utils.stopMeasure('sorting');
-        this.x3dElem.runtime.addMeasurement('SORT', sortTime);
         
         //===========================================================================
         // Render Shadow Pass
@@ -3033,14 +3034,17 @@ x3dom.gfx_webgl = (function () {
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }
         }
-        
-        gl.flush();
+
+        gl.finish();
+        //gl.flush();
         
         var renderTime = x3dom.Utils.stopMeasure('render');
         
         this.x3dElem.runtime.addMeasurement('RENDER', renderTime);
         this.x3dElem.runtime.addMeasurement('DRAW', renderTime/zPos.length);
-        this.x3dElem.runtime.addInfo('#NODES:', viewarea._numRenderedNodes);
+
+        this.x3dElem.runtime.addInfo('#NODES:', scene.drawableObjects.cnt);
+        this.x3dElem.runtime.addInfo('#SHAPES:', viewarea._numRenderedNodes);
         this.x3dElem.runtime.addInfo("#DRAWS:", this.numDrawCalls);
         this.x3dElem.runtime.addInfo("#POINTS:", this.numCoords);
         this.x3dElem.runtime.addInfo("#TRIS:", this.numFaces);
@@ -3190,6 +3194,7 @@ x3dom.gfx_webgl = (function () {
         else
         {
             locScene.drawableObjects = [];
+            locScene.drawableObjects.cnt = 0;
             
             locScene.collectDrawableObjects(
                 locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()), locScene.drawableObjects);
@@ -3293,37 +3298,29 @@ x3dom.gfx_webgl = (function () {
             var shape = scene.drawableObjects[i][1];
             var sp = shape._webgl.shader;
             
-			//Textures cleanup handled by TextureCache
-            /*for (var cnt=0; shape._webgl.texture !== undefined && 
-                            cnt < shape._webgl.texture.length; cnt++)
-            {
-                if (shape._webgl.texture[cnt].texture)
-                {
-                    gl.deleteTexture(shape._webgl.texture[cnt].texture);
-                }
-            }*/
-            
             for (var q=0; q<shape._webgl.positions.length; q++)
             {
+                var q5 = 5 * q;
+
                 if (sp.position !== undefined) 
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+1]);
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+0]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+1]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5  ]);
                 }
                 
                 if (sp.normal !== undefined) 
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+2]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+2]);
                 }
                 
                 if (sp.texcoord !== undefined) 
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+3]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+3]);
                 }
                 
                 if (sp.color !== undefined)
                 {
-                    gl.deleteBuffer(shape._webgl.buffers[5*q+4]);
+                    gl.deleteBuffer(shape._webgl.buffers[q5+4]);
                 }
             }
 

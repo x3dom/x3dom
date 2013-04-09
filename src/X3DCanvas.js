@@ -33,8 +33,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 	this.initFlashContext = function(object) {
         x3dom.debug.logInfo("Initializing X3DObject for [" + object.id + "]");
-        var gl = x3dom.gfx_flash(object);
-        return gl;
+        return x3dom.gfx_flash(object);
     };
 
 	this.appendParam = function(node, name, value) {
@@ -49,7 +48,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		try {
 			xhr.open("HEAD", url, false);
 			xhr.send(null);
-			return (xhr.status==404) ? false : true;
+			return (xhr.status != 404);
 		} catch(e) { return true; }
 	};		
 	
@@ -82,8 +81,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	this.createInitFailedDiv = function(x3dElem) {
 		var div = document.createElement('div');
         div.setAttribute("id", "x3dom-create-init-failed");
-		div.style.width = x3dElem.getAttribute("width");;
-		div.style.height = x3dElem.getAttribute("height");;
+		div.style.width = x3dElem.getAttribute("width");
+		div.style.height = x3dElem.getAttribute("height");
 		div.style.backgroundColor = "#C00";
 		div.style.color = "#FFF";
 		div.style.fontSize = "20px";
@@ -109,14 +108,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             altImgObj = new Image();
             altImgObj.src = altImg;
             div.style.backgroundImage = "url("+altImg+")";
-            div.style.backgroundRepeat = "no-repeat"
-            div.style.backgroundPosition = "50% 50%"
+            div.style.backgroundRepeat = "no-repeat";
+            div.style.backgroundPosition = "50% 50%";
         }
 
         x3dElem.appendChild(div);
 
         x3dom.debug.logError("Your Browser does not support X3DOM!");
-	}
+	};
 
 	this.createFlashObject = function(x3dElem) {
 	
@@ -151,10 +150,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
 			//Get width from x3d-Element or set default
 			var width = x3dElem.getAttribute("width");
+            var idx = -1;
 			if( width == null ) {
 				width = 550;
 			}else{
-				var idx = width.indexOf("px");
+				idx = width.indexOf("px");
 				if( idx != -1 ) {
 					width = width.substr(0, idx);
 				}
@@ -164,7 +164,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			if( height == null ) {
 				height = 400;
 			}else{
-				var idx = height.indexOf("px");
+				idx = height.indexOf("px");
 				if( idx != -1 ) {
 					height = height.substr(0, idx);
 				}
@@ -391,7 +391,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			this.gl = this.initFlashContext(this.canvas);
 		} else {
 			this.createInitFailedDiv(x3dElem);
-			return null;
+			return;
 		}
 	} else {
 		this.canvas = this.createHTMLCanvas(x3dElem);
@@ -410,12 +410,16 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				this.gl = this.initFlashContext(this.canvas);
 			} else {
 				this.createInitFailedDiv(x3dElem);
-				return null;
+				return;
 			}
 		}
 	}
 	
 	x3dom.caps.BACKEND = this.backend;
+
+    // for FPS measurements
+    this.lastTimeFPSWasTaken = 0;
+    this.framesSinceLastTime = 0;
 
 	this.fps_t0 = new Date().getTime();
     this.doc = null;
@@ -688,7 +692,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           lastDistance : new x3dom.fields.SFVec2f(),
           lastSquareDistance : 0,
           lastAngle : 0,
-		  lastLayer : new Array(),
+		  lastLayer : [],
           
           calcAngle : function(vector)
           {
@@ -704,7 +708,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           disableTouch: this.disableTouch,
           // set a mark in HTML so we can track the position of the finger visually
           visMarker: this.showTouchpoints,
-          visMarkerBag: new Array(),
+          visMarkerBag: [],
           
           visualizeTouches: function(evt, cleanup)
           {
@@ -773,9 +777,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				doc = this.parent.doc;
 			
 			touches.lastLayer = [];
-		
-			for(var i = 0; i < evt.touches.length; i++) {
-				var pos = this.parent.mousePosition(evt.touches[i]);
+
+            var i, pos;
+			for(i = 0; i < evt.touches.length; i++) {
+				pos = this.parent.mousePosition(evt.touches[i]);
 				touches.lastLayer.push(new Array(evt.touches[i].identifier, new x3dom.fields.SFVec2f(pos.x,pos.y)));
 			}
            
@@ -806,8 +811,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 			doc._viewarea._hasTouches = true;
 			
-			for(var i = 0; i < evt.touches.length; i++) {
-				var pos = this.parent.mousePosition(evt.touches[i]);
+			for(i = 0; i < evt.touches.length; i++) {
+				pos = this.parent.mousePosition(evt.touches[i]);
 				doc.onPick(that.gl, pos.x, pos.y);
 				doc._viewarea.prepareEvents(pos.x, pos.y, 1, "onmousedown");
 				doc._viewarea._pickingInfo.lastClickObj = doc._viewarea._pickingInfo.pickObj;
@@ -842,6 +847,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			if (doc == null)
 				doc = this.parent.doc;
 
+            var rotMatrix;
 			// one finger: x/y rotation
 			if(evt.touches.length == 1) {
 				var currentDrag = new x3dom.fields.SFVec2f(evt.touches[0].screenX, evt.touches[0].screenY);
@@ -851,7 +857,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				
 				var mx = x3dom.fields.SFMatrix4f.rotationY(deltaDrag.x / 100);
 				var my = x3dom.fields.SFMatrix4f.rotationX(deltaDrag.y / 100);
-				var rotMatrix = mx.mult(my);
+				rotMatrix = mx.mult(my);
 				
 				doc.onMoveView(that.gl, null, rotMatrix);
 				doc.needRender = true;
@@ -877,7 +883,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 				var angleDelta = touches.lastAngle - rotation;
 				touches.lastAngle = rotation;
 
-				var rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
+				rotMatrix = x3dom.fields.SFMatrix4f.rotationZ(angleDelta);
 
 				touches.lastMiddle = middle;
 				touches.lastDistance = distance;
@@ -1040,32 +1046,29 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     };
 };
 
-var lastTimeFPSWasTaken = 0;
-var framesSinceLastTime = 0;
-
 x3dom.X3DCanvas.prototype.tick = function()
 {
     var d = new Date().getTime();
     
     //
-    if ((d - lastTimeFPSWasTaken) >= 1000)
+    if ((d - this.lastTimeFPSWasTaken) >= 1000)
     {
         var that = this;
         (function(){
         
-            var diff = d - lastTimeFPSWasTaken;
+            var diff = d - that.lastTimeFPSWasTaken;
             
-            that.x3dElem.runtime.fps = framesSinceLastTime / (diff / 1000);
+            that.x3dElem.runtime.fps = that.framesSinceLastTime / (diff / 1000);
             
-            that.x3dElem.runtime.addMeasurement('FPS', framesSinceLastTime / (diff / 1000) );      
+            that.x3dElem.runtime.addMeasurement('FPS', that.framesSinceLastTime / (diff / 1000) );
+
+            that.framesSinceLastTime = 0;
             
-            framesSinceLastTime = 0;
-            
-            lastTimeFPSWasTaken = d;
+            that.lastTimeFPSWasTaken = d;
             
         })();
-    }    
-    ++framesSinceLastTime;
+    }
+    this.framesSinceLastTime++;
     //
     
     var fps = 1000.0 / (d - this.fps_t0);
@@ -1083,7 +1086,7 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.x3dElem.runtime.isReady = true;
             }
             
-            this.x3dElem.runtime.enterFrame()
+            this.x3dElem.runtime.enterFrame();
 			
             this.x3dElem.runtime.addMeasurement('ANIM', animD);
 
@@ -1103,7 +1106,7 @@ x3dom.X3DCanvas.prototype.tick = function()
             this.x3dElem.runtime.exitFrame();
 		}
 		
-    if (this.progressDiv) {
+        if (this.progressDiv) {
 				if (this.doc.downloadCount > 0) { 
 					this.x3dElem.runtime.addInfo("#LOADS:", this.doc.downloadCount);
 				} else {

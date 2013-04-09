@@ -33,12 +33,13 @@ x3dom.Utils.isNumber = function(n) {
 
 x3dom.Utils.startMeasure = function(name) {
   var uname = name.toUpperCase();
-  if ( !x3dom.Utils.measurements[uname] )
+  if ( !x3dom.Utils.measurements[uname] ) {
     if ( performance && performance.now ) {
       x3dom.Utils.measurements[uname] = performance.now();
     } else {
       x3dom.Utils.measurements[uname] = new Date().getTime();
     }
+  }
 };
 
 x3dom.Utils.stopMeasure = function(name) { 
@@ -52,6 +53,7 @@ x3dom.Utils.stopMeasure = function(name) {
       return new Date().getTime() - startTime;
     }
   }
+  return 0;
 };
 
 /*****************************************************************************

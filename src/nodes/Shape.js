@@ -248,6 +248,8 @@ x3dom.registerNodeType(
                 // TODO: culling etc
                 if (out && this._vf.render && this._cf.geometry.node)
                 {
+                    out.cnt++;  // shall we add 2 instead to include geo?
+
                     out.push( [transform, this] );
                 }
             },

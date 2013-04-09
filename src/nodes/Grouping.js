@@ -23,16 +23,20 @@ x3dom.registerNodeType(
         },
         {
             // Collects array of [transform matrix, node] for all objects that should be drawn.
+            // TODO: culling etc.
             collectDrawableObjects: function (transform, out)
             {
                 if (!this._vf.render || !out) {
                     return;
                 }
 
-                for (var i=0; i<this._childNodes.length; i++) {
-                    if (this._childNodes[i]) {
-                        var childTransform = this._childNodes[i].transformMatrix(transform);
-                        this._childNodes[i].collectDrawableObjects(childTransform, out);
+                out.cnt++;
+
+                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                    var cnode = this._childNodes[i];
+                    if (cnode) {
+                        var childTransform = cnode.transformMatrix(transform);
+                        cnode.collectDrawableObjects(childTransform, out);
                     }
                 }
             }
@@ -114,9 +118,12 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if (this._childNodes[this._vf.whichChoice]) {
-                    var childTransform = this._childNodes[this._vf.whichChoice].transformMatrix(transform);
-                    this._childNodes[this._vf.whichChoice].collectDrawableObjects(childTransform, out);
+                out.cnt++;
+
+                var cnode = this._childNodes[this._vf.whichChoice];
+                if (cnode) {
+                    var childTransform = cnode.transformMatrix(transform);
+                    cnode.collectDrawableObjects(childTransform, out);
                 }
             },
 
@@ -206,6 +213,7 @@ x3dom.registerNodeType(
                 return transform.mult(this._trafo);
             },
 
+            // TODO; always use BoxVolume instead of min/max
             getVolume: function(min, max, invalidate)
             {
                 var nMin = x3dom.fields.SFVec3f.MAX();
@@ -237,6 +245,14 @@ x3dom.registerNodeType(
 
                 if (valid)
                 {
+                    /* // TODO
+                    var boxVol = new x3dom.fields.BoxVolume(nMin, nMax);
+                    boxVol.transform(this._trafo);
+
+                    min.setValues(boxVol.min);
+                    max.setValues(boxVol.max);
+                    */
+
                     nMin = this._trafo.multMatrixPnt(nMin);
                     nMax = this._trafo.multMatrixPnt(nMax);
 
@@ -541,7 +557,9 @@ x3dom.registerNodeType(
                 for (var i=0; i<n; ++i)
                 {
                     var shape = this._childNodes[i];
-                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode)) {
+
+                    if (shape && x3dom.isa(shape, x3dom.nodeTypes.X3DShapeNode))
+                    {
                         this._nameObjMap[this._vf.label[i]] = { shape: shape, pos: i };
                         this._visibleList[i] = true;
                     }
@@ -549,9 +567,12 @@ x3dom.registerNodeType(
 						this._visibleList[i] = false;
 						x3dom.debug.logError("Invalid children: " + this._vf.label[i]);
 					}
+
 					// init list that holds creation time of gl object
 					this._createTime[i] = 0;
                 }
+
+                x3dom.debug.logInfo("RemoteSelectionGroup has " + n + " entries.");
             },
 
             fieldChanged: function(fieldName)
@@ -574,7 +595,7 @@ x3dom.registerNodeType(
                         {
                             this._visibleList[i] = true;
                             
-                            for (var j=0; j<this._vf.invisibleNodes.length; ++j)
+                            for (var j=0, numInvis=this._vf.invisibleNodes.length; j<numInvis; ++j)
                             {
                                 var nodeName = this._vf.invisibleNodes[j];
                                 var starInd = nodeName.lastIndexOf('*');
@@ -627,27 +648,30 @@ x3dom.registerNodeType(
                 if (!this._vf.render || !out) {
                     return;
                 }
-                
-                var isMoving = this._nameSpace.doc._viewarea.isMoving();
+
+                out.cnt++;
+
+                var viewarea = this._nameSpace.doc._viewarea;
+                var isMoving = viewarea.isMoving();
                 
                 var ts = new Date().getTime();
                 var maxLiveTime = 10000;
-                var i, n;
+                var i, n, numChild = this._childNodes.length;
                 
                 if (!this._vf.enableCulling)
                 {
-                    n = this.getNumRenderedObjects(this._childNodes.length, isMoving);
+                    n = this.getNumRenderedObjects(numChild, isMoving);
                     
                     // experimental
-                    var view_frustum = null;
+                    var view_frustum = null, box = null;
                     
                     if (this._vf.internalCulling == true)
                     {
-        		        var viewpoint = this._nameSpace.doc._viewarea._scene.getViewpoint();
+        		        var viewpoint = viewarea._scene.getViewpoint();
                         var near = viewpoint.getNear();
                         
-                        var proj = this._nameSpace.doc._viewarea.getProjectionMatrix();
-                        var view = this._nameSpace.doc._viewarea.getViewMatrix();
+                        var proj = viewarea.getProjectionMatrix();
+                        var view = viewarea.getViewMatrix();
                         
                         view_frustum = new x3dom.fields.FrustumVolume(proj.mult(view));
                         
@@ -657,10 +681,10 @@ x3dom.registerNodeType(
                         var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
                         imgPlaneHeightAtDistOne /= this._nameSpace.doc._viewarea._height;
                         
-                		var box = new x3dom.fields.BoxVolume();
+                		box = new x3dom.fields.BoxVolume();
         		    }
         		    
-                    for (i=0, cnt=0; i<this._childNodes.length; i++)
+                    for (i=0, cnt=0; i<numChild; i++)
                     {
                         var shape = this._childNodes[i];
                         
@@ -692,7 +716,7 @@ x3dom.registerNodeType(
                                     }
                                     
                                     // collect drawables
-                                    if (numPixel > pxThreshold)
+                                    if (numPixel >= pxThreshold)
                                     {
                                         shape.collectDrawableObjects(transform, out);
                                         this._createTime[i] = ts;

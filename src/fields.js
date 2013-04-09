@@ -2569,18 +2569,57 @@ x3dom.fields.Line.prototype.intersect = function(low, high)
 
 ///////////////////////////////////////////////////////////////////////////////
 /** BoxVolume constructor.
-    @class Represents a box (as internal helper).
+    @class Represents a box volume (as internal helper).
   */
 x3dom.fields.BoxVolume = function(min, max)
 {
     if (arguments.length < 2) {
         this.min = new x3dom.fields.SFVec3f(0, 0, 0);
         this.max = new x3dom.fields.SFVec3f(0, 0, 0);
+        this.valid = false;
     }
     else {
+        // compiler enforced type check for min/max would be nice
         this.min = min;
         this.max = max;
+        this.valid = true;
     }
+};
+
+x3dom.fields.BoxVolume.prototype.setBounds = function(min, max)
+{
+    this.min.setValues(min);
+    this.max.setValues(max);
+    this.valid = true;
+};
+
+x3dom.fields.BoxVolume.prototype.setBoundsByCenterSize = function(center, size)
+{
+    var halfSize = size.multiply(0.5);
+    this.min = center.subtract(halfSize);
+    this.max = center.add(halfSize);
+    this.valid = true;
+};
+
+x3dom.fields.BoxVolume.prototype.getBounds = function(min, max)
+{
+    min.setValues(this.min);
+    max.setValues(this.max);
+};
+
+x3dom.fields.BoxVolume.prototype.invalidate = function()
+{
+    this.valid = false;
+};
+
+x3dom.fields.BoxVolume.prototype.isValid = function()
+{
+    return this.valid;
+};
+
+x3dom.fields.BoxVolume.prototype.getCenter = function()
+{
+    return (this.min.add(this.max)).multiply(0.5);
 };
 
 x3dom.fields.BoxVolume.prototype.getDiameter = function()
@@ -2597,7 +2636,7 @@ x3dom.fields.BoxVolume.prototype.transform = function(m)
     ymin = ymax = m._13;
     zmin = zmax = m._23;
 
-    // calculate xmin and xmax of new tranformed BBox
+    // calculate xmin and xmax of new transformed BBox
     var a = this.max.x * m._00;
     var b = this.min.x * m._00;
 
@@ -2634,7 +2673,7 @@ x3dom.fields.BoxVolume.prototype.transform = function(m)
         xmin += a;
     }
 
-    // calculate ymin and ymax of new tranformed BBox
+    // calculate ymin and ymax of new transformed BBox
     a = this.max.x * m._10;
     b = this.min.x * m._10;
 
@@ -2671,7 +2710,7 @@ x3dom.fields.BoxVolume.prototype.transform = function(m)
         ymin += a;
     }
 
-    // calculate zmin and zmax of new tranformed BBox
+    // calculate zmin and zmax of new transformed BBox
     a = this.max.x * m._20;
     b = this.min.x * m._20;
 
@@ -2847,7 +2886,7 @@ x3dom.fields.FrustumVolume.prototype.intersect = function(vol)
     //Check if the point is in the halfspace
     var isInHalfSpace = function(i, pnt) {
         var s = that.planeNormals[i].dot(pnt) - that.planeDistances[i];
-        return (s >= 0) ? true : false;
+        return (s >= 0);
     };
     
     //Check if the box formed by min/max is fully outside the halfspace
