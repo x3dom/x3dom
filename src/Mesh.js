@@ -95,6 +95,19 @@ x3dom.Mesh.prototype.getVolume = function(min, max)
     }
 
     this._vol.getBounds(min, max);
+
+    return this._vol.isValid();
+};
+
+x3dom.Mesh.prototype.invalidate = function()
+{
+    this._invalidate = true;
+    this._vol.invalidate();
+};
+
+x3dom.Mesh.prototype.isValid = function()
+{
+    return this._vol.isValid();
 };
 
 x3dom.Mesh.prototype.getCenter = function() 

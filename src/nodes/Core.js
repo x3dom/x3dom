@@ -127,9 +127,17 @@ x3dom.registerNodeType(
             return transform;
         },
 
-        getVolume: function (min, max)
-        {
+        getVolume: function (min, max) {
             return false;
+        },
+
+        invalidateVolume: function() {
+            // overwritten
+        },
+
+        // Collects array of [transform matrix, node] for all objects that should be drawn.
+        collectDrawableObjects: function (transform, out) {
+            // explicitly do nothing on collect traversal for (most) nodes
         },
         
         highlight: function(enable, color)
@@ -212,11 +220,6 @@ x3dom.registerNodeType(
 
         findX3DDoc: function () {
             return this._nameSpace.doc;
-        },
-
-        // Collects array of [transform matrix, node] for all objects that should be drawn.
-        collectDrawableObjects: function (transform, out) {
-            // explicitly do nothing on collect traversal for (most) nodes
         },
 
         doIntersect: function(line) {
@@ -862,6 +865,15 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DChildNode,
         function (ctx) {
             x3dom.nodeTypes.X3DBoundedNode.superClass.call(this, ctx);
+
+            this._volume = new x3dom.fields.BoxVolume();
+
+            this._graph = {
+                _singlePath: true,    // unique path in graph back to root possible
+                _localMatrix: new x3dom.fields.SFMatrix4f(),
+                _globalMatrix: null,  // new x3dom.fields.SFMatrix4f();
+                _volume: new x3dom.fields.BoxVolume()
+            };
         },
         {
             getVolume: function (min, max)
@@ -889,6 +901,10 @@ x3dom.registerNodeType(
                     }
                 }
                 return valid;
+            },
+
+            invalidateVolume: function() {
+                // TODO
             }
         }
     )

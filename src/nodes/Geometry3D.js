@@ -1411,6 +1411,10 @@ x3dom.registerNodeType(
                 return true;
             },
 
+            invalidateVolume: function() {
+                // at the moment, do nothing here since field updates are not impl.
+            },
+
             getCenter: function() {
                 return this._vf.position;
             },
@@ -1475,6 +1479,7 @@ x3dom.registerNodeType(
 
             parentAdded: function()
             {
+                // TODO; also handle multiple shape parents!
                 var offsetInd, strideInd, offset, stride;
 
                 offsetInd = this._vf.coord.lastIndexOf('#');
