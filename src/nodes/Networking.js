@@ -237,7 +237,8 @@ x3dom.registerNodeType(
                         x3dom.debug.logInfo('Inline: added '+that._vf.url[0]+' to scene.');
                         
                         // recalc changed scene bounding box twice
-                        that._nameSpace.doc._scene.updateVolume();
+                        if (that._nameSpace.doc._scene)
+                            that._nameSpace.doc._scene.updateVolume();
                         window.setTimeout( function() { 
 							that._nameSpace.doc._scene.updateVolume();
 							that._nameSpace.doc.needRender = true;
