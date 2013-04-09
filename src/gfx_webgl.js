@@ -1957,7 +1957,7 @@ x3dom.gfx_webgl = (function () {
                 gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5 + 2]);
 
                 gl.vertexAttribPointer(sp.normal,
-                    s_msh._numNormComponents, s_gl.normalType, (s_gl.bitLODGeometry != 0),
+                    s_msh._numNormComponents, s_gl.normalType, false,
                     shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                 gl.enableVertexAttribArray(sp.normal);
             }
@@ -2214,7 +2214,7 @@ x3dom.gfx_webgl = (function () {
         currentLOD = (maxPrec != -1 && currentLOD > maxPrec) ? maxPrec : currentLOD;
 
         //assign rendering resolution, according to currently loaded data and LOD
-        var currentLOD_min = (s_gl.levelsAvailable < currentLOD) ? s_gl.levelsAvailable : currentLOD;
+        var currentLOD_min = (s_gl.levelsAvailable < currentLOD) ? s_gl.levelsAvailable : currentLOD;        
         currentLOD = currentLOD_min;
 
         //@todo: only for demonstration purposes!!!
