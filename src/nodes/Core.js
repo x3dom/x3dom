@@ -866,45 +866,53 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DBoundedNode.superClass.call(this, ctx);
 
-            this._volume = new x3dom.fields.BoxVolume();
-
             this._graph = {
-                _singlePath: true,    // unique path in graph back to root possible
-                _localMatrix: new x3dom.fields.SFMatrix4f(),
-                _globalMatrix: null,  // new x3dom.fields.SFMatrix4f();
-                _volume: new x3dom.fields.BoxVolume()
+                singlePath: true,    // unique path in graph back to root possible
+                localMatrix: null,   // new x3dom.fields.SFMatrix4f(),
+                globalMatrix: null,  // new x3dom.fields.SFMatrix4f();
+                volume: new x3dom.fields.BoxVolume()
             };
         },
         {
             getVolume: function (min, max)
             {
                 var valid = false;
+
                 for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
-                    if (this._childNodes[i])
+                    var child = this._childNodes[i];
+                    if (!child)
+                        continue;
+
+                    var childMin = x3dom.fields.SFVec3f.MAX();
+                    var childMax = x3dom.fields.SFVec3f.MIN();
+
+                    valid = child.getVolume(childMin, childMax) || valid;
+
+                    if (valid)  // values only set by Mesh.getVolume()
                     {
-                        var childMin = x3dom.fields.SFVec3f.MAX();
-                        var childMax = x3dom.fields.SFVec3f.MIN();
+                        if (min.x > childMin.x) { min.x = childMin.x; }
+                        if (min.y > childMin.y) { min.y = childMin.y; }
+                        if (min.z > childMin.z) { min.z = childMin.z; }
 
-                        valid = this._childNodes[i].getVolume(childMin, childMax) || valid;
-
-                        if (valid)  // values only set by Mesh.BBox()
-                        {
-                            if (min.x > childMin.x) { min.x = childMin.x; }
-                            if (min.y > childMin.y) { min.y = childMin.y; }
-                            if (min.z > childMin.z) { min.z = childMin.z; }
-
-                            if (max.x < childMax.x) { max.x = childMax.x; }
-                            if (max.y < childMax.y) { max.y = childMax.y; }
-                            if (max.z < childMax.z) { max.z = childMax.z; }
-                        }
+                        if (max.x < childMax.x) { max.x = childMax.x; }
+                        if (max.y < childMax.y) { max.y = childMax.y; }
+                        if (max.z < childMax.z) { max.z = childMax.z; }
                     }
                 }
+
                 return valid;
             },
 
-            invalidateVolume: function() {
-                // TODO
+            invalidateVolume: function()
+            {
+                this._graph.volume.invalidate();
+                // TODO; set parent volumes invalid
+            },
+
+            volumeValid: function()
+            {
+                return this._graph.volume.isValid();
             }
         }
     )
