@@ -135,6 +135,10 @@ x3dom.registerNodeType(
             // overwritten
         },
 
+        volumeValid: function() {
+            return false;
+        },
+
         // Collects array of [transform matrix, node] for all objects that should be drawn.
         collectDrawableObjects: function (transform, out) {
             // explicitly do nothing on collect traversal for (most) nodes
@@ -877,28 +881,34 @@ x3dom.registerNodeType(
             getVolume: function (min, max)
             {
                 var valid = false;
+                var vol = this._graph.volume;
 
-                for (var i=0, n=this._childNodes.length; i<n; i++)
+                // TODO; de-comment as soon as graph changes are considered
+                /*if (this.volumeValid())
                 {
-                    var child = this._childNodes[i];
-                    if (!child)
-                        continue;
-
-                    var childMin = x3dom.fields.SFVec3f.MAX();
-                    var childMax = x3dom.fields.SFVec3f.MIN();
-
-                    valid = child.getVolume(childMin, childMax) || valid;
-
-                    if (valid)  // values only set by Mesh.getVolume()
+                    vol.getBounds(min, max);
+                    valid = true;
+                }
+                else*/
+                {
+                    for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
-                        if (min.x > childMin.x) { min.x = childMin.x; }
-                        if (min.y > childMin.y) { min.y = childMin.y; }
-                        if (min.z > childMin.z) { min.z = childMin.z; }
+                        var child = this._childNodes[i];
+                        if (!child)
+                            continue;
 
-                        if (max.x < childMax.x) { max.x = childMax.x; }
-                        if (max.y < childMax.y) { max.y = childMax.y; }
-                        if (max.z < childMax.z) { max.z = childMax.z; }
+                        var childMin = x3dom.fields.SFVec3f.MAX();
+                        var childMax = x3dom.fields.SFVec3f.MIN();
+
+                        if (child.getVolume(childMin, childMax))
+                        {
+                            vol.extendBounds(childMin, childMax);
+                            valid = true;
+                        }
                     }
+
+                    if (valid)
+                        vol.getBounds(min, max);
                 }
 
                 return valid;
@@ -907,7 +917,12 @@ x3dom.registerNodeType(
             invalidateVolume: function()
             {
                 this._graph.volume.invalidate();
-                // TODO; set parent volumes invalid
+
+                // set parent volumes invalid, too
+                Array.forEach(this._parentNodes, function(node) {
+                    if (node.volumeValid())
+                        node.invalidateVolume();
+                });
             },
 
             volumeValid: function()

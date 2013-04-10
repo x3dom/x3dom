@@ -2601,6 +2601,24 @@ x3dom.fields.BoxVolume.prototype.setBoundsByCenterSize = function(center, size)
     this.valid = true;
 };
 
+x3dom.fields.BoxVolume.prototype.extendBounds = function(min, max)
+{
+    if (this.valid)
+    {
+        if (this.min.x > min.x) { this.min.x = min.x; }
+        if (this.min.y > min.y) { this.min.y = min.y; }
+        if (this.min.z > min.z) { this.min.z = min.z; }
+
+        if (this.max.x < max.x) { this.max.x = max.x; }
+        if (this.max.y < max.y) { this.max.y = max.y; }
+        if (this.max.z < max.z) { this.max.z = max.z; }
+    }
+    else
+    {
+        this.setBounds(min, max);
+    }
+};
+
 x3dom.fields.BoxVolume.prototype.getBounds = function(min, max)
 {
     min.setValues(this.min);

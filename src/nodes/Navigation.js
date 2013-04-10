@@ -867,19 +867,27 @@ x3dom.registerNodeType(
                     root.collectDrawableObjects(transform, out);
                 }
             },
-            
-            getVolume: function(min, max)
-            {
-                min.setValues(this._vf.center);
-                min.x -= 0.5 * this._vf.size.x;
-                min.y -= 0.5 * this._vf.size.y;
-                min.z -= x3dom.fields.Eps;
-                
-                max.setValues(this._vf.center);
-                max.x += 0.5 * this._vf.size.x;
-                max.y += 0.5 * this._vf.size.y;
-                max.z += x3dom.fields.Eps;
-                
+
+            getVolume: function(min, max) {
+                var vol = this._graph.volume;
+
+                if (!vol.isValid()) {
+                    min.setValues(this._vf.center);
+                    min.x -= 0.5 * this._vf.size.x;
+                    min.y -= 0.5 * this._vf.size.y;
+                    min.z -= x3dom.fields.Eps;
+
+                    max.setValues(this._vf.center);
+                    max.x += 0.5 * this._vf.size.x;
+                    max.y += 0.5 * this._vf.size.y;
+                    max.z += x3dom.fields.Eps;
+
+                    vol.setBounds(min, max);
+                }
+                else {
+                    vol.getBounds(min, max);
+                }
+
                 return true;
             }
         }
