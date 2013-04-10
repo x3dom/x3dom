@@ -62,8 +62,9 @@ x3dom.registerNodeType(
                     return false;
                 }
 
-                if (this._childNodes[this._vf.whichChoice]) {
-                    return this._childNodes[this._vf.whichChoice].getVolume(min, max);
+                var child = this._childNodes[this._vf.whichChoice];
+                if (child) {
+                    return child.getVolume(min, max);
                 }
 
                 return false;
@@ -76,12 +77,13 @@ x3dom.registerNodeType(
                     return null;
                 }
 
-                if (this._childNodes[this._vf.whichChoice]) {
-                    if (this._childNodes[this._vf.whichChoice].constructor == type) {
-                        return this._childNodes[this._vf.whichChoice];
+                var child = this._childNodes[this._vf.whichChoice];
+                if (child) {
+                    if (child.constructor == type) {
+                        return child;
                     }
 
-                    var c = this._childNodes[this._vf.whichChoice].find(type);
+                    var c = child.find(type);
                     if (c) {
                         return c;
                     }
@@ -98,13 +100,14 @@ x3dom.registerNodeType(
                 }
 
                 var found = [];
+                var child = this._childNodes[this._vf.whichChoice];
 
-                if (this._childNodes[this._vf.whichChoice]) {
-                    if (this._childNodes[this._vf.whichChoice].constructor == type) {
-                        found.push(this._childNodes[this._vf.whichChoice]);
+                if (child) {
+                    if (child.constructor == type) {
+                        found.push(child);
                     }
 
-                    found = found.concat(this._childNodes[this._vf.whichChoice].findAll(type));
+                    found = found.concat(child.findAll(type));
                 }
 
                 return found;
@@ -134,8 +137,9 @@ x3dom.registerNodeType(
                     return false;
                 }
 
-                if (this._childNodes[this._vf.whichChoice]) {
-                    return this._childNodes[this._vf.whichChoice].doIntersect(line);
+                var child = this._childNodes[this._vf.whichChoice];
+                if (child) {
+                    return child.doIntersect(line);
                 }
 
                 return false;
@@ -213,56 +217,46 @@ x3dom.registerNodeType(
                 return transform.mult(this._trafo);
             },
 
-            // TODO; always use BoxVolume instead of min/max
-            getVolume: function(min, max)
+            // TODO; use BoxVolume as param instead of min/max
+            getVolume: function (min, max)
             {
-                var nMin = x3dom.fields.SFVec3f.MAX();
-                var nMax = x3dom.fields.SFVec3f.MIN();
                 var valid = false;
+                var vol = this._graph.volume;
 
-                for (var i=0, n=this._childNodes.length; i<n; i++)
+                // TODO; de-comment as soon as graph changes are considered
+                /*if (this.volumeValid())
+                 {
+                     vol.getBounds(min, max);
+                     valid = true;
+                 }
+                 else*/
                 {
-                    if (this._childNodes[i])
+                    for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
+                        var child = this._childNodes[i];
+                        if (!child)
+                            continue;
+
                         var childMin = x3dom.fields.SFVec3f.MAX();
                         var childMax = x3dom.fields.SFVec3f.MIN();
 
-                        valid = this._childNodes[i].getVolume(childMin, childMax) || valid;
-
-                        if (valid)  // values only set by Mesh.BBox()
+                        if (child.getVolume(childMin, childMax))
                         {
-                            if (nMin.x > childMin.x) {nMin.x = childMin.x;}
-                            if (nMin.y > childMin.y) {nMin.y = childMin.y;}
-                            if (nMin.z > childMin.z) {nMin.z = childMin.z;}
-
-                            if (nMax.x < childMax.x) {nMax.x = childMax.x;}
-                            if (nMax.y < childMax.y) {nMax.y = childMax.y;}
-                            if (nMax.z < childMax.z) {nMax.z = childMax.z;}
+                            vol.extendBounds(childMin, childMax);
+                            valid = true;
                         }
+                    }
+
+                    if (valid)
+                    {
+                        vol.transform(this._trafo);
+                        vol.getBounds(min, max);
+
+                        // TODO; remove as soon as graph changes are considered
+                        vol.invalidate();
                     }
                 }
 
-                if (valid)
-                {
-                    /* // TODO
-                    var boxVol = new x3dom.fields.BoxVolume(nMin, nMax);
-                    boxVol.transform(this._trafo);
-
-                    min.setValues(boxVol.min);
-                    max.setValues(boxVol.max);
-                    */
-
-                    nMin = this._trafo.multMatrixPnt(nMin);
-                    nMax = this._trafo.multMatrixPnt(nMax);
-
-                    min.x = nMin.x < nMax.x ? nMin.x : nMax.x;
-                    min.y = nMin.y < nMax.y ? nMin.y : nMax.y;
-                    min.z = nMin.z < nMax.z ? nMin.z : nMax.z;
-
-                    max.x = nMax.x > nMin.x ? nMax.x : nMin.x;
-                    max.y = nMax.y > nMin.y ? nMax.y : nMin.y;
-                    max.z = nMax.z > nMin.z ? nMax.z : nMin.z;
-                }
                 return valid;
             },
 
