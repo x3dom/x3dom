@@ -2250,6 +2250,9 @@ x3dom.registerNodeType(
 				}
 			}
 
+            // needed because mesh is shared due to cache
+            this._vol = new x3dom.fields.BoxVolume();
+
             this._dirty = {
                 coord: true,
                 normal: true,
@@ -2267,6 +2270,7 @@ x3dom.registerNodeType(
 					node._dirty.texcoords = true;
                     node._dirty.colors = true;
 				});
+                this._vol.invalidate();
 			},
 
             fieldChanged: function(fieldName)
@@ -2276,6 +2280,38 @@ x3dom.registerNodeType(
                     fieldName == "index") {
                     this._dirty[fieldName] = true;
                 }
+                this._vol.invalidate();
+            },
+
+            getMin: function() {
+                var vol = this._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+
+                return vol.min;
+            },
+
+            getMax: function() {
+                var vol = this._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+
+                return vol.max;
+            },
+
+            getVolume: function(min, max) {
+                var vol = this._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+                vol.getBounds(min, max);
+
+                return true;
             },
 			
 			numCoordinateTextures: function()
