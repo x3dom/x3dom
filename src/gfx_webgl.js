@@ -169,7 +169,7 @@ x3dom.gfx_webgl = (function () {
             }
             
             if (needFullReInit)
-            {   
+            {
 				//Save old shader
 				var spOld = shape._webgl.shader;
 				
@@ -233,7 +233,8 @@ x3dom.gfx_webgl = (function () {
 					shape._dirty.shader = true;
 					
 					//Set dirty texture Coordinates
-					shape._dirty.texCoords = true;
+					if (shape._webgl.shader.texcoord === undefined)
+					    shape._dirty.texCoords = true;
 				}
 				else
 				{
@@ -380,7 +381,7 @@ x3dom.gfx_webgl = (function () {
               {
                 if (shape._webgl.shader.texcoord !== undefined)
                 {
-                    shape._webgl.texcoords[q] =  shape._cf.geometry.node._mesh._texCoords[q];
+                    shape._webgl.texcoords[q] = shape._cf.geometry.node._mesh._texCoords[q];
                     
                     gl.deleteBuffer(shape._webgl.buffers[q5+3]);
 					         

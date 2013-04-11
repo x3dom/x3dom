@@ -83,10 +83,10 @@ x3dom.registerNodeType(
 
             parentAdded: function(parent) {
                 if (this != x3dom.nodeTypes.Appearance._defaultNode) {
-                    if (parent._cleanupGLObjects) {
+                    /*if (parent._cleanupGLObjects) {
                         parent._cleanupGLObjects(true);
-                    }
-                    parent.setAllDirty();
+                    }*/
+                    parent.setAppDirty();
                 }
             }
         }
@@ -350,6 +350,14 @@ x3dom.registerNodeType(
 				this._dirty.texture = true;
 				this._dirty.material = true;
 				this._dirty.text = true;
+				this._dirty.shader = true;
+            },
+            
+            setAppDirty: function () {
+				// appearance properties
+				this._dirty.texture = true;
+				this._dirty.material = true;
+				//this._dirty.text = true;
 				this._dirty.shader = true;
             },
             
