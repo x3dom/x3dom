@@ -47,8 +47,8 @@ x3dom.shader.NormalShader.prototype.generateVertexShader = function(gl)
                     
                     "void main(void) {\n" +
                     "    vec3 pos = bgCenter + bgSize * position / bgPrecisionMax;\n" +
-                    //"    fragNormal = (normalMatrix * vec4(normal / bgPrecisionNorMax, 0.0)).xyz;\n" +
-                    "    fragNormal = normal;\n" +
+                    "    fragNormal = (normalMatrix * vec4(normal / bgPrecisionNorMax, 0.0)).xyz;\n" +
+                    //"    fragNormal = normal;\n" +
                     "    gl_Position = modelViewProjectionMatrix * vec4(pos, 1.0);\n" +
                     "}\n";
 
@@ -75,8 +75,7 @@ x3dom.shader.NormalShader.prototype.generateFragmentShader = function(gl)
                     "varying vec3 fragNormal;\n" +
 					
 					"void main(void) {\n" +
-					//"    gl_FragColor = vec4(normalize(fragNormal) / 2.0 + 0.5, 1.0);\n" +
-                    "    gl_FragColor = vec4(fragNormal, 1.0);\n" +
+					"    gl_FragColor = vec4(normalize(fragNormal) / 2.0 + 0.5, 1.0);\n" +
 					"}\n";
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);

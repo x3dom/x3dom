@@ -635,7 +635,7 @@ x3dom.gfx_webgl = (function () {
 
                 vertices = null;
               }
-              if (sp.normal !== undefined) 
+              if (sp.normal !== undefined || shape._webgl.normals[q])
               {
                 var normalBuffer = gl.createBuffer();
                 shape._webgl.buffers[q5+2] = normalBuffer;
@@ -3436,7 +3436,7 @@ x3dom.gfx_webgl = (function () {
                         s_msh._numNormComponents, s_gl.normalType, false,
                         shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.normal);
-                }
+                } else x3dom.debug.logError("fuck");
 
                 if (shape.isSolid()) {
                     gl.enable(gl.CULL_FACE);
