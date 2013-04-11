@@ -2596,7 +2596,9 @@ x3dom.gfx_webgl = (function () {
             scene._webgl.pickShader24 = this.cache.getShader(gl, x3dom.shader.PICKING_24);
 			scene._webgl.pickColorShader = this.cache.getShader(gl, x3dom.shader.PICKING_COLOR);
             scene._webgl.pickTexCoordShader = this.cache.getShader(gl, x3dom.shader.PICKING_TEXCOORD);
-            
+
+            scene._webgl.normalShader = this.cache.getShader(gl, x3dom.shader.NORMAL);
+
             scene._webgl.fboShadow = this.initFbo(gl, 1024, 1024, false, type);
 			scene._webgl.shadowShader = this.cache.getShader(gl, x3dom.shader.SHADOW);
             
@@ -3040,19 +3042,17 @@ x3dom.gfx_webgl = (function () {
             }
             if (oneShadowExistsAlready) {
                 gl.viewport(this.canvas.width/4, 3*this.canvas.height/4, 
-                            this.canvas.width/4, this.canvas.height/4);
+                            this.canvas.width/4,   this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }
-            /*
+
             for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
 
-                gl.viewport( rtl_i   *this.canvas.width/8,   this.canvas.height/2,
-                            (rtl_i+1)*this.canvas.width/8, 5*this.canvas.height/8);
+                gl.viewport( rtl_i   *(this.canvas.width/8), 5*this.canvas.height/8,
+                            (rtl_i+1)*(this.canvas.width/8),   this.canvas.height/8);
                 scene._fgnd._webgl.render(gl, rt_tex._webgl.fbo.tex);
             }
-            x3dom.debug.logWarning(rtl_n);
-            */
         }
 
         gl.finish();
@@ -3126,7 +3126,7 @@ x3dom.gfx_webgl = (function () {
         
         if (rt._cf.background.node === null) 
         {
-            gl.clearColor(1, 0, 0, 1);
+            gl.clearColor(0, 0, 0, 1);
             gl.clearDepth(1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
         }
@@ -3164,13 +3164,18 @@ x3dom.gfx_webgl = (function () {
         if (!locScene || locScene === scene)
         {
             n = scene.drawableObjects.length;
-            
+
+            if (rt._vf.showNormals)
+            {
+                this.renderNormals(gl, scene, scene._webgl.normalShader, mat_view, mat_scene);
+            }
+            else
             for (i=0; i<n; i++)
             {
                 transform = scene.drawableObjects[i][0];
                 shape = scene.drawableObjects[i][1];
                 
-                if (shape._vf.render !== undefined && shape._vf.render === false) {
+                if (!shape._vf.render) {
                    continue;
                 }
 
@@ -3220,13 +3225,26 @@ x3dom.gfx_webgl = (function () {
                 locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()), locScene.drawableObjects);
             
             n = locScene.drawableObjects.length;
-            
+
+            if (rt._vf.showNormals)
+            {
+                for (i=0; i<n; i++)
+                {
+                    shape = locScene.drawableObjects[i][1];
+
+                    if (shape._vf.render)
+                        this.setupShape(gl, shape, viewarea);
+                }
+
+                this.renderNormals(gl, locScene, scene._webgl.normalShader, mat_view, mat_scene);
+            }
+            else
             for (i=0; i<n; i++)
             {
                 transform = locScene.drawableObjects[i][0];
                 shape = locScene.drawableObjects[i][1];
                 
-                if (shape._vf.render !== undefined && shape._vf.render === false) {
+                if (!shape._vf.render) {
                    continue;
                 }
                 
@@ -3278,6 +3296,230 @@ x3dom.gfx_webgl = (function () {
         for (i=0; i<m; i++) {
             if (arr[i] !== 0) {
                 rt._cf.excludeNodes.nodes[i]._vf.render = true;
+            }
+        }
+    };
+
+    /*****************************************************************************
+     * Render Normals
+     *****************************************************************************/
+    Context.prototype.renderNormals = function(gl, scene, sp, mat_view, mat_scene)
+    {
+        if (!sp) {  // error
+            return;
+        }
+
+        gl.depthFunc(gl.LEQUAL);
+        gl.enable(gl.DEPTH_TEST);
+        gl.enable(gl.CULL_FACE);
+        gl.disable(gl.BLEND);
+
+        sp.bind();
+
+        var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
+        var bgSize = new x3dom.fields.SFVec3f(1, 1, 1).toGL();
+
+        for (var i=0, n=scene.drawableObjects.length; i<n; i++)
+        {
+            var trafo = scene.drawableObjects[i][0];
+            var shape = scene.drawableObjects[i][1];
+            var s_gl = shape._webgl;
+
+            if (!s_gl || s_gl.culled === true) {
+                continue;
+            }
+
+            var s_geo = shape._cf.geometry.node;
+            var s_msh = s_geo._mesh;
+
+            var model_view_inv = mat_view.mult(trafo).inverse();
+            sp.normalMatrix = model_view_inv.transpose().toGL();
+            //sp.normalMatrix = x3dom.fields.SFMatrix4f.identity();
+            sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
+
+            //Set ImageGeometry switch (TODO; also impl. in Shader!)
+            sp.imageGeometry = s_gl.imageGeometry;
+
+            if (s_gl.coordType != gl.FLOAT)
+            {
+                if ( s_gl.bitLODGeometry != 0 || s_gl.popGeometry != 0 ||
+                    (s_msh._numPosComponents == 4 && x3dom.Utils.isUnsignedType(s_geo._vf.coordType)) )
+                    sp.bgCenter = s_geo.getMin().toGL();
+                else
+                    sp.bgCenter = s_geo._vf.position.toGL();
+                sp.bgSize = s_geo._vf.size.toGL();
+                sp.bgPrecisionMax = s_geo.getPrecisionMax('coordType');
+            }
+            else {
+                sp.bgCenter = bgCenter;
+                sp.bgSize   = bgSize;
+                sp.bgPrecisionMax = 1;
+            }
+            if (s_gl.normalType != gl.FLOAT) {
+                sp.bgPrecisionNorMax = s_geo.getPrecisionMax('normalType');
+            }
+            else {
+                sp.bgPrecisionNorMax = 1;
+            }
+
+            if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE)  // FIXME: mobile errors
+            {
+                sp.IG_bboxMin 		   = s_geo.getMin().toGL();
+                sp.IG_bboxMax		   = s_geo.getMax().toGL();
+                sp.IG_implicitMeshSize = s_geo._vf.implicitMeshSize.toGL();  // FIXME
+
+                var coordTex = x3dom.Utils.findTextureByName(s_gl.texture, "IG_coords0");
+                if (coordTex) {
+                    sp.IG_coordTextureWidth  = coordTex.texture.width;
+                    sp.IG_coordTextureHeight = coordTex.texture.height;
+                }
+
+                if (s_gl.imageGeometry == 1) {
+                    var indexTex = x3dom.Utils.findTextureByName(s_gl.texture, "IG_index");
+                    if(indexTex) {
+                        sp.IG_indexTextureWidth	 = indexTex.texture.width;
+                        sp.IG_indexTextureHeight = indexTex.texture.height;
+                    }
+
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, indexTex.texture);
+
+                    gl.activeTexture(gl.TEXTURE1);
+                    gl.bindTexture(gl.TEXTURE_2D, coordTex.texture);
+                }
+                else {
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, coordTex.texture);
+                }
+
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+
+                var texUnit = 0;
+                if (s_geo.getIndexTexture()) {
+                    if(!sp.IG_indexTexture) {
+                        sp.IG_indexTexture = texUnit++;
+                    }
+                }
+
+                if (s_geo.getCoordinateTexture(0)) {
+                    if(!sp.IG_coordinateTexture) {
+                        sp.IG_coordinateTexture = texUnit++;
+                    }
+                }
+            }
+
+            for (var q=0, q_n=s_gl.positions.length; q<q_n; q++)
+            {
+                var q5 = 5 * q;
+                var v, v_n, offset;
+
+                if (s_gl.buffers[q5])
+                {
+                    gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, s_gl.buffers[q5]);
+                }
+                if (sp.position !== undefined && s_gl.buffers[q5+1])
+                {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5+1]);
+
+                    gl.vertexAttribPointer(sp.position,
+                        s_msh._numPosComponents, s_gl.coordType, false,
+                        shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.position);
+                }
+                if (sp.normal !== undefined && s_gl.buffers[q5+2]) {
+                    gl.bindBuffer(gl.ARRAY_BUFFER, s_gl.buffers[q5+2]);
+
+                    gl.vertexAttribPointer(sp.normal,
+                        s_msh._numNormComponents, s_gl.normalType, false,
+                        shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
+                    gl.enableVertexAttribArray(sp.normal);
+                }
+
+                if (shape.isSolid()) {
+                    gl.enable(gl.CULL_FACE);
+
+                    if (shape.isCCW()) {
+                        gl.frontFace(gl.CCW);
+                    }
+                    else {
+                        gl.frontFace(gl.CW);
+                    }
+                }
+                else {
+                    gl.disable(gl.CULL_FACE);
+                }
+
+                if (s_gl.indexes && s_gl.indexes[q])
+                {
+                    if (s_gl.imageGeometry != 0 ||
+                        s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0)
+                    {
+                        if (s_gl.bitLODGeometry != 0 && s_geo._vf.normalPerVertex === false)
+                        {
+                            var totalVertexCount = 0;
+                            for (v=0, v_n=s_geo._vf.vertexCount.length; v<v_n; v++)
+                            {
+                                if (s_gl.primType[v] == gl.TRIANGLES) {
+                                    totalVertexCount += s_geo._vf.vertexCount[v];
+                                }
+                                else if (s_gl.primType[v] == gl.TRIANGLE_STRIP) {
+                                    totalVertexCount += (s_geo._vf.vertexCount[v] - 2) * 3;
+                                }
+                            }
+                            gl.drawArrays(gl.TRIANGLES, 0, totalVertexCount);
+                        }
+                        else
+                        {
+                            for (v=0, offset=0, v_n=s_geo._vf.vertexCount.length; v<v_n; v++)
+                            {
+                                gl.drawArrays(s_gl.primType[v], offset, s_geo._vf.vertexCount[v]);
+                                offset += s_geo._vf.vertexCount[v];
+                            }
+                        }
+                    }
+                    else if (s_gl.binaryGeometry > 0 || s_gl.popGeometry > 0 || s_gl.bitLODGeometry > 0)
+                    {
+                        for (v=0, offset=0, v_n=s_geo._vf.vertexCount.length; v<v_n; v++)
+                        {
+                            gl.drawElements(s_gl.primType[v], s_geo._vf.vertexCount[v], gl.UNSIGNED_SHORT, 2*offset);
+                            offset += s_geo._vf.vertexCount[v];
+                        }
+                    }
+                    else if (x3dom.isa(s_geo, x3dom.nodeTypes.IndexedTriangleStripSet) && s_gl.primType == gl.TRIANGLE_STRIP)
+                    {
+                        // TODO; remove 2nd check for primType
+                        var indOff = s_geo._indexOffset;
+                        for (v=1, v_n=indOff.length; v<v_n; v++)
+                        {
+                            gl.drawElements(s_gl.primType, indOff[v]-indOff[v-1], gl.UNSIGNED_SHORT, 2*indOff[v-1]);
+                        }
+                    }
+                    else
+                    {
+                        gl.drawElements(s_gl.primType, s_gl.indexes[q].length, gl.UNSIGNED_SHORT, 0);
+                    }
+                }
+
+                //Clean Texture units for IG
+                if (s_gl.imageGeometry != 0 && !x3dom.caps.MOBILE)
+                {
+                    gl.activeTexture(gl.TEXTURE0);
+                    gl.bindTexture(gl.TEXTURE_2D, null);
+                    if (s_gl.imageGeometry == 1) {
+                        gl.activeTexture(gl.TEXTURE1);
+                        gl.bindTexture(gl.TEXTURE_2D, null);
+                    }
+                }
+
+                if (sp.position !== undefined) {
+                    gl.disableVertexAttribArray(sp.position);
+                }
+                if (sp.normal !== undefined) {
+                    gl.disableVertexAttribArray(sp.normal);
+                }
             }
         }
     };

@@ -29,6 +29,7 @@ SHADER = [
 	'shader/ShaderDynamic.js',
 	'shader/ShaderDynamicMobile.js',
 	'shader/ShaderComposed.js',
+	'shader/ShaderNormal.js',
 	'shader/ShaderPicking.js',
 	'shader/ShaderPicking24.js',
 	'shader/ShaderPickingColor.js',

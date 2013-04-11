@@ -133,7 +133,7 @@ x3dom.registerNodeType(
         {
             invalidateGLObject: function ()
             {
-                  Array.forEach(this._parentNodes, function (app) {
+                Array.forEach(this._parentNodes, function (app) {
                         Array.forEach(app._parentNodes, function (shape) {
                             shape._dirty.texture = true;
                         });
@@ -311,6 +311,7 @@ x3dom.registerNodeType(
             this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
             this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);
             this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+            this.addField_SFBool(ctx, 'showNormals', false);
 
             x3dom.debug.assert(this._vf.dimensions.length >= 3);
             this._clearParents = true;
