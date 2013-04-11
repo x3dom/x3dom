@@ -187,9 +187,10 @@ x3dom.registerNodeType(
                 else
                   return coords;
               }
-              
-              else
+              else {
                 x3dom.debug.logError('Unknown geoSystem: ' + geoSystem[0]);
+                return new x3dom.fields.MFVec3f();
+              }
             },
 
             OriginToGC: function(geoOrigin)
