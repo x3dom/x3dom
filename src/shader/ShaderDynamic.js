@@ -256,7 +256,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
           //translate coordinates, where PG_bbMin := floor(bbMin / size) 
           shader += "vertPosition = (vertPosition + offsetVec + PG_bbMin) * bgSize;\n";
         }
-		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {      
+		else if(properties.REQUIREBBOX) {      
           shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";
 		}
 
