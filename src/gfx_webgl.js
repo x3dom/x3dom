@@ -585,19 +585,19 @@ x3dom.gfx_webgl = (function () {
         // Binary container geometries need special handling
         if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) 
         {
-            x3dom.BinaryContainerLoader.setupBinGeo(shape, sp, gl, this);
+            x3dom.BinaryContainerLoader.setupBinGeo(shape, sp, gl, viewarea, this);
         }
         else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry))
         {
-            x3dom.BinaryContainerLoader.setupPopGeo(shape, sp, gl, this);
+            x3dom.BinaryContainerLoader.setupPopGeo(shape, sp, gl, viewarea, this);
         }
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry))
 		{
-            x3dom.BinaryContainerLoader.setupBitLODGeo(shape, sp, gl, this);
+            x3dom.BinaryContainerLoader.setupBitLODGeo(shape, sp, gl, viewarea, this);
 		}
 		else if(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
 		{
-            x3dom.BinaryContainerLoader.setupImgGeo(shape, sp, gl, this);
+            x3dom.BinaryContainerLoader.setupImgGeo(shape, sp, gl, viewarea, this);
 		}
         else // No BinaryMesh
         {
@@ -2144,7 +2144,7 @@ x3dom.gfx_webgl = (function () {
         //if (stateSwitchMode & STATE_SWITCH_UNBIND)
         {
             var s_gl_tex = s_gl.texture;
-            cnt_n = s_gl_tex ? s_gl_tex.length : 0
+            cnt_n = s_gl_tex ? s_gl_tex.length : 0;
 
             for (cnt = 0; cnt < cnt_n; cnt++)
             {
@@ -2567,15 +2567,14 @@ x3dom.gfx_webgl = (function () {
         
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
-        
+
+        var type = gl.UNSIGNED_BYTE;
+        if (x3dom.caps.FP_TEXTURES) {
+            type = gl.FLOAT;
+        }
+
         if (!scene._webgl)
         {
-            var type = gl.UNSIGNED_BYTE;
-
-            if (x3dom.caps.FP_TEXTURES) {
-                type = gl.FLOAT;
-            }
-
             scene._webgl = {};
             this.setupFgnds(gl, scene);
             
@@ -2640,6 +2639,17 @@ x3dom.gfx_webgl = (function () {
                 scene._webgl.fboPick.pixelData = null;
                 
                 x3dom.debug.logInfo("Refreshed picking FBO to size (" + fboWidth + ", " + fboHeight + ")");
+            }
+
+            for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
+                rt_tex = rentex[rtl_i];
+                if (rt_tex._webgl && rt_tex._webgl.fbo)
+                    continue;
+
+                rt_tex._webgl = {};
+                rt_tex._webgl.fbo = this.initFbo(gl,
+                    rt_tex._vf.dimensions[0],
+                    rt_tex._vf.dimensions[1], false, type);
             }
         }
         
@@ -3033,6 +3043,16 @@ x3dom.gfx_webgl = (function () {
                             this.canvas.width/4, this.canvas.height/4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboShadow.tex);
             }
+            /*
+            for (rtl_i=0; rtl_i<rtl_n; rtl_i++) {
+                rt_tex = rentex[rtl_i];
+
+                gl.viewport( rtl_i   *this.canvas.width/8,   this.canvas.height/2,
+                            (rtl_i+1)*this.canvas.width/8, 5*this.canvas.height/8);
+                scene._fgnd._webgl.render(gl, rt_tex._webgl.fbo.tex);
+            }
+            x3dom.debug.logWarning(rtl_n);
+            */
         }
 
         gl.finish();
@@ -3106,7 +3126,7 @@ x3dom.gfx_webgl = (function () {
         
         if (rt._cf.background.node === null) 
         {
-            gl.clearColor(0, 0, 0, 1);
+            gl.clearColor(1, 0, 0, 1);
             gl.clearDepth(1.0);
             gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
         }

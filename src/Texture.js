@@ -132,7 +132,13 @@ x3dom.Texture.prototype.updateTexture = function()
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.RenderedTexture))
     {
-		this.texture = tex._webgl.fbo.tex;
+        if (tex._webgl && tex._webgl.fbo) {
+		    this.texture = tex._webgl.fbo.tex;
+        }
+        else {
+            this.texture = null;
+            x3dom.debug.logError("Try updating RenderedTexture without FBO initialized!");
+        }
 	}
 	else if (x3dom.isa(tex, x3dom.nodeTypes.PixelTexture))
 	{
