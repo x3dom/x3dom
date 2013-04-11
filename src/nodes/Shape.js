@@ -204,7 +204,7 @@ x3dom.nodeTypes.Material.defaultNode = function() {
 x3dom.registerNodeType(
     "X3DShapeNode",
     "Shape",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass(x3dom.nodeTypes.X3DBoundedNode,
         function (ctx) {
             x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
 
@@ -271,9 +271,9 @@ x3dom.registerNodeType(
                 }
             },
 
-            getVolume: function(min, max, invalidate) {
+            getVolume: function(min, max) {
 				if (this._cf.geometry.node) {
-					return this._cf.geometry.node.getVolume(min, max, invalidate);
+					return this._cf.geometry.node.getVolume(min, max);
 				}
 				else {
 					return false;

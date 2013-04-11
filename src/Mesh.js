@@ -49,6 +49,7 @@ x3dom.Mesh.prototype._numTexComponents = 2;
 x3dom.Mesh.prototype._numColComponents = 3;
 x3dom.Mesh.prototype._numNormComponents = 3;
 x3dom.Mesh.prototype._lit = true;
+
 x3dom.Mesh.prototype._vol = null;
 x3dom.Mesh.prototype._invalidate = true;
 x3dom.Mesh.prototype._numFaces = 0;
@@ -67,61 +68,64 @@ x3dom.Mesh.prototype.setMeshData = function(positions, normals, texCoords, color
     this._numCoords = this._positions[0].length / 3;
 };
 
-x3dom.Mesh.prototype.getBBox = function(min, max, invalidate)
+x3dom.Mesh.prototype.getVolume = function(min, max)
 {
-    if (this._invalidate === true && invalidate === true)   //need both?
+    if (this._invalidate == true && !this._vol.isValid())
     {
         var coords = this._positions[0];
         var n = coords.length;
-        var initVal;
-        
-        if (n > 3) {
-            initVal = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
-        }
-        else {
-            // THINKABOUTME: bad init value, but need something valid here
-            initVal = new x3dom.fields.SFVec3f(0,0,0);
-        }
 
-        this._vol.setBounds(initVal, initVal);
-        
-        for (var i=3; i<n; i+=3)
+        if (n > 3)
         {
-            if (this._vol.min.x > coords[i+0]) { this._vol.min.x = coords[i+0]; }
-            if (this._vol.min.y > coords[i+1]) { this._vol.min.y = coords[i+1]; }
-            if (this._vol.min.z > coords[i+2]) { this._vol.min.z = coords[i+2]; }
-            
-            if (this._vol.max.x < coords[i+0]) { this._vol.max.x = coords[i+0]; }
-            if (this._vol.max.y < coords[i+1]) { this._vol.max.y = coords[i+1]; }
-            if (this._vol.max.z < coords[i+2]) { this._vol.max.z = coords[i+2]; }
+            var initVal = new x3dom.fields.SFVec3f(coords[0],coords[1],coords[2]);
+            this._vol.setBounds(initVal, initVal);
+
+            for (var i=3; i<n; i+=3)
+            {
+                if (this._vol.min.x > coords[i  ]) { this._vol.min.x = coords[i  ]; }
+                if (this._vol.min.y > coords[i+1]) { this._vol.min.y = coords[i+1]; }
+                if (this._vol.min.z > coords[i+2]) { this._vol.min.z = coords[i+2]; }
+
+                if (this._vol.max.x < coords[i  ]) { this._vol.max.x = coords[i  ]; }
+                if (this._vol.max.y < coords[i+1]) { this._vol.max.y = coords[i+1]; }
+                if (this._vol.max.z < coords[i+2]) { this._vol.max.z = coords[i+2]; }
+            }
+            this._invalidate = false;
         }
-        
-        this._invalidate = false;
     }
-    
-    min.setValues(this._vol.min);
-    max.setValues(this._vol.max);
+
+    this._vol.getBounds(min, max);
+
+    return this._vol.isValid();
+};
+
+x3dom.Mesh.prototype.invalidate = function()
+{
+    this._invalidate = true;
+    this._vol.invalidate();
+};
+
+x3dom.Mesh.prototype.isValid = function()
+{
+    return this._vol.isValid();
 };
 
 x3dom.Mesh.prototype.getCenter = function() 
 {
     var min = new x3dom.fields.SFVec3f(0,0,0);
     var max = new x3dom.fields.SFVec3f(0,0,0);
+
+    this.getVolume(min, max);
     
-    this.getBBox(min, max, true);
-    
-    var center = (min.add(max)).multiply(0.5);
-    //x3dom.debug.logInfo("center: " + center + "; size: " + max.subtract(min));
-    
-    return center;
+    return (min.add(max)).multiply(0.5);
 };
 
 x3dom.Mesh.prototype.getDiameter = function() 
 {
     var min = new x3dom.fields.SFVec3f(0,0,0);
     var max = new x3dom.fields.SFVec3f(0,0,0);
-    
-    this.getBBox(min, max, true);
+
+    this.getVolume(min, max);
     var size = max.subtract(min);
     
     return size.length();
@@ -131,8 +135,8 @@ x3dom.Mesh.prototype.doIntersect = function(line)
 {
     var min = new x3dom.fields.SFVec3f(0,0,0);
     var max = new x3dom.fields.SFVec3f(0,0,0);
-    
-    this.getBBox(min, max, true);
+
+    this.getVolume(min, max);
     
     var isect = line.intersect(min, max);
     
@@ -331,8 +335,8 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
     {
         var min = new x3dom.fields.SFVec3f(0, 0, 0), 
             max = new x3dom.fields.SFVec3f(0, 0, 0);
-        
-        this.getBBox(min, max, true);
+
+        this.getVolume(min, max);
         var dia = max.subtract(min);
         
         var S = 0, T = 1;

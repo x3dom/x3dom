@@ -552,7 +552,7 @@ x3dom.registerNodeType(
                 // TODO; optimize getting volume
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, false);
+                var ok = this.getVolume(min, max);
                 
                 var rotMat = x3dom.fields.SFMatrix4f.identity();
                 var mid = max.add(min).multiply(0.5);
@@ -704,7 +704,7 @@ x3dom.registerNodeType(
                 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max, false);
+                var ok = this.getVolume(min, max);
                 
                 var mid = max.add(min).multiply(0.5).add(this._vf.center);
                 var len = mid.subtract(this._eye).length();
@@ -867,19 +867,27 @@ x3dom.registerNodeType(
                     root.collectDrawableObjects(transform, out);
                 }
             },
-            
-            getVolume: function(min, max, invalidate)
-            {
-                min.setValues(this._vf.center);
-                min.x -= 0.5 * this._vf.size.x;
-                min.y -= 0.5 * this._vf.size.y;
-                min.z -= x3dom.fields.Eps;
-                
-                max.setValues(this._vf.center);
-                max.x += 0.5 * this._vf.size.x;
-                max.y += 0.5 * this._vf.size.y;
-                max.z += x3dom.fields.Eps;
-                
+
+            getVolume: function(min, max) {
+                var vol = this._graph.volume;
+
+                if (!vol.isValid()) {
+                    min.setValues(this._vf.center);
+                    min.x -= 0.5 * this._vf.size.x;
+                    min.y -= 0.5 * this._vf.size.y;
+                    min.z -= x3dom.fields.Eps;
+
+                    max.setValues(this._vf.center);
+                    max.x += 0.5 * this._vf.size.x;
+                    max.y += 0.5 * this._vf.size.y;
+                    max.z += x3dom.fields.Eps;
+
+                    vol.setBounds(min, max);
+                }
+                else {
+                    vol.getBounds(min, max);
+                }
+
                 return true;
             }
         }

@@ -23,13 +23,17 @@ x3dom.registerNodeType(
             // but one should be able to disable cache per geometry node.
             this.addField_SFBool(ctx, 'useGeoCache', true);
 
+            // mesh object also holds volume (_vol)
             this._mesh = new x3dom.Mesh(this);
             this._pickable = true;
         },
         {
-            getVolume: function(min, max, invalidate) {
-                this._mesh.getBBox(min, max, invalidate);
-                return true;
+            getVolume: function(min, max) {
+                return this._mesh.getVolume(min, max);
+            },
+
+            invalidateVolume: function() {
+                this._mesh.invalidate();
             },
 
             getCenter: function() {

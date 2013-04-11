@@ -519,7 +519,7 @@ x3dom.Runtime.prototype.showObject = function(obj) {
     var max = x3dom.fields.SFVec3f.MIN();
 
     if (obj && obj._x3domNode &&
-        obj._x3domNode.getVolume(min, max, true))
+        obj._x3domNode.getVolume(min, max))
     {
         var mat = obj._x3domNode.getCurrentTransform();
 

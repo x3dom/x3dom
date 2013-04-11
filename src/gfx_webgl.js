@@ -2614,7 +2614,7 @@ x3dom.gfx_webgl = (function () {
             var min = x3dom.fields.SFVec3f.MAX();
             var max = x3dom.fields.SFVec3f.MIN();
             
-            scene.getVolume(min, max, true);
+            scene.getVolume(min, max);
             
             scene._lastMin = min;
             scene._lastMax = max;
@@ -2937,7 +2937,7 @@ x3dom.gfx_webgl = (function () {
             
             if (view_frustum && obj[1]._webgl)
             {
-                obj[1].getVolume(box.min, box.max, false);
+                obj[1].getVolume(box.min, box.max);
                 box.transform(obj[0]);
                 
                 if (!view_frustum.intersect(box)) {

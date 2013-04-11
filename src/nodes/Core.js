@@ -127,32 +127,21 @@ x3dom.registerNodeType(
             return transform;
         },
 
-        getVolume: function (min, max, invalidate)
-        {
-            var valid = false;
-            for (var i=0, n=this._childNodes.length; i<n; i++)
-            {
-                if (this._childNodes[i])
-                {
-                    var childMin = x3dom.fields.SFVec3f.MAX();
-                    var childMax = x3dom.fields.SFVec3f.MIN();
+        getVolume: function (min, max) {
+            return false;
+        },
 
-                    valid = this._childNodes[i].getVolume(
-                                    childMin, childMax, invalidate) || valid;
+        invalidateVolume: function() {
+            // overwritten
+        },
 
-                    if (valid)  // values only set by Mesh.BBox()
-                    {
-                        if (min.x > childMin.x) { min.x = childMin.x; }
-                        if (min.y > childMin.y) { min.y = childMin.y; }
-                        if (min.z > childMin.z) { min.z = childMin.z; }
+        volumeValid: function() {
+            return false;
+        },
 
-                        if (max.x < childMax.x) { max.x = childMax.x; }
-                        if (max.y < childMax.y) { max.y = childMax.y; }
-                        if (max.z < childMax.z) { max.z = childMax.z; }
-                    }
-                }
-            }
-            return valid;
+        // Collects array of [transform matrix, node] for all objects that should be drawn.
+        collectDrawableObjects: function (transform, out) {
+            // explicitly do nothing on collect traversal for (most) nodes
         },
         
         highlight: function(enable, color)
@@ -235,11 +224,6 @@ x3dom.registerNodeType(
 
         findX3DDoc: function () {
             return this._nameSpace.doc;
-        },
-
-        // Collects array of [transform matrix, node] for all objects that should be drawn.
-        collectDrawableObjects: function (transform, out) {
-            // explicitly do nothing on collect traversal for (most) nodes
         },
 
         doIntersect: function(line) {
@@ -878,6 +862,76 @@ x3dom.registerNodeType(
     )
 );
 
+/* ### X3DBoundedNode ### */
+x3dom.registerNodeType(
+    "X3DBoundedNode",
+    "Core",
+    defineClass(x3dom.nodeTypes.X3DChildNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DBoundedNode.superClass.call(this, ctx);
+
+            this._graph = {
+                singlePath: true,    // unique path in graph back to root possible
+                localMatrix: null,   // new x3dom.fields.SFMatrix4f(),
+                globalMatrix: null,  // new x3dom.fields.SFMatrix4f();
+                volume: new x3dom.fields.BoxVolume()
+            };
+        },
+        {
+            getVolume: function (min, max)
+            {
+                var valid = false;
+                var vol = this._graph.volume;
+
+                // TODO; de-comment as soon as graph changes are considered
+                /*if (this.volumeValid())
+                {
+                    vol.getBounds(min, max);
+                    valid = true;
+                }
+                else*/
+                {
+                    for (var i=0, n=this._childNodes.length; i<n; i++)
+                    {
+                        var child = this._childNodes[i];
+                        if (!child)
+                            continue;
+
+                        var childMin = x3dom.fields.SFVec3f.MAX();
+                        var childMax = x3dom.fields.SFVec3f.MIN();
+
+                        if (child.getVolume(childMin, childMax))
+                        {
+                            vol.extendBounds(childMin, childMax);
+                            valid = true;
+                        }
+                    }
+
+                    if (valid)
+                        vol.getBounds(min, max);
+                }
+
+                return valid;
+            },
+
+            invalidateVolume: function()
+            {
+                this._graph.volume.invalidate();
+
+                // set parent volumes invalid, too
+                Array.forEach(this._parentNodes, function(node) {
+                    if (node.volumeValid())
+                        node.invalidateVolume();
+                });
+            },
+
+            volumeValid: function()
+            {
+                return this._graph.volume.isValid();
+            }
+        }
+    )
+);
 
 // ### X3DSensorNode ###
 x3dom.registerNodeType(

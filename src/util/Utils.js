@@ -27,10 +27,6 @@ performance.now = (function() {
          function() { return new Date().getTime(); };
 })();
 
-x3dom.Utils.isNumber = function(n) {
-    return !isNaN(parseFloat(n)) && isFinite(n);
-};
-
 x3dom.Utils.startMeasure = function(name) {
   var uname = name.toUpperCase();
   if ( !x3dom.Utils.measurements[uname] ) {
@@ -54,6 +50,13 @@ x3dom.Utils.stopMeasure = function(name) {
     }
   }
   return 0;
+};
+
+/*****************************************************************************
+ *
+ *****************************************************************************/
+x3dom.Utils.isNumber = function(n) {
+    return !isNaN(parseFloat(n)) && isFinite(n);
 };
 
 /*****************************************************************************

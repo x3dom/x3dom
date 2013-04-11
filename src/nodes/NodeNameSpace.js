@@ -96,7 +96,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
         // return if it is already initialized
         if (domNode._x3domNode) {
             x3dom.debug.logWarning('Tree is already initialized');
-            return;
+            return null;
         }
         
         // workaround since one cannot find out which handlers are registered
@@ -133,7 +133,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
 
         if (domNode.hasAttribute('USE')) {
             n = this.defMap[domNode.getAttribute('USE')];
-            if (n === null) {
+            if (!n) {
+                n = null;
                 x3dom.debug.logWarning('Could not USE: ' + domNode.getAttribute('USE'));
             }
             return n;

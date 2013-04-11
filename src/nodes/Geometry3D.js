@@ -1400,7 +1400,7 @@ x3dom.registerNodeType(
                 return vol.max;
             },
 
-            getVolume: function(min, max, invalidate) {
+            getVolume: function(min, max) {
                 var vol = this._mesh._vol;
 
                 if (!vol.isValid()) {
@@ -1409,6 +1409,10 @@ x3dom.registerNodeType(
                 vol.getBounds(min, max);
 
                 return true;
+            },
+
+            invalidateVolume: function() {
+                // at the moment, do nothing here since field updates are not impl.
             },
 
             getCenter: function() {
@@ -1475,6 +1479,7 @@ x3dom.registerNodeType(
 
             parentAdded: function()
             {
+                // TODO; also handle multiple shape parents!
                 var offsetInd, strideInd, offset, stride;
 
                 offsetInd = this._vf.coord.lastIndexOf('#');
@@ -2237,13 +2242,16 @@ x3dom.registerNodeType(
 						}
 					}
 					
-					this._mesh._invalidate = true;
+					//this._mesh._invalidate = true;
 					this._mesh._numFaces = this._mesh._indices[0].length / 3;
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 
 					x3dom.geoCache[geoCacheID] = this._mesh;
 				}
 			}
+
+            // needed because mesh is shared due to cache
+            this._vol = new x3dom.fields.BoxVolume();
 
             this._dirty = {
                 coord: true,
@@ -2262,6 +2270,7 @@ x3dom.registerNodeType(
 					node._dirty.texcoords = true;
                     node._dirty.colors = true;
 				});
+                this._vol.invalidate();
 			},
 
             fieldChanged: function(fieldName)
@@ -2271,6 +2280,38 @@ x3dom.registerNodeType(
                     fieldName == "index") {
                     this._dirty[fieldName] = true;
                 }
+                this._vol.invalidate();
+            },
+
+            getMin: function() {
+                var vol = this._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+
+                return vol.min;
+            },
+
+            getMax: function() {
+                var vol = this._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+
+                return vol.max;
+            },
+
+            getVolume: function(min, max) {
+                var vol = this._vol;
+
+                if (!vol.isValid()) {
+                    vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
+                }
+                vol.getBounds(min, max);
+
+                return true;
             },
 			
 			numCoordinateTextures: function()
