@@ -276,6 +276,7 @@ x3dom.gfx_webgl = (function () {
 				shape._dirty.shader = false;
 			}		
             
+            if (shape._webgl.binaryGeometry == 0)   // FIXME; handle BG
             for (q=0; q<shape._webgl.positions.length; q++)
             {
               q5 = 5 * q;
