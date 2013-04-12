@@ -334,18 +334,18 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         return canvas;
     };
 
-    var _old_dim = [0,0];
+    var _old_dim = [0, 0];
     this.watchForResize = function() {
 
         var new_dim = [
-            x3dom.getStyle(that.canvas, "width"),
-            x3dom.getStyle(that.canvas, "height")
+            parseInt(x3dom.getStyle(that.canvas, "width")),
+            parseInt(x3dom.getStyle(that.canvas, "height"))
         ];
 
         if ((_old_dim[0] != new_dim[0]) || (_old_dim[1] != new_dim[1])) {
             _old_dim = new_dim;
-            that.x3dElem.setAttribute("width", new_dim[0]);
-            that.x3dElem.setAttribute("height", new_dim[1]);
+            that.x3dElem.setAttribute("width", new_dim[0]+"px");
+            that.x3dElem.setAttribute("height", new_dim[1]+"px");
         }
     };
 
