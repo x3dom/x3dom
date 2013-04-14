@@ -1088,6 +1088,9 @@ x3dom.fields.SFVec3f = function(x, y, z) {
     }
 };
 
+x3dom.fields.SFVec3f.NullVector = new x3dom.fields.SFVec3f(0, 0, 0);
+x3dom.fields.SFVec3f.OneVector  = new x3dom.fields.SFVec3f(1, 1, 1);
+
 x3dom.fields.SFVec3f.copy = function(v) {
     return new x3dom.fields.SFVec3f(v.x, v.y, v.z);
 };

@@ -1609,7 +1609,6 @@ x3dom.gfx_webgl = (function () {
         gl.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
     
-    
 	/*****************************************************************************
     * Render single Shape
     *****************************************************************************/
@@ -1660,14 +1659,28 @@ x3dom.gfx_webgl = (function () {
             sp.bgSize = s_geo._vf.size.toGL();
             sp.bgPrecisionMax = s_geo.getPrecisionMax('coordType');
         }
+        else {
+            sp.bgCenter = x3dom.fields.SFVec3f.NullVector.toGL();
+            sp.bgSize = x3dom.fields.SFVec3f.OneVector.toGL();
+            sp.bgPrecisionMax = 1;
+        }
         if (s_gl.colorType != gl.FLOAT) {
             sp.bgPrecisionColMax = s_geo.getPrecisionMax('colorType');
+        }
+        else {
+            sp.bgPrecisionColMax = 1;
         }
         if (s_gl.texCoordType != gl.FLOAT) {
             sp.bgPrecisionTexMax = s_geo.getPrecisionMax('texCoordType');
         }
+        else {
+            sp.bgPrecisionTexMax = 1;
+        }
         if (s_gl.normalType != gl.FLOAT) {
             sp.bgPrecisionNorMax = s_geo.getPrecisionMax('normalType');
+        }
+        else {
+            sp.bgPrecisionNorMax = 1;
         }
 
         if (s_gl.imageGeometry != 0)
