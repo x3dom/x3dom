@@ -285,7 +285,10 @@ x3dom.registerNodeType(
 				
 				Array.forEach(this._parentNodes, function (app) {
 					Array.forEach(app._parentNodes, function (shape) {
-						shape._dirty.shader = true;
+						//shape.setAppDirty();
+						if (shape._cleanupGLObjects)
+						    shape._cleanupGLObjects();
+						shape.setAllDirty();
 					});
 				});	
             },

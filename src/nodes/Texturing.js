@@ -133,7 +133,7 @@ x3dom.registerNodeType(
         {
             invalidateGLObject: function ()
             {
-                  Array.forEach(this._parentNodes, function (app) {
+                Array.forEach(this._parentNodes, function (app) {
                         Array.forEach(app._parentNodes, function (shape) {
                             shape._dirty.texture = true;
                         });
@@ -311,6 +311,7 @@ x3dom.registerNodeType(
             this.addField_MFNode('excludeNodes', x3dom.nodeTypes.X3DNode);
             this.addField_MFInt32(ctx, 'dimensions', [128, 128, 4]);
             this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
+            this.addField_SFBool(ctx, 'showNormals', false);
 
             x3dom.debug.assert(this._vf.dimensions.length >= 3);
             this._clearParents = true;
@@ -365,28 +366,34 @@ x3dom.registerNodeType(
 
                 var vbP = this._nameSpace.doc._scene.getViewpoint();
                 var view = this._cf.viewpoint.node;
+                var ret_mat = null;
 
                 if (view === null || view === vbP) {
-                    return this._nameSpace.doc._viewarea.getViewMatrix();
+                    ret_mat = this._nameSpace.doc._viewarea.getViewMatrix();
                 }
                 else {
                     var mat_viewpoint = view.getCurrentTransform();
-                    return mat_viewpoint.mult(view.getViewMatrix());
+                    ret_mat = mat_viewpoint.mult(view.getViewMatrix());
                 }
+
+                return ret_mat;
             },
 
             getProjectionMatrix: function()
             {
                 var vbP = this._nameSpace.doc._scene.getViewpoint();
                 var view = this._cf.viewpoint.node;
+                var ret_mat = null;
 
                 if (view === null || view === vbP) {
-                    return this._nameSpace.doc._viewarea.getProjectionMatrix();
+                    ret_mat = this._nameSpace.doc._viewarea.getProjectionMatrix();
                 }
                 else {
                     var w = this._vf.dimensions[0], h = this._vf.dimensions[1];
-                    return view.getProjectionMatrix(w / h);
+                    ret_mat = view.getProjectionMatrix(w / h);
                 }
+
+                return ret_mat;
             },
 
             getWCtoCCMatrix: function()

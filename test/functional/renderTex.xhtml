@@ -30,6 +30,7 @@
 <script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
 <script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
 <script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderNormal.js"></script>
 <script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
 <script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
 <script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
@@ -121,7 +122,7 @@
                 <TextureCoordinate point='1 1 0 1 0 0 1 0'/>
               </IndexedFaceSet>
               <Appearance DEF='rtApp'>
-                <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' repeatS='false' repeatT='false'>
+                <RenderedTexture DEF='FBO' update='always' dimensions='512 512 4' repeatS='false' repeatT='false' showNormals="true">
                   <Shape USE='aNode' containerField='excludeNodes' />
                   <Background USE='back' containerField='background' />
                   <Viewpoint DEF='view3' containerField='viewpoint' />

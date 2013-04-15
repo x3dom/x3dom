@@ -106,7 +106,7 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
                 //program = new x3dom.shader.DepthShader(gl);
                 break;
             case x3dom.shader.NORMAL:
-                //program = new x3dom.shader.new NormalShader(gl);
+                program = new x3dom.shader.NormalShader(gl);
                 break;
             default:
                 break;

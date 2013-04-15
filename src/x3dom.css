@@ -112,7 +112,7 @@ x3d:hover,
   opacity: 0.9;
   background-color: #323232;
   z-index: 1000;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   color: #C8C8C8;
   font-weight: bold;
   text-transform: uppercase;

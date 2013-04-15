@@ -14,7 +14,7 @@
 x3dom.BinaryContainerLoader = {};
 
 /** setup/download binary geometry */
-x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, currContext)
+x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, viewarea, currContext)
 {
     var t00 = new Date().getTime();
 
@@ -740,7 +740,7 @@ x3dom.BinaryContainerLoader.setupBinGeo = function(shape, sp, gl, currContext)
 };
 
 /** setup/download pop geometry */
-x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, currContext)
+x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, viewarea, currContext)
 {
     var popGeo = shape._cf.geometry.node;
 
@@ -957,7 +957,7 @@ x3dom.BinaryContainerLoader.setupPopGeo = function(shape, sp, gl, currContext)
 };
 
 /** setup/download bit-lod geometry */
-x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, currContext)
+x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, viewarea, currContext)
 {
     shape._webgl.bitLODGeometry = -1;
 
@@ -1453,7 +1453,7 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, currContext
 };
 
 /** setup/download image geometry */
-x3dom.BinaryContainerLoader.setupImgGeo = function(shape, sp, gl, currContext)
+x3dom.BinaryContainerLoader.setupImgGeo = function(shape, sp, gl, viewarea, currContext)
 {
     var imageGeometry = shape._cf.geometry.node;
 

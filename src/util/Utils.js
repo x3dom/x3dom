@@ -172,7 +172,7 @@ x3dom.Utils.generateNonIndexedTriangleData = function(indices, positions, normal
             newColors.push(c2);
         }
     }
-}
+};
 
 /*****************************************************************************
 * 
@@ -293,7 +293,6 @@ x3dom.Utils.rescaleImage = function(image, width, height)
 				0, 0, canvas.width, canvas.height);
 	return canvas;
 };
-
 
 /*****************************************************************************
 * Scale image to next best power of two
@@ -455,7 +454,7 @@ x3dom.Utils.getArrayBufferView = function(type, buffer)
 *****************************************************************************/
 x3dom.Utils.isUnsignedType = function (str)
 {
-  return ((str == "Uint8" || str == "Uint16" || str == "Uint16" || str == "Uint32") ? true : false);
+  return (str == "Uint8" || str == "Uint16" || str == "Uint16" || str == "Uint32");
 };
 
 
