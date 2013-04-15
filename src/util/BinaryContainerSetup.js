@@ -1166,8 +1166,8 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, viewarea, c
 
                 var indexArray;
 
-                if (bitLODGeometry.usesVLCIndices()) {
-
+                if (bitLODGeometry.usesClientSideNormals() && bitLODGeometry.usesVLCIndices()) {
+                    
                     //variable-length decoding, indexed triangle strips are converted to indexed triangles
                     (function(){
                         if (typeof shape._webgl.dataBuffers == 'undefined')
@@ -1251,11 +1251,66 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, viewarea, c
                     bitLODGeometry._mesh._numCoords = shape._webgl.dataBuffers[0].length;
                 }
                 else
-                {
+                {   
                     var indicesBuffer = gl.createBuffer();
                     shape._webgl.buffers[0] = indicesBuffer;
+                    
+                    if (bitLODGeometry.usesVLCIndices())
+                    {
+                        var decodedIndices = [];
 
-                    indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
+                        (function(){
+                            var codes = x3dom.Utils.getArrayBufferView("Uint8", XHR_buffer);
+                            var i = 0;
+                            var b;
+                            var delta;
+                            var magic_number;
+                            var value = 0;
+
+                            var vertexIdx = 0;
+                            var primIdx   = 0;
+                            var lastVal   = -1, preLastVal = -1;
+
+                            while (i < codes.length) {
+                                if (vertexIdx >= shape._cf.geometry.node._vf.vertexCount[primIdx]) {
+                                    ++primIdx;
+                                    vertexIdx = 0;
+                                }
+
+                                b = codes[i++];
+
+                                delta        = 0;
+                                magic_number = 128;
+
+                                //read bytes while the marker bit (first one) is set
+                                while (b >= 128) {
+                                    delta |= b - 128;
+                                    delta <<= 7;
+
+                                    magic_number <<= 7;
+
+                                    b = codes[i++];
+                                }
+
+                                delta |= b;
+
+                                magic_number /= 2;
+                                delta -= magic_number;
+
+                                value = value + delta;
+
+                                decodedIndices.push(value);
+
+                                ++vertexIdx;
+                            }
+                        }());
+
+                        indexArray = new Uint16Array(decodedIndices);
+                    }
+                    else
+                    {
+                        indexArray = x3dom.Utils.getArrayBufferView("Uint16", XHR_buffer);
+                    }
 
                     gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
                     gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
@@ -1290,7 +1345,7 @@ x3dom.BinaryContainerLoader.setupBitLODGeo = function(shape, sp, gl, viewarea, c
             shape._webgl.loadedLevels++;
             bitLODGeometry.loadedLevels++;
 
-            if (bitLODGeometry.hasIndex() && bitLODGeometry.usesVLCIndices()) {
+            if (bitLODGeometry.hasIndex() && bitLODGeometry.usesClientSideNormals()) {
                 if (typeof shape._webgl.dataBuffers == 'undefined')
                     shape._webgl.dataBuffers = [];
 

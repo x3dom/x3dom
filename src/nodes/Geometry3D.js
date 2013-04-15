@@ -1956,6 +1956,7 @@ x3dom.registerNodeType(
 
 			this.addField_SFString(ctx, 'index', "");   // Uint16
             this.addField_SFBool(ctx, 'usesVLCIndices', false);  // variable-length coding
+            this.addField_SFBool(ctx, 'clientSideNormals', false);  // variable-length coding            
             this.addField_SFBool(ctx, 'normalAsSphericalCoordinates', false);
             this.addField_SFBool(ctx, 'normalPerVertex', true);
 			this.addField_MFNode('components', x3dom.nodeTypes.BitLODGeoComponent);
@@ -1974,11 +1975,9 @@ x3dom.registerNodeType(
 			this._hasStrideOffset = false;
 			this._mesh._numTexComponents = 2;
 			this._mesh._numColComponents = 3;
-            
-            //a chain of assumptions, not very beautiful yet:
-            //- using vlc indices leads to per-face-normals, which use 3 components
-            //- for all other cases, per-vertex-normals are used, with 2 components
-            this._vf.normalPerVertex              = !this._vf.usesVLCIndices;
+
+            this._vf.clientSideNormals            = false;
+            this._vf.normalPerVertex              = !this._vf.clientSideNormals;
             this._vf.normalAsSphericalCoordinates = this._vf.normalPerVertex;
 			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 		},
@@ -2012,6 +2011,11 @@ x3dom.registerNodeType(
 			{
 				return this._vf.usesVLCIndices == true;
 			},
+            
+            usesClientSideNormals: function()
+			{
+                return this._vf.clientSideNormals == true;
+            },
 			
 			hasColor: function()
 			{
