@@ -1979,7 +1979,7 @@ x3dom.registerNodeType(
             //- using vlc indices leads to per-face-normals, which use 3 components
             //- for all other cases, per-vertex-normals are used, with 2 components
             this._vf.normalPerVertex              = !this._vf.usesVLCIndices;
-            this._vf.normalAsSphericalCoordinates = true;//this._vf.normalPerVertex;
+            this._vf.normalAsSphericalCoordinates = this._vf.normalPerVertex;
 			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 		},
 		{
