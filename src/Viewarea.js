@@ -1128,7 +1128,7 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-				distance = (distance < x3dom.fields.Eps) ? 1 : distance;
+				distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
 			}
 			
 			translation = translation.multiply(distance);
