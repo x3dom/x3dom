@@ -1477,7 +1477,7 @@ x3dom.registerNodeType(
                 // TODO: handle field updates and retrigger XHR call
             },
 
-            parentAdded: function()
+            parentAdded: function(parent)
             {
                 // TODO; also handle multiple shape parents!
                 var offsetInd, strideInd, offset, stride;
@@ -1487,7 +1487,7 @@ x3dom.registerNodeType(
                 if (offsetInd >= 0 && strideInd >= 0) {
                     offset = +this._vf.coord.substring(++offsetInd, strideInd);
                     stride = +this._vf.coord.substring(strideInd);
-                    this._parentNodes[0]._coordStrideOffset = [stride, offset];
+                    parent._coordStrideOffset = [stride, offset];
                     this._hasStrideOffset = true;
                     if ((offset / 8) - Math.floor(offset / 8) == 0) {
                         this._mesh._numPosComponents = 4;
@@ -1496,7 +1496,7 @@ x3dom.registerNodeType(
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.coord.substring(strideInd);
-                    this._parentNodes[0]._coordStrideOffset = [stride, 0];
+                    parent._coordStrideOffset = [stride, 0];
                     if ((stride / 8) - Math.floor(stride / 8) == 0) {
                         this._mesh._numPosComponents = 4;   // ???
                     }
@@ -1508,12 +1508,12 @@ x3dom.registerNodeType(
                 if (offsetInd >= 0 && strideInd >= 0) {
                     offset = +this._vf.normal.substring(++offsetInd, strideInd);
                     stride = +this._vf.normal.substring(strideInd);
-                    this._parentNodes[0]._normalStrideOffset = [stride, offset];
+                    parent._normalStrideOffset = [stride, offset];
                     //x3dom.debug.logInfo("normal stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.normal.substring(strideInd);
-                    this._parentNodes[0]._normalStrideOffset = [stride, 0];
+                    parent._normalStrideOffset = [stride, 0];
                     //x3dom.debug.logInfo("normal stride: " + stride);
                 }
 
@@ -1522,12 +1522,12 @@ x3dom.registerNodeType(
                 if (offsetInd >= 0 && strideInd >= 0) {
                     offset = +this._vf.texCoord.substring(++offsetInd, strideInd);
                     stride = +this._vf.texCoord.substring(strideInd);
-                    this._parentNodes[0]._texCoordStrideOffset = [stride, offset];
+                    parent._texCoordStrideOffset = [stride, offset];
                     //x3dom.debug.logInfo("texCoord stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.texCoord.substring(strideInd);
-                    this._parentNodes[0]._texCoordStrideOffset = [stride, 0];
+                    parent._texCoordStrideOffset = [stride, 0];
                     //x3dom.debug.logInfo("texCoord stride: " + stride);
                 }
 
@@ -1536,12 +1536,12 @@ x3dom.registerNodeType(
                 if (offsetInd >= 0 && strideInd >= 0) {
                     offset = +this._vf.color.substring(++offsetInd, strideInd);
                     stride = +this._vf.color.substring(strideInd);
-                    this._parentNodes[0]._colorStrideOffset = [stride, offset];
+                    parent._colorStrideOffset = [stride, offset];
                     //x3dom.debug.logInfo("color stride/offset: " + stride + ", " + offset);
                 }
                 else if (strideInd >= 0) {
                     stride = +this._vf.color.substring(strideInd);
-                    this._parentNodes[0]._colorStrideOffset = [stride, 0];
+                    parent._colorStrideOffset = [stride, 0];
                     //x3dom.debug.logInfo("color stride: " + stride);
                 }
                 
@@ -1712,7 +1712,7 @@ x3dom.registerNodeType(
             nodeChanged: function() {              
             },
 
-            parentAdded: function() {
+            parentAdded: function(parent) {
               //TODO: implement 
             },
             
@@ -1987,12 +1987,12 @@ x3dom.registerNodeType(
                 // TODO
 			},
       
-		    parentAdded: function()
+		    parentAdded: function(parent)
 		    {
-			  this._parentNodes[0]._coordStrideOffset = [12, 0];
-			  this._parentNodes[0]._normalStrideOffset = [12, 8];
-			  this._parentNodes[0]._texCoordStrideOffset = [4, 0];
-			  this._parentNodes[0]._colorStrideOffset = [6, 0];
+			  parent._coordStrideOffset    = [12, 0];
+			  parent._normalStrideOffset   = [12, 8];
+			  parent._texCoordStrideOffset = [ 4, 0];
+			  parent._colorStrideOffset    = [ 6, 0];
 		    },
             
 		    fieldChanged: function(fieldName)
