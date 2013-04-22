@@ -20,5 +20,6 @@ x3dom.shader.BACKGROUND_TEXTURE = "backgroundTexture";
 x3dom.shader.BACKGROUND_SKYTEXTURE = "backgroundSkyTexture";
 x3dom.shader.BACKGROUND_CUBETEXTURE = "backgroundCubeTexture";
 x3dom.shader.SHADOW = "shadow";
+x3dom.shader.BLUR = "blur";
 x3dom.shader.DEPTH = "depth";
 x3dom.shader.NORMAL = "normal";

@@ -341,11 +341,12 @@ x3dom.registerNodeType(
                 }
             },
 			
-			parentAdded: function()
+			parentAdded: function(parent)
 			{
-				Array.forEach(this._parentNodes, function (app) {
-					app.nodeChanged();
-				});
+				//Array.forEach(this._parentNodes, function (app) {
+				//	app.nodeChanged();
+				//});
+				parent.nodeChanged();
 			}
         }
     )
@@ -426,11 +427,12 @@ x3dom.registerNodeType(
                 }
 			},
 			
-			parentAdded: function()
+			parentAdded: function(parent)
 			{
-				Array.forEach(this._parentNodes, function (shader) {
-					shader.nodeChanged();
-				});
+				//Array.forEach(this._parentNodes, function (shader) {
+				//	shader.nodeChanged();
+				//});
+				parent.nodeChanged();
 			}
         }
     )

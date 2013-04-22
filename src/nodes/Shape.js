@@ -272,30 +272,18 @@ x3dom.registerNodeType(
             },
 
             getVolume: function(min, max) {
-				if (this._cf.geometry.node) {
-					return this._cf.geometry.node.getVolume(min, max);
-				}
-				else {
-					return false;
-				}
+                var geo = this._cf.geometry.node;
+				return (geo ? geo.getVolume(min, max) : false);
             },
 
             getCenter: function() {
-				if (this._cf.geometry.node) {
-					return this._cf.geometry.node.getCenter();
-				}
-				else {
-					return new x3dom.fields.SFVec3f(0,0,0);
-				}
+                var geo = this._cf.geometry.node;
+				return (geo ? geo.getCenter() : new x3dom.fields.SFVec3f(0,0,0));
             },
 
             getDiameter: function() {
-				if (this._cf.geometry.node) {
-					return this._cf.geometry.node.getDiameter();
-				}
-				else {
-					return 0;
-				}
+                var geo = this._cf.geometry.node;
+				return (geo ? geo.getDiameter() : 0);
             },
 
             doIntersect: function(line) {
@@ -312,8 +300,9 @@ x3dom.registerNodeType(
 
             parentRemoved: function(parent) {
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
-                    if (this._childNodes[i]) {
-                        this._childNodes[i].parentRemoved(this);
+                    var child = this._childNodes[i];
+                    if (child) {
+                        child.parentRemoved(this);
                     }
                 }
 

@@ -144,16 +144,12 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		}
 	}
 	
-	//Lights & Shadows & Fog
+	//Lights & Fog
 	if(properties.LIGHTS || properties.FOG){
 		shader += "uniform vec3 eyePosition;\n";
 		shader += "varying vec3 fragPosition;\n";
 		if(properties.FOG) {
 			shader += "varying vec3 fragEyePosition;\n";
-		}
-		if(properties.SHADOW) {
-			shader += "uniform mat4 matPV;\n";
-			shader += "varying vec4 projCoord;\n";
 		}
 	}
 	
@@ -341,14 +337,11 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 		}
 	}
 	
-	//Lights & Shadows & Fog
+	//Lights & Fog
 	if(properties.LIGHTS || properties.FOG){    
 		shader += "fragPosition = (modelViewMatrix * vec4(vertPosition, 1.0)).xyz;\n";
 		if (properties.FOG) {
 			shader += "fragEyePosition = eyePosition - fragPosition;\n";
-		}
-		if(properties.SHADOW) {
-			shader += "projCoord = matPV * vec4(vertPosition+0.5*normalize(vertNormal), 1.0);\n";
 		}
 	}
 	
@@ -424,14 +417,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += x3dom.shader.fog();
 	}
 	
-	//Lights & Shadows
+	//Lights
 	if(properties.LIGHTS) {
 		shader += "varying vec3 fragNormal;\n";
         shader += "varying vec3 fragPosition;\n";
 		shader += x3dom.shader.light(properties.LIGHTS);
-		if(properties.SHADOW) {
-			shader += x3dom.shader.shadow();
-		}
 	}
  
  
@@ -460,12 +450,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		shader += "vec3 normal 	  = normalize(fragNormal);\n";
 		shader += "vec3 eye 	  = -fragPosition;\n";
 		
-		//Init Shadows
-		if(properties.SHADOW){
-			shader += "float shadowed = 1.0;\n";
-			shader += "float oneShadowAlreadyExists = 0.0;\n";
-		}
-		
 		//Normalmap
 		if(properties.NORMALMAP){                
 			shader += "vec3 t = normalize( fragTangent );\n";
@@ -489,7 +473,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "}\n";
 		}
 		
-		//Calculate lights & shadows
+		//Calculate lights
 		for(var l=0; l<properties.LIGHTS; l++) {
 			shader += " lighting(light"+l+"_Type, " +
 								"light"+l+"_Location, " +
@@ -502,13 +486,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 								"light"+l+"_BeamWidth, " +
 								"light"+l+"_CutOffAngle, " +
 								"normal, eye, ambient, diffuse, specular);\n";
-			if(properties.SHADOW){
-				shader += " if(light"+l+"_ShadowIntensity > 0.0 && oneShadowAlreadyExists == 0.0){\n";
-				shader += "     vec3 projectiveBiased = projCoord.xyz / projCoord.w;\n";
-				shader += "     shadowed = PCF_Filter(light"+l+"_ShadowIntensity, projectiveBiased, 0.002);\n";
-				shader += "     oneShadowAlreadyExists = 1.0;\n";
-				shader += " }\n";
-			}
 		}
 		
 		//Specularmap
@@ -543,10 +520,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "color.rgb = (emissiveColor + ambient*color.rgb + diffuse*color.rgb + specular*specularColor);\n";
 		}
 		
-		//Add shadows
-		if(properties.SHADOW) {
-			shader += "color.rgb *= shadowed;\n";
-		}
 	} else {
 		if(properties.TEXTURED || properties.DIFFUSEMAP){
 			shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";

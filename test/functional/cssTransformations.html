@@ -38,6 +38,8 @@
 <script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
 <script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
 <script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadowRendering.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBlur.js"></script>
 <script type="text/javascript" src="../../src/gfx_webgl.js"></script>
 <script type="text/javascript" src="../../src/gfx_flash.js"></script>
 <script type="text/javascript" src="../../src/X3DDocument.js"></script>
@@ -75,14 +77,28 @@
 <body>
 
 	<style type="text/css">
-
 	  #trans {
 	    -webkit-animation: spin 8s infinite linear;
+	    -moz-animation: spin 8s infinite linear;
 	  }
 
 	  @-webkit-keyframes spin {
 	    from { -webkit-transform: rotateY(0); }
 	    to   { -webkit-transform: rotateY(-360deg); }
+	  }
+	  @-moz-keyframes spin {
+  	    from { -moz-transform: rotateY(0); }
+  	    to   { -moz-transform: rotateY(-360deg); }
+  	  }
+  	  
+  	  #t1 {
+  	      -webkit-transform: translate3d(1em,0em,1em); 
+  	      -moz-transform: translate3d(1em,0em,1em);
+  	  }
+  	  
+  	  #t2 {
+	      -webkit-transform: rotateY(45deg); 
+	      -moz-transform: rotateY(45deg);
 	  }
 	  
 	  #bgnd {
@@ -97,7 +113,7 @@
 			<scene>
 				<background id='bgnd' transparency='0' skyColor='1 1 1' ></background>
 				<transform id="trans" >
-					<transform id='t1' style="-webkit-transform: translate3d(1em,0em,1em);">
+					<transform id='t1'>
 						<shape id="shape">
 							<appearance>
 								<material diffuseColor='0.8 0.8 0.8'></material>
@@ -105,7 +121,7 @@
 							<box></box>
 						</shape>
 					</transform>
-					<transform id='t2' style="-webkit-transform: rotateY(45deg);">
+					<transform id='t2'>
 						<shape USE="shape"></shape>
 					</transform>
 				</transform> 

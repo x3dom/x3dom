@@ -640,9 +640,115 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
     }
     else {
         view = lMat;
+		var proj = new x3dom.fields.SFMatrix4f();
+		proj.setValues(this._scene.getViewpoint().getProjectionMatrix(1));
+		proj._00 = 1;
+		proj._11 = 1;
     }
 
     return proj.mult(view);
+};
+
+/*
+ * get six WCtoLCMatrices for point light
+ */
+x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view)
+{	    		
+	var proj = new x3dom.fields.SFMatrix4f();
+	
+	//set projection matrix to 90° FOV (vertical and horizontal)
+    proj.setValues(this._scene.getViewpoint().getProjectionMatrix(1));
+	proj._00 = 1;
+	proj._11 = 1;
+	
+	var matrices = new Array();
+	
+	//create six matrices to cover all directions of point light
+	matrices[0] = proj.mult(view);
+		
+	var rotationMatrix;
+	
+	for (var i=1; i<=3; i++){	
+		rotationMatrix = x3dom.fields.SFMatrix4f.rotationY(i*Math.PI/2);
+		matrices[i] = proj.mult(rotationMatrix.mult(view));
+	}
+	
+	rotationMatrix = x3dom.fields.SFMatrix4f.rotationX(Math.PI/2);
+	matrices[4] = proj.mult(rotationMatrix.mult(view));
+	
+	rotationMatrix = x3dom.fields.SFMatrix4f.rotationX(3*Math.PI/2);
+	matrices[5] = proj.mult(rotationMatrix.mult(view));
+	
+    return matrices;
+};
+
+
+/*
+ * Get WCToLCMatrices for cascaded (directional) light
+ */
+x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades)
+{	
+	var proj = this.getLightProjectionMatrix(view);
+	
+	var viewProj = proj.mult(view);	
+	
+	var matrices = new Array();
+
+	
+	if (numCascades == 1){
+		matrices[0] = viewProj;
+		return matrices;
+	}
+	
+	var cascadeSplits = this.getShadowSplitDepths(numCascades,true);
+	
+	for (var i=0; i<numCascades; i++){
+		var fittingMat = this.getLightFittingMatrix(viewProj,cascadeSplits[i],cascadeSplits[i+1]);
+		matrices[i] = fittingMat.mult(viewProj);
+	}	
+	
+	return matrices;
+};
+
+
+x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat)
+{
+	//replace near and far plane of projection matrix
+	//by values adapted to the light position
+	
+	var lightPos = lMat.inverse().e3();
+	
+	var nearScale = 0.8;
+	var farScale = 1.2;
+	
+    var min = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
+	var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax); 
+	
+	//var 
+	var dia = max.subtract(min);
+	var sRad = dia.length() / 2;
+	
+	var sCenter = min.add(dia.multiply(0.5));
+	var vDist = (lightPos.subtract(sCenter)).length();
+	
+	var near, far;
+	
+	if (sRad) {
+		if (vDist > sRad)
+			near = (vDist - sRad) * nearScale; 
+		else
+			near = 0;                           
+		far = (vDist + sRad) * farScale;
+	}
+
+
+	var proj = new x3dom.fields.SFMatrix4f();
+
+    proj.setValues(this.getProjectionMatrix());
+	proj._22 = -(far+near)/(far-near);
+	proj._23 = -2.0*far*near / (far-near);
+	
+	return proj;
 };
 
 x3dom.Viewarea.prototype.getProjectionMatrix = function()
@@ -1128,7 +1234,7 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 			if (this._scene._lastMin && this._scene._lastMax)
 			{
 				distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-				distance = (distance < x3dom.fields.Eps) ? 1 : distance;
+				distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
 			}
 			
 			translation = translation.multiply(distance);
@@ -1361,4 +1467,157 @@ x3dom.Viewarea.prototype.orbitV = function(dy)
 
   m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
   this._relMat = this.getViewpointMatrix().mult(m);
+};
+
+x3dom.Viewarea.prototype.getShadowedLights = function()
+{	
+	var shadowedLights = new Array();
+	var shadowIndex = 0;
+	var slights = this.getLights();
+	for (var i=0; i< slights.length; i++){
+		if (slights[i]._vf.shadowIntensity > 0.0){
+			shadowedLights[shadowIndex] = slights[i];
+			shadowIndex++;
+		}
+	}
+	return shadowedLights;
+};
+
+
+/*
+ * Calculate view frustum split positions for the given number of cascades
+ */
+x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, postProject)
+{	
+	var mat_proj = this.getProjectionMatrix();
+	var logSplit;
+	var practSplit = new Array();
+	var alpha = 1.0;
+	var zNear = this._scene.getViewpoint().getNear();
+	var zFar = this._scene.getViewpoint().getFar();
+
+	practSplit[0] = zNear;
+	
+	//pseudo-near plane for bigger cascades near camera
+	zNear = zNear + (zFar-zNear)/75;
+	
+	//calculate split depths according to "practical split scheme"
+	for (var i=1;i<numCascades;i++){
+		logSplit = zNear * Math.pow((zFar / zNear), i / numCascades);
+		practSplit[i] = alpha * logSplit + (1 - alpha) * (zNear + i / (numCascades * (zNear-zFar)));
+	}
+	practSplit[numCascades] = zFar;
+	
+	//return in view coords
+	if (!postProject) return practSplit;
+	
+	//return in post projective coords
+	var postProj = new Array();
+	
+	for (var j=0; j<=numCascades; j++){
+		postProj[j] = mat_proj.multFullMatrixPnt(new x3dom.fields.SFVec3f(0,0,-practSplit[j])).z;
+	}
+	
+	return postProj;
+
+};
+
+/*
+ * Calculate a fitting matrix for the wctolc-matrix and split boundaries
+ */
+x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, zFar)
+{	
+	var mat_proj = this.getProjectionMatrix();
+	var mat_view = this.getViewMatrix();
+	var mat_view_proj = mat_proj.mult(mat_view);
+	var mat_view_proj_inverse = mat_view_proj.inverse();
+	
+	
+	//define view frustum corner points in post perspective view space
+	var frustumCorners = new Array();
+	frustumCorners[0] = new x3dom.fields.SFVec3f(-1, -1, zFar);
+	frustumCorners[1] = new x3dom.fields.SFVec3f(-1, -1, zNear);
+	frustumCorners[2] = new x3dom.fields.SFVec3f(-1,  1, zFar);
+	frustumCorners[3] = new x3dom.fields.SFVec3f(-1,  1, zNear);
+	frustumCorners[4] = new x3dom.fields.SFVec3f( 1, -1, zFar);
+	frustumCorners[5] = new x3dom.fields.SFVec3f( 1, -1, zNear);
+	frustumCorners[6] = new x3dom.fields.SFVec3f( 1,  1, zFar);
+	frustumCorners[7] = new x3dom.fields.SFVec3f( 1,  1, zNear);
+	
+
+	//transform corner points into post perspective light space
+	for (var i=0; i<8; i++){
+		frustumCorners[i] = mat_view_proj_inverse.multFullMatrixPnt(frustumCorners[i]);
+		frustumCorners[i] = WCToLCMatrix.multFullMatrixPnt(frustumCorners[i]);
+	}
+	
+	//calculate minimum and maximum values
+	var minFrustum = x3dom.fields.SFVec3f.copy(frustumCorners[0]);
+	var maxFrustum = x3dom.fields.SFVec3f.copy(frustumCorners[0]);
+
+	for (var i=1; i<8; i++){
+		minFrustum.x = Math.min(frustumCorners[i].x, minFrustum.x); 
+		minFrustum.y = Math.min(frustumCorners[i].y, minFrustum.y);
+		minFrustum.z = Math.min(frustumCorners[i].z, minFrustum.z); 
+		
+		maxFrustum.x = Math.max(frustumCorners[i].x, maxFrustum.x); 
+		maxFrustum.y = Math.max(frustumCorners[i].y, maxFrustum.y); 
+		maxFrustum.z = Math.max(frustumCorners[i].z, maxFrustum.z); 
+	}
+	
+	
+	//clip values to box (-1,-1,-1),(1,1,1)
+	function clip(min,max){
+		var xMin = min.x;
+		var yMin = min.y;
+		var zMin = min.z;
+		var xMax = max.x;
+		var yMax = max.y;
+		var zMax = max.z;
+		
+		if (xMin > 1.0 || xMax < -1.0) {
+			xMin = -1.0;
+			xMax =  1.0;
+		} else {
+			xMin = Math.max(xMin,-1.0);
+			xMax = Math.min(xMax, 1.0);
+		}
+		
+		if (yMin > 1.0 || yMax < -1.0) {
+			yMin = -1.0;
+			yMax =  1.0;
+		} else {
+			yMin = Math.max(yMin,-1.0);
+			yMax = Math.min(yMax, 1.0);
+		}
+					   
+		if (zMin > 1.0 || zMax < -1.0){
+			zMin = -1.0;
+			zMax = 1.0;
+		} else {
+			zMin = Math.max(zMin,-1.0);
+			zMax = Math.min(zMax, 1.0);
+		}
+		var minValues = new x3dom.fields.SFVec3f(xMin,yMin,zMin);
+		var maxValues = new x3dom.fields.SFVec3f(xMax,yMax,zMax);
+		return new x3dom.fields.BoxVolume(minValues,maxValues);
+	}
+	
+	var frustumBB = clip(minFrustum, maxFrustum);
+
+	//define fittingmatrix
+	var scaleX = 2.0 / (frustumBB.max.x - frustumBB.min.x);
+	var scaleY = 2.0 / (frustumBB.max.y - frustumBB.min.y);
+	var offsetX = -(scaleX * (frustumBB.max.x + frustumBB.min.x)) / 2.0;
+	var offsetY = -(scaleY * (frustumBB.max.y + frustumBB.min.y)) / 2.0;
+
+	
+	var fittingMatrix = new x3dom.fields.SFMatrix4f.identity();
+	
+	fittingMatrix._00 = scaleX;
+	fittingMatrix._11 = scaleY;
+	fittingMatrix._03 = offsetX;
+	fittingMatrix._13 = offsetY;
+
+	return fittingMatrix;
 };
