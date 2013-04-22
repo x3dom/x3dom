@@ -3087,14 +3087,14 @@ x3dom.gfx_webgl = (function () {
 
 		scene.updateVolume();
 		
-		var shadowIndex = 0;
+		var shadowCount = 0;
 
 		x3dom.Utils.startMeasure('shadow');
         for(var p=0; p<numLights; p++){
             if(slights[p]._vf.shadowIntensity > 0.0){
 
                 var lightMatrix = viewarea.getLightMatrix()[p];
-				var shadowMaps = scene._webgl.fboShadow[shadowIndex];
+				var shadowMaps = scene._webgl.fboShadow[shadowCount];
 												
 				if (x3dom.isa(slights[p], x3dom.nodeTypes.SpotLight)){
 					//one render pass for spot lights
@@ -3117,7 +3117,7 @@ x3dom.gfx_webgl = (function () {
 						this.renderShadowPass(gl, viewarea, mat_light[i], lightMatrix, shadowMaps[i],false);
 					}					
 				}
-				shadowIndex++;
+				shadowCount++;
 				
 				//save transformations for shadow rendering
 				WCToLCMatrices[WCToLCMatrices.length] = mat_light;
@@ -3125,9 +3125,7 @@ x3dom.gfx_webgl = (function () {
             } 
         }
 		
-		
-		var shadowCount = scene._webgl.fboShadow.length;
-		
+				
 		mat_view = viewarea.getViewMatrix();
 		mat_proj = viewarea.getProjectionMatrix();
 		
