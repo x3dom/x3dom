@@ -878,18 +878,29 @@ x3dom.registerNodeType(
             };
         },
         {
+            fieldChanged: function (fieldName) {
+                // TODO; wait for sync traversal to invalidate en block
+                if (this._vf.hasOwnProperty(fieldName))
+                    this.invalidateVolume();
+            },
+
+            nodeChanged: function () {
+                // TODO; wait for sync traversal to invalidate en block
+                this.invalidateVolume();
+            },
+
             getVolume: function (min, max)
             {
                 var valid = false;
                 var vol = this._graph.volume;
 
                 // TODO; de-comment as soon as graph changes are considered
-                /*if (this.volumeValid())
+                if (this.volumeValid())
                 {
                     vol.getBounds(min, max);
                     valid = true;
                 }
-                else*/
+                else
                 {
                     for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
