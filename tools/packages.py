@@ -20,7 +20,7 @@ BASICS = [
   'Runtime.js',
   'Main.js',
   'Cache.js',
-  'Texture.js',
+  'Texture.js'
 ]
 
 SHADER = [
@@ -39,6 +39,8 @@ SHADER = [
 	'shader/ShaderBackgroundSkyTexture.js',
 	'shader/ShaderBackgroundCubeTexture.js',
 	'shader/ShaderShadow.js',
+	'shader/ShaderShadowRendering.js',
+	'shader/ShaderBlur.js'
 ]
 
 GFX = [

@@ -80,7 +80,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.DirectionalLight.superClass.call(this, ctx);
 
             this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
-			this.addField_SFInt32(ctx, 'shadowCascades', 1);			
+			this.addField_SFInt32(ctx, 'shadowCascades', 2);			
         },
         {
             getViewMatrix: function(vec) {

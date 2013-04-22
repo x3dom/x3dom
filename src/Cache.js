@@ -154,7 +154,7 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
  */
 x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights)
 {
-	var ID = "";
+	var ID = "shadow";
 	for (var i = 0; i<shadowedLights.length; i++){
 			if(x3dom.isa(shadowedLights[i], x3dom.nodeTypes.SpotLight))
 				ID += "S";
