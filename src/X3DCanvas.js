@@ -1049,34 +1049,23 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 x3dom.X3DCanvas.prototype.tick = function()
 {
     var d = new Date().getTime();
+    var diff = d - this.lastTimeFPSWasTaken;
     
-    //
-    if ((d - this.lastTimeFPSWasTaken) >= 1000)
+    if (diff >= 1000)
     {
-        var that = this;
-        (function(){
-        
-            var diff = d - that.lastTimeFPSWasTaken;
-            
-            that.x3dElem.runtime.fps = that.framesSinceLastTime / (diff / 1000);
-            
-            that.x3dElem.runtime.addMeasurement('FPS', that.framesSinceLastTime / (diff / 1000) );
+        this.x3dElem.runtime.fps = this.framesSinceLastTime / (diff / 1000.0);
+        this.x3dElem.runtime.addMeasurement('FPS', this.x3dElem.runtime.fps);
 
-            that.framesSinceLastTime = 0;
-            
-            that.lastTimeFPSWasTaken = d;
-            
-        })();
+        this.framesSinceLastTime = 0;
+        this.lastTimeFPSWasTaken = d;
     }
     this.framesSinceLastTime++;
-    //
     
     var fps = 1000.0 / (d - this.fps_t0);
-
     this.fps_t0 = d;
 
     try {
-        this.doc.advanceTime(d / 1000);
+        this.doc.advanceTime(d / 1000.0);
         var animD = new Date().getTime() - d;
 
         if (this.doc.needRender) {
@@ -1107,12 +1096,12 @@ x3dom.X3DCanvas.prototype.tick = function()
 		}
 		
         if (this.progressDiv) {
-				if (this.doc.downloadCount > 0) { 
-					this.x3dElem.runtime.addInfo("#LOADS:", this.doc.downloadCount);
-				} else {
-					this.x3dElem.runtime.removeInfo("#LOADS:");
-				}
-		
+            if (this.doc.downloadCount > 0) {
+                this.x3dElem.runtime.addInfo("#LOADS:", this.doc.downloadCount);
+            } else {
+                this.x3dElem.runtime.removeInfo("#LOADS:");
+            }
+
             if (this.doc.properties.getProperty("showProgress") !== 'false') {
                 if (this.progressDiv) {
                     this.progressDiv.childNodes[0].textContent = 'Loading: ' + (+this.doc.downloadCount);
@@ -1127,12 +1116,11 @@ x3dom.X3DCanvas.prototype.tick = function()
                     window.setTimeout( function() { 
                            myThat.doc.downloadCount = 0;
                            myThat.progressDiv.style.display = 'none';
-						}, 1500 );
+                    }, 1500 );
                 }
             } else {
                 this.progressDiv.style.display = 'none';
             }
-
         }
 
     } catch (e) {
