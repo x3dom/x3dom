@@ -55,45 +55,108 @@ x3dom.shader.fog = function() {
 * Shadow
 ********************************************************************************/
 x3dom.shader.shadow = function() {
-
-	var shaderPart =    "uniform sampler2D sh_tex;\n" +
-						"varying vec4 projCoord;\n" +
-						"float PCF_Filter(float lShadowIntensity, vec3 projectiveBiased, float filterWidth)\n" +
-						"{\n" +
-						"    float stepSize = 2.0 * filterWidth / 3.0;\n" +
-						"    float blockerCount = 0.0;\n" +
-						"    projectiveBiased.x -= filterWidth;\n" +
-						"    projectiveBiased.y -= filterWidth;\n" +
-						"    for (float i=0.0; i<3.0; i++)\n" +
-						"    {\n" +
-						"        for (float j=0.0; j<3.0; j++)\n" +
-						"        {\n" +
-						"            projectiveBiased.x += (j*stepSize);\n" +
-						"            projectiveBiased.y += (i*stepSize);\n" +
-						"            vec4 zCol = texture2D(sh_tex, (1.0+projectiveBiased.xy)*0.5);\n";
-                            
-	if (!x3dom.caps.FP_TEXTURES) {
-		shaderPart +=   "            float fromFixed = 256.0 / 255.0;\n" +
-						"            float z = zCol.r * fromFixed;\n" +
-						"            z += zCol.g * fromFixed / (255.0);\n" +
-						"            z += zCol.b * fromFixed / (255.0 * 255.0);\n" +
-						"            z += zCol.a * fromFixed / (255.0 * 255.0 * 255.0);\n";
-	}
-	else {
-		shaderPart +=   "            float z = zCol.b;\n";
-	}
-                            
-	shaderPart +=       "            if (z < projectiveBiased.z) blockerCount += 1.0;\n" +
-						"            projectiveBiased.x -= (j*stepSize);\n" +
-						"            projectiveBiased.y -= (i*stepSize);\n" +
-						"        }\n" +
-						"    }" +
-						"    float result = 1.0 - lShadowIntensity * blockerCount / 9.0;\n" +
-						"    return result;\n" +
-						"}\n";
-						
+	var shaderPart = "";
+		shaderPart += 	
+					"vec4 packDepth(float depth){\n" +
+					"	depth = (depth + 1.0)*0.5;\n" +
+					"	vec4 outVal = vec4(1.0, 255.0, 65025.0, 160581375.0) * depth;\n" +
+					"	outVal = fract(outVal);\n" +
+					"  	outVal -= outVal.yzww * vec4(1.0/255.0, 1.0/255.0, 1.0/255.0, 0.0);\n" +
+					"  	return outVal;\n" +
+					"}\n";
+		
+		shaderPart += 	
+					"float unpackDepth(vec4 color){\n" +
+					"	float depth = dot(color, vec4(1.0, 1.0/255.0, 1.0/65025.0, 1.0/160581375.0));\n" +
+					"	return (2.0*depth - 1.0);\n" + 
+					"}\n";
 	return shaderPart;
 };
+
+x3dom.shader.shadowRendering = function(){
+	//determine if and how much a given position is influenced by given light
+	var shaderPart = "";
+	shaderPart +=
+				"float getLightInfluence(float lType, float lShadowIntensity, float lOn, vec3 lLocation, vec3 lDirection, " + 
+				"float lCutOffAngle, float lBeamWidth, vec3 lAttenuation, float lRadius, vec3 viewCoords) {\n" +
+				"	if (lOn == 0.0 || lShadowIntensity == 0.0){ return 0.0;\n" +
+				"	} else if (lType == 0.0) {\n" +
+				"		return 1.0;\n" +
+				"	} else {\n" +
+				"   	float attenuation = 0.0;\n" +
+				"   	vec3 lightVec = (lLocation - (viewCoords));\n" +
+				"   	float distance = length(lightVec);\n" +
+				"		lightVec = normalize(lightVec);\n" +
+				"		viewCoords = normalize(-viewCoords);\n" +
+				"   	if(lRadius == 0.0 || distance <= lRadius) {\n" +
+				"       	attenuation = 1.0 / max(lAttenuation.x + lAttenuation.y * distance + lAttenuation.z * (distance * distance), 1.0);\n" +
+				"		}\n" +
+				" 		if (lType == 1.0) return attenuation;\n" +
+				"   	float spotAngle = acos(max(0.0, dot(-lightVec, normalize(lDirection))));\n" +
+				"   	if(spotAngle >= lCutOffAngle) return 0.0;\n" +
+				"   	else if(spotAngle <= lBeamWidth) return attenuation;\n" +
+				"   	else return attenuation * (spotAngle - lCutOffAngle) / (lBeamWidth - lCutOffAngle);\n" +
+				"	}\n" +
+				"}\n";
+	
+	// get light space depth of view sample and all entries of the shadow map
+	shaderPart += 	
+				"void getShadowValues(inout vec4 shadowMapValues, inout float viewSampleDepth, in mat4 lightMatrix, in vec4 worldCoords, in sampler2D shadowMap){\n" +
+				"	vec4 lightSpaceCoords = lightMatrix*worldCoords;\n" +
+				"	vec3 lightSpaceCoordsCart = lightSpaceCoords.xyz / lightSpaceCoords.w;\n" +
+				"	vec2 textureCoords = (lightSpaceCoordsCart.xy + 1.0)*0.5;\n" +
+				"	viewSampleDepth = lightSpaceCoordsCart.z;\n" +	
+				"	shadowMapValues = texture2D(shadowMap, textureCoords);\n";
+	if (!x3dom.caps.FP_TEXTURES)
+		shaderPart +=	"	shadowMapValues = vec4(1.0,1.0,unpackDepth(shadowMapValues),1.0);\n";
+	shaderPart +="}\n";
+
+	
+	// get light space depth of view sample and all entries of the shadow map for point lights
+	shaderPart += 	
+				"void getShadowValuesPointLight(inout vec4 shadowMapValues, inout float viewSampleDepth, in vec3 lLocation, in vec4 worldCoords, in mat4 lightViewMatrix," +
+				"in mat4 lMatrix_0, in mat4 lMatrix_1, in mat4 lMatrix_2, in mat4 lMatrix_3, in mat4 lMatrix_4, in mat4 lMatrix_5," +
+				"in sampler2D shadowMap_0, in sampler2D shadowMap_1, in sampler2D shadowMap_2, in sampler2D shadowMap_3,"+
+				"in sampler2D shadowMap_4, in sampler2D shadowMap_5){\n" +
+				"	vec4 transformed = lightViewMatrix * worldCoords;\n" +
+				"	vec3 lightVec = normalize(transformed.xyz/transformed.w);\n"+
+				"	vec3 lightVecAbs = abs(lightVec);\n" +
+				"	float maximum = max(max(lightVecAbs.x, lightVecAbs.y),lightVecAbs.z);\n" +
+				"	if (lightVecAbs.x == maximum) {\n" +
+				"		if (lightVec.x < 0.0) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_3,worldCoords,shadowMap_3);\n"+		//right
+				"		else getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_1,worldCoords,shadowMap_1);\n" +						//left
+				"	}\n" +
+				"	else if (lightVecAbs.y == maximum) {\n" +
+				"		if (lightVec.y < 0.0) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_4,worldCoords,shadowMap_4);\n"+		//front
+				"		else getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_5,worldCoords,shadowMap_5);\n" +						//back
+				"	}\n" +
+				"	else if (lightVec.z < 0.0) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_0,worldCoords,shadowMap_0);\n"+	//bottom
+				"	else getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_2,worldCoords,shadowMap_2);\n" +							//top
+				"}\n";	
+
+	// get light space depth of view sample and all entries of the shadow map
+	shaderPart += 	
+				"void getShadowValuesCascaded(inout vec4 shadowMapValues, inout float viewSampleDepth, in vec4 worldCoords, in float viewDepth, in mat4 lMatrix_0, in mat4 lMatrix_1, in mat4 lMatrix_2,"+
+				"in mat4 lMatrix_3, in mat4 lMatrix_4, in mat4 lMatrix_5, in sampler2D shadowMap_0, in sampler2D shadowMap_1, in sampler2D shadowMap_2,"+
+				"in sampler2D shadowMap_3, in sampler2D shadowMap_4, in sampler2D shadowMap_5, in float split_0, in float split_1, in float split_2, in float split_3, in float split_4){\n" +
+				"	if (viewDepth < split_0) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_0, worldCoords, shadowMap_0);\n" +
+				"	else if (viewDepth < split_1) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_1, worldCoords, shadowMap_1);\n" +
+				"	else if (viewDepth < split_2) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_2, worldCoords, shadowMap_2);\n" +
+				"	else if (viewDepth < split_3) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_3, worldCoords, shadowMap_3);\n" +
+				"	else if (viewDepth < split_4) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_4, worldCoords, shadowMap_4);\n" +
+				"	else getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_5, worldCoords, shadowMap_5);\n" +																
+				"}\n";	
+				
+	shaderPart += 	
+				"float ESM(float shadowMapDepth, float viewSampleDepth){\n";
+	if (!x3dom.caps.FP_TEXTURES)
+			shaderPart += 	"	return exp(-80.0*(viewSampleDepth - shadowMapDepth));\n";
+	else 	shaderPart += 	"	return shadowMapDepth * exp(-80.0*(viewSampleDepth));\n";
+	shaderPart +="}\n";						
+	
+	return shaderPart;
+};
+
 
 /*******************************************************************************
 * Light

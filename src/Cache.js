@@ -102,6 +102,9 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
             case x3dom.shader.SHADOW:
                 program = new x3dom.shader.ShadowShader(gl);
                 break;
+			case x3dom.shader.BLUR:
+				program = new x3dom.shader.BlurShader(gl);
+				break;				
             case x3dom.shader.DEPTH:
                 //program = new x3dom.shader.DepthShader(gl);
                 break;
@@ -145,6 +148,29 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
 	
 	return this.shaders[properties.toIdentifier()];
 };
+
+/** 
+ * Returns the dynamically created shadow rendering shader 
+ */
+x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights)
+{
+	var ID = "";
+	for (var i = 0; i<shadowedLights.length; i++){
+			if(x3dom.isa(shadowedLights[i], x3dom.nodeTypes.SpotLight))
+				ID += "S";
+			else if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
+				ID += "P";
+			else 
+				ID += "D";
+		}
+		
+
+	if (this.shaders[ID]===undefined){
+		var program = new x3dom.shader.ShadowRenderingShader(gl, shadowedLights);
+		this.shaders[ID] = x3dom.Utils.wrapProgram(gl, program);
+		}
+	return this.shaders[ID];
+}
 
 /**
  * Release texture and shader resources
