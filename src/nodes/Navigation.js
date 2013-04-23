@@ -695,6 +695,7 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, "range", []);
             
             this._needReRender = true;
+            this._lastRangePos = -1;
         },
         {
             visitChildren: function(transform, out)
@@ -716,6 +717,7 @@ x3dom.registerNodeType(
                 if (i && i >= n) {
                     i = n - 1;
                 }
+                this._lastRangePos = i;
 
                 var cnode = this._childNodes[i];
                 if (n && cnode)
@@ -730,6 +732,53 @@ x3dom.registerNodeType(
                     this._nameSpace.doc.needRender = true;
                 }
             },
+
+            getVolume: function (min, max)
+            {
+                var valid = false;
+                var vol = this._graph.volume;
+
+                if (this.volumeValid())
+                {
+                    vol.getBounds(min, max);
+                    valid = true;
+                }
+                else
+                {
+                    var child = null;
+                    var childMin, childMax;
+
+                    if (this._lastRangePos >= 0) {
+                        child = this._childNodes[this._lastRangePos];
+
+                        childMin = x3dom.fields.SFVec3f.MAX();
+                        childMax = x3dom.fields.SFVec3f.MIN();
+
+                        if (child && child.getVolume(childMin, childMax)) {
+                            vol.extendBounds(childMin, childMax);
+                            valid = true;
+                        }
+                    }
+                    else {  // first time we're here
+                        for (var i=0, n=this._childNodes.length; i<n; i++) {
+                            child = this._childNodes[i];
+
+                            childMin = x3dom.fields.SFVec3f.MAX();
+                            childMax = x3dom.fields.SFVec3f.MIN();
+
+                            if (child && child.getVolume(childMin, childMax)) {
+                                vol.extendBounds(childMin, childMax);
+                                valid = true;
+                            }
+                        }
+                    }
+
+                    if (valid)
+                        vol.getBounds(min, max);
+                }
+
+                return valid;
+            },
             
             nodeChanged: function() {
                 this._needReRender = true;
@@ -738,7 +787,7 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName) {
                 this._needReRender = true;
-                if (fieldName == "render" || fieldName == "center" || fieldName == "range") {
+                if (fieldName == "center" || fieldName == "range") {
                     this.invalidateVolume();
                 }
             }

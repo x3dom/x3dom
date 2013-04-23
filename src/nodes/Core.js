@@ -874,7 +874,7 @@ x3dom.registerNodeType(
                 singlePath: true,    // unique path in graph back to root possible
                 localMatrix: null,   // new x3dom.fields.SFMatrix4f(),
                 globalMatrix: null,  // new x3dom.fields.SFMatrix4f();
-                volume: new x3dom.fields.BoxVolume()
+                volume: new x3dom.fields.BoxVolume()    // do we need a world volume, too?
             };
         },
         {
@@ -894,7 +894,6 @@ x3dom.registerNodeType(
                 var valid = false;
                 var vol = this._graph.volume;
 
-                // TODO; de-comment as soon as graph changes are considered
                 if (this.volumeValid())
                 {
                     vol.getBounds(min, max);

@@ -92,9 +92,6 @@ x3dom.registerNodeType(
 
                     this.invalidateVolume();
                 }
-                else if (fieldName == "render") {
-                    this.invalidateVolume();
-                }
             },
 
             fireEvents: function(eventType)

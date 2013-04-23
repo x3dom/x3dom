@@ -57,17 +57,37 @@ x3dom.registerNodeType(
         {
             getVolume: function (min, max)
             {
-                if (this._vf.whichChoice < 0 ||
-                    this._vf.whichChoice >= this._childNodes.length) {
-                    return false;
+                var valid = false;
+                var vol = this._graph.volume;
+
+                if (this.volumeValid())
+                {
+                    vol.getBounds(min, max);
+                    valid = true;
+                }
+                else
+                {
+                    if (this._vf.whichChoice < 0 ||
+                        this._vf.whichChoice >= this._childNodes.length) {
+                        valid = false;
+                    }
+                    else {
+                        var child = this._childNodes[this._vf.whichChoice];
+
+                        var childMin = x3dom.fields.SFVec3f.MAX();
+                        var childMax = x3dom.fields.SFVec3f.MIN();
+
+                        if (child && child.getVolume(childMin, childMax)) {
+                            vol.extendBounds(childMin, childMax);
+                            valid = true;
+                        }
+                    }
+
+                    if (valid)
+                        vol.getBounds(min, max);
                 }
 
-                var child = this._childNodes[this._vf.whichChoice];
-                if (child) {
-                    return child.getVolume(min, max);
-                }
-
-                return false;
+                return valid;
             },
 
             find: function (type)
@@ -163,6 +183,9 @@ x3dom.registerNodeType(
 
             // holds the current matrix (local space transform)
             this._trafo = null;
+
+            // workaround, only check on init if getStyle is necessary, since expensive
+            this._needCssStyleUpdates = true;
         },
         {
             tick: function(t)
@@ -188,13 +211,17 @@ x3dom.registerNodeType(
               }
               
               // temporary per frame update method for CSS-Transform
-              var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform") ||
-                          x3dom.getStyle(this._xmlNode, "-moz-transform");
-              //x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);
-              if (trans && (trans != 'none')) {
-                  this._trafo.setValueByStr(trans);
-                  //x3dom.debug.logInfo(' valid set:' + this._trafo);
-                  return true;
+              if (this._needCssStyleUpdates)
+              {
+                  var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform") ||
+                              x3dom.getStyle(this._xmlNode, "-moz-transform");
+                  //x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);
+                  if (trans && (trans != 'none')) {
+                      this._trafo.setValueByStr(trans);
+                      //x3dom.debug.logInfo(' valid set:' + this._trafo);
+                      return true;
+                  }
+                  this._needCssStyleUpdates = false;    // no special CSS set
               }
               
               return false;
@@ -210,7 +237,6 @@ x3dom.registerNodeType(
                 var valid = false;
                 var vol = this._graph.volume;
 
-                // TODO; de-comment as soon as graph changes are considered
                 if (this.volumeValid())
                 {
                      vol.getBounds(min, max);
@@ -345,9 +371,6 @@ x3dom.registerNodeType(
                             mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
                     this.invalidateVolume();
                 }
-                else if (fieldName == "render") {
-                    this.invalidateVolume();
-                }
             }
         }
     )
@@ -371,9 +394,6 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName) {
                 if (fieldName == "matrix") {
                     this._trafo = this._vf.matrix.transpose();
-                    this.invalidateVolume();
-                }
-                else if (fieldName == "render") {
                     this.invalidateVolume();
                 }
             }
@@ -618,9 +638,6 @@ x3dom.registerNodeType(
                             this._visibleList[i] = false;
                         }
                     }
-                    this.invalidateVolume();
-                }
-                else if (fieldName == "render") {
                     this.invalidateVolume();
                 }
             },
