@@ -667,7 +667,6 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function(transform, out)
             {
-                
                 if (!this._vf.render || !out) {
                     return;
                 }
@@ -734,10 +733,14 @@ x3dom.registerNodeType(
             
             nodeChanged: function() {
                 this._needReRender = true;
+                this.invalidateVolume();
             },
             
             fieldChanged: function(fieldName) {
                 this._needReRender = true;
+                if (fieldName == "render" || fieldName == "center" || fieldName == "range") {
+                    this.invalidateVolume();
+                }
             }
         }
     )

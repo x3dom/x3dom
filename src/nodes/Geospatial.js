@@ -411,7 +411,7 @@ x3dom.registerNodeType(
 x3dom.registerNodeType(
     "GeoLOD",
     "Geospatial",
-    defineClass(x3dom.nodeTypes.X3DChildNode,
+    defineClass(x3dom.nodeTypes.X3DLODNode,
         function (ctx) {
             x3dom.nodeTypes.GeoLOD.superClass.call(this, ctx);
 
@@ -421,21 +421,16 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'child2Url', []);
             this.addField_MFString(ctx, 'child3Url', []);
             this.addField_MFString(ctx, 'child4Url', []);
-            this.addField_SFVec3d(ctx, 'center', 0, 0, 0);
+            //this.addField_SFVec3d(ctx, 'center', 0, 0, 0);
             this.addField_SFFloat(ctx, 'range', 10);
             this.addField_SFString(ctx, 'referenceBindableDescription', []);
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ChildGroup);
-            this.addField_SFNode('rootNode', x3dom.nodeTypes.ChildGroup);
-            //this.addField_SFString(ctx, 'triggerName', Synchronize);
-            this.addField_SFNode('privateChild1Node', x3dom.nodeTypes.ChildGroup);
-            this.addField_SFNode('privateChild2Node', x3dom.nodeTypes.ChildGroup);
-            this.addField_SFNode('privateChild3Node', x3dom.nodeTypes.ChildGroup);
-            this.addField_SFNode('privateChild4Node', x3dom.nodeTypes.ChildGroup);
-            this.addField_SFNode('privateRootNode', x3dom.nodeTypes.ChildGroup);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DChildNode);
+            this.addField_SFNode('rootNode', x3dom.nodeTypes.X3DChildNode);
+            this.addField_SFNode('privateChild1Node', x3dom.nodeTypes.X3DChildNode);
+            this.addField_SFNode('privateChild2Node', x3dom.nodeTypes.X3DChildNode);
+            this.addField_SFNode('privateChild3Node', x3dom.nodeTypes.X3DChildNode);
+            this.addField_SFNode('privateChild4Node', x3dom.nodeTypes.X3DChildNode);
+            this.addField_SFNode('privateRootNode', x3dom.nodeTypes.X3DChildNode);
         }
     )
 );
@@ -450,11 +445,7 @@ x3dom.registerNodeType(
 
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ChildGroup);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DChildNode);
         }
     )
 );
@@ -470,10 +461,6 @@ x3dom.registerNodeType(
             this.addField_MFString(ctx, 'url', []);
             this.addField_MFNode('data', x3dom.nodeTypes.InfoNode);
             this.addField_MFString(ctx, 'summary', []);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -488,11 +475,7 @@ x3dom.registerNodeType(
 
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_SFVec3d(ctx, 'geoCoords', 0, 0, 0);
-            // this.addField_SFBool(ctx, 'rotateYUp', false);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            this.addField_SFBool(ctx, 'rotateYUp', false);
         }
     )
 );
@@ -531,10 +514,6 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
             this.addField_SFNode('geoOrigin', x3dom.nodeTypes.Transform);
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );

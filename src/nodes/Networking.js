@@ -89,6 +89,11 @@ x3dom.registerNodeType(
 					}
                     var xhr = this.nodeChanged();
                     xhr = null;
+
+                    this.invalidateVolume();
+                }
+                else if (fieldName == "render") {
+                    this.invalidateVolume();
                 }
             },
 
@@ -285,7 +290,7 @@ function setNamespace(prefix, childDomNode, mapDEFToID)
 	
 	if(childDomNode.hasChildNodes()){
 		Array.forEach ( childDomNode.childNodes, function (children) {
-				setNamespace(prefix, children, mapDEFToID);			
+			setNamespace(prefix, children, mapDEFToID);
 		} );
 	}		
 }

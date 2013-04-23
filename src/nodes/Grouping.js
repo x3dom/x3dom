@@ -211,12 +211,12 @@ x3dom.registerNodeType(
                 var vol = this._graph.volume;
 
                 // TODO; de-comment as soon as graph changes are considered
-                /*if (this.volumeValid())
-                 {
+                if (this.volumeValid())
+                {
                      vol.getBounds(min, max);
                      valid = true;
-                 }
-                 else*/
+                }
+                else
                 {
                     for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
@@ -239,8 +239,8 @@ x3dom.registerNodeType(
                         vol.transform(this._trafo);
                         vol.getBounds(min, max);
 
-                        // TODO; remove as soon as graph changes are considered
-                        vol.invalidate();
+                        // remove as soon as graph changes are considered
+                        //vol.invalidate();
                     }
                 }
 
@@ -329,15 +329,25 @@ x3dom.registerNodeType(
                 mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
         },
         {
-            fieldChanged: function (fieldName) {
-                // P' = T * C * R * SR * S * -SR * -C * P
-                this._trafo = x3dom.fields.SFMatrix4f.translation(
-                                this._vf.translation.add(this._vf.center)).
+            fieldChanged: function (fieldName)
+            {
+                if (fieldName == "center" || fieldName == "translation" ||
+                    fieldName == "rotation" || fieldName == "scale" ||
+                    fieldName == "scaleOrientation")
+                {
+                    // P' = T * C * R * SR * S * -SR * -C * P
+                    this._trafo = x3dom.fields.SFMatrix4f.translation(
+                                 this._vf.translation.add(this._vf.center)).
                             mult(this._vf.rotation.toMatrix()).
                             mult(this._vf.scaleOrientation.toMatrix()).
                             mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
                             mult(this._vf.scaleOrientation.toMatrix().inverse()).
                             mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
+                    this.invalidateVolume();
+                }
+                else if (fieldName == "render") {
+                    this.invalidateVolume();
+                }
             }
         }
     )
@@ -359,7 +369,13 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                this._trafo = this._vf.matrix.transpose();
+                if (fieldName == "matrix") {
+                    this._trafo = this._vf.matrix.transpose();
+                    this.invalidateVolume();
+                }
+                else if (fieldName == "render") {
+                    this.invalidateVolume();
+                }
             }
         }
     )
@@ -492,6 +508,7 @@ x3dom.registerNodeType(
                             this._lastData = evt.data;
                             that._nameSpace.doc.needRender = true;
                             //x3dom.debug.logInfo("WS Response: " + evt.data);
+                            that.invalidateVolume();
                         }
                     };
 
@@ -552,6 +569,8 @@ x3dom.registerNodeType(
 					this._createTime[i] = 0;
                 }
 
+                this.invalidateVolume();
+
                 x3dom.debug.logInfo("RemoteSelectionGroup has " + n + " entries.");
             },
 
@@ -599,6 +618,10 @@ x3dom.registerNodeType(
                             this._visibleList[i] = false;
                         }
                     }
+                    this.invalidateVolume();
+                }
+                else if (fieldName == "render") {
+                    this.invalidateVolume();
                 }
             },
             
@@ -789,6 +812,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 this.loadMapping();
+                this.invalidateVolume();
             },
             
             fieldChanged: function(fieldName)
