@@ -54,7 +54,7 @@ x3dom.shader.fog = function() {
 /*******************************************************************************
 * Shadow
 ********************************************************************************/
-x3dom.shader.shadow = function() {
+x3dom.shader.rgbaPacking = function() {
 	var shaderPart = "";
 		shaderPart += 	
 					"vec4 packDepth(float depth){\n" +
@@ -107,7 +107,7 @@ x3dom.shader.shadowRendering = function(){
 				"	vec2 textureCoords = (lightSpaceCoordsCart.xy + 1.0)*0.5;\n" +
 				"	viewSampleDepth = lightSpaceCoordsCart.z;\n" +	
 				"	shadowMapValues = texture2D(shadowMap, textureCoords);\n";
-	if (!x3dom.caps.FP_TEXTURES)
+	if (!x3dom.caps.FP_TEXTURES  || x3dom.caps.MOBILE)
 		shaderPart +=	"	shadowMapValues = vec4(1.0,1.0,unpackDepth(shadowMapValues),1.0);\n";
 	shaderPart +="}\n";
 
@@ -148,10 +148,10 @@ x3dom.shader.shadowRendering = function(){
 				"}\n";	
 				
 	shaderPart += 	
-				"float ESM(float shadowMapDepth, float viewSampleDepth){\n";
-	if (!x3dom.caps.FP_TEXTURES)
-			shaderPart += 	"	return exp(-80.0*(viewSampleDepth - shadowMapDepth));\n";
-	else 	shaderPart += 	"	return shadowMapDepth * exp(-80.0*(viewSampleDepth));\n";
+				"float ESM(float shadowMapDepth, float viewSampleDepth, float offset){\n";
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE)
+			shaderPart += 	"	return exp(-80.0*(1.0-offset)*(viewSampleDepth - shadowMapDepth));\n";
+	else 	shaderPart += 	"	return shadowMapDepth * exp(-80.0*(1.0-offset)*viewSampleDepth);\n";
 	shaderPart +="}\n";						
 	
 	return shaderPart;

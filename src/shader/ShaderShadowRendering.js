@@ -81,18 +81,20 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 				"uniform float light"+l+"_BeamWidth;\n" +
 				"uniform float light"+l+"_CutOffAngle;\n" +
 				"uniform float light"+l+"_ShadowIntensity;\n" +
+				"uniform float light"+l+"_ShadowOffset;\n" +
 				"uniform mat4 light"+l+"_ViewMatrix;\n";
 		for (var j=0; j<6; j++){
 			shader += "uniform mat4 light"+l+"_"+j+"_Matrix;\n";
-			shader += "uniform sampler2D light"+l+"_"+j+"_shadowMap;\n"; 
+			shader += "uniform sampler2D light"+l+"_"+j+"_ShadowMap;\n"; 
 		}
 		for (var j=0; j<5; j++)
 			shader += "uniform float light"+l+"_"+j+"_Split;\n"; 
 
 		
 	}
-		if (!x3dom.caps.FP_TEXTURES) 
-			shader += 	x3dom.shader.shadow();				
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
+		shader += 	x3dom.shader.rgbaPacking();				
+	
 	shader += x3dom.shader.shadowRendering();
 	
 	shader += 	"void main(void) {\n" +
@@ -100,7 +102,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 				"	vec2 texCoordsSceneMap = (vVertexPosition + 1.0)*0.5;\n" +
 				"	vec4 projCoords = texture2D(sceneMap, texCoordsSceneMap);\n" +
 				"	if (projCoords != vec4(1.0,1.0,1.0,0.0)){\n";
-	if (!x3dom.caps.FP_TEXTURES){ 
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){ 
 		shader += 	"	projCoords.z = unpackDepth(projCoords);\n" +
 					"	projCoords.w = 1.0;\n";
 	}
@@ -124,16 +126,17 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 		if (!x3dom.isa(shadowedLights[l], x3dom.nodeTypes.PointLight)){
 			shader += "		getShadowValuesCascaded(shadowMapValues, viewSampleDepth, worldCoords, -viewCoords.z/viewCoords.w,"+
 								"light"+l+"_0_Matrix,light"+l+"_1_Matrix,light"+l+"_2_Matrix,light"+l+"_3_Matrix,light"+l+"_4_Matrix,light"+l+"_5_Matrix,"+
-								"light"+l+"_0_shadowMap,light"+l+"_1_shadowMap,light"+l+"_2_shadowMap,light"+l+"_3_shadowMap,"+
-								"light"+l+"_4_shadowMap,light"+l+"_5_shadowMap, light"+l+"_0_Split, light"+l+"_1_Split, light"+l+"_2_Split, light"+l+"_3_Split, \n"+
+								"light"+l+"_0_ShadowMap,light"+l+"_1_ShadowMap,light"+l+"_2_ShadowMap,light"+l+"_3_ShadowMap,"+
+								"light"+l+"_4_ShadowMap,light"+l+"_5_ShadowMap, light"+l+"_0_Split, light"+l+"_1_Split, light"+l+"_2_Split, light"+l+"_3_Split, \n"+
 								"light"+l+"_4_Split);\n";
 		} else {
 			shader += "		getShadowValuesPointLight(shadowMapValues, viewSampleDepth, light"+l+"_Location, worldCoords, light"+l+"_ViewMatrix, "+
 								"light"+l+"_0_Matrix,light"+l+"_1_Matrix,light"+l+"_2_Matrix,light"+l+"_3_Matrix,light"+l+"_4_Matrix,light"+l+"_5_Matrix,"+
-								"light"+l+"_0_shadowMap,light"+l+"_1_shadowMap,light"+l+"_2_shadowMap,light"+l+"_3_shadowMap,"+
-								"light"+l+"_4_shadowMap,light"+l+"_5_shadowMap);\n";
+								"light"+l+"_0_ShadowMap,light"+l+"_1_ShadowMap,light"+l+"_2_ShadowMap,light"+l+"_3_ShadowMap,"+
+								"light"+l+"_4_ShadowMap,light"+l+"_5_ShadowMap);\n";
 		}		
-		shader += 	"		shadowValue *= clamp(ESM(shadowMapValues.z/shadowMapValues.w, viewSampleDepth), 1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n" +
+		shader += 	"		shadowValue *= clamp(ESM(shadowMapValues.z/shadowMapValues.w, viewSampleDepth, light"+l+"_ShadowOffset), "+
+					"							 1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n" +
 					"	}\n";			
 	}
 					

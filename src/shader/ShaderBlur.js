@@ -73,11 +73,8 @@ x3dom.shader.BlurShader.prototype.generateFragmentShader = function(gl)
 					"uniform float pixelSizeVert;\n" +
 					"uniform int filterSize;\n";
 
-	if (!x3dom.caps.FP_TEXTURES){
-	shader +=		x3dom.shader.shadow() +
-/*					"float logVal(float weight1, float value1, float weight2, float value2){\n" +
-					"	return value1 + log(weight1 + weight2 * exp(value2-value1));\n" +
-					"}\n" +*/
+	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){
+	shader +=		x3dom.shader.rgbaPacking() +
 	
 					"void main(void) {\n" +
 					"	vec2 texCoords = (vVertexPosition + 1.0)*0.5;\n" +

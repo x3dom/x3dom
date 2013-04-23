@@ -137,18 +137,19 @@ x3dom.shader.ShadowShader.prototype.generateFragmentShader = function(gl)
 				"#endif\n" +
 				"\n" +
 				"varying vec4 projCoords;\n" +
-				"uniform bool sceneDepth;\n";
-	if(!x3dom.caps.FP_TEXTURES) 
-		shader += 	x3dom.shader.shadow();
+				"uniform float offset;\n" +
+				"uniform bool cameraView;\n";
+	if(!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 
+		shader += 	x3dom.shader.rgbaPacking();
 	
 	shader +=	"void main(void) {\n" +
 				"    vec3 proj = (projCoords.xyz / projCoords.w);\n";
 
- 	if(!x3dom.caps.FP_TEXTURES) {
+ 	if(!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) {
 		shader +=	"gl_FragColor = packDepth(proj.z);\n";
 	} else {
 		//use exponential shadow maps, when not rendering from camera view
-		shader +=	"if (!sceneDepth) proj.z = exp(80.0*proj.z);\n";
+		shader +=	"if (!cameraView) proj.z = exp((1.0-offset)*80.0*proj.z);\n";
 		shader +=	"gl_FragColor = vec4(proj, 1.0);\n";
 	}
 	shader +=	"}\n";

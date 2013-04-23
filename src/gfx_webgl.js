@@ -1213,7 +1213,8 @@ x3dom.gfx_webgl = (function () {
 	/*****************************************************************************
     * Render Shadow-Pass
     *****************************************************************************/
-    Context.prototype.renderShadowPass = function(gl, viewarea, mat_scene, mat_view, targetFbo, sceneRender)
+    Context.prototype.renderShadowPass = function(gl, viewarea, mat_scene, 
+										 mat_view, targetFbo, offset, isCameraView)
     {
 		var scene = viewarea._scene;
 		var sp = scene._webgl.shadowShader;
@@ -1221,7 +1222,8 @@ x3dom.gfx_webgl = (function () {
 				
 		gl.bindFramebuffer(gl.FRAMEBUFFER, targetFbo.fbo);
 		gl.viewport(0, 0, targetFbo.width, targetFbo.height);
-		sp.sceneDepth = sceneRender;		
+		sp.cameraView = isCameraView;
+		sp.offset = offset;
 		
 		gl.clearColor(1.0, 1.0, 1.0, 0.0);						
         gl.clearDepth(1.0);
@@ -3095,6 +3097,7 @@ x3dom.gfx_webgl = (function () {
 
                 var lightMatrix = viewarea.getLightMatrix()[p];
 				var shadowMaps = scene._webgl.fboShadow[shadowCount];
+				var offset = Math.max(0.0,Math.min(.99,slights[p]._vf.shadowOffset));
 												
 				if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)){
 					//get cascade count
@@ -3107,13 +3110,13 @@ x3dom.gfx_webgl = (function () {
 					
 					//render shadow pass
 					for (var i=0; i<numCascades; i++){
-						this.renderShadowPass(gl, viewarea, mat_light[i], lightMatrix, shadowMaps[i],false);
+						this.renderShadowPass(gl, viewarea, mat_light[i], lightMatrix, shadowMaps[i], offset ,false);
 					}
 				} else {
 					//for point lights 6 render passes
 					mat_light = viewarea.getWCtoLCMatricesPointLight(lightMatrix);
 					for (var i=0; i<6; i++){
-						this.renderShadowPass(gl, viewarea, mat_light[i], lightMatrix, shadowMaps[i],false);
+						this.renderShadowPass(gl, viewarea, mat_light[i], lightMatrix, shadowMaps[i], offset ,false);
 					}					
 				}
 				shadowCount++;
@@ -3130,7 +3133,7 @@ x3dom.gfx_webgl = (function () {
 		
 		//One pass for depth of scene from camera view (to enable post-processing shading)
 		if (shadowCount > 0){
-			this.renderShadowPass(gl, viewarea, mat_proj.mult(mat_view), mat_view, scene._webgl.fboScene, true); 
+			this.renderShadowPass(gl, viewarea, mat_proj.mult(mat_view), mat_view, scene._webgl.fboScene, 0.0, true); 
 			var shadowTime = x3dom.Utils.stopMeasure('shadow');
 			this.x3dElem.runtime.addMeasurement('SHADOW', shadowTime);
 		} else this.x3dElem.runtime.removeMeasurement('SHADOW');
@@ -4053,7 +4056,7 @@ x3dom.gfx_webgl = (function () {
 				for (var i=0; i< numShadowMaps; i++){
 						gl.activeTexture(gl.TEXTURE1 + shadowIndex);
 						gl.bindTexture(gl.TEXTURE_2D, shadowMaps[i].tex);
-						sp['light'+p+'_'+i+'_shadowMap'] = shadowIndex+1;
+						sp['light'+p+'_'+i+'_ShadowMap'] = shadowIndex+1;
 						sp['light'+p+'_'+i+'_Matrix'] = mat_light[i].toGL();
 						shadowIndex++;
 				}
@@ -4082,7 +4085,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
-					sp['light'+p+'_ShadowOffset']     = currentLights[p]._vf.shadowOffset;
+					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(.99,currentLights[p]._vf.shadowOffset));
 					
 
 				}
@@ -4098,7 +4101,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_BeamWidth']        = 0.0;
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
-					sp['light'+p+'_ShadowOffset']	  = currentLights[p]._vf.shadowOffset;
+					sp['light'+p+'_ShadowOffset']	  = Math.max(0.0,Math.min(.99,currentLights[p]._vf.shadowOffset));
 					
 				}
 				else if(x3dom.isa(currentLights[p], x3dom.nodeTypes.SpotLight))
@@ -4113,7 +4116,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_CutOffAngle']      = currentLights[p]._vf.cutOffAngle;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
-					sp['light'+p+'_ShadowOffset']     = currentLights[p]._vf.shadowOffset;
+					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(.99,currentLights[p]._vf.shadowOffset));
 					
 				}
 					
