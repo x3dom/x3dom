@@ -202,6 +202,8 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials)
         
 	for (var i=0; i<faces.length; i++) {
 		var face = faces[i];
+	  if (url[i]!="")
+	  {
 		var image = new Image();
 		image.crossOrigin = withCredentials ? 'use-credentials' : '';
 		texture.pendingTextureLoads++;
@@ -243,6 +245,32 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials)
 		
 		// backUrl, frontUrl, bottomUrl, topUrl, leftUrl, rightUrl (for bgnd)
 		image.src = url[i];
+	   }
+	   else
+	   {
+	      if (width == 0 && height == 0) 
+	      {
+                // how to avoid magic numbers?                 
+		width = 1024;
+		height = 1024;
+	      }
+
+	      var data = new Uint8Array(width*height*4);
+	      for (var j = 0; j<width*height*4; j++)
+	        data[j]	= 0;
+
+	      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, bgnd);
+	      gl.bindTexture(gl.TEXTURE_CUBE_MAP, texture);
+	      gl.texImage2D(face, 0, gl.RGBA, width, height, 0, gl.RGBA, gl.UNSIGNED_BYTE, data);
+	      gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+	      gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);	 
+
+	      if (i==faces.length-1 && texture.pendingTextureLoads < 0) {
+		      texture.textureCubeReady = true;
+		      x3dom.debug.logInfo("[Utils|createTextureCube] Loading CubeMap finished...");
+		      doc.needRender = true;
+	      }
+	   }
 	}
 	
 	return texture;
