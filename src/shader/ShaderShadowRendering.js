@@ -120,9 +120,8 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 				"		vec4 shadowMapValues;\n" +
 				"		float viewSampleDepth;\n";
 				
-		if (x3dom.isa(shadowedLights[l], x3dom.nodeTypes.SpotLight)){
-			shader += " 	getShadowValues(shadowMapValues, viewSampleDepth, light"+l+"_0_Matrix,worldCoords,light"+l+"_0_shadowMap);\n";
-		} else if (x3dom.isa(shadowedLights[l], x3dom.nodeTypes.DirectionalLight)){
+
+		if (!x3dom.isa(shadowedLights[l], x3dom.nodeTypes.PointLight)){
 			shader += "		getShadowValuesCascaded(shadowMapValues, viewSampleDepth, worldCoords, -viewCoords.z/viewCoords.w,"+
 								"light"+l+"_0_Matrix,light"+l+"_1_Matrix,light"+l+"_2_Matrix,light"+l+"_3_Matrix,light"+l+"_4_Matrix,light"+l+"_5_Matrix,"+
 								"light"+l+"_0_shadowMap,light"+l+"_1_shadowMap,light"+l+"_2_shadowMap,light"+l+"_3_shadowMap,"+

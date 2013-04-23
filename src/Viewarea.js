@@ -686,15 +686,25 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view)
 /*
  * Get WCToLCMatrices for cascaded (directional) light
  */
-x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades)
+x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades,isSpotLight)
 {	
-	var proj = this.getLightProjectionMatrix(view);
+	var proj = new x3dom.fields.SFMatrix4f();
+	proj.setValues(this.getProjectionMatrix());
+	
+	//fit near and far plane of projection matrix
+	var cropMatrix = this.getLightCropMatrix(proj.mult(view));
+	
+	proj = cropMatrix.mult(proj);
+	
+	if (isSpotLight){
+		proj._00 = 1;
+		proj._11 = 1;
+	}	
 	
 	var viewProj = proj.mult(view);	
 	
 	var matrices = new Array();
 
-	
 	if (numCascades == 1){
 		matrices[0] = viewProj;
 		return matrices;
@@ -737,10 +747,9 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat)
 		if (vDist > sRad)
 			near = (vDist - sRad) * nearScale; 
 		else
-			near = 0;                           
+			near = 1;                           
 		far = (vDist + sRad) * farScale;
 	}
-
 
 	var proj = new x3dom.fields.SFMatrix4f();
 
@@ -1493,8 +1502,12 @@ x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, postProjec
 	var logSplit;
 	var practSplit = new Array();
 	var alpha = 1.0;
-	var zNear = this._scene.getViewpoint().getNear();
-	var zFar = this._scene.getViewpoint().getFar();
+	
+	var viewPoint = this._scene.getViewpoint();
+	
+	var zNear = viewPoint.getNear();
+	var zFar = viewPoint.getFar();
+	
 
 	practSplit[0] = zNear;
 	
@@ -1522,8 +1535,64 @@ x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, postProjec
 
 };
 
+
 /*
- * Calculate a fitting matrix for the wctolc-matrix and split boundaries
+ * calculate a matrix to enhance the placement of 
+ * the near and far planes of the light projection matrix
+*/
+x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
+{	
+	//get corner points of scene bounds
+	var sceneMin = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
+	var sceneMax = x3dom.fields.SFVec3f.copy(this._scene._lastMax);
+	
+	var sceneCorners = new Array();
+	sceneCorners[0] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMin.y, sceneMin.z);
+	sceneCorners[1] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMin.y, sceneMax.z);
+	sceneCorners[2] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMax.y, sceneMin.z);
+	sceneCorners[3] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMax.y, sceneMax.z);
+	sceneCorners[4] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMin.y, sceneMin.z);
+	sceneCorners[5] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMin.y, sceneMax.z);
+	sceneCorners[6] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMax.y, sceneMin.z);
+	sceneCorners[7] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMax.y, sceneMax.z);
+	
+	//transform scene bounds into light space
+	for (var i=0; i<8; i++){
+		sceneCorners[i] = WCToLCMatrix.multFullMatrixPnt(sceneCorners[i]);
+	}
+	
+	//determine min and max values in light space
+	var minScene = x3dom.fields.SFVec3f.copy(sceneCorners[0]);
+	var maxScene = x3dom.fields.SFVec3f.copy(sceneCorners[0]);
+	
+	for (var i=1; i<8; i++){
+		minScene.x = Math.min(sceneCorners[i].x, minScene.x); 
+		minScene.y = Math.min(sceneCorners[i].y, minScene.y);
+		minScene.z = Math.min(sceneCorners[i].z, minScene.z); 
+		
+		maxScene.x = Math.max(sceneCorners[i].x, maxScene.x); 
+		maxScene.y = Math.max(sceneCorners[i].y, maxScene.y); 
+		maxScene.z = Math.max(sceneCorners[i].z, maxScene.z); 
+	}
+	
+	var cropMatrix = new x3dom.fields.SFMatrix4f.identity();
+	
+	var scaleZ = 1.0 / (maxScene.z - minScene.z);
+	var offsetZ = -minScene.z * scaleZ;
+
+	var cropMatrix = new x3dom.fields.SFMatrix4f.identity();
+	
+	cropMatrix._22 = scaleZ;
+	cropMatrix._23 = offsetZ;	
+	
+	return cropMatrix;
+	
+};	
+	
+	
+
+/*
+ * Calculate a matrix to fit the given wctolc-matrix to the split boundaries
  */
 x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, zFar)
 {	

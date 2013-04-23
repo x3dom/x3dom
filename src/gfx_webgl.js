@@ -2739,15 +2739,15 @@ x3dom.gfx_webgl = (function () {
 			var shadowedLights = viewarea.getShadowedLights();
 			for (var i=0; i<shadowedLights.length; i++){
 				var size = shadowedLights[i]._vf.shadowMapSize;
-				var numShadowMaps = 1;
+				var numShadowMaps;
 					
-				if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
-					//six maps for point lights
-					numShadowMaps = 6;
-				else if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.DirectionalLight))
+				if (!x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
 					//cascades for directional lights
 					numShadowMaps = Math.max(1,Math.min(shadowedLights[i]._vf.shadowCascades,6));		
-				
+				else 
+					//six maps for point lights
+					numShadowMaps = 6;
+					
 				scene._webgl.fboShadow[i] = new Array();		
 				
 				for (var j=0; j < numShadowMaps; j++)
@@ -2830,13 +2830,13 @@ x3dom.gfx_webgl = (function () {
 			for (var i=0; i<shadowedLights.length; i++){
 				var size = shadowedLights[i]._vf.shadowMapSize;
 				
-				var numShadowMaps = 1;	
-				if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
-					//six maps for point lights
-					numShadowMaps = 6;
-				else if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.DirectionalLight))
+				var numShadowMaps ;	
+				if (!x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
 					//cascades for directional lights
-					numShadowMaps = Math.max(1,Math.min(shadowedLights[i]._vf.shadowCascades,6));		
+					numShadowMaps = Math.max(1,Math.min(shadowedLights[i]._vf.shadowCascades,6));				
+				else 
+					//six maps for point lights
+					numShadowMaps = 6;		
 				
 				if (typeof scene._webgl.fboShadow[i] === "undefined" || scene._webgl.fboShadow[i].length != numShadowMaps ||
 					scene._webgl.fboShadow[i][0].height != size){
@@ -3096,20 +3096,19 @@ x3dom.gfx_webgl = (function () {
                 var lightMatrix = viewarea.getLightMatrix()[p];
 				var shadowMaps = scene._webgl.fboShadow[shadowCount];
 												
-				if (x3dom.isa(slights[p], x3dom.nodeTypes.SpotLight)){
-					//one render pass for spot lights
-					mat_light = new Array();
-					mat_light[0] = viewarea.getWCtoLCMatrix(lightMatrix);
-					this.renderShadowPass(gl, viewarea, mat_light[0], lightMatrix, shadowMaps[0],false);
-				
-				} else if (x3dom.isa(slights[p], x3dom.nodeTypes.DirectionalLight)){
-					var numCascades = shadowMaps.length;
-					mat_light = viewarea.getWCtoLCMatricesCascaded(lightMatrix, numCascades);
+				if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)){
+					//get cascade count
+					var numCascades = Math.max(1,Math.min(slights[p]._vf.shadowCascades,6));
 					
+					var isSpotLight = x3dom.isa(slights[p], x3dom.nodeTypes.SpotLight);
+					
+					//calculate transformation matrices
+					mat_light = viewarea.getWCtoLCMatricesCascaded(lightMatrix, numCascades, isSpotLight);
+					
+					//render shadow pass
 					for (var i=0; i<numCascades; i++){
 						this.renderShadowPass(gl, viewarea, mat_light[i], lightMatrix, shadowMaps[i],false);
 					}
-
 				} else {
 					//for point lights 6 render passes
 					mat_light = viewarea.getWCtoLCMatricesPointLight(lightMatrix);
@@ -3959,9 +3958,8 @@ x3dom.gfx_webgl = (function () {
     {
 		var scene = viewarea._scene;
 		
-		//dont' render shadows whith less than 7 textures per fragment shader
+		//don't render shadows whith less than 7 textures per fragment shader
 		var texLimit = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);	
-		var uniformLimit = gl.getParameter(gl.MAX_FRAGMENT_UNIFORM_VECTORS);
 		
 		if (texLimit < 7) return;
 		
@@ -3969,7 +3967,6 @@ x3dom.gfx_webgl = (function () {
 		var renderSplit = new Array();
 		renderSplit[0] = 0;
 		
-		var lightsPerSplit = 0;
 		
 		
 		//filter shadow maps and determine, if multiple render passes are needed		
@@ -3983,16 +3980,11 @@ x3dom.gfx_webgl = (function () {
 					this.blurTex(gl, scene, shadowMaps[j], filterSize);
 				}
 				
-				lightsPerSplit++;
-				if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.DirectionalLight) ||
-					x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
-					texUnits += 6;
-				else texUnits += 1;
+				texUnits+=6;
 				
-				if (texUnits > texLimit || lightsPerSplit > 6){
+				if (texUnits > texLimit){
 					renderSplit[renderSplit.length] = i;
-					texUnits = 1 + numShadowMaps;
-					lightsPerSplit = 1;
+					texUnits = 7;
 				}
 		}
 		renderSplit[renderSplit.length] = shadowedLights.length;
@@ -4067,8 +4059,8 @@ x3dom.gfx_webgl = (function () {
 				}
 				sp['light'+p+'_ViewMatrix'] = lightMatrix.toGL();						
 
-				//cascade depths for directional light
-				if (x3dom.isa(currentLights[p], x3dom.nodeTypes.DirectionalLight)){
+				//cascade depths for directional and spot light
+				if (!x3dom.isa(currentLights[p], x3dom.nodeTypes.PointLight)){
 					for (var j=0; j< numShadowMaps; j++){
 						var numCascades = Math.max(1,Math.min(currentLights[p]._vf.shadowCascades,6));
 						var splitDepths = viewarea.getShadowSplitDepths(numCascades,false);
@@ -4090,6 +4082,8 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
+					sp['light'+p+'_ShadowOffset']     = currentLights[p]._vf.shadowOffset;
+					
 
 				}
 				
@@ -4104,6 +4098,8 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_BeamWidth']        = 0.0;
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
+					sp['light'+p+'_ShadowOffset']	  = currentLights[p]._vf.shadowOffset;
+					
 				}
 				else if(x3dom.isa(currentLights[p], x3dom.nodeTypes.SpotLight))
 				{
@@ -4116,6 +4112,9 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_BeamWidth']        = currentLights[p]._vf.beamWidth;
 					sp['light'+p+'_CutOffAngle']      = currentLights[p]._vf.cutOffAngle;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
+					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
+					sp['light'+p+'_ShadowOffset']     = currentLights[p]._vf.shadowOffset;
+					
 				}
 					
 			}

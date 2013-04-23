@@ -33,7 +33,9 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'on', true);
             this.addField_SFFloat(ctx, 'shadowIntensity', 0);
 			this.addField_SFInt32(ctx, 'shadowMapSize', 1024);
-			this.addField_SFInt32(ctx, 'shadowFilterSize', 0);			
+			this.addField_SFInt32(ctx, 'shadowFilterSize', 0);
+            this.addField_SFFloat(ctx, 'shadowOffset', 0);		
+			
         },
         {
             getViewMatrix: function(vec) {
@@ -80,7 +82,8 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.DirectionalLight.superClass.call(this, ctx);
 
             this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
-			this.addField_SFInt32(ctx, 'shadowCascades', 2);			
+			this.addField_SFInt32(ctx, 'shadowCascades', 1);
+			
         },
         {
             getViewMatrix: function(vec) {
@@ -127,7 +130,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DLightNode,
         function (ctx) {
             x3dom.nodeTypes.SpotLight.superClass.call(this, ctx);
-
+			this.addField_SFInt32(ctx, 'shadowCascades', 1);	
             this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
             this.addField_SFVec3f(ctx, 'attenuation', 1, 0, 0);
             this.addField_SFVec3f(ctx, 'location', 0, 0, 0);
