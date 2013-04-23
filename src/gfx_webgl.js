@@ -2413,6 +2413,8 @@ x3dom.gfx_webgl = (function () {
         
         //t0 = new Date().getTime();
         
+        x3dom.Utils.startMeasure("picking");
+        
         var mat_view, mat_scene;
         
         if (arguments.length > 4) {
@@ -2610,6 +2612,9 @@ x3dom.gfx_webgl = (function () {
                 viewarea._pickingInfo.lastClickObj = null;
             }
         }
+        
+        var pickTime = x3dom.Utils.stopMeasure("picking");
+			  this.x3dElem.runtime.addMeasurement('PICKING', pickTime);
         
         //t1 = new Date().getTime() - t0;
         //x3dom.debug.logInfo("Picking time (idBuf): " + t1 + "ms");
