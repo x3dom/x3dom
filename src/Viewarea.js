@@ -688,7 +688,8 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view)
 /*
  * Get WCToLCMatrices for cascaded (directional) light
  */
-x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades,isSpotLight)
+x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades,isSpotLight,
+															  splitFactor, splitOffset)
 {	
 	var proj = new x3dom.fields.SFMatrix4f();
 	proj.setValues(this.getProjectionMatrix());
@@ -712,7 +713,7 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades,i
 		return matrices;
 	}
 	
-	var cascadeSplits = this.getShadowSplitDepths(numCascades,true);
+	var cascadeSplits = this.getShadowSplitDepths(numCascades,splitFactor, splitOffset, true);
 	
 	for (var i=0; i<numCascades; i++){
 		var fittingMat = this.getLightFittingMatrix(viewProj,cascadeSplits[i],cascadeSplits[i+1]);
@@ -1508,35 +1509,35 @@ x3dom.Viewarea.prototype.getShadowedLights = function()
 /*
  * Calculate view frustum split positions for the given number of cascades
  */
-x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, postProject)
+x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFactor, 
+														splitOffset,  postProject)
 {	
-	var mat_proj = this.getProjectionMatrix();
 	var logSplit;
 	var practSplit = new Array();
-	var alpha = 1.0;
 	
 	var viewPoint = this._scene.getViewpoint();
 	
 	var zNear = viewPoint.getNear();
 	var zFar = viewPoint.getFar();
-	
 
 	practSplit[0] = zNear;
 	
-	//pseudo-near plane for bigger cascades near camera
-	zNear = zNear + (zFar-zNear)/75;
+	//pseudo near plane for bigger cascades near camera
+	zNear = zNear + splitOffset*(zFar-zNear)/10;
 	
 	//calculate split depths according to "practical split scheme"
 	for (var i=1;i<numCascades;i++){
 		logSplit = zNear * Math.pow((zFar / zNear), i / numCascades);
-		practSplit[i] = alpha * logSplit + (1 - alpha) * (zNear + i / (numCascades * (zNear-zFar)));
+		practSplit[i] = splitFactor * logSplit + (1 - splitFactor) * (zNear + i / (numCascades * (zNear-zFar)));
 	}
 	practSplit[numCascades] = zFar;
 	
 	//return in view coords
 	if (!postProject) return practSplit;
 	
-	//return in post projective coords
+	//return in post projective coords	
+	var mat_proj = this.getProjectionMatrix();	
+	
 	var postProj = new Array();
 	
 	for (var j=0; j<=numCascades; j++){
@@ -1544,7 +1545,6 @@ x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, postProjec
 	}
 	
 	return postProj;
-
 };
 
 
@@ -1578,17 +1578,10 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 	var maxScene = x3dom.fields.SFVec3f.copy(sceneCorners[0]);
 	
 	for (var i=1; i<8; i++){
-		minScene.x = Math.min(sceneCorners[i].x, minScene.x); 
-		minScene.y = Math.min(sceneCorners[i].y, minScene.y);
 		minScene.z = Math.min(sceneCorners[i].z, minScene.z); 
-		
-		maxScene.x = Math.max(sceneCorners[i].x, maxScene.x); 
-		maxScene.y = Math.max(sceneCorners[i].y, maxScene.y); 
 		maxScene.z = Math.max(sceneCorners[i].z, maxScene.z); 
 	}
-	
-	var cropMatrix = new x3dom.fields.SFMatrix4f.identity();
-	
+		
 	var scaleZ = 1.0 / (maxScene.z - minScene.z);
 	var offsetZ = -minScene.z * scaleZ;
 
@@ -1597,8 +1590,7 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 	cropMatrix._22 = scaleZ;
 	cropMatrix._23 = offsetZ;	
 	
-	return cropMatrix;
-	
+	return cropMatrix;	
 };	
 	
 	

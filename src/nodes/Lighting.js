@@ -83,6 +83,8 @@ x3dom.registerNodeType(
 
             this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
 			this.addField_SFInt32(ctx, 'shadowCascades', 1);
+			this.addField_SFFloat(ctx, 'shadowSplitFactor', 1);
+			this.addField_SFFloat(ctx, 'shadowSplitOffset', 0.1);			
 			
         },
         {
@@ -130,13 +132,17 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DLightNode,
         function (ctx) {
             x3dom.nodeTypes.SpotLight.superClass.call(this, ctx);
-			this.addField_SFInt32(ctx, 'shadowCascades', 1);	
             this.addField_SFVec3f(ctx, 'direction', 0, 0, -1);
             this.addField_SFVec3f(ctx, 'attenuation', 1, 0, 0);
             this.addField_SFVec3f(ctx, 'location', 0, 0, 0);
             this.addField_SFFloat(ctx, 'radius', 100);
             this.addField_SFFloat(ctx, 'beamWidth', 1.5707963);
             this.addField_SFFloat(ctx, 'cutOffAngle', 1.5707963);
+			this.addField_SFInt32(ctx, 'shadowCascades', 1);	
+			this.addField_SFFloat(ctx, 'shadowSplitFactor', 1);
+			this.addField_SFFloat(ctx, 'shadowSplitOffset', 0.1);
+			
+
 
             this._vf.global = true;
         },

@@ -2704,7 +2704,7 @@ x3dom.gfx_webgl = (function () {
         {
             return;
         }
-
+        
         var vol = null;
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
@@ -3108,12 +3108,16 @@ x3dom.gfx_webgl = (function () {
 												
 				if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)){
 					//get cascade count
-					var numCascades = Math.max(1,Math.min(slights[p]._vf.shadowCascades,6));
+					
+					var numCascades = Math.max(1,Math.min(slights[p]._vf.shadowCascades,6));					
+					var splitFactor = Math.max(0,Math.min(slights[p]._vf.shadowSplitFactor,1));					
+					var splitOffset = Math.max(0,Math.min(slights[p]._vf.shadowSplitOffset,1));
 					
 					var isSpotLight = x3dom.isa(slights[p], x3dom.nodeTypes.SpotLight);
 					
 					//calculate transformation matrices
-					mat_light = viewarea.getWCtoLCMatricesCascaded(lightMatrix, numCascades, isSpotLight);
+					mat_light = viewarea.getWCtoLCMatricesCascaded(lightMatrix, numCascades, isSpotLight,
+																   splitFactor, splitOffset);
 					
 					//render shadow pass
 					for (var i=0; i<numCascades; i++){
@@ -3970,6 +3974,9 @@ x3dom.gfx_webgl = (function () {
     {
 		var scene = viewarea._scene;
 		
+		if (x3dom.caps.MOBILE)
+			viewarea._visDbgBuf = true;
+		
 		//don't render shadows whith less than 7 textures per fragment shader
 		var texLimit = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);	
 		
@@ -4075,7 +4082,10 @@ x3dom.gfx_webgl = (function () {
 				if (!x3dom.isa(currentLights[p], x3dom.nodeTypes.PointLight)){
 					for (var j=0; j< numShadowMaps; j++){
 						var numCascades = Math.max(1,Math.min(currentLights[p]._vf.shadowCascades,6));
-						var splitDepths = viewarea.getShadowSplitDepths(numCascades,false);
+						var splitFactor = Math.max(0,Math.min(currentLights[p]._vf.shadowSplitFactor,1));					
+						var splitOffset = Math.max(0,Math.min(currentLights[p]._vf.shadowSplitOffset,1));						
+						
+						var splitDepths = viewarea.getShadowSplitDepths(numCascades, splitFactor, splitOffset, false);
 						sp['light'+p+'_'+j+'_Split'] = splitDepths[j+1];
 					}
 				}				
