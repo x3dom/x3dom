@@ -749,8 +749,21 @@ x3dom.gfx_webgl = (function () {
             {
                 gl.deleteBuffer(bgnd._webgl.buffers[2]);
             }
+
+            if (bgnd._webgl.cube_texture !== undefined && bgnd._webgl.cube_texture)
+            {
+                gl.deleteTexture(bgnd._webgl.cube_texture);
+            }
+            if (bgnd._webgl.cube_shader && bgnd._webgl.cube_shader.position !== undefined)
+            {
+                gl.deleteBuffer(bgnd._webgl.cube_buffers[1]);
+                gl.deleteBuffer(bgnd._webgl.cube_buffers[0]);
+            }
+
             bgnd._webgl = {};
         }
+	else
+	  bgnd._webgl = {};
         
         bgnd._dirty = false;
         
@@ -758,153 +771,128 @@ x3dom.gfx_webgl = (function () {
         var i = 0;
         var w = 1, h = 1;
         
-        if (url.length > 0 && url[0].length > 0)
+        if (url.length > 0 &&
+            (url[0] != "" || url[1] != "" || url[2] != "" ||
+             url[3] != "" || url[4] != "" || url[5] != ""))
         {
-            if (url.length >= 6 && url[1].length > 0 && url[2].length > 0 && 
-                url[3].length > 0 && url[4].length > 0 && url[5].length > 0)
-            {
-                sphere = new x3dom.nodeTypes.Sphere();
-                
-                bgnd._webgl = {
-                    positions: sphere._mesh._positions[0],
-                    indexes: sphere._mesh._indices[0],
-                    buffers: [{}, {}]
-                };
-                
-                bgnd._webgl.primType = gl.TRIANGLES;
-						
-				bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);
-                
-                bgnd._webgl.texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url, 
-                                                                    true, bgnd._vf.withCredentials);
-            }
-            else {      
-                bgnd._webgl = {
-                    positions: [-w,-h,0, -w,h,0, w,-h,0, w,h,0],
-                    indexes: [0, 1, 2, 3],
-                    buffers: [{}, {}]
-                };
-				
-				url = bgnd._nameSpace.getURL(url[0]);
-				
-				bgnd._webgl.texture = x3dom.Utils.createTexture2D(gl, bgnd._nameSpace.doc, url, 
-				                                                    true, bgnd._vf.withCredentials);
+	  sphere = new x3dom.nodeTypes.Sphere();
 
-                bgnd._webgl.primType = gl.TRIANGLE_STRIP;
+	  bgnd._webgl = {
+	      cube_positions: sphere._mesh._positions[0],
+	      cube_indexes: sphere._mesh._indices[0],
+	      cube_buffers: [{}, {}]
+	  };
 
-				bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_TEXTURE);
-            }
+	  bgnd._webgl.cube_primType = gl.TRIANGLES;
+	  bgnd._webgl.cube_shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_CUBETEXTURE);        
+	  bgnd._webgl.cube_texture = x3dom.Utils.createTextureCube(gl, bgnd._nameSpace.doc, url, 
+							      true, bgnd._vf.withCredentials);           
         }
-        else 
-        {          
-            if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length) 
-            {
-                sphere = new x3dom.nodeTypes.Sphere();
-                texture = gl.createTexture();
-                
-                bgnd._webgl = {
-                    positions: sphere._mesh._positions[0],
-                    texcoords: sphere._mesh._texCoords[0],
-                    indexes: sphere._mesh._indices[0],
-                    buffers: [{}, {}, {}],
-                    texture: texture,
-                    primType: gl.TRIANGLES
-                };
-                
-                var N = x3dom.Utils.nextHighestPowerOfTwo(
-                            bgnd.getSkyColor().length + bgnd.getGroundColor().length + 2);
-                N = (N < 512) ? 512 : N;
-                
-                var n = bgnd._vf.groundAngle.length;
-                var tmp = [], arr = [];
-                var colors = [], sky = [0];
-                
-                for (i=0; i<bgnd._vf.skyColor.length; i++) {
-                    colors[i] = bgnd._vf.skyColor[i];
-                }
-                
-                for (i=0; i<bgnd._vf.skyAngle.length; i++) {
-                    sky[i+1] = bgnd._vf.skyAngle[i];
-                }
-                
-                if (n > 0 || bgnd._vf.groundColor.length == 1) {
-                    if (sky[sky.length-1] < Math.PI / 2) {
-                        sky[sky.length] = Math.PI / 2 - x3dom.fields.Eps;
-                        colors[colors.length] = colors[colors.length - 1];
-                    }
-                    
-                    for (i=n-1; i>=0; i--) {
-                        if ((i == n - 1) && (Math.PI - bgnd._vf.groundAngle[i] <= Math.PI / 2)) {
-                            sky[sky.length] = Math.PI / 2;
-                            colors[colors.length] = bgnd._vf.groundColor[bgnd._vf.groundColor.length-1];
-                        }
-                        sky[sky.length] = Math.PI - bgnd._vf.groundAngle[i];
-                        colors[colors.length] = bgnd._vf.groundColor[i + 1];
-                    }
-                    
-                    if (n == 0 && bgnd._vf.groundColor.length == 1) {
-                        sky[sky.length] = Math.PI / 2;
-                        colors[colors.length] = bgnd._vf.groundColor[0];
-                    }
-                    sky[sky.length] = Math.PI;
-                    colors[colors.length] = bgnd._vf.groundColor[0];
-                }
-                else {
-                    if (sky[sky.length-1] < Math.PI) {
-                        sky[sky.length] = Math.PI;
-                        colors[colors.length] = colors[colors.length - 1];
-                    }
-                }
-                
-                for (i=0; i<sky.length; i++) {
-                    sky[i] /= Math.PI;
-                }
-                
-                x3dom.debug.assert(sky.length == colors.length);
-                
-                var interp = new x3dom.nodeTypes.ColorInterpolator();
-                
-                interp._vf.key = new x3dom.fields.MFFloat(sky);
-                interp._vf.keyValue = new x3dom.fields.MFColor(colors);
-                
-                for (i=0; i<N; i++) {
-                    interp._vf.set_fraction = i / (N - 1.0);
+      
+	if (bgnd.getSkyColor().length > 1 || bgnd.getGroundColor().length) 
+	{
+	    sphere = new x3dom.nodeTypes.Sphere();
+	    texture = gl.createTexture();
 
-                    interp.fieldChanged("set_fraction");
-                    tmp[i] = interp._vf.value_changed;
-                }
+	    bgnd._webgl.positions = sphere._mesh._positions[0];
+            bgnd._webgl.texcoords = sphere._mesh._texCoords[0];
+            bgnd._webgl.indexes = sphere._mesh._indices[0];
+	    bgnd._webgl.buffers = [{}, {}, {}];
+	    bgnd._webgl.texture = texture;
+	    bgnd._webgl.primType = gl.TRIANGLES;	    
+
+	    var N = x3dom.Utils.nextHighestPowerOfTwo(
+			bgnd.getSkyColor().length + bgnd.getGroundColor().length + 2);
+	    N = (N < 512) ? 512 : N;
+
+	    var n = bgnd._vf.groundAngle.length;
+	    var tmp = [], arr = [];
+	    var colors = [], sky = [0];
+
+	    for (i=0; i<bgnd._vf.skyColor.length; i++) {
+		colors[i] = bgnd._vf.skyColor[i];
+	    }
+
+	    for (i=0; i<bgnd._vf.skyAngle.length; i++) {
+		sky[i+1] = bgnd._vf.skyAngle[i];
+	    }
+
+	    if (n > 0 || bgnd._vf.groundColor.length == 1) {
+		if (sky[sky.length-1] < Math.PI / 2) {
+		    sky[sky.length] = Math.PI / 2 - x3dom.fields.Eps;
+		    colors[colors.length] = colors[colors.length - 1];
+		}
+
+		for (i=n-1; i>=0; i--) {
+		    if ((i == n - 1) && (Math.PI - bgnd._vf.groundAngle[i] <= Math.PI / 2)) {
+			sky[sky.length] = Math.PI / 2;
+			colors[colors.length] = bgnd._vf.groundColor[bgnd._vf.groundColor.length-1];
+		    }
+		    sky[sky.length] = Math.PI - bgnd._vf.groundAngle[i];
+		    colors[colors.length] = bgnd._vf.groundColor[i + 1];
+		}
                 
-                tmp.reverse();
-                
-                for (i=0; i<tmp.length; i++) {
-                    arr[3 * i + 0] = Math.floor(tmp[i].r * 255);
-                    arr[3 * i + 1] = Math.floor(tmp[i].g * 255);
-                    arr[3 * i + 2] = Math.floor(tmp[i].b * 255);
-                }
-                
-                var pixels = new Uint8Array(arr);
-                var format = gl.RGB;
-                
-                N = (pixels.length) / 3;
-                
-                gl.bindTexture(gl.TEXTURE_2D, texture);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
-                gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
-                
-                gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
-                gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 0, format, gl.UNSIGNED_BYTE, pixels);
-            	gl.bindTexture(gl.TEXTURE_2D, null);
-										
-				bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_SKYTEXTURE);
-            }
-            else 
-            {
-                // TODO; impl. gradient bg etc., e.g. via canvas 2d?
-                bgnd._webgl = {};
-            }
-        }
+		if (n == 0 && bgnd._vf.skyColor.length >= 1) {
+		    sky[sky.length] = Math.PI / 2;
+		    colors[colors.length] = bgnd._vf.skyColor[bgnd._vf.skyColor.length-1];
+		}  
+
+		if (n > 0) {
+		  sky[sky.length] = Math.PI;
+		  colors[colors.length] = bgnd._vf.groundColor[0];
+		}
+	    }
+	    else {
+		if (sky[sky.length-1] < Math.PI) {
+		    sky[sky.length] = Math.PI;
+		    colors[colors.length] = colors[colors.length - 1];
+		}
+	    }
+
+	    for (i=0; i<sky.length; i++) {
+		sky[i] /= Math.PI;
+	    }
+
+	    x3dom.debug.assert(sky.length == colors.length);
+
+	    var interp = new x3dom.nodeTypes.ColorInterpolator();
+
+	    interp._vf.key = new x3dom.fields.MFFloat(sky);
+	    interp._vf.keyValue = new x3dom.fields.MFColor(colors);
+
+	    for (i=0; i<N; i++) {
+		interp._vf.set_fraction = i / (N - 1.0);
+
+		interp.fieldChanged("set_fraction");
+		tmp[i] = interp._vf.value_changed;
+	    }
+
+	    tmp.reverse();
+
+	    for (i=0; i<tmp.length; i++) {
+		arr[3 * i + 0] = Math.floor(tmp[i].r * 255);
+		arr[3 * i + 1] = Math.floor(tmp[i].g * 255);
+		arr[3 * i + 2] = Math.floor(tmp[i].b * 255);
+	    }
+
+	    var pixels = new Uint8Array(arr);
+	    var format = gl.RGB;
+
+	    N = (pixels.length) / 3;
+
+	    gl.bindTexture(gl.TEXTURE_2D, texture);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.NEAREST);
+	    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.NEAREST);
+
+	    gl.pixelStorei(gl.UNPACK_ALIGNMENT, 1);
+	    gl.texImage2D(gl.TEXTURE_2D, 0, format, 1, N, 0, format, gl.UNSIGNED_BYTE, pixels);
+	    gl.bindTexture(gl.TEXTURE_2D, null);
+
+	    bgnd._webgl.shader = this.cache.getShader(gl, x3dom.shader.BACKGROUND_SKYTEXTURE);
+	}
+
         
         if (bgnd._webgl.shader)
         {
@@ -948,6 +936,34 @@ x3dom.gfx_webgl = (function () {
                 
                 texcoords = null;
             }
+        }
+
+        if (bgnd._webgl.cube_shader)
+        {
+            var sp = bgnd._webgl.cube_shader;
+            
+            var positionBuffer = gl.createBuffer();
+            bgnd._webgl.cube_buffers[1] = positionBuffer;
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            
+            var vertices = new Float32Array(bgnd._webgl.cube_positions);
+            
+            gl.bufferData(gl.ARRAY_BUFFER, vertices, gl.STATIC_DRAW);
+            gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+            
+            gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
+            gl.enableVertexAttribArray(sp.position);
+            
+            var indicesBuffer = gl.createBuffer();
+            bgnd._webgl.cube_buffers[0] = indicesBuffer;
+            
+            var indexArray = new Uint16Array(bgnd._webgl.cube_indexes);
+            
+            gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, indicesBuffer);
+            gl.bufferData(gl.ELEMENT_ARRAY_BUFFER, indexArray, gl.STATIC_DRAW);
+            
+            vertices = null;
+            indexArray = null;           
         }
         
         bgnd._webgl.render = function(gl, mat_view, mat_proj)
@@ -1028,9 +1044,7 @@ x3dom.gfx_webgl = (function () {
                 
                 gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
-            else if (!sp || !bgnd._webgl.texture ||
-                (bgnd._webgl.texture.textureCubeReady !== undefined && 
-                 bgnd._webgl.texture.textureCubeReady !== true))
+            else if (!sp || !bgnd._webgl.texture)
             {
                 var bgCol = bgnd.getSkyColor().toGL();
                 bgCol[3] = 1.0 - bgnd.getTransparency();
@@ -1039,22 +1053,23 @@ x3dom.gfx_webgl = (function () {
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
-            else
-            {
-                gl.clearDepth(1.0);
-                gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
-                
+
+	    var sp_cube = bgnd._webgl.cube_shader;
+            if ((sp_cube !== undefined && sp_cube !== null) &&	        
+	        (bgnd._webgl.cube_texture !== undefined && bgnd._webgl.cube_texture !== null))
+            {       
                 gl.frontFace(gl.CCW);
                 gl.disable(gl.CULL_FACE);
                 gl.disable(gl.DEPTH_TEST);
-                gl.disable(gl.BLEND);
+                gl.enable(gl.BLEND);
                 
-                sp.bind();
-                if (!sp.tex) {
-                    sp.tex = 0;
+                sp_cube.bind();
+                if (!sp_cube.tex) {
+                    sp_cube.tex = 0;
                 }
+		sp_cube.alpha = 1.0;
                 
-                if (bgnd._webgl.texture.textureCubeReady) {
+                if (bgnd._webgl.cube_texture.textureCubeReady) {
                     // adapt projection matrix to better near/far
                     mat_proj._22 = 100001 / 99999;
                     mat_proj._23 = 200000 / 99999;
@@ -1064,7 +1079,7 @@ x3dom.gfx_webgl = (function () {
                     mat_view._23 = 0;
 
                     mat_scene = mat_proj.mult(mat_view);
-                    sp.modelViewProjectionMatrix = mat_scene.toGL();
+                    sp_cube.modelViewProjectionMatrix = mat_scene.toGL();
 
                     mat_view._03 = camPos.x;
                     mat_view._13 = camPos.y;
@@ -1074,46 +1089,33 @@ x3dom.gfx_webgl = (function () {
                     mat_proj._23 = projMatrix_23;
                     
                     gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, bgnd._webgl.texture);
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, bgnd._webgl.cube_texture);
                     
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
                     gl.texParameteri(gl.TEXTURE_CUBE_MAP, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
                 }
-                else {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, bgnd._webgl.texture);
-                    
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
-                    gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-                }
                 
-                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bgnd._webgl.buffers[0]);
-                gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.buffers[1]);
-                gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
-                gl.enableVertexAttribArray(sp.position);
+                gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER, bgnd._webgl.cube_buffers[0]);
+                gl.bindBuffer(gl.ARRAY_BUFFER, bgnd._webgl.cube_buffers[1]);
+                gl.vertexAttribPointer(sp_cube.position, 3, gl.FLOAT, false, 0, 0);
+                gl.enableVertexAttribArray(sp_cube.position);
                 
                 try {
-                    gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
+                    gl.drawElements(bgnd._webgl.cube_primType, bgnd._webgl.cube_indexes.length, gl.UNSIGNED_SHORT, 0);
                 }
                 catch(e) {
                     x3dom.debug.logException("Render background: " + e);
                 }
                 
-                gl.disableVertexAttribArray(sp.position);
+                gl.disableVertexAttribArray(sp_cube.position);
                 
-                if (bgnd._webgl.texture.textureCubeReady) {
+                if (bgnd._webgl.cube_texture.textureCubeReady) {
                     gl.activeTexture(gl.TEXTURE0);
                     gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
                 }
-                else {
-                    gl.activeTexture(gl.TEXTURE0);
-                    gl.bindTexture(gl.TEXTURE_2D, null);
-                }
-                
+
                 gl.clear(gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
             }
         };
