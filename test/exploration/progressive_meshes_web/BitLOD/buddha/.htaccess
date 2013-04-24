@@ -29,14 +29,14 @@
 # http://blog.chromium.org/2011/07/using-cross-domain-images-in-webgl-and.html
 # http://hacks.mozilla.org/2011/11/using-cors-to-load-webgl-textures-from-cross-domain-images/
 
-<IfModule mod_setenvif.c>
-    <IfModule mod_headers.c>
-        <FilesMatch "\.(gif|ico|jpe?g|png|svg|svgz|webp)$">
-            SetEnvIf Origin ":" IS_CORS
-            Header set Access-Control-Allow-Origin "*" env=IS_CORS
-        </FilesMatch>
-    </IfModule>
-</IfModule>
+#<IfModule mod_setenvif.c>
+#    <IfModule mod_headers.c>
+#        <FilesMatch "\.(gif|ico|jpe?g|png|svg|svgz|webp)$">
+#            SetEnvIf Origin ":" IS_CORS
+#            Header set Access-Control-Allow-Origin "*" env=IS_CORS
+#        </FilesMatch>
+#    </IfModule>
+#</IfModule>
 
 # ------------------------------------------------------------------------------
 # | Web fonts access                                                           |
@@ -44,11 +44,11 @@
 
 # Allow access from all domains for web fonts
 
-<IfModule mod_headers.c>
-    <FilesMatch "\.(eot|font.css|otf|ttc|ttf|woff)$">
-        Header set Access-Control-Allow-Origin "*"
-    </FilesMatch>
-</IfModule>
+#<IfModule mod_headers.c>
+#    <FilesMatch "\.(eot|font.css|otf|ttc|ttf|woff)$">
+#        Header set Access-Control-Allow-Origin "*"
+#    </FilesMatch>
+#</IfModule>
 
 
 # ##############################################################################
@@ -64,7 +64,7 @@
 # http://httpd.apache.org/docs/current/content-negotiation.html#multiviews
 # http://www.webmasterworld.com/apache/3808792.htm
 
-Options -MultiViews
+#Options -MultiViews
 
 # ------------------------------------------------------------------------------
 # | Custom error messages / pages                                              |
@@ -73,7 +73,7 @@ Options -MultiViews
 # You can customize what Apache returns to the client in case of an error (see
 # http://httpd.apache.org/docs/current/mod/core.html#errordocument), e.g.:
 
-ErrorDocument 404 /404.html
+#ErrorDocument 404 /404.html
 
 
 # ##############################################################################
@@ -88,14 +88,14 @@ ErrorDocument 404 /404.html
 # cases when it may not: http://hsivonen.iki.fi/doctype/ie-mode.pdf.
 # Use, if installed, Google Chrome Frame.
 
-<IfModule mod_headers.c>
-    Header set X-UA-Compatible "IE=edge,chrome=1"
+#<IfModule mod_headers.c>
+#    Header set X-UA-Compatible "IE=edge,chrome=1"
     # `mod_headers` can't match based on the content-type, however, we only
     # want to send this header for HTML pages and not for the other resources
-    <FilesMatch "\.(appcache|crx|css|eot|gif|htc|ico|jpe?g|js|m4a|m4v|manifest|mp4|oex|oga|ogg|ogv|otf|pdf|png|safariextz|svg|svgz|ttf|vcf|webapp|webm|webp|woff|xml|xpi)$">
-        Header unset X-UA-Compatible
-    </FilesMatch>
-</IfModule>
+#    <FilesMatch "\.(appcache|crx|css|eot|gif|htc|ico|jpe?g|js|m4a|m4v|manifest|mp4|oex|oga|ogg|ogv|otf|pdf|png|safariextz|svg|svgz|ttf|vcf|webapp|webm|webp|woff|xml|xpi)$">
+#        Header unset X-UA-Compatible
+#    </FilesMatch>
+#</IfModule>
 
 # ------------------------------------------------------------------------------
 # | Cookie setting from iframes                                                |
@@ -160,7 +160,6 @@ ErrorDocument 404 /404.html
     # https://twitter.com/FontSquirrel/status/14855840545
     AddType     image/svg+xml                           svg svgz
     AddEncoding gzip                                    svgz
-    AddEncoding gzip                                    bin
 
   # Other
     AddType application/octet-stream                    safariextz
@@ -176,6 +175,7 @@ ErrorDocument 404 /404.html
     AddType text/vtt                                    vtt
     AddType text/x-component                            htc
     AddType text/x-vcard                                vcf
+    AddType application/x3dom-bin-mesh                  bin    
 
 </IfModule>
 
@@ -187,9 +187,9 @@ ErrorDocument 404 /404.html
 AddDefaultCharset utf-8
 
 # Force UTF-8 for certain file formats.
-<IfModule mod_mime.c>
-    AddCharset utf-8 .atom .css .js .json .rss .vtt .webapp .xml
-</IfModule>
+#<IfModule mod_mime.c>
+#    AddCharset utf-8 .atom .css .js .json .rss .vtt .webapp .xml
+#</IfModule>
 
 
 # ##############################################################################
@@ -210,12 +210,12 @@ AddDefaultCharset utf-8
 # Also, some cloud hosting services require `RewriteBase` to be set:
 # http://www.rackspace.com/knowledge_center/frequently-asked-question/why-is-mod-rewrite-not-working-on-my-site
 
-<IfModule mod_rewrite.c>
-    Options +FollowSymlinks
+#<IfModule mod_rewrite.c>
+#    Options +FollowSymlinks
   # Options +SymLinksIfOwnerMatch
-    RewriteEngine On
+#    RewriteEngine On
   # RewriteBase /
-</IfModule>
+#</IfModule>
 
 # ------------------------------------------------------------------------------
 # | Suppressing / Forcing the "www." at the beginning of URLs                  |
@@ -238,11 +238,11 @@ AddDefaultCharset utf-8
 
 # Option 1: rewrite www.example.com ? example.com
 
-<IfModule mod_rewrite.c>
-    RewriteCond %{HTTPS} !=on
-    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
-    RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
-</IfModule>
+#<IfModule mod_rewrite.c>
+#    RewriteCond %{HTTPS} !=on
+#    RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+#    RewriteRule ^ http://%1%{REQUEST_URI} [R=301,L]
+#</IfModule>
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -294,20 +294,20 @@ AddDefaultCharset utf-8
 # to surf through every directory on your server (which may includes rather
 # private places like the CMS's directories).
 
-<IfModule mod_autoindex.c>
-    Options -Indexes
-</IfModule>
+#<IfModule mod_autoindex.c>
+#    Options -Indexes
+#</IfModule>
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 # Block access to hidden files and directories.
 # This includes directories used by version control systems such as Git and SVN.
 
-<IfModule mod_rewrite.c>
-    RewriteCond %{SCRIPT_FILENAME} -d [OR]
-    RewriteCond %{SCRIPT_FILENAME} -f
-    RewriteRule "(^|/)\." - [F]
-</IfModule>
+#<IfModule mod_rewrite.c>
+#    RewriteCond %{SCRIPT_FILENAME} -d [OR]
+#    RewriteCond %{SCRIPT_FILENAME} -f
+#    RewriteRule "(^|/)\." - [F]
+#</IfModule>
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
@@ -315,11 +315,11 @@ AddDefaultCharset utf-8
 # These files may be left by some text editors and can pose a great security
 # danger when anyone has access to them.
 
-<FilesMatch "(^#.*#|\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|sw[op])|~)$">
-    Order allow,deny
-    Deny from all
-    Satisfy All
-</FilesMatch>
+#<FilesMatch "(^#.*#|\.(bak|config|dist|fla|inc|ini|log|psd|sh|sql|sw[op])|~)$">
+#    Order allow,deny
+#    Deny from all
+#    Satisfy All
+#</FilesMatch>
 
 # ------------------------------------------------------------------------------
 # | Secure Sockets Layer (SSL)                                                 |
@@ -384,7 +384,7 @@ AddDefaultCharset utf-8
     # (for Apache versions below 2.3.7, you don't need to enable `mod_filter`
     #  and can remove the `<IfModule mod_filter.c>` and `</IfModule>` lines
     #  as `AddOutputFilterByType` is still in the core directives).
-    <IfModule mod_filter.c>
+#    <IfModule mod_filter.c>
         AddOutputFilterByType DEFLATE application/atom+xml \
                                       application/javascript \
                                       application/json \
@@ -394,6 +394,7 @@ AddDefaultCharset utf-8
                                       application/x-web-app-manifest+json \
                                       application/xhtml+xml \
                                       application/xml \
+				      application/x3dom-bin-mesh \
                                       font/opentype \
                                       image/svg+xml \
                                       image/x-icon \
@@ -401,8 +402,8 @@ AddDefaultCharset utf-8
                                       text/html \
                                       text/plain \
                                       text/x-component \
-                                      text/xml
-    </IfModule>
+                                      text/xml				
+ #   </IfModule>
 
 </IfModule>
 
@@ -425,11 +426,11 @@ AddDefaultCharset utf-8
 # be removed: http://developer.yahoo.com/performance/rules.html#etags.
 
 # `FileETag None` is not enough for every server.
-<IfModule mod_headers.c>
-    Header unset ETag
-</IfModule>
+#<IfModule mod_headers.c>
+#    Header unset ETag
+#</IfModule>
 
-FileETag None
+#FileETag None
 
 # ------------------------------------------------------------------------------
 # | Expires headers (for better cache control)                                 |
@@ -439,56 +440,56 @@ FileETag None
 # control versioning with filename-based cache busting, consider lowering the
 # cache time for resources like CSS and JS to something like 1 week.
 
-<IfModule mod_expires.c>
+#<IfModule mod_expires.c>
 
-    ExpiresActive on
-    ExpiresDefault                                      "access plus 1 month"
+ #   ExpiresActive on
+ #   ExpiresDefault                                      "access plus 1 month"
 
   # CSS
-    ExpiresByType text/css                              "access plus 1 year"
+ #   ExpiresByType text/css                              "access plus 1 year"
 
   # Data interchange
-    ExpiresByType application/json                      "access plus 0 seconds"
-    ExpiresByType application/xml                       "access plus 0 seconds"
-    ExpiresByType text/xml                              "access plus 0 seconds"
+ #   ExpiresByType application/json                      "access plus 0 seconds"
+ #   ExpiresByType application/xml                       "access plus 0 seconds"
+ #   ExpiresByType text/xml                              "access plus 0 seconds"
 
   # Favicon (cannot be renamed!)
-    ExpiresByType image/x-icon                          "access plus 1 week"
+  #  ExpiresByType image/x-icon                          "access plus 1 week"
 
   # HTML components (HTCs)
-    ExpiresByType text/x-component                      "access plus 1 month"
+   # ExpiresByType text/x-component                      "access plus 1 month"
 
   # HTML
-    ExpiresByType text/html                             "access plus 0 seconds"
+   # ExpiresByType text/html                             "access plus 0 seconds"
 
   # JavaScript
-    ExpiresByType application/javascript                "access plus 1 year"
+   # ExpiresByType application/javascript                "access plus 1 year"
 
   # Manifest files
-    ExpiresByType application/x-web-app-manifest+json   "access plus 0 seconds"
-    ExpiresByType text/cache-manifest                   "access plus 0 seconds"
+   # ExpiresByType application/x-web-app-manifest+json   "access plus 0 seconds"
+   # ExpiresByType text/cache-manifest                   "access plus 0 seconds"
 
   # Media
-    ExpiresByType audio/ogg                             "access plus 1 month"
-    ExpiresByType image/gif                             "access plus 1 month"
-    ExpiresByType image/jpeg                            "access plus 1 month"
-    ExpiresByType image/png                             "access plus 1 month"
-    ExpiresByType video/mp4                             "access plus 1 month"
-    ExpiresByType video/ogg                             "access plus 1 month"
-    ExpiresByType video/webm                            "access plus 1 month"
+  #  ExpiresByType audio/ogg                             "access plus 1 month"
+  #  ExpiresByType image/gif                             "access plus 1 month"
+  #  ExpiresByType image/jpeg                            "access plus 1 month"
+  #  ExpiresByType image/png                             "access plus 1 month"
+  #  ExpiresByType video/mp4                             "access plus 1 month"
+  #  ExpiresByType video/ogg                             "access plus 1 month"
+  #  ExpiresByType video/webm                            "access plus 1 month"
 
   # Web feeds
-    ExpiresByType application/atom+xml                  "access plus 1 hour"
-    ExpiresByType application/rss+xml                   "access plus 1 hour"
+  #  ExpiresByType application/atom+xml                  "access plus 1 hour"
+  #  ExpiresByType application/rss+xml                   "access plus 1 hour"
 
   # Web fonts
-    ExpiresByType application/font-woff                 "access plus 1 month"
-    ExpiresByType application/vnd.ms-fontobject         "access plus 1 month"
-    ExpiresByType application/x-font-ttf                "access plus 1 month"
-    ExpiresByType font/opentype                         "access plus 1 month"
-    ExpiresByType image/svg+xml                         "access plus 1 month"
+  #  ExpiresByType application/font-woff                 "access plus 1 month"
+  #  ExpiresByType application/vnd.ms-fontobject         "access plus 1 month"
+  #  ExpiresByType application/x-font-ttf                "access plus 1 month"
+  #  ExpiresByType font/opentype                         "access plus 1 month"
+  #  ExpiresByType image/svg+xml                         "access plus 1 month"
 
-</IfModule>
+#</IfModule>
 
 # ------------------------------------------------------------------------------
 # | Filename-based cache busting                                               |
