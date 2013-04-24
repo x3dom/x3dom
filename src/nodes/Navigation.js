@@ -549,10 +549,11 @@ x3dom.registerNodeType(
 
                 out.cnt++;
 
-                // TODO; optimize getting volume
+                var vol = this.getVolume();
+
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max);
+                vol.getBounds(min, max);
                 
                 var rotMat = x3dom.fields.SFMatrix4f.identity();
                 var mid = max.add(min).multiply(0.5);
@@ -701,10 +702,12 @@ x3dom.registerNodeType(
             visitChildren: function(transform, out)
             {
                 var i=0, n=this._childNodes.length;
-                
+
+                var vol = this.getVolume();
+
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
-                var ok = this.getVolume(min, max);
+                vol.getBounds(min, max);
                 
                 var mid = max.add(min).multiply(0.5).add(this._vf.center);
                 var len = mid.subtract(this._eye).length();
@@ -733,51 +736,37 @@ x3dom.registerNodeType(
                 }
             },
 
-            getVolume: function (min, max)
+            getVolume: function()
             {
-                var valid = false;
                 var vol = this._graph.volume;
 
-                if (this.volumeValid())
+                if (!this.volumeValid())
                 {
-                    vol.getBounds(min, max);
-                    valid = true;
-                }
-                else
-                {
-                    var child = null;
-                    var childMin, childMax;
+                    var child, childVol;
 
                     if (this._lastRangePos >= 0) {
                         child = this._childNodes[this._lastRangePos];
 
-                        childMin = x3dom.fields.SFVec3f.MAX();
-                        childMax = x3dom.fields.SFVec3f.MIN();
+                        childVol = child ? child.getVolume() : null;
 
-                        if (child && child.getVolume(childMin, childMax)) {
-                            vol.extendBounds(childMin, childMax);
-                            valid = true;
-                        }
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
                     }
                     else {  // first time we're here
-                        for (var i=0, n=this._childNodes.length; i<n; i++) {
-                            child = this._childNodes[i];
+                        for (var i=0, n=this._childNodes.length; i<n; i++)
+                        {
+                            if (!(child = this._childNodes[i]))
+                                continue;
 
-                            childMin = x3dom.fields.SFVec3f.MAX();
-                            childMax = x3dom.fields.SFVec3f.MIN();
+                            childVol = child.getVolume();
 
-                            if (child && child.getVolume(childMin, childMax)) {
-                                vol.extendBounds(childMin, childMax);
-                                valid = true;
-                            }
+                            if (childVol && childVol.isValid())
+                                vol.extendBounds(childVol.min, childVol.max);
                         }
                     }
-
-                    if (valid)
-                        vol.getBounds(min, max);
                 }
 
-                return valid;
+                return vol;
             },
             
             nodeChanged: function() {
@@ -920,27 +909,22 @@ x3dom.registerNodeType(
                 }
             },
 
-            getVolume: function(min, max) {
+            getVolume: function() {
                 var vol = this._graph.volume;
 
                 if (!vol.isValid()) {
-                    min.setValues(this._vf.center);
-                    min.x -= 0.5 * this._vf.size.x;
-                    min.y -= 0.5 * this._vf.size.y;
-                    min.z -= x3dom.fields.Eps;
+                    vol.min.setValues(this._vf.center);
+                    vol.min.x -= 0.5 * this._vf.size.x;
+                    vol.min.y -= 0.5 * this._vf.size.y;
+                    vol.min.z -= x3dom.fields.Eps;
 
-                    max.setValues(this._vf.center);
-                    max.x += 0.5 * this._vf.size.x;
-                    max.y += 0.5 * this._vf.size.y;
-                    max.z += x3dom.fields.Eps;
-
-                    vol.setBounds(min, max);
-                }
-                else {
-                    vol.getBounds(min, max);
+                    vol.max.setValues(this._vf.center);
+                    vol.max.x += 0.5 * this._vf.size.x;
+                    vol.max.y += 0.5 * this._vf.size.y;
+                    vol.max.z += x3dom.fields.Eps;
                 }
 
-                return true;
+                return vol;
             }
         }
     )

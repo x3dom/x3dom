@@ -271,9 +271,9 @@ x3dom.registerNodeType(
                 }
             },
 
-            getVolume: function(min, max) {
+            getVolume: function() {
                 var geo = this._cf.geometry.node;
-				return (geo ? geo.getVolume(min, max) : false);
+				return (geo ? geo.getVolume() : this.getVolume());  // hmmm
             },
 
             getCenter: function() {

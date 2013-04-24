@@ -68,7 +68,7 @@ x3dom.Mesh.prototype.setMeshData = function(positions, normals, texCoords, color
     this._numCoords = this._positions[0].length / 3;
 };
 
-x3dom.Mesh.prototype.getVolume = function(min, max)
+x3dom.Mesh.prototype.getVolume = function()
 {
     if (this._invalidate == true && !this._vol.isValid())
     {
@@ -94,9 +94,7 @@ x3dom.Mesh.prototype.getVolume = function(min, max)
         }
     }
 
-    this._vol.getBounds(min, max);
-
-    return this._vol.isValid();
+    return this._vol;
 };
 
 x3dom.Mesh.prototype.invalidate = function()
@@ -112,33 +110,18 @@ x3dom.Mesh.prototype.isValid = function()
 
 x3dom.Mesh.prototype.getCenter = function() 
 {
-    var min = new x3dom.fields.SFVec3f(0,0,0);
-    var max = new x3dom.fields.SFVec3f(0,0,0);
-
-    this.getVolume(min, max);
-    
-    return (min.add(max)).multiply(0.5);
+    return this.getVolume().getCenter();
 };
 
 x3dom.Mesh.prototype.getDiameter = function() 
 {
-    var min = new x3dom.fields.SFVec3f(0,0,0);
-    var max = new x3dom.fields.SFVec3f(0,0,0);
-
-    this.getVolume(min, max);
-    var size = max.subtract(min);
-    
-    return size.length();
+    return this.getVolume().getDiameter();
 };
 
 x3dom.Mesh.prototype.doIntersect = function(line)
 {
-    var min = new x3dom.fields.SFVec3f(0,0,0);
-    var max = new x3dom.fields.SFVec3f(0,0,0);
-
-    this.getVolume(min, max);
-    
-    var isect = line.intersect(min, max);
+    var vol = this.getVolume();
+    var isect = line.intersect(vol.min, vol.max);
     
     //TODO: iterate over all faces!
     if (isect && line.enter < line.dist)
@@ -333,10 +316,11 @@ x3dom.Mesh.prototype.calcTexCoords = function(mode)
     }
     else    // "plane" is x3d default mapping
     {
-        var min = new x3dom.fields.SFVec3f(0, 0, 0), 
+        var min = new x3dom.fields.SFVec3f(0, 0, 0),
             max = new x3dom.fields.SFVec3f(0, 0, 0);
+        var vol = this.getVolume();
 
-        this.getVolume(min, max);
+        vol.getBounds(min, max);
         var dia = max.subtract(min);
         
         var S = 0, T = 1;

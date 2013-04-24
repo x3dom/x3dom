@@ -55,39 +55,25 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'whichChoice', -1);
         },
         {
-            getVolume: function (min, max)
+            getVolume: function()
             {
-                var valid = false;
                 var vol = this._graph.volume;
 
-                if (this.volumeValid())
+                if (!this.volumeValid())
                 {
-                    vol.getBounds(min, max);
-                    valid = true;
-                }
-                else
-                {
-                    if (this._vf.whichChoice < 0 ||
-                        this._vf.whichChoice >= this._childNodes.length) {
-                        valid = false;
-                    }
-                    else {
+                    if (this._vf.whichChoice >= 0 &&
+                        this._vf.whichChoice < this._childNodes.length)
+                    {
                         var child = this._childNodes[this._vf.whichChoice];
 
-                        var childMin = x3dom.fields.SFVec3f.MAX();
-                        var childMax = x3dom.fields.SFVec3f.MIN();
+                        var childVol = child ? child.getVolume() : null;
 
-                        if (child && child.getVolume(childMin, childMax)) {
-                            vol.extendBounds(childMin, childMax);
-                            valid = true;
-                        }
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
                     }
-
-                    if (valid)
-                        vol.getBounds(min, max);
                 }
 
-                return valid;
+                return vol;
             },
 
             find: function (type)
@@ -231,18 +217,11 @@ x3dom.registerNodeType(
                 return transform.mult(this._trafo);
             },
 
-            // TODO; use BoxVolume as param instead of min/max
-            getVolume: function (min, max)
+            getVolume: function()
             {
-                var valid = false;
                 var vol = this._graph.volume;
 
-                if (this.volumeValid())
-                {
-                     vol.getBounds(min, max);
-                     valid = true;
-                }
-                else
+                if (!this.volumeValid())
                 {
                     for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
@@ -250,27 +229,17 @@ x3dom.registerNodeType(
                         if (!child)
                             continue;
 
-                        var childMin = x3dom.fields.SFVec3f.MAX();
-                        var childMax = x3dom.fields.SFVec3f.MIN();
+                        var childVol = child.getVolume();
 
-                        if (child.getVolume(childMin, childMax))
-                        {
-                            vol.extendBounds(childMin, childMax);
-                            valid = true;
-                        }
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
                     }
 
-                    if (valid)
-                    {
+                    if (vol.isValid())
                         vol.transform(this._trafo);
-                        vol.getBounds(min, max);
-
-                        // remove as soon as graph changes are considered
-                        //vol.invalidate();
-                    }
                 }
 
-                return valid;
+                return vol;
             },
 
             doIntersect: function(line)
@@ -716,7 +685,8 @@ x3dom.registerNodeType(
                             {
                                 if (view_frustum)   // experimental
                                 {
-                                    shape.getVolume(box.min, box.max);
+                                    var vol = shape.getVolume();
+                                    vol.getBounds(box.min, box.max);
                                     box.transform(trafo);
                                 }
                                 
@@ -840,10 +810,15 @@ x3dom.registerNodeType(
             
             updateVolume: function()
             {
-                var min = x3dom.fields.SFVec3f.MAX();
-                var max = x3dom.fields.SFVec3f.MIN();
-                
-                if (this.getVolume(min, max)) {
+                var vol = this.getVolume();
+
+                if (vol.isValid())
+                {
+                    // TODO: could directly use _lastMin/Max, but then care care of initial null check
+                    var min = x3dom.fields.SFVec3f.MAX();
+                    var max = x3dom.fields.SFVec3f.MIN();
+                    vol.getBounds(min, max);
+
                     this._lastMin = min;
                     this._lastMax = max;
                 }

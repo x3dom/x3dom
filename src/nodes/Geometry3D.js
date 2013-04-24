@@ -1400,15 +1400,14 @@ x3dom.registerNodeType(
                 return vol.max;
             },
 
-            getVolume: function(min, max) {
+            getVolume: function() {
                 var vol = this._mesh._vol;
 
                 if (!vol.isValid()) {
                     vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
                 }
-                vol.getBounds(min, max);
 
-                return true;
+                return vol;
             },
 
             invalidateVolume: function() {
@@ -2307,15 +2306,14 @@ x3dom.registerNodeType(
                 return vol.max;
             },
 
-            getVolume: function(min, max) {
+            getVolume: function() {
                 var vol = this._vol;
 
                 if (!vol.isValid()) {
                     vol.setBoundsByCenterSize(this._vf.position, this._vf.size);
                 }
-                vol.getBounds(min, max);
 
-                return true;
+                return vol;
             },
 			
 			numCoordinateTextures: function()
