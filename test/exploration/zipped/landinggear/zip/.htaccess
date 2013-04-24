@@ -175,7 +175,7 @@
     AddType text/vtt                                    vtt
     AddType text/x-component                            htc
     AddType text/x-vcard                                vcf
-    AddType application/x3dom-bin-mesh                  bin    
+    AddType application/x3dom-bin-mesh                  bin bin+4 bin+8
 
 </IfModule>
 
@@ -216,6 +216,23 @@ AddDefaultCharset utf-8
 #    RewriteEngine On
   # RewriteBase /
 #</IfModule>
+
+#----
+# Turn on the rewrite engine
+RewriteEngine on
+
+# Make sure the browser supports gzip encoding before we send it
+RewriteCond %{HTTP:Accept-Encoding} \b(x-)?gzip\b
+RewriteCond %{REQUEST_FILENAME}.gz -s
+RewriteRule ^(.+) $1.gz [L]
+
+# without it, Content-Type will be "application/x-gzip"
+# also add a content-encoding header to tell the browser to decompress
+<FilesMatch "(\.bin|\.bin+4|\.bin+8)$"> 
+    ForceType text/plain
+    Header set Content-Encoding gzip
+</FilesMatch>
+#----
 
 # ------------------------------------------------------------------------------
 # | Suppressing / Forcing the "www." at the beginning of URLs                  |

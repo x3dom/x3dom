@@ -175,7 +175,7 @@
     AddType text/vtt                                    vtt
     AddType text/x-component                            htc
     AddType text/x-vcard                                vcf
-    AddType application/x3dom-bin-mesh                  bin    
+    AddType application/x3dom-bin-mesh                  bin bin+4 bin+8
 
 </IfModule>
 
@@ -394,7 +394,7 @@ AddDefaultCharset utf-8
                                       application/x-web-app-manifest+json \
                                       application/xhtml+xml \
                                       application/xml \
-				      application/x3dom-bin-mesh \
+                                      application/x3dom-bin-mesh \
                                       font/opentype \
                                       image/svg+xml \
                                       image/x-icon \
