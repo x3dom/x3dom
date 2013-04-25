@@ -39,7 +39,7 @@ x3dom.registerNodeType(
         },
         {
 
-            visitChildren: function (transform, out) {
+            visitChildren: function (transform, drawableCollection) {
                 if (this.cnt > 5) {
                     if (this.test == 4) {
                         this.createChildren = 0;
@@ -48,7 +48,7 @@ x3dom.registerNodeType(
                     else {
                         this.test++;
                     }
-                    this.rootNode.CollectDrawables(transform, out);
+                    this.rootNode.CollectDrawables(transform, drawableCollection);
                 }
                 else {
                     this.cnt++;
@@ -208,10 +208,18 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
 
     // here the decision is taken if new children should be created
     // and which should be rendered
-    this.CollectDrawables = function (transform, out) {
+    this.CollectDrawables = function (transform, drawableCollection) {
 
         if (isPossible) {
-
+            
+            var mat_view = navigation._nameSpace.doc._viewarea.getViewMatrix();;
+                
+            var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
+            center = mat_view.inverse().multMatrixPnt(center);
+            
+            var mat_view_model = mat_view.mult(transform);
+            navigation._eye = transform.inverse().multMatrixPnt(center);
+            
             var distanceToCamera = position.subtract(navigation._eye).length();
 
             if ((distanceToCamera < Math.pow((maxDepth - level), 5) / factor)) {
@@ -220,16 +228,16 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
                     create();
                 }
                 else if (children.length == 0 && navigation.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, out);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].CollectDrawables(transform, out);
+                        children[i].CollectDrawables(transform, drawableCollection);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, out);
+                shape.collectDrawableObjects(transform, drawableCollection);
             }
         }
     }

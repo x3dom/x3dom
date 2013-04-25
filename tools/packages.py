@@ -16,6 +16,7 @@ BASICS = [
   'util/Utils.js',
   'util/States.js',
   'util/BinaryContainerSetup.js',
+  'util/DrawableCollection.js',
   'X3DCanvas.js',
   'Runtime.js',
   'Main.js',

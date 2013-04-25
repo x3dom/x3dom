@@ -12,12 +12,12 @@
 /**
  * Generate the final Shader program
  */
-x3dom.shader.ComposedShader = function(gl, shape)
+x3dom.shader.ComposedShader = function(gl, properties)
 {
 	this.program = gl.createProgram();
 	
-	var vertexShader 	= this.generateVertexShader(gl, shape);
-	var fragmentShader 	= this.generateFragmentShader(gl, shape);
+	var vertexShader 	= this.generateVertexShader(gl, properties);
+	var fragmentShader 	= this.generateFragmentShader(gl, properties);
 	
 	gl.attachShader(this.program, vertexShader);
     gl.attachShader(this.program, fragmentShader);
@@ -33,9 +33,9 @@ x3dom.shader.ComposedShader = function(gl, shape)
 /**
  * Generate the vertex shader
  */
-x3dom.shader.ComposedShader.prototype.generateVertexShader = function(gl, shape)
+x3dom.shader.ComposedShader.prototype.generateVertexShader = function(gl, properties)
 {
-	var shader = shape._cf.appearance.node._shader._vertex._vf.url[0];
+	var shader = properties.CSHADER_V;
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
 	gl.shaderSource(vertexShader, shader);
@@ -51,9 +51,9 @@ x3dom.shader.ComposedShader.prototype.generateVertexShader = function(gl, shape)
 /**
  * Generate the fragment shader
  */
-x3dom.shader.ComposedShader.prototype.generateFragmentShader = function(gl, shape)
+x3dom.shader.ComposedShader.prototype.generateFragmentShader = function(gl, properties)
 {
-	var shader = shape._cf.appearance.node._shader._fragment._vf.url[0];
+	var shader = properties.CSHADER_F;
 
     var fragmentShader = gl.createShader(gl.FRAGMENT_SHADER);
 	gl.shaderSource(fragmentShader, shader);

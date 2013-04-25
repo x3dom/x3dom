@@ -24,19 +24,19 @@ x3dom.registerNodeType(
         {
             // Collects array of [transform matrix, node] for all objects that should be drawn.
             // TODO: culling etc.
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !out) {
+                if (!this._vf.render || !drawableCollection) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     var cnode = this._childNodes[i];
                     if (cnode) {
                         var childTransform = cnode.transformMatrix(transform);
-                        cnode.collectDrawableObjects(childTransform, out);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection);
                     }
                 }
             }
@@ -120,19 +120,19 @@ x3dom.registerNodeType(
             },
 
             // Collects array of [transform matrix, node] for all objects that should be drawn.
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!out || this._vf.whichChoice < 0 ||
+                if (!drawableCollection || this._vf.whichChoice < 0 ||
                     this._vf.whichChoice >= this._childNodes.length) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
                 var cnode = this._childNodes[this._vf.whichChoice];
                 if (cnode) {
                     var childTransform = cnode.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, out);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection);
                 }
             },
 
@@ -632,13 +632,13 @@ x3dom.registerNodeType(
 
             // Collects array of [matrix, node] for all objects with given id that should be drawn
             // out is drawableObjects array
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !out) {
+                if (!this._vf.render || !drawableCollection) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
                 var viewarea = this._nameSpace.doc._viewarea;
                 var isMoving = viewarea.isMoving();
@@ -708,7 +708,7 @@ x3dom.registerNodeType(
                                     // collect drawables
                                     if (numPixel >= pxThreshold)
                                     {
-                                        shape.collectDrawableObjects(transform, out);
+                                        shape.collectDrawableObjects(transform, drawableCollection);
                                         this._createTime[i] = ts;
                                         cnt++;
                                         needCleanup = false;
@@ -739,7 +739,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj && obj.shape) {
-                            obj.shape.collectDrawableObjects(transform, out);
+                            obj.shape.collectDrawableObjects(transform, drawableCollection);
                             this._createTime[obj.pos] = ts;
                         }
 						else
@@ -791,7 +791,8 @@ x3dom.registerNodeType(
             this._lastMax = null;
             
             this._shadowIdMap = null;
-            this.drawableObjects = null;    // webgl helper object
+            //this.drawableObjects = null;    // webgl helper object
+            this.drawableCollection = null;
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */
