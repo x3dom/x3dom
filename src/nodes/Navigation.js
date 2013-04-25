@@ -758,14 +758,14 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if (!this.volumeValid())
+                if (!this.volumeValid() && this._vf.render)
                 {
                     var child, childVol;
 
                     if (this._lastRangePos >= 0) {
                         child = this._childNodes[this._lastRangePos];
 
-                        childVol = child ? child.getVolume() : null;
+                        childVol = (child && child._vf.render === true) ? child.getVolume() : null;
 
                         if (childVol && childVol.isValid())
                             vol.extendBounds(childVol.min, childVol.max);
@@ -773,7 +773,7 @@ x3dom.registerNodeType(
                     else {  // first time we're here
                         for (var i=0, n=this._childNodes.length; i<n; i++)
                         {
-                            if (!(child = this._childNodes[i]))
+                            if (!(child = this._childNodes[i]) || child._vf.render !== true)
                                 continue;
 
                             childVol = child.getVolume();
@@ -794,7 +794,8 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName) {
                 this._needReRender = true;
-                if (fieldName == "center" || fieldName == "range") {
+
+                if (fieldName == "render" || fieldName == "center" || fieldName == "range") {
                     this.invalidateVolume();
                 }
             }
@@ -952,33 +953,6 @@ x3dom.registerNodeType(
 
                 return vol;
             }
-        }
-    )
-);
-
-///experimental
-/* ### Environment ### */
-x3dom.registerNodeType(
-    "Environment",
-    "Navigation",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
-        function (ctx) {
-            x3dom.nodeTypes.Environment.superClass.call(this, ctx);
-
-            this.addField_SFFloat(ctx, 'globalShadowIntensity', 0);
-            this.addField_SFInt32(ctx, 'shadowMapSize', 512);
-            this.addField_SFString(ctx, 'shadowMode', "perspectiveHardShadow");
-            this.addField_SFFloat(ctx, 'shadowOffset', 4);
-            this.addField_SFFloat(ctx, 'shadowSmoothness', 0.5);
-            this.addField_SFBool(ctx, 'shadowExcludeTransparentObjects', true);
-            this.addField_MFNode('shadowExcludeObjects', x3dom.nodeTypes.X3DNode);
-            //this.addField_SFBool(ctx, 'sortTrans', true);
-            //this.addField_SFBool(ctx, 'frustumCulling', true);
-            //this.addField_SFBool(ctx, 'stateSorting', true);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );

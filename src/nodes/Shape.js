@@ -208,14 +208,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DShapeNode.superClass.call(this, ctx);
 
-            // FIXME: X3DShapeNode inherits from X3DChildNode and X3DBoundedObject
-            // (at least according to spec), therefore impl. "render" field there.
-            this.addField_SFBool(ctx, 'render', true);
             this.addField_SFBool(ctx, 'isPickable', true);
-            // same thing for bbox
-            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
-            
             this.addField_SFNode('appearance', x3dom.nodeTypes.X3DAppearanceNode);
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
 
@@ -272,9 +265,20 @@ x3dom.registerNodeType(
                 }
             },
 
-            getVolume: function() {
-                var geo = this._cf.geometry.node;
-				return (geo ? geo.getVolume() : this.getVolume());  // hmmm
+            getVolume: function()
+            {
+                var vol = this._graph.volume;
+
+                if (!this.volumeValid() && this._vf.render)
+                {
+                    var geo = this._cf.geometry.node;
+                    var childVol = geo ? geo.getVolume() : null;
+
+                    if (childVol && childVol.isValid())
+                        vol.extendBounds(childVol.min, childVol.max);
+                }
+
+                return vol;
             },
 
             getCenter: function() {
