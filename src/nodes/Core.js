@@ -127,8 +127,9 @@ x3dom.registerNodeType(
             return transform;
         },
 
-        getVolume: function (min, max) {
-            return false;
+        getVolume: function () {
+            //x3dom.debug.logWarning("Called getVolume for unbounded node!");
+            return null;
         },
 
         invalidateVolume: function() {
@@ -140,7 +141,7 @@ x3dom.registerNodeType(
         },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
-        collectDrawableObjects: function (transform, out) {
+        collectDrawableObjects: function (transform, drawableCollection) {
             // explicitly do nothing on collect traversal for (most) nodes
         },
         
@@ -889,17 +890,11 @@ x3dom.registerNodeType(
                 this.invalidateVolume();
             },
 
-            getVolume: function (min, max)
+            getVolume: function()
             {
-                var valid = false;
                 var vol = this._graph.volume;
 
-                if (this.volumeValid())
-                {
-                    vol.getBounds(min, max);
-                    valid = true;
-                }
-                else
+                if (!this.volumeValid())
                 {
                     for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
@@ -907,21 +902,14 @@ x3dom.registerNodeType(
                         if (!child)
                             continue;
 
-                        var childMin = x3dom.fields.SFVec3f.MAX();
-                        var childMax = x3dom.fields.SFVec3f.MIN();
+                        var childVol = child.getVolume();
 
-                        if (child.getVolume(childMin, childMax))
-                        {
-                            vol.extendBounds(childMin, childMax);
-                            valid = true;
-                        }
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
                     }
-
-                    if (valid)
-                        vol.getBounds(min, max);
                 }
 
-                return valid;
+                return vol;
             },
 
             invalidateVolume: function()

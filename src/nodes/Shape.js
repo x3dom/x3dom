@@ -243,14 +243,15 @@ x3dom.registerNodeType(
             this._colorStrideOffset = [0, 0];
         },
         {
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
                 // TODO: culling etc
-                if (out && this._vf.render && this._cf.geometry.node)
+                if (drawableCollection && this._vf.render && this._cf.geometry.node)
                 {
-                    out.cnt++;  // shall we add 2 instead to include geo?
-
-                    out.push( [transform, this] );
+                    drawableCollection.numberOfNodes++;  // shall we add 2 instead to include geo?
+                    //out.push( [transform, this] );
+                    
+                    drawableCollection.addDrawable(this, transform, null/*bbox*/, null/*params*/);
                 }
             },
             
@@ -271,9 +272,9 @@ x3dom.registerNodeType(
                 }
             },
 
-            getVolume: function(min, max) {
+            getVolume: function() {
                 var geo = this._cf.geometry.node;
-				return (geo ? geo.getVolume(min, max) : false);
+				return (geo ? geo.getVolume() : this.getVolume());  // hmmm
             },
 
             getCenter: function() {

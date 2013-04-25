@@ -514,13 +514,16 @@ x3dom.Runtime.prototype.showAll = function(axis) {
  * Parameter:
  *     obj  - the scene-graph element on which to focus
  */
-x3dom.Runtime.prototype.showObject = function(obj) {
-    var min = x3dom.fields.SFVec3f.MAX();
-    var max = x3dom.fields.SFVec3f.MIN();
-
-    if (obj && obj._x3domNode &&
-        obj._x3domNode.getVolume(min, max))
+x3dom.Runtime.prototype.showObject = function(obj)
+{
+    if (obj && obj._x3domNode)
     {
+        var min = x3dom.fields.SFVec3f.MAX();
+        var max = x3dom.fields.SFVec3f.MIN();
+
+        var vol = obj._x3domNode.getVolume()
+        vol.getBounds(min, max);
+
         var mat = obj._x3domNode.getCurrentTransform();
 
         min = mat.multMatrixPnt(min);

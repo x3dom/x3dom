@@ -591,12 +591,14 @@ x3dom.Viewarea.prototype.getLightMatrix = function ()
 
     if (n > 0)
     {
-        var min = x3dom.fields.SFVec3f.MAX();
-        var max = x3dom.fields.SFVec3f.MIN();
-        var ok = this._scene.getVolume(min, max);    //TODO; FFF optimize
+        var vol = this._scene.getVolume();
 
-        if (ok)
+        if (vol.isValid())
         {
+            var min = x3dom.fields.SFVec3f.MAX();
+            var max = x3dom.fields.SFVec3f.MIN();
+            vol.getBounds(min, max);
+
             var l_arr = [];
             var viewpoint = this._scene.getViewpoint();
             var fov = viewpoint.getFieldOfView();
@@ -640,7 +642,7 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
     }
     else {
         view = lMat;
-		var proj = new x3dom.fields.SFMatrix4f();
+		proj = new x3dom.fields.SFMatrix4f();
 		proj.setValues(this._scene.getViewpoint().getProjectionMatrix(1));
 		proj._00 = 1;
 		proj._11 = 1;
@@ -656,7 +658,7 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view)
 {	    		
 	var proj = new x3dom.fields.SFMatrix4f();
 	
-	//set projection matrix to 90° FOV (vertical and horizontal)
+	//set projection matrix to 90ï¿½ FOV (vertical and horizontal)
     proj.setValues(this._scene.getViewpoint().getProjectionMatrix(1));
 	proj._00 = 1;
 	proj._11 = 1;
@@ -818,13 +820,14 @@ x3dom.Viewarea.prototype.calcViewRay = function(x, y)
 
 x3dom.Viewarea.prototype.showAll = function(axis)
 {
-    var min = x3dom.fields.SFVec3f.MAX();
-    var max = x3dom.fields.SFVec3f.MIN();
-	
-    var ok = this._scene.getVolume(min, max);
-    	
-    if (ok)
+    var vol = this._scene.getVolume();
+
+    if (vol.isValid())
     {
+        var min = x3dom.fields.SFVec3f.MAX();
+        var max = x3dom.fields.SFVec3f.MIN();
+        vol.getBounds(min, max);
+
         var x = "x", y = "y", z = "z";
         var sign = 1;
         var to, from = new x3dom.fields.SFVec3f(0, 0, -1);
@@ -1288,6 +1291,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     var dy = y - this._lastY;
     var min, max, ok, d, vec;
     var mat = null;
+    var vol = null;
 
     if (navi._vf.type[0].toLowerCase() === "examine")
     {
@@ -1319,11 +1323,15 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			}
 			else
 			{
-				min = x3dom.fields.SFVec3f.MAX();
-				max = x3dom.fields.SFVec3f.MIN();
-				
-				ok = this._scene.getVolume(min, max);
-				if (ok) {
+                vol = this._scene.getVolume();
+
+                min = x3dom.fields.SFVec3f.MAX();
+                max = x3dom.fields.SFVec3f.MIN();
+
+                if (vol.isValid())
+                {
+                    vol.getBounds(min, max);
+
                     this._scene._lastMin = min;
                     this._scene._lastMax = max;
                 }
@@ -1350,11 +1358,15 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 			}
 			else
 			{
-				min = x3dom.fields.SFVec3f.MAX();
-				max = x3dom.fields.SFVec3f.MIN();
-				
-				ok = this._scene.getVolume(min, max);
-				if (ok) {
+                vol = this._scene.getVolume();
+
+                min = x3dom.fields.SFVec3f.MAX();
+                max = x3dom.fields.SFVec3f.MIN();
+
+                if (vol.isValid())
+                {
+                    vol.getBounds(min, max);
+
                     this._scene._lastMin = min;
                     this._scene._lastMax = max;
                 }

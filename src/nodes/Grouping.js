@@ -24,19 +24,19 @@ x3dom.registerNodeType(
         {
             // Collects array of [transform matrix, node] for all objects that should be drawn.
             // TODO: culling etc.
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !out) {
+                if (!this._vf.render || !drawableCollection) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     var cnode = this._childNodes[i];
                     if (cnode) {
                         var childTransform = cnode.transformMatrix(transform);
-                        cnode.collectDrawableObjects(childTransform, out);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection);
                     }
                 }
             }
@@ -55,39 +55,25 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'whichChoice', -1);
         },
         {
-            getVolume: function (min, max)
+            getVolume: function()
             {
-                var valid = false;
                 var vol = this._graph.volume;
 
-                if (this.volumeValid())
+                if (!this.volumeValid())
                 {
-                    vol.getBounds(min, max);
-                    valid = true;
-                }
-                else
-                {
-                    if (this._vf.whichChoice < 0 ||
-                        this._vf.whichChoice >= this._childNodes.length) {
-                        valid = false;
-                    }
-                    else {
+                    if (this._vf.whichChoice >= 0 &&
+                        this._vf.whichChoice < this._childNodes.length)
+                    {
                         var child = this._childNodes[this._vf.whichChoice];
 
-                        var childMin = x3dom.fields.SFVec3f.MAX();
-                        var childMax = x3dom.fields.SFVec3f.MIN();
+                        var childVol = child ? child.getVolume() : null;
 
-                        if (child && child.getVolume(childMin, childMax)) {
-                            vol.extendBounds(childMin, childMax);
-                            valid = true;
-                        }
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
                     }
-
-                    if (valid)
-                        vol.getBounds(min, max);
                 }
 
-                return valid;
+                return vol;
             },
 
             find: function (type)
@@ -134,19 +120,19 @@ x3dom.registerNodeType(
             },
 
             // Collects array of [transform matrix, node] for all objects that should be drawn.
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!out || this._vf.whichChoice < 0 ||
+                if (!drawableCollection || this._vf.whichChoice < 0 ||
                     this._vf.whichChoice >= this._childNodes.length) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
                 var cnode = this._childNodes[this._vf.whichChoice];
                 if (cnode) {
                     var childTransform = cnode.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, out);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection);
                 }
             },
 
@@ -231,18 +217,11 @@ x3dom.registerNodeType(
                 return transform.mult(this._trafo);
             },
 
-            // TODO; use BoxVolume as param instead of min/max
-            getVolume: function (min, max)
+            getVolume: function()
             {
-                var valid = false;
                 var vol = this._graph.volume;
 
-                if (this.volumeValid())
-                {
-                     vol.getBounds(min, max);
-                     valid = true;
-                }
-                else
+                if (!this.volumeValid())
                 {
                     for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
@@ -250,27 +229,17 @@ x3dom.registerNodeType(
                         if (!child)
                             continue;
 
-                        var childMin = x3dom.fields.SFVec3f.MAX();
-                        var childMax = x3dom.fields.SFVec3f.MIN();
+                        var childVol = child.getVolume();
 
-                        if (child.getVolume(childMin, childMax))
-                        {
-                            vol.extendBounds(childMin, childMax);
-                            valid = true;
-                        }
+                        if (childVol && childVol.isValid())
+                            vol.extendBounds(childVol.min, childVol.max);
                     }
 
-                    if (valid)
-                    {
+                    if (vol.isValid())
                         vol.transform(this._trafo);
-                        vol.getBounds(min, max);
-
-                        // remove as soon as graph changes are considered
-                        //vol.invalidate();
-                    }
                 }
 
-                return valid;
+                return vol;
             },
 
             doIntersect: function(line)
@@ -663,13 +632,13 @@ x3dom.registerNodeType(
 
             // Collects array of [matrix, node] for all objects with given id that should be drawn
             // out is drawableObjects array
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !out) {
+                if (!this._vf.render || !drawableCollection) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
                 var viewarea = this._nameSpace.doc._viewarea;
                 var isMoving = viewarea.isMoving();
@@ -716,7 +685,8 @@ x3dom.registerNodeType(
                             {
                                 if (view_frustum)   // experimental
                                 {
-                                    shape.getVolume(box.min, box.max);
+                                    var vol = shape.getVolume();
+                                    vol.getBounds(box.min, box.max);
                                     box.transform(trafo);
                                 }
                                 
@@ -738,7 +708,7 @@ x3dom.registerNodeType(
                                     // collect drawables
                                     if (numPixel >= pxThreshold)
                                     {
-                                        shape.collectDrawableObjects(transform, out);
+                                        shape.collectDrawableObjects(transform, drawableCollection);
                                         this._createTime[i] = ts;
                                         cnt++;
                                         needCleanup = false;
@@ -769,7 +739,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj && obj.shape) {
-                            obj.shape.collectDrawableObjects(transform, out);
+                            obj.shape.collectDrawableObjects(transform, drawableCollection);
                             this._createTime[obj.pos] = ts;
                         }
 						else
@@ -821,7 +791,8 @@ x3dom.registerNodeType(
             this._lastMax = null;
             
             this._shadowIdMap = null;
-            this.drawableObjects = null;    // webgl helper object
+            //this.drawableObjects = null;    // webgl helper object
+            this.drawableCollection = null;
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */
@@ -840,10 +811,15 @@ x3dom.registerNodeType(
             
             updateVolume: function()
             {
-                var min = x3dom.fields.SFVec3f.MAX();
-                var max = x3dom.fields.SFVec3f.MIN();
-                
-                if (this.getVolume(min, max)) {
+                var vol = this.getVolume();
+
+                if (vol.isValid())
+                {
+                    // TODO: could directly use _lastMin/Max, but then care care of initial null check
+                    var min = x3dom.fields.SFVec3f.MAX();
+                    var max = x3dom.fields.SFVec3f.MIN();
+                    vol.getBounds(min, max);
+
                     this._lastMin = min;
                     this._lastMax = max;
                 }

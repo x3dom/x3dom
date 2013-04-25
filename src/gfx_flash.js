@@ -137,14 +137,13 @@ x3dom.gfx_flash = (function() {
 		this.setupBackground(background);
 		
 		//Collect all drawableObjects
-		scene.drawableObjects = null;
-		scene.drawableObjects = [];
-		scene.drawableObjects.LODs = [];
-        scene.drawableObjects.Billboards = [];
-		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
+		scene.drawableCollection = null;
+    scene.drawableCollection = new x3dom.DrawableCollection(viewarea, false);
+		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection);
+    scene.drawableCollection.concat();
 		
 		//Get Number of drawableObjects
-		var numDrawableObjects = scene.drawableObjects.length;
+		var numDrawableObjects = scene.drawableCollection.length;
 		
 		
 		if(numDrawableObjects > 0)
@@ -155,8 +154,8 @@ x3dom.gfx_flash = (function() {
 			for(var i=0; i<numDrawableObjects; i++) 
 			{
 				//Get object and transformation
-				var trafo = scene.drawableObjects[i][0];
-				var obj3d = scene.drawableObjects[i][1];
+				var trafo = scene.drawableCollection.get(i).transform;
+				var obj3d = scene.drawableCollection.get(i).shape;
 				
 				//Count shape references for DEF/USE
 				if(RefList[obj3d._objectID] != undefined) {
@@ -168,42 +167,9 @@ x3dom.gfx_flash = (function() {
 				this.setupShape(obj3d, trafo, RefList[obj3d._objectID]);
 			}	
 		}
-		
-        var numLOD 			= scene.drawableObjects.LODs.length;
-		var numBillboard 	= scene.drawableObjects.Billboards.length;
-		
-        if (numLOD || numBillboard) {
-            center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
-            center = mat_view.inverse().multMatrixPnt(center);
-        }
-        
-        for (var i=0; i<numLOD; i++)
-        {
-            trafo = scene.drawableObjects.LODs[i][0];
-            obj3d = scene.drawableObjects.LODs[i][1];
-            
-            if (obj3d) {
-                obj3d._eye = trafo.inverse().multMatrixPnt(center);
-            }
-        }
-		
-		for (i=0; i<numBillboard; i++)
-        {
-            trafo = scene.drawableObjects.Billboards[i][0];
-            obj3d = scene.drawableObjects.Billboards[i][1];
-            
-            if (obj3d) {
-                var mat_view_model = mat_view.mult(trafo);
-                obj3d._eye = trafo.inverse().multMatrixPnt(center);
-                obj3d._eyeViewUp = new x3dom.fields.SFVec3f(mat_view_model._10, mat_view_model._11, mat_view_model._12);
-                obj3d._eyeLook = new x3dom.fields.SFVec3f(mat_view_model._20, mat_view_model._21, mat_view_model._22);
-            }
-        }
 			
 		//Render the flash scene
 		this.object.renderScene();
-		
-		
 	};
 	
 	/**

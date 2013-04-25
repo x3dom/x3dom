@@ -28,8 +28,9 @@ x3dom.registerNodeType(
             this._pickable = true;
         },
         {
-            getVolume: function(min, max) {
-                return this._mesh.getVolume(min, max);
+            getVolume: function() {
+                // geometry doesn't hold volume, but mesh does
+                return this._mesh.getVolume();
             },
 
             invalidateVolume: function() {
