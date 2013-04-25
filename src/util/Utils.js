@@ -533,7 +533,6 @@ x3dom.Utils.boundaryModesDic = function(gl, mode)
 x3dom.Utils.generateProperties = function (viewarea, shape) 
 {
 	var property = {};
-	
 
 	var geometry 	= shape._cf.geometry.node;
 	var appearance 	= shape._cf.appearance.node;
@@ -543,9 +542,9 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	//Check if it's a composed shader
 	if (appearance && appearance._shader &&
         x3dom.isa(appearance._shader, x3dom.nodeTypes.ComposedShader)) {
-		property.CSHADER			= shape._objectID;
-    property.CSHADER_V    = shape._cf.appearance.node._shader._vertex._vf.url[0];
-    property.CSHADER_F    = shape._cf.appearance.node._shader._fragment._vf.url[0];
+		property.CSHADER   = shape._objectID;
+        property.CSHADER_V = shape._cf.appearance.node._shader._vertex._vf.url[0];
+        property.CSHADER_F = shape._cf.appearance.node._shader._fragment._vf.url[0];
 	}
     else if (geometry) {
 

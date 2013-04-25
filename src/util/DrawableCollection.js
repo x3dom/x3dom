@@ -93,14 +93,14 @@ x3dom.DrawableCollection.prototype.concat = function ( idx ) {
   
   //Merge opaque and transparent drawables to a single array
   this.collection = opaque.concat(transparent);
-}
+};
 
 /**
  *
  */
 x3dom.DrawableCollection.prototype.get = function ( idx ) {
   return this.collection[idx];
-}
+};
 
 /**
  *

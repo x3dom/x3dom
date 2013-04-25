@@ -2981,8 +2981,7 @@ x3dom.gfx_webgl = (function () {
         var traverseTime = x3dom.Utils.stopMeasure('traverse');
         this.x3dElem.runtime.addMeasurement('TRAVERSE', traverseTime);
       }
-        
-        
+
       //===========================================================================
       // Sort drawables
       //===========================================================================      
