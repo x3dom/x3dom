@@ -49,7 +49,7 @@
     AddType text/vtt                                    vtt
     AddType text/x-component                            htc
     AddType text/x-vcard                                vcf
-    AddType application/x3dom-bin-mesh                  bin bin+4 bin+8
+    AddType application/x3dom-bin-mesh                  bin bin+4 bin+8 bin+16
 
 </IfModule>
 
