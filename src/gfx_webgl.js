@@ -278,8 +278,8 @@ x3dom.gfx_webgl = (function () {
              shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1] ||
              shape._dirty.shader )
         {
-          //shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
-          shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
+          shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
+          //shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
           shape._dirty.shader = false;
         }		
         
@@ -533,8 +533,8 @@ x3dom.gfx_webgl = (function () {
       }
 
       //Set Shader
-      //shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
-      shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
+      shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
+      //shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
 		
       // init vertex attribs
       var sp = shape._webgl.shader;

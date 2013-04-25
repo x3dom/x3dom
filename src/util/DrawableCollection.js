@@ -65,7 +65,7 @@ x3dom.DrawableCollection.prototype.addDrawable = function ( shape, transform, bo
   }
   
   //Generate the shader properties
-  drawable.properties = x3dom.Utils.generateProperties(this.viewarea, shape);
+  //drawable.properties = x3dom.Utils.generateProperties(this.viewarea, shape);
 
   //Look for sorting by sortKey
   if (!this.sortBySortKey && drawable.sortKey != 0) {
