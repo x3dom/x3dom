@@ -541,19 +541,29 @@ x3dom.registerNodeType(
             this._eyeLook = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !out) {
+                if (!this._vf.render || !drawableCollection) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
                 var vol = this.getVolume();
 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
                 vol.getBounds(min, max);
+                
+                var mat_view = this._nameSpace.doc._viewarea.getViewMatrix();;
+                
+                var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
+                center = mat_view.inverse().multMatrixPnt(center);
+                
+                var mat_view_model = mat_view.mult(transform);
+                this._eye = transform.inverse().multMatrixPnt(center);
+                this._eyeViewUp = new x3dom.fields.SFVec3f(mat_view_model._10, mat_view_model._11, mat_view_model._12);
+                this._eyeLook = new x3dom.fields.SFVec3f(mat_view_model._20, mat_view_model._21, mat_view_model._22);
                 
                 var rotMat = x3dom.fields.SFMatrix4f.identity();
                 var mid = max.add(min).multiply(0.5);
@@ -602,14 +612,14 @@ x3dom.registerNodeType(
                     var cnode = this._childNodes[i];
                     if (cnode) {
                         var childTransform = cnode.transformMatrix(transform.mult(rotMat));
-                        cnode.collectDrawableObjects(childTransform, out);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection);
                     }
                 }
 
-                if (out !== null) {
+                /*if (out !== null) {
                     //optimization, exploit coherence and do it for next frame (see LOD)
                     out.Billboards.push( [transform, this] );
-                }
+                }*/
             }
         }
     )
@@ -629,13 +639,13 @@ x3dom.registerNodeType(
             // TODO; add Slots: collideTime, isActive
         },
         {
-            collectDrawableObjects: function (transform, out)
+            collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !out) {
+                if (!this._vf.render || !drawableCollection) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
                 
                 for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
                 {
@@ -644,7 +654,7 @@ x3dom.registerNodeType(
                     if (cnode && (cnode !== this._cf.proxy.node))
                     {
                         var childTransform = cnode.transformMatrix(transform);
-                        cnode.collectDrawableObjects(childTransform, out);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection);
                     }
                 }
             }
@@ -666,21 +676,21 @@ x3dom.registerNodeType(
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function(transform, out)
+            collectDrawableObjects: function(transform, drawableCollection)
             {
-                if (!this._vf.render || !out) {
+                if (!this._vf.render || !drawableCollection) {
                     return;
                 }
 
-                out.cnt++;
+                drawableCollection.numberOfNodes++;
 
-                this.visitChildren(transform, out);
+                this.visitChildren(transform, drawableCollection);
                 
                 //optimization, exploit coherence and do it for next frame
-                out.LODs.push( [transform, this] );
+                //out.LODs.push( [transform, this] );
             },
             
-            visitChildren: function(transform, out) {}
+            visitChildren: function(transform, drawableCollection) {}
         }
     )
 );
@@ -699,15 +709,23 @@ x3dom.registerNodeType(
             this._lastRangePos = -1;
         },
         {
-            visitChildren: function(transform, out)
+            visitChildren: function(transform, drawableCollection)
             {
                 var i=0, n=this._childNodes.length;
 
-                var vol = this.getVolume();
+                var vol = this.getVolume(); 
 
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
                 vol.getBounds(min, max);
+                
+                var mat_view = this._nameSpace.doc._viewarea.getViewMatrix();;
+                
+                var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
+                center = mat_view.inverse().multMatrixPnt(center);
+                
+                var mat_view_model = mat_view.mult(transform);
+                this._eye = transform.inverse().multMatrixPnt(center);
                 
                 var mid = max.add(min).multiply(0.5).add(this._vf.center);
                 var len = mid.subtract(this._eye).length();
@@ -726,7 +744,7 @@ x3dom.registerNodeType(
                 if (n && cnode)
                 {
                     var childTransform = cnode.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, out);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection);
                 }
                 
                 // eye position invalid in first frame
@@ -740,14 +758,14 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if (!this.volumeValid())
+                if (!this.volumeValid() && this._vf.render)
                 {
                     var child, childVol;
 
                     if (this._lastRangePos >= 0) {
                         child = this._childNodes[this._lastRangePos];
 
-                        childVol = child ? child.getVolume() : null;
+                        childVol = (child && child._vf.render === true) ? child.getVolume() : null;
 
                         if (childVol && childVol.isValid())
                             vol.extendBounds(childVol.min, childVol.max);
@@ -755,7 +773,7 @@ x3dom.registerNodeType(
                     else {  // first time we're here
                         for (var i=0, n=this._childNodes.length; i<n; i++)
                         {
-                            if (!(child = this._childNodes[i]))
+                            if (!(child = this._childNodes[i]) || child._vf.render !== true)
                                 continue;
 
                             childVol = child.getVolume();
@@ -776,7 +794,8 @@ x3dom.registerNodeType(
             
             fieldChanged: function(fieldName) {
                 this._needReRender = true;
-                if (fieldName == "center" || fieldName == "range") {
+
+                if (fieldName == "render" || fieldName == "center" || fieldName == "range") {
                     this.invalidateVolume();
                 }
             }
@@ -827,12 +846,20 @@ x3dom.registerNodeType(
     		    this._nameSpace.doc.needRender = true;
             },
             
-            visitChildren: function(transform, out)
+            visitChildren: function(transform, drawableCollection)
             {
                 var root = this._cf.root.node;
                 
                 if (root == null)
                     return;
+                    
+                var mat_view = this._nameSpace.doc._viewarea.getViewMatrix();;
+                
+                var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
+                center = mat_view.inverse().multMatrixPnt(center);
+                
+                var mat_view_model = mat_view.mult(transform);
+                this._eye = transform.inverse().multMatrixPnt(center);
                 
                 var l, len = this._vf.center.subtract(this._eye).length();
                 
@@ -852,7 +879,7 @@ x3dom.registerNodeType(
                             );
                         
                         for (l=0; l<4; l++) {
-                            var node = new x3dom.nodeTypes.DynamicLOD();
+                            var node = new x3dom.nodeTypes.DynamicLOD();                        
                             
                             node._nameSpace = this._nameSpace;
                             node._eye.setValues(this._eye);
@@ -900,12 +927,12 @@ x3dom.registerNodeType(
                     }
                     else {
                         for (l=1; l<this._childNodes.length; l++) {
-                            this._childNodes[l].collectDrawableObjects(transform, out);
+                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection);
                         }
                     }
                 }
                 else {
-                    root.collectDrawableObjects(transform, out);
+                    root.collectDrawableObjects(transform, drawableCollection);
                 }
             },
 
@@ -926,33 +953,6 @@ x3dom.registerNodeType(
 
                 return vol;
             }
-        }
-    )
-);
-
-///experimental
-/* ### Environment ### */
-x3dom.registerNodeType(
-    "Environment",
-    "Navigation",
-    defineClass(x3dom.nodeTypes.X3DBindableNode,
-        function (ctx) {
-            x3dom.nodeTypes.Environment.superClass.call(this, ctx);
-
-            this.addField_SFFloat(ctx, 'globalShadowIntensity', 0);
-            this.addField_SFInt32(ctx, 'shadowMapSize', 512);
-            this.addField_SFString(ctx, 'shadowMode', "perspectiveHardShadow");
-            this.addField_SFFloat(ctx, 'shadowOffset', 4);
-            this.addField_SFFloat(ctx, 'shadowSmoothness', 0.5);
-            this.addField_SFBool(ctx, 'shadowExcludeTransparentObjects', true);
-            this.addField_MFNode('shadowExcludeObjects', x3dom.nodeTypes.X3DNode);
-            //this.addField_SFBool(ctx, 'sortTrans', true);
-            //this.addField_SFBool(ctx, 'frustumCulling', true);
-            //this.addField_SFBool(ctx, 'stateSorting', true);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );

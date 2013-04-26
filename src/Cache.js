@@ -13,68 +13,59 @@
 /**
  * @namespace Cache namespace
  */
-x3dom.Cache = function()
-{
-	this.textures = [];
-	this.shaders = [];
+x3dom.Cache = function () {
+    this.textures = [];
+    this.shaders = [];
 };
 
 /**
  * Returns a Texture 2D
  */
-x3dom.Cache.prototype.getTexture2D = function(gl, doc, url, bgnd, withCredentials)
-{
-	var textureIdentifier = url;
-	
-	if( this.textures[textureIdentifier] === undefined )
-	{
-		this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd, withCredentials);
-	} 
-	/* else 
-	{
-		x3dom.debug.logInfo("[Cache] Using Texture from Cache");
-	}*/
-	
-	return this.textures[textureIdentifier];
+x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, withCredentials) {
+    var textureIdentifier = url;
+
+    if (this.textures[textureIdentifier] === undefined) {
+        this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd, withCredentials);
+    }
+    /* else
+     {
+     x3dom.debug.logInfo("[Cache] Using Texture from Cache");
+     }*/
+
+    return this.textures[textureIdentifier];
 };
 
 /**
  * Returns a Cube Texture
  */
-x3dom.Cache.prototype.getTextureCube = function(gl, doc, url, bgnd, withCredentials) 
-{
-	var textureIdentifier = "";
+x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, withCredentials) {
+    var textureIdentifier = "";
 
-	for ( var i=0; i<url.length; ++i )
-	{
-		textureIdentifier += url[i] + "|";
-	}
-	
-	if( this.textures[textureIdentifier] === undefined )
-	{
-		this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd, withCredentials);
-	}
-	/* else 
-	{
-		x3dom.debug.logInfo("[Cache] Using Texture from Cache");
-	}*/
-	
-	return this.textures[textureIdentifier];
+    for (var i = 0; i < url.length; ++i) {
+        textureIdentifier += url[i] + "|";
+    }
+
+    if (this.textures[textureIdentifier] === undefined) {
+        this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd, withCredentials);
+    }
+    /* else
+     {
+     x3dom.debug.logInfo("[Cache] Using Texture from Cache");
+     }*/
+
+    return this.textures[textureIdentifier];
 };
 
 /**
  * Returns one of the default shader programs
  */
-x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
-{
-	var program = null;
+x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
+    var program = null;
 
-	//Check if shader is in cache
-	if( this.shaders[shaderIdentifier] === undefined )
-	{
-		//Choose shader based on identifier
-        switch(shaderIdentifier)
-        {
+    //Check if shader is in cache
+    if (this.shaders[shaderIdentifier] === undefined) {
+        //Choose shader based on identifier
+        switch (shaderIdentifier) {
             case x3dom.shader.PICKING:
                 program = new x3dom.shader.PickingShader(gl);
                 break;
@@ -102,9 +93,9 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
             case x3dom.shader.SHADOW:
                 program = new x3dom.shader.ShadowShader(gl);
                 break;
-			case x3dom.shader.BLUR:
-				program = new x3dom.shader.BlurShader(gl);
-				break;				
+            case x3dom.shader.BLUR:
+                program = new x3dom.shader.BlurShader(gl);
+                break;
             case x3dom.shader.DEPTH:
                 //program = new x3dom.shader.DepthShader(gl);
                 break;
@@ -117,71 +108,80 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier)
 
         if (program)
             this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
-	}
-	
-	return this.shaders[shaderIdentifier];
+    }
+
+    return this.shaders[shaderIdentifier];
 };
 
 /**
- * Returns a dynamic generated shader program
+ * Returns a dynamic generated shader program by viewarea and shape
  */
-x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape)
-{
-	//Generate Properties
-	var properties = x3dom.Utils.generateProperties(viewarea, shape);
-	//x3dom.debug.logInfo(properties.toString());
-	
-	if( this.shaders[properties.toIdentifier()] === undefined )
-	{
+x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
+    //Generate Properties
+    var properties = x3dom.Utils.generateProperties(viewarea, shape);
+
+    if (this.shaders[properties.toIdentifier()] === undefined) {
         var program;
-		if (properties.CSHADER >= 0) {
-			program = new x3dom.shader.ComposedShader(gl, shape);
-		} else {
-			program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
-																	new x3dom.shader.DynamicShader(gl, properties);
-		}
+        if (properties.CSHADER >= 0) {
+            program = new x3dom.shader.ComposedShader(gl, shape);
+        } else {
+            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
+                new x3dom.shader.DynamicShader(gl, properties);
+        }
         this.shaders[properties.toIdentifier()] = x3dom.Utils.wrapProgram(gl, program);
-	}
-	/* else {
-		x3dom.debug.logInfo("[Cache] Using Shader from Cache");
-	} */
-	
-	return this.shaders[properties.toIdentifier()];
+    }
+
+    return this.shaders[properties.toIdentifier()];
 };
 
-/** 
- * Returns the dynamically created shadow rendering shader 
+/**
+ * Returns a dynamic generated shader program by properties
  */
-x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights)
-{
-	var ID = "shadow";
-	for (var i = 0; i<shadowedLights.length; i++){
-			if(x3dom.isa(shadowedLights[i], x3dom.nodeTypes.SpotLight))
-				ID += "S";
-			else if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
-				ID += "P";
-			else 
-				ID += "D";
-		}
-		
+x3dom.Cache.prototype.getShaderByProperties = function (gl, properties) {
+    if (this.shaders[properties.toIdentifier()] === undefined) {
+        var program;
+        if (properties.CSHADER >= 0) {
+            program = new x3dom.shader.ComposedShader(gl, properties);
+        } else {
+            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
+                new x3dom.shader.DynamicShader(gl, properties);
+        }
+        this.shaders[properties.toIdentifier()] = x3dom.Utils.wrapProgram(gl, program);
+    }
 
-	if (this.shaders[ID]===undefined){
-		var program = new x3dom.shader.ShadowRenderingShader(gl, shadowedLights);
-		this.shaders[ID] = x3dom.Utils.wrapProgram(gl, program);
-		}
-	return this.shaders[ID];
-}
+    return this.shaders[properties.toIdentifier()];
+};
+
+/**
+ * Returns the dynamically created shadow rendering shader
+ */
+x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights) {
+    var ID = "shadow";
+    for (var i = 0; i < shadowedLights.length; i++) {
+        if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.SpotLight))
+            ID += "S";
+        else if (x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
+            ID += "P";
+        else
+            ID += "D";
+    }
+
+    if (this.shaders[ID] === undefined) {
+        var program = new x3dom.shader.ShadowRenderingShader(gl, shadowedLights);
+        this.shaders[ID] = x3dom.Utils.wrapProgram(gl, program);
+    }
+    return this.shaders[ID];
+};
 
 /**
  * Release texture and shader resources
  */
-x3dom.Cache.prototype.Release = function ()
-{
-	for (var texture in this.textures) {
-		gl.deleteTexture(this.textures[texture]);
-	}
+x3dom.Cache.prototype.Release = function () {
+    for (var texture in this.textures) {
+        gl.deleteTexture(this.textures[texture]);
+    }
 
-	for (var shader in this.shaders) {
-		gl.deleteProgram(this.shaders[shader]);
-	}
+    for (var shader in this.shaders) {
+        gl.deleteProgram(this.shaders[shader]);
+    }
 };

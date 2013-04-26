@@ -141,7 +141,7 @@ x3dom.registerNodeType(
         },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
-        collectDrawableObjects: function (transform, out) {
+        collectDrawableObjects: function (transform, drawableCollection) {
             // explicitly do nothing on collect traversal for (most) nodes
         },
         
@@ -871,6 +871,10 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.X3DBoundedNode.superClass.call(this, ctx);
 
+            this.addField_SFBool(ctx, 'render', true);
+            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
+            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
+
             this._graph = {
                 singlePath: true,    // unique path in graph back to root possible
                 localMatrix: null,   // new x3dom.fields.SFMatrix4f(),
@@ -894,12 +898,13 @@ x3dom.registerNodeType(
             {
                 var vol = this._graph.volume;
 
-                if (!this.volumeValid())
+                if (!this.volumeValid() && this._vf.render)
                 {
                     for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
                         var child = this._childNodes[i];
-                        if (!child)
+                        // render could be undefined, but undefined != true
+                        if (!child || child._vf.render !== true)
                             continue;
 
                         var childVol = child.getVolume();
@@ -915,6 +920,9 @@ x3dom.registerNodeType(
             invalidateVolume: function()
             {
                 this._graph.volume.invalidate();
+
+                this._graph.localMatrix = null;
+                this._graph.globalMatrix = null;
 
                 // set parent volumes invalid, too
                 Array.forEach(this._parentNodes, function(node) {
