@@ -72,7 +72,7 @@ x3dom.registerNodeType(
 			this.addField_SFBool(ctx, 'mapDEFToID', false);
             
 			this.count = 0;
-       },
+        },
         {
             fieldChanged: function (fieldName)
             {
@@ -89,8 +89,6 @@ x3dom.registerNodeType(
 					}
                     var xhr = this.nodeChanged();
                     xhr = null;
-
-                    this.invalidateVolume();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
@@ -137,7 +135,7 @@ x3dom.registerNodeType(
                 }
             },
 
-           nodeChanged: function ()
+            nodeChanged: function ()
             {			
 				var that = this;
 
@@ -236,18 +234,24 @@ x3dom.registerNodeType(
                     if (newScene)
                     {
                         that.addChild(newScene);
-                        
+                        newScene.invalidateVolume();
+                        that.invalidateVolume();
+
                         that._nameSpace.doc.downloadCount -= 1;
                         that._nameSpace.doc.needRender = true;
-                        x3dom.debug.logInfo('Inline: added '+that._vf.url[0]+' to scene.');
+                        x3dom.debug.logInfo('Inline: added ' + that._vf.url[0] + ' to scene.');
                         
                         // recalc changed scene bounding box twice
-                        if (that._nameSpace.doc._scene)
-                            that._nameSpace.doc._scene.updateVolume();
-                        window.setTimeout( function() { 
-							that._nameSpace.doc._scene.updateVolume();
-							that._nameSpace.doc.needRender = true;
-							}, 1000 );
+                        var theScene = that._nameSpace.doc._scene;
+
+                        if (theScene) {
+                            theScene.updateVolume();
+                            window.setTimeout( function() {
+                                that.invalidateVolume();
+                                theScene.updateVolume();
+                                that._nameSpace.doc.needRender = true;
+                                }, 1500 );
+                        }
                         
                         that.fireEvents("load");
                     }
