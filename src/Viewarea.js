@@ -642,10 +642,6 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
     }
     else {
         view = lMat;
-		proj = new x3dom.fields.SFMatrix4f();
-		proj.setValues(this._scene.getViewpoint().getProjectionMatrix(1));
-		proj._00 = 1;
-		proj._11 = 1;
     }
 
     return proj.mult(view);

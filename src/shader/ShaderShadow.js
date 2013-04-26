@@ -148,8 +148,9 @@ x3dom.shader.ShadowShader.prototype.generateFragmentShader = function(gl)
  	if(!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) {
 		shader +=	"gl_FragColor = packDepth(proj.z);\n";
 	} else {
-		//use exponential shadow maps, when not rendering from camera view
-		shader +=	"if (!cameraView) proj.z = exp((1.0-offset)*80.0*proj.z);\n";
+		//use variance shadow maps, when not rendering from camera view
+		//shader +=	"if (!cameraView) proj.z = exp((1.0-offset)*80.0*proj.z);\n";
+		shader +=	"if (!cameraView) proj.y = proj.z * proj.z;\n";
 		shader +=	"gl_FragColor = vec4(proj, 1.0);\n";
 	}
 	shader +=	"}\n";

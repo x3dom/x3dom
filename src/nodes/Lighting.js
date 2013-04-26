@@ -89,7 +89,7 @@ x3dom.registerNodeType(
         },
         {
             getViewMatrix: function(vec) {
-                var dir = this._vf.direction.normalize();
+                var dir = this.getCurrentTransform().multMatrixVec(this._vf.direction).normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
                         new x3dom.fields.SFVec3f(0, 0, -1), dir);
                 return orientation.toMatrix().transpose().
@@ -115,7 +115,7 @@ x3dom.registerNodeType(
         },
         {
             getViewMatrix: function(vec) {
-                var pos = this._vf.location;
+                var pos = this.getCurrentTransform().multMatrixPnt(this._vf.location);
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
                         new x3dom.fields.SFVec3f(0, 0, -1), vec);
                 return orientation.toMatrix().transpose().
@@ -148,8 +148,8 @@ x3dom.registerNodeType(
         },
         {
             getViewMatrix: function(vec) {
-                var pos = this._vf.location;
-                var dir = this._vf.direction.normalize();
+                var pos = this.getCurrentTransform().multMatrixPnt(this._vf.location);
+                var dir = this.getCurrentTransform().multMatrixVec(this._vf.direction).normalize();
                 var orientation = x3dom.fields.Quaternion.rotateFromTo(
                         new x3dom.fields.SFVec3f(0, 0, -1), dir);
                 return orientation.toMatrix().transpose().

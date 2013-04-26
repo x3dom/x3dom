@@ -2714,6 +2714,12 @@ x3dom.gfx_webgl = (function () {
             type = gl.FLOAT;
         }
 
+
+        var shadowType = gl.UNSIGNED_BYTE;
+        if (x3dom.caps.FP_TEXTURES && !x3dom.caps.MOBILE) {
+            shadowType = gl.FLOAT;
+        }
+		
         if (!scene._webgl)
         {
             scene._webgl = {};
@@ -2759,10 +2765,11 @@ x3dom.gfx_webgl = (function () {
 				scene._webgl.fboShadow[i] = new Array();		
 				
 				for (var j=0; j < numShadowMaps; j++)
-					scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, type);
+					scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, shadowType);
 			}
 			
-			scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, false, type);
+			if (scene._webgl.fboShadow.length > 0)
+				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, false, shadowType);
 			scene._webgl.fboBlur = new Array();
 						
 			//initialize blur fbo (different fbos for different sizes)
@@ -2775,8 +2782,14 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, false, type);			
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, false, shadowType);			
 			}
+			
+			//initialize Data for post processing
+			scene._webgl.ppBuffer = gl.createBuffer();
+			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
+			var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
+			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);		
 			
 			scene._webgl.shadowShader = this.cache.getShader(gl, x3dom.shader.SHADOW);
             
@@ -2851,7 +2864,7 @@ x3dom.gfx_webgl = (function () {
 					scene._webgl.fboShadow[i][0].height != size){
 					scene._webgl.fboShadow[i] = new Array();
 					for (var j=0;j<numShadowMaps;j++){
-						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, type);					
+						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, shadowType);					
 					}
 					
 				}			
@@ -2867,8 +2880,13 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, false, type);			
-			}			
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, false, shadowType);			
+			}
+
+			if (this.canvas.width != scene._webgl.fboScene.width || this.canvas.height != scene._webgl.fboScene.height){
+				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, false, shadowType);
+			}
+			
 			
         }
         
@@ -3104,7 +3122,7 @@ x3dom.gfx_webgl = (function () {
 
                 var lightMatrix = viewarea.getLightMatrix()[p];
 				var shadowMaps = scene._webgl.fboShadow[shadowCount];
-				var offset = Math.max(0.0,Math.min(.99,slights[p]._vf.shadowOffset));
+				var offset = Math.max(0.0,Math.min(1.0,slights[p]._vf.shadowOffset));
 												
 				if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)){
 					//get cascade count
@@ -3974,9 +3992,6 @@ x3dom.gfx_webgl = (function () {
     {
 		var scene = viewarea._scene;
 		
-		if (x3dom.caps.MOBILE)
-			viewarea._visDbgBuf = true;
-		
 		//don't render shadows whith less than 7 textures per fragment shader
 		var texLimit = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);	
 		
@@ -3999,6 +4014,7 @@ x3dom.gfx_webgl = (function () {
 					this.blurTex(gl, scene, shadowMaps[j], filterSize);
 				}
 				
+				//shader consumes 6 tex units per lights (even if less are bound)
 				texUnits+=6;
 				
 				if (texUnits > texLimit){
@@ -4020,15 +4036,12 @@ x3dom.gfx_webgl = (function () {
 		
 		
 			var sp = this.cache.getShadowRenderingShader(gl, currentLights);
-			sp.bind();
-		
-			//initialize Data for post processing
-			var vertexBuffer = gl.createBuffer();
-			gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-			var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
-			gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-			gl.vertexAttribPointer(sp.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-			gl.enableVertexAttribArray(sp.aVertexPosition);
+			sp.bind();	
+			
+			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
+			gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
+			gl.enableVertexAttribArray(sp.position);
+			
 			
 			//enable (multiplicative) blending
 			gl.enable(gl.BLEND);
@@ -4104,7 +4117,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
-					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(.99,currentLights[p]._vf.shadowOffset));
+					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
 					
 
 				}
@@ -4120,7 +4133,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_BeamWidth']        = 0.0;
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
-					sp['light'+p+'_ShadowOffset']	  = Math.max(0.0,Math.min(.99,currentLights[p]._vf.shadowOffset));
+					sp['light'+p+'_ShadowOffset']	  = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
 					
 				}
 				else if(x3dom.isa(currentLights[p], x3dom.nodeTypes.SpotLight))
@@ -4135,7 +4148,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_CutOffAngle']      = currentLights[p]._vf.cutOffAngle;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
-					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(.99,currentLights[p]._vf.shadowOffset));
+					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
 					
 				}
 					
@@ -4147,6 +4160,8 @@ x3dom.gfx_webgl = (function () {
 				gl.activeTexture(gl.TEXTURE0 + k);
 				gl.bindTexture(gl.TEXTURE_2D, null);	
 			} 
+			gl.disableVertexAttribArray(sp.position);
+			
 		}
     };
 	
@@ -4190,14 +4205,10 @@ x3dom.gfx_webgl = (function () {
 		var sp = this.cache.getShader(gl, x3dom.shader.BLUR);
 		sp.bind();
 		
-		
 		//initialize Data for post processing
-		var vertexBuffer = gl.createBuffer();
-		gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer);
-		var vertices = [-1, -1, 1, -1, -1, 1, -1, 1, 1, -1, 1, 1];
-		gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW);
-		gl.vertexAttribPointer(sp.aVertexPosition, 2, gl.FLOAT, false, 0, 0);
-		gl.enableVertexAttribArray(sp.aVertexPosition);
+		gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
+		gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
+		gl.enableVertexAttribArray(sp.position);
 		
 		sp.pixelSizeHor = 1.0/width;
 		sp.pixelSizeVert = 1.0/height;
@@ -4242,6 +4253,8 @@ x3dom.gfx_webgl = (function () {
 		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, null);
+		gl.disableVertexAttribArray(sp.position);
+		
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
 	};	
 	

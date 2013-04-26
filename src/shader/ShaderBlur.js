@@ -37,13 +37,13 @@ x3dom.shader.BlurShader = function(gl)
 x3dom.shader.BlurShader.prototype.generateVertexShader = function(gl)
 {
 	var shader = "";
-	shader += "attribute vec2 aVertexPosition;\n";
+	shader += "attribute vec2 position;\n";
 
-	shader += "varying vec2 vVertexPosition;\n";
+	shader += "varying vec2 vPosition;\n";
 	
 	shader += "void main(void) {\n";
-	shader += " vVertexPosition = aVertexPosition;\n";
-	shader += " gl_Position = vec4(aVertexPosition, 0.0, 1.0);\n";
+	shader += " vPosition = position;\n";
+	shader += " gl_Position = vec4(position, -1.0, 1.0);\n";
 	shader += "}\n";
 
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -66,7 +66,7 @@ x3dom.shader.BlurShader.prototype.generateFragmentShader = function(gl)
 					"  precision highp float;\n" +
 					"#endif\n" +
 					"\n" +
-					"varying vec2 vVertexPosition;\n" +
+					"varying vec2 vPosition;\n" +
 					"uniform sampler2D texture;\n" +
 					"uniform bool horizontal;\n" +
 					"uniform float pixelSizeHor;\n" +
@@ -77,7 +77,7 @@ x3dom.shader.BlurShader.prototype.generateFragmentShader = function(gl)
 	shader +=		x3dom.shader.rgbaPacking() +
 	
 					"void main(void) {\n" +
-					"	vec2 texCoords = (vVertexPosition + 1.0)*0.5;\n" +
+					"	vec2 texCoords = (vPosition + 1.0)*0.5;\n" +
 					"	vec2 offset;\n" +
 					"	if (horizontal) offset = vec2(pixelSizeHor, 0.0);\n" +
 					"	else offset = vec2(0.0, pixelSizeVert);\n" +
@@ -105,7 +105,7 @@ x3dom.shader.BlurShader.prototype.generateFragmentShader = function(gl)
 					"}\n";
 	} else{
 	shader +=		"void main(void) {\n" +
-					"	vec2 texCoords = (vVertexPosition + 1.0)*0.5;\n" +
+					"	vec2 texCoords = (vPosition + 1.0)*0.5;\n" +
 					"	vec2 offset;\n" +
 					"	if (horizontal) offset = vec2(pixelSizeHor, 0.0);\n" +
 					"	else offset = vec2(0.0, pixelSizeVert);\n" +

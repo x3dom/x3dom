@@ -22,7 +22,7 @@ x3dom.shader.ShadowRenderingShader = function(gl,shadowedLights)
     gl.attachShader(this.program, fragmentShader);
     
     // optional, but position should be at location 0 for performance reasons
-    //gl.bindAttribLocation(this.program, 0, "position");
+    gl.bindAttribLocation(this.program, 0, "position");
     
 	gl.linkProgram(this.program);
 	
@@ -35,13 +35,13 @@ x3dom.shader.ShadowRenderingShader = function(gl,shadowedLights)
 x3dom.shader.ShadowRenderingShader.prototype.generateVertexShader = function(gl)
 {
 	var shader = "";
-	shader += "attribute vec2 aVertexPosition;\n";
+	shader += "attribute vec2 position;\n";
 
-	shader += "varying vec2 vVertexPosition;\n";
+	shader += "varying vec2 vPosition;\n";
 	
 	shader += "void main(void) {\n";
-	shader += " vVertexPosition = aVertexPosition;\n";
-	shader += " gl_Position = vec4(aVertexPosition, 0.0, 1.0);\n";
+	shader += " vPosition = position;\n";
+	shader += " gl_Position = vec4(position, -1.0, 1.0);\n";
 	shader += "}\n";
 	
 	var vertexShader = gl.createShader(gl.VERTEX_SHADER);
@@ -65,7 +65,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
     			 "#endif\n\n";
 	shader += "uniform mat4 inverseViewProj;\n";
 	shader += "uniform mat4 inverseProj;\n";
-	shader += "varying vec2 vVertexPosition;\n";
+	shader += "varying vec2 vPosition;\n";
 	shader += "uniform sampler2D sceneMap;\n";  
 	for (var i=0; i<5; i++)
 		shader += "uniform float cascade"+i+"_Depth;\n";
@@ -99,7 +99,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 	
 	shader += 	"void main(void) {\n" +
 				"	float shadowValue = 1.0;\n" +
-				"	vec2 texCoordsSceneMap = (vVertexPosition + 1.0)*0.5;\n" +
+				"	vec2 texCoordsSceneMap = (vPosition + 1.0)*0.5;\n" +
 				"	vec4 projCoords = texture2D(sceneMap, texCoordsSceneMap);\n" +
 				"	if (projCoords != vec4(1.0,1.0,1.0,0.0)){\n";
 	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE){ 
@@ -109,7 +109,7 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 	
 	//reconstruct world and view coordinates from scene map
 	shader += 	"	projCoords = projCoords / projCoords.w;\n" +
-				"	projCoords.xy = vVertexPosition;\n" +
+				"	projCoords.xy = vPosition;\n" +
 				"	vec4 viewCoords = inverseProj*projCoords;\n" +
 				"	vec4 worldCoords = inverseViewProj*projCoords;\n" +
 				"	float lightInfluence = 0.0;\n";
@@ -135,9 +135,15 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 								"light"+l+"_0_ShadowMap,light"+l+"_1_ShadowMap,light"+l+"_2_ShadowMap,light"+l+"_3_ShadowMap,"+
 								"light"+l+"_4_ShadowMap,light"+l+"_5_ShadowMap);\n";
 		}		
-		shader += 	"		shadowValue *= clamp(ESM(shadowMapValues.z/shadowMapValues.w, viewSampleDepth, light"+l+"_ShadowOffset), "+
-					"							 1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n" +
-					"	}\n";			
+	
+		if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE)	
+			shader += 	"	shadowValue *= clamp(ESM(shadowMapValues.z, viewSampleDepth, light"+l+"_ShadowOffset), "+
+						"				1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n";
+		else
+			shader += 	" 	shadowValue *= clamp(VSM(shadowMapValues.zy, viewSampleDepth, light"+l+"_ShadowOffset), "+
+						"				1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n";
+						
+		shader += 		"	}\n";			
 	}
 					
 	shader += 	"}\n" +

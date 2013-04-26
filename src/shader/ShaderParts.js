@@ -152,7 +152,17 @@ x3dom.shader.shadowRendering = function(){
 	if (!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE)
 			shaderPart += 	"	return exp(-80.0*(1.0-offset)*(viewSampleDepth - shadowMapDepth));\n";
 	else 	shaderPart += 	"	return shadowMapDepth * exp(-80.0*(1.0-offset)*viewSampleDepth);\n";
-	shaderPart +="}\n";						
+	shaderPart +="}\n";	
+
+	shaderPart += 	
+				"float VSM(vec2 moments, float depth, float offset){\n"+
+				"	if (depth <= moments.x) return 1.0;\n" +
+				"	float variance = moments.y - moments.x * moments.x;\n" +
+				"	variance = max(variance, 0.00002 + offset*0.01);\n" +
+				"	float d = depth - moments.x;\n" +
+				"	return variance/(variance + d*d);\n" +
+				"}\n";	
+			
 	
 	return shaderPart;
 };
