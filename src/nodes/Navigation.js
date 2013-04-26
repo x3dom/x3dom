@@ -712,8 +712,8 @@ x3dom.registerNodeType(
                 var min = x3dom.fields.SFVec3f.MAX();
                 var max = x3dom.fields.SFVec3f.MIN();
                 vol.getBounds(min, max);
-                
-                var mat_view = this._nameSpace.doc._viewarea.getViewMatrix();;
+
+                var mat_view = drawableCollection.viewMatrix;
                 
                 var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
                 center = mat_view.inverse().multMatrixPnt(center);
@@ -847,7 +847,7 @@ x3dom.registerNodeType(
                 if (root == null)
                     return;
                     
-                var mat_view = this._nameSpace.doc._viewarea.getViewMatrix();;
+                var mat_view = drawableCollection.viewMatrix;
                 
                 var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
                 center = mat_view.inverse().multMatrixPnt(center);
