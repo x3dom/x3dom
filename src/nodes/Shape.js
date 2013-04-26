@@ -241,10 +241,10 @@ x3dom.registerNodeType(
                 // TODO: culling etc
                 if (drawableCollection && this._vf.render && this._cf.geometry.node)
                 {
-                    drawableCollection.numberOfNodes++;  // shall we add 2 instead to include geo?
-                    //out.push( [transform, this] );
-                    
-                    drawableCollection.addDrawable(this, transform, null/*bbox*/, null/*params*/);
+                    //out.push( [transform, this] );   // shall we add 2 instead to include geo?
+
+                    if (!drawableCollection.cull())
+                        drawableCollection.addDrawable(this, transform, null/*bbox*/, null/*params*/);
                 }
             },
             

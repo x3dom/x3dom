@@ -2777,6 +2777,135 @@ x3dom.fields.BoxVolume.prototype.transform = function(m)
     this.max.z = zmax;
 };
 
+x3dom.fields.BoxVolume.prototype.transformFrom = function(m, other)
+{
+    var xmin, ymin, zmin;
+    var xmax, ymax, zmax;
+
+    xmin = xmax = m._03;
+    ymin = ymax = m._13;
+    zmin = zmax = m._23;
+
+    // calculate xmin and xmax of new transformed BBox
+    var a = other.max.x * m._00;
+    var b = other.min.x * m._00;
+
+    if (a >= b) {
+        xmax += a;
+        xmin += b;
+    }
+    else {
+        xmax += b;
+        xmin += a;
+    }
+
+    a = other.max.y * m._01;
+    b = other.min.y * m._01;
+
+    if (a >= b) {
+        xmax += a;
+        xmin += b;
+    }
+    else {
+        xmax += b;
+        xmin += a;
+    }
+
+    a = other.max.z * m._02;
+    b = other.min.z * m._02;
+
+    if (a >= b) {
+        xmax += a;
+        xmin += b;
+    }
+    else {
+        xmax += b;
+        xmin += a;
+    }
+
+    // calculate ymin and ymax of new transformed BBox
+    a = other.max.x * m._10;
+    b = other.min.x * m._10;
+
+    if (a >= b) {
+        ymax += a;
+        ymin += b;
+    }
+    else {
+        ymax += b;
+        ymin += a;
+    }
+
+    a = other.max.y * m._11;
+    b = other.min.y * m._11;
+
+    if (a >= b) {
+        ymax += a;
+        ymin += b;
+    }
+    else {
+        ymax += b;
+        ymin += a;
+    }
+
+    a = other.max.z * m._12;
+    b = other.min.z * m._12;
+
+    if (a >= b) {
+        ymax += a;
+        ymin += b;
+    }
+    else {
+        ymax += b;
+        ymin += a;
+    }
+
+    // calculate zmin and zmax of new transformed BBox
+    a = other.max.x * m._20;
+    b = other.min.x * m._20;
+
+    if (a >= b) {
+        zmax += a;
+        zmin += b;
+    }
+    else {
+        zmax += b;
+        zmin += a;
+    }
+
+    a = other.max.y * m._21;
+    b = other.min.y * m._21;
+
+    if (a >= b) {
+        zmax += a;
+        zmin += b;
+    }
+    else {
+        zmax += b;
+        zmin += a;
+    }
+
+    a = other.max.z * m._22;
+    b = other.min.z * m._22;
+
+    if (a >= b) {
+        zmax += a;
+        zmin += b;
+    }
+    else {
+        zmax += b;
+        zmin += a;
+    }
+
+    this.min.x = xmin;
+    this.min.y = ymin;
+    this.min.z = zmin;
+
+    this.max.x = xmax;
+    this.max.y = ymax;
+    this.max.z = zmax;
+};
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /** FrustumVolume constructor.

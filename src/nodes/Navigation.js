@@ -543,11 +543,9 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !drawableCollection) {
+                if (!this._vf.render || !drawableCollection || drawableCollection.cull()) {
                     return;
                 }
-
-                drawableCollection.numberOfNodes++;
 
                 var vol = this.getVolume();
 
@@ -555,7 +553,7 @@ x3dom.registerNodeType(
                 var max = x3dom.fields.SFVec3f.MIN();
                 vol.getBounds(min, max);
                 
-                var mat_view = this._nameSpace.doc._viewarea.getViewMatrix();;
+                var mat_view = drawableCollection.viewMatrix;
                 
                 var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
                 center = mat_view.inverse().multMatrixPnt(center);
@@ -641,11 +639,9 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !drawableCollection) {
+                if (!this._vf.render || !drawableCollection || drawableCollection.cull()) {
                     return;
                 }
-
-                drawableCollection.numberOfNodes++;
                 
                 for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
                 {
@@ -678,11 +674,9 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function(transform, drawableCollection)
             {
-                if (!this._vf.render || !drawableCollection) {
+                if (!this._vf.render || !drawableCollection || drawableCollection.cull()) {
                     return;
                 }
-
-                drawableCollection.numberOfNodes++;
 
                 this.visitChildren(transform, drawableCollection);
                 

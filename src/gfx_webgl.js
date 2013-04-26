@@ -2833,8 +2833,18 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         scene.drawableCollection = null;  // Always update needed?
 
-        if (!scene.drawableCollection) {
-            scene.drawableCollection = new x3dom.DrawableCollection(viewarea, scene._vf.sortTrans);
+        if (!scene.drawableCollection)
+        {
+            var drawableCollectionConfig = {
+                viewArea: viewarea,
+                sortTrans: scene._vf.sortTrans,
+                viewMatrix: mat_view,
+                projMatrix: mat_proj,
+                sceneMatrix: mat_scene,
+                frustumCulling: true
+            };
+
+            scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
             x3dom.Utils.startMeasure('traverse');
 
@@ -2982,9 +2992,7 @@ x3dom.gfx_webgl = (function () {
 
             if (view_frustum && drawable.shape._webgl) {
                 vol = drawable.shape.getVolume();
-                vol.getBounds(box.min, box.max);
-
-                box.transform(drawable.transform);
+                box.transformFrom(drawable.transform, vol);
 
                 if (!view_frustum.intersect(box)) {
                     // remember culled state for pick pass
@@ -3128,7 +3136,8 @@ x3dom.gfx_webgl = (function () {
     /*****************************************************************************
      * Render RenderedTexture-Pass
      *****************************************************************************/
-    Context.prototype.renderRTPass = function (gl, viewarea, rt) {
+    Context.prototype.renderRTPass = function (gl, viewarea, rt)
+    {
         switch (rt._vf.update.toUpperCase()) {
             case "NONE":
                 return;
@@ -3260,11 +3269,20 @@ x3dom.gfx_webgl = (function () {
             }
         }
         else {
-            locScene.numberOfNodes = 0
-            locScene.drawableCollection = new x3dom.DrawableCollection(viewarea, scene._vf.sortTrans);
+            var drawableCollectionConfig = {
+                viewArea: viewarea,
+                sortTrans: scene._vf.sortTrans,
+                viewMatrix: mat_view,
+                projMatrix: mat_proj,
+                sceneMatrix: mat_scene,
+                frustumCulling: false
+            };
 
-            locScene.collectDrawableObjects(
-                locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()), locScene.drawableCollection);
+            locScene.numberOfNodes = 0;
+            locScene.drawableCollection = new x3dom.DrawableCollection(viewarea, drawableCollectionConfig);
+
+            locScene.collectDrawableObjects(locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()),
+                                            locScene.drawableCollection);
 
             locScene.drawableCollection.sort();
 
@@ -3345,7 +3363,8 @@ x3dom.gfx_webgl = (function () {
     /*****************************************************************************
      * Render Normals
      *****************************************************************************/
-    Context.prototype.renderNormals = function (gl, scene, sp, mat_view, mat_scene) {
+    Context.prototype.renderNormals = function (gl, scene, sp, mat_view, mat_scene)
+    {
         if (!sp) {  // error
             return;
         }

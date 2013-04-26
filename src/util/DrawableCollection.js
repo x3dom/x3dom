@@ -8,22 +8,44 @@
  * Based on code originally provided by
  * Philip Taylor: http://philip.html5.org
  */
- 
+
  
 /**
  *
  */
-x3dom.DrawableCollection = function (viewarea, sortTrans) {
-  this.collection = [];
-  this.viewarea = viewarea;
- 
+x3dom.DrawableCollection = function (drawableCollectionConfig) {
+  this.collection = new Array(1000);
+
+  this.viewMatrix = drawableCollectionConfig.viewMatrix;
+  this.projMatrix = drawableCollectionConfig.projMatrix;
+  this.sceneMatrix = drawableCollectionConfig.sceneMatrix;
+
+  this.viewarea = drawableCollectionConfig.viewArea;
+
+  this.viewFrustum = this.viewarea.getViewfrustum(this.sceneMatrix);
+  this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
+
+  this.sortTrans = drawableCollectionConfig.sortTrans;
   this.sortBySortKey = false;
   this.sortByPriority = false;
-  this.sortTrans = sortTrans;
   
   this.numberOfNodes = 0;
   
   this.length = 0;
+};
+
+/**
+ *
+ */
+x3dom.DrawableCollection.prototype.cull = function() {
+    if (this.frustumCulling) {
+        // TODO; do culling here - if culled return true
+    }
+
+    // not culled, incr node cnt
+    this.numberOfNodes++;
+
+    return false;
 };
 
 /**
@@ -48,8 +70,7 @@ x3dom.DrawableCollection.prototype.addDrawable = function ( shape, transform, bo
   
   //Calculate the magical object priority
   drawable.priority = 0;
-  
-    
+
   var appearance = shape._cf.appearance.node;
   drawable.sortType = appearance ? appearance._vf.sortType.toLowerCase() : "opaque";
   drawable.sortKey  = appearance ? appearance._vf.sortKey  : 0;
@@ -58,9 +79,8 @@ x3dom.DrawableCollection.prototype.addDrawable = function ( shape, transform, bo
   //the center of the box is not available
   if (drawable.sortType == 'transparent') {
     var center = shape.getCenter();
-    var viewMatrix = this.viewarea.getViewMatrix();
     center = transform.multMatrixPnt(center);
-    center = viewMatrix.multMatrixPnt(center);
+    center = this.viewMatrix.multMatrixPnt(center);
     drawable.zPos = center.z;
   }
   

@@ -25,11 +25,9 @@ x3dom.registerNodeType(
             // TODO: culling etc.
             collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !drawableCollection) {
+                if (!this._vf.render || !drawableCollection || drawableCollection.cull()) {
                     return;
                 }
-
-                drawableCollection.numberOfNodes++;
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     var cnode = this._childNodes[i];
@@ -122,11 +120,10 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, drawableCollection)
             {
                 if (!drawableCollection || this._vf.whichChoice < 0 ||
-                    this._vf.whichChoice >= this._childNodes.length) {
+                    this._vf.whichChoice >= this._childNodes.length ||
+                    drawableCollection.cull()) {
                     return;
                 }
-
-                drawableCollection.numberOfNodes++;
 
                 var cnode = this._childNodes[this._vf.whichChoice];
                 if (cnode) {
@@ -642,11 +639,9 @@ x3dom.registerNodeType(
             // out is drawableObjects array
             collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !drawableCollection) {
+                if (!this._vf.render || !drawableCollection || drawableCollection.cull()) {
                     return;
                 }
-
-                drawableCollection.numberOfNodes++;
 
                 var viewarea = this._nameSpace.doc._viewarea;
                 var isMoving = viewarea.isMoving();
@@ -694,8 +689,7 @@ x3dom.registerNodeType(
                                 if (view_frustum)   // experimental
                                 {
                                     var vol = shape.getVolume();
-                                    vol.getBounds(box.min, box.max);
-                                    box.transform(trafo);
+                                    box.transformFrom(trafo, vol);
                                 }
                                 
                                 if (!view_frustum || view_frustum.intersect(box))
