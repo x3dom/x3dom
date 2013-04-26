@@ -2898,7 +2898,7 @@ x3dom.gfx_webgl = (function () {
 
                 var lightMatrix = viewarea.getLightMatrix()[p];
                 var shadowMaps = scene._webgl.fboShadow[shadowCount];
-                var offset = Math.max(0.0, Math.min(.99, slights[p]._vf.shadowOffset));
+                var offset = Math.max(0.0, Math.min(1.0, slights[p]._vf.shadowOffset));
 
                 if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)) {
                     //get cascade count
@@ -2933,6 +2933,9 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
+		mat_proj = viewarea.getProjectionMatrix();
+		mat_view = viewarea.getViewMatrix();
+		
         //One pass for depth of scene from camera view (to enable post-processing shading)
         if (shadowCount > 0) {
             this.renderShadowPass(gl, viewarea, mat_proj.mult(mat_view), mat_view, scene._webgl.fboScene, 0.0, true);
