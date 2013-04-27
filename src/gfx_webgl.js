@@ -2841,6 +2841,7 @@ x3dom.gfx_webgl = (function () {
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
                 frustumCulling: true,
+                smallFeatureThreshold: scene._vf.smallFeatureCulling ? 10 : 1,
                 context: this,
                 gl: gl
                 // TODO: what about Flash?
@@ -3236,6 +3237,7 @@ x3dom.gfx_webgl = (function () {
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
                 frustumCulling: false,
+                smallFeatureThreshold: 1,
                 context: this,
                 gl: gl
                 // TODO: what about Flash?

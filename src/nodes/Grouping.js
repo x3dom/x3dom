@@ -737,8 +737,11 @@ x3dom.registerNodeType(
             
             // If TRUE, transparent objects are sorted from back to front
             this.addField_SFBool(ctx, 'sortTrans', true);
+
             // If TRUE, objects outside the viewing frustum are ignored
             this.addField_SFBool(ctx, 'frustumCulling', true);
+            // If TRUE, objects smaller a certain threshold are ignored (experimental)
+            this.addField_SFBool(ctx, 'smallFeatureCulling', false);
             
             this._lastMin = null;
             this._lastMax = null;

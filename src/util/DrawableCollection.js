@@ -22,11 +22,17 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
 
   this.viewarea = drawableCollectionConfig.viewArea;
 
+  var viewpoint = this.viewarea._scene.getViewpoint();
+  this.near = viewpoint.getNear();
+  this.imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne() / this.viewarea._height;
+
   this.context = drawableCollectionConfig.context;
   this.gl = drawableCollectionConfig.gl;
 
   this.viewFrustum = this.viewarea.getViewfrustum(this.sceneMatrix);
   this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
+
+  this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
   this.worldVolume = new x3dom.fields.BoxVolume();
 
   this.sortTrans = drawableCollectionConfig.sortTrans;
@@ -48,6 +54,20 @@ x3dom.DrawableCollection.prototype.cull = function(transform, volume) {
         if (!this.viewFrustum.intersect(this.worldVolume)) {
             return true;
         }
+    }
+    if (this.smallFeatureThreshold > 1) {
+        var modelView = this.viewMatrix.mult(transform);
+
+        var center = modelView.multMatrixPnt(volume.getCenter());
+        var dia = volume.getDiameter();
+
+        var dist = Math.max(-center.z - dia / 2, this.near);
+        var projPixelLength = dist * this.imgPlaneHeightAtDistOne;
+
+        var numPixel = dia / projPixelLength;
+
+        if (numPixel < this.smallFeatureThreshold)
+            return true;
     }
 
     // not culled, incr node cnt
