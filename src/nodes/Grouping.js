@@ -21,18 +21,18 @@ x3dom.registerNodeType(
             // FIXME; add addChild and removeChild slots ?
         },
         {
-            // Collects array of [transform matrix, node] for all objects that should be drawn.
-            // TODO: culling etc.
             collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !drawableCollection || drawableCollection.cull()) {
+                if (!this._vf.render || !drawableCollection ||
+                    drawableCollection.cull(transform, this.getVolume())) {
                     return;
                 }
+
+                var childTransform = this.transformMatrix(transform);
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     var cnode = this._childNodes[i];
                     if (cnode) {
-                        var childTransform = cnode.transformMatrix(transform);
                         cnode.collectDrawableObjects(childTransform, drawableCollection);
                     }
                 }
@@ -116,18 +116,17 @@ x3dom.registerNodeType(
                 return found;
             },
 
-            // Collects array of [transform matrix, node] for all objects that should be drawn.
             collectDrawableObjects: function (transform, drawableCollection)
             {
                 if (!drawableCollection || this._vf.whichChoice < 0 ||
                     this._vf.whichChoice >= this._childNodes.length ||
-                    drawableCollection.cull()) {
+                    drawableCollection.cull(transform, this.getVolume())) {
                     return;
                 }
 
                 var cnode = this._childNodes[this._vf.whichChoice];
                 if (cnode) {
-                    var childTransform = cnode.transformMatrix(transform);
+                    var childTransform = this.transformMatrix(transform);
                     cnode.collectDrawableObjects(childTransform, drawableCollection);
                 }
             },
@@ -635,11 +634,10 @@ x3dom.registerNodeType(
                 return n;
             },
 
-            // Collects array of [matrix, node] for all objects with given id that should be drawn
-            // out is drawableObjects array
             collectDrawableObjects: function (transform, drawableCollection)
             {
-                if (!this._vf.render || !drawableCollection || drawableCollection.cull()) {
+                if (!this._vf.render || !drawableCollection ||
+                    drawableCollection.cull(transform, this.getVolume())) {
                     return;
                 }
 

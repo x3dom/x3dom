@@ -2779,6 +2779,8 @@ x3dom.fields.BoxVolume.prototype.transform = function(m)
 
 x3dom.fields.BoxVolume.prototype.transformFrom = function(m, other)
 {
+    this.valid = other.valid;
+
     var xmin, ymin, zmin;
     var xmax, ymax, zmax;
 

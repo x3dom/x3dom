@@ -152,11 +152,10 @@ x3dom.gfx_webgl = (function () {
      * Setup GL objects for given shape
      *****************************************************************************/
     Context.prototype.setupShape = function (gl, drawable, viewarea) {
-        var i, q = 0, q5;
+        var q = 0, q5;
         var textures, t;
         var vertices, positionBuffer;
         var indicesBuffer, indexArray;
-
 
         var shape = drawable.shape;
 
@@ -1194,7 +1193,7 @@ x3dom.gfx_webgl = (function () {
 
             var s_gl = shape._webgl;
 
-            if (!s_gl || s_gl.culled === true) {
+            if (!s_gl) {
                 continue;
             }
 
@@ -1440,7 +1439,7 @@ x3dom.gfx_webgl = (function () {
             var shape = drawable.shape;
             var s_gl = shape._webgl;
 
-            if (shape._objectID < 1 || !s_gl || !shape._vf.isPickable || s_gl.culled === true) {
+            if (shape._objectID < 1 || !s_gl || !shape._vf.isPickable) {
                 continue;
             }
 
@@ -2841,7 +2840,10 @@ x3dom.gfx_webgl = (function () {
                 viewMatrix: mat_view,
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
-                frustumCulling: true
+                frustumCulling: true,
+                context: this,
+                gl: gl
+                // TODO: what about Flash?
             };
 
             scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
@@ -2863,21 +2865,6 @@ x3dom.gfx_webgl = (function () {
 
         var sortTime = x3dom.Utils.stopMeasure('sorting');
         this.x3dElem.runtime.addMeasurement('SORT', sortTime);
-
-        //===========================================================================
-        // Setup shapes
-        //===========================================================================
-        x3dom.Utils.startMeasure('setup');
-
-        var drawable = null;
-
-        for (var drawableIdx = 0; drawableIdx < scene.drawableCollection.length; drawableIdx++) {
-            drawable = scene.drawableCollection.get(drawableIdx);
-            this.setupShape(gl, drawable, viewarea);
-        }
-
-        var setupTime = x3dom.Utils.stopMeasure('setup');
-        this.x3dElem.runtime.addMeasurement('SETUP', setupTime);
 
         //===========================================================================
         // Render Shadow Pass
@@ -2932,13 +2919,10 @@ x3dom.gfx_webgl = (function () {
                 lMatrices[lMatrices.length] = lightMatrix;
             }
         }
-
-		mat_proj = viewarea.getProjectionMatrix();
-		mat_view = viewarea.getViewMatrix();
 		
         //One pass for depth of scene from camera view (to enable post-processing shading)
         if (shadowCount > 0) {
-            this.renderShadowPass(gl, viewarea, mat_proj.mult(mat_view), mat_view, scene._webgl.fboScene, 0.0, true);
+            this.renderShadowPass(gl, viewarea, mat_scene, mat_view, scene._webgl.fboScene, 0.0, true);
             var shadowTime = x3dom.Utils.stopMeasure('shadow');
             this.x3dElem.runtime.addMeasurement('SHADOW', shadowTime);
         }
@@ -2978,35 +2962,12 @@ x3dom.gfx_webgl = (function () {
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris = 0;
 
-        // update view frustum
-        var view_frustum = viewarea.getViewfrustum(mat_scene);
-
-        if (view_frustum) {
-            var box = new x3dom.fields.BoxVolume();
-            var unculledObjects = 0;
-        }
-
         //var prevRenderedAppearance = null;
         //var nextRenderedAppearance = null;
 
         for (i = 0, n = scene.drawableCollection.length; i < n; i++) {
             //var obj = scene.drawableObjects[zPos[i][0]];
-            drawable = scene.drawableCollection.get(i);
-
-            if (view_frustum && drawable.shape._webgl) {
-                vol = drawable.shape.getVolume();
-                box.transformFrom(drawable.transform, vol);
-
-                if (!view_frustum.intersect(box)) {
-                    // remember culled state for pick pass
-                    drawable.shape._webgl.culled = true;
-                    continue;
-                }
-                else {
-                    drawable.shape._webgl.culled = false;
-                }
-                unculledObjects++;
-            }
+            var drawable = scene.drawableCollection.get(i);
 
             var needEnableBlending = false;
             var needEnableDepthMask = false;
@@ -3065,11 +3026,7 @@ x3dom.gfx_webgl = (function () {
         if (shadowCount > 0)
             this.renderShadows(gl, viewarea, viewarea.getShadowedLights(), WCToLCMatrices, lMatrices);
 
-        if (view_frustum) {
-            viewarea._numRenderedNodes = unculledObjects;
-        } else {
-            viewarea._numRenderedNodes = scene.drawableCollection.length;
-        }
+        viewarea._numRenderedNodes = scene.drawableCollection.length;
 
         gl.disable(gl.BLEND);
         /*gl.blendFuncSeparate( // just multiply dest RGB by its A
@@ -3278,11 +3235,14 @@ x3dom.gfx_webgl = (function () {
                 viewMatrix: mat_view,
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
-                frustumCulling: false
+                frustumCulling: false,
+                context: this,
+                gl: gl
+                // TODO: what about Flash?
             };
 
             locScene.numberOfNodes = 0;
-            locScene.drawableCollection = new x3dom.DrawableCollection(viewarea, drawableCollectionConfig);
+            locScene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
             locScene.collectDrawableObjects(locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()),
                                             locScene.drawableCollection);
@@ -3292,14 +3252,6 @@ x3dom.gfx_webgl = (function () {
             n = locScene.drawableCollection.length;
 
             if (rt._vf.showNormals) {
-                for (i = 0; i < n; i++) {
-                    drawable = locScene.drawableCollection.get(i);
-                    shape = drawable.shape;
-
-                    if (shape._vf.render)
-                        this.setupShape(gl, drawable, viewarea);
-                }
-
                 this.renderNormals(gl, locScene, scene._webgl.normalShader, mat_view, mat_scene);
             }
             else {
@@ -3311,8 +3263,6 @@ x3dom.gfx_webgl = (function () {
                     if (!shape._vf.render) {
                         continue;
                     }
-
-                    this.setupShape(gl, drawable, viewarea);
 
                     needEnableBlending = false;
                     needEnableDepthMask = false;
@@ -3388,7 +3338,7 @@ x3dom.gfx_webgl = (function () {
             var shape = drawable.shape;
             var s_gl = shape._webgl;
 
-            if (!s_gl || s_gl.culled === true) {
+            if (!s_gl) {
                 continue;
             }
 

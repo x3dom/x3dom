@@ -238,13 +238,14 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, drawableCollection)
             {
-                // TODO: culling etc
                 if (drawableCollection && this._vf.render && this._cf.geometry.node)
                 {
                     //out.push( [transform, this] );   // shall we add 2 instead to include geo?
 
-                    if (!drawableCollection.cull())
-                        drawableCollection.addDrawable(this, transform, null/*bbox*/, null/*params*/);
+                    if ( !drawableCollection.cull(transform, this.getVolume()) ) {
+                        var childTransform = this.transformMatrix(transform);
+                        drawableCollection.addDrawable(this, childTransform, null/*bbox*/, null/*params*/);
+                    }
                 }
             },
             

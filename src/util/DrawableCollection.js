@@ -22,8 +22,12 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
 
   this.viewarea = drawableCollectionConfig.viewArea;
 
+  this.context = drawableCollectionConfig.context;
+  this.gl = drawableCollectionConfig.gl;
+
   this.viewFrustum = this.viewarea.getViewfrustum(this.sceneMatrix);
   this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
+  this.worldVolume = new x3dom.fields.BoxVolume();
 
   this.sortTrans = drawableCollectionConfig.sortTrans;
   this.sortBySortKey = false;
@@ -37,9 +41,13 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
 /**
  *
  */
-x3dom.DrawableCollection.prototype.cull = function() {
+x3dom.DrawableCollection.prototype.cull = function(transform, volume) {
     if (this.frustumCulling) {
-        // TODO; do culling here - if culled return true
+        this.worldVolume.transformFrom(transform, volume);
+        // if culled return true
+        if (!this.viewFrustum.intersect(this.worldVolume)) {
+            return true;
+        }
     }
 
     // not culled, incr node cnt
@@ -102,6 +110,14 @@ x3dom.DrawableCollection.prototype.addDrawable = function ( shape, transform, bo
   
   //Increment collection length
   this.length++;
+
+  //Finally setup shape directly here to avoid another loop of O(n)
+  if (this.context && this.gl) {
+    this.context.setupShape(this.gl, drawable, this.viewarea);
+  }
+  else {
+    //TODO: setup Flash?
+  }
 };
 
 /**
