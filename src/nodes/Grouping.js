@@ -73,49 +73,6 @@ x3dom.registerNodeType(
                 return vol;
             },
 
-            find: function (type)
-            {
-                if (this._vf.whichChoice < 0 ||
-                    this._vf.whichChoice >= this._childNodes.length) {
-                    return null;
-                }
-
-                var child = this._childNodes[this._vf.whichChoice];
-                if (child) {
-                    if (child.constructor == type) {
-                        return child;
-                    }
-
-                    var c = child.find(type);
-                    if (c) {
-                        return c;
-                    }
-                }
-
-                return null;
-            },
-
-            findAll: function (type)
-            {
-                if (this._vf.whichChoice < 0 ||
-                    this._vf.whichChoice >= this._childNodes.length) {
-                    return [];
-                }
-
-                var found = [];
-                var child = this._childNodes[this._vf.whichChoice];
-
-                if (child) {
-                    if (child.constructor == type) {
-                        found.push(child);
-                    }
-
-                    found = found.concat(child.findAll(type));
-                }
-
-                return found;
-            },
-
             collectDrawableObjects: function (transform, drawableCollection)
             {
                 if (!drawableCollection || this._vf.whichChoice < 0 ||

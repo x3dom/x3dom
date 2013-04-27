@@ -131,7 +131,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             if ('_x3domNode' in child.parentNode) {
 				if (child.parentNode.tagName && 
 				    child.parentNode.tagName.toLowerCase() == 'inline') {
-					return;
 				}
 				else {
 					var parent = child.parentNode._x3domNode;

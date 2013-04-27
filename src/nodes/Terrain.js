@@ -6,7 +6,7 @@
  * Dual licensed under the MIT and GPL
  *
  * Based on code originally provided by
- * Michael Englert
+ * Philip Taylor: http://philip.html5.org
  */
 
 // ### Terrain ###
@@ -35,11 +35,9 @@ x3dom.registerNodeType(
                                              this._vf.maxDepth, 0, 0, this._vf.factor,
                                              new x3dom.fields.SFMatrix4f.identity(),
                                              null, 0, 0);
-
         },
         {
-
-            visitChildren: function (transform, drawableCollection) {
+            visitChildren: function(transform, drawableCollection) {
                 if (this.cnt > 5) {
                     if (this.test == 4) {
                         this.createChildren = 0;
@@ -48,11 +46,25 @@ x3dom.registerNodeType(
                     else {
                         this.test++;
                     }
-                    this.rootNode.CollectDrawables(transform, drawableCollection);
+                    this.rootNode.collectDrawables(transform, drawableCollection);
                 }
                 else {
                     this.cnt++;
                 }
+            },
+
+            getVolume: function()
+            {
+                var vol = this._graph.volume;
+
+                if (!this.volumeValid() && this._vf.render)
+                {
+                    var childVol = this.rootNode.getVolume();
+                    if (childVol && childVol.isValid())
+                        vol.extendBounds(childVol.min, childVol.max);
+                }
+
+                return vol;
             }
         }
     )
@@ -64,17 +76,24 @@ x3dom.registerNodeType(
  * Defines one node of a quadtree that represents a part (nxn vertices) of the whole mesh.
  */
 function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nodeNumber,
-                      factor, nodeTransformation, shader, columnNr, rowNr) {
+                      factor, nodeTransformation, shader, columnNr, rowNr)
+{
     // array with the maximal four child nodes
     var children = [];
     // path to x3d-file that should be loaded
     var path = colorUrl + "/" + level + "/" + columnNr + "/";
+
     // drawable component of this node
-    var shape = new x3dom.nodeTypes.Shape();
+    var shape = new x3dom.nodeTypes.Shape(ctx);
+
+    shape._nameSpace = new x3dom.NodeNameSpace("", navigation._nameSpace.doc);
+    shape._nameSpace.setBaseURL(navigation._nameSpace.baseURL + path);
+
     // 2D-Mesh that will represent the geometry of this node
-    var geometry = new x3dom.nodeTypes.BinaryGeometry(ctx);
+    //var geometry = new x3dom.nodeTypes.BinaryGeometry(ctx);
+
     // position of the node in world space
-    var position;
+    var position = null;
     // stores if file has been loaded
     var isPossible = false;
     // address of the image for the terrain height-data
@@ -88,33 +107,27 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
         var xmlDoc = xhr.responseXML;
         if (xmlDoc != null) {
             var replacer = new RegExp("\"", "g");
-            createGeometry();
+            createGeometry(shape);
             isPossible = true;
         }
-        var imgAddress = path + (xmlDoc.getElementsByTagName("ImageTexture")[0].attributes.url.nodeValue.replace(replacer, ""));
+        var imgAddress = xmlDoc.getElementsByTagName("ImageTexture")[0].getAttribute("url").replace(replacer, "");
     }
-    catch (exp) { }
+    catch (exp) {
+        x3dom.debug.logException("Error loading file '" + file + "': " + exp);
+    }
 
 
 
-    function createGeometry() {
-        try {
-            var binGeo = xmlDoc.getElementsByTagName("BinaryGeometry")[0];
-            var temp = binGeo.attributes.vertexCount.nodeValue.split(" ");
-            geometry._vf.vertexCount = new x3dom.fields.MFInt32(temp);
-            var strArr = ["TRIANGLESTRIP", "TRIANGLES"];
-            geometry._vf.primType = new x3dom.fields.MFString(strArr);
-            temp = binGeo.attributes.size.nodeValue.split(" ");
-            geometry._vf.size = new x3dom.fields.SFVec3f(temp[0].replace(replacer, ""), temp[1].replace(replacer, ""), temp[2].replace(replacer, ""));
-            temp = binGeo.attributes.position.nodeValue.split(" ");
-            geometry._vf.position = new x3dom.fields.SFVec3f(temp[0].replace(replacer, ""), temp[1].replace(replacer, ""), temp[2].replace(replacer, ""));
-            // calculate the average position of the node
-            position = geometry._vf.position;
-            geometry._vf.index = path + binGeo.attributes.index.nodeValue;
-            geometry._vf.coord = path + binGeo.attributes.coord.nodeValue;
-            geometry._vf.normal = path + binGeo.attributes.normal.nodeValue;
-            geometry._vf.texCoord = path + binGeo.attributes.texCoord.nodeValue;
-        } catch (exp) {}
+    function createGeometry(parent) {
+        var binGeo = xmlDoc.getElementsByTagName("BinaryGeometry")[0];
+
+        if (parent && parent._nameSpace && binGeo) {
+            var geometry = parent._nameSpace.setupTree(binGeo);
+            parent.addChild(geometry);
+            geometry.nodeChanged();
+
+            position = x3dom.fields.SFVec3f.copy(geometry._vf.position);
+        }
     }
 
 
@@ -130,9 +143,9 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
         var heightTexture = new x3dom.nodeTypes.ImageTexture(ctx);
 
         // definition of the nameSpace of this shape
-        shape._nameSpace = navigation._nameSpace;
+        //shape._nameSpace = navigation._nameSpace;
 
-        colorTexture._nameSpace = navigation._nameSpace;
+        colorTexture._nameSpace = shape._nameSpace;
         colorTexture._vf.url[0] = imgAddress;
         colorTexture._vf.repeatT = false;
         colorTexture._vf.repeatS = false;
@@ -143,8 +156,10 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
         textures.nodeChanged();
         shape.addChild(appearance);
         appearance.nodeChanged();
-        shape.addChild(geometry);
-        geometry.nodeChanged();
+        //shape.addChild(geometry);
+        //geometry.nodeChanged();
+
+        shape.nodeChanged();
     }
 
 
@@ -198,21 +213,32 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
         var rb = lb + 1;
         var s = (navigation._vf.size).multiply(0.25);
 
-        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), lt, factor, nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(new x3dom.fields.SFVec3f(-s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2), (rowNr * 2)));
-        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), rt, factor, nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(new x3dom.fields.SFVec3f(s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2 + 1), (rowNr * 2)));
-        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), lb, factor, nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(new x3dom.fields.SFVec3f(-s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2), (rowNr * 2 + 1)));
-        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), rb, factor, nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(new x3dom.fields.SFVec3f(s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2 + 1), (rowNr * 2 + 1)));
+        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), lt, factor,
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                new x3dom.fields.SFVec3f(-s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2), (rowNr * 2)));
+        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), rt, factor,
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                new x3dom.fields.SFVec3f(s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2 + 1), (rowNr * 2)));
+        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), lb, factor,
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                new x3dom.fields.SFVec3f(-s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2), (rowNr * 2 + 1)));
+        children.push(new QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, (level + 1), rb, factor,
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                new x3dom.fields.SFVec3f(s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), shader, (columnNr * 2 + 1), (rowNr * 2 + 1)));
     }
 
 
 
     // here the decision is taken if new children should be created
     // and which should be rendered
-    this.CollectDrawables = function (transform, drawableCollection) {
+    this.collectDrawables = function (transform, drawableCollection) {
 
         if (isPossible) {
-            
-            var mat_view = navigation._nameSpace.doc._viewarea.getViewMatrix();;
+            var mat_view = drawableCollection.viewMatrix;
                 
             var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
             center = mat_view.inverse().multMatrixPnt(center);
@@ -232,7 +258,7 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].CollectDrawables(transform, drawableCollection);
+                        children[i].collectDrawables(transform, drawableCollection);
                     }
                 }
             }
@@ -240,9 +266,12 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
                 shape.collectDrawableObjects(transform, drawableCollection);
             }
         }
-    }
+    };
 
-
+    this.getVolume = function() {
+        // TODO; implement correctly, for now just use first shape as workaround
+        return shape.getVolume();
+    };
 
     // initializes this node directly after creating
     initialize();

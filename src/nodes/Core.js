@@ -49,7 +49,6 @@ x3dom.registerNodeType(
         },
 
         addChild: function (node, containerFieldName) {
-
             if (node) {
                 var field = null;
                 if (containerFieldName) {
@@ -174,53 +173,6 @@ x3dom.registerNodeType(
                 if (this._childNodes[i])
                     this._childNodes[i].highlight(enable, color);
             }
-        },
-
-        find: function (type) {
-            for (var i=0; i<this._childNodes.length; i++) {
-                if (this._childNodes[i]) {
-                    if (this._childNodes[i].constructor == type) {
-                        return this._childNodes[i];
-                    }
-                    var c = this._childNodes[i].find(type);
-                    if (c) {
-                        return c;
-                    }
-                }
-            }
-            return null;
-        },
-
-        findAll: function (type) {
-            var found = [];
-            for (var i=0; i<this._childNodes.length; i++) {
-                if (this._childNodes[i]) {
-                    if (this._childNodes[i].constructor == type) {
-                        found.push(this._childNodes[i]);
-                    }
-                    // TODO: this has non-linear performance
-                    found = found.concat(this._childNodes[i].findAll(type));
-                }
-            }
-            return found;
-        },
-
-        findParentProperty: function (propertyName, checkDOMNode) {
-            var value = this[propertyName];
-
-            if (!value && checkDOMNode && this._xmlNode) {
-                value = this._xmlNode[propertyName];
-            }
-
-            if (!value) {
-                for (var i = 0, n = this._parentNodes.length; i < n; i++) {
-                    if ((value = this._parentNodes[i].findParentProperty(propertyName, checkDOMNode ))) {
-                        break;
-                    }
-                }
-            }
-
-            return value;
         },
 
         findX3DDoc: function () {
