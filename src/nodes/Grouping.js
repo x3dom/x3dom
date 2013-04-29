@@ -28,6 +28,15 @@ x3dom.registerNodeType(
                     return;
                 }
 
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
+                /*
+                if (singlePath && this.volumeValid()) {
+                    // TODO: build cache on change and then use world volume/ transform from cache
+                }
+                */
+
                 var childTransform = this.transformMatrix(transform);
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
@@ -80,6 +89,9 @@ x3dom.registerNodeType(
                     drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
+
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
 
                 var cnode = this._childNodes[this._vf.whichChoice];
                 if (cnode) {
@@ -599,6 +611,9 @@ x3dom.registerNodeType(
                     drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
+
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
 
                 var viewarea = this._nameSpace.doc._viewarea;
                 var isMoving = viewarea.isMoving();

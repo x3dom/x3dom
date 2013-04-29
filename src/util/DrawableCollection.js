@@ -50,7 +50,6 @@ x3dom.DrawableCollection = function (drawableCollectionConfig)
 /**
  *  graphState = {
  *     boundedNode:  backref to bounded node object
- *     singlePath:   unique path in graph back to root possible
  *     localMatrix:  mostly identity
  *     globalMatrix: current transform
  *     volume:       local bbox

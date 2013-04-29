@@ -139,7 +139,7 @@ x3dom.registerNodeType(
             return false;
         },
 
-        // Collects array of [transform matrix, node] for all objects that should be drawn.
+        // Collects all objects to be drawn (singlePath determines if unique path in graph back to root possible)
         collectDrawableObjects: function (transform, drawableCollection, singlePath) {
             // explicitly do nothing on collect traversal for (most) nodes
         },
@@ -829,7 +829,6 @@ x3dom.registerNodeType(
 
             this._graph = {
                 boundedNode:  this,    // backref to node object
-                singlePath:   true,    // unique path in graph back to root possible
                 localMatrix:  x3dom.fields.SFMatrix4f.identity(),   // usually identity
                 globalMatrix: null,    // new x3dom.fields.SFMatrix4f();
                 volume:       new x3dom.fields.BoxVolume(),     // local bbox
@@ -876,9 +875,6 @@ x3dom.registerNodeType(
             invalidateVolume: function()
             {
                 this._graph.volume.invalidate();
-
-                this._graph.localMatrix = null;
-                this._graph.globalMatrix = null;
 
                 // set parent volumes invalid, too
                 Array.forEach(this._parentNodes, function(node) {

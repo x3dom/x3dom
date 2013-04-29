@@ -564,6 +564,9 @@ x3dom.registerNodeType(
                     return;
                 }
 
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
                 var vol = this.getVolume();
 
                 var min = x3dom.fields.SFVec3f.MAX();
@@ -662,6 +665,9 @@ x3dom.registerNodeType(
                     return;
                 }
 
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
                 var childTransform = this.transformMatrix(transform);
 
                 for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
@@ -698,6 +704,9 @@ x3dom.registerNodeType(
                     drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
+
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
 
                 this.visitChildren(transform, drawableCollection, singlePath);
 
