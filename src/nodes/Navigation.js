@@ -316,6 +316,10 @@ x3dom.registerNodeType(
             getFar: function() {
                 return this._vf.zFar;
             },
+
+            getImgPlaneHeightAtDistOne: function() {
+                return 2.0;
+            },
             
             getProjectionMatrix: function(aspect)
             {
@@ -415,6 +419,18 @@ x3dom.registerNodeType(
             
             getFieldOfView: function() {
                 return (2.0 * Math.atan(1.0 / this._projMatrix._11));
+            },
+
+            getNear: function() {
+                return 0.1;     // FIXME; derive from matrix!
+            },
+
+            getFar: function() {
+                return 10000;   // FIXME; derive from matrix!
+            },
+
+            getImgPlaneHeightAtDistOne: function() {
+                return 2.0 / this._projMatrix._11;
             },
 
             setView: function(newView) {
@@ -544,7 +560,7 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, drawableCollection)
             {
                 if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.getVolume())) {
+                    drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
 
@@ -642,7 +658,7 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, drawableCollection)
             {
                 if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.getVolume())) {
+                    drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
 
@@ -679,7 +695,7 @@ x3dom.registerNodeType(
             collectDrawableObjects: function(transform, drawableCollection)
             {
                 if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.getVolume())) {
+                    drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
 

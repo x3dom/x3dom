@@ -3246,8 +3246,7 @@ x3dom.gfx_webgl = (function () {
             locScene.numberOfNodes = 0;
             locScene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
-            locScene.collectDrawableObjects(locScene.transformMatrix(x3dom.fields.SFMatrix4f.identity()),
-                                            locScene.drawableCollection);
+            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableCollection);
 
             locScene.drawableCollection.sort();
 
@@ -3539,10 +3538,6 @@ x3dom.gfx_webgl = (function () {
         //Release Texture and Shader Resources
         this.cache.Release();
 
-        // TODO; do we really need a second traverse at this time??
-        // TODO; optimize traversal, matrices are not needed for cleanup
-        //scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
-
         var bgnd = scene.getBackground();
         if (bgnd._webgl.texture !== undefined && bgnd._webgl.texture) {
             gl.deleteTexture(bgnd._webgl.texture);
@@ -3552,40 +3547,13 @@ x3dom.gfx_webgl = (function () {
             gl.deleteBuffer(bgnd._webgl.buffers[0]);
         }
 
+        //scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
+
         for (var i = 0, n = scene.drawableCollection.length; i < n; i++) {
             var shape = scene.drawableCollection.get(i).shape;
-            var sp = shape._webgl.shader;
 
-            for (var q = 0; q < shape._webgl.positions.length; q++) {
-                var q5 = 5 * q;
-
-                if (sp.position !== undefined) {
-                    gl.deleteBuffer(shape._webgl.buffers[q5 + 1]);
-                    gl.deleteBuffer(shape._webgl.buffers[q5  ]);
-                }
-
-                if (sp.normal !== undefined) {
-                    gl.deleteBuffer(shape._webgl.buffers[q5 + 2]);
-                }
-
-                if (sp.texcoord !== undefined) {
-                    gl.deleteBuffer(shape._webgl.buffers[q5 + 3]);
-                }
-
-                if (sp.color !== undefined) {
-                    gl.deleteBuffer(shape._webgl.buffers[q5 + 4]);
-                }
-            }
-
-            for (var df = 0; df < shape._webgl.dynamicFields.length; df++) {
-                attrib = shape._webgl.dynamicFields[df];
-
-                if (sp[attrib.name] !== undefined) {
-                    gl.deleteBuffer(attrib.buf);
-                }
-            }
-
-            shape._webgl = null;
+            if (shape._cleanupGLObjects)
+                shape._cleanupGLObjects(true);
         }
     };
 

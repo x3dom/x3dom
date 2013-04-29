@@ -31,9 +31,7 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
 
   this.viewFrustum = this.viewarea.getViewfrustum(this.sceneMatrix);
   this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
-
   this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
-  this.worldVolume = new x3dom.fields.BoxVolume();
 
   this.sortTrans = drawableCollectionConfig.sortTrans;
   this.sortBySortKey = false;
@@ -45,16 +43,30 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
 };
 
 /**
- *
+ *  graphState = {
+ *     boundedNode:  backref to bounded node object
+ *     singlePath:   unique path in graph back to root possible
+ *     localMatrix:  mostly identity
+ *     globalMatrix: current transform
+ *     volume:       local bbox
+ *     worldVolume:  global bbox
+ *     coverage:     currently approx. number of pixels on screen
+ *  };
  */
-x3dom.DrawableCollection.prototype.cull = function(transform, volume) {
+x3dom.DrawableCollection.prototype.cull = function(transform, graphState) {
+    var node = graphState.boundedNode;  // ref to SG node
+    var volume = node.getVolume();      // create on request
+
     if (this.frustumCulling) {
-        this.worldVolume.transformFrom(transform, volume);
-        // if culled return true
-        if (!this.viewFrustum.intersect(this.worldVolume)) {
-            return true;
+        graphState.worldVolume.transformFrom(transform, volume);
+
+        if (!this.viewFrustum.intersect(graphState.worldVolume)) {
+            return true;      // if culled return true
         }
     }
+
+    graphState.coverage = -1;  // ignore value later on
+
     if (this.smallFeatureThreshold > 1) {
         var modelView = this.viewMatrix.mult(transform);
 
@@ -64,11 +76,13 @@ x3dom.DrawableCollection.prototype.cull = function(transform, volume) {
         var dist = Math.max(-center.z - dia / 2, this.near);
         var projPixelLength = dist * this.imgPlaneHeightAtDistOne;
 
-        var numPixel = dia / projPixelLength;
+        graphState.coverage = dia / projPixelLength;    // shall we norm this to be in [0,1]?
 
-        if (numPixel < this.smallFeatureThreshold)
+        if (graphState.coverage < this.smallFeatureThreshold)
             return true;
     }
+
+    graphState.globalMatrix = transform; // attention, this matrix maybe shared
 
     // not culled, incr node cnt
     this.numberOfNodes++;

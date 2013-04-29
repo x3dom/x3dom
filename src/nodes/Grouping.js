@@ -24,7 +24,7 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, drawableCollection)
             {
                 if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.getVolume())) {
+                    drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
 
@@ -77,7 +77,7 @@ x3dom.registerNodeType(
             {
                 if (!drawableCollection || this._vf.whichChoice < 0 ||
                     this._vf.whichChoice >= this._childNodes.length ||
-                    drawableCollection.cull(transform, this.getVolume())) {
+                    drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
 
@@ -175,6 +175,8 @@ x3dom.registerNodeType(
 
                 if (!this.volumeValid() && this._vf.render)
                 {
+                    this._graph.localMatrix = this._trafo;
+
                     for (var i=0, n=this._childNodes.length; i<n; i++)
                     {
                         var child = this._childNodes[i];
@@ -594,7 +596,7 @@ x3dom.registerNodeType(
             collectDrawableObjects: function (transform, drawableCollection)
             {
                 if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.getVolume())) {
+                    drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
 

@@ -828,10 +828,13 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
 
             this._graph = {
-                singlePath: true,    // unique path in graph back to root possible
-                localMatrix: null,   // new x3dom.fields.SFMatrix4f(),
-                globalMatrix: null,  // new x3dom.fields.SFMatrix4f();
-                volume: new x3dom.fields.BoxVolume()    // do we need a world volume, too?
+                boundedNode:  this,    // backref to node object
+                singlePath:   true,    // unique path in graph back to root possible
+                localMatrix:  x3dom.fields.SFMatrix4f.identity(),   // usually identity
+                globalMatrix: null,    // new x3dom.fields.SFMatrix4f();
+                volume:       new x3dom.fields.BoxVolume(),  // local bbox
+                worldVolume:  new x3dom.fields.BoxVolume(),  // global bbox
+                coverage:     -1       // currently approx. number of pixels on screen
             };
         },
         {
@@ -886,6 +889,11 @@ x3dom.registerNodeType(
             volumeValid: function()
             {
                 return this._graph.volume.isValid();
+            },
+
+            graphState: function()
+            {
+                return this._graph;
             }
         }
     )
