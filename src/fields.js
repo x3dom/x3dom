@@ -2587,12 +2587,22 @@ x3dom.fields.BoxVolume = function(min, max)
         this.max = max;
         this.valid = true;
     }
+
+    this.center = (this.min.add(this.max)).multiply(0.5);
+    this.diameter = this.max.subtract(this.min).length();
+};
+
+x3dom.fields.BoxVolume.copy = function(other)
+{
+    return new x3dom.fields.BoxVolume(other.min, other.max);
 };
 
 x3dom.fields.BoxVolume.prototype.setBounds = function(min, max)
 {
     this.min.setValues(min);
     this.max.setValues(max);
+    this.center = (min.add(max)).multiply(0.5);
+    this.diameter = max.subtract(min).length();
     this.valid = true;
 };
 
@@ -2601,6 +2611,8 @@ x3dom.fields.BoxVolume.prototype.setBoundsByCenterSize = function(center, size)
     var halfSize = size.multiply(0.5);
     this.min = center.subtract(halfSize);
     this.max = center.add(halfSize);
+    this.center.setValues(center);
+    this.diameter = size.length();
     this.valid = true;
 };
 
@@ -2615,6 +2627,9 @@ x3dom.fields.BoxVolume.prototype.extendBounds = function(min, max)
         if (this.max.x < max.x) { this.max.x = max.x; }
         if (this.max.y < max.y) { this.max.y = max.y; }
         if (this.max.z < max.z) { this.max.z = max.z; }
+
+        this.center = (this.min.add(this.max)).multiply(0.5);
+        this.diameter = this.max.subtract(this.min).length();
     }
     else
     {
@@ -2640,12 +2655,12 @@ x3dom.fields.BoxVolume.prototype.isValid = function()
 
 x3dom.fields.BoxVolume.prototype.getCenter = function()
 {
-    return (this.min.add(this.max)).multiply(0.5);
+    return this.center;
 };
 
 x3dom.fields.BoxVolume.prototype.getDiameter = function()
 {
-    return this.max.subtract(this.min).length();
+    return this.diameter;
 };
 
 x3dom.fields.BoxVolume.prototype.transform = function(m)
@@ -2775,6 +2790,9 @@ x3dom.fields.BoxVolume.prototype.transform = function(m)
     this.max.x = xmax;
     this.max.y = ymax;
     this.max.z = zmax;
+
+    this.center = (this.min.add(this.max)).multiply(0.5);
+    this.diameter = this.max.subtract(this.min).length();
 };
 
 x3dom.fields.BoxVolume.prototype.transformFrom = function(m, other)
@@ -2906,6 +2924,9 @@ x3dom.fields.BoxVolume.prototype.transformFrom = function(m, other)
     this.max.x = xmax;
     this.max.y = ymax;
     this.max.z = zmax;
+
+    this.center = (this.min.add(this.max)).multiply(0.5);
+    this.diameter = this.max.subtract(this.min).length();
 };
 
 

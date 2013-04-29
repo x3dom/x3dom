@@ -832,8 +832,9 @@ x3dom.registerNodeType(
                 singlePath:   true,    // unique path in graph back to root possible
                 localMatrix:  x3dom.fields.SFMatrix4f.identity(),   // usually identity
                 globalMatrix: null,    // new x3dom.fields.SFMatrix4f();
-                volume:       new x3dom.fields.BoxVolume(),  // local bbox
-                worldVolume:  new x3dom.fields.BoxVolume(),  // global bbox
+                volume:       new x3dom.fields.BoxVolume(),     // local bbox
+                worldVolume:  new x3dom.fields.BoxVolume(),     // global bbox
+                center:       new x3dom.fields.SFVec3f(0,0,0),  // center in eye coords
                 coverage:     -1       // currently approx. number of pixels on screen
             };
         },

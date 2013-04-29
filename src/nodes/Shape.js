@@ -241,10 +241,11 @@ x3dom.registerNodeType(
                 if (drawableCollection && this._vf.render && this._cf.geometry.node)
                 {
                     //out.push( [transform, this] );   // shall we add 2 instead to include geo?
+                    var graphState = this.graphState();
 
-                    if ( !drawableCollection.cull(transform, this.graphState()) ) {
+                    if ( !drawableCollection.cull(transform, graphState) ) {
                         var childTransform = this.transformMatrix(transform);
-                        drawableCollection.addDrawable(this, childTransform, null/*bbox*/, null/*params*/);
+                        drawableCollection.addDrawable(this, childTransform, graphState);
                     }
                 }
             },

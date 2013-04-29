@@ -1722,10 +1722,6 @@ x3dom.registerNodeType(
             getBBoxSize: function() {
               return this._vf.size;
             },
-			
-            getDiameter: function() {
-                return this._volLargestRadius * 2;
-            },
             
             hasIndex: function() {
               return this._vf.indexedRendering;
