@@ -236,7 +236,7 @@ x3dom.registerNodeType(
             this._colorStrideOffset = [0, 0];
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
                 if (drawableCollection && this._vf.render && this._cf.geometry.node)
                 {

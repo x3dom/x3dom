@@ -37,7 +37,7 @@ x3dom.registerNodeType(
                                              null, 0, 0);
         },
         {
-            visitChildren: function(transform, drawableCollection) {
+            visitChildren: function(transform, drawableCollection, singlePath) {
                 if (this.cnt > 5) {
                     if (this.test == 4) {
                         this.createChildren = 0;
@@ -46,7 +46,7 @@ x3dom.registerNodeType(
                     else {
                         this.test++;
                     }
-                    this.rootNode.collectDrawables(transform, drawableCollection);
+                    this.rootNode.collectDrawables(transform, drawableCollection, singlePath);
                 }
                 else {
                     this.cnt++;
@@ -235,7 +235,7 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
 
     // here the decision is taken if new children should be created
     // and which should be rendered
-    this.collectDrawables = function (transform, drawableCollection) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath) {
 
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
@@ -254,16 +254,16 @@ function QuadtreeNode(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nod
                     create();
                 }
                 else if (children.length == 0 && navigation.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(transform, drawableCollection);
+                        children[i].collectDrawables(transform, drawableCollection, singlePath);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection);
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath);
             }
         }
     };

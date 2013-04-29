@@ -140,7 +140,7 @@ x3dom.registerNodeType(
         },
 
         // Collects array of [transform matrix, node] for all objects that should be drawn.
-        collectDrawableObjects: function (transform, drawableCollection) {
+        collectDrawableObjects: function (transform, drawableCollection, singlePath) {
             // explicitly do nothing on collect traversal for (most) nodes
         },
         

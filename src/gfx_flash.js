@@ -121,11 +121,13 @@ x3dom.gfx_flash = (function() {
 		//Get Scene from Viewarea
         var scene = viewarea._scene;
 		
-		if(viewarea._last_mat_view == undefined) {
+		if(viewarea._last_mat_view === undefined) {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
 		}
 		
 		var mat_view = viewarea.getViewMatrix();
+        var mat_proj = viewarea.getProjectionMatrix();
+        var mat_scene = mat_proj.mult(mat_view);
 		
 		//Setup the flash scene
 		this.setupScene(scene, viewarea);
@@ -138,9 +140,23 @@ x3dom.gfx_flash = (function() {
 		
 		//Collect all drawableObjects
 		scene.drawableCollection = null;
-    scene.drawableCollection = new x3dom.DrawableCollection(viewarea, false);
-		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection);
-    scene.drawableCollection.concat();
+
+        var drawableCollectionConfig = {
+            viewArea: viewarea,
+            sortTrans: scene._vf.sortTrans,
+            viewMatrix: mat_view,
+            projMatrix: mat_proj,
+            sceneMatrix: mat_scene,
+            frustumCulling: true,
+            smallFeatureThreshold: false,
+            context: null,
+            gl: null
+        };
+
+        scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
+		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true);
+
+        scene.drawableCollection.concat();
 		
 		//Get Number of drawableObjects
 		var numDrawableObjects = scene.drawableCollection.length;
@@ -154,8 +170,9 @@ x3dom.gfx_flash = (function() {
 			for(var i=0; i<numDrawableObjects; i++) 
 			{
 				//Get object and transformation
-				var trafo = scene.drawableCollection.get(i).transform;
-				var obj3d = scene.drawableCollection.get(i).shape;
+                var drawable = scene.drawableCollection.get(i);
+				var trafo = drawable.transform;
+				var obj3d = drawable.shape;
 				
 				//Count shape references for DEF/USE
 				if(RefList[obj3d._objectID] != undefined) {
@@ -163,7 +180,8 @@ x3dom.gfx_flash = (function() {
 				} else {
 					RefList[obj3d._objectID] = 0;
 				}
-				
+
+                // TODO; move to addDrawable()
 				this.setupShape(obj3d, trafo, RefList[obj3d._objectID]);
 			}	
 		}

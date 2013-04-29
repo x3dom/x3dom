@@ -21,7 +21,7 @@ x3dom.registerNodeType(
             // FIXME; add addChild and removeChild slots ?
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
                 if (!this._vf.render || !drawableCollection ||
                     drawableCollection.cull(transform, this.graphState())) {
@@ -33,7 +33,7 @@ x3dom.registerNodeType(
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     var cnode = this._childNodes[i];
                     if (cnode) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                     }
                 }
             }
@@ -73,7 +73,7 @@ x3dom.registerNodeType(
                 return vol;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
                 if (!drawableCollection || this._vf.whichChoice < 0 ||
                     this._vf.whichChoice >= this._childNodes.length ||
@@ -84,7 +84,7 @@ x3dom.registerNodeType(
                 var cnode = this._childNodes[this._vf.whichChoice];
                 if (cnode) {
                     var childTransform = this.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, drawableCollection);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                 }
             },
 
@@ -593,7 +593,7 @@ x3dom.registerNodeType(
                 return n;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
                 if (!this._vf.render || !drawableCollection ||
                     drawableCollection.cull(transform, this.graphState())) {
@@ -667,7 +667,7 @@ x3dom.registerNodeType(
                                     // collect drawables
                                     if (numPixel >= pxThreshold)
                                     {
-                                        shape.collectDrawableObjects(transform, drawableCollection);
+                                        shape.collectDrawableObjects(transform, drawableCollection, singlePath);
                                         this._createTime[i] = ts;
                                         cnt++;
                                         needCleanup = false;
@@ -698,7 +698,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj && obj.shape) {
-                            obj.shape.collectDrawableObjects(transform, drawableCollection);
+                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath);
                             this._createTime[obj.pos] = ts;
                         }
 						else

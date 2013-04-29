@@ -557,7 +557,7 @@ x3dom.registerNodeType(
             this._eyeLook = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
                 if (!this._vf.render || !drawableCollection ||
                     drawableCollection.cull(transform, this.graphState())) {
@@ -628,7 +628,7 @@ x3dom.registerNodeType(
                 {
                     var cnode = this._childNodes[i];
                     if (cnode) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                     }
                 }
 
@@ -655,7 +655,7 @@ x3dom.registerNodeType(
             // TODO; add Slots: collideTime, isActive
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
                 if (!this._vf.render || !drawableCollection ||
                     drawableCollection.cull(transform, this.graphState())) {
@@ -670,7 +670,7 @@ x3dom.registerNodeType(
 
                     if (cnode && (cnode !== this._cf.proxy.node))
                     {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                     }
                 }
             }
@@ -692,19 +692,19 @@ x3dom.registerNodeType(
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function(transform, drawableCollection)
+            collectDrawableObjects: function(transform, drawableCollection, singlePath)
             {
                 if (!this._vf.render || !drawableCollection ||
                     drawableCollection.cull(transform, this.graphState())) {
                     return;
                 }
 
-                this.visitChildren(transform, drawableCollection);
+                this.visitChildren(transform, drawableCollection, singlePath);
 
                 //out.LODs.push( [transform, this] );
             },
             
-            visitChildren: function(transform, drawableCollection) {}
+            visitChildren: function(transform, drawableCollection, singlePath) {}
         }
     )
 );
@@ -723,7 +723,7 @@ x3dom.registerNodeType(
             this._lastRangePos = -1;
         },
         {
-            visitChildren: function(transform, drawableCollection)
+            visitChildren: function(transform, drawableCollection, singlePath)
             {
                 var i=0, n=this._childNodes.length;
 
@@ -758,7 +758,7 @@ x3dom.registerNodeType(
                 if (n && cnode)
                 {
                     var childTransform = this.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, drawableCollection);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                 }
                 
                 // eye position invalid in first frame
@@ -860,7 +860,7 @@ x3dom.registerNodeType(
     		    this._nameSpace.doc.needRender = true;
             },
             
-            visitChildren: function(transform, drawableCollection)
+            visitChildren: function(transform, drawableCollection, singlePath)
             {
                 var root = this._cf.root.node;
                 
@@ -941,12 +941,12 @@ x3dom.registerNodeType(
                     }
                     else {
                         for (l=1; l<this._childNodes.length; l++) {
-                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection);
+                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection, singlePath);
                         }
                     }
                 }
                 else {
-                    root.collectDrawableObjects(transform, drawableCollection);
+                    root.collectDrawableObjects(transform, drawableCollection, singlePath);
                 }
             },
 

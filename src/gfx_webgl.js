@@ -2851,7 +2851,7 @@ x3dom.gfx_webgl = (function () {
 
             x3dom.Utils.startMeasure('traverse');
 
-            scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection);
+            scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true);
 
             var traverseTime = x3dom.Utils.stopMeasure('traverse');
             this.x3dElem.runtime.addMeasurement('TRAVERSE', traverseTime);
@@ -3246,7 +3246,7 @@ x3dom.gfx_webgl = (function () {
             locScene.numberOfNodes = 0;
             locScene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
-            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableCollection);
+            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableCollection, true);
 
             locScene.drawableCollection.sort();
 
@@ -3547,7 +3547,7 @@ x3dom.gfx_webgl = (function () {
             gl.deleteBuffer(bgnd._webgl.buffers[0]);
         }
 
-        //scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects);
+        //scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableObjects, true);
 
         for (var i = 0, n = scene.drawableCollection.length; i < n; i++) {
             var shape = scene.drawableCollection.get(i).shape;
