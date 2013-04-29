@@ -246,28 +246,13 @@ x3dom.registerNodeType(
                     if ( !drawableCollection.cull(transform, graphState) )
                     {
                         if (singlePath && (this._parentNodes.length > 1))
-                            singlePath = false;     // TODO
+                            singlePath = false;
 
-                        var childTransform = this.transformMatrix(transform);
-                        drawableCollection.addDrawable(this, childTransform, graphState);
+                        if (singlePath && !this._graph.globalMatrix)
+                            this._graph.globalMatrix = transform;
+
+                        drawableCollection.addDrawable(this, transform, graphState);
                     }
-                }
-            },
-            
-            transformMatrix: function(transform)
-            {
-                // uncomment following for pushing position and size of IG to model matrix
-                /*
-                if (x3dom.isa(this._cf.geometry.node, x3dom.nodeTypes.ImageGeometry))
-                {
-                    var trafo = x3dom.fields.SFMatrix4f.translation(this._cf.geometry.node.getMin()).
-                                    mult(x3dom.fields.SFMatrix4f.scale(this._cf.geometry.node._vf.size));
-                    return transform.mult(trafo);
-                }
-                else
-                */
-                {
-                    return transform;
                 }
             },
 

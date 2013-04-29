@@ -875,6 +875,7 @@ x3dom.registerNodeType(
             invalidateVolume: function()
             {
                 this._graph.volume.invalidate();
+                this._graph.globalMatrix = null;
 
                 // set parent volumes invalid, too
                 Array.forEach(this._parentNodes, function(node) {

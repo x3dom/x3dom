@@ -31,17 +31,21 @@ x3dom.registerNodeType(
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                /*
-                if (singlePath && this.volumeValid()) {
-                    // TODO: build cache on change and then use world volume/ transform from cache
-                }
-                */
+                var cnode, childTransform;
 
-                var childTransform = this.transformMatrix(transform);
+                // rebuild cache on change and reuse world transform
+                if (singlePath) {
+                    if (!this._graph.globalMatrix)
+                        this._graph.globalMatrix = this.transformMatrix(transform);
+
+                    childTransform = this._graph.globalMatrix;
+                }
+                else {
+                    childTransform = this.transformMatrix(transform);
+                }
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
-                    var cnode = this._childNodes[i];
-                    if (cnode) {
+                    if ( (cnode = this._childNodes[i]) ) {
                         cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                     }
                 }
@@ -61,6 +65,12 @@ x3dom.registerNodeType(
             this.addField_SFInt32(ctx, 'whichChoice', -1);
         },
         {
+            fieldChanged: function (fieldName) {
+                if (fieldName == "whichChoice") {
+                    this.invalidateVolume();
+                }
+            },
+
             getVolume: function()
             {
                 var vol = this._graph.volume;
@@ -93,9 +103,20 @@ x3dom.registerNodeType(
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                var cnode = this._childNodes[this._vf.whichChoice];
-                if (cnode) {
-                    var childTransform = this.transformMatrix(transform);
+                var cnode, childTransform;
+
+                // rebuild cache on change and reuse world transform
+                if (singlePath) {
+                    if (!this._graph.globalMatrix)
+                        this._graph.globalMatrix = this.transformMatrix(transform);
+
+                    childTransform = this._graph.globalMatrix;
+                }
+                else {
+                    childTransform = this.transformMatrix(transform);
+                }
+
+                if ( (cnode = this._childNodes[this._vf.whichChoice]) ) {
                     cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                 }
             },
@@ -169,6 +190,7 @@ x3dom.registerNodeType(
                   if (trans && (trans != 'none')) {
                       this._trafo.setValueByStr(trans);
                       //x3dom.debug.logInfo(' valid set:' + this._trafo);
+                      this.invalidateVolume();
                       return true;
                   }
                   this._needCssStyleUpdates = false;    // no special CSS set

@@ -71,7 +71,6 @@ x3dom.DrawableCollection.prototype.cull = function(transform, graphState)
         }
     }
 
-    graphState.globalMatrix = transform; // attention, this matrix maybe shared
     graphState.coverage = -1;            // if -1 then ignore value later on
 
     if (this.smallFeatureThreshold > 1) {

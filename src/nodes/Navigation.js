@@ -564,8 +564,9 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                // no caching here as this changes every frame anyway
+                //if (singlePath && (this._parentNodes.length > 1))
+                singlePath = false;
 
                 var vol = this.getVolume();
 
@@ -668,14 +669,22 @@ x3dom.registerNodeType(
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                var childTransform = this.transformMatrix(transform);
+                var cnode, childTransform;
+
+                // rebuild cache on change and reuse world transform
+                if (singlePath) {
+                    if (!this._graph.globalMatrix)
+                        this._graph.globalMatrix = this.transformMatrix(transform);
+
+                    childTransform = this._graph.globalMatrix;
+                }
+                else {
+                    childTransform = this.transformMatrix(transform);
+                }
 
                 for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
                 {
-                    var cnode = this._childNodes[i];
-
-                    if (cnode && (cnode !== this._cf.proxy.node))
-                    {
+                    if ((cnode = this._childNodes[i]) && (cnode !== this._cf.proxy.node)) {
                         cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
                     }
                 }
@@ -705,8 +714,9 @@ x3dom.registerNodeType(
                     return;
                 }
 
-                if (singlePath && (this._parentNodes.length > 1))
-                    singlePath = false;
+                // at the moment, no caching here as this may change every frame
+                //if (singlePath && (this._parentNodes.length > 1))
+                singlePath = false;
 
                 this.visitChildren(transform, drawableCollection, singlePath);
 

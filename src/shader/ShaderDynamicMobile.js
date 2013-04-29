@@ -199,8 +199,6 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 		}
 		
 		shader += "vertPosition /= (pow(2.0, 8.0 * " + properties.IG_PRECISION + ".0) - 1.0);\n";
-		
-		// comment out if transformMatrix() from Shape is used for generating model matrix
 		shader += "vertPosition = vertPosition * (IG_bboxMax - IG_bboxMin) + IG_bboxMin;\n";
 	
 		//Normals
