@@ -23,13 +23,13 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState())) {
-                    return;
-                }
-
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
+
+                if (!this._vf.render || !drawableCollection ||
+                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                    return;
+                }
 
                 var cnode, childTransform;
 
@@ -94,14 +94,14 @@ x3dom.registerNodeType(
 
             collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
-                if (!drawableCollection || this._vf.whichChoice < 0 ||
-                    this._vf.whichChoice >= this._childNodes.length ||
-                    drawableCollection.cull(transform, this.graphState())) {
-                    return;
-                }
-
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
+
+                if (!drawableCollection || this._vf.whichChoice < 0 ||
+                    this._vf.whichChoice >= this._childNodes.length ||
+                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                    return;
+                }
 
                 var cnode, childTransform;
 
@@ -629,13 +629,13 @@ x3dom.registerNodeType(
 
             collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState())) {
-                    return;
-                }
-
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
+
+                if (!this._vf.render || !drawableCollection ||
+                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                    return;
+                }
 
                 var viewarea = this._nameSpace.doc._viewarea;
                 var isMoving = viewarea.isMoving();

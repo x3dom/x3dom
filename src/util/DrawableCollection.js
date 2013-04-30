@@ -58,13 +58,15 @@ x3dom.DrawableCollection = function (drawableCollectionConfig)
  *     coverage:     currently approx. number of pixels on screen
  *  };
  */
-x3dom.DrawableCollection.prototype.cull = function(transform, graphState)
+x3dom.DrawableCollection.prototype.cull = function(transform, graphState, singlePath)
 {
     var node = graphState.boundedNode;  // ref to SG node
     var volume = node.getVolume();      // create on request
 
     if (this.frustumCulling) {
-        graphState.worldVolume.transformFrom(transform, volume);
+        if (singlePath && !graphState.worldVolume.isValid()) {
+            graphState.worldVolume.transformFrom(transform, volume);
+        }
 
         if (!this.viewFrustum.intersect(graphState.worldVolume)) {
             return true;      // if culled return true

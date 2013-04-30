@@ -2583,8 +2583,8 @@ x3dom.fields.BoxVolume = function(min, max)
     }
     else {
         // compiler enforced type check for min/max would be nice
-        this.min = min;
-        this.max = max;
+        this.min = x3dom.fields.SFVec3f.copy(min);
+        this.max = x3dom.fields.SFVec3f.copy(max);
         this.valid = true;
     }
 
@@ -2601,6 +2601,7 @@ x3dom.fields.BoxVolume.prototype.setBounds = function(min, max)
 {
     this.min.setValues(min);
     this.max.setValues(max);
+
     this.center = (min.add(max)).multiply(0.5);
     this.diameter = max.subtract(min).length();
     this.valid = true;
@@ -2611,6 +2612,7 @@ x3dom.fields.BoxVolume.prototype.setBoundsByCenterSize = function(center, size)
     var halfSize = size.multiply(0.5);
     this.min = center.subtract(halfSize);
     this.max = center.add(halfSize);
+
     this.center.setValues(center);
     this.diameter = size.length();
     this.valid = true;
@@ -2797,8 +2799,6 @@ x3dom.fields.BoxVolume.prototype.transform = function(m)
 
 x3dom.fields.BoxVolume.prototype.transformFrom = function(m, other)
 {
-    this.valid = other.valid;
-
     var xmin, ymin, zmin;
     var xmax, ymax, zmax;
 
@@ -2927,6 +2927,7 @@ x3dom.fields.BoxVolume.prototype.transformFrom = function(m, other)
 
     this.center = (this.min.add(this.max)).multiply(0.5);
     this.diameter = this.max.subtract(this.min).length();
+    this.valid = true;
 };
 
 

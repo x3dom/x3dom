@@ -243,11 +243,11 @@ x3dom.registerNodeType(
                     //out.push( [transform, this] );   // shall we add 2 instead to include geo?
                     var graphState = this.graphState();
 
-                    if ( !drawableCollection.cull(transform, graphState) )
-                    {
-                        if (singlePath && (this._parentNodes.length > 1))
-                            singlePath = false;
+                    if (singlePath && (this._parentNodes.length > 1))
+                        singlePath = false;
 
+                    if ( !drawableCollection.cull(transform, graphState, singlePath) )
+                    {
                         if (singlePath && !this._graph.globalMatrix)
                             this._graph.globalMatrix = transform;
 

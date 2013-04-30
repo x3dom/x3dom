@@ -559,13 +559,15 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
                 if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState())) {
+                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
-                // no caching here as this changes every frame anyway
-                //if (singlePath && (this._parentNodes.length > 1))
+                // no caching later on as transform changes almost every frame anyway
                 singlePath = false;
 
                 var vol = this.getVolume();
@@ -661,13 +663,13 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function (transform, drawableCollection, singlePath)
             {
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState())) {
-                    return;
-                }
-
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
+
+                if (!this._vf.render || !drawableCollection ||
+                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                    return;
+                }
 
                 var cnode, childTransform;
 
@@ -709,13 +711,15 @@ x3dom.registerNodeType(
         {
             collectDrawableObjects: function(transform, drawableCollection, singlePath)
             {
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
                 if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState())) {
+                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
-                // at the moment, no caching here as this may change every frame
-                //if (singlePath && (this._parentNodes.length > 1))
+                // at the moment, no caching here as children may change every frame
                 singlePath = false;
 
                 this.visitChildren(transform, drawableCollection, singlePath);
