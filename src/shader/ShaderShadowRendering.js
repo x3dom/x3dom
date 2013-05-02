@@ -110,21 +110,21 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 	//reconstruct world and view coordinates from scene map
 	shader += 	"	projCoords = projCoords / projCoords.w;\n" +
 				"	projCoords.xy = vPosition;\n" +
-				"	vec4 viewCoords = inverseProj*projCoords;\n" +
+				"	vec4 eyeCoords = inverseProj*projCoords;\n" +
 				"	vec4 worldCoords = inverseViewProj*projCoords;\n" +
 				"	float lightInfluence = 0.0;\n";
 	
 	for(var l=0; l<shadowedLights.length; l++) {
 		shader += 
 				"	lightInfluence = getLightInfluence(light"+l+"_Type, light"+l+"_ShadowIntensity, light"+l+"_On, light"+l+"_Location, light"+l+"_Direction, " +
-						"light"+l+"_CutOffAngle, light"+l+"_BeamWidth, light"+l+"_Attenuation, light"+l+"_Radius, viewCoords.xyz/viewCoords.w);\n" +
+						"light"+l+"_CutOffAngle, light"+l+"_BeamWidth, light"+l+"_Attenuation, light"+l+"_Radius, eyeCoords.xyz/eyeCoords.w);\n" +
 				"	if (lightInfluence != 0.0){\n" +
 				"		vec4 shadowMapValues;\n" +
 				"		float viewSampleDepth;\n";
 				
 
 		if (!x3dom.isa(shadowedLights[l], x3dom.nodeTypes.PointLight)){
-			shader += "		getShadowValuesCascaded(shadowMapValues, viewSampleDepth, worldCoords, -viewCoords.z/viewCoords.w,"+
+			shader += "		getShadowValuesCascaded(shadowMapValues, viewSampleDepth, worldCoords, -eyeCoords.z/eyeCoords.w,"+
 								"light"+l+"_0_Matrix,light"+l+"_1_Matrix,light"+l+"_2_Matrix,light"+l+"_3_Matrix,light"+l+"_4_Matrix,light"+l+"_5_Matrix,"+
 								"light"+l+"_0_ShadowMap,light"+l+"_1_ShadowMap,light"+l+"_2_ShadowMap,light"+l+"_3_ShadowMap,"+
 								"light"+l+"_4_ShadowMap,light"+l+"_5_ShadowMap, light"+l+"_0_Split, light"+l+"_1_Split, light"+l+"_2_Split, light"+l+"_3_Split, \n"+
@@ -141,9 +141,9 @@ x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(g
 						"				1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n";
 		else
 			shader += 	" 	shadowValue *= clamp(VSM(shadowMapValues.zy, viewSampleDepth, light"+l+"_ShadowOffset), "+
-						"				1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n";
-						
-		shader += 		"	}\n";			
+						"				1.0 - light"+l+"_ShadowIntensity*lightInfluence, 1.0);\n";				
+		shader += 		"	}\n";
+		
 	}
 					
 	shader += 	"}\n" +

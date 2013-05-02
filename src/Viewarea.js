@@ -650,12 +650,14 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
 /*
  * get six WCtoLCMatrices for point light
  */
-x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view)
-{	    		
-	var proj = new x3dom.fields.SFMatrix4f();
+x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view,lightNode)
+{	 
+	var zNear = lightNode._vf.zNear;
+	var zFar = lightNode._vf.zFar;
 	
-	//set projection matrix to 90� FOV (vertical and horizontal)
-    proj.setValues(this._scene.getViewpoint().getProjectionMatrix(1));
+	var proj = this.getLightProjectionMatrix(view, zNear, zFar, false);
+	
+	//set projection matrix to 90 degrees FOV (vertical and horizontal)
 	proj._00 = 1;
 	proj._11 = 1;
 	
@@ -666,11 +668,13 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view)
 		
 	var rotationMatrix;
 	
+	//y-rotation
 	for (var i=1; i<=3; i++){	
 		rotationMatrix = x3dom.fields.SFMatrix4f.rotationY(i*Math.PI/2);
 		matrices[i] = proj.mult(rotationMatrix.mult(view));
 	}
 	
+	//x-rotation
 	rotationMatrix = x3dom.fields.SFMatrix4f.rotationX(Math.PI/2);
 	matrices[4] = proj.mult(rotationMatrix.mult(view));
 	
@@ -682,35 +686,40 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view)
 
 
 /*
- * Get WCToLCMatrices for cascaded (directional) light
+ * Get WCToLCMatrices for cascaded light
  */
-x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades,isSpotLight,
-															  splitFactor, splitOffset)
+x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode)
 {	
-	var proj = new x3dom.fields.SFMatrix4f();
-	proj.setValues(this.getProjectionMatrix());
+	var numCascades = Math.max(1, Math.min(lightNode._vf.shadowCascades, 6));
+	var splitFactor = Math.max(0, Math.min(lightNode._vf.shadowSplitFactor, 1));
+	var splitOffset = Math.max(0, Math.min(lightNode._vf.shadowSplitOffset, 1));
+	var isSpotLight = x3dom.isa(lightNode, x3dom.nodeTypes.SpotLight);
+	var zNear = lightNode._vf.zNear;
+	var zFar = lightNode._vf.zFar;
 	
-	//fit near and far plane of projection matrix
-	var cropMatrix = this.getLightCropMatrix(proj.mult(view));
-	
-	proj = cropMatrix.mult(proj);
+	var proj = this.getLightProjectionMatrix(view, zNear, zFar, true);
 	
 	if (isSpotLight){
+		//set FOV to 90 degrees
 		proj._00 = 1;
 		proj._11 = 1;
 	}	
 	
+	//get view projection matrix
 	var viewProj = proj.mult(view);	
 	
 	var matrices = new Array();
 
 	if (numCascades == 1){
+		//return if only one cascade
 		matrices[0] = viewProj;
 		return matrices;
 	}
 	
-	var cascadeSplits = this.getShadowSplitDepths(numCascades,splitFactor, splitOffset, true);
+	//compute split positions of view frustum
+	var cascadeSplits = this.getShadowSplitDepths(numCascades, splitFactor, splitOffset, true);
 	
+	//calculate fitting matrices and multiply with view projection
 	for (var i=0; i<numCascades; i++){
 		var fittingMat = this.getLightFittingMatrix(viewProj,cascadeSplits[i],cascadeSplits[i+1]);
 		matrices[i] = fittingMat.mult(viewProj);
@@ -720,43 +729,56 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view,numCascades,i
 };
 
 
-x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat)
+x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, highPrecision)
 {
-	//replace near and far plane of projection matrix
-	//by values adapted to the light position
-	
-	var lightPos = lMat.inverse().e3();
-	
-	var nearScale = 0.8;
-	var farScale = 1.2;
-	
-    var min = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
-	var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax); 
-	
-	//var 
-	var dia = max.subtract(min);
-	var sRad = dia.length() / 2;
-	
-	var sCenter = min.add(dia.multiply(0.5));
-	var vDist = (lightPos.subtract(sCenter)).length();
-	
-	var near, far;
-	
-	if (sRad) {
-		if (vDist > sRad)
-			near = (vDist - sRad) * nearScale; 
-		else
-			near = 1;                           
-		far = (vDist + sRad) * farScale;
-	}
-
 	var proj = new x3dom.fields.SFMatrix4f();
+	proj.setValues(this.getProjectionMatrix());
 
-    proj.setValues(this.getProjectionMatrix());
-	proj._22 = -(far+near)/(far-near);
-	proj._23 = -2.0*far*near / (far-near);
 	
-	return proj;
+	if (!highPrecision || zNear > 0 || zFar > 0){
+		//replace near and far plane of projection matrix
+		//by values adapted to the light position
+		
+		var lightPos = lMat.inverse().e3();
+		
+		var nearScale = 0.8;
+		var farScale = 1.2;
+		
+		var min = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
+		var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax); 
+		
+		//var 
+		var dia = max.subtract(min);
+		var sRad = dia.length() / 2;
+		
+		var sCenter = min.add(dia.multiply(0.5));
+		var vDist = (lightPos.subtract(sCenter)).length();
+		
+		var near, far;
+		
+		if (sRad) {
+			if (vDist > sRad)
+				near = (vDist - sRad) * nearScale; 
+			else
+				near = 1;                           
+			far = (vDist + sRad) * farScale;
+		}
+		if (zNear > 0) near = zNear;
+		if (zFar > 0) far = zFar;
+
+		proj._22 = -(far+near)/(far-near);
+		proj._23 = -2.0*far*near / (far-near);
+		
+		return proj;
+	} else {
+	
+		//should be more accurate, but also more expensive
+		var cropMatrix = this.getLightCropMatrix(proj.mult(lMat));
+		
+		return cropMatrix.mult(proj);
+	
+	
+	}	
 };
 
 x3dom.Viewarea.prototype.getProjectionMatrix = function()
@@ -1577,9 +1599,12 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 		minScene.z = Math.min(sceneCorners[i].z, minScene.z); 
 		maxScene.z = Math.max(sceneCorners[i].z, maxScene.z); 
 	}
+
+	var scaleZ = 2.0 / (maxScene.z - minScene.z);
+	var offsetZ = -(scaleZ * (maxScene.z + minScene.z)) / 2.0;	
 		
-	var scaleZ = 1.0 / (maxScene.z - minScene.z);
-	var offsetZ = -minScene.z * scaleZ;
+	//var scaleZ = 1.0 / (maxScene.z - minScene.z);
+	//var offsetZ = -minScene.z * scaleZ;
 
 	var cropMatrix = new x3dom.fields.SFMatrix4f.identity();
 	

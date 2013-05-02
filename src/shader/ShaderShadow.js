@@ -150,8 +150,11 @@ x3dom.shader.ShadowShader.prototype.generateFragmentShader = function(gl)
 	} else {
 		//use variance shadow maps, when not rendering from camera view
 		//shader +=	"if (!cameraView) proj.z = exp((1.0-offset)*80.0*proj.z);\n";
-		shader +=	"if (!cameraView) proj.y = proj.z * proj.z;\n";
-		shader +=	"gl_FragColor = vec4(proj, 1.0);\n";
+		shader +=	"	if (!cameraView){\n" +
+					"		proj.z = (proj.z + 1.0)*0.5;\n" +
+					"		proj.y = proj.z * proj.z;\n" +
+					"	}\n";
+		shader +=	"	gl_FragColor = vec4(proj, 1.0);\n";
 	}
 	shader +=	"}\n";
 

@@ -34,7 +34,9 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'shadowIntensity', 0);
 			this.addField_SFInt32(ctx, 'shadowMapSize', 1024);
 			this.addField_SFInt32(ctx, 'shadowFilterSize', 0);
-            this.addField_SFFloat(ctx, 'shadowOffset', 0);		
+            this.addField_SFFloat(ctx, 'shadowOffset', 0);
+            this.addField_SFFloat(ctx, 'zNear', -1); 
+            this.addField_SFFloat(ctx, 'zFar', -1);			
 			
         },
         {

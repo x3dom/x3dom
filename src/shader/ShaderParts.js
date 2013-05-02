@@ -78,16 +78,16 @@ x3dom.shader.shadowRendering = function(){
 	var shaderPart = "";
 	shaderPart +=
 				"float getLightInfluence(float lType, float lShadowIntensity, float lOn, vec3 lLocation, vec3 lDirection, " + 
-				"float lCutOffAngle, float lBeamWidth, vec3 lAttenuation, float lRadius, vec3 viewCoords) {\n" +
+				"float lCutOffAngle, float lBeamWidth, vec3 lAttenuation, float lRadius, vec3 eyeCoords) {\n" +
 				"	if (lOn == 0.0 || lShadowIntensity == 0.0){ return 0.0;\n" +
 				"	} else if (lType == 0.0) {\n" +
 				"		return 1.0;\n" +
 				"	} else {\n" +
 				"   	float attenuation = 0.0;\n" +
-				"   	vec3 lightVec = (lLocation - (viewCoords));\n" +
+				"   	vec3 lightVec = (lLocation - (eyeCoords));\n" +
 				"   	float distance = length(lightVec);\n" +
 				"		lightVec = normalize(lightVec);\n" +
-				"		viewCoords = normalize(-viewCoords);\n" +
+				"		eyeCoords = normalize(-eyeCoords);\n" +
 				"   	if(lRadius == 0.0 || distance <= lRadius) {\n" +
 				"       	attenuation = 1.0 / max(lAttenuation.x + lAttenuation.y * distance + lAttenuation.z * (distance * distance), 1.0);\n" +
 				"		}\n" +
@@ -136,14 +136,14 @@ x3dom.shader.shadowRendering = function(){
 
 	// get light space depth of view sample and all entries of the shadow map
 	shaderPart += 	
-				"void getShadowValuesCascaded(inout vec4 shadowMapValues, inout float viewSampleDepth, in vec4 worldCoords, in float viewDepth, in mat4 lMatrix_0, in mat4 lMatrix_1, in mat4 lMatrix_2,"+
+				"void getShadowValuesCascaded(inout vec4 shadowMapValues, inout float viewSampleDepth, in vec4 worldCoords, in float eyeDepth, in mat4 lMatrix_0, in mat4 lMatrix_1, in mat4 lMatrix_2,"+
 				"in mat4 lMatrix_3, in mat4 lMatrix_4, in mat4 lMatrix_5, in sampler2D shadowMap_0, in sampler2D shadowMap_1, in sampler2D shadowMap_2,"+
 				"in sampler2D shadowMap_3, in sampler2D shadowMap_4, in sampler2D shadowMap_5, in float split_0, in float split_1, in float split_2, in float split_3, in float split_4){\n" +
-				"	if (viewDepth < split_0) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_0, worldCoords, shadowMap_0);\n" +
-				"	else if (viewDepth < split_1) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_1, worldCoords, shadowMap_1);\n" +
-				"	else if (viewDepth < split_2) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_2, worldCoords, shadowMap_2);\n" +
-				"	else if (viewDepth < split_3) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_3, worldCoords, shadowMap_3);\n" +
-				"	else if (viewDepth < split_4) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_4, worldCoords, shadowMap_4);\n" +
+				"	if (eyeDepth < split_0) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_0, worldCoords, shadowMap_0);\n" +
+				"	else if (eyeDepth < split_1) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_1, worldCoords, shadowMap_1);\n" +
+				"	else if (eyeDepth < split_2) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_2, worldCoords, shadowMap_2);\n" +
+				"	else if (eyeDepth < split_3) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_3, worldCoords, shadowMap_3);\n" +
+				"	else if (eyeDepth < split_4) getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_4, worldCoords, shadowMap_4);\n" +
 				"	else getShadowValues(shadowMapValues, viewSampleDepth, lMatrix_5, worldCoords, shadowMap_5);\n" +																
 				"}\n";	
 				
@@ -154,12 +154,14 @@ x3dom.shader.shadowRendering = function(){
 	else 	shaderPart += 	"	return shadowMapDepth * exp(-80.0*(1.0-offset)*viewSampleDepth);\n";
 	shaderPart +="}\n";	
 
+
 	shaderPart += 	
-				"float VSM(vec2 moments, float depth, float offset){\n"+
-				"	if (depth <= moments.x) return 1.0;\n" +
+				"float VSM(vec2 moments, float viewSampleDepth, float offset){\n"+
+				"	viewSampleDepth = (viewSampleDepth + 1.0) * 0.5;\n" +
+				"	if (viewSampleDepth <= moments.x) return 1.0;\n" +
 				"	float variance = moments.y - moments.x * moments.x;\n" +
 				"	variance = max(variance, 0.00002 + offset*0.01);\n" +
-				"	float d = depth - moments.x;\n" +
+				"	float d = viewSampleDepth - moments.x;\n" +
 				"	return variance/(variance + d*d);\n" +
 				"}\n";	
 			
