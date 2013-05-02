@@ -32,6 +32,7 @@ x3dom.DrawableCollection = function (drawableCollectionConfig)
   this.gl = drawableCollectionConfig.gl;
 
   this.viewFrustum = this.viewarea.getViewfrustum(this.sceneMatrix);
+  this.worldVol = new x3dom.fields.BoxVolume();     // helper
 
   this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
   this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
@@ -64,11 +65,18 @@ x3dom.DrawableCollection.prototype.cull = function(transform, graphState, single
     var volume = node.getVolume();      // create on request
 
     if (this.frustumCulling) {
+        var wvol;
+
         if (singlePath && !graphState.worldVolume.isValid()) {
             graphState.worldVolume.transformFrom(transform, volume);
+            wvol = graphState.worldVolume;
+        }
+        else {
+            this.worldVol.transformFrom(transform, volume);
+            wvol = this.worldVol;
         }
 
-        if (!this.viewFrustum.intersect(graphState.worldVolume)) {
+        if (!this.viewFrustum.intersect(wvol)) {
             return true;      // if culled return true
         }
     }
