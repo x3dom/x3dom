@@ -35,8 +35,10 @@ x3dom.registerNodeType(
 
                 // rebuild cache on change and reuse world transform
                 if (singlePath) {
-                    if (!this._graph.globalMatrix)
+                    if (!this._graph.globalMatrix) {
                         this._graph.globalMatrix = this.transformMatrix(transform);
+                        singlePath = false;     // propagate matrix rebuild down to children
+                    }
 
                     childTransform = this._graph.globalMatrix;
                 }
@@ -107,8 +109,10 @@ x3dom.registerNodeType(
 
                 // rebuild cache on change and reuse world transform
                 if (singlePath) {
-                    if (!this._graph.globalMatrix)
+                    if (!this._graph.globalMatrix) {
                         this._graph.globalMatrix = this.transformMatrix(transform);
+                        singlePath = false;     // propagate matrix rebuild down to children
+                    }
 
                     childTransform = this._graph.globalMatrix;
                 }
