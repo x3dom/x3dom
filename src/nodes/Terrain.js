@@ -50,14 +50,15 @@ x3dom.registerNodeType(
                                                    new x3dom.fields.SFMatrix4f.identity(), 0, 0, geometry);
             }
             else {
-                x3dom.debug.logException("Error attribute mode. Value: '" + this._vf.mode +
-                                         "' isn't conform. Please type 'bin', '2d' or '3d'");
+                x3dom.debug.logError("Error attribute mode. Value: '" + this._vf.mode +
+                                     "' isn't conform. Please use type 'bin', '2d' or '3d'");
             }
         },
         {
-            visitChildren: function(transform, drawableCollection) {
+            visitChildren: function(transform, drawableCollection, singlePath) {
                 this.createChildren = 0;
-                this.rootNode.collectDrawables(transform, drawableCollection);
+                singlePath = false;
+                this.rootNode.collectDrawables(transform, drawableCollection, singlePath);
             },
 
             getVolume: function()
@@ -85,7 +86,7 @@ x3dom.registerNodeType(
 function QuadtreeNode2D(ctx, navigation, colorUrl, heightUrl, maxDepth, level, nodeNumber,
                         factor, nodeTransformation, shader, columnNr, rowNr)
 {
-    x3dom.debug.logException("Error: NOT IMPLEMENTED YET");
+    x3dom.debug.logError("NOT IMPLEMENTED YET");
 }
 
 
@@ -286,7 +287,7 @@ function QuadtreeNode3D(ctx, navigation, colorUrl, heightUrl, maxDepth, level, n
 
     // here the decision is taken if new children should be created
     // and which should be rendered
-    this.collectDrawables = function (transform, drawableCollection) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath) {
 
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
@@ -298,18 +299,18 @@ function QuadtreeNode3D(ctx, navigation, colorUrl, heightUrl, maxDepth, level, n
                     create();
                 }
                 else if (children.length === 0 && navigation.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath);
                     }
                 }
             }
             else {
                 if (level === maxDepth)
-                    x3dom.debug.logException("Level: " + level);
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection);
+                    x3dom.debug.logWarning("Level: " + level);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
             }
         }
     };
@@ -434,7 +435,7 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
      * here the decision is taken if new children should be created
      * and which should be rendered
      */
-    this.collectDrawables = function (transform, drawableCollection) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath) {
 
         if (exists) {
             var mat_view = drawableCollection.viewMatrix;
@@ -451,19 +452,19 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
                 if (children.length === 0 && navigation.createChildren <= 1) {
                     navigation.createChildren++;
                     create();
-                    shape.collectDrawableObjects(transform, drawableCollection);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath);
                 }
                 else if (children.length === 0 && navigation.createChildren > 1) {
-                    shape.collectDrawableObjects(transform, drawableCollection);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(transform, drawableCollection);
+                        children[i].collectDrawables(transform, drawableCollection, singlePath);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection);
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath);
             }
         }
     };

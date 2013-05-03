@@ -135,6 +135,10 @@ x3dom.registerNodeType(
             // overwritten
         },
 
+        invalidateCache: function() {
+            // overwritten
+        },
+
         volumeValid: function() {
             return false;
         },
@@ -840,13 +844,16 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName) {
                 // TODO; wait for sync traversal to invalidate en block
-                if (this._vf.hasOwnProperty(fieldName))
+                if (this._vf.hasOwnProperty(fieldName)) {
                     this.invalidateVolume();
+                    this.invalidateCache();
+                }
             },
 
             nodeChanged: function () {
                 // TODO; wait for sync traversal to invalidate en block
                 this.invalidateVolume();
+                this.invalidateCache();
             },
 
             getVolume: function()
@@ -878,14 +885,35 @@ x3dom.registerNodeType(
 
                 graph.volume.invalidate();
 
+                // also clear cache
                 graph.worldVolume.invalidate();
                 graph.globalMatrix = null;
 
                 // set parent volumes invalid, too
-                Array.forEach(this._parentNodes, function(node) {
-                    if (node.volumeValid())
+                for (var i=0, n=this._parentNodes.length; i<n; i++) {
+                    var node = this._parentNodes[i];
+                    if (node && node.volumeValid())
                         node.invalidateVolume();
-                });
+                }
+            },
+
+            invalidateCache: function()
+            {
+                var graph = this._graph;
+
+                if (graph.volume.isValid() &&
+                    graph.globalMatrix == null && !graph.worldVolume.isValid())
+                    return;     // stop here, we're already done
+
+                graph.worldVolume.invalidate();
+                graph.globalMatrix = null;
+
+                // clear children's cache, too
+                for (var i=0, n=this._childNodes.length; i<n; i++) {
+                    var node = this._childNodes[i];
+                    if (node)
+                        node.invalidateCache();
+                }
             },
 
             volumeValid: function()

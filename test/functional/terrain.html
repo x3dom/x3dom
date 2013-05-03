@@ -81,19 +81,19 @@
   <body>
   <h1>Dynamic LOD</h1>
     <X3D showStat='true' showLog='true' width='600px' height='400px'>
-      <Scene DEF='scene' frustumCulling='false' sortTrans="false">
-	<!--<Terrain maxDepth='7' factor='30' center='0 0 0' 
-                     size="1 1" url="F:\x3dom\test\functional\realityMaps" 
+      <Scene DEF='scene' frustumCulling='false'>
+        <Terrain maxDepth='7' factor='30' center='0 0 0' 
+                     size="1 1" url="realityMaps" 
                      mode="bin">
-        </Terrain>--> 
-        <Terrain maxDepth='4' factor='15' center='0 0 0' maxElevation='1780' 
-                 subdivision='64 64' size='32000 32000'  
-                 elevationUrl="F:\x3dom\test\functional\suedhessen\DGM" 
-                 textureUrl="F:\x3dom\test\functional\suedhessen\DOP"
-                 imageFormat='PNG' mode="3d">
         </Terrain>
-        
+        <!--Terrain maxDepth='4' factor='15' center='0 0 0' maxElevation='1780' 
+                 subdivision='64 64' size='32000 32000'  
+                 elevationUrl="suedhessen/DGM" 
+                 textureUrl="suedhessen/DOP"
+                 imageFormat='PNG' mode="3d">
+        </Terrain-->
         <Background skyColor=".1 .15 .3"></Background>
+        <Viewpoint zNear="0.1" zFar="100000" position="531 -506 892"></Viewpoint>
         <Viewpoint zNear="0.1" zFar="100000" position="0 0 35000"></Viewpoint>
       </Scene>
     </X3D>

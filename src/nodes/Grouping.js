@@ -70,6 +70,7 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName) {
                 if (fieldName == "whichChoice") {
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
             },
 
@@ -191,10 +192,14 @@ x3dom.registerNodeType(
                   var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform") ||
                               x3dom.getStyle(this._xmlNode, "-moz-transform");
                   //x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);
+
                   if (trans && (trans != 'none')) {
                       this._trafo.setValueByStr(trans);
                       //x3dom.debug.logInfo(' valid set:' + this._trafo);
+
                       this.invalidateVolume();
+                      this.invalidateCache();
+
                       return true;
                   }
                   this._needCssStyleUpdates = false;    // no special CSS set
@@ -330,10 +335,13 @@ x3dom.registerNodeType(
                             mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
                             mult(this._vf.scaleOrientation.toMatrix().inverse()).
                             mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
+
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
             }
         }
@@ -358,10 +366,13 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName) {
                 if (fieldName == "matrix") {
                     this._trafo = this._vf.matrix.transpose();
+
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
             }
         }
@@ -495,7 +506,9 @@ x3dom.registerNodeType(
                             this._lastData = evt.data;
                             that._nameSpace.doc.needRender = true;
                             //x3dom.debug.logInfo("WS Response: " + evt.data);
+
                             that.invalidateVolume();
+                            that.invalidateCache();
                         }
                     };
 
@@ -557,6 +570,7 @@ x3dom.registerNodeType(
                 }
 
                 this.invalidateVolume();
+                this.invalidateCache();
 
                 x3dom.debug.logInfo("RemoteSelectionGroup has " + n + " entries.");
             },
@@ -605,10 +619,13 @@ x3dom.registerNodeType(
                             this._visibleList[i] = false;
                         }
                     }
+
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
             },
             
@@ -799,7 +816,9 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 this.loadMapping();
+
                 this.invalidateVolume();
+                this.invalidateCache();
             },
             
             fieldChanged: function(fieldName)

@@ -828,14 +828,19 @@ x3dom.registerNodeType(
             
             nodeChanged: function() {
                 this._needReRender = true;
+
                 this.invalidateVolume();
+                this.invalidateCache();
             },
             
             fieldChanged: function(fieldName) {
                 this._needReRender = true;
 
-                if (fieldName == "render" || fieldName == "center" || fieldName == "range") {
+                if (fieldName == "render" ||
+                    fieldName == "center" ||
+                    fieldName == "range") {
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
             }
         }

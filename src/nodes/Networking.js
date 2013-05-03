@@ -92,6 +92,7 @@ x3dom.registerNodeType(
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
+                    this.invalidateCache();
                 }
             },
 
@@ -234,8 +235,9 @@ x3dom.registerNodeType(
                     if (newScene)
                     {
                         that.addChild(newScene);
-                        newScene.invalidateVolume();
+
                         that.invalidateVolume();
+                        that.invalidateCache();
 
                         that._nameSpace.doc.downloadCount -= 1;
                         that._nameSpace.doc.needRender = true;
@@ -248,6 +250,8 @@ x3dom.registerNodeType(
                             theScene.updateVolume();
                             window.setTimeout( function() {
                                 that.invalidateVolume();
+                                that.invalidateCache();
+
                                 theScene.updateVolume();
                                 that._nameSpace.doc.needRender = true;
                                 }, 1500 );
