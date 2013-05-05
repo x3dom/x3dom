@@ -21,25 +21,28 @@ x3dom.registerNodeType(
             // FIXME; add addChild and removeChild slots ?
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
             {
+                // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                // an invalid world matrix or volume needs to be invalidated down the hierarchy
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                // check if sub-graph can be culled away or render flag was set to false
+                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
                 var cnode, childTransform;
 
-                // rebuild cache on change and reuse world transform
                 if (singlePath) {
+                    // rebuild cache on change and reuse world transform
                     if (!this._graph.globalMatrix) {
                         this._graph.globalMatrix = this.transformMatrix(transform);
-                        singlePath = false;     // propagate matrix rebuild down to children
                     }
-
                     childTransform = this._graph.globalMatrix;
                 }
                 else {
@@ -48,7 +51,7 @@ x3dom.registerNodeType(
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     if ( (cnode = this._childNodes[i]) ) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
                     }
                 }
             }
@@ -95,26 +98,25 @@ x3dom.registerNodeType(
                 return vol;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                if (!drawableCollection || this._vf.whichChoice < 0 ||
-                    this._vf.whichChoice >= this._childNodes.length ||
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                if (this._vf.whichChoice < 0 || this._vf.whichChoice >= this._childNodes.length ||
                     drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
                 var cnode, childTransform;
 
-                // rebuild cache on change and reuse world transform
                 if (singlePath) {
                     if (!this._graph.globalMatrix) {
                         this._graph.globalMatrix = this.transformMatrix(transform);
-                        singlePath = false;     // propagate matrix rebuild down to children
                     }
-
                     childTransform = this._graph.globalMatrix;
                 }
                 else {
@@ -122,7 +124,7 @@ x3dom.registerNodeType(
                 }
 
                 if ( (cnode = this._childNodes[this._vf.whichChoice]) ) {
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
                 }
             },
 
@@ -422,7 +424,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);  // scaling factor to reduce render calls during navigation (between 0 and 1)
             this.addField_SFBool(ctx, 'enableCulling', true);   // if false, RSG works like normal group
             this.addField_MFString(ctx, 'invisibleNodes', []);  // allows disabling nodes with given label name (incl. prefix*)
-            this.addField_SFBool(ctx, 'internalCulling', false);    // experimental field to enable internal culling algos
 
             this._idList = [];          // to be updated by socket connection
             this._websocket = null;     // pointer to socket
@@ -648,13 +649,15 @@ x3dom.registerNodeType(
                 return n;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
@@ -668,30 +671,9 @@ x3dom.registerNodeType(
                 if (!this._vf.enableCulling)
                 {
                     n = this.getNumRenderedObjects(numChild, isMoving);
-                    
-                    // experimental
-                    var view_frustum = null, box = null;
-                    
-                    if (this._vf.internalCulling == true)
-                    {
-        		        var viewpoint = viewarea._scene.getViewpoint();
-                        var near = viewpoint.getNear();
-                        
-                        var proj = viewarea.getProjectionMatrix();
-                        var view = viewarea.getViewMatrix();
-                        
-                        view_frustum = new x3dom.fields.FrustumVolume(proj.mult(view));
-                        
-                		var trafo = this.getCurrentTransform();
-                		var modelView = view.mult(trafo);
-                		
-                        var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
-                        imgPlaneHeightAtDistOne /= this._nameSpace.doc._viewarea._height;
-                        
-                		box = new x3dom.fields.BoxVolume();
-        		    }
-        		    
-                    for (i=0, cnt=0; i<numChild; i++)
+
+                    var cnt = 0;
+                    for (i=0; i<numChild; i++)
                     {
                         var shape = this._childNodes[i];
                         
@@ -699,38 +681,12 @@ x3dom.registerNodeType(
                         {
                             var needCleanup = true;
                             
-                            if (this._visibleList[i] && cnt < n)
+                            if (this._visibleList[i] && cnt < n &&
+                                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache))
                             {
-                                if (view_frustum)   // experimental
-                                {
-                                    var vol = shape.getVolume();
-                                    box.transformFrom(trafo, vol);
-                                }
-                                
-                                if (!view_frustum || view_frustum.intersect(box))
-                                {
-                                    var pxThreshold = 20, numPixel = pxThreshold;
-                                    
-                                    if (view_frustum)
-                                    {
-                                        var center = modelView.multMatrixPnt(shape.getCenter());
-                            		    var dia = shape.getDiameter();
-                            		    
-                                        var dist = Math.max(-center.z - dia / 2, near);
-                                        var projPixelLength = dist * imgPlaneHeightAtDistOne;
-                                        
-                                        numPixel = dia / projPixelLength;
-                                    }
-                                    
-                                    // collect drawables
-                                    if (numPixel >= pxThreshold)
-                                    {
-                                        shape.collectDrawableObjects(transform, drawableCollection, singlePath);
-                                        this._createTime[i] = ts;
-                                        cnt++;
-                                        needCleanup = false;
-                                    }
-                                }
+                                this._createTime[i] = ts;
+                                cnt++;
+                                needCleanup = false;
                             }
                             
                             if (needCleanup && !isMoving && this._createTime[i] > 0 && 
@@ -756,7 +712,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj && obj.shape) {
-                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                             this._createTime[obj.pos] = ts;
                         }
 						else

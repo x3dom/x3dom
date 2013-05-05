@@ -55,7 +55,7 @@ x3dom.registerNodeType(
             }
         },
         {
-            visitChildren: function(transform, drawableCollection, singlePath) {
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache) {
                 this.createChildren = 0;
                 singlePath = false;
                 this.rootNode.collectDrawables(transform, drawableCollection, singlePath);
@@ -299,7 +299,7 @@ function QuadtreeNode3D(ctx, navigation, colorUrl, heightUrl, maxDepth, level, n
                     create();
                 }
                 else if (children.length === 0 && navigation.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, true);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
@@ -310,7 +310,7 @@ function QuadtreeNode3D(ctx, navigation, colorUrl, heightUrl, maxDepth, level, n
             else {
                 if (level === maxDepth)
                     x3dom.debug.logWarning("Level: " + level);
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, true);
             }
         }
     };
@@ -452,10 +452,10 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
                 if (children.length === 0 && navigation.createChildren <= 1) {
                     navigation.createChildren++;
                     create();
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, true);
                 }
                 else if (children.length === 0 && navigation.createChildren > 1) {
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, true);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
@@ -464,7 +464,7 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath, true);
             }
         }
     };

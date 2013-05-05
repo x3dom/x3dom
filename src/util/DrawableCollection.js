@@ -61,7 +61,12 @@ x3dom.DrawableCollection = function (drawableCollectionConfig)
  */
 x3dom.DrawableCollection.prototype.cull = function(transform, graphState, singlePath)
 {
-    var node = graphState.boundedNode;  // ref to SG node
+    var node = graphState.boundedNode;  // get ref to SG node
+
+    if (!node || !node._vf.render) {
+        return true;
+    }
+
     var volume = node.getVolume();      // create on request
 
     if (this.frustumCulling) {
@@ -81,7 +86,7 @@ x3dom.DrawableCollection.prototype.cull = function(transform, graphState, single
         }
     }
 
-    graphState.coverage = -1;            // if -1 then ignore value later on
+    graphState.coverage = -1;    // if -1 then ignore value later on
 
     if (this.smallFeatureThreshold > 1) {
         // a few ops less than with this.viewMatrix.mult(transform)

@@ -236,24 +236,28 @@ x3dom.registerNodeType(
             this._colorStrideOffset = [0, 0];
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
             {
-                if (drawableCollection && this._vf.render && this._cf.geometry.node)
-                {
-                    //out.push( [transform, this] );   // shall we add 2 instead to include geo?
-                    var graphState = this.graphState();
+                // attention, in contrast to other collectDrawableObjects()
+                // this one has boolean return type to better work with RSG
+                var graphState = this.graphState();
 
-                    if (singlePath && (this._parentNodes.length > 1))
-                        singlePath = false;
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
 
-                    if ( !drawableCollection.cull(transform, graphState, singlePath) )
-                    {
-                        if (singlePath && !this._graph.globalMatrix)
-                            this._graph.globalMatrix = transform;
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
 
-                        drawableCollection.addDrawable(this, transform, graphState);
-                    }
+                if (!this._cf.geometry.node || drawableCollection.cull(transform, graphState, singlePath)) {
+                    return false;
                 }
+
+                if (singlePath && !this._graph.globalMatrix)
+                    this._graph.globalMatrix = transform;
+
+                drawableCollection.addDrawable(this, transform, graphState);
+
+                return true;
             },
 
             getVolume: function()

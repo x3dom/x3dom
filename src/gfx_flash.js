@@ -98,14 +98,14 @@ x3dom.gfx_flash = (function() {
 		this.object = object;
 		this.name = name;
 		this.isAlreadySet = false;
-	};
+	}
 	
 	/**
 	*
 	*/
 	function setupContext(object) {
 		return new Context(object, 'flash');
-	};
+	}
 	
 	/**
 	*
@@ -154,14 +154,13 @@ x3dom.gfx_flash = (function() {
         };
 
         scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
-		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true);
+		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false);
 
         scene.drawableCollection.concat();
 		
 		//Get Number of drawableObjects
 		var numDrawableObjects = scene.drawableCollection.length;
-		
-		
+
 		if(numDrawableObjects > 0)
 		{
 			var RefList = [];
@@ -339,10 +338,8 @@ x3dom.gfx_flash = (function() {
 		//Check shape geometry type
 		if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet)) {
 			x3dom.debug.logError("Flash backend don't support PointSets yet");
-			return;
 		} else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet)) {
 			x3dom.debug.logError("Flash backend don't support LineSets yet");
-			return;
 		} else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text)) { 
 			this.setupText(shape, trafo, refID);
 		} else {
@@ -748,7 +745,7 @@ x3dom.gfx_flash = (function() {
 	*/
 	Context.prototype.shutdown = function(viewarea)
 	{
-	
+
 	};
 	
 	//Return the setup context function

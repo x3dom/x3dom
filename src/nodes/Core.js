@@ -143,8 +143,8 @@ x3dom.registerNodeType(
             return false;
         },
 
-        // Collects all objects to be drawn (singlePath determines if unique path in graph back to root possible)
-        collectDrawableObjects: function (transform, drawableCollection, singlePath) {
+        // Collects all objects to be drawn
+        collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache) {
             // explicitly do nothing on collect traversal for (most) nodes
         },
         
@@ -901,19 +901,25 @@ x3dom.registerNodeType(
             {
                 var graph = this._graph;
 
-                if (graph.volume.isValid() &&
-                    graph.globalMatrix == null && !graph.worldVolume.isValid())
-                    return;     // stop here, we're already done
+                //if (graph.volume.isValid() &&
+                //    graph.globalMatrix == null && !graph.worldVolume.isValid())
+                //    return;     // stop here, we're already done
 
                 graph.worldVolume.invalidate();
                 graph.globalMatrix = null;
 
                 // clear children's cache, too
-                for (var i=0, n=this._childNodes.length; i<n; i++) {
-                    var node = this._childNodes[i];
-                    if (node)
-                        node.invalidateCache();
-                }
+                //for (var i=0, n=this._childNodes.length; i<n; i++) {
+                //    var node = this._childNodes[i];
+                //    if (node)
+                //        node.invalidateCache();
+                //}
+            },
+
+            cacheInvalid: function()
+            {
+                return ( this._graph.globalMatrix == null ||
+                        !this._graph.worldVolume.isValid() );
             },
 
             volumeValid: function()

@@ -878,13 +878,16 @@ x3dom.Viewarea.prototype.showAll = function(axis)
         var fov = viewpoint.getFieldOfView();
 
         var dia = max.subtract(min);
-        var dist1 = (dia[y]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
-        var dist2 = (dia[x]/2.0) / Math.tan(fov/2.0) - sign * (dia[z]/2.0);
+        var diaz2 = sign * (dia[z] / 2.0);
+        var tanfov2 = Math.tan(fov / 2.0);
+
+        var dist1 = (dia[y] / 2.0) / tanfov2 - diaz2;
+        var dist2 = (dia[x] / 2.0) / tanfov2 - diaz2;
 
         dia = min.add(dia.multiply(0.5));
         dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.001;
         
-        viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.multiply(-1)));
+        viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.negate()));
 
         this.animateTo(viewmat, viewpoint);
     }

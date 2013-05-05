@@ -23,8 +23,6 @@ x3dom.registerNodeType(
 );
 
 /* ### X3DNavigationInfoNode ### */
-// FIXME; in X3D there is no X3DNavigationInfoNode.
-//        So do we really need this abstract class?
 x3dom.registerNodeType(
     "X3DNavigationInfoNode",
     "Navigation",
@@ -557,13 +555,15 @@ x3dom.registerNodeType(
             this._eyeLook = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
@@ -634,7 +634,7 @@ x3dom.registerNodeType(
                 {
                     var cnode = this._childNodes[i];
                     if (cnode) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
                     }
                 }
 
@@ -661,35 +661,34 @@ x3dom.registerNodeType(
             // TODO; add Slots: collideTime, isActive
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
                 var cnode, childTransform;
 
-                // rebuild cache on change and reuse world transform
                 if (singlePath) {
                     if (!this._graph.globalMatrix) {
                         this._graph.globalMatrix = this.transformMatrix(transform);
-                        singlePath = false;     // propagate matrix rebuild down to children
                     }
-
                     childTransform = this._graph.globalMatrix;
                 }
                 else {
                     childTransform = this.transformMatrix(transform);
                 }
 
-                for (var i=0, i_n=this._childNodes.length; i<i_n; i++)
+                for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
                     if ((cnode = this._childNodes[i]) && (cnode !== this._cf.proxy.node)) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
                     }
                 }
             }
@@ -711,25 +710,29 @@ x3dom.registerNodeType(
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function(transform, drawableCollection, singlePath)
+            collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
 
-                if (!this._vf.render || !drawableCollection ||
-                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
                     return;
                 }
 
                 // at the moment, no caching here as children may change every frame
                 singlePath = false;
 
-                this.visitChildren(transform, drawableCollection, singlePath);
+                this.visitChildren(transform, drawableCollection, singlePath, invalidateCache);
 
                 //out.LODs.push( [transform, this] );
             },
             
-            visitChildren: function(transform, drawableCollection, singlePath) {}
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache) {
+                // overwritten
+            }
         }
     )
 );
@@ -744,11 +747,11 @@ x3dom.registerNodeType(
 
             this.addField_MFFloat(ctx, "range", []);
             
-            this._needReRender = true;
+            //this._needReRender = true;
             this._lastRangePos = -1;
         },
         {
-            visitChildren: function(transform, drawableCollection, singlePath)
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache)
             {
                 var i=0, n=this._childNodes.length;
 
@@ -763,7 +766,7 @@ x3dom.registerNodeType(
                 var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
                 center = mat_view.inverse().multMatrixPnt(center);
                 
-                var mat_view_model = mat_view.mult(transform);
+                //var mat_view_model = mat_view.mult(transform);
                 this._eye = transform.inverse().multMatrixPnt(center);
                 
                 var mid = max.add(min).multiply(0.5).add(this._vf.center);
@@ -783,14 +786,14 @@ x3dom.registerNodeType(
                 if (n && cnode)
                 {
                     var childTransform = this.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
                 }
                 
                 // eye position invalid in first frame
-                if (this._needReRender) {
+                /* if (this._needReRender) {
                     this._needReRender = false;
                     this._nameSpace.doc.needRender = true;
-                }
+                }*/
             },
 
             getVolume: function()
@@ -827,15 +830,13 @@ x3dom.registerNodeType(
             },
             
             nodeChanged: function() {
-                this._needReRender = true;
-
+                //this._needReRender = true;
                 this.invalidateVolume();
                 this.invalidateCache();
             },
             
             fieldChanged: function(fieldName) {
-                this._needReRender = true;
-
+                //this._needReRender = true;
                 if (fieldName == "render" ||
                     fieldName == "center" ||
                     fieldName == "range") {
@@ -890,7 +891,7 @@ x3dom.registerNodeType(
     		    this._nameSpace.doc.needRender = true;
             },
             
-            visitChildren: function(transform, drawableCollection, singlePath)
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache)
             {
                 var root = this._cf.root.node;
                 
@@ -902,7 +903,7 @@ x3dom.registerNodeType(
                 var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
                 center = mat_view.inverse().multMatrixPnt(center);
                 
-                var mat_view_model = mat_view.mult(transform);
+                //var mat_view_model = mat_view.mult(transform);
                 this._eye = transform.inverse().multMatrixPnt(center);
                 
                 var l, len = this._vf.center.subtract(this._eye).length();
@@ -971,12 +972,12 @@ x3dom.registerNodeType(
                     }
                     else {
                         for (l=1; l<this._childNodes.length; l++) {
-                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection, singlePath);
+                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                         }
                     }
                 }
                 else {
-                    root.collectDrawableObjects(transform, drawableCollection, singlePath);
+                    root.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                 }
             },
 
