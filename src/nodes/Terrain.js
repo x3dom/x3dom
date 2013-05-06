@@ -76,7 +76,7 @@ x3dom.registerNodeType(
                     if (childVol && childVol.isValid())
                         vol.extendBounds(childVol.min, childVol.max);
                 }
-
+                
                 return vol;
             }
         }
@@ -180,12 +180,18 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
     // and which should be rendered
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
+        var obj = {};
+        obj.boundedNode = shape;
+        obj.localMatrix = nodeTransformation;
+        obj.volume = shape.getVolume();
+        var cull = drawableCollection.cull(transform, obj, singlePath);
+        
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * resizeFac / fac)) {
-                if (children.length === 0 && navigation.createChildren === 0) {
+                if (children.length === 0 && navigation.createChildren === 0 && !cull) {
                     navigation.createChildren++;
                     create();
                 }
@@ -404,12 +410,18 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
     // and which should be rendered
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
+        var obj = {};
+        obj.boundedNode = shape;
+        obj.localMatrix = nodeTransformation;
+        obj.volume = shape.getVolume();
+        var cull = drawableCollection.cull(transform, obj, singlePath);
+
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * resizeFac / fac)) {
-                if (children.length === 0 && navigation.createChildren === 0) {
+                if (children.length === 0 && navigation.createChildren === 0 && !cull) {
                     navigation.createChildren++;
                     create();
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
@@ -551,24 +563,25 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
      */
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
-        if (exists) {
+        var obj = {};
+        obj.boundedNode = shape;
+        obj.localMatrix = transform;
+        obj.volume = shape.getVolume();
+        var cull = drawableCollection.cull(transform, obj, singlePath);
+
+        if (exists) {            
             var mat_view = drawableCollection.viewMatrix;
-                
-            var center = new x3dom.fields.SFVec3f(0, 0, 0); // eye
-            center = mat_view.inverse().multMatrixPnt(center);
+            var vPos = mat_view.multMatrixPnt(position);
+            var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             
-            //var mat_view_model = mat_view.mult(transform);
-            navigation._eye = transform.inverse().multMatrixPnt(center);
-            
-            var distanceToCamera = position.subtract(navigation._eye).length();
             // navigation._vf.factor instead (level * 16)
             if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * 1700 / fac)) {
-                if (children.length === 0 && navigation.createChildren <= 1) {
+                if (children.length === 0 && navigation.createChildren === 0 && !cull) {
                     navigation.createChildren++;
                     create();
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                 }
-                else if (children.length === 0 && navigation.createChildren > 1) {
+                else if (children.length === 0 && navigation.createChildren > 0) {
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                 }
                 else {

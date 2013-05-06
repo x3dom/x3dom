@@ -82,15 +82,17 @@
   <h1>Dynamic LOD</h1>
     <X3D showStat='true' showLog='true' width='600px' height='400px'>
       <Scene DEF='scene' frustumCulling='true' sortTrans="false">
-        <Terrain maxDepth='8' factor='5' center='0 0 0' size='2000 2000'  
+        <!-- for viewing this example disable web security on your browser 
+             because of cross origin problems -->
+        <!--<Terrain maxDepth='11' factor='5' center='0 0 0' size='2000 2000'  
                  url='http:\\a.tile.openstreetmap.org' imageFormat='PNG' mode="2d">
-        </Terrain>
-        <!--<Terrain maxDepth='7' factor='30' center='0 0 0' 
+        </Terrain>-->
+        <Terrain maxDepth='7' factor='30' center='0 0 0' 
                  size="1 1" url="RealityMaps" 
                  mode="bin">
-        </Terrain>-->
+        </Terrain>
         <Background skyColor=".1 .15 .3"></Background>
-        <Viewpoint zNear="0.1" zFar="10000" position="0 0 3000"></Viewpoint>
+        <Viewpoint zNear="0.01" zFar="10000" position="0 0 3000"></Viewpoint>
       </Scene>
     </X3D>
   </body>
