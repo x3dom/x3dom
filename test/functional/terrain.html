@@ -82,21 +82,21 @@
   <h1>Dynamic LOD</h1>
     <X3D showStat='true' showLog='true' width='600px' height='400px'>
       <Scene DEF='scene' frustumCulling='false' sortTrans="false">
-        <Terrain maxDepth='8' factor='5' center='0 0 0' size='2000 2000'  
+        <!--<Terrain maxDepth='8' factor='5' center='0 0 0' size='2000 2000'  
                  url='http:\\a.tile.openstreetmap.org' imageFormat='PNG' mode="2d">
-        </Terrain>
-        <!--<Terrain maxDepth='4' factor='5' center='0 0 0' maxElevation='120' 
+        </Terrain>-->
+        <Terrain maxDepth='4' factor='5' center='0 0 0' maxElevation='124' 
                  subdivision='64 64' size='2000 2000'  
                  elevationUrl="C:\Users\menglert\Desktop\suedhessen\DGM" 
                  textureUrl="C:\Users\menglert\Desktop\suedhessen\DOP"
-                 imageFormat='PNG' mode="3d">
+                 imageFormat='png' mode="3d">
         </Terrain>
-        <Terrain maxDepth='7' factor='30' center='0 0 0' 
+        <!--<Terrain maxDepth='7' factor='30' center='0 0 0' 
                      size="1 1" url="C:\Users\menglert\Desktop\Dynamic_LOD\RealityMaps\ConvertedBinaryGeometry" 
                      mode="bin">
         </Terrain>-->
         <Background skyColor=".1 .15 .3"></Background>
-        <Viewpoint zNear="0.1" zFar="100000" position="0 0 9000"></Viewpoint>
+        <Viewpoint zNear="0.1" zFar="10000" position="0 0 9000"></Viewpoint>
       </Scene>
     </X3D>
   </body>

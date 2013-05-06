@@ -345,7 +345,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
             "\n" +
             "void main(void) {\n" +
             "    vec4 height = texture2D(texHeight, vec2(texcoord[0], " + 
-            "                                            1.0-texcoord[1]));\n" +
+            "                                            1.0 - texcoord[1]));\n" +
             "    texC = vec2(texcoord[0], 1.0-texcoord[1]);\n" +
             "    col.x = height[0];\n" +
             "    col.y = height[1];\n" +
@@ -431,7 +431,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
             }
         }
     };
