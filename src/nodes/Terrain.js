@@ -18,7 +18,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.Terrain.superClass.call(this, ctx);
 
             this.addField_SFFloat(ctx, 'factor', 1.0);
-            this.addField_SFFloat(ctx, 'maxDepth', 3.0);
+            this.addField_SFInt32(ctx, 'maxDepth', 3);
             this.addField_SFVec2f(ctx, 'size', 1, 1);
             this.addField_SFVec2f(ctx, 'subdivision', 10, 10);
             this.addField_SFString(ctx, 'url', "");
@@ -59,10 +59,11 @@ x3dom.registerNodeType(
             }
         },
         {
-            visitChildren: function(transform, drawableCollection, singlePath) {
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache) {
                 this.createChildren = 0;
-                singlePath = false;
-                this.rootNode.collectDrawables(transform, drawableCollection, singlePath);
+                singlePath = false;         // TODO (specify if unique node path or multi-parent)
+                invalidateCache = true;     // TODO (reuse world transform and volume cache)
+                this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache);
             },
 
             getVolume: function()
@@ -123,9 +124,7 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
         texture._vf.url[0] = url;
 
         // calculate the average position of the node
-        position = new x3dom.fields.SFVec3f(nodeTransformation.at(0, 3),
-                                            nodeTransformation.at(1, 3),
-                                            nodeTransformation.at(2, 3));
+        position = new x3dom.fields.SFVec3f(nodeTransformation.e3());
         
         // add textures to the appearence of this node
         appearance.addChild(texture);
@@ -179,7 +178,7 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
     
     // here the decision is taken if new children should be created
     // and which should be rendered
-    this.collectDrawables = function (transform, drawableCollection) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
@@ -191,16 +190,16 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
                     create();
                 }
                 else if (children.length === 0 && navigation.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
             }
         }
     };
@@ -262,9 +261,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         shape._nameSpace = navigation._nameSpace;
 
         // calculate the average position of the node
-        position = new x3dom.fields.SFVec3f(nodeTransformation.at(0, 3),
-                                            nodeTransformation.at(1, 3),
-                                            nodeTransformation.at(2, 3));
+        position = new x3dom.fields.SFVec3f(nodeTransformation.e3());
         
         // creating the special vertex-shader for terrain-nodes
         var vertexShader = new x3dom.nodeTypes.ShaderPart(ctx);
@@ -344,15 +341,10 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
             "varying vec2 texC;\n" +
             "\n" +
             "void main(void) {\n" +
-            "    vec4 height = texture2D(texHeight, vec2(texcoord[0], " + 
-            "                                            1.0 - texcoord[1]));\n" +
+            "    vec4 height = texture2D(texHeight, vec2(texcoord[0], 1.0 - texcoord[1]));\n" +
             "    texC = vec2(texcoord[0], 1.0-texcoord[1]);\n" +
-            "    col.x = height[0];\n" +
-            "    col.y = height[1];\n" +
-            "    col.z = height[2];\n" +
-            "    gl_Position = modelViewProjectionMatrix * \n\ " +
-            "                  vec4(position.x, position.y, \n\ " +
-            "                       height.x * maxElevation, 1.0);\n" +
+            "    col = vec3(height[0], height[1], height[2]);\n" +
+            "    gl_Position = modelViewProjectionMatrix * vec4(position.xy, height.x * maxElevation, 1.0);\n" +
             "}\n";
     }
 
@@ -369,7 +361,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
             "\n" +
             "void main(void) {\n" +
             "    vec4 colr = texture2D(texColor, texC);\n" +
-            "    gl_FragColor = vec4(colr.x, colr.y, colr.z, 1.0);\n" +
+            "    gl_FragColor = vec4(colr.xyz, 1.0);\n" +
             "}\n";
     }
 
@@ -410,7 +402,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
 
     // here the decision is taken if new children should be created
     // and which should be rendered
-    this.collectDrawables = function (transform, drawableCollection, singlePath) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
@@ -420,18 +412,19 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
                 if (children.length === 0 && navigation.createChildren === 0) {
                     navigation.createChildren++;
                     create();
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                 }
                 else if (children.length === 0 && navigation.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
             }
         }
     };
@@ -556,7 +549,7 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
      * here the decision is taken if new children should be created
      * and which should be rendered
      */
-    this.collectDrawables = function (transform, drawableCollection, singlePath) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
         if (exists) {
             var mat_view = drawableCollection.viewMatrix;
@@ -568,24 +561,24 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
             navigation._eye = transform.inverse().multMatrixPnt(center);
             
             var distanceToCamera = position.subtract(navigation._eye).length();
-            // navigation._vf.factor anstatt (level * 16)
+            // navigation._vf.factor instead (level * 16)
             if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * 1700 / fac)) {
                 if (children.length === 0 && navigation.createChildren <= 1) {
                     navigation.createChildren++;
                     create();
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                 }
                 else if (children.length === 0 && navigation.createChildren > 1) {
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(transform, drawableCollection, singlePath);
+                        children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection, singlePath);
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
             }
         }
     };
