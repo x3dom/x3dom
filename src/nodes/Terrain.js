@@ -182,7 +182,7 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
 
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(position.x);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * resizeFac / fac)) {
                 if (children.length === 0 && navigation.createChildren === 0) {
@@ -406,7 +406,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
 
         if (isPossible) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(position.x);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * resizeFac / fac)) {
                 if (children.length === 0 && navigation.createChildren === 0) {
