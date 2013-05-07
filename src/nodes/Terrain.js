@@ -20,7 +20,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'factor', 1.0);
             this.addField_SFInt32(ctx, 'maxDepth', 3);
             this.addField_SFVec2f(ctx, 'size', 1, 1);
-            this.addField_SFVec2f(ctx, 'subdivision', 10, 10);
+            this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
             this.addField_SFString(ctx, 'url', "");
             this.addField_SFString(ctx, 'elevationUrl', "");
             this.addField_SFString(ctx, 'textureUrl', "");
@@ -30,7 +30,7 @@ x3dom.registerNodeType(
 
             if (this._vf.mode === "bin") {
                 // creating the root-node of the quadtree
-                this.rootNode = new QuadtreeNodeBin(ctx, this, 0, 0, 0);
+                this.rootNode = new QuadtreeNodeBin(ctx, this, 0, 0, 0, null);
             }
             else if (this._vf.mode === "3d" || this._vf.mode === "2d") {
                 // 2D-Mesh that will represent the geometry of this node
@@ -86,9 +86,19 @@ x3dom.registerNodeType(
 
 
 /*
- * Defines one node of a quadtree that represents a part (nxn vertices) of the whole mesh.
+ * Defines one 2D node (plane) of a quadtree that represents a part 
+ * (nxn vertices) of the whole mesh.
+ * @param {object} ctx context
+ * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
+ * @param {number} level level of the node within the quadtree
+ * @param {number} nodeNumber id of the node within the level
+ * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix that defines scale and position
+ * @param {number} columnNr column number in the wmts matrix within the level
+ * @param {number} rowNr row number in the wmts matrix within the level
+ * @param {x3dom.nodeTypes.Plane} geometry plane
+ * @returns {QuadtreeNode2D}
  */
-function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation, 
+function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation, 
                         columnNr, rowNr, geometry)
 {
 
@@ -99,17 +109,21 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
     // position of the node in world space
     var position = null;
     // true if components are available and renderable
-    var isPossible = true;
+    var exists = true;
     // url of the data source
-    var url = navigation._vf.url + "/" + level + "/" + columnNr + 
-              "/" + rowNr + "." + (navigation._vf.imageFormat).toLowerCase();
+    var url = terrain._vf.url + "/" + level + "/" + columnNr + 
+              "/" + rowNr + "." + (terrain._vf.imageFormat).toLowerCase();
     // defines the resizing factor
-    var resizeFac = (navigation._vf.size.x + navigation._vf.size.y) / 2.0;
-    var fac = navigation._vf.factor + Math.pow(3, level);
-    if (fac > 120){ fac = 120; }  
+    var resizeFac = (terrain._vf.size.x + terrain._vf.size.y) / 2.0;
+    // object that stores all information to do a frustum culling
+    var cullObject = {};
     
     
     
+    /* 
+     * Initializes all nodeTypes that are needed to create the drawable
+     * component for this node
+     */
     function initialize() {
 
         // appearance of the drawable component of this node
@@ -118,9 +132,10 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
         var texture = new x3dom.nodeTypes.ImageTexture(ctx);
 
         // definition of the nameSpace of this shape
-        shape._nameSpace = navigation._nameSpace;
+        shape._nameSpace = terrain._nameSpace;
         
-        texture._nameSpace = navigation._nameSpace;
+        // definition of texture
+        texture._nameSpace = terrain._nameSpace;
         texture._vf.url[0] = url;
 
         // calculate the average position of the node
@@ -136,16 +151,23 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
         geometry.nodeChanged();
         appearance.nodeChanged();
 
-        navigation.addChild(shape);
+        // add shape to terrain object
+        terrain.addChild(shape);
         shape.nodeChanged();
+        
+        // definition the static properties of cullObject
+        cullObject.boundedNode = shape;
+        cullObject.volume = shape.getVolume();
     }
     
     
     
-    // creates the four child-nodes
+    /* 
+     * Creates the four children 
+     */
     function create() {
-
-        // CREATE ALL FOUR CHILDREN
+        
+        // calculation of children number nodeNumber within their level
         var deltaR = Math.sqrt(Math.pow(4, level));
         var deltaR1 = Math.sqrt(Math.pow(4, level + 1));
         var lt = Math.floor(nodeNumber / deltaR) * 4 * deltaR + 
@@ -153,49 +175,50 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
         var rt = lt + 1;
         var lb = lt + deltaR1;
         var rb = lb + 1;
-        var s = (navigation._vf.size).multiply(0.25);
+        
+        // calculation of the scaling factor
+        var s = (terrain._vf.size).multiply(0.25);
 
-        children.push(new QuadtreeNode2D(ctx, navigation, (level + 1), lt,
+        // creation of all children
+        children.push(new QuadtreeNode2D(ctx, terrain, (level + 1), lt,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(-s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2), (rowNr * 2), geometry));
-        children.push(new QuadtreeNode2D(ctx, navigation, (level + 1), rt,
+        children.push(new QuadtreeNode2D(ctx, terrain, (level + 1), rt,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2), geometry));
-        children.push(new QuadtreeNode2D(ctx, navigation, (level + 1), lb,
+        children.push(new QuadtreeNode2D(ctx, terrain, (level + 1), lb,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(-s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2), (rowNr * 2 + 1), geometry));
-        children.push(new QuadtreeNode2D(ctx, navigation, (level + 1), rb,
+        children.push(new QuadtreeNode2D(ctx, terrain, (level + 1), rb,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2 + 1), geometry));
-    }
+    }    
     
     
     
-    
-    // here the decision is taken if new children should be created
-    // and which should be rendered
+    /* 
+     * Decides to create new children and if the node shoud be drawn or not
+     */
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
-        var obj = {};
-        obj.boundedNode = shape;
-        obj.localMatrix = nodeTransformation;
-        obj.volume = shape.getVolume();
-        var cull = drawableCollection.cull(transform, obj, singlePath);
+        // definition the actual transformation of the node
+        cullObject.localMatrix = nodeTransformation;
         
-        if (isPossible) {
+        // decision if culled, drawn etc...
+        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
-            if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * resizeFac / fac)) {
-                if (children.length === 0 && navigation.createChildren === 0 && !cull) {
-                    navigation.createChildren++;
+            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
+                if (children.length === 0 && terrain.createChildren === 0) {
+                    terrain.createChildren++;
                     create();
                 }
-                else if (children.length === 0 && navigation.createChildren > 0) {
+                else if (children.length === 0 && terrain.createChildren > 0) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                 }
                 else {
@@ -210,10 +233,17 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
         }
     };
 
+
+
+    /* 
+     * Returns the volume of this node
+     */
     this.getVolume = function() {
         // TODO; implement correctly, for now just use first shape as workaround
         return shape.getVolume();
     };
+
+
 
     // initializes this node directly after creating
     initialize();
@@ -221,11 +251,20 @@ function QuadtreeNode2D(ctx, navigation, level, nodeNumber, nodeTransformation,
 
 
 
-
 /*
- * Defines one node of a quadtree that represents a part (nxn vertices) of the whole mesh.
+ * Defines one 3D node (plane with displacement) of a quadtree that represents 
+ * a part (nxn vertices) of the whole mesh.
+ * @param {object} ctx context
+ * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
+ * @param {number} level level of the node within the quadtree
+ * @param {number} nodeNumber id of the node within the level
+ * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix that defines scale and position
+ * @param {number} columnNr column number in the wmts matrix within the level
+ * @param {number} rowNr row number in the wmts matrix within the level
+ * @param {x3dom.nodeTypes.Plane} geometry plane
+ * @returns {QuadtreeNode3D}
  */
-function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation, 
+function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation, 
                         columnNr, rowNr, geometry)
 {
     // array with the maximal four child nodes
@@ -235,21 +274,26 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
     // position of the node in world space
     var position = null;
     // address of the image for the terrain surface
-    var imageAddressColor = navigation._vf.textureUrl + "/" + level + "/" + 
+    var imageAddressColor = terrain._vf.textureUrl + "/" + level + "/" + 
                             columnNr + "/" + rowNr + "." + 
-                            (navigation._vf.imageFormat).toLowerCase();
+                            (terrain._vf.imageFormat).toLowerCase();
     // address of the image for the terrain height-data
-    var imageAddressHeight = navigation._vf.elevationUrl + "/" + level + "/" + 
+    var imageAddressHeight = terrain._vf.elevationUrl + "/" + level + "/" + 
                              columnNr + "/" + rowNr + "." + 
-                             (navigation._vf.imageFormat).toLowerCase();
+                             (terrain._vf.imageFormat).toLowerCase();
     // true if components are available and renderable
-    var isPossible = true;
+    var exists = true;
     // defines the resizing factor
-    var resizeFac = (navigation._vf.size.x + navigation._vf.size.y) / 2.0;
-    var fac = navigation._vf.factor + Math.pow(3, level);
-    if (fac > 120){ fac = 120; }
+    var resizeFac = (terrain._vf.size.x + terrain._vf.size.y) / 2.0;
+    // object that stores all information to do a frustum culling
+    var cullObject = {};
 
 
+
+    /* 
+     * Initializes all nodeTypes that are needed to create the drawable
+     * component for this node
+     */
     function initialize() {
 
         // appearance of the drawable component of this node
@@ -264,7 +308,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         var composedShader = new x3dom.nodeTypes.ComposedShader(ctx);
 
         // definition of the nameSpace of this shape
-        shape._nameSpace = navigation._nameSpace;
+        shape._nameSpace = terrain._nameSpace;
 
         // calculate the average position of the node
         position = nodeTransformation.e3();
@@ -284,7 +328,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         composedShader.addChild(fragmentShader, 'parts');
 
         // create texture-data of this node with url's of the texture data
-        colorTexture._nameSpace = navigation._nameSpace;
+        colorTexture._nameSpace = terrain._nameSpace;
         colorTexture._vf.url[0] = imageAddressColor;
         colorTexture._vf.repeatT = false;
         colorTexture._vf.repeatS = false;
@@ -298,7 +342,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         colorTextureField.nodeChanged();
 
         // create height-data
-        heightTexture._nameSpace = navigation._nameSpace;
+        heightTexture._nameSpace = terrain._nameSpace;
         heightTexture._vf.url[0] = imageAddressHeight;
         heightTexture._vf.repeatT = false;
         heightTexture._vf.repeatS = false;
@@ -315,7 +359,7 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         var maxHeight = new x3dom.nodeTypes.Field(ctx);
         maxHeight._vf.name = 'maxElevation';
         maxHeight._vf.type = 'SFFloat';
-        maxHeight._vf.value = navigation._vf.maxElevation;
+        maxHeight._vf.value = terrain._vf.maxElevation;
         composedShader.addChild(maxHeight, 'fields');
         maxHeight.nodeChanged();
 
@@ -331,12 +375,21 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         geometry.nodeChanged();
         appearance.nodeChanged();
 
-        navigation.addChild(shape);
+        // add shape to terrain object
+        terrain.addChild(shape);
         shape.nodeChanged();
+        
+        // definition the static properties of cullObject
+        cullObject.boundedNode = shape;
+        cullObject.volume = shape.getVolume();
     }
 
 
 
+    /* 
+     * Creates the code for the vertex shader
+     * @returns {String} code of the vertex shader 
+     */
     function createVertexShader() {
         return "attribute vec3 position;\n" +
             "attribute vec3 texcoord;\n" +
@@ -355,7 +408,11 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
     }
 
 
-
+    
+    /* 
+     * Creates the code for the fragment shader
+     * @returns {String} code of the fragment shader 
+     */
     function createFragmentShader() {
         return "#ifdef GL_ES\n" +
             "  precision highp float;\n" +
@@ -373,10 +430,12 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
 
 
 
-    // creates the four child-nodes
+    /* 
+     * Creates the four children 
+     */
     function create() {
-
-        // CREATE ALL FOUR CHILDREN
+        
+        // calculation of children number nodeNumber within their level
         var deltaR = Math.sqrt(Math.pow(4, level));
         var deltaR1 = Math.sqrt(Math.pow(4, level + 1));
         var lt = Math.floor(nodeNumber / deltaR) * 4 * deltaR + 
@@ -384,21 +443,24 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         var rt = lt + 1;
         var lb = lt + deltaR1;
         var rb = lb + 1;
-        var s = (navigation._vf.size).multiply(0.25);
+        
+        // calculation of the scaling factor
+        var s = (terrain._vf.size).multiply(0.25);
 
-        children.push(new QuadtreeNode3D(ctx, navigation, (level + 1), lt,
+        // creation of all children
+        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), lt,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(-s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2), (rowNr * 2), geometry));
-        children.push(new QuadtreeNode3D(ctx, navigation, (level + 1), rt,
+        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), rt,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2), geometry));
-        children.push(new QuadtreeNode3D(ctx, navigation, (level + 1), lb,
+        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), lb,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(-s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2), (rowNr * 2 + 1), geometry));
-        children.push(new QuadtreeNode3D(ctx, navigation, (level + 1), rb,
+        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), rb,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2 + 1), geometry));
@@ -406,27 +468,25 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
 
 
 
-    // here the decision is taken if new children should be created
-    // and which should be rendered
+    /* 
+     * Decides to create new children and if the node shoud be drawn or not
+     */
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
-        var obj = {};
-        obj.boundedNode = shape;
-        obj.localMatrix = nodeTransformation;
-        obj.volume = shape.getVolume();
-        var cull = drawableCollection.cull(transform, obj, singlePath);
-
-        if (isPossible) {
+        // definition the actual transformation of the node
+        cullObject.localMatrix = nodeTransformation;
+        
+        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
-            if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * resizeFac / fac)) {
-                if (children.length === 0 && navigation.createChildren === 0 && !cull) {
-                    navigation.createChildren++;
+            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
+                if (children.length === 0 && terrain.createChildren === 0) {
+                    terrain.createChildren++;
                     create();
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                 }
-                else if (children.length === 0 && navigation.createChildren > 0) {
+                else if (children.length === 0 && terrain.createChildren > 0) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
                 }
                 else {
@@ -441,10 +501,17 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
         }
     };
 
+
+
+    /* 
+     * Returns the volume of this node
+     */
     this.getVolume = function() {
         // TODO; implement correctly, for now just use first shape as workaround
         return shape.getVolume();
     };
+
+
 
     // initializes this node directly after creating
     initialize();
@@ -455,15 +522,25 @@ function QuadtreeNode3D(ctx, navigation, level, nodeNumber, nodeTransformation,
 /*
  * Defines one node of a quadtree that represents a part (nxn vertices) of 
  * the whole mesh, that represents a binary geometry object.
+ * @param {object} ctx context
+ * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
+ * @param {number} level level of the node within the quadtree
+ * @param {number} columnNr column number in the wmts matrix within the level
+ * @param {number} rowNr row number in the wmts matrix within the level
+ * @param {number} resizeFac defines the resizing factor. Can be null on init
+ * @returns {QuadtreeNodeBin}
  */
-function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
+function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
 {
-    var fac = navigation._vf.factor + Math.pow(3, level);
+    // object that stores all information to do a frustum culling
+    var cullObject = {};
+    // factor redefinition to get a view about the whole scene on level three
+    var fac = terrain._vf.factor + Math.pow(3, level);
     if (fac > 120){ fac = 120; }
     // array with the maximal four child nodes
     var children = [];
     // path to x3d-file that should be loaded
-    var path = navigation._vf.url + "/" + level + "/" + columnNr + "/";
+    var path = terrain._vf.url + "/" + level + "/" + columnNr + "/";
     // address of the image for the terrain height-data
     var file = path + rowNr + ".x3d";
     // position of the node in world space
@@ -487,7 +564,7 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
             exists = true;
         }
         var imgAddress = xmlDoc.getElementsByTagName("ImageTexture")[0].
-                            getAttribute("url").replace(replacer, "");
+                         getAttribute("url").replace(replacer, "");
     }
     catch (exp) {
         x3dom.debug.logException("Error loading file '" + file + "': " + exp);
@@ -505,7 +582,10 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
             var geometry = parent._nameSpace.setupTree(binGeo);
             parent.addChild(geometry);
             geometry.nodeChanged();
-
+            if (level === 0) {
+                resizeFac = (geometry._vf.size.x + 
+                             geometry._vf.size.y) / 2;
+            }
             position = x3dom.fields.SFVec3f.copy(geometry._vf.position);
         }
     }
@@ -523,12 +603,12 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
         var textures = new x3dom.nodeTypes.MultiTexture(ctx);
         // texture that should represent the surface-data of this node
         var colorTexture = new x3dom.nodeTypes.ImageTexture(ctx);
-        // texture that should represent the height-data of this node
-        // var heightTexture = new x3dom.nodeTypes.ImageTexture(ctx);
 
-        shape._nameSpace = new x3dom.NodeNameSpace("", navigation._nameSpace.doc);
-        shape._nameSpace.setBaseURL(navigation._nameSpace.baseURL + path);
+        // definition of nameSpace
+        shape._nameSpace = new x3dom.NodeNameSpace("", terrain._nameSpace.doc);
+        shape._nameSpace.setBaseURL(terrain._nameSpace.baseURL + path);
 
+        // creation of texture
         colorTexture._nameSpace = shape._nameSpace;
         colorTexture._vf.url[0] = imgAddress;
         colorTexture._vf.repeatT = false;
@@ -536,11 +616,16 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
         textures.addChild(colorTexture, 'texture');
         colorTexture.nodeChanged();
 
+        // add textures and appearance
         appearance.addChild(textures);
         textures.nodeChanged();
         shape.addChild(appearance);
         appearance.nodeChanged();
         shape.nodeChanged();
+        
+        // bind static cull-properties to cullObject
+        cullObject.boundedNode = shape; 
+        cullObject.volume = shape.getVolume();
     }
 
 
@@ -549,39 +634,35 @@ function QuadtreeNodeBin(ctx, navigation, level, columnNr, rowNr)
      * creates the four child-nodes
      */
     function create() {
-        children.push(new QuadtreeNodeBin(ctx, navigation, (level + 1), (columnNr * 2), (rowNr * 2)));
-        children.push(new QuadtreeNodeBin(ctx, navigation, (level + 1), (columnNr * 2 + 1), (rowNr * 2)));
-        children.push(new QuadtreeNodeBin(ctx, navigation, (level + 1), (columnNr * 2), (rowNr * 2 + 1)));
-        children.push(new QuadtreeNodeBin(ctx, navigation, (level + 1), (columnNr * 2 + 1), (rowNr * 2 + 1)));
+        children.push(new QuadtreeNodeBin(ctx, terrain, (level + 1), (columnNr * 2), (rowNr * 2), resizeFac));
+        children.push(new QuadtreeNodeBin(ctx, terrain, (level + 1), (columnNr * 2 + 1), (rowNr * 2), resizeFac));
+        children.push(new QuadtreeNodeBin(ctx, terrain, (level + 1), (columnNr * 2), (rowNr * 2 + 1), resizeFac));
+        children.push(new QuadtreeNodeBin(ctx, terrain, (level + 1), (columnNr * 2 + 1), (rowNr * 2 + 1), resizeFac));
     }
 
 
 
-    /*
-     * here the decision is taken if new children should be created
-     * and which should be rendered
+    /* 
+     * Decides to create new children and if the node shoud be drawn or not
      */
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
 
-        var obj = {};
-        obj.boundedNode = shape;
-        obj.localMatrix = transform;
-        obj.volume = shape.getVolume();
-        var cull = drawableCollection.cull(transform, obj, singlePath);
+        // definition the actual transformation of the node
+        cullObject.localMatrix = transform;
 
-        if (exists) {            
+        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {            
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             
-            // navigation._vf.factor instead (level * 16)
-            if ((distanceToCamera < Math.pow((navigation._vf.maxDepth - level), 2) * 1700 / fac)) {
-                if (children.length === 0 && navigation.createChildren === 0 && !cull) {
-                    navigation.createChildren++;
+            // terrain._vf.factor instead (level * 16)
+            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / fac)) {
+                if (children.length === 0 && terrain.createChildren === 0) {
+                    terrain.createChildren++;
                     create();
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                 }
-                else if (children.length === 0 && navigation.createChildren > 0) {
+                else if (children.length === 0 && terrain.createChildren > 0) {
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
                 }
                 else {
