@@ -386,7 +386,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: small feature culling | t: light view | " +
                                 "m: toggle render mode | c: frustum culling | p: intersect type | r: reset view | " +
                                 "e: examine mode | f: fly mode | w: walk mode | h: helicopter mode | o: lookaround | " +
-                                "l: lookAt mode | g: game mode | u: upright position | v: print viewpoint info ");
+                                "l: lookAt mode | g: game mode | u: upright position | v: print viewpoint info | " +
+                                "pageUp: next view | pageDown: prev. view | +: increase speed | -: decrease speed ");
             break;
         case  43: /* + (incr. speed) */
             nav._vf.speed = 2 * nav._vf.speed;
@@ -427,8 +428,10 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case  97: /* a, view all */
             this._viewarea.showAll();
             break;
-        case  99: /* s, toggle frustum culling */
+        case  99: /* c, toggle frustum culling */
             this._scene._vf.frustumCulling = !this._scene._vf.frustumCulling;
+            x3dom.debug.logInfo("Viewfrustum culling " +
+                    (this._scene._vf.frustumCulling ? "on" : "off"));
             break;
         case  100: /* d, switch on/off buffer view for dbg */
             if (this._viewarea._visDbgBuf === undefined) {
@@ -487,6 +490,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case 115: /* s, toggle small feature culling */
             this._scene._vf.smallFeatureCulling = !this._scene._vf.smallFeatureCulling;
+            x3dom.debug.logInfo("Small feature culling " +
+                    (this._scene._vf.smallFeatureCulling ? "on" : "off"));
             break;
         case 116: /* t, light view */
             if (this._nodeBag.lights.length > 0)
