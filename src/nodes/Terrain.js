@@ -20,6 +20,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'factor', 1.0);
             this.addField_SFInt32(ctx, 'maxDepth', 3);
             this.addField_SFVec2f(ctx, 'size', 1, 1);
+            this.addField_SFVec3f(ctx, 'octSize', 1, 1, 1);
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
             this.addField_SFString(ctx, 'url', "");
             this.addField_SFString(ctx, 'elevationUrl', "");
@@ -52,6 +53,10 @@ x3dom.registerNodeType(
                                                        new x3dom.fields.SFMatrix4f.identity(), 
                                                        0, 0, geometry);
                 }
+            }
+            else if (this._vf.mode === "oct"){
+                // creating the root-node of the quadtree
+                this.rootNode = new OctreeNode(ctx, this, 0, new x3dom.fields.SFMatrix4f.identity());
             }
             else {
                 x3dom.debug.logError("Error attribute mode. Value: '" + this._vf.mode +
@@ -684,6 +689,156 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
      */
     this.getVolume = function() {
         // TODO; implement correctly, for now just use first shape as workaround
+        return shape.getVolume();
+    };
+
+
+
+    // initializes this node directly after creating
+    initialize();
+}
+
+
+
+
+
+/*
+ * Defines one node of an octree that represents a part (nxn vertices) of 
+ * the whole point cloud
+ * @param {object} ctx context
+ * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
+ * @param {number} level level of the node within the quadtree
+ * @param {number} columnNr column number in the wmts matrix within the level
+ * @param {number} rowNr row number in the wmts matrix within the level
+ * @param {number} resizeFac defines the resizing factor. Can be null on init
+ * @returns {QuadtreeNodeBin}
+ */
+function OctreeNode(ctx, terrain, level, nodeTransformation)
+{
+    // array with the maximal four child nodes
+    var children = [];
+    // position of the node in world space
+    var position = nodeTransformation.e3();
+    // drawable component of this node
+    var shape = new x3dom.nodeTypes.Shape(ctx);
+    // object that stores all information to do a frustum culling
+    var cullObject = {};
+    // defines the resizing factor
+    var resizeFac = (terrain._vf.octSize.x + terrain._vf.octSize.y + terrain._vf.octSize.z) / 3.0;
+    
+    
+
+    /*
+     * creates the appearance for this node and add it to the dom tree
+     */
+    function initialize() {
+
+        // appearance of the drawable component of this node
+        var appearance = new x3dom.nodeTypes.Appearance(ctx);
+        var geometry = new x3dom.nodeTypes.Box(ctx);
+        
+        geometry._vf.size = terrain._vf.octSize;
+        geometry.fieldChanged('size');
+        
+        // definition of nameSpace
+        shape._nameSpace = new x3dom.NodeNameSpace("", terrain._nameSpace.doc);
+        shape._nameSpace.setBaseURL(terrain._nameSpace.baseURL);
+
+        shape.addChild(appearance);
+        appearance.nodeChanged();
+        shape.addChild(geometry);
+        geometry.nodeChanged();
+        shape.nodeChanged();
+        
+        // bind static cull-properties to cullObject
+        cullObject.boundedNode = shape; 
+        cullObject.volume = shape.getVolume();
+    }
+
+
+
+    /*
+     * creates the four child-nodes
+     */
+    function create() {
+        // calculation of the scaling factor
+        var s = terrain._vf.octSize.multiply(0.25);
+
+        // creation of all children
+        children.push(new OctreeNode(ctx, terrain, (level + 1), 
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(-s.x, s.y, s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+        children.push(new OctreeNode(ctx, terrain, (level + 1),
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(s.x, s.y, s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+        children.push(new OctreeNode(ctx, terrain, (level + 1),
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(-s.x, -s.y, s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+        children.push(new OctreeNode(ctx, terrain, (level + 1),
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(s.x, -s.y, s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+        children.push(new OctreeNode(ctx, terrain, (level + 1), 
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(-s.x, s.y, -s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+        children.push(new OctreeNode(ctx, terrain, (level + 1),
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(s.x, s.y, -s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+        children.push(new OctreeNode(ctx, terrain, (level + 1),
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(-s.x, -s.y, -s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+        children.push(new OctreeNode(ctx, terrain, (level + 1),
+            nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
+                    new x3dom.fields.SFVec3f(s.x, -s.y, -s.z))).mult(new x3dom.fields.SFMatrix4f.scale(
+                    new x3dom.fields.SFVec3f(0.5, 0.5, 0.5)))));
+    }
+
+
+
+    /* 
+     * Decides to create new children and if the node shoud be drawn or not
+     */
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
+        
+        // definition the actual transformation of the node
+        cullObject.localMatrix = nodeTransformation;
+        
+        if (!drawableCollection.cull(transform, cullObject, singlePath)) {
+        
+            var mat_view = drawableCollection.viewMatrix;
+            var vPos = mat_view.multMatrixPnt(position);
+            var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
+
+            // terrain._vf.factor instead (level * 16)
+            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
+                if (children.length === 0){
+                    create();
+                }
+                else {
+                    for (var i = 0; i < children.length; i++) {
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                    }
+                }
+            }
+            else {
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+            }
+        }
+    };
+
+
+
+    /*
+     * Returns the volume of this node
+     */
+    this.getVolume = function() {
+        // TODO; implement correctly, for now just use first box as workaround
         return shape.getVolume();
     };
 
