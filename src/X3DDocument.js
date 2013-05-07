@@ -383,10 +383,10 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 				states.display();
 			}
 
-            x3dom.debug.logInfo("a: show all | d: show helper buffers | s: light view | " +
-                                "m: toggle render mode | p: intersect type | r: reset view | " +
-                                "e: examine mode | f: fly mode | w: walk mode | h: helicopter mode | " +
-                                "l: lookAt mode | g: game mode | u: upright position");
+            x3dom.debug.logInfo("a: show all | d: show helper buffers | s: small feature culling | t: light view | " +
+                                "m: toggle render mode | c: frustum culling | p: intersect type | r: reset view | " +
+                                "e: examine mode | f: fly mode | w: walk mode | h: helicopter mode | o: lookaround | " +
+                                "l: lookAt mode | g: game mode | u: upright position | v: print viewpoint info ");
             break;
         case  43: /* + (incr. speed) */
             nav._vf.speed = 2 * nav._vf.speed;
@@ -427,6 +427,9 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case  97: /* a, view all */
             this._viewarea.showAll();
             break;
+        case  99: /* s, toggle frustum culling */
+            this._scene._vf.frustumCulling = !this._scene._vf.frustumCulling;
+            break;
         case  100: /* d, switch on/off buffer view for dbg */
             if (this._viewarea._visDbgBuf === undefined) {
                 this._viewarea._visDbgBuf = true;
@@ -454,9 +457,6 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             nav.setType("lookat", this._viewarea);
             break;
         case 109: /* m, toggle "points" attribute */
-            if (this._viewarea._points === undefined) {
-                this._viewarea._points = 0;
-            }
             this._viewarea._points = ++this._viewarea._points % 3; // % 2;
             break;
         case 111: /* o, look around like in fly, but don't move */
@@ -485,7 +485,10 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
         case 114: /* r, reset view */
             this._viewarea.resetView();
             break;
-        case 115: /* s, light view */
+        case 115: /* s, toggle small feature culling */
+            this._scene._vf.smallFeatureCulling = !this._scene._vf.smallFeatureCulling;
+            break;
+        case 116: /* t, light view */
             if (this._nodeBag.lights.length > 0)
             {
                 this._viewarea.animateTo(this._viewarea.getLightMatrix()[0],
