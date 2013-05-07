@@ -521,7 +521,7 @@ x3dom.Runtime.prototype.showObject = function(obj)
         var min = x3dom.fields.SFVec3f.MAX();
         var max = x3dom.fields.SFVec3f.MIN();
 
-        var vol = obj._x3domNode.getVolume()
+        var vol = obj._x3domNode.getVolume();
         vol.getBounds(min, max);
 
         var mat = obj._x3domNode.getCurrentTransform();
@@ -529,9 +529,11 @@ x3dom.Runtime.prototype.showObject = function(obj)
         min = mat.multMatrixPnt(min);
         max = mat.multMatrixPnt(max);
 
+        var viewarea = this.canvas.doc._viewarea;
+
         // assume FOV_smaller as camera's fovMode
-        var focalLen = (this.canvas.doc._viewarea._width < this.canvas.doc._viewarea._height) ?
-                        this.canvas.doc._viewarea._width : this.canvas.doc._viewarea._height;
+        var focalLen = (viewarea._width < viewarea._height) ?
+                        viewarea._width : viewarea._height;
 
         var n0 = new x3dom.fields.SFVec3f(0, 0, 1);    // facingDir
         var viewpoint = this.canvas.doc._scene.getViewpoint();
@@ -542,8 +544,8 @@ x3dom.Runtime.prototype.showObject = function(obj)
             focalLen /= ta;
         }
 
-        var w = this.canvas.doc._viewarea._width - 1;
-        var h = this.canvas.doc._viewarea._height - 1;
+        var w = viewarea._width - 1;
+        var h = viewarea._height - 1;
 
         var frame = 0.25;
         var minScreenPos = new x3dom.fields.SFVec2f(frame * w, frame * h);
@@ -578,7 +580,7 @@ x3dom.Runtime.prototype.showObject = function(obj)
         M = M.mult(R).mult(T).mult(M);
         var viewmat = M.inverse();
 
-        this.canvas.doc._viewarea.animateTo(viewmat, viewpoint);
+        viewarea.animateTo(viewmat, viewpoint);
     }
 };
 
@@ -783,8 +785,6 @@ x3dom.Runtime.prototype.helicopter = function() {
  * Toggles points attribute
  */
 x3dom.Runtime.prototype.togglePoints = function() {
-    if (this.canvas.doc._viewarea._points === undefined)
-        this.canvas.doc._viewarea._points = 0;
     this.canvas.doc._viewarea._points = ++this.canvas.doc._viewarea._points % 2; // % 3;
     this.canvas.doc.needRender = true;
 };

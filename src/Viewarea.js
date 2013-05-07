@@ -47,7 +47,9 @@ x3dom.Viewarea = function (document, scene) {
     this._pressY = -1;
     this._lastButton = 0;
     this._hasTouches = false;
-    
+
+    this._points = 0;   // old render mode flag (but think of better name!)
+
     this._numRenderedNodes = 0;
     
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -1511,6 +1513,18 @@ x3dom.Viewarea.prototype.orbitV = function(dy)
   m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
   this._relMat = this.getViewpointMatrix().mult(m);
 };
+// Experimental stuff stops here
+
+
+x3dom.Viewarea.prototype.getRenderMode = function()
+{
+    // this._points == 0 ? TRIANGLES or TRIANGLE_STRIP
+    // this._points == 1 ? gl.POINTS
+    // this._points == 2 ? gl.LINES
+    // TODO: 3 :== surface with additional wireframe render mode
+    return this._points;
+};
+
 
 x3dom.Viewarea.prototype.getShadowedLights = function()
 {	

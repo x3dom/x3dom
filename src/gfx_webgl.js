@@ -2028,9 +2028,10 @@ x3dom.gfx_webgl = (function () {
                 gl.enableVertexAttribArray(sp.PG_vertexID);
             }
 
-            // FIXME: viewarea._points is dynamic and doesn't belong there!
-            if (viewarea._points !== undefined && viewarea._points > 0) {
-                var polyMode = (viewarea._points == 1) ? gl.POINTS : gl.LINES;
+            var renderMode = viewarea.getRenderMode();
+            if (renderMode > 0) {
+                // TODO: implement surface with additional wireframe render mode (independent from poly mode)
+                var polyMode = (renderMode == 1) ? gl.POINTS : gl.LINES;
 
                 if (s_gl.imageGeometry != 0 ||
                     s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0) {
