@@ -87,9 +87,15 @@
         <!--<Terrain maxDepth='10' factor='75' center='0 0 0' size='2000 2000'  
                  url='http:\\a.tile.openstreetmap.org' imageFormat='PNG' mode="2d">
         </Terrain>-->
-        <Terrain maxDepth='7' factor='40' center='0 0 0' 
-                 url="RealityMaps" mode="bin">
+        <Terrain maxDepth='5' factor='10' center='0 0 0' maxElevation='205' 
+                 subdivision='128 128' size='2048 2048'  
+                 elevationUrl="Puget Sound WMTS\elevation" 
+                 textureUrl="Puget Sound WMTS\satellite"
+                 elevationFormat='png' textureFormat='png' mode="3d">
         </Terrain>
+        <!--<Terrain maxDepth='7' factor='40' center='0 0 0' 
+                 url="RealityMaps" mode="bin">
+        </Terrain>-->
         <!-- to see the effect use wireframe mode or points -->
         <!--<Terrain maxDepth='5' factor='12' center='0 0 0' octSize='500 500 500' mode="oct">
         </Terrain>-->

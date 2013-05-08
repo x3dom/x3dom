@@ -27,6 +27,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureUrl', "");
             this.addField_SFString(ctx, 'mode', "");
             this.addField_SFString(ctx, 'imageFormat', "png");
+            this.addField_SFString(ctx, 'elevationFormat', "png");
+            this.addField_SFString(ctx, 'textureFormat', "png");
             this.addField_SFFloat(ctx, 'maxElevation', 1.0);
 
             if (this._vf.mode === "bin") {
@@ -281,11 +283,11 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
     // address of the image for the terrain surface
     var imageAddressColor = terrain._vf.textureUrl + "/" + level + "/" + 
                             columnNr + "/" + rowNr + "." + 
-                            (terrain._vf.imageFormat).toLowerCase();
+                            (terrain._vf.textureFormat).toLowerCase();
     // address of the image for the terrain height-data
     var imageAddressHeight = terrain._vf.elevationUrl + "/" + level + "/" + 
                              columnNr + "/" + rowNr + "." + 
-                             (terrain._vf.imageFormat).toLowerCase();
+                             (terrain._vf.elevationFormat).toLowerCase();
     // true if components are available and renderable
     var exists = true;
     // defines the resizing factor
