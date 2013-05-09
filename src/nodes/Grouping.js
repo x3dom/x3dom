@@ -758,6 +758,9 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'frustumCulling', true);
             // If TRUE, objects smaller a certain threshold are ignored (experimental)
             this.addField_SFBool(ctx, 'smallFeatureCulling', false);
+
+            // very experimental field to further reduce rendered objects based on screen size during move
+            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);
             
             this._lastMin = null;
             this._lastMax = null;

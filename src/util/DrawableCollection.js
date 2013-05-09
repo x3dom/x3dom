@@ -9,43 +9,43 @@
  * Philip Taylor: http://philip.html5.org
  */
 
- 
+
 /**
  *
  */
-x3dom.DrawableCollection = function (drawableCollectionConfig)
-{
-  this.collection = [];
+x3dom.DrawableCollection = function (drawableCollectionConfig) {
+    this.collection = [];
 
-  this.viewMatrix = drawableCollectionConfig.viewMatrix;
-  this.projMatrix = drawableCollectionConfig.projMatrix;
-  this.sceneMatrix = drawableCollectionConfig.sceneMatrix;
+    this.viewMatrix = drawableCollectionConfig.viewMatrix;
+    this.projMatrix = drawableCollectionConfig.projMatrix;
+    this.sceneMatrix = drawableCollectionConfig.sceneMatrix;
 
-  this.viewarea = drawableCollectionConfig.viewArea;
+    this.viewarea = drawableCollectionConfig.viewArea;
 
-  var viewpoint = this.viewarea._scene.getViewpoint();
+    var scene = this.viewarea._scene;
+    var viewpoint = scene.getViewpoint();
 
-  this.near = viewpoint.getNear();
-  this.imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne() / this.viewarea._height;
+    this.near = viewpoint.getNear();
+    this.imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne() / this.viewarea._height;
 
-  this.context = drawableCollectionConfig.context;
-  this.gl = drawableCollectionConfig.gl;
+    this.context = drawableCollectionConfig.context;
+    this.gl = drawableCollectionConfig.gl;
 
-  this.viewFrustum = this.viewarea.getViewfrustum(this.sceneMatrix);
-  this.worldVol = new x3dom.fields.BoxVolume();     // helper
+    this.viewFrustum = this.viewarea.getViewfrustum(this.sceneMatrix);
+    this.worldVol = new x3dom.fields.BoxVolume();     // helper
 
-  this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
-  this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
+    this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
+    this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
 
-  this.sortOpaque = false; // this.smallFeatureThreshold > 1;
-  this.sortTrans = drawableCollectionConfig.sortTrans;
+    this.sortOpaque = (this.smallFeatureThreshold > 1 && scene._vf.scaleRenderedIdsOnMove < 1);
+    this.sortTrans = drawableCollectionConfig.sortTrans;
 
-  this.sortBySortKey = false;
-  this.sortByPriority = false;
-  
-  this.numberOfNodes = 0;
-  
-  this.length = 0;
+    this.sortBySortKey = false;
+    this.sortByPriority = false;
+
+    this.numberOfNodes = 0;
+
+    this.length = 0;
 };
 
 /**
@@ -59,8 +59,7 @@ x3dom.DrawableCollection = function (drawableCollectionConfig)
  *     coverage:     currently approx. number of pixels on screen
  *  };
  */
-x3dom.DrawableCollection.prototype.cull = function(transform, graphState, singlePath)
-{
+x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singlePath) {
     var node = graphState.boundedNode;  // get ref to SG node
 
     if (!node || !node._vf.render) {
@@ -114,137 +113,134 @@ x3dom.DrawableCollection.prototype.cull = function(transform, graphState, single
 /**
  * A drawable is basically a unique pair of a shape node and a global transformation.
  */
-x3dom.DrawableCollection.prototype.addDrawable = function ( shape, transform, graphState )
-{
-  //Create a new drawable object
-  var drawable = {};
-  
-  //Set the shape
-  drawable.shape = shape;
-  
-  //Set the transform
-  drawable.transform = transform;
+x3dom.DrawableCollection.prototype.addDrawable = function (shape, transform, graphState) {
+    //Create a new drawable object
+    var drawable = {};
 
-  drawable.localTransform = graphState.localMatrix;
+    //Set the shape
+    drawable.shape = shape;
 
-  //Set the local bounding box (reference, can be shared amongst shapes)
-  drawable.localVolume = graphState.volume;
-  
-  //Set the global bbox (needs to be cloned since shape can be shared)
-  drawable.worldVolume = x3dom.fields.BoxVolume.copy(graphState.worldVolume);
+    //Set the transform
+    drawable.transform = transform;
 
-  //Calculate the magical object priority (though currently not very magic)
-  // TODO; reuse graphState.coverage in updatePopState() during rendering
-  drawable.priority = Math.min(0, graphState.coverage);
+    drawable.localTransform = graphState.localMatrix;
 
-  var appearance = shape._cf.appearance.node;
+    //Set the local bounding box (reference, can be shared amongst shapes)
+    drawable.localVolume = graphState.volume;
 
-  drawable.sortType = appearance ? appearance._vf.sortType.toLowerCase() : "opaque";
-  drawable.sortKey  = appearance ? appearance._vf.sortKey  : 0;
+    //Set the global bbox (needs to be cloned since shape can be shared)
+    drawable.worldVolume = x3dom.fields.BoxVolume.copy(graphState.worldVolume);
 
-  if (drawable.sortType == 'transparent') {
-      if (this.smallFeatureThreshold > 1) {
-        drawable.zPos = graphState.center.z;
-      }
-      else {
-        //Calculate the z-Pos for transparent object sorting
-        //if the center of the box is not available
-        var center = transform.multMatrixPnt(shape.getCenter());
-        center = this.viewMatrix.multMatrixPnt(center);
-        drawable.zPos = center.z;
-      }
-  }
-  
-  //Generate the shader properties
-  //drawable.properties = x3dom.Utils.generateProperties(this.viewarea, shape);
+    //Calculate the magical object priority (though currently not very magic)
+    drawable.priority = Math.max(0, graphState.coverage);
+    // TODO; reuse graphState.coverage in updatePopState() during rendering
 
-  //Look for sorting by sortKey
-  if (!this.sortBySortKey && drawable.sortKey != 0) {
-    this.sortBySortKey = true;
-  }
+    var appearance = shape._cf.appearance.node;
 
-  //Generate separate array for sortType if not exists
-  if (this.collection[drawable.sortType] === undefined) {
-    this.collection[drawable.sortType] = [];
-  }
-  
-  //Push drawable to the collection
-  this.collection[drawable.sortType].push( drawable );
-  
-  //Increment collection length
-  this.length++;
+    drawable.sortType = appearance ? appearance._vf.sortType.toLowerCase() : "opaque";
+    drawable.sortKey = appearance ? appearance._vf.sortKey : 0;
 
-  //Finally setup shape directly here to avoid another loop of O(n)
-  if (this.context && this.gl) {
-    this.context.setupShape(this.gl, drawable, this.viewarea);
-  }
-  else {
-    //TODO: also setup Flash?
-  }
+    if (drawable.sortType == 'transparent') {
+        if (this.smallFeatureThreshold > 1) {
+            drawable.zPos = graphState.center.z;
+        }
+        else {
+            //Calculate the z-Pos for transparent object sorting
+            //if the center of the box is not available
+            var center = transform.multMatrixPnt(shape.getCenter());
+            center = this.viewMatrix.multMatrixPnt(center);
+            drawable.zPos = center.z;
+        }
+    }
+
+    //Generate the shader properties (TODO)
+    //drawable.properties = x3dom.Utils.generateProperties(this.viewarea, shape);
+
+    //Look for sorting by sortKey
+    if (!this.sortBySortKey && drawable.sortKey != 0) {
+        this.sortBySortKey = true;
+    }
+
+    //Generate separate array for sortType if not exists
+    if (this.collection[drawable.sortType] === undefined) {
+        this.collection[drawable.sortType] = [];
+    }
+
+    //Push drawable to the collection
+    this.collection[drawable.sortType].push(drawable);
+
+    //Increment collection length
+    this.length++;
+
+    //Finally setup shape directly here to avoid another loop of O(n)
+    if (this.context && this.gl) {
+        this.context.setupShape(this.gl, drawable, this.viewarea);
+    }
+    else {
+        //TODO: also setup Flash?
+    }
 };
 
 /**
  *
  */
 x3dom.DrawableCollection.prototype.concat = function () {
-  var opaque = (this.collection['opaque'] !== undefined) ? this.collection['opaque'] : [];
-  var transparent = (this.collection['transparent'] !== undefined) ? this.collection['transparent'] : [];
-  
-  //Merge opaque and transparent drawables to a single array
-  this.collection = opaque.concat(transparent);
+    var opaque = (this.collection['opaque'] !== undefined) ? this.collection['opaque'] : [];
+    var transparent = (this.collection['transparent'] !== undefined) ? this.collection['transparent'] : [];
+
+    //Merge opaque and transparent drawables to a single array
+    this.collection = opaque.concat(transparent);
 };
 
 /**
  *
  */
-x3dom.DrawableCollection.prototype.get = function ( idx ) {
-  return this.collection[idx];
+x3dom.DrawableCollection.prototype.get = function (idx) {
+    return this.collection[idx];
 };
 
 /**
  *
  */
-x3dom.DrawableCollection.prototype.sort = function ()
-{
-  var opaque = [];
-  var transparent = [];
+x3dom.DrawableCollection.prototype.sort = function () {
+    var opaque = [];
+    var transparent = [];
 
-  //Sort opaque drawables
-  if (this.collection['opaque'] !== undefined) {
-    // uhh, never call this for bigger scenes greater 1000 objects, very very slow
-    // TODO; revert to old binning approach (before 836491546f302fa9874e5ab372f747906732bb7f)
-    if ( this.sortOpaque) {
-      this.collection['opaque'].sort(function(a,b) {
-        if(a.sortKey == b.sortKey || !this.sortBySortKey) {
-          //Second sort criteria (priority)
-          return a.priority - b.priority;
+    //Sort opaque drawables
+    if (this.collection['opaque'] !== undefined) {
+        // never call this for very big scenes, getting very slow; try binning approach
+        if (this.sortOpaque) {
+            this.collection['opaque'].sort(function (a, b) {
+                if (a.sortKey == b.sortKey || !this.sortBySortKey) {
+                    //Second sort criteria (priority)
+                    return b.priority - a.priority;
+                }
+                //First sort criteria (sortKey)
+                return a.sortKey - b.sortKey;
+            });
         }
-        //First sort criteria (sortKey)
-        return a.sortKey - b.sortKey;
-      });
+        opaque = this.collection['opaque'];
     }
-    opaque = this.collection['opaque'];
-  }
 
-  //Sort transparent drawables
-  if (this.collection['transparent'] !== undefined) {
-    if (this.sortTrans) {
-      this.collection['transparent'].sort(function(a,b) {
-        if (a.sortKey == b.sortKey || !this.sortBySortKey) {
-          if (a.priority == b.priority || !this.sortByPriority) {
-            //Third sort criteria (zPos)
-            return a.zPos - b.zPos;
-          }
-          //Second sort criteria (priority)
-          return a.priority - b.priority;
-        }	
-        //First sort criteria (sortKey)
-        return a.sortKey - b.sortKey;
-      });
+    //Sort transparent drawables
+    if (this.collection['transparent'] !== undefined) {
+        if (this.sortTrans) {
+            this.collection['transparent'].sort(function (a, b) {
+                if (a.sortKey == b.sortKey || !this.sortBySortKey) {
+                    if (a.priority == b.priority || !this.sortByPriority) {
+                        //Third sort criteria (zPos)
+                        return a.zPos - b.zPos;
+                    }
+                    //Second sort criteria (priority)
+                    return b.priority - a.priority;
+                }
+                //First sort criteria (sortKey)
+                return a.sortKey - b.sortKey;
+            });
+        }
+        transparent = this.collection['transparent'];
     }
-    transparent = this.collection['transparent'];
-  }
-  
-  //Merge opaque and transparent drawables to a single array (uhh, slow operation)
-  this.collection = opaque.concat(transparent);
+
+    //Merge opaque and transparent drawables to a single array (slow operation)
+    this.collection = opaque.concat(transparent);
 };

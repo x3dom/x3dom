@@ -2961,7 +2961,14 @@ x3dom.gfx_webgl = (function () {
         //var prevRenderedAppearance = null;
         //var nextRenderedAppearance = null;
 
-        for (i = 0, n = scene.drawableCollection.length; i < n; i++) {
+        var n = scene.drawableCollection.length;
+
+        // very experimental prio culling, currently coupled with small feature culling
+        // TODO; what about shadows, picking etc. (but picking needs all objects)
+        if (scene._vf.smallFeatureCulling && scene._vf.scaleRenderedIdsOnMove < 1 && viewarea.isMoving())
+            n = Math.floor(n * scene._vf.scaleRenderedIdsOnMove);
+
+        for (i = 0; i < n; i++) {
             //var obj = scene.drawableObjects[zPos[i][0]];
             var drawable = scene.drawableCollection.get(i);
 
@@ -3022,7 +3029,7 @@ x3dom.gfx_webgl = (function () {
         if (shadowCount > 0)
             this.renderShadows(gl, viewarea, viewarea.getShadowedLights(), WCToLCMatrices, lMatrices);
 
-        viewarea._numRenderedNodes = scene.drawableCollection.length;
+        viewarea._numRenderedNodes = n;
 
         gl.disable(gl.BLEND);
         /*gl.blendFuncSeparate( // just multiply dest RGB by its A
