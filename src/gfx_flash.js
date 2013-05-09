@@ -77,8 +77,8 @@ x3dom.bridge = {
 	
 	setBBox: function(id, center, size) {
 		var shape = x3dom.nodeTypes.Shape.idMap.nodeID[id];
-		shape._vf.bboxCenter.setValues( new x3dom.fields.SFVec3f(center.x,center.y,center.z) );
-        shape._vf.bboxSize.setValues( new x3dom.fields.SFVec3f(size.x,size.y,size.z) );
+		//shape._vf.bboxCenter.setValues( new x3dom.fields.SFVec3f(center.x,center.y,center.z) );
+    //shape._vf.bboxSize.setValues( new x3dom.fields.SFVec3f(size.x,size.y,size.z) );
 	},
 	
 	setShapeDirty: function(id) {
@@ -119,19 +119,24 @@ x3dom.gfx_flash = (function() {
 	*/
 	Context.prototype.renderScene = function (viewarea) {
 		//Get Scene from Viewarea
-        var scene = viewarea._scene;
+    var scene = viewarea._scene;
+    
+    //Dirty HACK
+		var viewpoint = scene.getViewpoint();
+		viewpoint._vf.zFar = 100000;
+		viewpoint._vf.zNear = 0.01;
 		
 		if(viewarea._last_mat_view === undefined) {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
 		}
-		
+
 		var mat_view = viewarea.getViewMatrix();
-        var mat_proj = viewarea.getProjectionMatrix();
-        var mat_scene = mat_proj.mult(mat_view);
-		
+    var mat_proj = viewarea.getProjectionMatrix();
+    var mat_scene = mat_proj.mult(mat_view);
+
 		//Setup the flash scene
 		this.setupScene(scene, viewarea);
-		
+    
 		//Get background node
 		var background = scene.getBackground();
 		
@@ -153,10 +158,10 @@ x3dom.gfx_flash = (function() {
             gl: null
         };
 
-        scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
+    scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false);
 
-        scene.drawableCollection.concat();
+    scene.drawableCollection.concat();
 		
 		//Get Number of drawableObjects
 		var numDrawableObjects = scene.drawableCollection.length;
@@ -169,7 +174,7 @@ x3dom.gfx_flash = (function() {
 			for(var i=0; i<numDrawableObjects; i++) 
 			{
 				//Get object and transformation
-                var drawable = scene.drawableCollection.get(i);
+        var drawable = scene.drawableCollection.get(i);
 				var trafo = drawable.transform;
 				var obj3d = drawable.shape;
 				
@@ -215,7 +220,7 @@ x3dom.gfx_flash = (function() {
 					var e_mat = e_viewtrafo.inverse();
 					
 					var e_rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
-					e_rotation.setValue(e_mat);
+					//e_rotation.setValue(e_mat);
 					
 					var e_translation = e_mat.e3();
 					
@@ -715,17 +720,17 @@ x3dom.gfx_flash = (function() {
 	*/
 	Context.prototype.pickValue = function(viewarea, x, y, viewMat, sceneMat)
 	{
-        var scene = viewarea._scene;
+    var scene = viewarea._scene;
 	
 		// method requires that scene has already been rendered at least once
-        if (this.object === null || scene === null || scene.drawableObjects === undefined || 
-		    !scene.drawableObjects || scene._vf.pickMode.toLowerCase() === "box")
-        {
-            return false;
-        }
-        
-        var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
-                       ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
+    if (this.object === null || scene === null || scene.drawableObjects === undefined || 
+    !scene.drawableObjects || scene._vf.pickMode.toLowerCase() === "box")
+    {
+        return false;
+    }
+    
+    var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
+                   ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
 		
 		var data = this.object.pickValue( { pickMode: pickMode } );
 								 
@@ -734,7 +739,7 @@ x3dom.gfx_flash = (function() {
 			viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[data.objID];
 		} else {
 			viewarea._pickingInfo.pickObj = null;
-            viewarea._pickingInfo.lastClickObj = null;
+      viewarea._pickingInfo.lastClickObj = null;
 		}
 		
 		return true;
