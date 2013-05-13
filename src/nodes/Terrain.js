@@ -32,6 +32,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureFormat', "png");
             this.addField_SFString(ctx, 'normalFormat', "png");
             this.addField_SFFloat(ctx, 'maxElevation', 1.0);
+            this.addField_SFBool(ctx, 'lit', true);
 
             if (this._vf.mode === "bin") {
                 // creating the root-node of the quadtree
@@ -436,21 +437,21 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
             "const float shininess = 32.0;\n" + 
             "\n" +
             "void main(void) {\n" +
-            "    vec3 uLightPosition = vec3(2630.0, -4350.0, 6722.0);\n" +
+            "    vec3 uLightPosition = vec3(160.0, -9346.0, 4806.0);\n" +
             "    vec4 colr = texture2D(texColor, vec2(texcoord[0], 1.0-texcoord[1]));\n" +
-            "    vec3 uAmbientMaterial = vec3(1.0, 1.0, 1.0);" +
-            "    vec3 uAmbientLight = vec3(0.75, 0.75, 0.75);" +
-            "    vec3 uDiffuseMaterial = vec3(0.5, 0.5, 0.5);" +
+            "    vec3 uAmbientMaterial = vec3(1.0, 1.0, 0.9);" +
+            "    vec3 uAmbientLight = vec3(0.5, 0.5, 0.5);" +
+            "    vec3 uDiffuseMaterial = vec3(0.7, 0.7, 0.7);" +
             "    vec3 uDiffuseLight = vec3(1.0, 1.0, 1.0);" +
             "    vec4 vertexPositionEye4 = modelViewMatrix * vec4(position, 1.0);" +
-            "    vec3 vertexPositionEye3 = vertexPositionEye4.xyz / vertexPositionEye4.w;" +
+            "    vec3 vertexPositionEye3 = vec3((modelViewMatrix * vec4(vertexPositionEye4.xyz, 1.0)).xyz);" +
             "    vec3 vectorToLightSource = normalize(uLightPosition - vertexPositionEye3);" +
             "    vec4 height = texture2D(texHeight, vec2(texcoord[0], 1.0 - texcoord[1]));\n" +
             "    vec4 normalEye = 2.0 * texture2D(texNormal, vec2(texcoord[0], 1.0-texcoord[1])) - 1.0;\n" +
             "    float diffuseLightWeighting = max(dot(normalEye.xyz, vectorToLightSource), 0.0);" +
             "    texC = vec2(texcoord[0], 1.0-texcoord[1]);\n" +
             "    vec3 diffuseReflectance = uDiffuseMaterial * uDiffuseLight * diffuseLightWeighting;" +
-            "    vec3 uSpecularMaterial = vec3(0.1, 0.1, 0.1);" +
+            "    vec3 uSpecularMaterial = vec3(0.0, 0.0, 0.0);" +
             "    vec3 uSpecularLight = vec3(1.0, 1.0, 1.0);" +
             "    vec3 reflectionVector = normalize(reflect(-vectorToLightSource, normalEye.xyz));" +
             "    vec3 viewVectorEye = -normalize(vertexPositionEye3);" +
@@ -592,7 +593,7 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
     // object that stores all information to do a frustum culling
     var cullObject = {};
     // factor redefinition to get a view about the whole scene on level three
-    var fac = terrain._vf.factor + Math.pow(3, level);
+    var fac = terrain._vf.factor + Math.pow(4, level);
     if (fac > 120){ fac = 120; }
     // array with the maximal four child nodes
     var children = [];
