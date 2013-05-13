@@ -1090,6 +1090,9 @@ x3dom.X3DCanvas.prototype.tick = function()
 			    // picking might require another pass
 				this.doc.needRender = false;
 				this.doc.render(this.gl);
+
+                if (!this.doc._scene._vf.doPickPass)
+                    this.x3dElem.runtime.removeMeasurement('PICKING');
 			}
             
             this.x3dElem.runtime.exitFrame();
