@@ -1787,6 +1787,13 @@ x3dom.gfx_webgl = (function () {
                         shader._vf.ambientFactor.y +
                         shader._vf.ambientFactor.z) / 3;
                     sp.transparency = 1.0 - shader._vf.alphaFactor;
+                    
+                    if (shader.getDisplacementMap()) {
+                      tex = x3dom.Utils.findTextureByName(s_gl.texture, "displacementMap");
+                      sp.displacementWidth = tex.texture.width;
+                      sp.displacementHeight = tex.texture.height;
+                      sp.displacementFactor = shader._vf.displacementFactor;
+                    }
                 }
                 else if (mat) {
                     sp.diffuseColor = mat._vf.diffuseColor.toGL();

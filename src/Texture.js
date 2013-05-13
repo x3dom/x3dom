@@ -112,10 +112,10 @@ x3dom.Texture.prototype.updateTexture = function()
 			}
 		}
 	} else {
-		if (tex._vf.repeatS == false) {
+		if (tex._vf.repeatS == false || this.samplerName == "displacementMap") {
 			this.wrapS = gl.CLAMP_TO_EDGE;
 		}
-		if (tex._vf.repeatT == false) {
+		if (tex._vf.repeatT == false || this.samplerName == "displacementMap") {
 			this.wrapT = gl.CLAMP_TO_EDGE;
 		}
 	}

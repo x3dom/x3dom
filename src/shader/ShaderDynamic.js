@@ -142,6 +142,12 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "varying vec3 fragViewDir;\n";
 			shader += "uniform mat4 viewMatrix;\n";
 		}
+    if (properties.DISPLACEMENTMAP) {
+      shader += "uniform sampler2D displacementMap;\n";
+      shader += "uniform float displacementFactor;\n";
+      shader += "uniform float displacementWidth;\n";
+      shader += "uniform float displacementHeight;\n";
+    }
 	}
 	
 	//Lights & Fog
@@ -309,7 +315,28 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	
 	//Normals
 	if(properties.LIGHTS) {
-		shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
+    if (properties.DISPLACEMENTMAP && !properties.NORMALMAP) {
+      //Map-Tile Size
+      shader += "float dx = 1.0 / displacementWidth;\n";
+      shader += "float dy = 1.0 / displacementHeight;\n";
+      
+      //Get the 4 Vertex Neighbours
+      shader += "float s1 = texture2D(displacementMap, vec2(vertTexCoord.x - dx, 1.0 - vertTexCoord.y)).r;\n";		 //left      	
+      shader += "float s2 = texture2D(displacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y - dy)).r;\n";		 //bottom      	
+      shader += "float s3 = texture2D(displacementMap, vec2(vertTexCoord.x + dx, 1.0 - vertTexCoord.y)).r;\n";	   //right      	
+      shader += "float s4 = texture2D(displacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y + dy)).r;\n";		 //top
+
+      //Coeffiecent for smooth/sharp Normals
+      shader += "float coef = displacementFactor;\n";
+      
+      //Calculate the Normal    
+      shader += "vertNormal = vec3((s1 - s3) * coef, -5.0, (s2 - s4) * coef);\n";
+      
+      //normalized Normal
+      shader += "vertNormal = normalize(vertNormal);\n";
+    }
+  
+    shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
 	}
     
 	//Textures
@@ -342,8 +369,13 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "fragEyePosition = eyePosition - fragPosition;\n";
 		}
 	}
-	
-	//Positions
+  
+	//Displacement
+  if (properties.DISPLACEMENTMAP) {
+    shader += "vertPosition.y = texture2D(displacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).r * displacementFactor;\n";
+  }
+  
+  //Positions
 	shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
   
 	//END OF SHADER
@@ -408,6 +440,11 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if(properties.SPECMAP){
 			shader += "uniform sampler2D specularMap;\n";
 		}
+    if (properties.DISPLACEMENTMAP) {
+      shader += "uniform sampler2D displacementMap;\n";
+      shader += "uniform float displacementWidth;\n";
+      shader += "uniform float displacementHeight;\n";
+    }
 	}
 	
 	//Fog
@@ -418,7 +455,7 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 	//Lights
 	if(properties.LIGHTS) {
 		shader += "varying vec3 fragNormal;\n";
-        shader += "varying vec3 fragPosition;\n";
+    shader += "varying vec3 fragPosition;\n";
 		shader += x3dom.shader.light(properties.LIGHTS);
 	}
  
@@ -463,6 +500,36 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "normal.y = -normal.y;\n";
 			shader += "normal.x = -normal.x;\n";
 		}
+    
+    //Calculate normals from displacementMap
+    if (properties.DISPLACEMENTMAP && !properties.NORMALMAP) {
+      //Map-Tile Size
+      /*shader += "float dx = 1.0 / 512.0;\n";
+      shader += "float dy = 1.0 / 512.0;\n";
+      
+      //Get the 4 Vertex Neighbours
+      shader += "float s1 = texture2D(displacementMap, vec2(fragTexcoord.x - dx, 1.0 - fragTexcoord.y)).r;\n";		       	
+      shader += "float s2 = texture2D(displacementMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y - dy)).r;\n";		       	
+      shader += "float s3 = texture2D(displacementMap, vec2(fragTexcoord.x + dx, 1.0 - fragTexcoord.y)).r;\n";	       	
+      shader += "float s4 = texture2D(displacementMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y + dy)).r;\n";		
+
+      //Coeffiecent for smooth/sharp Normals
+      shader += "float coef = 1.0;\n";
+      
+      //Calculate the Normal
+      shader += "normal = vec3((s1 - s3) * coef, 0.5, (s2 - s4) * coef);\n";
+      
+      shader += "vec3 derivx = vec3(2.0*dx, 0.0, s1);\n";
+      shader += "vec3 derivy = vec3(0.0, 2.0*dy, s3);\n";
+      shader += "normal = normalize(cross(derivx,derivy));\n";
+      
+      //normalized Normal
+      shader += "normal = normalize(normal);\n";
+      
+      //shader += "normal =  2.0 * normal - 1.0;\n";
+      
+      //shader += "normal = normalize(normal);\n";*/
+    }
 		
 		//Solid
 		if(!properties.SOLID) {

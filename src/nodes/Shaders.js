@@ -103,6 +103,9 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'environmentTextureChannelMask', 'rgb');
             this.addField_SFFloat(ctx, 'relativeIndexOfRefraction', 1);
             this.addField_SFFloat(ctx, 'fresnelBlend', 0);
+            this.addField_SFFloat(ctx, 'displacementFactor', 255.0);
+            this.addField_SFInt32(ctx, 'displacementTextureId', -1);
+            this.addField_SFInt32(ctx, 'displacementTextureCoordinatesId', 0);
             this.addField_SFNode('emissiveTexture', x3dom.nodeTypes.X3DTextureNode);
             this.addField_SFNode('ambientTexture', x3dom.nodeTypes.X3DTextureNode);
             this.addField_SFNode('diffuseTexture', x3dom.nodeTypes.X3DTextureNode);
@@ -112,6 +115,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('reflectionTexture', x3dom.nodeTypes.X3DTextureNode);
             this.addField_SFNode('transmissionTexture', x3dom.nodeTypes.X3DTextureNode);
             this.addField_SFNode('environmentTexture', x3dom.nodeTypes.X3DTextureNode);
+            this.addField_SFNode('displacementTexture', x3dom.nodeTypes.X3DTextureNode);
             //this.addField_MFBool(ctx, 'textureTransformEnabled', []);     // MFBool NYI
             this.addField_SFVec3f(ctx, 'normalScale', 2, 2, 2);
             this.addField_SFVec3f(ctx, 'normalBias', -1, -1, -1);
@@ -194,6 +198,16 @@ x3dom.registerNodeType(
                     return null;
                 }
             },
+            
+            getDisplacementMap: function()
+            {
+                if(this._cf.displacementTexture.node) {
+                    this._cf.displacementTexture.node._cf.texture.node._type = "displacementMap";
+                    return this._cf.displacementTexture.node._cf.texture.node;
+                } else {
+                    return null;
+                }
+            },
 			
 			getTextures: function()
 			{
@@ -207,6 +221,9 @@ x3dom.registerNodeType(
 				
 				var spec = this.getSpecularMap();
 				if(spec) textures.push(spec);
+        
+        var displacement = this.getDisplacementMap();
+				if(displacement) textures.push(displacement);
 				
 				return textures;
 			}
