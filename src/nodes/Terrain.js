@@ -25,10 +25,12 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'url', "");
             this.addField_SFString(ctx, 'elevationUrl', "");
             this.addField_SFString(ctx, 'textureUrl', "");
+            this.addField_SFString(ctx, 'normalUrl', "");
             this.addField_SFString(ctx, 'mode', "");
             this.addField_SFString(ctx, 'imageFormat', "png");
             this.addField_SFString(ctx, 'elevationFormat', "png");
             this.addField_SFString(ctx, 'textureFormat', "png");
+            this.addField_SFString(ctx, 'normalFormat', "png");
             this.addField_SFFloat(ctx, 'maxElevation', 1.0);
 
             if (this._vf.mode === "bin") {
@@ -288,6 +290,10 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
     var imageAddressHeight = terrain._vf.elevationUrl + "/" + level + "/" + 
                              columnNr + "/" + rowNr + "." + 
                              (terrain._vf.elevationFormat).toLowerCase();
+    // address of the image for the terrain normal-data
+    var imageAddressNormal = terrain._vf.normalUrl + "/" + level + "/" + 
+                             columnNr + "/" + rowNr + "." + 
+                             (terrain._vf.normalFormat).toLowerCase();
     // true if components are available and renderable
     var exists = true;
     // defines the resizing factor
@@ -311,6 +317,8 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
         var colorTexture = new x3dom.nodeTypes.ImageTexture(ctx);
         // texture that should represent the height-data of this node
         var heightTexture = new x3dom.nodeTypes.ImageTexture(ctx);
+        // texture that should represent the normal-data of this node
+        var normalTexture = new x3dom.nodeTypes.ImageTexture(ctx);
         // creating the special shader for these nodes
         var composedShader = new x3dom.nodeTypes.ComposedShader(ctx);
 
@@ -361,6 +369,20 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
         heightTextureField._vf.value = 1;
         composedShader.addChild(heightTextureField, 'fields');
         heightTextureField.nodeChanged();
+
+        // create normal-data
+        normalTexture._nameSpace = terrain._nameSpace;
+        normalTexture._vf.url[0] = imageAddressNormal;
+        normalTexture._vf.repeatT = false;
+        normalTexture._vf.repeatS = false;
+        textures.addChild(normalTexture, 'texture');
+        normalTexture.nodeChanged();
+        var normalTextureField = new x3dom.nodeTypes.Field(ctx);
+        normalTextureField._vf.name = 'texNormal';
+        normalTextureField._vf.type = 'SFInt32';
+        normalTextureField._vf.value = 2;
+        composedShader.addChild(normalTextureField, 'fields');
+        normalTextureField.nodeChanged();
         
         // transmit maximum elevation value to gpu
         var maxHeight = new x3dom.nodeTypes.Field(ctx);
@@ -389,6 +411,9 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
         // definition the static properties of cullObject
         cullObject.boundedNode = shape;
         cullObject.volume = shape.getVolume();
+        // setting max and min in z-direction to get the complete volume
+        cullObject.volume.min.z = -Math.round(terrain._vf.maxElevation / 2);
+        cullObject.volume.max.z = Math.round(terrain._vf.maxElevation / 2);
     }
 
 
@@ -400,16 +425,39 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
     function createVertexShader() {
         return "attribute vec3 position;\n" +
             "attribute vec3 texcoord;\n" +
+            "uniform mat4 modelViewMatrix;\n" +
             "uniform mat4 modelViewProjectionMatrix;\n" +
+            "uniform sampler2D texColor;\n" +
             "uniform sampler2D texHeight;\n" +
             "uniform float maxElevation;\n" +
-            "varying vec3 col;\n" +
+            "uniform sampler2D texNormal;\n" +
             "varying vec2 texC;\n" +
+            "varying vec3 vLight;\n" +
+            "const float shininess = 32.0;\n" + 
             "\n" +
             "void main(void) {\n" +
+            "    vec3 uLightPosition = vec3(2630.0, -4350.0, 6722.0);\n" +
+            "    vec4 colr = texture2D(texColor, vec2(texcoord[0], 1.0-texcoord[1]));\n" +
+            "    vec3 uAmbientMaterial = vec3(1.0, 1.0, 1.0);" +
+            "    vec3 uAmbientLight = vec3(0.75, 0.75, 0.75);" +
+            "    vec3 uDiffuseMaterial = vec3(0.5, 0.5, 0.5);" +
+            "    vec3 uDiffuseLight = vec3(1.0, 1.0, 1.0);" +
+            "    vec4 vertexPositionEye4 = modelViewMatrix * vec4(position, 1.0);" +
+            "    vec3 vertexPositionEye3 = vertexPositionEye4.xyz / vertexPositionEye4.w;" +
+            "    vec3 vectorToLightSource = normalize(uLightPosition - vertexPositionEye3);" +
             "    vec4 height = texture2D(texHeight, vec2(texcoord[0], 1.0 - texcoord[1]));\n" +
+            "    vec4 normalEye = 2.0 * texture2D(texNormal, vec2(texcoord[0], 1.0-texcoord[1])) - 1.0;\n" +
+            "    float diffuseLightWeighting = max(dot(normalEye.xyz, vectorToLightSource), 0.0);" +
             "    texC = vec2(texcoord[0], 1.0-texcoord[1]);\n" +
-            "    col = vec3(height[0], height[1], height[2]);\n" +
+            "    vec3 diffuseReflectance = uDiffuseMaterial * uDiffuseLight * diffuseLightWeighting;" +
+            "    vec3 uSpecularMaterial = vec3(0.1, 0.1, 0.1);" +
+            "    vec3 uSpecularLight = vec3(1.0, 1.0, 1.0);" +
+            "    vec3 reflectionVector = normalize(reflect(-vectorToLightSource, normalEye.xyz));" +
+            "    vec3 viewVectorEye = -normalize(vertexPositionEye3);" +
+            "    float rdotv = max(dot(reflectionVector, viewVectorEye), 0.0);" +
+            "    float specularLightWeight = pow(rdotv, shininess);" +
+            "    vec3 specularReflection = uSpecularMaterial * uSpecularLight * specularLightWeight;" +
+            "    vLight = vec4(uAmbientMaterial * uAmbientLight + diffuseReflectance + specularReflection, 1.0).xyz;" +
             "    gl_Position = modelViewProjectionMatrix * vec4(position.xy, height.x * maxElevation, 1.0);\n" +
             "}\n";
     }
@@ -422,16 +470,18 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
      */
     function createFragmentShader() {
         return "#ifdef GL_ES\n" +
-            "  precision highp float;\n" +
+            "precision highp float;\n" +
             "#endif\n" +
             "uniform sampler2D texColor;\n" +
+            "uniform sampler2D texNormal;\n" +
             "varying vec2 texC;\n" +
-            "varying vec3 col;\n" +
+            "varying vec3 vLight;\n" +
             "\n" +
             "\n" +
             "void main(void) {\n" +
+            "    vec4 normal = 2.0 * texture2D(texNormal, texC) - 1.0;\n" +
             "    vec4 colr = texture2D(texColor, texC);\n" +
-            "    gl_FragColor = vec4(colr.xyz, 1.0);\n" +
+            "    gl_FragColor = vec4(colr.xyz * vLight, colr.w);\n" +
             "}\n";
     }
 
