@@ -721,8 +721,8 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
     // object that stores all information to do a frustum culling
     var cullObject = {};
     // factor redefinition to get a view about the whole scene on level three
-    var fac = terrain._vf.factor + Math.pow(4, level);
-    if (fac > 120){ fac = 120; }
+    var fac = terrain._vf.factor + level * 5;
+    
     // array with the maximal four child nodes
     var children = [];
     // path to x3d-file that should be loaded
@@ -842,7 +842,7 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             
             // terrain._vf.factor instead (level * 16)
-            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / fac)) {
+            if (level < 3 || (distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / fac)) {
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
