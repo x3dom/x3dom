@@ -9,13 +9,13 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-// ### Terrain ###
+// ### BVHRefiner ###
 x3dom.registerNodeType(
-    "Terrain",
+    "BVHRefiner",
     "Navigation",
     defineClass(x3dom.nodeTypes.X3DLODNode,
         function (ctx) {
-            x3dom.nodeTypes.Terrain.superClass.call(this, ctx);
+            x3dom.nodeTypes.BVHRefiner.superClass.call(this, ctx);
 
             this.addField_SFFloat(ctx, 'factor', 1.0);
             this.addField_SFInt32(ctx, 'maxDepth', 3);

@@ -84,23 +84,24 @@
       <Scene DEF='scene' frustumCulling='true' sortTrans="false">
         <!-- for viewing this example disable web security on your browser 
              because of cross origin problems -->
-        <!--<Terrain maxDepth='10' factor='75' center='0 0 0' size='2000 2000'  
-                 url='http://a.tile.openstreetmap.org' imageFormat='PNG' mode="2d">
-        </Terrain>-->
-        <Terrain maxDepth='5' factor='15' center='0 0 0' maxElevation='410' 
-                 subdivision='128 128' size='4096 4096'  
-                 elevationUrl="Puget Sound WMTS/elevation" 
-                 textureUrl="Puget Sound WMTS/satellite"
-                 normalUrl="Puget Sound WMTS/normal"
-                 elevationFormat='png' textureFormat='png' normalFormat='png' 
-                 mode="3d">
-        </Terrain>
-        <!--<Terrain maxDepth='7' factor='40' center='0 0 0' 
-                 url="RealityMaps" mode="bin">
-        </Terrain>-->
+        <!--<BVHRefiner maxDepth='10' factor='75' center='0 0 0' size='2000 2000'  
+                    url='http://a.tile.openstreetmap.org' imageFormat='PNG' mode="2d">
+        </BVHRefiner>-->
+        <BVHRefiner maxDepth='5' factor='15' center='0 0 0' maxElevation='410' 
+                    subdivision='128 128' size='4096 4096'  
+                    elevationUrl="Puget Sound WMTS/elevation" 
+                    textureUrl="Puget Sound WMTS/satellite"
+                    normalUrl="Puget Sound WMTS/normal"
+                    elevationFormat='png' textureFormat='png' normalFormat='png' 
+                    mode="3d">
+        </BVHRefiner>
+        <!--<BVHRefiner maxDepth='7' factor='40' center='0 0 0' 
+                    url="RealityMaps" mode="bin">
+        </BVHRefiner>-->
         <!-- to see the effect use wireframe mode or points -->
-        <!--<Terrain maxDepth='5' factor='12' center='0 0 0' octSize='500 500 500' mode="oct">
-        </Terrain>-->
+        <!--<BVHRefiner maxDepth='5' factor='12' center='0 0 0' 
+                    octSize='500 500 500' mode="oct">
+        </BVHRefiner>-->
         <Background skyColor=".1 .15 .3"></Background>
         <Viewpoint zNear="0.01" zFar="100000" position="0 0 3000"></Viewpoint>
       </Scene>
