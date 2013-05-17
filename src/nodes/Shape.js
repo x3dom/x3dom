@@ -255,7 +255,7 @@ x3dom.registerNodeType(
                 if (singlePath && !this._graph.globalMatrix)
                     this._graph.globalMatrix = transform;
 
-                drawableCollection.addDrawable(this, transform, graphState);
+                drawableCollection.addShape(this, transform, graphState);
 
                 return true;
             },

@@ -21,19 +21,20 @@ x3dom.BVH = function()
 /**
  * Node containing AABB, matrix, and drawable shape
  */
-x3dom.BVH.DataNode = function(bbox,mat,shape)
+x3dom.BVH.DataNode = function(drawable)
 {
-    this.bbox = bbox;
-    this.mat = mat;
-    this.shape = shape;
+    this.drawable = drawable;
+    this.bbox = new x3dom.fields.BoxVolume();
+    this.bbox.transformFrom(drawable.transform, drawable.shape.getVolume());
+    drawable.worldVolume = x3dom.fields.BoxVolume.copy(this.bbox);
 };
 
 /*
  * Add shapes to bvh
  */
-x3dom.BVH.prototype.addShape = function(bbox,mat,shape)
+x3dom.BVH.prototype.addDrawable = function(drawable)
 {
-    this.dataNodes.push(new x3dom.BVH.DataNode(bbox,mat,shape));
+    this.dataNodes.push(new x3dom.BVH.DataNode(drawable));
 };
 
 /*
@@ -121,7 +122,7 @@ x3dom.BVH.prototype.splitBoxVolume = function(bbox, axis, leftSplit, rightSplit)
     rightMin[axis] = rightSplit;
 
     return [new x3dom.fields.BoxVolume(leftMin,leftMax),new x3dom.fields.BoxVolume(rightMin,rightMax)];
-}
+};
 
 
 
@@ -347,9 +348,11 @@ x3dom.BIH.prototype.collectDrawables = function(drawableCollection)
 
     if(this.bihNodes.length > 0)
     {
-        x3dom.Utils.startMeasure('bvh');
         this.intersect(this.bihNodes[0],drawables,this.bbox, frustum);
-        $("h2#bvhOutput").html("Drawing "+drawables.length+ " of "+this.dataNodes.length+ " traverse: "+ x3dom.Utils.stopMeasure('bvh'));
+        for(var i =0, n = drawables.length; i < n; ++i)
+        {
+            drawableCollection.addDrawable(drawables[i].drawable);
+        }
     }
 };
 
