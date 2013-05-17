@@ -290,6 +290,12 @@ x3dom.registerNodeType(
                 return this._cf.geometry.node.doIntersect(line);
             },
 
+            forceUpdateCoverage: function()
+            {
+                var geo = this._cf.geometry.node;
+                return (geo ? geo.forceUpdateCoverage() : false);
+            },
+
             isSolid: function() {
                 return this._cf.geometry.node._vf.solid;
             },

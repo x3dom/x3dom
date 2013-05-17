@@ -930,6 +930,11 @@ x3dom.registerNodeType(
             graphState: function()
             {
                 return this._graph;
+            },
+
+            forceUpdateCoverage: function()
+            {
+                return false;
             }
         }
     )

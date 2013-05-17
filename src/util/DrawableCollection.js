@@ -87,7 +87,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
     graphState.coverage = -1;    // if -1 then ignore value later on
 
-    if (this.smallFeatureThreshold > 1) {
+    if (this.smallFeatureThreshold > 1 || node.forceUpdateCoverage()) {
         // a few ops less than with this.viewMatrix.mult(transform)
         graphState.center = transform.multMatrixPnt(volume.getCenter());
         graphState.center = this.viewMatrix.multMatrixPnt(graphState.center);
