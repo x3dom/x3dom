@@ -405,6 +405,81 @@ x3dom.registerNodeType(
             // FIXME; implement optimizations; no need to maintain the children's
             // X3D representations, as they cannot be accessed after creation time
             x3dom.debug.logWarning("StaticGroup NYI");
+
+            this.drawableCollection = null;
+            this.needBvhRebuild = true;
+            this.bvh = null;
+        },
+
+        {
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            {
+                // check if multi parent sub-graph, don't cache in that case
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
+                // an invalid world matrix or volume needs to be invalidated down the hierarchy
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                // check if sub-graph can be culled away or render flag was set to false
+                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                    return;
+                }
+
+                var cnode, childTransform;
+
+                if (singlePath) {
+                    // rebuild cache on change and reuse world transform
+                    if (!this._graph.globalMatrix) {
+                        this._graph.globalMatrix = this.transformMatrix(transform);
+                    }
+                    childTransform = this._graph.globalMatrix;
+                }
+                else {
+                    childTransform = this.transformMatrix(transform);
+                }
+
+                ///x3dom.Utils.startMeasure('bvh');
+
+                if(this.needBvhRebuild)
+                {
+                    var drawableCollectionConfig = {
+                        viewArea: drawableCollection.viewarea,
+                        sortTrans: drawableCollection.sortTrans,
+                        viewMatrix: drawableCollection.viewMatrix,
+                        projMatrix: drawableCollection.projMatrix,
+                        sceneMatrix: drawableCollection.sceneMatrix,
+                        frustumCulling: false,
+                        smallFeatureThreshold: 1,
+                        context: drawableCollection.context,
+                        gl: drawableCollection.gl
+                    };
+
+                    this.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
+
+                    var i, n;
+                    for (i=0, n=this._childNodes.length; i<n; i++) {
+                        if ( (cnode = this._childNodes[i]) ) {
+                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache);
+                        }
+                    }
+                    this.drawableCollection.concat();
+                    this.bvh = new x3dom.BIH();
+
+                    n = this.drawableCollection.length;
+                    for (i = 0; i < n; i++) {
+                        this.bvh.addDrawable(this.drawableCollection.get(i))
+                    }
+                    this.bvh.build();
+                    this.needBvhRebuild = false;
+                }
+
+                this.bvh.collectDrawables(drawableCollection);
+
+                //var dt = x3dom.Utils.stopMeasure('bvh');
+                //addMeasurement('BVH', dt);
+            }
         }
     )
 );

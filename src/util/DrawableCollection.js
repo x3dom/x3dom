@@ -87,7 +87,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
     graphState.coverage = -1;    // if -1 then ignore value later on
 
-    if (this.smallFeatureThreshold > 1) {
+    if (this.smallFeatureThreshold > 1 || node.forceUpdateCoverage()) {
         // a few ops less than with this.viewMatrix.mult(transform)
         graphState.center = transform.multMatrixPnt(volume.getCenter());
         graphState.center = this.viewMatrix.multMatrixPnt(graphState.center);
@@ -99,7 +99,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
         graphState.coverage = dia / projPixelLength;    // shall we norm this to be in [0,1]?
 
-        if (graphState.coverage < this.smallFeatureThreshold) {
+        if (this.smallFeatureThreshold > 1 && graphState.coverage < this.smallFeatureThreshold) {
             return true;
         }
     }
@@ -113,7 +113,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 /**
  * A drawable is basically a unique pair of a shape node and a global transformation.
  */
-x3dom.DrawableCollection.prototype.addDrawable = function (shape, transform, graphState) {
+x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphState) {
     //Create a new drawable object
     var drawable = {};
 
@@ -133,7 +133,6 @@ x3dom.DrawableCollection.prototype.addDrawable = function (shape, transform, gra
 
     //Calculate the magical object priority (though currently not very magic)
     drawable.priority = Math.max(0, graphState.coverage);
-    // TODO; reuse graphState.coverage in updatePopState() during rendering
 
     var appearance = shape._cf.appearance.node;
 
@@ -180,6 +179,57 @@ x3dom.DrawableCollection.prototype.addDrawable = function (shape, transform, gra
         //TODO: also setup Flash?
     }
 };
+
+/**
+ * A drawable is basically a unique pair of a shape node and a global transformation.
+ */
+x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
+
+    //Calculate the magical object priority (though currently not very magic)
+    //drawable.priority = Math.max(0, graphState.coverage);
+
+    var appearance = drawable.shape._cf.appearance.node;
+
+    drawable.sortType = appearance ? appearance._vf.sortType.toLowerCase() : "opaque";
+    drawable.sortKey = appearance ? appearance._vf.sortKey : 0;
+
+    if (drawable.sortType == 'transparent') {
+        //TODO set zPos for drawable for z-sorting
+        //Calculate the z-Pos for transparent object sorting
+        //if the center of the box is not available
+        var center = drawable.transform.multMatrixPnt(drawable.shape.getCenter());
+        center = this.viewMatrix.multMatrixPnt(center);
+        drawable.zPos = center.z;
+    }
+
+    //Generate the shader properties (TODO)
+    //drawable.properties = x3dom.Utils.generateProperties(this.viewarea, shape);
+
+    //Look for sorting by sortKey
+    if (!this.sortBySortKey && drawable.sortKey != 0) {
+        this.sortBySortKey = true;
+    }
+
+    //Generate separate array for sortType if not exists
+    if (this.collection[drawable.sortType] === undefined) {
+        this.collection[drawable.sortType] = [];
+    }
+
+    //Push drawable to the collection
+    this.collection[drawable.sortType].push(drawable);
+
+    //Increment collection length
+    this.length++;
+
+    //Finally setup shape directly here to avoid another loop of O(n)
+    if (this.context && this.gl) {
+        this.context.setupShape(this.gl, drawable, this.viewarea);
+    }
+    else {
+        //TODO: also setup Flash?
+    }
+};
+
 
 /**
  *

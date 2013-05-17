@@ -79,6 +79,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
     if (properties.POPGEOMETRY) {
         shader += "uniform float PG_precisionLevel;\n";
         shader += "uniform float PG_powPrecision;\n";
+        shader += "uniform vec3 PG_maxBBSize;\n";
         shader += "uniform vec3 PG_bbMin;\n";
         shader += "uniform vec3 PG_bbMaxModF;\n";
         shader += "uniform vec3 PG_bboxShiftVec;\n";
@@ -242,7 +243,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
           shader += "}\n";
           
           //translate coordinates, where PG_bbMin := floor(bbMin / size) 
-          shader += "vertPosition = (vertPosition + offsetVec + PG_bbMin) * bgSize;\n";
+          shader += "vertPosition = (vertPosition + offsetVec + PG_bbMin) * PG_maxBBSize;\n";
         }
 		else if(properties.REQUIREBBOX || properties.BITLODGEOMETRY) {
           shader += "vertPosition = bgCenter + bgSize * vertPosition / bgPrecisionMax;\n";

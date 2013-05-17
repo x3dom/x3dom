@@ -1284,7 +1284,7 @@ x3dom.gfx_webgl = (function () {
 
             //PopGeometry: adapt LOD and set shader variables
             if (s_gl.popGeometry) {
-                this.updatePopState(s_geo, sp, s_gl, scene, viewarea, model_view, this.x3dElem.runtime.fps);
+                this.updatePopState(shape, s_geo, sp, s_gl, scene, viewarea, this.x3dElem.runtime.fps);
             }
 
 
@@ -1925,7 +1925,7 @@ x3dom.gfx_webgl = (function () {
 
         //PopGeometry: adapt LOD and set shader variables
         if (s_gl.popGeometry) {
-            this.updatePopState(s_geo, sp, s_gl, scene, viewarea, model_view, this.x3dElem.runtime.fps);
+            this.updatePopState(shape, s_geo, sp, s_gl, scene, viewarea, this.x3dElem.runtime.fps);
         }
 
 
@@ -2191,7 +2191,7 @@ x3dom.gfx_webgl = (function () {
     /*****************************************************************************
      * PopGeometry: adapt LOD and set shader variables
      *****************************************************************************/
-    Context.prototype.updatePopState = function (popGeo, sp, s_gl, scene, viewarea, model_view, currFps)
+    Context.prototype.updatePopState = function (shape, popGeo, sp, s_gl, scene, viewarea, currFps)
     {
         var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * popGeo._vf.precisionFactor;
 
@@ -2202,20 +2202,9 @@ x3dom.gfx_webgl = (function () {
         var currentLOD = 16;
 
         if (tol > 0) {
-            //compute distance-based LOD
-            var viewpoint = scene.getViewpoint();
+            //compute LOD using screen-space coverage of bounding sphere
+            var arg = shape._graph.coverage / tol;
 
-            var imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne();
-            var near = viewpoint.getNear();
-
-            var center = model_view.multMatrixPnt(popGeo._vf.position);
-
-            //distance is estimated conservatively using the bounding sphere
-            var dist = Math.max(-center.z - popGeo._volRadius, near);
-            var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
-
-            //compute LOD using bounding sphere
-            var arg = (2 * popGeo._volLargestRadius) / (tol * projPixelLength);
             // use precomputed log(2.0) = 0.693147180559945
             currentLOD = Math.ceil(Math.log(arg) / 0.693147180559945);
 
@@ -2262,7 +2251,9 @@ x3dom.gfx_webgl = (function () {
         popGeo.adaptVertexCount(hasIndex ? p_msh._numFaces * 3 : p_msh._numCoords);
 
         // finally set shader variables...
-        sp.PG_bbMin = popGeo._bbMinBySize;  // floor(bbMin / size)
+        sp.PG_maxBBSize = popGeo._vf.maxBBSize.toGL();
+
+        sp.PG_bbMin = popGeo._bbMinBySize;  // floor(bbMin / maxBBSize)
 
         sp.PG_numAnchorVertices = popGeo._vf.numAnchorVertices;
 

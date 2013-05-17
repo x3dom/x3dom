@@ -1638,7 +1638,10 @@ x3dom.registerNodeType(
         function (ctx) {        
             x3dom.nodeTypes.PopGeometry.superClass.call(this, ctx);
 
+            //@todo: remove this
             this.addField_SFVec3f (ctx, 'tightSize',  1, 1, 1);
+            //@todo: add this on export
+            this.addField_SFVec3f (ctx, 'maxBBSize',  1, 1, 1);
             this.addField_SFVec3f (ctx, 'bbMinModF',  0, 0, 0);
             this.addField_SFVec3f (ctx, 'bbMaxModF',  1, 1, 1);
             this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
@@ -1690,13 +1693,18 @@ x3dom.registerNodeType(
             for (var i = 0; i < this._vf.vertexCount.length; ++i) {
                 this._vf.originalVertexCount[i] = this._vf.vertexCount[i];
             }
-            
-            this._bbMinBySize = [ Math.floor(this._vf.bbMin.x / this._vf.size.x), 
-                                  Math.floor(this._vf.bbMin.y / this._vf.size.y), 
-                                  Math.floor(this._vf.bbMin.z / this._vf.size.z) ];
-            this._volRadius        = this._vf.tightSize.length() / 2;
-            this._volLargestRadius = this._vf.size.length() / 2;
-            
+
+            //@todo: remove this three lines after cleanup
+            this._vf.maxBBSize = x3dom.fields.SFVec3f.copy(this._vf.size);
+            this._vf.size  = this._vf.tightSize;
+            this._diameter = this._vf.size.length();
+
+            this._bbMinBySize = [ Math.floor(this._vf.bbMin.x / this._vf.maxBBSize.x),
+                                  Math.floor(this._vf.bbMin.y / this._vf.maxBBSize.y),
+                                  Math.floor(this._vf.bbMin.z / this._vf.maxBBSize.z) ];
+            this._volRadius        = this._vf.size.length() / 2;
+            this._volLargestRadius = this._vf.maxBBSize.length() / 2;
+
             // workaround            
             this._mesh._numPosComponents  = this._vf.sphericalNormals ? 4 : 3;
             this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;
@@ -1709,6 +1717,11 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {              
+            },
+
+            forceUpdateCoverage: function()
+            {
+                return true;
             },
 
             parentAdded: function(parent) {

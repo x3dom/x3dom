@@ -54,6 +54,11 @@ x3dom.registerNodeType(
                 }
             },
 
+            forceUpdateCoverage: function()
+            {
+                return false;
+            },
+
             getColorTexture: function() {
                 return null;
             },

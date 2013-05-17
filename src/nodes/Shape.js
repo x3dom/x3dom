@@ -255,7 +255,7 @@ x3dom.registerNodeType(
                 if (singlePath && !this._graph.globalMatrix)
                     this._graph.globalMatrix = transform;
 
-                drawableCollection.addDrawable(this, transform, graphState);
+                drawableCollection.addShape(this, transform, graphState);
 
                 return true;
             },
@@ -288,6 +288,12 @@ x3dom.registerNodeType(
 
             doIntersect: function(line) {
                 return this._cf.geometry.node.doIntersect(line);
+            },
+
+            forceUpdateCoverage: function()
+            {
+                var geo = this._cf.geometry.node;
+                return (geo ? geo.forceUpdateCoverage() : false);
             },
 
             isSolid: function() {
