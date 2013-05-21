@@ -159,7 +159,7 @@ x3dom.gfx_flash = (function() {
         };
 
     scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
-		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false);
+		scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false, 0);
 
     scene.drawableCollection.concat();
 		

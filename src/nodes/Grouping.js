@@ -21,7 +21,7 @@ x3dom.registerNodeType(
             // FIXME; add addChild and removeChild slots ?
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
@@ -32,7 +32,8 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 // check if sub-graph can be culled away or render flag was set to false
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -51,7 +52,7 @@ x3dom.registerNodeType(
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     if ( (cnode = this._childNodes[i]) ) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
@@ -98,7 +99,7 @@ x3dom.registerNodeType(
                 return vol;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -107,7 +108,7 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 if (this._vf.whichChoice < 0 || this._vf.whichChoice >= this._childNodes.length ||
-                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) <= 0) {
                     return;
                 }
 
@@ -124,7 +125,7 @@ x3dom.registerNodeType(
                 }
 
                 if ( (cnode = this._childNodes[this._vf.whichChoice]) ) {
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
             },
 
@@ -411,7 +412,7 @@ x3dom.registerNodeType(
             this.bvh = null;
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
@@ -422,7 +423,8 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 // check if sub-graph can be culled away or render flag was set to false
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -460,7 +462,7 @@ x3dom.registerNodeType(
                     var i, n = this._childNodes.length;
                     for (i=0; i<n; i++) {
                         if ( (cnode = this._childNodes[i]) ) {
-                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache);
+                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache, planeMask);
                         }
                     }
                     this.drawableCollection.concat();
@@ -723,7 +725,7 @@ x3dom.registerNodeType(
                 return n;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -731,7 +733,8 @@ x3dom.registerNodeType(
                 if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
                     this.invalidateCache();
 
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -756,7 +759,7 @@ x3dom.registerNodeType(
                             var needCleanup = true;
                             
                             if (this._visibleList[i] && cnt < n &&
-                                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache))
+                                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask))
                             {
                                 this._createTime[i] = ts;
                                 cnt++;
@@ -786,7 +789,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj && obj.shape) {
-                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
+                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                             this._createTime[obj.pos] = ts;
                         }
 						else

@@ -555,7 +555,7 @@ x3dom.registerNodeType(
             this._eyeLook = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -563,7 +563,8 @@ x3dom.registerNodeType(
                 if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
                     this.invalidateCache();
 
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -634,7 +635,7 @@ x3dom.registerNodeType(
                 {
                     var cnode = this._childNodes[i];
                     if (cnode) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
 
@@ -661,7 +662,7 @@ x3dom.registerNodeType(
             // TODO; add Slots: collideTime, isActive
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -669,7 +670,8 @@ x3dom.registerNodeType(
                 if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
                     this.invalidateCache();
 
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -688,7 +690,7 @@ x3dom.registerNodeType(
                 for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
                     if ((cnode = this._childNodes[i]) && (cnode !== this._cf.proxy.node)) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
@@ -710,7 +712,7 @@ x3dom.registerNodeType(
             this._eye = new x3dom.fields.SFVec3f(0, 0, 0);
         },
         {
-            collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -718,19 +720,20 @@ x3dom.registerNodeType(
                 if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
                     this.invalidateCache();
 
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
                 // at the moment, no caching here as children may change every frame
                 singlePath = false;
 
-                this.visitChildren(transform, drawableCollection, singlePath, invalidateCache);
+                this.visitChildren(transform, drawableCollection, singlePath, invalidateCache, planeMask);
 
                 //out.LODs.push( [transform, this] );
             },
             
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache) {
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask) {
                 // overwritten
             }
         }
@@ -751,7 +754,7 @@ x3dom.registerNodeType(
             this._lastRangePos = -1;
         },
         {
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache)
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 var i=0, n=this._childNodes.length;
 
@@ -786,7 +789,7 @@ x3dom.registerNodeType(
                 if (n && cnode)
                 {
                     var childTransform = this.transformMatrix(transform);
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 
                 // eye position invalid in first frame
@@ -891,7 +894,7 @@ x3dom.registerNodeType(
     		    this._nameSpace.doc.needRender = true;
             },
             
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache)
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 var root = this._cf.root.node;
                 
@@ -972,12 +975,12 @@ x3dom.registerNodeType(
                     }
                     else {
                         for (l=1; l<this._childNodes.length; l++) {
-                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
+                            this._childNodes[l].collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                         }
                     }
                 }
                 else {
-                    root.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
+                    root.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
             },
 

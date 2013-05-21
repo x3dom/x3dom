@@ -78,11 +78,11 @@ x3dom.registerNodeType(
             }
         },
         {
-            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache) {
+            visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask) {
                 this.createChildren = 0;
                 singlePath = false;         // TODO (specify if unique node path or multi-parent)
                 invalidateCache = true;     // TODO (reuse world transform and volume cache)
-                this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache);
+                this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
             },
 
             getVolume: function()
@@ -222,13 +222,13 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
     /* 
      * Decides to create new children and if the node shoud be drawn or not
      */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
         // decision if culled, drawn etc...
-        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -238,16 +238,16 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
                     create();
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
             }
         }
     };
@@ -388,13 +388,13 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
     /* 
      * Decides to create new children and if the node shoud be drawn or not
      */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
         // decision if culled, drawn etc...
-        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -404,16 +404,16 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
                     create();
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
             }
         }
     };
@@ -657,12 +657,12 @@ function QuadtreeNode3D_NEW(ctx, terrain, level, nodeNumber, nodeTransformation,
     /* 
      * Decides to create new children and if the node shoud be drawn or not
      */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
-        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -670,19 +670,19 @@ function QuadtreeNode3D_NEW(ctx, terrain, level, nodeNumber, nodeTransformation,
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
             }
         }
     };
@@ -831,12 +831,12 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
     /* 
      * Decides to create new children and if the node shoud be drawn or not
      */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
         cullObject.localMatrix = transform;
 
-        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {            
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -846,19 +846,19 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache);
+                        children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
             }
         }
     };
@@ -985,12 +985,12 @@ function OctreeNode(ctx, terrain, level, nodeTransformation)
     /* 
      * Decides to create new children and if the node shoud be drawn or not
      */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
         
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
-        if (!drawableCollection.cull(transform, cullObject, singlePath)) {
+        if ((planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
         
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
@@ -1003,12 +1003,12 @@ function OctreeNode(ctx, terrain, level, nodeTransformation)
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
             }
         }
     };
@@ -1312,12 +1312,12 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
     /* 
      * Decides to create new children and if the node shoud be drawn or not
      */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache) {
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
-        if (exists && !drawableCollection.cull(transform, cullObject, singlePath)) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -1325,19 +1325,19 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
-                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
                     for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
             else {
-                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache);
+                shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
             }
         }
     };
