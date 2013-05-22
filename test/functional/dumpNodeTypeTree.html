@@ -1,7 +1,11 @@
 <html>
-	<head>
-		<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-		<title>x3dom nodetypes</title>
+
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+
+    <title>x3dom node types</title>
+
     <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
@@ -71,226 +75,448 @@
 <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
 <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
 <script type="text/javascript" src="../../src/Docs.js"></script>
-<!-- END:X3DOM -->
+    <!-- END:X3DOM -->
 
     <!-- BEGIN:TEST -->
     <script type="text/javascript" src="media/js/tests.js"></script>
-    <!-- END:TEST -->
     
+    <script type="text/javascript" src="http://static.jstree.com/v.1.0pre/jquery.js"></script>
+    <script type="text/javascript" src="http://static.jstree.com/v.1.0pre/jquery.jstree.js"></script>
+    <!-- END:TEST -->
+
+    <script type="text/javascript">
+        MYAPP = {};
+    </script>
+
     <style>
-    .FIELD {
-        font-size: small;
-        color: saddlebrown;
-        margin: 10px;
-    }
+        #dhead { display:none; }
+        .FIELD {
+            font-size: small;
+            color: saddlebrown;
+            margin: 10px;
+        }
+
+
+        .typeMainLink{
+            color:black;
+            text-decoration:none;
+            font-weight:bold;
+        }
+
+        .typeParentLink{
+            color:black;
+            text-decoration:none;
+            font-style:italic;
+
+        }
+
+        .typeParentLink .jstree-icon{
+            background: none !important;
+
+        }
+
+        #typesContainer li{
+            line-height: 17px;
+        }
+
+        .jstree-default.jstree-focused {
+            background: none !important;
+        }
     </style>
-	</head>
-       
+</head>
+
 <body>
 
-    <h1 style='color:darkblue;'>X3DOM Node Types</h1>
-	<div>
-	   The <a href="#_types">node type tree</a> shows the complete node hierarchy, 
-	   whereas the <a href="#_components">components</a> list below also shows the nodes' fields.
-	</div>
-    <br />
-    <hr />
-    
-    <a name="_types"></a>
-    <h1 style='color:darkblue;'>X3DOM node type tree</h1>
-	<div id="types"></div>
-    <br />
-    <hr />
-    
-    <a name="_components"></a>
-    <h1 style='color:darkblue;'>Node types by component</h1>
-    <div id="components"></div>
-    <br />
-    <hr />
-  
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>
-    <script type="text/javascript">
-    
-        function objInArray(array, obj) {
-            for(var i=0; i<array.length; i++) {
-                if (array[i] === obj) {
-                    return true;
-                }
-            }
-            return false;
-        }
-        
-        var urlMap = {
-            CADGeometry: "CADGeometry.html",
-            Core: "core.html",
-            DIS: "dis.html",
-            CubeMapTexturing: "env_texture.html",
-            EnvironmentalEffects: "enveffects.html",
-            EnvironmentalSensor: "envsensor.html",
-            Followers: "followers.html",
-            Geospatial: "geodata.html",
-            Geometry2D: "geometry2D.html",
-            Geometry3D: "geometry3D.html",
-            Grouping: "group.html",
-            //H-Anim: "hanim.html",
-            Interpolation: "interp.html",
-            KeyDeviceSensor: "keyboard.html",
-            Layering: "layering.html",
-            Layout: "layout.html",
-            Lighting: "lighting.html",
-            Navigation: "navigation.html",
-            Networking: "networking.html",
-            NURBS: "nurbs.html",
-            ParticleSystems: "particle_systems.html",
-            Picking: "picking.html",
-            PointingDeviceSensor: "pointingsensor.html",
-            Rendering: "rendering.html",
-            RigidBodyPhysics: "rigid_physics.html",
-            Scripting: "scripting.html",
-            Shaders: "shaders.html",
-            Shape: "shape.html",
-            Sound: "sound.html",
-            Text: "text.html",
-            Texturing3D: "texture3D.html",
-            Texturing: "texturing.html",
-            Time: "time.html",
-            EventUtilities: "utils.html",
-            VolumeRendering: "volume.html"
-        };
-        urlMap["H-Anim"] = "hanim.html";    //due to "-" in name
-        
-        var baseUrl = "http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/";
-        
-        
-        function dumpType(t, indent) {
-            for (var i=0; i<indent; i++) {
-                $("#types").append("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;");
-            }
-            
-            $("#types").append("<a href='" + 
-                baseUrl + urlMap[x3dom.nodeTypes[t]._compName] + "#" + t + 
-                "' style='color:black; text-decoration:none; font-weight:bold;'>" + 
-                t + "</a> &nbsp; <a href='" + 
-                baseUrl + urlMap[x3dom.nodeTypes[t]._compName] + 
-                "' style='color:black; text-decoration:none; font-style:italic;'>" + 
-                x3dom.nodeTypes[t]._compName + "</a><br/>");
-            
-            for (var i in x3dom.nodeTypes[t].childTypes[t]) {
-                dumpType(x3dom.nodeTypes[t].childTypes[t][i], indent+1); 
-            }
-        }        
-        
-        function dumpFields(t, elem) {
-            var instance = new x3dom.nodeTypes[t];
-            var isMultiField = false;
-            var fieldInfo = "<li><table cellspacing='1' cellpadding='1' border='1' class='FIELD'>";
-            
-            fieldInfo += "<tr align='left'><th>DataType</th><th>Name</th><th>DefaultValue</th></tr>";
-            
-            for (var fieldName in instance._vf) {
-                isMultiField = (instance._vfFieldTypes[fieldName].charAt(0) == "M");
-    			var fieldValue = isMultiField ? "[" : "";
-    			
-    			if (instance._vf[fieldName].toGL)
-		            fieldValue += instance._vf[fieldName].toGL().toString();
-		        else if (instance._vfFieldTypes[fieldName] == "MFString") {
-		            for (var k=0; k<instance._vf[fieldName].length; k++)
-		                if (k == instance._vf[fieldName].length - 1)
-		                    fieldValue += instance._vf[fieldName][k];
-		                else
-		                    fieldValue += (instance._vf[fieldName][k] + ", ");
-	            }
-		        else
-		            fieldValue += instance._vf[fieldName].toString();
-		        
-		        fieldValue += (isMultiField ? "]" : "");
-		        if (fieldValue.length == 0)
-		            fieldValue = "&nbsp;";
-		        
-		        fieldInfo += "<tr><td>" + instance._vfFieldTypes[fieldName] + "</td><td>" + 
-		                     fieldName + "</td><td>" + fieldValue + "</td></tr>";
-    		}
-    		
-            for (var fieldName in instance._cf) {
-                isMultiField = (instance._cfFieldTypes[fieldName].charAt(0) == "M");
-                if (isMultiField)
-                    fieldValue = "[]";
-                else
-                    fieldValue = "NULL";
-                
-		        fieldInfo += "<tr><td>" + instance._cfFieldTypes[fieldName] + "</td><td>" +  
-		                     fieldName + "</td><td>" + fieldValue + "</td></tr>";
-    		}
-    		
-    		fieldInfo += "</table></li>";
-    		
-    		elem.append(jQuery(fieldInfo));
-        }
-                        
-        $(document).ready( function() {
+<h1 style='color:darkblue;'>X3DOM Node Types</h1>
 
-            // Create the nodetype hierarchy
-            for (var tn in x3dom.nodeTypes) {
-                var t = x3dom.nodeTypes[tn];
-                
-                if (t.childTypes === undefined)
-                    t.childTypes = {};
-                
-                while (t.superClass) {     
-                    if (t.superClass.childTypes[t.superClass._typeName] === undefined) {
-                        t.superClass.childTypes[t.superClass._typeName] = [];
-                    }
-                    if (!objInArray(t.superClass.childTypes[t.superClass._typeName], t._typeName)) {
-                        t.superClass.childTypes[t.superClass._typeName].push(t._typeName);
-                    }
-                    t = t.superClass;
-                }
-            }            
-            
-            /*
-            var iexplore = (navigator.userAgent.indexOf("MSIE") != -1);
-            
-            if (iexplore) {
-                document.write("Sorry, but Internet Explorer does not yet support advanced scripting.");
-                document.write("<br\>Please use a WebKit or Gecko based web browser like Firefox etc.");
+<div>
+
+    The <a href="#_types">node type tree</a> shows the complete node hierarchy,
+
+    whereas the <a href="#_components">components</a> list below also shows the nodes' fields.
+
+</div>
+
+<br/>
+
+<hr/>
+
+
+<a name="_types"></a>
+
+<h1 style='color:darkblue;'>X3DOM node type tree</h1>
+
+<p><button id="buttonExpandToggle" type="button">Toggle open / close node tree</button> </p>
+<div id="typesContainer"><ul id="types"></ul></div>
+
+<br/>
+
+<hr/>
+
+
+<a name="_components"></a>
+
+<h1 style='color:darkblue;'>Node types by component</h1>
+
+<div id="components"></div>
+
+<br/>
+
+<hr/>
+
+
+
+<script type="text/javascript">
+
+
+function objInArray(array, obj) {
+
+    for (var i = 0; i < array.length; i++) {
+
+        if (array[i] === obj) {
+
+            return true;
+
+        }
+
+    }
+
+    return false;
+
+}
+
+
+var urlMap = {
+
+    CADGeometry:"CADGeometry.html",
+
+    Core:"core.html",
+
+    DIS:"dis.html",
+
+    CubeMapTexturing:"env_texture.html",
+
+    EnvironmentalEffects:"enveffects.html",
+
+    EnvironmentalSensor:"envsensor.html",
+
+    Followers:"followers.html",
+
+    Geospatial:"geodata.html",
+
+    Geometry2D:"geometry2D.html",
+
+    Geometry3D:"geometry3D.html",
+
+    Grouping:"group.html",
+
+    //H-Anim: "hanim.html",
+
+    Interpolation:"interp.html",
+
+    KeyDeviceSensor:"keyboard.html",
+
+    Layering:"layering.html",
+
+    Layout:"layout.html",
+
+    Lighting:"lighting.html",
+
+    Navigation:"navigation.html",
+
+    Networking:"networking.html",
+
+    NURBS:"nurbs.html",
+
+    ParticleSystems:"particle_systems.html",
+
+    Picking:"picking.html",
+
+    PointingDeviceSensor:"pointingsensor.html",
+
+    Rendering:"rendering.html",
+
+    RigidBodyPhysics:"rigid_physics.html",
+
+    Scripting:"scripting.html",
+
+    Shaders:"shaders.html",
+
+    Shape:"shape.html",
+
+    Sound:"sound.html",
+
+    Text:"text.html",
+
+    Texturing3D:"texture3D.html",
+
+    Texturing:"texturing.html",
+
+    Time:"time.html",
+
+    EventUtilities:"utils.html",
+
+    VolumeRendering:"volume.html"
+
+};
+
+urlMap["H-Anim"] = "hanim.html";    //due to "-" in name
+
+
+//var baseUrl = "http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/";
+var baseUrl = "http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/";
+
+
+function dumpType(t, parent) {
+    var li = $(
+            '<li>' +
+                    '<a href="' + baseUrl + urlMap[x3dom.nodeTypes[t]._compName] + '#' + t + '" target="_blank" class="typeMainLink">' + t + '</a>' +
+                    '<a href="' + baseUrl + urlMap[x3dom.nodeTypes[t]._compName] + '" class="typeParentLink">' + x3dom.nodeTypes[t]._compName + '</a>' +
+            '</li>'
+    );
+    parent.append(li)
+
+    if( x3dom.nodeTypes[t].childTypes[t]){
+        var ul = $("<ul></ul>");
+        li.append(ul);
+    }
+    for (var i in x3dom.nodeTypes[t].childTypes[t]) {
+        dumpType(x3dom.nodeTypes[t].childTypes[t][i], ul);
+    }
+}
+
+
+
+
+
+function dumpFields(t, elem) {
+
+    var instance = new x3dom.nodeTypes[t];
+
+    var isMultiField = false;
+
+    var fieldInfo = "<li><table cellspacing='1' cellpadding='1' border='1' class='FIELD'>";
+
+
+    fieldInfo += "<tr align='left'><th>DataType</th><th>Name</th><th>DefaultValue</th></tr>";
+
+
+    for (var fieldName in instance._vf) {
+
+        isMultiField = (instance._vfFieldTypes[fieldName].charAt(0) == "M");
+
+        var fieldValue = isMultiField ? "[" : "";
+
+
+        if (instance._vf[fieldName].toGL)
+
+            fieldValue += instance._vf[fieldName].toGL().toString();
+
+        else if (instance._vfFieldTypes[fieldName] == "MFString") {
+
+            for (var k = 0; k < instance._vf[fieldName].length; k++)
+
+                if (k == instance._vf[fieldName].length - 1)
+
+                    fieldValue += instance._vf[fieldName][k];
+
+                else
+
+                    fieldValue += (instance._vf[fieldName][k] + ", ");
+
+        }
+
+        else
+
+            fieldValue += instance._vf[fieldName].toString();
+
+
+        fieldValue += (isMultiField ? "]" : "");
+
+        if (fieldValue.length == 0)
+
+            fieldValue = "&nbsp;";
+
+
+        fieldInfo += "<tr><td>" + instance._vfFieldTypes[fieldName] + "</td><td>" +
+
+                fieldName + "</td><td>" + fieldValue + "</td></tr>";
+
+    }
+
+
+    for (var fieldName in instance._cf) {
+
+        isMultiField = (instance._cfFieldTypes[fieldName].charAt(0) == "M");
+
+        if (isMultiField)
+
+            fieldValue = "[]";
+
+        else
+
+            fieldValue = "NULL";
+
+
+        fieldInfo += "<tr><td>" + instance._cfFieldTypes[fieldName] + "</td><td>" +
+
+                fieldName + "</td><td>" + fieldValue + "</td></tr>";
+
+    }
+
+
+    fieldInfo += "</table></li>";
+
+
+    elem.append(jQuery(fieldInfo));
+
+}
+
+
+$(document).ready(function () {
+    // Create the nodetype hierarchy
+    for (var tn in x3dom.nodeTypes) {
+
+        var t = x3dom.nodeTypes[tn];
+
+
+        if (t.childTypes === undefined)
+
+            t.childTypes = {};
+
+
+        while (t.superClass) {
+
+            if (t.superClass.childTypes[t.superClass._typeName] === undefined) {
+
+                t.superClass.childTypes[t.superClass._typeName] = [];
+
             }
-            else */
-            {
-                // Dump the nodetype hierachy
-                dumpType("X3DNode", 0); 
-                
-                
-                // Dump nodetypes by component
-                // but first sort alphabetically
-                var components = [];
-                for (var c in x3dom.components) {
-                    components.push(c);
-                }
-                components.sort();
-                
-                for (var cn in components) {
-                    var c = components[cn];
-                    var component = x3dom.components[c];
-                    $("#components").append("<h2 style='margin-top: 40px;'><a href='" + 
-                        baseUrl + urlMap[c] +
-                        "' style='color:green; text-decoration:none; font-style:italic; font-weight:bold;'>" + 
-                        c + "</a></h2>");
-                    
-                    $("#components").append("<ul style='list-style-type:circle;'>");
-                    
-                    var $ul = $("#components ul:last");
-                    for (var t in component) {
-                        $ul.append("<li><a href='" + 
-                            baseUrl + urlMap[c] + "#" + t + 
-                            "' style='color:black; text-decoration:none; font-weight:bold;'>" + 
-                            t + "</a></li>");
-                        
-                        dumpFields(t, $ul); 
-                    }
-                }
+
+            if (!objInArray(t.superClass.childTypes[t.superClass._typeName], t._typeName)) {
+
+                t.superClass.childTypes[t.superClass._typeName].push(t._typeName);
+
             }
+
+            t = t.superClass;
+
+        }
+
+    }
+
+
+    /*
+
+     var iexplore = (navigator.userAgent.indexOf("MSIE") != -1);
+
+
+
+     if (iexplore) {
+
+     document.write("Sorry, but Internet Explorer does not yet support advanced scripting.");
+
+     document.write("<br\>Please use a WebKit or Gecko based web browser like Firefox etc.");
+
+     }
+
+     else */
+
+    {
+
+        // Dump the nodetype hierachy
+
+        dumpType("X3DNode", $("#types"));
+
+
+
+        // Dump nodetypes by component
+
+        // but first sort alphabetically
+
+        var components = [];
+
+        for (var c in x3dom.components) {
+
+            components.push(c);
+
+        }
+
+        components.sort();
+
+
+        for (var cn in components) {
+
+            var c = components[cn];
+
+            var component = x3dom.components[c];
+
+            $("#components").append("<h2 style='margin-top: 40px;'><a href='" +
+
+                    baseUrl + urlMap[c] +
+
+                    "' style='color:green; text-decoration:none; font-style:italic; font-weight:bold;'>" +
+
+                    c + "</a></h2>");
+
+
+            $("#components").append("<ul style='list-style-type:circle;'>");
+
+
+            var $ul = $("#components ul:last");
+
+            for (var t in component) {
+
+                $ul.append("<li><a href='" +
+
+                        baseUrl + urlMap[c] + "#" + t +
+
+                        "' style='color:black; text-decoration:none; font-weight:bold;'>" +
+
+                        t + "</a></li>");
+
+
+                dumpFields(t, $ul);
+
+            }
+
+        }
+
+    }
+
+
+    MYAPP.isTreeOpen = false;
+    $(function () {
+        $("#typesContainer").jstree({
+            "plugins" : [ "themes", "html_data"],
+            "themes" : {
+                "theme" : "default",
+                "dots" : false,
+                "icons" : true
+            },
+            "core" : { "initially_open" : [ "phtml_2" ] }
         });
-    </script>
-    
+
+
+        jQuery("#buttonExpandToggle").click(function() {
+            if(!MYAPP.isTreeOpen){
+                jQuery("#typesContainer").jstree("open_all");
+            }
+            else{
+                jQuery("#typesContainer").jstree("close_all");
+            }
+            MYAPP.isTreeOpen = !MYAPP.isTreeOpen;
+        });
+    });
+
+
+
+});
+
+</script>
+
+
 </body>
+
 </html>
+
