@@ -118,7 +118,7 @@ x3dom.registerNodeType(
  * @returns {QuadtreeNode2D}
  */
 function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation, 
-                        columnNr, rowNr, geometry)
+                            columnNr, rowNr, geometry)
 {
 
      // array with the maximal four child nodes
@@ -228,7 +228,7 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
         cullObject.localMatrix = nodeTransformation;
         
         // decision if culled, drawn etc...
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -394,7 +394,7 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
         cullObject.localMatrix = nodeTransformation;
         
         // decision if culled, drawn etc...
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -634,19 +634,19 @@ function QuadtreeNode3D_NEW(ctx, terrain, level, nodeNumber, nodeTransformation,
         var s = (terrain._vf.size).multiply(0.25);
 
         // creation of all children
-        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), lt,
+        children.push(new QuadtreeNode3D_NEW(ctx, terrain, (level + 1), lt,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(-s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2), (rowNr * 2), geometry));
-        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), rt,
+        children.push(new QuadtreeNode3D_NEW(ctx, terrain, (level + 1), rt,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(s.x, s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2), geometry));
-        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), lb,
+        children.push(new QuadtreeNode3D_NEW(ctx, terrain, (level + 1), lb,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(-s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2), (rowNr * 2 + 1), geometry));
-        children.push(new QuadtreeNode3D(ctx, terrain, (level + 1), rb,
+        children.push(new QuadtreeNode3D_NEW(ctx, terrain, (level + 1), rb,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2 + 1), geometry));
@@ -662,7 +662,7 @@ function QuadtreeNode3D_NEW(ctx, terrain, level, nodeNumber, nodeTransformation,
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -836,7 +836,7 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
         // definition the actual transformation of the node
         cullObject.localMatrix = transform;
 
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -990,7 +990,7 @@ function OctreeNode(ctx, terrain, level, nodeTransformation)
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
-        if ((planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
+        if ((planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
         
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
@@ -1317,7 +1317,7 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath)) > 0) {
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(position);
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
