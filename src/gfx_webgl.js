@@ -1284,7 +1284,7 @@ x3dom.gfx_webgl = (function () {
 
             //PopGeometry: adapt LOD and set shader variables
             if (s_gl.popGeometry) {
-                this.updatePopState(shape, s_geo, sp, s_gl, scene, viewarea, this.x3dElem.runtime.fps);
+                this.updatePopState(drawable, s_geo, sp, s_gl, scene, viewarea, this.x3dElem.runtime.fps);
             }
 
 
@@ -1925,7 +1925,7 @@ x3dom.gfx_webgl = (function () {
 
         //PopGeometry: adapt LOD and set shader variables
         if (s_gl.popGeometry) {
-            this.updatePopState(shape, s_geo, sp, s_gl, scene, viewarea, this.x3dElem.runtime.fps);
+            this.updatePopState(drawable, s_geo, sp, s_gl, scene, viewarea, this.x3dElem.runtime.fps);
         }
 
 
@@ -2191,7 +2191,7 @@ x3dom.gfx_webgl = (function () {
     /*****************************************************************************
      * PopGeometry: adapt LOD and set shader variables
      *****************************************************************************/
-    Context.prototype.updatePopState = function (shape, popGeo, sp, s_gl, scene, viewarea, currFps)
+    Context.prototype.updatePopState = function (drawable, popGeo, sp, s_gl, scene, viewarea, currFps)
     {
         var tol = x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor * popGeo._vf.precisionFactor;
 
@@ -2203,7 +2203,8 @@ x3dom.gfx_webgl = (function () {
 
         if (tol > 0) {
             //compute LOD using screen-space coverage of bounding sphere
-            var arg = shape._graph.coverage / tol;
+            //@todo: the coverage should be distinct from priority
+            var arg = drawable.priority / tol;
 
             // use precomputed log(2.0) = 0.693147180559945
             currentLOD = Math.ceil(Math.log(arg) / 0.693147180559945);

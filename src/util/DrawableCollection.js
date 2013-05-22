@@ -93,6 +93,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
     graphState.coverage = -1;    // if -1 then ignore value later on
 
+    //@todo: save the coverage only for drawables (shapes can be shared!)
     if (this.smallFeatureThreshold > 1 || node.forceUpdateCoverage()) {
         var modelViewMat = this.viewMatrix.mult(transform);
 
@@ -148,6 +149,7 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
 
     if (drawable.sortType == 'transparent') {
         if (this.smallFeatureThreshold > 1) {
+            //@todo: this cannot work if the shape is shared!
             drawable.zPos = graphState.center.z;
         }
         else {
