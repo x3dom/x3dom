@@ -2645,6 +2645,11 @@ x3dom.fields.BoxVolume.prototype.getBounds = function(min, max)
     max.setValues(this.max);
 };
 
+x3dom.fields.BoxVolume.prototype.getRadialVec = function()
+{
+    return this.max.subtract(this.min).multiply(0.5);
+};
+
 x3dom.fields.BoxVolume.prototype.invalidate = function()
 {
     this.valid = false;

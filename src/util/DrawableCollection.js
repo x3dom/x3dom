@@ -94,17 +94,18 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
     graphState.coverage = -1;    // if -1 then ignore value later on
 
     if (this.smallFeatureThreshold > 1 || node.forceUpdateCoverage()) {
-        // a few ops less than with this.viewMatrix.mult(transform)
-        graphState.center = transform.multMatrixPnt(volume.getCenter());
-        graphState.center = this.viewMatrix.multMatrixPnt(graphState.center);
+        var modelViewMat = this.viewMatrix.mult(transform);
 
-        var dia = volume.getDiameter();
+        graphState.center = modelViewMat.multMatrixPnt(volume.getCenter());
 
-        var dist = Math.max(-graphState.center.z - dia / 2.0, this.near);
+        var rVec = modelViewMat.multMatrixVec(volume.getRadialVec());
+        var r    = rVec.length();
+
+        var dist = Math.max(-graphState.center.z - r, this.near);
         var projPixelLength = dist * this.pixelHeightAtDistOne;
 
-        graphState.coverage = dia / projPixelLength;    // shall we norm this to be in [0,1]? -> better not, PopGeo needs pixels
-        console.log(graphState.coverage);
+        graphState.coverage = (r * 2.0) / projPixelLength;
+
         if (this.smallFeatureThreshold > 1 && graphState.coverage < this.smallFeatureThreshold) {
             return 0;   // differentiate between outside and this case
         }
