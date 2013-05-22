@@ -21,7 +21,7 @@ x3dom.registerNodeType(
             // FIXME; add addChild and removeChild slots ?
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
@@ -32,7 +32,8 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 // check if sub-graph can be culled away or render flag was set to false
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -51,7 +52,7 @@ x3dom.registerNodeType(
 
                 for (var i=0, n=this._childNodes.length; i<n; i++) {
                     if ( (cnode = this._childNodes[i]) ) {
-                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
+                        cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
@@ -98,7 +99,7 @@ x3dom.registerNodeType(
                 return vol;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -107,7 +108,7 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 if (this._vf.whichChoice < 0 || this._vf.whichChoice >= this._childNodes.length ||
-                    drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) <= 0) {
                     return;
                 }
 
@@ -124,7 +125,7 @@ x3dom.registerNodeType(
                 }
 
                 if ( (cnode = this._childNodes[this._vf.whichChoice]) ) {
-                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache);
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
             },
 
@@ -410,9 +411,8 @@ x3dom.registerNodeType(
             this.needBvhRebuild = true;
             this.bvh = null;
         },
-
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 // check if multi parent sub-graph, don't cache in that case
                 if (singlePath && (this._parentNodes.length > 1))
@@ -423,7 +423,8 @@ x3dom.registerNodeType(
                     this.invalidateCache();
 
                 // check if sub-graph can be culled away or render flag was set to false
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -440,9 +441,9 @@ x3dom.registerNodeType(
                     childTransform = this.transformMatrix(transform);
                 }
 
-                ///x3dom.Utils.startMeasure('bvh');
+                x3dom.Utils.startMeasure('bvhTraverse');
 
-                if(this.needBvhRebuild)
+                if (this.needBvhRebuild)
                 {
                     var drawableCollectionConfig = {
                         viewArea: drawableCollection.viewarea,
@@ -451,17 +452,17 @@ x3dom.registerNodeType(
                         projMatrix: drawableCollection.projMatrix,
                         sceneMatrix: drawableCollection.sceneMatrix,
                         frustumCulling: false,
-                        smallFeatureThreshold: 1,
+                        smallFeatureThreshold: 1,    // THINKABOUTME
                         context: drawableCollection.context,
                         gl: drawableCollection.gl
                     };
 
                     this.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
-                    var i, n;
-                    for (i=0, n=this._childNodes.length; i<n; i++) {
+                    var i, n = this._childNodes.length;
+                    for (i=0; i<n; i++) {
                         if ( (cnode = this._childNodes[i]) ) {
-                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache);
+                            cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache, planeMask);
                         }
                     }
                     this.drawableCollection.concat();
@@ -472,13 +473,13 @@ x3dom.registerNodeType(
                         this.bvh.addDrawable(this.drawableCollection.get(i))
                     }
                     this.bvh.build();
-                    this.needBvhRebuild = false;
+                    this.needBvhRebuild = false;    // TODO: re-evaluate if Inline node is child node
                 }
 
                 this.bvh.collectDrawables(drawableCollection);
 
-                //var dt = x3dom.Utils.stopMeasure('bvh');
-                //addMeasurement('BVH', dt);
+                var dt = x3dom.Utils.stopMeasure('bvhTraverse');
+                this._nameSpace.doc.ctx.x3dElem.runtime.addMeasurement('BVH', dt);
             }
         }
     )
@@ -724,7 +725,7 @@ x3dom.registerNodeType(
                 return n;
             },
 
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 if (singlePath && (this._parentNodes.length > 1))
                     singlePath = false;
@@ -732,7 +733,8 @@ x3dom.registerNodeType(
                 if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
                     this.invalidateCache();
 
-                if (drawableCollection.cull(transform, this.graphState(), singlePath)) {
+                planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask);
+                if (planeMask <= 0) {
                     return;
                 }
 
@@ -757,7 +759,7 @@ x3dom.registerNodeType(
                             var needCleanup = true;
                             
                             if (this._visibleList[i] && cnt < n &&
-                                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache))
+                                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask))
                             {
                                 this._createTime[i] = ts;
                                 cnt++;
@@ -787,7 +789,7 @@ x3dom.registerNodeType(
                     {
                         var obj = this._nameObjMap[this._idList[i]];
                         if (obj && obj.shape) {
-                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache);
+                            obj.shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                             this._createTime[obj.pos] = ts;
                         }
 						else
@@ -836,6 +838,10 @@ x3dom.registerNodeType(
 
             // very experimental field to further reduce rendered objects based on screen size during move
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);
+
+            // define frame-rate range for quality-speed trade-off (experimental)
+            this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
+            this.addField_SFFloat(ctx, 'maxFrameRate', 62.5);
             
             this._lastMin = null;
             this._lastMax = null;

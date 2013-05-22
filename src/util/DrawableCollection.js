@@ -59,30 +59,36 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
  *     coverage:     currently approx. number of pixels on screen
  *  };
  */
-x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singlePath) {
+x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singlePath, planeMask) {
     var node = graphState.boundedNode;  // get ref to SG node
 
     if (!node || !node._vf.render) {
-        return true;
+        return 0;   // <0 outside, >0 inside, but can't tell in this case
     }
 
     var volume = node.getVolume();      // create on request
+    var MASK_SET = 63;  // 2^6-1, i.e. all sides of the volume
 
     if (this.frustumCulling) {
         var wvol;
 
         if (singlePath && !graphState.worldVolume.isValid()) {
             graphState.worldVolume.transformFrom(transform, volume);
-            wvol = graphState.worldVolume;
+            wvol = graphState.worldVolume;  // use opportunity to update if necessary
         }
-        else {
+        else if (planeMask < MASK_SET) {
             this.worldVol.transformFrom(transform, volume);
             wvol = this.worldVol;
         }
 
-        if (!this.viewFrustum.intersect(wvol)) {
-            return true;      // if culled return true
+        if (planeMask < MASK_SET)
+            planeMask = this.viewFrustum.intersect(wvol, planeMask);
+        if (planeMask <= 0) {
+            return -1;      // if culled return -1; 0 should never happen
         }
+    }
+    else {
+        planeMask = MASK_SET;
     }
 
     graphState.coverage = -1;    // if -1 then ignore value later on
@@ -100,14 +106,14 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
         graphState.coverage = dia / projPixelLength;    // shall we norm this to be in [0,1]? -> better not, PopGeo needs pixels
         console.log(graphState.coverage);
         if (this.smallFeatureThreshold > 1 && graphState.coverage < this.smallFeatureThreshold) {
-            return true;
+            return 0;   // differentiate between outside and this case
         }
     }
 
     // not culled, incr node cnt
     this.numberOfNodes++;
 
-    return false;
+    return planeMask;   // >0, inside
 };
 
 /**

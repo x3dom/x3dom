@@ -236,7 +236,7 @@ x3dom.registerNodeType(
             this._colorStrideOffset = [0, 0];
         },
         {
-            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache)
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 // attention, in contrast to other collectDrawableObjects()
                 // this one has boolean return type to better work with RSG
@@ -248,7 +248,8 @@ x3dom.registerNodeType(
                 if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
                     this.invalidateCache();
 
-                if (!this._cf.geometry.node || drawableCollection.cull(transform, graphState, singlePath)) {
+                if (!this._cf.geometry.node ||
+                    drawableCollection.cull(transform, graphState, singlePath, planeMask) <= 0) {
                     return false;
                 }
 

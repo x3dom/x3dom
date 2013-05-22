@@ -3036,7 +3036,7 @@ x3dom.fields.FrustumVolume = function(clipMat)
 };
 
 /** Check the volume against the frustum. */
-x3dom.fields.FrustumVolume.prototype.intersect = function(vol)
+x3dom.fields.FrustumVolume.prototype.intersect = function(vol, planeMask)
 {
     if (this.planeNormals.length < 6) {
         x3dom.debug.logWarning("FrustumVolume not initialized!");
@@ -3058,22 +3058,37 @@ x3dom.fields.FrustumVolume.prototype.intersect = function(vol)
     };
     
     //Check if the point is in the halfspace
-    var isInHalfSpace = function(i, pnt) {
+    var pntIsInHalfSpace = function(i, pnt) {
         var s = that.planeNormals[i].dot(pnt) - that.planeDistances[i];
         return (s >= 0);
     };
-    
+
+    //Check if the box formed by min/max is fully inside the halfspace
+    var isInHalfSpace = function(i) {
+        var p = setDirectionIndexPoint(that.directionIndex[i]);
+        return pntIsInHalfSpace(i, p);
+    };
+
     //Check if the box formed by min/max is fully outside the halfspace
     var isOutHalfSpace = function(i) {
         var p = setDirectionIndexPoint(that.directionIndex[i] ^ 7);
-        return !isInHalfSpace(i, p);
+        return !pntIsInHalfSpace(i, p);
     };
     
     //Check each point of the box to the 6 planes
-    for (var i=0; i<6; i++) {
+    var mask = 1;
+    if (planeMask < 0) planeMask = 0;
+
+    for (var i=0; i<6; i++, mask<<=1) {
+        if ((planeMask & mask) != 0)
+            continue;
+
         if (isOutHalfSpace(i))
-            return false;
+            return -1;
+
+        if (isInHalfSpace(i))
+            planeMask |= mask;
     }
 
-    return true;
+    return planeMask;
 };

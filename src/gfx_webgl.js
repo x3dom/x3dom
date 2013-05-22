@@ -2849,7 +2849,7 @@ x3dom.gfx_webgl = (function () {
 
             x3dom.Utils.startMeasure('traverse');
 
-            scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false);
+            scene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), scene.drawableCollection, true, false, 0);
 
             var traverseTime = x3dom.Utils.stopMeasure('traverse');
             this.x3dElem.runtime.addMeasurement('TRAVERSE', traverseTime);
@@ -3245,7 +3245,7 @@ x3dom.gfx_webgl = (function () {
             locScene.numberOfNodes = 0;
             locScene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
 
-            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableCollection, true, false);
+            locScene.collectDrawableObjects(x3dom.fields.SFMatrix4f.identity(), locScene.drawableCollection, true, false, 0);
 
             locScene.drawableCollection.sort();
 

@@ -144,7 +144,7 @@ x3dom.registerNodeType(
         },
 
         // Collects all objects to be drawn
-        collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache) {
+        collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
             // explicitly do nothing on collect traversal for (most) nodes
         },
         
