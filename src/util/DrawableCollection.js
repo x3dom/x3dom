@@ -26,7 +26,7 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
     var viewpoint = scene.getViewpoint();
 
     this.near = viewpoint.getNear();
-    this.imgPlaneHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne() / this.viewarea._height;
+    this.pixelHeightAtDistOne = viewpoint.getImgPlaneHeightAtDistOne() / this.viewarea._height;
 
     this.context = drawableCollectionConfig.context;
     this.gl = drawableCollectionConfig.gl;
@@ -95,10 +95,10 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
         var dia = volume.getDiameter();
 
         var dist = Math.max(-graphState.center.z - dia / 2.0, this.near);
-        var projPixelLength = dist * this.imgPlaneHeightAtDistOne;
+        var projPixelLength = dist * this.pixelHeightAtDistOne;
 
-        graphState.coverage = dia / projPixelLength;    // shall we norm this to be in [0,1]?
-
+        graphState.coverage = dia / projPixelLength;    // shall we norm this to be in [0,1]? -> better not, PopGeo needs pixels
+        console.log(graphState.coverage);
         if (this.smallFeatureThreshold > 1 && graphState.coverage < this.smallFeatureThreshold) {
             return true;
         }

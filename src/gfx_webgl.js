@@ -2207,7 +2207,6 @@ x3dom.gfx_webgl = (function () {
 
             // use precomputed log(2.0) = 0.693147180559945
             currentLOD = Math.ceil(Math.log(arg) / 0.693147180559945);
-
             currentLOD = (currentLOD < 1) ? 1 : ((currentLOD > 16) ? 16 : currentLOD);
         }
 

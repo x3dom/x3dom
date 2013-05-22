@@ -1710,7 +1710,7 @@ x3dom.registerNodeType(
             this._mesh._numNormComponents = this._vf.sphericalNormals ? 2 : 3;
             this._mesh._numTexComponents  = 2;
             this._mesh._numColComponents  = 3;
-            
+
             x3dom.nodeTypes.PopGeometry.numTotalVerts += this.getVertexCount();
             x3dom.nodeTypes.PopGeometry.numTotalTris  += (this.hasIndex() ? 
                          this.getTotalNumberOfIndices() : this.getVertexCount()) / 3;
