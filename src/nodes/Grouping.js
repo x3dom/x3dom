@@ -389,8 +389,19 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
             x3dom.nodeTypes.Group.superClass.call(this, ctx);
-        },
-        {
+        }
+    )
+);
+
+// ### Block ###
+x3dom.registerNodeType(
+    "Block",
+    "Grouping",
+    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+        function (ctx) {
+            x3dom.nodeTypes.Block.superClass.call(this, ctx);
+
+            this.addField_MFString(ctx, 'nameSpaceName', []);
         }
     )
 );

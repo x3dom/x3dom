@@ -58,6 +58,7 @@ x3dom.registerNodeType(
         }
     )
 );
+
 // ### Inline ###
 x3dom.registerNodeType(
     "Inline",
