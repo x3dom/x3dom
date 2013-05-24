@@ -2209,14 +2209,15 @@ x3dom.gfx_webgl = (function () {
             var near = viewpoint.getNear();
             var center = model_view.multMatrixPnt(popGeo._vf.position);
 
-            //@todo: here, we should take the potentially scaled radii into account!
+            var tightRad   = model_view.multMatrixVec(popGeo._vf.size).length()      * 0.5;
+            var largestRad = model_view.multMatrixVec(popGeo._vf.maxBBSize).length() * 0.5
 
             //distance is estimated conservatively using the bounding sphere
-            var dist = Math.max(-center.z - popGeo._volRadius, near);
+            var dist = Math.max(-center.z - tightRad, near);
             var projPixelLength = dist * (imgPlaneHeightAtDistOne / viewarea._height);
 
             //compute LOD using bounding sphere
-            var arg = (2 * popGeo._volLargestRadius) / (tol * projPixelLength);
+            var arg = (2 * largestRad) / (tol * projPixelLength);
             //END CLASSIC CODE
 
             //BEGIN EXPERIMENTAL CODE
