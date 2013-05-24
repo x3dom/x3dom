@@ -462,6 +462,7 @@ x3dom.registerNodeType(
                     var i, n = this._childNodes.length;
                     for (i=0; i<n; i++) {
                         if ( (cnode = this._childNodes[i]) ) {
+                            //this is only used to collect all drawables once
                             cnode.collectDrawableObjects(childTransform, this.drawableCollection, singlePath, invalidateCache, planeMask);
                         }
                     }
