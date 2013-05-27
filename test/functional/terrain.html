@@ -100,6 +100,15 @@
                     elevationFormat='png' textureFormat='png' normalFormat='png' 
                     mode="3d">
         </BVHRefiner>
+        <!-- DON'T USE THIS EXAMPLE BECAUSE IT'S NOT COMPLETELY IMPLEMENTED YET -->
+        <!--<BVHRefiner maxDepth='5' factor='5' center='0 0 0' maxElevation='531' 
+                    subdivision='36 24' size='1201 801'  
+                    elevationUrl="C:\Users\menglert\Desktop\Result3" 
+                    textureUrl="C:\Users\menglert\Desktop\Result3"
+                    normalUrl="C:\Users\menglert\Desktop\Normal"
+                    elevationFormat='png' textureFormat='png' normalFormat='png' 
+                    mode="3d" submode="32bit">
+        </BVHRefiner>-->
         <!--<BVHRefiner maxDepth='7' factor='40' center='0 0 0' 
                     url="RealityMaps" mode="bin">
         </BVHRefiner>-->
@@ -107,8 +116,8 @@
         <!--<BVHRefiner maxDepth='5' factor='12' center='0 0 0' 
                     octSize='500 500 500' mode="oct">
         </BVHRefiner>-->
-        <Background skyColor=".1 .15 .3"></Background>
-        <Viewpoint zNear="0.01" zFar="100000" position="0 0 3000"></Viewpoint>
+        <Background skyColor=".1 .1 .3"></Background>
+        <Viewpoint zNear="0.1" zFar="10000" position="0 0 3000"></Viewpoint>
       </Scene>
     </X3D>
   </body>
