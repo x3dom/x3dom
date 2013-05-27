@@ -466,7 +466,10 @@ x3dom.registerNodeType(
                         }
                     }
                     this.drawableCollection.concat();
-                    this.bvh = new x3dom.BIH();
+
+                    this.bvh = new x3dom.bvh.BIH();
+                    this.bvh = new x3dom.bvh.DebugComposite(this.bvh,this._nameSpace.doc._scene);
+
 
                     n = this.drawableCollection.length;
                     for (i = 0; i < n; i++) {
@@ -474,9 +477,11 @@ x3dom.registerNodeType(
                     }
                     this.bvh.build();
                     this.needBvhRebuild = false;    // TODO: re-evaluate if Inline node is child node
+
                 }
 
                 this.bvh.collectDrawables(drawableCollection);
+
 
                 var dt = x3dom.Utils.stopMeasure('bvhTraverse');
                 this._nameSpace.doc.ctx.x3dElem.runtime.addMeasurement('BVH', dt);
