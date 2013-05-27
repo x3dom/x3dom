@@ -34,6 +34,8 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'normalFormat', "png");
             this.addField_SFFloat(ctx, 'maxElevation', 1.0);
             this.addField_SFBool(ctx, 'lit', true);
+            // count of elements on next level
+            this.addField_SFInt32(ctx, 'bvhCount', 8);
 
             if (this._vf.mode === "bin") {
                 // creating the root-node of the quadtree
@@ -77,7 +79,7 @@ x3dom.registerNodeType(
             }
             else if (this._vf.mode === "oct"){
                 // creating the root-node of the quadtree
-                this.rootNode = new OctreeNode(ctx, this, 0, new x3dom.fields.SFMatrix4f.identity());
+                this.rootNode = new BVHNode(ctx, this, 0, "/", 1, this._vf.bvhCount);
             }
             else {
                 x3dom.debug.logError("Error attribute mode. Value: '" + this._vf.mode +
@@ -1601,7 +1603,7 @@ function QuadtreeNode3D_32bit(ctx, terrain, level, nodeNumber, nodeTransformatio
             "void main(void) {\n" +
             "    vec4 normal = 2.0 * texture2D(texNormal, texC) - 1.0;\n" +
             "    vec4 colr = texture2D(texColor, texC);\n" +
-            "    float coler = ((colr.g * 256.0)+colr.b) / 1.0;" +
+            "    float coler = ((colr.g * 256.0)+colr.b);" +
             "    gl_FragColor = vec4(vLight * coler, 1.0);\n" +
             "}\n";
     }
@@ -1682,6 +1684,178 @@ function QuadtreeNode3D_32bit(ctx, terrain, level, nodeNumber, nodeTransformatio
 
 
     /* 
+     * Returns the volume of this node
+     */
+    this.getVolume = function() {
+        // TODO; implement correctly, for now just use first shape as workaround
+        return shape.getVolume();
+    };
+
+
+
+    // initializes this node directly after creating
+    initialize();
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
+ * Defines one node of an octree that represents a part (nxn vertices) of 
+ * the whole point cloud
+ * @param {object} ctx context
+ * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
+ * @param {number} level level of the node within the quadtree
+ * @param {number} columnNr column number in the wmts matrix within the level
+ * @param {number} rowNr row number in the wmts matrix within the level
+ * @param {number} resizeFac defines the resizing factor. Can be null on init
+ * @returns {OctreeNode}
+ */
+function BVHNode(ctx, terrain, level, path, imgNumber, count)
+{
+    // object that stores all information to do a frustum culling
+    var cullObject = {};
+    // factor redefinition to get a view about the whole scene on level three
+    var fac = terrain._vf.factor + level * 5;
+    
+    // array with the maximal four child nodes
+    var children = [];
+    // path to x3d-file that should be loaded
+    //var path = terrain._vf.url + "/" + level + "/" + columnNr + "/";
+    // address of the image for the terrain height-data
+    var file = terrain._vf.url + path + imgNumber + ".x3d";
+    alert(file);
+    // position of the node in world space
+    var position = null;
+    // stores if file has been loaded
+    var exists = false;
+    // drawable component of this node
+    var shape = new x3dom.nodeTypes.Shape(ctx);
+    // loader for binary geometry files
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", file, false);
+    // Try to load the binary geometry files
+    try {
+        xhr.send();
+
+        var xmlDoc = xhr.responseXML;
+        if (xmlDoc !== null) {
+            var replacer = new RegExp("\"", "g");
+            createGeometry(shape);
+            initialize();
+            exists = true;
+        }
+    }
+    catch (exp) {
+        x3dom.debug.logException("Error loading file '" + file + "': " + exp);
+    }
+
+
+
+    /*
+     * creates the geometry of this node
+     */
+    function createGeometry(parent) {
+        // definition of nameSpace
+        shape._nameSpace = new x3dom.NodeNameSpace("", terrain._nameSpace.doc);
+        shape._nameSpace.setBaseURL(terrain._nameSpace.baseURL + terrain._vf.url + path);
+        var binGeo = xmlDoc.getElementsByTagName("BinaryGeometry")[0];
+
+        if (parent && parent._nameSpace && binGeo) {
+            var geometry = parent._nameSpace.setupTree(binGeo);
+            parent.addChild(geometry);
+            geometry.nodeChanged();
+            if (level === 0) {
+                resizeFac = (geometry._vf.size.x + 
+                             geometry._vf.size.y) / 2;
+            }
+            position = x3dom.fields.SFVec3f.copy(geometry._vf.position);
+        }
+    }
+
+
+
+    /*
+     * creates the appearance for this node and add it to the dom tree
+     */
+    function initialize() {
+
+        // appearance of the drawable component of this node
+        var appearance = new x3dom.nodeTypes.Appearance(ctx); 
+
+        shape.addChild(appearance);
+        appearance.nodeChanged();
+        shape.nodeChanged();
+        
+        // bind static cull-properties to cullObject
+        cullObject.boundedNode = shape; 
+        cullObject.volume = shape.getVolume();
+    }
+
+
+
+    /*
+     * creates the four child-nodes
+     */
+    function create() {
+        for (var i = 0; i < count; i++){
+            children.push(new BVHNode(ctx, terrain, (level + 1),
+                                      path + imgNumber + "/", 
+                                      i + 1, count));
+        }
+    }
+
+
+
+    /* 
+     * Decides to create new children and if the node shoud be drawn or not
+     */
+    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
+
+        // definition the actual transformation of the node
+        cullObject.localMatrix = transform;
+
+        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
+            var mat_view = drawableCollection.viewMatrix;
+            var vPos = mat_view.multMatrixPnt(position);
+            var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
+            
+            // terrain._vf.factor instead (level * 16)
+            if (level < 1 && (distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * 100 / fac)) {
+                if (children.length === 0 && terrain.createChildren === 0) {
+                    terrain.createChildren++;
+                    create();
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                }
+                else if (children.length === 0 && terrain.createChildren > 0) {
+                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                }
+                else {
+                    for (var i = 0; i < children.length; i++) {
+                        children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    }
+                }
+            }
+            else {
+                shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+            }
+        }
+    };
+
+
+
+    /*
      * Returns the volume of this node
      */
     this.getVolume = function() {
