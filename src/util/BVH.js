@@ -23,7 +23,7 @@ x3dom.bvh.Settings = defineClass(
     null,
     function()
     {
-        this.debug = true;
+        this.debug = false;
         this.MASK_SET = 63;  // 2^6-1, i.e. all sides of the volume
 
     }
@@ -138,6 +138,17 @@ x3dom.bvh.Base = defineClass(
             rightMin[axis] = rightSplit;
 
             return [new x3dom.fields.BoxVolume(leftMin,leftMax),new x3dom.fields.BoxVolume(rightMin,rightMax)];
+        },
+        calculateCoverage : function(bbox)
+        {
+            //small feature culling
+            var modelViewMat = this.drawableCollection.viewMatrix;
+            var center = modelViewMat.multMatrixPnt(bbox.getCenter());
+            var rVec = modelViewMat.multMatrixVec(bbox.getRadialVec());
+            var r    = rVec.length();
+            var dist = Math.max(-center.z - r, this.drawableCollection.near);
+            var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
+            return (r * 2.0) / projPixelLength;
         }
     }
 );
@@ -177,7 +188,7 @@ x3dom.bvh.DebugComposite = defineClass(
             console.log("Time for BVH creation: "+x3dom.Utils.stopMeasure("buildBVH")+" : %o",this.bvh);
             console.log("DataNodes: "+this.bvh.dataNodes.length + " BihNodes: "+this.bvh.bihNodes.length);
 
-            if(this.scene != null)
+            if(this.bvh.settings.debug && this.scene != null)
             {
                 this.createDebugShape();
             }
@@ -327,7 +338,7 @@ x3dom.bvh.BihSettings = defineClass(
         /* Bih building settings */
         this.max_obj_per_node = 1;
         this.max_depth = 25;
-        this.min_relative_bbox_size = 0.001;
+        this.min_relative_bbox_size = 0.01;
     }
 );
 
@@ -345,6 +356,8 @@ x3dom.bvh.BihNode = defineClass(
 
         /* clipping planes */
         this.clip = [0,0];
+
+        this.bbox = null;
 
         /* only set in leafs */
         this.dataIndex = [0,0];
@@ -404,6 +417,7 @@ x3dom.bvh.BIH = defineClass(
         processNode : function(nodeIndex, startObjIndex, numObjs, bbox, depth)
         {
             var node = this.getNodeForIndex(nodeIndex);
+            node.bbox = bbox;
 
             //calculate split axis and split at center of AABB
             node.split_axis = this.getLongestAxisForBox(bbox);
@@ -439,51 +453,36 @@ x3dom.bvh.BIH = defineClass(
             node.clip[1] -= delta;
             */
 
-            var min= new x3dom.fields.SFVec3f(),
-                max= new x3dom.fields.SFVec3f(),
-                voxel,
-                relativeBBoxToSmall = (bbox.getDiameter()/ this.coveredBoxVolume.getDiameter()) <= this.settings.min_relative_bbox_size;
+            var relativeBBoxToSmall = (bbox.getDiameter()/ this.coveredBoxVolume.getDiameter()) <= this.settings.min_relative_bbox_size;
+
+            //get box volumes from split
+            var voxel = this.splitBoxVolume(bbox, node.split_axis, node.clip[0], node.clip[1]); //splitCenter could be faster
 
             //subdivide or store leaves
             if((numLeft > this.settings.max_obj_per_node) && (depth < this.settings.max_depth) && !relativeBBoxToSmall )
             {
-                //subdivide
-                bbox.getBounds(min,max);
-                max[node.split_axis] = node.clip[0];//splitCenter; //clip[0]; is slower
-                voxel = new x3dom.fields.BoxVolume();
-                voxel.setBounds(min,max);
-
-                node.leftChild = this.processNode(this.bihNodes.length,startObjIndex,numLeft,voxel,depth+1);
+                node.leftChild = this.processNode(this.bihNodes.length,startObjIndex,numLeft,voxel[0],depth+1);
             }
             else
             {
                 //store in new Node
                 node.leftChild = this.getNodeForIndex(this.bihNodes.length);
-                node.leftChild.split_axis = -1;
-                node.leftChild.index_right_child = -1;
+                node.leftChild.bbox = (numLeft == 1)? this.dataNodes[this.index[startObjIndex]].bbox : voxel[0];
 
                 node.leftChild.dataIndex[0] = startObjIndex;
                 node.leftChild.dataIndex[1] = numLeft;
 
-                //TODO statistics ?
             }
 
             if((numRight > this.settings.max_obj_per_node) && (depth < this.settings.max_depth) && !relativeBBoxToSmall)
             {
-                //subdivide
-                bbox.getBounds(min,max);
-                min[node.split_axis] = node.clip[1];//splitCenter; //clip[1]; is slower
-                voxel = new x3dom.fields.BoxVolume();
-                voxel.setBounds(min,max);
-
-                node.rightChild = this.processNode(this.bihNodes.length,startObjIndex +numLeft,numRight,voxel,depth+1);
+               node.rightChild = this.processNode(this.bihNodes.length,startObjIndex +numLeft,numRight,voxel[1],depth+1);
             }
             else
             {
                 //store in new Node
                 node.rightChild = this.getNodeForIndex(this.bihNodes.length);
-                node.rightChild .split_axis = -1;
-                node.rightChild .index_right_child = -1;
+                node.rightChild.bbox = (numRight == 1)? this.dataNodes[this.index[startObjIndex+numLeft]].bbox : voxel[1];
 
                 node.rightChild .dataIndex[0] = startObjIndex + numLeft;
                 node.rightChild .dataIndex[1] = numRight;
@@ -515,48 +514,58 @@ x3dom.bvh.BIH = defineClass(
             if(this.bihNodes.length > 0)
             {
                 var planeMask = 0;
-                this.intersect(this.bihNodes[0],this.coveredBoxVolume, planeMask);
+                this.intersect(this.bihNodes[0], planeMask);
             }
         },
-        intersect : function(node,bbox, planeMask)
+        intersect : function(node, planeMask)
         {
             //viewfrustum intersection test
             if(planeMask < this.settings.MASK_SET)
-                planeMask = this.drawableCollection.viewFrustum.intersect(bbox,planeMask);
+                planeMask = this.drawableCollection.viewFrustum.intersect(node.bbox,planeMask);
             if(planeMask >= 0)
             {
-                //small feature culling
-                var modelViewMat = this.drawableCollection.viewMatrix;//.mult(transform);
-                var center = modelViewMat.multMatrixPnt(bbox.getCenter());
-                var rVec = modelViewMat.multMatrixVec(bbox.getRadialVec());
-                var r    = rVec.length();
-                var dist = Math.max(-center.z - r, this.drawableCollection.near);
-                var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
-                var coverage = (r * 2.0) / projPixelLength;
+                coverage = this.calculateCoverage(node.bbox);
 
-                if (coverage < 250 /*this.drawableCollection.smallFeatureThreshol*/ )
+                if (coverage < this.drawableCollection.smallFeatureThreshold )
                 {
-                    return;   // differentiate between outside and this case
+                    return;
                 }
 
                 //leaf node - add drawables
                 if(node.split_axis == -1)
                 {
+                    /*
+                    //small feature culling
+                    var modelViewMat = this.drawableCollection.viewMatrix;//.mult(transform);
+                    var center = modelViewMat.multMatrixPnt(node.bbox.getCenter());
+                    var rVec = modelViewMat.multMatrixVec(node.bbox.getRadialVec());
+                    var r    = rVec.length();
+                    var dist = Math.max(-center.z - r, this.drawableCollection.near);
+                    var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
+                    var coverage = (r * 2.0) / projPixelLength;
+
+                    if (coverage < this.drawableCollection.smallFeatureThreshold )
+                    {
+                        return;
+                    }
+                    */
                     //add all drawables of datanodes between indices of node (dataIndex[0] - dataIndex[1])
                     for(var i = 0, n = node.dataIndex[1]; i < n; ++i)
                     {
-                        this.drawableCollection.addDrawable(this.dataNodes[this.index[node.dataIndex[0]+i]].drawable);
+                        var drawable = this.dataNodes[this.index[node.dataIndex[0]+i]].drawable;
+                        drawable.priority = coverage;
+                        this.drawableCollection.addDrawable(drawable);
                     }
                 }
                 else
                 {
                     //get box volumes from split
-                    var boxVolumes = this.splitBoxVolume(bbox, node.split_axis, node.clip[0], node.clip[1]);
+                    //var boxVolumes = this.splitBoxVolume(bbox, node.split_axis, node.clip[0], node.clip[1]);
 
                     //call with children
-                    this.intersect(node.leftChild,  boxVolumes[0], planeMask);
+                    this.intersect(node.leftChild, planeMask);
 
-                    this.intersect(node.rightChild, boxVolumes[1], planeMask);
+                    this.intersect(node.rightChild, planeMask);
                 }
             }
         }
