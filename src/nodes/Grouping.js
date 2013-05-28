@@ -480,8 +480,8 @@ x3dom.registerNodeType(
                     this.drawableCollection.concat();
 
                     this.bvh = new x3dom.bvh.BIH();
-                    this.bvh = new x3dom.bvh.DebugComposite(this.bvh,this._nameSpace.doc._scene);
-
+                    //Add debugging composite
+                    //this.bvh = new x3dom.bvh.DebugComposite(this.bvh,this._nameSpace.doc._scene);
 
                     n = this.drawableCollection.length;
                     for (i = 0; i < n; i++) {

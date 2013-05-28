@@ -129,10 +129,10 @@ x3dom.bvh.Base = defineClass(
 
             bbox.getBounds(min,max);
 
-            var leftMin = new x3dom.fields.SFVec3f(min.x,min.y,min.z),
-                leftMax = new x3dom.fields.SFVec3f(max.x,max.y,max.z),
-                rightMin = new x3dom.fields.SFVec3f(min.x,min.y,min.z),
-                rightMax = new x3dom.fields.SFVec3f(max.x,max.y,max.z);
+            var leftMin = x3dom.fields.SFVec3f.copy(min),
+                leftMax = x3dom.fields.SFVec3f.copy(max),
+                rightMin = x3dom.fields.SFVec3f.copy(min),
+                rightMax = x3dom.fields.SFVec3f.copy(max);
 
             leftMax[axis] = leftSplit;
             rightMin[axis] = rightSplit;
@@ -197,7 +197,7 @@ x3dom.bvh.DebugComposite = defineClass(
             this.renderedDrawablesCount = drawableCollection.length;//getDCSize(drawableCollection);
             this.bvh.collectDrawables(drawableCollection);
             this.renderedDrawablesCount = drawableCollection.length - this.renderedDrawablesCount;
-            console.log("added drawables: "+this.renderedDrawablesCount);
+            //console.log("added drawables: "+this.renderedDrawablesCount);
         },
         //create shape for debugging
         createDebugShape : function()
@@ -326,8 +326,8 @@ x3dom.bvh.BihSettings = defineClass(
         x3dom.bvh.BihSettings.superClass.call(this);
         /* Bih building settings */
         this.max_obj_per_node = 1;
-        this.max_depth = 100;
-        this.min_relative_bbox_size = 0.01;
+        this.max_depth = 25;
+        this.min_relative_bbox_size = 0.001;
     }
 );
 
@@ -449,7 +449,7 @@ x3dom.bvh.BIH = defineClass(
             {
                 //subdivide
                 bbox.getBounds(min,max);
-                max[node.split_axis] = splitCenter; //clip[0]; is slower
+                max[node.split_axis] = node.clip[0];//splitCenter; //clip[0]; is slower
                 voxel = new x3dom.fields.BoxVolume();
                 voxel.setBounds(min,max);
 
@@ -472,7 +472,7 @@ x3dom.bvh.BIH = defineClass(
             {
                 //subdivide
                 bbox.getBounds(min,max);
-                min[node.split_axis] = splitCenter; //clip[1]; is slower
+                min[node.split_axis] = node.clip[1];//splitCenter; //clip[1]; is slower
                 voxel = new x3dom.fields.BoxVolume();
                 voxel.setBounds(min,max);
 
@@ -520,41 +520,41 @@ x3dom.bvh.BIH = defineClass(
         },
         intersect : function(node,bbox, planeMask)
         {
-            //leaf node - add drawables
-            if(node.split_axis == -1)
+            //viewfrustum intersection test
+            if(planeMask < this.settings.MASK_SET)
+                planeMask = this.drawableCollection.viewFrustum.intersect(bbox,planeMask);
+            if(planeMask >= 0)
             {
-                //add all drawables of datanodes between indices of node (dataIndex[0] - dataIndex[1])
-                for(var i = 0, n = node.dataIndex[1]; i < n; ++i)
+                //small feature culling
+                var modelViewMat = this.drawableCollection.viewMatrix;//.mult(transform);
+                var center = modelViewMat.multMatrixPnt(bbox.getCenter());
+                var rVec = modelViewMat.multMatrixVec(bbox.getRadialVec());
+                var r    = rVec.length();
+                var dist = Math.max(-center.z - r, this.drawableCollection.near);
+                var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
+                var coverage = (r * 2.0) / projPixelLength;
+
+                if (coverage < 250 /*this.drawableCollection.smallFeatureThreshol*/ )
                 {
-                    this.drawableCollection.addDrawable(this.dataNodes[node.dataIndex[0]+i].drawable);
+                    return;   // differentiate between outside and this case
                 }
-            }
-            else
-            {
-                //viewfrustum intersection test
-                if(planeMask < this.settings.MASK_SET)
-                    planeMask = this.drawableCollection.viewFrustum.intersect(bbox,planeMask);
-                if(planeMask >= 0)
+
+                //leaf node - add drawables
+                if(node.split_axis == -1)
                 {
-                    //small feature culling
-                    /*var modelViewMat = this.drawableCollection.viewMatrix;//.mult(transform);
-                    var center = modelViewMat.multMatrixPnt(bbox.getCenter());
-                    var rVec = modelViewMat.multMatrixVec(bbox.getRadialVec());
-                    var r    = rVec.length();
-                    var dist = Math.max(-center.z - r, this.drawableCollection.near);
-                    var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
-                    var coverage = (r * 2.0) / projPixelLength;
-
-                    if (coverage < this.drawableCollection.smallFeatureThreshold )
+                    //add all drawables of datanodes between indices of node (dataIndex[0] - dataIndex[1])
+                    for(var i = 0, n = node.dataIndex[1]; i < n; ++i)
                     {
-                        return;   // differentiate between outside and this case
-                    }*/
-
+                        this.drawableCollection.addDrawable(this.dataNodes[this.index[node.dataIndex[0]+i]].drawable);
+                    }
+                }
+                else
+                {
                     //get box volumes from split
                     var boxVolumes = this.splitBoxVolume(bbox, node.split_axis, node.clip[0], node.clip[1]);
 
                     //call with children
-                    this.intersect(node.leftChild, boxVolumes[0], planeMask);
+                    this.intersect(node.leftChild,  boxVolumes[0], planeMask);
 
                     this.intersect(node.rightChild, boxVolumes[1], planeMask);
                 }
