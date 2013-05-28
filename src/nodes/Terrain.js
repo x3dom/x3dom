@@ -239,7 +239,7 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
         // decision if culled, drawn etc...
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
                 if (children.length === 0 && terrain.createChildren === 0) {
@@ -405,7 +405,7 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
         // decision if culled, drawn etc...
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
                 if (children.length === 0 && terrain.createChildren === 0) {
@@ -673,7 +673,7 @@ function QuadtreeNode3D_NEW(ctx, terrain, level, nodeNumber, nodeTransformation,
         
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
                 if (children.length === 0 && terrain.createChildren === 0) {
@@ -847,7 +847,7 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
 
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             
             // terrain._vf.factor instead (level * 16)
@@ -1002,7 +1002,7 @@ function OctreeNode(ctx, terrain, level, nodeTransformation)
         if ((planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
         
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
 
             // terrain._vf.factor instead (level * 16)
@@ -1328,7 +1328,7 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
         
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
                 if (children.length === 0 && terrain.createChildren === 0) {
@@ -1469,6 +1469,7 @@ function QuadtreeNode3D_32bit(ctx, terrain, level, nodeNumber, nodeTransformatio
         colorTexture._vf.url[0] = imageAddressColor;
         colorTexture._vf.repeatT = false;
         colorTexture._vf.repeatS = false;
+        colorTexture._vf.generateMipMaps = false;
         textures.addChild(colorTexture, 'texture');
         colorTexture.nodeChanged();
         var colorTextureField = new x3dom.nodeTypes.Field(ctx);
@@ -1483,6 +1484,15 @@ function QuadtreeNode3D_32bit(ctx, terrain, level, nodeNumber, nodeTransformatio
         heightTexture._vf.url[0] = imageAddressHeight;
         heightTexture._vf.repeatT = false;
         heightTexture._vf.repeatS = false;
+        
+        /*heightTexture._cf.textureProperties.node = new x3dom.nodeTypes.TextureProperties(ctx);
+        heightTexture._cf.textureProperties.node._vf.minificationFilter = 'NEAREST';
+        heightTexture._cf.textureProperties.node._vf.magnificationFilter = 'NEAREST';
+        heightTexture._cf.textureProperties.node._vf.generateMipMaps = false;
+        heightTexture._cf.textureProperties.node._vf.boundaryModeS = 'MIRRORED_REPEAT';
+        heightTexture._cf.textureProperties.node._vf.boundaryModeT = 'MIRRORED_REPEAT';
+        heightTexture._cf.textureProperties.node._vf.boundaryModeR = 'MIRRORED_REPEAT';*/
+        
         textures.addChild(heightTexture, 'texture');
         heightTexture.nodeChanged();
         var heightTextureField = new x3dom.nodeTypes.Field(ctx);
@@ -1658,7 +1668,7 @@ function QuadtreeNode3D_32bit(ctx, terrain, level, nodeNumber, nodeTransformatio
         
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
                 if (children.length === 0 && terrain.createChildren === 0) {
@@ -1828,7 +1838,7 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
 
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(position);
+            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             
             // terrain._vf.factor instead (level * 16)
