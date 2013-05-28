@@ -45,6 +45,8 @@ package x3dom
 			
 			FlashBackend.setObjs(numDrawableObjects);
 			
+			//_context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA );
+			
 			//Iterate all objects for rendering
 			for(var i:uint; i<numDrawableObjects; i++)
 			{
@@ -115,6 +117,7 @@ package x3dom
 					}
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.1 ] ) );
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  5, Vector.<Number>( [ 0.0, 0.5, 1.0, 2.0 ] ) );
+					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  14, Vector.<Number>( [ 0.07, 0.07, 0.07, 1.0 ] ) );
 					
 					
 					//Associate sphere mapping
@@ -128,6 +131,10 @@ package x3dom
 						if(shape.texture is CubeMapTexture) {
 							_context3D.setProgramConstantsFromMatrix( Context3DProgramType.FRAGMENT,  6, this._mvInvMatrix, true );
 							_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  10, Vector.<Number>( [ 0.75, 0.75, 0.75, 1.0 ] ) );
+						}
+						if(shape.texture.transform)
+						{
+							_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  13, shape.texture.transform, true );
 						}
 					}
 					

@@ -82,8 +82,16 @@ package x3dom.shaders
 					shader += "add vt2, vt2.xyz, vc9.x\n";
 					shader += "mov v2, vt2\n";
 				} else {
-					shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)
+					if( shape.texture.transform )
+					{
+						shader += "m44 v2, va1, vc13\n";
+					} 
+					else 
+					{
+						shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)
+					}
 				}
+				
 			}
 			
 			//Generate AGALMiniAssembler from generated Shader
@@ -156,7 +164,6 @@ package x3dom.shaders
 				}
 				shader += "mul ft5, ft5, fc2.xyz\n";
 				shader += "add ft3, ft3, ft5\n";
-				
 				if(shape.texCoordBuffer && shape.texture && shape.texture.blending) {
 					if(shape.texture is CubeMapTexture) {
 						shader += "sub ft6, ft0, ft3)\n";				//lerp(diffColor, refColor, ratio)
@@ -174,8 +181,9 @@ package x3dom.shaders
 					shader += "mov ft3.w, fc1.w\n";
 				}
 				
-				shader += "sat ft3, ft3\n";								//saturate(NdotL)
+				
 				shader += "add ft3.xyz, fc3.xyz, ft3.xyz\n";			//rgb += emissiveColor
+				shader += "sat ft3, ft3\n";								//saturate(NdotL)
 				shader += "sub ft4, ft3, fc4\n";
 				shader += "kil ft4.wwww\n";
 				shader += "mov oc, ft3 \n";							//Output Color

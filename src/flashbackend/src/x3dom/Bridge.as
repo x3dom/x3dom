@@ -271,10 +271,15 @@ package x3dom {
 		
 		private function setMeshTexture(value:Object) : void 
 		{
+			if(value.transform != null) {
+				value.transform = new Matrix3D( Vector.<Number>( value.transform ) );
+			}
+			
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new ImageTexture( String(value.url),
 																							  Boolean(Number(value.origChannelCount) == 1.0 || Number(value.origChannelCount) == 2.0),
 																							  Boolean(value.repeatS),
-																							  Boolean(value.repeatT) );
+																							  Boolean(value.repeatT),
+																							  value.transform);
 		}
 		
 		private function setPixelTexture(value:Object) : void 

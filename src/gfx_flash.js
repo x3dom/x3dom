@@ -538,7 +538,7 @@ x3dom.gfx_flash = (function() {
 			}
 			
 			//Set texture coordinates
-			if( shape._dirty.texcoords === true ) {
+			if( shape._dirty.texCoords === true ) {
 				if(isImageGeometry) {
 					this.object.setMeshTexCoords( { id: shape._objectID,					
 													idx: 0, 
@@ -560,7 +560,7 @@ x3dom.gfx_flash = (function() {
 						}
 					}
 				}
-				shape._dirty.texcoords = false;
+				shape._dirty.texCoords = false;
 			}
 			
 			//Set material
@@ -583,7 +583,14 @@ x3dom.gfx_flash = (function() {
 			//Set Texture
 			if( shape._dirty.texture === true ) {
 				if (appearance) {
+          
+          var texTrafo = null;
+          if (appearance._cf.textureTransform.node) {
+            texTrafo = appearance.texTransformMatrix().toGL();
+          }
+        
 					var texture = shape._cf.appearance.node._cf.texture.node;
+            
 					if(texture) {		
 						if (x3dom.isa(texture, x3dom.nodeTypes.PixelTexture))
 						{
@@ -609,7 +616,8 @@ x3dom.gfx_flash = (function() {
 														  origChannelCount: texture._vf.origChannelCount,
 														  repeatS: texture._vf.repeatS,
 														  repeatT: texture._vf.repeatT,
-														  url: texture._vf.url[0] } );
+														  url: texture._vf.url[0],
+                              transform: texTrafo } );
 						}
 					}
 				}

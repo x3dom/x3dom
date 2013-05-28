@@ -90,7 +90,8 @@ package x3dom.shaders
 										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture is CubeMapTexture)) + " / " +
 										  String(Boolean(shape.colorBuffer)) + " / " + 
 										  String(shape.sphereMapping) + " / " +
-										  String(shape.solid);
+										  String(shape.solid) + " / " +
+										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture.transform));
 
 			//Check if shader is in cache
 			if( this._cache[shaderIdentifier] == undefined ) 
