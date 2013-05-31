@@ -346,7 +346,7 @@ x3dom.registerNodeType(
                 var p0, p1, c0, c1;
 
                 // Found MultiIndex Mesh OR LineSet with too many vertices for 16 bit
-                if ( (hasColor && hasColorInd) || indexes.length > 65535 )
+                if ( (hasColor && hasColorInd) || positions.length > 65535 )
                 {
                     t = 0;
                     cnt = 0;
@@ -370,7 +370,7 @@ x3dom.registerNodeType(
                                 if (hasColorInd && colPerVert) { c0 = +colorInd[i]; }
                                 else { c0 = p0; }
                                 t = 1;
-                            break;
+                                break;
                             case 1:
                                 p1 = +indexes[i];
                                 if (hasColorInd && colPerVert) { c1 = +colorInd[i]; }
@@ -400,9 +400,8 @@ x3dom.registerNodeType(
 
                                 t = 2;
                                 lineCnt++;
-                            break;
-                            //@todo: check - when does this ever happen? (case t=3)
-                            case 3:
+                                break;
+                            case 2:
                                 p0 = p1;
                                 c0 = c1;
                                 p1 = +indexes[i];
@@ -432,7 +431,7 @@ x3dom.registerNodeType(
                                 }
 
                                 lineCnt++;
-                            break;
+                                break;
                             default:
                         }
                     }
