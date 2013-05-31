@@ -345,9 +345,9 @@ x3dom.registerNodeType(
                 var i, t, cnt, lineCnt;
                 var p0, p1, c0, c1;
 
-                if ( (hasColor && hasColorInd) )
+                // Found MultiIndex Mesh OR LineSet with too many vertices for 16 bit
+                if ( (hasColor && hasColorInd) || indexes.length > 65535 )
                 {
-                    // Found MultiIndex Mesh
                     t = 0;
                     cnt = 0;
                     lineCnt = 0;
@@ -401,6 +401,7 @@ x3dom.registerNodeType(
                                 t = 2;
                                 lineCnt++;
                             break;
+                            //@todo: check - when does this ever happen? (case t=3)
                             case 3:
                                 p0 = p1;
                                 c0 = c1;
@@ -435,6 +436,10 @@ x3dom.registerNodeType(
                             default:
                         }
                     }
+
+                    //if the LineSet is too large for 16 bit indices, split it!
+                    if (indexes.length > 65535)
+                        this._mesh.splitMesh(2);
                 } // if isMulti
                 else
                 {
@@ -463,7 +468,11 @@ x3dom.registerNodeType(
                 }
 
                 this._mesh._invalidate = true;
-                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                this._mesh._numCoords = 0;
+
+                for (i=0; i<this._mesh._indices.length; i++) {
+                    this._mesh._numCoords += this._mesh._positions[i].length / 3;
+                }
 
                 var time1 = new Date().getTime() - time0;
                 //x3dom.debug.logInfo("Mesh load time: " + time1 + " ms");
@@ -471,6 +480,7 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
+                //@todo: handle field updates for over-sized LineSets
                 var pnts = null;
                 
                 if (fieldName == "coord")

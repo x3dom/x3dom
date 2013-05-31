@@ -230,9 +230,22 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
     this._normals[0] = vertNormals;
 };
 
-x3dom.Mesh.prototype.splitMesh = function()
+/** @param primStride Number of index entries per primitive, for example 3 for TRIANGLES
+ */
+x3dom.Mesh.prototype.splitMesh = function(primStride)
 {
+    var pStride;
+
+    if (typeof primStride == 'undefined')
+        pStride = 3;
+    else
+        pStride = primStride;
+
     var MAX = 65535;
+
+    //adapt MAX to match the primitive stride
+    MAX = Math.floor(MAX / pStride) * pStride;
+
     if (this._positions[0].length / 3 <= MAX) {
         return;
     }
@@ -298,6 +311,11 @@ x3dom.Mesh.prototype.splitMesh = function()
         }
     }
     while (positions.length > ++i * MAX * 3);
+
+    /*console.log("Here's the result:")
+    for (i = 0; i < this._indices.length; ++i)
+        console.log(this._indices[i].length);
+        */
 };
 
 x3dom.Mesh.prototype.calcTexCoords = function(mode)
