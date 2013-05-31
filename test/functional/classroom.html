@@ -82,7 +82,7 @@
                    orientation='0 1 0 2.99229' position='4.79662 1.8101 -11.0811'
                    zNear="0.001" zFar="300"></viewpoint>
         <viewpoint DEF='AOPT_CAM' centerOfRotation='3.4625 1.73998 -5.55' position='3.4625 1.73998 8.69028'></viewpoint>
-        <background DEF='bgnd'></background>
+        <background DEF='bgnd' skyColor="0 0 0"></background>
         <group id='root' render='false'>
             <group DEF='theScene'>
                 <shape DEF='_G_0'>
@@ -124,7 +124,8 @@
         <group DEF='left'>
             <shape>
                 <appearance>
-                    <renderedTexture id="rtLeft" update='ALWAYS' dimensions='512 512 4' repeatS='false' repeatT='false'>
+                    <renderedTexture id="rtLeft" stereoMode="LEFT_EYE" update='ALWAYS'
+                                     dimensions='640 800 4' repeatS='false' repeatT='false'>
                         <viewpoint USE='vp' containerField='viewpoint'></viewpoint>
                         <background USE='bgnd' containerField='background'></background>
                         <!--group USE='left' containerField="excludeNodes"></group-->
@@ -132,6 +133,7 @@
                     </renderedTexture>
                     <composedShader>
                         <field name='tex' type='SFInt32' value='0'></field>
+                        <field name='leftEye' type='SFFloat' value='1'></field>
                         <shaderPart type='VERTEX'>
                             attribute vec3 position;
                             attribute vec2 texcoord;
@@ -148,19 +150,39 @@
                                 //gl_Position = vec4(pos.xy / 4.0 + vec2(-0.75,0.75), 0.0, 1.0);
                             }
                         </shaderPart>
-                        <shaderPart type='FRAGMENT'>
+                        <shaderPart DEF="frag" type='FRAGMENT'>
                             #ifdef GL_ES
                             precision highp float;
                             #endif
 
                             uniform sampler2D tex;
+                            uniform float leftEye;
                             varying vec2 fragTexCoord;
 
                             void main()
                             {
-                                vec3 col = texture2D(tex, fragTexCoord).rgb;
+                                float distortionScale = 0.9; //0.685;
+                                vec2 screenCenter = vec2(0.5, 0.5);
+                                //float distortionK[4] = float[](1.0, 0.22, 0.24, 0.0);
+                                vec2 lensCenter = vec2(0.151976495726, 0.0);
+                                if (leftEye == 0.0) {
+                                    lensCenter.x *= -0.5;
+                                }
 
-                                gl_FragColor = vec4(col, 1.0);
+                                vec2 theta = (fragTexCoord * 2.0) - 1.0;
+                                float rSq = theta.x * theta.x + theta.y * theta.y;
+                                vec2 rvec = theta * (1.0 + 0.22 * rSq + 0.24 * rSq * rSq); //+ 0.0 * rSq * rSq * rSq);
+                                vec2 texCoord = distortionScale * (rvec + 1.0) / 2.0 + lensCenter;
+
+                                if (any(notEqual(clamp(texCoord, screenCenter - vec2(0.5, 0.5),
+                                                                 screenCenter + vec2(0.5, 0.5)) - texCoord,
+                                                 vec2(0.0, 0.0)))) {
+                                    discard;
+                                }
+                                else {
+                                    vec3 col = texture2D(tex, texCoord).rgb;
+                                    gl_FragColor = vec4(col, 1.0);
+                                }
                             }
                         </shaderPart>
                     </composedShader>
@@ -171,14 +193,15 @@
         <group DEF='right'>
             <shape>
                 <appearance>
-                    <renderedTexture id="rtRight" update='ALWAYS' dimensions='512 512 4' repeatS='false' repeatT='false'>
+                    <renderedTexture id="rtRight" stereoMode="RIGHT_EYE" update='ALWAYS'
+                                     dimensions='640 800 4' repeatS='false' repeatT='false'>
                         <viewpoint USE='vp' containerField='viewpoint'></viewpoint>
                         <background USE='bgnd' containerField='background'></background>
-                        <!--group USE='left' containerField="excludeNodes"></group-->
                         <group USE='theScene' containerField="scene"></group>
                     </renderedTexture>
                     <composedShader>
                         <field name='tex' type='SFInt32' value='0'></field>
+                        <field name='leftEye' type='SFFloat' value='0'></field>
                         <shaderPart type='VERTEX'>
                             attribute vec3 position;
                             attribute vec2 texcoord;
@@ -194,20 +217,7 @@
                                 gl_Position = vec4((pos.x + 1.0) / 2.0, pos.y, 0.0, 1.0);
                             }
                         </shaderPart>
-                        <shaderPart type='FRAGMENT'>
-                            #ifdef GL_ES
-                            precision highp float;
-                            #endif
-
-                            uniform sampler2D tex;
-                            varying vec2 fragTexCoord;
-
-                            void main()
-                            {
-                                vec3 col = texture2D(tex, fragTexCoord).rgb;
-
-                                gl_FragColor = vec4(col, 1.0);
-                            }
+                        <shaderPart USE="frag" type='FRAGMENT'>
                         </shaderPart>
                     </composedShader>
                 </appearance>
@@ -234,6 +244,16 @@
         var hw = Math.round(lastW / 2);
         rtLeft.setAttribute('dimensions',  hw + ' ' + lastH + ' 4');
         rtRight.setAttribute('dimensions', hw + ' ' + lastH + ' 4');
+
+        /*
+        rtLeft.hScreenSize = 0.14976;
+        rtLeft.vScreenSize = 0.09356;
+        rtLeft.vScreenCenter = this.vScreenSize / 2;
+        rtLeft.eyeToScreenDistance = 0.041;
+        rtLeft.lensSeparationDistance = 0.0635;
+        rtLeft.distortionK = [1.0, 0.22, 0.24, 0.0];
+        rtLeft.lensCenter = 1 - 2 * this.lensSeparationDistance / this.hScreenSize;
+        */
 
         runtime.exitFrame = function ()
         {
