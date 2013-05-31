@@ -2736,9 +2736,12 @@ x3dom.gfx_webgl = (function () {
 
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
-                if (rt_tex._webgl && rt_tex._webgl.fbo)
+                if (rt_tex._webgl && rt_tex._webgl.fbo &&
+                    rt_tex._webgl.fbo.width  == rt_tex._vf.dimensions[0] &&
+                    rt_tex._webgl.fbo.height == rt_tex._vf.dimensions[1])
                     continue;
 
+                rt_tex.invalidateGLObject();
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                     rt_tex._vf.dimensions[0],
