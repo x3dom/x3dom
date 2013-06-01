@@ -196,7 +196,9 @@ x3dom.registerNodeType(
                     
                     if (inlScene)
                     {
-                        nameSpace = new x3dom.NodeNameSpace("", that._nameSpace.doc);
+                        var nsName = (that._vf.nameSpaceName.length != 0) ?
+                                      that._vf.nameSpaceName.toString().replace(' ','') : "";
+                        nameSpace = new x3dom.NodeNameSpace(nsName, that._nameSpace.doc);
                         
                         var url = that._vf.url.length ? that._vf.url[0] : "";
                         if ((url[0] === '/') || (url.indexOf(":") >= 0))
@@ -205,6 +207,7 @@ x3dom.registerNodeType(
                             nameSpace.setBaseURL(that._nameSpace.baseURL + url);
                         
                         newScene = nameSpace.setupTree(inlScene);
+                        that._nameSpace.addSpace(nameSpace);
                         
                         if(that._vf.nameSpaceName.length != 0)
                         {
@@ -227,6 +230,9 @@ x3dom.registerNodeType(
 
                     // trick to free memory, assigning a property to global object, then deleting it
                     var global = x3dom.getGlobal();
+
+                    if (that._childNodes.length > 0 && that._childNodes[0] && that._childNodes[0]._nameSpace)
+                        that._nameSpace.removeSpace(that._childNodes[0]._nameSpace);
                     
                     while (that._childNodes.length !== 0)
                         global['_remover'] = that.removeChild(that._childNodes[0]);
@@ -248,14 +254,16 @@ x3dom.registerNodeType(
                         var theScene = that._nameSpace.doc._scene;
 
                         if (theScene) {
-                            theScene.updateVolume();
+                            theScene.invalidateVolume();
+                            theScene.invalidateCache();
+
                             window.setTimeout( function() {
                                 that.invalidateVolume();
                                 that.invalidateCache();
 
                                 theScene.updateVolume();
                                 that._nameSpace.doc.needRender = true;
-                                }, 1500 );
+                                }, 1000 );
                         }
                         
                         that.fireEvents("load");
@@ -285,6 +293,7 @@ x3dom.registerNodeType(
         }
     )
 );
+
 
 function setNamespace(prefix, childDomNode, mapDEFToID)
 {

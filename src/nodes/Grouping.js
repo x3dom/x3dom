@@ -890,7 +890,7 @@ x3dom.registerNodeType(
 
                 if (vol.isValid())
                 {
-                    // TODO: could directly use _lastMin/Max, but then care care of initial null check
+                    // TODO: could directly use _lastMin/Max, but then take care of initial null check
                     var min = x3dom.fields.SFVec3f.MAX();
                     var max = x3dom.fields.SFVec3f.MIN();
                     vol.getBounds(min, max);

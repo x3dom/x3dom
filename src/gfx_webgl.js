@@ -2746,6 +2746,8 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl.fbo = this.initFbo(gl,
                     rt_tex._vf.dimensions[0],
                     rt_tex._vf.dimensions[1], false, type);
+                x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
+                                    rt_tex._vf.dimensions[0] + " x " + rt_tex._vf.dimensions[1]);
             }			
 			
 			//reinitialize shadow fbos if neccessary
@@ -3366,7 +3368,7 @@ x3dom.gfx_webgl = (function () {
             var shape = drawable.shape;
             var s_gl = shape._webgl;
 
-            if (!s_gl) {
+            if (!s_gl || !shape._vf.render) {
                 continue;
             }
 
