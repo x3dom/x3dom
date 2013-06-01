@@ -28,7 +28,7 @@ from __future__ import with_statement
 #       nodetypes-x.x.x.html  The node type tree dump
 #   docs/html/            The documentation as browsable html
 #   docs/singlehtml/      The documentation as single page html
-#   docs/guide.pdf        The documnetation as PDF (optinal)
+#   docs/guide.pdf        The documnetation as PDF (optional)
 #   examples/             Some selected examples that work locally
 #   x3dom.js              the core x3dom profile, minified
 #   x3dom-debug.js        the core x3dom profile, un-minified with comments
