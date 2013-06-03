@@ -28,10 +28,14 @@ Commit early, commit often
 If at all possible commit small units of work very often.
 Large commits, with no updates of your codebase in between
 most likely will lead to conflicts in projects with more
-than one committer. Partition your work into small logical 
-pieces and commit as often as possible. View the commit and
-push as a extended save operation. It's far better to have 10
-10-liner commits, than one 100 liner.
+than one committer. Committing often also lets your fellow
+programmers know what you are working on and integrate your
+changes early on.
+
+Partition your work into small logicalpieces and commit as 
+often as possible. View the commit and push as a extended 
+save operation. It's far better to have ten 10-liner commits, 
+than one 100 liner.
 
 
 Git Workflow
