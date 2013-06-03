@@ -441,9 +441,11 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
  */
 x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl, properties)
 {
-	var shader = "#ifdef GL_ES\n" +
-    			 "  precision highp float;\n" +
-    			 "#endif\n\n";
+	var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
 	
 	/*******************************************************************************
 	* Generate dynamic uniforms & varyings

@@ -62,11 +62,13 @@ x3dom.shader.PickingColorShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.PickingColorShader.prototype.generateFragmentShader = function(gl)
 {
-	var	shader =	"#ifdef GL_ES\n" +
-					"  precision highp float;\n" +
-					"#endif\n" +
-					"\n" +
-					"uniform float lowBit;\n" +
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
+	shader += "uniform float lowBit;\n" +
 					"varying vec3 fragColor;\n" +
 					"\n" +
 					"void main(void) {\n" +

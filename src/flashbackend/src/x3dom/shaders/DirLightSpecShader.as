@@ -23,7 +23,7 @@ package x3dom.shaders
 		/**
 		 * Generate the final Program3D for the DirLightShader
 		 */
-		public function DirLightSpecShader()
+		public function DirLightSpecShader(isHeadLight:Boolean = false)
 		{
 			//Get 3D Context
 			this._context3D = FlashBackend.getContext();
@@ -32,7 +32,7 @@ package x3dom.shaders
 			this._program3D = this._context3D.createProgram();
 			
 			//Generate vertex shader
-			var vertexShader:AGALMiniAssembler = generateVertexShader();
+			var vertexShader:AGALMiniAssembler = generateVertexShader(isHeadLight);
 			
 			//Generate fragment shader
 			var fragmentShader:AGALMiniAssembler = generateFragmentShader();
@@ -44,7 +44,7 @@ package x3dom.shaders
 		/**
 		 * Generate the vertex shader
 		 */
-		private function generateVertexShader() : AGALMiniAssembler
+		private function generateVertexShader(isHeadLight:Boolean) : AGALMiniAssembler
 		{
 			//Init shader string
 			var shader:String = "";
@@ -56,13 +56,19 @@ package x3dom.shaders
 			shader += "dp4 vt0.z, va0, vc6\n"; 	//position * proInv(v1)
 			shader += "mov v1, vt0.xyz0\n";
 			
-			shader += "mov vt2,vc8\n";
-			shader += "dp3 vt1.x, vt2, vc0\n";
-			shader += "dp3 vt1.y, vt2, vc1\n";
-			shader += "dp3 vt1.z, vt2, vc2\n";
-			shader += "mov v2, vt1.xyz0\n";
-			
-			
+			if (isHeadLight)
+			{
+				shader += "mov v2, vc8\n";	
+			} 
+			else 
+			{
+				shader += "mov vt2,vc8\n";
+				shader += "dp3 vt1.x, vt2, vc0\n";
+				shader += "dp3 vt1.y, vt2, vc1\n";
+				shader += "dp3 vt1.z, vt2, vc2\n";
+				shader += "mov v2, vt1.xyz0\n";
+			}
+				
 			shader += "mov op, va0\n";
 			
 			//Generate AGALMiniAssembler from generated Shader
@@ -97,6 +103,7 @@ package x3dom.shaders
 			/*10*/ shader += "neg ft1, ft1\n";								//-PosVS
 
 			/*11*/ shader += "tex ft2, v0, fs1 <2d, clamp, linear>\n";		//Sample Normal Texture		-> ft2
+			shader += "mov ft6.x, ft2.w\n";							//Shininess -> ft6
 			/*12*/ shader += "mul ft2.xyz, ft2.xyz, fc0.z\n";				//Normal * 2.0
 			/*13*/ shader += "sub ft2.xyz, ft2.xyz, fc1.x\n";				//Normal - 1.0
 			/*14*/ shader += "nrm ft2.xyz, ft2.xyz\n";						//normalize(N)
@@ -110,9 +117,10 @@ package x3dom.shaders
 			/*19*/ shader += "dp3 ft4, ft2, ft3\n";							//NdotL
 			/*20*/ shader += "dp3 ft5, ft2, ft1\n";							//NdotH
 			
-			/*21*/ shader += "mul ft3, ft2.w, fc0.y\n";						//shininess * 128
+			/*21*/ shader += "mul ft3, ft6.x, fc0.y\n";						//shininess * 128
 			/*22*/ shader += "pow ft2, ft5, ft3\n";							//pow(NdotH, shininess*128)
-			/*23*/ shader += "mul ft1.w, ft4, ft2\n";						//NdotL * pow(NdotH, shininess*128)
+			/*23*/ shader += "mul ft1, ft4, ft2\n";							//NdotL * pow(NdotH, shininess*128)
+			/*23*/ shader += "mul ft1, ft1, fc3.x\n";
 			/*23*/ shader += "mul ft1, fc4, ft1.w\n";						//LightColor * NdotL * pow(NdotH, shininess*128)
 			
 			/*24*/ shader += "mov oc, ft1\n";								//Output color

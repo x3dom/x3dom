@@ -129,11 +129,13 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.PickingShader.prototype.generateFragmentShader = function(gl)
 {
-	var shader =	"#ifdef GL_ES\n" +
-					"  precision highp float;\n" +
-					"#endif\n" +
-					"\n" +
-					"uniform float writeShadowIDs;\n" +
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
+	shader += "uniform float writeShadowIDs;\n" +
 					"uniform float highBit;\n" +
 					"uniform float lowBit;\n" +
 					"uniform float sceneSize;\n" +

@@ -60,11 +60,13 @@ x3dom.shader.BackgroundCubeTextureShader.prototype.generateVertexShader = functi
  */
 x3dom.shader.BackgroundCubeTextureShader.prototype.generateFragmentShader = function(gl)
 {
-	shader =	"#ifdef GL_ES\n" +
-				"  precision highp float;\n" +
-				"#endif\n" +
-				"\n" +
-				"uniform samplerCube tex;\n" +
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
+	shader +=	"uniform samplerCube tex;\n" +
 				"varying vec3 fragNormal;\n" +
 				"\n" +
 				"float magn(float val) {\n" +
