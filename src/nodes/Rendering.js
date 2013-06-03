@@ -437,7 +437,7 @@ x3dom.registerNodeType(
                     }
 
                     //if the LineSet is too large for 16 bit indices, split it!
-                    if (indexes.length > 65535)
+                    if (positions.length > 65535)
                         this._mesh.splitMesh(2);
                 } // if isMulti
                 else

@@ -311,11 +311,6 @@ x3dom.Mesh.prototype.splitMesh = function(primStride)
         }
     }
     while (positions.length > ++i * MAX * 3);
-
-    /*console.log("Here's the result:")
-    for (i = 0; i < this._indices.length; ++i)
-        console.log(this._indices[i].length);
-        */
 };
 
 x3dom.Mesh.prototype.calcTexCoords = function(mode)
