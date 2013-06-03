@@ -10,9 +10,9 @@ With all X3DOM source files the following file format
 and encoding conventions have to be used. Please set your 
 editor to the following settings:
 
-File encoding: **UTF-8**, without Byte-Order-Mark (BOM)
-Lineendings: **LF** (Unix Line Feed)
-Indentation: 4 spaces (unless otherwise noted)
+    - File encoding: **UTF-8**, without Byte-Order-Mark (BOM)
+    - Lineendings: **LF** (Unix Line Feed)
+    - Indentation: **4 spaces** (unless otherwise noted)
 
 A note about indentation: Essentially this is a 
 no-tab policy. Which means no tab chars in the code to be used
@@ -75,5 +75,5 @@ For Python there are official, very sane, guidelines outlined in
 `PEP-8`_. All Python code should follow this styleguide. 
 
 
-.. _PEP-8: http://www.python.org/dev/peps/pep-0008/`
+.. _PEP-8: http://www.python.org/dev/peps/pep-0008/
 
