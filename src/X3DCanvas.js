@@ -197,9 +197,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			obj.setAttribute('id', id);
       
       //Check for xhtml
-      var pathname = window.location.pathname;
-      if (pathname.substring(pathname.lastIndexOf('.')+1) == "xhtml")
-      {
+      if (!document.doctype || document.doctype && document.doctype.publicId.search(/DTD XHTML/i) != -1) {
         x3dom.debug.logWarning("Flash backend don't like XHTML, please use HTML5!");
         obj.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
       } else {
