@@ -45,9 +45,14 @@
 		private var _viewMatrix:Matrix3D = new Matrix3D();
 		
 		/**
-		 * Scenes projection matrix
+		 * Scenes perspective projection matrix
 		 */
 		private var _projMatrix:Matrix3D = new Matrix3D();
+		
+		/**
+		 * Scenes orthogonal projection matrix
+		 */
+		private var _orthoProjMatrix:Matrix3D = new Matrix3D();
 		
 		/**
 		 * Array of all scene lights
@@ -141,7 +146,8 @@
 			
 			//If nothing found create new Light
 			switch( type ) {
-				case LightType.DIRECTIONALIGHT: this._lights.push( new DirectionalLight(id) ); break;
+				case LightType.HEADLIGHT: this._lights.push( new HeadLight(id) ); break;
+				case LightType.DIRECTIONALLIGHT: this._lights.push( new DirectionalLight(id) ); break;
 				case LightType.POINTLIGHT: 		this._lights.push( new PointLight(id) ); break;
 				case LightType.SPOTLIGHT: 		this._lights.push( new SpotLight(id) ); break;
 			}

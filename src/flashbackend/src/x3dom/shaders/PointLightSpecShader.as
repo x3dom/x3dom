@@ -8,7 +8,7 @@ package x3dom.shaders
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Program3D;
 	
-	public class PointLightDiffShader
+	public class PointLightSpecShader
 	{
 		/**
 		 * Holds our 3D context
@@ -23,7 +23,7 @@ package x3dom.shaders
 		/**
 		 * Generate the final Program3D for the DirLightShader
 		 */
-		public function PointLightDiffShader()
+		public function PointLightSpecShader()
 		{
 			//Get 3D Context
 			this._context3D = FlashBackend.getContext();
@@ -48,8 +48,8 @@ package x3dom.shaders
 		{
 			//Init shader string
 			var shader:String = "";
-								
-			//Build shader						
+			
+			//Build shader											
 			shader += "mov v0, va1\n";			//TexCoord -> Fragment(v0)
 			
 			shader += "dp3 vt0.x, va0, vc4\n"; 	//position * proInv(v1)
@@ -78,12 +78,6 @@ package x3dom.shaders
 		 */
 		private function generateFragmentShader() : AGALMiniAssembler
 		{
-			//FC0 [0.01, 128.0, 2.0, _scene.zFar]
-			//FC1 [1.0, 1.0, 1.0, 1.0]
-			//FC2 [1.0, 255.0, 65025.0, 16581375.0]
-			//FC3 [lights[i].intensity, 0.0, 0.0, 0.0]
-			//FC4 [lights[i].color]
-			
 			//Init shader string
 			var shader:String = "";
 			
@@ -97,23 +91,35 @@ package x3dom.shaders
 			shader += "sub ft3.xxxx, ft1.x, fc0.x\n";				//if(depth-0.01)
 			shader += "kill ft3.xxxx\n";							//kill
 			
-			shader += "mul ft1.x, ft1.x, fc0.w\n";					//depth * zFar
+			shader += "mul ft1.x, ft1.x, fc0.w\n";					//depth*farClipPlane 	-> ft1.x
 			shader += "mul ft1.xyz, v1.xyz, ft1.x\n";				//PosVS * depth
 			//shader += "neg ft1, ft1\n";
 			
-			
 			shader += "tex ft2, v0, fs1 <2d, clamp, linear>\n";		//Sample Normal Texture		-> ft2
+			shader += "mov ft6.x, ft2.w\n";							//Shininess -> ft6
 			shader += "mul ft2.xyz, ft2.xyz, fc0.z\n";				//Normal * 2.0
 			shader += "sub ft2.xyz, ft2.xyz, fc1.x\n";				//Normal - 1.0
 			shader += "nrm ft2.xyz, ft2.xyz\n";						//normalize(N)
 			
-			shader += "sub ft3, v2, ft1\n";							//LightPos = lightPos - VS Pos
+			shader += "sub ft3, v2.xyz, v1.xyz\n";					//LightPos = lightPos - VS Pos
 			shader += "nrm ft3.xyz, ft3\n";							//normalize(LightDir)
+			shader += "nrm ft1.xyz, ft1\n";						//normalize(LightDir)
 			
-			shader += "dp3 ft4.x, ft2.xyz, ft3.xyz\n";				//NdotL
-			shader += "mul ft4.x, ft4.x, fc3.x\n";					//intensity * NdotL
-			shader += "mul ft1, fc4, ft4.x\n";						//lightColor * NdotL
-
+			shader += "neg ft5, v1\n";
+			shader += "nrm ft5.xyz, v1\n";
+			
+			shader += "add ft1, ft1.xyz, ft5.xyz\n";				// H = L + V
+			shader += "nrm ft1.xyz, ft1.xyz\n";						//normalize(H)
+			
+			shader += "dp3 ft4, ft2.xyz, ft3.xyz\n";				//NdotL
+			shader += "dp3 ft5, ft2.xyz, ft1.xyz\n";				//NdotH
+			
+			shader += "mul ft3.x, ft6.x, fc0.y\n";					//shininess * 128
+			shader += "pow ft2.x, ft5.x, ft3.x\n";					//pow(NdotH, shininess*128)
+			shader += "mul ft1.x, ft4.x, ft2.x\n";					//NdotL * pow(NdotH, shininess*128)
+			shader += "mul ft1.x, ft1.x, fc3.x\n";					//intensity
+			shader += "mul ft1, fc4, ft1.xxxx\n";					//LightColor * NdotL * pow(NdotH, shininess*128)
+			
 			shader += "mov oc, ft1\n";								//Output color
 			
 			//Generate AGALMiniAssembler from generated Shader

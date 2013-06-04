@@ -99,8 +99,6 @@ package x3dom
 					
 					if(lights.length && shape.material != null)
 					{
-						//Associate EyePosition
-						this._context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  8, Vector.<Number>( [ -this._scene.viewMatrix.position.x, -this._scene.viewMatrix.position.y, -this._scene.viewMatrix.position.z, 1.0 ] ) );
 						//Associate LightDirection
 						this._context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  0, Vector.<Number>( lights[0].direction ) );
 					}

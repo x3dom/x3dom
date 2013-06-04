@@ -8,7 +8,7 @@ package x3dom.shaders
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Program3D;
 	
-	public class LPPDynamicShader
+	public class LPPDebugShader
 	{
 		/**
 		 * Holds our 3D context
@@ -16,14 +16,14 @@ package x3dom.shaders
 		private var _context3D:Context3D;
 		
 		/**
-		 * Program3D for the PickingShader
+		 * Program3D for the LPPDebugShader
 		 */
 		private var _program3D:Program3D;
 		
 		/**
 		 * Generate the final Program3D for the DepthShader
 		 */
-		public function LPPDynamicShader()
+		public function LPPDebugShader()
 		{
 			//Get 3D Context
 			this._context3D = FlashBackend.getContext();
@@ -50,8 +50,8 @@ package x3dom.shaders
 			var shader:String = "";
 			
 			//Build shader
-			shader += "m44 v0, va0, vc0\n";		//PositionWS -> (v0)
-			shader += "m44 op, va0, vc0\n";		//Position*MVP-Matrix -> (op)
+			shader += "m44 op, va0, vc0\n";	//Position*MP-Matrix -> (op)
+			shader += "mov v0, va1\n";	//Texcoords -> (v0)
 			
 			//Generate AGALMiniAssembler from generated Shader
 			var vertexShader:AGALMiniAssembler = new AGALMiniAssembler();
@@ -69,27 +69,7 @@ package x3dom.shaders
 			//Init shader string
 			var shader:String = "";
 			
-			//Build shader
-			shader += "mov ft0, v0\n";
-			shader += "div ft0.xy, ft0.xy, ft0.ww\n";
-			shader += "neg ft0.y, ft0.y\n";
-			shader += "add ft0.xy, ft0.xy, fc5.yy\n";
-			shader += "mul ft0.xy, ft0.xy, fc5.xx\n";
-			
-			shader += "tex ft1, ft0.xy, fs0 <2d, clamp, linear>\n";		//Sample Light Texture		-> ft1
-			shader += "tex ft2, ft0.xy, fs1 <2d, clamp, linear>\n";		//Sample Light Texture		-> ft1
-			
-			shader += "mul ft3.xyz, fc1.xyz, ft1.xyz\n";
-			shader += "mov ft3.w, fc1.w\n";
-			
-			shader += "mul ft4.xyz, fc2.xyz, ft2.xyz\n";
-			shader += "mov ft4.w, fc1.w\n";
-			
-			shader += "add ft5, ft3, ft4\n";
-			
-			//shader += "sat ft5, ft5\n";
-
-			shader += "mov oc, ft5\n"; 					//Output color*/
+			shader += "tex oc, v0, fs0 <2d, wrap, linear>\n";	//Sample Texture(ft0)
 			
 			//Generate AGALMiniAssembler from generated Shader
 			var fragmentShader:AGALMiniAssembler = new AGALMiniAssembler();
