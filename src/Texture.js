@@ -28,6 +28,7 @@ x3dom.Texture = function(gl, doc, cache, node)
 	this.wrapT			= gl.REPEAT;
 	this.genMipMaps		= false;
 	this.texture		= null;
+	this.ready			= false;
 	
 	this.update();
 };

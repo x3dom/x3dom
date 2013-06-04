@@ -89,6 +89,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials)
 		//Save image Size
 		texture.width  = image.width;
 		texture.height = image.height;
+		texture.ready = true;
 		
 		doc.downloadCount--;
 		doc.needRender = true;
