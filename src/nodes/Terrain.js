@@ -1090,8 +1090,10 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
     var imageAddressNormal = terrain._vf.normalUrl + "/" + level + "/" + 
                              columnNr + "/" + rowNr + "." + 
                              (terrain._vf.normalFormat).toLowerCase();
-    // true if components are available and renderable
-    var exists = true;
+    // true if this component is available and renderable
+    var readyState = false;
+    // checks if children are ready
+    var childrenReadyState = false;
     // defines the resizing factor
     var resizeFac = (terrain._vf.size.x + terrain._vf.size.y) / 2.0;
     // object that stores all information to do a frustum culling
@@ -1322,61 +1324,87 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
     
     
     
+    /* 
+     * Runs only local ready() method. This is needed from parent to ask if 
+     * all children are ready to render or not 
+     */
     this.Ready = function(){
-        var ready = true;
-        
-        if (shape._webgl !== undefined){
-            if (shape._webgl.texture !== undefined){
-                for (var i = 0; i < shape._webgl.texture.length; i++){
-                    if (!shape._webgl.texture[i].texture.ready){
-                        ready = false;
-                    }
-                }
+        if (shape._webgl !== undefined && shape._webgl.texture !== undefined) {
+                return ready();
+        }
+    };
+    
+    
+    
+    /* 
+     * Iterates through all textures of this node and sets readState parameter
+     * to true if all textures have been loaded to gpu yet, false if not.
+     */
+    function ready() {
+        readyState = true;
+        for (var i = 0; i < shape._webgl.texture.length; i++){
+            if (!shape._webgl.texture[i].texture.ready){
+                readyState = false;
             }
         }
-        else {
-            ready = false;
-        }
-        
-        return ready;
-    };
+
+        return readyState;
+    }
 
     
+    
+    /* 
+     * Updates the loading state of children and initializes this node
+     * if this wasn't done before 
+     */
+    function updateLoadingState(drawableCollection, transform){
 
+            for (var i = 0; i < children.length; i++){
+                childrenReadyState = true;
+                if (!children[i].Ready()) {
+                    childrenReadyState = false;
+                }
+            }
+  
+            if (shape._webgl === undefined || shape._webgl.texture === undefined) {
+                drawableCollection.context.setupShape(drawableCollection.gl, 
+                                                     {shape:shape, transform:transform}, 
+                                                      drawableCollection.viewarea);
+            }
+            else {
+                ready(); 
+            }
+        
+    }
+    
+    
+    
+    
     /* 
      * Decides to create new children and if the node shoud be drawn or not
      */
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
-        cullObject.localMatrix = nodeTransformation;
+        cullObject.localMatrix = nodeTransformation;   
+        // Checks the actual loading state of itself and children if something wasn't loaded in last frame
+        if (!readyState || !childrenReadyState) { updateLoadingState(drawableCollection, nodeTransformation); }
         
-        // checks if children are ready
-        var childrenReady = true;
-        for (var i = 0; i < children.length; i++){
-            if (!children[i].Ready()) {
-                childrenReady = false;
-            }
-        }
-        
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
+        if (readyState && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
-                if (children.length === 0 && terrain.createChildren === 0) {
+                if (children.length === 0 && terrain.createChildren < 2) {
                     terrain.createChildren++;
                     create();
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
-                    }
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
-                else if (children.length === 0 && terrain.createChildren > 0) {
+                else if (children.length === 0 && terrain.createChildren >= 2) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
-                    if (childrenReady){
+                    if (childrenReadyState){
                         for (var i = 0; i < children.length; i++) {
                             children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                         }
