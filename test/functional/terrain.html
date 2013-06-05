@@ -92,18 +92,19 @@
         <!--<BVHRefiner maxDepth='2' factor='3' center='0 0 0' size='2000 2000'  
                     url='NonWMTS' imageFormat='PNG' mode="2d" subMode="nonWMTS">
         </BVHRefiner>-->
-        <BVHRefiner maxDepth='5' factor='12' center='0 0 0' maxElevation='410' 
-                    subdivision='128 128' size='4096 4096'  
+        <BVHRefiner maxDepth='5' factor='15' center='0 0 0' maxElevation='410' 
+                    subdivision='112 112' size='4096 4096'  
                     elevationUrl="Puget Sound WMTS/elevation" 
                     textureUrl="Puget Sound WMTS/satellite"
                     normalUrl="Puget Sound WMTS/normal"
                     elevationFormat='png' textureFormat='png' normalFormat='png' 
                     mode="3d">
         </BVHRefiner>
-        <!--<BVHRefiner maxDepth='7' factor='40' center='0 0 0' 
-                    url="RealityMaps" mode="bin">
-        </BVHRefiner>-->
-        
+        <!--<transform translation="-550 700 -50"  scale="1.0 1.0 1.0">
+        <BVHRefiner maxDepth='7' factor='30' center='0 0 0' 
+                    url="C:\Users\menglert\Desktop\Stadtmodell_Muenchen_WMTS" mode="bin">
+        </BVHRefiner>
+        </Transform>-->
         
         
         <!-- DON'T USE THE FOLLOWING EXAMPLES BECAUSE IT'S NOT COMPLETELY IMPLEMENTED YET -->
@@ -123,11 +124,11 @@
         </BVHRefiner>-->
         <!--<BVHRefiner maxDepth='5' factor='5' center='0 0 0' maxElevation='265' 
                     subdivision='36 24' size='1201 801'  
-                    elevationUrl="C:\Users\menglert\Desktop\Result2" 
-                    textureUrl="C:\Users\menglert\Desktop\Result2"
+                    elevationUrl="C:\Users\menglert\Desktop\Result" 
+                    textureUrl="C:\Users\menglert\Desktop\Result"
                     normalUrl="C:\Users\menglert\Desktop\Normal"
                     elevationFormat='png' textureFormat='png' normalFormat='png' 
-                    mode="3d">
+                    mode="3d" submode="32bit">
         </BVHRefiner>-->
         <Background skyColor=".1 .1 .3"></Background>
         <Viewpoint zNear="0.1" zFar="10000" position="0 0 3000"></Viewpoint>

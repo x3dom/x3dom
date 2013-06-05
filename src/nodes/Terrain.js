@@ -855,6 +855,9 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
+                    for (var i = 0; i < children.length; i++) {
+                        children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    }
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
@@ -863,7 +866,7 @@ function QuadtreeNodeBin(ctx, terrain, level, columnNr, rowNr, resizeFac)
                 else {
                     for (var i = 0; i < children.length; i++) {
                         children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
-                    }
+                    }  
                 }
             }
             else {
@@ -1120,6 +1123,7 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
 
         // calculate the average position of the node
         position = nodeTransformation.e3();
+        position[1] = terrain._vf.maxElevation / 2;
         
         // creating the special vertex-shader for terrain-nodes
         var vertexShader = new x3dom.nodeTypes.ShaderPart(ctx);
@@ -1315,8 +1319,29 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
                     new x3dom.fields.SFVec3f(s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2 + 1), geometry));
     }
+    
+    
+    
+    this.Ready = function(){
+        var ready = true;
+        
+        if (shape._webgl !== undefined){
+            if (shape._webgl.texture !== undefined){
+                for (var i = 0; i < shape._webgl.texture.length; i++){
+                    if (!shape._webgl.texture[i].texture.ready){
+                        ready = false;
+                    }
+                }
+            }
+        }
+        else {
+            ready = false;
+        }
+        
+        return ready;
+    };
 
-
+    
 
     /* 
      * Decides to create new children and if the node shoud be drawn or not
@@ -1326,6 +1351,14 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
         
+        // checks if children are ready
+        var childrenReady = true;
+        for (var i = 0; i < children.length; i++){
+            if (!children[i].Ready()) {
+                childrenReady = false;
+            }
+        }
+        
         if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
@@ -1334,14 +1367,25 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
+                    for (var i = 0; i < children.length; i++) {
+                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    }
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    if (childrenReady){
+                        for (var i = 0; i < children.length; i++) {
+                            children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                        }
+                    }
+                    else {
+                        for (var i = 0; i < children.length; i++) {
+                            children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                        }
+                        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
@@ -1710,17 +1754,6 @@ function QuadtreeNode3D_32bit(ctx, terrain, level, nodeNumber, nodeTransformatio
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 /*
  * Defines one node of an octree that represents a part (nxn vertices) of 
  * the whole point cloud
@@ -1745,7 +1778,6 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
     //var path = terrain._vf.url + "/" + level + "/" + columnNr + "/";
     // address of the image for the terrain height-data
     var file = terrain._vf.url + path + imgNumber + ".x3d";
-    alert(file);
     // position of the node in world space
     var position = null;
     // stores if file has been loaded
