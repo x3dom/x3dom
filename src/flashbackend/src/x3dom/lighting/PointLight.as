@@ -43,7 +43,7 @@ package x3dom.lighting
 		public function set attenuation(attenuation:Vector.<Number>) : void
 		{
 			_attenuation = attenuation;
-			this._attenuation.push(0.0);
+			this._attenuation.push(1.0);
 		}
 		
 		/**
@@ -52,6 +52,7 @@ package x3dom.lighting
 		public function get location() : Vector.<Number>
 		{
 			return _location;
+			this._location.push(0.0);
 		}
 		
 		/**
@@ -60,7 +61,7 @@ package x3dom.lighting
 		public function set location(location:Vector.<Number>) : void
 		{
 			_location = location;
-			this._location.push(0.0);
+			this._location.push(1.0);
 		}
 		
 		/**

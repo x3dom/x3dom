@@ -132,11 +132,13 @@ x3dom.shader.ShadowShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.ShadowShader.prototype.generateFragmentShader = function(gl)
 {
-	var shader ="#ifdef GL_ES\n" +
-				"  precision highp float;\n" +
-				"#endif\n" +
-				"\n" +
-				"varying vec4 projCoords;\n" +
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
+	shader += "varying vec4 projCoords;\n" +
 				"uniform float offset;\n" +
 				"uniform bool cameraView;\n";
 	if(!x3dom.caps.FP_TEXTURES || x3dom.caps.MOBILE) 

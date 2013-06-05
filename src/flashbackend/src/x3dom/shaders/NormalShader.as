@@ -55,11 +55,9 @@ package x3dom.shaders
 			shader += "dp3 vt0.x, va1, vc4\n";	//Normal*MV-Matrix -> (v0)
 			shader += "dp3 vt0.y, va1, vc5\n";	//Normal*MV-Matrix -> (v0)
 			shader += "dp3 vt0.z, va1, vc6\n";	//Normal*MV-Matrix -> (v0)
-			
-			shader += "add vt0.xyz, vt0.xyz, vc8.y\n";
-			shader += "mul vt0.xyz, vt0.xyz, vc8.x\n";
-			
-			shader += "mov v0, vt0.xyz\n";	//Normal*MV-Matrix -> (v0)
+			shader += "mov v0, vt0.xyz0\n";	//Normal*MV-Matrix -> (v0)
+			//shader += "add vt0.xyz, vt0.xyz, vc8.y\n";
+			//shader += "mul vt0.xyz, vt0.xyz, vc8.x\n";	
 			
 			shader += "m44 op, va0, vc0\n";	//Position*MVP-Matrix -> (op)
 			
@@ -79,7 +77,10 @@ package x3dom.shaders
 			//Init shader string
 			var shader:String = "";
 			
-			shader += "mov ft0.xyz, v0\n";
+			shader += "nrm ft0.xyz, v0\n";
+			//shader += "sat ft0.xyz, ft0.xyz\n";
+			shader += "add ft0, ft0.xyz, fc1.yyy\n";
+			shader += "mul ft0, ft0, fc1.x\n";
 			shader += "mov ft0.w, fc0.x\n";
 			shader += "mov oc, ft0\n"; 					//Output color*/
 			

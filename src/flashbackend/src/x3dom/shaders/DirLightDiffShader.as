@@ -1,12 +1,12 @@
 package x3dom.shaders
 {
-	import x3dom.*;
-	
 	import com.adobe.utils.AGALMiniAssembler;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
 	import flash.display3D.Program3D;
+	
+	import x3dom.*;
 	
 	public class DirLightDiffShader
 	{
@@ -23,7 +23,7 @@ package x3dom.shaders
 		/**
 		 * Generate the final Program3D for the DirLightShader
 		 */
-		public function DirLightDiffShader()
+		public function DirLightDiffShader(isHeadLight:Boolean = false)
 		{
 			//Get 3D Context
 			this._context3D = FlashBackend.getContext();
@@ -32,7 +32,7 @@ package x3dom.shaders
 			this._program3D = this._context3D.createProgram();
 			
 			//Generate vertex shader
-			var vertexShader:AGALMiniAssembler = generateVertexShader();
+			var vertexShader:AGALMiniAssembler = generateVertexShader(isHeadLight);
 			
 			//Generate fragment shader
 			var fragmentShader:AGALMiniAssembler = generateFragmentShader();
@@ -44,18 +44,26 @@ package x3dom.shaders
 		/**
 		 * Generate the vertex shader
 		 */
-		private function generateVertexShader() : AGALMiniAssembler
+		private function generateVertexShader(isHeadLight:Boolean) : AGALMiniAssembler
 		{
 			//Init shader string
 			var shader:String = "";
 			
 			//Build shader						
 			shader += "mov v0, va1\n";			//TexCoord -> Fragment(v0)		
-			shader += "mov vt2,vc8\n";
-			shader += "dp3 vt1.x, vt2, vc0\n";
-			shader += "dp3 vt1.y, vt2, vc1\n";
-			shader += "dp3 vt1.z, vt2, vc2\n";
-			shader += "mov v2, vt1.xyz0\n";
+						
+			if (isHeadLight)
+			{
+				shader += "mov v2, vc8\n";	
+			} 
+			else 
+			{
+				shader += "mov vt2,vc8\n";
+				shader += "dp3 vt1.x, vt2, vc0\n";
+				shader += "dp3 vt1.y, vt2, vc1\n";
+				shader += "dp3 vt1.z, vt2, vc2\n";
+				shader += "mov v2, vt1.xyz0\n";
+			}
 			
 			shader += "mov op, va0\n";
 			
@@ -94,7 +102,8 @@ package x3dom.shaders
 			/*16*/ shader += "nrm ft3.xyz, ft3\n";							//normalize(LightDir)
 			
 			/*19*/ shader += "dp3 ft4, ft2, ft3\n";							//NdotL
-			
+				   //shader += "sat ft4, ft4\n";
+				   shader += "mul ft4, ft4, fc3.x\n";
 			/*21*/ shader += "mul ft1, fc4, ft4\n";							//lightColor * NdotL
 			/*24*/ shader += "mov oc, ft1\n";								//Output color
 			

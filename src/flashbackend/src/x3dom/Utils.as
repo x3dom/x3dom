@@ -3,6 +3,7 @@ package x3dom
 	import flash.display.Bitmap;
 	import flash.display.BitmapData;
 	import flash.geom.Matrix;
+	import flash.geom.Matrix3D;
 	import flash.utils.ByteArray;
 	
 	public class Utils
@@ -148,5 +149,29 @@ package x3dom
 			
 			return value;
 		}
+		
+		/**
+		 * 
+		 */
+		public static function MatrixOrthoRH(width:int, height:int, zNear:Number, zFar:Number) : Matrix3D
+		{
+			return new Matrix3D(Vector.<Number>([2.0/width, 0.0, 0.0, 0.0,
+												 0.0, 2.0/height, 0.0, 0.0,
+												 0.0, 0.0, 1.0/(zNear-zFar), zNear/(zNear-zFar),
+												 0.0, 0.0, 0.0, 1.0]));
+		}
+		
+		/**
+		 * 
+		 */
+		public static function MatrixOrthoLH(width:int, height:int, zNear:Number, zFar:Number) : Matrix3D
+		{
+			return new Matrix3D(Vector.<Number>([2.0/width, 0.0, 0.0, 0.0,
+												 0.0, 2.0/height, 0.0, 0.0,
+												 0.0, 0.0, 1.0/(zFar-zNear), zNear/(zNear-zFar),
+												 0.0, 0.0, 0.0, 1.0]));
+		}
+	
+		
 	}
 }

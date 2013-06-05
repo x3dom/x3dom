@@ -68,11 +68,13 @@ x3dom.shader.NormalShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.NormalShader.prototype.generateFragmentShader = function(gl)
 {
-	var shader =	"#ifdef GL_ES\n" +
-					"  precision highp float;\n" +
-					"#endif\n" +
-					"\n" +
-                    "varying vec3 fragNormal;\n" +
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
+	shader += "varying vec3 fragNormal;\n" +
 					
 					"void main(void) {\n" +
 					"    gl_FragColor = vec4(normalize(fragNormal) / 2.0 + 0.5, 1.0);\n" +

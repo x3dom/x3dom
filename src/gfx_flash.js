@@ -94,17 +94,18 @@ x3dom.gfx_flash = (function() {
 	/**
 	*
 	*/
-	function Context(object, name) {
+	function Context(object, name, renderType) {
 		this.object = object;
 		this.name = name;
 		this.isAlreadySet = false;
+    this.renderType = renderType;
 	}
 	
 	/**
 	*
 	*/
-	function setupContext(object) {
-		return new Context(object, 'flash');
+	function setupContext(object, renderType) {
+		return new Context(object, 'flash', renderType);
 	}
 	
 	/**
@@ -121,10 +122,24 @@ x3dom.gfx_flash = (function() {
 		//Get Scene from Viewarea
     var scene = viewarea._scene;
     
+    
+    var min = x3dom.fields.SFVec3f.MAX();
+    var max = x3dom.fields.SFVec3f.MIN();
+
+    vol = scene.getVolume();
+    vol.getBounds(min, max);
+
+    scene._lastMin = min;
+    scene._lastMax = max;
+
+    viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
+    viewarea._last_mat_proj = x3dom.fields.SFMatrix4f.identity();
+    viewarea._last_mat_scene = x3dom.fields.SFMatrix4f.identity();
+    
     //Dirty HACK
 		var viewpoint = scene.getViewpoint();
-		viewpoint._vf.zFar = 100000;
-		viewpoint._vf.zNear = 0.01;
+		viewpoint._vf.zFar = 10000;
+		viewpoint._vf.zNear = 0.1;
 		
 		if(viewarea._last_mat_view === undefined) {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
@@ -246,8 +261,8 @@ x3dom.gfx_flash = (function() {
 		
 		//Dirty HACK
 		var viewpoint = scene.getViewpoint();
-		viewpoint._vf.zFar = 100000;
-		viewpoint._vf.zNear = 0.01;
+		//viewpoint._vf.zFar = 100;
+		//viewpoint._vf.zNear = 0.1;
 		
         var mat_proj = viewarea.getProjectionMatrix();
 		
@@ -260,62 +275,72 @@ x3dom.gfx_flash = (function() {
 		//Set HeadLight
 		var nav = scene.getNavigationInfo();
         if(nav._vf.headlight){
-			this.object.setLights( { idx: 0,
-									 type: 0,
-									 on: 1.0,
-									 color: [1.0, 1.0, 1.0],
-									 intensity: 1.0,
-									 ambientIntensity: 0.0,
-									 direction: [0.0, 0.0, 1.0],
-									 attenuation: [1.0, 1.0, 1.0],
-									 location: [1.0, 1.0, 1.0],
-									 radius: 0.0,
-									 beamWidth: 0.0,
-									 cutOffAngle: 0.0 } );
-		}
+          /*this.object.setLights( { idx: 0,
+                                   type: 0,
+                                   on: 1.0,
+                                   color: [1.0, 1.0, 1.0],
+                                   intensity: 1.0,
+                                   ambientIntensity: 0.0,
+                                   direction: [0.0, 0.0, 1.0],
+                                   attenuation: [1.0, 1.0, 1.0],
+                                   location: [1.0, 1.0, 1.0],
+                                   radius: 0.0,
+                                   beamWidth: 0.0,
+                                   cutOffAngle: 0.0 } );*/
+                                   
+          this.object.setHeadLight( { id: -1,
+                                      on: 1.0,
+                                      color: [1.0, 1.0, 1.0],
+                                      intensity: 1.0,
+                                      ambientIntensity: 0.0,
+                                      direction: [0.0, 0.0, -1.0] } );
+        }
 		
 		//TODO Set Lights
-		var lights = viewarea.getLights();
-		for(var i=0; i<lights.length; i++) {
-			if(lights[i]._dirty) { 
-				
-				if( x3dom.isa(lights[i], x3dom.nodeTypes.DirectionalLight) ) 
-				{
-					/*this.object.setDirectionalLight( { id: lights[i]._lightID,
-													   on: lights[i]._vf.on,
-													   color: lights[i]._vf.color.toGL(),
-													   intensity: lights[i]._vf.color.toGL(),
-													   ambientIntensity: lights[i]._vf.ambientIntensity,
-													   direction: lights[i]._vf.direction.toGL() } );*/
-				}
-				else if( x3dom.isa(lights[i], x3dom.nodeTypes.PointLight) ) 
-				{
-					/*this.object.setPointLight( { id: lights[i]._lightID,
-												 on: lights[i]._vf.on,
-												 color: lights[i]._vf.color.toGL(),
-												 intensity: lights[i]._vf.color.toGL(),
-												 ambientIntensity: lights[i]._vf.ambientIntensity,
-												 attenuation: lights[i]._vf.attenuation.toGL(),
-												 location: lights[i]._vf.location.toGL(),
-												 radius: lights[i]._vf.radius } );*/
-				}
-				else if( x3dom.isa(lights[i], x3dom.nodeTypes.SpotLight) ) 
-				{
-					/*this.object.setSpotLight( { id: lights[i]._lightID,
-												on: lights[i]._vf.on,
-												color: lights[i]._vf.color.toGL(),
-												intensity: lights[i]._vf.color.toGL(),
-												ambientIntensity: lights[i]._vf.ambientIntensity,
-												direction: lights[i]._vf.direction.toGL(),
-												attenuation: lights[i]._vf.attenuation.toGL(),
-												location: lights[i]._vf.location.toGL(),
-												radius: lights[i]._vf.radius,
-												beamWidth: lights[i]._vf.beamWidth,
-												cutOffAngle: lights[i]._vf.cutOffAngle } );*/
-				}
-				lights[i]._dirty = false;
-			}
-		}
+    if (this.renderType == "deferred")
+    {
+      var lights = viewarea.getLights();
+      for(var i=0; i<lights.length; i++) {
+        if(lights[i]._dirty) { 
+          
+          if( x3dom.isa(lights[i], x3dom.nodeTypes.DirectionalLight) ) 
+          {
+            this.object.setDirectionalLight( { id: lights[i]._lightID,
+                               on: lights[i]._vf.on,
+                               color: lights[i]._vf.color.toGL(),
+                               intensity: lights[i]._vf.intensity,
+                               ambientIntensity: lights[i]._vf.ambientIntensity,
+                               direction: lights[i]._vf.direction.toGL() } );
+          }
+          else if( x3dom.isa(lights[i], x3dom.nodeTypes.PointLight) ) 
+          {
+            this.object.setPointLight( { id: lights[i]._lightID,
+                           on: lights[i]._vf.on,
+                           color: lights[i]._vf.color.toGL(),
+                           intensity: lights[i]._vf.intensity,
+                           ambientIntensity: lights[i]._vf.ambientIntensity,
+                           attenuation: lights[i]._vf.attenuation.toGL(),
+                           location: lights[i]._vf.location.toGL(),
+                           radius: lights[i]._vf.radius } );
+          }
+          else if( x3dom.isa(lights[i], x3dom.nodeTypes.SpotLight) ) 
+          {
+            /*this.object.setSpotLight( { id: lights[i]._lightID,
+                          on: lights[i]._vf.on,
+                          color: lights[i]._vf.color.toGL(),
+                          intensity: lights[i]._vf.color.toGL(),
+                          ambientIntensity: lights[i]._vf.ambientIntensity,
+                          direction: lights[i]._vf.direction.toGL(),
+                          attenuation: lights[i]._vf.attenuation.toGL(),
+                          location: lights[i]._vf.location.toGL(),
+                          radius: lights[i]._vf.radius,
+                          beamWidth: lights[i]._vf.beamWidth,
+                          cutOffAngle: lights[i]._vf.cutOffAngle } );*/
+          }
+          lights[i]._dirty = false;
+        }
+      }
+    }
 	};
 	
 	/**

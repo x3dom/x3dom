@@ -182,8 +182,7 @@ public class Base64Decoder
      *  @private 
      *  Used for accessing localized Error messages.
      */
-    private var resourceManager:IResourceManager =
-                                    ResourceManager.getInstance();
+    private var resourceManager:IResourceManager = ResourceManager.getInstance();
 
     private static const ESCAPE_CHAR_CODE:Number = 61; // The '=' char
 
