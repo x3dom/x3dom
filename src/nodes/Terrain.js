@@ -1395,12 +1395,12 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
             var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * resizeFac / terrain._vf.factor)) {
-                if (children.length === 0 && terrain.createChildren < 2) {
+                if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
-                else if (children.length === 0 && terrain.createChildren >= 2) {
+                else if (children.length === 0 && terrain.createChildren > 0) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
