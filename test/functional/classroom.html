@@ -2,6 +2,7 @@
 <html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
 <head>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <!-- BEGIN:X3DOM -->
     <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge"/>
     <link rel="stylesheet" type="text/css" href="../../src/x3dom.css"/>
     <script type="text/javascript" src="../../src/lang/Array.js"></script>
@@ -70,6 +71,11 @@
     <script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
     <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
     <script type="text/javascript" src="../../src/Docs.js"></script>
+    <!-- END:X3DOM -->
+    
+    <!-- taken from http://www.ailis.de/~k/archives/66-jQuery-Fullscreen-Plugin.html -->
+    <script type="text/javascript" src="http://www.ailis.de/~k/scripts/jquery/jquery.js"></script> 
+    <script type="text/javascript" src="http://www.ailis.de/~k/scripts/jquery/plugins/fullscreen.js"></script>
 </head>
 <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
 
@@ -226,6 +232,10 @@
         </group>
     </scene>
 </x3d>
+
+<button style="position:absolute; top:0px; left:0px;" onclick="$(document).toggleFullScreen();">
+    Fullscreen
+</button>
 
 <script>
     var runtime = null;
