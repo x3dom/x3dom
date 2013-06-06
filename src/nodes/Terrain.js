@@ -136,8 +136,10 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
     var shape = new x3dom.nodeTypes.Shape();
     // position of the node in world space
     var position = null;
-    // true if components are available and renderable
-    var exists = true;
+    // true if this component is available and renderable
+    var readyState = false;
+    // checks if children are ready
+    var childrenReadyState = false;
     // url of the data source
     var url = terrain._vf.url + "/" + level + "/" + columnNr + 
               "/" + rowNr + "." + (terrain._vf.imageFormat).toLowerCase();
@@ -224,7 +226,64 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
             nodeTransformation.mult(new x3dom.fields.SFMatrix4f.translation(
                     new x3dom.fields.SFVec3f(s.x, -s.y, 0.0))).mult(new x3dom.fields.SFMatrix4f.scale(
                     new x3dom.fields.SFVec3f(0.5, 0.5, 1.0))), (columnNr * 2 + 1), (rowNr * 2 + 1), geometry));
-    }    
+    }
+    
+    
+    
+    /* 
+     * Runs only local ready() method. This is needed from parent to ask if 
+     * all children are ready to render or not 
+     */
+    this.Ready = function(){
+        if (shape._webgl !== undefined && shape._webgl.texture !== undefined) {
+                return ready();
+        }
+    };
+    
+    
+    
+    /* 
+     * Iterates through all textures of this node and sets readState parameter
+     * to true if all textures have been loaded to gpu yet, false if not.
+     */
+    function ready() {
+        readyState = true;
+        for (var i = 0; i < shape._webgl.texture.length; i++){
+            if (!shape._webgl.texture[i].texture.ready){
+                readyState = false;
+            }
+            
+            
+        }
+
+        return readyState;
+    }
+
+    
+    
+    /* 
+     * Updates the loading state of children and initializes this node
+     * if this wasn't done before 
+     */
+    function updateLoadingState(drawableCollection, transform){
+
+            for (var i = 0; i < children.length; i++){
+                childrenReadyState = true;
+                if (!children[i].Ready()) {
+                    childrenReadyState = false;
+                }
+            }
+  
+            if (shape._webgl === undefined || shape._webgl.texture === undefined) {
+                drawableCollection.context.setupShape(drawableCollection.gl, 
+                                                     {shape:shape, transform:transform}, 
+                                                      drawableCollection.viewarea);
+            }
+            else {
+                ready(); 
+            }
+        
+    }
     
     
     
@@ -234,10 +293,11 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
-        cullObject.localMatrix = nodeTransformation;
+        cullObject.localMatrix = nodeTransformation;   
+        // Checks the actual loading state of itself and children if something wasn't loaded in last frame
+        if (!readyState || !childrenReadyState) { updateLoadingState(drawableCollection, nodeTransformation); }
         
-        // decision if culled, drawn etc...
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
+        if (readyState && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -245,13 +305,22 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
+                    shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else if (children.length === 0 && terrain.createChildren > 0) {
                     shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                    if (childrenReadyState){
+                        for (var i = 0; i < children.length; i++) {
+                            children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                        }
+                    }
+                    else {
+                        for (var i = 0; i < children.length; i++) {
+                            children[i].collectDrawables(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
+                        }
+                        shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
             }
