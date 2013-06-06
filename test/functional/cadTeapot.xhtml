@@ -3,16 +3,381 @@
 <html xmlns="http://www.w3.org/1999/xhtml">
   <head>
     <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-    <script type="text/javascript" src="http://www.x3dom.org/x3dom/example/x3dom.js"></script>
-    <script type="text/javascript" src="http://www.kshell.com/pages/x3dom/x3dom_cad/scripts/CADGeometry.js"></script>
-    <link rel="stylesheet" type="text/css" href="http://www.kshell.com/pages/x3dom/x3dom_cad/scripts/ProductStructure.css" />
-    <script type="text/javascript" src="http://www.kshell.com/pages/x3dom/x3dom_cad/scripts/ProductStructure.js"></script>
-    <script type="text/javascript">useRenderToHide = true;</script>
-    <script type="text/javascript" src="http://www.kshell.com/pages/x3dom/x3dom_cad/scripts/Metadata.js"></script>
+
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/util/States.js"></script>
+<script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
+<script type="text/javascript" src="../../src/util/DrawableCollection.js"></script>
+<script type="text/javascript" src="../../src/util/BVH.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderNormal.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadowRendering.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBlur.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/CADGeometry.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+    
+    
+    
+<script type="text/javascript">
+/*
+Javascript code to implement manipulating the DOM elements which
+are associated with the CADGeometry component implementation of x3dom.
+
+
+Vincent Marchetti 2012
+Licensed in same way as X3DOM release 1.5 : http://x3dom.org
+
+Dual licensed under the MIT and GPL.
+http://x3dom.org/download/dev/docs/html/license.html
+*/
+
+/*
+useRenderToHide, a global level variable, will specify whether CADFace nodes will
+be removed from the render-graph for the purpose of "unhighlighting" them. If the
+use of DEF/USE attributes on Appearance nodes makes it impossible to use the transparency
+mechanism to unhighlight faces, this variable should be set to true, after this
+script is read.
+*/
+var useRenderToHide = false;
+
+
+ps = {
+
+    parent: function(part){
+        /*
+        For ps_container a CADAssembly or CADPart will traverse
+        up the DOM tree (via DOM parentNode) until it locates
+        a CADAssembly, and returns that DOM Element
+        
+        will return null if the Scene node is reached before
+        an enclosing CADAssembly (or null) node is reached
+        */
+        var rv = part;
+        while (rv.parentNode){
+            rv = rv.parentNode;
+            var tag = rv.tagName;
+            if (tag=="Scene") return null
+            if (tag=="CADPart" || tag=="CADAssembly")
+                return rv;
+        } 
+        return null;
+    },
+
+
+    children: function(nd){
+        /*
+        With a recursive, depth-first, pruned search returns
+        the "product-structure-children" of this node
+        */
+        var rv=new Array();
+        for (var i = 0; i &lt; nd.childNodes.length; i++){
+            if (nd.childNodes[i].nodeType == 1){
+                var zc = nd.childNodes[i];
+                if (zc.tagName=="CADAssembly" || zc.tagName=="CADPart"){
+                    rv.push(zc);
+                } else {
+                    var sub=ps.children(zc);
+                    for (var j = 0; j &lt; sub.length; j++)
+                        rv.push( sub[j] );
+                }
+            }
+        }
+        return rv;
+    },
+};
+
+
+/*
+display node creates div tree with this structure.
+ps_depth an integer = 0 for a root assembly, 1 for its children, 2 for children of children...
+ps_node is the Element in the DOM tree of the X3D structure, ps_node is the &lt;CADAssembly&gt; or
+        &lt;CADPart&gt; element
+        
+&lt;div class="cadassembly|cadpart"&gt; # as js object, has attributes ps_node, ps_depth
+  &lt;div class="ps-name"&gt;NAME&lt;/div&gt; # listeners attached to click events on this
+  &lt;div class="ps-children"&gt;
+    {recursively 1-unbound child div nodes with this structure}
+  &lt;/div&gt;
+&lt;/div&gt;
+*/
+
+function displayNode(part, depth){
+    var rv = document.createElement("div");
+    rv.className = part.tagName.toLowerCase();
+    rv["ps_node"]=part;
+    rv["ps_depth"] = depth;
+    
+    var titleNode=document.createElement("div");
+    titleNode.className = "ps-name";
+    titleNode.appendChild(document.createTextNode( part.getAttribute("name") ));
+    
+    if (useRenderToHide){
+        titleNode.addEventListener('click', showStructureComponentByRender, false);
+    } else {
+        titleNode.addEventListener('click', showStructureComponentByTransparency, false);
+    }
+    titleNode.addEventListener('click', showStructureMenu, false);
+    rv.appendChild(titleNode);
+    
+    var children = ps.children(part);
+    if (children.length &gt; 0) {
+        var ps_children_div = document.createElement("div");
+        rv.appendChild( ps_children_div );
+        ps_children_div.className = "ps-children";
+        
+        for (var j=0; j &lt; children.length; j++)
+            ps_children_div.appendChild( displayNode(children[j], depth+1));
+    }
+    return rv
+}
+
+(function(){
+    var existing_ready = x3dom.runtime.ready;
+    
+    
+    function load_product_structure(x3dElem, psElem){
+        // load the HTML elements describing the product structure
+        // (CADAssembly/CADPart tree) in the DOM ELement x3dElem, into
+        // (as child appendings) the DOM element psElem -- usually, psElem
+        // will be an HTMLDivElement
+
+        try{
+            scene=x3dElem.getElementsByTagName("Scene")[0];
+        } catch (e) {
+            console.error("Scene not found");
+            return;
+        }
+        var assemblies = ps.children(scene);
+        for (var i=0; i&lt; assemblies.length; i++)
+            psElem.appendChild( displayNode(assemblies[0], 0));
+    }
+       
+    // according to X3DOM documentation, setting or overriding
+    // this function is how you perform a desired action just before
+    // the X3D scene to to be rendered, so the X3DOM objects have all been constru
+    x3dom.runtime.ready=function(){
+        if (existing_ready !== undefined) existing_ready();   
+        
+        // quick and dirty; assume one and only one X3D node; and a
+        // element to place the product structure tree with it "product-structure"
+        try{
+            x3dElem=document.getElementsByTagName("X3D")[0];
+        } catch (e) {
+            console.error("X3D node not found");
+            return;
+        }
+
+        try{
+            psElem=document.getElementById("product-structure");
+        } catch (e) {
+            console.error("product structure display node not found");
+            return;
+        }
+        load_product_structure(x3dElem, psElem);
+    }
+})();
+
+
+function showStructureComponentByTransparency(e){
+    /*
+    The hiddenTransparency constant is the value that will be applied to the
+    transparency field of the Shape&gt;Appearance&gt;Material X3D node of the CAFDaces
+    which are to be "unhighlighted", while the highlighted nodes are unaffected.
+    A value of 1.0 will make these unhighlighted faces completely transparent, value
+    of 0 will leave them unchanged
+    */
+    var hiddenTransparency=0.9
+    var base=e.target.parentNode["ps_node"];
+    
+    var top=base;
+    while (true){
+        var next=ps.parent(top);
+        if (!next) break;
+        top=next;
+    }
+    
+    var topFaces = top.getElementsByTagName("CADFace");
+    for (var j=0; j &lt; topFaces.length; ++j){
+        var mat;
+        try{
+            mat = topFaces[j].getElementsByTagName("Material")[0];
+        } catch (e) {
+            console.log("error: material node not found");
+        }
+        if (mat !== undefined) mat.setAttribute("transparency",hiddenTransparency);
+    }
+
+    var baseFaces = base.getElementsByTagName("CADFace");
+    for (var j=0; j &lt; baseFaces.length; ++j){
+        var mat;
+        try{
+            mat = baseFaces[j].getElementsByTagName("Material")[0];
+        } catch (e){
+            console.log("error: material node not found");
+        }
+        if (mat !== undefined) mat.setAttribute("transparency",0.0);
+
+    }  
+    top._x3domNode._nameSpace.doc.needRender = true;
+}    
+
+function showStructureComponentByRender(e){
+    var base=e.target.parentNode["ps_node"];
+    
+    var top=base;
+    while (true){
+        var next=ps.parent(top);
+        if (!next) break;
+        top=next;
+    }
+    
+    var topFaces = top.getElementsByTagName("CADFace");
+    for (var j=0; j &lt; topFaces.length; ++j)
+        topFaces[j].setAttribute("render", false);
+
+    var baseFaces = base.getElementsByTagName("CADFace");
+    for (var j=0; j &lt; baseFaces.length; ++j)
+        baseFaces[j].setAttribute("render", true);
+        
+    top._x3domNode._nameSpace.doc.needRender = true;
+}    
+ 
+function showStructureMenu(e){
+    var a = e.target.parentNode;
+    while (a["ps_depth"] &gt; 0) a=a.parentNode.parentNode;
+    var dimTitles = a.getElementsByTagName("div");
+    for (var j=0; j &lt; dimTitles.length; j++)
+        if (dimTitles[j].className.indexOf("ps-name")&gt;=0)
+            dimTitles[j].className="ps-name dimmed";
+            
+    var hiTitles = e.target.parentNode.getElementsByTagName("div");
+    for (var j=0; j &lt; hiTitles.length; j++)
+        if (hiTitles[j].className.indexOf("ps-name")&gt;=0)
+            hiTitles[j].className="ps-name";
+}
+</script>
+
+<script type="text/javascript">useRenderToHide = true;</script>
+    
+<script type="text/javascript">
+(function(){
+    var existing_ready = x3dom.runtime.ready;
+    console.log("Existing ready " + existing_ready.toString());
+    
+       
+    // according to X3DOM documentation, setting or overriding
+    // this function is how you perform a desired action just before
+    // the X3D scene to to be rendered, so the X3DOM objects have all been constru
+    x3dom.runtime.ready=function(){
+    if (existing_ready !== undefined) existing_ready();
+    
+    var x3docs = document.getElementsByTagName('X3D');
+    if (x3docs.length != 1){
+        console.log("no/multiple X3D nodes found");
+        return;
+    }
+    var x3doc = x3docs[0];
+    
+    function load_named_containers(name, content){
+        var containers = document.getElementsByName(name);
+        if (containers.length==0){
+            console.log("No HTML elements with name " + name.toString() + " found");
+            return;
+        }
+        for (var i = 0; i &lt; containers.length; i++){
+            containers[i].appendChild(
+                document.createTextNode(content)
+            );
+        }
+    }
+    
+    metas = x3doc.getElementsByTagName('meta');
+    for (var i = 0; i &lt; metas.length; i++){
+        var meta = metas[i];
+        if (meta.getAttribute('name') == 'title'){
+            load_named_containers('x3d-meta-name', meta.getAttribute('content'));
+        }
+        
+        if (meta.getAttribute('name') == 'description'){
+            load_named_containers('x3d-meta-description', meta.getAttribute('content'));
+        }
+
+    }
+}
+
+})();
+
+</script>
     <style type="text/css">
       body {margin-left:15px; font-size: medium}
       #x3d-meta-name {font-size:larger; font-weight: bold; margin-top:1.5em; margin-bottom:1.5em}
       #x3d-meta-description {}
+      
+.ps-name { margin-top:0.25em ; cursor:pointer; }
+.dimmed  { font-style:italic; color:gray;}
+
+.ps-children {padding-left:2em}
+
       </style>
   </head>
   <body id="htmlBody">
