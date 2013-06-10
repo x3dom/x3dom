@@ -39,6 +39,33 @@ save operation. It's far better to have ten 10-liner commits,
 than one 100 liner.
 
 
+Use descriptive commit messages
+-------------------------------
+Try to avoid non-descriptive commit messages unless it's really small
+correction like fixing a typo or forgotton semi-colon. Always describe
+what you have done succinctly. If you are closing a ticket with this
+commit refer the ticket in your message. For example::
+
+    git commit -m "Fixing readability problem reported with issue #123"
+
+The following messages also `close the referred ticket`_ in GitHub. No 
+need to log in for closing tickets::
+
+    git commit -m "Typo, fixing #123"
+    git commit -m "Added CAD example closing #123"
+
+
+You can refer to github issues, commits and tickets by using the SHA or
+issue number::
+
+    git commit -m "Fixing bug introduced with 70b0d56e1aca5ec6b55b915b1810a5caeddfcd62"
+
+
+More:
+
+  - GitHub Help 
+
+
 
 Git Workflow
 ------------
@@ -77,6 +104,8 @@ Some pointers:
 
 
 **The versioning system is not a replacement for communication. **
+
+
 
 
 
@@ -167,4 +196,5 @@ For Python there are official, very sane, guidelines outlined in
 .. _stash: http://git-scm.com/book/en/Git-Tools-Stashing
 .. _local branches: http://git-scm.com/book/en/Git-Branching-Branch-Management
 .. _Git Manual: http://git-scm.com/doc
-
+.. _GitHub Help: https://help.github.com/
+.. _close the referred ticket: https://help.github.com/articles/closing-issues-via-commit-messages
