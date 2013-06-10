@@ -9,9 +9,9 @@ File Encoding, Indentation
 With all X3DOM source files the following file format 
 and encoding conventions have to be used:
 
-    - File encoding: **UTF-8**, without Byte-Order-Mark (BOM)
-    - Lineendings: **LF** (Unix Line Feed)
-    - Indentation: **4 spaces** (unless otherwise noted)
+- File encoding: **UTF-8**, without Byte-Order-Mark (BOM)
+- Lineendings: **LF** (Unix Line Feed)
+- Indentation: **4 spaces** (unless otherwise noted)
 
 A note about indentation: Essentially this is a 
 no-tab policy. Which means no tab chars in the code to be used
@@ -23,6 +23,7 @@ the TAB key.
 TODO: basic guide of how to set this for webstorm,vi,emacs,sublime,textmate
 
 
+
 Commit early, commit often
 --------------------------
 If at all possible commit small units of work very often.
@@ -32,44 +33,95 @@ than one committer. Committing often also lets your fellow
 programmers know what you are working on and integrate your
 changes early on.
 
-Partition your work into small logicalpieces and commit as 
-often as possible. View the commit and push as a extended 
+Partition your work into small logical pieces and commit as 
+often as possible. View ``commit`` and ``push`` as a extended 
 save operation. It's far better to have ten 10-liner commits, 
 than one 100 liner.
 
 
+
 Git Workflow
 ------------
-Make it a policy to pull changes before you start working and
-then again before you push.
+Make it a policy to issue a ``git pull`` before you start working and
+then again before you commit and push. Push your work as soon as 
+possible - ideally after a commit.
 
-Also make yourself familiar with the stash command. Even more
-important is to use local branches for developing a new feature
-or trying things out. It is very easy to do and you will have
-less merge conflicts.
+Make yourself familiar with the `stash`_ command if you need to set 
+aside changes during work. 
+Even more important is to use `local branches`_ for developing a new 
+feature or trying things out. It is very easy to do and you will have
+less merge conflicts. If you go this route, it important that you 
+regulary merge changes from the upstream master into your local branch
+to keep up to date. 
+
+Don't push your branch to GitHub unless more than one person is workin 
+on that branch. If you need to sync local branches from say your 
+workstation to a laptop or home machine, there are other ways (ssh, 
+format-patch, etc.)
+
 
 Familiarize yourself with the use of the source control on 
-the command line. Only after you understand how this works,
-you can switch to GUI tools. It's important to understand
+the command line (`Git Manual`_). Only after you understand how this 
+works, you can switch to GUI tools. It's important to understand
 the basics of the versioning system. The GUI tools disguise much
 of what's going on. Learning to use a source control system is a 
 one-time effort that will benefit you far into the future 
-(even if versioning systems change, the learning is 
-only incremental). Code conflicts are inevitabel and mastering your tool
+(even if versioning systems change, the learning is only incremental). 
+Code conflicts are inevitabel and mastering your tool
 can help to resove those conflicts.
 
-Some help:
+Some pointers:
 
-  - Use aliases https://git.wiki.kernel.org/index.php/Aliases
+- Git aliases https://git.wiki.kernel.org/index.php/Aliases
+- `Git Manual`_
 
 
 **The versioning system is not a replacement for communication. **
 
 
+
 JS Coding Conventions
 ---------------------
-- keine if/else ohne {}, das behindert die Lesbarkeit und kan den
-  optimizer verwirren
+The following coding guidelines should be followed:
+
+
+
+Semi colon
++++++++++++
+Always end a statement mit a semi-colon. For C coders that's ususally
+a non issue. If you are coming from another dynamic language, it happens
+frequently to forget the semi-colon.
+
+
+
+if/else shortcuts
++++++++++++++++++
+Aviod the use if ``if/else`` constructs without curly braces. It impaires
+readability and is a potential source for errors:
+
+Good:
+
+.. code-block:: js
+
+    if (condition) {
+        doSomething();
+    }
+    else {
+        doAnotherThing();
+    }
+
+
+Bad:
+
+.. code-block:: js
+
+    if (condition)
+        doSomething();
+    else
+        doOtherThing()
+
+
+
 - möglichst wenig anonyme funktionen verwenden
 - immer mit ; abschliessen
 - that = this
@@ -112,4 +164,7 @@ For Python there are official, very sane, guidelines outlined in
 
 
 .. _PEP-8: http://www.python.org/dev/peps/pep-0008/
+.. _stash: http://git-scm.com/book/en/Git-Tools-Stashing
+.. _local branches: http://git-scm.com/book/en/Git-Branching-Branch-Management
+.. _Git Manual: http://git-scm.com/doc
 
