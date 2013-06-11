@@ -176,6 +176,8 @@ x3d:hover,
 .x3dom-logContainer {
     border: 2px solid olivedrab;
     height: 200px;
+    bottom: 0px;
+    position: absolute;
     padding: 4px;
     overflow: auto;
     white-space: pre-wrap;
