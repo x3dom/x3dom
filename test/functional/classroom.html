@@ -80,6 +80,7 @@
 <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
 
 <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+<!-- <x3d id='x3dElement' showStat='false' showLog='false' width="800px" height="600px"> -->
     <scene id='scene' frustumCulling="false">
         <worldInfo info='"Created using RenderPark (http://www.cs.kuleuven.ac.be/cwis/research/graphics/RENDERPARK/)"'
                    title='Some nice model'></worldInfo>
@@ -167,28 +168,29 @@
 
                             void main()
                             {
-                                float distortionScale = 0.9; //0.685;
-                                vec2 screenCenter = vec2(0.5, 0.5);
+                                float distortionScale = 0.75; //0.685;
                                 //float distortionK[4] = float[](1.0, 0.22, 0.24, 0.0);
                                 vec2 lensCenter = vec2(0.151976495726, 0.0);
                                 if (leftEye == 0.0) {
-                                    lensCenter.x *= -0.5;
+                                    lensCenter.x *= -1.0;
                                 }
 
                                 vec2 theta = (fragTexCoord * 2.0) - 1.0;
                                 float rSq = theta.x * theta.x + theta.y * theta.y;
                                 vec2 rvec = theta * (1.0 + 0.22 * rSq + 0.24 * rSq * rSq); //+ 0.0 * rSq * rSq * rSq);
-                                vec2 texCoord = distortionScale * (rvec + 1.0) / 2.0 + lensCenter;
+                                vec2 texCoord = (distortionScale*rvec+(1.0-distortionScale)*lensCenter + 1.0) / 2.0;
 
-                                if (any(notEqual(clamp(texCoord, screenCenter - vec2(0.5, 0.5),
-                                                                 screenCenter + vec2(0.5, 0.5)) - texCoord,
-                                                 vec2(0.0, 0.0)))) {
+                                if (any(notEqual(clamp(texCoord, vec2(0.0, 0.0), vec2(1.0, 1.0)) - texCoord,
+                                                       vec2(0.0, 0.0)))) {
+                                    //if (leftEye == 0.0) gl_FragColor = vec4(1.0,1.0,0.0,1.0);
+                                    //else gl_FragColor = vec4(1.0,0.0,0.0,1.0);
                                     discard;
                                 }
                                 else {
                                     vec3 col = texture2D(tex, texCoord).rgb;
                                     gl_FragColor = vec4(col, 1.0);
                                 }
+                                //gl_FragColor = texture2D(tex, fragTexCoord);
                             }
                         </shaderPart>
                     </composedShader>
