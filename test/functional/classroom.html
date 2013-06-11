@@ -168,7 +168,7 @@
 
                             void main()
                             {
-                                float distortionScale = 0.75; //0.685;
+                                float distortionScale = 0.685;
                                 //float distortionK[4] = float[](1.0, 0.22, 0.24, 0.0);
                                 vec2 lensCenter = vec2(0.151976495726, 0.0);
                                 if (leftEye == 0.0) {
@@ -282,6 +282,13 @@
                 lastH = h;
             }
         };
+
+        document.addEventListener('keyup', function (evt) {
+            var code = evt.keyCode;
+            if (code==13)
+                $(document).toggleFullScreen();
+            evt.returnValue = true;
+        }, true);
     };
 </script>
 </body>
