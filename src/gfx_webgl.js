@@ -3071,12 +3071,12 @@ x3dom.gfx_webgl = (function () {
                 scene._vf.pickMode.toLowerCase() == "color" ||
                 scene._vf.pickMode.toLowerCase() == "texcoord") {
                 gl.viewport(0, 3 * this.canvas.height / 4,
-                    this.canvas.width / 4, this.canvas.height / 4);
+                            this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
-            if (shadowCount > 0) {
+            if (shadowCount > 0) {  // TODO: this one still used/needed?
                 gl.viewport(this.canvas.width / 4, 3 * this.canvas.height / 4,
-                    this.canvas.width / 4, this.canvas.height / 4);
+                            this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
             }
 
@@ -3086,7 +3086,7 @@ x3dom.gfx_webgl = (function () {
                 var shadowMaps = scene._webgl.fboShadow[i];
                 for (var j = 0; j < shadowMaps.length; j++) {
                     gl.viewport(col * this.canvas.width / 4, row * this.canvas.height / 4,
-                        this.canvas.width / 4, this.canvas.height / 4);
+                                this.canvas.width / 4, this.canvas.height / 4);
                     scene._fgnd._webgl.render(gl, shadowMaps[j].tex);
                     if (col < 2) {
                         col++;
@@ -3100,8 +3100,8 @@ x3dom.gfx_webgl = (function () {
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
 
-                gl.viewport(rtl_i * (this.canvas.width / 8), 5 * this.canvas.height / 8,
-                    (rtl_i + 1) * (this.canvas.width / 8), this.canvas.height / 8);
+                gl.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
+                            this.canvas.width / 8, this.canvas.height / 8);
                 scene._fgnd._webgl.render(gl, rt_tex._webgl.fbo.tex);
             }
         }
@@ -3649,7 +3649,6 @@ x3dom.gfx_webgl = (function () {
         return tex;
     };
 
-
     /*****************************************************************************
      * Creates FBO with given size
      * (taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009)
@@ -3694,19 +3693,19 @@ x3dom.gfx_webgl = (function () {
     {
 		var scene = viewarea._scene;
 		
-		//don't render shadows whith less than 7 textures per fragment shader
+		//don't render shadows with less than 7 textures per fragment shader
 		var texLimit = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);	
 		
-		if (texLimit < 7) return;
+		if (texLimit < 7)
+            return;
 		
 		var texUnits = 1;
 		var renderSplit = new Array();
 		renderSplit[0] = 0;
 		
-		
-		
 		//filter shadow maps and determine, if multiple render passes are needed		
-		for (var i = 0; i < shadowedLights.length; i++){
+		for (var i = 0; i < shadowedLights.length; i++)
+        {
 				var filterSize = shadowedLights[i]._vf.shadowFilterSize;				
 				var shadowMaps = scene._webgl.fboShadow[i];
 				var numShadowMaps = shadowMaps.length;
@@ -3727,7 +3726,8 @@ x3dom.gfx_webgl = (function () {
 		renderSplit[renderSplit.length] = shadowedLights.length;
 		
 		//render shadows for current render split
-		for (var s=0; s<renderSplit.length-1; s++){
+		for (var s=0; s<renderSplit.length-1; s++)
+        {
 			var startIndex = renderSplit[s];
 			var endIndex = renderSplit[s+1];
 		
@@ -3735,16 +3735,14 @@ x3dom.gfx_webgl = (function () {
 			
 			for (var k=startIndex; k< endIndex; k++)
 				currentLights[currentLights.length] = shadowedLights[k];
-		
-		
+
 			var sp = this.cache.getShadowRenderingShader(gl, currentLights);
 			sp.bind();	
 			
 			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
 			gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(sp.position);
-			
-			
+
 			//enable (multiplicative) blending
 			gl.enable(gl.BLEND);
 			gl.blendFunc(gl.DST_COLOR, gl.ZERO);
@@ -3769,7 +3767,6 @@ x3dom.gfx_webgl = (function () {
 			var mat_view_proj = mat_proj.mult(mat_view);
 			var mat_inv = mat_view_proj.inverse();
 			sp.inverseViewProj = mat_inv.toGL();
-			
 
 			var mat_light;
 			var lightMatrix;
@@ -3820,10 +3817,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
 					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
-					
-
 				}
-				
 				else if(x3dom.isa(currentLights[p], x3dom.nodeTypes.PointLight))
 				{
 					sp['light'+p+'_Type']             = 1.0;
@@ -3836,7 +3830,6 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowOffset']	  = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
-					
 				}
 				else if(x3dom.isa(currentLights[p], x3dom.nodeTypes.SpotLight))
 				{
@@ -3851,9 +3844,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
 					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
-					
 				}
-					
 			}
 		
 			gl.drawArrays(gl.TRIANGLES,0,6);
@@ -3863,10 +3854,8 @@ x3dom.gfx_webgl = (function () {
 				gl.bindTexture(gl.TEXTURE_2D, null);	
 			} 
 			gl.disableVertexAttribArray(sp.position);
-			
 		}
     };
-	
 	
 	/*****************************************************************************
     * Blur texture associated with given fbo
@@ -3927,7 +3916,6 @@ x3dom.gfx_webgl = (function () {
 		
 		gl.drawArrays(gl.TRIANGLES,0,6);
 		
-		
 		//second pass (vertical blur), result stored in targetFbo
 		gl.bindFramebuffer(gl.FRAMEBUFFER, targetFbo.fbo);
 		
@@ -3943,10 +3931,8 @@ x3dom.gfx_webgl = (function () {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		
 
 		gl.drawArrays(gl.TRIANGLES,0,6);
-			
 
 		//cleanup
 		gl.flush();
