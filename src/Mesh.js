@@ -137,8 +137,11 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     return isect;
 };
 
-x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
+x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
 {
+    if (ccw === undefined)
+      ccw = true;
+      
     var i = 0, j = 0, num = 0;
     var multInd = (this._multiIndIndices !== undefined && this._multiIndIndices.length);
     var coords = this._positions[0];
@@ -184,6 +187,8 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
         }
         
         n = a.cross(b).normalize();
+        if (!ccw)
+          n = n.negate();
         
         if (creaseAngle <= x3dom.fields.Eps) {
             vertNormals[i*3  ] = vertNormals[(i+1)*3  ] = vertNormals[(i+2)*3  ] = n.x;
