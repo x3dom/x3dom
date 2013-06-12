@@ -42,7 +42,7 @@ than one 100 liner.
 Use descriptive commit messages
 -------------------------------
 Try to avoid non-descriptive commit messages unless it's really small
-correction like fixing a typo or forgotton semi-colon. Always describe
+correction like fixing a typo or forgotton semicolon. Always describe
 what you have done succinctly. If you are closing a ticket with this
 commit refer the ticket in your message. For example::
 
@@ -115,17 +115,17 @@ The following coding guidelines should be followed:
 
 
 
-Semi colon
+Semicolon
 +++++++++++
-Always end a statement mit a semi-colon. For C coders that's ususally
+Always end a statement mit a semicolon. For C/C++ coders that's ususally
 a non issue. If you are coming from another dynamic language, it happens
-frequently to forget the semi-colon.
+frequently to forget the semicolon.
 
 
 
 if/else shortcuts
 +++++++++++++++++
-Aviod the use if ``if/else`` constructs without curly braces. It impaires
+Aviod the use of ``if/else`` constructs without curly braces. It impaires
 readability and is a potential source for errors:
 
 Good:
@@ -151,12 +151,13 @@ Bad:
 
 
 
+- zwischen Funktionen je eine Leerzeile zur Übersichtlichkeit
 - möglichst wenig anonyme funktionen verwenden
 - immer mit ; abschliessen
 - that = this
 - variablen nicht inline deklarieren/initialisieren sondern direkt
   nach funktionsbeginn var x,j,k = 0, var test = true, etc. Auch die
-  Zähler (js kennt nur zwei contexte: global und funktionslokal, blocklocal
+  Zähler (js kennt nur zwei contexte: global und funktionslokal), blocklocal
   gibts bei js nicht.
 - sprechende Namen verwenden
 - hier mehr zur Inspiration:
