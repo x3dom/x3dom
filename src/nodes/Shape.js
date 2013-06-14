@@ -220,7 +220,7 @@ x3dom.registerNodeType(
             this._dirty = {
                 positions: true,
                 normals: true,
-                texcoords: true,
+                texCoords: true,
                 colors: true,
                 indexes: true,
                 texture: true,
