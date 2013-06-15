@@ -460,12 +460,11 @@ x3dom.Utils.isUnsignedType = function (str)
 
 
 /*****************************************************************************
-* Checks for lighting and shadowing
+* Checks for lighting
 *****************************************************************************/
 x3dom.Utils.checkDirtyLighting = function (viewarea)
 {
-	return [viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight,
-			viewarea.getLightsShadow()];
+	return (viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight);
 };
 
 /*****************************************************************************

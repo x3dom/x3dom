@@ -66,11 +66,14 @@ x3dom.bvh.Base = defineClass(
         {
             this.dataNodes.push(new x3dom.bvh.DataNode(drawable));
         },
+
         /*
          * interface functions
          */
-        build : function(){},
-        collectDrawables : function(drawableCollection){},
+        build : function() {},
+
+        collectDrawables : function(drawableCollection) {},
+
         /*
          * return longest axis of box : 0=x, 1=y, 2=z
          */
@@ -97,6 +100,7 @@ x3dom.bvh.Base = defineClass(
             }
             return ret;
         },
+
         /* calculate boundingBox for all data nodes */
         calculateBBoxForDataNodes : function()
         {
@@ -122,6 +126,7 @@ x3dom.bvh.Base = defineClass(
             box.setBounds(min,max);
             return box;
         },
+
         splitBoxVolume : function(bbox, axis, leftSplit, rightSplit)
         {
             var min = new x3dom.fields.SFVec3f,
@@ -139,6 +144,7 @@ x3dom.bvh.Base = defineClass(
 
             return [new x3dom.fields.BoxVolume(leftMin,leftMax),new x3dom.fields.BoxVolume(rightMin,rightMax)];
         },
+
         calculateCoverage : function(bbox)
         {
             //small feature culling
@@ -177,6 +183,7 @@ x3dom.bvh.DebugComposite = defineClass(
         {
             this.bvh.addDrawable(drawable);
         },
+
         /*
          * measure build time and create debugging elements
          */
@@ -193,6 +200,7 @@ x3dom.bvh.DebugComposite = defineClass(
                 this.createDebugShape();
             }
         },
+
         collectDrawables : function(drawableCollection)
         {
             var getDCSize = function(drawableCollection)
@@ -210,6 +218,7 @@ x3dom.bvh.DebugComposite = defineClass(
             this.renderedDrawablesCount = drawableCollection.length - this.renderedDrawablesCount;
             //console.log("added drawables: "+this.renderedDrawablesCount);
         },
+
         //create shape for debugging
         createDebugShape : function()
         {
@@ -259,6 +268,7 @@ x3dom.bvh.DebugComposite = defineClass(
             this.debugShape.nodeChanged();
             this.scene.nodeChanged();
         },
+
         addBihNodeBoxVolume: function(geo, node, boxVolume)
         {
             this.addBoxVolumeToGeometry(boxVolume,geo);
@@ -274,6 +284,7 @@ x3dom.bvh.DebugComposite = defineClass(
 
             }
         },
+
         addAllDataNodeBoxVolumes : function(geo)
         {
             for(var i = 0, n = this.bvh.dataNodes.length; i < n; ++i)
@@ -281,6 +292,7 @@ x3dom.bvh.DebugComposite = defineClass(
                 this.addBoxVolumeToGeometry(this.bvh.dataNodes[i].bbox, geo);
             }
         },
+
         //adds a boxvolume to a geometry
         addBoxVolumeToGeometry : function(boxVolume, geo)
         {
@@ -387,6 +399,7 @@ x3dom.bvh.BIH = defineClass(
             }
             return this.bihNodes[index];
         },
+
         /* sorts given number of objects from start inplace and returns number in "left" space */
         bucketSort : function(startIndex, number, pivot, axis)
         {
@@ -411,6 +424,7 @@ x3dom.bvh.BIH = defineClass(
             }
             return numLeft;
         },
+
         /*
          * recursively divides set of geometry into subnodes
          */
@@ -490,6 +504,7 @@ x3dom.bvh.BIH = defineClass(
 
             return node;
         },
+
         /* compiles nodes into bih tree */
         build : function()
         {
@@ -506,6 +521,7 @@ x3dom.bvh.BIH = defineClass(
             }
             this.processNode(0,0,this.dataNodes.length,this.coveredBoxVolume,0);
         },
+
         /* return drawables to webgl for rendering */
         collectDrawables : function(drawableCollection)
         {
@@ -517,6 +533,7 @@ x3dom.bvh.BIH = defineClass(
                 this.intersect(this.bihNodes[0], planeMask);
             }
         },
+
         intersect : function(node, planeMask)
         {
             //viewfrustum intersection test
@@ -524,7 +541,7 @@ x3dom.bvh.BIH = defineClass(
                 planeMask = this.drawableCollection.viewFrustum.intersect(node.bbox,planeMask);
             if(planeMask >= 0)
             {
-                coverage = this.calculateCoverage(node.bbox);
+                var coverage = this.calculateCoverage(node.bbox);
 
                 if (coverage < this.drawableCollection.smallFeatureThreshold )
                 {
