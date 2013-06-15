@@ -1630,7 +1630,7 @@ x3dom.registerNodeType(
 						}
 						
 						Array.forEach(this._parentNodes, function (node) {
-							node._dirty.texCoords = true;
+							node._dirty.texcoords = true;
 						}); 
 					}
                 }

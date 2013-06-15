@@ -225,7 +225,7 @@ x3dom.gfx_webgl = (function () {
 
                     //Set dirty texture Coordinates
                     if (shape._webgl.shader.texcoord === undefined)
-                        shape._dirty.texCoords = true;
+                        shape._dirty.texcoords = true;
                 }
                 else {
                     //If someone remove and append at the same time, texture count don't change
@@ -361,7 +361,7 @@ x3dom.gfx_webgl = (function () {
                         shape._dirty.normals = false;
                     }
 
-                    if (!needFullReInit && shape._dirty.texCoords === true) {
+                    if (!needFullReInit && shape._dirty.texcoords === true) {
                         if (shape._webgl.shader.texcoord !== undefined) {
                             shape._webgl.texcoords[q] = shape._cf.geometry.node._mesh._texCoords[q];
 
@@ -383,7 +383,7 @@ x3dom.gfx_webgl = (function () {
                             texCoords = null;
                         }
 
-                        shape._dirty.texCoords = false;
+                        shape._dirty.texcoords = false;
                     }
                 }
 
@@ -392,11 +392,7 @@ x3dom.gfx_webgl = (function () {
                     shape._webgl.texture[t].updateTexture();
                 }
 
-                shape._cf.geometry.node._dirty.coord = false;
-                shape._cf.geometry.node._dirty.normal = false;
-                shape._cf.geometry.node._dirty.texCoord = false;
-                shape._cf.geometry.node._dirty.color = false;
-                shape._cf.geometry.node._dirty.index = false;
+                shape._cf.geometry.node.unsetGeoDirty();
             }
 
             if (!needFullReInit) {

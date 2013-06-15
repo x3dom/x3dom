@@ -220,7 +220,7 @@ x3dom.registerNodeType(
             this._dirty = {
                 positions: true,
                 normals: true,
-                texCoords: true,
+                texcoords: true,
                 colors: true,
                 indexes: true,
                 texture: true,
@@ -323,7 +323,7 @@ x3dom.registerNodeType(
 				// vertex attributes
 				this._dirty.positions = false;
 				this._dirty.normals = false;
-				this._dirty.texCoords = false;
+				this._dirty.texcoords = false;
 				this._dirty.colors =  false;
 				// indices/topology
 				this._dirty.indexes = false;
@@ -338,7 +338,7 @@ x3dom.registerNodeType(
 			    // vertex attributes
 				this._dirty.positions = true;
 				this._dirty.normals = true;
-				this._dirty.texCoords = true;
+				this._dirty.texcoords = true;
 				this._dirty.colors =  true;
 				// indices/topology
 				this._dirty.indexes = true;
