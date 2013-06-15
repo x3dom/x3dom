@@ -11,10 +11,11 @@
 
 // ### X3DDocument ###
 x3dom.X3DDocument = function(canvas, ctx, settings) {
-    this.properties = settings;
     this.canvas = canvas;
     this.ctx = ctx;
+    this.properties = settings;
     this.needRender = true;
+    this._x3dElem = null;   // backref to <X3D> root element (set on parsing)
     this._scene = null;
     this._viewarea = null;
     this._nodeBag = {
@@ -57,6 +58,7 @@ x3dom.X3DDocument.prototype.load = function (uri, sceneElemPos) {
         {
             // Special case, when passed an X3D node instead of a URI string
             uri_docs[next_uri] = next_uri;
+            doc._x3dElem = next_uri;
             next_step();
         }
     }
@@ -334,6 +336,9 @@ x3dom.X3DDocument.prototype.onKeyUp = function(keyCode)
     var stack = null;
 
     switch (keyCode) {
+        case 13: /* return */
+            x3dom.toggleFullScreen();
+            break;
         case 27: /* ESC */
             window.history.back(); // emulate good old ESC key
             break;
@@ -378,7 +383,6 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     {
         case  32: /* space */
             var states = this.canvas.parent.stateViewer;
-			
 			if (states) {
 				states.display();
 			}

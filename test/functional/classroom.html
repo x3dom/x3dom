@@ -72,10 +72,6 @@
     <script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
     <script type="text/javascript" src="../../src/Docs.js"></script>
     <!-- END:X3DOM -->
-    
-    <!-- taken from http://www.ailis.de/~k/archives/66-jQuery-Fullscreen-Plugin.html -->
-    <script type="text/javascript" src="http://www.ailis.de/~k/scripts/jquery/jquery.js"></script> 
-    <script type="text/javascript" src="http://www.ailis.de/~k/scripts/jquery/plugins/fullscreen.js"></script>
 </head>
 <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
 
@@ -86,7 +82,7 @@
                    title='Some nice model'></worldInfo>
         <navigationInfo headlight='false' type='"EXAMINE" "WALK"'></navigationInfo>
         <viewpoint id='vpp' DEF='vp' description='ViewPoint 1' centerOfRotation='3.4625 1.73998 -5.55'
-                   orientation='0 1 0 2.99229' position='4.79662 1.8101 -11.0811'
+                   orientation='0 1 0 2.99229' position='4.17102 1.00905 -6.97228'
                    zNear="0.001" zFar="300"></viewpoint>
         <viewpoint DEF='AOPT_CAM' centerOfRotation='3.4625 1.73998 -5.55' position='3.4625 1.73998 8.69028'></viewpoint>
         <background DEF='bgnd' skyColor="0 0 0"></background>
@@ -235,7 +231,7 @@
     </scene>
 </x3d>
 
-<button style="position:absolute; top:0px; left:0px;" onclick="$(document).toggleFullScreen();">
+<button style="position:absolute; top:0px; left:0px;" onclick="x3dom.toggleFullScreen();">
     Fullscreen
 </button>
 
@@ -257,16 +253,6 @@
         rtLeft.setAttribute('dimensions',  hw + ' ' + lastH + ' 4');
         rtRight.setAttribute('dimensions', hw + ' ' + lastH + ' 4');
 
-        /*
-        rtLeft.hScreenSize = 0.14976;
-        rtLeft.vScreenSize = 0.09356;
-        rtLeft.vScreenCenter = this.vScreenSize / 2;
-        rtLeft.eyeToScreenDistance = 0.041;
-        rtLeft.lensSeparationDistance = 0.0635;
-        rtLeft.distortionK = [1.0, 0.22, 0.24, 0.0];
-        rtLeft.lensCenter = 1 - 2 * this.lensSeparationDistance / this.hScreenSize;
-        */
-
         runtime.exitFrame = function ()
         {
             var w = +runtime.getWidth();
@@ -282,13 +268,6 @@
                 lastH = h;
             }
         };
-
-        document.addEventListener('keyup', function (evt) {
-            var code = evt.keyCode;
-            if (code==13)
-                $(document).toggleFullScreen();
-            evt.returnValue = true;
-        }, true);
     };
 	
 	
@@ -308,7 +287,6 @@
 		socket_ass.onmessage = function(event)
 		{
 			//console.log(event.data);
-			
 			var h = x3dom.fields.SFVec4f.parse(event.data);
 			var q = new x3dom.fields.Quaternion(h.x, h.y, h.z, h.w);
 			
@@ -319,7 +297,7 @@
 		}
 	}
 
-	var instantIOport = "12345";
+	var instantIOport = "12345";    // attention: use port as opened in InstantIO
 	start_log("ws://localhost:" + instantIOport + "/InstantIO/element/ovr/Orientation/data.string", "image");
 </script>
 </body>

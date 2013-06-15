@@ -78,6 +78,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.MAX_VERTEX_UNIFORM_VECTORS = ctx.getParameter(ctx.MAX_VERTEX_UNIFORM_VECTORS);
                         x3dom.caps.MAX_COMBINED_TEXTURE_IMAGE_UNITS = ctx.getParameter(ctx.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
                         x3dom.caps.MAX_TEXTURE_SIZE = ctx.getParameter(ctx.MAX_TEXTURE_SIZE);
+                        x3dom.caps.MAX_TEXTURE_IMAGE_UNITS = ctx.getParameter(ctx.MAX_TEXTURE_IMAGE_UNITS);
                         x3dom.caps.MAX_CUBE_MAP_TEXTURE_SIZE = ctx.getParameter(ctx.MAX_CUBE_MAP_TEXTURE_SIZE);
                         x3dom.caps.COMPRESSED_TEXTURE_FORMATS = ctx.getParameter(ctx.COMPRESSED_TEXTURE_FORMATS);
                         x3dom.caps.MAX_RENDERBUFFER_SIZE = ctx.getParameter(ctx.MAX_RENDERBUFFER_SIZE);
@@ -133,8 +134,8 @@ x3dom.gfx_webgl = (function () {
 
                     return newCtx;
                 }
-            } catch (e) {
             }
+            catch (e) {}
         }
         return null;
     }
@@ -974,12 +975,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
 
-                try {
-                    gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-                }
-                catch (e) {
-                    x3dom.debug.logException("Render background: " + e);
-                }
+                gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1055,12 +1051,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.position);
 
-                try {
-                    gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-                }
-                catch (e) {
-                    x3dom.debug.logException("Render background: " + e);
-                }
+                gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.disableVertexAttribArray(sp.position);
 
@@ -1094,8 +1085,7 @@ x3dom.gfx_webgl = (function () {
             positions: [-w, -h, 0, -w, h, 0, w, -h, 0, w, h, 0],
             indexes: [0, 1, 2, 3],
             buffers: [
-                {},
-                {}
+                {}, {}
             ]
         };
 
@@ -1153,13 +1143,7 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(sp.position);
 
-            try {
-                gl.drawElements(scene._fgnd._webgl.primType,
-                    scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-            }
-            catch (e) {
-                x3dom.debug.logException("Render foreground: " + e);
-            }
+            gl.drawElements(scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
             gl.disableVertexAttribArray(sp.position);
 
@@ -2645,6 +2629,7 @@ x3dom.gfx_webgl = (function () {
         if (!scene._webgl)
         {
             scene._webgl = {};
+
             this.setupFgnds(gl, scene);
 
             // scale factor for mouse coords and width/ height (low res for speed-up)
@@ -2819,6 +2804,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         var bgnd = scene.getBackground();
+
         this.setupScene(gl, bgnd);
 
         this.numFaces = 0;
@@ -3062,8 +3048,7 @@ x3dom.gfx_webgl = (function () {
             }
 
             this.renderShape(drawable, viewarea, slights, numLights,
-                mat_view, mat_scene, mat_light, mat_proj, gl,
-                stateSwitchMode);
+                mat_view, mat_scene, mat_light, mat_proj, gl, stateSwitchMode);
 
             //if (stateSwitchMode & STATE_SWITCH_UNBIND)
             {
@@ -3099,7 +3084,8 @@ x3dom.gfx_webgl = (function () {
                             this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
-            if (shadowCount > 0) {  // TODO: this one still used/needed?
+
+            if (shadowCount > 0) {
                 gl.viewport(this.canvas.width / 4, 3 * this.canvas.height / 4,
                             this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
@@ -3372,7 +3358,7 @@ x3dom.gfx_webgl = (function () {
      *****************************************************************************/
     Context.prototype.renderNormals = function (gl, scene, sp, mat_view, mat_scene)
     {
-        if (!sp) {  // error
+        if (!sp || !scene) {  // error
             return;
         }
 
@@ -3580,32 +3566,33 @@ x3dom.gfx_webgl = (function () {
      *****************************************************************************/
     Context.prototype.shutdown = function (viewarea) {
         var gl = this.ctx3d;
-        var attrib;
-        var scene;
+        var scene = viewarea._scene;
 
-        if (gl === null || scene === null || !scene || scene.drawableCollection === null) {
+        if (gl == null || !scene) {
             return;
         }
-        scene = viewarea._scene;
-
-        //Release Texture and Shader Resources
-        this.cache.Release();
 
         var bgnd = scene.getBackground();
-        if (bgnd._webgl.texture !== undefined && bgnd._webgl.texture) {
-            gl.deleteTexture(bgnd._webgl.texture);
-        }
-        if (bgnd._webgl.shader.position !== undefined) {
+        if (bgnd._webgl.position !== undefined) {
             gl.deleteBuffer(bgnd._webgl.buffers[1]);
             gl.deleteBuffer(bgnd._webgl.buffers[0]);
         }
+        var fgnd = scene._fgnd;
+        if (fgnd._webgl.position !== undefined) {
+            gl.deleteBuffer(fgnd._webgl.buffers[1]);
+            gl.deleteBuffer(fgnd._webgl.buffers[0]);
+        }
 
-        for (var i = 0, n = scene.drawableCollection.length; i < n; i++) {
+        var n = scene.drawableCollection ? scene.drawableCollection.length : 0;
+        for (var i = 0; i < n; i++) {
             var shape = scene.drawableCollection.get(i).shape;
 
             if (shape._cleanupGLObjects)
                 shape._cleanupGLObjects(true);
         }
+
+        //Release Texture and Shader Resources
+        this.cache.Release(gl);
     };
 
     /*****************************************************************************
@@ -3718,46 +3705,49 @@ x3dom.gfx_webgl = (function () {
 		var scene = viewarea._scene;
 		
 		//don't render shadows with less than 7 textures per fragment shader
-		var texLimit = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);	
+		var texLimit = x3dom.caps.MAX_TEXTURE_IMAGE_UNITS;
 		
 		if (texLimit < 7)
             return;
 		
 		var texUnits = 1;
-		var renderSplit = new Array();
-		renderSplit[0] = 0;
+		var renderSplit = [ 0 ];
+
+        var shadowMaps, numShadowMaps;
+        var i, j, k;
 		
 		//filter shadow maps and determine, if multiple render passes are needed		
-		for (var i = 0; i < shadowedLights.length; i++)
+		for (i = 0; i < shadowedLights.length; i++)
         {
-				var filterSize = shadowedLights[i]._vf.shadowFilterSize;				
-				var shadowMaps = scene._webgl.fboShadow[i];
-				var numShadowMaps = shadowMaps.length;
+            var filterSize = shadowedLights[i]._vf.shadowFilterSize;
+            shadowMaps = scene._webgl.fboShadow[i];
+            numShadowMaps = shadowMaps.length;
 
-				//filtering
-				for (var j=0; j<numShadowMaps;j++){	
-					this.blurTex(gl, scene, shadowMaps[j], filterSize);
-				}
-				
-				//shader consumes 6 tex units per lights (even if less are bound)
-				texUnits+=6;
-				
-				if (texUnits > texLimit){
-					renderSplit[renderSplit.length] = i;
-					texUnits = 7;
-				}
+            //filtering
+            for (j=0; j<numShadowMaps;j++){
+                this.blurTex(gl, scene, shadowMaps[j], filterSize);
+            }
+
+            //shader consumes 6 tex units per lights (even if less are bound)
+            texUnits+=6;
+
+            if (texUnits > texLimit){
+                renderSplit[renderSplit.length] = i;
+                texUnits = 7;
+            }
 		}
 		renderSplit[renderSplit.length] = shadowedLights.length;
 		
 		//render shadows for current render split
-		for (var s=0; s<renderSplit.length-1; s++)
+        var n = renderSplit.length - 1;
+		for (var s=0; s<n; s++)
         {
 			var startIndex = renderSplit[s];
 			var endIndex = renderSplit[s+1];
 		
-			var currentLights = new Array();
+			var currentLights = [];
 			
-			for (var k=startIndex; k< endIndex; k++)
+			for (k=startIndex; k< endIndex; k++)
 				currentLights[currentLights.length] = shadowedLights[k];
 
 			var sp = this.cache.getShadowRenderingShader(gl, currentLights);
@@ -3794,18 +3784,17 @@ x3dom.gfx_webgl = (function () {
 
 			var mat_light;
 			var lightMatrix;
-			var shadowMaps;
 		
 			var shadowIndex = 0;
-			for (var p=0; p<currentLights.length; p++){		
+			for (var p=0; p<currentLights.length; p++) {
 				//get light matrices and shadow maps for current light
 				lightMatrix = lMatrices[p+startIndex];
 				mat_light = wctolc[p+startIndex];
 				shadowMaps = scene._webgl.fboShadow[p+startIndex]; 
 				
-				var numShadowMaps = mat_light.length;
+				numShadowMaps = mat_light.length;
 				
-				for (var i=0; i< numShadowMaps; i++){
+				for (i=0; i< numShadowMaps; i++){
 						gl.activeTexture(gl.TEXTURE1 + shadowIndex);
 						gl.bindTexture(gl.TEXTURE_2D, shadowMaps[i].tex);
 						sp['light'+p+'_'+i+'_ShadowMap'] = shadowIndex+1;
@@ -3816,7 +3805,7 @@ x3dom.gfx_webgl = (function () {
 
 				//cascade depths for directional and spot light
 				if (!x3dom.isa(currentLights[p], x3dom.nodeTypes.PointLight)){
-					for (var j=0; j< numShadowMaps; j++){
+					for (j=0; j< numShadowMaps; j++){
 						var numCascades = Math.max(1,Math.min(currentLights[p]._vf.shadowCascades,6));
 						var splitFactor = Math.max(0,Math.min(currentLights[p]._vf.shadowSplitFactor,1));					
 						var splitOffset = Math.max(0,Math.min(currentLights[p]._vf.shadowSplitOffset,1));						
@@ -3872,8 +3861,10 @@ x3dom.gfx_webgl = (function () {
 			}
 		
 			gl.drawArrays(gl.TRIANGLES,0,6);
+
 			//cleanup
-			for (var k=0; k<shadowIndex+1; k++){
+            var nk = shadowIndex + 1;
+			for (k=0; k<nk; k++) {
 				gl.activeTexture(gl.TEXTURE0 + k);
 				gl.bindTexture(gl.TEXTURE_2D, null);	
 			} 
@@ -3886,22 +3877,23 @@ x3dom.gfx_webgl = (function () {
     *****************************************************************************/	
 	Context.prototype.blurTex = function(gl, scene, targetFbo, filterSize)
     {
-		if (filterSize == 0) return;
+		if (filterSize <= 0)
+            return;
 		else if (filterSize < 5)
 			filterSize = 3;
 		else if (filterSize < 7)
 			filterSize = 5;
-		else filterSize = 7;
+		else
+            filterSize = 7;
 		
 		//first pass (horizontal blur), result stored in fboBlur
 		var width = targetFbo.width;
 		var height = targetFbo.height;
-		
-		var targetSize = targetFbo.height;
 		var fboBlur;
 		
 		for (var i=0; i<scene._webgl.fboBlur.length; i++)
-			if (targetSize == scene._webgl.fboBlur[i].height) fboBlur = scene._webgl.fboBlur[i];
+			if (height == scene._webgl.fboBlur[i].height)
+                fboBlur = scene._webgl.fboBlur[i];  // THINKABOUTME
 				
 		gl.bindFramebuffer(gl.FRAMEBUFFER, fboBlur.fbo);
 		gl.viewport(0, 0, width, height);
@@ -3966,7 +3958,7 @@ x3dom.gfx_webgl = (function () {
 		gl.disableVertexAttribArray(sp.position);
 		
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-	};	
+	};
 	
     return setupContext;
 
