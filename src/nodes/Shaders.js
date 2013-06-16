@@ -222,7 +222,7 @@ x3dom.registerNodeType(
 				var spec = this.getSpecularMap();
 				if(spec) textures.push(spec);
         
-        var displacement = this.getDisplacementMap();
+                var displacement = this.getDisplacementMap();
 				if(displacement) textures.push(displacement);
 				
 				return textures;
@@ -246,9 +246,12 @@ x3dom.registerNodeType(
             this._vertex = null;
             this._fragment = null;
 
-            x3dom.debug.logInfo("Current ComposedShader node implementation limitations:\n" +
+            if (!x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown) {
+                x3dom.debug.logInfo("Current ComposedShader node implementation limitations:\n" +
                     "Vertex attributes (if given in the standard X3D fields 'coord', 'color', " +
                     "'normal', 'texCoord'), matrices and texture are provided as follows...\n" +
+                    "(see also <a href='http://x3dom.org/x3dom/doc/help/composedShader.html'>" +
+                    "http://x3dom.org/x3dom/doc/help/composedShader.html</a>)\n" +
                     "    attribute vec3 position;\n" +
                     "    attribute vec3 normal;\n" +
                     "    attribute vec2 texcoord;\n" +
@@ -258,6 +261,8 @@ x3dom.registerNodeType(
 					"    uniform mat4 normalMatrix;\n" +
 					"    uniform mat4 viewMatrix;\n" +
                     "    uniform sampler2D tex;\n");
+                x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown = true;
+            }
         },
         {
             nodeChanged: function()
@@ -368,6 +373,9 @@ x3dom.registerNodeType(
         }
     )
 );
+
+x3dom.nodeTypes.ComposedShader.ShaderInfoMsgShown = false;
+
 
 /* ### ShaderPart ### */
 x3dom.registerNodeType(
