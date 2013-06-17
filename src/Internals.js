@@ -264,3 +264,30 @@ window.requestAnimFrame = (function() {
            };
 })();
 
+
+/// toggle full-screen mode
+x3dom.toggleFullScreen = function() {
+    if (document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen) {
+        if (document.cancelFullScreen) {
+            document.cancelFullScreen();
+        }
+        else if (document.mozCancelFullScreen) {
+            document.mozCancelFullScreen();
+        }
+        else if (document.webkitCancelFullScreen) {
+            document.webkitCancelFullScreen();
+        }
+    }
+    else {
+        var docElem = document.documentElement;
+        if (docElem.requestFullScreen) {
+            docElem.requestFullScreen();
+        }
+        else if (docElem.mozRequestFullScreen) {
+            docElem.mozRequestFullScreen();
+        }
+        else if (docElem.webkitRequestFullScreen) {
+            docElem.webkitRequestFullScreen();
+        }
+    }
+};

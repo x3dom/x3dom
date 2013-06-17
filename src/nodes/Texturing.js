@@ -388,9 +388,10 @@ x3dom.registerNodeType(
                     ret_mat = mat_viewpoint.mult(view.getViewMatrix());
                 }
 
-                if (this._vf.stereoMode != "NONE") {
+                var stereoMode = this._vf.stereoMode.toUpperCase();
+                if (stereoMode != "NONE") {
                     var d = this._vf.interpupillaryDistance / 2;
-                    if (this._vf.stereoMode == "RIGHT_EYE") {
+                    if (stereoMode == "RIGHT_EYE") {
                         d = -d;
                     }
                     var modifier = new x3dom.fields.SFMatrix4f(
@@ -412,7 +413,8 @@ x3dom.registerNodeType(
                 var view = this._cf.viewpoint.node;
                 var ret_mat = null;
                 var f, w = this._vf.dimensions[0], h = this._vf.dimensions[1];
-                var stereo = (this._vf.stereoMode != "NONE");
+                var stereoMode = this._vf.stereoMode.toUpperCase();
+                var stereo = (stereoMode != "NONE");
 
                 if (view === null || view === vbP) {
                     ret_mat = x3dom.fields.SFMatrix4f.copy(doc._viewarea.getProjectionMatrix());
@@ -432,7 +434,7 @@ x3dom.registerNodeType(
 
                 if (stereo) {
                     var hp = this.lensCenter;
-                    if (this._vf.stereoMode == "RIGHT_EYE") {
+                    if (stereoMode == "RIGHT_EYE") {
                         hp = -hp;
                     }
                     var modifier = new x3dom.fields.SFMatrix4f(

@@ -567,7 +567,7 @@ x3dom.gfx_flash = (function() {
 			}
 			
 			//Set texture coordinates
-			if( shape._dirty.texCoords === true ) {
+			if( shape._dirty.texcoords === true ) {
 				if(isImageGeometry) {
 					this.object.setMeshTexCoords( { id: shape._objectID,					
 													idx: 0, 
@@ -589,7 +589,7 @@ x3dom.gfx_flash = (function() {
 						}
 					}
 				}
-				shape._dirty.texCoords = false;
+				shape._dirty.texcoords = false;
 			}
 			
 			//Set material

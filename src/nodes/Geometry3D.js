@@ -2274,6 +2274,22 @@ x3dom.registerNodeType(
             };
 		},
 		{
+            setGeoDirty: function () {
+                this._dirty.coord = true;
+                this._dirty.normal = true;
+                this._dirty.texCoords = true;
+                this._dirty.color = true;
+                this._dirty.index = true;
+            },
+
+            unsetGeoDirty: function () {
+                this._dirty.coord = false;
+                this._dirty.normal = false;
+                this._dirty.texCoords = false;
+                this._dirty.color = false;
+                this._dirty.index = false;
+            },
+
 			nodeChanged: function()
             {		
 				Array.forEach(this._parentNodes, function (node) {
