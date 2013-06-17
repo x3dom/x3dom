@@ -82,12 +82,12 @@ package x3dom.shaders
 			shader += "mul ft3.xyz, fc1.xyz, ft1.xyz\n";
 			shader += "mov ft3.w, fc1.w\n";
 			
-			shader += "mul ft4.xyz, fc2.xyz, ft2.xyz\n";
-			shader += "mov ft4.w, fc1.w\n";
+			shader += "mul ft4, fc2.xyz, ft2.xyz\n";
 			
-			shader += "add ft5, ft3, ft4\n";
+			shader += "add ft5, ft3, ft4\n";	
+			shader += "add ft5, ft5, fc3\n";
 			
-			//shader += "sat ft5, ft5\n";
+			shader += "mov ft5.w, fc1.w\n";
 
 			shader += "mov oc, ft5\n"; 					//Output color*/
 			

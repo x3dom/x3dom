@@ -3,13 +3,9 @@ package x3dom.texturing
 	import flash.display3D.Context3D;
 	import flash.display3D.textures.TextureBase;
 	import flash.events.EventDispatcher;
-	import flash.geom.Matrix;
 	import flash.geom.Matrix3D;
 	
-	import mx.messaging.AbstractConsumer;
-	
 	import x3dom.FlashBackend;
-	import x3dom.Utils;
 	
 	public class BaseTexture extends EventDispatcher
 	{

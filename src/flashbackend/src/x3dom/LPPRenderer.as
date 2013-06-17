@@ -1,20 +1,22 @@
 package x3dom
 {
-	import flash.display.BitmapData;
-	import flash.display.BlendMode;
-	import flash.display.Scene;
-	import flash.display3D.*;
+	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DCompareMode;
+	import flash.display3D.Context3DProgramType;
+	import flash.display3D.Context3DTextureFormat;
+	import flash.display3D.Context3DTriangleFace;
+	import flash.display3D.Context3DVertexBufferFormat;
 	import flash.display3D.textures.Texture;
 	import flash.events.Event;
 	import flash.geom.Matrix3D;
-	import flash.geom.Vector3D;
 	
 	import x3dom.lighting.DirectionalLight;
 	import x3dom.lighting.HeadLight;
-	import x3dom.lighting.LightType;
 	import x3dom.lighting.PointLight;
-	import x3dom.shaders.*;
-	import x3dom.shapes.*;
+	import x3dom.shaders.ShaderIdentifier;
+	import x3dom.shapes.FullScreenQuad;
+	import x3dom.shapes.Quad;
+	import x3dom.shapes.Sphere;
 	
 	public class LPPRenderer extends Renderer
 	{		
@@ -96,11 +98,10 @@ package x3dom
 				_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX, 4, _mvMatrix, true );
 				
 				//Associate constants for float to rgba encoding
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 255.0, 65025.0, 16581375.0]) );
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 1, Vector.<Number>([0,0039215686274509803921568627451, 0,0039215686274509803921568627451, 0,0039215686274509803921568627451, 0.0]) );
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([1.0, 256.0, 65536.0, 16777216.0]) );
 				
 				//Associate farclip distance
-				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 2, Vector.<Number>([_scene.zFar, 0.0, 0.0, 0.0]) );
+				_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 2, Vector.<Number>([-_scene.zFar, 0.0, 0.0, 0.0]) );
 				
 				if(shape.solid) {
 					this._context3D.setCulling(Context3DTriangleFace.FRONT);
@@ -189,15 +190,17 @@ package x3dom
 			} else {
 				_context3D.setRenderToTexture(_lightSpecTexture, true);
 			}
-			
 			_context3D.clear();
 			
 			//Build ModelView-Matrix
-			_mvMatrix = _scene.viewMatrix.clone();
+			_mvMatrix.identity();
+			_mvMatrix.append(_scene.viewMatrix);
 			
 			//Build ProjectionInverse-Matrix
-			_pInvMatrix = _scene.projectionMatrix.clone();
+			_pInvMatrix.identity();
+			_pInvMatrix.append(_scene.projectionMatrix);
 			_pInvMatrix.invert();
+			//_pInvMatrix.transpose();
 			
 			//Associate ModelView-Matrix
 			_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  0, _mvMatrix, true );
@@ -207,7 +210,7 @@ package x3dom
 			
 			_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 0, Vector.<Number>([0.01, 128.0, 2.0, _scene.zFar]) );
 			_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 1, Vector.<Number>([1.0, 1.0, 1.0, 1.0]) );
-			_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 2, Vector.<Number>([1.0, 255.0, 65025.0, 16581375.0]) );
+			_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 2, Vector.<Number>([1.0, 255.0, 65536.0, 16777216.0]) );
 					
 			_context3D.setTextureAt(0, _depthTexture);
 			_context3D.setTextureAt(1, _normalTexture);
@@ -240,7 +243,7 @@ package x3dom
 						
 						//Set Light direction
 						_context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  8, Vector.<Number>(lights[i].direction) );
-						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 3, Vector.<Number>([lights[i].intensity, 0.0, 0.0, 0.0]) );
+						_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT, 3, Vector.<Number>([lights[i].intensity, 5.0, 0.0, 0.0]) );
 					}
 					else if(lights[i] is PointLight)
 					{			

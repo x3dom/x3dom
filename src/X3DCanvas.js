@@ -201,7 +201,10 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         x3dom.debug.logWarning("Flash backend doesn't like XHTML, please use HTML5!");
         obj.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
       } else {
-        x3dElem.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
+        if(x3dElem.getAttribute('style') == null)
+        {
+          x3dElem.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
+        }
       }
 
 			this.appendParam(obj, 'menu', 'false');

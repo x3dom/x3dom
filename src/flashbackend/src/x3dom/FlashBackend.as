@@ -1,14 +1,22 @@
 package x3dom
 {
-	import flash.display.*;
-	import flash.display3D.*;
-	import flash.events.*;
+	import flash.display.LoaderInfo;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.display.Stage;
+	import flash.display.Stage3D;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
+	import flash.display3D.Context3D;
+	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DProfile;
+	import flash.display3D.Context3DRenderMode;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
-	import flash.geom.Rectangle;
-	import flash.system.ApplicationDomain;
 	import flash.system.LoaderContext;
 	import flash.system.Security;
-	import flash.system.SecurityDomain;
 	
 	[SWF(backgroundColor="#000000", width="550", height="400", frameRate="120")]
 	
@@ -17,10 +25,10 @@ package x3dom
 		
 		Security.allowDomain('*');
 		
-		[Embed(source="res/Library.swf", symbol="LoadingText")]
+		[Embed(source="../../res/Library.swf", symbol="LoadingText")]
 		private var LoadingScreen:Class;
 		
-		[Embed(source="res/Library.swf", symbol="InfoField")]
+		[Embed(source="../../res/Library.swf", symbol="InfoField")]
 		private static var InfoField:Class;
 		
 		private static var _stage:Stage;

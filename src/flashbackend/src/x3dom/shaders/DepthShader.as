@@ -55,7 +55,7 @@ package x3dom.shaders
 			shader += "dp4 vt0.x va0, vc4\n";
 			shader += "dp4 vt0.y va0, vc5\n";
 			shader += "dp4 vt0.z va0, vc6\n";
-			shader += "mov v0, vt0.xyz1\n";
+			shader += "m44 v0, va0, vc4\n";
 			
 			shader += "m44 op, va0, vc0\n";	//Position*MVP-Matrix -> (op)
 			

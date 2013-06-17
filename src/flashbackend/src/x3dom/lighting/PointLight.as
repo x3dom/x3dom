@@ -52,7 +52,6 @@ package x3dom.lighting
 		public function get location() : Vector.<Number>
 		{
 			return _location;
-			this._location.push(0.0);
 		}
 		
 		/**

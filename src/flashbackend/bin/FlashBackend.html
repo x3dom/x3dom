@@ -76,15 +76,20 @@
 </head>
 <body>
 <h1>Flash Light Pre-Pass Renderer</h1>
-<x3d width='800px' height='500px' backend='flash' id="test">
+<x3d width='800px' height='500px' backend='flash' id="test" flashrenderer="deferred">
 <Scene>
-	<NavigationInfo headlight='true'></NavigationInfo>
+	<NavigationInfo headlight='false'></NavigationInfo>
 	<Background skyColor='0.678431 0.847059 0.901961'></Background>
-	<!--DirectionalLight direction='0 -0.3 -1' color='1 1 0' intensity='0.5'></DirectionalLight>
+	<!--DirectionalLight direction='0 -0.3 -1' color='1 1 0' intensity='1'></DirectionalLight>
 	<DirectionalLight direction='0 0 1' color='1 0 1' intensity='0.5'></DirectionalLight>
 	<DirectionalLight direction='0 1 0' color='0 1 1' intensity='0.5'></DirectionalLight>
-	<DirectionalLight direction='0 -1 0' color='0 0 1' intensity='0.5'></DirectionalLight>
-	<PointLight location='3 2 0' color='1 1 1' intensity='1.0'></PointLight-->
+	<DirectionalLight direction='0 -1 0' color='0 0 1' intensity='0.5'></DirectionalLight-->
+	<PointLight location='3 2 0' color='1 1 0' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 0' color='0 1 1' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 2' color='0 0 1' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 4' color='0 1 1' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 6' color='0 1 0' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 8' color='1 0 0' intensity='0.2' radius='300'></PointLight>
 	<Transform translation='0 2 0'>
 		<Shape>
 			<Appearance>
@@ -96,20 +101,28 @@
 	<Transform translation='0 0 0' rotation='1 0 0 -1.57'>
 		<Shape>
 			<Appearance>
-				<Material diffuseColor='1 1 1' specularColor='1 1 1' shininess='0.5'></Material>
+				<Material diffuseColor='1 1 1' specularColor='0.5 0.5 0.5' shininess='1'></Material>
 			</Appearance>
 			<Plane size='20 20' solid="false"></Plane>
 		</Shape>
 	</Transform>
-	<Transform translation='5 2 0'>
+	<Transform translation='3 2 0'>
 		<Shape>
 			<Appearance>
-				<Material diffuseColor='1 1 1' specularColor='1 1 1' shininess='0.5'></Material>
+				<Material diffuseColor='0 0 0' specularColor='0 0 0' shininess='0' emissiveColor='1 1 0.2'></Material>
 			</Appearance>
 			<Sphere radius='0.2' solid="true"></Sphere>
 		</Shape>
 	</Transform>
-	<Viewpoint position="-0.19050 12.63145 21.27034" orientation="-0.99985 -0.01151 0.01301 0.53598" znear='0.1' zfar='1000'></Viewpoint>
+	<Transform translation='-3 2 0'>
+		<Shape>
+			<Appearance>
+				<Material diffuseColor='0 0 0' emissiveColor='0.2 1 1'></Material>
+			</Appearance>
+			<Sphere radius='0.2' solid="true"></Sphere>
+		</Shape>
+	</Transform>
+	<Viewpoint position="-0.19050 12.63145 21.27034" orientation="-0.99985 -0.01151 0.01301 0.53598" znear='0.1' zfar='100'></Viewpoint>
 </Scene>
 </x3d>
 </body>

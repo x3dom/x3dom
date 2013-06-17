@@ -84,16 +84,16 @@ package x3dom.shaders
 			var shader:String = "";
 			
 			//Build shader
-			/*02*/ shader += "tex ft1, v0, fs0 <2d, clamp, linear>\n";		//Sample Depth Texture		-> ft1
+			/*02*/ shader += "tex ft1, v0, fs0 <2d, clamp, nearest>\n";		//Sample Depth Texture		-> ft1
 			 
 			/*03*/ shader += "mov ft2, fc1\n";
 			/*04*/ shader += "div ft2, ft2, fc2\n";							//1/1.0, 1/255.0, 1/65025.0, 1/16581375.0
-			/*05*/ shader += "dp4 ft1.x, ft1, ft2\n"; 						//dot(rgba,ft2) = depth -> ft1.x
+			/*05*/ shader += "dp4 ft1.x, ft1.xyzw, ft2.xyzw\n"; 			//dot(rgba,ft2) = depth -> ft1.x
 			
 			/*06*/ shader += "sub ft3.xxxx, ft1.x, fc0.x\n";				//if(depth-0.01)
-			/*07*/ shader += "kill ft3.xxxx\n";								//kill
-
-			/*11*/ shader += "tex ft2, v0, fs1 <2d, clamp, linear>\n";		//Sample Normal Texture		-> ft2
+			/*07*/ shader += "kill ft3.xxxx\n";								//kill	
+			
+			/*11*/ shader += "tex ft2, v0, fs1 <2d, clamp, nearest>\n";		//Sample Normal Texture		-> ft2
 			/*12*/ shader += "mul ft2.xyz, ft2.xyz, fc0.z\n";				//Normal * 2.0
 			/*13*/ shader += "sub ft2.xyz, ft2.xyz, fc1.x\n";				//Normal - 1.0
 			/*14*/ shader += "nrm ft2.xyz, ft2.xyz\n";						//normalize(N)
@@ -102,8 +102,7 @@ package x3dom.shaders
 			/*16*/ shader += "nrm ft3.xyz, ft3\n";							//normalize(LightDir)
 			
 			/*19*/ shader += "dp3 ft4, ft2, ft3\n";							//NdotL
-				   //shader += "sat ft4, ft4\n";
-				   shader += "mul ft4, ft4, fc3.x\n";
+				   shader += "mul ft4, ft4, fc3.x\n";						//intensity * NdotL
 			/*21*/ shader += "mul ft1, fc4, ft4\n";							//lightColor * NdotL
 			/*24*/ shader += "mov oc, ft1\n";								//Output color
 			

@@ -51,17 +51,11 @@ package x3dom.shaders
 								
 			//Build shader						
 			shader += "mov v0, va1\n";			//TexCoord -> Fragment(v0)
+
+			shader += "m44 v1, va0, vc4\n";		//VS Position (v1)
 			
-			shader += "dp3 vt0.x, va0, vc4\n"; 	//position * proInv(v1)
-			shader += "dp3 vt0.y, va0, vc5\n"; 	//position * proInv(v1)
-			shader += "dp3 vt0.z, va0, vc6\n"; 	//position * proInv(v1)
-			shader += "mov v1, vt0.xyz0\n";		//VS Position (v1)
-			
-			shader += "mov vt2,vc8\n";
-			shader += "dp4 vt1.x, vt2, vc0\n";
-			shader += "dp4 vt1.y, vt2, vc1\n";
-			shader += "dp4 vt1.z, vt2, vc2\n";
-			shader += "mov v2, vt1.xyz0\n";		//LightPos (v2)
+			shader += "mov vt0, vc8\n";
+			shader += "m44 v2, vt0, vc0\n";		//LightPos (v2)
 			
 			shader += "mov op, va0\n";
 			
@@ -88,7 +82,7 @@ package x3dom.shaders
 			var shader:String = "";
 			
 			//Build shader
-			shader += "tex ft1, v0, fs0 <2d, clamp, point>\n";		//Sample Depth Texture		-> ft1
+			shader += "tex ft1, v0, fs0 <2d, clamp, nearest>\n";	//Sample Depth Texture		-> ft1
 			
 			shader += "mov ft2, fc1\n";
 			shader += "div ft2, ft2, fc2\n";						//1/1.0, 1/255.0, 1/65025.0, 1/16581375.0
@@ -97,23 +91,23 @@ package x3dom.shaders
 			shader += "sub ft3.xxxx, ft1.x, fc0.x\n";				//if(depth-0.01)
 			shader += "kill ft3.xxxx\n";							//kill
 			
-			shader += "mul ft1.x, ft1.x, fc0.w\n";					//depth * zFar
-			shader += "mul ft1.xyz, v1.xyz, ft1.x\n";				//PosVS * depth
-			//shader += "neg ft1, ft1\n";
+			shader += "mul ft1, ft1.x, fc0.w\n";					//depth*farClipPlane 	-> ft1.x		
+			shader += "mul ft7, v1.xyz, ft1.x\n";					//PosVS * depth
 			
-			
-			shader += "tex ft2, v0, fs1 <2d, clamp, linear>\n";		//Sample Normal Texture		-> ft2
-			shader += "mul ft2.xyz, ft2.xyz, fc0.z\n";				//Normal * 2.0
-			shader += "sub ft2.xyz, ft2.xyz, fc1.x\n";				//Normal - 1.0
+			shader += "tex ft2, v0, fs1 <2d, clamp, nearest>\n";	//Sample Normal Texture		-> ft2
+			shader += "mov ft6.x, ft2.w\n";							//Shininess -> ft6
+			shader += "mul ft2.xyz, ft2.xyz, fc0.zzz\n";			//Normal * 2.0
+			shader += "sub ft2.xyz, ft2.xyz, fc1.xxx\n";			//Normal - 1.0
 			shader += "nrm ft2.xyz, ft2.xyz\n";						//normalize(N)
 			
-			shader += "sub ft3, v2, ft1\n";							//LightPos = lightPos - VS Pos
-			shader += "nrm ft3.xyz, ft3\n";							//normalize(LightDir)
+			shader += "sub ft3.xyz, v2.xyz, ft7.xyz\n";				//LightDir = LightPos - VSPos
+			shader += "nrm ft3.xyz, ft3.xyz\n";						//normalize(LightDir)
+					
+			shader += "dp3 ft4, ft2.xyz, ft3.xyz\n";				//NdotL
 			
-			shader += "dp3 ft4.x, ft2.xyz, ft3.xyz\n";				//NdotL
-			shader += "mul ft4.x, ft4.x, fc3.x\n";					//intensity * NdotL
-			shader += "mul ft1, fc4, ft4.x\n";						//lightColor * NdotL
-
+			shader += "mul ft1, ft4, fc3.x\n";						//intensity * NdotL
+			shader += "mul ft1, fc4, ft1.x\n";						//LightColor * intensity * NdotL
+			
 			shader += "mov oc, ft1\n";								//Output color
 			
 			//Generate AGALMiniAssembler from generated Shader

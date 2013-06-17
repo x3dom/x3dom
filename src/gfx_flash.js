@@ -138,9 +138,11 @@ x3dom.gfx_flash = (function() {
     
     //Dirty HACK
 		var viewpoint = scene.getViewpoint();
-		viewpoint._vf.zFar = 10000;
-		viewpoint._vf.zNear = 0.1;
-		
+    if(viewpoint._vf.zNear == -1 || viewpoint._vf.zFar == -1) {
+      viewpoint._vf.zFar = 20000;
+      viewpoint._vf.zNear = 0.1;
+		}
+    
 		if(viewarea._last_mat_view === undefined) {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
 		}
@@ -167,7 +169,7 @@ x3dom.gfx_flash = (function() {
             viewMatrix: mat_view,
             projMatrix: mat_proj,
             sceneMatrix: mat_scene,
-            frustumCulling: true,
+            frustumCulling: false,
             smallFeatureThreshold: false,
             context: null,
             gl: null
@@ -314,6 +316,8 @@ x3dom.gfx_flash = (function() {
           }
           else if( x3dom.isa(lights[i], x3dom.nodeTypes.PointLight) ) 
           {
+            var light_transform = mat_view.mult(lights[i].getCurrentTransform());
+          
             this.object.setPointLight( { id: lights[i]._lightID,
                            on: lights[i]._vf.on,
                            color: lights[i]._vf.color.toGL(),
@@ -637,6 +641,7 @@ x3dom.gfx_flash = (function() {
 						} else if (x3dom.isa(texture, x3dom.nodeTypes.MovieTexture)) { 
 							x3dom.debug.logError("Flash backend don't support MovieTextures yet");
 						} else {
+              console.log(texture._vf.url[0]);
 							this.object.setMeshTexture( { id: shape._objectID,
 														  origChannelCount: texture._vf.origChannelCount,
 														  repeatS: texture._vf.repeatS,
@@ -754,10 +759,10 @@ x3dom.gfx_flash = (function() {
 	Context.prototype.pickValue = function(viewarea, x, y, viewMat, sceneMat)
 	{
     var scene = viewarea._scene;
-	
+
 		// method requires that scene has already been rendered at least once
-    if (this.object === null || scene === null || scene.drawableObjects === undefined || 
-    !scene.drawableObjects || scene._vf.pickMode.toLowerCase() === "box")
+    if (this.object === null || scene === null || scene.drawableCollection === undefined || 
+    !scene.drawableCollection || scene._vf.pickMode.toLowerCase() === "box")
     {
         return false;
     }
@@ -766,7 +771,7 @@ x3dom.gfx_flash = (function() {
                    ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
 		
 		var data = this.object.pickValue( { pickMode: pickMode } );
-								 
+
 		if(data.objID > 0) {
 			viewarea._pickingInfo.pickPos = new x3dom.fields.SFVec3f(data.pickPosX, data.pickPosY, data.pickPosZ);
 			viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[data.objID];
