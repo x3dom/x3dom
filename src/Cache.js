@@ -182,8 +182,15 @@ x3dom.Cache.prototype.Release = function (gl) {
     for (var texture in this.textures) {
         gl.deleteTexture(this.textures[texture]);
     }
+    this.textures = [];
 
-    for (var shader in this.shaders) {
-        gl.deleteShader(this.shaders[shader]);
+    for (var shaderId in this.shaders) {
+        var shader = this.shaders[shaderId];
+        var glShaders = gl.getAttachedShaders(shader.program);
+        for (var i=0; i<glShaders.length; ++i) {
+            gl.deleteShader(glShaders[i]);
+        }
+         gl.deleteProgram(shader.program)
     }
+    this.shaders = [];
 };

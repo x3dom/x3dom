@@ -735,6 +735,6 @@ x3dom.Utils.wrapProgram = function (gl, program)
 		loc = gl.getAttribLocation(program, obj.name);
 		shader[obj.name] = loc;
 	}
-	
+	shader["program"]=program;
 	return shader;
 };
