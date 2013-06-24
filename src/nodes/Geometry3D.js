@@ -2649,7 +2649,7 @@ x3dom.registerNodeType(
 									else { t0 = p0; }
 									if (hasColorInd && colPerVert) { c0 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c0 = +colorInd[faceCnt]; }
-									else { c0 = p0; }
+									else { c0 = faceCnt; }
 									t = 1;
 								break;
 								case 1:
@@ -2661,7 +2661,7 @@ x3dom.registerNodeType(
 									else { t1 = p1; }
 									if (hasColorInd && colPerVert) { c1 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c1 = +colorInd[faceCnt]; }
-									else { c1 = p1; }
+									else { c1 = faceCnt; }
 									t = 2;
 								break;
 								case 2:
@@ -2673,7 +2673,7 @@ x3dom.registerNodeType(
 									else { t2 = p2; }
 									if (hasColorInd && colPerVert) { c2 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c2 = +colorInd[faceCnt]; }
-									else { c2 = p2; }
+									else { c2 = faceCnt; }
 									t = 3;
 	
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
@@ -2775,7 +2775,7 @@ x3dom.registerNodeType(
 									} else if (hasColorInd && !colPerVert) {
 										/*c2 = +colorInd[faceCnt];*/
 									} else {
-										c2 = p2;
+										c2 = faceCnt;
 									}
 	
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
@@ -3163,7 +3163,7 @@ x3dom.registerNodeType(
 									else { t0 = p0; }
 									if (hasColorInd && colPerVert) { c0 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c0 = +colorInd[faceCnt]; }
-									else { c0 = p0; }
+									else { c0 = faceCnt; }
 									t = 1;
 								break;
 								case 1:
@@ -3175,7 +3175,7 @@ x3dom.registerNodeType(
 									else { t1 = p1; }
 									if (hasColorInd && colPerVert) { c1 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c1 = +colorInd[faceCnt]; }
-									else { c1 = p1; }
+									else { c1 = faceCnt; }
 									t = 2;
 								break;
 								case 2:
@@ -3187,7 +3187,7 @@ x3dom.registerNodeType(
 									else { t2 = p2; }
 									if (hasColorInd && colPerVert) { c2 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c2 = +colorInd[faceCnt]; }
-									else { c2 = p2; }
+									else { c2 = faceCnt; }
 									t = 3;
 
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
@@ -3288,7 +3288,7 @@ x3dom.registerNodeType(
 									} else if (hasColorInd && !colPerVert) {
 										/*c2 = +colorInd[faceCnt];*/
 									} else {
-										c2 = p2;
+										c2 = faceCnt;
 									}
 
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
