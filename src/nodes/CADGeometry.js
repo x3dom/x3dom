@@ -121,8 +121,17 @@ x3dom.registerNodeType(
                 is in the IndexedTriangleSet code. It has been removed
                 here until it's applicability to the QUadSet case can
                 be evaluated
+
+                NOTE: !normPerVert or creaseAngle == 0 means per-face normals
+                      therefore, the original multi-index structure also can't
+                      be retained since this means every face has other vertices
+                      with other attribute properties.
+                      A similar problem arises if we have more than 2^16 coordinates
+                      since WebGL only supports 16-bit indices, why we have to split
+                      the mesh here (which is most easiest achieved by using just the
+                      same code path previously mentioned)
                 */
-                if (1)
+                //if (true)
                 {
 					faceCnt = 0;
 					for (i=0; i<indexes.length; i++)
@@ -197,7 +206,7 @@ x3dom.registerNodeType(
                 if ( pnts.length > 65535 )  // are there other problematic cases?
                 {
 					// TODO; implement
-                    x3dom.debug.logWarning("IndexedTriangleSet: fieldChanged with " + 
+                    x3dom.debug.logWarning("IndexedQuadSet: fieldChanged with " +
                                            "too many coordinates not yet implemented!");
                     return;
                 }
@@ -296,7 +305,8 @@ x3dom.registerNodeType(
                     });
                 }
             }
-        }    )
+        }
+    )
 );
 
 // ### QuadSet ###
@@ -305,8 +315,7 @@ x3dom.registerNodeType(
     "CADGeometry",
     defineClass(x3dom.nodeTypes.X3DComposedGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.IndexedQuadSet.superClass.call(this, ctx);
-
+            x3dom.nodeTypes.QuadSet.superClass.call(this, ctx);
         },
         {
             nodeChanged: function()
@@ -573,7 +582,8 @@ x3dom.registerNodeType(
                     });
                 }
             }
-        }    )
+        }
+    )
 );
 
 
@@ -583,13 +593,13 @@ x3dom.registerNodeType(
     "CADGeometry",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.Group.superClass.call(this, ctx);
+            x3dom.nodeTypes.CADLayer.superClass.call(this, ctx);
+
             this.addField_SFString(ctx,'name', "");
-            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
             // to be implemented: the 'visible' field
-        },
-        {
+            // there already is a 'render' field defined in base class
+            // which basically defines visibility...
+            // NOTE: bbox stuff also already defined in a base class!
         }
     )
 );
@@ -600,97 +610,88 @@ x3dom.registerNodeType(
     "CADGeometry",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.Group.superClass.call(this, ctx);
+            x3dom.nodeTypes.CADAssembly.superClass.call(this, ctx);
+
             this.addField_SFString(ctx, 'name', "");
-
-            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
-
-        },
-        {
         }
     )
 );
 
+// ### CADPart ###
 // According to the CADGeometry specification,
 // the CADPart node has transformation fields identical to 
-// those used in the Transform node. This implementation is largely
-// adapted from the X3DOM implementation of the Transform node.
+// those used in the Transform node, therefore just inherit it
 x3dom.registerNodeType(
     "CADPart",
     "CADGeometry",
-    defineClass(x3dom.nodeTypes.X3DGroupingNode,
+    defineClass(x3dom.nodeTypes.Transform,
         function (ctx) {
-            x3dom.nodeTypes.Group.superClass.call(this, ctx);
-            this.addField_SFString(ctx, 'name', "");
-            
-            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
-            
-            this._trafo = null; // will hold the transformation matrix
-            this.addField_SFVec3f(ctx, 'center', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
-            this.addField_SFRotation(ctx, 'rotation', 0, 0, 1, 0);
-            this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
-            this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
+            x3dom.nodeTypes.CADPart.superClass.call(this, ctx);
 
-            // P' = T * C * R * SR * S * -SR * -C * P
-            this._trafo = x3dom.fields.SFMatrix4f.translation(
-                    this._vf.translation.add(this._vf.center)).
-                mult(this._vf.rotation.toMatrix()).
-                mult(this._vf.scaleOrientation.toMatrix()).
-                mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
-                mult(this._vf.scaleOrientation.toMatrix().inverse()).
-                mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));            
+            this.addField_SFString(ctx, 'name', "");
         },
         {
-            fieldChanged: function (fieldName) {
-                // P' = T * C * R * SR * S * -SR * -C * P
-                this._trafo = x3dom.fields.SFMatrix4f.translation(
-                                this._vf.translation.add(this._vf.center)).
-                            mult(this._vf.rotation.toMatrix()).
-                            mult(this._vf.scaleOrientation.toMatrix()).
-                            mult(x3dom.fields.SFMatrix4f.scale(this._vf.scale)).
-                            mult(this._vf.scaleOrientation.toMatrix().inverse()).
-                            mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
-            },
-            
-            transformMatrix: function(transform) {
-                return transform.mult(this._trafo);
-            },
-
         }
     )
 );
 
+// ### CADFace ###
 x3dom.registerNodeType(
     "CADFace",
     "CADGeometry",
     defineClass(x3dom.nodeTypes.X3DGroupingNode,
         function (ctx) {
-            x3dom.nodeTypes.Group.superClass.call(this, ctx);
-            this.addField_SFString(ctx, 'name', "");
-            this.addField_SFVec3f(ctx, 'bboxCenter', 0, 0, 0);
-            this.addField_SFVec3f(ctx, 'bboxSize', -1, -1, -1);
+            x3dom.nodeTypes.CADFace.superClass.call(this, ctx);
 
-            this.addField_SFNode('shape', x3dom.nodeTypes.Shape);
+            this.addField_SFString(ctx, 'name', "");
+            this.addField_SFNode('shape', x3dom.nodeTypes.X3DShapeNode);
         },
         {
-            collectDrawableObjects: function (transform, out)
+            getVolume: function()
             {
-                if (!this._vf.render || !out) {
+                var vol = this._graph.volume;
+
+                if (!this.volumeValid() && this._vf.render)
+                {
+                    var child = this._cf.shape.node;
+                    var childVol = (child && child._vf.render === true) ? child.getVolume() : null;
+
+                    if (childVol && childVol.isValid())
+                        vol.extendBounds(childVol.min, childVol.max);
+                }
+
+                return vol;
+            },
+
+            collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
+            {
+                if (singlePath && (this._parentNodes.length > 1))
+                    singlePath = false;
+
+                if (singlePath && (invalidateCache = invalidateCache || this.cacheInvalid()))
+                    this.invalidateCache();
+
+                if (!this._cf.shape.node ||
+                    (planeMask = drawableCollection.cull(transform, this.graphState(), singlePath, planeMask)) <= 0) {
                     return;
                 }
 
+                var cnode, childTransform;
 
-                if (this._cf.shape) {
-                     this._cf.shape.node.collectDrawableObjects(transform, out);
+                if (singlePath) {
+                    if (!this._graph.globalMatrix) {
+                        this._graph.globalMatrix = this.transformMatrix(transform);
+                    }
+                    childTransform = this._graph.globalMatrix;
+                }
+                else {
+                    childTransform = this.transformMatrix(transform);
                 }
 
+                if ( (cnode = this._cf.shape.node) ) {
+                    cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
+                }
             }
-
         }
     )
 );
-
-
