@@ -562,7 +562,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                 x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polyline2D) ||
                                 x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Arc2D) ||
                                 x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D) ? 1 : 0;					  
-		 
+		
+		property.APPMAT					= (appearance && (material || property.CSSHADER) ) ? 1 : 0;
 		property.SHADOW				    = (viewarea.getLightsShadow()) ? 1 : 0;
 		property.FOG				      = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
 		property.CSSHADER			    = (appearance && appearance._shader && x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
