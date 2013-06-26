@@ -224,6 +224,23 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     };
                 }
 
+                // add very experimental visibility-switch functionality
+                // (might be removed again in later versions from x3dom)
+                if (domNode.setVisibility === undefined &&
+                    domNode.resetVisibility === undefined &&
+                    x3dom.isa(n, x3dom.nodeTypes.X3DBoundedNode))
+                {
+                    domNode.setVisibility = function(on) {
+                        this._x3domNode.setVisibility(on);
+                        this._x3domNode._nameSpace.doc.needRender = true;
+                    };
+
+                    domNode.resetVisibility = function() {
+                        this._x3domNode.resetVisibility();
+                        this._x3domNode._nameSpace.doc.needRender = true;
+                    };
+                }
+
                 // link both DOM-Node and Scene-graph-Node
                 n._xmlNode = domNode;
                 domNode._x3domNode = n;
