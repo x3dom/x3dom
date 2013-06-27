@@ -479,8 +479,9 @@ x3dom.registerNodeType(
                     }
                     this.drawableCollection.concat();
 
-                    this.bvh = new x3dom.bvh.BIH();
-                    //Add debugging composite
+                    this.bvh =  this._nameSpace.doc._scene._vf.useCrossCompiled ?  new x3dom.bvh.EmscriptenBvH() : new x3dom.bvh.BIH();
+
+                    //Add debugging decorator
                     //this.bvh = new x3dom.bvh.DebugComposite(this.bvh,this._nameSpace.doc._scene);
 
                     n = this.drawableCollection.length;
@@ -841,7 +842,10 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
-            
+
+            //VERY VERY experimental field, don't use unles you know exactly whats happening :)
+            this.addField_SFBool(ctx, 'useCrossCompiled', false);
+
             // yet another exp. field for shadow dom remapping
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
             
