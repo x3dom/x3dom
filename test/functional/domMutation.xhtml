@@ -148,7 +148,8 @@
         
         render = !render;
         
-        elem.setAttribute("render", render.toString());
+        //elem.setAttribute("render", render.toString());
+        elem.setVisibility(render);
         
         return false;
     }

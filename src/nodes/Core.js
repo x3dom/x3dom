@@ -946,8 +946,9 @@ x3dom.registerNodeType(
 
                 for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
-                    if (this._childNodes[i])
-                        this._childNodes[i].setVisibility(on);
+                    var child = this._childNodes[i];
+                    if (child && child.setVisibility)
+                        child.setVisibility(on);
                 }
             },
 
@@ -960,8 +961,9 @@ x3dom.registerNodeType(
 
                 for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
-                    if (this._childNodes[i])
-                        this._childNodes[i].resetVisibility();
+                    var child = this._childNodes[i];
+                    if (child && child.setVisibility)
+                        child.resetVisibility();
                 }
             }
         }
