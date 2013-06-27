@@ -137,8 +137,11 @@ x3dom.Mesh.prototype.doIntersect = function(line)
     return isect;
 };
 
-x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
+x3dom.Mesh.prototype.calcNormals = function(creaseAngle, ccw)
 {
+    if (ccw === undefined)
+      ccw = true;
+      
     var i = 0, j = 0, num = 0;
     var multInd = (this._multiIndIndices !== undefined && this._multiIndIndices.length);
     var coords = this._positions[0];
@@ -184,6 +187,8 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
         }
         
         n = a.cross(b).normalize();
+        if (!ccw)
+          n = n.negate();
         
         if (creaseAngle <= x3dom.fields.Eps) {
             vertNormals[i*3  ] = vertNormals[(i+1)*3  ] = vertNormals[(i+2)*3  ] = n.x;
@@ -230,9 +235,22 @@ x3dom.Mesh.prototype.calcNormals = function(creaseAngle)
     this._normals[0] = vertNormals;
 };
 
-x3dom.Mesh.prototype.splitMesh = function()
+/** @param primStride Number of index entries per primitive, for example 3 for TRIANGLES
+ */
+x3dom.Mesh.prototype.splitMesh = function(primStride)
 {
+    var pStride;
+
+    if (typeof primStride == 'undefined')
+        pStride = 3;
+    else
+        pStride = primStride;
+
     var MAX = 65535;
+
+    //adapt MAX to match the primitive stride
+    MAX = Math.floor(MAX / pStride) * pStride;
+
     if (this._positions[0].length / 3 <= MAX) {
         return;
     }

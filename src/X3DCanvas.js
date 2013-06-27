@@ -31,9 +31,9 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         return gl;
     };
 
-	this.initFlashContext = function(object) {
+	this.initFlashContext = function(object, renderType) {
         x3dom.debug.logInfo("Initializing X3DObject for [" + object.id + "]");
-        return x3dom.gfx_flash(object);
+        return x3dom.gfx_flash(object, renderType);
     };
 
 	this.appendParam = function(node, name, value) {
@@ -144,8 +144,21 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			
 			if( !this.fileExists(swf_path) )
 			{
-				swf_path = "http://www.x3dom.org/download/x3dom.swf";
-				x3dom.debug.logWarning("Can't find local x3dom.swf. X3DOM now using the online version from x3dom.org."); 
+        if (x3dom.versionInfo === undefined || 
+            x3dom.versionInfo.version.indexOf('dev') != -1) //use dev version
+        {
+          var version = "dev";
+        } 
+        else 
+        {
+          var version = x3dom.versionInfo.version.substr(3);
+        }
+        
+        swf_path = "http://www.x3dom.org/download/" + version + "/x3dom.swf";
+        
+				x3dom.debug.logWarning("Can't find local x3dom.swf (" + version + "). X3DOM now using the online version from x3dom.org." + 
+                               "The online version needs a <a href='http://examples.x3dom.org/crossdomain.xml'>crossdomain.xml</a> " +
+                               "file in the root directory of your domain to access textures"); 
 			}
 
 			//Get width from x3d-Element or set default
@@ -169,20 +182,39 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 					height = height.substr(0, idx);
 				}
 			}
+      
+      //Get flash render type
+      var renderType = x3dElem.getAttribute("flashrenderer");
+			if( renderType == null ) {
+				this.flash_renderType = "forward";
+			}else{
+				this.flash_renderType = "deferred";
+			}
 
 			var obj = document.createElement('object');
-			obj.setAttribute('width', width);
-			obj.setAttribute('height', height);
+			obj.setAttribute('width', '100%');
+			obj.setAttribute('height', '100%');
 			obj.setAttribute('id', id);
+      
+      //Check for xhtml
+      if (!document.doctype || document.doctype && document.doctype.publicId.search(/DTD XHTML/i) != -1) {
+        x3dom.debug.logWarning("Flash backend doesn't like XHTML, please use HTML5!");
+        obj.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
+      } else {
+        if(x3dElem.getAttribute('style') == null)
+        {
+          x3dElem.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
+        }
+      }
 
 			this.appendParam(obj, 'menu', 'false');
 			this.appendParam(obj, 'quality', 'high');
 			this.appendParam(obj, 'wmode', 'gpu');
 			this.appendParam(obj, 'allowScriptAccess', 'always');
-			this.appendParam(obj, 'flashvars', 'width=' + width + '&height=' + height + '&canvasIdx=' + this.canvasIdx);
+			this.appendParam(obj, 'flashvars', 'canvasIdx=' + this.canvasIdx + '&renderType=' + this.flash_renderType);
 			this.appendParam(obj, 'movie', swf_path);
 
-			x3dElem.appendChild(obj);
+      x3dElem.appendChild(obj);
 
 			if(navigator.appName == "Microsoft Internet Explorer")
 				obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
@@ -341,7 +373,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
             parseInt(x3dom.getStyle(that.canvas, "width")),
             parseInt(x3dom.getStyle(that.canvas, "height"))
         ];
-
+        
         if ((_old_dim[0] != new_dim[0]) || (_old_dim[1] != new_dim[1])) {
             _old_dim = new_dim;
             that.x3dElem.setAttribute("width", new_dim[0]+"px");
@@ -388,7 +420,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 		this.canvas = this.createFlashObject(x3dElem);
 		if (this.canvas != null) {
 			this.canvas.parent = this;
-			this.gl = this.initFlashContext(this.canvas);
+			this.gl = this.initFlashContext(this.canvas, this.flash_renderType);
 		} else {
 			this.createInitFailedDiv(x3dElem);
 			return;
@@ -407,7 +439,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			this.canvas = this.createFlashObject(x3dElem);
 			if (this.canvas != null) {
 				this.canvas.parent = this;
-				this.gl = this.initFlashContext(this.canvas);
+				this.gl = this.initFlashContext(this.canvas, this.flash_renderType);
 			} else {
 				this.createInitFailedDiv(x3dElem);
 				return;

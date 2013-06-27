@@ -80,8 +80,8 @@
 
 </head>
   <body>
-  <h1>BVH Refiner</h1>
-    <X3D showStat='true' showLog='true' width='600px' height='400px'>
+  <h1>BVH Refiner: Terrain of Puget Sound</h1>
+    <X3D showStat='false' showLog='false' width='1024px' height='600px'>
       <Scene DEF='scene' frustumCulling='true' sortTrans="false">
         <!-- for viewing this example disable web security on your browser 
              because of cross origin problems -->
@@ -92,7 +92,7 @@
         <!--<BVHRefiner maxDepth='2' factor='3' center='0 0 0' size='2000 2000'  
                     url='NonWMTS' imageFormat='PNG' mode="2d" subMode="nonWMTS">
         </BVHRefiner>-->
-        <BVHRefiner maxDepth='5' factor='12' center='0 0 0' maxElevation='410' 
+        <BVHRefiner maxDepth='5' factor='15' center='0 0 0' maxElevation='410' 
                     subdivision='128 128' size='4096 4096'  
                     elevationUrl="Puget Sound WMTS/elevation" 
                     textureUrl="Puget Sound WMTS/satellite"
@@ -100,10 +100,11 @@
                     elevationFormat='png' textureFormat='png' normalFormat='png' 
                     mode="3d">
         </BVHRefiner>
-        <!--<BVHRefiner maxDepth='7' factor='40' center='0 0 0' 
-                    url="RealityMaps" mode="bin">
-        </BVHRefiner>-->
-        
+        <!--<transform translation="-550 700 -50"  scale="1.0 1.0 1.0">
+        <BVHRefiner maxDepth='7' factor='30' center='0 0 0' 
+                    url="C:\Users\menglert\Desktop\Stadtmodell_Muenchen_WMTS" mode="bin">
+        </BVHRefiner>
+        </Transform>-->
         
         
         <!-- DON'T USE THE FOLLOWING EXAMPLES BECAUSE IT'S NOT COMPLETELY IMPLEMENTED YET -->
@@ -123,14 +124,14 @@
         </BVHRefiner>-->
         <!--<BVHRefiner maxDepth='5' factor='5' center='0 0 0' maxElevation='265' 
                     subdivision='36 24' size='1201 801'  
-                    elevationUrl="C:\Users\menglert\Desktop\Result2" 
-                    textureUrl="C:\Users\menglert\Desktop\Result2"
+                    elevationUrl="C:\Users\menglert\Desktop\Result" 
+                    textureUrl="C:\Users\menglert\Desktop\Result"
                     normalUrl="C:\Users\menglert\Desktop\Normal"
                     elevationFormat='png' textureFormat='png' normalFormat='png' 
-                    mode="3d">
+                    mode="3d" submode="32bit">
         </BVHRefiner>-->
         <Background skyColor=".1 .1 .3"></Background>
-        <Viewpoint zNear="0.1" zFar="10000" position="0 0 3000"></Viewpoint>
+        <Viewpoint zNear="0.1" zFar="10000" position="-35.37671 357.67245 42.79925" orientation="-0.41397 0.64145 0.64589 3.92558" centerOfRotation="908.8588619817687 -48.190695936235045 0.1262787826381171"></Viewpoint>
       </Scene>
     </X3D>
   </body>

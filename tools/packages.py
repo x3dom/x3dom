@@ -81,6 +81,8 @@ COMPONENTS = [
   'nodes/Geospatial.js',
   'nodes/Geometry2D.js',
   'nodes/VolumeRendering.js',
+  'nodes/CADGeometry.js',
+  'nodes/Terrain.js',
   'Docs.js'                    # interactive documentation
 ]
 

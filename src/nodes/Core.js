@@ -171,8 +171,8 @@ x3dom.registerNodeType(
                     }
                 }
             }
-            
-            for (var i=0; i<this._childNodes.length; i++)
+
+            for (var i=0, n=this._childNodes.length; i<n; i++)
             {
                 if (this._childNodes[i])
                     this._childNodes[i].highlight(enable, color);
@@ -935,6 +935,34 @@ x3dom.registerNodeType(
             forceUpdateCoverage: function()
             {
                 return false;
+            },
+
+            setVisibility: function(on)
+            {
+                if (on != this._vf.render) {
+                    this._actRender = this._vf.render;
+                    this._vf.render = on;
+                }
+
+                for (var i=0, n=this._childNodes.length; i<n; i++)
+                {
+                    if (this._childNodes[i])
+                        this._childNodes[i].setVisibility(on);
+                }
+            },
+
+            resetVisibility: function()
+            {
+                if (this._actRender !== undefined &&
+                    this._actRender != this._vf.render) {
+                    this._vf.render = this._actRender;
+                }
+
+                for (var i=0, n=this._childNodes.length; i<n; i++)
+                {
+                    if (this._childNodes[i])
+                        this._childNodes[i].resetVisibility();
+                }
             }
         }
     )

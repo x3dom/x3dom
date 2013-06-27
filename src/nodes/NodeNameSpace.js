@@ -47,8 +47,12 @@ x3dom.NodeNameSpace.prototype.addSpace = function (space) {
 };
 
 x3dom.NodeNameSpace.prototype.removeSpace = function (space) {
-    this.childSpaces.push(space);
     space.parent = null;
+    for (var it=0; it<this.childSpaces.length; it++) {
+        if (this.childSpaces[it] == space) {
+            this.childSpaces.splice(it, 1);
+        }
+    }
 };
 
 x3dom.NodeNameSpace.prototype.setBaseURL = function (url) {
@@ -134,8 +138,23 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
         if (domNode.hasAttribute('USE')) {
             n = this.defMap[domNode.getAttribute('USE')];
             if (!n) {
-                n = null;
-                x3dom.debug.logWarning('Could not USE: ' + domNode.getAttribute('USE'));
+                var nsName = domNode.getAttribute('USE').split('__');
+
+                if (nsName.length >= 2) {
+                    var otherNS = this;
+                    while (otherNS) {
+                        if (otherNS.name == nsName[0])
+                            n = otherNS.defMap[nsName[1]];
+                        if (n)
+                            otherNS = null;
+                        else
+                            otherNS = otherNS.parent;
+                    }
+                    if (!n) {
+                        n = null;
+                        x3dom.debug.logWarning('Could not USE: ' + domNode.getAttribute('USE'));
+                    }
+                }
             }
             return n;
         }
@@ -201,6 +220,23 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     domNode.highlight = function(enable, colorStr) {
                         var color = x3dom.fields.SFColor.parse(colorStr);
                         this._x3domNode.highlight(enable, color);
+                        this._x3domNode._nameSpace.doc.needRender = true;
+                    };
+                }
+
+                // add very experimental visibility-switch functionality
+                // (might be removed again in later versions from x3dom)
+                if (domNode.setVisibility === undefined &&
+                    domNode.resetVisibility === undefined &&
+                    x3dom.isa(n, x3dom.nodeTypes.X3DBoundedNode))
+                {
+                    domNode.setVisibility = function(on) {
+                        this._x3domNode.setVisibility(on);
+                        this._x3domNode._nameSpace.doc.needRender = true;
+                    };
+
+                    domNode.resetVisibility = function() {
+                        this._x3domNode.resetVisibility();
                         this._x3domNode._nameSpace.doc.needRender = true;
                     };
                 }

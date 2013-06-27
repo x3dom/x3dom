@@ -1,6 +1,7 @@
 package x3dom.shaders
 {
 	import com.adobe.utils.AGALMiniAssembler;
+	import com.adobe.utils.AGALMacroAssembler;
 	
 	import flash.display3D.Context3D;
 	import flash.display3D.Context3DProgramType;
@@ -50,23 +51,16 @@ package x3dom.shaders
 			//Init shader string
 			var shader:String = "";
 			
-			//Build shader			
+			//WS Positions -> pos * mvp-Matrix			
 			shader += "m44 op, va0, vc0\n";
 			
 			if( lights.length && shape.normalBuffer && shape.material) {
-				shader += "dp3 vt0.x, va0, vc4\n";
-				shader += "dp3 vt0.y, va0, vc5\n";
-				shader += "dp3 vt0.z, va0, vc6\n";
+				//VS Positions pos * mv-Matrix 
+				shader += "m44 v3, va0, vc4\n";
 				
-				shader += "sub v3, vc8, -vt0.xyz\n";
-				//shader += "mov v3, -vt0\n";
-				
-				shader += "dp3 vt1.x, va2, vc4\n";
-				shader += "dp3 vt1.y, va2, vc5\n";
-				shader += "dp3 vt1.z, va2, vc6\n";
-				shader += "mov v0, vt1.xyz\n";
-				
-				shader += "mov v4, va2\n";
+				//VS Normals normal * mv-Matrix
+				shader += "m33 vt0.xyz, va2, vc4\n";
+				shader += "mov v0, vt0.xyz1\n";
 			} 
 			
 			if( shape.colorBuffer ) {
@@ -82,8 +76,16 @@ package x3dom.shaders
 					shader += "add vt2, vt2.xyz, vc9.x\n";
 					shader += "mov v2, vt2\n";
 				} else {
-					shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)
+					if( shape.texture.transform )
+					{
+						shader += "m44 v2, va1, vc13\n";
+					} 
+					else 
+					{
+						shader += "mov v2, va1\n";		 	//TexCoord -> Fragment(v0)
+					}
 				}
+				
 			}
 			
 			//Generate AGALMiniAssembler from generated Shader
@@ -105,7 +107,7 @@ package x3dom.shaders
 			//Build shader
 			if( shape.texCoordBuffer && shape.texture ) {
 				if(shape.texture is CubeMapTexture) {
-					shader += "nrm ft1.xyz, v0\n";							//Normalize Normal(ft2)
+					shader += "nrm ft1.xyz, v0.xyz\n";							//Normalize Normal(ft2)
 					shader += "nrm ft7.xyz, v3\n";
 					
 					shader += "dp3 ft0.w, ft7.xyz, ft1.xyz\n";
@@ -126,24 +128,28 @@ package x3dom.shaders
 			
 			if( lights.length > 0 && shape.material) {
 				shader += "mov ft1, fc0\n";
+				shader += "neg ft1, ft1\n";
 				shader += "nrm ft1.xyz, ft1\n";							//Normalize LightDir(ft1)
-				shader += "nrm ft2.xyz, v0 \n";							//Normalize Normal(ft2)
+				shader += "nrm ft2.xyz, v0.xyz \n";						//Normalize Normal(ft2)				
+				shader += "neg ft3, v3\n";								//EyeDir = -VS Pos
+				shader += "nrm ft3.xyz, ft3\n";
 				
 				if(!shape.solid) {
-					shader += "dp4 ft6.x, ft2.xyz, v3.xyz\n";				//dot(normal, eye) (ft6)
+					shader += "dp3 ft6.x, ft2.xyz, ft3.xyz\n";				//dot(normal, eye) (ft6)
 					shader += "slt ft6.x, ft6.x, fc5.x\n";					//(ft6) < 0
 					shader += "sub ft6.x, fc5.y, ft6.x\n";					//0.5 - 0|1
 					shader += "mul ft6.x, ft6.x, fc5.w\n";					//-0.5|0.5 * 2
-					shader += "mul ft2.xyz, ft2.xyz, ft6.xxx\n";			//normal * 1|-1
+					shader += "mul ft2.xyz, ft2.xyz, ft6.xxx\n";				//normal * 1|-1
 				}
 				
-				shader += "add ft4, ft1.xyz, v3\n";						//L+V
+											//normalize EyeDir
+				shader += "add ft4, ft1, ft3\n";						//L+V
 				shader += "nrm ft4.xyz, ft4\n";							//Normalize(L+V)
-				shader += "dp3 ft3, ft2.xyz, ft1.xyz\n";				//NdotL
-				shader += "dp3 ft5, ft2.xyz, ft4\n";					//NdotH
-				shader += "sat ft3, ft3\n";								//saturate(NdotL)
-				shader += "sat ft5, ft5\n";								//saturate(NdotH)
-				shader += "pow ft5, ft5, fc2.w\n";						//pow(NdotH, shininess)
+				shader += "dp3 ft3.xyz, ft2.xyz, ft1.xyz\n";			//NdotL
+				shader += "dp3 ft5.xyz, ft2.xyz, ft4.xyz\n";			//NdotH
+				//shader += "sat ft3, ft3\n";								//saturate(NdotL)
+				//shader += "sat ft5, ft5\n";								//saturate(NdotH)
+				shader += "pow ft5, ft5.x, fc2.w\n";					//pow(NdotH, shininess)
 				shader += "mul ft5, ft3, ft5\n";						//NdotL * pow(NdotH, shininess);
 				if(shape.texCoordBuffer && shape.texture && !shape.texture.blending) {
 					shader += "mul ft3, ft3, ft0\n";
@@ -156,7 +162,6 @@ package x3dom.shaders
 				}
 				shader += "mul ft5, ft5, fc2.xyz\n";
 				shader += "add ft3, ft3, ft5\n";
-				
 				if(shape.texCoordBuffer && shape.texture && shape.texture.blending) {
 					if(shape.texture is CubeMapTexture) {
 						shader += "sub ft6, ft0, ft3)\n";				//lerp(diffColor, refColor, ratio)
@@ -174,8 +179,9 @@ package x3dom.shaders
 					shader += "mov ft3.w, fc1.w\n";
 				}
 				
-				shader += "sat ft3, ft3\n";								//saturate(NdotL)
+				
 				shader += "add ft3.xyz, fc3.xyz, ft3.xyz\n";			//rgb += emissiveColor
+				shader += "sat ft3, ft3\n";								//saturate(NdotL)
 				shader += "sub ft4, ft3, fc4\n";
 				shader += "kil ft4.wwww\n";
 				shader += "mov oc, ft3 \n";							//Output Color
@@ -199,7 +205,7 @@ package x3dom.shaders
 				shader += "kil ft2.wwww\n";
 				shader += "mov oc, ft1 \n";							//Output Color
 			}
-			
+			trace(shader);
 			//Generate AGALMiniAssembler from generated Shader
 			var fragmentShader:AGALMiniAssembler = new AGALMiniAssembler();
 			fragmentShader.assemble( Context3DProgramType.FRAGMENT, shader );

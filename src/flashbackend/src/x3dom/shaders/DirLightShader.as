@@ -51,6 +51,7 @@ package x3dom.shaders
 			
 			//Build shader						
 			shader += "mov v0, va1\n";			//TexCoord -> Fragment(v0)
+			
 			shader += "dp4 vt0.x, va0, vc4\n"; 	//position * proInv(v1)
 			shader += "dp4 vt0.y, va0, vc5\n"; 	//position * proInv(v1)
 			shader += "dp4 vt0.z, va0, vc6\n"; 	//position * proInv(v1)
@@ -61,7 +62,6 @@ package x3dom.shaders
 			shader += "dp3 vt1.y, vt2, vc1\n";
 			shader += "dp3 vt1.z, vt2, vc2\n";
 			shader += "mov v2, vt1.xyz0\n";
-			
 			
 			shader += "mov op, va0\n";
 			

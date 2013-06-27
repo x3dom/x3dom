@@ -32,7 +32,6 @@ package x3dom.lighting
 		 */
 		protected var _ambientIntensity:Number =  0.0;
 		
-		
 		/**
 		 * 
 		 */

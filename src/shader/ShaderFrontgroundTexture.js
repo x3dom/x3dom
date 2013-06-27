@@ -60,11 +60,13 @@ x3dom.shader.FrontgroundTextureShader.prototype.generateVertexShader = function(
  */
 x3dom.shader.FrontgroundTextureShader.prototype.generateFragmentShader = function(gl)
 {
-	shader =	"#ifdef GL_ES\n" +
-				"  precision highp float;\n" +
-				"#endif\n" +
-				"\n" +
-				"uniform sampler2D tex;\n" +
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
+	shader += "uniform sampler2D tex;\n" +
 				"varying vec2 fragTexCoord;\n" +
 				"\n" +
 				"void main(void) {\n" +

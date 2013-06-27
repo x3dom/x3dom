@@ -78,6 +78,7 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.MAX_VERTEX_UNIFORM_VECTORS = ctx.getParameter(ctx.MAX_VERTEX_UNIFORM_VECTORS);
                         x3dom.caps.MAX_COMBINED_TEXTURE_IMAGE_UNITS = ctx.getParameter(ctx.MAX_COMBINED_TEXTURE_IMAGE_UNITS);
                         x3dom.caps.MAX_TEXTURE_SIZE = ctx.getParameter(ctx.MAX_TEXTURE_SIZE);
+                        x3dom.caps.MAX_TEXTURE_IMAGE_UNITS = ctx.getParameter(ctx.MAX_TEXTURE_IMAGE_UNITS);
                         x3dom.caps.MAX_CUBE_MAP_TEXTURE_SIZE = ctx.getParameter(ctx.MAX_CUBE_MAP_TEXTURE_SIZE);
                         x3dom.caps.COMPRESSED_TEXTURE_FORMATS = ctx.getParameter(ctx.COMPRESSED_TEXTURE_FORMATS);
                         x3dom.caps.MAX_RENDERBUFFER_SIZE = ctx.getParameter(ctx.MAX_RENDERBUFFER_SIZE);
@@ -133,8 +134,8 @@ x3dom.gfx_webgl = (function () {
 
                     return newCtx;
                 }
-            } catch (e) {
             }
+            catch (e) {}
         }
         return null;
     }
@@ -158,6 +159,7 @@ x3dom.gfx_webgl = (function () {
         var indicesBuffer, indexArray;
 
         var shape = drawable.shape;
+        var geoNode = shape._cf.geometry.node;
 
         if (shape._webgl !== undefined) {
             var needFullReInit = false;
@@ -165,7 +167,7 @@ x3dom.gfx_webgl = (function () {
             // TODO; do same for texcoords etc.!
             if (shape._dirty.colors === true &&
                 shape._webgl.shader.color === undefined &&
-                shape._cf.geometry.node._mesh._colors[0].length) {
+                geoNode._mesh._colors[0].length) {
                 // required since otherwise shape._webgl.shader.color stays undefined
                 // and thus the wrong shader will be chosen although there are colors
                 needFullReInit = true;
@@ -225,7 +227,7 @@ x3dom.gfx_webgl = (function () {
 
                     //Set dirty texture Coordinates
                     if (shape._webgl.shader.texcoord === undefined)
-                        shape._dirty.texCoords = true;
+                        shape._dirty.texcoords = true;
                 }
                 else {
                     //If someone remove and append at the same time, texture count don't change
@@ -252,24 +254,22 @@ x3dom.gfx_webgl = (function () {
             }
 
             //Check if we need a new shader
-            var oldLightsAndShadow = shape._webgl.lightsAndShadow;
-            shape._webgl.lightsAndShadow = x3dom.Utils.checkDirtyLighting(viewarea);
-
-            if (shape._webgl.lightsAndShadow[0] != oldLightsAndShadow[0] ||
-                shape._webgl.lightsAndShadow[1] != oldLightsAndShadow[1] ||
-                shape._dirty.shader) {
+            if (shape._dirty.shader || shape._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea))
+            {
                 shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
                 //shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
                 shape._dirty.shader = false;
             }
 
             if (shape._webgl.binaryGeometry == 0)   // FIXME; handle BG
-                for (q = 0; q < shape._webgl.positions.length; q++) {
+            {
+                for (q = 0; q < shape._webgl.positions.length; q++)
+                {
                     q5 = 5 * q;
 
                     if (!needFullReInit && shape._dirty.positions === true) {
                         if (shape._webgl.shader.position !== undefined) {
-                            shape._webgl.indexes[q] = shape._cf.geometry.node._mesh._indices[q];
+                            shape._webgl.indexes[q] = geoNode._mesh._indices[q];
 
                             gl.deleteBuffer(shape._webgl.buffers[q5]);
 
@@ -284,7 +284,7 @@ x3dom.gfx_webgl = (function () {
                             indexArray = null;
 
                             // vertex positions
-                            shape._webgl.positions[q] = shape._cf.geometry.node._mesh._positions[q];
+                            shape._webgl.positions[q] = geoNode._mesh._positions[q];
 
                             // TODO; don't delete VBO but use glMapBuffer() and DYNAMIC_DRAW
                             gl.deleteBuffer(shape._webgl.buffers[q5 + 1]);
@@ -301,7 +301,7 @@ x3dom.gfx_webgl = (function () {
                             gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
                             gl.vertexAttribPointer(shape._webgl.shader.position,
-                                shape._cf.geometry.node._mesh._numPosComponents,
+                                geoNode._mesh._numPosComponents,
                                 shape._webgl.coordType, false,
                                 shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
 
@@ -313,7 +313,7 @@ x3dom.gfx_webgl = (function () {
 
                     if (!needFullReInit && shape._dirty.colors === true) {
                         if (shape._webgl.shader.color !== undefined) {
-                            shape._webgl.colors[q] = shape._cf.geometry.node._mesh._colors[q];
+                            shape._webgl.colors[q] = geoNode._mesh._colors[q];
 
                             gl.deleteBuffer(shape._webgl.buffers[q5 + 4]);
 
@@ -326,7 +326,7 @@ x3dom.gfx_webgl = (function () {
                             gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
 
                             gl.vertexAttribPointer(shape._webgl.shader.color,
-                                shape._cf.geometry.node._mesh._numColComponents,
+                                geoNode._mesh._numColComponents,
                                 shape._webgl.colorType, false,
                                 shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
 
@@ -338,7 +338,7 @@ x3dom.gfx_webgl = (function () {
 
                     if (!needFullReInit && shape._dirty.normals === true) {
                         if (shape._webgl.shader.normal !== undefined) {
-                            shape._webgl.normals[q] = shape._cf.geometry.node._mesh._normals[q];
+                            shape._webgl.normals[q] = geoNode._mesh._normals[q];
 
                             gl.deleteBuffer(shape._webgl.buffers[q5 + 2]);
 
@@ -351,7 +351,7 @@ x3dom.gfx_webgl = (function () {
                             gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
 
                             gl.vertexAttribPointer(shape._webgl.shader.normal,
-                                shape._cf.geometry.node._mesh._numNormComponents,
+                                geoNode._mesh._numNormComponents,
                                 shape._webgl.normalType, false,
                                 shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
 
@@ -361,9 +361,9 @@ x3dom.gfx_webgl = (function () {
                         shape._dirty.normals = false;
                     }
 
-                    if (!needFullReInit && shape._dirty.texCoords === true) {
+                    if (!needFullReInit && shape._dirty.texcoords === true) {
                         if (shape._webgl.shader.texcoord !== undefined) {
-                            shape._webgl.texcoords[q] = shape._cf.geometry.node._mesh._texCoords[q];
+                            shape._webgl.texcoords[q] = geoNode._mesh._texCoords[q];
 
                             gl.deleteBuffer(shape._webgl.buffers[q5 + 3]);
 
@@ -376,41 +376,39 @@ x3dom.gfx_webgl = (function () {
                             gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
 
                             gl.vertexAttribPointer(shape._webgl.shader.texCoord,
-                                shape._cf.geometry.node._mesh._numTexComponents,
+                                geoNode._mesh._numTexComponents,
                                 shape._webgl.texCoordType, false,
                                 shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
 
                             texCoords = null;
                         }
 
-                        shape._dirty.texCoords = false;
+                        shape._dirty.texcoords = false;
                     }
                 }
+            }
 
             if (shape._webgl.imageGeometry != 0) {
                 for (t = 0; t < shape._webgl.texture.length; ++t) {
                     shape._webgl.texture[t].updateTexture();
                 }
 
-                shape._cf.geometry.node._dirty.coord = false;
-                shape._cf.geometry.node._dirty.normal = false;
-                shape._cf.geometry.node._dirty.texCoord = false;
-                shape._cf.geometry.node._dirty.color = false;
-                shape._cf.geometry.node._dirty.index = false;
+                geoNode.unsetGeoDirty();
             }
 
             if (!needFullReInit) {
+                // we're done
                 return;
             }
         }
-        else if (!(x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Text) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) &&
-            (!shape._cf.geometry.node || shape._cf.geometry.node._mesh._positions[0].length < 1))
+        else if (!(x3dom.isa(geoNode, x3dom.nodeTypes.Text) ||
+                   x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry) ||
+                   x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry) ||
+                   x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry)) &&
+                  (!geoNode || geoNode._mesh._positions[0].length < 1))
         {
             if (x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS < 2 &&
-                x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) {
+                x3dom.isa(geoNode, x3dom.nodeTypes.ImageGeometry)) {
                 x3dom.debug.logError("Can't render ImageGeometry nodes with only " +
                     x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS +
                     " vertex texture units. Please upgrade your GPU!");
@@ -425,10 +423,13 @@ x3dom.gfx_webgl = (function () {
         shape.unsetDirty();
 
         // dynamically attach clean-up method for GL objects
-        if (shape._cleanupGLObjects == null) {
-            shape._cleanupGLObjects = function (force) {
+        if (!shape._cleanupGLObjects)
+        {
+            shape._cleanupGLObjects = function (force)
+            {
                 // FIXME; what if complete tree is removed? Then _parentNodes.length my be greater 0.
-                if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0)) {
+                if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
+                {
                     var sp = this._webgl.shader;
 
                     for (var q = 0; q < this._webgl.positions.length; q++) {
@@ -467,11 +468,11 @@ x3dom.gfx_webgl = (function () {
 
 
         shape._webgl = {
-            positions: shape._cf.geometry.node._mesh._positions,
-            normals: shape._cf.geometry.node._mesh._normals,
-            texcoords: shape._cf.geometry.node._mesh._texCoords,
-            colors: shape._cf.geometry.node._mesh._colors,
-            indexes: shape._cf.geometry.node._mesh._indices,
+            positions: geoNode._mesh._positions,
+            normals: geoNode._mesh._normals,
+            texcoords: geoNode._mesh._texCoords,
+            colors: geoNode._mesh._colors,
+            indexes: geoNode._mesh._indices,
             //indicesBuffer,positionBuffer,normalBuffer,texcBuffer,colorBuffer
             //buffers: [{},{},{},{},{}],
             coordType: gl.FLOAT,
@@ -479,11 +480,11 @@ x3dom.gfx_webgl = (function () {
             texCoordType: gl.FLOAT,
             colorType: gl.FLOAT,
             texture: [],
-            lightsAndShadow: x3dom.Utils.checkDirtyLighting(viewarea),
-            imageGeometry: 0, // 0 := no IG,  1 := indexed IG, -1  := non-indexed IG
-            binaryGeometry: 0, // 0 := no BG,  1 := indexed BG, -1  := non-indexed BG
-            popGeometry: 0, // 0 := no PG,  1 := indexed PG, -1  := non-indexed PG
-            bitLODGeometry: 0  // 0 := no BLG, 1 := indexed BLG, -1 := non-indexed BLG      
+            dirtyLighting: x3dom.Utils.checkDirtyLighting(viewarea),
+            imageGeometry: 0,   // 0 := no IG,  1 := indexed IG, -1  := non-indexed IG
+            binaryGeometry: 0,  // 0 := no BG,  1 := indexed BG, -1  := non-indexed BG
+            popGeometry: 0,     // 0 := no PG,  1 := indexed PG, -1  := non-indexed PG
+            bitLODGeometry: 0   // 0 := no BLG, 1 := indexed BLG, -1 := non-indexed BLG
         };
 
         //Set Textures		
@@ -504,27 +505,34 @@ x3dom.gfx_webgl = (function () {
         shape._webgl.dynamicFields = [];
 
         //Set Geometry Primitive Type
-        if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polypoint2D)) {
+        if (x3dom.isa(geoNode, x3dom.nodeTypes.PointSet) ||
+            x3dom.isa(geoNode, x3dom.nodeTypes.Polypoint2D))
+        {
             shape._webgl.primType = gl.POINTS;
         }
-        else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Arc2D) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polyline2D)) {
+        else if (x3dom.isa(geoNode, x3dom.nodeTypes.IndexedLineSet) ||
+                 x3dom.isa(geoNode, x3dom.nodeTypes.Circle2D) ||
+                 x3dom.isa(geoNode, x3dom.nodeTypes.Arc2D) ||
+                 x3dom.isa(geoNode, x3dom.nodeTypes.Polyline2D))
+        {
             shape._webgl.primType = gl.LINES;
         }
-        else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedTriangleStripSet) &&
-            shape._cf.geometry.node._mesh._primType.toUpperCase() == 'TRIANGLESTRIP') {
+        else if (x3dom.isa(geoNode, x3dom.nodeTypes.IndexedTriangleStripSet) &&
+                 geoNode._mesh._primType.toUpperCase() == 'TRIANGLESTRIP')
+        {
             shape._webgl.primType = gl.TRIANGLE_STRIP;
         }
-        else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry) ||
-            x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) {
+        else if (x3dom.isa(geoNode, x3dom.nodeTypes.ImageGeometry) ||
+                 x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry) ||
+                 x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry) ||
+                 x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry))
+        {
             shape._webgl.primType = [];
-            for (var primCnt = 0; primCnt < shape._cf.geometry.node._vf.primType.length; ++primCnt) {
-                switch (shape._cf.geometry.node._vf.primType[primCnt].toUpperCase()) {
+
+            for (var primCnt = 0; primCnt < geoNode._vf.primType.length; ++primCnt)
+            {
+                switch (geoNode._vf.primType[primCnt].toUpperCase())
+                {
                     case 'POINTS':
                         shape._webgl.primType.push(gl.POINTS);
                         break;
@@ -541,26 +549,32 @@ x3dom.gfx_webgl = (function () {
                 }
             }
         }
-        else {
+        else
+        {
             shape._webgl.primType = gl.TRIANGLES;
         }
 
         // Binary container geometries need special handling
-        if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BinaryGeometry)) {
+        if (x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry))
+        {
             x3dom.BinaryContainerLoader.setupBinGeo(shape, sp, gl, viewarea, this);
         }
-        else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PopGeometry)) {
+        else if (x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry))
+        {
             x3dom.BinaryContainerLoader.setupPopGeo(shape, sp, gl, viewarea, this);
         }
-        else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.BitLODGeometry)) {
+        else if (x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry))
+        {
             x3dom.BinaryContainerLoader.setupBitLODGeo(shape, sp, gl, viewarea, this);
         }
-        else if (x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.ImageGeometry)) {
+        else if (x3dom.isa(geoNode, x3dom.nodeTypes.ImageGeometry))
+        {
             x3dom.BinaryContainerLoader.setupImgGeo(shape, sp, gl, viewarea, this);
         }
         else // No BinaryMesh
         {
-            for (q = 0; q < shape._webgl.positions.length; q++) {
+            for (q = 0; q < shape._webgl.positions.length; q++)
+            {
                 q5 = 5 * q;
 
                 if (sp.position !== undefined) {
@@ -585,7 +599,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
 
                     gl.vertexAttribPointer(sp.position,
-                        shape._cf.geometry.node._mesh._numPosComponents,
+                        geoNode._mesh._numPosComponents,
                         shape._webgl.coordType, false,
                         shape._coordStrideOffset[0], shape._coordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.position);
@@ -602,7 +616,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, normals, gl.STATIC_DRAW);
 
                     gl.vertexAttribPointer(sp.normal,
-                        shape._cf.geometry.node._mesh._numNormComponents,
+                        geoNode._mesh._numNormComponents,
                         shape._webgl.normalType, false,
                         shape._normalStrideOffset[0], shape._normalStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.normal);
@@ -619,7 +633,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, texCoords, gl.STATIC_DRAW);
 
                     gl.vertexAttribPointer(sp.texcoord,
-                        shape._cf.geometry.node._mesh._numTexComponents,
+                        geoNode._mesh._numTexComponents,
                         shape._webgl.texCoordType, false,
                         shape._texCoordStrideOffset[0], shape._texCoordStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.texcoord);
@@ -636,7 +650,7 @@ x3dom.gfx_webgl = (function () {
                     gl.bufferData(gl.ARRAY_BUFFER, colors, gl.STATIC_DRAW);
 
                     gl.vertexAttribPointer(sp.color,
-                        shape._cf.geometry.node._mesh._numColComponents,
+                        geoNode._mesh._numColComponents,
                         shape._webgl.colorType, false,
                         shape._colorStrideOffset[0], shape._colorStrideOffset[1]);
                     gl.enableVertexAttribArray(sp.color);
@@ -645,12 +659,13 @@ x3dom.gfx_webgl = (function () {
                 }
             }
 
-            // TODO; FIXME; what if geometry with split mesh has dynamic fields?
-            for (var df in shape._cf.geometry.node._mesh._dynamicFields) {
-                if (!shape._cf.geometry.node._mesh._dynamicFields.hasOwnProperty(df))
+            // TODO; FIXME; handle geometry with split mesh that has dynamic fields!
+            for (var df in geoNode._mesh._dynamicFields)
+            {
+                if (!geoNode._mesh._dynamicFields.hasOwnProperty(df))
                     continue;
 
-                var attrib = shape._cf.geometry.node._mesh._dynamicFields[df];
+                var attrib = geoNode._mesh._dynamicFields[df];
 
                 shape._webgl.dynamicFields[currAttribs] = {
                     buf: {}, name: df, numComponents: attrib.numComponents };
@@ -960,12 +975,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.texcoord, 2, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.texcoord);
 
-                try {
-                    gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-                }
-                catch (e) {
-                    x3dom.debug.logException("Render background: " + e);
-                }
+                gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.activeTexture(gl.TEXTURE0);
                 gl.bindTexture(gl.TEXTURE_2D, null);
@@ -1041,12 +1051,7 @@ x3dom.gfx_webgl = (function () {
                 gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp.position);
 
-                try {
-                    gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-                }
-                catch (e) {
-                    x3dom.debug.logException("Render background: " + e);
-                }
+                gl.drawElements(bgnd._webgl.primType, bgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
                 gl.disableVertexAttribArray(sp.position);
 
@@ -1080,8 +1085,7 @@ x3dom.gfx_webgl = (function () {
             positions: [-w, -h, 0, -w, h, 0, w, -h, 0, w, h, 0],
             indexes: [0, 1, 2, 3],
             buffers: [
-                {},
-                {}
+                {}, {}
             ]
         };
 
@@ -1139,13 +1143,7 @@ x3dom.gfx_webgl = (function () {
             gl.vertexAttribPointer(sp.position, 3, gl.FLOAT, false, 0, 0);
             gl.enableVertexAttribArray(sp.position);
 
-            try {
-                gl.drawElements(scene._fgnd._webgl.primType,
-                    scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
-            }
-            catch (e) {
-                x3dom.debug.logException("Render foreground: " + e);
-            }
+            gl.drawElements(scene._fgnd._webgl.primType, scene._fgnd._webgl.indexes.length, gl.UNSIGNED_SHORT, 0);
 
             gl.disableVertexAttribArray(sp.position);
 
@@ -2300,8 +2298,12 @@ x3dom.gfx_webgl = (function () {
         var scene = viewarea._scene;
 
         // method requires that scene has already been rendered at least once
-        if (gl === null || scene === null || !scene._webgl || !scene.drawableCollection ||
-            scene._vf.pickMode.toLowerCase() === "box") {
+        if (gl === null || scene === null || !scene._webgl || !scene.drawableCollection) {
+            return false;
+        }
+
+        var pm = scene._vf.pickMode.toLowerCase();
+        if (pm === "box") {
             return false;
         }
 
@@ -2320,9 +2322,7 @@ x3dom.gfx_webgl = (function () {
             mat_scene = viewarea._last_mat_scene;
         }
 
-        var pickMode = (scene._vf.pickMode.toLowerCase() === "color") ? 1 :
-            ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 :
-                ((scene._vf.pickMode.toLowerCase() === "idbuf24") ? 3 : 0));
+        var pickMode = (pm === "color") ? 1 : ((pm === "texcoord") ? 2 : ((pm === "idbuf24") ? 3 : 0));
 
         var min = scene._lastMin;
         var max = scene._lastMax;
@@ -2365,7 +2365,8 @@ x3dom.gfx_webgl = (function () {
         //               scene._webgl.fboPick.width + scene._lastX ) * 4;
         var index = 0;
         if (index >= 0 && scene._webgl.fboPick.pixelData &&
-            index < scene._webgl.fboPick.pixelData.length) {
+            index < scene._webgl.fboPick.pixelData.length)
+        {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
             var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
             var objId = scene._webgl.fboPick.pixelData[index + 3];
@@ -2378,7 +2379,7 @@ x3dom.gfx_webgl = (function () {
                 objId += 256 * scene._webgl.fboPick.pixelData[index + 2];
 
                 dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
-                    (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
 
                 line = viewarea.calcViewRay(x, y);
 
@@ -2386,7 +2387,7 @@ x3dom.gfx_webgl = (function () {
 
                 index = 4;      // get right pixel
                 dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
-                    (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
 
                 lineoff = viewarea.calcViewRay(x + pixelOffset, y);
 
@@ -2395,7 +2396,7 @@ x3dom.gfx_webgl = (function () {
 
                 index = 8;      // get top pixel
                 dist = (scene._webgl.fboPick.pixelData[index + 0] / 255.0) * denom +
-                    (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
+                       (scene._webgl.fboPick.pixelData[index + 1] / 255.0);
 
                 lineoff = viewarea.calcViewRay(x, y - pixelOffset);
 
@@ -2621,9 +2622,14 @@ x3dom.gfx_webgl = (function () {
         if (x3dom.caps.FP_TEXTURES && !x3dom.caps.MOBILE) {
             shadowType = gl.FLOAT;
         }
+
+        var shadowedLights, numShadowMaps;
+        var i, j, size, sizeAvailable;
 		
-        if (!scene._webgl) {
+        if (!scene._webgl)
+        {
             scene._webgl = {};
+
             this.setupFgnds(gl, scene);
 
             // scale factor for mouse coords and width/ height (low res for speed-up)
@@ -2636,7 +2642,7 @@ x3dom.gfx_webgl = (function () {
             // https://bugzilla.mozilla.org/show_bug.cgi?id=681903
             // https://www.khronos.org/webgl/public-mailing-list/archives/1108/msg00025.html
             scene._webgl.fboPick = this.initFbo(gl,
-                scene._webgl._currFboWidth, scene._webgl._currFboHeight, true, gl.UNSIGNED_BYTE);
+                                   scene._webgl._currFboWidth, scene._webgl._currFboHeight, true, gl.UNSIGNED_BYTE);
             scene._webgl.fboPick.pixelData = null;
 
             //Set picking shaders
@@ -2649,13 +2655,14 @@ x3dom.gfx_webgl = (function () {
 
 
             //Initialize shadow maps
-			scene._webgl.fboShadow = new Array();
+			scene._webgl.fboShadow = [];
 			
-			var shadowedLights = viewarea.getShadowedLights();
-			for (var i=0; i<shadowedLights.length; i++){
-				var size = shadowedLights[i]._vf.shadowMapSize;
-				var numShadowMaps;
-					
+			shadowedLights = viewarea.getShadowedLights();
+
+			for (i=0; i<shadowedLights.length; i++)
+            {
+				size = shadowedLights[i]._vf.shadowMapSize;
+
 				if (!x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
 					//cascades for directional lights
 					numShadowMaps = Math.max(1,Math.min(shadowedLights[i]._vf.shadowCascades,6));		
@@ -2663,21 +2670,22 @@ x3dom.gfx_webgl = (function () {
 					//six maps for point lights
 					numShadowMaps = 6;
 					
-				scene._webgl.fboShadow[i] = new Array();		
+				scene._webgl.fboShadow[i] = [];
 				
-				for (var j=0; j < numShadowMaps; j++)
+				for (j=0; j < numShadowMaps; j++)
 					scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, shadowType);
 			}
 			
 			if (scene._webgl.fboShadow.length > 0)
 				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, false, shadowType);
-			scene._webgl.fboBlur = new Array();
+			scene._webgl.fboBlur = [];
 						
 			//initialize blur fbo (different fbos for different sizes)
-			for (var i = 0; i< shadowedLights.length; i++){
-				var size = scene._webgl.fboShadow[i][0].height;
-				
-				var sizeAvailable = false;
+			for (i = 0; i< shadowedLights.length; i++)
+            {
+				size = scene._webgl.fboShadow[i][0].height;
+				sizeAvailable = false;
+
 				for (j = 0; j < scene._webgl.fboBlur.length; j++){
 					if (size == scene._webgl.fboBlur[j].height) 
 						sizeAvailable = true;
@@ -2719,7 +2727,8 @@ x3dom.gfx_webgl = (function () {
 
             this._calledViewpointChangedHandler = false;
         }
-        else {
+        else // updates needed?
+        {
             var fboWidth = Math.round(this.canvas.width * scene._webgl.pickScale);
             var fboHeight = Math.round(this.canvas.height * scene._webgl.pickScale);
 
@@ -2736,21 +2745,26 @@ x3dom.gfx_webgl = (function () {
 
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
-                if (rt_tex._webgl && rt_tex._webgl.fbo)
+                if (rt_tex._webgl && rt_tex._webgl.fbo &&
+                    rt_tex._webgl.fbo.width  == rt_tex._vf.dimensions[0] &&
+                    rt_tex._webgl.fbo.height == rt_tex._vf.dimensions[1])
                     continue;
 
+                rt_tex.invalidateGLObject();
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                     rt_tex._vf.dimensions[0],
                     rt_tex._vf.dimensions[1], false, type);
+                x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
+                                    rt_tex._vf.dimensions[0] + " x " + rt_tex._vf.dimensions[1]);
             }			
 			
-			//reinitialize shadow fbos if neccessary
-			var shadowedLights = viewarea.getShadowedLights();
-			for (var i=0; i<shadowedLights.length; i++){
-				var size = shadowedLights[i]._vf.shadowMapSize;
-				
-				var numShadowMaps ;	
+			//reinitialize shadow fbos if necessary
+			shadowedLights = viewarea.getShadowedLights();
+
+			for (i=0; i<shadowedLights.length; i++){
+				size = shadowedLights[i]._vf.shadowMapSize;
+
 				if (!x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
 					//cascades for directional lights
 					numShadowMaps = Math.max(1,Math.min(shadowedLights[i]._vf.shadowCascades,6));				
@@ -2758,10 +2772,11 @@ x3dom.gfx_webgl = (function () {
 					//six maps for point lights
 					numShadowMaps = 6;		
 				
-				if (typeof scene._webgl.fboShadow[i] === "undefined" || scene._webgl.fboShadow[i].length != numShadowMaps ||
-					scene._webgl.fboShadow[i][0].height != size){
-					scene._webgl.fboShadow[i] = new Array();
-					for (var j=0;j<numShadowMaps;j++){
+				if (typeof scene._webgl.fboShadow[i] === "undefined" ||
+                    scene._webgl.fboShadow[i].length != numShadowMaps ||
+					scene._webgl.fboShadow[i][0].height != size) {
+					scene._webgl.fboShadow[i] = [];
+					for (j=0;j<numShadowMaps;j++){
 						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, shadowType);					
 					}
 					
@@ -2769,10 +2784,10 @@ x3dom.gfx_webgl = (function () {
 			}
 			
 			//reinitialize blur fbos if neccessary
-			for (var i = 0; i< shadowedLights.length; i++){
-				var size = scene._webgl.fboShadow[i][0].height;
+			for (i = 0; i< shadowedLights.length; i++){
+				size = scene._webgl.fboShadow[i][0].height;
 				
-				var sizeAvailable = false;
+				sizeAvailable = false;
 				for (j = 0; j < scene._webgl.fboBlur.length; j++){
 					if (size == scene._webgl.fboBlur[j].height) 
 						sizeAvailable = true;
@@ -2789,6 +2804,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         var bgnd = scene.getBackground();
+
         this.setupScene(gl, bgnd);
 
         this.numFaces = 0;
@@ -2896,8 +2912,8 @@ x3dom.gfx_webgl = (function () {
         var slights = viewarea.getLights();
         var numLights = slights.length;
         var mat_light;
-        var WCToLCMatrices = new Array();
-        var lMatrices = new Array();
+        var WCToLCMatrices = [];
+        var lMatrices = [];
 
         scene.updateVolume();
 
@@ -2908,7 +2924,7 @@ x3dom.gfx_webgl = (function () {
             if (slights[p]._vf.shadowIntensity > 0.0) {
 
                 var lightMatrix = viewarea.getLightMatrix()[p];
-                var shadowMaps = scene._webgl.fboShadow[shadowCount];
+                shadowMaps = scene._webgl.fboShadow[shadowCount];
                 var offset = Math.max(0.0, Math.min(1.0, slights[p]._vf.shadowOffset));
 
                 if (!x3dom.isa(slights[p], x3dom.nodeTypes.PointLight)) {
@@ -2919,14 +2935,14 @@ x3dom.gfx_webgl = (function () {
                     mat_light = viewarea.getWCtoLCMatricesCascaded(lightMatrix, slights[p]);
 
                     //render shadow pass
-                    for (var i = 0; i < numCascades; i++) {
+                    for (i = 0; i < numCascades; i++) {
                         this.renderShadowPass(gl, viewarea, mat_light[i], shadowMaps[i], offset, false);
                     }
                 }
                 else {
                     //for point lights 6 render passes
                     mat_light = viewarea.getWCtoLCMatricesPointLight(lightMatrix, slights[p]);
-                    for (var i = 0; i < 6; i++) {
+                    for (i = 0; i < 6; i++) {
                         this.renderShadowPass(gl, viewarea, mat_light[i], shadowMaps[i], offset, false);
                     }
                 }
@@ -3004,7 +3020,7 @@ x3dom.gfx_webgl = (function () {
              nextRenderedAppearance = null;
              }*/
 
-            var stateSwitchMode = STATE_SWITCH_BOTH;
+            var stateSwitchMode = STATE_SWITCH_BOTH;    // TODO: state sorting
             // FIXME; even if app is the same, gl stuff could be different if geo has other properties!
             /*
              var stateSwitchMode = STATE_SWITCH_NONE;
@@ -3032,8 +3048,7 @@ x3dom.gfx_webgl = (function () {
             }
 
             this.renderShape(drawable, viewarea, slights, numLights,
-                mat_view, mat_scene, mat_light, mat_proj, gl,
-                stateSwitchMode);
+                mat_view, mat_scene, mat_light, mat_proj, gl, stateSwitchMode);
 
             //if (stateSwitchMode & STATE_SWITCH_UNBIND)
             {
@@ -3061,27 +3076,27 @@ x3dom.gfx_webgl = (function () {
 
         gl.disable(gl.DEPTH_TEST);
 
-        if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf) {
-            if (scene._vf.pickMode.toLowerCase().indexOf("idbuf") == 0 ||
-                scene._vf.pickMode.toLowerCase() == "color" ||
-                scene._vf.pickMode.toLowerCase() == "texcoord") {
+        if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
+        {
+            var pm = scene._vf.pickMode.toLowerCase();
+            if (pm.indexOf("idbuf") == 0 || pm == "color" || pm == "texcoord") {
                 gl.viewport(0, 3 * this.canvas.height / 4,
-                    this.canvas.width / 4, this.canvas.height / 4);
+                            this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
+
             if (shadowCount > 0) {
                 gl.viewport(this.canvas.width / 4, 3 * this.canvas.height / 4,
-                    this.canvas.width / 4, this.canvas.height / 4);
+                            this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
             }
 
-            var row = 3;
-            var col = 2;
-            for (var i = 0; i < shadowCount; i++) {
+            var row = 3, col = 2;
+            for (i = 0; i < shadowCount; i++) {
                 var shadowMaps = scene._webgl.fboShadow[i];
-                for (var j = 0; j < shadowMaps.length; j++) {
+                for (j = 0; j < shadowMaps.length; j++) {
                     gl.viewport(col * this.canvas.width / 4, row * this.canvas.height / 4,
-                        this.canvas.width / 4, this.canvas.height / 4);
+                                this.canvas.width / 4, this.canvas.height / 4);
                     scene._fgnd._webgl.render(gl, shadowMaps[j].tex);
                     if (col < 2) {
                         col++;
@@ -3095,8 +3110,8 @@ x3dom.gfx_webgl = (function () {
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
 
-                gl.viewport(rtl_i * (this.canvas.width / 8), 5 * this.canvas.height / 8,
-                    (rtl_i + 1) * (this.canvas.width / 8), this.canvas.height / 8);
+                gl.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
+                            this.canvas.width / 8, this.canvas.height / 8);
                 scene._fgnd._webgl.render(gl, rt_tex._webgl.fbo.tex);
             }
         }
@@ -3343,7 +3358,7 @@ x3dom.gfx_webgl = (function () {
      *****************************************************************************/
     Context.prototype.renderNormals = function (gl, scene, sp, mat_view, mat_scene)
     {
-        if (!sp) {  // error
+        if (!sp || !scene) {  // error
             return;
         }
 
@@ -3363,7 +3378,7 @@ x3dom.gfx_webgl = (function () {
             var shape = drawable.shape;
             var s_gl = shape._webgl;
 
-            if (!s_gl) {
+            if (!s_gl || !shape._vf.render) {
                 continue;
             }
 
@@ -3551,32 +3566,33 @@ x3dom.gfx_webgl = (function () {
      *****************************************************************************/
     Context.prototype.shutdown = function (viewarea) {
         var gl = this.ctx3d;
-        var attrib;
-        var scene;
+        var scene = viewarea._scene;
 
-        if (gl === null || scene === null || !scene || scene.drawableCollection === null) {
+        if (gl == null || !scene) {
             return;
         }
-        scene = viewarea._scene;
-
-        //Release Texture and Shader Resources
-        this.cache.Release();
 
         var bgnd = scene.getBackground();
-        if (bgnd._webgl.texture !== undefined && bgnd._webgl.texture) {
-            gl.deleteTexture(bgnd._webgl.texture);
-        }
-        if (bgnd._webgl.shader.position !== undefined) {
+        if (bgnd._webgl.position !== undefined) {
             gl.deleteBuffer(bgnd._webgl.buffers[1]);
             gl.deleteBuffer(bgnd._webgl.buffers[0]);
         }
+        var fgnd = scene._fgnd;
+        if (fgnd._webgl.position !== undefined) {
+            gl.deleteBuffer(fgnd._webgl.buffers[1]);
+            gl.deleteBuffer(fgnd._webgl.buffers[0]);
+        }
 
-        for (var i = 0, n = scene.drawableCollection.length; i < n; i++) {
+        var n = scene.drawableCollection ? scene.drawableCollection.length : 0;
+        for (var i = 0; i < n; i++) {
             var shape = scene.drawableCollection.get(i).shape;
 
             if (shape._cleanupGLObjects)
                 shape._cleanupGLObjects(true);
         }
+
+        //Release Texture and Shader Resources
+        this.cache.Release(gl);
     };
 
     /*****************************************************************************
@@ -3644,7 +3660,6 @@ x3dom.gfx_webgl = (function () {
         return tex;
     };
 
-
     /*****************************************************************************
      * Creates FBO with given size
      * (taken from FBO utilities for WebGL by Emanuele Ruffaldi 2009)
@@ -3689,57 +3704,59 @@ x3dom.gfx_webgl = (function () {
     {
 		var scene = viewarea._scene;
 		
-		//don't render shadows whith less than 7 textures per fragment shader
-		var texLimit = gl.getParameter(gl.MAX_TEXTURE_IMAGE_UNITS);	
+		//don't render shadows with less than 7 textures per fragment shader
+		var texLimit = x3dom.caps.MAX_TEXTURE_IMAGE_UNITS;
 		
-		if (texLimit < 7) return;
+		if (texLimit < 7)
+            return;
 		
 		var texUnits = 1;
-		var renderSplit = new Array();
-		renderSplit[0] = 0;
-		
-		
+		var renderSplit = [ 0 ];
+
+        var shadowMaps, numShadowMaps;
+        var i, j, k;
 		
 		//filter shadow maps and determine, if multiple render passes are needed		
-		for (var i = 0; i < shadowedLights.length; i++){
-				var filterSize = shadowedLights[i]._vf.shadowFilterSize;				
-				var shadowMaps = scene._webgl.fboShadow[i];
-				var numShadowMaps = shadowMaps.length;
+		for (i = 0; i < shadowedLights.length; i++)
+        {
+            var filterSize = shadowedLights[i]._vf.shadowFilterSize;
+            shadowMaps = scene._webgl.fboShadow[i];
+            numShadowMaps = shadowMaps.length;
 
-				//filtering
-				for (var j=0; j<numShadowMaps;j++){	
-					this.blurTex(gl, scene, shadowMaps[j], filterSize);
-				}
-				
-				//shader consumes 6 tex units per lights (even if less are bound)
-				texUnits+=6;
-				
-				if (texUnits > texLimit){
-					renderSplit[renderSplit.length] = i;
-					texUnits = 7;
-				}
+            //filtering
+            for (j=0; j<numShadowMaps;j++){
+                this.blurTex(gl, scene, shadowMaps[j], filterSize);
+            }
+
+            //shader consumes 6 tex units per lights (even if less are bound)
+            texUnits+=6;
+
+            if (texUnits > texLimit){
+                renderSplit[renderSplit.length] = i;
+                texUnits = 7;
+            }
 		}
 		renderSplit[renderSplit.length] = shadowedLights.length;
 		
 		//render shadows for current render split
-		for (var s=0; s<renderSplit.length-1; s++){
+        var n = renderSplit.length - 1;
+		for (var s=0; s<n; s++)
+        {
 			var startIndex = renderSplit[s];
 			var endIndex = renderSplit[s+1];
 		
-			var currentLights = new Array();
+			var currentLights = [];
 			
-			for (var k=startIndex; k< endIndex; k++)
+			for (k=startIndex; k< endIndex; k++)
 				currentLights[currentLights.length] = shadowedLights[k];
-		
-		
+
 			var sp = this.cache.getShadowRenderingShader(gl, currentLights);
 			sp.bind();	
 			
 			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
 			gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(sp.position);
-			
-			
+
 			//enable (multiplicative) blending
 			gl.enable(gl.BLEND);
 			gl.blendFunc(gl.DST_COLOR, gl.ZERO);
@@ -3764,22 +3781,20 @@ x3dom.gfx_webgl = (function () {
 			var mat_view_proj = mat_proj.mult(mat_view);
 			var mat_inv = mat_view_proj.inverse();
 			sp.inverseViewProj = mat_inv.toGL();
-			
 
 			var mat_light;
 			var lightMatrix;
-			var shadowMaps;
 		
 			var shadowIndex = 0;
-			for (var p=0; p<currentLights.length; p++){		
+			for (var p=0; p<currentLights.length; p++) {
 				//get light matrices and shadow maps for current light
 				lightMatrix = lMatrices[p+startIndex];
 				mat_light = wctolc[p+startIndex];
 				shadowMaps = scene._webgl.fboShadow[p+startIndex]; 
 				
-				var numShadowMaps = mat_light.length;
+				numShadowMaps = mat_light.length;
 				
-				for (var i=0; i< numShadowMaps; i++){
+				for (i=0; i< numShadowMaps; i++){
 						gl.activeTexture(gl.TEXTURE1 + shadowIndex);
 						gl.bindTexture(gl.TEXTURE_2D, shadowMaps[i].tex);
 						sp['light'+p+'_'+i+'_ShadowMap'] = shadowIndex+1;
@@ -3790,7 +3805,7 @@ x3dom.gfx_webgl = (function () {
 
 				//cascade depths for directional and spot light
 				if (!x3dom.isa(currentLights[p], x3dom.nodeTypes.PointLight)){
-					for (var j=0; j< numShadowMaps; j++){
+					for (j=0; j< numShadowMaps; j++){
 						var numCascades = Math.max(1,Math.min(currentLights[p]._vf.shadowCascades,6));
 						var splitFactor = Math.max(0,Math.min(currentLights[p]._vf.shadowSplitFactor,1));					
 						var splitOffset = Math.max(0,Math.min(currentLights[p]._vf.shadowSplitOffset,1));						
@@ -3815,10 +3830,7 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
 					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
-					
-
 				}
-				
 				else if(x3dom.isa(currentLights[p], x3dom.nodeTypes.PointLight))
 				{
 					sp['light'+p+'_Type']             = 1.0;
@@ -3831,7 +3843,6 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_CutOffAngle']      = 0.0;
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowOffset']	  = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
-					
 				}
 				else if(x3dom.isa(currentLights[p], x3dom.nodeTypes.SpotLight))
 				{
@@ -3846,44 +3857,43 @@ x3dom.gfx_webgl = (function () {
 					sp['light'+p+'_ShadowIntensity']  = currentLights[p]._vf.shadowIntensity;
 					sp['light'+p+'_ShadowCascades']   = currentLights[p]._vf.shadowCascades;
 					sp['light'+p+'_ShadowOffset']      = Math.max(0.0,Math.min(1.0,currentLights[p]._vf.shadowOffset));
-					
 				}
-					
 			}
 		
 			gl.drawArrays(gl.TRIANGLES,0,6);
+
 			//cleanup
-			for (var k=0; k<shadowIndex+1; k++){
+            var nk = shadowIndex + 1;
+			for (k=0; k<nk; k++) {
 				gl.activeTexture(gl.TEXTURE0 + k);
 				gl.bindTexture(gl.TEXTURE_2D, null);	
 			} 
 			gl.disableVertexAttribArray(sp.position);
-			
 		}
     };
-	
 	
 	/*****************************************************************************
     * Blur texture associated with given fbo
     *****************************************************************************/	
 	Context.prototype.blurTex = function(gl, scene, targetFbo, filterSize)
     {
-		if (filterSize == 0) return;
+		if (filterSize <= 0)
+            return;
 		else if (filterSize < 5)
 			filterSize = 3;
 		else if (filterSize < 7)
 			filterSize = 5;
-		else filterSize = 7;
+		else
+            filterSize = 7;
 		
 		//first pass (horizontal blur), result stored in fboBlur
 		var width = targetFbo.width;
 		var height = targetFbo.height;
-		
-		var targetSize = targetFbo.height;
 		var fboBlur;
 		
 		for (var i=0; i<scene._webgl.fboBlur.length; i++)
-			if (targetSize == scene._webgl.fboBlur[i].height) fboBlur = scene._webgl.fboBlur[i];
+			if (height == scene._webgl.fboBlur[i].height)
+                fboBlur = scene._webgl.fboBlur[i];  // THINKABOUTME
 				
 		gl.bindFramebuffer(gl.FRAMEBUFFER, fboBlur.fbo);
 		gl.viewport(0, 0, width, height);
@@ -3922,7 +3932,6 @@ x3dom.gfx_webgl = (function () {
 		
 		gl.drawArrays(gl.TRIANGLES,0,6);
 		
-		
 		//second pass (vertical blur), result stored in targetFbo
 		gl.bindFramebuffer(gl.FRAMEBUFFER, targetFbo.fbo);
 		
@@ -3938,10 +3947,8 @@ x3dom.gfx_webgl = (function () {
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
 		gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
-		
 
 		gl.drawArrays(gl.TRIANGLES,0,6);
-			
 
 		//cleanup
 		gl.flush();
@@ -3951,7 +3958,7 @@ x3dom.gfx_webgl = (function () {
 		gl.disableVertexAttribArray(sp.position);
 		
 		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
-	};	
+	};
 	
     return setupContext;
 

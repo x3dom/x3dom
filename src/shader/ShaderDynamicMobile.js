@@ -399,6 +399,9 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "fragColor.a = alpha;\n";
 		}
 	} else {
+		if (properties.APPMAT) {
+			shader += "rgb = vec3(0.0, 0.0, 0.0);\n";
+		}
 		if(properties.TEXTURED && !properties.BLENDING) {
 			shader += "fragAmbient = vec3(1.0);\n";
 			shader += "fragDiffuse = vec3(1.0);\n";
@@ -441,9 +444,11 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
  */
 x3dom.shader.DynamicMobileShader.prototype.generateFragmentShader = function(gl, properties)
 {
-	var shader = "#ifdef GL_ES\n" +
-    			 "  precision highp float;\n" +
-    			 "#endif\n\n";
+	var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
 	
 	/*******************************************************************************
 	* Generate dynamic uniforms & varyings

@@ -399,9 +399,15 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
  */
 x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, properties)
 {
-	var shader = "#ifdef GL_ES\n" +
+	/*var shader = "#ifdef GL_ES\n" +
     			 "  precision highp float;\n" +
-    			 "#endif\n\n";
+    			 "#endif\n\n";*/
+    
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
 	
 	/*******************************************************************************
 	* Generate dynamic uniforms & varyings
@@ -587,6 +593,10 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 		
 	} else {
+		if (properties.APPMAT) {
+			shader += "color = vec4(0.0, 0.0, 0.0, 1.0);\n";
+		}
+		
 		if(properties.TEXTURED || properties.DIFFUSEMAP){
 			shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
 			shader += "vec4 texColor = texture2D(diffuseMap, texCoord);\n";

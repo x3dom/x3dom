@@ -89,6 +89,7 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials)
 		//Save image Size
 		texture.width  = image.width;
 		texture.height = image.height;
+		texture.ready = true;
 		
 		doc.downloadCount--;
 		doc.needRender = true;
@@ -459,12 +460,11 @@ x3dom.Utils.isUnsignedType = function (str)
 
 
 /*****************************************************************************
-* Checks for lighting and shadowing
+* Checks for lighting
 *****************************************************************************/
 x3dom.Utils.checkDirtyLighting = function (viewarea)
 {
-	return [viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight,
-			viewarea.getLightsShadow()];
+	return (viewarea.getLights().length + viewarea._scene.getNavigationInfo()._vf.headlight);
 };
 
 /*****************************************************************************
@@ -562,7 +562,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                 x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polyline2D) ||
                                 x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Arc2D) ||
                                 x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D) ? 1 : 0;					  
-		 
+		
+		property.APPMAT					= (appearance && (material || property.CSSHADER) ) ? 1 : 0;
 		property.SHADOW				    = (viewarea.getLightsShadow()) ? 1 : 0;
 		property.FOG				      = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
 		property.CSSHADER			    = (appearance && appearance._shader && x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
@@ -735,6 +736,6 @@ x3dom.Utils.wrapProgram = function (gl, program)
 		loc = gl.getAttribLocation(program, obj.name);
 		shader[obj.name] = loc;
 	}
-	
+	shader["program"]=program;
 	return shader;
 };

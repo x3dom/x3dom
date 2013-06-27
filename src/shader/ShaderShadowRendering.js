@@ -60,9 +60,12 @@ x3dom.shader.ShadowRenderingShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.ShadowRenderingShader.prototype.generateFragmentShader = function(gl,shadowedLights)
 {
-	var shader = "#ifdef GL_ES\n" +
-    			 "  precision highp float;\n" +
-    			 "#endif\n\n";
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
 	shader += "uniform mat4 inverseViewProj;\n";
 	shader += "uniform mat4 inverseProj;\n";
 	shader += "varying vec2 vPosition;\n";

@@ -71,23 +71,23 @@ package x3dom.shaders
 			
 			//Build shader
 			shader += "mov ft0, v0\n";
-			shader += "div ft0, ft0, ft0.w\n";
+			shader += "div ft0.xy, ft0.xy, ft0.ww\n";
 			shader += "neg ft0.y, ft0.y\n";
-			shader += "add ft0, ft0, fc5.y\n";
-			shader += "mul ft0, ft0, fc5.x\n";
+			shader += "add ft0.xy, ft0.xy, fc5.yy\n";
+			shader += "mul ft0.xy, ft0.xy, fc5.xx\n";
 			
-			//shader += "add ft0, ft0, fc6\n";
-			
-			shader += "tex ft1, ft0, fs0 <2d, clamp, linear>\n";		//Sample Light Texture		-> ft1
-			shader += "tex ft2, ft0, fs1 <2d, clamp, linear>\n";		//Sample Light Texture		-> ft1
+			shader += "tex ft1, ft0.xy, fs0 <2d, clamp, linear>\n";		//Sample Light Texture		-> ft1
+			shader += "tex ft2, ft0.xy, fs1 <2d, clamp, linear>\n";		//Sample Light Texture		-> ft1
 			
 			shader += "mul ft3.xyz, fc1.xyz, ft1.xyz\n";
 			shader += "mov ft3.w, fc1.w\n";
-			shader += "mul ft4.xyz, fc2.xyz, ft2.xyz\n";
-			shader += "mov ft4.w, fc1.w\n";
-			shader += "add ft5, ft3, ft4\n";
 			
-			shader += "sat ft5, ft5\n";
+			shader += "mul ft4, fc2.xyz, ft2.xyz\n";
+			
+			shader += "add ft5, ft3, ft4\n";	
+			shader += "add ft5, ft5, fc3\n";
+			
+			shader += "mov ft5.w, fc1.w\n";
 
 			shader += "mov oc, ft5\n"; 					//Output color*/
 			

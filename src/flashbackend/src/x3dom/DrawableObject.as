@@ -16,8 +16,8 @@ package x3dom
 	{
 		private var _context3D:Context3D;
 		
-		private var _id:uint;
-		private var _refID:uint;
+		private var _id:int;
+		private var _refID:int;
 		private var _type:String;
 		private var _shape:Shape;
 		private var _transform:Matrix3D;
@@ -25,7 +25,7 @@ package x3dom
 		private var _sortType:String;
 		private var _sortKey:uint;
 		
-		public function DrawableObject(id:uint=-1, refID:uint=-1)
+		public function DrawableObject(id:int=-1, refID:int=-1)
 		{
 			this._id		= id;
 			this._refID		= refID;
@@ -40,7 +40,7 @@ package x3dom
 		/**
 		 * 
 		 */
-		public function set id(id:uint) : void
+		public function set id(id:int) : void
 		{
 			this._id = id;
 		}
@@ -48,7 +48,7 @@ package x3dom
 		/**
 		 * @private
 		 */
-		public function get id() : uint
+		public function get id() : int
 		{
 			return this._id;
 		}
@@ -56,7 +56,7 @@ package x3dom
 		/**
 		 * 
 		 */
-		public function set refID(refID:uint) : void
+		public function set refID(refID:int) : void
 		{
 			this._refID = refID;
 		}
@@ -80,7 +80,7 @@ package x3dom
 		/**
 		 * @private
 		 */
-		public function get refID() : uint
+		public function get refID() : int
 		{
 			return this._refID;
 		}

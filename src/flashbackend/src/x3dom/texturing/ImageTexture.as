@@ -7,6 +7,7 @@ package x3dom.texturing
 	import flash.display3D.textures.*;
 	import flash.events.Event;
 	import flash.events.IOErrorEvent;
+	import flash.geom.Matrix3D;
 	import flash.net.URLRequest;
 	
 	import x3dom.*;
@@ -23,7 +24,7 @@ package x3dom.texturing
 		/**
 		 * Creates a new ImageTexture instance
 		 */
-		public function ImageTexture(url:String, blending:Boolean=false, repeatS:Boolean=true, repeatT:Boolean=true)
+		public function ImageTexture(url:String, blending:Boolean=false, repeatS:Boolean=true, repeatT:Boolean=true, transform:Matrix3D=null)
 		{
 			//Init super class
 			super(blending, repeatS, repeatT);
@@ -33,6 +34,9 @@ package x3dom.texturing
 			
 			//Set URL
 			this._url = url;
+			
+			//Set texture transform
+			this._transform = transform;
 			
 			//Load Texture
 			this.loadTexture();

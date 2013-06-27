@@ -108,6 +108,8 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
 
         if (program)
             this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
+        else
+            x3dom.debug.logError("Couldn't create shader: " + shaderIdentifier);
     }
 
     return this.shaders[shaderIdentifier];
@@ -176,12 +178,19 @@ x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights) {
 /**
  * Release texture and shader resources
  */
-x3dom.Cache.prototype.Release = function () {
+x3dom.Cache.prototype.Release = function (gl) {
     for (var texture in this.textures) {
         gl.deleteTexture(this.textures[texture]);
     }
+    this.textures = [];
 
-    for (var shader in this.shaders) {
-        gl.deleteProgram(this.shaders[shader]);
+    for (var shaderId in this.shaders) {
+        var shader = this.shaders[shaderId];
+        var glShaders = gl.getAttachedShaders(shader.program);
+        for (var i=0; i<glShaders.length; ++i) {
+            gl.deleteShader(glShaders[i]);
+        }
+         gl.deleteProgram(shader.program)
     }
+    this.shaders = [];
 };

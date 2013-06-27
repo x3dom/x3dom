@@ -859,6 +859,13 @@ x3dom.registerNodeType(
             // define frame-rate range for quality-speed trade-off (experimental)
             this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
             this.addField_SFFloat(ctx, 'maxFrameRate', 62.5);
+
+            // 4 exp. factors for controlling speed-performance trade-off
+            // factors could be in [0, 1] (and not evaluated if -1)
+            this.addField_SFFloat(ctx, 'userDataFactor', -1);
+            this.addField_SFFloat(ctx, 'screenSpaceFactor', -1);
+            this.addField_SFFloat(ctx, 'drawCountFactor', -1);
+            this.addField_SFFloat(ctx, 'drawTessellationFactor', -1);
             
             this._lastMin = null;
             this._lastMax = null;
@@ -890,7 +897,7 @@ x3dom.registerNodeType(
 
                 if (vol.isValid())
                 {
-                    // TODO: could directly use _lastMin/Max, but then care care of initial null check
+                    // TODO: could directly use _lastMin/Max, but then take care of initial null check
                     var min = x3dom.fields.SFVec3f.MAX();
                     var max = x3dom.fields.SFVec3f.MIN();
                     vol.getBounds(min, max);

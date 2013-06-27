@@ -638,9 +638,7 @@ x3dom.Runtime.prototype.getCurrentTransform = function(domNode) {
  */
 x3dom.Runtime.prototype.getSceneBBox = function() {
     var scene = this.canvas.doc._scene;
-    
-    if ( !(scene._lastMin && scene._lastMax) )
-        scene.updateVolume();
+    scene.updateVolume();
     
     return {
         min: x3dom.fields.SFVec3f.copy(scene._lastMin),
@@ -913,6 +911,7 @@ x3dom.Runtime.prototype.statistics = function(mode) {
         // if no parameter is given return current status (false = not visible, true = visible)
         return states.active;
     }
+    return false;
 };
 
 /**
@@ -943,6 +942,7 @@ x3dom.Runtime.prototype.processIndicator = function(mode) {
         // if no parameter is given return current status (false = not visible, true = visible)
         return processDiv.style.display != 'none'
     }
+    return false;
 };
 
 /** Get properties */

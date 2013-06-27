@@ -294,9 +294,9 @@ x3dom.registerNodeType(
 
                 // TODO; handle at least per quad normals
                 //       (corresponds to creaseAngle = 0)
-                //this._mesh.calcNormals(this._vf.creaseAngle);
+                //this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
                 if (!normals)
-                    this._mesh.calcNormals(Math.PI);
+                    this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
 				this._mesh._invalidate = true;
                 this._mesh._numTexComponents = numTexComponents;
@@ -324,7 +324,7 @@ x3dom.registerNodeType(
                     
                     if (!normals) {
                         this._mesh._normals[0] = [];
-                        this._mesh.calcNormals(Math.PI);
+                        this._mesh.calcNormals(Math.PI, this._vf.ccw);
                     }
 
                     this._mesh._invalidate = true;
@@ -2274,6 +2274,22 @@ x3dom.registerNodeType(
             };
 		},
 		{
+            setGeoDirty: function () {
+                this._dirty.coord = true;
+                this._dirty.normal = true;
+                this._dirty.texCoords = true;
+                this._dirty.color = true;
+                this._dirty.index = true;
+            },
+
+            unsetGeoDirty: function () {
+                this._dirty.coord = false;
+                this._dirty.normal = false;
+                this._dirty.texCoords = false;
+                this._dirty.color = false;
+                this._dirty.index = false;
+            },
+
 			nodeChanged: function()
             {		
 				Array.forEach(this._parentNodes, function (node) {
@@ -2915,7 +2931,7 @@ x3dom.registerNodeType(
 					}
 					
 					if (!hasNormal) {
-						this._mesh.calcNormals(this._vf.creaseAngle);
+						this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
 					}
 					if (!hasTexCoord) {
 						this._mesh.calcTexCoords(texMode);
@@ -2969,7 +2985,7 @@ x3dom.registerNodeType(
                         this._mesh._normals[0] = normals.toGL();
                     }
                     else {
-                        this._mesh.calcNormals(this._vf.creaseAngle);
+                        this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
                     }
                     if (hasTexCoord) {
                         this._mesh._texCoords[0] = texCoords.toGL();
@@ -3426,7 +3442,7 @@ x3dom.registerNodeType(
 					}
 
 					if (!hasNormal) {
-						this._mesh.calcNormals(this._vf.creaseAngle);
+						this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
 					}
 					if (!hasTexCoord) {
 						this._mesh.calcTexCoords(texMode);

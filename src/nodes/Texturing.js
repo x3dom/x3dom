@@ -313,6 +313,18 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'update', 'NONE');         // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
             this.addField_SFBool(ctx, 'showNormals', false);
 
+            this.addField_SFString(ctx, 'stereoMode', 'NONE');     // ("NONE"|"LEFT_EYE"|"RIGHT_EYE")
+            this.addField_SFFloat(ctx, 'interpupillaryDistance', 0.064);
+
+            this.hScreenSize = 0.14976;
+            this.vScreenSize = 0.09356;
+            this.vScreenCenter = this.vScreenSize / 2;
+            this.eyeToScreenDistance = 0.041;
+            this.lensSeparationDistance = 0.0635;
+            this.distortionK = [1.0, 0.22, 0.24, 0.0];
+            //hRes, vRes = 1280 x 800
+            this.lensCenter = 1 - 2 * this.lensSeparationDistance / this.hScreenSize;
+
             x3dom.debug.assert(this._vf.dimensions.length >= 3);
             this._clearParents = true;
             this._needRenderUpdate = true;
@@ -376,21 +388,62 @@ x3dom.registerNodeType(
                     ret_mat = mat_viewpoint.mult(view.getViewMatrix());
                 }
 
+                var stereoMode = this._vf.stereoMode.toUpperCase();
+                if (stereoMode != "NONE") {
+                    var d = this._vf.interpupillaryDistance / 2;
+                    if (stereoMode == "RIGHT_EYE") {
+                        d = -d;
+                    }
+                    var modifier = new x3dom.fields.SFMatrix4f(
+                        1, 0, 0, d,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1
+                    );
+                    ret_mat = modifier.mult(ret_mat);
+                }
+
                 return ret_mat;
             },
 
             getProjectionMatrix: function()
             {
-                var vbP = this._nameSpace.doc._scene.getViewpoint();
+                var doc = this._nameSpace.doc;
+                var vbP = doc._scene.getViewpoint();
                 var view = this._cf.viewpoint.node;
                 var ret_mat = null;
+                var f, w = this._vf.dimensions[0], h = this._vf.dimensions[1];
+                var stereoMode = this._vf.stereoMode.toUpperCase();
+                var stereo = (stereoMode != "NONE");
 
                 if (view === null || view === vbP) {
-                    ret_mat = this._nameSpace.doc._viewarea.getProjectionMatrix();
+                    ret_mat = x3dom.fields.SFMatrix4f.copy(doc._viewarea.getProjectionMatrix());
+                    if (stereo) {
+                        f = 2 * Math.atan(this.vScreenSize / (2 * this.eyeToScreenDistance));
+                        f = 1 / Math.tan(f / 2);
+                    }
+                    else {
+                        f = 1 / Math.tan(vbP._vf.fieldOfView / 2);
+                    }
+                    ret_mat._00 = f / (w / h);
+                    ret_mat._11 = f;
                 }
                 else {
-                    var w = this._vf.dimensions[0], h = this._vf.dimensions[1];
                     ret_mat = view.getProjectionMatrix(w / h);
+                }
+
+                if (stereo) {
+                    var hp = this.lensCenter;
+                    if (stereoMode == "RIGHT_EYE") {
+                        hp = -hp;
+                    }
+                    var modifier = new x3dom.fields.SFMatrix4f(
+                        1, 0, 0, hp,
+                        0, 1, 0, 0,
+                        0, 0, 1, 0,
+                        0, 0, 0, 1
+                    );
+                    ret_mat = modifier.mult(ret_mat);
                 }
 
                 return ret_mat;

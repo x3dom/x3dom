@@ -1,10 +1,20 @@
 package x3dom
 {
-	import flash.display.*;
-	import flash.display3D.*;
-	import flash.events.*;
+	import flash.display.LoaderInfo;
+	import flash.display.MovieClip;
+	import flash.display.Sprite;
+	import flash.display.Stage;
+	import flash.display.Stage3D;
+	import flash.display.StageAlign;
+	import flash.display.StageScaleMode;
+	import flash.display3D.Context3D;
+	import flash.display3D.Context3DBlendFactor;
+	import flash.display3D.Context3DProfile;
+	import flash.display3D.Context3DRenderMode;
+	import flash.events.Event;
+	import flash.events.KeyboardEvent;
+	import flash.events.MouseEvent;
 	import flash.external.ExternalInterface;
-	import flash.geom.Rectangle;
 	import flash.system.LoaderContext;
 	import flash.system.Security;
 	
@@ -15,10 +25,10 @@ package x3dom
 		
 		Security.allowDomain('*');
 		
-		[Embed(source="res/Library.swf", symbol="LoadingText")]
+		[Embed(source="../../res/Library.swf", symbol="LoadingText")]
 		private var LoadingScreen:Class;
 		
-		[Embed(source="res/Library.swf", symbol="InfoField")]
+		[Embed(source="../../res/Library.swf", symbol="InfoField")]
 		private static var InfoField:Class;
 		
 		private static var _stage:Stage;
@@ -100,19 +110,24 @@ package x3dom
 		private static var _texLoadWheel:Sprite;
 		
 		/**
+		 * 
+		 */
+		private var _renderType:String;
+		
+		/**
 		 * Main entry point of the x3dom flash renderer
 		 */
 		public function FlashBackend()
 		{
 			_stage = stage;
-			
+					
 			//Enable doubleClick feature for the stage
-			stage.doubleClickEnabled = true;
+			_stage.doubleClickEnabled = true;
 			
 			//Set stage align to TopLeft
-			stage.align = StageAlign.TOP_LEFT;
+			_stage.align = StageAlign.TOP_LEFT;
 			
-			stage.scaleMode = StageScaleMode.NO_SCALE;
+			_stage.scaleMode = StageScaleMode.NO_SCALE;
 			
 			//Get FlashVars
 			this.getFlashVars();
@@ -132,6 +147,8 @@ package x3dom
 			//Create LoaderContext for crossdomain loading
 			_loaderContext = new LoaderContext();
 			_loaderContext.checkPolicyFile = true;
+			//_loaderContext.securityDomain = SecurityDomain.currentDomain;
+			//_loaderContext.applicationDomain = ApplicationDomain.currentDomain; 
 		}
 		
 		private function initLoadingScreen() : void
@@ -215,8 +232,9 @@ package x3dom
 			this._canvasIdx = Number(param.canvasIdx);
 			
 			//Set stageWidth and stageHeight from flashVars
-			_stageWidth  = Number(param.width);
-			_stageHeight = Number(param.height);
+			_stageWidth  = _stage.stageWidth;//Number(param.width);
+			_stageHeight = _stage.stageHeight;//Number(param.height);
+			_renderType  = String(param.renderType);
 		}
 		
 		/**
@@ -224,18 +242,19 @@ package x3dom
 		 */
 		private function initEventListener() : void
 		{
-			stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
-			stage.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
-			stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, handleRightMouseDown);
-			stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, handleMouseUp);
-			stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, handleMiddleMouseDown);
-			stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, handleMouseUp);
-			stage.addEventListener(MouseEvent.ROLL_OVER, handleMouseOver);
-			stage.addEventListener(Event.MOUSE_LEAVE, handleMouseOut);
-			stage.addEventListener(MouseEvent.DOUBLE_CLICK, handleDoubleClick);
-			stage.addEventListener(MouseEvent.MOUSE_WHEEL, handleMouseWheel);
-			stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
-			stage.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+			_stage.addEventListener(MouseEvent.MOUSE_DOWN, handleMouseDown);
+			_stage.addEventListener(MouseEvent.MOUSE_UP, handleMouseUp);
+			_stage.addEventListener(MouseEvent.RIGHT_MOUSE_DOWN, handleRightMouseDown);
+			_stage.addEventListener(MouseEvent.RIGHT_MOUSE_UP, handleMouseUp);
+			_stage.addEventListener(MouseEvent.MIDDLE_MOUSE_DOWN, handleMiddleMouseDown);
+			_stage.addEventListener(MouseEvent.MIDDLE_MOUSE_UP, handleMouseUp);
+			_stage.addEventListener(MouseEvent.ROLL_OVER, handleMouseOver);
+			_stage.addEventListener(Event.MOUSE_LEAVE, handleMouseOut);
+			_stage.addEventListener(MouseEvent.DOUBLE_CLICK, handleDoubleClick);
+			_stage.addEventListener(MouseEvent.MOUSE_WHEEL, handleMouseWheel);
+			_stage.addEventListener(KeyboardEvent.KEY_DOWN, handleKeyDown);
+			_stage.addEventListener(MouseEvent.MOUSE_MOVE, handleMouseMove);
+			_stage.addEventListener(Event.RESIZE, handleResize);
 		}
 		
 		/**
@@ -244,15 +263,13 @@ package x3dom
 		private function createContext3D() : void
 		{
 			//Add EventListener for Context3D creation
-			stage.stage3Ds[0].addEventListener(Event.CONTEXT3D_CREATE, handleContext3DCreate);
-			
-			//Request Context3D
-			stage.stage3Ds[0].requestContext3D();
-			
-			//Set viewport size and location
-			//stage.stage3Ds[0].viewPort = new Rectangle(0, 0, _stageWidth, _stageHeight);
-			//stage.stage3Ds[0].x = 0;
-			//stage.stage3Ds[0].y = 0;
+			if(_stage.stage3Ds.length > 0)
+			{
+				var stage3D:Stage3D = _stage.stage3Ds[0]; 
+				stage3D.addEventListener(Event.CONTEXT3D_CREATE, handleContext3DCreate);
+				//Request Context3D
+				stage3D.requestContext3D(Context3DRenderMode.AUTO, Context3DProfile.BASELINE);
+			}
 		}
 		
 		/**
@@ -276,13 +293,17 @@ package x3dom
 			_context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA );
 			
 			// The back buffer size is in actual pixels
-			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 4, true );
+			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 8, true );
 			
 			//Create X3DScene for scene managing
 			this._scene = new X3DScene();
 			
-			this._renderer = new ForwardRenderer(_scene);
-			//this._renderer = new LPPRenderer(_scene);
+			if (this._renderType == "forward")
+			{
+				this._renderer = new ForwardRenderer(_scene);
+			} else {
+				this._renderer = new LPPRenderer(_scene);
+			}
 			
 			//Create JSToASBridge for communication
 			this._bridge = new Bridge(_scene, _renderer);
@@ -461,6 +482,21 @@ package x3dom
 					FlashBackend._infoField.visible = true;
 				}
 			}
+		}
+		
+		/**
+		 * Handle scene resize
+		 */
+		public function handleResize(event:Event):void
+		{
+			//Save new size
+			_stageWidth = _stage.stageWidth;
+			_stageHeight = _stage.stageHeight;
+			
+			//rearrange infofield
+			_infoField.x = _stageWidth - _infoField.width - 10;
+			
+			_context3D.configureBackBuffer( _stageWidth, _stageHeight, 8, true );
 		}
 		
 	}

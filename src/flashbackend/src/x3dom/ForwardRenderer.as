@@ -1,24 +1,35 @@
 package x3dom
 {
+	import flash.display.Bitmap;
 	import flash.display.BitmapData;
-	import flash.display3D.*;
+	import flash.display3D.Context3DCompareMode;
+	import flash.display3D.Context3DProgramType;
+	import flash.display3D.Context3DTriangleFace;
+	import flash.display3D.Context3DVertexBufferFormat;
 	import flash.display3D.textures.Texture;
 	import flash.events.Event;
 	import flash.geom.Matrix3D;
 	import flash.geom.Vector3D;
 	
-	import x3dom.shaders.*;
+	import x3dom.shaders.ShaderIdentifier;
+	import x3dom.shapes.Quad;
+	import x3dom.texturing.BitmapTexture;
 	import x3dom.texturing.CubeMapTexture;
 
 	public class ForwardRenderer extends Renderer
 	{	
 		private var _mvMatrix:Matrix3D = new Matrix3D();
 		private var _mvInvMatrix:Matrix3D = new Matrix3D();
+		private var _orthoMatrix:Matrix3D = new Matrix3D();
+		private var _quad:Quad = new Quad(FlashBackend.getWidth()/4, FlashBackend.getHeight()/4);
 		
+		private var _pickingTexture:BitmapTexture;
 		
 		public function ForwardRenderer(scene:X3DScene)
 		{
 			super(scene);
+			
+			_orthoMatrix = Utils.MatrixOrthoRH(FlashBackend.getWidth(), FlashBackend.getHeight(), _scene.zNear, _scene.zFar);
 		}
 		
 		override public function render() : void
@@ -44,6 +55,8 @@ package x3dom
 			var numDrawableObjects:Number = drawableObjects.length;
 			
 			FlashBackend.setObjs(numDrawableObjects);
+			
+			//_context3D.setBlendFactors(Context3DBlendFactor.SOURCE_ALPHA, Context3DBlendFactor.ONE_MINUS_SOURCE_ALPHA );
 			
 			//Iterate all objects for rendering
 			for(var i:uint; i<numDrawableObjects; i++)
@@ -97,8 +110,6 @@ package x3dom
 					
 					if(lights.length && shape.material != null)
 					{
-						//Associate EyePosition
-						this._context3D.setProgramConstantsFromVector( Context3DProgramType.VERTEX,  8, Vector.<Number>( [ -this._scene.viewMatrix.position.x, -this._scene.viewMatrix.position.y, -this._scene.viewMatrix.position.z, 1.0 ] ) );
 						//Associate LightDirection
 						this._context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  0, Vector.<Number>( lights[0].direction ) );
 					}
@@ -115,6 +126,7 @@ package x3dom
 					}
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  4, Vector.<Number>( [ 0.0, 0.0, 0.0, 0.1 ] ) );
 					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  5, Vector.<Number>( [ 0.0, 0.5, 1.0, 2.0 ] ) );
+					_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  14, Vector.<Number>( [ 0.07, 0.07, 0.07, 1.0 ] ) );
 					
 					
 					//Associate sphere mapping
@@ -128,6 +140,10 @@ package x3dom
 						if(shape.texture is CubeMapTexture) {
 							_context3D.setProgramConstantsFromMatrix( Context3DProgramType.FRAGMENT,  6, this._mvInvMatrix, true );
 							_context3D.setProgramConstantsFromVector( Context3DProgramType.FRAGMENT,  10, Vector.<Number>( [ 0.75, 0.75, 0.75, 1.0 ] ) );
+						}
+						if(shape.texture.transform)
+						{
+							_context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  13, shape.texture.transform, true );
 						}
 					}
 					
@@ -258,5 +274,37 @@ package x3dom
 			pixelValue = this._bitmapBuffer.getPixel32(FlashBackend.getMouseX(), FlashBackend.getMouseY());
 			this._scene.pickedObj = 255.0 - (pixelValue >> 24 & 0xFF);
 		}
+		
+		private function debugPass() : void
+		{
+			_pickingTexture = new BitmapTexture(new Bitmap(this._bitmapBuffer));
+			
+			_context3D.setDepthTest(false,  Context3DCompareMode.LESS);
+			
+			//Set Dynamic shader
+			this._context3D.setProgram( this._shaderCache.getShader(ShaderIdentifier.LPPDEBUGSHADER) );
+			
+			var xPos:Number = (-FlashBackend.getWidth()/2) + (FlashBackend.getWidth()/8);
+			var yPos:Number = (FlashBackend.getHeight()/2) - (FlashBackend.getHeight()/8);
+			var mpMatrix:Matrix3D = new Matrix3D();
+			mpMatrix.appendTranslation(xPos, yPos, 0);
+			mpMatrix.append(_orthoMatrix);
+				
+			this._context3D.setProgramConstantsFromMatrix( Context3DProgramType.VERTEX,  0, mpMatrix, true );
+				
+			_context3D.setTextureAt(0, _pickingTexture.texture);
+	
+			_context3D.setVertexBufferAt( 0, _quad.shape.vertexBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_3 );
+			_context3D.setVertexBufferAt( 1, _quad.shape.texCoordBuffer[0],  0, Context3DVertexBufferFormat.FLOAT_2 );
+			
+			_context3D.drawTriangles( _quad.shape.indexBuffer[0], 0, _quad.shape.numTriangles[0] );
+				
+			this.cleanBuffers();
+			
+			this._context3D.present();
+			
+			_context3D.setDepthTest(true,  Context3DCompareMode.LESS);
+		}
+		
 	}
 }

@@ -94,17 +94,18 @@ x3dom.gfx_flash = (function() {
 	/**
 	*
 	*/
-	function Context(object, name) {
+	function Context(object, name, renderType) {
 		this.object = object;
 		this.name = name;
 		this.isAlreadySet = false;
+    this.renderType = renderType;
 	}
 	
 	/**
 	*
 	*/
-	function setupContext(object) {
-		return new Context(object, 'flash');
+	function setupContext(object, renderType) {
+		return new Context(object, 'flash', renderType);
 	}
 	
 	/**
@@ -121,11 +122,27 @@ x3dom.gfx_flash = (function() {
 		//Get Scene from Viewarea
     var scene = viewarea._scene;
     
+    
+    var min = x3dom.fields.SFVec3f.MAX();
+    var max = x3dom.fields.SFVec3f.MIN();
+
+    vol = scene.getVolume();
+    vol.getBounds(min, max);
+
+    scene._lastMin = min;
+    scene._lastMax = max;
+
+    viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
+    viewarea._last_mat_proj = x3dom.fields.SFMatrix4f.identity();
+    viewarea._last_mat_scene = x3dom.fields.SFMatrix4f.identity();
+    
     //Dirty HACK
 		var viewpoint = scene.getViewpoint();
-		viewpoint._vf.zFar = 100000;
-		viewpoint._vf.zNear = 0.01;
-		
+    if(viewpoint._vf.zNear == -1 || viewpoint._vf.zFar == -1) {
+      viewpoint._vf.zFar = 20000;
+      viewpoint._vf.zNear = 0.1;
+		}
+    
 		if(viewarea._last_mat_view === undefined) {
 			viewarea._last_mat_view = x3dom.fields.SFMatrix4f.identity();
 		}
@@ -152,7 +169,7 @@ x3dom.gfx_flash = (function() {
             viewMatrix: mat_view,
             projMatrix: mat_proj,
             sceneMatrix: mat_scene,
-            frustumCulling: true,
+            frustumCulling: false,
             smallFeatureThreshold: false,
             context: null,
             gl: null
@@ -246,8 +263,8 @@ x3dom.gfx_flash = (function() {
 		
 		//Dirty HACK
 		var viewpoint = scene.getViewpoint();
-		viewpoint._vf.zFar = 100000;
-		viewpoint._vf.zNear = 0.01;
+		//viewpoint._vf.zFar = 100;
+		//viewpoint._vf.zNear = 0.1;
 		
         var mat_proj = viewarea.getProjectionMatrix();
 		
@@ -260,62 +277,74 @@ x3dom.gfx_flash = (function() {
 		//Set HeadLight
 		var nav = scene.getNavigationInfo();
         if(nav._vf.headlight){
-			this.object.setLights( { idx: 0,
-									 type: 0,
-									 on: 1.0,
-									 color: [1.0, 1.0, 1.0],
-									 intensity: 1.0,
-									 ambientIntensity: 0.0,
-									 direction: [0.0, 0.0, 1.0],
-									 attenuation: [1.0, 1.0, 1.0],
-									 location: [1.0, 1.0, 1.0],
-									 radius: 0.0,
-									 beamWidth: 0.0,
-									 cutOffAngle: 0.0 } );
-		}
+          /*this.object.setLights( { idx: 0,
+                                   type: 0,
+                                   on: 1.0,
+                                   color: [1.0, 1.0, 1.0],
+                                   intensity: 1.0,
+                                   ambientIntensity: 0.0,
+                                   direction: [0.0, 0.0, 1.0],
+                                   attenuation: [1.0, 1.0, 1.0],
+                                   location: [1.0, 1.0, 1.0],
+                                   radius: 0.0,
+                                   beamWidth: 0.0,
+                                   cutOffAngle: 0.0 } );*/
+                                   
+          this.object.setHeadLight( { id: -1,
+                                      on: 1.0,
+                                      color: [1.0, 1.0, 1.0],
+                                      intensity: 1.0,
+                                      ambientIntensity: 0.0,
+                                      direction: [0.0, 0.0, -1.0] } );
+        }
 		
 		//TODO Set Lights
-		var lights = viewarea.getLights();
-		for(var i=0; i<lights.length; i++) {
-			if(lights[i]._dirty) { 
-				
-				if( x3dom.isa(lights[i], x3dom.nodeTypes.DirectionalLight) ) 
-				{
-					/*this.object.setDirectionalLight( { id: lights[i]._lightID,
-													   on: lights[i]._vf.on,
-													   color: lights[i]._vf.color.toGL(),
-													   intensity: lights[i]._vf.color.toGL(),
-													   ambientIntensity: lights[i]._vf.ambientIntensity,
-													   direction: lights[i]._vf.direction.toGL() } );*/
-				}
-				else if( x3dom.isa(lights[i], x3dom.nodeTypes.PointLight) ) 
-				{
-					/*this.object.setPointLight( { id: lights[i]._lightID,
-												 on: lights[i]._vf.on,
-												 color: lights[i]._vf.color.toGL(),
-												 intensity: lights[i]._vf.color.toGL(),
-												 ambientIntensity: lights[i]._vf.ambientIntensity,
-												 attenuation: lights[i]._vf.attenuation.toGL(),
-												 location: lights[i]._vf.location.toGL(),
-												 radius: lights[i]._vf.radius } );*/
-				}
-				else if( x3dom.isa(lights[i], x3dom.nodeTypes.SpotLight) ) 
-				{
-					/*this.object.setSpotLight( { id: lights[i]._lightID,
-												on: lights[i]._vf.on,
-												color: lights[i]._vf.color.toGL(),
-												intensity: lights[i]._vf.color.toGL(),
-												ambientIntensity: lights[i]._vf.ambientIntensity,
-												direction: lights[i]._vf.direction.toGL(),
-												attenuation: lights[i]._vf.attenuation.toGL(),
-												location: lights[i]._vf.location.toGL(),
-												radius: lights[i]._vf.radius,
-												beamWidth: lights[i]._vf.beamWidth,
-												cutOffAngle: lights[i]._vf.cutOffAngle } );*/
-				}
-				lights[i]._dirty = false;
-			}
-		}
+    if (this.renderType == "deferred")
+    {
+      var lights = viewarea.getLights();
+      for(var i=0; i<lights.length; i++) {
+        if(lights[i]._dirty) { 
+          
+          if( x3dom.isa(lights[i], x3dom.nodeTypes.DirectionalLight) ) 
+          {
+            this.object.setDirectionalLight( { id: lights[i]._lightID,
+                               on: lights[i]._vf.on,
+                               color: lights[i]._vf.color.toGL(),
+                               intensity: lights[i]._vf.intensity,
+                               ambientIntensity: lights[i]._vf.ambientIntensity,
+                               direction: lights[i]._vf.direction.toGL() } );
+          }
+          else if( x3dom.isa(lights[i], x3dom.nodeTypes.PointLight) ) 
+          {
+            var light_transform = mat_view.mult(lights[i].getCurrentTransform());
+          
+            this.object.setPointLight( { id: lights[i]._lightID,
+                           on: lights[i]._vf.on,
+                           color: lights[i]._vf.color.toGL(),
+                           intensity: lights[i]._vf.intensity,
+                           ambientIntensity: lights[i]._vf.ambientIntensity,
+                           attenuation: lights[i]._vf.attenuation.toGL(),
+                           location: lights[i]._vf.location.toGL(),
+                           radius: lights[i]._vf.radius } );
+          }
+          else if( x3dom.isa(lights[i], x3dom.nodeTypes.SpotLight) ) 
+          {
+            /*this.object.setSpotLight( { id: lights[i]._lightID,
+                          on: lights[i]._vf.on,
+                          color: lights[i]._vf.color.toGL(),
+                          intensity: lights[i]._vf.color.toGL(),
+                          ambientIntensity: lights[i]._vf.ambientIntensity,
+                          direction: lights[i]._vf.direction.toGL(),
+                          attenuation: lights[i]._vf.attenuation.toGL(),
+                          location: lights[i]._vf.location.toGL(),
+                          radius: lights[i]._vf.radius,
+                          beamWidth: lights[i]._vf.beamWidth,
+                          cutOffAngle: lights[i]._vf.cutOffAngle } );*/
+          }
+          lights[i]._dirty = false;
+        }
+      }
+    }
 	};
 	
 	/**
@@ -583,7 +612,14 @@ x3dom.gfx_flash = (function() {
 			//Set Texture
 			if( shape._dirty.texture === true ) {
 				if (appearance) {
+          
+          var texTrafo = null;
+          if (appearance._cf.textureTransform.node) {
+            texTrafo = appearance.texTransformMatrix().toGL();
+          }
+        
 					var texture = shape._cf.appearance.node._cf.texture.node;
+            
 					if(texture) {		
 						if (x3dom.isa(texture, x3dom.nodeTypes.PixelTexture))
 						{
@@ -605,11 +641,13 @@ x3dom.gfx_flash = (function() {
 						} else if (x3dom.isa(texture, x3dom.nodeTypes.MovieTexture)) { 
 							x3dom.debug.logError("Flash backend don't support MovieTextures yet");
 						} else {
+              console.log(texture._vf.url[0]);
 							this.object.setMeshTexture( { id: shape._objectID,
 														  origChannelCount: texture._vf.origChannelCount,
 														  repeatS: texture._vf.repeatS,
 														  repeatT: texture._vf.repeatT,
-														  url: texture._vf.url[0] } );
+														  url: texture._vf.url[0],
+                              transform: texTrafo } );
 						}
 					}
 				}
@@ -721,10 +759,10 @@ x3dom.gfx_flash = (function() {
 	Context.prototype.pickValue = function(viewarea, x, y, viewMat, sceneMat)
 	{
     var scene = viewarea._scene;
-	
+
 		// method requires that scene has already been rendered at least once
-    if (this.object === null || scene === null || scene.drawableObjects === undefined || 
-    !scene.drawableObjects || scene._vf.pickMode.toLowerCase() === "box")
+    if (this.object === null || scene === null || scene.drawableCollection === undefined || 
+    !scene.drawableCollection || scene._vf.pickMode.toLowerCase() === "box")
     {
         return false;
     }
@@ -733,7 +771,7 @@ x3dom.gfx_flash = (function() {
                    ((scene._vf.pickMode.toLowerCase() === "texcoord") ? 2 : 0);
 		
 		var data = this.object.pickValue( { pickMode: pickMode } );
-								 
+
 		if(data.objID > 0) {
 			viewarea._pickingInfo.pickPos = new x3dom.fields.SFVec3f(data.pickPosX, data.pickPosY, data.pickPosZ);
 			viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[data.objID];

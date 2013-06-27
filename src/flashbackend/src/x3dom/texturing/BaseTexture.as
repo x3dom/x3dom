@@ -1,9 +1,9 @@
 package x3dom.texturing
 {
-	import x3dom.Utils;
 	import flash.display3D.Context3D;
 	import flash.display3D.textures.TextureBase;
 	import flash.events.EventDispatcher;
+	import flash.geom.Matrix3D;
 	
 	import x3dom.FlashBackend;
 	
@@ -45,7 +45,10 @@ package x3dom.texturing
 		protected var _repeatT:Boolean;
 		
 		
-		public function BaseTexture(blending:Boolean = false, repeatS:Boolean = true, repeatT:Boolean = true)
+		protected var _transform:Matrix3D;
+		
+		
+		public function BaseTexture(blending:Boolean = false, repeatS:Boolean = true, repeatT:Boolean = true, transform:Matrix3D = null)
 		{
 			//Get the 3D Context
 			this._context3D = FlashBackend.getContext();
@@ -61,6 +64,8 @@ package x3dom.texturing
 			
 			//Set repeatT
 			this._repeatS = repeatT;
+			
+			this._transform = transform;
 		}
 		
 		/**
@@ -125,6 +130,22 @@ package x3dom.texturing
 		public function set repeatT(repeatT:Boolean) : void
 		{
 			this._repeatT = repeatT;
+		}
+		
+		/**
+		 * Specify how the texture is tranformed. 
+		 */
+		public function get transform() : Matrix3D
+		{
+			return this._transform;
+		}
+		
+		/**
+		 * @private
+		 */
+		public function set transform(transform:Matrix3D) : void
+		{
+			this._transform = transform;
 		}
 		
 		/**

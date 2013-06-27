@@ -17,5 +17,6 @@ Documentation for people who are hacking on X3DOM itself. This is the place to g
 .. toctree::
 
    release
+   conventions
    contributing/index
 

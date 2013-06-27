@@ -5,11 +5,6 @@ package x3dom
 	import flash.events.Event;
 	import flash.geom.Vector3D;
 	import flash.net.URLRequest;
-	import flash.system.ApplicationDomain;
-	import flash.system.LoaderContext;
-	import flash.system.SecurityDomain;
-	
-	import mx.flash.UIMovieClip;
 	
 	
 

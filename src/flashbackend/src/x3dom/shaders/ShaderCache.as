@@ -63,14 +63,22 @@ package x3dom.shaders
 					this._cache[shaderIdentifier] = new DepthShader().program3D;
 				} else if(shaderIdentifier == ShaderIdentifier.NORMAL) {
 					this._cache[shaderIdentifier] = new NormalShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.HEADLIGHTDIFFSHADER) {
+					this._cache[shaderIdentifier] = new DirLightDiffShader(true).program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.HEADLIGHTSPECSHADER) {
+					this._cache[shaderIdentifier] = new DirLightSpecShader(true).program3D;
 				} else if(shaderIdentifier == ShaderIdentifier.DIRLIGHTDIFFSHADER) {
-					this._cache[shaderIdentifier] = new DirLightShader().program3D;
+					this._cache[shaderIdentifier] = new DirLightDiffShader().program3D;
 				} else if(shaderIdentifier == ShaderIdentifier.DIRLIGHTSPECSHADER) {
 					this._cache[shaderIdentifier] = new DirLightSpecShader().program3D;
 				} else if(shaderIdentifier == ShaderIdentifier.POINTLIGHTDIFFSHADER) {
 					this._cache[shaderIdentifier] = new PointLightDiffShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.POINTLIGHTSPECSHADER) {
+					this._cache[shaderIdentifier] = new PointLightSpecShader().program3D;
 				} else if(shaderIdentifier == ShaderIdentifier.LPPDYNAMICSHADER) {
 					this._cache[shaderIdentifier] = new LPPDynamicShader().program3D;
+				} else if(shaderIdentifier == ShaderIdentifier.LPPDEBUGSHADER) {
+					this._cache[shaderIdentifier] = new LPPDebugShader().program3D;					
 				}
 			}
 			
@@ -90,7 +98,8 @@ package x3dom.shaders
 										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture is CubeMapTexture)) + " / " +
 										  String(Boolean(shape.colorBuffer)) + " / " + 
 										  String(shape.sphereMapping) + " / " +
-										  String(shape.solid);
+										  String(shape.solid) + " / " +
+										  String(Boolean(shape.texCoordBuffer && shape.texture && shape.texture.transform));
 
 			//Check if shader is in cache
 			if( this._cache[shaderIdentifier] == undefined ) 

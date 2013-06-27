@@ -1,9 +1,8 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns='http://www.w3.org/1999/xhtml'>
-	<head>
-		<meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
-		<title>X3DOM | Unlit Geometry</title>
-		
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<title>Flash Light Pre-Pass Renderer</title>
     <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../x3dom.css" />
@@ -18,6 +17,9 @@
 <script type="text/javascript" src="../../util/EarClipping.js"></script>
 <script type="text/javascript" src="../../util/Utils.js"></script>
 <script type="text/javascript" src="../../util/States.js"></script>
+<script type="text/javascript" src="../../util/BinaryContainerSetup.js"></script>
+<script type="text/javascript" src="../../util/DrawableCollection.js"></script>
+<script type="text/javascript" src="../../util/BVH.js"></script>
 <script type="text/javascript" src="../../X3DCanvas.js"></script>
 <script type="text/javascript" src="../../Runtime.js"></script>
 <script type="text/javascript" src="../../Main.js"></script>
@@ -28,7 +30,9 @@
 <script type="text/javascript" src="../../shader/ShaderDynamic.js"></script>
 <script type="text/javascript" src="../../shader/ShaderDynamicMobile.js"></script>
 <script type="text/javascript" src="../../shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../shader/ShaderNormal.js"></script>
 <script type="text/javascript" src="../../shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../shader/ShaderPicking24.js"></script>
 <script type="text/javascript" src="../../shader/ShaderPickingColor.js"></script>
 <script type="text/javascript" src="../../shader/ShaderPickingTexcoord.js"></script>
 <script type="text/javascript" src="../../shader/ShaderFrontgroundTexture.js"></script>
@@ -36,6 +40,8 @@
 <script type="text/javascript" src="../../shader/ShaderBackgroundSkyTexture.js"></script>
 <script type="text/javascript" src="../../shader/ShaderBackgroundCubeTexture.js"></script>
 <script type="text/javascript" src="../../shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../shader/ShaderShadowRendering.js"></script>
+<script type="text/javascript" src="../../shader/ShaderBlur.js"></script>
 <script type="text/javascript" src="../../gfx_webgl.js"></script>
 <script type="text/javascript" src="../../gfx_flash.js"></script>
 <script type="text/javascript" src="../../X3DDocument.js"></script>
@@ -67,35 +73,57 @@
 <script type="text/javascript" src="../../nodes/VolumeRendering.js"></script>
 <script type="text/javascript" src="../../Docs.js"></script>
 <!-- END:X3DOM -->
-    <script type="text/javascript" src="media/js/tests.js"></script>
-		
-	</head>
-	<body>
-		<h2>Unlit Geometry</h2>
-		<p>Render unlit if no Appearance or Material node is available.</p>
-		<X3D id='someUniqueId' showStat='false' showLog='false' width='400' height='400' backend='flash'>
-			<scene>
-				<navigationinfo headlight='true'></navigationinfo>
-				<background></background>
-				<transform>
-				  <shape>
-					<appearance>
-					  <material diffuseColor='1 1 1'></material>
-					</appearance>
-					<Box></Box>
-				  </shape>
-				</transform>
-			</scene>
-		</X3D>
-		<X3D id='someUniqueId2' showStat='false' showLog='false' width='400' height='400' backend='flash'>
-			<scene>
-				<background></background>
-				<transform>
-				  <shape>
-					<Box></Box>
-				  </shape>
-				</transform>
-			</scene>
-		</X3D>
-	</body>
+</head>
+<body>
+<h1>Flash Light Pre-Pass Renderer</h1>
+<x3d width='800px' height='500px' backend='flash' id="test" flashrenderer="deferred">
+<Scene>
+	<NavigationInfo headlight='false'></NavigationInfo>
+	<Background skyColor='0.678431 0.847059 0.901961'></Background>
+	<!--DirectionalLight direction='0 -0.3 -1' color='1 1 0' intensity='1'></DirectionalLight>
+	<DirectionalLight direction='0 0 1' color='1 0 1' intensity='0.5'></DirectionalLight>
+	<DirectionalLight direction='0 1 0' color='0 1 1' intensity='0.5'></DirectionalLight>
+	<DirectionalLight direction='0 -1 0' color='0 0 1' intensity='0.5'></DirectionalLight-->
+	<PointLight location='3 2 0' color='1 1 0' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 0' color='0 1 1' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 2' color='0 0 1' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 4' color='0 1 1' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 6' color='0 1 0' intensity='0.2' radius='300'></PointLight>
+	<PointLight location='-3 2 8' color='1 0 0' intensity='0.2' radius='300'></PointLight>
+	<Transform translation='0 2 0'>
+		<Shape>
+			<Appearance>
+				<Material diffuseColor='1 1 1' specularColor='1 1 1' shininess='0.5'></Material>
+			</Appearance>
+			<Sphere solid="true"></Sphere>
+		</Shape>
+	</Transform>
+	<Transform translation='0 0 0' rotation='1 0 0 -1.57'>
+		<Shape>
+			<Appearance>
+				<Material diffuseColor='1 1 1' specularColor='0.5 0.5 0.5' shininess='1'></Material>
+			</Appearance>
+			<Plane size='20 20' solid="false"></Plane>
+		</Shape>
+	</Transform>
+	<Transform translation='3 2 0'>
+		<Shape>
+			<Appearance>
+				<Material diffuseColor='0 0 0' specularColor='0 0 0' shininess='0' emissiveColor='1 1 0.2'></Material>
+			</Appearance>
+			<Sphere radius='0.2' solid="true"></Sphere>
+		</Shape>
+	</Transform>
+	<Transform translation='-3 2 0'>
+		<Shape>
+			<Appearance>
+				<Material diffuseColor='0 0 0' emissiveColor='0.2 1 1'></Material>
+			</Appearance>
+			<Sphere radius='0.2' solid="true"></Sphere>
+		</Shape>
+	</Transform>
+	<Viewpoint position="-0.19050 12.63145 21.27034" orientation="-0.99985 -0.01151 0.01301 0.53598" znear='0.1' zfar='100'></Viewpoint>
+</Scene>
+</x3d>
+</body>
 </html>

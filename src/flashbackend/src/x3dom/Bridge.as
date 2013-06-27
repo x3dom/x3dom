@@ -48,6 +48,7 @@ package x3dom {
 			ExternalInterface.addCallback("setCubeTexture", setCubeTexture);
 			ExternalInterface.addCallback("setCanvasTexture", setCanvasTexture);
 			ExternalInterface.addCallback("setLights", setLights);
+			ExternalInterface.addCallback("setHeadLight", setHeadLight);
 			ExternalInterface.addCallback("setDirectionalLight", setDirectionalLight);
 			ExternalInterface.addCallback("setPointLight", setPointLight);
 			ExternalInterface.addCallback("setSpotLight", setSpotLight);
@@ -120,9 +121,19 @@ package x3dom {
 			this._scene.lights[Number(value.idx)] = light;
 		}
 		
+		private function setHeadLight(value:Object) : void
+		{
+			var light:HeadLight 	    = HeadLight( this._scene.getLight( uint(value.id), LightType.HEADLIGHT ) );
+			light.on 					= Boolean( value.on );
+			light.intensity 			= Number( value.intensity );
+			light.ambientIntensity 		= Number( value.ambientIntensity );
+			light.color 				= Vector.<uint>( value.color );
+			light.direction 			= Vector.<Number>( value.direction );
+		}
+		
 		private function setDirectionalLight(value:Object) : void
 		{
-			var light:DirectionalLight 	= DirectionalLight( this._scene.getLight( uint(value.id), LightType.DIRECTIONALIGHT ) );
+			var light:DirectionalLight 	= DirectionalLight( this._scene.getLight( uint(value.id), LightType.DIRECTIONALLIGHT ) );
 			light.on 					= Boolean( value.on );
 			light.intensity 			= Number( value.intensity );
 			light.ambientIntensity 		= Number( value.ambientIntensity );
@@ -271,10 +282,15 @@ package x3dom {
 		
 		private function setMeshTexture(value:Object) : void 
 		{
+			if(value.transform != null) {
+				value.transform = new Matrix3D( Vector.<Number>( value.transform ) );
+			}
+			
 			this._scene.getDrawableObject( uint(value.id) ).shape.texture = new ImageTexture( String(value.url),
 																							  Boolean(Number(value.origChannelCount) == 1.0 || Number(value.origChannelCount) == 2.0),
 																							  Boolean(value.repeatS),
-																							  Boolean(value.repeatT) );
+																							  Boolean(value.repeatT),
+																							  value.transform);
 		}
 		
 		private function setPixelTexture(value:Object) : void 

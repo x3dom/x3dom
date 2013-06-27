@@ -62,11 +62,13 @@ x3dom.shader.BlurShader.prototype.generateVertexShader = function(gl)
  */
 x3dom.shader.BlurShader.prototype.generateFragmentShader = function(gl)
 {
-	var shader =	"#ifdef GL_ES\n" +
-					"  precision highp float;\n" +
-					"#endif\n" +
-					"\n" +
-					"varying vec2 vPosition;\n" +
+  var shader = "#ifdef GL_FRAGMENT_PRECISION_HIGH\n";
+  shader += "precision highp float;\n";
+  shader += "#else\n";
+  shader += " precision mediump float;\n";
+  shader += "#endif\n\n";
+
+	shader += "varying vec2 vPosition;\n" +
 					"uniform sampler2D texture;\n" +
 					"uniform bool horizontal;\n" +
 					"uniform float pixelSizeHor;\n" +

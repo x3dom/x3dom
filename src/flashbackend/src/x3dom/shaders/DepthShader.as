@@ -50,7 +50,13 @@ package x3dom.shaders
 			var shader:String = "";
 			
 			//Build shader
-			shader += "m44 v0, va0, vc4\n";	//Position*MV-Matrix -> (v0)
+			//shader += "m44 v0, va0, vc4\n";	//Position*MV-Matrix -> (v0)
+			
+			shader += "dp4 vt0.x va0, vc4\n";
+			shader += "dp4 vt0.y va0, vc5\n";
+			shader += "dp4 vt0.z va0, vc6\n";
+			shader += "m44 v0, va0, vc4\n";
+			
 			shader += "m44 op, va0, vc0\n";	//Position*MVP-Matrix -> (op)
 			
 			//Generate AGALMiniAssembler from generated Shader
@@ -71,15 +77,21 @@ package x3dom.shaders
 			
 			//Build shader
 			//Normalize depth
-			shader += "neg ft0.x, v0.z\n";
-			shader += "div ft0.x, ft0.x, fc2.x\n";				//VSPos.z / farClipDistance
+			shader += "div ft0.x, v0.z, fc2.x\n";				//VSPos.z / farClipDistance
 			
 			//Encoding floats to RGBA - Thanks To: "Aras" 
 			//http://aras-p.info/blog/2009/07/30/encoding-floats-to-rgba-the-final/
 			
 			shader += "mul ft0, fc0, ft0.x\n";					//
-			shader += "frc ft0, ft0\n";							//
-			shader += "mul ft1, ft0.yzww, fc1\n"; 				//
+			shader += "frc ft0, ft0\n";					//
+			
+			shader += "mov ft1, fc0\n";
+			shader += "div ft2.xyz, ft1.x, ft1.y\n";
+			shader += "mov ft2.w, fc1.w\n"; 
+			
+			shader += "mul ft1.xyzw, ft0.yzww, ft2.xyzw\n"; 				//
+			//shader += "mul ft1.xyzw, ft0.yzww, fc1.xyzw\n"; 				//
+			
 			shader += "sub oc, ft0, ft1\n"; 					//Output color*/
 			
 			//Generate AGALMiniAssembler from generated Shader
