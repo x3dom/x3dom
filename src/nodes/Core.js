@@ -962,7 +962,7 @@ x3dom.registerNodeType(
                 for (var i=0, n=this._childNodes.length; i<n; i++)
                 {
                     var child = this._childNodes[i];
-                    if (child && child.setVisibility)
+                    if (child && child.resetVisibility)
                         child.resetVisibility();
                 }
             }
