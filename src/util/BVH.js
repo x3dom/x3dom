@@ -710,7 +710,7 @@ x3dom.bvh.EmscriptenBvH = defineClass(
             this.doSetSmallFeatureCullingParams(
                 this.drawableCollection.pixelHeightAtDistOne,
                 this.drawableCollection.near,
-                100/*this.drawableCollection.smallFeatureThreshold*/);
+                this.drawableCollection.smallFeatureThreshold);
             this.doSetModelViewMatrix(  mvm._00, mvm._01, mvm._02, mvm._03,
                                         mvm._10, mvm._11, mvm._12, mvm._13,
                                         mvm._20, mvm._21, mvm._22, mvm._23,
