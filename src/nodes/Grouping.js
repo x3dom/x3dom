@@ -463,7 +463,7 @@ x3dom.registerNodeType(
                         projMatrix: drawableCollection.projMatrix,
                         sceneMatrix: drawableCollection.sceneMatrix,
                         frustumCulling: false,
-                        smallFeatureThreshold: 1,    // THINKABOUTME
+                        smallFeatureThreshold: 0,//1,    // THINKABOUTME
                         context: drawableCollection.context,
                         gl: drawableCollection.gl
                     };
@@ -843,7 +843,7 @@ x3dom.registerNodeType(
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
 
-            //VERY VERY experimental field, don't use unles you know exactly whats happening :)
+            //VERY VERY experimental field, don't use unles you know exactly what's happening :)
             this.addField_SFBool(ctx, 'useCrossCompiled', false);
 
             // yet another exp. field for shadow dom remapping
@@ -854,11 +854,18 @@ x3dom.registerNodeType(
 
             // If TRUE, objects outside the viewing frustum are ignored
             this.addField_SFBool(ctx, 'frustumCulling', true);
-            // If TRUE, objects smaller a certain threshold are ignored (experimental)
+
+            // If TRUE, objects smaller than the threshold below are ignored (experimental)
             this.addField_SFBool(ctx, 'smallFeatureCulling', false);
+
+            // (max) threshold for small feature culling
+            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 10);
 
             // very experimental field to further reduce rendered objects based on screen size during move
             this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);
+
+            // experimental If true ARC adjusts rendering parameters
+            this.addField_SFBool(ctx, 'enableARC', false);
 
             // define frame-rate range for quality-speed trade-off (experimental)
             this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
@@ -877,6 +884,8 @@ x3dom.registerNodeType(
             this._shadowIdMap = null;
             //this.drawableObjects = null;    // webgl helper object
             this.drawableCollection = null;
+
+            this.arc = null;
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */

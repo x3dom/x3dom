@@ -1126,7 +1126,17 @@ x3dom.X3DCanvas.prototype.tick = function()
                 if (!this.doc._scene._vf.doPickPass)
                     this.x3dElem.runtime.removeMeasurement('PICKING');
 			}
-            
+
+            if(this.doc._scene._vf.enableARC)
+            {
+                if(this.doc._scene.arc == null)
+                {
+                    this.doc._scene.arc = new x3dom.arc.AdaptiveRenderControl(this.doc._scene);
+                }
+                this.doc._scene.arc.update(this.doc._viewarea.isMoving() ? 1 : 0, fps);
+            }
+
+
             this.x3dElem.runtime.exitFrame();
 		}
 		

@@ -2880,7 +2880,7 @@ x3dom.gfx_webgl = (function () {
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
                 frustumCulling: true,
-                smallFeatureThreshold: scene._vf.smallFeatureCulling ? 10 : 1,
+                smallFeatureThreshold: scene._vf.smallFeatureCulling ? scene._vf.smallFeatureThreshold : 1,
                 context: this,
                 gl: gl
                 // TODO: what about Flash?
