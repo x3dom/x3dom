@@ -108,12 +108,14 @@ x3dom.Viewarea.prototype.isMoving = function()
 x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 {
     var navi = this._scene.getNavigationInfo();
-    var needNavAnim = ( navi._vf.type[0].toLowerCase() === "game" ||
+    var navType = navi.getType();
+    
+    var needNavAnim = ( navType === "game" ||
                         (this._lastButton > 0 &&
-                        (navi._vf.type[0].toLowerCase() === "fly" ||
-                         navi._vf.type[0].toLowerCase() === "walk" ||
-                         navi._vf.type[0].toLowerCase() === "helicopter" ||
-                         navi._vf.type[0].toLowerCase().substr(0, 5) === "looka")) );
+                        (navType === "fly" ||
+                         navType === "walk" ||
+                         navType === "helicopter" ||
+                         navType.substr(0, 5) === "looka")) );
     
     this._deltaT = timeStamp - this._lastTS;
 
@@ -164,10 +166,10 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             this._from = this._flyMat.e3();
             this._at = this._from.subtract(this._flyMat.e2());
 
-            if (navi._vf.type[0].toLowerCase() === "helicopter")
+            if (navType === "helicopter")
                 this._at.y = this._from.y;
             
-            if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
+            if (navType.substr(0, 5) !== "looka")
                 this._up = new x3dom.fields.SFVec3f(0, 1, 0);
             else
                 this._up = this._flyMat.e1();
@@ -181,7 +183,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         var q, temp, fin;
         var lv, sv, up;
 
-        if (navi._vf.type[0].toLowerCase() === "game")
+        if (navType === "game")
         {
             this._pitch += this._dy;
             this._yaw   += this._dx;
@@ -234,7 +236,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
 
             return needNavAnim;
         }   // game
-        else if (navi._vf.type[0].toLowerCase() === "helicopter")
+        else if (navType === "helicopter")
         {
             var typeParams = navi.getTypeParams();
 
@@ -329,7 +331,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
         this._at = fin.multMatrixPnt(this._at);
 
         // forward along view vector
-        if (navi._vf.type[0].toLowerCase().substr(0, 5) !== "looka")
+        if (navType.substr(0, 5) !== "looka")
         {
             var currProjMat = this.getProjectionMatrix();
 
@@ -361,7 +363,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             this._from = this._from.add(lv);
 
             // finally attach to ground when walking
-            if (navi._vf.type[0].toLowerCase() === "walk")
+            if (navType === "walk")
             {
                 tmpAt = this._from.addScaled(up, -1.0);
                 tmpUp = sv.cross(up.negate()).normalize();  // lv
@@ -395,7 +397,7 @@ x3dom.Viewarea.prototype.moveFwd = function()
 {
     var navi = this._scene.getNavigationInfo();
 
-    if (navi._vf.type[0].toLowerCase() === "game")
+    if (navi.getType() === "game")
     {
         var avatarRadius = 0.25;
         var avatarHeight = 1.6;
@@ -435,7 +437,7 @@ x3dom.Viewarea.prototype.moveBwd = function()
 {
     var navi = this._scene.getNavigationInfo();
 
-    if (navi._vf.type[0].toLowerCase() === "game")
+    if (navi.getType() === "game")
     {
         var speed = 5 * this._deltaT * navi._vf.speed;
         var yRotRad = (this._yaw / 180 * Math.PI);
@@ -451,7 +453,7 @@ x3dom.Viewarea.prototype.strafeRight = function()
 {
     var navi = this._scene.getNavigationInfo();
 
-    if (navi._vf.type[0].toLowerCase() === "game")
+    if (navi.getType() === "game")
     {
         var speed = 5 * this._deltaT * navi._vf.speed;
         var yRotRad = (this._yaw / 180 * Math.PI);
@@ -465,7 +467,7 @@ x3dom.Viewarea.prototype.strafeLeft = function()
 {
     var navi = this._scene.getNavigationInfo();
 
-    if (navi._vf.type[0].toLowerCase() === "game")
+    if (navi.getType() === "game")
     {
         var speed = 5 * this._deltaT * navi._vf.speed;
         var yRotRad = (this._yaw / 180 * Math.PI);
@@ -538,9 +540,10 @@ x3dom.Viewarea.prototype.getLightsShadow = function () {
 
 x3dom.Viewarea.prototype.updateSpecialNavigation = function (viewpoint, mat_viewpoint) {
     var navi = this._scene.getNavigationInfo();
+    var navType = navi.getType();
     
     // helicopter mode needs to manipulate view matrix specially
-    if (navi._vf.type[0].toLowerCase() == "helicopter" && !navi._heliUpdated)
+    if (navType == "helicopter" && !navi._heliUpdated)
     {
         var typeParams = navi.getTypeParams();
         var theta = typeParams[0];
@@ -735,9 +738,8 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, 
 {
 	var proj = new x3dom.fields.SFMatrix4f();
 	proj.setValues(this.getProjectionMatrix());
-
 	
-	if (!highPrecision || zNear > 0 || zFar > 0){
+	if (!highPrecision || zNear > 0 || zFar > 0) {
 		//replace near and far plane of projection matrix
 		//by values adapted to the light position
 		
@@ -778,9 +780,7 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, 
 		var cropMatrix = this.getLightCropMatrix(proj.mult(lMat));
 		
 		return cropMatrix.mult(proj);
-	
-	
-	}	
+	}
 };
 
 x3dom.Viewarea.prototype.getProjectionMatrix = function()
@@ -1077,6 +1077,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
     var tDist = 3.0;  // distance modifier for lookat, could be param
     var dir;
     var navi = this._scene.getNavigationInfo();
+    var navType = navi.getType();
 
     if (this._scene._vf.pickMode.toLowerCase() !== "box") {
         this.prepareEvents(x, y, buttonState, "onmouseup");
@@ -1115,7 +1116,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
         }
     }
 
-    if (this._pickingInfo.pickObj && navi._vf.type[0].toLowerCase() === "lookat" &&
+    if (this._pickingInfo.pickObj && navType === "lookat" &&
         this._pressX === x && this._pressY === y)
     {
         var step = (this._lastButton & 2) ? -1 : 1;
@@ -1187,7 +1188,8 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
     }
     
     var navi = this._scene.getNavigationInfo();
-    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() == "none") {
+    
+    if (navi.getType() == "none") {
         return;
     }
 
@@ -1261,7 +1263,7 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 	var navi = this._scene.getNavigationInfo();
 	var viewpoint = this._scene.getViewpoint();
 
-	if (navi._vf.type[0].toLowerCase() === "examine")
+	if (navi.getType() === "examine")
 	{
 		if (translation)
 		{
@@ -1306,7 +1308,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     this.handleMoveEvt(x, y, buttonState);
 
     var navi = this._scene.getNavigationInfo();
-    if (navi._vf.type[0].length <= 1 || navi._vf.type[0].toLowerCase() === "none") {
+    var navType = navi.getType();
+    
+    if (navType === "none") {
         return;
     }
 
@@ -1316,7 +1320,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
     var mat = null;
     var vol = null;
 
-    if (navi._vf.type[0].toLowerCase() === "examine")
+    if (navType === "examine")
     {
         if (buttonState & 1) //left
         {

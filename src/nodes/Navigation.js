@@ -66,13 +66,13 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function (fieldName) {
-                if (fieldName == "position" || 
-					fieldName == "orientation") {
+                if (fieldName == "position" ||
+                    fieldName == "orientation") {
                     this.resetView();
                 }
                 else if (fieldName == "fieldOfView" ||
-                         fieldName == "zNear" || 
-						 fieldName == "zFar") {
+                         fieldName == "zNear" ||
+                         fieldName == "zFar") {
                     this._projMatrix = null;   // only trigger refresh
                     this._zNear = this._vf.zNear;
                     this._zFar = this._vf.zFar;
@@ -149,12 +149,15 @@ x3dom.registerNodeType(
                 {
                     var nearScale = 0.8, farScale = 1.2;
                     var viewarea = this._nameSpace.doc._viewarea;
+                    var scene = viewarea._scene;
+                    
+                    scene.updateVolume();
                     
                     var min = new x3dom.fields.SFVec3f();
-                    min.setValues(viewarea._scene._lastMin);
+                    min.setValues(scene._lastMin);
                     
                     var max = new x3dom.fields.SFVec3f();
-                    max.setValues(viewarea._scene._lastMax);
+                    max.setValues(scene._lastMax);
                     
                     var dia = max.subtract(min);
                     var sRad = dia.length() / 2;
@@ -249,12 +252,12 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName) {
                 if (fieldName == "position" || 
-					fieldName == "orientation") {
+                    fieldName == "orientation") {
                     this.resetView();
                 }
                 else if (fieldName == "fieldOfView" ||
                          fieldName == "zNear" || 
-						 fieldName == "zFar") {
+                         fieldName == "zFar") {
                     this._projMatrix = null;   // trigger refresh
                     this.resetView();
                 }
@@ -496,7 +499,13 @@ x3dom.registerNodeType(
             },
 
             getType: function() {
-                return this._vf.type[0].toLowerCase();
+                var type = this._vf.type[0].toLowerCase();
+                // FIXME; the following if's aren't nice!
+                if (type.length <= 1)
+                    type = "none";
+                else if (type == "any")
+                    type = "examine";
+                return type;
             },
 
             getTypeParams: function() {
