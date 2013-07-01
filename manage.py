@@ -187,22 +187,23 @@ def changelog():
     print("Generating changelog this may take a while ...")
     subprocess.call(["python", 'tools/git2cl.py'])
 
-def docs():
-    # TODO: call this directly with python
-    print("Generating JSDOC for Sphinx")
+def docs(mode='all'):
     
-    subprocess.call([
-        'java', 
-        '-jar',
-        'tools/jsdoc-toolkit/jsrun.jar',
-        'tools/jsdoc-toolkit/app/run.js',
-        '--recurse=5',
-        '--template=doc/guide/_themes/jsdoc-for-sphinx',
-        '-x=js,jsx', 
-        '--allfunctions',
-        '--directory=./doc/guide/api',
-        SRC_ROOT
-        ])
+    if not mode == 'nojsdoc':
+        # TODO: call this directly with python
+        print("Generating JSDOC for Sphinx")
+        subprocess.call([
+            'java', 
+            '-jar',
+            'tools/jsdoc-toolkit/jsrun.jar',
+            'tools/jsdoc-toolkit/app/run.js',
+            '--recurse=5',
+            '--template=doc/guide/_themes/jsdoc-for-sphinx',
+            '-x=js,jsx', 
+            '--allfunctions',
+            '--directory=./doc/guide/api',
+            SRC_ROOT
+            ])
     
     
     print("Generating Sphinx documentation ...")
@@ -261,7 +262,7 @@ def rebuild():
     clean()
     prepare()
     build()
-    docs()
+    docs(mode='all')
 
 
 def _zipdir(basedir, archivename):
@@ -295,7 +296,7 @@ if __name__ == '__main__':
 
     parser.add_argument('--changelog', action='store_true', default=False,  help='regenerate ChangeLog file from git log messages')
 
-    parser.add_argument('--docs', action='store_true', default=False,  help='build documentation')
+    parser.add_argument('--docs', nargs='?', action='store', default=False, const='all', required=False, choices=['all', 'nojsdoc'], help='build documentation')
 
     parser.add_argument('--clean', action='store_true', default=False,  
 help='clean up build and remove all generated files')
@@ -330,7 +331,7 @@ help='clean up build and remove all generated files')
         changelog()
     elif args.docs:
         prepare()
-        docs()
+        docs(mode=args.docs)
     elif args.rebuild:
         rebuild()
     else:
