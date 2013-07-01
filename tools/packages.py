@@ -7,6 +7,7 @@ BASICS = [
   'lang/Array.js',
   'Internals.js',
   'debug.js',
+  'util/AdaptiveRenderControl.js',
   'util/DownloadManager.js',
   'util/RefinementJobManager.js',
   'util/RefinementJobWorker.js',
