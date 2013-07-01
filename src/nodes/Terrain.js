@@ -1852,8 +1852,8 @@ function QuadtreeNode3D_32bit(ctx, terrain, level, nodeNumber, nodeTransformatio
 
 
 /*
- * Defines one node of an octree that represents a part (nxn vertices) of 
- * the whole point cloud
+ * Defines one node of an arbitrary tree that represents a part (nxn vertices)  
+ * of the entire point cloud
  * @param {object} ctx context
  * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
  * @param {number} level level of the node within the quadtree
@@ -1867,7 +1867,7 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
     // object that stores all information to do a frustum culling
     var cullObject = {};
     // factor redefinition to get a view about the whole scene on level three
-    var fac = terrain._vf.factor + level * 5;
+    var fac = terrain._vf.factor + Math.pow(level, 2);
     
     // array with the maximal four child nodes
     var children = [];
@@ -1876,7 +1876,7 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
     // address of the image for the terrain height-data
     var file = terrain._vf.url + path + imgNumber + ".x3d";
     // position of the node in world space
-    var position = null;
+    var position = new x3dom.fields.SFVec3f(0.0, 0.0, 0.0);
     // stores if file has been loaded
     var exists = false;
     // drawable component of this node
@@ -1971,7 +1971,7 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
             
             // terrain._vf.factor instead (level * 16)
-            if (level < 1 && (distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * 100 / fac)) {
+            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * 1000 / fac)) {
                 if (children.length === 0 && terrain.createChildren === 0) {
                     terrain.createChildren++;
                     create();
