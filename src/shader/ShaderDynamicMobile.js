@@ -399,7 +399,7 @@ x3dom.shader.DynamicMobileShader.prototype.generateVertexShader = function(gl, p
 			shader += "fragColor.a = alpha;\n";
 		}
 	} else {
-		if (properties.APPMAT) {
+		if (properties.APPMAT && !properties.VERTEXCOLOR) {
 			shader += "rgb = vec3(0.0, 0.0, 0.0);\n";
 		}
 		if(properties.TEXTURED && !properties.BLENDING) {
