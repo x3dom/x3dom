@@ -125,16 +125,34 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                     return that._scene._vf.scaleRenderedIdsOnMove *100;
                 },
                 function(value)
-                {                              4
+                {
                     that._scene._vf.scaleRenderedIdsOnMove = value/100;
                 }
             )
         );
 
-        /*this.drawTesselation = new x3dom.arc.ARF(0,1,this.scene._vf.drawTessellationFactor, function(value)
-        {
-            //TODO set value
-        });*/
+        this._arfs.push(
+            new x3dom.arc.ARF("tesselationErrorBound",
+                1,12,1,
+                function()
+                {
+                    return that._scene._vf.tesselationErrorBound;
+                },
+                function(value)
+                {
+                    that._scene._vf.tesselationErrorBound = value;
+                },
+                //@todo: this factor is a static member of PopGeo... should it belong to scene instead?
+                function()
+                {
+                    return x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
+                },
+                function(value)
+                {
+                    x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = value;
+                }
+            )
+        );
 
         this._stepWidth = 0.1;
     },

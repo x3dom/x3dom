@@ -876,7 +876,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'userDataFactor', -1);
             this.addField_SFFloat(ctx, 'screenSpaceFactor', -1);
             this.addField_SFFloat(ctx, 'drawCountFactor', -1);
-            this.addField_SFFloat(ctx, 'drawTessellationFactor', -1);
+            this.addField_SFFloat(ctx, 'tesselationErrorBound', -1);
             
             this._lastMin = null;
             this._lastMax = null;
