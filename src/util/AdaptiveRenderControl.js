@@ -133,7 +133,7 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
 
         this._arfs.push(
             new x3dom.arc.ARF("tesselationErrorBound",
-                1,12,1,
+                1,12,-1,
                 function()
                 {
                     return that._scene._vf.tesselationErrorBound;
