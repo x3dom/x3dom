@@ -479,10 +479,9 @@ x3dom.registerNodeType(
                     }
                     this.drawableCollection.concat();
 
-                    this.bvh =  this._nameSpace.doc._scene._vf.useCrossCompiled ?  new x3dom.bvh.EmscriptenBvH() : new x3dom.bvh.BIH();
-
+                    this.bvh = this._nameSpace.doc._scene._vf.useCrossCompiled ?  new x3dom.bvh.EmscriptenBvH() : new x3dom.bvh.BIH();
                     //Add debugging decorator
-                    //this.bvh = new x3dom.bvh.DebugComposite(this.bvh,this._nameSpace.doc._scene);
+                    this.bvh = this._nameSpace.doc._scene._vf.bvhDebug ? new x3dom.bvh.DebugDecorator(this.bvh,this._nameSpace.doc._scene) : this.bvh;
 
                     n = this.drawableCollection.length;
                     for (i = 0; i < n; i++) {
@@ -845,6 +844,8 @@ x3dom.registerNodeType(
 
             //VERY VERY experimental field, don't use unles you know exactly what's happening :)
             this.addField_SFBool(ctx, 'useCrossCompiled', false);
+            //visualizes bvh box volumes with a line renderer
+            this.addField_SFBool(ctx, 'bvhDebug', false);
 
             // yet another exp. field for shadow dom remapping
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
