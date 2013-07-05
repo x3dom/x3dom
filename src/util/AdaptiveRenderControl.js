@@ -136,11 +136,11 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                 1,12,-1,
                 function()
                 {
-                    return that._scene._vf.tesselationErrorBound;
+                    return that._scene._vf.tesselationErrorFactor;
                 },
                 function(value)
                 {
-                    that._scene._vf.tesselationErrorBound = value;
+                    that._scene._vf.tesselationErrorFactor = value;
                 },
                 //@todo: this factor is a static member of PopGeo... should it belong to scene instead?
                 function()
