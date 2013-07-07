@@ -139,11 +139,11 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
 /**
  * Returns a dynamic generated shader program by properties
  */
-x3dom.Cache.prototype.getShaderByProperties = function (gl, properties) {
+x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties) {
     if (this.shaders[properties.toIdentifier()] === undefined) {
         var program;
         if (properties.CSHADER >= 0) {
-            program = new x3dom.shader.ComposedShader(gl, properties);
+            program = new x3dom.shader.ComposedShader(gl, shape);
         } else {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
                 new x3dom.shader.DynamicShader(gl, properties);

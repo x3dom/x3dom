@@ -254,12 +254,15 @@ x3dom.gfx_webgl = (function () {
             }
 
             //Check if we need a new shader
-            if (shape._dirty.shader || shape._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea))
-            {
-                shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
+            //if (shape._dirty.shader || shape._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea))
+            //{
+                //shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
                 //shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
-                shape._dirty.shader = false;
-            }
+                //shape._dirty.shader = false;
+            //}
+
+
+            shape._webgl.shader = this.cache.getShaderByProperties(gl, shape, shape.getShaderProperties(viewarea));
 
             if (shape._webgl.binaryGeometry == 0)   // FIXME; handle BG
             {
@@ -494,8 +497,9 @@ x3dom.gfx_webgl = (function () {
         }
 
         //Set Shader
-        shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
+        //shape._webgl.shader = this.cache.getDynamicShader(gl, viewarea, shape);
         //shape._webgl.shader = this.cache.getShaderByProperties(gl, drawable.properties);
+        shape._webgl.shader = this.cache.getShaderByProperties(gl, shape, shape.getShaderProperties(viewarea));
 
         // init vertex attribs
         var sp = shape._webgl.shader;

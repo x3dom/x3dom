@@ -213,6 +213,7 @@ x3dom.registerNodeType(
             this.addField_SFNode('geometry', x3dom.nodeTypes.X3DGeometryNode);
 
             this._objectID = 0;
+            this._shaderProperties = null;
             
             // in WebGL-based renderer a clean-up function is attached
             this._cleanupGLObjects = null;
@@ -367,6 +368,22 @@ x3dom.registerNodeType(
 				this._dirty.indexes = true;
                 // finally invalidate volume
                 this.invalidateVolume();
+            },
+
+            getShaderProperties: function(viewarea) {
+                if (this._shaderProperties === null ||
+                    this._dirty.shader == true ||
+                    (this._webgl !== undefined && this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea)))
+                {
+                    this._shaderProperties = x3dom.Utils.generateProperties(viewarea, this);
+                    this._dirty.shader = false;
+                    if (this._webgl !== undefined)
+                    {
+                        this._webgl.dirtyLighting = x3dom.Utils.checkDirtyLighting(viewarea);
+                    }
+                }
+
+                return this._shaderProperties;
             },
 			
 			getTextures: function() {
