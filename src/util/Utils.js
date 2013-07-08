@@ -621,9 +621,11 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 * Returns "shader" such that "shader.foo = [1,2,3]" magically sets the 
 * appropriate uniform
 *****************************************************************************/
-x3dom.Utils.wrapProgram = function (gl, program)
+x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 {
 	var shader = {};
+
+    shader.shaderID = shaderID;
         
 	shader.bind = function () { 
 		gl.useProgram(program); 

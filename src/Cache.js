@@ -122,7 +122,9 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
     //Generate Properties
     var properties = x3dom.Utils.generateProperties(viewarea, shape);
 
-    if (this.shaders[properties.toIdentifier()] === undefined) {
+    var shaderID = properties.toIdentifier();
+
+    if (this.shaders[shaderID] === undefined) {
         var program;
         if (properties.CSHADER >= 0) {
             program = new x3dom.shader.ComposedShader(gl, shape);
@@ -130,17 +132,22 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
                 new x3dom.shader.DynamicShader(gl, properties);
         }
-        this.shaders[properties.toIdentifier()] = x3dom.Utils.wrapProgram(gl, program);
+        this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
     }
 
-    return this.shaders[properties.toIdentifier()];
+    return this.shaders[shaderID];
 };
 
 /**
  * Returns a dynamic generated shader program by properties
  */
 x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties) {
-    if (this.shaders[properties.toIdentifier()] === undefined) {
+
+    //Get shaderID
+    var shaderID = properties.toIdentifier();
+
+    if (this.shaders[shaderID] === undefined)
+    {
         var program;
         if (properties.CSHADER >= 0) {
             program = new x3dom.shader.ComposedShader(gl, shape);
@@ -148,10 +155,10 @@ x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties) {
             program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
                 new x3dom.shader.DynamicShader(gl, properties);
         }
-        this.shaders[properties.toIdentifier()] = x3dom.Utils.wrapProgram(gl, program);
+        this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
     }
 
-    return this.shaders[properties.toIdentifier()];
+    return this.shaders[shaderID];
 };
 
 /**
@@ -170,7 +177,7 @@ x3dom.Cache.prototype.getShadowRenderingShader = function (gl, shadowedLights) {
 
     if (this.shaders[ID] === undefined) {
         var program = new x3dom.shader.ShadowRenderingShader(gl, shadowedLights);
-        this.shaders[ID] = x3dom.Utils.wrapProgram(gl, program);
+        this.shaders[ID] = x3dom.Utils.wrapProgram(gl, program, ID);
     }
     return this.shaders[ID];
 };
