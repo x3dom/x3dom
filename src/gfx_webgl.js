@@ -1430,6 +1430,9 @@ x3dom.gfx_webgl = (function () {
             case 3:
                 sp = scene._webgl.pickShader24;
                 break;
+            case 4:
+                sp = scene._webgl.pickShaderId;
+                break;
             default:
                 break;
         }
@@ -2316,8 +2319,15 @@ x3dom.gfx_webgl = (function () {
         }
 
         var pm = scene._vf.pickMode.toLowerCase();
-        if (pm === "box") {
-            return false;
+        var pickMode = 0;
+
+        switch (pm) {
+            case "box":      return false;
+            case "idbuf":    pickMode = 0; break;
+            case "idbuf24":  pickMode = 3; break;
+            case "idbufid":  pickMode = 4; break;
+            case "color":    pickMode = 1; break;
+            case "texcoord": pickMode = 2; break;
         }
 
         //t0 = new Date().getTime();
@@ -2334,8 +2344,6 @@ x3dom.gfx_webgl = (function () {
             mat_view = viewarea._last_mat_view;
             mat_scene = viewarea._last_mat_scene;
         }
-
-        var pickMode = (pm === "color") ? 1 : ((pm === "texcoord") ? 2 : ((pm === "idbuf24") ? 3 : 0));
 
         var min = scene._lastMin;
         var max = scene._lastMax;
@@ -2382,7 +2390,7 @@ x3dom.gfx_webgl = (function () {
         {
             var pickPos = new x3dom.fields.SFVec3f(0, 0, 0);
             var pickNorm = new x3dom.fields.SFVec3f(0, 0, 1);
-            var objId = scene._webgl.fboPick.pixelData[index + 3];
+            var objId = scene._webgl.fboPick.pixelData[index + 3], shapeId;
 
             var pixelOffset = 1.0 / scene._webgl.pickScale;
             var denom = 1.0 / 256.0;
@@ -2446,6 +2454,12 @@ x3dom.gfx_webgl = (function () {
 
                 pickNorm = right.cross(up).normalize();
             }
+            else if (pickMode == 4) {
+                objId += 256 * scene._webgl.fboPick.pixelData[index + 2];
+
+                shapeId  =       scene._webgl.fboPick.pixelData[index + 1];
+                shapeId += 256 * scene._webgl.fboPick.pixelData[index + 0];
+            }
             else {
                 pickPos.x = scene._webgl.fboPick.pixelData[index + 0];
                 pickPos.y = scene._webgl.fboPick.pixelData[index + 1];
@@ -2458,23 +2472,36 @@ x3dom.gfx_webgl = (function () {
             if (objId >= baseID) {
                 objId -= baseID;
 
-                viewarea._pickingInfo.pickPos = pickPos;
-                viewarea._pick.setValues(pickPos);
+                var hitObject;
 
-                viewarea._pickingInfo.pickNorm = pickNorm;
-                viewarea._pickNorm.setValues(pickNorm);
+                if (pickMode != 4) {
+                    viewarea._pickingInfo.pickPos = pickPos;
+                    viewarea._pick.setValues(pickPos);
 
-                viewarea._pickingInfo.pickObj = null;
-                viewarea._pickingInfo.lastClickObj = null;
+                    viewarea._pickingInfo.pickNorm = pickNorm;
+                    viewarea._pickNorm.setValues(pickNorm);
+
+                    viewarea._pickingInfo.pickObj = null;
+                    viewarea._pickingInfo.lastClickObj = null;
+
+                    hitObject = scene._xmlNode;
+                }
+                else {
+                    viewarea._pickingInfo.pickObj = x3dom.nodeTypes.Shape.idMap.nodeID[shapeId];
+
+                    hitObject = viewarea._pickingInfo.pickObj._xmlNode;
+                }
+
+                viewarea._pickingInfo.shadowObjectId = objId;
 
                 //x3dom.debug.logInfo(baseID + " + " + objId);
                 var eventType = "shadowObjectIdChanged";
 
                 try {
-                    if (scene._xmlNode &&
+                    if ( scene._xmlNode &&
                         (scene._xmlNode["on" + eventType] ||
                             scene._xmlNode.hasAttribute("on" + eventType) ||
-                            scene._listeners[eventType])) {
+                            scene._listeners[eventType]) ) {
                         var event = {
                             target: scene._xmlNode,
                             type: eventType,
@@ -2489,7 +2516,7 @@ x3dom.gfx_webgl = (function () {
                             normalY: pickNorm.y,
                             normalZ: pickNorm.z,
                             hitPnt: pickPos.toGL(),
-                            hitObject: scene._xmlNode,
+                            hitObject: hitObject,
                             cancelBubble: false,
                             stopPropagation: function () {
                                 this.cancelBubble = true;
@@ -2663,6 +2690,7 @@ x3dom.gfx_webgl = (function () {
             //Set picking shaders
             scene._webgl.pickShader = this.cache.getShader(gl, x3dom.shader.PICKING);
             scene._webgl.pickShader24 = this.cache.getShader(gl, x3dom.shader.PICKING_24);
+            scene._webgl.pickShaderId = this.cache.getShader(gl, x3dom.shader.PICKING_ID);
             scene._webgl.pickColorShader = this.cache.getShader(gl, x3dom.shader.PICKING_COLOR);
             scene._webgl.pickTexCoordShader = this.cache.getShader(gl, x3dom.shader.PICKING_TEXCOORD);
 

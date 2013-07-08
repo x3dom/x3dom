@@ -52,7 +52,7 @@ x3dom.StateManager.prototype.initStates = function ()
     //Initialize View and Clip states
     this.states['viewport'] = {x: null, y: null, width: null, height: null};
 
-    //TODO more states (e.g. stecil, texture, ...)
+    //TODO more states (e.g. stencil, texture, ...)
 };
 
 /*
@@ -101,7 +101,7 @@ x3dom.StateManager.prototype.colorMask = function (red, green, blue, alpha)
         this.states['colorMask'].blue != blue ||
         this.states['colorMask'].alpha != alphal)
     {
-        this.gl.colorMak(red, green, blue, alpha);
+        this.gl.colorMask(red, green, blue, alpha);
         this.states['colorMask'].red = red;
         this.states['colorMask'].green = green;
         this.states['colorMask'].blue = blue;
@@ -261,7 +261,7 @@ x3dom.StateManager.prototype.viewport = function (x, y, width, height)
         this.states['viewport'].width = width;
         this.states['viewport'].height = height;
     }
-}
+};
 
 /*
  * Bind a framebuffer to a framebuffer target
@@ -270,4 +270,4 @@ x3dom.StateManager.prototype.bindFramebuffer = function (target, framebuffer)
 {
     this.gl.bindFramebuffer(target, framebuffer);
     this.initStates();
-}
+};

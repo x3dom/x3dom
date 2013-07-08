@@ -21,7 +21,8 @@ x3dom.Viewarea = function (document, scene) {
         pickNorm: new x3dom.fields.SFVec3f(0, 0, 1),
         pickObj: null,
         lastObj: null,
-        lastClickObj: null
+        lastClickObj: null,
+        shadowObjectId: 0
     };
 
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
@@ -991,6 +992,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         normalZ: that._pickNorm.z,
         hitPnt: that._pick.toGL(), // for convenience
         hitObject: obj._xmlNode ? obj._xmlNode : null,
+        shadowObjectId: that._pickingInfo.shadowObjectId,
         cancelBubble: false,
         stopPropagation: function() { this.cancelBubble = true; },
 		preventDefault: function() { this.cancelBubble = true; }
@@ -1193,8 +1195,9 @@ x3dom.Viewarea.prototype.onDoubleClick = function (x, y)
         return;
     }
 
-    if ((this._scene._vf.pickMode.toLowerCase() === "color" ||
-         this._scene._vf.pickMode.toLowerCase() === "texcoord")) {
+    var pickMode = this._scene._vf.pickMode.toLowerCase();
+
+    if ((pickMode == "color" || pickMode == "texcoord")) {
          return;
     }
 
@@ -1423,9 +1426,9 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
 x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
 {
-    var avoidTraversal = (this._scene._vf.pickMode.toLowerCase().indexOf("idbuf") == 0 ||
-                          this._scene._vf.pickMode.toLowerCase() === "color" ||
-                          this._scene._vf.pickMode.toLowerCase() === "texcoord");
+    var pickMode = this._scene._vf.pickMode.toLowerCase();
+    var avoidTraversal = (pickMode.indexOf("idbuf") == 0 ||
+                          pickMode == "color" || pickMode == "texcoord");
 
     if (avoidTraversal) {
         var obj = this._pickingInfo.pickObj;

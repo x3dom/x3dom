@@ -36,6 +36,7 @@ SHADER = [
 	'shader/ShaderNormal.js',
 	'shader/ShaderPicking.js',
 	'shader/ShaderPicking24.js',
+	'shader/ShaderPickingId.js',
 	'shader/ShaderPickingColor.js',
 	'shader/ShaderPickingTexcoord.js',
 	'shader/ShaderFrontgroundTexture.js',

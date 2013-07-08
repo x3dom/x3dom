@@ -83,9 +83,9 @@ x3dom.shader.PickingIdShader.prototype.generateFragmentShader = function(gl)
                 "varying vec2 idCoord;\n" +
 
                 "void main(void) {\n" +
-                "    vec4 col = vec4(0.0, 0.0, highBit, lowBit);\n" +
+                "    vec4 col = vec4(highBit, lowBit, 0.0, 0.0);\n" +
                 "    if (writeShadowIDs > 0.0) {\n" +
-                "       col.rg = idCoord;\n" +
+                "       col.ba = idCoord;\n" +
                 "	 }\n" +
                 "    gl_FragColor = col;\n" +
                 "}\n";
