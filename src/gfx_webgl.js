@@ -2641,6 +2641,8 @@ x3dom.gfx_webgl = (function () {
 		
         if (!scene._webgl)
         {
+            scene.updateVolume();
+
             scene._webgl = {};
 
             this.setupFgnds(gl, scene);
