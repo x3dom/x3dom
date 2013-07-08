@@ -22,6 +22,7 @@ x3dom.gfx_webgl = (function () {
         this.x3dElem = x3dElem;
         this.IG_PositionBuffer = null;
         this.cache = new x3dom.Cache();
+        this.stateManager = new x3dom.StateManager(ctx3d);
         this.activeShader = null;
     }
 
@@ -699,6 +700,8 @@ x3dom.gfx_webgl = (function () {
         var sphere;
         var texture;
 
+        var that = this;
+
         if (bgnd._webgl !== undefined) {
             if (!bgnd._dirty) {
                 return;
@@ -931,12 +934,12 @@ x3dom.gfx_webgl = (function () {
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
-                gl.frontFace(gl.CCW);
-                gl.disable(gl.CULL_FACE);
-                gl.disable(gl.DEPTH_TEST);
-                gl.disable(gl.BLEND);
+                that.stateManager.frontFace(gl.CCW);
+                that.stateManager.disable(gl.CULL_FACE);
+                that.stateManager.disable(gl.DEPTH_TEST);
+                that.stateManager.disable(gl.BLEND);
 
-                sp.bind();
+                that.stateManager.useProgram(sp);
 
                 if (!sp.tex) {
                     sp.tex = 0;
@@ -1003,12 +1006,13 @@ x3dom.gfx_webgl = (function () {
                 gl.clearDepth(1.0);
                 gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT | gl.STENCIL_BUFFER_BIT);
 
-                gl.frontFace(gl.CCW);
-                gl.disable(gl.CULL_FACE);
-                gl.disable(gl.DEPTH_TEST);
-                gl.disable(gl.BLEND);
+                that.stateManager.frontFace(gl.CCW);
+                that.stateManager.disable(gl.CULL_FACE);
+                that.stateManager.disable(gl.DEPTH_TEST);
+                that.stateManager.disable(gl.BLEND);
 
-                sp.bind();
+                that.stateManager.useProgram(sp);
+
                 if (!sp.tex) {
                     sp.tex = 0;
                 }
@@ -1082,6 +1086,8 @@ x3dom.gfx_webgl = (function () {
             return;
         }
 
+        var that = this;
+
         var w = 1, h = 1;
         scene._fgnd = {};
 
@@ -1124,16 +1130,17 @@ x3dom.gfx_webgl = (function () {
         scene._fgnd._webgl.render = function (gl, tex) {
             scene._fgnd._webgl.texture = tex;
 
-            gl.frontFace(gl.CCW);
-            gl.disable(gl.CULL_FACE);
-            gl.disable(gl.DEPTH_TEST);
+            that.stateManager.frontFace(gl.CCW);
+            that.stateManager.disable(gl.CULL_FACE);
+            that.stateManager.disable(gl.DEPTH_TEST);
 
-            sp.bind();
+            that.stateManager.useProgram(sp);
+
             if (!sp.tex) {
                 sp.tex = 0;
             }
 
-            //gl.enable(gl.TEXTURE_2D);
+            //this.stateManager.enable(gl.TEXTURE_2D);
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, scene._fgnd._webgl.texture);
 
@@ -1153,7 +1160,7 @@ x3dom.gfx_webgl = (function () {
 
             gl.activeTexture(gl.TEXTURE0);
             gl.bindTexture(gl.TEXTURE_2D, null);
-            //gl.disable(gl.TEXTURE_2D);
+            //this.stateManager.disable(gl.TEXTURE_2D);
         };
     };
 
@@ -1165,10 +1172,11 @@ x3dom.gfx_webgl = (function () {
     {
         var scene = viewarea._scene;
         var sp = scene._webgl.shadowShader;
-        sp.bind();
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, targetFbo.fbo);
-        gl.viewport(0, 0, targetFbo.width, targetFbo.height);
+        this.stateManager.useProgram(sp);
+
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, targetFbo.fbo);
+        this.stateManager.viewport(0, 0, targetFbo.width, targetFbo.height);
         sp.cameraView = isCameraView;
         sp.offset = offset;
 
@@ -1176,10 +1184,10 @@ x3dom.gfx_webgl = (function () {
         gl.clearDepth(1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.depthFunc(gl.LEQUAL);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
+        this.stateManager.depthFunc(gl.LEQUAL);
+        this.stateManager.enable(gl.DEPTH_TEST);
+        this.stateManager.enable(gl.CULL_FACE);
+        this.stateManager.disable(gl.BLEND);
 
         var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
         var bgSize = new x3dom.fields.SFVec3f(1, 1, 1).toGL();
@@ -1316,17 +1324,17 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 if (shape.isSolid()) {
-                    gl.enable(gl.CULL_FACE);
+                    this.stateManager.enable(gl.CULL_FACE);
 
                     if (shape.isCCW()) {
-                        gl.frontFace(gl.CCW);
+                        this.stateManager.frontFace(gl.CCW);
                     }
                     else {
-                        gl.frontFace(gl.CW);
+                        this.stateManager.frontFace(gl.CW);
                     }
                 }
                 else {
-                    gl.disable(gl.CULL_FACE);
+                    this.stateManager.disable(gl.CULL_FACE);
                 }
 
                 if (s_gl.indexes && s_gl.indexes[q5]) {
@@ -1385,7 +1393,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         gl.flush();
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
 
     /*****************************************************************************
@@ -1394,18 +1402,18 @@ x3dom.gfx_webgl = (function () {
     Context.prototype.renderPickingPass = function (gl, scene, mat_view, mat_scene, from, sceneSize,
                                                     pickMode, lastX, lastY, width, height)
     {
-        gl.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, scene._webgl.fboPick.fbo);
 
-        gl.viewport(0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height);
+        this.stateManager.viewport(0, 0, scene._webgl.fboPick.width, scene._webgl.fboPick.height);
 
         gl.clearColor(0.0, 0.0, 0.0, 0.0);
         gl.clearDepth(1.0);
         gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-        gl.depthFunc(gl.LEQUAL);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
+        this.stateManager.depthFunc(gl.LEQUAL);
+        this.stateManager.enable(gl.DEPTH_TEST);
+        this.stateManager.enable(gl.CULL_FACE);
+        this.stateManager.disable(gl.BLEND);
 
         var sp = null;
 
@@ -1430,7 +1438,7 @@ x3dom.gfx_webgl = (function () {
             return;
         }
 
-        sp.bind();
+        this.stateManager.useProgram(sp);
 
         var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
         var bgSize = new x3dom.fields.SFVec3f(1, 1, 1).toGL();
@@ -1567,17 +1575,17 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 if (shape.isSolid()) {
-                    gl.enable(gl.CULL_FACE);
+                    this.stateManager.enable(gl.CULL_FACE);
 
                     if (shape.isCCW()) {
-                        gl.frontFace(gl.CCW);
+                        this.stateManager.frontFace(gl.CCW);
                     }
                     else {
-                        gl.frontFace(gl.CW);
+                        this.stateManager.frontFace(gl.CW);
                     }
                 }
                 else {
-                    gl.disable(gl.CULL_FACE);
+                    this.stateManager.disable(gl.CULL_FACE);
                 }
 
                 if (s_gl.indexes && s_gl.indexes[q]) {
@@ -1660,7 +1668,7 @@ x3dom.gfx_webgl = (function () {
             x3dom.debug.logException(se + " (cannot pick)");
         }
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
     };
 
     /*****************************************************************************
@@ -1689,7 +1697,8 @@ x3dom.gfx_webgl = (function () {
         //var shaderIdentifier = drawable.properties.toIdentifier();
         //if (this.activeShader != shaderIdentifier)
         //{
-        sp.bind();
+
+        this.stateManager.useProgram(sp);
         //this.activeShader = shaderIdentifier;
         //}
 
@@ -1976,15 +1985,15 @@ x3dom.gfx_webgl = (function () {
         //if (stateSwitchMode & STATE_SWITCH_BIND)
         {
             if (shape.isSolid()) {
-                gl.enable(gl.CULL_FACE);
+                this.stateManager.enable(gl.CULL_FACE);
 
                 if (shape.isCCW()) {
-                    gl.frontFace(gl.CCW);
+                    this.stateManager.frontFace(gl.CCW);
                 } else {
-                    gl.frontFace(gl.CW);
+                    this.stateManager.frontFace(gl.CW);
                 }
             } else {
-                gl.disable(gl.CULL_FACE);
+                this.stateManager.disable(gl.CULL_FACE);
             }
         } // STATE_SWITCH_BIND
 
@@ -2977,25 +2986,25 @@ x3dom.gfx_webgl = (function () {
         // rendering
         x3dom.Utils.startMeasure('render');
 
-        gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+        this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 
         // calls gl.clear etc. (bgnd stuff)
         bgnd._webgl.render(gl, mat_view, mat_proj);
 
-        gl.depthMask(true);
-        gl.depthFunc(gl.LEQUAL);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
+        this.stateManager.depthMask(true);
+        this.stateManager.depthFunc(gl.LEQUAL);
+        this.stateManager.enable(gl.DEPTH_TEST);
+        this.stateManager.enable(gl.CULL_FACE);
 
-        //gl.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
+        //this.stateManager.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         //Workaround for WebKit & Co.
-        gl.blendFuncSeparate(
+        this.stateManager.blendFuncSeparate(
             gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
             //gl.ONE_MINUS_DST_ALPHA, gl.ONE
             gl.ONE, gl.ONE
             //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
         );
-        gl.enable(gl.BLEND);
+        this.stateManager.enable(gl.BLEND);
 
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris = 0;
@@ -3042,12 +3051,12 @@ x3dom.gfx_webgl = (function () {
                     shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
                     shapeApp._cf.blendMode.node._vf.destFactor.toLowerCase() === "none") {
                     needEnableBlending = true;
-                    gl.disable(gl.BLEND);
+                    this.stateManager.disable(gl.BLEND);
                 }
                 if (shapeApp && shapeApp._cf.depthMode.node &&
                     shapeApp._cf.depthMode.node._vf.readOnly === true) {
                     needEnableDepthMask = true;
-                    gl.depthMask(false);
+                    this.stateManager.depthMask(false);
                 }
             }
 
@@ -3057,10 +3066,10 @@ x3dom.gfx_webgl = (function () {
             //if (stateSwitchMode & STATE_SWITCH_UNBIND)
             {
                 if (needEnableBlending) {
-                    gl.enable(gl.BLEND);
+                    this.stateManager.enable(gl.BLEND);
                 }
                 if (needEnableDepthMask) {
-                    gl.depthMask(true);
+                    this.stateManager.depthMask(true);
                 }
             }
 
@@ -3072,25 +3081,25 @@ x3dom.gfx_webgl = (function () {
 
         viewarea._numRenderedNodes = n;
 
-        gl.disable(gl.BLEND);
-        /*gl.blendFuncSeparate( // just multiply dest RGB by its A
+        this.stateManager.disable(gl.BLEND);
+        /*this.stateManager.blendFuncSeparate( // just multiply dest RGB by its A
          gl.ZERO, gl.DST_ALPHA,
          gl.ZERO, gl.ONE
          );*/
 
-        gl.disable(gl.DEPTH_TEST);
+        this.stateManager.disable(gl.DEPTH_TEST);
 
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
             var pm = scene._vf.pickMode.toLowerCase();
             if (pm.indexOf("idbuf") == 0 || pm == "color" || pm == "texcoord") {
-                gl.viewport(0, 3 * this.canvas.height / 4,
+                this.stateManager.viewport(0, 3 * this.canvas.height / 4,
                             this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
 
             if (shadowCount > 0) {
-                gl.viewport(this.canvas.width / 4, 3 * this.canvas.height / 4,
+                this.stateManager.viewport(this.canvas.width / 4, 3 * this.canvas.height / 4,
                             this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
             }
@@ -3099,7 +3108,7 @@ x3dom.gfx_webgl = (function () {
             for (i = 0; i < shadowCount; i++) {
                 var shadowMaps = scene._webgl.fboShadow[i];
                 for (j = 0; j < shadowMaps.length; j++) {
-                    gl.viewport(col * this.canvas.width / 4, row * this.canvas.height / 4,
+                    this.stateManager.viewport(col * this.canvas.width / 4, row * this.canvas.height / 4,
                                 this.canvas.width / 4, this.canvas.height / 4);
                     scene._fgnd._webgl.render(gl, shadowMaps[j].tex);
                     if (col < 2) {
@@ -3114,7 +3123,7 @@ x3dom.gfx_webgl = (function () {
             for (rtl_i = 0; rtl_i < rtl_n; rtl_i++) {
                 rt_tex = rentex[rtl_i];
 
-                gl.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
+                this.stateManager.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
                             this.canvas.width / 8, this.canvas.height / 8);
                 scene._fgnd._webgl.render(gl, rt_tex._webgl.fbo.tex);
             }
@@ -3184,9 +3193,9 @@ x3dom.gfx_webgl = (function () {
             rt._cf.excludeNodes.nodes[i]._vf.render = false;
         }
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fbo.fbo);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, rt._webgl.fbo.fbo);
 
-        gl.viewport(0, 0, rt._webgl.fbo.width, rt._webgl.fbo.height);
+        this.stateManager.viewport(0, 0, rt._webgl.fbo.width, rt._webgl.fbo.height);
 
         if (rt._cf.background.node === null) {
             gl.clearColor(0, 0, 0, 1);
@@ -3203,15 +3212,15 @@ x3dom.gfx_webgl = (function () {
             bgnd._webgl.render(gl, mat_view, mat_proj);
         }
 
-        gl.depthFunc(gl.LEQUAL);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
+        this.stateManager.depthFunc(gl.LEQUAL);
+        this.stateManager.enable(gl.DEPTH_TEST);
+        this.stateManager.enable(gl.CULL_FACE);
 
-        gl.blendFuncSeparate(
+        this.stateManager.blendFuncSeparate(
             gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
             gl.ONE, gl.ONE
         );
-        gl.enable(gl.BLEND);
+        this.stateManager.enable(gl.BLEND);
 
         var slights = viewarea.getLights();
         var numLights = slights.length;
@@ -3250,12 +3259,12 @@ x3dom.gfx_webgl = (function () {
                             appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
                             appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none") {
                             needEnableBlending = true;
-                            gl.disable(gl.BLEND);
+                            this.stateManager.disable(gl.BLEND);
                         }
                         if (appearance._cf.depthMode.node &&
                             appearance._cf.depthMode.node._vf.readOnly === true) {
                             needEnableDepthMask = true;
-                            gl.depthMask(false);
+                            this.stateManager.depthMask(false);
                         }
                     }
 
@@ -3264,10 +3273,10 @@ x3dom.gfx_webgl = (function () {
                         stateSwitchMode);
 
                     if (needEnableBlending) {
-                        gl.enable(gl.BLEND);
+                        this.stateManager.enable(gl.BLEND);
                     }
                     if (needEnableDepthMask) {
-                        gl.depthMask(true);
+                        this.stateManager.depthMask(true);
                     }
                 }
             }
@@ -3321,12 +3330,12 @@ x3dom.gfx_webgl = (function () {
                             appearance._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
                             appearance._cf.blendMode.node._vf.destFactor.toLowerCase() === "none") {
                             needEnableBlending = true;
-                            gl.disable(gl.BLEND);
+                            this.stateManager.disable(gl.BLEND);
                         }
                         if (appearance._cf.depthMode.node &&
                             appearance._cf.depthMode.node._vf.readOnly === true) {
                             needEnableDepthMask = true;
-                            gl.depthMask(false);
+                            this.stateManager.depthMask(false);
                         }
                     }
 
@@ -3335,20 +3344,20 @@ x3dom.gfx_webgl = (function () {
                         stateSwitchMode);
 
                     if (needEnableBlending) {
-                        gl.enable(gl.BLEND);
+                        this.stateManager.enable(gl.BLEND);
                     }
                     if (needEnableDepthMask) {
-                        gl.depthMask(true);
+                        this.stateManager.depthMask(true);
                     }
                 }
             }
         }
 
-        gl.disable(gl.BLEND);
-        gl.disable(gl.DEPTH_TEST);
+        this.stateManager.disable(gl.BLEND);
+        this.stateManager.disable(gl.DEPTH_TEST);
 
         gl.flush();
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         for (i = 0; i < m; i++) {
             if (arr[i] !== 0) {
@@ -3366,12 +3375,12 @@ x3dom.gfx_webgl = (function () {
             return;
         }
 
-        gl.depthFunc(gl.LEQUAL);
-        gl.enable(gl.DEPTH_TEST);
-        gl.enable(gl.CULL_FACE);
-        gl.disable(gl.BLEND);
+        this.stateManager.depthFunc(gl.LEQUAL);
+        this.stateManager.enable(gl.DEPTH_TEST);
+        this.stateManager.enable(gl.CULL_FACE);
+        this.stateManager.disable(gl.BLEND);
 
-        sp.bind();
+        this.stateManager.useProgram(sp);
 
         var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
         var bgSize = new x3dom.fields.SFVec3f(1, 1, 1).toGL();
@@ -3492,17 +3501,17 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 if (shape.isSolid()) {
-                    gl.enable(gl.CULL_FACE);
+                    this.stateManager.enable(gl.CULL_FACE);
 
                     if (shape.isCCW()) {
-                        gl.frontFace(gl.CCW);
+                        this.stateManager.frontFace(gl.CCW);
                     }
                     else {
-                        gl.frontFace(gl.CW);
+                        this.stateManager.frontFace(gl.CW);
                     }
                 }
                 else {
-                    gl.disable(gl.CULL_FACE);
+                    this.stateManager.disable(gl.CULL_FACE);
                 }
 
                 if (s_gl.indexes && s_gl.indexes[q]) {
@@ -3676,14 +3685,14 @@ x3dom.gfx_webgl = (function () {
 
         var tex = this.initTex(gl, w, h, nearest, type);
 
-        gl.bindFramebuffer(gl.FRAMEBUFFER, fbo);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, fbo);
         gl.bindRenderbuffer(gl.RENDERBUFFER, rb);
         gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT16, w, h);
         gl.bindRenderbuffer(gl.RENDERBUFFER, null);
 
         gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
         gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb);
-        gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+        this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
 
         var status = gl.checkFramebufferStatus(gl.FRAMEBUFFER);
         if (status != gl.FRAMEBUFFER_COMPLETE)
@@ -3755,15 +3764,16 @@ x3dom.gfx_webgl = (function () {
 				currentLights[currentLights.length] = shadowedLights[k];
 
 			var sp = this.cache.getShadowRenderingShader(gl, currentLights);
-			sp.bind();	
+
+            this.stateManager.useProgram(sp);
 			
 			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
 			gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(sp.position);
 
 			//enable (multiplicative) blending
-			gl.enable(gl.BLEND);
-			gl.blendFunc(gl.DST_COLOR, gl.ZERO);
+			this.stateManager.enable(gl.BLEND);
+			this.stateManager.blendFunc(gl.DST_COLOR, gl.ZERO);
 			
 			//bind depth texture (depth from camera view)
 			sp.sceneMap = 0;
@@ -3899,20 +3909,21 @@ x3dom.gfx_webgl = (function () {
 			if (height == scene._webgl.fboBlur[i].height)
                 fboBlur = scene._webgl.fboBlur[i];  // THINKABOUTME
 				
-		gl.bindFramebuffer(gl.FRAMEBUFFER, fboBlur.fbo);
-		gl.viewport(0, 0, width, height);
+		this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, fboBlur.fbo);
+		this.stateManager.viewport(0, 0, width, height);
 		
-		gl.enable(gl.BLEND);
-		gl.blendFunc(gl.ONE, gl.ZERO);
-		gl.disable(gl.CULL_FACE);
-		gl.disable(gl.DEPTH_TEST);
+		this.stateManager.enable(gl.BLEND);
+		this.stateManager.blendFunc(gl.ONE, gl.ZERO);
+		this.stateManager.disable(gl.CULL_FACE);
+		this.stateManager.disable(gl.DEPTH_TEST);
 		
 		gl.clearColor(1.0, 1.0, 1.0, 0.0);
 		gl.clearDepth(1.0);
 		gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 		
 		var sp = this.cache.getShader(gl, x3dom.shader.BLUR);
-		sp.bind();
+
+        this.stateManager.useProgram(sp);
 		
 		//initialize Data for post processing
 		gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
@@ -3937,7 +3948,7 @@ x3dom.gfx_webgl = (function () {
 		gl.drawArrays(gl.TRIANGLES,0,6);
 		
 		//second pass (vertical blur), result stored in targetFbo
-		gl.bindFramebuffer(gl.FRAMEBUFFER, targetFbo.fbo);
+		this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, targetFbo.fbo);
 		
 		gl.clearColor(1.0, 1.0, 1.0, 0.0);
 		gl.clearDepth(1.0);
@@ -3956,12 +3967,12 @@ x3dom.gfx_webgl = (function () {
 
 		//cleanup
 		gl.flush();
-		gl.bindFramebuffer(gl.FRAMEBUFFER, null);
+		this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
 		gl.activeTexture(gl.TEXTURE0);
 		gl.bindTexture(gl.TEXTURE_2D, null);
 		gl.disableVertexAttribArray(sp.position);
 		
-		gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+		this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 	};
 	
     return setupContext;

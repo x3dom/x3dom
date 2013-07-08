@@ -16,6 +16,7 @@ BASICS = [
   'util/EarClipping.js',
   'util/Utils.js',
   'util/States.js',
+  'util/StateManager.js',
   'util/BinaryContainerSetup.js',
   'util/DrawableCollection.js',
   'util/BVH.js',

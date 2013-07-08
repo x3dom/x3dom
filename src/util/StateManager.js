@@ -20,6 +20,15 @@ x3dom.StateManager = function (ctx3d)
     //Hold all the active states
     this.states = [];
 
+    //Initialize States
+    this.initStates();
+};
+
+/*
+ * Initialize States
+ */
+x3dom.StateManager.prototype.initStates = function ()
+{
     //Initialize Shader states
     this.states['shaderID'] = null;
 
@@ -40,6 +49,9 @@ x3dom.StateManager = function (ctx3d)
     this.states['blendFuncSeparate'] = {srcRGB: null, dstRGB: null, srcAlpha: null, dstAlpha: null};
     this.states['depthFunc'] = null;
 
+    //Initialize View and Clip states
+    this.states['viewport'] = {x: null, y: null, width: null, height: null};
+
     //TODO more states (e.g. stecil, texture, ...)
 };
 
@@ -48,10 +60,10 @@ x3dom.StateManager = function (ctx3d)
  */
 x3dom.StateManager.prototype.useProgram = function (shader)
 {
-    if (this.states[shaderID] != shader.shaderID)
+    if (this.states['shaderID'] != shader.shaderID)
     {
         this.gl.useProgram(shader.program);
-        this.states[shaderID] = shader.shaderID;
+        this.states['shaderID'] = shader.shaderID;
     }
 };
 
@@ -87,7 +99,7 @@ x3dom.StateManager.prototype.colorMask = function (red, green, blue, alpha)
     if (this.states['colorMask'].red != red ||
         this.states['colorMask'].green != green ||
         this.states['colorMask'].blue != blue ||
-        this.states['colorMask'].alpha != alpha)
+        this.states['colorMask'].alpha != alphal)
     {
         this.gl.colorMak(red, green, blue, alpha);
         this.states['colorMask'].red = red;
@@ -181,7 +193,7 @@ x3dom.StateManager.prototype.blendEquation = function (mode)
 x3dom.StateManager.prototype.blendEquationSeparate = function (modeRGB, modeAlpha)
 {
     if (this.states['blendEquationSeparate'].modeRGB != modeRGB ||
-        this.states['blendEquationSeparate'].modeAlpha != modealpha)
+        this.states['blendEquationSeparate'].modeAlpha != modeAlpha)
     {
         this.gl.blendEquationSeparate(modeRGB, modeAlpha);
         this.states['blendEquationSeparate'].modeRGB = modeRGB;
@@ -232,3 +244,30 @@ x3dom.StateManager.prototype.depthFunc = function (func)
         this.states['depthFunc'] = func;
     }
 };
+
+/*
+ * Set the viewport
+ */
+x3dom.StateManager.prototype.viewport = function (x, y, width, height)
+{
+    if (this.states['viewport'].x != x ||
+        this.states['viewport'].y != y ||
+        this.states['viewport'].width != width ||
+        this.states['viewport'].height != height)
+    {
+        this.gl.viewport(x, y, width, height);
+        this.states['viewport'].x = x;
+        this.states['viewport'].y = y;
+        this.states['viewport'].width = width;
+        this.states['viewport'].height = height;
+    }
+}
+
+/*
+ * Bind a framebuffer to a framebuffer target
+ */
+x3dom.StateManager.prototype.bindFramebuffer = function (target, framebuffer)
+{
+    this.gl.bindFramebuffer(target, framebuffer);
+    this.initStates();
+}

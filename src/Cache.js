@@ -107,7 +107,7 @@ x3dom.Cache.prototype.getShader = function (gl, shaderIdentifier) {
         }
 
         if (program)
-            this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program);
+            this.shaders[shaderIdentifier] = x3dom.Utils.wrapProgram(gl, program, shaderIdentifier);
         else
             x3dom.debug.logError("Couldn't create shader: " + shaderIdentifier);
     }
