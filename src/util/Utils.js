@@ -592,6 +592,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                 (property.BITLODGEOMETRY && geometry.hasColor()) || 
                                 (property.POPGEOMETRY    && geometry.hasColor()) ||
                                 (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
+
 	}
 	
 	property.toIdentifier = function() { 
@@ -601,6 +602,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 				id += this[p];
 			}
 		}
+        this.id = id;
 		return id;
 	};
 	
@@ -613,6 +615,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 		}
 		return str;
 	};
+
+    property.toIdentifier();
 
 	return property;
 };

@@ -125,7 +125,7 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
     //Generate Properties
     var properties = x3dom.Utils.generateProperties(viewarea, shape);
 
-    var shaderID = properties.toIdentifier();
+    var shaderID = properties.id;//toIdentifier();
 
     if (this.shaders[shaderID] === undefined) {
         var program;
@@ -147,7 +147,7 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
 x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties) {
 
     //Get shaderID
-    var shaderID = properties.toIdentifier();
+    var shaderID = properties.id;//toIdentifier();
 
     if (this.shaders[shaderID] === undefined)
     {
