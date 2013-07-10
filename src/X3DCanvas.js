@@ -1157,11 +1157,12 @@ x3dom.X3DCanvas.prototype.tick = function()
                     }
 
                     var myThat = this;
-                    
+                    /*
                     window.setTimeout( function() { 
                            myThat.doc.downloadCount = 0;
                            myThat.progressDiv.style.display = 'none';
                     }, 10000 );
+                    */
                 }
             } else {
                 this.progressDiv.style.display = 'none';
