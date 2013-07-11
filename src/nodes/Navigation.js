@@ -150,8 +150,7 @@ x3dom.registerNodeType(
                     var nearScale = 0.8, farScale = 1.2;
                     var viewarea = this._nameSpace.doc._viewarea;
                     var scene = viewarea._scene;
-                    
-                    scene.updateVolume();
+                    //scene.updateVolume();
                     
                     var min = new x3dom.fields.SFVec3f();
                     min.setValues(scene._lastMin);

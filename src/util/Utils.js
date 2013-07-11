@@ -592,6 +592,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                 (property.BITLODGEOMETRY && geometry.hasColor()) || 
                                 (property.POPGEOMETRY    && geometry.hasColor()) ||
                                 (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
+
 	}
 	
 	property.toIdentifier = function() { 
@@ -601,6 +602,7 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 				id += this[p];
 			}
 		}
+        this.id = id;
 		return id;
 	};
 	
@@ -614,6 +616,8 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 		return str;
 	};
 
+    property.toIdentifier();
+
 	return property;
 };
 
@@ -621,9 +625,11 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 * Returns "shader" such that "shader.foo = [1,2,3]" magically sets the 
 * appropriate uniform
 *****************************************************************************/
-x3dom.Utils.wrapProgram = function (gl, program)
+x3dom.Utils.wrapProgram = function (gl, program, shaderID)
 {
 	var shader = {};
+
+    shader.shaderID = shaderID;
         
 	shader.bind = function () { 
 		gl.useProgram(program); 

@@ -40,6 +40,9 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
     this.sortOpaque = (this.smallFeatureThreshold > 1 && scene._vf.scaleRenderedIdsOnMove < 1);
     this.sortTrans = drawableCollectionConfig.sortTrans;
 
+    this.prioLevels = 10;
+    this.maxTreshold = 100;
+
     this.sortBySortKey = false;
     this.sortByPriority = false;
 
@@ -141,6 +144,10 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
 
     //Calculate the magical object priority (though currently not very magic)
     drawable.priority = Math.max(0, graphState.coverage);
+    //drawable.priority = this.calculatePriority(graphState);
+
+    //Get shaderID from shape
+    drawable.shaderID = shape.getShaderProperties(this.viewarea).id;
 
     var appearance = shape._cf.appearance.node;
 
@@ -161,9 +168,6 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
         }
     }
 
-    //Generate the shader properties (TODO)
-    //drawable.properties = x3dom.Utils.generateProperties(this.viewarea, shape);
-
     //Look for sorting by sortKey
     if (!this.sortBySortKey && drawable.sortKey != 0) {
         this.sortBySortKey = true;
@@ -174,8 +178,24 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
         this.collection[drawable.sortType] = [];
     }
 
+    //Generate separate array for sortKey if not exists
+    /*if (this.collection[drawable.sortType][drawable.sortKey] === undefined) {
+        this.collection[drawable.sortType][drawable.sortKey] = [];
+    }
+
+    //Generate separate array for priority if not exists
+    if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority] === undefined) {
+        this.collection[drawable.sortType][drawable.sortKey][drawable.priority] = [];
+    }
+
+    //Generate separate array for shaderID if not exists
+    if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] === undefined) {
+        this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] = [];
+    }*/
+
     //Push drawable to the collection
     this.collection[drawable.sortType].push(drawable);
+    //this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID].push(drawable);
 
     //Increment collection length
     this.length++;
@@ -195,7 +215,10 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
 x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
 
     //Calculate the magical object priority (though currently not very magic)
-    //drawable.priority = Math.max(0, graphState.coverage);
+    //drawable.priority = this.calculatePriority(graphState);
+
+    //Get shaderID from shape
+    drawable.shaderID = shape.getShaderProperties(this.viewarea).toIdentifier();
 
     var appearance = drawable.shape._cf.appearance.node;
 
@@ -211,9 +234,6 @@ x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
         drawable.zPos = center.z;
     }
 
-    //Generate the shader properties (TODO)
-    //drawable.properties = x3dom.Utils.generateProperties(this.viewarea, shape);
-
     //Look for sorting by sortKey
     if (!this.sortBySortKey && drawable.sortKey != 0) {
         this.sortBySortKey = true;
@@ -224,8 +244,24 @@ x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
         this.collection[drawable.sortType] = [];
     }
 
+    //Generate separate array for sortKey if not exists
+    /*if (this.collection[drawable.sortType][drawable.sortKey] === undefined) {
+     this.collection[drawable.sortType][drawable.sortKey] = [];
+     }
+
+     //Generate separate array for priority if not exists
+     if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority] === undefined) {
+     this.collection[drawable.sortType][drawable.sortKey][drawable.priority] = [];
+     }
+
+     //Generate separate array for shaderID if not exists
+     if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] === undefined) {
+     this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] = [];
+     }*/
+
     //Push drawable to the collection
     this.collection[drawable.sortType].push(drawable);
+    //this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID].push(drawable);
 
     //Increment collection length
     this.length++;
@@ -239,6 +275,20 @@ x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
     }
 };
 
+
+/**
+ * Calculate the magical object priority (though currently not very magic).
+ */
+x3dom.DrawableCollection.prototype.calculatePriority = function (graphState) {
+
+    //Use coverage as priority
+    var priority = Math.max(0, graphState.coverage);
+
+    //Classify the priority level
+    priority = Math.min( Math.round(priority / (maxTreshold / this.prioLevels-1)), this.prioLevels-1 );
+
+    return priority;
+}
 
 /**
  *
@@ -302,4 +352,60 @@ x3dom.DrawableCollection.prototype.sort = function () {
 
     //Merge opaque and transparent drawables to a single array (slow operation)
     this.collection = opaque.concat(transparent);
+};
+
+x3dom.DrawableCollection.prototype.forEach = function (fnc, maxPriority) {
+
+    //Set maximal priority
+    maxPriority = typeof maxPriority !== 'undefined' ? Math.min(maxPriority, prioLevels) : prioLevels;
+
+    //Define run variables
+    var sortKey, priority, shaderID, drawable;
+
+    //First traverse Opaque drawables
+    for (sortKey=0; sortKey<this.collection['opaque'].length; ++sortKey)
+    {
+        if (this.collection['opaque'][sortkey] !== undefined)
+        {
+            for (priority=this.collection['opaque'][sortKey].length; priority>0; --priority)
+            {
+                if (this.collection['opaque'][sortKey][priority] !== undefined)
+                {
+                    for (shaderID in this.collection['opaque'][sortKey][priority])
+                    {
+                        for (drawable=0; drawable<this.collection['opaque'][sortKey][priority][shaderID].lenght; ++drawable)
+                        {
+                            fnc( this.collection['opaque'][sortKey][priority][shaderID][drawable] );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    //Next traverse transparent drawables
+    for (sortKey=0; sortKey<this.collection['transparent'].length; ++sortKey)
+    {
+        if (this.collection['transparent'][sortkey] !== undefined)
+        {
+            for (priority=this.collection['transparent'][sortKey].length; priority>0; --priority)
+            {
+                if (this.collection['transparent'][sortKey][priority] !== undefined)
+                {
+                    for (shaderId in this.collection['transparent'][sortKey][priority])
+                    {
+                        //Sort transparent drawables by z-Pos
+                        this.collection['transparent'][sortKey][priority][shaderId].sort(function(a, b) {
+                            return a.zPos - b.zPos
+                        });
+
+                        for (drawable=0; drawable<this.collection['transparent'][sortKey][priority][shaderId].lenght; ++drawable)
+                        {
+                            fnc( this.collection['transparent'][sortKey][priority][shaderId][drawable] );
+                        }
+                    }
+                }
+            }
+        }
+    }
 };

@@ -837,7 +837,7 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Scene.superClass.call(this, ctx);
 
-            // define the experimental picking mode: box, idBuf, idBuf24, color, texCoord
+            // define the experimental picking mode: box, idBuf, idBuf24, idBufId, color, texCoord
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);

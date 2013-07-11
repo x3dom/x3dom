@@ -13,6 +13,7 @@ x3dom.shader = {};
 
 x3dom.shader.PICKING = "picking";
 x3dom.shader.PICKING_24 = "picking24";
+x3dom.shader.PICKING_ID = "pickingId";
 x3dom.shader.PICKING_COLOR = "pickingColor";
 x3dom.shader.PICKING_TEXCOORD = "pickingTexCoord";
 x3dom.shader.FRONTGROUND_TEXTURE = "frontgroundTexture";
