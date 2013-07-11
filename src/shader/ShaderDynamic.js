@@ -364,7 +364,7 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
       shader += "calcNormal = normalize(calcNormal);\n";
     }
   
-    shader += "fragNormal = (normalMatrix * vec4(calcNormal, 0.0)).xyz;\n";
+    shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
 	}
     
 	//Textures
