@@ -143,12 +143,20 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 			shader += "varying vec3 fragViewDir;\n";
 			shader += "uniform mat4 viewMatrix;\n";
 		}
-    if (properties.DISPLACEMENTMAP) {
-      shader += "uniform sampler2D displacementMap;\n";
-      shader += "uniform float displacementFactor;\n";
-      shader += "uniform float displacementWidth;\n";
-      shader += "uniform float displacementHeight;\n";
-    }
+        if (properties.DISPLACEMENTMAP) {
+          shader += "uniform sampler2D displacementMap;\n";
+          shader += "uniform float displacementFactor;\n";
+          shader += "uniform float displacementWidth;\n";
+          shader += "uniform float displacementHeight;\n";
+            shader += "uniform float displacementAxis;\n";
+        }
+        if (properties.DIFFPLACEMENTMAP) {
+            shader += "uniform sampler2D diffuseDisplacementMap;\n";
+            shader += "uniform float displacementFactor;\n";
+            shader += "uniform float displacementWidth;\n";
+            shader += "uniform float displacementHeight;\n";
+            shader += "uniform float displacementAxis;\n";
+        }
 	}
 	
 	//Lights & Fog
@@ -316,28 +324,47 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	
 	//Normals
 	if(properties.LIGHTS) {
-    if (properties.DISPLACEMENTMAP && !properties.NORMALMAP) {
+    if (properties.DISPLACEMENTMAP || properties.DIFFPLACEMENTMAP && !properties.NORMALMAP) {
       //Map-Tile Size
       shader += "float dx = 1.0 / displacementWidth;\n";
       shader += "float dy = 1.0 / displacementHeight;\n";
       
       //Get the 4 Vertex Neighbours
-      shader += "float s1 = texture2D(displacementMap, vec2(vertTexCoord.x - dx, 1.0 - vertTexCoord.y)).r;\n";		 //left      	
-      shader += "float s2 = texture2D(displacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y - dy)).r;\n";		 //bottom      	
-      shader += "float s3 = texture2D(displacementMap, vec2(vertTexCoord.x + dx, 1.0 - vertTexCoord.y)).r;\n";	   //right      	
-      shader += "float s4 = texture2D(displacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y + dy)).r;\n";		 //top
+      if (properties.DISPLACEMENTMAP)
+      {
+          shader += "float s1 = texture2D(displacementMap, vec2(vertTexCoord.x - dx, 1.0 - vertTexCoord.y)).r;\n";		 //left
+          shader += "float s2 = texture2D(displacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y - dy)).r;\n";		 //bottom
+          shader += "float s3 = texture2D(displacementMap, vec2(vertTexCoord.x + dx, 1.0 - vertTexCoord.y)).r;\n";	   //right
+          shader += "float s4 = texture2D(displacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y + dy)).r;\n";		 //top
+      }
+      else if (properties.DIFFPLACEMENTMAP)
+      {
+          shader += "float s1 = texture2D(diffuseDisplacementMap, vec2(vertTexCoord.x - dx, 1.0 - vertTexCoord.y)).a;\n";		 //left
+          shader += "float s2 = texture2D(diffuseDisplacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y - dy)).a;\n";		 //bottom
+          shader += "float s3 = texture2D(diffuseDisplacementMap, vec2(vertTexCoord.x + dx, 1.0 - vertTexCoord.y)).a;\n";	   //right
+          shader += "float s4 = texture2D(diffuseDisplacementMap, vec2(vertTexCoord.x, 1.0 - vertTexCoord.y + dy)).a;\n";		 //top
+      }
 
       //Coeffiecent for smooth/sharp Normals
       shader += "float coef = displacementFactor;\n";
       
-      //Calculate the Normal    
-      shader += "vertNormal = vec3((s1 - s3) * coef, -5.0, (s2 - s4) * coef);\n";
+      //Calculate the Normal
+      shader += "vec3 calcNormal;\n";
+
+      shader += "if (displacementAxis == 0.0) {\n"; //X
+      shader += "calcNormal = vec3((s1 - s3) * coef, -5.0, (s2 - s4) * coef);\n";
+      shader += "} else if(displacementAxis == 1.0) {\n"; //Y
+      shader += "calcNormal = vec3((s1 - s3) * coef, -5.0, (s2 - s4) * coef);\n";
+      shader += "} else {\n"; //Z
+      shader += "calcNormal = vec3((s1 - s3) * coef, -(s2 - s4) * coef, 5.0);\n";
+      shader += "}\n";
+
       
       //normalized Normal
-      shader += "vertNormal = normalize(vertNormal);\n";
+      shader += "calcNormal = normalize(calcNormal);\n";
     }
   
-    shader += "fragNormal = (normalMatrix * vec4(vertNormal, 0.0)).xyz;\n";
+    shader += "fragNormal = (normalMatrix * vec4(calcNormal, 0.0)).xyz;\n";
 	}
     
 	//Textures
@@ -372,9 +399,13 @@ x3dom.shader.DynamicShader.prototype.generateVertexShader = function(gl, propert
 	}
   
 	//Displacement
-  if (properties.DISPLACEMENTMAP) {
-    shader += "vertPosition.y = texture2D(displacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).r * displacementFactor;\n";
-  }
+    if (properties.DISPLACEMENTMAP) {
+        shader += "vertPosition += normalize(vertNormal) * texture2D(displacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).r * displacementFactor;\n";
+    }
+    else if (properties.DIFFPLACEMENTMAP)
+    {
+        shader += "vertPosition += normalize(vertNormal) * texture2D(diffuseDisplacementMap, vec2(fragTexcoord.x, 1.0-fragTexcoord.y)).a * displacementFactor;\n";
+    }
   
   //Positions
 	shader += "gl_Position = modelViewProjectionMatrix * vec4(vertPosition, 1.0);\n";
@@ -447,11 +478,16 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		if(properties.SPECMAP){
 			shader += "uniform sampler2D specularMap;\n";
 		}
-    if (properties.DISPLACEMENTMAP) {
-      shader += "uniform sampler2D displacementMap;\n";
-      shader += "uniform float displacementWidth;\n";
-      shader += "uniform float displacementHeight;\n";
-    }
+        if (properties.DISPLACEMENTMAP) {
+          shader += "uniform sampler2D displacementMap;\n";
+          shader += "uniform float displacementWidth;\n";
+          shader += "uniform float displacementHeight;\n";
+        }
+        if (properties.DIFFPLACEMENTMAP) {
+            shader += "uniform sampler2D diffuseDisplacementMap;\n";
+            shader += "uniform float displacementWidth;\n";
+            shader += "uniform float displacementHeight;\n";
+        }
 	}
 	
 	//Fog
@@ -507,36 +543,6 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 			shader += "normal.y = -normal.y;\n";
 			shader += "normal.x = -normal.x;\n";
 		}
-    
-    //Calculate normals from displacementMap
-    if (properties.DISPLACEMENTMAP && !properties.NORMALMAP) {
-      //Map-Tile Size
-      /*shader += "float dx = 1.0 / 512.0;\n";
-      shader += "float dy = 1.0 / 512.0;\n";
-      
-      //Get the 4 Vertex Neighbours
-      shader += "float s1 = texture2D(displacementMap, vec2(fragTexcoord.x - dx, 1.0 - fragTexcoord.y)).r;\n";		       	
-      shader += "float s2 = texture2D(displacementMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y - dy)).r;\n";		       	
-      shader += "float s3 = texture2D(displacementMap, vec2(fragTexcoord.x + dx, 1.0 - fragTexcoord.y)).r;\n";	       	
-      shader += "float s4 = texture2D(displacementMap, vec2(fragTexcoord.x, 1.0 - fragTexcoord.y + dy)).r;\n";		
-
-      //Coeffiecent for smooth/sharp Normals
-      shader += "float coef = 1.0;\n";
-      
-      //Calculate the Normal
-      shader += "normal = vec3((s1 - s3) * coef, 0.5, (s2 - s4) * coef);\n";
-      
-      shader += "vec3 derivx = vec3(2.0*dx, 0.0, s1);\n";
-      shader += "vec3 derivy = vec3(0.0, 2.0*dy, s3);\n";
-      shader += "normal = normalize(cross(derivx,derivy));\n";
-      
-      //normalized Normal
-      shader += "normal = normalize(normal);\n";
-      
-      //shader += "normal =  2.0 * normal - 1.0;\n";
-      
-      //shader += "normal = normalize(normal);\n";*/
-    }
 		
 		//Solid
 		if(!properties.SOLID) {
@@ -566,14 +572,21 @@ x3dom.shader.DynamicShader.prototype.generateFragmentShader = function(gl, prope
 		}
 		
 		//Textures
-		if(properties.TEXTURED || properties.DIFFUSEMAP){
+		if(properties.TEXTURED || properties.DIFFUSEMAP || properties.DIFFPLACEMENTMAP){
 			if(properties.CUBEMAP) {
 				shader += "vec3 viewDir = normalize(fragViewDir);\n";
 				shader += "vec3 reflected = reflect(viewDir, normal);\n";
 				shader += "reflected = (modelViewMatrixInverse * vec4(reflected,0.0)).xyz;\n";
 				shader += "vec4 texColor = textureCube(cubeMap, reflected);\n";
 				shader += "color.a *= texColor.a;\n";
-			} else {
+			}
+            else if (properties.DIFFPLACEMENTMAP)
+            {
+                shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
+                shader += "vec4 texColor = texture2D(diffuseDisplacementMap, texCoord);\n";
+            }
+            else
+            {
 				shader += "vec2 texCoord = vec2(fragTexcoord.x, 1.0-fragTexcoord.y);\n";
 				shader += "vec4 texColor = texture2D(diffuseMap, texCoord);\n";
 				shader += "color.a *= texColor.a;\n";

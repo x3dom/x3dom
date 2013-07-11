@@ -1800,6 +1800,16 @@ x3dom.gfx_webgl = (function () {
                       sp.displacementWidth = tex.texture.width;
                       sp.displacementHeight = tex.texture.height;
                       sp.displacementFactor = shader._vf.displacementFactor;
+                      sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
+                                            (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
+                    }
+                    else if (shader.getDiffuseDisplacementMap()) {
+                        tex = x3dom.Utils.findTextureByName(s_gl.texture, "diffuseDisplacementMap");
+                        sp.displacementWidth = tex.texture.width;
+                        sp.displacementHeight = tex.texture.height;
+                        sp.displacementFactor = shader._vf.displacementFactor;
+                        sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
+                                              (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
                     }
                 }
                 else if (mat) {

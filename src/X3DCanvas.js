@@ -1083,7 +1083,7 @@ x3dom.X3DCanvas.prototype.tick = function()
     var d = new Date().getTime();
     var diff = d - this.lastTimeFPSWasTaken;
     
-    if (diff >= 1000)
+    if (diff >= 1000 && this.doc.needRender)
     {
         this.x3dElem.runtime.fps = this.framesSinceLastTime / (diff / 1000.0);
         this.x3dElem.runtime.addMeasurement('FPS', this.x3dElem.runtime.fps);
@@ -1106,7 +1106,7 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.x3dElem.runtime.ready();
                 this.x3dElem.runtime.isReady = true;
             }
-            
+
             this.x3dElem.runtime.enterFrame();
 			
             this.x3dElem.runtime.addMeasurement('ANIM', animD);
