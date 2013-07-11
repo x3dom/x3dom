@@ -14,22 +14,18 @@
 x3dom.arc = {};
 x3dom.arc.instance = null;
 
-x3dom.arc.Limits = defineClass(
-    null,
-    function(min, max, initial)
+x3dom.arc.Limits = function(min, max, initial)
+{
+    this._min = min;
+    this._max = max;
+
+    this.getValue = function(value)
     {
-        this._min = min;
-        this._max = max;
-    },
-    {
-        //input between 0 and 1
-        getValue: function(value)
-        {
-            value = this._min + (this._max - this._min) * value;
-            return this._max >= value ? (this._min <= value ? value : this._min ) : this._max;
-        }
+        value = this._min + (this._max - this._min) * value;
+        return this._max >= value ? (this._min <= value ? value : this._min ) : this._max;
     }
-);
+}
+
 
 //---------------------------------------------------------------------------------------------------------------------
 
