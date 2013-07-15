@@ -218,7 +218,7 @@ x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
     //drawable.priority = this.calculatePriority(graphState);
 
     //Get shaderID from shape
-    drawable.shaderID = drawable.shape.getShaderProperties(this.viewarea).toIdentifier();
+    drawable.shaderID = drawable.shape.getShaderProperties(this.viewarea).id;
 
     var appearance = drawable.shape._cf.appearance.node;
 
