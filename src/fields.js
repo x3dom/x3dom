@@ -1195,7 +1195,7 @@ x3dom.fields.SFVec3f.prototype.toGL = function () {
 };
 
 x3dom.fields.SFVec3f.prototype.toString = function () {
-    return "{ x " + this.x + " y " + this.y + " z " + this.z + " }";
+    return  this.x + " " + this.y + " " + this.z;
 };
 
 x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
