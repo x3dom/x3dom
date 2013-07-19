@@ -539,9 +539,8 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function(fieldName) {
-                 if (fieldName === "radius") {  
+                 if (fieldName === "radius") {
                     this._mesh._positions[0] = [];
-					this._mesh._normals[0] = [];
 					var r = this._vf.radius;
 					var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 					var qfactor = this._quality;
