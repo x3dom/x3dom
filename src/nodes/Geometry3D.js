@@ -1646,11 +1646,11 @@ x3dom.registerNodeType(
             this.addField_SFVec3f (ctx, 'bbMin', 0, 0, 0);
             this.addField_SFVec3f (ctx, 'bbShiftVec', 0, 0, 0);
 
-            if (this._vf.bbMinModF.x >= this._vf.bbMaxModF.x)
+            if (this._vf.bbMinModF.x > this._vf.bbMaxModF.x)
                 this._vf.bbShiftVec.x = 1.0;
-            if (this._vf.bbMinModF.y >= this._vf.bbMaxModF.y)
+            if (this._vf.bbMinModF.y > this._vf.bbMaxModF.y)
                 this._vf.bbShiftVec.y = 1.0;
-            if (this._vf.bbMinModF.z >= this._vf.bbMaxModF.z)
+            if (this._vf.bbMinModF.z > this._vf.bbMaxModF.z)
                 this._vf.bbShiftVec.z = 1.0;
       
             this.addField_MFNode('levels', x3dom.nodeTypes.PopGeometryLevel);

@@ -2298,7 +2298,7 @@ x3dom.gfx_webgl = (function () {
 
         sp.PG_numAnchorVertices = popGeo._vf.numAnchorVertices;
 
-        sp.PG_bbMaxModF = popGeo._vf.bbMaxModF.toGL();
+        sp.PG_bbMaxModF    = popGeo._vf.bbMaxModF.toGL();
         sp.PG_bboxShiftVec = popGeo._vf.bbShiftVec.toGL();
 
         sp.PG_precisionLevel = currentLOD;
