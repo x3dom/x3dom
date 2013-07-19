@@ -23,44 +23,47 @@ x3dom.arc.Limits = function(min, max, initial)
     {
         value = this._min + (this._max - this._min) * value;
         return this._max >= value ? (this._min <= value ? value : this._min ) : this._max;
-    }
-}
+    };
+};
 
 
 //---------------------------------------------------------------------------------------------------------------------
 
-x3dom.arc.ARF = defineClass(
-    null,
-    function(name, min, max, dirFac, factorGetterFunc, factorSetterFunc, getterFunc, setterFunc)
+x3dom.arc.ARF = function(name, min, max, dirFac, factorGetterFunc, factorSetterFunc, getterFunc, setterFunc)
+{
+    this._name = name;
+    //start with average
+    this._stateValue = [];
+    this._stateValue[0] = 0.5;
+    this._stateValue[1] = 0.5;
+
+    this._limits = new x3dom.arc.Limits(min, max);
+    this._factorGetterFunc = factorGetterFunc;
+    this._factorSetterFunc = factorSetterFunc;
+    this._setterFunc = setterFunc;
+    this._getterFunc = getterFunc;
+    this._dirFac = dirFac;
+
+    this.getFactor = function()
     {
-        this._name = name;
-        //start with average
-        this._stateValue = [];
+        return this._factorGetterFunc();
+    };
+
+    this.update = function(state, step)
+    {
+        var stateVal = this._stateValue[state] + step * this._dirFac;
+        this._stateValue[state] =  0 <= stateVal ? ( 1 >= stateVal ? stateVal : 1 ) : 0;
+        this._setterFunc(this._limits.getValue(this._stateValue[state]));
+
+        //console.log(this.name +" "+this._factorGetterFunc() +" *  " + step +" "+ this._stateValue[state] +" "+ state);
+    };
+
+    this.reset = function()
+    {
         this._stateValue[0] = 0.5;
         this._stateValue[1] = 0.5;
-
-        this._limits = new x3dom.arc.Limits(min, max);
-        this._factorGetterFunc = factorGetterFunc;
-        this._factorSetterFunc = factorSetterFunc;
-        this._setterFunc = setterFunc;
-        this._getterFunc = getterFunc;
-        this._dirFac = dirFac;
-    },
-    {
-        getFactor: function()
-        {
-            return this._factorGetterFunc();
-        },
-        update: function(state, step)
-        {
-            var stateVal = this._stateValue[state] + step * this._dirFac;
-            this._stateValue[state] =  0 <= stateVal ? ( 1 >= stateVal ? stateVal : 1 ) : 0;
-            this._setterFunc(this._limits.getValue(this._stateValue[state]));
-
-            //console.log(this.name +" "+this._factorGetterFunc() +" *  " + step +" "+ this._stateValue[state] +" "+ state);
-        }
-    }
-);
+    };
+};
 
 //---------------------------------------------------------------------------------------------------------------------
 
@@ -184,6 +187,13 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                     normFactors[i] /= factorSum;
                     this._arfs[i].update(state, this._stepWidth * normFactors[i] * dirFac);
                 }
+            }
+        },
+        reset: function()
+        {
+            for( var i = 0, n = this._arfs.length; i < n; ++i)
+            {
+                this._arfs[i].reset();
             }
         }
     }

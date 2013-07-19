@@ -19,6 +19,10 @@ x3dom.registerNodeType(
 
             this.addField_SFFloat(ctx, 'factor', 1.0);
             this.addField_SFInt32(ctx, 'maxDepth', 3);
+            this.addField_SFInt32(ctx, 'minDepth', 0);
+            this.addField_SFInt32(ctx, 'smoothLoading', 1);
+            this.addField_SFInt32(ctx, 'maxPoints', 1000000);
+            this.addField_SFInt32(ctx, 'interactionDepth', 0);
             this.addField_SFVec2f(ctx, 'size', 1, 1);
             this.addField_SFVec3f(ctx, 'octSize', 1, 1, 1);
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
@@ -33,9 +37,14 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'textureFormat', "png");
             this.addField_SFString(ctx, 'normalFormat', "png");
             this.addField_SFFloat(ctx, 'maxElevation', 1.0);
+            this.addField_SFBool(ctx, 'useNormals', true);
             this.addField_SFBool(ctx, 'lit', true);
             // count of elements on next level
             this.addField_SFInt32(ctx, 'bvhCount', 8);
+            this.creationSmooth = 0;
+            this.x3dElement = document.getElementById("x3d");
+            this.togglePoints = true;
+            this.nodeProducer = new NodeProducer();
 
             if (this._vf.mode === "bin") {
                 // creating the root-node of the quadtree
@@ -88,10 +97,27 @@ x3dom.registerNodeType(
         },
         {
             visitChildren: function(transform, drawableCollection, singlePath, invalidateCache, planeMask) {
-                this.createChildren = 0;
-                singlePath = false;         // TODO (specify if unique node path or multi-parent)
-                invalidateCache = true;     // TODO (reuse world transform and volume cache)
-                this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                if (this._vf.mode === "oct") {
+                    if (this.x3dElement.runtime.isReady && this.togglePoints){
+                        this.x3dElement.runtime.togglePoints();
+                        this.togglePoints = false;
+                        this.view = this.x3dElement.runtime.canvas.doc._viewarea;
+                    }
+                    this.creationSmooth++;
+                    singlePath = false;         // TODO (specify if unique node path or multi-parent)
+                    invalidateCache = true;     // TODO (reuse world transform and volume cache)
+                    this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+
+                    if (!this.view.isMoving() && ((this.creationSmooth % this._vf.smoothLoading) === 0)) {
+                        this.nodeProducer.CreateNewNode();
+                    }
+                }
+                else {
+                    this.createChildren = 0;
+                    singlePath = false;         // TODO (specify if unique node path or multi-parent)
+                    invalidateCache = true;     // TODO (reuse world transform and volume cache)
+                    this.rootNode.collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                }
             },
 
             getVolume: function()
@@ -110,6 +136,42 @@ x3dom.registerNodeType(
         }
     )
 );
+
+
+
+
+function NodeProducer()
+{
+    var nextNode        = null;
+    var nearestDistance = 1000000;
+    var smallestDepth   = 1000000;
+    
+    
+    
+    this.AddNewNode = function(node, distance){
+        if (node.Level() < smallestDepth) {
+            smallestDepth = node.Level();
+            nextNode = node;
+        }
+        if (node.Level() === smallestDepth){
+            if (distance < nearestDistance){
+                distance = nearestDistance;
+                nextNode = node;
+            }
+        }
+    };
+    
+    
+    
+    this.CreateNewNode = function(){
+        if (nextNode !== null) {
+            nextNode.CreateChildren();
+        }
+        nextNode = null;
+        smallestDepth = 1000;
+    };
+}
+
 
 
 
@@ -1866,13 +1928,22 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
 {
     // object that stores all information to do a frustum culling
     var cullObject = {};
+    // temporary variable to store the view matrix
+    var mat_view;
+    // temporary position of this node in view space
+    var vPos;
+    // temporary distance to camera in view space
+    var distanceToCamera;
     // factor redefinition to get a view about the whole scene on level three
-    var fac = terrain._vf.factor + Math.pow(level, 2);
-    
+    var fac = ((1/4 * Math.pow(level, 2) + 1.5) * 0.1) * terrain._vf.factor;
     // array with the maximal four child nodes
     var children = [];
-    // path to x3d-file that should be loaded
-    //var path = terrain._vf.url + "/" + level + "/" + columnNr + "/";
+    // true if a file for the children is available
+    var childrenExist = false;
+    // true if this component is available and renderable
+    var readyState = false;
+    // checks if children are ready
+    var childrenReadyState = false;
     // address of the image for the terrain height-data
     var file = terrain._vf.url + path + imgNumber + ".x3d";
     // position of the node in world space
@@ -1881,6 +1952,17 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
     var exists = false;
     // drawable component of this node
     var shape = new x3dom.nodeTypes.Shape(ctx);
+    
+    
+    this.RecalcFactor = function() {
+        fac = ((1/4 * Math.pow(level, 2) + 1.5) * 0.1) * terrain._vf.factor;
+        for (var i = 0; i < children.length; i++){
+            children[i].RecalcFactor();
+        }
+    };
+    
+    
+    
     // loader for binary geometry files
     var xhr = new XMLHttpRequest();
     xhr.open("GET", file, false);
@@ -1899,6 +1981,17 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
     catch (exp) {
         x3dom.debug.logException("Error loading file '" + file + "': " + exp);
     }
+    
+    
+    this.Exists = function()
+    {
+        return exists;
+    };
+    
+    
+    this.Shape = function(){
+        return shape;
+    };
 
 
 
@@ -1907,20 +2000,17 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
      */
     function createGeometry(parent) {
         // definition of nameSpace
-        shape._nameSpace = new x3dom.NodeNameSpace("", terrain._nameSpace.doc);
-        shape._nameSpace.setBaseURL(terrain._nameSpace.baseURL + terrain._vf.url + path);
-        var binGeo = xmlDoc.getElementsByTagName("BinaryGeometry")[0];
-
-        if (parent && parent._nameSpace && binGeo) {
-            var geometry = parent._nameSpace.setupTree(binGeo);
-            parent.addChild(geometry);
-            geometry.nodeChanged();
-            if (level === 0) {
-                resizeFac = (geometry._vf.size.x + 
-                             geometry._vf.size.y) / 2;
-            }
-            position = x3dom.fields.SFVec3f.copy(geometry._vf.position);
+        this._nameSpace = new x3dom.NodeNameSpace("", terrain._nameSpace.doc);
+        this._nameSpace.setBaseURL(terrain._nameSpace.baseURL + terrain._vf.url + path);
+        var tempShape = xmlDoc.getElementsByTagName("Shape")[0];
+        shape = this._nameSpace.setupTree(tempShape);
+        if (!terrain._vf.useNormals){
+            var appearance = new x3dom.nodeTypes.Appearance(ctx);
+            var material = new x3dom.nodeTypes.Material(ctx);
+            appearance.addChild(material);
+            shape._cf.appearance = appearance;
         }
+        position = x3dom.fields.SFVec3f.copy(shape._cf.geometry.node._vf.position);
     }
 
 
@@ -1929,21 +2019,20 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
      * creates the appearance for this node and add it to the dom tree
      */
     function initialize() {
-
-        // appearance of the drawable component of this node
-        var appearance = new x3dom.nodeTypes.Appearance(ctx); 
-
-        shape.addChild(appearance);
-        appearance.nodeChanged();
-        shape.nodeChanged();
-        
+       
         // bind static cull-properties to cullObject
         cullObject.boundedNode = shape; 
         cullObject.volume = shape.getVolume();
     }
 
 
-
+    
+    this.CreateChildren = function() {
+        create();
+    };
+    
+    
+    
     /*
      * creates the four child-nodes
      */
@@ -1954,6 +2043,66 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
                                       i + 1, count));
         }
     }
+    
+    
+    
+    /* 
+     * Runs only local ready() method. This is needed from parent to ask if 
+     * all children are ready to render or not 
+     */
+    this.Ready = function(){
+        if (shape._webgl !== undefined && shape._webgl.internalDownloadCount !== undefined) {
+                return ready();
+        }
+        
+        return false;
+    };
+    
+    
+    
+    /* 
+     * Iterates through all textures of this node and sets readState parameter
+     * to true if all textures have been loaded to gpu yet, false if not.
+     */
+    function ready() {
+        readyState = true;
+
+        if (shape._webgl.internalDownloadCount > 0){
+            readyState = false;
+        }
+             
+        return readyState;
+    }
+
+    
+    
+    /* 
+     * Updates the loading state of children and initializes this node
+     * if this wasn't done before 
+     */
+    function updateLoadingState(drawableCollection, transform){
+        
+        for (var i = 0; i < children.length; i++){
+            childrenReadyState = true;
+            if (!children[i].Ready()) {
+                childrenReadyState = false;
+            }
+            else {
+                children[i].Shape()._vf.render = true;
+            }
+        }
+
+        if (shape._cf.geometry.node !== null) {
+            if (shape._webgl === undefined || shape._webgl.internalDownloadCount === undefined) {
+                drawableCollection.context.setupShape(drawableCollection.gl, 
+                                                     {shape:shape, transform:transform}, 
+                                                      drawableCollection.viewarea);
+            }
+            else {
+                ready(); 
+            }
+        }
+    }
 
 
 
@@ -1962,27 +2111,53 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
      */
     this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
 
+        // THIS CALC IS ONLY FOR THE DEMO AND HAS TO BE DELETED AFTER IT
+        fac = ((1/4 * Math.pow(level, 2) + 1.5) * 0.1) * terrain._vf.factor;
+
         // definition the actual transformation of the node
         cullObject.localMatrix = transform;
 
-        if (exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
-            var mat_view = drawableCollection.viewMatrix;
-            var vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
-            var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
-            
-            // terrain._vf.factor instead (level * 16)
-            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) * 1000 / fac)) {
-                if (children.length === 0 && terrain.createChildren === 0) {
-                    terrain.createChildren++;
-                    create();
-                    shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
-                }
-                else if (children.length === 0 && terrain.createChildren > 0) {
+        // Checks the actual loading state of itself and children if something wasn't loaded in last frame
+        if (!readyState || !childrenReadyState) { updateLoadingState(drawableCollection, transform); }
+
+        if (readyState && exists && (planeMask = drawableCollection.cull(transform, cullObject, singlePath, planeMask)) > 0) {
+            mat_view = drawableCollection.viewMatrix;
+            vPos = mat_view.multMatrixPnt(transform.multMatrixPnt(position));
+            distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
+                        
+            if ((distanceToCamera < Math.pow((terrain._vf.maxDepth - level), 2) / fac) || level < terrain._vf.minDepth) {
+                if (terrain.view.isMoving() && level >= terrain._vf.interactionDepth) {
                     shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
-                    for (var i = 0; i < children.length; i++) {
-                        children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    if (children.length === 0) {
+                        terrain.nodeProducer.AddNewNode(thisNode, distanceToCamera);
+                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    }
+                    else if (children.length === 0 && terrain.createChildren > 0) {
+                        shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                    }
+                    else {
+                        if (!childrenExist){
+                            for (var i = 0; i < children.length; i++) {
+                                if (children[i].Exists()) {
+                                    childrenExist = true;
+                                    break;
+                                }
+                            }
+                        }
+                        if (childrenExist && childrenReadyState){
+                            for (var i = 0; i < children.length; i++) {
+                                children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);   
+                            }
+                        }
+                        else {
+                            for (var i = 0; i < children.length; i++) {
+                                children[i].collectDrawables(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                                children[i].Shape()._vf.render = false;
+                            }
+                            shape.collectDrawableObjects(transform, drawableCollection, singlePath, invalidateCache, planeMask);
+                        }
                     }
                 }
             }
@@ -2001,9 +2176,15 @@ function BVHNode(ctx, terrain, level, path, imgNumber, count)
         // TODO; implement correctly, for now just use first shape as workaround
         return shape.getVolume();
     };
+    
+    
+    
+    this.Level = function() {
+        return level;
+    };
 
 
-
+    var thisNode = this;
     // initializes this node directly after creating
     initialize();
 }
