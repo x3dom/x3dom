@@ -157,9 +157,11 @@ x3dom.registerNodeType(
 					
 					if (xhr.status === 202 && that.count < 10) {
 						that.count++;
-						x3dom.debug.logInfo('Statuscode 202 and send new Request');
-						window.setTimeout(function(){ 
-							that.nodeChanged(); 
+						x3dom.debug.logInfo('Statuscode 202 and send new Request in 5 sec');
+                        //TODO: check reload header field for better reload timout?
+						window.setTimeout(function(){
+                            that._nameSpace.doc.downloadCount -= 1;
+                            that.nodeChanged();
 							}, 5000);
                         return xhr;
 					}
