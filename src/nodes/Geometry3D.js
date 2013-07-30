@@ -2643,36 +2643,45 @@ x3dom.registerNodeType(
 									p0 = +indexes[i];
 									if (hasNormalInd && normPerVert) { n0 = +normalInd[i]; }
 									else if (hasNormalInd && !normPerVert) { n0 = +normalInd[faceCnt]; }
-									else { n0 = p0; }
+									else if (normPerVert) { n0 = p0; }
+									else { n0 = faceCnt; }
+
 									if (hasTexCoordInd) { t0 = +texCoordInd[i]; }
 									else { t0 = p0; }
 									if (hasColorInd && colPerVert) { c0 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c0 = +colorInd[faceCnt]; }
-									else { c0 = p0; }
+									else if (colPerVert) { c0 = p0; }
+									else { c0 = faceCnt; }
 									t = 1;
 								break;
 								case 1:
 									p1 = +indexes[i];
 									if (hasNormalInd && normPerVert) { n1 = +normalInd[i]; }
 									else if (hasNormalInd && !normPerVert) { n1 = +normalInd[faceCnt]; }
-									else { n1 = p1; }
+									else if (normPerVert) { n1 = p1; }
+									else { n1 = faceCnt; }
+
 									if (hasTexCoordInd) { t1 = +texCoordInd[i]; }
 									else { t1 = p1; }
 									if (hasColorInd && colPerVert) { c1 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c1 = +colorInd[faceCnt]; }
-									else { c1 = p1; }
+									else if (colPerVert) { c1 = p1; }
+									else { c1 = faceCnt; }
 									t = 2;
 								break;
 								case 2:
 									p2 = +indexes[i];
 									if (hasNormalInd && normPerVert) { n2 = +normalInd[i]; }
 									else if (hasNormalInd && !normPerVert) { n2 = +normalInd[faceCnt]; }
-									else { n2 = p2; }
+									else if (normPerVert) { n2 = p2; }
+									else { n2 = faceCnt; }
+
 									if (hasTexCoordInd) { t2 = +texCoordInd[i]; }
 									else { t2 = p2; }
 									if (hasColorInd && colPerVert) { c2 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c2 = +colorInd[faceCnt]; }
-									else { c2 = p2; }
+									else if (colPerVert) { c2 = p2; }
+									else { c2 = faceCnt; }
 									t = 3;
 	
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
@@ -2759,8 +2768,10 @@ x3dom.registerNodeType(
 										n2 = +normalInd[i];
 									} else if (hasNormalInd && !normPerVert) {
 										/*n2 = +normalInd[faceCnt];*/
-									} else {
+									} else if (normPerVert) {
 										n2 = p2;
+									} else {
+										n2 = faceCnt;
 									}
 	
 									if (hasTexCoordInd) {
@@ -2773,8 +2784,10 @@ x3dom.registerNodeType(
 										c2 = +colorInd[i];
 									} else if (hasColorInd && !colPerVert) {
 										/*c2 = +colorInd[faceCnt];*/
-									} else {
+									} else if (colPerVert) {
 										c2 = p2;
+									} else {
+										c2 = faceCnt;
 									}
 	
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
@@ -3157,36 +3170,45 @@ x3dom.registerNodeType(
 									p0 = +indexes[i];
 									if (hasNormalInd && normPerVert) { n0 = +normalInd[i]; }
 									else if (hasNormalInd && !normPerVert) { n0 = +normalInd[faceCnt]; }
-									else { n0 = p0; }
+									else if (normPerVert) { n0 = p0; }
+									else { n0 = faceCnt; }
+
 									if (hasTexCoordInd) { t0 = +texCoordInd[i]; }
 									else { t0 = p0; }
 									if (hasColorInd && colPerVert) { c0 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c0 = +colorInd[faceCnt]; }
-									else { c0 = p0; }
+									else if (colPerVert) { c0 = p0; }
+									else { c0 = faceCnt; }
 									t = 1;
 								break;
 								case 1:
 									p1 = +indexes[i];
 									if (hasNormalInd && normPerVert) { n1 = +normalInd[i]; }
 									else if (hasNormalInd && !normPerVert) { n1 = +normalInd[faceCnt]; }
-									else { n1 = p1; }
+									else if (normPerVert) { n1 = p1; }
+									else { n1 = faceCnt; }
+
 									if (hasTexCoordInd) { t1 = +texCoordInd[i]; }
 									else { t1 = p1; }
 									if (hasColorInd && colPerVert) { c1 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c1 = +colorInd[faceCnt]; }
-									else { c1 = p1; }
+									else if (colPerVert) { c1 = p1; }
+									else { c1 = faceCnt; }
 									t = 2;
 								break;
 								case 2:
 									p2 = +indexes[i];
 									if (hasNormalInd && normPerVert) { n2 = +normalInd[i]; }
 									else if (hasNormalInd && !normPerVert) { n2 = +normalInd[faceCnt]; }
-									else { n2 = p2; }
+									else if (normPerVert) { n2 = p2; }
+									else { n2 = faceCnt; }
+
 									if (hasTexCoordInd) { t2 = +texCoordInd[i]; }
 									else { t2 = p2; }
 									if (hasColorInd && colPerVert) { c2 = +colorInd[i]; }
 									else if (hasColorInd && !colPerVert) { c2 = +colorInd[faceCnt]; }
-									else { c2 = p2; }
+									else if (colPerVert) { c2 = p2; }
+									else { c2 = faceCnt; }
 									t = 3;
 
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
@@ -3272,8 +3294,10 @@ x3dom.registerNodeType(
 										n2 = +normalInd[i];
 									} else if (hasNormalInd && !normPerVert) {
 										/*n2 = +normalInd[faceCnt];*/
-									} else {
+									} else if (normPerVert) {
 										n2 = p2;
+									} else {
+										n2 = faceCnt;
 									}
 
 									if (hasTexCoordInd) {
@@ -3286,8 +3310,10 @@ x3dom.registerNodeType(
 										c2 = +colorInd[i];
 									} else if (hasColorInd && !colPerVert) {
 										/*c2 = +colorInd[faceCnt];*/
-									} else {
+									} else if (colPerVert) {
 										c2 = p2;
+									} else {
+										c2 = faceCnt;
 									}
 
 									this._mesh._indices[0].push(cnt++, cnt++, cnt++);
