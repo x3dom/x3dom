@@ -662,15 +662,27 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Torus.superClass.call(this, ctx);
+
+            var twoPi = 2.0 * Math.PI;
+
 			this.addField_SFFloat(ctx, 'innerRadius', 0.5);
 			this.addField_SFFloat(ctx, 'outerRadius', 1.0);
+            this.addField_SFFloat(ctx, 'angle', twoPi);
 			this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
 			
 			var innerRadius = this._vf.innerRadius;
 			var outerRadius = this._vf.outerRadius;
 			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
-					
-			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;
+
+            // assure that angle in [0, 2 * PI]
+            if (this._vf.angle < 0)
+                this._vf.angle = 0;
+            else if (this._vf.angle > twoPi)
+                this._vf.angle = twoPi;
+
+            rings = Math.max(2, Math.round((this._vf.angle / twoPi) * rings));
+
+			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;  // FIXME; field update!
 
 			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
@@ -679,21 +691,22 @@ x3dom.registerNodeType(
 			}
 			else
 			{
-				var ringDelta = 2.0 * Math.PI / rings;
-				var sideDelta = 2.0 * Math.PI / sides;
+				var ringDelta = this._vf.angle / rings;
+				var sideDelta = twoPi / sides;
 				var p = [], n = [], t = [], i = [];
 				var a, b, theta, phi;
+                var cosTheta, sinTheta, cosPhi, sinPhi, dist;
 
 				for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
 				{
-					var cosTheta = Math.cos(theta);
-					var sinTheta = Math.sin(theta);
+					cosTheta = Math.cos(theta);
+					sinTheta = Math.sin(theta);
 
 					for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
 					{
-						var cosPhi = Math.cos(phi);
-						var sinPhi = Math.sin(phi);
-						var dist = outerRadius + innerRadius * cosPhi;
+						cosPhi = Math.cos(phi);
+						sinPhi = Math.sin(phi);
+						dist = outerRadius + innerRadius * cosPhi;
 
 						this._mesh._normals[0].push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
 						this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
@@ -714,6 +727,39 @@ x3dom.registerNodeType(
 						this._mesh._indices[0].push((b + 1) * (sides+1) + a);
 					}
 				}
+
+                if (this._vf.angle < twoPi - x3dom.fields.Eps)
+                {
+                    // create caps
+                    // TODO, finish!!!
+                    /*
+                    var mid = (outerRadius + innerRadius) / 2.0;
+                    var origPos = this._mesh._positions[0].length;
+
+                    this._mesh._positions[0].push(cosTheta * mid, -sinTheta * mid, innerRadius * sinPhi);
+                    this._mesh._normals[0].push(0, 0, 1);
+                    this._mesh._texCoords[0].push(0, 0);    // TODO
+
+                    for (b=0, phi=0; b<sides; b++, phi+=sideDelta)
+                    {
+                        cosPhi = Math.cos(phi);
+                        sinPhi = Math.sin(phi);
+                        dist = outerRadius + innerRadius * cosPhi;
+
+                        this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
+                        this._mesh._normals[0].push(0, 0, 1);
+                        this._mesh._texCoords[0].push(0, 0);    // TODO
+
+                        if (b > 0)
+                        {
+                            var newPos = this._mesh._positions[0].length;
+                            this._mesh._indices[0].push(origPos);
+                            this._mesh._indices[0].push(newPos - 2);
+                            this._mesh._indices[0].push(newPos - 1);
+                        }
+                    }
+                    */
+                }
 				
 				this._mesh._invalidate = true;
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
@@ -723,71 +769,74 @@ x3dom.registerNodeType(
 			}
         },
         {
-            fieldChanged: function(fieldName) {
-                if (fieldName === "innerRadius" || fieldName === "outerRadius") { 
-				
+            fieldChanged: function(fieldName)
+            {return;
+                var innerRadius = this._vf.innerRadius;
+                var outerRadius = this._vf.outerRadius;
+                var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
+
+                // assure that angle in [0, 2 * PI]
+                if (this._vf.angle < 0)
+                    this._vf.angle = 0;
+                else if (this._vf.angle > 2.0 * Math.PI)
+                    this._vf.angle = 2.0 * Math.PI;
+
+                rings = Math.max(2, Math.round((this._vf.angle / (2.0 * Math.PI)) * rings));
+
+                var ringDelta = this._vf.angle / rings;
+                var sideDelta = 2.0 * Math.PI / sides;
+                var a, b, theta, phi;
+                var cosTheta, sinTheta, cosPhi, sinPhi, dist;
+
+                if (fieldName == "innerRadius" || fieldName == "outerRadius")
+                {
                     this._mesh._positions[0] = [];
-					
-					var innerRadius = this._vf.innerRadius;
-					var outerRadius = this._vf.outerRadius;
-					var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
-				
-					var ringDelta = 2.0 * Math.PI / rings;
-					var sideDelta = 2.0 * Math.PI / sides;
-					var a, b, theta, phi;
 	
 					for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
 					{
-						var cosTheta = Math.cos(theta);
-						var sinTheta = Math.sin(theta);
+						cosTheta = Math.cos(theta);
+						sinTheta = Math.sin(theta);
 	
 						for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
 						{
-							var cosPhi = Math.cos(phi);
-							var sinPhi = Math.sin(phi);
-							var dist = outerRadius + innerRadius * cosPhi;
+							cosPhi = Math.cos(phi);
+							sinPhi = Math.sin(phi);
+							dist = outerRadius + innerRadius * cosPhi;
 							this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
 						}
 					}
 					
-					this._mesh._invalidate = true;
+					this.invalidateVolume();
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
                     });
-                } else if (fieldName === "subdivision") {
-					
+                }
+                else if (fieldName == "subdivision" || fieldName == "angle")
+                {
 					this._mesh._positions[0] = [];
 					this._mesh._indices[0] =[];
 					this._mesh._normals[0] = [];
 					this._mesh._texCoords[0] =[];
-					
-					var innerRadius = this._vf.innerRadius;
-					var outerRadius = this._vf.outerRadius;
-					var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
-					
-					var ringDelta = 2.0 * Math.PI / rings;
-					var sideDelta = 2.0 * Math.PI / sides;
-					var a, b, theta, phi;
-	
+
 					for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
 					{
-						var cosTheta = Math.cos(theta);
-						var sinTheta = Math.sin(theta);
+						cosTheta = Math.cos(theta);
+						sinTheta = Math.sin(theta);
 	
 						for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
 						{
-							var cosPhi = Math.cos(phi);
-							var sinPhi = Math.sin(phi);
-							var dist = outerRadius + innerRadius * cosPhi;
+							cosPhi = Math.cos(phi);
+							sinPhi = Math.sin(phi);
+							dist = outerRadius + innerRadius * cosPhi;
 	
 							this._mesh._normals[0].push(cosTheta * cosPhi, -sinTheta * cosPhi, sinPhi);
 							this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
 							this._mesh._texCoords[0].push(-a / rings, b / sides);
 						}
 					}
-	
+
 					for (a=0; a<sides; a++)
 					{
 						for (b=0; b<rings; b++)
@@ -801,12 +850,12 @@ x3dom.registerNodeType(
 							this._mesh._indices[0].push((b + 1) * (sides+1) + a);
 						}
 					}
-				
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numFaces = this._mesh._indices[0].length / 3;
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 					
-					 Array.forEach(this._parentNodes, function (node) {
+					Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
                     });
 				}
