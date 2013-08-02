@@ -327,7 +327,7 @@ x3dom.registerNodeType(
                         this._mesh.calcNormals(Math.PI, this._vf.ccw);
                     }
 
-                    this._mesh._invalidate = true;
+                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
@@ -499,7 +499,7 @@ x3dom.registerNodeType(
 						y = -cosTheta;
 						z = -sinPhi * sinTheta;
 
-						u = 0.25 - ((1.0 * longNumber) / longitudeBands);
+						u = 0.25 - (longNumber / longitudeBands);
 						v = latNumber / latitudeBands;
 
 						this._mesh._positions[0].push(r * x);
