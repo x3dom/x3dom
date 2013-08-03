@@ -804,55 +804,28 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldName)
             {
                 // TODO; invalidate geometry cache if necessary!
-                var innerRadius = this._vf.innerRadius;
-                var outerRadius = this._vf.outerRadius;
-                var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
-
-                // assure that angle in [0, 2 * PI]
-                var twoPi = 2.0 * Math.PI;
-
-                if (this._vf.angle < 0)
-                    this._vf.angle = 0;
-                else if (this._vf.angle > twoPi)
-                    this._vf.angle = twoPi;
-
-                rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
-
-                var ringDelta = this._vf.angle / rings;
-                var sideDelta = twoPi / sides;
-                var a, b, theta, phi;
-                var cosTheta, sinTheta, cosPhi, sinPhi, dist;
-
-                if (fieldName == "innerRadius" || fieldName == "outerRadius")
+                if (fieldName == "innerRadius" || fieldName == "outerRadius" ||
+                    fieldName == "subdivision" || fieldName == "angle")
                 {
-                    var i = 0;
-	
-					for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
-					{
-						cosTheta = Math.cos(theta);
-						sinTheta = Math.sin(theta);
-	
-						for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
-						{
-							cosPhi = Math.cos(phi);
-							sinPhi = Math.sin(phi);
-							dist = outerRadius + innerRadius * cosPhi;
+                    var innerRadius = this._vf.innerRadius;
+                    var outerRadius = this._vf.outerRadius;
+                    var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
-							this._mesh._positions[0][i++] =  cosTheta * dist;
-                            this._mesh._positions[0][i++] = -sinTheta * dist;
-                            this._mesh._positions[0][i++] =  innerRadius * sinPhi;
-						}
-					}
-					
-					this.invalidateVolume();
-					this._mesh._numCoords = this._mesh._positions[0].length / 3;
-				
-                    Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
-                    });
-                }
-                else if (fieldName == "subdivision" || fieldName == "angle")
-                {
+                    // assure that angle in [0, 2 * PI]
+                    var twoPi = 2.0 * Math.PI;
+
+                    if (this._vf.angle < 0)
+                        this._vf.angle = 0;
+                    else if (this._vf.angle > twoPi)
+                        this._vf.angle = twoPi;
+
+                    rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
+
+                    var ringDelta = this._vf.angle / rings;
+                    var sideDelta = twoPi / sides;
+                    var a, b, theta, phi;
+                    var cosTheta, sinTheta, cosPhi, sinPhi, dist;
+
 					this._mesh._positions[0] = [];
 					this._mesh._normals[0]   = [];
 					this._mesh._texCoords[0] = [];
