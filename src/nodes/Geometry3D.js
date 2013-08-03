@@ -333,6 +333,7 @@ x3dom.registerNodeType(
                         node._dirty.positions = true;
                         if (!normals)
                             node._dirty.normals = true;
+                        node.invalidateVolume();
                     });
                 }
                 // TODO: handle other cases!
@@ -611,7 +612,7 @@ x3dom.registerNodeType(
 							y = -cosTheta;
 							z = -sinPhi * sinTheta;
 	
-							u = 0.25 - ((1.0 * longNumber) / longitudeBands);
+							u = 0.25 - (longNumber / longitudeBands);
 							v = latNumber / latitudeBands;
 	
 							this._mesh._positions[0].push(r * x);
@@ -680,7 +681,7 @@ x3dom.registerNodeType(
             else if (this._vf.angle > twoPi)
                 this._vf.angle = twoPi;
 
-            rings = Math.max(2, Math.round((this._vf.angle / twoPi) * rings));
+            rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 
 			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;  // FIXME; field update!
 
@@ -693,14 +694,13 @@ x3dom.registerNodeType(
 			{
 				var ringDelta = this._vf.angle / rings;
 				var sideDelta = twoPi / sides;
-				var p = [], n = [], t = [], i = [];
 				var a, b, theta, phi;
                 var cosTheta, sinTheta, cosPhi, sinPhi, dist;
 
 				for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
 				{
 					cosTheta = Math.cos(theta);
-					sinTheta = Math.sin(theta);
+                    sinTheta = Math.sin(theta);
 
 					for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
 					{
@@ -728,37 +728,69 @@ x3dom.registerNodeType(
 					}
 				}
 
-                if (this._vf.angle < twoPi - x3dom.fields.Eps)
+                if (this._vf.angle < twoPi - 0.01)
                 {
                     // create caps
-                    // TODO, finish!!!
-                    /*
-                    var mid = (outerRadius + innerRadius) / 2.0;
-                    var origPos = this._mesh._positions[0].length;
+                    var origPos = this._mesh._positions[0].length / 3;
 
-                    this._mesh._positions[0].push(cosTheta * mid, -sinTheta * mid, innerRadius * sinPhi);
-                    this._mesh._normals[0].push(0, 0, 1);
-                    this._mesh._texCoords[0].push(0, 0);    // TODO
+                    this._mesh._positions[0].push(outerRadius, 0, 0);
+                    this._mesh._normals[0].push(0, 1, 0);
+                    this._mesh._texCoords[0].push(0.5, 0.5);
 
-                    for (b=0, phi=0; b<sides; b++, phi+=sideDelta)
+                    for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
                     {
                         cosPhi = Math.cos(phi);
                         sinPhi = Math.sin(phi);
                         dist = outerRadius + innerRadius * cosPhi;
 
-                        this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
-                        this._mesh._normals[0].push(0, 0, 1);
-                        this._mesh._texCoords[0].push(0, 0);    // TODO
+                        this._mesh._positions[0].push(dist, 0, sinPhi * innerRadius);
+                        this._mesh._normals[0].push(0, 1, 0);
+                        this._mesh._texCoords[0].push((1 + cosPhi) * 0.5, (1 - sinPhi) * 0.5);
 
-                        if (b > 0)
-                        {
-                            var newPos = this._mesh._positions[0].length;
+                        if (b > 0) {
                             this._mesh._indices[0].push(origPos);
-                            this._mesh._indices[0].push(newPos - 2);
-                            this._mesh._indices[0].push(newPos - 1);
+                            this._mesh._indices[0].push(origPos + b);
+                            this._mesh._indices[0].push(origPos + b - 1);
+                        }
+                        if (b == sides) {
+                            this._mesh._indices[0].push(origPos);
+                            this._mesh._indices[0].push(origPos + 1);
+                            this._mesh._indices[0].push(origPos + b);
                         }
                     }
-                    */
+
+                    // second cap
+                    cosTheta = Math.cos(this._vf.angle);
+                    sinTheta = Math.sin(this._vf.angle);
+
+                    origPos = this._mesh._positions[0].length / 3;
+                    var nx = -sinTheta, ny = -cosTheta;
+
+                    this._mesh._positions[0].push(cosTheta * outerRadius, -sinTheta * outerRadius, 0);
+                    this._mesh._normals[0].push(nx, ny, 0);
+                    this._mesh._texCoords[0].push(0.5, 0.5);
+
+                    for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
+                    {
+                        cosPhi = Math.cos(phi);
+                        sinPhi = Math.sin(phi);
+                        dist = outerRadius + innerRadius * cosPhi;
+
+                        this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, sinPhi * innerRadius);
+                        this._mesh._normals[0].push(nx, ny, 0);
+                        this._mesh._texCoords[0].push(1 - (1 + cosPhi) * 0.5, (1 - sinPhi) * 0.5);
+
+                        if (b > 0) {
+                            this._mesh._indices[0].push(origPos);
+                            this._mesh._indices[0].push(origPos + b - 1);
+                            this._mesh._indices[0].push(origPos + b);
+                        }
+                        if (b == sides) {
+                            this._mesh._indices[0].push(origPos);
+                            this._mesh._indices[0].push(origPos + b);
+                            this._mesh._indices[0].push(origPos + 1);
+                        }
+                    }
                 }
 				
 				this._mesh._invalidate = true;
@@ -770,27 +802,30 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function(fieldName)
-            {return;
+            {
+                // TODO; invalidate geometry cache if necessary!
                 var innerRadius = this._vf.innerRadius;
                 var outerRadius = this._vf.outerRadius;
                 var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
                 // assure that angle in [0, 2 * PI]
+                var twoPi = 2.0 * Math.PI;
+
                 if (this._vf.angle < 0)
                     this._vf.angle = 0;
-                else if (this._vf.angle > 2.0 * Math.PI)
-                    this._vf.angle = 2.0 * Math.PI;
+                else if (this._vf.angle > twoPi)
+                    this._vf.angle = twoPi;
 
-                rings = Math.max(2, Math.round((this._vf.angle / (2.0 * Math.PI)) * rings));
+                rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 
                 var ringDelta = this._vf.angle / rings;
-                var sideDelta = 2.0 * Math.PI / sides;
+                var sideDelta = twoPi / sides;
                 var a, b, theta, phi;
                 var cosTheta, sinTheta, cosPhi, sinPhi, dist;
 
                 if (fieldName == "innerRadius" || fieldName == "outerRadius")
                 {
-                    this._mesh._positions[0] = [];
+                    var i = 0;
 	
 					for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
 					{
@@ -802,7 +837,10 @@ x3dom.registerNodeType(
 							cosPhi = Math.cos(phi);
 							sinPhi = Math.sin(phi);
 							dist = outerRadius + innerRadius * cosPhi;
-							this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, innerRadius * sinPhi);
+
+							this._mesh._positions[0][i++] =  cosTheta * dist;
+                            this._mesh._positions[0][i++] = -sinTheta * dist;
+                            this._mesh._positions[0][i++] =  innerRadius * sinPhi;
 						}
 					}
 					
@@ -816,9 +854,9 @@ x3dom.registerNodeType(
                 else if (fieldName == "subdivision" || fieldName == "angle")
                 {
 					this._mesh._positions[0] = [];
-					this._mesh._indices[0] =[];
-					this._mesh._normals[0] = [];
-					this._mesh._texCoords[0] =[];
+					this._mesh._normals[0]   = [];
+					this._mesh._texCoords[0] = [];
+                    this._mesh._indices[0]   = [];
 
 					for (a=0, theta=0; a <= rings; a++, theta+=ringDelta)
 					{
@@ -850,6 +888,71 @@ x3dom.registerNodeType(
 							this._mesh._indices[0].push((b + 1) * (sides+1) + a);
 						}
 					}
+
+                    if (this._vf.angle < twoPi - 0.01)
+                    {
+                        // create caps
+                        var origPos = this._mesh._positions[0].length / 3;
+
+                        this._mesh._positions[0].push(outerRadius, 0, 0);
+                        this._mesh._normals[0].push(0, 1, 0);
+                        this._mesh._texCoords[0].push(0.5, 0.5);
+
+                        for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
+                        {
+                            cosPhi = Math.cos(phi);
+                            sinPhi = Math.sin(phi);
+                            dist = outerRadius + innerRadius * cosPhi;
+
+                            this._mesh._positions[0].push(dist, 0, sinPhi * innerRadius);
+                            this._mesh._normals[0].push(0, 1, 0);
+                            this._mesh._texCoords[0].push((1 + cosPhi) * 0.5, (1 - sinPhi) * 0.5);
+
+                            if (b > 0) {
+                                this._mesh._indices[0].push(origPos);
+                                this._mesh._indices[0].push(origPos + b);
+                                this._mesh._indices[0].push(origPos + b - 1);
+                            }
+                            if (b == sides) {
+                                this._mesh._indices[0].push(origPos);
+                                this._mesh._indices[0].push(origPos + 1);
+                                this._mesh._indices[0].push(origPos + b);
+                            }
+                        }
+
+                        // second cap
+                        cosTheta = Math.cos(this._vf.angle);
+                        sinTheta = Math.sin(this._vf.angle);
+
+                        origPos = this._mesh._positions[0].length / 3;
+                        var nx = -sinTheta, ny = -cosTheta;
+
+                        this._mesh._positions[0].push(cosTheta * outerRadius, -sinTheta * outerRadius, 0);
+                        this._mesh._normals[0].push(nx, ny, 0);
+                        this._mesh._texCoords[0].push(0.5, 0.5);
+
+                        for (b=0, phi=0; b<=sides; b++, phi+=sideDelta)
+                        {
+                            cosPhi = Math.cos(phi);
+                            sinPhi = Math.sin(phi);
+                            dist = outerRadius + innerRadius * cosPhi;
+
+                            this._mesh._positions[0].push(cosTheta * dist, -sinTheta * dist, sinPhi * innerRadius);
+                            this._mesh._normals[0].push(nx, ny, 0);
+                            this._mesh._texCoords[0].push(1 - (1 + cosPhi) * 0.5, (1 - sinPhi) * 0.5);
+
+                            if (b > 0) {
+                                this._mesh._indices[0].push(origPos);
+                                this._mesh._indices[0].push(origPos + b - 1);
+                                this._mesh._indices[0].push(origPos + b);
+                            }
+                            if (b == sides) {
+                                this._mesh._indices[0].push(origPos);
+                                this._mesh._indices[0].push(origPos + b);
+                                this._mesh._indices[0].push(origPos + 1);
+                            }
+                        }
+                    }
 
                     this.invalidateVolume();
 					this._mesh._numFaces = this._mesh._indices[0].length / 3;

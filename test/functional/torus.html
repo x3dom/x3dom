@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+  <head>
+    <meta http-equiv='Content-Type' content='text/html;charset=utf-8'></meta>
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/util/AdaptiveRenderControl.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/util/States.js"></script>
+<script type="text/javascript" src="../../src/util/StateManager.js"></script>
+<script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
+<script type="text/javascript" src="../../src/util/DrawableCollection.js"></script>
+<script type="text/javascript" src="../../src/util/BVH.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderNormal.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingId.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadowRendering.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBlur.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/CADGeometry.js"></script>
+<script type="text/javascript" src="../../src/nodes/Terrain.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+    <style>.x3dom-logContainer { bottom: 0px; position: absolute; }
+    </style>
+  </head>
+  <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+    <div id='HUDs_Div'> 
+      <div id='X3DOM_AOPT_Links' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; z-index:1000;'> 
+        <table>
+            <tr>
+                <td>innerRadius</td>
+                <td><input type="text" id="innerRadius" value="0.5" onchange="document.getElementById('geo').setAttribute('innerRadius', this.value);"></td>
+            </tr>
+            <tr>
+                <td>outerRadius</td>
+                <td><input type="text" id="outerRadius" value="1.0" onchange="document.getElementById('geo').setAttribute('outerRadius', this.value);"></td>
+            </tr>
+            <tr>
+                <td>angle</td><!-- 6.283185307179586 -->
+                <td><input type="text" id="angle" value="3.14159265359" onchange="document.getElementById('geo').setAttribute('angle', this.value);"></td>
+            </tr>
+        </table>
+      </div> 
+      <div id='Interaction_Toolbox' style='margin:2px; padding:4px; padding-right:150px; background-color:rgba(199,202,204,.7);position:absolute; z-index:1000; right:0px; top:0px;'> 
+        <table> 
+          <tr> 
+            <td>Navigation Mode: 
+            </td> 
+            <td align='right'> 
+              <select style='float:right;' onchange='if (this.selectedIndex !== undefined) { var e = document.getElementById(&apos;x3dElement&apos;); if (this.options[this.selectedIndex].value === &apos;examine&apos;) { e.runtime.examine(); } else if (this.options[this.selectedIndex].value === &apos;lookat&apos;) { e.runtime.lookAt(); } else if (this.options[this.selectedIndex].value === &apos;walk&apos;) { e.runtime.walk(); } else if (this.options[this.selectedIndex].value === &apos;fly&apos;) { e.runtime.fly(); } else if (this.options[this.selectedIndex].value === &apos;helicopter&apos;) { e.runtime.helicopter(); } else if (this.options[this.selectedIndex].value === &apos;none&apos;) { e.runtime.noNav(); } }'> 
+                <option value='examine'>Examine 
+                </option> 
+                <option value='lookat'>LookAt 
+                </option> 
+                <option value='walk'>Walk 
+                </option> 
+                <option value='fly'>Fly 
+                </option> 
+                <option value='helicopter'>Helicopter 
+                </option> 
+                <option value='none'>None 
+                </option> 
+              </select> 
+            </td> 
+          </tr> 
+          <tr> 
+            <td>Debug Display: 
+            </td> 
+            <td align='right'> 
+              <input type='checkbox' checked onclick='if (this.checked) { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(true); } else { document.getElementById(&apos;x3dElement&apos;).runtime.statistics(false); }'> 
+              </input> Stats 
+              <input type='checkbox' checked onclick='document.getElementById(&apos;x3dElement&apos;).runtime.debug();'> 
+              </input> Log 
+            </td> 
+          </tr> 
+          <tr> 
+            <td> 
+              <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.showAll();'> Show Everything 
+              </button> 
+            </td> 
+            <td> 
+              <button onclick='document.getElementById(&apos;x3dElement&apos;).runtime.resetView();'> Reset View 
+              </button> 
+            </td> 
+          </tr> 
+        </table> 
+      </div> 
+    </div>
+    <x3d id='x3dElement' showStat='true' showLog='true' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+      <scene>
+        <transform>
+          <shape>
+            <appearance>
+              <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+              <material diffuseColor='0.7 0.6 0.5' specularColor='0.3 0.3 0.3'></material>
+            </appearance><!-- 6.283185307179586 -->
+            <torus id="geo" innerRadius="0.5" outerRadius="1.0" angle="3.14159265359">
+            </torus>
+          </shape>
+        </transform>
+      </scene>
+    </x3d>
+  </body>
+</html>
