@@ -83,6 +83,8 @@
   <body style='width:100%; height:100%; border:0; margin:0; padding:0;'>
     <div id='HUDs_Div'> 
       <div id='X3DOM_AOPT_Links' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; z-index:1000;'> 
+        <fieldset>
+            <legend>Torus</legend>
         <table>
             <tr>
                 <td>innerRadius</td>
@@ -101,7 +103,31 @@
                 <td><input type="text" id="subdivision" value="24 24" onchange="document.getElementById('geo').setAttribute('subdivision', this.value);"></td>
             </tr>
         </table>
+        </fieldset>
       </div> 
+      <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; left:250px; z-index:1000;'> 
+        <fieldset>
+            <legend>Cone</legend>
+        <table>
+            <tr>
+                <td>bottomRadius</td>
+                <td><input type="text" id="bottomRadius" value="1.0" onchange="document.getElementById('geo1').setAttribute('bottomRadius', this.value);"></td>
+            </tr>
+            <tr>
+                <td>height</td>
+                <td><input type="text" id="height" value="2.0" onchange="document.getElementById('geo1').setAttribute('height', this.value);"></td>
+            </tr>
+            <tr>
+                <td>topRadius</td>
+                <td><input type="text" id="topRadius" value="0.5" onchange="document.getElementById('geo1').setAttribute('topRadius', this.value);"></td>
+            </tr>
+            <tr>
+                <td>subdivision</td>
+                <td><input type="text" id="subdivision1" value="32" onchange="document.getElementById('geo1').setAttribute('subdivision', this.value);"></td>
+            </tr>
+        </table>
+        </fieldset>
+      </div>
       <div id='Interaction_Toolbox' style='margin:2px; padding:4px; padding-right:150px; background-color:rgba(199,202,204,.7);position:absolute; z-index:1000; right:0px; top:0px;'> 
         <table> 
           <tr> 
@@ -149,7 +175,7 @@
     </div>
     <x3d id='x3dElement' showStat='true' showLog='true' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
       <scene>
-        <transform>
+        <transform translation="-2 0.5 0">
           <shape>
             <appearance>
               <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
@@ -159,6 +185,16 @@
             </torus>
           </shape>
         </transform>
+          <transform translation="2 0.5 0">
+              <shape>
+                <appearance>
+                  <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                  <material diffuseColor='0.7 0.5 0.3' specularColor='0.3 0.3 0.3'></material>
+                </appearance>
+                <cone id="geo1" bottomRadius="1.0" height="2.0" topRadius="0.5">
+                </cone>
+              </shape>
+          </transform>
       </scene>
     </x3d>
   </body>
