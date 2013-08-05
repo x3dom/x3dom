@@ -523,7 +523,8 @@ x3dom.gfx_webgl = (function () {
         else if (x3dom.isa(geoNode, x3dom.nodeTypes.ImageGeometry) ||
                  x3dom.isa(geoNode, x3dom.nodeTypes.BinaryGeometry) ||
                  x3dom.isa(geoNode, x3dom.nodeTypes.PopGeometry) ||
-                 x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry))
+                 x3dom.isa(geoNode, x3dom.nodeTypes.BitLODGeometry) ||
+                 x3dom.isa(geoNode, x3dom.nodeTypes.Plane))
         {
             shape._webgl.primType = [];
 
