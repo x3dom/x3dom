@@ -669,16 +669,26 @@ x3dom.registerNodeType(
 			this.addField_SFFloat(ctx, 'outerRadius', 1.0);
             this.addField_SFFloat(ctx, 'angle', twoPi);
 			this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
-			
-			var innerRadius = this._vf.innerRadius;
-			var outerRadius = this._vf.outerRadius;
-			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
             // assure that angle in [0, 2 * PI]
             if (this._vf.angle < 0)
                 this._vf.angle = 0;
             else if (this._vf.angle > twoPi)
                 this._vf.angle = twoPi;
+
+            // assure that innerRadius < outerRadius
+            if (this._vf.innerRadius > this._vf.outerRadius)
+            {
+                var tmp = this._vf.innerRadius;
+                this._vf.innerRadius = this._vf.outerRadius;
+                this._vf.outerRadius = tmp;
+            }
+
+            var delta = (this._vf.outerRadius - this._vf.innerRadius) / 2;
+
+			var innerRadius = this._vf.innerRadius - delta;
+			var outerRadius = this._vf.outerRadius - delta;
+			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
             rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 
@@ -806,10 +816,6 @@ x3dom.registerNodeType(
                 if (fieldName == "innerRadius" || fieldName == "outerRadius" ||
                     fieldName == "subdivision" || fieldName == "angle")
                 {
-                    var innerRadius = this._vf.innerRadius;
-                    var outerRadius = this._vf.outerRadius;
-                    var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
-
                     // assure that angle in [0, 2 * PI]
                     var twoPi = 2.0 * Math.PI;
 
@@ -817,6 +823,23 @@ x3dom.registerNodeType(
                         this._vf.angle = 0;
                     else if (this._vf.angle > twoPi)
                         this._vf.angle = twoPi;
+
+                    // assure that innerRadius < outerRadius
+                    if (this._vf.innerRadius > this._vf.outerRadius)
+                    {
+                        var tmp = this._vf.innerRadius;
+                        this._vf.innerRadius = this._vf.outerRadius;
+                        this._vf.outerRadius = tmp;
+                    }
+
+                    var delta = (this._vf.outerRadius - this._vf.innerRadius) / 2;
+
+                    var innerRadius = this._vf.innerRadius - delta;
+                    var outerRadius = this._vf.outerRadius - delta;
+
+                    var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
+
+
 
                     rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 

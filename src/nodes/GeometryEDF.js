@@ -393,15 +393,6 @@ x3dom.registerNodeType(
         }
     )
 );
-    
-    
-    
-    
-    
-    
-    
-    
-    
 
 /* ### Pyramid ### */
 x3dom.registerNodeType(
@@ -529,6 +520,14 @@ x3dom.registerNodeType(
                 this._vf.angle = 0;
             else if (this._vf.angle > twoPi)
                 this._vf.angle = twoPi;
+
+            // assure that innerRadius < outerRadius
+            if (this._vf.innerRadius > this._vf.outerRadius)
+            {
+                var tmp = this._vf.innerRadius;
+                this._vf.innerRadius = this._vf.outerRadius;
+                this._vf.outerRadius = tmp;
+            }
 
             var innerRadius = this._vf.innerRadius;
             var outerRadius = this._vf.outerRadius;
@@ -746,6 +745,14 @@ x3dom.registerNodeType(
                         this._vf.angle = 0;
                     else if (this._vf.angle > twoPi)
                         this._vf.angle = twoPi;
+
+                    // assure that innerRadius < outerRadius
+                    if (this._vf.innerRadius > this._vf.outerRadius)
+                    {
+                        var tmp = this._vf.innerRadius;
+                        this._vf.innerRadius = this._vf.outerRadius;
+                        this._vf.outerRadius = tmp;
+                    }
 
                     var innerRadius = this._vf.innerRadius;
                     var outerRadius = this._vf.outerRadius;

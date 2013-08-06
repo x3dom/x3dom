@@ -156,6 +156,37 @@
                 </table>
             </fieldset>
         </div>
+        <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:350px; z-index:1000;'>
+            <fieldset>
+                <legend>Pyramid</legend>
+                <table>
+                    <tr>
+                        <td>xbottom</td>
+                        <td><input type="text" id="xbottom" value="1.0" onchange="document.getElementById('geo3').setAttribute('xbottom', this.value);"></td>
+                    </tr>
+                    <tr>
+                        <td>ybottom</td>
+                        <td><input type="text" id="ybottom" value="1.0" onchange="document.getElementById('geo3').setAttribute('ybottom', this.value);"></td>
+                    </tr>
+                    <tr>
+                        <td>xtop</td>
+                        <td><input type="text" id="xtop" value="0.5" onchange="document.getElementById('geo3').setAttribute('xtop', this.value);"></td>
+                    </tr>
+                    <tr>
+                        <td>ytop</td>
+                        <td><input type="text" id="ytop" value="0.5" onchange="document.getElementById('geo3').setAttribute('ytop', this.value);"></td>
+                    </tr>
+                    <tr>
+                        <td>xoff</td>
+                        <td><input type="text" id="xoff" value="0.25" onchange="document.getElementById('geo3').setAttribute('xoff', this.value);"></td>
+                    </tr>
+                    <tr>
+                        <td>yoff</td>
+                        <td><input type="text" id="yoff" value="0.25" onchange="document.getElementById('geo3').setAttribute('yoff', this.value);"></td>
+                    </tr>
+                </table>
+            </fieldset>
+        </div>
       <div id='Interaction_Toolbox' style='margin:2px; padding:4px; padding-right:150px; background-color:rgba(199,202,204,.7);position:absolute; z-index:1000; right:0px; top:0px;'>
         <table> 
           <tr> 
@@ -203,7 +234,7 @@
     </div>
     <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
       <scene>
-        <transform translation="-4 0 0">
+        <transform translation="-3 0 0" rotation="0.5774 -0.5774 -0.5774 -2.094">
           <shape>
             <appearance>
               <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
@@ -223,7 +254,7 @@
                 </cone>
               </shape>
           </transform>
-          <transform translation="4 0 0">
+          <transform translation="3 0 0">
               <shape>
                   <appearance>
                       <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
@@ -231,6 +262,16 @@
                   </appearance>
                   <RectangularTorus id="geo2" innerRadius="0.5" outerRadius="1.0" height="1.0" angle="1.57">
                   </RectangularTorus>
+              </shape>
+          </transform>
+          <transform translation="6 0 0">
+              <shape>
+                  <appearance>
+                      <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                      <material diffuseColor='0.6 0.5 0.5' specularColor='0.3 0.3 0.3'></material>
+                  </appearance>
+                  <Pyramid id="geo3">
+                  </Pyramid>
               </shape>
           </transform>
       </scene>
