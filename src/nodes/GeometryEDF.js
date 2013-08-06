@@ -410,37 +410,101 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.Pyramid.superClass.call(this, ctx);
-			
-			this.addField_SFFloat(ctx, 'xbottom', 0);	//Dimension of bottom parallel to X-axis
-			this.addField_SFFloat(ctx, 'ybottom', 0);	//Dimension of bottom parallel to Y-axis
-			this.addField_SFFloat(ctx, 'xtop', 0);		//Dimension of top parallel to X-axis
-			this.addField_SFFloat(ctx, 'ytop', 0);		//Dimension of top parallel to Y-axis
-			this.addField_SFFloat(ctx, 'height', 0);	//Height between top and bottom surface
-			this.addField_SFFloat(ctx, 'xoff', 0);		//Displacement of axes along X-axis
-			this.addField_SFFloat(ctx, 'yoff', 0);		//Displacement of axes along Y-axis
-			
-			var geoCacheID = 'Pyramid...';
+            
+            this.addField_SFFloat(ctx, 'xbottom', 1);	//Dimension of bottom parallel to X-axis
+            this.addField_SFFloat(ctx, 'ybottom', 1);	//Dimension of bottom parallel to Y-axis
+            this.addField_SFFloat(ctx, 'xtop', 0.5);		//Dimension of top parallel to X-axis
+            this.addField_SFFloat(ctx, 'ytop', 0.5);		//Dimension of top parallel to Y-axis
+            this.addField_SFFloat(ctx, 'height', 1);	//Height between top and bottom surface
+            this.addField_SFFloat(ctx, 'xoff', 0.25);		//Displacement of axes along X-axis
+            this.addField_SFFloat(ctx, 'yoff', 0.25);		//Displacement of axes along Y-axis
+            
+            var xTop = this._vf.xtop;
+            var yTop = this._vf.ytop;
+            var xBot = this._vf.xbottom;
+            var yBot = this._vf.ybottom;
+            var xOff = this._vf.xoff;
+            var yOff = this._vf.yoff;
+            var sy = this._vf.height / 2;
 
-			if( ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-			{
-				this._mesh = x3dom.geoCache[geoCacheID];
-			}
-			else
-			{                
-				this._mesh._invalidate = true;
-				this._mesh._numFaces = this._mesh._indices[0].length / 3;
-				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            var geoCacheID = 'Pyramid_'+xTop+'-'+yTop+'-'+xBot+'-'+yBot+'-'+xOff+'-'+yOff+'-'+sy;
 
-				x3dom.geoCache[geoCacheID] = this._mesh;
-			}
-         },
-         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) 
-			{
-			
-        	}
-		}
+            if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
+            {
+                    //x3dom.debug.logInfo("Using Box from Cache");
+                    this._mesh = x3dom.geoCache[geoCacheID];
+            }
+            else
+            {
+                    this._mesh._positions[0] = [
+                        -xBot,-sy,-yBot,  -xTop + xOff, sy,-yTop + yOff,   xTop + xOff, sy,-yTop + yOff,   xBot,-sy,-yBot, //hinten 0,0,-1
+                        -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xBot,-sy, yBot, //vorne 0,0,1
+                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,  -xTop + xOff, sy,-yTop + yOff, //links -1,0,0
+                         xBot,-sy,-yBot,   xBot,-sy, yBot,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //rechts 1,0,0
+                        -xTop + xOff, sy,-yTop + yOff,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //oben 0,1,0
+                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,   xBot,-sy, yBot,   xBot,-sy,-yBot  //unten 0,-1,0
+                    ];
+                    this._mesh._normals[0] = [
+                        0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
+                        0,0,1,  0,0,1,   0,0,1,   0,0,1,
+                        -1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
+                        1,0,0,   1,0,0,   1,0,0,   1,0,0,
+                        0,1,0,  0,1,0,   0,1,0,   0,1,0,
+                        0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0
+                    ];
+                    this._mesh._texCoords[0] = [
+                        1,0, 1,1, 0,1, 0,0,
+                        0,0, 0,1, 1,1, 1,0,
+                        0,0, 1,0, 1,1, 0,1,
+                        1,0, 0,0, 0,1, 1,1,
+                        0,1, 0,0, 1,0, 1,1,
+                        0,0, 0,1, 1,1, 1,0
+                    ];
+                    this._mesh._indices[0] = [
+                        0,1,2, 2,3,0,
+                        4,7,5, 5,7,6,
+                        8,9,10, 10,11,8,
+                        12,14,13, 14,12,15,
+                        16,17,18, 18,19,16,
+                        20,22,21, 22,20,23
+                    ];
+                    this._mesh._invalidate = true;
+                    this._mesh._numFaces = 12;
+                    this._mesh._numCoords = 24;
+
+                    x3dom.geoCache[geoCacheID] = this._mesh;
+            }
+        },
+        {
+            fieldChanged: function(fieldName) {
+                if (fieldName === "xbottom" || fieldName === "ybottom" ||
+                    fieldName === "xtop" || fieldName === "ytop" ||
+                    fieldName === "xoff" || fieldName === "yoff" ||
+                    fieldName === "height") {
+                
+                    var xTop = this._vf.xtop;
+                    var yTop = this._vf.ytop;
+                    var xBot = this._vf.xbottom;
+                    var yBot = this._vf.ybottom;
+                    var xOff = this._vf.xoff;
+                    var yOff = this._vf.yoff;
+                    var sy = this._vf.height / 2;
+
+                    this._mesh._positions[0] = [
+                        -xBot,-sy,-yBot,  -xTop + xOff, sy,-yTop + yOff,   xTop + xOff, sy,-yTop + yOff,   xBot,-sy,-yBot, //hinten 0,0,-1
+                        -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xBot,-sy, yBot, //vorne 0,0,1
+                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,  -xTop + xOff, sy,-yTop + yOff, //links -1,0,0
+                         xBot,-sy,-yBot,   xBot,-sy, yBot,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //rechts 1,0,0
+                        -xTop + xOff, sy,-yTop + yOff,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //oben 0,1,0
+                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,   xBot,-sy, yBot,   xBot,-sy,-yBot  //unten 0,-1,0
+                    ];
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                    });
+                }
+            }
+        }
     )
 );
 
