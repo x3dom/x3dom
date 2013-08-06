@@ -515,34 +515,431 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.RectangularTorus.superClass.call(this, ctx);
-			
-			this.addField_SFFloat(ctx, 'rinside', 0); 	//Inside radius
-			this.addField_SFFloat(ctx, 'routside', 0);	//Outside radius	
-			this.addField_SFFloat(ctx, 'height', 0);	//Height of rectangular section
-			this.addField_SFFloat(ctx, 'angle', 0);		//Subtended angle (max. 180 degrees)
-			
-			var geoCacheID = 'RectangularTorus...';
 
-			if( ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-			{
-				this._mesh = x3dom.geoCache[geoCacheID];
-			}
-			else
-			{                
-				this._mesh._invalidate = true;
-				this._mesh._numFaces = this._mesh._indices[0].length / 3;
-				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            var twoPi = 2.0 * Math.PI;
 
-				x3dom.geoCache[geoCacheID] = this._mesh;
-			}
-         },
-         {
+            this.addField_SFFloat(ctx, 'innerRadius', 0.5); //Inside radius
+            this.addField_SFFloat(ctx, 'outerRadius', 1);	//Outside radius
+            this.addField_SFFloat(ctx, 'height', 1);	//Height of rectangular section
+            this.addField_SFFloat(ctx, 'angle', twoPi);	//Subtended angle
+            this.addField_SFVec2f(ctx, 'subdivision', 32, 0);
+
+            // assure that angle in [0, 2 * PI]
+            if (this._vf.angle < 0)
+                this._vf.angle = 0;
+            else if (this._vf.angle > twoPi)
+                this._vf.angle = twoPi;
+
+            var innerRadius = this._vf.innerRadius;
+            var outerRadius = this._vf.outerRadius;
+            var height = this._vf.height;
+            var angle = this._vf.angle;
+
+            var beta, delta, x, z, k, j;
+            var sides = this._vf.subdivision.x;
+
+            var geoCacheID = 'RectangularTorus_'+innerRadius+'-'+outerRadius+'-'+height+'-'+angle;
+
+            if( ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
+            {
+                this._mesh = x3dom.geoCache[geoCacheID];
+            }
+            else
+            {
+                delta = angle / sides;
+
+                //Outer Side
+                for (j=0, k=0; j<=sides; j++)
+                {
+                    beta = j * delta;
+                    x = outerRadius * Math.sin(beta);
+                    z = outerRadius * -Math.cos(beta);
+
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(x, 0, z);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(x, 0, z);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 3);
+
+                        k += 2;
+                    }
+                }
+
+                //Inner Side
+                for (j=0, k=k+2; j<=sides; j++)
+                {
+                    beta = j * delta;
+                    x = innerRadius * Math.sin(beta);
+                    z = innerRadius * -Math.cos(beta);
+
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(-x, 0, -z);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(-x, 0, -z);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 0);
+
+                        this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        k += 2;
+                    }
+                }
+
+                //Top Side
+                for (j=0, k=k+2; j<=sides; j++)
+                {
+                    beta = j * delta;
+                    x = outerRadius * Math.sin(beta);
+                    z = outerRadius * -Math.cos(beta);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(0, 1, 0);
+
+                    x = innerRadius * Math.sin(beta);
+                    z = innerRadius * -Math.cos(beta);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(0, 1, 0);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 3);
+
+                        k += 2;
+                    }
+                }
+
+                //Bottom Side
+                for (j=0, k=k+2; j<=sides; j++)
+                {
+                    beta = j * delta;
+                    x = outerRadius * Math.sin(beta);
+                    z = outerRadius * -Math.cos(beta);
+
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(0, -1, 0);
+
+                    x = innerRadius * Math.sin(beta);
+                    z = innerRadius * -Math.cos(beta);
+
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(0, -1, 0);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 0);
+
+                        this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        k += 2;
+                    }
+                }
+
+                //Create Caps
+                if (angle < twoPi)
+                {
+                    //First Cap
+                    k += 2;
+
+                    x = outerRadius * Math.sin(0);
+                    z = outerRadius * -Math.cos(0);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(-1, 0, 0);
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(-1, 0, 0);
+
+                    x = innerRadius * Math.sin(0);
+                    z = innerRadius * -Math.cos(0);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(-1, 0, 0);
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(-1, 0, 0);
+
+                    this._mesh._indices[0].push(k + 0);
+                    this._mesh._indices[0].push(k + 1);
+                    this._mesh._indices[0].push(k + 2);
+
+                    this._mesh._indices[0].push(k + 2);
+                    this._mesh._indices[0].push(k + 1);
+                    this._mesh._indices[0].push(k + 3);
+
+                    //Second Cap
+                    k+=4;
+
+                    x = outerRadius * Math.sin(angle);
+                    z = outerRadius * -Math.cos(angle);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(z, 0, x);
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(z, 0, x);
+
+                    x = innerRadius * Math.sin(angle);
+                    z = innerRadius * -Math.cos(angle);
+
+                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._normals[0].push(z, 0, x);
+                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._normals[0].push(z, 0, x);
+
+                    this._mesh._indices[0].push(k + 2);
+                    this._mesh._indices[0].push(k + 1);
+                    this._mesh._indices[0].push(k + 0);
+
+                    this._mesh._indices[0].push(k + 3);
+                    this._mesh._indices[0].push(k + 1);
+                    this._mesh._indices[0].push(k + 2);
+                }
+
+                this._mesh._invalidate = true;
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+                x3dom.geoCache[geoCacheID] = this._mesh;
+            }
+        },
+        {
             nodeChanged: function() {},
-            fieldChanged: function(fieldName) 
-			{
-			
-        	}
-		}
+            fieldChanged: function(fieldname)
+            {
+                if (fieldname === "innerRadius" || fieldname === "outerRadius" ||
+                    fieldname === "height" || fieldname === "angle" || fieldname === "subdivision")
+                {
+                    this._mesh._positions[0] = [];
+                    this._mesh._normals[0]   = [];
+                    this._mesh._texCoords[0] = [];
+                    this._mesh._indices[0]   = [];
+
+                    var twoPi = 2.0 * Math.PI;
+
+                    // assure that angle in [0, 2 * PI]
+                    if (this._vf.angle < 0)
+                        this._vf.angle = 0;
+                    else if (this._vf.angle > twoPi)
+                        this._vf.angle = twoPi;
+
+                    var innerRadius = this._vf.innerRadius;
+                    var outerRadius = this._vf.outerRadius;
+                    var height = this._vf.height;
+                    var angle = this._vf.angle;
+                    var sides = this._vf.subdivision.x;
+
+                    var beta, delta, x, z, k, j;
+
+                    delta = angle / sides;
+
+                    //Outer Side
+                    for (j=0, k=0; j<=sides; j++)
+                    {
+                        beta = j * delta;
+                        x = outerRadius * Math.sin(beta);
+                        z = outerRadius * -Math.cos(beta);
+
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(x, 0, z);
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(x, 0, z);
+
+                        if (j > 0)
+                        {
+                            this._mesh._indices[0].push(k + 0);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 2);
+
+                            this._mesh._indices[0].push(k + 2);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 3);
+
+                            k += 2;
+                        }
+                    }
+
+                    //Inner Side
+                    for (j=0, k=k+2; j<=sides; j++)
+                    {
+                        beta = j * delta;
+                        x = innerRadius * Math.sin(beta);
+                        z = innerRadius * -Math.cos(beta);
+
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(-x, 0, -z);
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(-x, 0, -z);
+
+                        if (j > 0)
+                        {
+                            this._mesh._indices[0].push(k + 2);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 0);
+
+                            this._mesh._indices[0].push(k + 3);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 2);
+
+                            k += 2;
+                        }
+                    }
+
+                    //Top Side
+                    for (j=0, k=k+2; j<=sides; j++)
+                    {
+                        beta = j * delta;
+                        x = outerRadius * Math.sin(beta);
+                        z = outerRadius * -Math.cos(beta);
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(0, 1, 0);
+
+                        x = innerRadius * Math.sin(beta);
+                        z = innerRadius * -Math.cos(beta);
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(0, 1, 0);
+
+                        if (j > 0)
+                        {
+                            this._mesh._indices[0].push(k + 0);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 2);
+
+                            this._mesh._indices[0].push(k + 2);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 3);
+
+                            k += 2;
+                        }
+                    }
+
+                    //Bottom Side
+                    for (j=0, k=k+2; j<=sides; j++)
+                    {
+                        beta = j * delta;
+                        x = outerRadius * Math.sin(beta);
+                        z = outerRadius * -Math.cos(beta);
+
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(0, -1, 0);
+
+                        x = innerRadius * Math.sin(beta);
+                        z = innerRadius * -Math.cos(beta);
+
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(0, -1, 0);
+
+                        if (j > 0)
+                        {
+                            this._mesh._indices[0].push(k + 2);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 0);
+
+                            this._mesh._indices[0].push(k + 3);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 2);
+
+                            k += 2;
+                        }
+                    }
+
+                    //Create Caps
+                    if (angle < twoPi)
+                    {
+                        //First Cap
+                        k += 2;
+
+                        x = outerRadius * Math.sin(0);
+                        z = outerRadius * -Math.cos(0);
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(-1, 0, 0);
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(-1, 0, 0);
+
+                        x = innerRadius * Math.sin(0);
+                        z = innerRadius * -Math.cos(0);
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(-1, 0, 0);
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(-1, 0, 0);
+
+                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 3);
+
+                        //Second Cap
+                        k+=4;
+
+                        x = outerRadius * Math.sin(angle);
+                        z = outerRadius * -Math.cos(angle);
+
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(z, 0, x);
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(z, 0, x);
+
+                        x = innerRadius * Math.sin(angle);
+                        z = innerRadius * -Math.cos(angle);
+
+                        this._mesh._positions[0].push(x, height/2, z);
+                        this._mesh._normals[0].push(z, 0, x);
+                        this._mesh._positions[0].push(x, -height/2, z);
+                        this._mesh._normals[0].push(z, 0, x);
+
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 0);
+
+                        this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+                    }
+
+                    this.invalidateVolume();
+                    this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.setAllDirty();
+                    });
+                }
+            }
+        }
     )
 );
 

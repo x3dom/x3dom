@@ -109,6 +109,7 @@ package x3dom.shaders
 				if(shape.texture is CubeMapTexture) {
 					shader += "nrm ft1.xyz, v0.xyz\n";							//Normalize Normal(ft2)
 					shader += "neg ft7.xyz, v3\n";
+					shader += "nrm ft7.xyz, ft7.xyz\n";
 					
 					shader += "dp3 ft0.w, ft7.xyz, ft1.xyz\n";
 					shader += "add ft0.w, ft0.w, ft0.w\n";
