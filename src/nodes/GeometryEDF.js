@@ -553,36 +553,203 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
             x3dom.nodeTypes.SlopeBottomCylinder.superClass.call(this, ctx);
-			
-			this.addField_SFFloat(ctx, 'diameter', 0);	//Diameter
-			this.addField_SFFloat(ctx, 'height', 0);	//Height along axis, between P1 and P2
-			this.addField_SFFloat(ctx, 'xtshear', 0);	//Inclination of top face to X-axis
-			this.addField_SFFloat(ctx, 'ytshear', 0);	//Inclination of top face to Y-axis
-			this.addField_SFFloat(ctx, 'xbshear', 0);	//Inclination of bottom face to X-axis
-			this.addField_SFFloat(ctx, 'ybshear', 0);	//Inclination of bottom face to Y-axis
-			
-			var geoCacheID = 'SlopeBottomCylinder...';
 
-			if( ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-			{
-				this._mesh = x3dom.geoCache[geoCacheID];
-			}
-			else
-			{                
-				this._mesh._invalidate = true;
-				this._mesh._numFaces = this._mesh._indices[0].length / 3;
-				this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            this.addField_SFFloat(ctx, 'radius', 1.0);
+            this.addField_SFFloat(ctx, 'height', 2.0);
+            this.addField_SFBool(ctx, 'bottom', true);
+            this.addField_SFBool(ctx, 'top', true);
+            this.addField_SFFloat(ctx, 'xtshear', -15.0);
+            this.addField_SFFloat(ctx, 'ytshear', 10.0);
+            this.addField_SFFloat(ctx, 'xbshear', 5.0);
+            this.addField_SFFloat(ctx, 'ybshear', 35.0);
+	    this.addField_SFFloat(ctx, 'subdivision', 32);
+            
+            var topSlopeX = this._vf.radius * (Math.tan(this._vf.xtshear * Math.PI/180));
+            var topSlopeY = this._vf.radius * (Math.tan(this._vf.ytshear * Math.PI/180));
+            var botSlopeX = this._vf.radius * (Math.tan(this._vf.xbshear * Math.PI/180));
+            var botSlopeY = this._vf.radius * (Math.tan(this._vf.ybshear * Math.PI/180));
+            
+            var sides = this._vf.subdivision;
 
-				x3dom.geoCache[geoCacheID] = this._mesh;
-			}
+            var geoCacheID = 'SlopeBottomCylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
+
+            if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
+            {
+                //x3dom.debug.logInfo("Using Cylinder from Cache");
+                this._mesh = x3dom.geoCache[geoCacheID];
+            }
+            else
+            {
+                var radius = this._vf.radius;
+                var height = this._vf.height;
+
+                var beta, x, z;
+                var delta = 2.0 * Math.PI / sides;
+
+                var j = 0;
+                var k = 0;
+
+                for (j=0, k=0; j<=sides; j++)
+                {
+                      beta = j * delta;
+                      x = Math.sin(beta);
+                      z = -Math.cos(beta);
+
+                      this._mesh._positions[0].push(x * radius, -height/2 + x * botSlopeX + z * botSlopeY, z * radius);
+                      this._mesh._normals[0].push(x, 0, z);
+                      this._mesh._texCoords[0].push(1.0 - j / sides, 0);
+
+                      this._mesh._positions[0].push(x * radius, height/2 + x * topSlopeX + z * topSlopeY, z * radius);
+                      this._mesh._normals[0].push(x, 0, z);
+                      this._mesh._texCoords[0].push(1.0 - j / sides, 1);
+
+                      if (j > 0)
+                      {
+                              this._mesh._indices[0].push(k + 0);
+                              this._mesh._indices[0].push(k + 1);
+                              this._mesh._indices[0].push(k + 2);
+
+                              this._mesh._indices[0].push(k + 2);
+                              this._mesh._indices[0].push(k + 1);
+                              this._mesh._indices[0].push(k + 3);
+
+                              k += 2;
+                      }
+                }
+                
+
+                if (radius > 0)
+                {
+                    var h, base = this._mesh._positions[0].length / 3;
+
+                    if (this._vf.top)
+                    {
+                        for (j=sides-1; j>=0; j--)
+                        {
+                              beta = j * delta;
+                              x = radius * Math.sin(beta);
+                              z = -radius * Math.cos(beta);
+
+                              this._mesh._positions[0].push(x, height/2 + x * topSlopeX + z * topSlopeY, z);
+                              this._mesh._normals[0].push(0, 1, 0);
+                              this._mesh._texCoords[0].push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
+                        }
+
+                        h = base + 1;
+
+                        for (j=2; j<sides; j++)
+                        {
+                              this._mesh._indices[0].push(base);
+                              this._mesh._indices[0].push(h);
+
+                              h = base + j;
+                              this._mesh._indices[0].push(h);
+                        }
+
+                        base = this._mesh._positions[0].length / 3;
+                    }
+
+                    if (this._vf.bottom)
+                    {
+                        for (j=sides-1; j>=0; j--)
+                        {
+                              beta = j * delta;
+                              x = radius * Math.sin(beta);
+                              z = -radius * Math.cos(beta);
+
+                              this._mesh._positions[0].push(x, -height/2 + x * botSlopeX + z * botSlopeY, z);
+                              this._mesh._normals[0].push(0, -1, 0);
+                              this._mesh._texCoords[0].push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
+                        }
+
+                        h = base + 1;
+
+                        for (j=2; j<sides; j++)
+                        {
+                              this._mesh._indices[0].push(h);
+                              this._mesh._indices[0].push(base);
+
+                              h = base + j;
+                              this._mesh._indices[0].push(h);
+                        }
+                    }
+                }
+
+                this._mesh._invalidate = true;
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+                x3dom.geoCache[geoCacheID] = this._mesh;
+            }
          },
-         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) 
-			{
-			
-        	}
-		}
+        {
+            fieldChanged: function(fieldName) {
+                if (fieldName === "xtshear" || fieldName === "ytshear" ||
+                    fieldName === "xbshear" || fieldName === "ybshear" ||
+                    fieldName === "radius" || fieldName === "height") { 
+		
+                    this._mesh._positions[0] = [];
+                    
+                    var topSlopeX = (Math.tan(this._vf.xtshear * Math.PI/180));
+                    var topSlopeY = (Math.tan(this._vf.ytshear * Math.PI/180));
+                    var botSlopeX = (Math.tan(this._vf.xbshear * Math.PI/180));
+                    var botSlopeY = (Math.tan(this._vf.ybshear * Math.PI/180));
+
+                    var sides = this._vf.subdivision;
+                    
+                    var radius = this._vf.radius;
+                    var height = this._vf.height;
+
+                    var beta, x, z;
+                    var delta = 2.0 * Math.PI / sides;
+
+                    var j = 0;
+
+                    for (j=0; j<=sides; j++)
+                    {
+                          beta = j * delta;
+                          x = Math.sin(beta);
+                          z = -Math.cos(beta);
+
+                          this._mesh._positions[0].push(x * radius, -height/2 + x * botSlopeX * radius + z * botSlopeY * radius, z * radius);
+                          this._mesh._positions[0].push(x * radius, height/2 + x * topSlopeX * radius + z * topSlopeY * radius, z * radius);
+                    }
+
+
+                    if (radius > 0)
+                    {
+                        if (this._vf.top)
+                        {
+                            for (j=sides-1; j>=0; j--)
+                            {
+                                  beta = j * delta;
+                                  x = radius * Math.sin(beta);
+                                  z = -radius * Math.cos(beta);
+
+                                  this._mesh._positions[0].push(x, height/2 + x * topSlopeX + z * topSlopeY, z);
+                            }
+                        }
+
+                        if (this._vf.bottom)
+                        {
+                            for (j=sides-1; j>=0; j--)
+                            {
+                                  beta = j * delta;
+                                  x = radius * Math.sin(beta);
+                                  z = -radius * Math.cos(beta);
+
+                                  this._mesh._positions[0].push(x, -height/2 + x * botSlopeX + z * botSlopeY, z);
+                            }
+                        }
+                    }
+                    
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.positions = true;
+                    });
+                
+                }		
+            }
+        }
     )
 );
 
