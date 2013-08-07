@@ -839,8 +839,6 @@ x3dom.registerNodeType(
 
                     var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
-
-
                     rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 
                     var ringDelta = this._vf.angle / rings;
@@ -1223,7 +1221,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'height', 2.0);
             this.addField_SFBool(ctx, 'bottom', true);
             this.addField_SFBool(ctx, 'top', true);
-	    this.addField_SFFloat(ctx, 'subdivision', 32);
+            this.addField_SFFloat(ctx, 'subdivision', 32);
             this.addField_SFBool(ctx, 'side', true);
 			
 			var sides = this._vf.subdivision;

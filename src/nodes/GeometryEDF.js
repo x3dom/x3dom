@@ -18,11 +18,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Cone.superClass.call(this, ctx);
 
-            this.addField_SFFloat(ctx, 'Dbottom', 1.0);
-            this.addField_SFFloat(ctx, 'Dtop', 0.4);
+            this.addField_SFFloat(ctx, 'dbottom', 1.0);
+            this.addField_SFFloat(ctx, 'dtop', 0.4);
             this.addField_SFFloat(ctx, 'height', 1.0);
-            this.addField_SFFloat(ctx, 'XOff', 0.25);
-            this.addField_SFFloat(ctx, 'YOff', 0.25);
+            this.addField_SFFloat(ctx, 'xoff', 0.25);
+            this.addField_SFFloat(ctx, 'yoff', 0.25);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             var geoCacheID = 'Snout_' + this._vf.bottomRadius + '_' + this._vf.height + '_' +
@@ -33,8 +33,8 @@ x3dom.registerNodeType(
                 this._mesh = x3dom.geoCache[geoCacheID];
             }
             else {
-                var bottomRadius = this._vf.Dbottom, height = this._vf.height;
-                var topRadius = this._vf.Dtop, sides = this._vf.subdivision;
+                var bottomRadius = this._vf.dbottom, height = this._vf.height;
+                var topRadius = this._vf.dtop, sides = this._vf.subdivision;
 
                 var beta, x, z;
                 var delta = 2.0 * Math.PI / sides;
@@ -54,8 +54,8 @@ x3dom.registerNodeType(
                         z = -Math.cos(beta);
 
                         if (topRadius > x3dom.fields.Eps) {
-                            px = x * topRadius + this._vf.XOff;
-                            pz = z * topRadius + this._vf.YOff;
+                            px = x * topRadius + this._vf.xoff;
+                            pz = z * topRadius + this._vf.yoff;
                         }
 
                         this._mesh._positions[0].push(px, height / 2, pz);
@@ -112,7 +112,7 @@ x3dom.registerNodeType(
                         x =  topRadius * Math.sin(beta);
                         z = -topRadius * Math.cos(beta);
 
-                        this._mesh._positions[0].push(x + this._vf.XOff, height / 2, z + this._vf.YOff);
+                        this._mesh._positions[0].push(x + this._vf.xoff, height / 2, z + this._vf.yoff);
                         this._mesh._normals[0].push(0, 1, 0);
                         this._mesh._texCoords[0].push(x / topRadius / 2 + 0.5, 1.0 - z / topRadius / 2 + 0.5);
                     }
@@ -138,17 +138,17 @@ x3dom.registerNodeType(
         {
             fieldChanged: function (fieldName)
             {
-                if (fieldName === "Dtop" || fieldName === "Dbottom" ||
+                if (fieldName === "dtop" || fieldName === "dbottom" ||
                     fieldName === "height" || fieldName === "subdivision" ||
-                    fieldName === "XOff" || fieldName === "YOff")
+                    fieldName === "xoff" || fieldName === "yoff")
                 {
                     this._mesh._positions[0] = [];
                     this._mesh._indices[0] = [];
                     this._mesh._normals[0] = [];
                     this._mesh._texCoords[0] = [];
 
-                    var bottomRadius = this._vf.Dbottom, height = this._vf.height;
-                    var topRadius = this._vf.Dtop, sides = this._vf.subdivision;
+                    var bottomRadius = this._vf.dbottom, height = this._vf.height;
+                    var topRadius = this._vf.dtop, sides = this._vf.subdivision;
 
                     var beta, x, z;
                     var delta = 2.0 * Math.PI / sides;
@@ -169,8 +169,8 @@ x3dom.registerNodeType(
                             z = -Math.cos(beta);
 
                             if (topRadius > x3dom.fields.Eps) {
-                                px = x * topRadius + this._vf.XOff;
-                                pz = z * topRadius + this._vf.YOff;
+                                px = x * topRadius + this._vf.xoff;
+                                pz = z * topRadius + this._vf.yoff;
                             }
 
                             this._mesh._positions[0].push(px, height / 2, pz);
@@ -226,8 +226,8 @@ x3dom.registerNodeType(
 
                         for (j = sides - 1; j >= 0; j--) {
                             beta = j * delta;
-                            x =  topRadius * Math.sin(beta) + this._vf.XOff;
-                            z = -topRadius * Math.cos(beta) + this._vf.YOff;
+                            x =  topRadius * Math.sin(beta) + this._vf.xoff;
+                            z = -topRadius * Math.cos(beta) + this._vf.yoff;
 
                             this._mesh._positions[0].push(x, height / 2, z);
                             this._mesh._normals[0].push(0, 1, 0);
@@ -387,7 +387,7 @@ x3dom.registerNodeType(
                         node._dirty.positions = true;
                     });
                 } else if (fieldName === "subdivision") {
-                    
+                    // TODO
                 }
             }
         }
@@ -422,48 +422,47 @@ x3dom.registerNodeType(
 
             if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
             {
-                    //x3dom.debug.logInfo("Using Box from Cache");
-                    this._mesh = x3dom.geoCache[geoCacheID];
+                this._mesh = x3dom.geoCache[geoCacheID];
             }
             else
             {
-                    this._mesh._positions[0] = [
-                        -xBot,-sy,-yBot,  -xTop + xOff, sy,-yTop + yOff,   xTop + xOff, sy,-yTop + yOff,   xBot,-sy,-yBot, //hinten 0,0,-1
-                        -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xBot,-sy, yBot, //vorne 0,0,1
-                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,  -xTop + xOff, sy,-yTop + yOff, //links -1,0,0
-                         xBot,-sy,-yBot,   xBot,-sy, yBot,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //rechts 1,0,0
-                        -xTop + xOff, sy,-yTop + yOff,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //oben 0,1,0
-                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,   xBot,-sy, yBot,   xBot,-sy,-yBot  //unten 0,-1,0
-                    ];
-                    this._mesh._normals[0] = [
-                        0,0,-1,  0,0,-1,   0,0,-1,   0,0,-1,
-                        0,0,1,  0,0,1,   0,0,1,   0,0,1,
-                        -1,0,0,  -1,0,0,  -1,0,0,  -1,0,0,
-                        1,0,0,   1,0,0,   1,0,0,   1,0,0,
-                        0,1,0,  0,1,0,   0,1,0,   0,1,0,
-                        0,-1,0,  0,-1,0,   0,-1,0,   0,-1,0
-                    ];
-                    this._mesh._texCoords[0] = [
-                        1,0, 1,1, 0,1, 0,0,
-                        0,0, 0,1, 1,1, 1,0,
-                        0,0, 1,0, 1,1, 0,1,
-                        1,0, 0,0, 0,1, 1,1,
-                        0,1, 0,0, 1,0, 1,1,
-                        0,0, 0,1, 1,1, 1,0
-                    ];
-                    this._mesh._indices[0] = [
-                        0,1,2, 2,3,0,
-                        4,7,5, 5,7,6,
-                        8,9,10, 10,11,8,
-                        12,14,13, 14,12,15,
-                        16,17,18, 18,19,16,
-                        20,22,21, 22,20,23
-                    ];
-                    this._mesh._invalidate = true;
-                    this._mesh._numFaces = 12;
-                    this._mesh._numCoords = 24;
+                this._mesh._positions[0] = [
+                    -xBot, -sy, -yBot, -xTop + xOff, sy, -yTop + yOff, xTop + xOff, sy, -yTop + yOff, xBot, -sy, -yBot, //hinten 0,0,-1
+                    -xBot, -sy, yBot, -xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, yTop + yOff, xBot, -sy, yBot, //vorne 0,0,1
+                    -xBot, -sy, -yBot, -xBot, -sy, yBot, -xTop + xOff, sy, yTop + yOff, -xTop + xOff, sy, -yTop + yOff, //links -1,0,0
+                    xBot, -sy, -yBot, xBot, -sy, yBot, xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, -yTop + yOff, //rechts 1,0,0
+                    -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, -yTop + yOff, //oben 0,1,0
+                    -xBot, -sy, -yBot, -xBot, -sy, yBot, xBot, -sy, yBot, xBot, -sy, -yBot  //unten 0,-1,0
+                ];
+                this._mesh._normals[0] = [
+                    0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
+                    0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
+                    -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
+                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
+                    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
+                    0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0
+                ];
+                this._mesh._texCoords[0] = [
+                    1, 0, 1, 1, 0, 1, 0, 0,
+                    0, 0, 0, 1, 1, 1, 1, 0,
+                    0, 0, 1, 0, 1, 1, 0, 1,
+                    1, 0, 0, 0, 0, 1, 1, 1,
+                    0, 1, 0, 0, 1, 0, 1, 1,
+                    0, 0, 0, 1, 1, 1, 1, 0
+                ];
+                this._mesh._indices[0] = [
+                    0, 1, 2, 2, 3, 0,
+                    4, 7, 5, 5, 7, 6,
+                    8, 9, 10, 10, 11, 8,
+                    12, 14, 13, 14, 12, 15,
+                    16, 17, 18, 18, 19, 16,
+                    20, 22, 21, 22, 20, 23
+                ];
+                this._mesh._invalidate = true;
+                this._mesh._numFaces = 12;
+                this._mesh._numCoords = 24;
 
-                    x3dom.geoCache[geoCacheID] = this._mesh;
+                x3dom.geoCache[geoCacheID] = this._mesh;
             }
         },
         {
@@ -489,6 +488,9 @@ x3dom.registerNodeType(
                         -xTop + xOff, sy,-yTop + yOff,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //oben 0,1,0
                         -xBot,-sy,-yBot,  -xBot,-sy, yBot,   xBot,-sy, yBot,   xBot,-sy,-yBot  //unten 0,-1,0
                     ];
+
+                    // TODO: set correct normals!! (could be calculated using slope from bottom to top)
+                    //this._mesh._normals[0] = [];
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
@@ -914,7 +916,6 @@ x3dom.registerNodeType(
                         x = outerRadius * Math.sin(angle);
                         z = outerRadius * -Math.cos(angle);
 
-
                         this._mesh._positions[0].push(x, height/2, z);
                         this._mesh._normals[0].push(z, 0, x);
                         this._mesh._positions[0].push(x, -height/2, z);
@@ -966,12 +967,13 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'ytshear', 10.0);
             this.addField_SFFloat(ctx, 'xbshear', 5.0);
             this.addField_SFFloat(ctx, 'ybshear', 35.0);
-	    this.addField_SFFloat(ctx, 'subdivision', 32);
-            
-            var topSlopeX = this._vf.radius * (Math.tan(this._vf.xtshear * Math.PI/180));
-            var topSlopeY = this._vf.radius * (Math.tan(this._vf.ytshear * Math.PI/180));
-            var botSlopeX = this._vf.radius * (Math.tan(this._vf.xbshear * Math.PI/180));
-            var botSlopeY = this._vf.radius * (Math.tan(this._vf.ybshear * Math.PI/180));
+            this.addField_SFFloat(ctx, 'subdivision', 32);
+
+            var pi180 = Math.PI / 180;
+            var topSlopeX = this._vf.radius * (Math.tan(this._vf.xtshear * pi180));
+            var topSlopeY = this._vf.radius * (Math.tan(this._vf.ytshear * pi180));
+            var botSlopeX = this._vf.radius * (Math.tan(this._vf.xbshear * pi180));
+            var botSlopeY = this._vf.radius * (Math.tan(this._vf.ybshear * pi180));
             
             var sides = this._vf.subdivision;
 
@@ -1093,11 +1095,12 @@ x3dom.registerNodeType(
                     fieldName === "radius" || fieldName === "height") { 
 		
                     this._mesh._positions[0] = [];
-                    
-                    var topSlopeX = (Math.tan(this._vf.xtshear * Math.PI/180));
-                    var topSlopeY = (Math.tan(this._vf.ytshear * Math.PI/180));
-                    var botSlopeX = (Math.tan(this._vf.xbshear * Math.PI/180));
-                    var botSlopeY = (Math.tan(this._vf.ybshear * Math.PI/180));
+
+                    var pi180 = Math.PI / 180;
+                    var topSlopeX = (Math.tan(this._vf.xtshear * pi180));
+                    var topSlopeY = (Math.tan(this._vf.ytshear * pi180));
+                    var botSlopeX = (Math.tan(this._vf.xbshear * pi180));
+                    var botSlopeY = (Math.tan(this._vf.ybshear * pi180));
 
                     var sides = this._vf.subdivision;
                     
@@ -1115,10 +1118,11 @@ x3dom.registerNodeType(
                           x = Math.sin(beta);
                           z = -Math.cos(beta);
 
-                          this._mesh._positions[0].push(x * radius, -height/2 + x * botSlopeX * radius + z * botSlopeY * radius, z * radius);
-                          this._mesh._positions[0].push(x * radius, height/2 + x * topSlopeX * radius + z * topSlopeY * radius, z * radius);
+                          this._mesh._positions[0].push(x * radius,
+                              -height/2 + x * botSlopeX * radius + z * botSlopeY * radius, z * radius);
+                          this._mesh._positions[0].push(x * radius,
+                              height/2 + x * topSlopeX * radius + z * topSlopeY * radius, z * radius);
                     }
-
 
                     if (radius > 0)
                     {
@@ -1146,11 +1150,12 @@ x3dom.registerNodeType(
                             }
                         }
                     }
+
+                    // TODO: subdivision
                     
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
                     });
-                
                 }		
             }
         }
