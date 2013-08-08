@@ -676,18 +676,9 @@ x3dom.registerNodeType(
             else if (this._vf.angle > twoPi)
                 this._vf.angle = twoPi;
 
-            // assure that innerRadius < outerRadius
-            if (this._vf.innerRadius > this._vf.outerRadius)
-            {
-                var tmp = this._vf.innerRadius;
-                this._vf.innerRadius = this._vf.outerRadius;
-                this._vf.outerRadius = tmp;
-            }
 
-            var delta = (this._vf.outerRadius - this._vf.innerRadius) / 2;
-
-			var innerRadius = this._vf.innerRadius - delta;
-			var outerRadius = this._vf.outerRadius - delta;
+			var innerRadius = this._vf.innerRadius
+			var outerRadius = this._vf.outerRadius
 			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
             rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
@@ -824,18 +815,9 @@ x3dom.registerNodeType(
                     else if (this._vf.angle > twoPi)
                         this._vf.angle = twoPi;
 
-                    // assure that innerRadius < outerRadius
-                    if (this._vf.innerRadius > this._vf.outerRadius)
-                    {
-                        var tmp = this._vf.innerRadius;
-                        this._vf.innerRadius = this._vf.outerRadius;
-                        this._vf.outerRadius = tmp;
-                    }
 
-                    var delta = (this._vf.outerRadius - this._vf.innerRadius) / 2;
-
-                    var innerRadius = this._vf.innerRadius - delta;
-                    var outerRadius = this._vf.outerRadius - delta;
+                    var innerRadius = this._vf.innerRadius;
+                    var outerRadius = this._vf.outerRadius;
 
                     var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
