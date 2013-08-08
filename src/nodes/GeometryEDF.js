@@ -953,11 +953,11 @@ x3dom.registerNodeType(
 
 /* ### Slope-Bottom Cylinder ### */
 x3dom.registerNodeType(
-    "SlopeBottomCylinder",
+    "SlopedCylinder",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.SlopeBottomCylinder.superClass.call(this, ctx);
+            x3dom.nodeTypes.SlopedCylinder.superClass.call(this, ctx);
 
             this.addField_SFFloat(ctx, 'radius', 1.0);
             this.addField_SFFloat(ctx, 'height', 2.0);
