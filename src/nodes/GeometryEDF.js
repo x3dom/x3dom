@@ -16,7 +16,7 @@ x3dom.registerNodeType(
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
         function (ctx) {
-            x3dom.nodeTypes.Cone.superClass.call(this, ctx);
+            x3dom.nodeTypes.Snout.superClass.call(this, ctx);
 
             this.addField_SFFloat(ctx, 'dbottom', 1.0);
             this.addField_SFFloat(ctx, 'dtop', 0.4);
@@ -29,7 +29,6 @@ x3dom.registerNodeType(
                              this._vf.bottom + '_' + this._vf.side + '_' + this._vf.topRadius;
 
             if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
-                //x3dom.debug.logInfo("Using Cone from Cache");
                 this._mesh = x3dom.geoCache[geoCacheID];
             }
             else {
@@ -266,6 +265,8 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Dish.superClass.call(this, ctx);
 
+            // TODO: THINKABOUTME, could Dish node be integrated with SphereSegment?
+
             this.addField_SFFloat(ctx, 'diameter', 1); 	//Diameter of base
             this.addField_SFFloat(ctx, 'height', 1);	//Maximum height of dished surface above base
             this.addField_SFFloat(ctx, 'radius', 1);	//If radius is zero, dish is drawn as section of sphere.
@@ -386,7 +387,8 @@ x3dom.registerNodeType(
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
                     });
-                } else if (fieldName === "subdivision") {
+                }
+                else if (fieldName === "subdivision") {
                     // TODO
                 }
             }
@@ -501,7 +503,7 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### Rectangular Torus ### */
+/* ### RectangularTorus ### */
 x3dom.registerNodeType(
     "RectangularTorus",
     "Geometry3D",
@@ -729,7 +731,6 @@ x3dom.registerNodeType(
             }
         },
         {
-            nodeChanged: function() {},
             fieldChanged: function(fieldname)
             {
                 if (fieldname === "innerRadius" || fieldname === "outerRadius" ||
@@ -951,7 +952,7 @@ x3dom.registerNodeType(
     )
 );
 
-/* ### Slope-Bottom Cylinder ### */
+/* ### SlopedCylinder ### */
 x3dom.registerNodeType(
     "SlopedCylinder",
     "Geometry3D",
@@ -977,7 +978,7 @@ x3dom.registerNodeType(
             
             var sides = this._vf.subdivision;
 
-            var geoCacheID = 'SlopeBottomCylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
+            var geoCacheID = 'SlopedCylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top;
 
             if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
             {
@@ -1190,11 +1191,39 @@ x3dom.registerNodeType(
 			}
          },
          {
-            nodeChanged: function() {},
             fieldChanged: function(fieldName) 
 			{
-			
         	}
 		}
+    )
+);
+
+/* ### Extrusion ### */
+x3dom.registerNodeType(
+    "Extrusion",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.Extrusion.superClass.call(this, ctx);
+
+            this.addField_SFBool(ctx, 'beginCap', true);
+            this.addField_SFBool(ctx, 'endCap', true);
+            this.addField_SFBool(ctx, 'ccw', true);
+            this.addField_SFBool(ctx, 'convex', true);
+            this.addField_SFBool(ctx, 'solid', true);
+            this.addField_SFFloat(ctx, 'creaseAngle', 0);
+            this.addField_MFVec2f(ctx, 'crossSection', []);   //1, 1, 1, -1, -1, -1, -1, 1, 1, 1
+            this.addField_MFRotation(ctx, 'orientation', []); //0, 0, 1, 0
+            this.addField_MFVec2f(ctx, 'scale', []); //1, 1
+            this.addField_MFVec3f(ctx, 'spine', []); //0, 0, 0, 0, 1, 0
+
+            x3dom.debug.logWarning("Extrusion NYI");
+            //http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
+        },
+        {
+            fieldChanged: function(fieldName)
+            {
+            }
+        }
     )
 );

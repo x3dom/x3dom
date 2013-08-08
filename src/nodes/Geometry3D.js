@@ -22,7 +22,7 @@ x3dom.registerNodeType(
 );
 
 /* ### Plane ### */
-        x3dom.registerNodeType(
+x3dom.registerNodeType(
     "Plane",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
@@ -85,7 +85,7 @@ x3dom.registerNodeType(
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
         },
-         {
+        {
              nodeChanged: function () { },
              fieldChanged: function (fieldName) {
 
@@ -163,7 +163,7 @@ x3dom.registerNodeType(
                      });
                  }
              }
-         }
+        }
     )
 );
 
