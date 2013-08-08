@@ -676,9 +676,8 @@ x3dom.registerNodeType(
             else if (this._vf.angle > twoPi)
                 this._vf.angle = twoPi;
 
-
-			var innerRadius = this._vf.innerRadius
-			var outerRadius = this._vf.outerRadius
+			var innerRadius = this._vf.innerRadius;
+			var outerRadius = this._vf.outerRadius;
 			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
 
             rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
@@ -814,7 +813,6 @@ x3dom.registerNodeType(
                         this._vf.angle = 0;
                     else if (this._vf.angle > twoPi)
                         this._vf.angle = twoPi;
-
 
                     var innerRadius = this._vf.innerRadius;
                     var outerRadius = this._vf.outerRadius;
@@ -3119,16 +3117,16 @@ x3dom.registerNodeType(
 						{
 							if (indexes[i] == -1) {
 								var linklist_indices = x3dom.EarClipping.getIndexes(linklist);
-															
+
 								for (j = 0; j < linklist_indices.length; j++) {
 									this._mesh._indices[0].push(linklist_indices[j]);
 								}
 								linklist = new x3dom.DoublyLinkedList();
 							    continue;
 							}
-							
+
 							linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[indexes[i]], indexes[i]));
-						}								
+						}
 					}
                    
                     this._mesh._positions[0] = positions.toGL();

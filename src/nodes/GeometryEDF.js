@@ -436,6 +436,7 @@ x3dom.registerNodeType(
                     -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, -yTop + yOff, //oben 0,1,0
                     -xBot, -sy, -yBot, -xBot, -sy, yBot, xBot, -sy, yBot, xBot, -sy, -yBot  //unten 0,-1,0
                 ];
+                // TODO: set correct normals!! (could be calculated using slope from bottom to top)
                 this._mesh._normals[0] = [
                     0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
                     0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
@@ -1217,12 +1218,215 @@ x3dom.registerNodeType(
             this.addField_MFVec2f(ctx, 'scale', []); //1, 1
             this.addField_MFVec3f(ctx, 'spine', []); //0, 0, 0, 0, 1, 0
 
-            x3dom.debug.logWarning("Extrusion NYI");
-            //http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
+            // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
+            // http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-318.htm
+
+            var geoCacheID = 'Extrusion_'+this._vf.crossSection.toGL().toString()+"_"+this._vf.spine.toGL().toString();
+
+            if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined)
+            {
+                this._mesh = x3dom.geoCache[geoCacheID];
+            }
+            else
+            {
+                var i, j, n, m, sx = 1, sy = 1;
+                var spine = this._vf.spine, scale = this._vf.scale, crossSection = this._vf.crossSection;
+                var positions = [], index = 0;
+
+                for (i=0, m=spine.length; i<m; i++) {
+                    var len = scale.length;
+                    if (len) {
+                        if (i < len) {
+                            sx = scale[i].x;
+                            sy = scale[i].y;
+                        }
+                        else {
+                            sx = scale[len-1].x;
+                            sy = scale[len-1].y;
+                        }
+                    }
+
+                    for (j=0, n=crossSection.length; j<n; j++) {
+                        // TODO; use orientation values
+                        var pos = new x3dom.fields.SFVec3f(
+                            crossSection[j].x * sx + spine[i].x,
+                            spine[i].y,
+                            crossSection[j].y * sy + spine[i].z);
+                        positions.push(pos);
+
+                        // TODO; also implement version with smooth normals/ shared vertices
+                        if (i > 0 && j > 0) {
+                            var iPos = (i-1)*n+(j-1);
+                            this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                            iPos = (i-1)*n+j;
+                            this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                            iPos = i*n+j;
+                            this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+
+                            this._mesh._indices[0].push(index++, index++, index++);
+
+                            this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                            iPos = i*n+(j-1);
+                            this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                            iPos = (i-1)*n+(j-1);
+                            this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+
+                            this._mesh._indices[0].push(index++, index++, index++);
+                        }
+                    }
+
+                    var p0, linklist, linklist_indices;
+
+                    if (i == 0) {
+                        linklist = new x3dom.DoublyLinkedList();
+
+                        for (j=0; j<n; j++) {
+                            linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[j], j));
+                        }
+
+                        linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+                        linklist_indices.reverse();
+
+                        for (j=0; j<linklist_indices.length; j++) {
+                            p0 = positions[linklist_indices[j]];
+                            this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                            this._mesh._indices[0].push(index++);
+                        }
+                    }
+                    else if (i == m-1) {
+                        linklist = new x3dom.DoublyLinkedList();
+
+                        var startPos = i * n;
+                        for (j=0; j<n; j++) {
+                            linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[startPos+j], startPos+j));
+                        }
+
+                        linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+
+                        for (j=0; j<linklist_indices.length; j++) {
+                            p0 = positions[linklist_indices[j]];
+                            this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                            this._mesh._indices[0].push(index++);
+                        }
+                    }
+                }
+
+                this._mesh.calcNormals(0, this._vf.ccw);
+                this._mesh.calcTexCoords("");
+
+                this.invalidateVolume();
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+                x3dom.geoCache[geoCacheID] = this._mesh;
+            }
         },
         {
             fieldChanged: function(fieldName)
             {
+                if (fieldName == "beginCap" || fieldName == "endCap" ||
+                    fieldName == "crossSection" || fieldName == "orientation" ||
+                    fieldName == "scale" || fieldName == "spine")
+                {
+                    this._mesh._positions[0] = [];
+                    this._mesh._normals[0]   = [];
+                    this._mesh._texCoords[0] = [];
+                    this._mesh._indices[0]   = [];
+
+                    // FIXME: this is unefficient copy & paste code, make faster!
+                    var i, j, n, m, sx = 1, sy = 1;
+                    var spine = this._vf.spine, scale = this._vf.scale, crossSection = this._vf.crossSection;
+                    var positions = [], index = 0;
+
+                    for (i=0, m=spine.length; i<m; i++) {
+                        var len = scale.length;
+                        if (len) {
+                            if (i < len) {
+                                sx = scale[i].x;
+                                sy = scale[i].y;
+                            }
+                            else {
+                                sx = scale[len-1].x;
+                                sy = scale[len-1].y;
+                            }
+                        }
+
+                        for (j=0, n=crossSection.length; j<n; j++) {
+                            // TODO; use orientation values
+                            var pos = new x3dom.fields.SFVec3f(
+                                crossSection[j].x * sx + spine[i].x,
+                                spine[i].y,
+                                crossSection[j].y * sy + spine[i].z);
+                            positions.push(pos);
+
+                            // TODO; also implement version with smooth normals/ shared vertices
+                            if (i > 0 && j > 0) {
+                                var iPos = (i-1)*n+(j-1);
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = (i-1)*n+j;
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = i*n+j;
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+
+                                this._mesh._indices[0].push(index++, index++, index++);
+
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = i*n+(j-1);
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = (i-1)*n+(j-1);
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+
+                                this._mesh._indices[0].push(index++, index++, index++);
+                            }
+                        }
+
+                        var p0, linklist, linklist_indices;
+
+                        if (i == 0) {
+                            linklist = new x3dom.DoublyLinkedList();
+
+                            for (j=0; j<n; j++) {
+                                linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[j], j));
+                            }
+
+                            linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+                            linklist_indices.reverse();
+
+                            for (j=0; j<linklist_indices.length; j++) {
+                                p0 = positions[linklist_indices[j]];
+                                this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                                this._mesh._indices[0].push(index++);
+                            }
+                        }
+                        else if (i == m-1) {
+                            linklist = new x3dom.DoublyLinkedList();
+
+                            var startPos = i * n;
+                            for (j=0; j<n; j++) {
+                                linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[startPos+j], startPos+j));
+                            }
+
+                            linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+
+                            for (j=0; j<linklist_indices.length; j++) {
+                                p0 = positions[linklist_indices[j]];
+                                this._mesh._positions[0].push(p0.x, p0.y, p0.z);
+                                this._mesh._indices[0].push(index++);
+                            }
+                        }
+                    }
+
+                    this._mesh.calcNormals(0, this._vf.ccw);
+                    this._mesh.calcTexCoords("");
+
+                    this.invalidateVolume();
+                    this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.setAllDirty();
+                    });
+                }
             }
         }
     )

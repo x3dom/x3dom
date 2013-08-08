@@ -9,17 +9,7 @@
  * Philip Taylor: http://philip.html5.org
  */
 
-/**
- * Class: x3dom.runtime
- *
- * Runtime proxy object to get and set runtime parameters. This object
- * is attached to each X3D element and can be used in the following manner:
- *
- * > var e = document.getElementById('the_x3delement');
- * > e.runtime.showAll();
- * > e.runtime.resetView();
- * > ...
- */
+
 x3dom.EarClipping = {
 	
 	reversePointDirection: function (linklist, plane) {
@@ -54,10 +44,10 @@ x3dom.EarClipping = {
 				
 				if (z < 0) {
 					count--;
-				} else if (z > 0) {
+				} else /*if (z >= 0)*/ {
 					count++;
 				}
-			}	
+			}
 			
 			if (count < 0) {
 				linklist.invert();
@@ -203,20 +193,20 @@ x3dom.EarClipping = {
 		var ap1a, ap1b, tp1a, tp1b, tp2a, tp2b, tp3a, tp3b;
 		
 		if(plane == 'YZ') {
-			ap1a = ap1.y, ap1b = ap1.z;
-			tp1a = tp1.y, tp1b = tp1.z;
-			tp2a = tp2.y, tp2b = tp2.z;
-			tp3a = tp3.y, tp3b = tp3.z;
+			ap1a = ap1.y; ap1b = ap1.z;
+			tp1a = tp1.y; tp1b = tp1.z;
+			tp2a = tp2.y; tp2b = tp2.z;
+			tp3a = tp3.y; tp3b = tp3.z;
 		} else if(plane == 'XZ') {
-			ap1a = ap1.z, ap1b = ap1.x;
-			tp1a = tp1.z, tp1b = tp1.x;
-			tp2a = tp2.z, tp2b = tp2.x;
-			tp3a = tp3.z, tp3b = tp3.x;		
+			ap1a = ap1.z; ap1b = ap1.x;
+			tp1a = tp1.z; tp1b = tp1.x;
+			tp2a = tp2.z; tp2b = tp2.x;
+			tp3a = tp3.z; tp3b = tp3.x;
 		} else {
-			ap1a = ap1.x, ap1b = ap1.y;
-			tp1a = tp1.x, tp1b = tp1.y;
-			tp2a = tp2.x, tp2b = tp2.y;
-			tp3a = tp3.x, tp3b = tp3.y;
+			ap1a = ap1.x; ap1b = ap1.y;
+			tp1a = tp1.x; tp1b = tp1.y;
+			tp2a = tp2.x; tp2b = tp2.y;
+			tp3a = tp3.x; tp3b = tp3.y;
 		}
 		
 		b0 = ((tp2a - tp1a) * (tp3b - tp1b) - (tp3a - tp1a) * (tp2b - tp1b));
@@ -235,17 +225,17 @@ x3dom.EarClipping = {
 	isKonvex: function (p ,p1, p2, plane) {
 		var pa, pb, p1a, p1b, p2a, p2b;
 		if(plane == 'YZ') {
-			pa = p.y, pb = p.z;
-			p1a = p1.y, p1b = p1.z;
-			p2a = p2.y, p2b = p2.z;
+			pa = p.y; pb = p.z;
+			p1a = p1.y; p1b = p1.z;
+			p2a = p2.y; p2b = p2.z;
 		} else if(plane == 'XZ') {
-			pa = p.z, pb = p.x;
-			p1a = p1.z, p1b = p1.x;
-			p2a = p2.z, p2b = p2.x;
+			pa = p.z; pb = p.x;
+			p1a = p1.z; p1b = p1.x;
+			p2a = p2.z; p2b = p2.x;
 		} else {
-			pa = p.x, pb = p.y;
-			p1a = p1.x, p1b = p1.y;
-			p2a = p2.x, p2b = p2.y;
+			pa = p.x; pb = p.y;
+			p1a = p1.x; p1b = p1.y;
+			p2a = p2.x; p2b = p2.y;
 		}
 		
 		var l = ((p1a - pa) * (p2b - pb) - (p1b - pb) * (p2a - pa));
@@ -261,8 +251,8 @@ x3dom.EarClipping = {
 		var v2x, v2y, v2z;
 		var v3x, v3y, v3z;
 	
-		v1x = p2.x - p1.x, v1y = p2.y - p1.y, v1z = p2.z - p1.z;
-		v2x = p3.x - p1.x, v2y = p3.y - p1.y, v2z = p3.z - p1.z;
+		v1x = p2.x - p1.x; v1y = p2.y - p1.y; v1z = p2.z - p1.z;
+		v2x = p3.x - p1.x; v2y = p3.y - p1.y; v2z = p3.z - p1.z;
 		
 		v3x = v1y*v2z - v1z*v2y;
 		v3y = v1z*v2x - v1x*v2z;
