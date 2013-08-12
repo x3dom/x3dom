@@ -429,21 +429,12 @@ x3dom.registerNodeType(
             else
             {
                 this._mesh._positions[0] = [
-                    -xBot, -sy, -yBot, -xTop + xOff, sy, -yTop + yOff, xTop + xOff, sy, -yTop + yOff, xBot, -sy, -yBot, //hinten 0,0,-1
-                    -xBot, -sy, yBot, -xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, yTop + yOff, xBot, -sy, yBot, //vorne 0,0,1
-                    -xBot, -sy, -yBot, -xBot, -sy, yBot, -xTop + xOff, sy, yTop + yOff, -xTop + xOff, sy, -yTop + yOff, //links -1,0,0
-                    xBot, -sy, -yBot, xBot, -sy, yBot, xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, -yTop + yOff, //rechts 1,0,0
-                    -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, yTop + yOff, xTop + xOff, sy, -yTop + yOff, //oben 0,1,0
-                    -xBot, -sy, -yBot, -xBot, -sy, yBot, xBot, -sy, yBot, xBot, -sy, -yBot  //unten 0,-1,0
-                ];
-                // TODO: set correct normals!! (could be calculated using slope from bottom to top)
-                this._mesh._normals[0] = [
-                    0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1,
-                    0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1,
-                    -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0, 0,
-                    1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0, 0,
-                    0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 1, 0,
-                    0, -1, 0, 0, -1, 0, 0, -1, 0, 0, -1, 0
+                    -xBot,       -sy, -yBot,        -xTop + xOff, sy, -yTop + yOff,  xTop + xOff, sy, -yTop + yOff,  xBot,       -sy, -yBot,
+                    -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xBot,       -sy,  yBot,
+                    -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff, -xTop + xOff, sy, -yTop + yOff,
+                     xBot,       -sy, -yBot,         xBot,       -sy,  yBot,         xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                    -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                    -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,         xBot,       -sy,  yBot,         xBot,       -sy, -yBot
                 ];
                 this._mesh._texCoords[0] = [
                     1, 0, 1, 1, 0, 1, 0, 0,
@@ -455,12 +446,16 @@ x3dom.registerNodeType(
                 ];
                 this._mesh._indices[0] = [
                     0, 1, 2, 2, 3, 0,
-                    4, 7, 5, 5, 7, 6,
+                    6, 5, 4, 4, 7, 6,
                     8, 9, 10, 10, 11, 8,
-                    12, 14, 13, 14, 12, 15,
+                    12, 15, 14, 14, 13, 12,
                     16, 17, 18, 18, 19, 16,
-                    20, 22, 21, 22, 20, 23
+                    20, 23, 22, 22, 21, 20
                 ];
+
+                // attention, we share per side, therefore > 0
+                this._mesh.calcNormals(Math.PI, this._vf.ccw);
+
                 this._mesh._invalidate = true;
                 this._mesh._numFaces = 12;
                 this._mesh._numCoords = 24;
@@ -484,19 +479,22 @@ x3dom.registerNodeType(
                     var sy = this._vf.height / 2;
 
                     this._mesh._positions[0] = [
-                        -xBot,-sy,-yBot,  -xTop + xOff, sy,-yTop + yOff,   xTop + xOff, sy,-yTop + yOff,   xBot,-sy,-yBot, //hinten 0,0,-1
-                        -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xBot,-sy, yBot, //vorne 0,0,1
-                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,  -xTop + xOff, sy,-yTop + yOff, //links -1,0,0
-                         xBot,-sy,-yBot,   xBot,-sy, yBot,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //rechts 1,0,0
-                        -xTop + xOff, sy,-yTop + yOff,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff, //oben 0,1,0
-                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,   xBot,-sy, yBot,   xBot,-sy,-yBot  //unten 0,-1,0
+                        -xBot,-sy,-yBot,  -xTop + xOff, sy,-yTop + yOff,   xTop + xOff, sy,-yTop + yOff,   xBot,-sy,-yBot,
+                        -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xBot,-sy, yBot,
+                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,  -xTop + xOff, sy,-yTop + yOff,
+                         xBot,-sy,-yBot,   xBot,-sy, yBot,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff,
+                        -xTop + xOff, sy,-yTop + yOff,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff,
+                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,   xBot,-sy, yBot,   xBot,-sy,-yBot
                     ];
 
-                    // TODO: set correct normals!! (could be calculated using slope from bottom to top)
-                    //this._mesh._normals[0] = [];
+                    this._mesh._normals[0] = [];
+                    this._mesh.calcNormals(Math.PI, this._vf.ccw);
+
+                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
             }
