@@ -3701,8 +3701,6 @@ x3dom.registerNodeType(
             // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
             // http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-318.htm
             this.rebuildGeometry();
-
-            x3dom.debug.logWarning("Extrusion's orientation field NYI!");
         },
         {
             rebuildGeometry: function()
@@ -3719,7 +3717,13 @@ x3dom.registerNodeType(
                     crossSection = this._vf.crossSection;
                 var positions = [], index = 0;
 
-                for (i=0, m=spine.length; i<m; i++) {
+                m = spine.length;
+                n = crossSection.length;
+
+                var x, y, z, last_z;
+                var spineClosed = (m > 2) ? spine[0].equals(spine[spine.length-1], x3dom.fields.Eps) : false;
+
+                for (i=0; i<m; i++) {
                     if ((len = scale.length) > 0) {
                         if (i < len) {
                             sx = scale[i].x;
@@ -3731,12 +3735,55 @@ x3dom.registerNodeType(
                         }
                     }
 
-                    for (j=0, n=crossSection.length; j<n; j++) {
-                        // TODO; also use orientation values
+                    for (j=0; j<n; j++) {
                         var pos = new x3dom.fields.SFVec3f(
                             crossSection[j].x * sx + spine[i].x,
                             spine[i].y,
                             crossSection[j].y * sy + spine[i].z);
+
+                        if (m > 2 && orientation.length == m) {
+                            if (i == 0) {
+                                if (spineClosed) {
+                                    y = spine[1].subtract(spine[m-2]).normalize();
+                                    z = spine[1].subtract(spine[0]).normalize().cross(spine[m-2].subtract(spine[0]).normalize());
+                                }
+                                else {
+                                    y = spine[1].subtract(spine[0]).normalize();
+                                    z = spine[2].subtract(spine[1]).normalize().cross(spine[0].subtract(spine[1]).normalize());
+                                }
+                                last_z = x3dom.fields.SFVec3f.copy(z);
+                            }
+                            else if (i == m-1) {
+                                if (spineClosed) {
+                                    y = spine[1].subtract(spine[m-2]).normalize();
+                                    z = spine[1].subtract(spine[0]).normalize().cross(spine[m-2].subtract(spine[0]).normalize());
+                                }
+                                else {
+                                    y = spine[m-1].subtract(spine[m-2]).normalize();
+                                    z = x3dom.fields.SFVec3f.copy(last_z);
+                                }
+                            }
+                            else {
+                                y = spine[i+1].subtract(spine[i]).normalize();
+                                z = y.cross(spine[i-1].subtract(spine[i]).normalize());
+                            }
+                            if (z.dot(last_z) < 0) {
+                                z = z.negate();
+                            }
+                            if (i != 0) {
+                                last_z = x3dom.fields.SFVec3f.copy(z);
+                            }
+                            x = y.cross(z);
+
+                            var baseMat = x3dom.fields.SFMatrix4f.identity();
+                            baseMat.setValue(x, y, z);
+                            var rotMat = orientation[i].toMatrix();
+
+                            pos = pos.subtract(spine[i]);
+                            pos = baseMat.multMatrixPnt(rotMat.multMatrixPnt(pos));
+                            pos = pos.add(spine[i]);
+                        }
+
                         positions.push(pos);
 
                         if (this._vf.creaseAngle <= x3dom.fields.Eps) {
