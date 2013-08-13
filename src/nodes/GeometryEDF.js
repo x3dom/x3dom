@@ -280,12 +280,14 @@ x3dom.registerNodeType(
                 this._mesh._texCoords[0] = [];
                 this._mesh._indices[0]   = [];
 
-                var halfDia = this._vf.diameter / 2, r = this._vf.radius, h = this._vf.height;
+                var halfDia = this._vf.diameter / 2, r = this._vf.radius,
+                    h = (r == 0) ? Math.min(this._vf.height, halfDia) : this._vf.height;
                 var offset = (r == 0) ? (halfDia - h) : 0;
                 var twoPi = Math.PI * 2, halfPi = Math.PI / 2;
 
                 var latitudeBands = this._vf.subdivision.x, longitudeBands = this._vf.subdivision.y;
                 var latNumber, longNumber;
+                var a, b, c;
 
                 var theta, sinTheta, cosTheta;
                 var phi, sinPhi, cosPhi;
@@ -295,6 +297,15 @@ x3dom.registerNodeType(
                 if (r == 0) {
                     var segTheta = halfPi - Math.asin(1 - h / halfDia);
                     var segL = Math.ceil(latitudeBands / halfPi * segTheta);
+
+                    a = halfDia;
+                    b = halfDia;
+                    c = halfDia;
+                }
+                else {
+                    a = halfDia;
+                    b = h;
+                    c = r;
                 }
 
                 for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
@@ -312,18 +323,21 @@ x3dom.registerNodeType(
                         sinPhi = Math.sin(phi);
                         cosPhi = Math.cos(phi);
 
-                        x = halfDia * (-cosPhi * sinTheta);
-                        y = halfDia *            cosTheta;
-                        z = halfDia * (-sinPhi * sinTheta);
+                        x = a * (-cosPhi * sinTheta);
+                        y = b *            cosTheta;
+                        z = c * (-sinPhi * sinTheta);
 
                         u = 0.25 - (longNumber / longitudeBands);
                         v = latNumber / latitudeBands;
 
                         this._mesh._positions[0].push(x, y - offset, z);
-                        this._mesh._normals[0].push(x);
-                        this._mesh._normals[0].push(y);
-                        this._mesh._normals[0].push(z);
                         this._mesh._texCoords[0].push(u, v);
+                        if (r == 0) {
+                            this._mesh._normals[0].push(x, y, z);
+                        }
+                        else {
+                            this._mesh._normals[0].push(x/(a*a), y/(b*b), z/(c*c));
+                        }
 
                         if ((latNumber == latitudeBands) || (r == 0 && segL == latNumber)) {
                             tmpPosArr.push(x, y - offset, z);
@@ -360,9 +374,9 @@ x3dom.registerNodeType(
                     this._mesh._positions[0].push(tmpPosArr[3*i  ]);
                     this._mesh._positions[0].push(tmpPosArr[3*i+1]);
                     this._mesh._positions[0].push(tmpPosArr[3*i+2]);
-                    this._mesh._normals[0].push(0, -1, 0);
                     this._mesh._texCoords[0].push(tmpTcArr[2*i  ]);
                     this._mesh._texCoords[0].push(tmpTcArr[2*i+1]);
+                    this._mesh._normals[0].push(0, -1, 0);
 
                     if (i >= 2) {
                         this._mesh._indices[0].push(origPos);

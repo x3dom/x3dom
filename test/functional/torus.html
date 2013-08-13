@@ -129,7 +129,30 @@
         </table>
         </fieldset>
       </div>
-        <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:160px; z-index:1000;'>
+        <div id='X3DOM_AOPT_TotalDaneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; left:550px; z-index:1000;'>
+          <fieldset>
+              <legend>Dish</legend>
+          <table>
+              <tr>
+                  <td>radius</td>
+                  <td><input type="text" id="radius" value="0" onchange="document.getElementById('geod').setAttribute('radius', this.value);"></td>
+              </tr>
+              <tr>
+                  <td>height</td>
+                  <td><input type="text" id="height" value="1" onchange="document.getElementById('geod').setAttribute('height', this.value);"></td>
+              </tr>
+              <tr>
+                  <td>diameter</td>
+                  <td><input type="text" id="diameter" value="2" onchange="document.getElementById('geod').setAttribute('diameter', this.value);"></td>
+              </tr>
+              <tr>
+                  <td>subdivision</td>
+                  <td><input type="text" id="subdivision1" value="24 24" onchange="document.getElementById('geod').setAttribute('subdivision', this.value);"></td>
+              </tr>
+          </table>
+          </fieldset>
+        </div>
+        <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:150px; z-index:1000;'>
             <fieldset>
                 <legend>Rectangular Torus</legend>
                 <table>
@@ -156,7 +179,7 @@
                 </table>
             </fieldset>
         </div>
-        <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:350px; z-index:1000;'>
+        <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:325px; z-index:1000;'>
             <fieldset>
                 <legend>Pyramid</legend>
                 <table>
@@ -262,9 +285,9 @@
                 <shape>
                   <appearance>
                     <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
-                    <material diffuseColor='0.4 0.5 0.6' specularColor='0.3 0.3 0.3'></material>
+                    <material diffuseColor='0.4 0.5 0.6' specularColor='0.3 0.3 0.3' shininess="0.5"></material>
                   </appearance>
-                  <dish id="geod" radius="0" height="0.7" diameter="2.0">
+                  <dish id="geod" radius="0" height="1" diameter="2">
                   </dish>
                 </shape>
             </transform>
