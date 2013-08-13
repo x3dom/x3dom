@@ -238,7 +238,7 @@
     </div>
     <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
       <scene>
-        <transform translation="-3 0 0" rotation="0.5774 -0.5774 -0.5774 -2.094">
+        <transform translation="-3 0 0">
           <shape>
             <appearance>
               <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
@@ -258,6 +258,16 @@
                 </cone>
               </shape>
           </transform>
+            <transform translation="-3 0 0">
+                <shape>
+                  <appearance>
+                    <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                    <material diffuseColor='0.4 0.5 0.6' specularColor='0.3 0.3 0.3'></material>
+                  </appearance>
+                  <dish id="geod" radius="0" height="0.7" diameter="2.0">
+                  </dish>
+                </shape>
+            </transform>
           <transform translation="3 0 0">
               <shape>
                   <appearance>

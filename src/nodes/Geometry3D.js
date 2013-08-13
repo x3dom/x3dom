@@ -681,7 +681,7 @@ x3dom.registerNodeType(
 
             rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 
-			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius;  // FIXME; field update!
+			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius+'_'+this._vf.angle;  // FIXME; field update!
 
 			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
