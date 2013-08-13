@@ -37,7 +37,8 @@ x3dom.registerNodeType(
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 
-            var geoCacheID = 'Plane_' + sx + '-' + sy + '-' + subx + '-' + suby + '-' + this._vf.center.x + '-' + this._vf.center.y + '-' + this._vf.center.z;
+            var geoCacheID = 'Plane_' + sx + '-' + sy + '-' + subx + '-' + suby + '-' +
+                             this._vf.center.x + '-' + this._vf.center.y + '-' + this._vf.center.z;
 
             // Attention: DynamicLOD node internally creates Plane nodes, but MUST NOT 
             //            use geoCache, therefore only use cache if "ctx" is defined!
@@ -3689,9 +3690,7 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'beginCap', true);
             this.addField_SFBool(ctx, 'endCap', true);
-            this.addField_SFBool(ctx, 'ccw', true);
             this.addField_SFBool(ctx, 'convex', true);
-            this.addField_SFBool(ctx, 'solid', true);
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
             this.addField_MFVec2f(ctx, 'crossSection', []);   //1, 1, 1, -1, -1, -1, -1, 1, 1, 1
             this.addField_MFRotation(ctx, 'orientation', []); //0, 0, 1, 0

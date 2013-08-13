@@ -334,7 +334,7 @@ x3dom.registerNodeType(
                         this._mesh._positions[0].push(x, y - offset, z);
                         this._mesh._texCoords[0].push(u, v);
                         if (r == 0) {
-                            this._mesh._normals[0].push(x, y, z);
+                            this._mesh._normals[0].push(x/a, y/a, z/a);
                         }
                         else {
                             this._mesh._normals[0].push(x/(a*a), y/(b*b), z/(c*c));
@@ -1189,26 +1189,63 @@ x3dom.registerNodeType(
 			this.addField_SFFloat(ctx, 'height', 0);
 			this.addField_SFFloat(ctx, 'angle', 0);
 			this.addField_SFFloat(ctx, 'radius', 0);
-			
-			var geoCacheID = 'Nozzle...';
 
-			if( ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-			{
-				this._mesh = x3dom.geoCache[geoCacheID];
-			}
-			else
-			{                
-				this._mesh._invalidate = true;
-				this._mesh._numFaces = this._mesh._indices[0].length / 3;
-				this._mesh._numCoords = this._mesh._positions[0].length / 3;
-
-				x3dom.geoCache[geoCacheID] = this._mesh;
-			}
+            x3dom.debug.logWarning("Nozzle NYI");
          },
          {
             fieldChanged: function(fieldName) 
 			{
         	}
 		}
+    )
+);
+
+/* ### SolidOfRevolution ### */
+x3dom.registerNodeType(
+    "SolidOfRevolution",
+    "Geometry3D",
+    defineClass(x3dom.nodeTypes.X3DGeometryNode,
+        function (ctx) {
+            x3dom.nodeTypes.SolidOfRevolution.superClass.call(this, ctx);
+
+            this.addField_SFFloat(ctx, 'creaseAngle', 0);
+            this.addField_MFVec2f(ctx, 'crossSection', []);
+            this.addField_SFFloat(ctx, 'angle', 2*Math.PI);
+
+            this.rebuildGeometry();
+
+            x3dom.debug.logWarning("SolidOfRevolution NYI");
+        },
+        {
+            rebuildGeometry: function()
+            {
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0]   = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._indices[0]   = [];
+
+                // TODO
+                //
+                //this._mesh.calcNormals(Math.PI, this._vf.ccw);
+                //this._mesh.calcTexCoords("");
+
+                this.invalidateVolume();
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            },
+
+            fieldChanged: function(fieldName)
+            {
+                if (fieldName == "crossSection" || fieldName == "angle")
+                {
+                    this.rebuildGeometry();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node.setAllDirty();
+                        node.invalidateVolume();
+                    });
+                }
+            }
+        }
     )
 );
