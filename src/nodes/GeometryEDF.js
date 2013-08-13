@@ -25,8 +25,8 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'yoff', 0.25);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
-            var geoCacheID = 'Snout_' + this._vf.bottomRadius + '_' + this._vf.height + '_' +
-                             this._vf.bottom + '_' + this._vf.side + '_' + this._vf.topRadius;
+            var geoCacheID = 'Snout_' + this._vf.dbottom + '_' + this._vf.dtop + '_' + this._vf.height + '_' +
+                             this._vf.xoff + '_' + this._vf.yoff + '_' + this._vf.subdivision;
 
             if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
                 this._mesh = x3dom.geoCache[geoCacheID];
@@ -250,6 +250,7 @@ x3dom.registerNodeType(
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
+                        node.invalidateVolume();
                     });
                 }
             }
@@ -529,7 +530,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'outerRadius', 1);	//Outside radius
             this.addField_SFFloat(ctx, 'height', 1);	//Height of rectangular section
             this.addField_SFFloat(ctx, 'angle', twoPi);	//Subtended angle
-            this.addField_SFVec2f(ctx, 'subdivision', 32, 0);
+            this.addField_SFFloat(ctx, 'subdivision', 32);
 
             // assure that angle in [0, 2 * PI]
             if (this._vf.angle < 0)
@@ -551,7 +552,7 @@ x3dom.registerNodeType(
             var angle = this._vf.angle;
 
             var beta, delta, x, z, k, j;
-            var sides = this._vf.subdivision.x;
+            var sides = this._vf.subdivision;
 
             var geoCacheID = 'RectangularTorus_'+innerRadius+'-'+outerRadius+'-'+height+'-'+angle;
 
@@ -746,7 +747,8 @@ x3dom.registerNodeType(
             fieldChanged: function(fieldname)
             {
                 if (fieldname === "innerRadius" || fieldname === "outerRadius" ||
-                    fieldname === "height" || fieldname === "angle" || fieldname === "subdivision")
+                    fieldname === "height" || fieldname === "angle" ||
+                    fieldname === "subdivision")
                 {
                     this._mesh._positions[0] = [];
                     this._mesh._normals[0]   = [];
@@ -773,7 +775,7 @@ x3dom.registerNodeType(
                     var outerRadius = this._vf.outerRadius;
                     var height = this._vf.height;
                     var angle = this._vf.angle;
-                    var sides = this._vf.subdivision.x;
+                    var sides = this._vf.subdivision;
 
                     var beta, delta, x, z, k, j;
 
@@ -957,6 +959,7 @@ x3dom.registerNodeType(
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
+                        node.invalidateVolume();
                     });
                 }
             }
@@ -1035,7 +1038,6 @@ x3dom.registerNodeType(
                               k += 2;
                       }
                 }
-                
 
                 if (radius > 0)
                 {
@@ -1164,9 +1166,11 @@ x3dom.registerNodeType(
                     }
 
                     // TODO: subdivision
+                    this.invalidateVolume();
                     
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }		
             }
