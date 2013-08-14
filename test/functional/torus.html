@@ -106,7 +106,7 @@
         </table>
         </fieldset>
       </div> 
-      <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; left:270px; z-index:1000;'>
+      <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; left:250px; z-index:1000;'>
         <fieldset>
             <legend>Cone</legend>
         <table>
@@ -129,7 +129,7 @@
         </table>
         </fieldset>
       </div>
-        <div id='X3DOM_AOPT_TotalDaneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; left:550px; z-index:1000;'>
+        <div id='X3DOM_AOPT_TotalDaneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; left:510px; z-index:1000;'>
           <fieldset>
               <legend>Dish</legend>
           <table>
@@ -152,6 +152,21 @@
           </table>
           </fieldset>
         </div>
+      <div id='X3DOM_AOPT_REVO' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; left:760px; z-index:1000;'>
+        <fieldset>
+            <legend>Revolution</legend>
+        <table>
+            <tr>
+                <td>angle</td>
+                <td><input type="text" id="angler" value="1.57" onchange="document.getElementById('geor').setAttribute('angle', this.value);"></td>
+            </tr>
+            <tr>
+                <td>subdivision</td>
+                <td><input type="text" id="subdivisionr" value="32" onchange="document.getElementById('geor').setAttribute('subdivision', this.value);"></td>
+            </tr>
+        </table>
+        </fieldset>
+      </div>
         <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:150px; z-index:1000;'>
             <fieldset>
                 <legend>Rectangular Torus</legend>
@@ -354,7 +369,7 @@
                   <material diffuseColor='0.4 0.7 0.6' specularColor='0.3 0.3 0.3' shininess="0.5" transparency="0"></material>
                   <!--depthMode readOnly="true"></depthMode-->
                 </appearance>
-                <solidOfRevolution crossSection='1 0.5, 1.5 1.5, 4.5 1.5, 5 0.5, 4 0.5, 3 1, 2 0.5, 1 0.5'>
+                <solidOfRevolution crossSection='1 0.7, 1.5 1.5, 3 1.2, 4.5 1.5, 5 0.7, 4 0.7, 3 1, 2 0.7, 1 0.7' subdivision="128">
                 </solidOfRevolution>
               </shape>
           </transform>
@@ -363,8 +378,7 @@
                   <appearance>
                     <material diffuseColor='0.4 0.7 0.6' specularColor='0.3 0.3 0.3' shininess="0.5"></material>
                   </appearance>
-                  <solidOfRevolution id="geor" angle="2.2" crossSection='-0.866 0.5, -0.5 0.866, 0 0.8, 0.5 0.866, 0.866 0.5'>
-                  <!--solidOfRevolution id="geor" angle="1.57" crossSection="0 0, 1 2, 2 1, 3 2, 4 0"-->
+                  <solidOfRevolution id="geor" angle="1.57" crossSection='-0.866 0.5, -0.5 0.866, 0 0.8, 0.5 0.866, 0.866 0.5'>
                   </solidOfRevolution>
                 </shape>
             </transform>

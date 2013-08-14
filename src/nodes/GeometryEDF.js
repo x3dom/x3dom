@@ -1649,10 +1649,12 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.SolidOfRevolution.superClass.call(this, ctx);
 
-            this.addField_SFFloat(ctx, 'creaseAngle', 0);   // TODO
+            this.addField_SFFloat(ctx, 'creaseAngle', 0);
             this.addField_MFVec2f(ctx, 'crossSection', []);
             this.addField_SFFloat(ctx, 'angle', 2*Math.PI);
             this.addField_SFFloat(ctx, 'subdivision', 32);
+
+            this._origCCW = this._vf.ccw;
 
             this.rebuildGeometry();
         },
@@ -1672,18 +1674,17 @@ x3dom.registerNodeType(
                     this._vf.angle = twoPi;
 
                 var crossSection = this._vf.crossSection, angle = this._vf.angle, steps = this._vf.subdivision;
-                var i, j, k, m, n = crossSection.length;
+                var i, j, k, l, m, n = crossSection.length;
 
                 var loop = (n > 2) ? crossSection[0].equals(crossSection[n-1], x3dom.fields.Eps) : false;
                 var fullRevolution = (twoPi - Math.abs(angle) <= x3dom.fields.Eps);
 
                 var alpha, delta = angle / steps;
                 var pos, positions = [];
+                var index = 0;
 
                 // fix wrong face orientation in case of clockwise rotation
-                if (angle < 0) {
-                    this._vf.ccw = !this._vf.ccw;
-                }
+                this._vf.ccw = (angle < 0) ? this._origCCW : !this._origCCW;
 
                 // check if side caps are required
                 if (!loop)
@@ -1702,23 +1703,45 @@ x3dom.registerNodeType(
                 {
                     var mat = x3dom.fields.SFMatrix4f.rotationX(alpha);
 
-                    //for (j=0; j<n; j++)
-                    for (j=n-1; j>=0; j--)
+                    for (j=0; j<n; j++)
                     {
                         pos = new x3dom.fields.SFVec3f(crossSection[j].x, 0, crossSection[j].y);
                         pos = mat.multMatrixPnt(pos);
 
-                        this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                        //if (i == 0 || i == steps)
+                        positions.push(pos);
 
-                        if (i == 0 || i == steps)
+                        if (this._vf.creaseAngle <= x3dom.fields.Eps)
                         {
-                            positions.push(pos);
+                            if (i > 0 && j > 0)
+                            {
+                                var iPos = (i-1)*n+(j-1);
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = (i-1)*n+j;
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = i*n+j;
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+
+                                this._mesh._indices[0].push(index++, index++, index++);
+
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = i*n+(j-1);
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+                                iPos = (i-1)*n+(j-1);
+                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
+
+                                this._mesh._indices[0].push(index++, index++, index++);
+                            }
                         }
-
-                        if (i > 0 && j > 0)
+                        else
                         {
-                            this._mesh._indices[0].push((i-1)*n+(j-1), (i-1)*n+ j   ,  i   *n+ j   );
-                            this._mesh._indices[0].push( i   *n+ j   ,  i   *n+(j-1), (i-1)*n+(j-1));
+                            this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+
+                            if (i > 0 && j > 0)
+                            {
+                                this._mesh._indices[0].push((i-1)*n+(j-1), (i-1)*n+ j   ,  i   *n+ j   );
+                                this._mesh._indices[0].push( i   *n+ j   ,  i   *n+(j-1), (i-1)*n+(j-1));
+                            }
                         }
                     }
                 }
@@ -1727,7 +1750,8 @@ x3dom.registerNodeType(
                 {
                     // add first cap
                     var linklist = new x3dom.DoublyLinkedList();
-                    m = n * (steps + 1);
+                    //m = n * (steps + 1);
+                    m = this._mesh._positions[0].length / 3;
 
                     for (j=0; j<n; j++)
                     {
@@ -1746,10 +1770,11 @@ x3dom.registerNodeType(
 
                     // second cap
                     linklist = new x3dom.DoublyLinkedList();
+                    m = this._mesh._positions[0].length / 3;
 
                     for (j=0; j<n; j++)
                     {
-                        var l = n + j;
+                        l = n * steps + j; //n + j;
                         linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[l], l));
 
                         pos = positions[l];
@@ -1757,17 +1782,18 @@ x3dom.registerNodeType(
                     }
 
                     linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+                    l = m - n * steps;
 
                     for (j=0; j<linklist_indices.length; j++)
                     {
-                        this._mesh._indices[0].push(m + linklist_indices[j]);
+                        this._mesh._indices[0].push(l + linklist_indices[j]);
                     }
                 }
 
                 // calculate and readjust normals
                 this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
-                if (fullRevolution)
+                if (fullRevolution && (this._vf.creaseAngle > x3dom.fields.Eps))
                 {
                     m = 3 * n * steps;
 
@@ -1789,7 +1815,7 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "crossSection" || fieldName == "angle")
+                if (fieldName == "crossSection" || fieldName == "angle" || fieldName == "subdivision")
                 {
                     this.rebuildGeometry();
 
