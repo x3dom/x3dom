@@ -1681,6 +1681,16 @@ x3dom.registerNodeType(
                     this._vf.ccw = !this._vf.ccw;
                 }
 
+                // check if side caps are required
+                if (Math.abs(crossSection[n-1].y) > x3dom.fields.Eps) {
+                    crossSection.push(new x3dom.fields.SFVec2f(crossSection[n-1].x, 0));
+                }
+                if (Math.abs(crossSection[0].y) > x3dom.fields.Eps) {
+                    crossSection.unshift(new x3dom.fields.SFVec2f(crossSection[0].x, 0));
+                }
+                n = crossSection.length;
+
+                // generate body of revolution
                 for (i=0, alpha=0; i<=steps; i++, alpha+=delta)
                 {
                     var mat = x3dom.fields.SFMatrix4f.rotationX(alpha);
@@ -1706,7 +1716,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                // first cap
+                // add first cap
                 var linklist = new x3dom.DoublyLinkedList();
                 m = n * (steps + 1);
 
@@ -1744,6 +1754,7 @@ x3dom.registerNodeType(
                     this._mesh._indices[0].push(m + linklist_indices[j]);
                 }
 
+                // calculate and readjust normals
                 this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
                 if (twoPi - Math.abs(angle) <= x3dom.fields.Eps)
