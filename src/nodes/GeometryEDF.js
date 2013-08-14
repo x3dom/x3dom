@@ -1208,13 +1208,12 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.SolidOfRevolution.superClass.call(this, ctx);
 
-            this.addField_SFFloat(ctx, 'creaseAngle', 0);
+            this.addField_SFFloat(ctx, 'creaseAngle', 0);   // TODO
             this.addField_MFVec2f(ctx, 'crossSection', []);
             this.addField_SFFloat(ctx, 'angle', 2*Math.PI);
+            this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this.rebuildGeometry();
-
-            x3dom.debug.logWarning("SolidOfRevolution NYI");
         },
         {
             rebuildGeometry: function()
@@ -1224,10 +1223,102 @@ x3dom.registerNodeType(
                 this._mesh._texCoords[0] = [];
                 this._mesh._indices[0]   = [];
 
-                // TODO
-                //
-                //this._mesh.calcNormals(Math.PI, this._vf.ccw);
-                //this._mesh.calcTexCoords("");
+                // assure that angle in [-2.Pi, 2.PI]
+                var twoPi = 2.0 * Math.PI;
+                if (this._vf.angle < -twoPi)
+                    this._vf.angle = -twoPi;
+                else if (this._vf.angle > twoPi)
+                    this._vf.angle = twoPi;
+
+                var crossSection = this._vf.crossSection, angle = this._vf.angle, steps = this._vf.subdivision;
+                var i, j, k, m, n = crossSection.length;
+                var alpha, delta = angle / steps;
+                var pos, positions = [];
+
+                // fix wrong face orientation in case of clockwise rotation
+                if (angle < 0) {
+                    this._vf.ccw = !this._vf.ccw;
+                }
+
+                for (i=0, alpha=0; i<=steps; i++, alpha+=delta)
+                {
+                    var mat = x3dom.fields.SFMatrix4f.rotationX(alpha);
+
+                    //for (j=0; j<n; j++)
+                    for (j=n-1; j>=0; j--)
+                    {
+                        pos = new x3dom.fields.SFVec3f(crossSection[j].x, 0, crossSection[j].y);
+                        pos = mat.multMatrixPnt(pos);
+
+                        this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+
+                        if (i == 0 || i == steps)
+                        {
+                            positions.push(pos);
+                        }
+
+                        if (i > 0 && j > 0)
+                        {
+                            this._mesh._indices[0].push((i-1)*n+(j-1), (i-1)*n+ j   ,  i   *n+ j   );
+                            this._mesh._indices[0].push( i   *n+ j   ,  i   *n+(j-1), (i-1)*n+(j-1));
+                        }
+                    }
+                }
+
+                // first cap
+                var linklist = new x3dom.DoublyLinkedList();
+                m = n * (steps + 1);
+
+                for (j=0; j<n; j++)
+                {
+                    linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[j], j));
+
+                    pos = positions[j];
+                    this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                }
+
+                var linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+
+                for (j=linklist_indices.length-1; j>=0; j--)
+                {
+                    this._mesh._indices[0].push(m + linklist_indices[j]);
+                }
+
+                // second cap
+                linklist = new x3dom.DoublyLinkedList();
+
+                for (j=0; j<n; j++)
+                {
+                    var l = n + j;
+                    linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[l], l));
+
+                    pos = positions[l];
+                    this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                }
+
+                linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+
+                for (j=0; j<linklist_indices.length; j++)
+                {
+                    this._mesh._indices[0].push(m + linklist_indices[j]);
+                }
+
+                this._mesh.calcNormals(Math.PI, this._vf.ccw);
+
+                if (twoPi - Math.abs(angle) <= x3dom.fields.Eps)
+                {
+                    m = 3 * n * steps;
+
+                    for (j=0; j<n; j++)
+                    {
+                        k = 3 * j;
+                        this._mesh._normals[0][m+k  ] = this._mesh._normals[0][k  ];
+                        this._mesh._normals[0][m+k+1] = this._mesh._normals[0][k+1];
+                        this._mesh._normals[0][m+k+2] = this._mesh._normals[0][k+2];
+                    }
+                }
+
+                this._mesh.calcTexCoords("");
 
                 this.invalidateVolume();
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;

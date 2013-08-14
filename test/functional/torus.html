@@ -259,7 +259,7 @@
         </table> 
       </div> 
     </div>
-    <x3d id='x3dElement' showStat='false' showLog='false' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
+    <x3d id='x3dElement' showStat='true' showLog='true' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
       <scene>
         <transform translation="-3 0 0">
           <shape>
@@ -304,11 +304,21 @@
           <transform translation="6 0 0">
               <shape>
                   <appearance>
-                      <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                      <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture -->
                       <material diffuseColor='0.6 0.5 0.5' specularColor='0.3 0.3 0.3'></material>
                   </appearance>
                   <Pyramid id="geo3">
                   </Pyramid>
+              </shape>
+          </transform>
+          <transform translation="2 0 0">
+              <shape>
+                <appearance>
+                  <material diffuseColor='0.4 0.7 0.6' specularColor='0.3 0.3 0.3' shininess="0.5"></material>
+                </appearance>
+                <solidOfRevolution id="geor" angle="2.5" crossSection='-1 0, -0.866 -0.5, -0.5 -0.866, 0 -1, 0.5 -0.866, 0.866 -0.5, 1 0'>
+                <!--solidOfRevolution id="geor" angle="1.57" crossSection="0 0, 1 2, 2 1, 3 2, 4 0"-->
+                </solidOfRevolution>
               </shape>
           </transform>
       </scene>
