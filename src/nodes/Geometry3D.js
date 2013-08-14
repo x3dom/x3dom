@@ -88,7 +88,6 @@ x3dom.registerNodeType(
         },
         {
              fieldChanged: function (fieldName) {
-
                  if (fieldName === "size") {
                      this._mesh._positions[0] = [];
 
@@ -108,13 +107,15 @@ x3dom.registerNodeType(
                          }
                      }
 
-                     this._mesh._invalidate = true;
+                     this.invalidateVolume();
                      this._mesh._numCoords = this._mesh._positions[0].length / 3;
 
                      Array.forEach(this._parentNodes, function (node) {
                          node._dirty.positions = true;
+                         node.invalidateVolume();
                      });
-                 } else if (fieldName === "subdivision") {
+                 }
+                 else if (fieldName === "subdivision") {
                      this._mesh._positions[0] = [];
                      this._mesh._indices[0] = [];
                      this._mesh._normals[0] = [];
@@ -154,12 +155,13 @@ x3dom.registerNodeType(
                          }
                      }
 
-                     this._mesh._invalidate = true;
+                     this.invalidateVolume();
                      this._mesh._numFaces = this._mesh._indices[0].length / 3;
                      this._mesh._numCoords = this._mesh._positions[0].length / 3;
 
                      Array.forEach(this._parentNodes, function (node) {
                          node.setAllDirty();
+                         node.invalidateVolume();
                      });
                  }
              }
@@ -421,8 +423,11 @@ x3dom.registerNodeType(
                         -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //bottom 0,-1,0
                     ];
 
+                    this.invalidateVolume();
+
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
             }
@@ -446,7 +451,7 @@ x3dom.registerNodeType(
 			var r = this._vf.radius;
 			var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 			
-			var geoCacheID = 'Sphere_'+r;
+			var geoCacheID = 'Sphere_' + r + '-' + subx + '-' + suby;
 
 			if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
 				//x3dom.debug.logInfo("Using Sphere from Cache");
@@ -477,9 +482,6 @@ x3dom.registerNodeType(
 				var latNumber, longNumber;
 				var latitudeBands = Math.floor(subx * qfactor);
 				var longitudeBands = Math.floor(suby * qfactor);
-
-                //x3dom.debug.logInfo("Latitude bands:  "+ latitudeBands);
-                //x3dom.debug.logInfo("Longitude bands: "+ longitudeBands);
 
 				var theta, sinTheta, cosTheta;
 				var phi, sinPhi, cosPhi;
@@ -572,14 +574,16 @@ x3dom.registerNodeType(
 							this._mesh._positions[0].push(r * z);
 						}
 					}
-					
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
-                } else if (fieldName === "subdivision") {
+                }
+                else if (fieldName === "subdivision") {
 					this._mesh._positions[0] = [];
 					this._mesh._indices[0] =[];
 					this._mesh._normals[0] = [];
@@ -641,13 +645,14 @@ x3dom.registerNodeType(
 							this._mesh._indices[0].push(first + 1);
 						}
 					}
-					
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numFaces = this._mesh._indices[0].length / 3;
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 					
 					 Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
+                        node.invalidateVolume();
                     });
 				}
             }
@@ -682,7 +687,8 @@ x3dom.registerNodeType(
 
             rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 
-			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius+'_'+this._vf.angle;  // FIXME; field update!
+			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius+'_'+this._vf.angle+'_'+this._vf.subdivision;
+			// FIXME; check/update geoCache on field update (for ALL primitives)!
 
 			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
@@ -933,6 +939,7 @@ x3dom.registerNodeType(
 					
 					Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
+                        node.invalidateVolume();
                     });
 				}
             }
@@ -956,8 +963,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'top', true);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
-            var geoCacheID = 'Cone_' + this._vf.bottomRadius + '_' + this._vf.height + '_' +
-                             this._vf.bottom + '_' + this._vf.side + '_' + this._vf.topRadius;
+            var geoCacheID = 'Cone_' + this._vf.bottomRadius + '_' + this._vf.height + '_' + this._vf.top + '_' +
+                             this._vf.bottom + '_' + this._vf.side + '_' + this._vf.topRadius + '_' + this._vf.subdivision;
 
             if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
                 //x3dom.debug.logInfo("Using Cone from Cache");
@@ -1070,8 +1077,8 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName)
             {
                 if (fieldName == "bottomRadius" || fieldName == "topRadius" ||
-                    fieldName == "height" || fieldName === "subdivision" ||
-                    fieldName === "bottom" || fieldName == "top")
+                    fieldName == "height" || fieldName == "subdivision" ||
+                    fieldName == "bottom" || fieldName == "top" || fieldName == "side")
                 {
                     this._mesh._positions[0] = [];
                     this._mesh._indices[0] = [];
@@ -1182,6 +1189,7 @@ x3dom.registerNodeType(
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
+                        node.invalidateVolume();
                     });
                 }
             }
@@ -1206,7 +1214,8 @@ x3dom.registerNodeType(
 			
 			var sides = this._vf.subdivision;
 
-			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+this._vf.side;
+			var geoCacheID = 'Cylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top+'_'+
+                             this._vf.side+'_'+this._vf.subdivision;
 
 			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
@@ -1220,9 +1229,8 @@ x3dom.registerNodeType(
 
 				var beta, x, z;
 				var delta = 2.0 * Math.PI / sides;
+				var j, k;
 
-				var j = 0;
-       			 var k = 0;
 				if (this._vf.side)
 				{
 				  for (j=0, k=0; j<=sides; j++)
@@ -1372,14 +1380,17 @@ x3dom.registerNodeType(
 						this._mesh._positions[0].push(x, -height/2, z);
 					  }
 					}
-				
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
-                } else if (fieldName === "subdivision" || fieldName === "bottom" || fieldName === "top") {
+                }
+                else if (fieldName === "subdivision" || fieldName === "bottom" ||
+                         fieldName === "top" || fieldName === "side") {
 					
 					this._mesh._positions[0] = [];
 					this._mesh._indices[0] =[];
@@ -1481,13 +1492,14 @@ x3dom.registerNodeType(
 						  }
 						}
 					}
-						
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numFaces = this._mesh._indices[0].length / 3;
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 					
 					 Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
+                        node.invalidateVolume();
                     });
 				}
             }
