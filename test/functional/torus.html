@@ -174,12 +174,39 @@
                     </tr>
                     <tr>
                         <td>subdivision</td>
-                        <td><input type="text" id="subdivision1" value="32" onchange="document.getElementById('geo2').setAttribute('subdivision', this.value);"></td>
+                        <td><input type="text" id="subdivision3" value="32" onchange="document.getElementById('geo2').setAttribute('subdivision', this.value);"></td>
                     </tr>
                 </table>
             </fieldset>
         </div>
-        <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:325px; z-index:1000;'>
+      <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:580px; z-index:1000;'>
+          <fieldset>
+              <legend>Nozzle</legend>
+              <table>
+                  <tr>
+                      <td>stemHeight</td>
+                      <td><input type="text" id="stemHeight" value="0.8" onchange="document.getElementById('geo4').setAttribute('stemHeight', this.value);"></td>
+                  </tr>
+                  <tr>
+                      <td>stemRadius</td>
+                      <td><input type="text" id="stemRadius" value="0.5" onchange="document.getElementById('geo4').setAttribute('stemRadius', this.value);"></td>
+                  </tr>
+                  <tr>
+                      <td>nozzleHeight</td>
+                      <td><input type="text" id="nozzleHeight" value="0.2" onchange="document.getElementById('geo4').setAttribute('nozzleHeight', this.value);"></td>
+                  </tr>
+                  <tr>
+                      <td>nozzleRadius</td>
+                      <td><input type="text" id="nozzleRadius" value="1.0" onchange="document.getElementById('geo4').setAttribute('nozzleRadius', this.value);"></td>
+                  </tr>
+                  <tr>
+                      <td>subdivision</td>
+                      <td><input type="text" id="subdivision2" value="32" onchange="document.getElementById('geo4').setAttribute('subdivision', this.value);"></td>
+                  </tr>
+              </table>
+          </fieldset>
+      </div>
+        <div id='X3DOM_AOPT_Daneben' class='group' style='margin:2px; padding:4px; background-color:rgba(199,202,204,.7); position:absolute; float:center; top:330px; z-index:1000;'>
             <fieldset>
                 <legend>Pyramid</legend>
                 <table>
@@ -261,6 +288,16 @@
     </div>
     <x3d id='x3dElement' showStat='true' showLog='true' style='width:100%; height:100%; border:0; margin:0; padding:0;'>
       <scene>
+          <transform translation="-6 0 0">
+              <shape>
+                  <appearance>
+                      <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
+                      <material diffuseColor='0.6 0.5 0.5' specularColor='0.3 0.3 0.3'></material>
+                  </appearance>
+                  <Nozzle id="geo4">
+                  </Nozzle>
+              </shape>
+          </transform>
         <transform translation="-3 0 0">
           <shape>
             <appearance>
