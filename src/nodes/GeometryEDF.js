@@ -1673,6 +1673,10 @@ x3dom.registerNodeType(
 
                 var crossSection = this._vf.crossSection, angle = this._vf.angle, steps = this._vf.subdivision;
                 var i, j, k, m, n = crossSection.length;
+
+                var loop = (n > 2) ? crossSection[0].equals(crossSection[n-1], x3dom.fields.Eps) : false;
+                var fullRevolution = (twoPi - Math.abs(angle) <= x3dom.fields.Eps);
+
                 var alpha, delta = angle / steps;
                 var pos, positions = [];
 
@@ -1682,13 +1686,16 @@ x3dom.registerNodeType(
                 }
 
                 // check if side caps are required
-                if (Math.abs(crossSection[n-1].y) > x3dom.fields.Eps) {
-                    crossSection.push(new x3dom.fields.SFVec2f(crossSection[n-1].x, 0));
+                if (!loop)
+                {
+                    if (Math.abs(crossSection[n-1].y) > x3dom.fields.Eps) {
+                        crossSection.push(new x3dom.fields.SFVec2f(crossSection[n-1].x, 0));
+                    }
+                    if (Math.abs(crossSection[0].y) > x3dom.fields.Eps) {
+                        crossSection.unshift(new x3dom.fields.SFVec2f(crossSection[0].x, 0));
+                    }
+                    n = crossSection.length;
                 }
-                if (Math.abs(crossSection[0].y) > x3dom.fields.Eps) {
-                    crossSection.unshift(new x3dom.fields.SFVec2f(crossSection[0].x, 0));
-                }
-                n = crossSection.length;
 
                 // generate body of revolution
                 for (i=0, alpha=0; i<=steps; i++, alpha+=delta)
@@ -1716,48 +1723,51 @@ x3dom.registerNodeType(
                     }
                 }
 
-                // add first cap
-                var linklist = new x3dom.DoublyLinkedList();
-                m = n * (steps + 1);
-
-                for (j=0; j<n; j++)
+                if (!fullRevolution)
                 {
-                    linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[j], j));
+                    // add first cap
+                    var linklist = new x3dom.DoublyLinkedList();
+                    m = n * (steps + 1);
 
-                    pos = positions[j];
-                    this._mesh._positions[0].push(pos.x, pos.y, pos.z);
-                }
+                    for (j=0; j<n; j++)
+                    {
+                        linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[j], j));
 
-                var linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+                        pos = positions[j];
+                        this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                    }
 
-                for (j=linklist_indices.length-1; j>=0; j--)
-                {
-                    this._mesh._indices[0].push(m + linklist_indices[j]);
-                }
+                    var linklist_indices = x3dom.EarClipping.getIndexes(linklist);
 
-                // second cap
-                linklist = new x3dom.DoublyLinkedList();
+                    for (j=linklist_indices.length-1; j>=0; j--)
+                    {
+                        this._mesh._indices[0].push(m + linklist_indices[j]);
+                    }
 
-                for (j=0; j<n; j++)
-                {
-                    var l = n + j;
-                    linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[l], l));
+                    // second cap
+                    linklist = new x3dom.DoublyLinkedList();
 
-                    pos = positions[l];
-                    this._mesh._positions[0].push(pos.x, pos.y, pos.z);
-                }
+                    for (j=0; j<n; j++)
+                    {
+                        var l = n + j;
+                        linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[l], l));
 
-                linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+                        pos = positions[l];
+                        this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                    }
 
-                for (j=0; j<linklist_indices.length; j++)
-                {
-                    this._mesh._indices[0].push(m + linklist_indices[j]);
+                    linklist_indices = x3dom.EarClipping.getIndexes(linklist);
+
+                    for (j=0; j<linklist_indices.length; j++)
+                    {
+                        this._mesh._indices[0].push(m + linklist_indices[j]);
+                    }
                 }
 
                 // calculate and readjust normals
                 this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
-                if (twoPi - Math.abs(angle) <= x3dom.fields.Eps)
+                if (fullRevolution)
                 {
                     m = 3 * n * steps;
 
