@@ -1201,8 +1201,8 @@ x3dom.registerNodeType(
             var center = (this._vf.stemHeight + this._vf.nozzleHeight) / 2;
             var innerRadius = this._vf.stemRadius - (this._vf.stemRadius * 0.2);
 
-            delta = twoPi / sides;
             var beta, delta, x, z, k, j;
+            delta = twoPi / sides;
 
             //Outer Stem Side
             for (j=0, k=0; j<=sides; j++)
@@ -1401,6 +1401,10 @@ x3dom.registerNodeType(
                     k += 2;
                 }
             }
+
+            this._mesh._invalidate = true;
+            this._mesh._numFaces = this._mesh._indices[0].length / 3;
+            this._mesh._numCoords = this._mesh._positions[0].length / 3;
          },
          {
             fieldChanged: function(fieldName) 
