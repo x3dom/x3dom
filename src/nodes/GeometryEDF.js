@@ -1680,8 +1680,7 @@ x3dom.registerNodeType(
                 var fullRevolution = (twoPi - Math.abs(angle) <= x3dom.fields.Eps);
 
                 var alpha, delta = angle / steps;
-                var pos, positions = [];
-                var index = 0;
+                var positions = [], baseCurve = [];
 
                 // fix wrong face orientation in case of clockwise rotation
                 this._vf.ccw = (angle < 0) ? this._origCCW : !this._origCCW;
@@ -1698,50 +1697,54 @@ x3dom.registerNodeType(
                     n = crossSection.length;
                 }
 
-                // generate body of revolution
+                // check curvature, starting from 2nd segment, and adjust base curve
+                var pos = null, lastPos = null, penultimatePos = null;
+
+                for (j=0; j<n; j++)
+                {
+                    if (pos) {
+                        if (lastPos) {
+                            penultimatePos = lastPos;
+                        }
+                        lastPos = pos;
+                    }
+
+                    pos = new x3dom.fields.SFVec3f(crossSection[j].x, 0, crossSection[j].y);
+
+                    if (j >= 2)
+                    {
+                        alpha = pos.subtract(lastPos).normalize();
+                        alpha = alpha.dot(lastPos.subtract(penultimatePos).normalize());
+                        alpha = Math.abs(Math.cos(alpha));
+
+                        if (alpha > this._vf.creaseAngle)
+                        {
+                            baseCurve.push(x3dom.fields.SFVec3f.copy(lastPos));
+                        }
+                        // TODO; handle case that curve is loop and angle smaller creaseAngle
+                    }
+
+                    baseCurve.push(pos);
+                }
+
+                n = baseCurve.length;
+
+                // generate body of revolution (with rotation around x-axis)
                 for (i=0, alpha=0; i<=steps; i++, alpha+=delta)
                 {
                     var mat = x3dom.fields.SFMatrix4f.rotationX(alpha);
 
                     for (j=0; j<n; j++)
                     {
-                        pos = new x3dom.fields.SFVec3f(crossSection[j].x, 0, crossSection[j].y);
-                        pos = mat.multMatrixPnt(pos);
-
-                        //if (i == 0 || i == steps)
+                        pos = mat.multMatrixPnt(baseCurve[j]);
                         positions.push(pos);
 
-                        if (this._vf.creaseAngle <= x3dom.fields.Eps)
+                        this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+
+                        if (i > 0 && j > 0)
                         {
-                            if (i > 0 && j > 0)
-                            {
-                                var iPos = (i-1)*n+(j-1);
-                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
-                                iPos = (i-1)*n+j;
-                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
-                                iPos = i*n+j;
-                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
-
-                                this._mesh._indices[0].push(index++, index++, index++);
-
-                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
-                                iPos = i*n+(j-1);
-                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
-                                iPos = (i-1)*n+(j-1);
-                                this._mesh._positions[0].push(positions[iPos].x, positions[iPos].y, positions[iPos].z);
-
-                                this._mesh._indices[0].push(index++, index++, index++);
-                            }
-                        }
-                        else
-                        {
-                            this._mesh._positions[0].push(pos.x, pos.y, pos.z);
-
-                            if (i > 0 && j > 0)
-                            {
-                                this._mesh._indices[0].push((i-1)*n+(j-1), (i-1)*n+ j   ,  i   *n+ j   );
-                                this._mesh._indices[0].push( i   *n+ j   ,  i   *n+(j-1), (i-1)*n+(j-1));
-                            }
+                            this._mesh._indices[0].push((i-1)*n+(j-1), (i-1)*n+ j   ,  i   *n+ j   );
+                            this._mesh._indices[0].push( i   *n+ j   ,  i   *n+(j-1), (i-1)*n+(j-1));
                         }
                     }
                 }
@@ -1750,7 +1753,6 @@ x3dom.registerNodeType(
                 {
                     // add first cap
                     var linklist = new x3dom.DoublyLinkedList();
-                    //m = n * (steps + 1);
                     m = this._mesh._positions[0].length / 3;
 
                     for (j=0; j<n; j++)
@@ -1774,7 +1776,7 @@ x3dom.registerNodeType(
 
                     for (j=0; j<n; j++)
                     {
-                        l = n * steps + j; //n + j;
+                        l = n * steps + j;
                         linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[l], l));
 
                         pos = positions[l];
@@ -1790,10 +1792,10 @@ x3dom.registerNodeType(
                     }
                 }
 
-                // calculate and readjust normals
+                // calculate and readjust normals if full revolution
                 this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
-                if (fullRevolution && (this._vf.creaseAngle > x3dom.fields.Eps))
+                if (fullRevolution)
                 {
                     m = 3 * n * steps;
 

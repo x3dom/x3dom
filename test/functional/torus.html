@@ -162,7 +162,7 @@
             </tr>
             <tr>
                 <td>subdivision</td>
-                <td><input type="text" id="subdivisionr" value="32" onchange="document.getElementById('geor').setAttribute('subdivision', this.value);"></td>
+                <td><input type="text" id="subdivisionr" value="12" onchange="document.getElementById('geor').setAttribute('subdivision', this.value);"></td>
             </tr>
         </table>
         </fieldset>
@@ -369,7 +369,7 @@
                   <material diffuseColor='0.4 0.7 0.6' specularColor='0.3 0.3 0.3' shininess="0.5" transparency="0"></material>
                   <!--depthMode readOnly="true"></depthMode-->
                 </appearance>
-                <solidOfRevolution crossSection='1 0.7, 1.5 1.5, 3 1.2, 4.5 1.5, 5 0.7, 4 0.7, 3 1, 2 0.7, 1 0.7' subdivision="128">
+                <solidOfRevolution creaseAngle="0.8" crossSection='1 0.7, 1.5 1.5, 3 1.2, 4.5 1.5, 5 0.7, 4 0.7, 3 1, 2 0.7, 1 0.7'>
                 </solidOfRevolution>
               </shape>
           </transform>
@@ -378,7 +378,7 @@
                   <appearance>
                     <material diffuseColor='0.4 0.7 0.6' specularColor='0.3 0.3 0.3' shininess="0.5"></material>
                   </appearance>
-                  <solidOfRevolution id="geor" angle="1.57" crossSection='-0.866 0.5, -0.5 0.866, 0 0.8, 0.5 0.866, 0.866 0.5'>
+                  <solidOfRevolution id="geor" angle="1.57" subdivision="12" crossSection='-0.866 0.5, -0.5 0.866, 0 0.8, 0.5 0.866, 0.866 0.5'>
                   </solidOfRevolution>
                 </shape>
             </transform>
