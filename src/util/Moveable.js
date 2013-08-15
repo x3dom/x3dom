@@ -2,9 +2,12 @@
  *  Moveable interface, wraps x3d bounded node with movement functionality
  *  attaches event handlers, thus to be called earliest in document.onload
  */
-Moveable = function(x3domElem, boundedObj) {
+Moveable = function(x3domElem, boundedObj, callback) {
     this._x3domRoot = x3domElem;
     this._runtime = x3domElem.runtime;
+
+    // callback function for notifying changes
+    this._callback = callback;
 
     this._moveable = boundedObj;
     this._drag = false;
@@ -208,6 +211,10 @@ Moveable.prototype.move = function(event) {
                 else {
                     that._matrixTrafo.setTranslate(track);
                     that._moveable.setAttribute("matrix", that._matrixTrafo.toGL().toString());
+                }
+
+                if (that._callback) {
+                    that._callback(that._moveable, track);
                 }
             }
 
