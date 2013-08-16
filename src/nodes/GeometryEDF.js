@@ -1676,6 +1676,11 @@ x3dom.registerNodeType(
                 var crossSection = this._vf.crossSection, angle = this._vf.angle, steps = this._vf.subdivision;
                 var i, j, k, l, m, n = crossSection.length;
 
+                if (n < 1) {
+                    x3dom.debug.logWarning("SolidOfRevolution requires crossSection curve.");
+                    return;
+                }
+
                 var loop = (n > 2) ? crossSection[0].equals(crossSection[n-1], x3dom.fields.Eps) : false;
                 var fullRevolution = (twoPi - Math.abs(angle) <= x3dom.fields.Eps);
 
