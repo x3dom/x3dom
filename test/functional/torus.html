@@ -314,13 +314,13 @@
                   </Nozzle>
               </shape>
           </transform>
-        <transform translation="-3 0 0">
+        <transform id="thor" translation="-3 0 0">
           <shape>
             <appearance>
               <!--imageTexture url="media/texture/generic/earth.jpg"></imageTexture-->
               <material diffuseColor='0.7 0.6 0.5' specularColor='0.3 0.3 0.3'></material>
             </appearance><!-- 6.283185307179586 -->
-            <torus id="geo" innerRadius="0.5" outerRadius="1.0" angle="3.14159265359">
+            <torus id="geo" insideOutsideRadius="true" innerRadius="0.5" outerRadius="1.0" angle="3.14159265359">
             </torus>
           </shape>
         </transform>
@@ -391,6 +391,7 @@
       }
 
       document.onload = function() {
+        new Moveable(document.getElementById("x3dElement"), document.getElementById("thor"), notified);
         new Moveable(document.getElementById("x3dElement"), document.getElementById("totalRevolution"), notified);
         new Moveable(document.getElementById("x3dElement"), document.getElementById("revolution"), notified);
       }
