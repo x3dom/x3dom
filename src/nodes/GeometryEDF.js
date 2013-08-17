@@ -18,11 +18,11 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Snout.superClass.call(this, ctx);
 
-            this.addField_SFFloat(ctx, 'dbottom', 1.0);
-            this.addField_SFFloat(ctx, 'dtop', 0.4);
-            this.addField_SFFloat(ctx, 'height', 1.0);
-            this.addField_SFFloat(ctx, 'xoff', 0.25);
-            this.addField_SFFloat(ctx, 'yoff', 0.25);
+            this.addField_SFFloat(ctx, 'dbottom', 1.0); // Diameter of bottom surface
+            this.addField_SFFloat(ctx, 'dtop', 0.5);    // Diameter of top surface
+            this.addField_SFFloat(ctx, 'height', 1.0);  // Perpendicular distance between surfaces
+            this.addField_SFFloat(ctx, 'xoff', 0.25);   // Displacement of axes along X-axis
+            this.addField_SFFloat(ctx, 'yoff', 0.25);   // Displacement of axes along Y-axis
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             var geoCacheID = 'Snout_' + this._vf.dbottom + '_' + this._vf.dtop + '_' + this._vf.height + '_' +
@@ -32,8 +32,8 @@ x3dom.registerNodeType(
                 this._mesh = x3dom.geoCache[geoCacheID];
             }
             else {
-                var bottomRadius = this._vf.dbottom, height = this._vf.height;
-                var topRadius = this._vf.dtop, sides = this._vf.subdivision;
+                var bottomRadius = this._vf.dbottom / 2, height = this._vf.height;
+                var topRadius = this._vf.dtop / 2, sides = this._vf.subdivision;
 
                 var beta, x, z;
                 var delta = 2.0 * Math.PI / sides;
@@ -146,8 +146,8 @@ x3dom.registerNodeType(
                     this._mesh._normals[0] = [];
                     this._mesh._texCoords[0] = [];
 
-                    var bottomRadius = this._vf.dbottom, height = this._vf.height;
-                    var topRadius = this._vf.dtop, sides = this._vf.subdivision;
+                    var bottomRadius = this._vf.dbottom / 2, height = this._vf.height;
+                    var topRadius = this._vf.dtop / 2, sides = this._vf.subdivision;
 
                     var beta, x, z;
                     var delta = 2.0 * Math.PI / sides;
@@ -426,10 +426,10 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'xoff', 0.25);		//Displacement of axes along X-axis
             this.addField_SFFloat(ctx, 'yoff', 0.25);		//Displacement of axes along Y-axis
             
-            var xTop = this._vf.xtop;
-            var yTop = this._vf.ytop;
-            var xBot = this._vf.xbottom;
-            var yBot = this._vf.ybottom;
+            var xTop = this._vf.xtop / 2;
+            var yTop = this._vf.ytop / 2;
+            var xBot = this._vf.xbottom / 2;
+            var yBot = this._vf.ybottom / 2;
             var xOff = this._vf.xoff;
             var yOff = this._vf.yoff;
             var sy = this._vf.height / 2;
@@ -478,16 +478,17 @@ x3dom.registerNodeType(
             }
         },
         {
-            fieldChanged: function(fieldName) {
+            fieldChanged: function(fieldName)
+            {
                 if (fieldName === "xbottom" || fieldName === "ybottom" ||
                     fieldName === "xtop" || fieldName === "ytop" ||
                     fieldName === "xoff" || fieldName === "yoff" ||
-                    fieldName === "height") {
-                
-                    var xTop = this._vf.xtop;
-                    var yTop = this._vf.ytop;
-                    var xBot = this._vf.xbottom;
-                    var yBot = this._vf.ybottom;
+                    fieldName === "height")
+                {
+                    var xTop = this._vf.xtop / 2;
+                    var yTop = this._vf.ytop / 2;
+                    var xBot = this._vf.xbottom / 2;
+                    var yBot = this._vf.ybottom / 2;
                     var xOff = this._vf.xoff;
                     var yOff = this._vf.yoff;
                     var sy = this._vf.height / 2;
@@ -979,25 +980,22 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'height', 2.0);
             this.addField_SFBool(ctx, 'bottom', true);
             this.addField_SFBool(ctx, 'top', true);
-            this.addField_SFFloat(ctx, 'xtshear', -15.0);
-            this.addField_SFFloat(ctx, 'ytshear', 10.0);
-            this.addField_SFFloat(ctx, 'xbshear', 5.0);
-            this.addField_SFFloat(ctx, 'ybshear', 35.0);
+            this.addField_SFFloat(ctx, 'xtshear', 0.26179);
+            this.addField_SFFloat(ctx, 'ytshear', 0.0);
+            this.addField_SFFloat(ctx, 'xbshear', 0.26179);
+            this.addField_SFFloat(ctx, 'ybshear', 0.0);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
-            var pi180 = Math.PI / 180;
-            var topSlopeX = this._vf.radius * (Math.tan(this._vf.xtshear * pi180));
-            var topSlopeY = this._vf.radius * (Math.tan(this._vf.ytshear * pi180));
-            var botSlopeX = this._vf.radius * (Math.tan(this._vf.xbshear * pi180));
-            var botSlopeY = this._vf.radius * (Math.tan(this._vf.ybshear * pi180));
-            
+            var topSlopeX = this._vf.xtshear;
+            var topSlopeY = this._vf.ytshear;
+            var botSlopeX = this._vf.xbshear;
+            var botSlopeY = this._vf.ybshear;
             var sides = this._vf.subdivision;
 
             var geoCacheID = 'SlopedCylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top;
 
             if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
             {
-                //x3dom.debug.logInfo("Using Cylinder from Cache");
                 this._mesh = x3dom.geoCache[geoCacheID];
             }
             else
@@ -1008,8 +1006,7 @@ x3dom.registerNodeType(
                 var beta, x, z;
                 var delta = 2.0 * Math.PI / sides;
 
-                var j = 0;
-                var k = 0;
+                var j = 0, k = 0;
 
                 for (j=0, k=0; j<=sides; j++)
                 {
@@ -1018,11 +1015,9 @@ x3dom.registerNodeType(
                       z = -Math.cos(beta);
 
                       this._mesh._positions[0].push(x * radius, -height/2 + x * botSlopeX + z * botSlopeY, z * radius);
-                      this._mesh._normals[0].push(x, 0, z);
                       this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
                       this._mesh._positions[0].push(x * radius, height/2 + x * topSlopeX + z * topSlopeY, z * radius);
-                      this._mesh._normals[0].push(x, 0, z);
                       this._mesh._texCoords[0].push(1.0 - j / sides, 1);
 
                       if (j > 0)
@@ -1048,11 +1043,10 @@ x3dom.registerNodeType(
                         for (j=sides-1; j>=0; j--)
                         {
                               beta = j * delta;
-                              x = radius * Math.sin(beta);
+                              x =  radius * Math.sin(beta);
                               z = -radius * Math.cos(beta);
 
                               this._mesh._positions[0].push(x, height/2 + x * topSlopeX + z * topSlopeY, z);
-                              this._mesh._normals[0].push(0, 1, 0);
                               this._mesh._texCoords[0].push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
                         }
 
@@ -1075,11 +1069,10 @@ x3dom.registerNodeType(
                         for (j=sides-1; j>=0; j--)
                         {
                               beta = j * delta;
-                              x = radius * Math.sin(beta);
+                              x =  radius * Math.sin(beta);
                               z = -radius * Math.cos(beta);
 
                               this._mesh._positions[0].push(x, -height/2 + x * botSlopeX + z * botSlopeY, z);
-                              this._mesh._normals[0].push(0, -1, 0);
                               this._mesh._texCoords[0].push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
                         }
 
@@ -1095,6 +1088,8 @@ x3dom.registerNodeType(
                         }
                     }
                 }
+                
+                this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
                 this._mesh._invalidate = true;
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
@@ -1103,20 +1098,22 @@ x3dom.registerNodeType(
                 x3dom.geoCache[geoCacheID] = this._mesh;
             }
          },
-        {
-            fieldChanged: function(fieldName) {
+         {
+            fieldChanged: function(fieldName)
+            {
                 if (fieldName === "xtshear" || fieldName === "ytshear" ||
                     fieldName === "xbshear" || fieldName === "ybshear" ||
-                    fieldName === "radius" || fieldName === "height") { 
-		
+                    fieldName === "radius" || fieldName === "height")
+                { 
                     this._mesh._positions[0] = [];
+                    this._mesh._normals[0] = [];
 
-                    var pi180 = Math.PI / 180;
-                    var topSlopeX = (Math.tan(this._vf.xtshear * pi180));
-                    var topSlopeY = (Math.tan(this._vf.ytshear * pi180));
-                    var botSlopeX = (Math.tan(this._vf.xbshear * pi180));
-                    var botSlopeY = (Math.tan(this._vf.ybshear * pi180));
-
+                    var topSlopeX = this._vf.xtshear;
+                    var topSlopeY = this._vf.ytshear;
+                    var botSlopeX = this._vf.xbshear;
+                    var botSlopeY = this._vf.ybshear;
+                    
+                    // TODO: what if subdivision changed?!
                     var sides = this._vf.subdivision;
                     
                     var radius = this._vf.radius;
@@ -1129,11 +1126,12 @@ x3dom.registerNodeType(
                     for (j=0; j<=sides; j++)
                     {
                           beta = j * delta;
-                          x = Math.sin(beta);
+                          x =  Math.sin(beta);
                           z = -Math.cos(beta);
 
                           this._mesh._positions[0].push(x * radius,
                               -height/2 + x * botSlopeX * radius + z * botSlopeY * radius, z * radius);
+                          
                           this._mesh._positions[0].push(x * radius,
                               height/2 + x * topSlopeX * radius + z * topSlopeY * radius, z * radius);
                     }
@@ -1145,7 +1143,7 @@ x3dom.registerNodeType(
                             for (j=sides-1; j>=0; j--)
                             {
                                   beta = j * delta;
-                                  x = radius * Math.sin(beta);
+                                  x =  radius * Math.sin(beta);
                                   z = -radius * Math.cos(beta);
 
                                   this._mesh._positions[0].push(x, height/2 + x * topSlopeX + z * topSlopeY, z);
@@ -1157,22 +1155,23 @@ x3dom.registerNodeType(
                             for (j=sides-1; j>=0; j--)
                             {
                                   beta = j * delta;
-                                  x = radius * Math.sin(beta);
+                                  x =  radius * Math.sin(beta);
                                   z = -radius * Math.cos(beta);
 
                                   this._mesh._positions[0].push(x, -height/2 + x * botSlopeX + z * botSlopeY, z);
                             }
                         }
                     }
-
-                    // TODO: subdivision
+                    
+                    this._mesh.calcNormals(Math.PI, this._vf.ccw);
+                    
                     this.invalidateVolume();
                     
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
                         node.invalidateVolume();
                     });
-                }		
+                }
             }
         }
     )
