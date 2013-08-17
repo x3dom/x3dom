@@ -782,8 +782,9 @@ x3dom.Runtime.prototype.helicopter = function() {
  *
  * Toggles points attribute
  */
-x3dom.Runtime.prototype.togglePoints = function() {
-    this.canvas.doc._viewarea._points = ++this.canvas.doc._viewarea._points % 2; // % 3;
+x3dom.Runtime.prototype.togglePoints = function(lines) {
+    var mod = (lines === true) ? 3 : 2;
+    this.canvas.doc._viewarea._points = ++this.canvas.doc._viewarea._points % mod;
     this.canvas.doc.needRender = true;
 };
 
