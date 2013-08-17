@@ -1775,24 +1775,17 @@ x3dom.registerNodeType(
                     }
 
                     // second cap
-                    linklist = new x3dom.DoublyLinkedList();
                     m = this._mesh._positions[0].length / 3;
 
                     for (j=0; j<n; j++)
                     {
-                        l = n * steps + j;
-                        linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[l], l));
-
-                        pos = positions[l];
+                        pos = positions[n * steps + j];
                         this._mesh._positions[0].push(pos.x, pos.y, pos.z);
                     }
 
-                    linklist_indices = x3dom.EarClipping.getIndexes(linklist);
-                    l = m - n * steps;
-
                     for (j=0; j<linklist_indices.length; j++)
                     {
-                        this._mesh._indices[0].push(l + linklist_indices[j]);
+                        this._mesh._indices[0].push(m + linklist_indices[j]);
                     }
                 }
 
