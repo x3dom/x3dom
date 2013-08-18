@@ -659,28 +659,27 @@ x3dom.Runtime.prototype.getSceneBBox = function() {
  *     Current visibility status of debug window (true=visible, false=hidden)
  */
 x3dom.Runtime.prototype.debug = function(show) {
-    if (this.canvas.doc._viewarea._visDbgBuf === undefined)
-        this.canvas.doc._viewarea._visDbgBuf = true;
+    var doc = this.canvas.doc;
+    if (doc._viewarea._visDbgBuf === undefined)
+        doc._viewarea._visDbgBuf = (doc._x3dElem.getAttribute("showLog") === 'true');
 
     if (arguments.length > 0) {
         if (show === true) {
-            this.canvas.doc._viewarea._visDbgBuf = true;
+            doc._viewarea._visDbgBuf = true;
             x3dom.debug.logContainer.style.display = "block";
         }
         else {
-            this.canvas.doc._viewarea._visDbgBuf = false;
+            doc._viewarea._visDbgBuf = false;
             x3dom.debug.logContainer.style.display = "none";
         }
     }
     else {
-        this.canvas.doc._viewarea._visDbgBuf = !this.canvas.doc._viewarea._visDbgBuf;
-
-        x3dom.debug.logContainer.style.display =
-                (this.canvas.doc._viewarea._visDbgBuf == true) ? "block" : "none";
+        doc._viewarea._visDbgBuf = !doc._viewarea._visDbgBuf;
+        x3dom.debug.logContainer.style.display = (doc._viewarea._visDbgBuf == true) ? "block" : "none";
     }
+    doc.needRender = true;
 
-    this.canvas.doc.needRender = true;
-    return this.canvas.doc._viewarea._visDbgBuf;
+    return doc._viewarea._visDbgBuf;
 };
 
 /**
@@ -769,7 +768,7 @@ x3dom.Runtime.prototype.helicopter = function() {
 /**
  * Function: resetExamin
  *
- * Resets all variables required by examin mode to init state
+ * Resets all variables required by examine mode to init state
  */
  x3dom.Runtime.prototype.resetExamin = function() {
     var viewarea = this.canvas.doc._viewarea;
@@ -786,9 +785,13 @@ x3dom.Runtime.prototype.helicopter = function() {
  * Toggles points attribute
  */
 x3dom.Runtime.prototype.togglePoints = function(lines) {
+    var doc = this.canvas.doc;
     var mod = (lines === true) ? 3 : 2;
-    this.canvas.doc._viewarea._points = ++this.canvas.doc._viewarea._points % mod;
-    this.canvas.doc.needRender = true;
+
+    doc._viewarea._points = ++doc._viewarea._points % mod;
+    doc.needRender = true;
+
+    return doc._viewarea._points;
 };
 
 /**
@@ -880,11 +883,12 @@ x3dom.Runtime.prototype.changePickMode = function(type, options) {
  * 		The current speed value
  */
 x3dom.Runtime.prototype.speed = function(newSpeed) {
+    var navi = this.canvas.doc._scene.getNavigationInfo();
     if (newSpeed) {
-        this.canvas.doc._scene.getNavigationInfo()._vf.speed = newSpeed;
-        x3dom.debug.logInfo("Changed navigation speed to " + this.canvas.doc._scene.getNavigationInfo()._vf.speed);
+        navi._vf.speed = newSpeed;
+        x3dom.debug.logInfo("Changed navigation speed to " + navi._vf.speed);
     }
-    return this.canvas.doc._scene.getNavigationInfo()._vf.speed;
+    return navi._vf.speed;
 };
 
 /**
@@ -907,13 +911,15 @@ x3dom.Runtime.prototype.statistics = function(mode) {
             states.display(mode);
             return true;
         }
-        if (mode === false) {
+        else if (mode === false) {
             states.display(mode);
             return false;
         }
-
-        // if no parameter is given return current status (false = not visible, true = visible)
-        return states.active;
+        else {
+            states.display(!states.active);
+            // if no parameter is given return current status (false = not visible, true = visible)
+            return states.active;
+        }
     }
     return false;
 };
@@ -922,23 +928,22 @@ x3dom.Runtime.prototype.statistics = function(mode) {
  * Function: processIndicator
  *
  * Enable or disable the process indicator. If parameter is omitted, this method
- * only returns the the visibility status of the statistics info overlay.
+ * only returns the the visibility status of the progress bar overlay.
  *
  * Parameters:
- *		mode - true or false. To enable or disable the process indicator
+ *		mode - true or false. To enable or disable the progress indicator
  *
  * Returns:
- * 		The current visibility of the process indicator info (true = visible, false = invisible)
+ * 		The current visibility of the progress indicator info (true = visible, false = invisible)
  */
 x3dom.Runtime.prototype.processIndicator = function(mode) {
-    var processDiv = this.canvas.processDiv;
+    var processDiv = this.canvas.progressDiv;
     if (processDiv) {
-
         if (mode === true) {
             processDiv.style.display = 'inline';
             return true;
         }
-        if (mode === false) {
+        else if (mode === false) {
             processDiv.style.display = 'none';
             return false;
         }

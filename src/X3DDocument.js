@@ -439,7 +439,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             break;
         case  100: /* d, switch on/off buffer view for dbg */
             if (this._viewarea._visDbgBuf === undefined) {
-                this._viewarea._visDbgBuf = true;
+                this._viewarea._visDbgBuf = (this._x3dElem.getAttribute("showLog") === 'true');
             }
             else {
                 this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
