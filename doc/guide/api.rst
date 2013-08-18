@@ -303,8 +303,8 @@ the X3D element they are working on as first parameter::
     :param boolean show: true/false to show or hide the debug window
     :returns: The current visibility status of the debug window (true/false)
 
-    Displays or hides the debug window. If the paramter is omitted, the 
-    current visibility satus is returned.
+    Displays or hides the debug window. If the parameter is omitted, the 
+    current visibility status is returned.
 
 
 ..  js:function:: navigationType()

@@ -659,23 +659,26 @@ x3dom.Runtime.prototype.getSceneBBox = function() {
  *     Current visibility status of debug window (true=visible, false=hidden)
  */
 x3dom.Runtime.prototype.debug = function(show) {
-    if (show === true) {
+    if (this.canvas.doc._viewarea._visDbgBuf === undefined)
         this.canvas.doc._viewarea._visDbgBuf = true;
-        x3dom.debug.logContainer.style.display = "block";
-    }
-    if (show === false) {
-        this.canvas.doc._viewarea._visDbgBuf = false;
-        x3dom.debug.logContainer.style.display = "none";
+
+    if (arguments.length > 0) {
+        if (show === true) {
+            this.canvas.doc._viewarea._visDbgBuf = true;
+            x3dom.debug.logContainer.style.display = "block";
+        }
+        else {
+            this.canvas.doc._viewarea._visDbgBuf = false;
+            x3dom.debug.logContainer.style.display = "none";
+        }
     }
     else {
-        if (this.canvas.doc._viewarea._visDbgBuf === undefined) 
-            this.canvas.doc._viewarea._visDbgBuf = true;
-        else
-            this.canvas.doc._viewarea._visDbgBuf = !this.canvas.doc._viewarea._visDbgBuf;
+        this.canvas.doc._viewarea._visDbgBuf = !this.canvas.doc._viewarea._visDbgBuf;
 
         x3dom.debug.logContainer.style.display =
-                (this.canvas.doc._viewarea._visDbgBuf === true) ? "block" : "none";
+                (this.canvas.doc._viewarea._visDbgBuf == true) ? "block" : "none";
     }
+
     this.canvas.doc.needRender = true;
     return this.canvas.doc._viewarea._visDbgBuf;
 };
