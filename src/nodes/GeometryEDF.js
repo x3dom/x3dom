@@ -508,7 +508,7 @@ x3dom.registerNodeType(
                     this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                        node.setAllDirty();
                         node.invalidateVolume();
                     });
                 }
@@ -986,13 +986,16 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'ybshear', 0.0);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
+            var radius = this._vf.radius;
+            var height = this._vf.height;
             var topSlopeX = this._vf.xtshear;
             var topSlopeY = this._vf.ytshear;
             var botSlopeX = this._vf.xbshear;
             var botSlopeY = this._vf.ybshear;
             var sides = this._vf.subdivision;
 
-            var geoCacheID = 'SlopedCylinder_'+this._vf.radius+'_'+this._vf.height+'_'+this._vf.bottom+'_'+this._vf.top;
+            var geoCacheID = 'SlopedCylinder_'+radius+'_'+height+'_'+this._vf.bottom+'_'+this._vf.top
+                                              +topSlopeX+'_'+topSlopeY+'_'+botSlopeX+'_'+botSlopeY+'_'+sides;
 
             if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
             {
@@ -1000,96 +1003,127 @@ x3dom.registerNodeType(
             }
             else
             {
-                var radius = this._vf.radius;
-                var height = this._vf.height;
-
-                var beta, x, z;
                 var delta = 2.0 * Math.PI / sides;
+                var beta, x, y, z;
+                var j, k;
 
-                var j = 0, k = 0;
+                height /= 2;
 
                 for (j=0, k=0; j<=sides; j++)
                 {
                       beta = j * delta;
-                      x = Math.sin(beta);
+                      x =  Math.sin(beta);
                       z = -Math.cos(beta);
 
-                      this._mesh._positions[0].push(x * radius, -height/2 + x * botSlopeX + z * botSlopeY, z * radius);
+                      this._mesh._positions[0].push(x * radius, -height + x * botSlopeX + z * botSlopeY, z * radius);
                       this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
-                      this._mesh._positions[0].push(x * radius, height/2 + x * topSlopeX + z * topSlopeY, z * radius);
+                      this._mesh._positions[0].push(x * radius,  height + x * topSlopeX + z * topSlopeY, z * radius);
                       this._mesh._texCoords[0].push(1.0 - j / sides, 1);
 
                       if (j > 0)
                       {
-                              this._mesh._indices[0].push(k + 0);
-                              this._mesh._indices[0].push(k + 1);
-                              this._mesh._indices[0].push(k + 2);
+                          this._mesh._indices[0].push(k + 0);
+                          this._mesh._indices[0].push(k + 1);
+                          this._mesh._indices[0].push(k + 2);
 
-                              this._mesh._indices[0].push(k + 2);
-                              this._mesh._indices[0].push(k + 1);
-                              this._mesh._indices[0].push(k + 3);
+                          this._mesh._indices[0].push(k + 2);
+                          this._mesh._indices[0].push(k + 1);
+                          this._mesh._indices[0].push(k + 3);
 
-                              k += 2;
+                          k += 2;
                       }
                 }
 
-                if (radius > 0)
+                var h, base;
+
+                if (this._vf.top && radius > 0)
                 {
-                    var h, base = this._mesh._positions[0].length / 3;
+                    base = this._mesh._positions[0].length / 3
 
-                    if (this._vf.top)
+                    for (j=sides-1; j>=0; j--)
                     {
-                        for (j=sides-1; j>=0; j--)
-                        {
-                              beta = j * delta;
-                              x =  radius * Math.sin(beta);
-                              z = -radius * Math.cos(beta);
+                        k = 6 * j;
+                        x = this._mesh._positions[0][k+3];
+                        y = this._mesh._positions[0][k+4];
+                        z = this._mesh._positions[0][k+5];
 
-                              this._mesh._positions[0].push(x, height/2 + x * topSlopeX + z * topSlopeY, z);
-                              this._mesh._texCoords[0].push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
-                        }
-
-                        h = base + 1;
-
-                        for (j=2; j<sides; j++)
-                        {
-                              this._mesh._indices[0].push(base);
-                              this._mesh._indices[0].push(h);
-
-                              h = base + j;
-                              this._mesh._indices[0].push(h);
-                        }
-
-                        base = this._mesh._positions[0].length / 3;
+                        this._mesh._positions[0].push(x, y, z);
+                        this._mesh._texCoords[0].push(x / 2 + 0.5, -z / 2 + 0.5);
                     }
 
-                    if (this._vf.bottom)
+                    h = base + 1;
+
+                    for (j=2; j<sides; j++)
                     {
-                        for (j=sides-1; j>=0; j--)
-                        {
-                              beta = j * delta;
-                              x =  radius * Math.sin(beta);
-                              z = -radius * Math.cos(beta);
+                        this._mesh._indices[0].push(base);
+                        this._mesh._indices[0].push(h);
 
-                              this._mesh._positions[0].push(x, -height/2 + x * botSlopeX + z * botSlopeY, z);
-                              this._mesh._texCoords[0].push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
-                        }
-
-                        h = base + 1;
-
-                        for (j=2; j<sides; j++)
-                        {
-                              this._mesh._indices[0].push(h);
-                              this._mesh._indices[0].push(base);
-
-                              h = base + j;
-                              this._mesh._indices[0].push(h);
-                        }
+                        h = base + j;
+                        this._mesh._indices[0].push(h);
                     }
                 }
-                
+
+                if (this._vf.bottom && radius > 0)
+                {
+                    base = this._mesh._positions[0].length / 3;
+
+                    for (j=sides-1; j>=0; j--)
+                    {
+                        k = 6 * j;
+                        x = this._mesh._positions[0][k+0];
+                        y = this._mesh._positions[0][k+1];
+                        z = this._mesh._positions[0][k+2];
+
+                        this._mesh._positions[0].push(x, y, z);
+                        this._mesh._texCoords[0].push(x / 2 + 0.5, z / 2 + 0.5);
+                    }
+
+                    h = base + 1;
+
+                    for (j=2; j<sides; j++)
+                    {
+                        this._mesh._indices[0].push(h);
+                        this._mesh._indices[0].push(base);
+
+                        h = base + j;
+                        this._mesh._indices[0].push(h);
+                    }
+                }
+
+                // calculate normals and adjust them at seam
                 this._mesh.calcNormals(Math.PI, this._vf.ccw);
+
+                var n0b = new x3dom.fields.SFVec3f(this._mesh._normals[0][0],
+                                                   this._mesh._normals[0][1],
+                                                   this._mesh._normals[0][2]);
+                var n0t = new x3dom.fields.SFVec3f(this._mesh._normals[0][3],
+                                                   this._mesh._normals[0][4],
+                                                   this._mesh._normals[0][5]);
+                k = 6 * sides;
+                var n1b = new x3dom.fields.SFVec3f(this._mesh._normals[0][k  ],
+                                                   this._mesh._normals[0][k+1],
+                                                   this._mesh._normals[0][k+2]);
+                var n1t = new x3dom.fields.SFVec3f(this._mesh._normals[0][k+3],
+                                                   this._mesh._normals[0][k+4],
+                                                   this._mesh._normals[0][k+5]);
+
+                var nb = n0b.add(n1b).normalize();
+                var nt = n0t.add(n1t).normalize();
+
+                this._mesh._normals[0][0] = nb.x;
+                this._mesh._normals[0][1] = nb.y;
+                this._mesh._normals[0][2] = nb.z;
+                this._mesh._normals[0][3] = nt.x;
+                this._mesh._normals[0][4] = nt.y;
+                this._mesh._normals[0][5] = nt.z;
+
+                this._mesh._normals[0][k  ] = nb.x;
+                this._mesh._normals[0][k+1] = nb.y;
+                this._mesh._normals[0][k+2] = nb.z;
+                this._mesh._normals[0][k+3] = nt.x;
+                this._mesh._normals[0][k+4] = nt.y;
+                this._mesh._normals[0][k+5] = nt.z;
 
                 this._mesh._invalidate = true;
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
@@ -1101,74 +1135,150 @@ x3dom.registerNodeType(
          {
             fieldChanged: function(fieldName)
             {
-                if (fieldName === "xtshear" || fieldName === "ytshear" ||
-                    fieldName === "xbshear" || fieldName === "ybshear" ||
-                    fieldName === "radius" || fieldName === "height")
-                { 
+                if (fieldName == "xtshear" || fieldName == "ytshear" ||
+                    fieldName == "xbshear" || fieldName == "ybshear" ||
+                    fieldName == "radius" || fieldName == "height" ||
+                    fieldName == "bottom" || fieldName == "top" || fieldName == "subdivision")
+                {
                     this._mesh._positions[0] = [];
-                    this._mesh._normals[0] = [];
+                    this._mesh._normals[0]   = [];
+                    this._mesh._texCoords[0] = [];
+                    this._mesh._indices[0]   = [];
 
                     var topSlopeX = this._vf.xtshear;
                     var topSlopeY = this._vf.ytshear;
                     var botSlopeX = this._vf.xbshear;
                     var botSlopeY = this._vf.ybshear;
-                    
-                    // TODO: what if subdivision changed?!
                     var sides = this._vf.subdivision;
-                    
+
                     var radius = this._vf.radius;
-                    var height = this._vf.height;
+                    var height = this._vf.height / 2;
 
-                    var beta, x, z;
+                    // mainly copy and paste from above code...
                     var delta = 2.0 * Math.PI / sides;
-                    var j = 0;
+                    var beta, x, y, z;
+                    var j, k;
 
-                    for (j=0; j<=sides; j++)
+                    for (j=0, k=0; j<=sides; j++)
                     {
-                          beta = j * delta;
-                          x =  Math.sin(beta);
-                          z = -Math.cos(beta);
+                        beta = j * delta;
+                        x =  Math.sin(beta);
+                        z = -Math.cos(beta);
 
-                          this._mesh._positions[0].push(x * radius,
-                              -height/2 + x * botSlopeX * radius + z * botSlopeY * radius, z * radius);
-                          
-                          this._mesh._positions[0].push(x * radius,
-                              height/2 + x * topSlopeX * radius + z * topSlopeY * radius, z * radius);
-                    }
+                        this._mesh._positions[0].push(x * radius, -height + x * botSlopeX + z * botSlopeY, z * radius);
+                        this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
-                    if (radius > 0)
-                    {
-                        if (this._vf.top)
+                        this._mesh._positions[0].push(x * radius,  height + x * topSlopeX + z * topSlopeY, z * radius);
+                        this._mesh._texCoords[0].push(1.0 - j / sides, 1);
+
+                        if (j > 0)
                         {
-                            for (j=sides-1; j>=0; j--)
-                            {
-                                  beta = j * delta;
-                                  x =  radius * Math.sin(beta);
-                                  z = -radius * Math.cos(beta);
+                            this._mesh._indices[0].push(k + 0);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 2);
 
-                                  this._mesh._positions[0].push(x, height/2 + x * topSlopeX + z * topSlopeY, z);
-                            }
-                        }
+                            this._mesh._indices[0].push(k + 2);
+                            this._mesh._indices[0].push(k + 1);
+                            this._mesh._indices[0].push(k + 3);
 
-                        if (this._vf.bottom)
-                        {
-                            for (j=sides-1; j>=0; j--)
-                            {
-                                  beta = j * delta;
-                                  x =  radius * Math.sin(beta);
-                                  z = -radius * Math.cos(beta);
-
-                                  this._mesh._positions[0].push(x, -height/2 + x * botSlopeX + z * botSlopeY, z);
-                            }
+                            k += 2;
                         }
                     }
-                    
+
+                    var h, base;
+
+                    if (this._vf.top && radius > 0)
+                    {
+                        base = this._mesh._positions[0].length / 3
+
+                        for (j=sides-1; j>=0; j--)
+                        {
+                            k = 6 * j;
+                            x = this._mesh._positions[0][k+3];
+                            y = this._mesh._positions[0][k+4];
+                            z = this._mesh._positions[0][k+5];
+
+                            this._mesh._positions[0].push(x, y, z);
+                            this._mesh._texCoords[0].push(x / 2 + 0.5, -z / 2 + 0.5);
+                        }
+
+                        h = base + 1;
+
+                        for (j=2; j<sides; j++)
+                        {
+                            this._mesh._indices[0].push(base);
+                            this._mesh._indices[0].push(h);
+
+                            h = base + j;
+                            this._mesh._indices[0].push(h);
+                        }
+                    }
+
+                    if (this._vf.bottom && radius > 0)
+                    {
+                        base = this._mesh._positions[0].length / 3;
+
+                        for (j=sides-1; j>=0; j--)
+                        {
+                            k = 6 * j;
+                            x = this._mesh._positions[0][k+0];
+                            y = this._mesh._positions[0][k+1];
+                            z = this._mesh._positions[0][k+2];
+
+                            this._mesh._positions[0].push(x, y, z);
+                            this._mesh._texCoords[0].push(x / 2 + 0.5, z / 2 + 0.5);
+                        }
+
+                        h = base + 1;
+
+                        for (j=2; j<sides; j++)
+                        {
+                            this._mesh._indices[0].push(h);
+                            this._mesh._indices[0].push(base);
+
+                            h = base + j;
+                            this._mesh._indices[0].push(h);
+                        }
+                    }
+
+                    // calculate normals and adjust them at seam
                     this._mesh.calcNormals(Math.PI, this._vf.ccw);
+
+                    var n0b = new x3dom.fields.SFVec3f(this._mesh._normals[0][0],
+                                                       this._mesh._normals[0][1],
+                                                       this._mesh._normals[0][2]);
+                    var n0t = new x3dom.fields.SFVec3f(this._mesh._normals[0][3],
+                                                       this._mesh._normals[0][4],
+                                                       this._mesh._normals[0][5]);
+                    k = 6 * sides;
+                    var n1b = new x3dom.fields.SFVec3f(this._mesh._normals[0][k  ],
+                                                       this._mesh._normals[0][k+1],
+                                                       this._mesh._normals[0][k+2]);
+                    var n1t = new x3dom.fields.SFVec3f(this._mesh._normals[0][k+3],
+                                                       this._mesh._normals[0][k+4],
+                                                       this._mesh._normals[0][k+5]);
+
+                    var nb = n0b.add(n1b).normalize();
+                    var nt = n0t.add(n1t).normalize();
+
+                    this._mesh._normals[0][0] = nb.x;
+                    this._mesh._normals[0][1] = nb.y;
+                    this._mesh._normals[0][2] = nb.z;
+                    this._mesh._normals[0][3] = nt.x;
+                    this._mesh._normals[0][4] = nt.y;
+                    this._mesh._normals[0][5] = nt.z;
+
+                    this._mesh._normals[0][k  ] = nb.x;
+                    this._mesh._normals[0][k+1] = nb.y;
+                    this._mesh._normals[0][k+2] = nb.z;
+                    this._mesh._normals[0][k+3] = nt.x;
+                    this._mesh._normals[0][k+4] = nt.y;
+                    this._mesh._normals[0][k+5] = nt.z;
                     
                     this.invalidateVolume();
                     
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.positions = true;
+                        node.setAllDirty();
                         node.invalidateVolume();
                     });
                 }
