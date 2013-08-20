@@ -168,6 +168,9 @@ x3dom.registerNodeType(
                     if (this._actDiffuseColor !== undefined) {
                         this._vf.diffuseColor.setValues(this._actDiffuseColor);
                         this._highlightOn = false;
+                        // new/delete every frame can be very slow
+                        // but prevent from copying if called not only on change
+                        delete this._actDiffuseColor;
                     }
                 }
             }
