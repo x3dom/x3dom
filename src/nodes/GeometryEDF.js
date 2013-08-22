@@ -685,23 +685,23 @@ x3dom.registerNodeType(
                     //First Cap
                     k += 2;
 
-                    x = outerRadius * Math.sin(0);
-                    z = outerRadius * -Math.cos(0);
+                    x = 0;
+                    z = -outerRadius;
 
                     this._mesh._positions[0].push(x, height/2, z);
                     this._mesh._normals[0].push(-1, 0, 0);
                     this._mesh._positions[0].push(x, -height/2, z);
                     this._mesh._normals[0].push(-1, 0, 0);
 
-                    x = innerRadius * Math.sin(0);
-                    z = innerRadius * -Math.cos(0);
+                    x = 0;
+                    z = -innerRadius;
 
                     this._mesh._positions[0].push(x, height/2, z);
                     this._mesh._normals[0].push(-1, 0, 0);
                     this._mesh._positions[0].push(x, -height/2, z);
                     this._mesh._normals[0].push(-1, 0, 0);
 
-                    this._mesh._indices[0].push(k + 0);
+                    this._mesh._indices[0].push(k    );
                     this._mesh._indices[0].push(k + 1);
                     this._mesh._indices[0].push(k + 2);
 
@@ -712,25 +712,26 @@ x3dom.registerNodeType(
                     //Second Cap
                     k+=4;
 
-                    x = outerRadius * Math.sin(angle);
-                    z = outerRadius * -Math.cos(angle);
+                    var nx = Math.sin(angle), nz = Math.cos(angle);
+                    x = outerRadius * nx;
+                    z = outerRadius * -nz;
 
                     this._mesh._positions[0].push(x, height/2, z);
-                    this._mesh._normals[0].push(z, 0, x);
+                    this._mesh._normals[0].push(nz, 0, nx);
                     this._mesh._positions[0].push(x, -height/2, z);
-                    this._mesh._normals[0].push(z, 0, x);
+                    this._mesh._normals[0].push(nz, 0, nx);
 
-                    x = innerRadius * Math.sin(angle);
-                    z = innerRadius * -Math.cos(angle);
+                    x = innerRadius * nx;
+                    z = innerRadius * -nz;
 
                     this._mesh._positions[0].push(x, height/2, z);
-                    this._mesh._normals[0].push(z, 0, x);
+                    this._mesh._normals[0].push(nz, 0, nx);
                     this._mesh._positions[0].push(x, -height/2, z);
-                    this._mesh._normals[0].push(z, 0, x);
+                    this._mesh._normals[0].push(nz, 0, nx);
 
                     this._mesh._indices[0].push(k + 2);
                     this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 0);
+                    this._mesh._indices[0].push(k    );
 
                     this._mesh._indices[0].push(k + 3);
                     this._mesh._indices[0].push(k + 1);
@@ -902,23 +903,23 @@ x3dom.registerNodeType(
                         //First Cap
                         k += 2;
 
-                        x = outerRadius * Math.sin(0);
-                        z = outerRadius * -Math.cos(0);
+                        x = 0;
+                        z = -outerRadius;
 
                         this._mesh._positions[0].push(x, height/2, z);
                         this._mesh._normals[0].push(-1, 0, 0);
                         this._mesh._positions[0].push(x, -height/2, z);
                         this._mesh._normals[0].push(-1, 0, 0);
 
-                        x = innerRadius * Math.sin(0);
-                        z = innerRadius * -Math.cos(0);
+                        x = 0;
+                        z = -innerRadius;
 
                         this._mesh._positions[0].push(x, height/2, z);
                         this._mesh._normals[0].push(-1, 0, 0);
                         this._mesh._positions[0].push(x, -height/2, z);
                         this._mesh._normals[0].push(-1, 0, 0);
 
-                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k    );
                         this._mesh._indices[0].push(k + 1);
                         this._mesh._indices[0].push(k + 2);
 
@@ -929,25 +930,26 @@ x3dom.registerNodeType(
                         //Second Cap
                         k+=4;
 
-                        x = outerRadius * Math.sin(angle);
-                        z = outerRadius * -Math.cos(angle);
+                        var nx = Math.sin(angle), nz = Math.cos(angle);
+                        x = outerRadius * nx;
+                        z = outerRadius * -nz;
 
                         this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(z, 0, x);
+                        this._mesh._normals[0].push(nz, 0, nx);
                         this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(z, 0, x);
+                        this._mesh._normals[0].push(nz, 0, nx);
 
-                        x = innerRadius * Math.sin(angle);
-                        z = innerRadius * -Math.cos(angle);
+                        x = innerRadius * nx;
+                        z = innerRadius * -nz;
 
                         this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(z, 0, x);
+                        this._mesh._normals[0].push(nz, 0, nx);
                         this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(z, 0, x);
+                        this._mesh._normals[0].push(nz, 0, nx);
 
                         this._mesh._indices[0].push(k + 2);
                         this._mesh._indices[0].push(k + 1);
-                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k    );
 
                         this._mesh._indices[0].push(k + 3);
                         this._mesh._indices[0].push(k + 1);
