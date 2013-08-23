@@ -28,7 +28,6 @@ x3dom.Viewarea = function (document, scene) {
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-    this._relMat = x3dom.fields.SFMatrix4f.identity();
 
     this._needNavigationMatrixUpdate = true;
     this._deltaT = 0;
@@ -50,7 +49,6 @@ x3dom.Viewarea = function (document, scene) {
     this._hasTouches = false;
 
     this._points = 0;   // old render mode flag (but think of better name!)
-
     this._numRenderedNodes = 0;
     
     this._pick = new x3dom.fields.SFVec3f(0, 0, 0);
@@ -151,7 +149,6 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             this._rotMat = x3dom.fields.SFMatrix4f.identity();
             this._transMat = x3dom.fields.SFMatrix4f.identity();
             this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-            this._relMat = x3dom.fields.SFMatrix4f.identity();
 
             var angleX = 0;
             var angleY = Math.asin(currViewMat._02);
@@ -491,8 +488,6 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
         if (prev && x3dom.isa(prev, x3dom.nodeTypes.X3DViewpointNode)) {
             prev = prev.getCurrentTransform().mult(prev.getViewMatrix()).
                          mult(this._transMat).mult(this._rotMat);
-            //prev = this._relMat.inverse().
-            //         mult(prev.getViewMatrix().mult(prev.getCurrentTransform().inverse()));
 
             this._mixer._beginTime = this._lastTS;
 
@@ -521,7 +516,6 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-    this._relMat = x3dom.fields.SFMatrix4f.identity();
     this._needNavigationMatrixUpdate = true;
 };
 
@@ -586,7 +580,6 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function () {
 };
 
 x3dom.Viewarea.prototype.getViewMatrix = function () {
-    //return this._relMat.inverse().mult(this.getViewpointMatrix());
     return this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
 };
 
@@ -918,7 +911,6 @@ x3dom.Viewarea.prototype.resetView = function()
     this._rotMat = x3dom.fields.SFMatrix4f.identity();
     this._transMat = x3dom.fields.SFMatrix4f.identity();
     this._movement = new x3dom.fields.SFVec3f(0, 0, 0);
-    this._relMat = x3dom.fields.SFMatrix4f.identity();
     this._needNavigationMatrixUpdate = true;
     navi._heliUpdated = false;
 };
@@ -991,7 +983,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         normalY: that._pickNorm.y,
         normalZ: that._pickNorm.z,
         hitPnt: that._pick.toGL(), // for convenience
-        hitObject: obj._xmlNode ? obj._xmlNode : null,
+        hitObject: (obj && obj._xmlNode) ? obj._xmlNode : null,
         shadowObjectId: that._pickingInfo.shadowObjectId,
         cancelBubble: false,
         stopPropagation: function() { this.cancelBubble = true; },
@@ -1038,7 +1030,7 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         });
     };
 
-    if (needRecurse) {
+    if (needRecurse && obj) {
         recurse(obj);
     }
 	
@@ -1086,8 +1078,29 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
 
         // click means that mousedown _and_ mouseup were detected on same element
         if (this._pickingInfo.pickObj &&
-            this._pickingInfo.pickObj === this._pickingInfo.lastClickObj) {
+            this._pickingInfo.pickObj === this._pickingInfo.lastClickObj)
+        {
             this.prepareEvents(x, y, buttonState, "onclick");
+        }
+        else if (!this._pickingInfo.pickObj && !this._pickingInfo.lastClickObj)
+        {
+            var eventType = "backgroundClicked";
+            try {
+                if ( this._scene._xmlNode &&
+                    (this._scene._xmlNode["on" + eventType] ||
+                        this._scene._xmlNode.hasAttribute("on" + eventType) ||
+                        this._scene._listeners[eventType]) ) {
+                    var event = {
+                        target: {}, type: eventType,
+                        button: buttonState, layerX: x, layerY: y,
+                        cancelBubble: false,
+                        stopPropagation: function () { this.cancelBubble = true; },
+                        preventDefault:  function () { this.cancelBubble = true; }
+                    };
+                    this._scene.callEvtHandler(("on" + eventType), event);
+                }
+            }
+            catch (e) { x3dom.debug.logException("backgroundClicked: " + e); }
         }
     }
     else {
@@ -1279,7 +1292,6 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 			}
 			
 			translation = translation.multiply(distance);
-			//this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.translation(translation));
             this._movement = this._movement.add(translation);
 
             this._transMat = viewpoint.getViewMatrix().inverse().
@@ -1297,10 +1309,6 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
                            mult(x3dom.fields.SFMatrix4f.translation(center)).
                            mult(mat.inverse()).mult(rotation).mult(mat).
                            mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
-            //this._relMat = this._relMat.
-            //    mult(x3dom.fields.SFMatrix4f.translation(center)).
-            //    mult(rotation).
-            //    mult(x3dom.fields.SFMatrix4f.translation(center.negate()));
 		}
 	}
 };
@@ -1448,80 +1456,6 @@ x3dom.Viewarea.prototype.prepareEvents = function (x, y, buttonState, eventType)
     }
 };
 
-// Experimental stuff starts here
-x3dom.Viewarea.prototype.rotateH = function(right)
-{
-  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.parseRotation("0, 1, 0," + (right ? "-0.05" : "0.05")));
-};
-
-x3dom.Viewarea.prototype.rotateV = function(down)
-{
-  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.parseRotation("1, 0, 0," + (down ? "-0.05" : "0.05")));
-};
-
-x3dom.Viewarea.prototype.pan = function(vec)
-{
-  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.translation(vec));
-};
-
-x3dom.Viewarea.prototype.zoom = function(vec)
-{
-  this._relMat = this._relMat.mult(x3dom.fields.SFMatrix4f.translation(vec));
-};
-
-x3dom.Viewarea.prototype.orbitH = function(dx)
-{
-  var beta = -(dx * 2 * Math.PI) / this._height;
-  var mat = this.getViewMatrix().inverse();
-
-  var pos = mat.e3();
-  var at = pos.subtract(mat.e2());
-  var up = mat.e1();
-
-  var viewpoint = this._scene.getViewpoint();
-  var center = viewpoint.getCenterOfRotation();
-  var radius = center.subtract(pos);
-
-  var m = new x3dom.fields.SFMatrix4f.translation(radius);
-
-  m = m.mult(x3dom.fields.SFMatrix4f.parseRotation(up.x + ", " + up.y + ", " + up.z + ", " + beta));
-  m = m.mult(x3dom.fields.SFMatrix4f.translation(radius.negate()));
-
-  pos = center.subtract(m.multMatrixVec(radius));
-  at = m.multMatrixVec(at);
-  up = m.multMatrixVec(up);
-
-  m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
-  this._relMat = this.getViewpointMatrix().mult(m);
-};
-
-x3dom.Viewarea.prototype.orbitV = function(dy)
-{
-  var alpha = (dy * 2 * Math.PI) / this._width;
-
-  var mat = this.getViewMatrix().inverse();
-  var pos = mat.e3();
-  var at = pos.subtract(mat.e2());
-  var up = mat.e1();
-
-  var viewpoint = this._scene.getViewpoint();
-  var center = viewpoint.getCenterOfRotation();
-  var radius = center.subtract(pos);
-
-  var m = new x3dom.fields.SFMatrix4f.translation(radius);
-  var rotVec = at.cross(up);
-  m = m.mult(x3dom.fields.SFMatrix4f.parseRotation(rotVec.x + ", " + rotVec.y + ", " + rotVec.z + ", " + alpha));
-  m = m.mult(x3dom.fields.SFMatrix4f.translation(radius.negate()));
-
-  pos = center.subtract(m.multMatrixVec(radius));
-  at = m.multMatrixVec(at);
-  up = m.multMatrixVec(up);
-
-  m = x3dom.fields.SFMatrix4f.lookAt(pos, at, up);  
-  this._relMat = this.getViewpointMatrix().mult(m);
-};
-// Experimental stuff stops here
-
 
 x3dom.Viewarea.prototype.getRenderMode = function()
 {
@@ -1535,7 +1469,7 @@ x3dom.Viewarea.prototype.getRenderMode = function()
 
 x3dom.Viewarea.prototype.getShadowedLights = function()
 {	
-	var shadowedLights = new Array();
+	var shadowedLights = [];
 	var shadowIndex = 0;
 	var slights = this.getLights();
 	for (var i=0; i< slights.length; i++){
@@ -1555,7 +1489,7 @@ x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFacto
 														splitOffset,  postProject)
 {	
 	var logSplit;
-	var practSplit = new Array();
+	var practSplit = [];
 	
 	var viewPoint = this._scene.getViewpoint();
 	
@@ -1575,12 +1509,13 @@ x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFacto
 	practSplit[numCascades] = zFar;
 	
 	//return in view coords
-	if (!postProject) return practSplit;
+	if (!postProject)
+        return practSplit;
 	
 	//return in post projective coords	
 	var mat_proj = this.getProjectionMatrix();	
-	
-	var postProj = new Array();
+
+	var postProj = [];
 	
 	for (var j=0; j<=numCascades; j++){
 		postProj[j] = mat_proj.multFullMatrixPnt(new x3dom.fields.SFVec3f(0,0,-practSplit[j])).z;
@@ -1600,7 +1535,7 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 	var sceneMin = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
 	var sceneMax = x3dom.fields.SFVec3f.copy(this._scene._lastMax);
 	
-	var sceneCorners = new Array();
+	var sceneCorners = [];
 	sceneCorners[0] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMin.y, sceneMin.z);
 	sceneCorners[1] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMin.y, sceneMax.z);
 	sceneCorners[2] = new x3dom.fields.SFVec3f(sceneMin.x, sceneMax.y, sceneMin.z);
@@ -1611,7 +1546,8 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 	sceneCorners[7] = new x3dom.fields.SFVec3f(sceneMax.x, sceneMax.y, sceneMax.z);
 	
 	//transform scene bounds into light space
-	for (var i=0; i<8; i++){
+    var i;
+	for (i=0; i<8; i++){
 		sceneCorners[i] = WCToLCMatrix.multFullMatrixPnt(sceneCorners[i]);
 	}
 	
@@ -1619,7 +1555,7 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 	var minScene = x3dom.fields.SFVec3f.copy(sceneCorners[0]);
 	var maxScene = x3dom.fields.SFVec3f.copy(sceneCorners[0]);
 	
-	for (var i=1; i<8; i++){
+	for (i=1; i<8; i++){
 		minScene.z = Math.min(sceneCorners[i].z, minScene.z); 
 		maxScene.z = Math.max(sceneCorners[i].z, maxScene.z); 
 	}
@@ -1630,21 +1566,20 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 	//var scaleZ = 1.0 / (maxScene.z - minScene.z);
 	//var offsetZ = -minScene.z * scaleZ;
 
-	var cropMatrix = new x3dom.fields.SFMatrix4f.identity();
+	var cropMatrix = x3dom.fields.SFMatrix4f.identity();
 	
 	cropMatrix._22 = scaleZ;
 	cropMatrix._23 = offsetZ;	
 	
 	return cropMatrix;	
-};	
-	
+};
 	
 
 /*
  * Calculate a matrix to fit the given wctolc-matrix to the split boundaries
  */
 x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, zFar)
-{	
+{
 	var mat_proj = this.getProjectionMatrix();
 	var mat_view = this.getViewMatrix();
 	var mat_view_proj = mat_proj.mult(mat_view);
@@ -1652,7 +1587,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	
 	
 	//define view frustum corner points in post perspective view space
-	var frustumCorners = new Array();
+	var frustumCorners = [];
 	frustumCorners[0] = new x3dom.fields.SFVec3f(-1, -1, zFar);
 	frustumCorners[1] = new x3dom.fields.SFVec3f(-1, -1, zNear);
 	frustumCorners[2] = new x3dom.fields.SFVec3f(-1,  1, zFar);
@@ -1664,7 +1599,8 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	
 
 	//transform corner points into post perspective light space
-	for (var i=0; i<8; i++){
+    var i;
+	for (i=0; i<8; i++){
 		frustumCorners[i] = mat_view_proj_inverse.multFullMatrixPnt(frustumCorners[i]);
 		frustumCorners[i] = WCToLCMatrix.multFullMatrixPnt(frustumCorners[i]);
 	}
@@ -1673,7 +1609,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	var minFrustum = x3dom.fields.SFVec3f.copy(frustumCorners[0]);
 	var maxFrustum = x3dom.fields.SFVec3f.copy(frustumCorners[0]);
 
-	for (var i=1; i<8; i++){
+	for (i=1; i<8; i++){
 		minFrustum.x = Math.min(frustumCorners[i].x, minFrustum.x); 
 		minFrustum.y = Math.min(frustumCorners[i].y, minFrustum.y);
 		minFrustum.z = Math.min(frustumCorners[i].z, minFrustum.z); 
@@ -1685,7 +1621,8 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	
 	
 	//clip values to box (-1,-1,-1),(1,1,1)
-	function clip(min,max){
+	function clip(min,max)
+    {
 		var xMin = min.x;
 		var yMin = min.y;
 		var zMin = min.z;
@@ -1723,14 +1660,14 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	
 	var frustumBB = clip(minFrustum, maxFrustum);
 
-	//define fittingmatrix
+	//define fitting matrix
 	var scaleX = 2.0 / (frustumBB.max.x - frustumBB.min.x);
 	var scaleY = 2.0 / (frustumBB.max.y - frustumBB.min.y);
 	var offsetX = -(scaleX * (frustumBB.max.x + frustumBB.min.x)) / 2.0;
 	var offsetY = -(scaleY * (frustumBB.max.y + frustumBB.min.y)) / 2.0;
 
 	
-	var fittingMatrix = new x3dom.fields.SFMatrix4f.identity();
+	var fittingMatrix = x3dom.fields.SFMatrix4f.identity();
 	
 	fittingMatrix._00 = scaleX;
 	fittingMatrix._11 = scaleY;
