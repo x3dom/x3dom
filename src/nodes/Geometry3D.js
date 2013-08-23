@@ -685,23 +685,19 @@ x3dom.registerNodeType(
 
             this._origCCW = this._vf.ccw;
 
-            var delta = 0;
+            var innerRadius = this._vf.innerRadius;
+            var outerRadius = this._vf.outerRadius;
+
             if (this._vf.insideOutsideRadius == true)
             {
-                // assure that innerRadius < outerRadius
-                if (this._vf.innerRadius > this._vf.outerRadius) {
-                    var tmp = this._vf.innerRadius;
-                    this._vf.innerRadius = this._vf.outerRadius;
-                    this._vf.outerRadius = tmp;
-                }
-                delta = (this._vf.outerRadius - this._vf.innerRadius) / 2;
+                var rad = (outerRadius - innerRadius) / 2;
+
+                outerRadius = innerRadius + rad;
+                innerRadius = rad;
 
                 // fix wrong face orientation in case of clockwise rotation
                 this._vf.ccw = !this._origCCW;
             }
-
-			var innerRadius = this._vf.innerRadius - delta;
-			var outerRadius = this._vf.outerRadius - delta;
 
 			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
             rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
@@ -871,23 +867,20 @@ x3dom.registerNodeType(
                     else if (this._vf.angle > twoPi)
                         this._vf.angle = twoPi;
 
-                    var delta = 0;
+                    var innerRadius = this._vf.innerRadius;
+                    var outerRadius = this._vf.outerRadius;
+
                     if (this._vf.insideOutsideRadius == true)
                     {
-                        if (this._vf.innerRadius > this._vf.outerRadius) {
-                            var tmp = this._vf.innerRadius;
-                            this._vf.innerRadius = this._vf.outerRadius;
-                            this._vf.outerRadius = tmp;
-                        }
-                        delta = (this._vf.outerRadius - this._vf.innerRadius) / 2;
+                        var rad = (outerRadius - innerRadius) / 2;
+
+                        outerRadius = innerRadius + rad;
+                        innerRadius = rad;
 
                         this._vf.ccw = !this._origCCW;
                     }
                     else
                         this._vf.ccw = this._origCCW;
-
-                    var innerRadius = this._vf.innerRadius - delta;
-                    var outerRadius = this._vf.outerRadius - delta;
 
                     var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
                     rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
