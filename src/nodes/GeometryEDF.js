@@ -1142,6 +1142,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'creaseAngle', 0);
             this.addField_MFVec2f(ctx, 'crossSection', []);
             this.addField_SFFloat(ctx, 'angle', 2*Math.PI);
+            this.addField_SFBool(ctx, 'caps', true);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
             this._origCCW = this._vf.ccw;
@@ -1244,7 +1245,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                if (!fullRevolution)
+                if (!fullRevolution && this._vf.caps == true)
                 {
                     // add first cap
                     var linklist = new x3dom.DoublyLinkedList();
