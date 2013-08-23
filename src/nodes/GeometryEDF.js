@@ -424,6 +424,8 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'caps', true);        //Show side caps
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
+            this._origCCW = this._vf.ccw;
+
             this.rebuildGeometry();
         },
         {
@@ -435,6 +437,8 @@ x3dom.registerNodeType(
                 this._mesh._indices[0]   = [];
 
                 var twoPi = 2.0 * Math.PI;
+
+                this._vf.ccw = !this._origCCW;
 
                 // assure that angle in [0, 2 * PI]
                 if (this._vf.angle < 0)
@@ -463,8 +467,8 @@ x3dom.registerNodeType(
                 for (j=0, k=0; j<=sides; j++)
                 {
                     beta = j * delta;
-                    nx =  Math.sin(beta);
-                    nz = -Math.cos(beta);
+                    nx =  Math.cos(beta);
+                    nz = -Math.sin(beta);
 
                     x = outerRadius * nx;
                     z = outerRadius * nz;
@@ -493,8 +497,8 @@ x3dom.registerNodeType(
                 for (j=0, k=k+2; j<=sides; j++)
                 {
                     beta = j * delta;
-                    nx =  Math.sin(beta);
-                    nz = -Math.cos(beta);
+                    nx =  Math.cos(beta);
+                    nz = -Math.sin(beta);
 
                     x = innerRadius * nx;
                     z = innerRadius * nz;
@@ -523,8 +527,8 @@ x3dom.registerNodeType(
                 for (j=0, k=k+2; j<=sides; j++)
                 {
                     beta = j * delta;
-                    nx =  Math.sin(beta);
-                    nz = -Math.cos(beta);
+                    nx =  Math.cos(beta);
+                    nz = -Math.sin(beta);
 
                     x = outerRadius * nx;
                     z = outerRadius * nz;
@@ -556,8 +560,8 @@ x3dom.registerNodeType(
                 for (j=0, k=k+2; j<=sides; j++)
                 {
                     beta = j * delta;
-                    nx =  Math.sin(beta);
-                    nz = -Math.cos(beta);
+                    nx =  Math.cos(beta);
+                    nz = -Math.sin(beta);
 
                     x = outerRadius * nx;
                     z = outerRadius * nz;
@@ -591,21 +595,21 @@ x3dom.registerNodeType(
                     //First Cap
                     k += 2;
 
-                    x = 0;
-                    z = -outerRadius;
+                    x = outerRadius;
+                    z = 0;
 
                     this._mesh._positions[0].push(x, height, z);
-                    this._mesh._normals[0].push(-1, 0, 0);
+                    this._mesh._normals[0].push(0, 0, 1);
                     this._mesh._positions[0].push(x, -height, z);
-                    this._mesh._normals[0].push(-1, 0, 0);
+                    this._mesh._normals[0].push(0, 0, 1);
 
-                    x = 0;
-                    z = -innerRadius;
+                    x = innerRadius;
+                    z = 0;
 
                     this._mesh._positions[0].push(x, height, z);
-                    this._mesh._normals[0].push(-1, 0, 0);
+                    this._mesh._normals[0].push(0, 0, 1);
                     this._mesh._positions[0].push(x, -height, z);
-                    this._mesh._normals[0].push(-1, 0, 0);
+                    this._mesh._normals[0].push(0, 0, 1);
 
                     this._mesh._indices[0].push(k    );
                     this._mesh._indices[0].push(k + 1);
@@ -618,24 +622,24 @@ x3dom.registerNodeType(
                     //Second Cap
                     k+=4;
 
-                    nx = Math.sin(angle);
-                    nz = Math.cos(angle);
+                    nx =  Math.cos(angle);
+                    nz = -Math.sin(angle);
 
                     x = outerRadius * nx;
-                    z = outerRadius * -nz;
+                    z = outerRadius * nz;
 
                     this._mesh._positions[0].push(x, height, z);
-                    this._mesh._normals[0].push(nz, 0, nx);
+                    this._mesh._normals[0].push(nz, 0, -nx);
                     this._mesh._positions[0].push(x, -height, z);
-                    this._mesh._normals[0].push(nz, 0, nx);
+                    this._mesh._normals[0].push(nz, 0, -nx);
 
                     x = innerRadius * nx;
-                    z = innerRadius * -nz;
+                    z = innerRadius * nz;
 
                     this._mesh._positions[0].push(x, height, z);
-                    this._mesh._normals[0].push(nz, 0, nx);
+                    this._mesh._normals[0].push(nz, 0, -nx);
                     this._mesh._positions[0].push(x, -height, z);
-                    this._mesh._normals[0].push(nz, 0, nx);
+                    this._mesh._normals[0].push(nz, 0, -nx);
 
                     this._mesh._indices[0].push(k + 2);
                     this._mesh._indices[0].push(k + 1);
