@@ -673,6 +673,7 @@ x3dom.registerNodeType(
 			this.addField_SFFloat(ctx, 'innerRadius', 0.5);
 			this.addField_SFFloat(ctx, 'outerRadius', 1.0);
             this.addField_SFFloat(ctx, 'angle', twoPi);
+            this.addField_SFBool(ctx, 'caps', true);
 			this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
             this.addField_SFBool(ctx, 'insideOutsideRadius', false);    // use other radius/orientation behavior
 
@@ -705,8 +706,9 @@ x3dom.registerNodeType(
 			var rings = this._vf.subdivision.x, sides = this._vf.subdivision.y;
             rings = Math.max(3, Math.round((this._vf.angle / twoPi) * rings));
 
-			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius+'_'+this._vf.angle+'_'+this._vf.subdivision;
-			// FIXME; check/update geoCache on field update (for ALL primitives)!
+            // FIXME; check/update geoCache on field update (for ALL primitives)!
+			var geoCacheID = 'Torus_'+innerRadius+'_'+outerRadius+'_'+this._vf.angle+'_'+
+                             this._vf.subdivision+'-'+this._vf.caps;
 
 			if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 			{
@@ -757,9 +759,9 @@ x3dom.registerNodeType(
 					}
 				}
 
-                if (this._vf.angle < twoPi - 0.01)
+                if (this._vf.angle < twoPi && this._vf.caps == true)
                 {
-                    // create caps
+                    // create first cap
                     var origPos = this._mesh._positions[0].length / 3;
 
                     if (this._vf.insideOutsideRadius) {
@@ -856,9 +858,10 @@ x3dom.registerNodeType(
         {
             fieldChanged: function(fieldName)
             {
-                // TODO; invalidate geometry cache if necessary!
+                // TODO; invalidate geometry cache if necessary (to be fixed for all primitives)!
                 if (fieldName == "innerRadius" || fieldName == "outerRadius" ||
-                    fieldName == "subdivision" || fieldName == "angle" || fieldName == "insideOutsideRadius")
+                    fieldName == "subdivision" || fieldName == "angle" ||
+                    fieldName == "insideOutsideRadius" || fieldName == "caps")
                 {
                     // assure that angle in [0, 2 * PI]
                     var twoPi = 2.0 * Math.PI;
@@ -936,9 +939,9 @@ x3dom.registerNodeType(
 						}
 					}
 
-                    if (this._vf.angle < twoPi - 0.01)
+                    if (this._vf.angle < twoPi && this._vf.caps == true)
                     {
-                        // create caps
+                        // create first cap
                         var origPos = this._mesh._positions[0].length / 3;
 
                         if (this._vf.insideOutsideRadius) {
@@ -1097,7 +1100,7 @@ x3dom.registerNodeType(
                         this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
                         if (j > 0) {
-                            this._mesh._indices[0].push(k + 0);
+                            this._mesh._indices[0].push(k    );
                             this._mesh._indices[0].push(k + 2);
                             this._mesh._indices[0].push(k + 1);
 
@@ -1212,7 +1215,7 @@ x3dom.registerNodeType(
                             this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
                             if (j > 0) {
-                                this._mesh._indices[0].push(k + 0);
+                                this._mesh._indices[0].push(k    );
                                 this._mesh._indices[0].push(k + 2);
                                 this._mesh._indices[0].push(k + 1);
 
@@ -1317,7 +1320,7 @@ x3dom.registerNodeType(
 			else
 			{
 				var radius = this._vf.radius;
-				var height = this._vf.height;
+				var height = this._vf.height / 2;
 
 				var beta, x, z;
 				var delta = 2.0 * Math.PI / sides;
@@ -1331,17 +1334,17 @@ x3dom.registerNodeType(
 					x = Math.sin(beta);
 					z = -Math.cos(beta);
 
-					this._mesh._positions[0].push(x * radius, -height/2, z * radius);
+					this._mesh._positions[0].push(x * radius, -height, z * radius);
 					this._mesh._normals[0].push(x, 0, z);
 					this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
-					this._mesh._positions[0].push(x * radius, height/2, z * radius);
+					this._mesh._positions[0].push(x * radius, height, z * radius);
 					this._mesh._normals[0].push(x, 0, z);
 					this._mesh._texCoords[0].push(1.0 - j / sides, 1);
 
 					if (j > 0)
 					{
-						this._mesh._indices[0].push(k + 0);
+						this._mesh._indices[0].push(k    );
 						this._mesh._indices[0].push(k + 1);
 						this._mesh._indices[0].push(k + 2);
 
@@ -1366,7 +1369,7 @@ x3dom.registerNodeType(
 						x = radius * Math.sin(beta);
 						z = -radius * Math.cos(beta);
 
-						this._mesh._positions[0].push(x, height/2, z);
+						this._mesh._positions[0].push(x, height, z);
 						this._mesh._normals[0].push(0, 1, 0);
 						this._mesh._texCoords[0].push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
 					  }
@@ -1393,7 +1396,7 @@ x3dom.registerNodeType(
 						x = radius * Math.sin(beta);
 						z = -radius * Math.cos(beta);
 
-						this._mesh._positions[0].push(x, -height/2, z);
+						this._mesh._positions[0].push(x, -height, z);
 						this._mesh._normals[0].push(0, -1, 0);
 						this._mesh._texCoords[0].push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
 					  }
@@ -1420,17 +1423,16 @@ x3dom.registerNodeType(
          },
         {
             fieldChanged: function(fieldName) {
-                if (fieldName === "radius" || fieldName === "height") { 
-				
+                if (fieldName === "radius" || fieldName === "height")
+                {
                     this._mesh._positions[0] = [];
 					
-					var radius = this._vf.radius, height = this._vf.height;
+					var radius = this._vf.radius, height = this._vf.height / 2;
 					var sides = this._vf.subdivision;	
 					
-					var beta, x, z;
+					var beta, x, z, j;
 					var delta = 2.0 * Math.PI / sides;
-	
-					var j = 0;
+
 					if (this._vf.side)
 					{
 					  for (j=0; j<=sides; j++)
@@ -1439,8 +1441,8 @@ x3dom.registerNodeType(
 						x = Math.sin(beta);
 						z = -Math.cos(beta);
 	
-						this._mesh._positions[0].push(x * radius, -height/2, z * radius);
-						this._mesh._positions[0].push(x * radius, height/2, z * radius);	
+						this._mesh._positions[0].push(x * radius, -height, z * radius);
+						this._mesh._positions[0].push(x * radius, height, z * radius);
 					  }
 					}
 	
@@ -1456,7 +1458,7 @@ x3dom.registerNodeType(
 							x = radius * Math.sin(beta);
 							z = -radius * Math.cos(beta);
 	
-							this._mesh._positions[0].push(x, height/2, z);							
+							this._mesh._positions[0].push(x, height, z);
 						  }
 						}
 					}
@@ -1469,7 +1471,7 @@ x3dom.registerNodeType(
 						x = radius * Math.sin(beta);
 						z = -radius * Math.cos(beta);
 						
-						this._mesh._positions[0].push(x, -height/2, z);
+						this._mesh._positions[0].push(x, -height, z);
 					  }
 					}
 
@@ -1482,21 +1484,20 @@ x3dom.registerNodeType(
                     });
                 }
                 else if (fieldName === "subdivision" || fieldName === "bottom" ||
-                         fieldName === "top" || fieldName === "side") {
-					
+                         fieldName === "top" || fieldName === "side")
+                {
 					this._mesh._positions[0] = [];
 					this._mesh._indices[0] =[];
 					this._mesh._normals[0] = [];
 					this._mesh._texCoords[0] =[];
 					
-					var radius = this._vf.radius, height = this._vf.height;
+					var radius = this._vf.radius, height = this._vf.height / 2;
 					var sides = this._vf.subdivision;
 					
-					var beta, x, z;
+					var beta, x, z, j;
 					var delta = 2.0 * Math.PI / sides;
+					var k = 0;
 
-					var j = 0;
-					 var k = 0;
 					if (this._vf.side)
 					{
 					  for (j=0, k=0; j<=sides; j++)
@@ -1505,11 +1506,11 @@ x3dom.registerNodeType(
 						x = Math.sin(beta);
 						z = -Math.cos(beta);
 	
-						this._mesh._positions[0].push(x * radius, -height/2, z * radius);
+						this._mesh._positions[0].push(x * radius, -height, z * radius);
 						this._mesh._normals[0].push(x, 0, z);
 						this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 	
-						this._mesh._positions[0].push(x * radius, height/2, z * radius);
+						this._mesh._positions[0].push(x * radius, height, z * radius);
 						this._mesh._normals[0].push(x, 0, z);
 						this._mesh._texCoords[0].push(1.0 - j / sides, 1);
 	
@@ -1540,7 +1541,7 @@ x3dom.registerNodeType(
 							x = radius * Math.sin(beta);
 							z = -radius * Math.cos(beta);
 	
-							this._mesh._positions[0].push(x, height/2, z);
+							this._mesh._positions[0].push(x, height, z);
 							this._mesh._normals[0].push(0, 1, 0);
 							this._mesh._texCoords[0].push(x / radius / 2 + 0.5, -z / radius / 2 + 0.5);
 						  }
@@ -1567,7 +1568,7 @@ x3dom.registerNodeType(
 							x = radius * Math.sin(beta);
 							z = -radius * Math.cos(beta);
 	
-							this._mesh._positions[0].push(x, -height/2, z);
+							this._mesh._positions[0].push(x, -height, z);
 							this._mesh._normals[0].push(0, -1, 0);
 							this._mesh._texCoords[0].push(x / radius / 2 + 0.5, z / radius / 2 + 0.5);
 						  }

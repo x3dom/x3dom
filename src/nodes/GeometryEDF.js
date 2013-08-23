@@ -23,15 +23,20 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'height', 1.0);  // Perpendicular distance between surfaces
             this.addField_SFFloat(ctx, 'xoff', 0.25);   // Displacement of axes along X-axis
             this.addField_SFFloat(ctx, 'yoff', 0.25);   // Displacement of axes along Y-axis
+            this.addField_SFBool(ctx, 'bottom', true);
+            this.addField_SFBool(ctx, 'top', true);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
-            var geoCacheID = 'Snout_' + this._vf.dbottom + '_' + this._vf.dtop + '_' + this._vf.height + '_' +
-                             this._vf.xoff + '_' + this._vf.yoff + '_' + this._vf.subdivision;
+            this.rebuildGeometry();
+        },
+        {
+            rebuildGeometry: function()
+            {
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0]   = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._indices[0]   = [];
 
-            if (this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
-                this._mesh = x3dom.geoCache[geoCacheID];
-            }
-            else {
                 var bottomRadius = this._vf.dbottom / 2, height = this._vf.height;
                 var topRadius = this._vf.dtop / 2, sides = this._vf.subdivision;
 
@@ -66,7 +71,7 @@ x3dom.registerNodeType(
                         this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
                         if (j > 0) {
-                            this._mesh._indices[0].push(k + 0);
+                            this._mesh._indices[0].push(k    );
                             this._mesh._indices[0].push(k + 2);
                             this._mesh._indices[0].push(k + 1);
 
@@ -79,7 +84,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                if (bottomRadius > 0) {
+                if (bottomRadius > 0 && this._vf.bottom) {
                     base = this._mesh._positions[0].length / 3;
 
                     for (j = sides - 1; j >= 0; j--) {
@@ -103,7 +108,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                if (topRadius > x3dom.fields.Eps) {
+                if (topRadius > x3dom.fields.Eps && this._vf.top) {
                     base = this._mesh._positions[0].length / 3;
 
                     for (j = sides - 1; j >= 0; j--) {
@@ -127,126 +132,19 @@ x3dom.registerNodeType(
                     }
                 }
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
                 this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            },
 
-                x3dom.geoCache[geoCacheID] = this._mesh;
-            }
-        },
-        {
             fieldChanged: function (fieldName)
             {
-                if (fieldName === "dtop" || fieldName === "dbottom" ||
-                    fieldName === "height" || fieldName === "subdivision" ||
-                    fieldName === "xoff" || fieldName === "yoff")
+                if (fieldName == "dtop" || fieldName == "dbottom" ||
+                    fieldName == "height" || fieldName == "subdivision" ||
+                    fieldName == "xoff" || fieldName == "yoff" ||
+                    fieldName == "bottom" || fieldName == "top")
                 {
-                    this._mesh._positions[0] = [];
-                    this._mesh._indices[0] = [];
-                    this._mesh._normals[0] = [];
-                    this._mesh._texCoords[0] = [];
-
-                    var bottomRadius = this._vf.dbottom / 2, height = this._vf.height;
-                    var topRadius = this._vf.dtop / 2, sides = this._vf.subdivision;
-
-                    var beta, x, z;
-                    var delta = 2.0 * Math.PI / sides;
-
-                    var incl = (bottomRadius - topRadius) / height;
-                    var nlen = 1.0 / Math.sqrt(1.0 + incl * incl);
-
-                    var j = 0, k = 0;
-                    var h, base;
-
-                    if (height > 0)
-                    {
-                        var px = 0, pz = 0;
-
-                        for (j = 0, k = 0; j <= sides; j++) {
-                            beta = j * delta;
-                            x = Math.sin(beta);
-                            z = -Math.cos(beta);
-
-                            if (topRadius > x3dom.fields.Eps) {
-                                px = x * topRadius + this._vf.xoff;
-                                pz = z * topRadius + this._vf.yoff;
-                            }
-
-                            this._mesh._positions[0].push(px, height / 2, pz);
-                            this._mesh._normals[0].push(x / nlen, incl / nlen, z / nlen);
-                            this._mesh._texCoords[0].push(1.0 - j / sides, 1);
-
-                            this._mesh._positions[0].push(x * bottomRadius, -height / 2, z * bottomRadius);
-                            this._mesh._normals[0].push(x / nlen, incl / nlen, z / nlen);
-                            this._mesh._texCoords[0].push(1.0 - j / sides, 0);
-
-                            if (j > 0) {
-                                this._mesh._indices[0].push(k + 0);
-                                this._mesh._indices[0].push(k + 2);
-                                this._mesh._indices[0].push(k + 1);
-
-                                this._mesh._indices[0].push(k + 1);
-                                this._mesh._indices[0].push(k + 2);
-                                this._mesh._indices[0].push(k + 3);
-
-                                k += 2;
-                            }
-                        }
-                    }
-
-                    if (bottomRadius > 0)
-                    {
-                        base = this._mesh._positions[0].length / 3;
-
-                        for (j = sides - 1; j >= 0; j--) {
-                            beta = j * delta;
-                            x = bottomRadius * Math.sin(beta);
-                            z = -bottomRadius * Math.cos(beta);
-
-                            this._mesh._positions[0].push(x, -height / 2, z);
-                            this._mesh._normals[0].push(0, -1, 0);
-                            this._mesh._texCoords[0].push(x / bottomRadius / 2 + 0.5, z / bottomRadius / 2 + 0.5);
-                        }
-
-                        h = base + 1;
-
-                        for (j = 2; j < sides; j++) {
-                            this._mesh._indices[0].push(h);
-                            this._mesh._indices[0].push(base);
-
-                            h = base + j;
-                            this._mesh._indices[0].push(h);
-                        }
-                    }
-
-                    if (topRadius > x3dom.fields.Eps)
-                    {
-                        base = this._mesh._positions[0].length / 3;
-
-                        for (j = sides - 1; j >= 0; j--) {
-                            beta = j * delta;
-                            x =  topRadius * Math.sin(beta) + this._vf.xoff;
-                            z = -topRadius * Math.cos(beta) + this._vf.yoff;
-
-                            this._mesh._positions[0].push(x, height / 2, z);
-                            this._mesh._normals[0].push(0, 1, 0);
-                            this._mesh._texCoords[0].push(x / topRadius / 2 + 0.5, 1.0 - z / topRadius / 2 + 0.5);
-                        }
-
-                        h = base + 1;
-
-                        for (j = 2; j < sides; j++) {
-                            this._mesh._indices[0].push(base);
-                            this._mesh._indices[0].push(h);
-
-                            h = base + j;
-                            this._mesh._indices[0].push(h);
-                        }
-                    }
-
-                    this.invalidateVolume();
-                    this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                    this.rebuildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
@@ -269,6 +167,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'diameter', 2); 	//Diameter of base
             this.addField_SFFloat(ctx, 'height', 1);	//Maximum height of dished surface above base
             this.addField_SFFloat(ctx, 'radius', 0);	//If r is 0, treat as section of sphere, else half of ellipsoid
+            this.addField_SFBool(ctx, 'bottom', true);
             this.addField_SFVec2f(ctx, 'subdivision', 24, 24);
 
             this.rebuildGeometry();
@@ -368,23 +267,28 @@ x3dom.registerNodeType(
                     }
                 }
 
-                var origPos = this._mesh._positions[0].length / 3;
-                var t = origPos + 1;
+                if (this._vf.bottom)
+                {
+                    var origPos = this._mesh._positions[0].length / 3;
+                    var t = origPos + 1;
 
-                for (var i=0, m=tmpPosArr.length/3; i<m; i++) {
-                    this._mesh._positions[0].push(tmpPosArr[3*i  ]);
-                    this._mesh._positions[0].push(tmpPosArr[3*i+1]);
-                    this._mesh._positions[0].push(tmpPosArr[3*i+2]);
-                    this._mesh._texCoords[0].push(tmpTcArr[2*i  ]);
-                    this._mesh._texCoords[0].push(tmpTcArr[2*i+1]);
-                    this._mesh._normals[0].push(0, -1, 0);
+                    for (var i=0, m=tmpPosArr.length/3; i<m; i++) {
+                        var j = 3 * i;
+                        this._mesh._positions[0].push(tmpPosArr[j  ]);
+                        this._mesh._positions[0].push(tmpPosArr[j+1]);
+                        this._mesh._positions[0].push(tmpPosArr[j+2]);
+                        j = 2 * i;
+                        this._mesh._texCoords[0].push(tmpTcArr[j  ]);
+                        this._mesh._texCoords[0].push(tmpTcArr[j+1]);
+                        this._mesh._normals[0].push(0, -1, 0);
 
-                    if (i >= 2) {
-                        this._mesh._indices[0].push(origPos);
-                        this._mesh._indices[0].push(t);
+                        if (i >= 2) {
+                            this._mesh._indices[0].push(origPos);
+                            this._mesh._indices[0].push(t);
 
-                        t = origPos + i;
-                        this._mesh._indices[0].push(t);
+                            t = origPos + i;
+                            this._mesh._indices[0].push(t);
+                        }
                     }
                 }
 
@@ -395,8 +299,8 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                 if (fieldName == "radius" || fieldName == "height" ||
-                     fieldName == "diameter" || fieldName == "subdivision")
+                 if (fieldName == "radius" || fieldName == "height" || fieldName == "diameter" ||
+                     fieldName == "subdivision" || fieldName == "bottom")
                  {
                      this.rebuildGeometry();
 
@@ -434,56 +338,44 @@ x3dom.registerNodeType(
             var yOff = this._vf.yoff;
             var sy = this._vf.height / 2;
 
-            var geoCacheID = 'Pyramid_'+xTop+'-'+yTop+'-'+xBot+'-'+yBot+'-'+xOff+'-'+yOff+'-'+sy;
+            this._mesh._positions[0] = [
+                -xBot,       -sy, -yBot,        -xTop + xOff, sy, -yTop + yOff,  xTop + xOff, sy, -yTop + yOff,  xBot,       -sy, -yBot,
+                -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xBot,       -sy,  yBot,
+                -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff, -xTop + xOff, sy, -yTop + yOff,
+                 xBot,       -sy, -yBot,         xBot,       -sy,  yBot,         xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,         xBot,       -sy,  yBot,         xBot,       -sy, -yBot
+            ];
+            this._mesh._texCoords[0] = [
+                1, 0, 1, 1, 0, 1, 0, 0,
+                0, 0, 0, 1, 1, 1, 1, 0,
+                0, 0, 1, 0, 1, 1, 0, 1,
+                1, 0, 0, 0, 0, 1, 1, 1,
+                0, 1, 0, 0, 1, 0, 1, 1,
+                0, 0, 0, 1, 1, 1, 1, 0
+            ];
+            this._mesh._indices[0] = [
+                0, 1, 2, 2, 3, 0,
+                6, 5, 4, 4, 7, 6,
+                8, 9, 10, 10, 11, 8,
+                12, 15, 14, 14, 13, 12,
+                16, 17, 18, 18, 19, 16,
+                20, 23, 22, 22, 21, 20
+            ];
 
-            if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-            {
-                this._mesh = x3dom.geoCache[geoCacheID];
-            }
-            else
-            {
-                this._mesh._positions[0] = [
-                    -xBot,       -sy, -yBot,        -xTop + xOff, sy, -yTop + yOff,  xTop + xOff, sy, -yTop + yOff,  xBot,       -sy, -yBot,
-                    -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xBot,       -sy,  yBot,
-                    -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff, -xTop + xOff, sy, -yTop + yOff,
-                     xBot,       -sy, -yBot,         xBot,       -sy,  yBot,         xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
-                    -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
-                    -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,         xBot,       -sy,  yBot,         xBot,       -sy, -yBot
-                ];
-                this._mesh._texCoords[0] = [
-                    1, 0, 1, 1, 0, 1, 0, 0,
-                    0, 0, 0, 1, 1, 1, 1, 0,
-                    0, 0, 1, 0, 1, 1, 0, 1,
-                    1, 0, 0, 0, 0, 1, 1, 1,
-                    0, 1, 0, 0, 1, 0, 1, 1,
-                    0, 0, 0, 1, 1, 1, 1, 0
-                ];
-                this._mesh._indices[0] = [
-                    0, 1, 2, 2, 3, 0,
-                    6, 5, 4, 4, 7, 6,
-                    8, 9, 10, 10, 11, 8,
-                    12, 15, 14, 14, 13, 12,
-                    16, 17, 18, 18, 19, 16,
-                    20, 23, 22, 22, 21, 20
-                ];
+            // attention, we share per side, therefore creaseAngle > 0
+            this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
-                // attention, we share per side, therefore > 0
-                this._mesh.calcNormals(Math.PI, this._vf.ccw);
-
-                this._mesh._invalidate = true;
-                this._mesh._numFaces = 12;
-                this._mesh._numCoords = 24;
-
-                x3dom.geoCache[geoCacheID] = this._mesh;
-            }
+            this._mesh._invalidate = true;
+            this._mesh._numFaces = 12;
+            this._mesh._numCoords = 24;
         },
         {
             fieldChanged: function(fieldName)
             {
-                if (fieldName === "xbottom" || fieldName === "ybottom" ||
-                    fieldName === "xtop" || fieldName === "ytop" ||
-                    fieldName === "xoff" || fieldName === "yoff" ||
-                    fieldName === "height")
+                if (fieldName == "xbottom" || fieldName == "ybottom" ||
+                    fieldName == "xtop" || fieldName == "ytop" ||
+                    fieldName == "xoff" || fieldName == "yoff" || fieldName == "height")
                 {
                     var xTop = this._vf.xtop / 2;
                     var yTop = this._vf.ytop / 2;
@@ -494,12 +386,12 @@ x3dom.registerNodeType(
                     var sy = this._vf.height / 2;
 
                     this._mesh._positions[0] = [
-                        -xBot,-sy,-yBot,  -xTop + xOff, sy,-yTop + yOff,   xTop + xOff, sy,-yTop + yOff,   xBot,-sy,-yBot,
-                        -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xBot,-sy, yBot,
-                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,  -xTop + xOff, sy, yTop + yOff,  -xTop + xOff, sy,-yTop + yOff,
-                         xBot,-sy,-yBot,   xBot,-sy, yBot,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff,
-                        -xTop + xOff, sy,-yTop + yOff,  -xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy, yTop + yOff,   xTop + xOff, sy,-yTop + yOff,
-                        -xBot,-sy,-yBot,  -xBot,-sy, yBot,   xBot,-sy, yBot,   xBot,-sy,-yBot
+                        -xBot,       -sy, -yBot,        -xTop + xOff, sy, -yTop + yOff,  xTop + xOff, sy, -yTop + yOff,  xBot,       -sy, -yBot,
+                        -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xBot,       -sy,  yBot,
+                        -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,        -xTop + xOff, sy,  yTop + yOff, -xTop + xOff, sy, -yTop + yOff,
+                         xBot,       -sy, -yBot,         xBot,       -sy,  yBot,         xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                        -xTop + xOff, sy, -yTop + yOff, -xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy,  yTop + yOff,  xTop + xOff, sy, -yTop + yOff,
+                        -xBot,       -sy, -yBot,        -xBot,       -sy,  yBot,         xBot,       -sy,  yBot,         xBot,       -sy, -yBot
                     ];
 
                     this._mesh._normals[0] = [];
@@ -525,62 +417,67 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.RectangularTorus.superClass.call(this, ctx);
 
-            var twoPi = 2.0 * Math.PI;
-
             this.addField_SFFloat(ctx, 'innerRadius', 0.5); //Inside radius
             this.addField_SFFloat(ctx, 'outerRadius', 1);	//Outside radius
-            this.addField_SFFloat(ctx, 'height', 1);	//Height of rectangular section
-            this.addField_SFFloat(ctx, 'angle', twoPi);	//Subtended angle
+            this.addField_SFFloat(ctx, 'height', 1);	    //Height of rectangular section
+            this.addField_SFFloat(ctx, 'angle', 2 * Math.PI);	//Subtended angle
+            this.addField_SFBool(ctx, 'caps', true);        //Show side caps
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
-            // assure that angle in [0, 2 * PI]
-            if (this._vf.angle < 0)
-                this._vf.angle = 0;
-            else if (this._vf.angle > twoPi)
-                this._vf.angle = twoPi;
-
-            // assure that innerRadius < outerRadius
-            if (this._vf.innerRadius > this._vf.outerRadius)
+            this.rebuildGeometry();
+        },
+        {
+            rebuildGeometry: function()
             {
-                var tmp = this._vf.innerRadius;
-                this._vf.innerRadius = this._vf.outerRadius;
-                this._vf.outerRadius = tmp;
-            }
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0]   = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._indices[0]   = [];
 
-            var innerRadius = this._vf.innerRadius;
-            var outerRadius = this._vf.outerRadius;
-            var height = this._vf.height;
-            var angle = this._vf.angle;
+                var twoPi = 2.0 * Math.PI;
 
-            var beta, delta, x, z, k, j;
-            var sides = this._vf.subdivision;
+                // assure that angle in [0, 2 * PI]
+                if (this._vf.angle < 0)
+                    this._vf.angle = 0;
+                else if (this._vf.angle > twoPi)
+                    this._vf.angle = twoPi;
 
-            var geoCacheID = 'RectangularTorus_'+innerRadius+'-'+outerRadius+'-'+height+'-'+angle;
+                // assure that innerRadius < outerRadius
+                if (this._vf.innerRadius > this._vf.outerRadius)
+                {
+                    var tmp = this._vf.innerRadius;
+                    this._vf.innerRadius = this._vf.outerRadius;
+                    this._vf.outerRadius = tmp;
+                }
 
-            if( ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-            {
-                this._mesh = x3dom.geoCache[geoCacheID];
-            }
-            else
-            {
-                delta = angle / sides;
+                var innerRadius = this._vf.innerRadius;
+                var outerRadius = this._vf.outerRadius;
+                var height = this._vf.height / 2;
+                var angle = this._vf.angle;
+                var sides = this._vf.subdivision;
+
+                var beta, x, z, k, j, nx, nz;
+                var delta = angle / sides;
 
                 //Outer Side
                 for (j=0, k=0; j<=sides; j++)
                 {
                     beta = j * delta;
-                    x = outerRadius * Math.sin(beta);
-                    z = outerRadius * -Math.cos(beta);
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._positions[0].push(x, -height/2, z);
-                    this._mesh._normals[0].push(x, 0, z);
+                    x = outerRadius * nx;
+                    z = outerRadius * nz;
 
-                    this._mesh._positions[0].push(x, height/2, z);
-                    this._mesh._normals[0].push(x, 0, z);
+                    this._mesh._positions[0].push(x, -height, z);
+                    this._mesh._normals[0].push(nx, 0, nz);
+
+                    this._mesh._positions[0].push(x, height, z);
+                    this._mesh._normals[0].push(nx, 0, nz);
 
                     if (j > 0)
                     {
-                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k    );
                         this._mesh._indices[0].push(k + 1);
                         this._mesh._indices[0].push(k + 2);
 
@@ -596,20 +493,23 @@ x3dom.registerNodeType(
                 for (j=0, k=k+2; j<=sides; j++)
                 {
                     beta = j * delta;
-                    x = innerRadius * Math.sin(beta);
-                    z = innerRadius * -Math.cos(beta);
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._positions[0].push(x, -height/2, z);
-                    this._mesh._normals[0].push(-x, 0, -z);
+                    x = innerRadius * nx;
+                    z = innerRadius * nz;
 
-                    this._mesh._positions[0].push(x, height/2, z);
-                    this._mesh._normals[0].push(-x, 0, -z);
+                    this._mesh._positions[0].push(x, -height, z);
+                    this._mesh._normals[0].push(-nx, 0, -nz);
+
+                    this._mesh._positions[0].push(x, height, z);
+                    this._mesh._normals[0].push(-nx, 0, -nz);
 
                     if (j > 0)
                     {
                         this._mesh._indices[0].push(k + 2);
                         this._mesh._indices[0].push(k + 1);
-                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k    );
 
                         this._mesh._indices[0].push(k + 3);
                         this._mesh._indices[0].push(k + 1);
@@ -623,21 +523,24 @@ x3dom.registerNodeType(
                 for (j=0, k=k+2; j<=sides; j++)
                 {
                     beta = j * delta;
-                    x = outerRadius * Math.sin(beta);
-                    z = outerRadius * -Math.cos(beta);
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._positions[0].push(x, height/2, z);
+                    x = outerRadius * nx;
+                    z = outerRadius * nz;
+
+                    this._mesh._positions[0].push(x, height, z);
                     this._mesh._normals[0].push(0, 1, 0);
 
-                    x = innerRadius * Math.sin(beta);
-                    z = innerRadius * -Math.cos(beta);
+                    x = innerRadius * nx;
+                    z = innerRadius * nz;
 
-                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._positions[0].push(x, height, z);
                     this._mesh._normals[0].push(0, 1, 0);
 
                     if (j > 0)
                     {
-                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k    );
                         this._mesh._indices[0].push(k + 1);
                         this._mesh._indices[0].push(k + 2);
 
@@ -653,23 +556,26 @@ x3dom.registerNodeType(
                 for (j=0, k=k+2; j<=sides; j++)
                 {
                     beta = j * delta;
-                    x = outerRadius * Math.sin(beta);
-                    z = outerRadius * -Math.cos(beta);
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._positions[0].push(x, -height/2, z);
+                    x = outerRadius * nx;
+                    z = outerRadius * nz;
+
+                    this._mesh._positions[0].push(x, -height, z);
                     this._mesh._normals[0].push(0, -1, 0);
 
-                    x = innerRadius * Math.sin(beta);
-                    z = innerRadius * -Math.cos(beta);
+                    x = innerRadius * nx;
+                    z = innerRadius * nz;
 
-                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._positions[0].push(x, -height, z);
                     this._mesh._normals[0].push(0, -1, 0);
 
                     if (j > 0)
                     {
                         this._mesh._indices[0].push(k + 2);
                         this._mesh._indices[0].push(k + 1);
-                        this._mesh._indices[0].push(k + 0);
+                        this._mesh._indices[0].push(k    );
 
                         this._mesh._indices[0].push(k + 3);
                         this._mesh._indices[0].push(k + 1);
@@ -680,7 +586,7 @@ x3dom.registerNodeType(
                 }
 
                 //Create Caps
-                if (angle < twoPi)
+                if (angle < twoPi && this._vf.caps == true)
                 {
                     //First Cap
                     k += 2;
@@ -688,17 +594,17 @@ x3dom.registerNodeType(
                     x = 0;
                     z = -outerRadius;
 
-                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._positions[0].push(x, height, z);
                     this._mesh._normals[0].push(-1, 0, 0);
-                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._positions[0].push(x, -height, z);
                     this._mesh._normals[0].push(-1, 0, 0);
 
                     x = 0;
                     z = -innerRadius;
 
-                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._positions[0].push(x, height, z);
                     this._mesh._normals[0].push(-1, 0, 0);
-                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._positions[0].push(x, -height, z);
                     this._mesh._normals[0].push(-1, 0, 0);
 
                     this._mesh._indices[0].push(k    );
@@ -712,21 +618,23 @@ x3dom.registerNodeType(
                     //Second Cap
                     k+=4;
 
-                    var nx = Math.sin(angle), nz = Math.cos(angle);
+                    nx = Math.sin(angle);
+                    nz = Math.cos(angle);
+
                     x = outerRadius * nx;
                     z = outerRadius * -nz;
 
-                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._positions[0].push(x, height, z);
                     this._mesh._normals[0].push(nz, 0, nx);
-                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._positions[0].push(x, -height, z);
                     this._mesh._normals[0].push(nz, 0, nx);
 
                     x = innerRadius * nx;
                     z = innerRadius * -nz;
 
-                    this._mesh._positions[0].push(x, height/2, z);
+                    this._mesh._positions[0].push(x, height, z);
                     this._mesh._normals[0].push(nz, 0, nx);
-                    this._mesh._positions[0].push(x, -height/2, z);
+                    this._mesh._positions[0].push(x, -height, z);
                     this._mesh._normals[0].push(nz, 0, nx);
 
                     this._mesh._indices[0].push(k + 2);
@@ -738,227 +646,18 @@ x3dom.registerNodeType(
                     this._mesh._indices[0].push(k + 2);
                 }
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
                 this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            },
 
-                x3dom.geoCache[geoCacheID] = this._mesh;
-            }
-        },
-        {
             fieldChanged: function(fieldName)
             {
-                if (fieldName === "innerRadius" || fieldName === "outerRadius" ||
-                    fieldName === "height" || fieldName === "angle" ||
-                    fieldName === "subdivision")
+                if (fieldName == "innerRadius" || fieldName == "outerRadius" ||
+                    fieldName == "height" || fieldName == "angle" ||
+                    fieldName == "subdivision" || fieldName == "caps")
                 {
-                    this._mesh._positions[0] = [];
-                    this._mesh._normals[0]   = [];
-                    this._mesh._texCoords[0] = [];
-                    this._mesh._indices[0]   = [];
-
-                    var twoPi = 2.0 * Math.PI;
-
-                    // assure that angle in [0, 2 * PI]
-                    if (this._vf.angle < 0)
-                        this._vf.angle = 0;
-                    else if (this._vf.angle > twoPi)
-                        this._vf.angle = twoPi;
-
-                    // assure that innerRadius < outerRadius
-                    if (this._vf.innerRadius > this._vf.outerRadius)
-                    {
-                        var tmp = this._vf.innerRadius;
-                        this._vf.innerRadius = this._vf.outerRadius;
-                        this._vf.outerRadius = tmp;
-                    }
-
-                    var innerRadius = this._vf.innerRadius;
-                    var outerRadius = this._vf.outerRadius;
-                    var height = this._vf.height;
-                    var angle = this._vf.angle;
-                    var sides = this._vf.subdivision;
-
-                    var beta, delta, x, z, k, j;
-
-                    delta = angle / sides;
-
-                    //Outer Side
-                    for (j=0, k=0; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = outerRadius * Math.sin(beta);
-                        z = outerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(x, 0, z);
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(x, 0, z);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 0);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 3);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Inner Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = innerRadius * Math.sin(beta);
-                        z = innerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(-x, 0, -z);
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(-x, 0, -z);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 0);
-
-                            this._mesh._indices[0].push(k + 3);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Top Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = outerRadius * Math.sin(beta);
-                        z = outerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(0, 1, 0);
-
-                        x = innerRadius * Math.sin(beta);
-                        z = innerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(0, 1, 0);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 0);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 3);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Bottom Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = outerRadius * Math.sin(beta);
-                        z = outerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(0, -1, 0);
-
-                        x = innerRadius * Math.sin(beta);
-                        z = innerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(0, -1, 0);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 0);
-
-                            this._mesh._indices[0].push(k + 3);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Create Caps
-                    if (angle < twoPi)
-                    {
-                        //First Cap
-                        k += 2;
-
-                        x = 0;
-                        z = -outerRadius;
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(-1, 0, 0);
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(-1, 0, 0);
-
-                        x = 0;
-                        z = -innerRadius;
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(-1, 0, 0);
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(-1, 0, 0);
-
-                        this._mesh._indices[0].push(k    );
-                        this._mesh._indices[0].push(k + 1);
-                        this._mesh._indices[0].push(k + 2);
-
-                        this._mesh._indices[0].push(k + 2);
-                        this._mesh._indices[0].push(k + 1);
-                        this._mesh._indices[0].push(k + 3);
-
-                        //Second Cap
-                        k+=4;
-
-                        var nx = Math.sin(angle), nz = Math.cos(angle);
-                        x = outerRadius * nx;
-                        z = outerRadius * -nz;
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(nz, 0, nx);
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(nz, 0, nx);
-
-                        x = innerRadius * nx;
-                        z = innerRadius * -nz;
-
-                        this._mesh._positions[0].push(x, height/2, z);
-                        this._mesh._normals[0].push(nz, 0, nx);
-                        this._mesh._positions[0].push(x, -height/2, z);
-                        this._mesh._normals[0].push(nz, 0, nx);
-
-                        this._mesh._indices[0].push(k + 2);
-                        this._mesh._indices[0].push(k + 1);
-                        this._mesh._indices[0].push(k    );
-
-                        this._mesh._indices[0].push(k + 3);
-                        this._mesh._indices[0].push(k + 1);
-                        this._mesh._indices[0].push(k + 2);
-                    }
-
-                    this.invalidateVolume();
-                    this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                    this.rebuildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
@@ -988,60 +687,60 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'ybshear', 0.0);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
-            var radius = this._vf.radius;
-            var height = this._vf.height;
-            var topSlopeX = this._vf.xtshear;
-            var topSlopeY = this._vf.ytshear;
-            var botSlopeX = this._vf.xbshear;
-            var botSlopeY = this._vf.ybshear;
-            var sides = this._vf.subdivision;
-
-            var geoCacheID = 'SlopedCylinder_'+radius+'_'+height+'_'+this._vf.bottom+'_'+this._vf.top
-                                              +topSlopeX+'_'+topSlopeY+'_'+botSlopeX+'_'+botSlopeY+'_'+sides;
-
-            if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
+            this.rebuildGeometry();
+        },
+        {
+            rebuildGeometry: function()
             {
-                this._mesh = x3dom.geoCache[geoCacheID];
-            }
-            else
-            {
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0]   = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._indices[0]   = [];
+
+                var topSlopeX = this._vf.xtshear;
+                var topSlopeY = this._vf.ytshear;
+                var botSlopeX = this._vf.xbshear;
+                var botSlopeY = this._vf.ybshear;
+                var sides = this._vf.subdivision;
+
+                var radius = this._vf.radius;
+                var height = this._vf.height / 2;
+
                 var delta = 2.0 * Math.PI / sides;
                 var beta, x, y, z;
                 var j, k;
 
-                height /= 2;
-
                 for (j=0, k=0; j<=sides; j++)
                 {
-                      beta = j * delta;
-                      x =  Math.sin(beta);
-                      z = -Math.cos(beta);
+                    beta = j * delta;
+                    x =  Math.sin(beta);
+                    z = -Math.cos(beta);
 
-                      this._mesh._positions[0].push(x * radius, -height + x * botSlopeX + z * botSlopeY, z * radius);
-                      this._mesh._texCoords[0].push(1.0 - j / sides, 0);
+                    this._mesh._positions[0].push(x * radius, -height + x * botSlopeX + z * botSlopeY, z * radius);
+                    this._mesh._texCoords[0].push(1.0 - j / sides, 0);
 
-                      this._mesh._positions[0].push(x * radius,  height + x * topSlopeX + z * topSlopeY, z * radius);
-                      this._mesh._texCoords[0].push(1.0 - j / sides, 1);
+                    this._mesh._positions[0].push(x * radius,  height + x * topSlopeX + z * topSlopeY, z * radius);
+                    this._mesh._texCoords[0].push(1.0 - j / sides, 1);
 
-                      if (j > 0)
-                      {
-                          this._mesh._indices[0].push(k + 0);
-                          this._mesh._indices[0].push(k + 1);
-                          this._mesh._indices[0].push(k + 2);
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k    );
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
 
-                          this._mesh._indices[0].push(k + 2);
-                          this._mesh._indices[0].push(k + 1);
-                          this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 3);
 
-                          k += 2;
-                      }
+                        k += 2;
+                    }
                 }
 
                 var h, base;
 
                 if (this._vf.top && radius > 0)
                 {
-                    base = this._mesh._positions[0].length / 3
+                    base = this._mesh._positions[0].length / 3;
 
                     for (j=sides-1; j>=0; j--)
                     {
@@ -1073,7 +772,7 @@ x3dom.registerNodeType(
                     for (j=sides-1; j>=0; j--)
                     {
                         k = 6 * j;
-                        x = this._mesh._positions[0][k+0];
+                        x = this._mesh._positions[0][k  ];
                         y = this._mesh._positions[0][k+1];
                         z = this._mesh._positions[0][k+2];
 
@@ -1127,14 +826,11 @@ x3dom.registerNodeType(
                 this._mesh._normals[0][k+4] = nt.y;
                 this._mesh._normals[0][k+5] = nt.z;
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
                 this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            },
 
-                x3dom.geoCache[geoCacheID] = this._mesh;
-            }
-         },
-         {
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "xtshear" || fieldName == "ytshear" ||
@@ -1142,142 +838,7 @@ x3dom.registerNodeType(
                     fieldName == "radius" || fieldName == "height" ||
                     fieldName == "bottom" || fieldName == "top" || fieldName == "subdivision")
                 {
-                    this._mesh._positions[0] = [];
-                    this._mesh._normals[0]   = [];
-                    this._mesh._texCoords[0] = [];
-                    this._mesh._indices[0]   = [];
-
-                    var topSlopeX = this._vf.xtshear;
-                    var topSlopeY = this._vf.ytshear;
-                    var botSlopeX = this._vf.xbshear;
-                    var botSlopeY = this._vf.ybshear;
-                    var sides = this._vf.subdivision;
-
-                    var radius = this._vf.radius;
-                    var height = this._vf.height / 2;
-
-                    // mainly copy and paste from above code...
-                    var delta = 2.0 * Math.PI / sides;
-                    var beta, x, y, z;
-                    var j, k;
-
-                    for (j=0, k=0; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x =  Math.sin(beta);
-                        z = -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x * radius, -height + x * botSlopeX + z * botSlopeY, z * radius);
-                        this._mesh._texCoords[0].push(1.0 - j / sides, 0);
-
-                        this._mesh._positions[0].push(x * radius,  height + x * topSlopeX + z * topSlopeY, z * radius);
-                        this._mesh._texCoords[0].push(1.0 - j / sides, 1);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 0);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 3);
-
-                            k += 2;
-                        }
-                    }
-
-                    var h, base;
-
-                    if (this._vf.top && radius > 0)
-                    {
-                        base = this._mesh._positions[0].length / 3
-
-                        for (j=sides-1; j>=0; j--)
-                        {
-                            k = 6 * j;
-                            x = this._mesh._positions[0][k+3];
-                            y = this._mesh._positions[0][k+4];
-                            z = this._mesh._positions[0][k+5];
-
-                            this._mesh._positions[0].push(x, y, z);
-                            this._mesh._texCoords[0].push(x / 2 + 0.5, -z / 2 + 0.5);
-                        }
-
-                        h = base + 1;
-
-                        for (j=2; j<sides; j++)
-                        {
-                            this._mesh._indices[0].push(base);
-                            this._mesh._indices[0].push(h);
-
-                            h = base + j;
-                            this._mesh._indices[0].push(h);
-                        }
-                    }
-
-                    if (this._vf.bottom && radius > 0)
-                    {
-                        base = this._mesh._positions[0].length / 3;
-
-                        for (j=sides-1; j>=0; j--)
-                        {
-                            k = 6 * j;
-                            x = this._mesh._positions[0][k+0];
-                            y = this._mesh._positions[0][k+1];
-                            z = this._mesh._positions[0][k+2];
-
-                            this._mesh._positions[0].push(x, y, z);
-                            this._mesh._texCoords[0].push(x / 2 + 0.5, z / 2 + 0.5);
-                        }
-
-                        h = base + 1;
-
-                        for (j=2; j<sides; j++)
-                        {
-                            this._mesh._indices[0].push(h);
-                            this._mesh._indices[0].push(base);
-
-                            h = base + j;
-                            this._mesh._indices[0].push(h);
-                        }
-                    }
-
-                    // calculate normals and adjust them at seam
-                    this._mesh.calcNormals(Math.PI, this._vf.ccw);
-
-                    var n0b = new x3dom.fields.SFVec3f(this._mesh._normals[0][0],
-                                                       this._mesh._normals[0][1],
-                                                       this._mesh._normals[0][2]);
-                    var n0t = new x3dom.fields.SFVec3f(this._mesh._normals[0][3],
-                                                       this._mesh._normals[0][4],
-                                                       this._mesh._normals[0][5]);
-                    k = 6 * sides;
-                    var n1b = new x3dom.fields.SFVec3f(this._mesh._normals[0][k  ],
-                                                       this._mesh._normals[0][k+1],
-                                                       this._mesh._normals[0][k+2]);
-                    var n1t = new x3dom.fields.SFVec3f(this._mesh._normals[0][k+3],
-                                                       this._mesh._normals[0][k+4],
-                                                       this._mesh._normals[0][k+5]);
-
-                    var nb = n0b.add(n1b).normalize();
-                    var nt = n0t.add(n1t).normalize();
-
-                    this._mesh._normals[0][0] = nb.x;
-                    this._mesh._normals[0][1] = nb.y;
-                    this._mesh._normals[0][2] = nb.z;
-                    this._mesh._normals[0][3] = nt.x;
-                    this._mesh._normals[0][4] = nt.y;
-                    this._mesh._normals[0][5] = nt.z;
-
-                    this._mesh._normals[0][k  ] = nb.x;
-                    this._mesh._normals[0][k+1] = nb.y;
-                    this._mesh._normals[0][k+2] = nb.z;
-                    this._mesh._normals[0][k+3] = nt.x;
-                    this._mesh._normals[0][k+4] = nt.y;
-                    this._mesh._normals[0][k+5] = nt.z;
-                    
-                    this.invalidateVolume();
+                    this.rebuildGeometry();
                     
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
@@ -1297,450 +858,264 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Nozzle.superClass.call(this, ctx);
 
-            this.addField_SFFloat(ctx, 'nozzleHeight', 0.2);
-            this.addField_SFFloat(ctx, 'nozzleRadius', 1.0);
-            this.addField_SFFloat(ctx, 'stemHeight', 0.8);
+            this.addField_SFFloat(ctx, 'nozzleHeight', 0.1);
+            this.addField_SFFloat(ctx, 'nozzleRadius', 0.6);
+            this.addField_SFFloat(ctx, 'stemHeight', 0.9);
             this.addField_SFFloat(ctx, 'stemRadius', 0.5);
             this.addField_SFFloat(ctx, 'subdivision', 32);
 
-            var twoPi = 2.0 * Math.PI;
-            var nozzleHeight = this._vf.nozzleHeight;
-            var nozzleRadius = this._vf.nozzleRadius;
-            var stemHeight = this._vf.stemHeight;
-            var stemRadius = this._vf.stemRadius;
-            var sides = this._vf.subdivision;
-            var center = (this._vf.stemHeight + this._vf.nozzleHeight) / 2;
-            var innerRadius = this._vf.stemRadius - (this._vf.stemRadius * 0.2);
-
-            var beta, delta, x, z, k, j;
-            delta = twoPi / sides;
-
-            //Outer Stem Side
-            for (j=0, k=0; j<=sides; j++)
+            this.rebuildGeometry();
+        },
+        {
+            rebuildGeometry: function()
             {
-                beta = j * delta;
-                x = stemRadius * Math.sin(beta);
-                z = stemRadius * -Math.cos(beta);
+                this._mesh._positions[0] = [];
+                this._mesh._normals[0]   = [];
+                this._mesh._texCoords[0] = [];
+                this._mesh._indices[0]   = [];
 
-                this._mesh._positions[0].push(x, -center, z);
-                this._mesh._normals[0].push(x, 0, z);
+                var twoPi = 2.0 * Math.PI;
+                var nozzleHeight = this._vf.nozzleHeight;
+                var nozzleRadius = this._vf.nozzleRadius;
+                var stemHeight = this._vf.stemHeight;
+                var stemRadius = this._vf.stemRadius;
+                var sides = this._vf.subdivision;
+                var center = (stemHeight + nozzleHeight) / 2;
+                var innerRadius = 0.8 * stemRadius;
 
-                this._mesh._positions[0].push(x, stemHeight-center, z);
-                this._mesh._normals[0].push(x, 0, z);
+                var beta, delta, x, z, k, j, nx, nz;
+                delta = twoPi / sides;
 
-                if (j > 0)
+                //Outer Stem Side
+                for (j=0, k=0; j<=sides; j++)
                 {
-                    this._mesh._indices[0].push(k + 0);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 2);
+                    beta = j * delta;
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._indices[0].push(k + 2);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 3);
+                    x = stemRadius * nx;
+                    z = stemRadius * nz;
 
-                    k += 2;
+                    this._mesh._positions[0].push(x, -center, z);
+                    this._mesh._normals[0].push(nx, 0, nz);
+
+                    this._mesh._positions[0].push(x, stemHeight-center, z);
+                    this._mesh._normals[0].push(nx, 0, nz);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k    );
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 3);
+
+                        k += 2;
+                    }
                 }
-            }
 
-            //Inner Stem Side
-            for (j=0, k=k+2; j<=sides; j++)
-            {
-                beta = j * delta;
-                x = innerRadius * Math.sin(beta);
-                z = innerRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, -center, z);
-                this._mesh._normals[0].push(-x, 0, -z);
-
-                this._mesh._positions[0].push(x, stemHeight-center, z);
-                this._mesh._normals[0].push(-x, 0, -z);
-
-                if (j > 0)
+                //Inner Stem Side
+                for (j=0, k=k+2; j<=sides; j++)
                 {
-                    this._mesh._indices[0].push(k + 2);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 0);
+                    beta = j * delta;
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._indices[0].push(k + 3);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 2);
+                    x = innerRadius * nx;
+                    z = innerRadius * nz;
 
-                    k += 2;
+                    this._mesh._positions[0].push(x, -center, z);
+                    this._mesh._normals[0].push(-nx, 0, -nz);
+
+                    this._mesh._positions[0].push(x, stemHeight-center, z);
+                    this._mesh._normals[0].push(-nx, 0, -nz);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k    );
+
+                        this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        k += 2;
+                    }
                 }
-            }
 
-            //Stem Bottom Side
-            for (j=0, k=k+2; j<=sides; j++)
-            {
-                beta = j * delta;
-                x = stemRadius * Math.sin(beta);
-                z = stemRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, -center, z);
-                this._mesh._normals[0].push(0, -1, 0);
-
-                x = innerRadius * Math.sin(beta);
-                z = innerRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, -center, z);
-                this._mesh._normals[0].push(0, -1, 0);
-
-                if (j > 0)
+                //Stem Bottom Side
+                for (j=0, k=k+2; j<=sides; j++)
                 {
-                    this._mesh._indices[0].push(k + 2);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 0);
+                    beta = j * delta;
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._indices[0].push(k + 3);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 2);
+                    x = stemRadius * nx;
+                    z = stemRadius * nz;
 
-                    k += 2;
+                    this._mesh._positions[0].push(x, -center, z);
+                    this._mesh._normals[0].push(0, -1, 0);
+
+                    x = innerRadius * nx;
+                    z = innerRadius * nz;
+
+                    this._mesh._positions[0].push(x, -center, z);
+                    this._mesh._normals[0].push(0, -1, 0);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k    );
+
+                        this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        k += 2;
+                    }
                 }
-            }
 
-            //Outer Nozzle Side
-            for (j=0, k=k+2; j<=sides; j++)
-            {
-                beta = j * delta;
-                x = nozzleRadius * Math.sin(beta);
-                z = nozzleRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, stemHeight-center, z);
-                this._mesh._normals[0].push(x, 0, z);
-
-                this._mesh._positions[0].push(x, center, z);
-                this._mesh._normals[0].push(x, 0, z);
-
-                if (j > 0)
+                //Outer Nozzle Side
+                for (j=0, k=k+2; j<=sides; j++)
                 {
-                    this._mesh._indices[0].push(k + 0);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 2);
+                    beta = j * delta;
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._indices[0].push(k + 2);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 3);
+                    x = nozzleRadius * nx;
+                    z = nozzleRadius * nz;
 
-                    k += 2;
+                    this._mesh._positions[0].push(x, stemHeight-center, z);
+                    this._mesh._normals[0].push(nx, 0, nz);
+
+                    this._mesh._positions[0].push(x, center, z);
+                    this._mesh._normals[0].push(nx, 0, nz);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k    );
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 3);
+
+                        k += 2;
+                    }
                 }
-            }
 
-            //Inner Nozzle Side
-            for (j=0, k=k+2; j<=sides; j++)
-            {
-                beta = j * delta;
-                x = innerRadius * Math.sin(beta);
-                z = innerRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, stemHeight-center, z);
-                this._mesh._normals[0].push(-x, 0, -z);
-
-                this._mesh._positions[0].push(x, center, z);
-                this._mesh._normals[0].push(-x, 0, -z);
-
-                if (j > 0)
+                //Inner Nozzle Side
+                for (j=0, k=k+2; j<=sides; j++)
                 {
-                    this._mesh._indices[0].push(k + 2);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 0);
+                    beta = j * delta;
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._indices[0].push(k + 3);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 2);
+                    x = innerRadius * nx;
+                    z = innerRadius * nz;
 
-                    k += 2;
+                    this._mesh._positions[0].push(x, stemHeight-center, z);
+                    this._mesh._normals[0].push(-nx, 0, -nz);
+
+                    this._mesh._positions[0].push(x, center, z);
+                    this._mesh._normals[0].push(-nx, 0, -nz);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k    );
+
+                        this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        k += 2;
+                    }
                 }
-            }
 
-            //Nozzle Bottom Side
-            for (j=0, k=k+2; j<=sides; j++)
-            {
-                beta = j * delta;
-                x = nozzleRadius * Math.sin(beta);
-                z = nozzleRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, stemHeight-center, z);
-                this._mesh._normals[0].push(0, -1, 0);
-
-                x = stemRadius * Math.sin(beta);
-                z = stemRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, stemHeight-center, z);
-                this._mesh._normals[0].push(0, -1, 0);
-
-                if (j > 0)
+                //Nozzle Bottom Side
+                for (j=0, k=k+2; j<=sides; j++)
                 {
-                    this._mesh._indices[0].push(k + 2);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 0);
+                    beta = j * delta;
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._indices[0].push(k + 3);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 2);
+                    x = nozzleRadius * nx;
+                    z = nozzleRadius * nz;
 
-                    k += 2;
+                    this._mesh._positions[0].push(x, stemHeight-center, z);
+                    this._mesh._normals[0].push(0, -1, 0);
+
+                    x = stemRadius * nx;
+                    z = stemRadius * nz;
+
+                    this._mesh._positions[0].push(x, stemHeight-center, z);
+                    this._mesh._normals[0].push(0, -1, 0);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k    );
+
+                        this._mesh._indices[0].push(k + 3);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        k += 2;
+                    }
                 }
-            }
 
-            //Nozzle Top Side
-            for (j=0, k=k+2; j<=sides; j++)
-            {
-                beta = j * delta;
-                x = nozzleRadius * Math.sin(beta);
-                z = nozzleRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, center, z);
-                this._mesh._normals[0].push(0, 1, 0);
-
-                x = innerRadius * Math.sin(beta);
-                z = innerRadius * -Math.cos(beta);
-
-                this._mesh._positions[0].push(x, center, z);
-                this._mesh._normals[0].push(0, 1, 0);
-
-                if (j > 0)
+                //Nozzle Top Side
+                for (j=0, k=k+2; j<=sides; j++)
                 {
-                    this._mesh._indices[0].push(k + 0);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 2);
+                    beta = j * delta;
+                    nx =  Math.sin(beta);
+                    nz = -Math.cos(beta);
 
-                    this._mesh._indices[0].push(k + 2);
-                    this._mesh._indices[0].push(k + 1);
-                    this._mesh._indices[0].push(k + 3);
+                    x = nozzleRadius * nx;
+                    z = nozzleRadius * nz;
 
-                    k += 2;
+                    this._mesh._positions[0].push(x, center, z);
+                    this._mesh._normals[0].push(0, 1, 0);
+
+                    x = innerRadius * nx;
+                    z = innerRadius * nz;
+
+                    this._mesh._positions[0].push(x, center, z);
+                    this._mesh._normals[0].push(0, 1, 0);
+
+                    if (j > 0)
+                    {
+                        this._mesh._indices[0].push(k    );
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 2);
+
+                        this._mesh._indices[0].push(k + 2);
+                        this._mesh._indices[0].push(k + 1);
+                        this._mesh._indices[0].push(k + 3);
+
+                        k += 2;
+                    }
                 }
-            }
 
-            this._mesh._invalidate = true;
-            this._mesh._numFaces = this._mesh._indices[0].length / 3;
-            this._mesh._numCoords = this._mesh._positions[0].length / 3;
-         },
-         {
+                this.invalidateVolume();
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+            },
+
             fieldChanged: function(fieldName) 
 			{
                 if (fieldName == "nozzleHeight" || fieldName == "nozzleRadius" ||
                     fieldName == "stemHeight" || fieldName == "stemRadius" || fieldName == "subdivision")
                 {
-                    this._mesh._positions[0] = [];
-                    this._mesh._normals[0]   = [];
-                    this._mesh._texCoords[0] = [];
-                    this._mesh._indices[0]   = [];
-
-                    var twoPi = 2.0 * Math.PI;
-                    var nozzleHeight = this._vf.nozzleHeight;
-                    var nozzleRadius = this._vf.nozzleRadius;
-                    var stemHeight = this._vf.stemHeight;
-                    var stemRadius = this._vf.stemRadius;
-                    var sides = this._vf.subdivision;
-                    var center = (this._vf.stemHeight + this._vf.nozzleHeight) / 2;
-                    var innerRadius = this._vf.stemRadius - (this._vf.stemRadius * 0.2);
-
-                    delta = twoPi / sides;
-                    var beta, delta, x, z, k, j;
-
-                    //Outer Stem Side
-                    for (j=0, k=0; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = stemRadius * Math.sin(beta);
-                        z = stemRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -center, z);
-                        this._mesh._normals[0].push(x, 0, z);
-
-                        this._mesh._positions[0].push(x, stemHeight-center, z);
-                        this._mesh._normals[0].push(x, 0, z);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 0);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 3);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Inner Stem Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = innerRadius * Math.sin(beta);
-                        z = innerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -center, z);
-                        this._mesh._normals[0].push(-x, 0, -z);
-
-                        this._mesh._positions[0].push(x, stemHeight-center, z);
-                        this._mesh._normals[0].push(-x, 0, -z);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 0);
-
-                            this._mesh._indices[0].push(k + 3);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Stem Bottom Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = stemRadius * Math.sin(beta);
-                        z = stemRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -center, z);
-                        this._mesh._normals[0].push(0, -1, 0);
-
-                        x = innerRadius * Math.sin(beta);
-                        z = innerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, -center, z);
-                        this._mesh._normals[0].push(0, -1, 0);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 0);
-
-                            this._mesh._indices[0].push(k + 3);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Outer Nozzle Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = nozzleRadius * Math.sin(beta);
-                        z = nozzleRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, stemHeight-center, z);
-                        this._mesh._normals[0].push(x, 0, z);
-
-                        this._mesh._positions[0].push(x, center, z);
-                        this._mesh._normals[0].push(x, 0, z);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 0);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 3);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Inner Nozzle Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = innerRadius * Math.sin(beta);
-                        z = innerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, stemHeight-center, z);
-                        this._mesh._normals[0].push(-x, 0, -z);
-
-                        this._mesh._positions[0].push(x, center, z);
-                        this._mesh._normals[0].push(-x, 0, -z);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 0);
-
-                            this._mesh._indices[0].push(k + 3);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Nozzle Bottom Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = nozzleRadius * Math.sin(beta);
-                        z = nozzleRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, stemHeight-center, z);
-                        this._mesh._normals[0].push(0, -1, 0);
-
-                        x = stemRadius * Math.sin(beta);
-                        z = stemRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, stemHeight-center, z);
-                        this._mesh._normals[0].push(0, -1, 0);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 0);
-
-                            this._mesh._indices[0].push(k + 3);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            k += 2;
-                        }
-                    }
-
-                    //Nozzle Top Side
-                    for (j=0, k=k+2; j<=sides; j++)
-                    {
-                        beta = j * delta;
-                        x = nozzleRadius * Math.sin(beta);
-                        z = nozzleRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, center, z);
-                        this._mesh._normals[0].push(0, 1, 0);
-
-                        x = innerRadius * Math.sin(beta);
-                        z = innerRadius * -Math.cos(beta);
-
-                        this._mesh._positions[0].push(x, center, z);
-                        this._mesh._normals[0].push(0, 1, 0);
-
-                        if (j > 0)
-                        {
-                            this._mesh._indices[0].push(k + 0);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 2);
-
-                            this._mesh._indices[0].push(k + 2);
-                            this._mesh._indices[0].push(k + 1);
-                            this._mesh._indices[0].push(k + 3);
-
-                            k += 2;
-                        }
-                    }
-
-                    this.invalidateVolume();
-                    this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                    this._mesh._numCoords = this._mesh._positions[0].length / 3;
+                    this.rebuildGeometry();
 
                     Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
