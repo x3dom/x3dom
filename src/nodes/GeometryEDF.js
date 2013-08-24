@@ -1306,7 +1306,8 @@ x3dom.registerNodeType(
 
             fieldChanged: function(fieldName)
             {
-                if (fieldName == "crossSection" || fieldName == "angle" || fieldName == "subdivision")
+                if (fieldName == "crossSection" || fieldName == "angle" || fieldName == "caps" ||
+                    fieldName == "subdivision" || fieldName == "creaseAngle")
                 {
                     this.rebuildGeometry();
 
