@@ -1195,6 +1195,7 @@ x3dom.registerNodeType(
 
                 // check curvature, starting from 2nd segment, and adjust base curve
                 var pos = null, lastPos = null, penultimatePos = null;
+                var duplicate = [];    // to be able to sort out duplicates for caps
 
                 for (j=0; j<n; j++)
                 {
@@ -1216,11 +1217,13 @@ x3dom.registerNodeType(
                         if (alpha > this._vf.creaseAngle)
                         {
                             baseCurve.push(x3dom.fields.SFVec3f.copy(lastPos));
+                            duplicate.push(true);
                         }
                         // TODO; handle case that curve is loop and angle smaller creaseAngle
                     }
 
                     baseCurve.push(pos);
+                    duplicate.push(false);
                 }
 
                 n = baseCurve.length;
@@ -1251,12 +1254,16 @@ x3dom.registerNodeType(
                     var linklist = new x3dom.DoublyLinkedList();
                     m = this._mesh._positions[0].length / 3;
 
-                    for (j=0; j<n; j++)
+                    for (j=0, i=0; j<n; j++)
                     {
-                        linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[j], j));
+                        if (!duplicate[j])
+                        {
+                            // Tessellation leads to errors with duplicated vertices if polygon not convex
+                            linklist.appendNode(new x3dom.DoublyLinkedList.ListNode(positions[j], i++));
 
-                        pos = positions[j];
-                        this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                            pos = positions[j];
+                            this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                        }
                     }
 
                     var linklist_indices = x3dom.EarClipping.getIndexes(linklist);
@@ -1271,8 +1278,11 @@ x3dom.registerNodeType(
 
                     for (j=0; j<n; j++)
                     {
-                        pos = positions[n * steps + j];
-                        this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                        if (!duplicate[j])
+                        {
+                            pos = positions[n * steps + j];
+                            this._mesh._positions[0].push(pos.x, pos.y, pos.z);
+                        }
                     }
 
                     for (j=0; j<linklist_indices.length; j++)

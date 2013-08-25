@@ -74,7 +74,7 @@ x3dom.DoublyLinkedList.prototype.deleteNode = function(node) {
 x3dom.DoublyLinkedList.prototype.getNode = function(index) {
 	var node = null;
 	if(index > this.length) {
-		return node;	
+		return node;
 	}
 	for(var i = 0; i < this.length; i++) {
 		if(i == 0) {
@@ -90,9 +90,8 @@ x3dom.DoublyLinkedList.prototype.getNode = function(index) {
 };
 
 x3dom.DoublyLinkedList.prototype.invert = function() {
-	var node = null;
 	var tmp = null;
-	node = this.first;
+	var node = this.first;
 	
 	for(var i = 0; i < this.length; i++) {
 		tmp = node.prev;

@@ -88,7 +88,7 @@ x3dom.registerNodeType(
         },
         {
              fieldChanged: function (fieldName) {
-                 if (fieldName === "size") {
+                 if (fieldName == "size" || fieldName == "center") {
                      this._mesh._positions[0] = [];
 
                      var sx = this._vf.size.x, sy = this._vf.size.y;
@@ -115,7 +115,7 @@ x3dom.registerNodeType(
                          node.invalidateVolume();
                      });
                  }
-                 else if (fieldName === "subdivision") {
+                 else if (fieldName == "subdivision") {
                      this._mesh._positions[0] = [];
                      this._mesh._indices[0] = [];
                      this._mesh._normals[0] = [];
@@ -690,6 +690,12 @@ x3dom.registerNodeType(
 
             if (this._vf.insideOutsideRadius == true)
             {
+                if (innerRadius > outerRadius) {
+                    var tmp = innerRadius;
+                    innerRadius = outerRadius;
+                    outerRadius = tmp;
+                }
+
                 var rad = (outerRadius - innerRadius) / 2;
 
                 outerRadius = innerRadius + rad;
@@ -872,6 +878,12 @@ x3dom.registerNodeType(
 
                     if (this._vf.insideOutsideRadius == true)
                     {
+                        if (innerRadius > outerRadius) {
+                            var tmp = innerRadius;
+                            innerRadius = outerRadius;
+                            outerRadius = tmp;
+                        }
+
                         var rad = (outerRadius - innerRadius) / 2;
 
                         outerRadius = innerRadius + rad;
@@ -3794,6 +3806,7 @@ x3dom.registerNodeType(
             this.addField_MFRotation(ctx, 'orientation', []); //0, 0, 1, 0
             this.addField_MFVec2f(ctx, 'scale', []); //1, 1
             this.addField_MFVec3f(ctx, 'spine', []); //0, 0, 0, 0, 1, 0
+            this.addField_SFFloat(ctx, 'height', 0); // convenience field for setting default spine
 
             // http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/geometry3D.html#Extrusion
             // http://accad.osu.edu/~pgerstma/class/vnv/resources/info/AnnotatedVrmlRef/ch3-318.htm
@@ -3813,9 +3826,17 @@ x3dom.registerNodeType(
                     orientation = this._vf.orientation,
                     crossSection = this._vf.crossSection;
                 var positions = [], index = 0;
+                var cleanSpine = false;
 
                 m = spine.length;
                 n = crossSection.length;
+
+                if (m == 0 && this._vf.height > 0) {
+                    spine[0] = new x3dom.fields.SFVec3f(0, 0, 0);
+                    spine[1] = new x3dom.fields.SFVec3f(0, this._vf.height, 0);
+                    m = 2;
+                    cleanSpine = true;
+                }
 
                 var x, y, z, last_z;
                 var spineClosed = (m > 2) ? spine[0].equals(spine[spine.length-1], x3dom.fields.Eps) : false;
@@ -3976,6 +3997,10 @@ x3dom.registerNodeType(
                     }
                 }
 
+                if (cleanSpine) {
+                    this._vf.spine = new x3dom.fields.MFVec3f();
+                }
+
                 this._mesh.calcNormals(this._vf.creaseAngle, this._vf.ccw);
                 this._mesh.calcTexCoords("");
 
@@ -3988,7 +4013,8 @@ x3dom.registerNodeType(
             {
                 if (fieldName == "beginCap" || fieldName == "endCap" ||
                     fieldName == "crossSection" || fieldName == "orientation" ||
-                    fieldName == "scale" || fieldName == "spine")
+                    fieldName == "scale" || fieldName == "spine" ||
+                    fieldName == "height" || fieldName == "creaseAngle")
                 {
                     this.rebuildGeometry();
 
