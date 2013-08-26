@@ -1,8 +1,22 @@
-/**
- *  Moveable interface, wraps x3d bounded node with movement functionality
- *  attaches event handlers, thus to be called earliest in document.onload
+/*
+ * X3DOM JavaScript Library
+ * http://www.x3dom.org
+ *
+ * (C)2009 Fraunhofer IGD, Darmstadt, Germany
+ * Dual licensed under the MIT and GPL
+ *
+ * Based on code originally provided by
+ * Philip Taylor: http://philip.html5.org
  */
-Moveable = function(x3domElem, boundedObj, callback) {
+
+
+/**
+ *  Moveable interface, wraps x3d bounded node with SpaceSensor-like movement functionality,
+ *  therefore attaches event handlers, thus to be called earliest in document.onload method.
+ *
+ *  Cleanup backrefs and listeners on delete by explicitly calling detachHandlers()
+ */
+x3dom.Moveable = function(x3domElem, boundedObj, callback) {
     this._x3domRoot = x3domElem;
     this._runtime = x3domElem.runtime;
 
@@ -29,20 +43,23 @@ Moveable = function(x3domElem, boundedObj, callback) {
     this._firstRay = null;
     this._matrixTrafo = null;
 
-    // TODO; cleanup backref and listeners on delete
     this.attachHandlers();
 };
 
-Moveable.prototype.attachHandlers = function() {
+x3dom.Moveable.prototype.attachHandlers = function() {
     // add backref to movable object (for member access and wrapping)
     this._moveable._iMove = this;
+
+    // same for <x3d> element
+    if (!this._x3domRoot._iMove)
+        this._x3domRoot._iMove = [];
+    this._x3domRoot._iMove.push(this);
+
+    // mouse events
     this._moveable.addEventListener('mousedown', this.start, false);
     this._moveable.addEventListener('mouseover', this.over, false);
     this._moveable.addEventListener('mouseout', this.out, false);
 
-    if (!this._x3domRoot._iMove)
-        this._x3domRoot._iMove = [];
-    this._x3domRoot._iMove.push(this);
     this._x3domRoot.addEventListener('mouseup', this.stop, false);
     this._x3domRoot.addEventListener('mouseout', this.stop, false);
     this._x3domRoot.addEventListener('mousemove', this.move, true);
@@ -57,8 +74,41 @@ Moveable.prototype.attachHandlers = function() {
     this._x3domRoot.addEventListener('touchend', this.touchEndHandler, false);
 };
 
+x3dom.Moveable.prototype.detachHandlers = function() {
+    // remove backref to movable object
+    delete this._moveable._iMove;
+
+    // same for <x3d> element
+    for (var i=0, n=this._x3domRoot._iMove.length; i<n; i++) {
+        if (this._x3domRoot._iMove[i] == this) {
+            this._x3domRoot._iMove.splice(i, 1);
+            break;
+        }
+    }
+    if (this._x3domRoot._iMove.length == 0)
+        delete this._x3domRoot._iMove;
+
+    // mouse events
+    this._moveable.removeEventListener('mousedown', this.start, false);
+    this._moveable.removeEventListener('mouseover', this.over, false);
+    this._moveable.removeEventListener('mouseout', this.out, false);
+
+    this._x3domRoot.removeEventListener('mouseup', this.stop, false);
+    this._x3domRoot.removeEventListener('mouseout', this.stop, false);
+    this._x3domRoot.removeEventListener('mousemove', this.move, true);
+
+    // touch events
+    this._x3domRoot.removeEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
+    this._x3domRoot.removeEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
+    this._x3domRoot.removeEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
+
+    this._x3domRoot.removeEventListener('touchstart', this.touchStartHandler, false);
+    this._x3domRoot.removeEventListener('touchmove', this.touchMoveHandler, true);
+    this._x3domRoot.removeEventListener('touchend', this.touchEndHandler, false);
+};
+
 // calculate viewing plane
-Moveable.prototype.calcViewPlane = function(origin) {
+x3dom.Moveable.prototype.calcViewPlane = function(origin) {
     // init width and height
     this._w = this._runtime.getWidth();
     this._h = this._runtime.getHeight();
@@ -85,14 +135,14 @@ Moveable.prototype.calcViewPlane = function(origin) {
 };
 
 // helper method to obtain determinant
-Moveable.prototype.det = function(mat) {
+x3dom.Moveable.prototype.det = function(mat) {
     return mat[0][0] * mat[1][1] * mat[2][2] + mat[0][1] * mat[1][2] * mat[2][0] +
            mat[0][2] * mat[2][1] * mat[1][0] - mat[2][0] * mat[1][1] * mat[0][2] -
            mat[0][0] * mat[2][1] * mat[1][2] - mat[1][0] * mat[0][1] * mat[2][2];
 };
 
 // Translation along plane parallel to viewing plane E:x=p+t*u+s*v
-Moveable.prototype.translateXY = function(l) {
+x3dom.Moveable.prototype.translateXY = function(l) {
     var track = null;
     var z = [], n = [];
 
@@ -130,7 +180,7 @@ Moveable.prototype.translateXY = function(l) {
 };
 
 // Translation along picking ray
-Moveable.prototype.translateZ = function(l, currY) {
+x3dom.Moveable.prototype.translateZ = function(l, currY) {
     var vol = this._runtime.getSceneBBox();
 
     var sign = (currY < this._lastY) ? 1 : -1;
@@ -141,13 +191,13 @@ Moveable.prototype.translateZ = function(l, currY) {
     return this._translationOffset;
 };
 
-Moveable.prototype.over = function(event) {
+x3dom.Moveable.prototype.over = function(event) {
     var that = this._iMove;
 
     that._runtime.getCanvas().style.cursor = "crosshair";
 };
 
-Moveable.prototype.out = function(event) {
+x3dom.Moveable.prototype.out = function(event) {
     var that = this._iMove;
 
     if (!that._drag)
@@ -155,7 +205,7 @@ Moveable.prototype.out = function(event) {
 };
 
 // start object movement, switch from navigation to interaction
-Moveable.prototype.start = function(event) {
+x3dom.Moveable.prototype.start = function(event) {
     var that = this._iMove;
 
     if (!that._drag) {
@@ -197,7 +247,7 @@ Moveable.prototype.start = function(event) {
     }
 };
 
-Moveable.prototype.move = function(event) {
+x3dom.Moveable.prototype.move = function(event) {
     for (var i=0, n=this._iMove.length; i<n; i++) {
         var that = this._iMove[i];
 
@@ -234,7 +284,7 @@ Moveable.prototype.move = function(event) {
 };
 
 // stop object movement, switch from interaction to navigation
-Moveable.prototype.stop = function(event) {
+x3dom.Moveable.prototype.stop = function(event) {
     for (var i=0, n=this._iMove.length; i<n; i++) {
         var that = this._iMove[i];
 
@@ -256,27 +306,27 @@ Moveable.prototype.stop = function(event) {
 
 // TODO: impl. special (multi-)touch event stuff
 // === Touch Start (W3C) ===
-Moveable.prototype.touchStartHandler = function (evt) {
+x3dom.Moveable.prototype.touchStartHandler = function (evt) {
     evt.preventDefault();
 };
 
 // === Touch Start Moz (Firefox has other touch interface) ===
-Moveable.prototype.touchStartHandlerMoz = function (evt) {
+x3dom.Moveable.prototype.touchStartHandlerMoz = function (evt) {
     evt.preventDefault();
 };
 
 // === Touch Move ===
-Moveable.prototype.touchMoveHandler = function (evt) {
+x3dom.Moveable.prototype.touchMoveHandler = function (evt) {
     evt.preventDefault();
 };
 
 // === Touch Move Moz ===
-Moveable.prototype.touchMoveHandlerMoz = function (evt) {
+x3dom.Moveable.prototype.touchMoveHandlerMoz = function (evt) {
     evt.preventDefault();
 };
 
 // === Touch End ===
-Moveable.prototype.touchEndHandler = function (evt) {
+x3dom.Moveable.prototype.touchEndHandler = function (evt) {
     if (this._iMove.length) {
         var that = this._iMove[0];
         // mouse start code is called, but not stop
@@ -286,7 +336,7 @@ Moveable.prototype.touchEndHandler = function (evt) {
 };
 
 // === Touch End Moz ===
-Moveable.prototype.touchEndHandlerMoz = function (evt) {
+x3dom.Moveable.prototype.touchEndHandlerMoz = function (evt) {
     if (this._iMove.length) {
         var that = this._iMove[0];
         that.stop.apply(that._x3domRoot, [evt]);
