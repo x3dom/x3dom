@@ -50,7 +50,7 @@ x3dom.Moveable.prototype.attachHandlers = function() {
     // add backref to movable object (for member access and wrapping)
     this._moveable._iMove = this;
 
-    // same for <x3d> element
+    // add backref to <x3d> element
     if (!this._x3domRoot._iMove)
         this._x3domRoot._iMove = [];
     this._x3domRoot._iMove.push(this);
@@ -60,51 +60,59 @@ x3dom.Moveable.prototype.attachHandlers = function() {
     this._moveable.addEventListener('mouseover', this.over, false);
     this._moveable.addEventListener('mouseout', this.out, false);
 
-    this._x3domRoot.addEventListener('mouseup', this.stop, false);
-    this._x3domRoot.addEventListener('mouseout', this.stop, false);
-    this._x3domRoot.addEventListener('mousemove', this.move, true);
+    if (this._x3domRoot._iMove.length == 1) {
+        // more mouse events
+        this._x3domRoot.addEventListener('mouseup', this.stop, false);
+        this._x3domRoot.addEventListener('mouseout', this.stop, false);
+        this._x3domRoot.addEventListener('mousemove', this.move, true);
 
-    // mozilla touch events
-    this._x3domRoot.addEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
-    this._x3domRoot.addEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
-    this._x3domRoot.addEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
-    // w3c / apple touch events
-    this._x3domRoot.addEventListener('touchstart', this.touchStartHandler, false);
-    this._x3domRoot.addEventListener('touchmove', this.touchMoveHandler, true);
-    this._x3domRoot.addEventListener('touchend', this.touchEndHandler, false);
+        // mozilla touch events
+        this._x3domRoot.addEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
+        this._x3domRoot.addEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
+        this._x3domRoot.addEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
+        // w3c / apple touch events
+        this._x3domRoot.addEventListener('touchstart', this.touchStartHandler, false);
+        this._x3domRoot.addEventListener('touchmove', this.touchMoveHandler, true);
+        this._x3domRoot.addEventListener('touchend', this.touchEndHandler, false);
+    }
 };
 
 x3dom.Moveable.prototype.detachHandlers = function() {
-    // remove backref to movable object
-    delete this._moveable._iMove;
-
-    // same for <x3d> element
-    for (var i=0, n=this._x3domRoot._iMove.length; i<n; i++) {
-        if (this._x3domRoot._iMove[i] == this) {
-            this._x3domRoot._iMove.splice(i, 1);
-            break;
+    // remove backref to <x3d> element
+    var iMove = this._x3domRoot._iMove;
+    if (iMove) {
+        for (var i=0, n=iMove.length; i<n; i++) {
+            if (iMove[i] == this) {
+                iMove.splice(i, 1);
+                break;
+            }
         }
     }
-    if (this._x3domRoot._iMove.length == 0)
-        delete this._x3domRoot._iMove;
 
     // mouse events
     this._moveable.removeEventListener('mousedown', this.start, false);
     this._moveable.removeEventListener('mouseover', this.over, false);
     this._moveable.removeEventListener('mouseout', this.out, false);
 
-    this._x3domRoot.removeEventListener('mouseup', this.stop, false);
-    this._x3domRoot.removeEventListener('mouseout', this.stop, false);
-    this._x3domRoot.removeEventListener('mousemove', this.move, true);
+    if (iMove.length == 0) {
+        // more mouse events
+        this._x3domRoot.removeEventListener('mouseup', this.stop, false);
+        this._x3domRoot.removeEventListener('mouseout', this.stop, false);
+        this._x3domRoot.removeEventListener('mousemove', this.move, true);
 
-    // touch events
-    this._x3domRoot.removeEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
-    this._x3domRoot.removeEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
-    this._x3domRoot.removeEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
+        // touch events
+        this._x3domRoot.removeEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
+        this._x3domRoot.removeEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
+        this._x3domRoot.removeEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
+        // mozilla version
+        this._x3domRoot.removeEventListener('touchstart', this.touchStartHandler, false);
+        this._x3domRoot.removeEventListener('touchmove', this.touchMoveHandler, true);
+        this._x3domRoot.removeEventListener('touchend', this.touchEndHandler, false);
+    }
 
-    this._x3domRoot.removeEventListener('touchstart', this.touchStartHandler, false);
-    this._x3domRoot.removeEventListener('touchmove', this.touchMoveHandler, true);
-    this._x3domRoot.removeEventListener('touchend', this.touchEndHandler, false);
+    // finally remove backref to movable object
+    if (this._moveable._iMove)
+        delete this._moveable._iMove;
 };
 
 // calculate viewing plane
