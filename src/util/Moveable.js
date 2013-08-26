@@ -46,6 +46,15 @@ Moveable.prototype.attachHandlers = function() {
     this._x3domRoot.addEventListener('mouseup', this.stop, false);
     this._x3domRoot.addEventListener('mouseout', this.stop, false);
     this._x3domRoot.addEventListener('mousemove', this.move, true);
+
+    // mozilla touch events
+    this._x3domRoot.addEventListener('MozTouchDown', this.touchStartHandlerMoz, false);
+    this._x3domRoot.addEventListener('MozTouchMove', this.touchMoveHandlerMoz, true);
+    this._x3domRoot.addEventListener('MozTouchUp', this.touchEndHandlerMoz, false);
+    // w3c / apple touch events
+    this._x3domRoot.addEventListener('touchstart', this.touchStartHandler, false);
+    this._x3domRoot.addEventListener('touchmove', this.touchMoveHandler, true);
+    this._x3domRoot.addEventListener('touchend', this.touchEndHandler, false);
 };
 
 // calculate viewing plane
@@ -243,4 +252,44 @@ Moveable.prototype.stop = function(event) {
             that._runtime.getCanvas().style.cursor = "pointer";
         }
     }
+};
+
+// TODO: impl. special (multi-)touch event stuff
+// === Touch Start (W3C) ===
+Moveable.prototype.touchStartHandler = function (evt) {
+    evt.preventDefault();
+};
+
+// === Touch Start Moz (Firefox has other touch interface) ===
+Moveable.prototype.touchStartHandlerMoz = function (evt) {
+    evt.preventDefault();
+};
+
+// === Touch Move ===
+Moveable.prototype.touchMoveHandler = function (evt) {
+    evt.preventDefault();
+};
+
+// === Touch Move Moz ===
+Moveable.prototype.touchMoveHandlerMoz = function (evt) {
+    evt.preventDefault();
+};
+
+// === Touch End ===
+Moveable.prototype.touchEndHandler = function (evt) {
+    if (this._iMove.length) {
+        var that = this._iMove[0];
+        // mouse start code is called, but not stop
+        that.stop.apply(that._x3domRoot, [evt]);
+    }
+    evt.preventDefault();
+};
+
+// === Touch End Moz ===
+Moveable.prototype.touchEndHandlerMoz = function (evt) {
+    if (this._iMove.length) {
+        var that = this._iMove[0];
+        that.stop.apply(that._x3domRoot, [evt]);
+    }
+    evt.preventDefault();
 };

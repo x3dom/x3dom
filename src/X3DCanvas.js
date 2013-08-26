@@ -117,115 +117,113 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         x3dom.debug.logError("Your Browser does not support X3DOM!");
 	};
 
-	this.createFlashObject = function(x3dElem) {
-	
-		var result = this.detectFlash(11, 11);
-		
-		if( !result[0] || result[0] < result[1]) {
-			return null;
-		} else {
-		
-			x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
-			
-			//Get X3D-Element ID
-			var id = x3dElem.getAttribute("id");
-			if (id !== null) {
-				id = "x3dom-" + id + "-object";
-			} else {
-				var index = new Date().getTime();
-				id = "x3dom-" + index + "-object";
-			}
+    this.createFlashObject = function (x3dElem) {
 
-			//Get SWFPath
-			var swf_path = x3dElem.getAttribute("swfpath");
-			if (swf_path === null) {
-				swf_path = "x3dom.swf";
-			}
-			
-			if( !this.fileExists(swf_path) )
-			{
-        if (x3dom.versionInfo === undefined || 
-            x3dom.versionInfo.version.indexOf('dev') != -1) //use dev version
-        {
-          var version = "dev";
-        } 
-        else 
-        {
-          var version = x3dom.versionInfo.version.substr(3);
-        }
-        
-        swf_path = "http://www.x3dom.org/download/" + version + "/x3dom.swf";
-        
-				x3dom.debug.logWarning("Can't find local x3dom.swf (" + version + "). X3DOM now using the online version from x3dom.org." + 
-                               "The online version needs a <a href='http://examples.x3dom.org/crossdomain.xml'>crossdomain.xml</a> " +
-                               "file in the root directory of your domain to access textures"); 
-			}
+        var result = this.detectFlash(11, 11);
 
-			//Get width from x3d-Element or set default
-			var width = x3dElem.getAttribute("width");
+        if (!result[0] || result[0] < result[1]) {
+            return null;
+        } else {
+
+            x3dom.debug.logInfo("Creating FlashObject for (X)3D element...");
+
+            //Get X3D-Element ID
+            var id = x3dElem.getAttribute("id");
+            if (id !== null) {
+                id = "x3dom-" + id + "-object";
+            } else {
+                var index = new Date().getTime();
+                id = "x3dom-" + index + "-object";
+            }
+
+            //Get SWFPath
+            var swf_path = x3dElem.getAttribute("swfpath");
+            if (swf_path === null) {
+                swf_path = "x3dom.swf";
+            }
+
+            if (!this.fileExists(swf_path)) {
+                var version;
+                if (x3dom.versionInfo === undefined ||
+                    x3dom.versionInfo.version.indexOf('dev') != -1) //use dev version
+                {
+                    version = "dev";
+                }
+                else {
+                    version = x3dom.versionInfo.version.substr(3);
+                }
+
+                swf_path = "http://www.x3dom.org/download/" + version + "/x3dom.swf";
+
+                x3dom.debug.logWarning("Can't find local x3dom.swf (" + version + "). X3DOM now using the online version from x3dom.org." +
+                    "The online version needs a <a href='http://examples.x3dom.org/crossdomain.xml'>crossdomain.xml</a> " +
+                    "file in the root directory of your domain to access textures");
+            }
+
+            //Get width from x3d-Element or set default
+            var width = x3dElem.getAttribute("width");
             var idx = -1;
-			if( width == null ) {
-				width = 550;
-			}else{
-				idx = width.indexOf("px");
-				if( idx != -1 ) {
-					width = width.substr(0, idx);
-				}
-			}
-			//Get height from x3d-Element or set default
-			var height = x3dElem.getAttribute("height");
-			if( height == null ) {
-				height = 400;
-			}else{
-				idx = height.indexOf("px");
-				if( idx != -1 ) {
-					height = height.substr(0, idx);
-				}
-			}
-      
-      //Get flash render type
-      var renderType = x3dElem.getAttribute("flashrenderer");
-			if( renderType == null ) {
-				this.flash_renderType = "forward";
-			}else{
-				this.flash_renderType = "deferred";
-			}
+            if (width == null) {
+                width = 550;
+            } else {
+                idx = width.indexOf("px");
+                if (idx != -1) {
+                    width = width.substr(0, idx);
+                }
+            }
+            //Get height from x3d-Element or set default
+            var height = x3dElem.getAttribute("height");
+            if (height == null) {
+                height = 400;
+            } else {
+                idx = height.indexOf("px");
+                if (idx != -1) {
+                    height = height.substr(0, idx);
+                }
+            }
 
-			var obj = document.createElement('object');
-			obj.setAttribute('width', '100%');
-			obj.setAttribute('height', '100%');
-			obj.setAttribute('id', id);
-      
-      //Check for xhtml
-      if (!document.doctype || document.doctype && document.doctype.publicId.search(/DTD XHTML/i) != -1) {
-        x3dom.debug.logWarning("Flash backend doesn't like XHTML, please use HTML5!");
-        obj.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
-      } else {
-        if(x3dElem.getAttribute('style') == null)
-        {
-          x3dElem.setAttribute('style','width:' + width + 'px; height:' + height + 'px;');
+            //Get flash render type
+            var renderType = x3dElem.getAttribute("flashrenderer");
+            if (renderType == null) {
+                this.flash_renderType = "forward";
+            } else {
+                this.flash_renderType = "deferred";
+            }
+
+            var obj = document.createElement('object');
+            obj.setAttribute('width', '100%');
+            obj.setAttribute('height', '100%');
+            obj.setAttribute('id', id);
+
+            //Check for xhtml
+            if (!document.doctype || document.doctype && document.doctype.publicId.search(/DTD XHTML/i) != -1) {
+                x3dom.debug.logWarning("Flash backend doesn't like XHTML, please use HTML5!");
+                obj.setAttribute('style', 'width:' + width + 'px; height:' + height + 'px;');
+            } else {
+                if (x3dElem.getAttribute('style') == null) {
+                    x3dElem.setAttribute('style', 'width:' + width + 'px; height:' + height + 'px;');
+                }
+            }
+
+            this.appendParam(obj, 'menu', 'false');
+            this.appendParam(obj, 'quality', 'high');
+            this.appendParam(obj, 'wmode', 'gpu');
+            this.appendParam(obj, 'allowScriptAccess', 'always');
+            this.appendParam(obj, 'flashvars', 'canvasIdx=' + this.canvasIdx + '&renderType=' + this.flash_renderType);
+            this.appendParam(obj, 'movie', swf_path);
+
+            x3dElem.appendChild(obj);
+
+            if (navigator.appName == "Microsoft Internet Explorer")
+                obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
+            else {
+                obj.setAttribute('type', 'application/x-shockwave-flash');
+                obj.setAttribute('data', swf_path);
+            }
+
+            return obj;
         }
-      }
-
-			this.appendParam(obj, 'menu', 'false');
-			this.appendParam(obj, 'quality', 'high');
-			this.appendParam(obj, 'wmode', 'gpu');
-			this.appendParam(obj, 'allowScriptAccess', 'always');
-			this.appendParam(obj, 'flashvars', 'canvasIdx=' + this.canvasIdx + '&renderType=' + this.flash_renderType);
-			this.appendParam(obj, 'movie', swf_path);
-
-      x3dElem.appendChild(obj);
-
-			if(navigator.appName == "Microsoft Internet Explorer")
-				obj.setAttribute('classid', 'clsid:d27cdb6e-ae6d-11cf-96b8-444553540000');
-			else {
-				obj.setAttribute('type', 'application/x-shockwave-flash');
-				obj.setAttribute('data', swf_path);
-			}
-
-			return obj;
-		}
-	};
+    };
 
     this.createHTMLCanvas = function(x3dElem)
     {
@@ -261,14 +259,14 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 			"ontouchenter",
             
             // apple gestures
-            "ongesturestart",
-            "ongesturechange",
-            "ongestureend",
+            //"ongesturestart",
+            //"ongesturechange",
+            //"ongestureend",
 
             // mozilla touch
-            "MozTouchDown",
-            "MozTouchMove",
-            "MozTouchUp"
+            "onMozTouchDown",
+            "onMozTouchMove",
+            "onMozTouchUp"
         ];
 
         // TODO; handle attribute event handlers dynamically during runtime
@@ -408,6 +406,8 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 	this.isFlashReady = false;
 
     this.x3dElem = x3dElem;
+
+    x3dom.caps.MOBILE = (navigator.appVersion.indexOf("Mobile") > -1);
 	
 	this.backend = this.x3dElem.getAttribute('backend');
 	if (this.backend)
@@ -496,26 +496,29 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
     }
 
 	//States only needed for the webgl backend. flash has his own.
-	if (this.backend != "flash") {
-		this.showStat = x3dElem.getAttribute("showStat");
+    if (this.backend != "flash") {
+        this.showStat = x3dElem.getAttribute("showStat");
 
-    this.stateViewer = new x3dom.States(x3dElem);
-		if (this.showStat !== null && this.showStat == "true") {
-			this.stateViewer.display(true);
-		}
-    
-    this.x3dElem.appendChild(this.stateViewer.viewer);
-	}
-    
+        this.stateViewer = new x3dom.States(x3dElem);
+        if (this.showStat !== null && this.showStat == "true") {
+            this.stateViewer.display(true);
+        }
+
+        this.x3dElem.appendChild(this.stateViewer.viewer);
+    }
+
+    // progress bar
     this.showProgress = x3dElem.getAttribute("showProgress");
     this.progressDiv = this.createProgressDiv();
     this.progressDiv.style.display = (this.showProgress !== null && this.showProgress == "true") ? "inline" : "none";
     this.x3dElem.appendChild(this.progressDiv);
-    
+
+    // touch visualization
     this.showTouchpoints = x3dElem.getAttribute("showTouchpoints");
     this.showTouchpoints = this.showTouchpoints ? !(this.showTouchpoints.toLowerCase() == "false") : true;
     //this.showTouchpoints = this.showTouchpoints ? (this.showTouchpoints.toLowerCase() == "true") : false;
 
+    // disable touch events
     this.disableTouch = x3dElem.getAttribute("disableTouch");
     this.disableTouch = this.disableTouch ? (this.disableTouch.toLowerCase() == "true") : false;
     
@@ -527,7 +530,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
         this.canvas.mouse_drag_x = 0;
         this.canvas.mouse_drag_y = 0;
 
-        this.canvas.isMulti = false;
+        this.canvas.isMulti = false;    // don't interfere with multi-touch
 
         this.canvas.oncontextmenu = function(evt) {
             evt.preventDefault();
@@ -738,7 +741,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
           },
 
           disableTouch: this.disableTouch,
-          // set a mark in HTML so we can track the position of the finger visually
+          // set a marker in HTML so we can track the position of the finger visually
           visMarker: this.showTouchpoints,
           visMarkerBag: [],
           
@@ -1136,7 +1139,6 @@ x3dom.X3DCanvas.prototype.tick = function()
                 this.doc._scene.arc.update(this.doc._viewarea.isMoving() ? 1 : 0, fps);
             }
 
-
             this.x3dElem.runtime.exitFrame();
 		}
 		
@@ -1156,8 +1158,9 @@ x3dom.X3DCanvas.prototype.tick = function()
                         this.progressDiv.style.display = 'none';
                     }
 
-                    var myThat = this;
                     /*
+                    var myThat = this;
+
                     window.setTimeout( function() { 
                            myThat.doc.downloadCount = 0;
                            myThat.progressDiv.style.display = 'none';
@@ -1177,6 +1180,8 @@ x3dom.X3DCanvas.prototype.tick = function()
 
 /** Loads the given @p uri.
     @param uri can be a uri or an X3D node
+    @param sceneElemPos
+    @param settings properties
     */
 x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
     this.doc = new x3dom.X3DDocument(this.canvas, this.gl, settings);
