@@ -1074,13 +1074,13 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButto
     var navType = navi.getType();
 
     if (this._scene._vf.pickMode.toLowerCase() !== "box") {
-        this.prepareEvents(x, y, buttonState, "onmouseup");
+        this.prepareEvents(x, y, prevButton, "onmouseup");
 
         // click means that mousedown _and_ mouseup were detected on same element
         if (this._pickingInfo.pickObj &&
             this._pickingInfo.pickObj === this._pickingInfo.lastClickObj)
         {
-            this.prepareEvents(x, y, buttonState, "onclick");
+            this.prepareEvents(x, y, prevButton, "onclick");
         }
         else if (!this._pickingInfo.pickObj && !this._pickingInfo.lastClickObj)
         {
