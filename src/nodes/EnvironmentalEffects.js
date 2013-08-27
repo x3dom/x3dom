@@ -126,3 +126,39 @@ x3dom.registerNodeType(
         }
     )
 );
+
+/* ### X3DEnvironmentNode ### */
+x3dom.registerNodeType(
+    "X3DEnvironmentNode",
+    "EnvironmentalEffects",
+    defineClass(x3dom.nodeTypes.X3DBindableNode,
+        function (ctx) {
+            x3dom.nodeTypes.X3DEnvironmentNode.superClass.call(this, ctx);
+        }
+    )
+);
+
+/* ### Environment ### */
+x3dom.registerNodeType(
+    "Environment",
+    "EnvironmentalEffects",
+    defineClass(x3dom.nodeTypes.X3DEnvironmentNode,
+        function (ctx) {
+            x3dom.nodeTypes.Environment.superClass.call(this, ctx);
+
+            // TODO: fields generated from Avalon, to be adapted to X3DOM!
+            this.addField_SFBool(ctx, 'occlusionCulling', false);
+            this.addField_SFFloat(ctx, 'occlusionCullingPixels', 0.0);
+            this.addField_SFInt32(ctx, 'occlusionCullingThreshold', 0.0);
+            this.addField_SFBool(ctx, 'sortTrans', true);
+            this.addField_SFBool(ctx, 'smallFeatureCulling', false);
+            this.addField_SFFloat(ctx, 'smallFeaturePixels', 10.0);
+            this.addField_SFInt32(ctx, 'smallFeatureThreshold', 0.0);
+            this.addField_SFBool(ctx, 'frustumCulling', true);
+            this.addField_SFBool(ctx, 'stateSorting', true);
+            this.addField_SFFloat(ctx, 'systemSpeed', 1.0);
+        },
+        {
+        }
+    )
+);

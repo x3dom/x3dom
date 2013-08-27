@@ -16,12 +16,15 @@
  *
  *  Cleanup backrefs and listeners on delete by explicitly calling detachHandlers()
  */
-x3dom.Moveable = function(x3domElem, boundedObj, callback) {
+x3dom.Moveable = function(x3domElem, boundedObj, callback, gridSize) {
     this._x3domRoot = x3domElem;
     this._runtime = x3domElem.runtime;
 
     // callback function for notifying changes
     this._callback = callback;
+
+    // snap to grid of given size (0, no grid, if undefined)
+    this._gridSize = gridSize ? gridSize : 0;
 
     this._moveable = boundedObj;
     this._drag = false;
@@ -44,6 +47,11 @@ x3dom.Moveable = function(x3domElem, boundedObj, callback) {
     this._matrixTrafo = null;
 
     this.attachHandlers();
+};
+
+// grid size setter, for snapping
+x3dom.Moveable.prototype.setGridSize = function(gridSize) {
+    this._gridSize = gridSize;
 };
 
 x3dom.Moveable.prototype.attachHandlers = function() {

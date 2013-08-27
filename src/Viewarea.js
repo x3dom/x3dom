@@ -936,7 +936,7 @@ x3dom.Viewarea.prototype.uprightView = function()
 x3dom.Viewarea.prototype.callEvtHandler = function (node, eventType, event)
 {
     if (!node || !node._xmlNode)
-        return;
+        return null;
         
     event.target = node._xmlNode;
     var attrib = node._xmlNode[eventType];
