@@ -274,13 +274,13 @@ x3dom.X3DDocument.prototype.onMousePress = function (ctx, x, y, buttonState) {
     this._viewarea.onMousePress(x, y, buttonState);
 };
 
-x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState) {
+x3dom.X3DDocument.prototype.onMouseRelease = function (ctx, x, y, buttonState, prevButton) {
     if (!ctx || !this._viewarea) {
         return;
     }
 
     ctx.pickValue(this._viewarea, x, y, buttonState);
-    this._viewarea.onMouseRelease(x, y, buttonState);
+    this._viewarea.onMouseRelease(x, y, buttonState, prevButton);
 };
 
 x3dom.X3DDocument.prototype.onMouseOver = function (ctx, x, y, buttonState) {

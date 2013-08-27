@@ -1066,7 +1066,7 @@ x3dom.Viewarea.prototype.onMousePress = function (x, y, buttonState)
     this._lastButton = buttonState;
 };
 
-x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
+x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState, prevButton)
 {
     var tDist = 3.0;  // distance modifier for lookat, could be param
     var dir;
@@ -1092,7 +1092,7 @@ x3dom.Viewarea.prototype.onMouseRelease = function (x, y, buttonState)
                         this._scene._listeners[eventType]) ) {
                     var event = {
                         target: {}, type: eventType,
-                        button: buttonState, layerX: x, layerY: y,
+                        button: prevButton, layerX: x, layerY: y,
                         cancelBubble: false,
                         stopPropagation: function () { this.cancelBubble = true; },
                         preventDefault:  function () { this.cancelBubble = true; }

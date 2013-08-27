@@ -582,10 +582,11 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
         this.canvas.addEventListener('mouseup', function (evt) {
 			if(!this.isMulti) {
+			    var prev_mouse_button = this.mouse_button;
 				this.mouse_button = 0;
 				this.mouse_dragging = false;
 
-				this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button);
+				this.parent.doc.onMouseRelease(that.gl, this.mouse_drag_x, this.mouse_drag_y, this.mouse_button, prev_mouse_button);
 				this.parent.doc.needRender = true;
 				
 				evt.returnValue = true;
