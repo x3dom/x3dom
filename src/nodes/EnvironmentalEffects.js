@@ -146,17 +146,17 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Environment.superClass.call(this, ctx);
 
-            // TODO: fields generated from Avalon, to be adapted to X3DOM!
-            this.addField_SFBool(ctx, 'occlusionCulling', false);
-            this.addField_SFFloat(ctx, 'occlusionCullingPixels', 0.0);
-            this.addField_SFInt32(ctx, 'occlusionCullingThreshold', 0.0);
-            this.addField_SFBool(ctx, 'sortTrans', true);
+            // boolean flags for feature (de)activation
+            this.addField_SFBool(ctx, 'viewFrustumCulling', true);
             this.addField_SFBool(ctx, 'smallFeatureCulling', false);
-            this.addField_SFFloat(ctx, 'smallFeaturePixels', 10.0);
-            this.addField_SFInt32(ctx, 'smallFeatureThreshold', 0.0);
-            this.addField_SFBool(ctx, 'frustumCulling', true);
-            this.addField_SFBool(ctx, 'stateSorting', true);
-            this.addField_SFFloat(ctx, 'systemSpeed', 1.0);
+            this.addField_SFBool(ctx, 'occlusionCulling', false);
+            this.addField_SFBool(ctx, 'lowPriorityCulling', false);
+            this.addField_SFBool(ctx, 'tesselationDetailCulling', false);
+
+            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 0.0);
+            this.addField_SFFloat(ctx, 'occlusionCoveredThreshold', 0.0);
+            this.addField_SFFloat(ctx, 'lowPriorityThreshold', 0.0);
+            this.addField_SFFloat(ctx, 'tesselationErrorThreshold', 0.0);
         },
         {
         }
