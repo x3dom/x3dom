@@ -374,6 +374,8 @@ x3dom.bvh.BIH = defineClass(
         x3dom.bvh.BIH.superClass.call(this, settings);
         this.bihNodes = [];
         this.index = [];
+
+        this.env = scene.getEnvironment();
     },
     {
         /*gets BIHNode for id or creates if not present */
@@ -552,21 +554,20 @@ x3dom.bvh.BIH = defineClass(
                     //if they cover enough pixels
                     for(var i = 0, n = node.dataIndex[1]; i < n; ++i)
                     {
-                        var bbox = this.dataNodes[node.dataIndex[0]+i].bbox;
-                        var coverage = this.calculateCoverage(bbox);
+                        var dataNode = this.dataNodes[this.index[node.dataIndex[0]+i]];
+                        var coverage = this.calculateCoverage(dataNode.bbox);
 
-                        if( coverage >= this.drawableCollection.smallFeatureThreshold)
+                        if( coverage >= this.env._vf.smallFeatureThreshold )
                         {
-                            var drawable = this.dataNodes[this.index[node.dataIndex[0]+i]].drawable;
-                            drawable.priority = coverage;
-                            this.drawableCollection.addDrawable(drawable);
+                            dataNode.drawable.priority = coverage;
+                            this.drawableCollection.addDrawable(dataNode.drawable);
                         }
                     }
                 }
                 else
                 {
                     var coverage = this.calculateCoverage(node.bbox);
-                    if (coverage >= this.drawableCollection.smallFeatureThreshold )
+                    if (coverage >= this.env._vf.smallFeatureThreshold )
                     {
                         //traverse children
                         this.intersect(node.leftChild, planeMask);
@@ -720,7 +721,7 @@ x3dom.bvh.Culler = defineClass(
             );
             this.traverseSetup.setViewFrustum(vf);
 
-            this.traverseSetup.projectedPixelLength = this.drawableCollection.pixelHeightAtDistOne;
+            this.traverseSetup.pixelHeightAtDistOne = this.drawableCollection.pixelHeightAtDistOne;
             this.traverseSetup.nearClippingPlane = this.drawableCollection.near;
 
             var env = this.scene.getEnvironment();
