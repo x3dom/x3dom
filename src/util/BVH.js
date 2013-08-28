@@ -21,11 +21,15 @@ x3dom.bvh = {};
  */
 x3dom.bvh.Settings = defineClass(
     null,
-    function()
+    function(debug, showDebugBoxVolumes,bvhType, maxObjectsPerNode, maxDepth, minRelBBoxSize)
     {
-        this.debug = true;
-        this.MASK_SET = 63;  // 2^6-1, i.e. all sides of the volume
-
+        this.debug = debug;
+        this.showDebugBoxVolumes = showDebugBoxVolumes;
+        this.bvhType = bvhType;
+        this.maxObjectsPerNode = maxObjectsPerNode;
+        this.maxDepth = maxDepth;
+        this.minRelativeBBoxSize = minRelBBoxSize !== 'undefined' ? minRelBBoxSize : 0.01;
+        this.MASK_SET = 63;
     }
 );
 
@@ -48,17 +52,17 @@ x3dom.bvh.DataNode = defineClass(
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Base class for BVHs
+ * Base class for jsBVHs
  */
 x3dom.bvh.Base = defineClass(
     null,
-    function()
+    function(settings)
     {
         /*Data Members*/
         this.dataNodes = [];
         this.drawableCollection = null;
         this.coveredBoxVolume = null;
-        this.settings = new x3dom.bvh.Settings();
+        this.settings = settings;
     },
     {
         /*add Drawable as DataNode to BVH */
@@ -168,17 +172,13 @@ x3dom.bvh.Base = defineClass(
  * Decorator for BVH- Debugging
  */
 x3dom.bvh.DebugDecorator = defineClass(
-    x3dom.bvh.Base,
-    function(bvh,scene,params)
+    null,
+    function(bvh,scene,settings)
     {
-        x3dom.bvh.DebugDecorator.superClass.call(this,params);
         this.bvh = bvh;
         this.scene = scene;
         this.debugShape = null;
-
-
         this.renderedDrawablesCount = 0;
-
     },
     {
         /*add Drawable as DataNode to BVH */
@@ -189,22 +189,36 @@ x3dom.bvh.DebugDecorator = defineClass(
         /*
          * measure build time and create debugging elements
          */
-        build : function()
+        compile : function()
         {
-            console.log("debugger build");
-            x3dom.Utils.startMeasure("buildBVH");
-            this.bvh.build();
-            console.log("Time for BVH creation: "+x3dom.Utils.stopMeasure("buildBVH")+" : %o",this.bvh);
-            //console.log("DataNodes: "+this.bvh.dataNodes.length + " BihNodes: "+this.bvh.bihNodes.length);
-
-            if(this.bvh.settings.debug && this.scene != null)
+            if(this.bvh.settings.showDebugBoxVolumes && this.scene != null)
             {
                 this.createDebugShape();
             }
+            if(this.bvh.settings.bvhType == 'jsBIH')
+                x3dom.Utils.startMeasure("buildBVH");
+            //compile
+            this.bvh.compile();
+
+            if(this.bvh.settings.debug && this.bvh.settings.bvhType == 'jsBIH')
+            {
+                console.log("Compile time: "+x3dom.Utils.stopMeasure("buildBVH"));
+                console.log("BVH : %o",this.bvh);
+            }
+            if(this.bvh.settings.showDebugBoxVolumes)
+            {
+                if(this.bvh.settings.bvhType == 'jsBIH')
+                    this.addHierarchyBoxVolumes();
+                this.createLineRenderersFromBoxVolumes();
+            }
+        },
+        showCompileStats : function()
+        {
+            this.bvh.showCompileStats();
         },
         collectDrawables : function(drawableCollection)
         {
-            var getDCSize = function(drawableCollection)
+            /*var getDCSize = function(drawableCollection)
             {
                 var count = 0;
                 for(var i = 0, n = drawableCollection.collection.length; i < n; ++i)
@@ -212,7 +226,7 @@ x3dom.bvh.DebugDecorator = defineClass(
                     count +=  drawableCollection.collection[i].length;
                 }
                 return count;
-            };
+            };*/
 
             this.renderedDrawablesCount = drawableCollection.length;//getDCSize(drawableCollection);
             this.bvh.collectDrawables(drawableCollection);
@@ -225,8 +239,8 @@ x3dom.bvh.DebugDecorator = defineClass(
             this.debugShape = new x3dom.nodeTypes.Shape();
             this.debugShape._nameSpace = this.scene._nameSpace;
 
-            var geo = null,
-                coords = null;
+            this.bvh.geo = null,
+            this.bvh.coords = null;
 
             if(!this.debugShape._cf.appearance.node)
             {
@@ -241,60 +255,43 @@ x3dom.bvh.DebugDecorator = defineClass(
             }
             if(!this.debugShape._cf.geometry.node)
             {
-                geo = new x3dom.nodeTypes.IndexedLineSet();
-                coords = new x3dom.nodeTypes.Coordinate();
+                this.bvh.geo = new x3dom.nodeTypes.IndexedLineSet();
+                this.bvh.coords = new x3dom.nodeTypes.Coordinate();
             }
-
+        },
+        addHierarchyBoxVolumes : function()
+        {
             //add data from real bvh
             var id = 0;
             var boxVolume;
             while( (boxVolume = this.bvh.getHierarchyNodeBoxVolume(id)) != null)
             {
 
-                this.addBoxVolumeToGeometry(boxVolume,geo);
+                this.addBoxVolumeToGeometry(boxVolume,this.bvh.geo);
                 id++;
             }
-
+        },
+        createLineRenderersFromBoxVolumes : function()
+        {
             //add data to frontend elements
-            for(var i = 0, n = geo._mesh._positions[0].length; i < n; ++i)
+            for(var i = 0, n = this.bvh.geo._mesh._positions[0].length; i < n; ++i)
             {
-                coords._vf.point.push(geo._mesh._positions[0][i]);
+                this.bvh.coords._vf.point.push(this.bvh.geo._mesh._positions[0][i]);
             }
 
-            for(var i = 0, n = geo._mesh._indices[0].length; i < n; ++i)
+            for(var i = 0, n = this.bvh.geo._mesh._indices[0].length; i < n; ++i)
             {
-                geo._vf.coordIndex.push(geo._mesh._indices[0][i]);
-                geo._vf.colorIndex.push(0);
+                this.bvh.geo._vf.coordIndex.push(this.bvh.geo._mesh._indices[0][i]);
+                this.bvh.geo._vf.colorIndex.push(0);
             }
-            geo.addChild(coords);
-            this.debugShape.addChild(geo);
-            geo.nodeChanged();
+            this.bvh.geo.addChild(this.bvh.coords);
+            this.debugShape.addChild(this.bvh.geo);
+            this.bvh.geo.nodeChanged();
             this.scene.addChild(this.debugShape);
             this.debugShape.nodeChanged();
             this.scene.nodeChanged();
         },
-        /*addBihNodeBoxVolume: function(geo, node, boxVolume)
-        {
-            this.addBoxVolumeToGeometry(boxVolume,geo);
-            if(node.split_axis != -1)
-            {
-                //get box volumes from split
-                var boxVolumes = this.splitBoxVolume(boxVolume, node.split_axis, node.clip[0], node.clip[1]);
 
-                //call with children
-                this.addBihNodeBoxVolume(geo,node.leftChild, boxVolumes[0]);
-
-                this.addBihNodeBoxVolume(geo,node.rightChild, boxVolumes[1]);
-
-            }
-        },*/
-        addAllDataNodeBoxVolumes : function(geo)
-        {
-            for(var i = 0, n = this.bvh.dataNodes.length; i < n; ++i)
-            {
-                this.addBoxVolumeToGeometry(this.bvh.dataNodes[i].bbox, geo);
-            }
-        },
         //adds a boxvolume to a geometry
         addBoxVolumeToGeometry : function(boxVolume, geo)
         {
@@ -331,6 +328,10 @@ x3dom.bvh.DebugDecorator = defineClass(
                 startId+7, startId+5, -1,
                 startId+7, startId+6, -1
             );
+        },
+        showTraverseStats : function(runtime)
+        {
+            this.bvh.showTraverseStats(runtime);
         }
     }
 );
@@ -341,22 +342,6 @@ x3dom.bvh.DebugDecorator = defineClass(
  * Bounding Interval Hierarchy -
  ******************************************/
 
-/**
- * Extended settings
- */
-x3dom.bvh.BihSettings = defineClass(
-    x3dom.bvh.Settings,
-    function()
-    {
-        x3dom.bvh.BihSettings.superClass.call(this);
-        /* Bih building settings */
-        this.max_obj_per_node = 1;
-        this.max_depth = 25;
-        this.min_relative_bbox_size = 0.01;
-    }
-);
-
-//---------------------------------------------------------------------------------------------------------------------
 
 x3dom.bvh.BihNode = defineClass(
     null,
@@ -379,18 +364,16 @@ x3dom.bvh.BihNode = defineClass(
     }
 );
 
-
 /**
  * Bounding Interval Hierarchy -
  */
 x3dom.bvh.BIH = defineClass(
     x3dom.bvh.Base,
-    function(params)
+    function(scene, settings)
     {
-        x3dom.bvh.BIH.superClass.call(this, params);
+        x3dom.bvh.BIH.superClass.call(this, settings);
         this.bihNodes = [];
         this.index = [];
-        this.settings = new x3dom.bvh.BihSettings();
     },
     {
         /*gets BIHNode for id or creates if not present */
@@ -468,13 +451,13 @@ x3dom.bvh.BIH = defineClass(
             node.clip[1] -= delta;
             */
 
-            var relativeBBoxToSmall = (bbox.getDiameter()/ this.coveredBoxVolume.getDiameter()) <= this.settings.min_relative_bbox_size;
+            var relativeBBoxToSmall = (bbox.getDiameter()/ this.coveredBoxVolume.getDiameter()) <= this.settings.minRelativeBBoxSize;
 
             //get box volumes from split
             var voxel = this.splitBoxVolume(bbox, node.split_axis, node.clip[0], node.clip[1]); //splitCenter could be faster
 
             //subdivide or store leaves
-            if((numLeft > this.settings.max_obj_per_node) && (depth < this.settings.max_depth) && !relativeBBoxToSmall )
+            if((numLeft > this.settings.maxObjectsPerNode) && (depth < this.settings.maxDepth) && !relativeBBoxToSmall )
             {
                 node.leftChild = this.processNode(this.bihNodes.length,startObjIndex,numLeft,voxel[0],depth+1);
             }
@@ -486,10 +469,9 @@ x3dom.bvh.BIH = defineClass(
 
                 node.leftChild.dataIndex[0] = startObjIndex;
                 node.leftChild.dataIndex[1] = numLeft;
-
             }
 
-            if((numRight > this.settings.max_obj_per_node) && (depth < this.settings.max_depth) && !relativeBBoxToSmall)
+            if((numRight > this.settings.maxObjectsPerNode) && (depth < this.settings.maxDepth) && !relativeBBoxToSmall)
             {
                node.rightChild = this.processNode(this.bihNodes.length,startObjIndex +numLeft,numRight,voxel[1],depth+1);
             }
@@ -516,7 +498,7 @@ x3dom.bvh.BIH = defineClass(
         },
 
         /* compiles nodes into bih tree */
-        build : function()
+        compile : function()
         {
             if(this.dataNodes.length == 0)
                 return;
@@ -531,6 +513,10 @@ x3dom.bvh.BIH = defineClass(
             }
             this.processNode(0,0,this.dataNodes.length,this.coveredBoxVolume,0);
         },
+        showCompileStats : function()
+        {
+
+        },
         /* return drawables to webgl for rendering */
         collectDrawables : function(drawableCollection)
         {
@@ -542,6 +528,16 @@ x3dom.bvh.BIH = defineClass(
                 this.intersect(this.bihNodes[0], planeMask);
             }
         },
+        calculateCoverage : function(bbox)
+        {
+            var modelViewMatrix = this.drawableCollection.viewMatrix;//.mult(transform);
+            var center = modelViewMatrix.multMatrixPnt(bbox.getCenter());
+            var rVec = modelViewMatrix.multMatrixVec(bbox.getRadialVec());
+            var r    = rVec.length();
+            var dist = Math.max(-center.z - r, this.drawableCollection.near);
+            var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
+            return (r * 2.0) / projPixelLength;
+        },
         intersect : function(node, planeMask)
         {
             //viewfrustum intersection test
@@ -549,71 +545,39 @@ x3dom.bvh.BIH = defineClass(
                 planeMask = this.drawableCollection.viewFrustum.intersect(node.bbox,planeMask);
             if(planeMask >= 0)
             {
-                //var coverage = this.calculateCoverage(node.bbox);
-
-                /*if (coverage < this.drawableCollection.smallFeatureThreshold )
-                {
-                    return;
-                } */
-
                 //leaf node - add drawables
                 if(node.split_axis == -1)
                 {
-                    /*
-                    //small feature culling
-                    var modelViewMat = this.drawableCollection.viewMatrix;//.mult(transform);
-                    var pos = node.bbox.center;
-                    var centerZ = modelViewMat._20* pos.x + modelViewMat._21* pos.y + modelViewMat._22 * pos.z + modelViewMat._23;
-                    var pixels_per_radian = 0.5 * 800 * this.drawableCollection.projMatrix._00;
-                    var scale = 2.0 * pixels_per_radian / centerZ;
-                    var coverage = node.bbox.getRadialVec().length() * scale;
-
-                     //Test
-                     var center = modelViewMat.multMatrixPnt(node.bbox.getCenter());
-                     var rVec = modelViewMat.multMatrixVec(node.bbox.getRadialVec());
-                     var r    = rVec.length();
-                     var dist = Math.max(-center.z - r, this.drawableCollection.near);
-                     var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
-                     var coverage2 = (r * 2.0) / projPixelLength;
-
-                     console.log(coverage2/coverage);
-
-
-                     */
-
-                    //small feature culling
-                    var modelViewMat = this.drawableCollection.viewMatrix;//.mult(transform);
-                    var center = modelViewMat.multMatrixPnt(node.bbox.getCenter());
-                    var rVec = modelViewMat.multMatrixVec(node.bbox.getRadialVec());
-                    var r    = rVec.length();
-                    var dist = Math.max(-center.z - r, this.drawableCollection.near);
-                    var projPixelLength = dist * this.drawableCollection.pixelHeightAtDistOne;
-                    var coverage = (r * 2.0) / projPixelLength;
-
-                    if (coverage < this.drawableCollection.smallFeatureThreshold )
-                    {
-                        return;
-                    }
-
                     //add all drawables of datanodes between indices of node (dataIndex[0] - dataIndex[1])
+                    //if they cover enough pixels
                     for(var i = 0, n = node.dataIndex[1]; i < n; ++i)
                     {
-                        var drawable = this.dataNodes[this.index[node.dataIndex[0]+i]].drawable;
-                        drawable.priority = coverage;
-                        this.drawableCollection.addDrawable(drawable);
+                        var bbox = this.dataNodes[node.dataIndex[0]+i].bbox;
+                        var coverage = this.calculateCoverage(bbox);
+
+                        if( coverage >= this.drawableCollection.smallFeatureThreshold)
+                        {
+                            var drawable = this.dataNodes[this.index[node.dataIndex[0]+i]].drawable;
+                            drawable.priority = coverage;
+                            this.drawableCollection.addDrawable(drawable);
+                        }
                     }
                 }
                 else
                 {
-                    //get box volumes from split
-                    //var boxVolumes = this.splitBoxVolume(bbox, node.split_axis, node.clip[0], node.clip[1]);
-
-                    //call with children
-                    this.intersect(node.leftChild, planeMask);
-
-                    this.intersect(node.rightChild, planeMask);
+                    var coverage = this.calculateCoverage(node.bbox);
+                    if (coverage >= this.drawableCollection.smallFeatureThreshold )
+                    {
+                        //traverse children
+                        this.intersect(node.leftChild, planeMask);
+                        this.intersect(node.rightChild, planeMask);
+                    }
                 }
             }
+        },
+        showTraverseStats : function(runtime)
+        {
+
         }
     }
 );
@@ -621,103 +585,132 @@ x3dom.bvh.BIH = defineClass(
 //---------------------------------------------------------------------------------------------------------------------
 
 /**
- * Decorator for BVH- Debugging
+ * Wrapper for cross-compiled Culler
  */
-x3dom.bvh.EmscriptenBvH = defineClass(
-    x3dom.bvh.Base,
-    function(params)
+x3dom.bvh.Culler = defineClass(
+    null,
+    function(drawableCollection, scene, settings)
     {
-        x3dom.bvh.EmscriptenBvH.superClass.call(this,params);
+        this.drawableCollection = drawableCollection;
+        this.scene = scene;
+        this.settings = settings;
 
-        var that  = this;
-        if(Module != null)
+        this.compileSetup = new Module.CompileSetup();
+        this.compileSetup.poolSize = this.drawableCollection.length;
+        this.compileSetup.debug = this.settings.debug;
+        this.compileSetup.showDebugBoxVolumes = this.settings.showDebugBoxVolumes;
+        this.compileSetup.dataStructureType = this.settings.bvhType == "OCTREE" ? Module.DataStructureType.OCTREE : Module.DataStructureType.BIH;
+        this.compileSetup.maxObjectsPerNode = this.settings.maxObjectsPerNode;
+        this.compileSetup.maxDepth = this.settings.maxDepth;
+
+        var that = this;
+
+        var jsFuncs =
         {
-            //wrap functions
-            this.doCreateSpatialHierarchy
-                = Module.cwrap('createSpatialHierarchy','number',['number']);
+            addStructureBoxVolume : function(depth, volume)
+            {
+                var volMin = volume.min, volMax = volume.max;
 
-            this.doAddDataElement
-                = Module.cwrap('addDataElement','number',['number','number','number','number','number','number']);
-
-            this.doSetValue
-                = Module.cwrap('setDataElementValue','number',['number','number','number','number']);
-
-            this.doGetValue
-                = Module.cwrap('getDataElementValue','number',['number','number','number']);
-
-            this.doGetHierarchyNodeBoxVolume
-                = Module.cwrap('getHierarchyNodeBoxVolume','number',['number']);//'number','number','number','number','number']);
+                var min = new x3dom.fields.SFVec3f(volMin.x, volMin.y, volMin.z),
+                    max = new x3dom.fields.SFVec3f(volMax.x, volMax.y, volMax.z);
 
 
-            this.doBuildHierarchy
-                = Module.cwrap('buildHierarchy','number');
+                var startId = that.geo._mesh._positions[0].length;
+                that.geo._mesh._positions[0].push(
+                    new x3dom.fields.SFVec3f(min.x, min.y, min.z), // 0 links unten hinten
+                    new x3dom.fields.SFVec3f(min.x, min.y, max.z), // 1 links unten vorne
+                    new x3dom.fields.SFVec3f(min.x, max.y, min.z), // 2 links oben hinten
+                    new x3dom.fields.SFVec3f(min.x, max.y, max.z), // 3 links oben vorne
+                    new x3dom.fields.SFVec3f(max.x, min.y, min.z), // 4 rechts unten hinten
+                    new x3dom.fields.SFVec3f(max.x, min.y, max.z), // 5 rechts unten vorne
+                    new x3dom.fields.SFVec3f(max.x, max.y, min.z), // 6 rechts oben hinten
+                    new x3dom.fields.SFVec3f(max.x, max.y, max.z)  // 7 rechts oben vorne
+                );
 
-            this.doUpdateHierarchy
-                = Module.cwrap('updateHierarchy','number');
+                //set indices
+                that.geo._mesh._indices[0].push(
+                    startId, startId+1, -1,
+                    startId, startId+2, -1,
+                    startId, startId+4, -1,
+                    startId+1, startId+3, -1,
+                    startId+1, startId+5, -1,
+                    startId+2, startId+3, -1,
+                    startId+2, startId+6, -1,
+                    startId+4, startId+5, -1,
+                    startId+4, startId+6, -1,
+                    startId+7, startId+3, -1,
+                    startId+7, startId+5, -1,
+                    startId+7, startId+6, -1
+                );
+            },
 
+            timeNow: function()
+            {
+                return performance.now();
+            }
+        };
 
-            this.doSetModelViewMatrix
-                = Module.cwrap('setModelViewMatrix','number',[
-                'number','number','number','number',
-                'number','number','number','number',
-                'number','number','number','number',
-                'number','number','number','number']);
+        this.compileSetup.setJsCallbacks(Module.JsCallbacks.implement(jsFuncs));
+        this.culler = new Module.Culler(this.compileSetup);
 
-            this.doSetSmallFeatureCullingParams
-                = Module.cwrap('setSmallFeatureCullingParams','number',[
-                'number','number','number','number']);
-
-            this.doCollectDrawables
-                = Module.cwrap('collectDrawables','number',[
-                'number','number','number','number',
-                'number','number','number','number',
-                'number','number','number','number',
-                'number','number','number','number',
-                'number','number','number','number',
-                'number','number','number','number']);
-
-        }
+        this.traverseSetup = new Module.TraverseSetup();
     },
     {
-        build : function()
+        addDrawable : function(drawable)
         {
-            //create implementation with pool
-            this.doCreateSpatialHierarchy(this.dataNodes.length);
+            var that = this;
 
-            //add all nodes
-            for(var i = 0, n = this.dataNodes.length; i < n; ++i)
+            var funcs =
             {
-                var box = this.dataNodes[i].bbox;
-                var id = this.doAddDataElement(box.min.x,box.min.y,box.min.z,box.max.x, box.max.y, box.max.z);
-            }
-            this.doBuildHierarchy();
+                drawable: drawable,
+
+                addDrawableToCollection : function( coverage)
+                {
+                    this.drawable.priority = coverage;
+                    that.drawableCollection.addDrawable(this.drawable);
+                },
+
+                createBoxVolume : function()
+                {
+                    var bbox = new x3dom.fields.BoxVolume();
+                    bbox.transformFrom(this.drawable.transform, this.drawable.shape.getVolume());
+                    this.drawable.worldVolume = x3dom.fields.BoxVolume.copy(bbox);
+
+                    var min = new x3dom.fields.SFVec3f(),max = new x3dom.fields.SFVec3f();
+                    bbox.getBounds(min,max);
+
+                    var boxVol = new Module.BoxVolume(new Module.SFVec3f(min.x,min.y,min.z),new Module.SFVec3f(max.x,max.y,max.z));
+                    return boxVol;
+                }
+            };
+            var dc = new Module.DrawableContainer.implement(funcs);
+            this.culler.addDrawable(dc);
+        },
+
+        compile : function()
+        {
+            this.culler.compile();
+        },
+        showCompileStats : function()
+        {
+            console.log(this.culler.stats());
         },
         /* return drawables to webgl for rendering */
         collectDrawables : function(drawableCollection)
         {
             this.drawableCollection = drawableCollection;
-
-            var that = this;
-
-            _jsAddDrawableCallback = function(id, coverage)
-            {
-                    var drawable = that.dataNodes[id].drawable;
-                    drawable.priority = coverage;
-                    that.drawableCollection.addDrawable(drawable);
-            };
-
-            var mvm = that.drawableCollection.viewMatrix;//all boxes in world space
-            this.doSetSmallFeatureCullingParams(
-                this.drawableCollection.pixelHeightAtDistOne,
-                this.drawableCollection.near,
-                this.drawableCollection.smallFeatureThreshold);
-            this.doSetModelViewMatrix(  mvm._00, mvm._01, mvm._02, mvm._03,
-                                        mvm._10, mvm._11, mvm._12, mvm._13,
-                                        mvm._20, mvm._21, mvm._22, mvm._23,
-                                        mvm._30, mvm._31, mvm._32, mvm._33);
-
             var viewFrustum = this.drawableCollection.viewFrustum;
-            this.doCollectDrawables(
+            var modelViewMatrix = this.drawableCollection.viewMatrix;
+
+            var mvm = new Module.SFMatrix4f(
+                modelViewMatrix._00,modelViewMatrix._01,modelViewMatrix._02,modelViewMatrix._03,
+                modelViewMatrix._10,modelViewMatrix._11,modelViewMatrix._12,modelViewMatrix._13,
+                modelViewMatrix._20,modelViewMatrix._21,modelViewMatrix._22,modelViewMatrix._23,
+                modelViewMatrix._30,modelViewMatrix._31,modelViewMatrix._32,modelViewMatrix._33);
+            this.traverseSetup.setModelViewMatrix(mvm);
+
+
+            var vf = new Module.FrustumVolume(
                 viewFrustum.planeNormals[0].x,viewFrustum.planeNormals[0].y,viewFrustum.planeNormals[0].z, viewFrustum.planeDistances[0],
                 viewFrustum.planeNormals[1].x,viewFrustum.planeNormals[1].y,viewFrustum.planeNormals[1].z, viewFrustum.planeDistances[1],
                 viewFrustum.planeNormals[2].x,viewFrustum.planeNormals[2].y,viewFrustum.planeNormals[2].z, viewFrustum.planeDistances[2],
@@ -725,25 +718,33 @@ x3dom.bvh.EmscriptenBvH = defineClass(
                 viewFrustum.planeNormals[4].x,viewFrustum.planeNormals[4].y,viewFrustum.planeNormals[4].z, viewFrustum.planeDistances[4],
                 viewFrustum.planeNormals[5].x,viewFrustum.planeNormals[5].y,viewFrustum.planeNormals[5].z, viewFrustum.planeDistances[5]
             );
+            this.traverseSetup.setViewFrustum(vf);
+
+            this.traverseSetup.projectedPixelLength = this.drawableCollection.pixelHeightAtDistOne;
+            this.traverseSetup.nearClippingPlane = this.drawableCollection.near;
+
+            var env = this.scene.getEnvironment();
+
+            this.traverseSetup.viewFrustumCulling = env._vf.viewFrustumCulling;
+            this.traverseSetup.smallFeatureCulling = env._vf.smallFeatureCulling;
+            this.traverseSetup.occlusionCulling = env._vf.occlusionCulling;
+
+            this.traverseSetup.smallFeatureThreshold = env._vf.smallFeatureThreshold;
+            //this.traverseSetup.occlusionCoveredThreshold = env.occlusionCoveredThreshold;
+
+            this.culler.cull(this.traverseSetup);
+
+            mvm.delete();
+            vf.delete();
         },
-        /*get Node BoxVolume - to be overwritten for actual hierarchies*/
-        getHierarchyNodeBoxVolume : function(id)
+        showTraverseStats : function( runtime)
         {
-            var min = null,max = null;
-
-            _jsAddHierarchyBoxVolume = function(minX, minY, minZ, maxX, maxY, maxZ)
-            {
-                min = new x3dom.fields.SFVec3f(minX, minY, minZ);
-                max = new x3dom.fields.SFVec3f(maxX, maxY, maxZ);
-            };
-
-            this.doGetHierarchyNodeBoxVolume(id);
-
-            if(min != null && max != null)
-            {
-                return new x3dom.fields.BoxVolume(min,max);
-            }
-            return null;
+            var cullingStats = this.culler.stats().culling;
+            runtime.addInfo('#CNodes Visited', cullingStats.nodesVisited);
+            runtime.addInfo('#Cull Frustum', cullingStats.nodesViewFrustumCulled);
+            runtime.addInfo('#Cull SFeature', cullingStats.nodesSmallFeatureCulled);
+            runtime.addInfo('#Cull OCC', cullingStats.nodesOcclusionCulled);
+            runtime.addInfo('#Drawables SF', cullingStats.drawablesSmallFeatureCulled);
         }
     }
 );

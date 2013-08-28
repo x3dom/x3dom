@@ -418,11 +418,29 @@ x3dom.registerNodeType(
             // X3D representations, as they cannot be accessed after creation time
             x3dom.debug.logWarning("StaticGroup NYI");
 
-            this.drawableCollection = null;
+            this.addField_SFBool(ctx,'debug', false);
+            this.addField_SFBool(ctx,'showDebugBoxVolumes', false);
+
+            // type of bvh to use, supported are 'jsBIH', 'BIH' and 'OCTREE'
+            this.addField_SFString(ctx,'bvhType', 'jsBIH' );
+            this.addField_SFInt32(ctx,'maxObjectsPerNode', 1);
+            // -1 sets default values, other values forces maxDepth
+            this.addField_SFInt32(ctx,'maxDepth',-1);
+            this.addField_SFFloat(ctx,'minRelativeBBoxSize', 0.01);
+
             this.needBvhRebuild = true;
+            this.drawableCollection = null;
             this.bvh = null;
         },
         {
+            getMaxDepth : function()
+            {
+                if(this._vf.maxDepth == -1 )
+                {
+                    return (this._vf.bvhType == ('jsBIH' || 'BIH')) ? 50 : 4;
+                }
+                return this._vf.maxDepth;
+            },
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 // check if multi parent sub-graph, don't cache in that case
@@ -452,8 +470,6 @@ x3dom.registerNodeType(
                     childTransform = this.transformMatrix(transform);
                 }
 
-                x3dom.Utils.startMeasure('bvhTraverse');
-
                 if (this.needBvhRebuild)
                 {
                     var drawableCollectionConfig = {
@@ -465,10 +481,10 @@ x3dom.registerNodeType(
                         frustumCulling: false,
                         smallFeatureThreshold: 0,//1,    // THINKABOUTME
                         context: drawableCollection.context,
-                        gl: drawableCollection.gl
                     };
 
                     this.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
+                    gl: drawableCollection.gl
 
                     var i, n = this._childNodes.length;
                     for (i=0; i<n; i++) {
@@ -479,24 +495,50 @@ x3dom.registerNodeType(
                     }
                     this.drawableCollection.concat();
 
-                    this.bvh = this._nameSpace.doc._scene._vf.useCrossCompiled ?  new x3dom.bvh.EmscriptenBvH() : new x3dom.bvh.BIH();
-                    //Add debugging decorator
-                    this.bvh = this._nameSpace.doc._scene._vf.bvhDebug ? new x3dom.bvh.DebugDecorator(this.bvh,this._nameSpace.doc._scene) : this.bvh;
+                    var scene = this._nameSpace.doc._scene;
 
+                    //create settings
+                    var bvhSettings = new x3dom.bvh.Settings(
+                        this._vf.debug,
+                        this._vf.showDebugBoxVolumes,
+                        this._vf.bvhType,
+                        this._vf.maxObjectsPerNode,
+                        this.getMaxDepth(),
+                        this._vf.minRelativeBBoxSize
+                    );
+                    //create bvh type
+                    this.bvh = (this._vf.bvhType == 'jsBIH' ) ?
+                        new x3dom.bvh.BIH(scene, bvhSettings) :
+                        new x3dom.bvh.Culler(this.drawableCollection,scene, bvhSettings);
+
+                    //add decorator for debug shapes
+                    if(this._vf.debug || this._vf.showDebugBoxVolumes)
+                        this.bvh = new x3dom.bvh.DebugDecorator(this.bvh, scene, bvhSettings);
+
+                    //add drawables
                     n = this.drawableCollection.length;
-                    for (i = 0; i < n; i++) {
+                    for (i = 0; i < n; i++)
+                    {
                         this.bvh.addDrawable(this.drawableCollection.get(i))
                     }
-                    this.bvh.build();
-                    this.needBvhRebuild = false;    // TODO: re-evaluate if Inline node is child node
 
+                    //compile bvh
+                    this.bvh.compile();
+
+                    if(this._vf.debug)
+                        this.bvh.showCompileStats();
+
+                    this.needBvhRebuild = false;    // TODO: re-evaluate if Inline node is child node
                 }
 
+                x3dom.Utils.startMeasure('bvhTraverse');
+                //collect drawables
                 this.bvh.collectDrawables(drawableCollection);
-
-
                 var dt = x3dom.Utils.stopMeasure('bvhTraverse');
                 this._nameSpace.doc.ctx.x3dElem.runtime.addMeasurement('BVH', dt);
+
+                //show stats
+                this.bvh.showTraverseStats(this._nameSpace.doc.ctx.x3dElem.runtime);
             }
         }
     )
