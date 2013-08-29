@@ -100,7 +100,7 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
         // return if it is already initialized
         if (domNode._x3domNode) {
             x3dom.debug.logWarning('Tree is already initialized');
-            //return null;
+            return null;
         }
         
         // workaround since one cannot find out which handlers are registered
