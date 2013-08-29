@@ -1,0 +1,219 @@
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+	<title>DOM Mutation test</title>
+    <!-- BEGIN:X3DOM -->
+<meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
+<link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
+<script type="text/javascript" src="../../src/lang/Array.js"></script>
+<script type="text/javascript" src="../../src/Internals.js"></script>
+<script type="text/javascript" src="../../src/debug.js"></script>
+<script type="text/javascript" src="../../src/util/AdaptiveRenderControl.js"></script>
+<script type="text/javascript" src="../../src/util/DownloadManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobManager.js"></script>
+<script type="text/javascript" src="../../src/util/RefinementJobWorker.js"></script>
+<script type="text/javascript" src="../../src/util/Properties.js"></script>
+<script type="text/javascript" src="../../src/util/DoublyLinkedList.js"></script>
+<script type="text/javascript" src="../../src/util/EarClipping.js"></script>
+<script type="text/javascript" src="../../src/util/Utils.js"></script>
+<script type="text/javascript" src="../../src/util/States.js"></script>
+<script type="text/javascript" src="../../src/util/StateManager.js"></script>
+<script type="text/javascript" src="../../src/util/BinaryContainerSetup.js"></script>
+<script type="text/javascript" src="../../src/util/DrawableCollection.js"></script>
+<script type="text/javascript" src="../../src/util/BVH.js"></script>
+<script type="text/javascript" src="../../src/X3DCanvas.js"></script>
+<script type="text/javascript" src="../../src/Runtime.js"></script>
+<script type="text/javascript" src="../../src/Main.js"></script>
+<script type="text/javascript" src="../../src/Cache.js"></script>
+<script type="text/javascript" src="../../src/Texture.js"></script>
+<script type="text/javascript" src="../../src/shader/Shader.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderParts.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamic.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderDynamicMobile.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderComposed.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderNormal.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPicking24.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingId.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingColor.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderPickingTexcoord.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderFrontgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundSkyTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBackgroundCubeTexture.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadow.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderShadowRendering.js"></script>
+<script type="text/javascript" src="../../src/shader/ShaderBlur.js"></script>
+<script type="text/javascript" src="../../src/gfx_webgl.js"></script>
+<script type="text/javascript" src="../../src/gfx_flash.js"></script>
+<script type="text/javascript" src="../../src/X3DDocument.js"></script>
+<script type="text/javascript" src="../../src/MatrixMixer.js"></script>
+<script type="text/javascript" src="../../src/Viewarea.js"></script>
+<script type="text/javascript" src="../../src/Mesh.js"></script>
+<script type="text/javascript" src="../../src/fields.js"></script>
+<script type="text/javascript" src="../../src/nodes/NodeNameSpace.js"></script>
+<script type="text/javascript" src="../../src/nodes/Core.js"></script>
+<script type="text/javascript" src="../../src/nodes/Grouping.js"></script>
+<script type="text/javascript" src="../../src/nodes/Bindable.js"></script>
+<script type="text/javascript" src="../../src/nodes/Rendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shape.js"></script>
+<script type="text/javascript" src="../../src/nodes/Lighting.js"></script>
+<script type="text/javascript" src="../../src/nodes/Followers.js"></script>
+<script type="text/javascript" src="../../src/nodes/Interpolation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Time.js"></script>
+<script type="text/javascript" src="../../src/nodes/Networking.js"></script>
+<script type="text/javascript" src="../../src/nodes/EnvironmentalEffects.js"></script>
+<script type="text/javascript" src="../../src/nodes/Navigation.js"></script>
+<script type="text/javascript" src="../../src/nodes/Text.js"></script>
+<script type="text/javascript" src="../../src/nodes/Sound.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing.js"></script>
+<script type="text/javascript" src="../../src/nodes/Shaders.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Texturing3D.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geospatial.js"></script>
+<script type="text/javascript" src="../../src/nodes/Geometry2D.js"></script>
+<script type="text/javascript" src="../../src/nodes/VolumeRendering.js"></script>
+<script type="text/javascript" src="../../src/nodes/CADGeometry.js"></script>
+<script type="text/javascript" src="../../src/nodes/Terrain.js"></script>
+<script type="text/javascript" src="../../src/Docs.js"></script>
+<!-- END:X3DOM -->
+    <script type="text/javascript" src="media/js/tests.js"></script>
+</head>
+       
+<body>
+    <h1>DOM Mutation test</h1>
+	<div class="group"> 
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="false" showLog="true" x="0px" y="0px" width="400px" height="300px">
+			<Scene>
+				<Background DEF='bgnd' transparency='0' skyColor='0.2 0.7 0.4'></Background>
+				<Group DEF="root" id='root'>
+					<Transform>
+                        <Shape id='ball'>
+                            <Appearance>
+                                <Material diffuseColor="1 0 0" specularColor=".5 .5 .5" transparency="0" />
+                            </Appearance>
+                            <Sphere/>
+                        </Shape>
+                    </Transform>
+				</Group>
+			</Scene>
+		</X3D>
+	</div>
+	
+	<script type="text/javascript">
+	
+	var solid = true;
+	
+	function toggleRendering()
+	{
+		var button = document.getElementById("col");
+		
+		solid = !solid;
+		
+		if (solid)
+			button.value = "Blue";
+		else
+			button.value = "Red";
+		
+		var mat = document.getElementsByTagName("Material");
+		var n = mat.length;
+		
+		var aMat = mat[0];
+		aMat.setAttribute("diffuseColor", (!solid ? "0 0 1" : "1 0 0"));
+		
+		return false;
+	}
+    
+    var pos = -4;
+    
+    function addChild()
+    {
+        var t = document.createElement('Transform');
+        t.setAttribute("translation", pos+" 0 0");
+        pos += 2;
+        var s = document.createElement('Shape');
+        t.appendChild(s);
+        var b = document.createElement('Cone');
+        s.appendChild(b);
+        var a = document.createElement('Appearance');
+        s.appendChild(a);
+        var m = document.createElement('Material');
+        a.appendChild(m);
+        var r = document.getElementById("root");
+        r.appendChild(t);
+        
+        return false;
+    }
+
+    var render = true, high = true;
+    
+    function toggleRender()
+    {
+        var elem = document.getElementById("ball");
+        
+        render = !render;
+        
+        //elem.setAttribute("render", render.toString());
+        elem.setVisibility(render);
+        
+        return false;
+    }
+
+    function highlight(col)
+    {
+        var elem = document.getElementById("root");
+        
+        elem.highlight(high, col);
+        
+        high = !high;
+        
+        return false;
+    }
+    
+    function groupNodes()
+    {
+        var transformNodes;
+        var rootNode;
+        var groupNode;
+        var i;
+        
+        transformNodes = document.getElementsByTagName("Transform");        
+        rootNode       = document.getElementById("root");
+        groupNode      = document.createElement("Group");
+        
+        groupNode.setAttribute("id", "THE_NEW_GROUP");
+        
+        for (i = 0; i < transformNodes.length; ++i)
+        {
+            rootNode.removeChild(transformNodes[i]);
+            groupNode.appendChild(transformNodes[i]);
+        }
+        
+        rootNode.appendChild(groupNode);
+    }
+    
+    document.onload = function(evt) {
+        //alert("Finished loading X3D scene.\nStart rendering...");
+    };
+	
+	</script>
+	
+	<div class="group">
+	Dynamic material update
+	<input type="button" id="col" value="Change Color" onclick="toggleRendering();" />
+    <br /> 
+	Dynamic childtree update
+	<input type="button" id="child" value="Add Child" onclick="addChild();" />
+    <br /> 
+    Toggle visibility of sphere
+    <input type="button" id="render" value="Change Visibility" onclick="toggleRender();" />
+    <br /> 
+    Toggle highlight of subtree
+    <input type="button" id="highlight" value="Highlight Tree" onclick="highlight('yellow');" />
+    <br /> 
+    Group nodes in DOM
+    <input type="button" id="render" value="Group nodes" onclick="groupNodes();" />    
+    </div>
+
+</body>
+</html>
