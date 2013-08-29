@@ -179,9 +179,10 @@
         
         transformNodes = document.getElementsByTagName("Transform");        
         rootNode       = document.getElementById("root");
-        groupNode      = document.createElement("Group");
+        groupNode      = document.createElement("Transform");
         
-        groupNode.setAttribute("id", "THE_NEW_GROUP");
+        groupNode.setAttribute("id", "THE_NEW_TRANSFORM");
+        groupNode.setAttribute("translation", "1 0.5 -3");
         
         for (i = 0; i < transformNodes.length; ++i)
         {
@@ -190,6 +191,33 @@
         }
         
         rootNode.appendChild(groupNode);
+    }
+    
+    function ungroupNodes()
+    {
+        var transformNodes;
+        var rootNode;
+        var groupNode;
+        var i;
+        
+        groupNode = document.getElementById("THE_NEW_TRANSFORM");
+        
+        if (typeof groupNode !== 'undefined')
+        {
+            transformNodes = document.getElementsByTagName("Transform");        
+            rootNode       = document.getElementById("root");
+        
+            for (i = 0; i < transformNodes.length; ++i)
+            {
+                if (transformNodes[i] !== groupNode)
+                {
+                    groupNode.removeChild(transformNodes[i]);
+                    rootNode.appendChild(transformNodes[i]);
+                }
+            }
+            
+            rootNode.removeChild(groupNode);
+        }
     }
     
     document.onload = function(evt) {
@@ -213,6 +241,9 @@
     <br /> 
     Group nodes in DOM
     <input type="button" id="render" value="Group nodes" onclick="groupNodes();" />    
+    <br />
+    Ungroup nodes in DOM
+    <input type="button" id="render" value="Ungroup nodes" onclick="ungroupNodes();" />    
     </div>
 
 </body>
