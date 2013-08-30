@@ -19,13 +19,12 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'solid', true);
             this.addField_SFBool(ctx, 'ccw', true);
-            // All geo primitives use geo cache and others might later on,
+            // Most geo primitives use geo cache and others might later on,
             // but one should be able to disable cache per geometry node.
             this.addField_SFBool(ctx, 'useGeoCache', true);
 
             // mesh object also holds volume (_vol)
             this._mesh = new x3dom.Mesh(this);
-            this._pickable = true;
         },
         {
             getVolume: function() {
@@ -46,16 +45,10 @@ x3dom.registerNodeType(
             },
 
             doIntersect: function(line) {
-                if (this._pickable) {
-                    return this._mesh.doIntersect(line);
-                }
-                else {
-                    return false;
-                }
+                return this._mesh.doIntersect(line);
             },
 
-            forceUpdateCoverage: function()
-            {
+            forceUpdateCoverage: function() {
                 return false;
             },
 
@@ -149,8 +142,6 @@ x3dom.registerNodeType(
 
             this.addField_SFNode('coord', x3dom.nodeTypes.Coordinate);
             this.addField_SFNode('color', x3dom.nodeTypes.X3DColorNode);
-
-            this._pickable = false;
         },
         {
             nodeChanged: function()
@@ -298,8 +289,6 @@ x3dom.registerNodeType(
 
             this.addField_MFInt32(ctx, 'coordIndex', []);
             this.addField_MFInt32(ctx, 'colorIndex', []);
-
-            this._pickable = false;
         },
         {
             nodeChanged: function()

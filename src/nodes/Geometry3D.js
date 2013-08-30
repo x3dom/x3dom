@@ -1797,23 +1797,19 @@ x3dom.registerNodeType(
 			
 			doIntersect: function(line)
             {
-                if (this._pickable) {
-                    var min = this.getMin();
-                    var max = this.getMax();
-                    
-                    var isect = line.intersect(min, max);
-                    
-                    if (isect && line.enter < line.dist) {
-                        line.dist = line.enter;
-                        line.hitObject = this;
-                        line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                var min = this.getMin();
+                var max = this.getMax();
+                var isect = line.intersect(min, max);
+
+                if (isect && line.enter < line.dist) {
+                    line.dist = line.enter;
+                    line.hitObject = this;
+                    line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
+                    return true;
                 }
-                return false;
+                else {
+                    return false;
+                }
             },
 			
 			getPrecisionMax: function(type)

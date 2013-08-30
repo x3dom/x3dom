@@ -371,8 +371,7 @@ x3dom.registerNodeType(
             },
 
             getShaderProperties: function(viewarea) {
-                if (this._shaderProperties === null ||
-                    this._dirty.shader == true ||
+                if (this._shaderProperties == null || this._dirty.shader == true ||
                     (this._webgl !== undefined && this._webgl.dirtyLighting != x3dom.Utils.checkDirtyLighting(viewarea)))
                 {
                     this._shaderProperties = x3dom.Utils.generateProperties(viewarea, this);
@@ -441,7 +440,7 @@ x3dom.registerNodeType(
                     if (this._DEF)
                         x3dom.debug.logError("No geometry given in Shape/" + this._DEF);
                 }
-                else if (!this._objectID && this._cf.geometry.node._pickable) {
+                else if (!this._objectID) {
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;
                     x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
                 }

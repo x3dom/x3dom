@@ -82,10 +82,12 @@
   </head>
   <body>
     <h1>IndexedLineSet</h1>
-    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='false' showLog='true' x='0px' y='0px' width='400px' height='400px'>
+    <X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='false' showLog='true' width='500px' height='400px'>
       <Scene DEF='scene'>
         <Transform>
-          <Shape>
+          <Shape id="grid" onmouseover="document.getElementById('output').innerHTML=' grid over';"
+                           onmouseout="document.getElementById('output').innerHTML=' grid out';"
+                           onclick="document.getElementById('output').innerHTML=' grid click';">
             <Appearance>
               <Material diffuseColor='1 0 0' emissiveColor='1 0 0' shininess='0.078125' specularColor='1 0 0'/>
             </Appearance>
@@ -105,6 +107,6 @@
       </Transform>
       </Scene>
     </X3D>
-    
+    <div id="output">&nbsp;</div>
   </body>
 </html>
