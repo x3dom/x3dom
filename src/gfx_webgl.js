@@ -2920,21 +2920,22 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Collect drawables (traverse)
         //===========================================================================
+        var env = scene.getEnvironment();
+
         scene.drawableCollection = null;  // Always update needed?
 
         if (!scene.drawableCollection)
         {
             var drawableCollectionConfig = {
                 viewArea: viewarea,
-                sortTrans: scene._vf.sortTrans,
+                sortTrans: env._vf.sortTrans,
                 viewMatrix: mat_view,
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
                 frustumCulling: true,
-                smallFeatureThreshold: scene._vf.smallFeatureCulling ? scene._vf.smallFeatureThreshold : 1,
+                smallFeatureThreshold: env._vf.smallFeatureCulling ? env._vf.smallFeatureThreshold : 1,
                 context: this,
                 gl: gl
-                // TODO: what about Flash?
             };
 
             scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
@@ -3054,8 +3055,11 @@ x3dom.gfx_webgl = (function () {
 
         // very experimental prio culling, currently coupled with small feature culling
         // TODO; what about shadows, picking etc. (but picking needs all objects)
-        if (scene._vf.smallFeatureCulling && scene._vf.scaleRenderedIdsOnMove < 1 && viewarea.isMoving())
-            n = Math.floor(n * scene._vf.scaleRenderedIdsOnMove);
+        if (env._vf.smallFeatureCulling && env._vf.lowPriorityThreshold < 1 && viewarea.isMoving()) {
+            n = Math.floor(n * env._vf.lowPriorityThreshold);
+            if (n == 0 && scene.drawableCollection.length > 0)
+                n = 1;    // render at least one object
+        }
 
         for (i = 0; i < n; i++) {
             //var obj = scene.drawableObjects[zPos[i][0]];
@@ -3320,9 +3324,11 @@ x3dom.gfx_webgl = (function () {
             }
         }
         else {
+            var env = scene.getEnvironment();
+
             var drawableCollectionConfig = {
                 viewArea: viewarea,
-                sortTrans: scene._vf.sortTrans,
+                sortTrans: env._vf.sortTrans,
                 viewMatrix: mat_view,
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
@@ -3330,7 +3336,6 @@ x3dom.gfx_webgl = (function () {
                 smallFeatureThreshold: 1,
                 context: this,
                 gl: gl
-                // TODO: what about Flash?
             };
 
             locScene.numberOfNodes = 0;

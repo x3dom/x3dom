@@ -726,7 +726,7 @@ x3dom.bvh.Culler = defineClass(
 
             var env = this.scene.getEnvironment();
 
-            this.traverseSetup.viewFrustumCulling = env._vf.viewFrustumCulling;
+            this.traverseSetup.viewFrustumCulling = env._vf.frustumCulling;
             this.traverseSetup.smallFeatureCulling = env._vf.smallFeatureCulling;
             this.traverseSetup.occlusionCulling = env._vf.occlusionCulling;
 

@@ -162,10 +162,11 @@ x3dom.gfx_flash = (function() {
 		
 		//Collect all drawableObjects
 		scene.drawableCollection = null;
+        var env = scene.getEnvironment();
 
         var drawableCollectionConfig = {
             viewArea: viewarea,
-            sortTrans: scene._vf.sortTrans,
+            sortTrans: env._vf.sortTrans,
             viewMatrix: mat_view,
             projMatrix: mat_proj,
             sceneMatrix: mat_scene,

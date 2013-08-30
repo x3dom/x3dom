@@ -786,7 +786,9 @@ x3dom.Viewarea.prototype.getProjectionMatrix = function()
 
 x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
 {
-    if (this._scene._vf.frustumCulling == true)
+    var env = this._scene.getEnvironment();
+
+    if (env._vf.frustumCulling == true)
     {
         if (arguments.length == 0) {
             var proj = this.getProjectionMatrix();
@@ -798,9 +800,8 @@ x3dom.Viewarea.prototype.getViewfrustum = function(clipMat)
             return new x3dom.fields.FrustumVolume(clipMat);
         }
     }
-    else {
-        return null;
-    }
+
+    return null;
 };
 
 x3dom.Viewarea.prototype.getWCtoCCMatrix = function()

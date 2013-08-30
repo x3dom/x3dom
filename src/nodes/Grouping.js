@@ -441,6 +441,7 @@ x3dom.registerNodeType(
                 }
                 return this._vf.maxDepth;
             },
+
             collectDrawableObjects: function (transform, drawableCollection, singlePath, invalidateCache, planeMask)
             {
                 // check if multi parent sub-graph, don't cache in that case
@@ -480,11 +481,10 @@ x3dom.registerNodeType(
                         sceneMatrix: drawableCollection.sceneMatrix,
                         frustumCulling: false,
                         smallFeatureThreshold: 0,//1,    // THINKABOUTME
-                        context: drawableCollection.context,
+                        context: drawableCollection.context
                     };
 
                     this.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
-                    gl: drawableCollection.gl
 
                     var i, n = this._childNodes.length;
                     for (i=0; i<n; i++) {
@@ -883,49 +883,33 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
+            // another experimental field for shadow DOM remapping
+            this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
 
-            //VERY VERY experimental field, don't use unles you know exactly what's happening :)
+            ///
+            // TODO: move all following 9 fields over to StaticGroup (or Environment respectively)
+            //VERY VERY experimental field, don't use unless you know exactly what's happening :)
             this.addField_SFBool(ctx, 'useCrossCompiled', false);
             //visualizes bvh box volumes with a line renderer
             this.addField_SFBool(ctx, 'bvhDebug', false);
-
-            // yet another exp. field for shadow dom remapping
-            this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
-            
-            // If TRUE, transparent objects are sorted from back to front
-            this.addField_SFBool(ctx, 'sortTrans', true);
-
-            // If TRUE, objects outside the viewing frustum are ignored
-            this.addField_SFBool(ctx, 'frustumCulling', true);
-
-            // If TRUE, objects smaller than the threshold below are ignored (experimental)
-            this.addField_SFBool(ctx, 'smallFeatureCulling', false);
-
-            // (max) threshold for small feature culling
-            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 10);
-
-            // very experimental field to further reduce rendered objects based on screen size during move
-            this.addField_SFFloat(ctx, 'scaleRenderedIdsOnMove', 1.0);
-
             // experimental If true ARC adjusts rendering parameters
             this.addField_SFBool(ctx, 'enableARC', false);
-
             // define frame-rate range for quality-speed trade-off (experimental)
             this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
             this.addField_SFFloat(ctx, 'maxFrameRate', 62.5);
-
             // 4 exp. factors for controlling speed-performance trade-off
             // factors could be in [0, 1] (and not evaluated if -1)
             this.addField_SFFloat(ctx, 'userDataFactor', -1);
             this.addField_SFFloat(ctx, 'screenSpaceFactor', -1);
             this.addField_SFFloat(ctx, 'drawCountFactor', -1);
-            this.addField_SFFloat(ctx, 'tesselationErrorFactor', -1);
+            this.addField_SFFloat(ctx, 'tessellationErrorFactor', -1);
+            ///
+
             
             this._lastMin = null;
             this._lastMax = null;
             
             this._shadowIdMap = null;
-            //this.drawableObjects = null;    // webgl helper object
             this.drawableCollection = null;
 
             this.arc = null;

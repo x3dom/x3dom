@@ -86,7 +86,7 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
 
         this._arfs.push(
             new x3dom.arc.ARF("screenSpace",
-                0, this._scene._vf.smallFeatureThreshold, -1,
+                0, 10, -1,
                 function()
                 {
                     return that._scene._vf.screenSpaceFactor;
@@ -94,15 +94,14 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                 function(value)
                 {
                     that._scene._vf.screenSpaceFactor = value;
-                }
-                ,
+                },
                 function()
                 {
-                    return that._scene._vf.smallFeatureThreshold;
+                    return that._scene.getEnvironment()._vf.smallFeatureThreshold;
                 },
                 function(value)
                 {
-                    that._scene._vf.smallFeatureThreshold = value;
+                    that._scene.getEnvironment()._vf.smallFeatureThreshold = value;
                 }
             )
         );
@@ -121,11 +120,11 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                 },
                 function()
                 {
-                    return that._scene._vf.scaleRenderedIdsOnMove *100;
+                    return that._scene.getEnvironment()._vf.lowPriorityThreshold * 100;
                 },
                 function(value)
                 {
-                    that._scene._vf.scaleRenderedIdsOnMove = value/100;
+                    that._scene.getEnvironment()._vf.lowPriorityThreshold = value / 100;
                 }
             )
         );
@@ -135,11 +134,11 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                 1,12,-1,
                 function()
                 {
-                    return that._scene._vf.tesselationErrorFactor;
+                    return that._scene._vf.tessellationErrorFactor;
                 },
                 function(value)
                 {
-                    that._scene._vf.tesselationErrorFactor = value;
+                    that._scene._vf.tessellationErrorFactor = value;
                 },
                 //@todo: this factor is a static member of PopGeo... should it belong to scene instead?
                 function()

@@ -378,6 +378,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 {
     //x3dom.debug.logInfo("pressed key " + charCode);
     var nav = this._scene.getNavigationInfo();
+    var env = this._scene.getEnvironment();
 
     switch (charCode)
     {
@@ -432,8 +433,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             this._viewarea.showAll();
             break;
         case  99: /* c, toggle frustum culling */
-            this._scene._vf.frustumCulling = !this._scene._vf.frustumCulling;
-            x3dom.debug.logInfo("Viewfrustum culling " + (this._scene._vf.frustumCulling ? "on" : "off"));
+            env._vf.frustumCulling = !env._vf.frustumCulling;
+            x3dom.debug.logInfo("Viewfrustum culling " + (env._vf.frustumCulling ? "on" : "off"));
             break;
         case  100: /* d, switch on/off buffer view for dbg */
             if (this._viewarea._visDbgBuf === undefined) {
@@ -485,8 +486,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             this._viewarea.resetView();
             break;
         case 115: /* s, toggle small feature culling */
-            this._scene._vf.smallFeatureCulling = !this._scene._vf.smallFeatureCulling;
-            x3dom.debug.logInfo("Small feature culling " + (this._scene._vf.smallFeatureCulling ? "on" : "off"));
+            env._vf.smallFeatureCulling = !env._vf.smallFeatureCulling;
+            x3dom.debug.logInfo("Small feature culling " + (env._vf.smallFeatureCulling ? "on" : "off"));
             break;
         case 116: /* t, light view */
             if (this._nodeBag.lights.length > 0) {
