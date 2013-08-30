@@ -126,7 +126,9 @@ x3dom.registerNodeType(
                 }
 
                 this._mesh._indices[0] = this._vf.index.toGL();
-                this._mesh._invalidate = true;
+
+                this.invalidateVolume();
+
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
                 this._mesh._numCoords = this._mesh._positions[0].length / 3;
 
@@ -172,13 +174,15 @@ x3dom.registerNodeType(
                 }
 
                 this._mesh._numColComponents = numColComponents;
+                this._mesh._lit = false;
+
                 this._mesh._indices[0] = [];
                 this._mesh._positions[0] = positions.toGL();
                 this._mesh._colors[0] = colors.toGL();
                 this._mesh._normals[0] = [];
                 this._mesh._texCoords[0] = [];
-                this._mesh._lit = false;
-                this._mesh._invalidate = true;
+
+                this.invalidateVolume();
                 this._mesh._numCoords = this._mesh._positions[0].length / 3;
 
                 var time1 = new Date().getTime() - time0;
@@ -194,11 +198,12 @@ x3dom.registerNodeType(
                     pnts = this._cf.coord.node._vf.point;
                     
                     this._mesh._positions[0] = pnts.toGL();
-                    
-                    this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {					
-                         node._dirty.positions = true;
+                        node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
                 else if (fieldName == "color")
@@ -466,7 +471,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numCoords = 0;
 
                 for (i=0; i<this._mesh._indices.length; i++) {
@@ -487,11 +492,12 @@ x3dom.registerNodeType(
                     pnts = this._cf.coord.node._vf.point;
                     
                     this._mesh._positions[0] = pnts.toGL();
-                    
-                    this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {					
-                         node._dirty.positions = true;
+                        node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
                 else if (fieldName == "color")
@@ -600,7 +606,7 @@ x3dom.registerNodeType(
                 }
                 posMax = positions.length;
 
-                if (!normPerVert || positions.length > 65535)
+                if (!normPerVert || posMax > 65535)
                 {
                     t = 0;
                     cnt = 0;
@@ -799,7 +805,8 @@ x3dom.registerNodeType(
                     }
                 }
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
+
                 this._mesh._numFaces = 0;
                 this._mesh._numCoords = 0;
                 for (i=0; i<this._mesh._indices.length; i++) {
@@ -828,10 +835,11 @@ x3dom.registerNodeType(
                     this._mesh._positions[0] = pnts.toGL();
                     
                     // tells the mesh that its bbox requires update
-                    this._mesh._invalidate = true;
+                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {					
-                         node._dirty.positions = true;
+                        node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
                 else if (fieldName == "color")
@@ -1020,7 +1028,6 @@ x3dom.registerNodeType(
 						if (indexes[i] == -1) {
 							faceCnt++;
 							this._indexOffset.push(this._mesh._indices[0].length);
-							continue;
 						}
 						else {
 						    this._mesh._indices[0].push(+indexes[i]);
@@ -1045,8 +1052,7 @@ x3dom.registerNodeType(
                     
 					if(normPerVert) {
 						this._mesh._normals[0] = normals.toGL();
-					} 
-                   
+					}
                     
                     if (hasTexCoord) {
                         this._mesh._texCoords[0] = texCoords.toGL();
@@ -1190,6 +1196,8 @@ x3dom.registerNodeType(
 			
 					this._mesh.splitMesh();
 
+                    this.invalidateVolume();
+
                     for (i=0; i<this._mesh._indices.length; i++) {
                         this._mesh._numFaces += this._mesh._indices[i].length / 3;
                         this._mesh._numCoords += this._mesh._positions[i].length / 3;
@@ -1211,7 +1219,6 @@ x3dom.registerNodeType(
                 
 				if ((this._cf.normal.node === null) || (pnts.length > 65535))
                 {
-                    
 					if (fieldName == "coord") {
 						this._mesh._positions[0] = [];
 						this._mesh._indices[0] =[];
@@ -1297,7 +1304,6 @@ x3dom.registerNodeType(
 									faceCnt++;
 									continue;
 								}
-							
 								
 								if (swapOrder) {
 									p1 = indexes[i];
@@ -1449,8 +1455,8 @@ x3dom.registerNodeType(
 							}
 							
 						}
-						
-						this._mesh._invalidate = true;
+
+                        this.invalidateVolume();
 						this._mesh._numFaces = 0;
 						this._mesh._numCoords = 0;
 						
@@ -1461,6 +1467,7 @@ x3dom.registerNodeType(
 		
 						Array.forEach(this._parentNodes, function (node) {
 							node.setAllDirty();
+                            node.invalidateVolume();
 						});
 					}
 					else if (fieldName == "color") {
@@ -1527,8 +1534,8 @@ x3dom.registerNodeType(
 						}); 
 					}  
 					else if (fieldName == "normal") {
-					   var nor = this._cf.normal.node._vf.vector;
-					   var faceCnt = 0;
+					    var nor = this._cf.normal.node._vf.vector;
+					    var faceCnt = 0;
 						var n1 = n2 = n3 = 0;
 						
 						this._mesh._normals[0] = [];
@@ -1641,10 +1648,11 @@ x3dom.registerNodeType(
 						this._mesh._positions[0] = pnts.toGL();
 						
 						// tells the mesh that its bbox requires update
-						this._mesh._invalidate = true;
+                        this.invalidateVolume();
 	
 						Array.forEach(this._parentNodes, function (node) {					
-							 node._dirty.positions = true;
+							node._dirty.positions = true;
+                            node.invalidateVolume();
 						});
 					}
 					else if (fieldName == "color")
