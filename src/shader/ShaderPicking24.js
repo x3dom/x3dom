@@ -61,6 +61,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
 					"uniform vec2 IG_implicitMeshSize;\n" +
 					
 					"void main(void) {\n" +
+                    "   gl_PointSize = 2.0;\n" +
 					"   if (writeShadowIDs > 0.0) {\n" +
                     //      composed id is at least 32 (= 2*16) bit + num bits for max-orig-shape-id
                     "       float ID = (texcoord.y * 65536.0 + texcoord.x) + writeShadowIDs;\n" +
@@ -107,6 +108,7 @@ x3dom.shader.Picking24Shader.prototype.generateVertexShader = function(gl)
                     "varying vec3 idCoord;\n" +
                     
                     "void main(void) {\n" +
+                    "    gl_PointSize = 2.0;\n" +
                     "    if (writeShadowIDs > 0.0) {\n" +
                     //      composed id is at least 32 (= 2*16) bit + num bits for max-orig-shape-id
                     "       float ID = (texcoord.y * 65536.0 + texcoord.x) + writeShadowIDs;\n" +

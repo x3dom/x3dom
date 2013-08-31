@@ -1446,6 +1446,8 @@ x3dom.gfx_webgl = (function () {
         var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
         var bgSize = new x3dom.fields.SFVec3f(1, 1, 1).toGL();
 
+        gl.lineWidth(2);    // bigger lines for better picking
+
         for (var i = 0, n = scene.drawableCollection.length; i < n; i++) {
             var drawable = scene.drawableCollection.get(i);
             var trafo = drawable.transform;
@@ -1591,7 +1593,10 @@ x3dom.gfx_webgl = (function () {
                     this.stateManager.disable(gl.CULL_FACE);
                 }
 
-                if (s_gl.indexes && s_gl.indexes[q]) {
+                if (s_gl.primType == gl.POINTS && (typeof s_gl.primType).toString() != "object") {
+                    gl.drawArrays(gl.POINTS, 0, s_gl.positions[q].length / 3);
+                }
+                else if (s_gl.indexes && s_gl.indexes[q]) {
                     if (s_gl.imageGeometry != 0 ||
                         s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0) {
                         if (s_gl.bitLODGeometry != 0 && s_geo._vf.normalPerVertex === false) {
@@ -1652,6 +1657,8 @@ x3dom.gfx_webgl = (function () {
                 }
             }
         }
+
+        gl.lineWidth(1);
         gl.flush();
 
         try {
@@ -1978,7 +1985,6 @@ x3dom.gfx_webgl = (function () {
                 var texTrafo = s_app.texTransformMatrix();
                 sp.texTrafoMatrix = texTrafo.toGL();
             }
-
         } // STATE_SWITCH_BIND
 
         // TODO; FIXME; what if geometry with split mesh has dynamic fields?
@@ -2208,7 +2214,6 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
-
         } // STATE_SWITCH_UNBIND
     };
 
@@ -2234,7 +2239,7 @@ x3dom.gfx_webgl = (function () {
             var center = model_view.multMatrixPnt(popGeo._vf.position);
 
             var tightRad   = model_view.multMatrixVec(popGeo._vf.size).length()      * 0.5;
-            var largestRad = model_view.multMatrixVec(popGeo._vf.maxBBSize).length() * 0.5
+            var largestRad = model_view.multMatrixVec(popGeo._vf.maxBBSize).length() * 0.5;
 
             //distance is estimated conservatively using the bounding sphere
             var dist = Math.max(-center.z - tightRad, near);

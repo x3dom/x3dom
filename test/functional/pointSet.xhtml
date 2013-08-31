@@ -90,7 +90,9 @@
     <div class="group"> 
 	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="someUniqueId" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="400px" style="border: 1px solid #000; background-color: darkslategray;">
         <Scene>
-            <Shape>
+            <Shape onmouseover="document.getElementById('output').innerHTML=' pnt over';"
+                   onmouseout="document.getElementById('output').innerHTML=' pnt out';"
+                   onclick="document.getElementById('output').innerHTML=' pnt click';">
                 <PointSet>
                     <Coordinate point='0 0 0 2 2 2 3 3 3'/>
                     <Color color='1 0 0 1 0 0 1 0 0'/>
@@ -126,6 +128,7 @@
     ]]></script>
     <p> &nbsp; 
 	<input type="button" id="col" value="Change" onclick="setCol();" />
+	<div id="output">&nbsp;</div>
 	</p>
 </body>
 </html>
