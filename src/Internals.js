@@ -10,7 +10,7 @@
  */
 
 /*
- * @namespace Namepsace container for x3dom objects.
+ * @namespace Namespace container for x3dom objects.
  */
 var x3dom = {
     canvases: []
@@ -34,16 +34,16 @@ x3dom.components = {};
 /** Cache for primitive nodes (Box, Sphere, etc.) */
 x3dom.geoCache = [];
 
-/** Stores informations about Browser and Hardware capabilities */
+/** Stores information about Browser and hardware capabilities */
 x3dom.caps = { PLATFORM: navigator.platform, AGENT: navigator.userAgent };
 
 /** Registers the node defined by @p nodeDef.
 
     The node is registered with the given @p nodeTypeName and @p componentName.
 
-    @param nodeTypeName the name of the nodetype (e.g. Material, Shape, ...)
-    @param componentName the name of the component the nodetype belongs to
-    @param nodeDef the definition of the nodetype
+    @param nodeTypeName the name of the node type (e.g. Material, Shape, ...)
+    @param componentName the name of the component the node type belongs to
+    @param nodeDef the definition of the node type
  */
 x3dom.registerNodeType = function(nodeTypeName, componentName, nodeDef) {
     //console.log("Registering nodetype [" + nodeTypeName + "] in component [" + componentName + "]");
@@ -100,7 +100,7 @@ x3dom.extend = function(f) {
  * specified element <tt>e</tt>.
  *
  * Parameters:
- *     oElm       - The element on wich to compute the CSS property
+ *     oElm       - The element on which to compute the CSS property
  *     strCssRule - The name of the CSS property
  *
  *	Returns:
@@ -181,7 +181,7 @@ x3dom.getGlobal = function() { return (function(){ return this;}).call(null); };
 
 
 /**
- * Load javascript file either by performing an syncronous jax request
+ * Load javascript file either by performing an synchronous jax request
  * an eval'ing the response or by dynamically creating a <script> tag.
  *
  * CAUTION: This function is a possible source for Cross-Site
@@ -199,17 +199,12 @@ x3dom.getGlobal = function() { return (function(){ return this;}).call(null); };
  *                     set to false to use the script i
  */
 x3dom.loadJS = function(src, path_prefix, blocking) {
-    var blocking = (blocking === false) ? blocking : true;   // default to truye
+    var blocking = (blocking === false) ? blocking : true;   // default to true
 
     if (blocking) {
-        var req;
         var url = (path_prefix) ? path_prefix.trim() + src : src;
 
-        if (window.XMLHttpRequest) {
-            req = new XMLHttpRequest();
-        } else {
-            req = new ActiveXObject("Microsoft.XMLHTTP");
-        }
+        var req = new XMLHttpRequest();
 
         if (req) {
             // third parameter false = synchronous/blocking call
@@ -234,7 +229,7 @@ x3dom.loadJS = function(src, path_prefix, blocking) {
 //        head.appendChild(script);
             head.appendChild(script, head.firstChild);
         } else {
-            alert("No document object found. Can't load components");
+            alert("No document object found. Can't load components!");
             //x3dom.debug.logError("No document object found. Can't load components");
         }
     }
@@ -264,8 +259,9 @@ window.requestAnimFrame = (function() {
            };
 })();
 
-
-/// toggle full-screen mode
+/**
+ * Toggle full-screen mode
+ */
 x3dom.toggleFullScreen = function() {
     if (document.fullScreen || document.mozFullScreen || document.webkitIsFullScreen) {
         if (document.cancelFullScreen) {

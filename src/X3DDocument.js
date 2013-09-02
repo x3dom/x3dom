@@ -121,7 +121,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     doc.needRender = true;
                 }
             }
-            else if (e.target.localName && e.target.localName.toUpperCase() == "ROUTE") {
+            else if (e.target && e.target.localName &&
+                     e.target.localName.toUpperCase() == "ROUTE" && e.target._nodeNameSpace) {
                 x3dom.debug.logError("Remove ROUTE NYI");   // TODO
             }
         },
