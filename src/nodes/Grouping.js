@@ -886,33 +886,10 @@ x3dom.registerNodeType(
             // another experimental field for shadow DOM remapping
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
 
-            ///
-            // TODO: move all following 9 fields over to StaticGroup (or Environment respectively)
-            //VERY VERY experimental field, don't use unless you know exactly what's happening :)
-            this.addField_SFBool(ctx, 'useCrossCompiled', false);
-            //visualizes bvh box volumes with a line renderer
-            this.addField_SFBool(ctx, 'bvhDebug', false);
-            // experimental If true ARC adjusts rendering parameters
-            this.addField_SFBool(ctx, 'enableARC', false);
-            // define frame-rate range for quality-speed trade-off (experimental)
-            this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
-            this.addField_SFFloat(ctx, 'maxFrameRate', 62.5);
-            // 4 exp. factors for controlling speed-performance trade-off
-            // factors could be in [0, 1] (and not evaluated if -1)
-            this.addField_SFFloat(ctx, 'userDataFactor', -1);
-            this.addField_SFFloat(ctx, 'screenSpaceFactor', -1);
-            this.addField_SFFloat(ctx, 'drawCountFactor', -1);
-            this.addField_SFFloat(ctx, 'tessellationErrorFactor', -1);
-            ///
-
-            
             this._lastMin = null;
             this._lastMax = null;
             
             this._shadowIdMap = null;
-            this.drawableCollection = null;
-
-            this.arc = null;
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */

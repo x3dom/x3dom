@@ -160,10 +160,23 @@ x3dom.registerNodeType(
 
             // defaults can be >0 since only used upon activation
             this.addField_SFFloat(ctx, 'smallFeatureThreshold', 10.0);
-            this.addField_SFFloat(ctx, 'occlusionCoveredThreshold', 0.0);
+            this.addField_SFFloat(ctx, 'occlusionVisibilityThreshold', 0.0);
             // previously was scaleRenderedIdsOnMove; percentage of objects to be rendered, in [0,1]
             this.addField_SFFloat(ctx, 'lowPriorityThreshold', 1.0);     // 1.0 means everything is rendered
             this.addField_SFFloat(ctx, 'tessellationErrorThreshold', 0.0);
+
+            // experimental If true ARC adjusts rendering parameters
+            this.addField_SFBool(ctx, 'enableARC', false);
+            // define frame-rate range for quality-speed trade-off (experimental)
+            this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
+            this.addField_SFFloat(ctx, 'maxFrameRate', 62.5);
+            // 4 exp. factors for controlling speed-performance trade-off
+            // factors could be in [0, 1] (and not evaluated if -1)
+            this.addField_SFFloat(ctx, 'userDataFactor', -1);
+            this.addField_SFFloat(ctx, 'smallFeatureFactor', -1);
+            this.addField_SFFloat(ctx, 'occlusionVisibilityFactor', -1);
+            this.addField_SFFloat(ctx, 'lowPriorityFactor', -1);
+            this.addField_SFFloat(ctx, 'tessellationErrorFactor', -1);
         }
     )
 );
