@@ -38,8 +38,12 @@ x3dom.gfx_webgl = (function () {
     /*****************************************************************************
      * Setup the 3D context and init some things
      *****************************************************************************/
-    function setupContext(canvas, forbidMobileShaders, forceMobileShaders, x3dElem) {
+    function setupContext(canvas, forbidMobileShaders, forceMobileShaders,tryWebGL2, x3dElem) {
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
+
+        if(tryWebGL2)
+            validContextNames = ['experimental-webgl2'].concat(validContextNames);
+
         var ctx = null;
         // Context creation params
         var ctxAttribs = {
