@@ -154,7 +154,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'tesselationDetailCulling', false);
 
             this.addField_SFFloat(ctx, 'smallFeatureThreshold', 0.0);
-            this.addField_SFFloat(ctx, 'occlusionVisibilityThreshold', 0.0);
+            this.addField_SFFloat(ctx, 'occlusionCoveredThreshold', 0.0);
             this.addField_SFFloat(ctx, 'lowPriorityThreshold', 0.0);
             this.addField_SFFloat(ctx, 'tesselationErrorThreshold', 0.0);
         },

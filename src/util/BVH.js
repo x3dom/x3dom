@@ -596,8 +596,6 @@ x3dom.bvh.Culler = defineClass(
         this.scene = scene;
         this.settings = settings;
 
-        this.frameId = 0;
-
         this.compileSetup = new Module.CompileSetup();
         this.compileSetup.poolSize = this.drawableCollection.length;
         this.compileSetup.debug = this.settings.debug;
@@ -667,7 +665,7 @@ x3dom.bvh.Culler = defineClass(
             {
                 drawable: drawable,
 
-                addDrawableToCollection : function(coverage)
+                addDrawableToCollection : function( coverage)
                 {
                     this.drawable.priority = coverage;
                     that.drawableCollection.addDrawable(this.drawable);
@@ -733,12 +731,7 @@ x3dom.bvh.Culler = defineClass(
             this.traverseSetup.occlusionCulling = env._vf.occlusionCulling;
 
             this.traverseSetup.smallFeatureThreshold = env._vf.smallFeatureThreshold;
-
             //this.traverseSetup.occlusionCoveredThreshold = env.occlusionCoveredThreshold;
-
-            this.traverseSetup.useRenderQueue = false;
-            this.traverseSetup.frameId = this.frameId++;
-            this.traverseSetup.traverserType = Module.TraverserType.DistanceQueue;
 
             this.culler.cull(this.traverseSetup);
 
