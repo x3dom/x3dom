@@ -281,6 +281,13 @@ x3dom.Moveable.prototype.move = function(event) {
             // TODO; what about object rotation like SpaceSensor?
 
             if (track) {
+                if (that._gridSize > 0) {
+                    var x = that._gridSize * Math.round(track.x / that._gridSize);
+                    var y = that._gridSize * Math.round(track.y / that._gridSize);
+                    var z = that._gridSize * Math.round(track.z / that._gridSize);
+                    track = new x3dom.fields.SFVec3f(x, y, z);
+                }
+
                 if (!that._matrixTrafo)
                     that._moveable.setAttribute("translation", track.toString());
                 else {
