@@ -595,6 +595,7 @@ x3dom.bvh.Culler = defineClass(
         this.drawableCollection = drawableCollection;
         this.scene = scene;
         this.settings = settings;
+        this.frameId = 0;
 
         this.compileSetup = new Module.CompileSetup();
         this.compileSetup.poolSize = this.drawableCollection.length;
@@ -665,7 +666,7 @@ x3dom.bvh.Culler = defineClass(
             {
                 drawable: drawable,
 
-                addDrawableToCollection : function( coverage)
+                addDrawableToCollection : function(coverage)
                 {
                     this.drawable.priority = coverage;
                     that.drawableCollection.addDrawable(this.drawable);
@@ -721,17 +722,25 @@ x3dom.bvh.Culler = defineClass(
             );
             this.traverseSetup.setViewFrustum(vf);
 
+            //set calculation parameters
             this.traverseSetup.pixelHeightAtDistOne = this.drawableCollection.pixelHeightAtDistOne;
             this.traverseSetup.nearClippingPlane = this.drawableCollection.near;
 
             var env = this.scene.getEnvironment();
 
+            //setup culling methods
             this.traverseSetup.viewFrustumCulling = env._vf.frustumCulling;
             this.traverseSetup.smallFeatureCulling = env._vf.smallFeatureCulling;
             this.traverseSetup.occlusionCulling = env._vf.occlusionCulling;
 
+            //set up parameters
             this.traverseSetup.smallFeatureThreshold = env._vf.smallFeatureThreshold;
-            //this.traverseSetup.occlusionCoveredThreshold = env.occlusionCoveredThreshold;
+            this.traverseSetup.occlusionCoveredThreshold = env.occlusionVisibilityThreshold;
+
+            //set up traverser
+            this.traverseSetup.useRenderQueue = false;
+            this.traverseSetup.frameId = this.frameId++;
+            this.traverseSetup.traverserType = Module.TraverserType.DistanceQueue;
 
             this.culler.cull(this.traverseSetup);
 
