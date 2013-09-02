@@ -42,7 +42,8 @@ x3dom.gfx_webgl = (function () {
         var validContextNames = ['moz-webgl', 'webkit-3d', 'experimental-webgl', 'webgl'];
         var ctx = null;
         // Context creation params
-        var ctxAttribs = { alpha: true,
+        var ctxAttribs = {
+            alpha: true,
             depth: true,
             stencil: true,
             antialias: true,
@@ -57,12 +58,6 @@ x3dom.gfx_webgl = (function () {
                     var newCtx = new Context(ctx, canvas, 'webgl', x3dElem);
 
                     try {
-                        x3dom.debug.logInfo("\nVendor: " + ctx.getParameter(ctx.VENDOR) + ", " +
-                            "Renderer: " + ctx.getParameter(ctx.RENDERER) + ", " +
-                            "Version: " + ctx.getParameter(ctx.VERSION) + ", " +
-                            "ShadingLangV.: " + ctx.getParameter(ctx.SHADING_LANGUAGE_VERSION)
-                            + ", " + "\nExtensions: " + ctx.getSupportedExtensions());
-
                         //Save CAPS
                         x3dom.caps.VENDOR = ctx.getParameter(ctx.VENDOR);
                         x3dom.caps.VERSION = ctx.getParameter(ctx.VERSION);
@@ -90,11 +85,15 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
 
-                        //TODO remove if fp_textures work again in all browsers
-                        /*if (window.chrome) {
-                            x3dom.caps.FP_TEXTURES = null;
-                            x3dom.debug.logWarning("Floating point textures currently disabled on Chrome due to FBO problems.");
-                        }*/
+                        // TODO; check this when consistent again in all browsers
+                        if (!window.chrome && !x3dom.caps.FPL_TEXTURES) {
+                            x3dom.caps.FPL_TEXTURES = {};
+                        }
+
+                        x3dom.debug.logInfo("\nVendor: " + x3dom.caps.VENDOR + ", " +
+                            "Renderer: " + x3dom.caps.RENDERER + ", " + "Version: " + x3dom.caps.VERSION + ", " +
+                            "ShadingLangV.: " + x3dom.caps.SHADING_LANGUAGE_VERSION
+                            + ", " + "\nExtensions: " + x3dom.caps.EXTENSIONS);
 
                         x3dom.caps.MOBILE = (function (a) {
                             if (/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) {
@@ -1447,6 +1446,8 @@ x3dom.gfx_webgl = (function () {
         var bgCenter = new x3dom.fields.SFVec3f(0, 0, 0).toGL();
         var bgSize = new x3dom.fields.SFVec3f(1, 1, 1).toGL();
 
+        gl.lineWidth(2);    // bigger lines for better picking
+
         for (var i = 0, n = scene.drawableCollection.length; i < n; i++) {
             var drawable = scene.drawableCollection.get(i);
             var trafo = drawable.transform;
@@ -1592,7 +1593,10 @@ x3dom.gfx_webgl = (function () {
                     this.stateManager.disable(gl.CULL_FACE);
                 }
 
-                if (s_gl.indexes && s_gl.indexes[q]) {
+                if (s_gl.primType == gl.POINTS && (typeof s_gl.primType).toString() != "object") {
+                    gl.drawArrays(gl.POINTS, 0, s_gl.positions[q].length / 3);
+                }
+                else if (s_gl.indexes && s_gl.indexes[q]) {
                     if (s_gl.imageGeometry != 0 ||
                         s_gl.binaryGeometry < 0 || s_gl.popGeometry < 0 || s_gl.bitLODGeometry < 0) {
                         if (s_gl.bitLODGeometry != 0 && s_geo._vf.normalPerVertex === false) {
@@ -1653,6 +1657,8 @@ x3dom.gfx_webgl = (function () {
                 }
             }
         }
+
+        gl.lineWidth(1);
         gl.flush();
 
         try {
@@ -1979,7 +1985,6 @@ x3dom.gfx_webgl = (function () {
                 var texTrafo = s_app.texTransformMatrix();
                 sp.texTrafoMatrix = texTrafo.toGL();
             }
-
         } // STATE_SWITCH_BIND
 
         // TODO; FIXME; what if geometry with split mesh has dynamic fields?
@@ -2209,7 +2214,6 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
-
         } // STATE_SWITCH_UNBIND
     };
 
@@ -2235,7 +2239,7 @@ x3dom.gfx_webgl = (function () {
             var center = model_view.multMatrixPnt(popGeo._vf.position);
 
             var tightRad   = model_view.multMatrixVec(popGeo._vf.size).length()      * 0.5;
-            var largestRad = model_view.multMatrixVec(popGeo._vf.maxBBSize).length() * 0.5
+            var largestRad = model_view.multMatrixVec(popGeo._vf.maxBBSize).length() * 0.5;
 
             //distance is estimated conservatively using the bounding sphere
             var dist = Math.max(-center.z - tightRad, near);
@@ -2665,12 +2669,10 @@ x3dom.gfx_webgl = (function () {
         var rt_tex, rtl_i, rtl_n = rentex.length;
 
         var type = gl.UNSIGNED_BYTE;
-        if (x3dom.caps.FP_TEXTURES && x3dom.caps.FPL_TEXTURES) {
-            type = gl.FLOAT;
-        }
-
         var shadowType = gl.UNSIGNED_BYTE;
+
         if (x3dom.caps.FP_TEXTURES && x3dom.caps.FPL_TEXTURES && !x3dom.caps.MOBILE) {
+            type = gl.FLOAT;
             shadowType = gl.FLOAT;
         }
 
@@ -2923,21 +2925,22 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Collect drawables (traverse)
         //===========================================================================
+        var env = scene.getEnvironment();
+
         scene.drawableCollection = null;  // Always update needed?
 
         if (!scene.drawableCollection)
         {
             var drawableCollectionConfig = {
                 viewArea: viewarea,
-                sortTrans: scene._vf.sortTrans,
+                sortTrans: env._vf.sortTrans,
                 viewMatrix: mat_view,
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
                 frustumCulling: true,
-                smallFeatureThreshold: scene._vf.smallFeatureCulling ? scene._vf.smallFeatureThreshold : 1,
+                smallFeatureThreshold: env._vf.smallFeatureCulling ? env._vf.smallFeatureThreshold : 1,
                 context: this,
                 gl: gl
-                // TODO: what about Flash?
             };
 
             scene.drawableCollection = new x3dom.DrawableCollection(drawableCollectionConfig);
@@ -3057,8 +3060,11 @@ x3dom.gfx_webgl = (function () {
 
         // very experimental prio culling, currently coupled with small feature culling
         // TODO; what about shadows, picking etc. (but picking needs all objects)
-        if (scene._vf.smallFeatureCulling && scene._vf.scaleRenderedIdsOnMove < 1 && viewarea.isMoving())
-            n = Math.floor(n * scene._vf.scaleRenderedIdsOnMove);
+        if (env._vf.smallFeatureCulling && env._vf.lowPriorityThreshold < 1 && viewarea.isMoving()) {
+            n = Math.floor(n * env._vf.lowPriorityThreshold);
+            if (n == 0 && scene.drawableCollection.length > 0)
+                n = 1;    // render at least one object
+        }
 
         for (i = 0; i < n; i++) {
             //var obj = scene.drawableObjects[zPos[i][0]];
@@ -3323,9 +3329,11 @@ x3dom.gfx_webgl = (function () {
             }
         }
         else {
+            var env = scene.getEnvironment();
+
             var drawableCollectionConfig = {
                 viewArea: viewarea,
-                sortTrans: scene._vf.sortTrans,
+                sortTrans: env._vf.sortTrans,
                 viewMatrix: mat_view,
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
@@ -3333,7 +3341,6 @@ x3dom.gfx_webgl = (function () {
                 smallFeatureThreshold: 1,
                 context: this,
                 gl: gl
-                // TODO: what about Flash?
             };
 
             locScene.numberOfNodes = 0;

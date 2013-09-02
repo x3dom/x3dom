@@ -1797,23 +1797,19 @@ x3dom.registerNodeType(
 			
 			doIntersect: function(line)
             {
-                if (this._pickable) {
-                    var min = this.getMin();
-                    var max = this.getMax();
-                    
-                    var isect = line.intersect(min, max);
-                    
-                    if (isect && line.enter < line.dist) {
-                        line.dist = line.enter;
-                        line.hitObject = this;
-                        line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
-                        return true;
-                    }
-                    else {
-                        return false;
-                    }
+                var min = this.getMin();
+                var max = this.getMax();
+                var isect = line.intersect(min, max);
+
+                if (isect && line.enter < line.dist) {
+                    line.dist = line.enter;
+                    line.hitObject = this;
+                    line.hitPoint = line.pos.add(line.dir.multiply(line.enter));
+                    return true;
                 }
-                return false;
+                else {
+                    return false;
+                }
             },
 			
 			getPrecisionMax: function(type)
@@ -4024,92 +4020,6 @@ x3dom.registerNodeType(
                     });
                 }
             }
-        }
-    )
-);
-
-/* ### SphereSegment ### */
-x3dom.registerNodeType(
-    "SphereSegment",
-    "Geometry3D",
-    defineClass(x3dom.nodeTypes.X3DSpatialGeometryNode,
-        function (ctx) {
-            x3dom.nodeTypes.SphereSegment.superClass.call(this, ctx);
-
-            this.addField_SFFloat(ctx, 'radius', 1);
-            this.addField_MFFloat(ctx, 'longitude', []);
-            this.addField_MFFloat(ctx, 'latitude', []);
-            this.addField_SFVec2f(ctx, 'stepSize', 1, 1);
-            
-            var r = this._vf.radius;
-            var longs = this._vf.longitude;
-            var lats = this._vf.latitude; 
-            
-			var subx = longs.length, suby = lats.length;
-			
-            var latNumber, longNumber;
-			var latitudeBands = suby;
-			var longitudeBands = subx;
-
-            //x3dom.debug.logInfo("Latitude bands:  "+ latitudeBands);
-            //x3dom.debug.logInfo("Longitude bands: "+ longitudeBands);
-
-			var theta, sinTheta, cosTheta;
-			var phi, sinPhi, cosPhi;
-			var x, y, z, u, v;
-
-			for (latNumber = 0; latNumber <= latitudeBands; latNumber++) {
-				theta = ((lats[latNumber]+90) * Math.PI) / 180;
-				sinTheta = Math.sin(theta);
-				cosTheta = Math.cos(theta);
-
-				for (longNumber = 0; longNumber <= longitudeBands; longNumber++) {
-					//phi = ((longs[longNumber]+90) * Math.PI) / -180;
-					//phi = (longNumber * 2.0 * Math.PI) / longitudeBands;
-					phi = ((longs[longNumber]) * Math.PI) / 180;
-					
-					sinPhi = Math.sin(phi);
-					cosPhi = Math.cos(phi);
-
-					x = -cosPhi * sinTheta;
-					y = -cosTheta;
-					z = -sinPhi * sinTheta;
-
-					//u = 0.25 - ((1.0 * longNumber) / longitudeBands);
-					u = longNumber / (longitudeBands-1);
-					v = latNumber / (latitudeBands-1);
-
-					this._mesh._positions[0].push(r * x);
-					this._mesh._positions[0].push(r * y);
-					this._mesh._positions[0].push(r * z);
-					this._mesh._normals[0].push(x);
-					this._mesh._normals[0].push(y);
-					this._mesh._normals[0].push(z);
-					this._mesh._texCoords[0].push(u);
-					this._mesh._texCoords[0].push(v);
-				}
-			}
-
-			var first, second;
-
-			for (latNumber = 0; latNumber < latitudeBands; latNumber++) {
-				for (longNumber = 0; longNumber < longitudeBands; longNumber++) {
-					first = (latNumber * (longitudeBands + 1)) + longNumber;
-					second = first + longitudeBands + 1;
-
-					this._mesh._indices[0].push(first);
-					this._mesh._indices[0].push(second);
-					this._mesh._indices[0].push(first + 1);
-
-					this._mesh._indices[0].push(second);
-					this._mesh._indices[0].push(second + 1);
-					this._mesh._indices[0].push(first + 1);
-				}
-			}
-			
-			this._mesh._invalidate = true;
-			this._mesh._numFaces = this._mesh._indices[0].length / 3;
-			this._mesh._numCoords = this._mesh._positions[0].length / 3;
         }
     )
 );

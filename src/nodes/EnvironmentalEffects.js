@@ -146,19 +146,24 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.Environment.superClass.call(this, ctx);
 
+            // If TRUE, transparent objects are sorted from back to front (allows explicitly disabling sorting)
+            this.addField_SFBool(ctx, 'sortTrans', true);
+
             // boolean flags for feature (de)activation
-            this.addField_SFBool(ctx, 'viewFrustumCulling', true);
+            // If TRUE, objects outside the viewing frustum are ignored
+            this.addField_SFBool(ctx, 'frustumCulling', true);
+            // If TRUE, objects smaller than the threshold below are ignored
             this.addField_SFBool(ctx, 'smallFeatureCulling', false);
             this.addField_SFBool(ctx, 'occlusionCulling', false);
-            this.addField_SFBool(ctx, 'lowPriorityCulling', false);
-            this.addField_SFBool(ctx, 'tesselationDetailCulling', false);
+            this.addField_SFBool(ctx, 'lowPriorityCulling', false);  // TODO; check flag before using lowPriorityThreshold
+            this.addField_SFBool(ctx, 'tessellationDetailCulling', false);
 
-            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 0.0);
+            // defaults can be >0 since only used upon activation
+            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 10.0);
             this.addField_SFFloat(ctx, 'occlusionCoveredThreshold', 0.0);
-            this.addField_SFFloat(ctx, 'lowPriorityThreshold', 0.0);
-            this.addField_SFFloat(ctx, 'tesselationErrorThreshold', 0.0);
-        },
-        {
+            // previously was scaleRenderedIdsOnMove; percentage of objects to be rendered, in [0,1]
+            this.addField_SFFloat(ctx, 'lowPriorityThreshold', 1.0);     // 1.0 means everything is rendered
+            this.addField_SFFloat(ctx, 'tessellationErrorThreshold', 0.0);
         }
     )
 );

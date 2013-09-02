@@ -61,6 +61,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
 					"uniform vec2 IG_implicitMeshSize;\n" +
 					
 					"void main(void) {\n" +
+					"   gl_PointSize = 2.0;\n" +
 					"   if (writeShadowIDs > 0.0) {\n" +
 					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +
@@ -102,6 +103,7 @@ x3dom.shader.PickingShader.prototype.generateVertexShader = function(gl)
                     "varying vec2 idCoord;\n" +
                     
                     "void main(void) {\n" +
+                    "    gl_PointSize = 2.0;\n" +
 					"    if (writeShadowIDs > 0.0) {\n" +
 					"	    idCoord = vec2((texcoord.x + writeShadowIDs) / 256.0);\n" +
     				"       idCoord.x = floor(idCoord.x) / 255.0;\n" +

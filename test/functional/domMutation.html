@@ -1,9 +1,7 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
-	<title>PointSet test</title>
-
+	<title>DOM Mutation test</title>
     <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
@@ -79,56 +77,174 @@
 <script type="text/javascript" src="../../src/nodes/Terrain.js"></script>
 <script type="text/javascript" src="../../src/Docs.js"></script>
 <!-- END:X3DOM -->
-
-    <!-- BEGIN:TEST -->
     <script type="text/javascript" src="media/js/tests.js"></script>
-    <!-- END:TEST -->
-
 </head>
+       
 <body>
-    <h1>Point set test</h1>
-    <div class="group"> 
-	    <X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="someUniqueId" showStat="true" showLog="true" x="0px" y="0px" width="400px" height="400px" style="border: 1px solid #000; background-color: darkslategray;">
-        <Scene>
-            <Shape onmouseover="document.getElementById('output').innerHTML=' pnt over';"
-                   onmouseout="document.getElementById('output').innerHTML=' pnt out';"
-                   onclick="document.getElementById('output').innerHTML=' pnt click';">
-                <PointSet>
-                    <Coordinate point='0 0 0 2 2 2 3 3 3'/>
-                    <Color color='1 0 0 1 0 0 1 0 0'/>
-                </PointSet>
-            </Shape>
-            <Transform translation='2 0 0'>
-                <Shape>
-                    <PointSet>
-                        <Coordinate point='0 0 0 2 2 2 3 3 3'/>
-                        <Color color='1 1 0 1 1 0 1 1 0'/>
-                    </PointSet>
-                </Shape>
-            </Transform>
-            <Viewpoint position='2.5 1.5 9.03553' orientation='0 0 1 0' />
-        </Scene>
-      </X3D>
-    </div>
-
-
-    <script type="text/javascript"><![CDATA[
-    function setCol()
+    <h1>DOM Mutation test</h1>
+	<div class="group"> 
+		<X3D xmlns="http://www.web3d.org/specifications/x3d-namespace" id="boxes" showStat="false" showLog="true" x="0px" y="0px" width="400px" height="300px">
+			<Scene>
+				<Background DEF='bgnd' transparency='0' skyColor='0.2 0.7 0.4'></Background>
+				<Group DEF="root" id='root'>
+					<Transform>
+                        <Shape id='ball'>
+                            <Appearance>
+                                <Material diffuseColor="1 0 0" specularColor=".5 .5 .5" transparency="0" />
+                            </Appearance>
+                            <Sphere/>
+                        </Shape>
+                    </Transform>
+				</Group>
+			</Scene>
+		</X3D>
+	</div>
+	
+	<script type="text/javascript">
+	
+	var solid = true;
+	
+	function toggleRendering()
 	{
-		var mat = document.getElementsByTagName("Color");
+		var button = document.getElementById("col");
 		
-		mat[0].setAttribute("color", '0 1 0 1 1 1 0 1 0');
-        
-        var pnt = document.getElementsByTagName("Coordinate");
-        
-        pnt[0].setAttribute("point", '0 1 1 2 2 2 3 2 2');
+		solid = !solid;
+		
+		if (solid)
+			button.value = "Blue";
+		else
+			button.value = "Red";
+		
+		var mat = document.getElementsByTagName("Material");
+		var n = mat.length;
+		
+		var aMat = mat[0];
+		aMat.setAttribute("diffuseColor", (!solid ? "0 0 1" : "1 0 0"));
 		
 		return false;
 	}
-    ]]></script>
-    <p> &nbsp; 
-	<input type="button" id="col" value="Change" onclick="setCol();" />
-	<div id="output">&nbsp;</div>
-	</p>
+    
+    var pos = -4;
+    
+    function addChild()
+    {
+        var t = document.createElement('Transform');
+        t.setAttribute("translation", pos+" 0 0");
+        pos += 2;
+        var s = document.createElement('Shape');
+        t.appendChild(s);
+        var b = document.createElement('Cone');
+        s.appendChild(b);
+        var a = document.createElement('Appearance');
+        s.appendChild(a);
+        var m = document.createElement('Material');
+        a.appendChild(m);
+        var r = document.getElementById("root");
+        r.appendChild(t);
+        
+        return false;
+    }
+
+    var render = true, high = true;
+    
+    function toggleRender()
+    {
+        var elem = document.getElementById("ball");
+        
+        render = !render;
+        
+        //elem.setAttribute("render", render.toString());
+        elem.setVisibility(render);
+        
+        return false;
+    }
+
+    function highlight(col)
+    {
+        var elem = document.getElementById("root");
+        
+        elem.highlight(high, col);
+        
+        high = !high;
+        
+        return false;
+    }
+    
+    function groupNodes()
+    {
+        var transformNodes;
+        var rootNode;
+        var groupNode;
+        var i;
+        
+        transformNodes = document.getElementsByTagName("Transform");        
+        rootNode       = document.getElementById("root");
+        groupNode      = document.createElement("Transform");
+        
+        groupNode.setAttribute("id", "THE_NEW_TRANSFORM");
+        groupNode.setAttribute("translation", "1 0.5 -3");
+        
+        for (i = 0; i < transformNodes.length; ++i)
+        {
+            rootNode.removeChild(transformNodes[i]);
+            groupNode.appendChild(transformNodes[i]);
+        }
+        
+        rootNode.appendChild(groupNode);
+    }
+    
+    function ungroupNodes()
+    {
+        var transformNodes;
+        var rootNode;
+        var groupNode;
+        var i;
+        
+        groupNode = document.getElementById("THE_NEW_TRANSFORM");
+        
+        if (typeof groupNode !== 'undefined')
+        {
+            transformNodes = document.getElementsByTagName("Transform");        
+            rootNode       = document.getElementById("root");
+        
+            for (i = 0; i < transformNodes.length; ++i)
+            {
+                if (transformNodes[i] !== groupNode)
+                {
+                    groupNode.removeChild(transformNodes[i]);
+                    rootNode.appendChild(transformNodes[i]);
+                }
+            }
+            
+            rootNode.removeChild(groupNode);
+        }
+    }
+    
+    document.onload = function(evt) {
+        //alert("Finished loading X3D scene.\nStart rendering...");
+    };
+	
+	</script>
+	
+	<div class="group">
+	Dynamic material update
+	<input type="button" id="col" value="Change Color" onclick="toggleRendering();" />
+    <br /> 
+	Dynamic childtree update
+	<input type="button" id="child" value="Add Child" onclick="addChild();" />
+    <br /> 
+    Toggle visibility of sphere
+    <input type="button" id="render" value="Change Visibility" onclick="toggleRender();" />
+    <br /> 
+    Toggle highlight of subtree
+    <input type="button" id="highlight" value="Highlight Tree" onclick="highlight('yellow');" />
+    <br /> 
+    Group nodes in DOM
+    <input type="button" id="render" value="Group nodes" onclick="groupNodes();" />    
+    <br />
+    Ungroup nodes in DOM
+    <input type="button" id="render" value="Ungroup nodes" onclick="ungroupNodes();" />    
+    </div>
+
 </body>
 </html>

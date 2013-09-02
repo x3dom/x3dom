@@ -23,6 +23,7 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
     this.viewarea = drawableCollectionConfig.viewArea;
 
     var scene = this.viewarea._scene;
+    var env = scene.getEnvironment();
     var viewpoint = scene.getViewpoint();
 
     this.near = viewpoint.getNear();
@@ -37,7 +38,8 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
     this.frustumCulling = drawableCollectionConfig.frustumCulling && (this.viewFrustum != null);
     this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
 
-    this.sortOpaque = (this.smallFeatureThreshold > 1 && scene._vf.scaleRenderedIdsOnMove < 1);
+    // if (lowPriorityThreshold < 1) sort all potentially visible objects according to priority
+    this.sortOpaque = (this.smallFeatureThreshold > 1 && env._vf.lowPriorityThreshold < 1);
     this.sortTrans = drawableCollectionConfig.sortTrans;
 
     this.prioLevels = 10;

@@ -18,6 +18,7 @@ x3dom.X3DDocument = function(canvas, ctx, settings) {
     this._x3dElem = null;   // backref to <X3D> root element (set on parsing)
     this._scene = null;
     this._viewarea = null;
+    // bag for pro-active elements
     this._nodeBag = {
         timer: [],
         lights: [],
@@ -89,7 +90,6 @@ x3dom.findScene = function(x3dElem) {
 
 
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
-
     var doc = this;
 
     // Test capturing DOM mutation events on the X3D subscene
@@ -378,6 +378,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 {
     //x3dom.debug.logInfo("pressed key " + charCode);
     var nav = this._scene.getNavigationInfo();
+    var env = this._scene.getEnvironment();
 
     switch (charCode)
     {
@@ -386,7 +387,6 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
 			if (states) {
 				states.display();
 			}
-
             x3dom.debug.logInfo("a: show all | d: show helper buffers | s: small feature culling | t: light view | " +
                                 "m: toggle render mode | c: frustum culling | p: intersect type | r: reset view | " +
                                 "e: examine mode | f: fly mode | w: walk mode | h: helicopter mode | o: lookaround | " +
@@ -433,20 +433,15 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             this._viewarea.showAll();
             break;
         case  99: /* c, toggle frustum culling */
-            this._scene._vf.frustumCulling = !this._scene._vf.frustumCulling;
-            x3dom.debug.logInfo("Viewfrustum culling " +
-                    (this._scene._vf.frustumCulling ? "on" : "off"));
+            env._vf.frustumCulling = !env._vf.frustumCulling;
+            x3dom.debug.logInfo("Viewfrustum culling " + (env._vf.frustumCulling ? "on" : "off"));
             break;
         case  100: /* d, switch on/off buffer view for dbg */
             if (this._viewarea._visDbgBuf === undefined) {
                 this._viewarea._visDbgBuf = (this._x3dElem.getAttribute("showLog") === 'true');
             }
-            else {
-                this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
-            }
-
-            x3dom.debug.logContainer.style.display =
-                    (this._viewarea._visDbgBuf === true) ? "block" : "none";
+            this._viewarea._visDbgBuf = !this._viewarea._visDbgBuf;
+            x3dom.debug.logContainer.style.display = (this._viewarea._visDbgBuf == true) ? "block" : "none";
             break;
         case 101: /* e, examine mode */
             nav.setType("examine", this._viewarea);
@@ -464,7 +459,7 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
             nav.setType("lookat", this._viewarea);
             break;
         case 109: /* m, toggle "points" attribute */
-            this._viewarea._points = ++this._viewarea._points % 3; // % 2;
+            this._viewarea._points = ++this._viewarea._points % 3;
             break;
         case 111: /* o, look around like in fly, but don't move */
             nav.setType("lookaround", this._viewarea);
@@ -485,23 +480,18 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
                     this._scene._vf.pickMode = "idBuf";
                     break;
             }
-
-            x3dom.debug.logInfo("Switch pickMode to '" +
-                                this._scene._vf.pickMode + "'.");
+            x3dom.debug.logInfo("Switch pickMode to '" + this._scene._vf.pickMode + "'.");
             break;
         case 114: /* r, reset view */
             this._viewarea.resetView();
             break;
         case 115: /* s, toggle small feature culling */
-            this._scene._vf.smallFeatureCulling = !this._scene._vf.smallFeatureCulling;
-            x3dom.debug.logInfo("Small feature culling " +
-                    (this._scene._vf.smallFeatureCulling ? "on" : "off"));
+            env._vf.smallFeatureCulling = !env._vf.smallFeatureCulling;
+            x3dom.debug.logInfo("Small feature culling " + (env._vf.smallFeatureCulling ? "on" : "off"));
             break;
         case 116: /* t, light view */
-            if (this._nodeBag.lights.length > 0)
-            {
-                this._viewarea.animateTo(this._viewarea.getLightMatrix()[0],
-                                         this._scene.getViewpoint());
+            if (this._nodeBag.lights.length > 0) {
+                this._viewarea.animateTo(this._viewarea.getLightMatrix()[0], this._scene.getViewpoint());
             }
             break;
         case 117: /* u, upright position */
@@ -515,9 +505,8 @@ x3dom.X3DDocument.prototype.onKeyPress = function(charCode)
     			
     			var rotation = new x3dom.fields.Quaternion(0, 0, 1, 0);
     			rotation.setValue(mat_view);
-    			
+    			var rot = rotation.toAxisAngle();
     			var translation = mat_view.e3();
-				var rot = rotation.toAxisAngle();
     			
     			x3dom.debug.logInfo('\n&lt;Viewpoint position="' + translation.x.toFixed(5) + ' '
     			                    + translation.y.toFixed(5) + ' ' + translation.z.toFixed(5) + '" ' +
