@@ -735,7 +735,7 @@ x3dom.bvh.Culler = defineClass(
 
             //set up parameters
             this.traverseSetup.smallFeatureThreshold = env._vf.smallFeatureThreshold;
-            this.traverseSetup.occlusionCoveredThreshold = env.occlusionVisibilityThreshold;
+            //this.traverseSetup.occlusionCoveredThreshold = env.occlusionVisibilityThreshold;
 
             //set up traverser
             this.traverseSetup.useRenderQueue = false;
