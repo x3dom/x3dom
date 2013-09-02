@@ -159,7 +159,7 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'tessellationDetailCulling', false);
 
             // defaults can be >0 since only used upon activation
-            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 10.0);
+            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 1.0);
             this.addField_SFFloat(ctx, 'occlusionVisibilityThreshold', 0.0);
             // previously was scaleRenderedIdsOnMove; percentage of objects to be rendered, in [0,1]
             this.addField_SFFloat(ctx, 'lowPriorityThreshold', 1.0);     // 1.0 means everything is rendered
