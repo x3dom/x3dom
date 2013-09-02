@@ -884,11 +884,6 @@ x3dom.registerNodeType(
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
 
-            //VERY VERY experimental field, don't use unles you know exactly what's happening :)
-            this.addField_SFBool(ctx, 'useCrossCompiled', false);
-            //visualizes bvh box volumes with a line renderer
-            this.addField_SFBool(ctx, 'bvhDebug', false);
-
             // yet another exp. field for shadow dom remapping
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
             
