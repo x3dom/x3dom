@@ -30,9 +30,11 @@ x3dom.registerNodeType(
         this._cfFieldTypes = {};
 
         this._fieldWatchers = {};
-        this._parentNodes = [];
+        this._routes = {};
 
         this._listeners = {};
+
+        this._parentNodes = [];
 
         // FIXME; should be removed and handled by _cf methods
         this._childNodes = [];
@@ -303,26 +305,90 @@ x3dom.registerNodeType(
                 }
             }
 
-            if (! this._fieldWatchers[fromField]) {
-                this._fieldWatchers[fromField] = [];
-            }
-            this._fieldWatchers[fromField].push(
-                function (msg) {
-                    toNode.postMessage(toField, msg);
-                }
-            );
+            var where = this._DEF + "&" + fromField + "&" + toNode._DEF + "&" + toField;
 
-            if (! toNode._fieldWatchers[toField]) {
-                toNode._fieldWatchers[toField] = [];
-            }
-            toNode._fieldWatchers[toField].push(
-                function (msg) {
+            if (!this._routes[where]) {
+                if (!this._fieldWatchers[fromField]) {
+                    this._fieldWatchers[fromField] = [];
+                }
+                this._fieldWatchers[fromField].push(
+                    function (msg) {
+                        toNode.postMessage(toField, msg);
+                    }
+                );
+
+                if (!toNode._fieldWatchers[toField]) {
+                    toNode._fieldWatchers[toField] = [];
+                }
+                toNode._fieldWatchers[toField].push(
                     // FIXME: THIS DOESN'T WORK FOR NODE (_cf) FIELDS
-                    toNode._vf[toField] = msg;
+                    function (msg) {
+                        toNode._vf[toField] = msg;
+                        toNode.fieldChanged(toField);
+                    }
+                );
 
-                    toNode.fieldChanged(toField);
+                // store this route to be able to delete it
+                this._routes[where] = {
+                    from: this._fieldWatchers[fromField].length - 1,
+                    to: toNode._fieldWatchers[toField].length - 1
+                };
+            }
+        },
+
+        removeRoute: function (fromField, toNode, toField) {
+            var pos;
+            var fieldName;
+            var pre = "set_", post = "_changed";
+
+            // again, build correct fromField
+            if (!this._vf[fromField]) {
+                pos = fromField.indexOf(pre);
+                if (pos === 0) {
+                    fieldName = fromField.substr(pre.length, fromField.length - 1);
+                    if (this._vf[fieldName]) {
+                        fromField = fieldName;
+                    }
+                } else {
+                    pos = fromField.indexOf(post);
+                    if (pos > 0) {
+                        fieldName = fromField.substr(0, fromField.length - post.length);
+                        if (this._vf[fieldName]) {
+                            fromField = fieldName;
+                        }
+                    }
                 }
-            );
+            }
+
+            // again, build correct toField
+            if (!toNode._vf[toField]) {
+                pos = toField.indexOf(pre);
+                if (pos === 0) {
+                    fieldName = toField.substr(pre.length, toField.length - 1);
+                    if (toNode._vf[fieldName]) {
+                        toField = fieldName;
+                    }
+                }
+                else {
+                    pos = toField.indexOf(post);
+                    if (pos > 0) {
+                        fieldName = toField.substr(0, toField.length - post.length);
+                        if (toNode._vf[fieldName]) {
+                            toField = fieldName;
+                        }
+                    }
+                }
+            }
+
+            // finally, delete route
+            var where = this._DEF + "&" + fromField + "&" + toNode._DEF + "&" + toField;
+
+            if (this._routes[where]) {
+                this._fieldWatchers[fromField].splice(this._routes[where].from, 1);
+                toNode._fieldWatchers[toField].splice(this._routes[where].to, 1);
+
+                delete this._routes[where];
+            }
         },
 
         fieldChanged: function (fieldName) {
