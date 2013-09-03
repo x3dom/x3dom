@@ -7,7 +7,13 @@ This tutorial shows how to add shadows to your scene and how specific shadow set
 
 Turning on shadows
 ------------------
-To be able to use shadows, you first need a light source. What kind of light source does not matter -- shadows can be used with directional lights and spot lights as well as point lights. Shadow rendering is turned on, when the ``shadowIntensity`` property of a light node is set to a value greater than zero. The higher the setting, the darker the shadows will be. However, be advised that shadow computations are quite expensive and can have noticable impact on the performance of your application.
+To be able to use shadows, you first need a light source. What kind of light source does not matter -- shadows can be used with directional lights and spot lights as well as point lights. Shadow rendering is turned on, when the ``shadowIntensity`` property of a light node is set to a value greater than zero (see code snippet below). The higher the setting, the darker the shadows will be. However, be advised that shadow computations are quite expensive and can have noticable impact on the performance of your application.
+
+.. code-block:: xml
+
+    <directionalLight direction='0 0 -1' intensity='1.0' shadowIntensity='0.7'>
+    </directionalLight>
+
 
 Basic shadow settings
 ---------------------
@@ -25,7 +31,7 @@ With the right combination of ``shadowMapSize``, ``shadowFilterSize`` and ``shad
 The first one -- ``shadowOffset`` -- is used to hide artifacts which may occur in specific scenarios. One of these situations that is escpecially susceptible to inaccuracies is a scene in which the light direction is nearly parallel to an object's surface. By increasing the ``shadowOffset`` the shadow artifacts become less pronounced. However, not only artifacts are affected by this setting, but to some degree the correctly drawn shadows are, too. A high shadow offset can result in light to leak onto objects which should be in shadow. For this reason the default offset value is zero.
 
 Further options to influence shadow computations are given by the light node's ``zNear`` and ``zFar`` properties. These settings determine the placement of the near and far planes of the light projection, i.e. the bounds of the area in which shadow casters are captured. If no such setting is given, the near and far planes are placed automatically. An example scenario where a manual setting of one of these planes might be helpful would be a scene where an object is placed very closely to the light source. If you don't want that object to cast a shadow, the ``zNear`` setting can be set to a value which places the near plane behind that object and thereby excludes it from the shadow computations.
-(Note: if the shadows disappear when a shadow caster leaves the visible view area, then try setting the scene node's ``frustumCulling`` field to false.)
+(Please note: if the shadows disappear when a shadow caster leaves the visible view area, then try setting the `Environment` bindable node's ``frustumCulling`` field to false.)
 
 The last two settings -- ``shadowSplitFactor`` and ``shadowSplitOffset`` -- are additional parameters for cascading. As mentioned before, when using shadow cascades the visible area is split along the z-axis. The ``shadowSplitFactor`` setting determines, how these splits are placed. A setting of zero gives an equidistant placement, a setting of one a logarithmic placement. In most cases a logarithmic placement should achieve better results, since it allocates more resolution to the close range where it is needed the most. However, the equidistant split scheme can still be useful in some scenarios, as the transitions between different cascades are less apparent.
 The ``shadowSplitOffset`` option was introduced, because in some cases the cascades close to the near plane can get quite small. While this is good for shadow quality in that specific cascade, the transition to the next cascade will become all the more apparent. By using the ``shadowSplitOffset`` property, the split positions are moved away from the camera while the computation scheme that is defined by ``shadowSplitFactor`` is still respected.
