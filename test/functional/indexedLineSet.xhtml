@@ -87,7 +87,8 @@
         <Transform>
           <Shape id="grid" onmouseover="document.getElementById('output').innerHTML=' grid over';"
                            onmouseout="document.getElementById('output').innerHTML=' grid out';"
-                           onclick="document.getElementById('output').innerHTML=' grid click';">
+                           onclick="document.getElementById('output').innerHTML=' grid click';
+                           document.getElementById('ils').setAttribute('coordIndex', '0 1 2 3 -1')">
             <Appearance>
               <Material diffuseColor='1 0 0' emissiveColor='1 0 0' shininess='0.078125' specularColor='1 0 0'/>
             </Appearance>
@@ -98,7 +99,7 @@
         </Transform>
       <Transform translation="0 0 2">
           <Shape>
-              <IndexedLineSet coordIndex="0 1 2 3 4 -1">
+              <IndexedLineSet id="ils" coordIndex="0 1 2 3 4 -1">
                   <Coordinate point="0.0 0.0 0.0, 0.0 0.0 -1.0, 1.0 0.0 -1.0, 1.0 0.0
     0.0, 0.0 0.0 0.0, "/>
                   <Color color="0.0 0.0 0.0, 1 1 0.0, 0.0 0.0 1, 0.0 1 0.0, 1 0.0 0.0, "/>
