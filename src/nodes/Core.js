@@ -162,9 +162,9 @@ x3dom.registerNodeType(
                     
                     if (!this._highlightOn) {
                         this._actDiffuseColor.setValues(this._vf.diffuseColor);
-                        this._vf.diffuseColor.setValues(color);
                         this._highlightOn = true;
                     }
+                    this._vf.diffuseColor.setValues(color);
                 }
                 else {
                     if (this._actDiffuseColor !== undefined) {
