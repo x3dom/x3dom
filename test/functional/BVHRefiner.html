@@ -1,7 +1,139 @@
-﻿<html xmlns='http://www.w3.org/1999/xhtml'>
+<html style='width:100%; height:100%; border:0; margin:0; padding:0; float: left; position:fixed; top: -20px; overflow: hidden;' xmlns='http://www.w3.org/1999/xhtml'>
 <head>
     <meta http-equiv='Content-Type' content='text/html;charset=utf-8'/>
 
+    
+     <!-- BEGIN:JQUERY -->
+    <!--<link href="../../../JQuery/css/custom-theme/jquery-ui-1.10.3.custom.css" rel="stylesheet" />
+    <script src="../../../JQuery/js/jquery-1.9.1.js"></script>
+    <script src="../../../JQuery/js/jquery-ui-1.10.3.custom.js"></script>-->
+    <link href="../../example/media/js/jquery-ui.css" rel="stylesheet" />
+    <script src="../../example/media/js/jquery.min.js"></script>
+    <script src="../../example/media/js/jquery-ui.min.js"></script>
+    
+    
+    <script>
+        
+	$(function() {
+		
+		$( "#slider" ).slider({
+			range: "min",
+                        value: 4,
+                        min: 0,
+                        max: 5,
+                        slide: function(event, ui){
+                            document.getElementById("amount").innerHTML = ui.value;
+                            document.getElementById("bvh_refiner").interactionDepth = ui.value;
+                        }
+		});
+                
+	});
+        
+        
+        $(function() {
+		
+		$( "#slider2" ).slider({
+			range: "min",
+                        value: 5,
+                        min: 1,
+                        max: 5,
+                        slide: function(event, ui){
+                            document.getElementById("amount2").innerHTML = ui.value;
+                            document.getElementById("bvh_refiner").maxDepth = ui.value;
+                        }
+		});
+                
+	});
+        
+        
+        $(function() {
+		
+		$( "#slider3" ).slider({
+			range: "min",
+                        value: 2,
+                        min: 0,
+                        max: 5,
+                        slide: function(event, ui){
+                            document.getElementById("amount3").innerHTML = ui.value;
+                            document.getElementById("bvh_refiner").minDepth = ui.value;
+                        }
+		});
+                
+	});
+        
+        
+        
+        $(function() {
+		
+		$( "#slider4" ).slider({
+			range: "min",
+                        value: 10,
+                        min: 1,
+                        max: 20,
+                        slide: function(event, ui){
+                            document.getElementById("amount4").innerHTML = ui.value;
+                            document.getElementById("bvh_refiner").factor = ui.value;
+                        }
+		});
+                
+	});
+        
+        
+        
+        $(function() {
+		
+		$( "#slider5" ).slider({
+			range: "min",
+                        value: 5,
+                        min: 1,
+                        max: 10,
+                        slide: function(event, ui){
+                            document.getElementById("amount5").innerHTML = ui.value;
+                            document.getElementById("bvh_refiner").smoothLoading = 11-ui.value;
+                        }
+		});
+                
+	});
+        
+        
+        
+        $(function() {
+            $( "#accordion" ).accordion({
+              collapsible: true
+            });
+        });
+        
+        
+        function formatNumber(number) {
+            // Info: Die '' sind zwei Hochkommas
+            number = '' + number;
+            if (number.length > 3) {
+                var mod = number.length % 3;
+                var output = (mod > 0 ? (number.substring(0,mod)) : '');
+                for (i=0 ; i < Math.floor(number.length / 3); i++) {
+                    if ((mod == 0) && (i == 0))
+                        output += number.substring(mod+ 3 * i, mod + 3 * i + 3);
+                    else
+                        // hier wird das Trennzeichen festgelegt mit '.'
+                        output+= '.' + number.substring(mod + 3 * i, mod + 3 * i + 3);
+                }
+                return (output);
+            }
+            else return number;
+        }
+        
+	</script>
+	<style>
+	body{
+		font: 22.5% "Trebuchet MS", sans-serif;
+		margin: 50px;
+	}
+	
+	</style>
+<!-- END:JQUERY -->
+    
+    
+    
     <!-- BEGIN:X3DOM -->
 <meta http-equiv="X-UA-Compatible" content="chrome=1,IE=edge" />
 <link rel="stylesheet" type="text/css" href="../../src/x3dom.css" />
@@ -82,10 +214,28 @@
     <script type="text/javascript" src="media/js/tests.js"></script>
     <!-- END:TEST -->
 
+    <style>
+    
+    #info_link{
+        color: #2b81af;
+        text-decoration: none;
+        font-family: Calibri;
+        font-size: 14px;
+        font-weight: bold;
+        padding: 2px;
+    }
+    #info_link:hover{
+        color: #fff;
+        background-color: rgba(43, 129, 175, 1);
+    }
+    
+</style>
+    
+    
 </head>
-  <body>
-  <h1>BVH Refiner: Terrain of Puget Sound</h1>
-    <X3D id="x3d" showStat='false' showLog='false' width='1024px' height='600px'>
+  <body style='width:100%; height:100%; float: left; border:0; margin:0; padding:0; background-color: #000;' onload="">
+    
+    <X3D id="x3d" showStat='false' showLog='false' style='width:100%; height:100%; float:left; border:0; margin:0; padding:0;'>
       <Scene DEF='scene' frustumCulling='true' sortTrans="true">
         
         <Timesensor cycleInterval='0.0' loop='true'></Timesensor>
@@ -98,11 +248,11 @@
         <Viewpoint zNear="0.1" zFar="10000" position="104.26081 643.98574 5212.33273" orientation="0.00000 0.00000 0.00000 0.00000" centerOfRotation="98.05008881794338 656.9452991372756 -0.17125758609342512"></Viewpoint>-->
         
         <!--<BVHRefiner maxDepth='6' factor='10' center='0 0 0' size='2000 2000'  
-                    textureUrl='' textureFormat='' mode="2d" subMode="nonWMTS">
+                    textureUrl='U:\Data\Mainz 2D NonWMTS' textureFormat='png' mode="2d" subMode="nonWMTS">
         </BVHRefiner>
         <Viewpoint zNear="0.1" zFar="10000" position="104.26081 643.98574 5212.33273" orientation="0.00000 0.00000 0.00000 0.00000" centerOfRotation="98.05008881794338 656.9452991372756 -0.17125758609342512"></Viewpoint>-->
         
-        <BVHRefiner maxDepth='5' minDepth="2" interactionDepth='4'  
+        <BVHRefiner id="bvh_refiner" maxDepth='5' minDepth="2" interactionDepth='4'  
                     subdivision='128 128' size='4096 4096' factor='10' maxElevation='410' 
                     elevationUrl="Puget Sound WMTS/elevation" 
                     textureUrl="Puget Sound WMTS/satellite"
@@ -142,5 +292,54 @@
         <!--VIEWPOINT_FOR_OCTREE<Viewpoint zNear="0.1" zFar="10000" position="565.40811 -296.84308 127.44207" orientation="0.72349 0.42632 0.54297 1.71780" centerOfRotation="-16.344523510123736 3.543724564365448 -0.3191464981986769"></Viewpoint>-->
       </Scene>
     </X3D>
+    
+      <div id="accordion" style="z-index: 10000; width: 337px; font: 65.5% 'Trebuchet MS', sans-serif; position:absolute; right:10px; top:35px;">
+        <h3 style="font-weight: inherit; padding: 10px; font-size: 14px;">Information</h3>
+        <div style="width: 295px; overflow: hidden;">
+            <div style='font-size: 12px; margin-top: 5px; font-weight: inherit; padding-bottom: 15px; border-bottom: #414141 solid 1px; line-height: 1.6;'>
+                <b><i style="font-size: 14px;">Description:</i></b><br/> 
+                    This 3D model is rendered by the <a id='info_link' href='http://www.x3dom.org'>X3DOM</a>-BVHRefiner node which loads and refines a terrain dynamically corresponding to the view point. <br /> 
+            </div>
+            <div style='font-size: 12px; margin-top: 5px; font-weight: inherit; padding-bottom: 15px; border-bottom: #414141 solid 1px; line-height: 1.6;'>
+                <br/><b><i style="font-size: 14px;">3D-Model Statistics:</i></b><br/>
+                <div style='float:left; width: 150px;'>Model:</div><div style='float: left; width: 140px;'>Puget Sound </div><br />
+                <div style='float:left; width: 150px;'>Points:</div><div style='float: left; width: 140px;'>16.777.261 (~16.5 Mio.) </div><br />
+            </div>
+            <div style='font-size: 12px; margin-top: 5px; font-weight: inherit; padding-bottom: 15px; line-height: 1.6;'>
+                <br/><b><i style="font-size: 14px;">Rendering Statistics:</i></b><br/>
+                <div style='float:left; width: 150px;'>Rendering speed:</div><div style='float: left; width: 140px;' id='fps_lb' >0 fps </div><br />
+                <div style='float:left; width: 150px;'>Actually drawn points:</div><div style='float: left; width: 140px;' id='points_lb' >0.0 </div><br />
+            </div>
+        </div>
+        <h3 style="font-weight: inherit; font-size: 14px; padding: 10px;">Parameters</h3>
+        <div style="float:left; width: 295px; overflow: hidden;">
+            <div style="float:left; margin-top: 10px; padding-bottom: 15px; border-bottom: #414141 solid 1px;">
+                <div style="float:left; font-size: 11px; font-weight: bold; width: 245px;">Minimal Depth: </div>
+                <div id="amount3" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 2 </div>
+                <div id="slider3" style="width: 278px; font: 60.5% 'Trebuchet MS', sans-serif; margin-top: 15px; float: left;"></div>
+            </div>
+            <div style="float:left; margin-top: 10px; padding-bottom: 15px; border-bottom: #414141 solid 1px;">
+                <div style="float:left; font-size: 11px; font-weight: bold; width: 245px;">Maximal Depth: </div>
+                <div id="amount2" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 5 </div>
+                <div id="slider2" style="width: 278px; font: 60.5% 'Trebuchet MS', sans-serif; margin-top: 15px; float: left;"></div>
+            </div>            
+            <div style="float:left; margin-top: 10px; padding-bottom: 15px; border-bottom: #414141 solid 1px;">
+                <div style="float:left; font-size: 11px; font-weight: bold; width: 245px;">Distance Factor: </div>
+                <div id="amount4" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 10 </div>
+                <div id="slider4" style="width: 278px; font: 60.5% 'Trebuchet MS', sans-serif; margin-top: 15px; float: left;"></div>
+            </div>
+            <div style="float:left; margin-top: 10px; padding-bottom: 15px; border-bottom: #414141 solid 1px;">
+                <div style="float:left; font-size: 11px; font-weight: bold; width: 245px;">Loading speed: </div>
+                <div id="amount5" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 5 </div>
+                <div id="slider5" style="width: 278px; font: 60.5% 'Trebuchet MS', sans-serif; margin-top: 15px; margin-bottom: 15px; float: left;"></div>
+            </div>
+            <div style="float:left; margin-top: 5px; padding-bottom: 15px;">
+                <div style="float:left; font-size: 11px; font-weight: bold; width: 245px;">Interaction Rendering Depth: </div>
+                <div id="amount" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 4 </div>
+                <div id="slider" style="width: 278px; font: 60.5% 'Trebuchet MS', sans-serif; margin-top: 15px; float: left;"></div>
+            </div>
+        </div>
+    </div>
+      
   </body>
 </html>
