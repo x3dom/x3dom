@@ -2860,6 +2860,10 @@ x3dom.gfx_webgl = (function () {
 			}
         }
 
+        var env = scene.getEnvironment();
+        // update internal flags
+        env.checkSanity();
+
         var bgnd = scene.getBackground();
 
         this.setupScene(gl, bgnd);
@@ -2926,8 +2930,6 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Collect drawables (traverse)
         //===========================================================================
-        var env = scene.getEnvironment();
-
         scene.drawableCollection = null;  // Always update needed?
 
         if (!scene.drawableCollection)
@@ -2939,7 +2941,7 @@ x3dom.gfx_webgl = (function () {
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
                 frustumCulling: true,
-                smallFeatureThreshold: env._vf.smallFeatureCulling ? env._vf.smallFeatureThreshold : 1,
+                smallFeatureThreshold: env._smallFeatureThreshold,
                 context: this,
                 gl: gl
             };
@@ -3061,8 +3063,8 @@ x3dom.gfx_webgl = (function () {
 
         // very experimental prio culling, currently coupled with small feature culling
         // TODO; what about shadows, picking etc. (but picking needs all objects)
-        if (env._vf.smallFeatureCulling && env._vf.lowPriorityThreshold < 1 && viewarea.isMoving()) {
-            n = Math.floor(n * env._vf.lowPriorityThreshold);
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+            n = Math.floor(n * env._lowPriorityThreshold);
             if (n == 0 && scene.drawableCollection.length > 0)
                 n = 1;    // render at least one object
         }

@@ -174,6 +174,7 @@ x3dom.registerNodeType(
             // define frame-rate range for quality-speed trade-off (experimental)
             this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
             this.addField_SFFloat(ctx, 'maxFrameRate', 62.5);
+
             // 4 exp. factors for controlling speed-performance trade-off
             // factors could be in [0, 1] (and not evaluated if -1)
             this.addField_SFFloat(ctx, 'userDataFactor', -1);
@@ -181,11 +182,14 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'occlusionVisibilityFactor', -1);
             this.addField_SFFloat(ctx, 'lowPriorityFactor', -1);
             this.addField_SFFloat(ctx, 'tessellationErrorFactor', -1);
+
+            // init internal stuff (but should be called each frame)
+            this.checkSanity();
         },
         {
-            checkSanity : function()
+            checkSanity: function()
             {
-                checkParam = function(flag, value, defaultOn, defaultOff)
+                var checkParam = function(flag, value, defaultOn, defaultOff)
                 {
                     if(flag && (value == defaultOff))
                         return defaultOn;
@@ -197,10 +201,15 @@ x3dom.registerNodeType(
 
                 this._sortTrans = this._vf.sortTrans;
                 this._frustumCulling = this._vf.frustumCulling;
-                this._smallFeatureThreshold = checkParam(this._vf.smallFeatureCulling,this._vf.smallFeatureThreshold,1,0);
-                this._lowPriorityThreshold = checkParam(this._vf.lowPriorityCulling,this._vf.lowPriorityThreshold,0.99,1);
-                this._occlusionVisibilityThreshold = checkParam(this._vf.occlusionCulling,this._vf.occlusionVisibilityThreshold,1,0);
-                this._tessellationErrorThreshold = checkParam(this._vf.tessellationDetailCulling,this._vf.tessellationErrorThreshold,1,0);
+
+                this._smallFeatureThreshold = checkParam(this._vf.smallFeatureCulling,
+                                                         this._vf.smallFeatureThreshold, 10, 1);
+                this._lowPriorityThreshold = checkParam(this._vf.lowPriorityCulling,
+                                                        this._vf.lowPriorityThreshold, 0.8, 1);
+                this._occlusionVisibilityThreshold = checkParam(this._vf.occlusionCulling,
+                                                                this._vf.occlusionVisibilityThreshold, 1, 0);
+                this._tessellationErrorThreshold = checkParam(this._vf.tessellationDetailCulling,
+                                                              this._vf.tessellationErrorThreshold, 1, 0);
             }
         }
     )
