@@ -84,7 +84,7 @@ x3dom.registerNodeType(
                     }
                 }
             }
-            else if (this._vf.mode === "oct"){
+            else if (this._vf.mode === "bvh"){
                 // creating the root-node of the quadtree
                 this.rootNode = new BVHNode(ctx, this, 0, "/", 1, this._vf.bvhCount);
             }
@@ -144,15 +144,33 @@ x3dom.registerNodeType(
 
 
 
-
+/*
+ * All bvh-nodes must login at this element if they want to
+ * create their children on next frame. This node decides what node
+ * has the highest priority and creates its four children on the next 
+ * frame. On the next frame the same course will happen till all children
+ * are created. 
+ * @returns {NodeProducer}
+ */
 function NodeProducer()
 {
+    // Node thats children should be created after current frame is rendered
     var nextNode        = null;
+    // Distance of the node that should be created after current frame
     var nearestDistance = 1000000;
+    // Depth of the node that should be created after current frame
     var smallestDepth   = 1000000;
     
     
     
+    /*
+     * Decides if the given node has a smaller or the same depth as the 
+     * current "nextNode", and if this is true if the distance to camera
+     * is less. In this case it will be new "nextNode"
+     * @param {Node of BVHRefiner} node node that will create children
+     * @param {type} distance distance of the node to camera
+     * @returns {null}
+     */
     this.AddNewNode = function(node, distance){
         if (node.Level() < smallestDepth) {
             smallestDepth = node.Level();
@@ -168,6 +186,10 @@ function NodeProducer()
     
     
     
+    /*
+     * Creates the children of the node with highest priority in the last frame 
+     * @returns {null}
+     */
     this.CreateNewNode = function(){
         if (nextNode !== null) {
             nextNode.CreateChildren();
@@ -179,24 +201,24 @@ function NodeProducer()
 
 
 
-/*****************************************************************************************************************************
- *****************************************************************************************************************************
- ********************************************* QuadtreeNode2dWMTS ************************************************************
- *****************************************************************************************************************************
- ****************************************************************************************************************************/
-
-/*
+/*******************************************************************************
+ *******************************************************************************
+ **************************** QuadtreeNode2dWMTS *******************************
+ *******************************************************************************
+ *******************************************************************************
+ *
  * Defines one 2D node (plane) of a quadtree that represents a part 
  * (nxn vertices) of the whole mesh.
  * @param {object} ctx context
  * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
  * @param {number} level level of the node within the quadtree
  * @param {number} nodeNumber id of the node within the level
- * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix that defines scale and position
+ * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix 
+ *                                  that defines scale and position
  * @param {number} columnNr column number in the wmts matrix within the level
  * @param {number} rowNr row number in the wmts matrix within the level
  * @param {x3dom.nodeTypes.Plane} geometry plane
- * @returns {QuadtreeNode2D}
+ * @returns {QuadtreeNode2dWMTS}
  */
 function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation, 
                             columnNr, rowNr, geometry)
@@ -225,6 +247,7 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
     /* 
      * Initializes all nodeTypes that are needed to create the drawable
      * component for this node
+     * @returns {null}
      */
     function initialize() {
 
@@ -264,14 +287,19 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
     
     
     
+    /*
+     * Creates the four children
+     * @returns {null}
+     */
     this.CreateChildren = function () {
         create();
     };
     
     
     
-    /* 
-     * Creates the four children 
+    /*
+     * Creates the four children
+     * @returns {null}
      */
     function create() {
         
@@ -308,27 +336,35 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
     
     
     
+    /*
+     * Returns the shape of this node 
+     * @returns {x3dom.nodeTypes.Shape}
+     */
     this.Shape = function () {
         return shape;
     };
     
     
     
-    /* 
+    /*
      * Runs only local ready() method. This is needed from parent to ask if 
-     * all children are ready to render or not 
+     * all children are ready to render or not
+     * @returns {Boolean} true if ready to render, else false
      */
     this.Ready = function(){
         if (shape._webgl !== undefined && shape._webgl.texture !== undefined) {
                 return ready();
         }
+        
+        return false;
     };
     
     
     
-    /* 
+    /*
      * Iterates through all textures of this node and sets readState parameter
      * to true if all textures have been loaded to gpu yet, false if not.
+     * @returns {Boolean} true if ready to render, else false
      */
     function ready() {
         readyState = true;
@@ -345,9 +381,12 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
 
     
     
-    /* 
+    /*
      * Updates the loading state of children and initializes this node
      * if this wasn't done before 
+     * @param {x3dom.DrawableCollection} drawableCollection 
+     * @param {x3dom.fields.SFMatrix4f} transform outer transformation matrix
+     * @returns {null}
      */
     function updateLoadingState(drawableCollection, transform){
 
@@ -369,28 +408,39 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
   
         if (shape._webgl === undefined || shape._webgl.texture === undefined) {
             drawableCollection.context.setupShape(drawableCollection.gl, 
-                                                 {shape:shape, transform:transform}, 
+                                                 {shape:shape, 
+                                                  transform:transform}, 
                                                   drawableCollection.viewarea);
         }
         else {
             ready(); 
         }
-        
     }
     
     
     
-    /* 
-    * Decides to create new children and if the node shoud be drawn or not
-    */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
+    /*
+     * Decides to create new children and if the node shoud be drawn or not
+     * @param {x3dom.fields.SFMatrix4f} transform outer transformation matrix
+     * @param {x3dom.DrawableCollection} drawableCollection 
+     * @param {bool} singlePath 
+     * @param {bool} invalidateCache
+     * @param {number} planeMask
+     * @returns {null}
+     */
+    this.collectDrawables = function (transform, drawableCollection, 
+                                      singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
+        // calculation of new plane mask
+        planeMask = drawableCollection.cull(nodeTransformation, cullObject, singlePath, planeMask);
+        
         // Checks the actual loading state of itself and children if something wasn't loaded in last frame
-        if (!readyState || !childrenReadyState) { updateLoadingState(drawableCollection, nodeTransformation); }
-
-        if (readyState && (planeMask = drawableCollection.cull(nodeTransformation, cullObject, singlePath, planeMask)) > 0) {
+        if (!readyState || !childrenReadyState) 
+            updateLoadingState(drawableCollection, nodeTransformation); 
+ 
+        if (readyState && planeMask > 0) {
             var mat_view = drawableCollection.viewMatrix;
             var vPos = mat_view.multMatrixPnt(nodeTransformation.multMatrixPnt(position));
             var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
@@ -429,21 +479,25 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
 
 
 
-    /* 
-     * Returns the volume of this node
+    /*
+     * Returns the volume of this node 
+     * @returns {x3dom.fields.BoxVolume}
      */
     this.getVolume = function() {
-        // TODO; implement correctly, for now just use first shape as workaround
         return shape.getVolume();
     };
 
 
-
+    /*
+     * Returns the level of this node 
+     * @returns {number}
+     */
     this.Level = function () {
         return level;
     };
 
 
+    // reference to get access to public methods within this node
     var that = this;
     // initializes this node directly after creating
     initialize();
@@ -451,23 +505,25 @@ function QuadtreeNode2dWMTS(ctx, terrain, level, nodeNumber, nodeTransformation,
 
 
 
-/*****************************************************************************************************************************
- *****************************************************************************************************************************
- ************************************************* QuadtreeNode2D ************************************************************
- *****************************************************************************************************************************
- ****************************************************************************************************************************/
-
-/*
+/*******************************************************************************
+ *******************************************************************************
+ **************************** QuadtreeNode2D ***********************************
+ *******************************************************************************
+ *******************************************************************************
+ *
  * Defines one 2D node (plane) of a quadtree that represents a part 
  * (nxn vertices) of the whole mesh.
  * @param {object} ctx context
  * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
  * @param {number} level level of the node within the quadtree
  * @param {number} nodeNumber id of the node within the level
- * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix that defines scale and position
+ * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix 
+ *                                  that defines scale and position
  * @param {number} columnNr column number in the wmts matrix within the level
  * @param {number} rowNr row number in the wmts matrix within the level
  * @param {x3dom.nodeTypes.Plane} geometry plane
+ * @param {string} path path to the nodes data 
+ * @param {type} imgNumber number of the image within the path
  * @returns {QuadtreeNode2D}
  */
 function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation, 
@@ -498,6 +554,7 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
     /* 
      * Initializes all nodeTypes that are needed to create the drawable
      * component for this node
+     * @returns {null}
      */
     function initialize() {
 
@@ -537,14 +594,19 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
     
     
     
+    /*
+     * Creates the four children
+     * @returns {null}
+     */
     this.CreateChildren = function () {
         create();
     };
     
     
     
-    /* 
-     * Creates the four children 
+    /*
+     * Creates the four children
+     * @returns {null}
      */
     function create() {
         
@@ -581,27 +643,35 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
     
     
     
+    /*
+     * Returns the shape of this node 
+     * @returns {x3dom.nodeTypes.Shape}
+     */
     this.Shape = function () {
         return shape;
     };
     
     
     
-    /* 
+    /*
      * Runs only local ready() method. This is needed from parent to ask if 
-     * all children are ready to render or not 
+     * all children are ready to render or not
+     * @returns {Boolean} true if ready to render, else false
      */
     this.Ready = function(){
         if (shape._webgl !== undefined && shape._webgl.texture !== undefined) {
                 return ready();
         }
+        
+        return false;
     };
     
     
     
-    /* 
+    /*
      * Iterates through all textures of this node and sets readState parameter
      * to true if all textures have been loaded to gpu yet, false if not.
+     * @returns {Boolean} true if ready to render, else false
      */
     function ready() {
         readyState = true;
@@ -618,9 +688,12 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
 
     
     
-    /* 
+    /*
      * Updates the loading state of children and initializes this node
      * if this wasn't done before 
+     * @param {x3dom.DrawableCollection} drawableCollection 
+     * @param {x3dom.fields.SFMatrix4f} transform outer transformation matrix
+     * @returns {null}
      */
     function updateLoadingState(drawableCollection, transform){
         
@@ -654,10 +727,17 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
     
     
     
-    /* 
-    * Decides to create new children and if the node shoud be drawn or not
-    */
-    this.collectDrawables = function (transform, drawableCollection, singlePath, invalidateCache, planeMask) {
+    /*
+     * Decides to create new children and if the node shoud be drawn or not
+     * @param {x3dom.fields.SFMatrix4f} transform outer transformation matrix
+     * @param {x3dom.DrawableCollection} drawableCollection 
+     * @param {bool} singlePath 
+     * @param {bool} invalidateCache
+     * @param {number} planeMask
+     * @returns {null}
+     */
+    this.collectDrawables = function (transform, drawableCollection, 
+                                      singlePath, invalidateCache, planeMask) {
 
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;
@@ -703,21 +783,26 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
 
 
 
-    /* 
-     * Returns the volume of this node
+    /*
+     * Returns the volume of this node 
+     * @returns {x3dom.fields.BoxVolume}
      */
     this.getVolume = function() {
-        // TODO; implement correctly, for now just use first shape as workaround
         return shape.getVolume();
     };
 
 
-
+    /*
+     * Returns the level of this node 
+     * @returns {number}
+     */
     this.Level = function () {
         return level;
     };
 
 
+    
+    // reference to get access to public methods within this node
     var that = this;
     // initializes this node directly after creating
     initialize();
@@ -725,20 +810,20 @@ function QuadtreeNode2D(ctx, terrain, level, nodeNumber, nodeTransformation,
 
 
 
-/*****************************************************************************************************************************
- *****************************************************************************************************************************
- ************************************************* QuadtreeNode3D ************************************************************
- *****************************************************************************************************************************
- ****************************************************************************************************************************/
-
-/*
+/*******************************************************************************
+ *******************************************************************************
+ **************************** QuadtreeNode3D ***********************************
+ *******************************************************************************
+ *******************************************************************************
+ *
  * Defines one 3D node (plane with displacement) of a quadtree that represents 
  * a part (nxn vertices) of the whole mesh.
  * @param {object} ctx context
  * @param {x3dom.nodeTypes.Terrain} terrain root terrain node  
  * @param {number} level level of the node within the quadtree
  * @param {number} nodeNumber id of the node within the level
- * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix that defines scale and position
+ * @param {x3dom.fields.SFMatrix4f} nodeTransformation transformation matrix 
+ *                                  that defines scale and position
  * @param {number} columnNr column number in the wmts matrix within the level
  * @param {number} rowNr row number in the wmts matrix within the level
  * @param {x3dom.nodeTypes.Plane} geometry plane
