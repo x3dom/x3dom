@@ -39,7 +39,7 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
     this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
 
     // if (lowPriorityThreshold < 1) sort all potentially visible objects according to priority
-    this.sortOpaque = (this.smallFeatureThreshold > 1 && env._vf.lowPriorityThreshold < 1);
+    this.sortOpaque = (this.smallFeatureThreshold > 1 && env._lowPriorityThreshold < 1);
     this.sortTrans = drawableCollectionConfig.sortTrans;
 
     this.prioLevels = 10;

@@ -436,11 +436,12 @@ x3dom.registerNodeType(
                 } // if isMulti
                 else
                 {
+                    var n = indexes.length;
                     t = 0;
 
-                    for (i=0; i < indexes.length; ++i)
+                    for (i=0; i < n; ++i)
                     {
-                        if (indexes[i] === -1) {
+                        if (indexes[i] == -1) {
                             t = 0;
                             continue;
                         }
@@ -497,6 +498,32 @@ x3dom.registerNodeType(
 
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.colors = true;
+                    });
+                }
+                else if (fieldName == "coordIndex") {
+                    this._mesh._indices[0] = [];
+
+                    var indexes = this._vf.coordIndex;
+                    var p0, p1, t = 0;
+
+                    for (var i=0, n=indexes.length; i < n; ++i) {
+                        if (indexes[i] == -1) {
+                            t = 0;
+                        }
+                        else {
+                            switch (t) {
+                                case 0: p0 = +indexes[i]; t = 1; break;
+                                case 1: p1 = +indexes[i]; t = 2; this._mesh._indices[0].push(p0, p1); break;
+                                case 2: p0 = p1; p1 = +indexes[i]; this._mesh._indices[0].push(p0, p1); break;
+                            }
+                        }
+                    }
+
+                    this.invalidateVolume();
+
+                    Array.forEach(this._parentNodes, function (node) {
+                        node._dirty.indexes = true;
+                        node.invalidateVolume();
                     });
                 }
             }
@@ -1679,7 +1706,7 @@ x3dom.registerNodeType(
 								}  
 							}
 						}
-						x3dom.debug.logInfo();
+
 						Array.forEach(this._parentNodes, function (node) {
 							node._dirty.colors = true;
 						});
