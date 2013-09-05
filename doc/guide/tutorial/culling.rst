@@ -79,4 +79,4 @@ Setting                        Usage                                            
 tesselationDetailCulling       (de-)activate the culling technique                                    [true;false]
 tesselationErrorTreshold       use mesh simplification having lower error than threshold              [0..*]
 ===========================    ===================================================================    ========================
-* : Not fully implemented yet
+(* : Not fully implemented yet)
