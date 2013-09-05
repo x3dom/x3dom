@@ -7,9 +7,9 @@
     <!--<link href="../../../JQuery/css/custom-theme/jquery-ui-1.10.3.custom.css" rel="stylesheet" />
     <script src="../../../JQuery/js/jquery-1.9.1.js"></script>
     <script src="../../../JQuery/js/jquery-ui-1.10.3.custom.js"></script>-->
-    <link href="../../example/media/js/jquery-ui.css" rel="stylesheet" />
-    <script src="../../example/media/js/jquery.min.js"></script>
-    <script src="../../example/media/js/jquery-ui.min.js"></script>
+    <link href="media/css/jquery-ui-1.10.3.custom.min.css" rel="stylesheet" />
+    <script src="media/js/jquery-1.9.1.js"></script>
+    <script src="media/js/jquery-ui-1.10.3.custom.min.js"></script>
     
     
     <script>
@@ -18,7 +18,7 @@
 		
 		$( "#slider" ).slider({
 			range: "min",
-                        value: 4,
+                        value: 5,
                         min: 0,
                         max: 5,
                         slide: function(event, ui){
@@ -98,6 +98,30 @@
         
         
         $(function() {
+		
+		$( "#slider6" ).slider({
+                        value: 0,
+                        min: 0,
+                        max: 1,
+                        slide: function(event, ui){
+                            var output = "";
+                            var viewArea = document.getElementById('x3d').runtime.canvas.doc._viewarea;
+                            if (ui.value === 0){ 
+                                viewArea._points = 0;
+                                output = "TRIANGLES";
+                            } else {
+                                viewArea._points = 2; 
+                                output = "LINES"; 
+                            }
+                            document.getElementById("amount6").innerHTML = output;
+                        }
+		});
+                
+	});
+        
+        
+        
+        $(function() {
             $( "#accordion" ).accordion({
               collapsible: true
             });
@@ -121,6 +145,20 @@
             }
             else return number;
         }
+        
+        
+        document.onload = function(){
+            var x3d = document.getElementsByTagName("x3d")[0];
+            if (x3d !== "" || x3d !== undefined){
+                x3d.runtime.exitFrame = function(){
+                    document.getElementById("fps_lb").innerHTML = this.getFPS().toFixed(2) + " fps";
+                    document.getElementById("points_lb").innerHTML = formatNumber(x3d.runtime.states.infos["#POINTS:"]);
+                    this.canvas.doc.needRender = true;
+                };
+            }
+        }
+        
+        
         
 	</script>
 	<style>
@@ -254,7 +292,7 @@
         </BVHRefiner>
         <Viewpoint zNear="0.1" zFar="10000" position="104.26081 643.98574 5212.33273" orientation="0.00000 0.00000 0.00000 0.00000" centerOfRotation="98.05008881794338 656.9452991372756 -0.17125758609342512"></Viewpoint>-->
         
-        <BVHRefiner id="bvh_refiner" maxDepth='5' minDepth="2" interactionDepth='4'  
+        <BVHRefiner id="bvh_refiner" maxDepth='5' minDepth="2" interactionDepth='5'  
                     subdivision='128 128' size='4096 4096' factor='10' maxElevation='410' 
                     elevationUrl="Puget Sound WMTS/elevation" 
                     textureUrl="Puget Sound WMTS/satellite"
@@ -289,15 +327,15 @@
                     mode="3d" submode="32bit">
         </BVHRefiner>-->
         
-        <Background skyColor="0 0 0"></Background>
+        <Background skyColor="0.4 0.6 0.8"></Background>
         
         <!--VIEWPOINT_FOR_OCTREE<Viewpoint zNear="0.1" zFar="10000" position="565.40811 -296.84308 127.44207" orientation="0.72349 0.42632 0.54297 1.71780" centerOfRotation="-16.344523510123736 3.543724564365448 -0.3191464981986769"></Viewpoint>-->
       </Scene>
     </X3D>
     
       <div id="accordion" style="z-index: 10000; width: 337px; font: 65.5% 'Trebuchet MS', sans-serif; position:absolute; right:10px; top:35px;">
-        <h3 style="font-weight: inherit; padding: 10px; font-size: 14px;">Information</h3>
-        <div style="width: 295px; overflow: hidden;">
+        <h3 style="font-weight: inherit; font-size: 14px;">Information</h3>
+        <div style=" overflow: hidden;">
             <div style='font-size: 12px; margin-top: 5px; font-weight: inherit; padding-bottom: 15px; border-bottom: #414141 solid 1px; line-height: 1.6;'>
                 <b><i style="font-size: 14px;">Description:</i></b><br/> 
                     This 3D model is rendered by the <a id='info_link' href='http://www.x3dom.org'>X3DOM</a>-BVHRefiner node which loads and refines a terrain dynamically corresponding to the view point. <br /> 
@@ -305,16 +343,22 @@
             <div style='font-size: 12px; margin-top: 5px; font-weight: inherit; padding-bottom: 15px; border-bottom: #414141 solid 1px; line-height: 1.6;'>
                 <br/><b><i style="font-size: 14px;">3D-Model Statistics:</i></b><br/>
                 <div style='float:left; width: 150px;'>Model:</div><div style='float: left; width: 140px;'>Puget Sound </div><br />
+                <div style='float:left; width: 150px;'>DataSet:</div><div style='float: left; width: 140px;'>4096 x 4096 Pixel </div><br />
                 <div style='float:left; width: 150px;'>Points:</div><div style='float: left; width: 140px;'>16.777.261 (~16.5 Mio.) </div><br />
             </div>
             <div style='font-size: 12px; margin-top: 5px; font-weight: inherit; padding-bottom: 15px; line-height: 1.6;'>
                 <br/><b><i style="font-size: 14px;">Rendering Statistics:</i></b><br/>
                 <div style='float:left; width: 150px;'>Rendering speed:</div><div style='float: left; width: 140px;' id='fps_lb' >0 fps </div><br />
-                <div style='float:left; width: 150px;'>Actually drawn points:</div><div style='float: left; width: 140px;' id='points_lb' >0.0 </div><br />
+                <div style='float:left; width: 150px;'>Currently drawn points:</div><div style='float: left; width: 140px;' id='points_lb' >0.0 </div><br />
             </div>
         </div>
-        <h3 style="font-weight: inherit; font-size: 14px; padding: 10px;">Parameters</h3>
-        <div style="float:left; width: 295px; overflow: hidden;">
+        <h3 style="font-weight: inherit; font-size: 14px;">Parameters</h3>
+        <div style=" overflow: hidden;">
+            <div style="float:left; margin-top: 5px; padding-bottom: 15px;  padding-bottom: 15px; border-bottom: #414141 solid 1px;">
+                <div style="float:left; font-size: 11px; font-weight: bold; width: 175px; line-height: 20px;">Render Mode: <br />(TRIANGLES, LINES) </div>
+                <div id="slider6" style="width: 55px; font: 60.5% 'Trebuchet MS', sans-serif; margin-top: 8px; margin-right: 14px; float: right;"></div>
+                <div id="amount6" style="float:left; font-size: 11px; font-weight: bold; color: #808000; width: 110px; margin-top: 10px; text-align: right;"> TRIANGLES </div>  
+            </div>
             <div style="float:left; margin-top: 10px; padding-bottom: 15px; border-bottom: #414141 solid 1px;">
                 <div style="float:left; font-size: 11px; font-weight: bold; width: 245px;">Minimal Depth: </div>
                 <div id="amount3" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 2 </div>
@@ -337,7 +381,7 @@
             </div>
             <div style="float:left; margin-top: 5px; padding-bottom: 15px;">
                 <div style="float:left; font-size: 11px; font-weight: bold; width: 245px;">Interaction Rendering Depth: </div>
-                <div id="amount" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 4 </div>
+                <div id="amount" style="float:left; font-size: 11px; margin-left: 10px; font-weight: bold; color: #808000; width: 30px; text-align: right;"> 5 </div>
                 <div id="slider" style="width: 278px; font: 60.5% 'Trebuchet MS', sans-serif; margin-top: 15px; float: left;"></div>
             </div>
         </div>

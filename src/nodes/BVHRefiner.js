@@ -26,6 +26,7 @@ x3dom.registerNodeType(
             // TODO: delete if octree will be deleted
             this.addField_SFVec3f(ctx, 'octSize', 1, 1, 1);
             this.addField_SFVec2f(ctx, 'subdivision', 1, 1);
+            this.addField_SFString(ctx, 'url', "");
             this.addField_SFString(ctx, 'elevationUrl', "");
             this.addField_SFString(ctx, 'textureUrl', "");
             this.addField_SFString(ctx, 'normalUrl', "");
@@ -40,7 +41,7 @@ x3dom.registerNodeType(
             // count of elements on next level
             this.addField_SFInt32(ctx, 'bvhCount', 8);
             this.creationSmooth = 0;
-            this.x3dElement = document.getElementById("x3d");
+            this.x3dElement = document.getElementsByTagName("x3d")[0];
             this.togglePoints = true;
             this.nodeProducer = new NodeProducer();
 
@@ -113,6 +114,7 @@ x3dom.registerNodeType(
                 else {
                     if (this.x3dElement.runtime.isReady && this.togglePoints){
                         this.view = this.x3dElement.runtime.canvas.doc._viewarea;
+                        this.togglePoints = false;
                     }
                     this.createChildren = 0;
                     this.creationSmooth++;
