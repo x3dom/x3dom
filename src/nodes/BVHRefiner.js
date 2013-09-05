@@ -836,6 +836,8 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
 {
     // array with the maximal four child nodes
     var children = [];
+    // neighborhood of the node
+    var neighbors = [];
     // drawable component of this node
     var shape = new x3dom.nodeTypes.Shape();
     // position of the node in world space
@@ -978,6 +980,45 @@ function QuadtreeNode3D(ctx, terrain, level, nodeNumber, nodeTransformation,
         // setting max and min in z-direction to get the complete volume
         cullObject.volume.min.z = -Math.round(terrain._vf.maxElevation / 2);
         cullObject.volume.max.z = Math.round(terrain._vf.maxElevation / 2);
+        
+        calculateNeighborhood();
+    }
+    
+    
+    
+    function calculateNeighborhood() {
+
+        // stores the start-ID of this level in quadList
+        var levelStartID = 0;
+
+        // calculate id in quadList where to store this quad
+        for (var i = 0; i < level; i++) {
+            levelStartID += Math.pow(4, i);
+        }
+        var sid = levelStartID + nodeNumber;
+        
+        //generals.QuadList()[sid] = thisQuad;
+
+        var c = Math.sqrt(Math.pow(4, level));
+        // calculate neighbor-IDs
+        // on the left side of the quad
+        neighbors[0] = levelStartID + (Math.ceil(((nodeNumber + 1) / c) - 1) * c + ((nodeNumber + (c - 1)) % c));
+        // on the right side of the quad
+        neighbors[1] = levelStartID + (Math.ceil(((nodeNumber + 1) / c) - 1) * c + ((nodeNumber + 1) % c));
+        // on the top side of the quad
+        neighbors[3] = levelStartID + (nodeNumber + (c * (c - 1))) % (Math.pow(4, level));
+        // on the bottom side of the quad
+        neighbors[2] = levelStartID + (nodeNumber + c) % (Math.pow(4, level));
+
+        if (columnNr === 0) { neighbors[0] = 0; }
+        if (rowNr === 0) { neighbors[2] = 0; }
+        if (columnNr === c - 1) { neighbors[1] = 0; }
+        if (rowNr === c - 1) { neighbors[3] = 0; }
+        
+        /*alert("NodeID: " + sid + " ::> (" + neighbors[0] + ", " 
+                                          + neighbors[1] + ", " 
+                                          + neighbors[2] + ", " 
+                                          + neighbors[3] + ")");*/
     }
 
 
