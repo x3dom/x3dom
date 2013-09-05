@@ -15,6 +15,8 @@ Copy release notes to ``doc/guide/releasenotes.rst``
 
 Set version: ``doc/guide/conf.py``
 
+.. code-block::
+
     version = 'x.x'
     release = 'x.x.x'
 
