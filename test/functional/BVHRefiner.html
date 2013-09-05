@@ -150,7 +150,7 @@
                 x3d.runtime.exitFrame = function(){
                     document.getElementById("fps_lb").innerHTML = this.getFPS().toFixed(2) + " fps";
                     document.getElementById("points_lb").innerHTML = formatNumber(x3d.runtime.states.infos["#POINTS:"]);
-                    this.canvas.doc.needRender = true;
+                    //this.canvas.doc.needRender = true;
                 };
             }
         }
