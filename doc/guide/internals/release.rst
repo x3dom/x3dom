@@ -52,7 +52,7 @@ Add older version links: ``doc/guide/_templates/sidebarintro.html``
 Commit
 ------
 
-.. code-block:
+.. code-block::
 
   ./manage.py --changelog
   git commit -Am "Release x.x.x"
