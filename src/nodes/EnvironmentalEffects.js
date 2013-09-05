@@ -162,7 +162,7 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'occlusionVisibilityThreshold', 0.0);
 
             // previously was scaleRenderedIdsOnMove; percentage of objects to be rendered, in [0,1]
-            this.addField_SFBool(ctx, 'lowPriorityCulling', false);  // TODO; check flag before using lowPriorityThreshold
+            this.addField_SFBool(ctx, 'lowPriorityCulling', false);
             this.addField_SFFloat(ctx, 'lowPriorityThreshold', 1.0);     // 1.0 means everything is rendered
 
             // shape tesselation is lowered as long as resulting error is lower than threshold
@@ -199,13 +199,10 @@ x3dom.registerNodeType(
                     return value;
                 };
 
-                this._sortTrans = this._vf.sortTrans;
-                this._frustumCulling = this._vf.frustumCulling;
-
                 this._smallFeatureThreshold = checkParam(this._vf.smallFeatureCulling,
-                                                         this._vf.smallFeatureThreshold, 10, 1);
+                                                         this._vf.smallFeatureThreshold, 10, 0); // cull objects < 10 px
                 this._lowPriorityThreshold = checkParam(this._vf.lowPriorityCulling,
-                                                        this._vf.lowPriorityThreshold, 0.8, 1);
+                                                        this._vf.lowPriorityThreshold, 0.5, 1);  // 1 means 100% visible
                 this._occlusionVisibilityThreshold = checkParam(this._vf.occlusionCulling,
                                                                 this._vf.occlusionVisibilityThreshold, 1, 0);
                 this._tessellationErrorThreshold = checkParam(this._vf.tessellationDetailCulling,

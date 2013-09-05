@@ -11,7 +11,7 @@
 
 
 /**
- *
+ * c'tor
  */
 x3dom.DrawableCollection = function (drawableCollectionConfig) {
     this.collection = [];
@@ -39,7 +39,7 @@ x3dom.DrawableCollection = function (drawableCollectionConfig) {
     this.smallFeatureThreshold = drawableCollectionConfig.smallFeatureThreshold;
 
     // if (lowPriorityThreshold < 1) sort all potentially visible objects according to priority
-    this.sortOpaque = (this.smallFeatureThreshold > 1 && env._lowPriorityThreshold < 1);
+    this.sortOpaque = (this.smallFeatureThreshold > 0 && env._lowPriorityThreshold < 1);
     this.sortTrans = drawableCollectionConfig.sortTrans;
 
     this.prioLevels = 10;
@@ -98,8 +98,8 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
     graphState.coverage = -1;    // if -1 then ignore value later on
 
-    //@todo: save the coverage only for drawables (shapes can be shared!)
-    if (this.smallFeatureThreshold > 1 || node.forceUpdateCoverage()) {
+    // TODO: save the coverage only for drawables, which are unique (shapes can be shared!)
+    if (this.smallFeatureThreshold > 0 || node.forceUpdateCoverage()) {
         var modelViewMat = this.viewMatrix.mult(transform);
 
         graphState.center = modelViewMat.multMatrixPnt(volume.getCenter());
@@ -112,7 +112,7 @@ x3dom.DrawableCollection.prototype.cull = function (transform, graphState, singl
 
         graphState.coverage = (r * 2.0) / projPixelLength;
 
-        if (this.smallFeatureThreshold > 1 && graphState.coverage < this.smallFeatureThreshold) {
+        if (this.smallFeatureThreshold > 0 && graphState.coverage < this.smallFeatureThreshold) {
             return 0;   // differentiate between outside and this case
         }
     }
@@ -157,8 +157,10 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
     drawable.sortKey = appearance ? appearance._vf.sortKey : 0;
 
     if (drawable.sortType == 'transparent') {
-        if (this.smallFeatureThreshold > 1) {
-            //@todo: this cannot work if the shape is shared!
+        if (this.smallFeatureThreshold > 0) {
+            // TODO: center was previously set in cull, which is called first, but this
+            // might be problematic if scene is traversed in parallel and node is shared
+            // (though currently traversal is sequential, so everything is fine)
             drawable.zPos = graphState.center.z;
         }
         else {
@@ -180,21 +182,6 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
         this.collection[drawable.sortType] = [];
     }
 
-    //Generate separate array for sortKey if not exists
-    /*if (this.collection[drawable.sortType][drawable.sortKey] === undefined) {
-        this.collection[drawable.sortType][drawable.sortKey] = [];
-    }
-
-    //Generate separate array for priority if not exists
-    if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority] === undefined) {
-        this.collection[drawable.sortType][drawable.sortKey][drawable.priority] = [];
-    }
-
-    //Generate separate array for shaderID if not exists
-    if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] === undefined) {
-        this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] = [];
-    }*/
-
     //Push drawable to the collection
     this.collection[drawable.sortType].push(drawable);
     //this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID].push(drawable);
@@ -206,16 +193,13 @@ x3dom.DrawableCollection.prototype.addShape = function (shape, transform, graphS
     if (this.context && this.gl) {
         this.context.setupShape(this.gl, drawable, this.viewarea);
     }
-    else {
-        //TODO: also setup Flash?
-    }
+    //TODO: what about Flash? Shall we also setup structures here?
 };
 
 /**
  * A drawable is basically a unique pair of a shape node and a global transformation.
  */
 x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
-
     //Calculate the magical object priority (though currently not very magic)
     //drawable.priority = this.calculatePriority(graphState);
 
@@ -246,21 +230,6 @@ x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
         this.collection[drawable.sortType] = [];
     }
 
-    //Generate separate array for sortKey if not exists
-    /*if (this.collection[drawable.sortType][drawable.sortKey] === undefined) {
-     this.collection[drawable.sortType][drawable.sortKey] = [];
-     }
-
-     //Generate separate array for priority if not exists
-     if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority] === undefined) {
-     this.collection[drawable.sortType][drawable.sortKey][drawable.priority] = [];
-     }
-
-     //Generate separate array for shaderID if not exists
-     if (this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] === undefined) {
-     this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID] = [];
-     }*/
-
     //Push drawable to the collection
     this.collection[drawable.sortType].push(drawable);
     //this.collection[drawable.sortType][drawable.sortKey][drawable.priority][drawable.shaderID].push(drawable);
@@ -272,9 +241,6 @@ x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
     if (this.context && this.gl) {
         this.context.setupShape(this.gl, drawable, this.viewarea);
     }
-    else {
-        //TODO: also setup Flash?
-    }
 };
 
 
@@ -282,15 +248,15 @@ x3dom.DrawableCollection.prototype.addDrawable = function (drawable) {
  * Calculate the magical object priority (though currently not very magic).
  */
 x3dom.DrawableCollection.prototype.calculatePriority = function (graphState) {
-
     //Use coverage as priority
     var priority = Math.max(0, graphState.coverage);
 
     //Classify the priority level
-    priority = Math.min( Math.round(priority / (maxTreshold / this.prioLevels-1)), this.prioLevels-1 );
+    var pl = this.prioLevels - 1;   // Can this be <= 0? Then FIXME!
+    priority = Math.min( Math.round(priority / (this.maxTreshold / pl)), pl );
 
     return priority;
-}
+};
 
 /**
  *
@@ -357,9 +323,8 @@ x3dom.DrawableCollection.prototype.sort = function () {
 };
 
 x3dom.DrawableCollection.prototype.forEach = function (fnc, maxPriority) {
-
     //Set maximal priority
-    maxPriority = typeof maxPriority !== 'undefined' ? Math.min(maxPriority, prioLevels) : prioLevels;
+    maxPriority = typeof maxPriority !== 'undefined' ? Math.min(maxPriority, this.prioLevels) : this.prioLevels;
 
     //Define run variables
     var sortKey, priority, shaderID, drawable;
@@ -394,7 +359,7 @@ x3dom.DrawableCollection.prototype.forEach = function (fnc, maxPriority) {
             {
                 if (this.collection['transparent'][sortKey][priority] !== undefined)
                 {
-                    for (shaderId in this.collection['transparent'][sortKey][priority])
+                    for (var shaderId in this.collection['transparent'][sortKey][priority])
                     {
                         //Sort transparent drawables by z-Pos
                         this.collection['transparent'][sortKey][priority][shaderId].sort(function(a, b) {
