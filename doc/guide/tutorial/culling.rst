@@ -12,6 +12,7 @@ The Environment-Bindable
 All relevant parameters are included in the new Environment-Bindable. To change it's settings it has to be added to the scene explicitly. For each culling technique there exists a boolean flag to enable/disable it and a list of more detailed settings if applicable. Each of the following sections explains the usage of a technique and it's parameters. Their combination can lead to very different results which allows explicit performance tuning for a specific scene.
 
 .. code-block:: xml
+
     <environment viewFrustumCulling='true' smallFeatureCulling='true' smallFeatureThreshold..>
     </environment>
     
