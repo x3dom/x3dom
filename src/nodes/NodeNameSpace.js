@@ -171,7 +171,8 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     return null;
                 }
                 fromNode.setupRoute(route.getAttribute('fromField'), toNode, route.getAttribute('toField'));
-                // TODO: Store the routes of the scene - needed for being able to remove them later on!
+                // Store reference to namespace for being able to remove route later on
+                route._nodeNameSpace = this;
                 return null;
             }
 

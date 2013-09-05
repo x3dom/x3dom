@@ -152,17 +152,21 @@ x3dom.registerNodeType(
             // boolean flags for feature (de)activation
             // If TRUE, objects outside the viewing frustum are ignored
             this.addField_SFBool(ctx, 'frustumCulling', true);
+
             // If TRUE, objects smaller than the threshold below are ignored
             this.addField_SFBool(ctx, 'smallFeatureCulling', false);
-            this.addField_SFBool(ctx, 'occlusionCulling', false);
-            this.addField_SFBool(ctx, 'lowPriorityCulling', false);  // TODO; check flag before using lowPriorityThreshold
-            this.addField_SFBool(ctx, 'tessellationDetailCulling', false);
+            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 1.0);
 
             // defaults can be >0 since only used upon activation
-            this.addField_SFFloat(ctx, 'smallFeatureThreshold', 1.0);
+            this.addField_SFBool(ctx, 'occlusionCulling', false);
             this.addField_SFFloat(ctx, 'occlusionVisibilityThreshold', 0.0);
+
             // previously was scaleRenderedIdsOnMove; percentage of objects to be rendered, in [0,1]
+            this.addField_SFBool(ctx, 'lowPriorityCulling', false);
             this.addField_SFFloat(ctx, 'lowPriorityThreshold', 1.0);     // 1.0 means everything is rendered
+
+            // shape tesselation is lowered as long as resulting error is lower than threshold
+            this.addField_SFBool(ctx, 'tessellationDetailCulling', false);
             this.addField_SFFloat(ctx, 'tessellationErrorThreshold', 0.0);
 
             // experimental If true ARC adjusts rendering parameters
@@ -170,6 +174,7 @@ x3dom.registerNodeType(
             // define frame-rate range for quality-speed trade-off (experimental)
             this.addField_SFFloat(ctx, 'minFrameRate',  1.0);
             this.addField_SFFloat(ctx, 'maxFrameRate', 62.5);
+
             // 4 exp. factors for controlling speed-performance trade-off
             // factors could be in [0, 1] (and not evaluated if -1)
             this.addField_SFFloat(ctx, 'userDataFactor', -1);
@@ -177,6 +182,32 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'occlusionVisibilityFactor', -1);
             this.addField_SFFloat(ctx, 'lowPriorityFactor', -1);
             this.addField_SFFloat(ctx, 'tessellationErrorFactor', -1);
+
+            // init internal stuff (but should be called each frame)
+            this.checkSanity();
+        },
+        {
+            checkSanity: function()
+            {
+                var checkParam = function(flag, value, defaultOn, defaultOff)
+                {
+                    if(flag && (value == defaultOff))
+                        return defaultOn;
+
+                    if(!flag && (value != defaultOff))
+                        return defaultOff;
+                    return value;
+                };
+
+                this._smallFeatureThreshold = checkParam(this._vf.smallFeatureCulling,
+                                                         this._vf.smallFeatureThreshold, 10, 0); // cull objects < 10 px
+                this._lowPriorityThreshold = checkParam(this._vf.lowPriorityCulling,
+                                                        this._vf.lowPriorityThreshold, 0.5, 1);  // 1 means 100% visible
+                this._occlusionVisibilityThreshold = checkParam(this._vf.occlusionCulling,
+                                                                this._vf.occlusionVisibilityThreshold, 1, 0);
+                this._tessellationErrorThreshold = checkParam(this._vf.tessellationDetailCulling,
+                                                              this._vf.tessellationErrorThreshold, 1, 0);
+            }
         }
     )
 );

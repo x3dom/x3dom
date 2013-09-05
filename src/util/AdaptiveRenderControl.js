@@ -26,7 +26,6 @@ x3dom.arc.Limits = function(min, max, initial)
     };
 };
 
-
 //---------------------------------------------------------------------------------------------------------------------
 
 x3dom.arc.ARF = function(name, min, max, dirFac, factorGetterFunc, factorSetterFunc, getterFunc, setterFunc)
@@ -81,73 +80,76 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
         this._currentState = 0;
 
         var that = this;
+        var environment = that._scene.getEnvironment();
 
         this._arfs = [];
 
+
+
         this._arfs.push(
-            new x3dom.arc.ARF("screenSpace",
+            new x3dom.arc.ARF("smallFeatureCulling",
                 0, 10, -1,
                 function()
                 {
-                    return that._scene._vf.screenSpaceFactor;
+                    return environment._vf.smallFeatureFactor;
                 },
                 function(value)
                 {
-                    that._scene._vf.screenSpaceFactor = value;
+                    environment._vf.smallFeatureFactor = value;
                 },
                 function()
                 {
-                    return that._scene.getEnvironment()._vf.smallFeatureThreshold;
+                    return  environment._vf.smallFeatureThreshold;
                 },
                 function(value)
                 {
-                    that._scene.getEnvironment()._vf.smallFeatureThreshold = value;
+                    environment._vf.smallFeatureThreshold = value;
                 }
             )
         );
 
 
         this._arfs.push(
-            new x3dom.arc.ARF("renderedPercentage",
+            new x3dom.arc.ARF("lowPriorityCulling",
                 0,100,1,
                 function()
                 {
-                    return that._scene._vf.drawCountFactor;
+                    return environment._vf.lowPriorityFactor;
                 },
                 function(value)
                 {
-                    that._scene._vf.drawCountFactor = value;
+                    environment._vf.lowPriorityFactor = value;
                 },
                 function()
                 {
-                    return that._scene.getEnvironment()._vf.lowPriorityThreshold * 100;
+                    return environment._vf.lowPriorityThreshold * 100;
                 },
                 function(value)
                 {
-                    that._scene.getEnvironment()._vf.lowPriorityThreshold = value / 100;
+                    environment._vf.lowPriorityThreshold = value / 100;
                 }
             )
         );
 
         this._arfs.push(
-            new x3dom.arc.ARF("tesselationErrorBound",
+            new x3dom.arc.ARF("tessellationDetailCulling",
                 1,12,-1,
                 function()
                 {
-                    return that._scene._vf.tessellationErrorFactor;
+                    return environment._vf.tessellationErrorFactor;
                 },
                 function(value)
                 {
-                    that._scene._vf.tessellationErrorFactor = value;
+                    environment._vf.tessellationErrorFactor = value;
                 },
                 //@todo: this factor is a static member of PopGeo... should it belong to scene instead?
                 function()
                 {
-                    return x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor;
+                    return environment.tessellationErrorThreshold;
                 },
                 function(value)
                 {
-                    x3dom.nodeTypes.PopGeometry.ErrorToleranceFactor = value;
+                    environment.tessellationErrorThreshold = value;
                 }
             )
         );

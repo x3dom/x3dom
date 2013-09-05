@@ -16,7 +16,7 @@ x3dom.X3DCanvas = function(x3dElem, canvasIdx) {
 
     var that = this;
 	this.canvasIdx = canvasIdx;
-	
+
     this.initContext = function(canvas, forbidMobileShaders, forceMobileShaders, tryWebGL2)
     {
         x3dom.debug.logInfo("Initializing X3DCanvas for [" + canvas.id + "]");
@@ -1097,7 +1097,7 @@ x3dom.X3DCanvas.prototype.tick = function()
         this.lastTimeFPSWasTaken = d;
     }
     this.framesSinceLastTime++;
-    
+
     var fps = 1000.0 / (d - this.fps_t0);
     this.fps_t0 = d;
 
@@ -1131,15 +1131,6 @@ x3dom.X3DCanvas.prototype.tick = function()
                 if (!this.doc._scene._vf.doPickPass)
                     this.x3dElem.runtime.removeMeasurement('PICKING');
 			}
-
-            if(this.doc._scene._vf.enableARC)
-            {
-                if(this.doc._scene.arc == null)
-                {
-                    this.doc._scene.arc = new x3dom.arc.AdaptiveRenderControl(this.doc._scene);
-                }
-                this.doc._scene.arc.update(this.doc._viewarea.isMoving() ? 1 : 0, fps);
-            }
 
             this.x3dElem.runtime.exitFrame();
 		}

@@ -57,10 +57,22 @@ x3dom.Viewarea = function (document, scene) {
     this._isAnimating = false;
     this._lastTS = 0;
     this._mixer = new x3dom.MatrixMixer();
+
+    this.arc = null;
 };
 
 x3dom.Viewarea.prototype.tick = function(timeStamp)
 {
+    var environment = this._scene.getEnvironment();
+    if(environment._vf.enableARC && this.arc == null)
+    {
+        this.arc = new x3dom.arc.AdaptiveRenderControl(this._scene);
+    }
+    if(this.arc != null )
+    {
+        this.arc.update(this.isMoving() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
+    }
+
     var needMixAnim = false;
 
     if (this._mixer._beginTime > 0)

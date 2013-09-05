@@ -108,11 +108,15 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         },
         
         onNodeRemoved: function(e) {
-            if ('_x3domNode' in e.target.parentNode && '_x3domNode' in e.target) {
-                var parent = e.target.parentNode._x3domNode;
-                var child = e.target._x3domNode;
+            var domNode = e.target;
+            if (!domNode)
+                return;
 
-                //x3dom.debug.logInfo("Child: " + e.target.type + ", removed node=" + e.target.tagName);
+            if ('_x3domNode' in domNode.parentNode && '_x3domNode' in domNode) {
+                var parent = domNode.parentNode._x3domNode;
+                var child = domNode._x3domNode;
+
+                //x3dom.debug.logInfo("Child: " + domNode.type + ", removed node=" + domNode.tagName);
                 if (parent && child) {
                     parent.removeChild(child);
                     
@@ -121,8 +125,13 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     doc.needRender = true;
                 }
             }
-            else if (e.target.localName && e.target.localName.toUpperCase() == "ROUTE") {
-                x3dom.debug.logError("Remove ROUTE NYI");   // TODO
+            else if (domNode.localName && domNode.localName.toUpperCase() == "ROUTE" && domNode._nodeNameSpace) {
+                var fromNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('fromNode')];
+                var toNode = domNode._nodeNameSpace.defMap[domNode.getAttribute('toNode')];
+
+                if (fromNode && toNode) {
+                    fromNode.removeRoute(domNode.getAttribute('fromField'), toNode, domNode.getAttribute('toField'));
+                }
             }
         },
         

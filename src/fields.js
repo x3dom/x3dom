@@ -925,7 +925,7 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
 };
 
 x3dom.fields.SFMatrix4f.prototype.toString = function () {
-    return '[SFMatrix4f \n' +
+    return '\n' +
 		this._00.toFixed(6)+', '+this._01.toFixed(6)+', '+
 		this._02.toFixed(6)+', '+this._03.toFixed(6)+', \n'+
         this._10.toFixed(6)+', '+this._11.toFixed(6)+', '+
@@ -933,7 +933,7 @@ x3dom.fields.SFMatrix4f.prototype.toString = function () {
         this._20.toFixed(6)+', '+this._21.toFixed(6)+', '+
 		this._22.toFixed(6)+', '+this._23.toFixed(6)+', \n'+
         this._30.toFixed(6)+', '+this._31.toFixed(6)+', '+
-		this._32.toFixed(6)+', '+this._33.toFixed(6)+']';
+		this._32.toFixed(6)+', '+this._33.toFixed(6);
 };
 
 x3dom.fields.SFMatrix4f.prototype.setValueByStr = function(str) {
@@ -1062,7 +1062,7 @@ x3dom.fields.SFVec2f.prototype.toGL = function () {
 };
 
 x3dom.fields.SFVec2f.prototype.toString = function () {
-    return "{ x " + this.x + " y " + this.y + " }";
+    return this.x + " " + this.y;
 };
 
 x3dom.fields.SFVec2f.prototype.setValueByStr = function(str) {
@@ -1195,7 +1195,7 @@ x3dom.fields.SFVec3f.prototype.toGL = function () {
 };
 
 x3dom.fields.SFVec3f.prototype.toString = function () {
-    return  this.x + " " + this.y + " " + this.z;
+    return this.x + " " + this.y + " " + this.z;
 };
 
 x3dom.fields.SFVec3f.prototype.setValueByStr = function(str) {
@@ -1255,7 +1255,7 @@ x3dom.fields.SFVec4f.prototype.toGL = function () {
 };
 
 x3dom.fields.SFVec4f.prototype.toString = function () {
-    return "{ x " + this.x + " y " + this.y + " z " + this.z + " w " + this.w + " }";
+    return this.x + " " + this.y + " " + this.z + " " + this.w;
 };
 
 
@@ -1566,7 +1566,7 @@ x3dom.fields.Quaternion.prototype.toGL = function () {
 };
 
 x3dom.fields.Quaternion.prototype.toString = function () {
-    return '((' + this.x + ', ' + this.y + ', ' + this.z + '), ' + this.w + ')';
+    return this.x + " " + this.y + " " + this.z + ", " + this.w;
 };
 
 x3dom.fields.Quaternion.prototype.setValueByStr = function(str) {
@@ -1644,7 +1644,7 @@ x3dom.fields.SFColor.prototype.toGL = function () {
 };
 
 x3dom.fields.SFColor.prototype.toString = function() {
-    return "{ r " + this.r + " g " + this.g + " b " + this.b + " }";
+    return this.r + " " + this.g + " " + this.b;
 };
 
 x3dom.fields.SFColor.prototype.setValueByStr = function(str) {
@@ -1788,7 +1788,7 @@ x3dom.fields.SFColorRGBA.prototype.toGL = function () {
 };
 
 x3dom.fields.SFColorRGBA.prototype.toString = function() {
-    return "{ r " + this.r + " g " + this.g + " b " + this.b + " a " + this.a + " }";
+    return this.r + " " + this.g + " " + this.b + " " + this.a;
 };
 
 x3dom.fields.SFColorRGBA.prototype.setValueByStr = function(str) {
@@ -2439,8 +2439,7 @@ x3dom.fields.Line = function(pos, dir)
 };
 
 x3dom.fields.Line.prototype.toString = function () {
-    var str = 'Line: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
-    return str;
+    return 'Line: [' + this.pos.toString() + '; ' + this.dir.toString() + ']';
 };
 
 /** intersect line with box volume given by low and high */

@@ -89,22 +89,13 @@ x3dom.gfx_webgl = (function () {
                         x3dom.caps.FPL_TEXTURES = ctx.getExtension("OES_texture_float_linear");
                         x3dom.caps.EXTENSIONS = ctx.getSupportedExtensions();
 
-                        // TODO; check this when consistent again in all browsers
-                        if (!window.chrome && !x3dom.caps.FPL_TEXTURES) {
-                            x3dom.caps.FPL_TEXTURES = {};
-                        }
-
                         x3dom.debug.logInfo("\nVendor: " + x3dom.caps.VENDOR + ", " +
                             "Renderer: " + x3dom.caps.RENDERER + ", " + "Version: " + x3dom.caps.VERSION + ", " +
                             "ShadingLangV.: " + x3dom.caps.SHADING_LANGUAGE_VERSION
                             + ", " + "\nExtensions: " + x3dom.caps.EXTENSIONS);
 
                         x3dom.caps.MOBILE = (function (a) {
-                            if (/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4))) {
-                                return true;
-                            } else {
-                                return false;
-                            }
+                            return (/android.+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(a) || /1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|e\-|e\/|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(di|rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|xda(\-|2|g)|yas\-|your|zeto|zte\-/i.test(a.substr(0, 4)))
                         })(navigator.userAgent || navigator.vendor || window.opera);
 
                         // explicitly disable for iPad and the like
@@ -1874,6 +1865,8 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Set Lights
         //===========================================================================
+        // TODO: when no state/shader switch occured, all light/fog/... uniforms don't need to be set again
+
         if (numLights > 0 /*&& (stateSwitchMode & STATE_SWITCH_BIND)*/) {
             for (var p = 0; p < numLights; p++) {
                 var light_transform = mat_view.mult(slights[p].getCurrentTransform());
@@ -2672,12 +2665,17 @@ x3dom.gfx_webgl = (function () {
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
 
+        // for initFbo
         var type = gl.UNSIGNED_BYTE;
         var shadowType = gl.UNSIGNED_BYTE;
+        var nearestFilt = false;
 
-        if (x3dom.caps.FP_TEXTURES && x3dom.caps.FPL_TEXTURES && !x3dom.caps.MOBILE) {
+        if (x3dom.caps.FP_TEXTURES && !x3dom.caps.MOBILE) {
             type = gl.FLOAT;
             shadowType = gl.FLOAT;
+            if (!x3dom.caps.FPL_TEXTURES) {
+                nearestFilt = true;
+            }
         }
 
         var shadowedLights, numShadowMaps;
@@ -2733,11 +2731,11 @@ x3dom.gfx_webgl = (function () {
 				scene._webgl.fboShadow[i] = [];
 				
 				for (j=0; j < numShadowMaps; j++)
-					scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, shadowType);
+					scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, nearestFilt, shadowType);
 			}
 			
 			if (scene._webgl.fboShadow.length > 0)
-				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, false, shadowType);
+				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, nearestFilt, shadowType);
 			scene._webgl.fboBlur = [];
 						
 			//initialize blur fbo (different fbos for different sizes)
@@ -2751,7 +2749,7 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, false, shadowType);			
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, nearestFilt, shadowType);
 			}
 			
 			//initialize Data for post processing
@@ -2768,7 +2766,7 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                     rt_tex._vf.dimensions[0],
-                    rt_tex._vf.dimensions[1], false, type);
+                    rt_tex._vf.dimensions[1], nearestFilt, type);
             }
 
             // init scene volume to improve picking speed
@@ -2814,7 +2812,7 @@ x3dom.gfx_webgl = (function () {
                 rt_tex._webgl = {};
                 rt_tex._webgl.fbo = this.initFbo(gl,
                     rt_tex._vf.dimensions[0],
-                    rt_tex._vf.dimensions[1], false, type);
+                    rt_tex._vf.dimensions[1], nearestFilt, type);
                 x3dom.debug.logInfo("Init/resize RenderedTexture_" + rtl_i + " to size " +
                                     rt_tex._vf.dimensions[0] + " x " + rt_tex._vf.dimensions[1]);
             }			
@@ -2837,7 +2835,7 @@ x3dom.gfx_webgl = (function () {
 					scene._webgl.fboShadow[i][0].height != size) {
 					scene._webgl.fboShadow[i] = [];
 					for (j=0;j<numShadowMaps;j++){
-						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, false, shadowType);					
+						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, nearestFilt, shadowType);
 					}
 					
 				}			
@@ -2853,15 +2851,18 @@ x3dom.gfx_webgl = (function () {
 						sizeAvailable = true;
 				}
 				if (!sizeAvailable) 
-					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, false, shadowType);			
+					scene._webgl.fboBlur[scene._webgl.fboBlur.length] = this.initFbo(gl, size, size, nearestFilt, shadowType);
 			}
 
-			if (scene._webgl.fboShadow.length > 0 &&
-				typeof scene._webgl.fboScene == "undefined" || !(typeof scene._webgl.fboScene == "undefined") &&
-				(this.canvas.width != scene._webgl.fboScene.width || this.canvas.height != scene._webgl.fboScene.height)){
-				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, false, shadowType);
+			if (scene._webgl.fboShadow.length > 0 && typeof scene._webgl.fboScene == "undefined" || scene._webgl.fboScene &&
+				(this.canvas.width != scene._webgl.fboScene.width || this.canvas.height != scene._webgl.fboScene.height)) {
+				scene._webgl.fboScene = this.initFbo(gl, this.canvas.width, this.canvas.height, nearestFilt, shadowType);
 			}
         }
+
+        var env = scene.getEnvironment();
+        // update internal flags
+        env.checkSanity();
 
         var bgnd = scene.getBackground();
 
@@ -2929,8 +2930,6 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Collect drawables (traverse)
         //===========================================================================
-        var env = scene.getEnvironment();
-
         scene.drawableCollection = null;  // Always update needed?
 
         if (!scene.drawableCollection)
@@ -2942,7 +2941,7 @@ x3dom.gfx_webgl = (function () {
                 projMatrix: mat_proj,
                 sceneMatrix: mat_scene,
                 frustumCulling: true,
-                smallFeatureThreshold: env._vf.smallFeatureCulling ? env._vf.smallFeatureThreshold : 1,
+                smallFeatureThreshold: env._smallFeatureThreshold,
                 context: this,
                 gl: gl
             };
@@ -3064,8 +3063,8 @@ x3dom.gfx_webgl = (function () {
 
         // very experimental prio culling, currently coupled with small feature culling
         // TODO; what about shadows, picking etc. (but picking needs all objects)
-        if (env._vf.smallFeatureCulling && env._vf.lowPriorityThreshold < 1 && viewarea.isMoving()) {
-            n = Math.floor(n * env._vf.lowPriorityThreshold);
+        if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
+            n = Math.floor(n * env._lowPriorityThreshold);
             if (n == 0 && scene.drawableCollection.length > 0)
                 n = 1;    // render at least one object
         }
