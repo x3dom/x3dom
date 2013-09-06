@@ -25,72 +25,83 @@ x3dom.registerNodeType(
 
             var sx = this._vf.size.x, sy = this._vf.size.y;
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
-
-            var geoCacheID = 'Plane_' + sx + '-' + sy + '-' + subx + '-' + suby + '-' +
-                             this._vf.center.x + '-' + this._vf.center.y + '-' + this._vf.center.z;
             
             this._indexBuffers = [];
             var indices;
 
-            // Attention: DynamicLOD node internally creates Plane nodes, but MUST NOT 
-            //            use geoCache, therefore only use cache if "ctx" is defined!
-            // TODO: move mesh generation of all primitives to nodeChanged()
-            if (ctx && this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined) {
-                //x3dom.debug.logInfo("Using Plane from Cache");
-                this._mesh = x3dom.geoCache[geoCacheID];
-            }
-            else {
+
                 var x = 0, y = 0;
-                var xstep = sx / subx;
-                var ystep = sy / suby;
+                var xstep = sx / subx / 2;
+                var ystep = sy / suby / 2;
 
                 sx /= 2; sy /= 2;
+                var countX = subx * 2 + 1;
+                var countY = suby * 2 + 1;
 
-                for (y = 0; y <= suby; y++) {
-                    for (x = 0; x <= subx; x++) {
+                /*************************************************************/
+                // VERTEX-INFORMATION
+                /*************************************************************/
+                for (y = 0; y <= suby * 2; y++) {
+                    for (x = 0; x <= subx * 2; x++) {
                         this._mesh._positions[0].push(this._vf.center.x + x * xstep - sx);
                         this._mesh._positions[0].push(this._vf.center.y + y * ystep - sy);
                         this._mesh._positions[0].push(this._vf.center.z);
                         this._mesh._normals[0].push(0);
                         this._mesh._normals[0].push(0);
                         this._mesh._normals[0].push(1);
-                        this._mesh._texCoords[0].push(x / subx);
-                        this._mesh._texCoords[0].push(y / suby);
+                        this._mesh._texCoords[0].push(x / (subx * 2));
+                        this._mesh._texCoords[0].push(y / (suby * 2));
                     }
                 }
                 
+                /*************************************************************/
+                // regular triangulation
                 indices = [];
-                for (y = 1; y <= suby; y++) {
-                    for (x = 0; x < subx; x++) {
-                        indices.push((y - 1) * (subx + 1) + x);
-                        indices.push((y - 1) * (subx + 1) + x + 1);
-                        indices.push(y * (subx + 1) + x);
-
-                        indices.push(y * (subx + 1) + x);
-                        indices.push((y - 1) * (subx + 1) + x + 1);
-                        indices.push(y * (subx + 1) + x + 1);
+                for (var y = 0; y < countY - 2; y += 2) {
+                    for (var x = 0; x < countX - 2; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
                     }
                 }
                 
-                //Push to indexBuffer List
-                this._indexBuffers.push(indices);
+                this._indexBuffers.push(indices); 
                 
-                
-                indices = [];
-                for (y = 2; y <= suby - 1; y++) {
-                    for (x = 1; x < subx - 1; x++) {
-                        indices.push((y - 1) * (subx + 1) + x);
-                        indices.push((y - 1) * (subx + 1) + x + 1);
-                        indices.push(y * (subx + 1) + x);
+                /*************************************************************/
+                // finer left triangulation
 
-                        indices.push(y * (subx + 1) + x);
-                        indices.push((y - 1) * (subx + 1) + x + 1);
-                        indices.push(y * (subx + 1) + x + 1);
-                    }
-                }
                 
-                //Push to indexBuffer List
-                this._indexBuffers.push(indices);
+                /*************************************************************/
+                // finer right triangulation
+
+                
+                /*************************************************************/
+                // finer bottom triangulation
+
+                
+                /*************************************************************/
+                // finer top triangulation
+
+                
+                /*************************************************************/
+                // finer topRight triangulation
+
+                
+                /*************************************************************/
+                // finer topLeft triangulation
+
+                
+                /*************************************************************/
+                // finer bottomLeft triangulation
+
+                
+                /*************************************************************/
+                // finer bottomRight triangulation
+
                 
                 
                 //Set act indexbuffer
@@ -100,8 +111,7 @@ x3dom.registerNodeType(
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
                 this._mesh._numCoords = this._mesh._positions[0].length / 3;
 
-                x3dom.geoCache[geoCacheID] = this._mesh;
-            }
+           
         },
         {
              fieldChanged: function (fieldName) {
@@ -111,11 +121,12 @@ x3dom.registerNodeType(
              setLevel: function(level)
              {
                  this._mesh._indices[0] = this._indexBuffers[level];
+                 this._mesh._numFaces = this._indexBuffers[level].length / 3;
+                 this._mesh._invalidate = true;
              }   
         }
     )
 );
-
 
 
 
@@ -167,7 +178,7 @@ x3dom.registerNodeType(
             }
             else if (this._vf.mode === "3d" || this._vf.mode === "2d") {
                 // 2D-Mesh that will represent the geometry of this node
-                var geometry = new x3dom.nodeTypes.Patch(ctx);
+                var geometry = new x3dom.nodeTypes.Plane(ctx);
                 // definition the parameters of the geometry
                 geometry._vf.subdivision.setValues(this._vf.subdivision);
                 geometry.fieldChanged("subdivision");
@@ -195,6 +206,7 @@ x3dom.registerNodeType(
                                                            0, 0, geometry);
                     }
                     else {
+                        geometry = new x3dom.nodeTypes.Patch(ctx);
                         this.rootNode = new QuadtreeNode3D(ctx, this, 0, 0,
                                                            new x3dom.fields.SFMatrix4f.identity(), 
                                                            0, 0, geometry);
@@ -1083,7 +1095,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // create shape with geometry and appearance data
         shape._cf.geometry.node = geometry;
         shape._cf.appearance.node = appearance;
-        geometry.nodeChanged();
+        shape._cf.geometry.node.nodeChanged();
         appearance.nodeChanged();
 
         // add shape to bvhRefiner object
@@ -1480,11 +1492,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             indiceNumber = 2;
         }
         
-        if (indiceNumber === 0)
-            shape._cf.geometry.node.setLevel(0);
-        else
-            shape._cf.geometry.node.setLevel(0);
-        
+        //shape._cf.geometry.node.setLevel(indiceNumber); 
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
     }
 
