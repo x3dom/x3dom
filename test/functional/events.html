@@ -101,7 +101,7 @@
   {
     document.getElementById('box_2_2_id').addEventListener('click', clicked, false);
     document.getElementById('box_2_2_id').addEventListener('transform', transform, false);
-  };
+  }
 </script>
   </head>
   
@@ -116,7 +116,7 @@
         skyAngle='0.9 1.5 1.57' skyColor='0.21 0.18 0.66 0.2 0.44 0.85 0.51 0.81 0.95 0.51 0.81 0.95' 
         groundTransparency='0.5 0.5 0.5 0.5' skyTransparency='0.5 0.5 0.5 0.5'></background>
       
-      <transform scale="2.5 2.5 2.5">
+      <transform id="grey_box" scale="2.5 2.5 2.5">
         <shape id="box_1_id" DEF="box_1">  
           <appearance>
             <material></material>	
@@ -155,183 +155,29 @@
   
   <script>
     var runtime = null;
-    var tsEnabled = false;
-    
-    var redBox = null;
     var drag = false;
-    
-    var w = 0, h = 0;
-    var uPlane, vPlane, pPlane;
-    
-    var isect = null;
-    var translationOffset = null;
-    
-    var lastX, lastY;
-    var firstRay = null;
-    var buttonState = 0;
-    
-    
-    function calcViewPlane(origin) 
-    {
-        var ray = null;
-        
-        // init width and height
-        w = runtime.getWidth();
-        h = runtime.getHeight();
-        
-        ray = runtime.getViewingRay(0, h-1);
-        var r = ray.pos.add(ray.dir);   //bottom left of viewarea
+    var tsEnabled = false;
 
-        ray = runtime.getViewingRay(w-1, h-1);
-        var s = ray.pos.add(ray.dir);   //bottom right of viewarea
-
-        ray = runtime.getViewingRay(0, 0);
-        var t = ray.pos.add(ray.dir);   //top left of viewarea
-        
-        uPlane = s.subtract(r).normalize();
-		vPlane = t.subtract(r).normalize();
-		
-		if (arguments.length === 0)
-		    pPlane = r;
-		else
-		    pPlane = x3dom.fields.SFVec3f.copy(origin);
-    }
-    
-    function det(mat)
-    {
-        return 	mat[0][0]*mat[1][1]*mat[2][2] + mat[0][1]*mat[1][2]*mat[2][0] +
-        		mat[0][2]*mat[2][1]*mat[1][0] - mat[2][0]*mat[1][1]*mat[0][2] -
-    		    mat[0][0]*mat[2][1]*mat[1][2] - mat[1][0]*mat[0][1]*mat[2][2] ;
-    }
-    
-    // Translation along plane parallel to viewing plane E:x=p+t*u+s*v
-    function translateXY(l)
-    {
-        var track = null;
-        var z = [], n = [];
-
-        for (var i=0; i<3; i++) {
-            z[i] = [];
-            n[i] = [];
-            
-        	z[i][0] = uPlane.at(i);
-        	n[i][0] = z[i][0];
-        	
-            z[i][1] = vPlane.at(i);
-            n[i][1] = z[i][1]
-            
-            z[i][2] = (l.pos.subtract(pPlane)).at(i);
-            n[i][2] = -l.dir.at(i);
-        }
-        
-        // get intersection line-plane with cramer's rule
-        var s = det(n);
-        
-        if (s !== 0) {
-            var t = det(z) / s;
-            track = l.pos.addScaled(l.dir, t);
-        }
-        
-        if (track) {
-            if (isect) {
-                // calc offset from first click position
-                track = track.subtract(isect);
-            }
-            track = track.add(translationOffset);
-        }
-        
-        return track;
-    }
-    
-    // Translation along picking ray
-    function translateZ(l, currY)
-    {
-        var vol = runtime.getSceneBBox();
-        var sign = (currY < lastY) ? 1 : -1;
-        var fact = sign * (vol.max.subtract(vol.min)).length() / 100;
-        
-        translationOffset.setValues(translationOffset.addScaled(l.dir, fact));
-        
-        return translationOffset;
-    }
-    
-    function over(event)
-    {
-        runtime.getCanvas().style.cursor = "crosshair";
-    }
-    
-    function out(event)
-    {
-        if (!drag)
-            runtime.getCanvas().style.cursor = "pointer";
-    }
 
     function start(event) 
     {
-        if (!drag) 
-        {
+        if (!drag) {
             document.getElementById('moveEvent').innerHTML = "Down: [" + event.layerX + " | " + event.layerY + "]";
-            lastX = event.layerX;
-            lastY = event.layerY;
-            
             drag = true;
-            runtime.noNav();    // disable navigation
-            
-            // calc view-aligned plane through original pick position
-            isect = new x3dom.fields.SFVec3f(event.worldX, event.worldY, event.worldZ);
-            calcViewPlane(isect);
-            
-            firstRay = runtime.getViewingRay(event.layerX, event.layerY);
-            // to distinguish between parallel or orthogonal movement
-            buttonState = event.button;
-            
-            var mTrans = redBox.getAttribute("translation");
-			if (mTrans)
-				translationOffset = x3dom.fields.SFVec3f.parse(mTrans);
-			else
-				translationOffset = new x3dom.fields.SFVec3f(0, 0, 0);
-			
-			runtime.getCanvas().style.cursor = "crosshair";
-        }
-    }
-
-    function move(event) 
-    {
-        if (drag) 
-        {
-            var pos = runtime.mousePosition(event);
-            var ray = runtime.getViewingRay(pos[0], pos[1]);
-            
-            var track = null;
-            
-            if (buttonState == 2)   // right mouse button
-                track = translateZ(firstRay, pos[1]);
-            else
-                track = translateXY(ray);
-            
-            if (track)
-                redBox.setAttribute("translation", track.x + " " + track.y + " " + track.z);
-            
-            document.getElementById('moveEvent').innerHTML = "Move: [" + pos[0] + " | " + pos[1] + "]";
-            lastX = pos[0];
-            lastY = pos[1];
         }
     }
 
     function stop(event)
     {
-        if (drag) 
-        {
+        if (drag) {
             document.getElementById('moveEvent').innerHTML = "Up: [" + event.layerX + " | " + event.layerY + "]";
-            lastX = event.layerX;
-            lastY = event.layerY;
-            
-            isect = null;
             drag = false;
-            runtime.examine();    // enable navigation
-            
-            runtime.getCanvas().style.cursor = "pointer";
         }
+    }
+
+    function moveCallback(elem, trans)
+    {
+        document.getElementById('moveEvent').innerHTML = "Move " + elem.id + ": [" + trans + "]";
     }
     
     function toggleTimer()
@@ -343,17 +189,17 @@
     document.onload = function() {
         var boxes = document.getElementById("boxes");
         runtime = boxes.runtime;
-        
-        redBox = document.getElementById("box_2_id");
-        redBox.addEventListener('mousedown', start, false);
-        redBox.addEventListener('mouseover', over, false);
-        redBox.addEventListener('mouseout', out, false);
-        
         boxes.addEventListener('mouseup', stop, false);
-        boxes.addEventListener('mouseout', stop, false);
-        boxes.addEventListener('mousemove', move, true);
         
-        x3dom.debug.logInfo("Drag the red box around with your mouse!");
+        var redBox = document.getElementById("box_2_id");
+        redBox.addEventListener('mousedown', start, false);
+
+        // Moveable wrapper requires x3dom-full.js, its signature is:
+        // x3dom.Moveable(x3domElement, transformNode, callback, snapToGridSize)
+        new x3dom.Moveable(boxes, redBox, moveCallback, 0);
+        new x3dom.Moveable(boxes, document.getElementById("grey_box"), null, 0);
+        
+        x3dom.debug.logInfo("Drag the boxes around with your mouse!");
     }
   </script>
   
