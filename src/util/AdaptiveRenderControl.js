@@ -32,9 +32,7 @@ x3dom.arc.ARF = function(name, min, max, dirFac, factorGetterFunc, factorSetterF
 {
     this._name = name;
     //start with average
-    this._stateValue = [];
-    this._stateValue[0] = 0.5;
-    this._stateValue[1] = 0.5;
+    this._stateValue = [ 0.5, 0.5 ];
 
     this._limits = new x3dom.arc.Limits(min, max);
     this._factorGetterFunc = factorGetterFunc;
@@ -84,8 +82,6 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
 
         this._arfs = [];
 
-
-
         this._arfs.push(
             new x3dom.arc.ARF("smallFeatureCulling",
                 0, 10, -1,
@@ -107,7 +103,6 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                 }
             )
         );
-
 
         this._arfs.push(
             new x3dom.arc.ARF("lowPriorityCulling",
@@ -173,7 +168,9 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
             var normFactors = [];
 
             //normalize factors
-            for( var i = 0, n = this._arfs.length; i < n; ++i)
+            var i, n = this._arfs.length;
+
+            for(i = 0; i < n; ++i)
             {
                 normFactors[i] = this._arfs[i].getFactor();
                 if(normFactors[i] > 0)
@@ -181,7 +178,7 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
             }
 
             var dirFac = delta < 0 ? -1 : 1;
-            for( var i = 0, n = this._arfs.length; i < n; ++i)
+            for(i = 0; i < n; ++i)
             {
                 if(normFactors[i] > 0)
                 {
@@ -190,6 +187,7 @@ x3dom.arc.AdaptiveRenderControl = defineClass(
                 }
             }
         },
+
         reset: function()
         {
             for( var i = 0, n = this._arfs.length; i < n; ++i)

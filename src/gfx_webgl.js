@@ -692,8 +692,8 @@ x3dom.gfx_webgl = (function () {
      * Mainly manages rendering of backgrounds and buffer clearing
      *****************************************************************************/
     Context.prototype.setupScene = function (gl, bgnd) {
-        var sphere;
-        var texture;
+        var sphere = null;
+        var texture = null;
 
         var that = this;
 
@@ -916,7 +916,8 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
-        bgnd._webgl.render = function (gl, mat_view, mat_proj) {
+        bgnd._webgl.render = function (gl, mat_view, mat_proj)
+        {
             var sp = bgnd._webgl.shader;
             var mat_scene = null;
             var projMatrix_22 = mat_proj._22,
@@ -2711,7 +2712,6 @@ x3dom.gfx_webgl = (function () {
 
             scene._webgl.normalShader = this.cache.getShader(gl, x3dom.shader.NORMAL);
 
-
             //Initialize shadow maps
 			scene._webgl.fboShadow = [];
 			
@@ -2841,7 +2841,7 @@ x3dom.gfx_webgl = (function () {
 				}			
 			}
 			
-			//reinitialize blur fbos if neccessary
+			//reinitialize blur fbos if necessary
 			for (i = 0; i< shadowedLights.length; i++){
 				size = scene._webgl.fboShadow[i][0].height;
 				

@@ -63,17 +63,13 @@ x3dom.Viewarea = function (document, scene) {
 
 x3dom.Viewarea.prototype.tick = function(timeStamp)
 {
-    var environment = this._scene.getEnvironment();
-    if(environment._vf.enableARC && this.arc == null)
+    var needMixAnim = false;
+    var env = this._scene.getEnvironment();
+
+    if (env._vf.enableARC && this.arc == null)
     {
         this.arc = new x3dom.arc.AdaptiveRenderControl(this._scene);
     }
-    if(this.arc != null )
-    {
-        this.arc.update(this.isMoving() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
-    }
-
-    var needMixAnim = false;
 
     if (this._mixer._beginTime > 0)
     {
@@ -107,6 +103,11 @@ x3dom.Viewarea.prototype.tick = function(timeStamp)
 
     this._lastTS = timeStamp;
     this._isAnimating = (needMixAnim || needNavAnim);
+
+    if (this.arc != null )
+    {
+        this.arc.update(this.isMoving() ? 1 : 0, this._doc._x3dElem.runtime.getFPS());
+    }
 
     return (this._isAnimating || lastIsAnimating);
 };
@@ -260,7 +261,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             }
 
             if (this._lastButton & 1) {
-                step *= this._deltaT * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+                step *= 0.1 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
             }
             else {
                 step = 0;
