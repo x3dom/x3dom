@@ -73,6 +73,25 @@ x3dom.Runtime.prototype.initialize = function(doc, canvas) {
 
 
 /**
+ * APIFunction: noBackendFound
+ *
+ * This method is called once the system initialized and is not ready to 
+ * render the first time because there is no backend found. By default this
+ * method noop. You can however override it with your own implementation.
+ *
+ * > x3dom.runtime.noBackendFound = function() {
+ * >    alert("Dingel Dingel Ding Dong...");
+ * > }
+ *
+ * It is important to create this override before the document onLoad event has 
+ * fired. Therefore putting it directly under the inclusion of x3dom.js is the 
+ * preferred way to ensure overloading of this function.
+ */
+x3dom.Runtime.prototype.noBackendFound = function() {
+    x3dom.debug.logInfo('No backend found. Unable to render.');
+};
+
+/**
  * APIFunction: ready
  *
  * This method is called once the system initialized and is ready to render

@@ -267,7 +267,12 @@ x3dom.userAgentFeature = {
             if (x3dom.runtime.ready) {
                 x3ds[i].runtime.ready = x3dom.runtime.ready;
             }
-
+            
+            // no backend found method system wide call
+            if (x3dcanvas.backend == '') {
+                x3dom.runtime.noBackendFound();
+            }
+            
             x3dcanvas.load(x3ds[i], i, settings);
 
             // show or hide statistics based on param/x3d attribute settings

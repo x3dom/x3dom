@@ -56,6 +56,24 @@ the X3D element they are working on as first parameter::
     };
 
 
+..  js:function:: noBackendFound()
+    
+    This callback is executed once the system initialized and is not ready to 
+    render the first time because there is no backend found. By default this
+    method noop. You can however override it with your own implementation.
+ 
+        x3dom.runtime.noBackendFound = function() {
+            alert("No backend, what a bummer.");
+        }
+
+    It is important to create this override before the document onLoad event has 
+    fired. Therefore putting it directly under the inclusion of ``x3dom.js`` is the 
+    preferred way to ensure overloading of this function.
+
+    Please note that this does not account for a installed, but disabled
+    Flash plugin.
+ 
+
 
 ..  js:function:: ready()
 
