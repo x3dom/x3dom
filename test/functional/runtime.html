@@ -203,9 +203,12 @@
 	var ab_info;
 
     x3dom.runtime.ready = function() {
-        alert('Hello World');
+        alert('Hello I am the result of a custom runtime ready function.');
     };
 
+    x3dom.runtime.noBackendFound = function() {
+        alert('Custom no backend present function');
+    };
 
 	function init(event) {
 //		$element = document.getElementById('the_element');
