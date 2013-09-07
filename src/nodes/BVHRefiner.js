@@ -72,36 +72,567 @@ x3dom.registerNodeType(
                 this._indexBuffers.push(indices); 
                 
                 /*************************************************************/
-                // finer left triangulation
-
+                /*************************************************************/
+                /* TODO: check creation of special mesh triangulation on 
+                 * right creation of base mesh component
+                 */ 
+                /*************************************************************/
+                /*************************************************************/
+                
                 
                 /*************************************************************/
-                // finer right triangulation
+                // finer left triangulation
+                indices = [];
+                for (var y = countY - 3; y < countY - 2; y += 2) {
+                    for (var x = 0; x < countX - 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 2) * countX);
+                        
+                        indices.push((x + 1) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                for (var y = 0; y < countY - 4; y += 2) {
+                    for (var x = 0; x < countX - 2; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+                              
+                this._indexBuffers.push(indices);
 
+                /*************************************************************/
+                // finer right triangulation
+                indices = [];
+                
+                for (var y = 2; y < countY - 2; y += 2) {
+                    for (var x = 0; x < countX - 2; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+                
+                for (var y = 0; y < 2; y += 2) {
+                    for (var x = 0; x < countX - 2; x += 2) {
+                    
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);  
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + y * countX);
+                        
+                        indices.push((x + 1) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                              
+                this._indexBuffers.push(indices); 
                 
                 /*************************************************************/
                 // finer bottom triangulation
-
+                indices = [];
+                
+                for (var y = 0; y < countY - 2; y += 2) {
+                    for (var x = 0; x < 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 1) * countX);
+                        
+                        indices.push((x) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                for (var y = 0; y < countY - 2; y += 2) {
+                    for (var x = 2; x < countX - 2; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+             
+                this._indexBuffers.push(indices);
                 
                 /*************************************************************/
                 // finer top triangulation
-
+                indices = [];
+                
+                for (var y = 0; y < countY - 2; y += 2) {
+                    for (var x = countX - 3; x < countX - 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 1) * countX);
+                        
+                        indices.push((x + 2) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                for (var y = 0; y < countY - 2; y += 2) {
+                    for (var x = 0; x < countX - 4; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+             
+                this._indexBuffers.push(indices);
                 
                 /*************************************************************/
                 // finer topRight triangulation
-
+                indices = [];
+                
+                // finer right
+                for (var y = 0; y < 2; y += 2) {
+                    for (var x = countX - 3; x < countX - 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 1) * countX);
+                        
+                        indices.push((x + 2) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + y * countX);
+                        
+                        indices.push((x + 1) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                for (var y = 2; y < countY - 2; y += 2) {
+                    for (var x = 0; x < countX - 4; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+                
+                //  finer top 
+                for (var y = 2; y < countY - 2; y += 2) {
+                    for (var x = countX - 3; x < countX - 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 1) * countX);
+                        
+                        indices.push((x + 2) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                // finer right
+                for (var y = 0; y < 2; y += 2) {
+                    for (var x = 0; x < countX - 4; x += 2) {
+                    
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);  
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + y * countX);
+                        
+                        indices.push((x + 1) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                this._indexBuffers.push(indices);
                 
                 /*************************************************************/
                 // finer topLeft triangulation
-
+                indices = [];
+                
+                for (var y = countY - 3; y < countY - 2; y += 2) {
+                    for (var x = countX - 3; x < countX - 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 2) * countX);
+                        
+                        indices.push((x + 1) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 1) * countX);
+                        
+                        indices.push((x + 2) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                for (var y = 0; y < countY - 4; y += 2) {
+                    for (var x = 0; x < countX - 4; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+                
+                for (var y = 0; y < countY - 4; y += 2) {
+                    for (var x = countX - 3; x < countX - 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 1) * countX);
+                        
+                        indices.push((x + 2) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                for (var y = countY - 3; y < countY - 2; y += 2) {
+                    for (var x = 0; x < countX - 4; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 2) * countX);
+                        
+                        indices.push((x + 1) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                this._indexBuffers.push(indices);
                 
                 /*************************************************************/
                 // finer bottomLeft triangulation
-
+                indices = [];
+                
+                for (var y = countY - 3; y < countY - 2; y += 2) {
+                    for (var x = 0; x < 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 1) * countX);
+                        
+                        indices.push((x) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 2) * countX);
+                        
+                        indices.push((x + 1) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                for (var y = 0; y < countY - 4; y += 2) {
+                    for (var x = 2; x < countX - 2; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+                
+                // finer left
+                for (var y = countY - 3; y < countY - 2; y += 2) {
+                    for (var x = 2; x < countX - 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 2) * countX);
+                        
+                        indices.push((x + 1) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                // finer bottom
+                for (var y = 0; y < countY - 4; y += 2) {
+                    for (var x = 0; x < 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 1) * countX);
+                        
+                        indices.push((x) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                this._indexBuffers.push(indices);
                 
                 /*************************************************************/
                 // finer bottomRight triangulation
-
+                indices = [];
+                
+                for (var y = 0; y < 2; y += 2) {
+                    for (var x = 0; x < 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 1) * countX);
+                        
+                        indices.push((x) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + y * countX);
+                        
+                        indices.push((x + 1) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+            
+                for (var y = 2; y < countY - 2; y += 2) {
+                    for (var x = 2; x < countX - 2; x += 2) {
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x) + y * countX);
+                        
+                        indices.push((x) + y * countX);
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                    }
+                }
+                
+                // finer bottom
+                for (var y = 2; y < countY - 2; y += 2) {
+                    for (var x = 0; x < 2; x += 2) {
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 1) * countX);
+                        
+                        indices.push((x) + (y + 1) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                // finer right
+                for (var y = 0; y < 2; y += 2) {
+                    for (var x = 2; x < countX - 2; x += 2) {
+                    
+                        indices.push((x) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + (y + 2) * countX);
+                        
+                        indices.push((x) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + (y + 2) * countX);
+                        
+                        indices.push((x + 2) + (y + 2) * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 2) + y * countX);  
+                        
+                        indices.push((x + 2) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x + 1) + y * countX);
+                        
+                        indices.push((x + 1) + y * countX);
+                        indices.push((x + 1) + (y + 1) * countX);
+                        indices.push((x) + y * countX);
+                    }
+                }
+                
+                this._indexBuffers.push(indices);
+                
                 
                 
                 //Set act indexbuffer
