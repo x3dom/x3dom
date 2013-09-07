@@ -1181,7 +1181,7 @@ x3dom.X3DCanvas.prototype.load = function(uri, sceneElemPos, settings) {
     var x3dCanvas = this;
 
     this.doc.onload = function () {
-        x3dom.debug.logInfo("loaded '" + uri + "'");
+        //x3dom.debug.logInfo("loaded '" + uri + "'");
 		
         if (x3dCanvas.hasRuntime) {
 

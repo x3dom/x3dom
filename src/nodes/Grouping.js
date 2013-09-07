@@ -886,8 +886,8 @@ x3dom.registerNodeType(
             // another experimental field for shadow DOM remapping
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
 
-            this._lastMin = null;
-            this._lastMax = null;
+            this._lastMin = new x3dom.fields.SFVec3f(0, 0, 0);
+            this._lastMax = new x3dom.fields.SFVec3f(1, 1, 1);
             
             this._shadowIdMap = null;
         },
@@ -914,13 +914,8 @@ x3dom.registerNodeType(
 
                 if (vol.isValid())
                 {
-                    // TODO: could directly use _lastMin/Max, but then take care of initial null check
-                    var min = x3dom.fields.SFVec3f.MAX();
-                    var max = x3dom.fields.SFVec3f.MIN();
-                    vol.getBounds(min, max);
-
-                    this._lastMin = min;
-                    this._lastMax = max;
+                    this._lastMin = x3dom.fields.SFVec3f.copy(vol.min);
+                    this._lastMax = x3dom.fields.SFVec3f.copy(vol.max);
                 }
             },
             

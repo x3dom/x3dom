@@ -65,6 +65,7 @@ x3dom.registerNodeType(
                     parent._cleanupGLObjects(true);
                 }
                 parent.setAllDirty();
+                parent.invalidateVolume();
             }
         }
     )

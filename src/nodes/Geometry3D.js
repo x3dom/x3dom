@@ -299,7 +299,7 @@ x3dom.registerNodeType(
                 if (!normals)
                     this._mesh.calcNormals(Math.PI, this._vf.ccw);
 
-				this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numTexComponents = numTexComponents;
                 this._mesh._numColComponents = numColComponents;
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;

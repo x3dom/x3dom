@@ -444,6 +444,9 @@ x3dom.registerNodeType(
                     this._objectID = ++x3dom.nodeTypes.Shape.objectID;
                     x3dom.nodeTypes.Shape.idMap.nodeID[this._objectID] = this;
                 }
+
+                this.invalidateVolume();
+                this.invalidateCache();
             }
         }
     )

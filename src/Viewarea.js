@@ -261,7 +261,7 @@ x3dom.Viewarea.prototype.navigateTo = function(timeStamp)
             }
 
             if (this._lastButton & 1) {
-                step *= 0.1 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
+                step *= 0.01 * (this._pressY - this._lastY) * Math.abs(this._pressY - this._lastY);
             }
             else {
                 step = 0;
@@ -700,8 +700,8 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view,lightNode)
 /*
  * Get WCToLCMatrices for cascaded light
  */
-x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode)
-{	
+x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode, mat_proj)
+{
 	var numCascades = Math.max(1, Math.min(lightNode._vf.shadowCascades, 6));
 	var splitFactor = Math.max(0, Math.min(lightNode._vf.shadowSplitFactor, 1));
 	var splitOffset = Math.max(0, Math.min(lightNode._vf.shadowSplitOffset, 1));
@@ -720,7 +720,7 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode)
 	//get view projection matrix
 	var viewProj = proj.mult(view);	
 	
-	var matrices = new Array();
+	var matrices = [];
 
 	if (numCascades == 1){
 		//return if only one cascade
@@ -729,11 +729,11 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode)
 	}
 	
 	//compute split positions of view frustum
-	var cascadeSplits = this.getShadowSplitDepths(numCascades, splitFactor, splitOffset, true);
+	var cascadeSplits = this.getShadowSplitDepths(numCascades, splitFactor, splitOffset, true, mat_proj);
 	
 	//calculate fitting matrices and multiply with view projection
 	for (var i=0; i<numCascades; i++){
-		var fittingMat = this.getLightFittingMatrix(viewProj,cascadeSplits[i],cascadeSplits[i+1]);
+		var fittingMat = this.getLightFittingMatrix(viewProj, cascadeSplits[i], cascadeSplits[i+1], mat_proj);
 		matrices[i] = fittingMat.mult(viewProj);
 	}	
 	
@@ -743,8 +743,7 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode)
 
 x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, highPrecision)
 {
-	var proj = new x3dom.fields.SFMatrix4f();
-	proj.setValues(this.getProjectionMatrix());
+    var proj = this.getProjectionMatrix();
 	
 	if (!highPrecision || zNear > 0 || zFar > 0) {
 		//replace near and far plane of projection matrix
@@ -781,8 +780,8 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, 
 		proj._23 = -2.0*far*near / (far-near);
 		
 		return proj;
-	} else {
-	
+	}
+    else {
 		//should be more accurate, but also more expensive
 		var cropMatrix = this.getLightCropMatrix(proj.mult(lMat));
 		
@@ -1297,13 +1296,8 @@ x3dom.Viewarea.prototype.onMoveView = function (translation, rotation)
 	{
 		if (translation)
 		{
-			var distance = 10;
-			
-			if (this._scene._lastMin && this._scene._lastMax)
-			{
-				distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-				distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
-			}
+			var distance = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
+			distance = ((distance < x3dom.fields.Eps) ? 1 : distance) * navi._vf.speed;
 			
 			translation = translation.multiply(distance);
             this._movement = this._movement.add(translation);
@@ -1341,16 +1335,12 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
 
     var dx = x - this._lastX;
     var dy = y - this._lastY;
-    var min, max, ok, d, vec;
-    var mat = null;
-    var vol = null;
+    var d, vec, mat = null;
 
     if (navType === "examine")
     {
         if (buttonState & 1) //left
         {
-            //this.orbitH(dx);
-            //this.orbitV(dy);
             var alpha = (dy * 2 * Math.PI) / this._width;
             var beta = (dx * 2 * Math.PI) / this._height;
             mat = this.getViewMatrix();
@@ -1369,27 +1359,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         if (buttonState & 4) //middle
         {
-			if (this._scene._lastMin && this._scene._lastMax)
-			{
-				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-			}
-			else
-			{
-                vol = this._scene.getVolume();
-
-                min = x3dom.fields.SFVec3f.MAX();
-                max = x3dom.fields.SFVec3f.MIN();
-
-                if (vol.isValid())
-                {
-                    vol.getBounds(min, max);
-
-                    this._scene._lastMin = min;
-                    this._scene._lastMax = max;
-                }
-				
-				d = ok ? (max.subtract(min)).length() : 10;
-			}
+			d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
 			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(d*dx/this._width, d*(-dy)/this._height, 0);
@@ -1404,27 +1374,7 @@ x3dom.Viewarea.prototype.onDrag = function (x, y, buttonState)
         }
         if (buttonState & 2) //right
         {
-			if (this._scene._lastMin && this._scene._lastMax)
-			{
-				d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
-			}
-			else
-			{
-                vol = this._scene.getVolume();
-
-                min = x3dom.fields.SFVec3f.MAX();
-                max = x3dom.fields.SFVec3f.MIN();
-
-                if (vol.isValid())
-                {
-                    vol.getBounds(min, max);
-
-                    this._scene._lastMin = min;
-                    this._scene._lastMax = max;
-                }
-				
-				d = ok ? (max.subtract(min)).length() : 10;
-			}
+			d = (this._scene._lastMax.subtract(this._scene._lastMin)).length();
 			d = ((d < x3dom.fields.Eps) ? 1 : d) * navi._vf.speed;
 
             vec = new x3dom.fields.SFVec3f(0, 0, d*(dx+dy)/this._height);
@@ -1486,7 +1436,7 @@ x3dom.Viewarea.prototype.getShadowedLights = function()
 	var shadowedLights = [];
 	var shadowIndex = 0;
 	var slights = this.getLights();
-	for (var i=0; i< slights.length; i++){
+	for (var i=0; i<slights.length; i++){
 		if (slights[i]._vf.shadowIntensity > 0.0){
 			shadowedLights[shadowIndex] = slights[i];
 			shadowIndex++;
@@ -1499,9 +1449,8 @@ x3dom.Viewarea.prototype.getShadowedLights = function()
 /*
  * Calculate view frustum split positions for the given number of cascades
  */
-x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFactor, 
-														splitOffset,  postProject)
-{	
+x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFactor, splitOffset, postProject, mat_proj)
+{
 	var logSplit;
 	var practSplit = [];
 	
@@ -1526,9 +1475,7 @@ x3dom.Viewarea.prototype.getShadowSplitDepths = function(numCascades, splitFacto
 	if (!postProject)
         return practSplit;
 	
-	//return in post projective coords	
-	var mat_proj = this.getProjectionMatrix();	
-
+	//return in post projective coords
 	var postProj = [];
 	
 	for (var j=0; j<=numCascades; j++){
@@ -1592,13 +1539,11 @@ x3dom.Viewarea.prototype.getLightCropMatrix = function(WCToLCMatrix)
 /*
  * Calculate a matrix to fit the given wctolc-matrix to the split boundaries
  */
-x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, zFar)
+x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, zFar, mat_proj)
 {
-	var mat_proj = this.getProjectionMatrix();
 	var mat_view = this.getViewMatrix();
 	var mat_view_proj = mat_proj.mult(mat_view);
 	var mat_view_proj_inverse = mat_view_proj.inverse();
-	
 	
 	//define view frustum corner points in post perspective view space
 	var frustumCorners = [];
@@ -1669,6 +1614,7 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 		}
 		var minValues = new x3dom.fields.SFVec3f(xMin,yMin,zMin);
 		var maxValues = new x3dom.fields.SFVec3f(xMax,yMax,zMax);
+
 		return new x3dom.fields.BoxVolume(minValues,maxValues);
 	}
 	
@@ -1679,7 +1625,6 @@ x3dom.Viewarea.prototype.getLightFittingMatrix = function(WCToLCMatrix, zNear, z
 	var scaleY = 2.0 / (frustumBB.max.y - frustumBB.min.y);
 	var offsetX = -(scaleX * (frustumBB.max.x + frustumBB.min.x)) / 2.0;
 	var offsetY = -(scaleY * (frustumBB.max.y + frustumBB.min.y)) / 2.0;
-
 	
 	var fittingMatrix = x3dom.fields.SFMatrix4f.identity();
 	

@@ -152,11 +152,8 @@ x3dom.registerNodeType(
                     var scene = viewarea._scene;
                     //scene.updateVolume();
                     
-                    var min = new x3dom.fields.SFVec3f();
-                    min.setValues(scene._lastMin);
-                    
-                    var max = new x3dom.fields.SFVec3f();
-                    max.setValues(scene._lastMax);
+                    var min = x3dom.fields.SFVec3f.copy(scene._lastMin);
+                    var max = x3dom.fields.SFVec3f.copy(scene._lastMax);
                     
                     var dia = max.subtract(min);
                     var sRad = dia.length() / 2;
