@@ -40,13 +40,10 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'topToBottom', true);
         },
 		{
-        	nodeChanged: function() {
-            },
-
 			fieldChanged: function(fieldName) {
-				if (fieldName == 'family' || fieldName == 'horizontal' || fieldName == 'justify' || fieldName == 'language' ||
-					fieldName == 'leftToRight' || fieldName == 'size' || fieldName == 'spacing' || fieldName == 'style' ||
-					fieldName == 'topToBottom') {
+				if (fieldName == 'family' || fieldName == 'horizontal' || fieldName == 'justify' ||
+                    fieldName == 'language' || fieldName == 'leftToRight' || fieldName == 'size' ||
+                    fieldName == 'spacing' || fieldName == 'style' || fieldName == 'topToBottom') {
                     Array.forEach(this._parentNodes, function (node) {
 						node.fieldChanged(fieldName);
                     });
@@ -76,7 +73,8 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'length', []);
             this.addField_SFFloat(ctx, 'maxExtent', 0.0);
             this.addField_SFNode ('fontStyle', x3dom.nodeTypes.X3DFontStyleNode);
-					
+
+            this._mesh._positions[0] = [];
 			this._mesh._normals[0]   = [0,0,1, 0,0,1, 0,0,1, 0,0,1];
             this._mesh._texCoords[0] = [0,0, 1,0, 1,1, 0,1];
             this._mesh._colors[0] 	 = [];
@@ -90,6 +88,8 @@ x3dom.registerNodeType(
                 if (!this._cf.fontStyle.node) {
                     this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
                 }
+                this.invalidateVolume();
+                this.invalidateCache();
             },
 
             fieldChanged: function(fieldName) {

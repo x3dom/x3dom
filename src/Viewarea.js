@@ -493,7 +493,7 @@ x3dom.Viewarea.prototype.animateTo = function(target, prev, dur)
     var navi = this._scene.getNavigationInfo();
 
     if (x3dom.isa(target, x3dom.nodeTypes.X3DViewpointNode)) {
-        target = target.getViewMatrix();
+        target = target.getCurrentTransform().mult(target.getViewMatrix());
     }
 
     if (navi._vf.transitionType[0].toLowerCase() !== "teleport" && navi.getType() !== "game")
@@ -583,7 +583,8 @@ x3dom.Viewarea.prototype.updateSpecialNavigation = function (viewpoint, mat_view
     }
 };
 
-x3dom.Viewarea.prototype.getViewpointMatrix = function () {
+x3dom.Viewarea.prototype.getViewpointMatrix = function ()
+{
     var viewpoint = this._scene.getViewpoint();
     var mat_viewpoint = viewpoint.getCurrentTransform();
     
@@ -592,7 +593,8 @@ x3dom.Viewarea.prototype.getViewpointMatrix = function () {
     return viewpoint.getViewMatrix().mult(mat_viewpoint.inverse());
 };
 
-x3dom.Viewarea.prototype.getViewMatrix = function () {
+x3dom.Viewarea.prototype.getViewMatrix = function ()
+{
     return this.getViewpointMatrix().mult(this._transMat).mult(this._rotMat);
 };
 
@@ -662,18 +664,18 @@ x3dom.Viewarea.prototype.getWCtoLCMatrix = function(lMat)
 /*
  * get six WCtoLCMatrices for point light
  */
-x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view,lightNode)
+x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view, lightNode, mat_proj)
 {	 
 	var zNear = lightNode._vf.zNear;
 	var zFar = lightNode._vf.zFar;
 	
-	var proj = this.getLightProjectionMatrix(view, zNear, zFar, false);
+	var proj = this.getLightProjectionMatrix(view, zNear, zFar, false, mat_proj);
 	
 	//set projection matrix to 90 degrees FOV (vertical and horizontal)
 	proj._00 = 1;
 	proj._11 = 1;
 	
-	var matrices = new Array();
+	var matrices = [];
 	
 	//create six matrices to cover all directions of point light
 	matrices[0] = proj.mult(view);
@@ -696,7 +698,6 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesPointLight = function(view,lightNode)
     return matrices;
 };
 
-
 /*
  * Get WCToLCMatrices for cascaded light
  */
@@ -705,11 +706,12 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode, m
 	var numCascades = Math.max(1, Math.min(lightNode._vf.shadowCascades, 6));
 	var splitFactor = Math.max(0, Math.min(lightNode._vf.shadowSplitFactor, 1));
 	var splitOffset = Math.max(0, Math.min(lightNode._vf.shadowSplitOffset, 1));
+
 	var isSpotLight = x3dom.isa(lightNode, x3dom.nodeTypes.SpotLight);
 	var zNear = lightNode._vf.zNear;
 	var zFar = lightNode._vf.zFar;
 	
-	var proj = this.getLightProjectionMatrix(view, zNear, zFar, true);
+	var proj = this.getLightProjectionMatrix(view, zNear, zFar, true, mat_proj);
 	
 	if (isSpotLight){
 		//set FOV to 90 degrees
@@ -740,10 +742,9 @@ x3dom.Viewarea.prototype.getWCtoLCMatricesCascaded = function(view, lightNode, m
 	return matrices;
 };
 
-
-x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, highPrecision)
+x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, highPrecision, mat_proj)
 {
-    var proj = this.getProjectionMatrix();
+    var proj = x3dom.fields.SFMatrix4f.copy(mat_proj);
 	
 	if (!highPrecision || zNear > 0 || zFar > 0) {
 		//replace near and far plane of projection matrix
@@ -756,8 +757,7 @@ x3dom.Viewarea.prototype.getLightProjectionMatrix = function(lMat, zNear, zFar, 
 		
 		var min = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
 		var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax); 
-		
-		//var 
+
 		var dia = max.subtract(min);
 		var sRad = dia.length() / 2;
 		
@@ -847,59 +847,55 @@ x3dom.Viewarea.prototype.calcViewRay = function(x, y)
 
 x3dom.Viewarea.prototype.showAll = function(axis)
 {
-    var vol = this._scene.getVolume();
+    this._scene.updateVolume();
 
-    if (vol.isValid())
-    {
-        var min = x3dom.fields.SFVec3f.MAX();
-        var max = x3dom.fields.SFVec3f.MIN();
-        vol.getBounds(min, max);
+    var min = x3dom.fields.SFVec3f.copy(this._scene._lastMin);
+    var max = x3dom.fields.SFVec3f.copy(this._scene._lastMax);
 
-        var x = "x", y = "y", z = "z";
-        var sign = 1;
-        var to, from = new x3dom.fields.SFVec3f(0, 0, -1);
-        
-        switch (axis) {
-            case "posX":
-            sign = -1;
-            case "negX":
-            z = "x"; x = "y"; y = "z";
-            to = new x3dom.fields.SFVec3f(sign, 0, 0);
-            break;
-            case "posY":
-            sign = -1;
-            case "negY":
-            z = "y"; x = "z"; y = "x";
-            to = new x3dom.fields.SFVec3f(0, sign, 0);
-            break;
-            case "posZ":
-            sign = -1;
-            case "negZ":
-            default:
-            to = new x3dom.fields.SFVec3f(0, 0, -sign);
-            break;
-        }
-        
-        var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
-        var viewmat = quat.toMatrix();
-        
-        var viewpoint = this._scene.getViewpoint();
-        var fov = viewpoint.getFieldOfView();
+    var x = "x", y = "y", z = "z";
+    var sign = 1;
+    var to, from = new x3dom.fields.SFVec3f(0, 0, -1);
 
-        var dia = max.subtract(min);
-        var diaz2 = sign * (dia[z] / 2.0);
-        var tanfov2 = Math.tan(fov / 2.0);
-
-        var dist1 = (dia[y] / 2.0) / tanfov2 - diaz2;
-        var dist2 = (dia[x] / 2.0) / tanfov2 - diaz2;
-
-        dia = min.add(dia.multiply(0.5));
-        dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.001;
-        
-        viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.negate()));
-
-        this.animateTo(viewmat, viewpoint);
+    switch (axis) {
+        case "posX":
+        sign = -1;
+        case "negX":
+        z = "x"; x = "y"; y = "z";
+        to = new x3dom.fields.SFVec3f(sign, 0, 0);
+        break;
+        case "posY":
+        sign = -1;
+        case "negY":
+        z = "y"; x = "z"; y = "x";
+        to = new x3dom.fields.SFVec3f(0, sign, 0);
+        break;
+        case "posZ":
+        sign = -1;
+        case "negZ":
+        default:
+        to = new x3dom.fields.SFVec3f(0, 0, -sign);
+        break;
     }
+
+    var viewpoint = this._scene.getViewpoint();
+    var fov = viewpoint.getFieldOfView();
+
+    var dia = max.subtract(min);
+    var diaz2 = sign * (dia[z] / 2.0);
+    var tanfov2 = Math.tan(fov / 2.0);
+
+    var dist1 = (dia[y] / 2.0) / tanfov2 - diaz2;
+    var dist2 = (dia[x] / 2.0) / tanfov2 - diaz2;
+
+    dia = min.add(dia.multiply(0.5));
+    dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.1;
+
+    var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
+
+    var viewmat = quat.toMatrix();
+    viewmat = viewmat.mult(x3dom.fields.SFMatrix4f.translation(dia.negate()));
+
+    this.animateTo(viewmat, viewpoint);
 };
 
 x3dom.Viewarea.prototype.resetView = function()
@@ -1002,8 +998,6 @@ x3dom.Viewarea.prototype.checkEvents = function (obj, x, y, buttonState, eventTy
         stopPropagation: function() { this.cancelBubble = true; },
 		preventDefault: function() { this.cancelBubble = true; }
     };
-    //x3dom.debug.logInfo(event.type + ", " + event.worldX.toFixed(2) + ", " +
-    //    event.worldY.toFixed(2) + ", " + event.worldZ.toFixed(2) + ", " + event.button);
 
     try {
         var anObj = obj;

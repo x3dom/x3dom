@@ -212,6 +212,7 @@ x3dom.gfx_webgl = (function () {
 
                     //Generate new Textures
                     textures = shape.getTextures();
+
                     for (t = 0; t < textures.length; ++t) {
                         shape._webgl.texture.push(new x3dom.Texture(gl, shape._nameSpace.doc, this.cache, textures[t]));
                     }
@@ -227,6 +228,7 @@ x3dom.gfx_webgl = (function () {
                     //If someone remove and append at the same time, texture count don't change
                     //and we have to check if all nodes the same as before
                     textures = shape.getTextures();
+
                     for (t = 0; t < textures.length; ++t) {
                         if (textures[t] === shape._webgl.texture[t].node) {
                             //only update the texture
@@ -2961,7 +2963,7 @@ x3dom.gfx_webgl = (function () {
                 }
                 else {
                     //for point lights 6 render passes
-                    mat_light = viewarea.getWCtoLCMatricesPointLight(lightMatrix, slights[p]);
+                    mat_light = viewarea.getWCtoLCMatricesPointLight(lightMatrix, slights[p], mat_proj);
                     for (i = 0; i < 6; i++) {
                         this.renderShadowPass(gl, viewarea, mat_light[i], mat_view, shadowMaps[i], offset, false);
                     }

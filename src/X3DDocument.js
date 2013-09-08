@@ -120,9 +120,11 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 if (parent && child) {
                     parent.removeChild(child);
                     parent.nodeChanged();
-                    
-                    if (doc._viewarea && doc._viewarea._scene)
+
+                    if (doc._viewarea && doc._viewarea._scene) {
+                        doc._viewarea._scene.nodeChanged();
                         doc._viewarea._scene.updateVolume();
+                    }
                     doc.needRender = true;
                 }
             }
@@ -155,8 +157,10 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                         parent.addChild(newNode, child.getAttribute("containerField"));
                         parent.nodeChanged();
 
-                        if (doc._viewarea && doc._viewarea._scene)
+                        if (doc._viewarea && doc._viewarea._scene) {
+                            doc._viewarea._scene.nodeChanged();
                             doc._viewarea._scene.updateVolume();
+                        }
                         doc.needRender = true;
 					}
 					else {

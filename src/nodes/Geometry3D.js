@@ -1425,7 +1425,7 @@ x3dom.registerNodeType(
 
 				x3dom.geoCache[geoCacheID] = this._mesh;
 			}
-         },
+        },
         {
             fieldChanged: function(fieldName) {
                 if (fieldName === "radius" || fieldName === "height")
@@ -1718,11 +1718,6 @@ x3dom.registerNodeType(
             }
         },
         {
-            nodeChanged: function()
-            {
-                // TODO: handle field updates and retrigger XHR call
-            },
-
             parentAdded: function(parent)
             {
                 // TODO; also handle multiple shape parents!
@@ -1843,34 +1838,27 @@ x3dom.registerNodeType(
     "PopGeometryLevel",
     "Geometry3D",
     defineClass(x3dom.nodeTypes.X3DGeometricPropertyNode,
-      function (ctx) {	
-          x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
-    
-          this.addField_SFString(ctx, 'src', "");
-          this.addField_SFInt32(ctx, 'numIndices', 0);			
-          this.addField_SFInt32(ctx, 'vertexDataBufferOffset', 0);
-      },
-      {
-        nodeChanged: function() {	
-          //TODO: implement
-        },
+        function (ctx) {
+            x3dom.nodeTypes.PopGeometryLevel.superClass.call(this, ctx);
 
-        fieldChanged: function(fieldName) {
+            this.addField_SFString(ctx, 'src', "");
+            this.addField_SFInt32(ctx, 'numIndices', 0);
+            this.addField_SFInt32(ctx, 'vertexDataBufferOffset', 0);
         },
-			
-        getSrc: function() {
-          return this._vf.src;
-        },
-			
-        getNumIndices: function() {
-          return this._vf.numIndices;
-        },
-        
-        getVertexDataBufferOffset: function() {
-            return this._vf.vertexDataBufferOffset;
+        {
+            getSrc: function () {
+                return this._vf.src;
+            },
+
+            getNumIndices: function () {
+                return this._vf.numIndices;
+            },
+
+            getVertexDataBufferOffset: function () {
+                return this._vf.vertexDataBufferOffset;
+            }
         }
-	  }
-	)
+    )
 );
 
 /* ### PopGeometry ### */
@@ -1959,16 +1947,8 @@ x3dom.registerNodeType(
                          this.getTotalNumberOfIndices() : this.getVertexCount()) / 3;
         },
         {
-            nodeChanged: function() {              
-            },
-
-            forceUpdateCoverage: function()
-            {
+            forceUpdateCoverage: function() {
                 return true;
-            },
-
-            parentAdded: function(parent) {
-              //TODO: implement 
             },
             
             getBBoxShiftVec: function() {
@@ -2169,10 +2149,6 @@ x3dom.registerNodeType(
 					this._bitsPerComponent += this._vf.format[f];
 				}
 			},
-
-            fieldChanged: function(fieldName)
-            {
-            },
 			
 			getSrc: function()
 			{
@@ -2233,22 +2209,12 @@ x3dom.registerNodeType(
 			this._mesh._numNormComponents         = this._vf.normalAsSphericalCoordinates ? 2 : 3;
 		},
 		{
-			nodeChanged: function()
-            {
-                // TODO
-			},
-      
 		    parentAdded: function(parent)
 		    {
 			  parent._coordStrideOffset    = [12, 0];
 			  parent._normalStrideOffset   = [12, 8];
 			  parent._texCoordStrideOffset = [ 4, 0];
 			  parent._colorStrideOffset    = [ 6, 0];
-		    },
-            
-		    fieldChanged: function(fieldName)
-		    {
-			    // TODO
 		    },
 			
 			// ATTENTION: the following accessor methods are NOT shared 
@@ -2476,10 +2442,9 @@ x3dom.registerNodeType(
 			
 			//TODO check if GPU-Version is supported (Flash, etc.)
 			//Dummy mesh generation only needed for GPU-Version
-			
-			if(x3dom.caps.BACKEND == 'webgl' && x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS > 0) {
-			
-				var geoCacheID = 'ImageGeometry';   // TODO: FIXME implicitMeshSize may differ!!!
+			if (x3dom.caps.BACKEND == 'webgl' && x3dom.caps.MAX_VERTEX_TEXTURE_IMAGE_UNITS > 0) {
+
+				var geoCacheID = 'ImageGeometry_' + this._vf.implicitMeshSize.x + '_' + this._vf.implicitMeshSize.y;
 
 				if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
 				{
@@ -3202,7 +3167,6 @@ x3dom.registerNodeType(
 						for (i = 0; i < indexes.length; ++i)
 						{
 							// Convert non-triangular polygons to a triangle fan
-							
 							if (indexes[i] == -1) {
 								t = 0;
 								continue;
@@ -3256,7 +3220,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numFaces = 0;
                 this._mesh._numCoords = 0;
                 for (i=0; i<this._mesh._indices.length; i++) {
@@ -3718,8 +3682,8 @@ x3dom.registerNodeType(
 					}
 
 					this._mesh.splitMesh();
-					
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numFaces = 0;
 					this._mesh._numCoords = 0;
 					
@@ -3731,18 +3695,18 @@ x3dom.registerNodeType(
 					Array.forEach(this._parentNodes, function (node) {
 						node.setGeoDirty();
 					});	 
-                } 
+                }
 				else {
-
 					if (fieldName == "coord")
 					{
 						this._mesh._positions[0] = pnts.toGL();
 						
 						// tells the mesh that its bbox requires update
-						this._mesh._invalidate = true;
+                        this.invalidateVolume();
 
 						Array.forEach(this._parentNodes, function (node) {					
-							 node._dirty.positions = true;
+							node._dirty.positions = true;
+                            node.invalidateVolume();
 						});
 					}
 					else if (fieldName == "color")

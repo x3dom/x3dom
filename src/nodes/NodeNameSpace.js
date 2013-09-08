@@ -184,7 +184,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
             else {
                 var ctx = { doc: this.doc, xmlNode: domNode, nameSpace: this };
                 n = new nodeType(ctx);
-                //n._nameSpace = this;
                 
                 //active workaround for missing DOMAttrModified support
                 if ( (x3dom.userAgentFeature.supportsDOMAttrModified === false)
@@ -255,7 +254,6 @@ x3dom.NodeNameSpace.prototype.setupTree = function (domNode) {
                     }
                 } );
 
-                // FIXME: remove
                 n.nodeChanged();
                 return n;
             }

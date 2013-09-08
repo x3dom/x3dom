@@ -167,48 +167,45 @@ x3dom.registerNodeType(
             this._needCssStyleUpdates = true;
         },
         {
-            tick: function(t)
+            tick: function (t)
             {
-              if (this._xmlNode && (
-                  this._xmlNode['ontransform'] ||
-                  this._xmlNode.hasAttribute('ontransform') ||
-                  this._listeners['transform']) )
-              {
-                var transMatrix = this.getCurrentTransform();
-                
-                var event = {
-                  target: this._xmlNode,
-                  type: 'transform',
-                  worldX: transMatrix._03,
-                  worldY: transMatrix._13,
-                  worldZ: transMatrix._23,
-                  cancelBubble: false,
-                  stopPropagation: function() { this.cancelBubble = true; }
-                };
-                
-                this.callEvtHandler("ontransform", event);
-              }
-              
-              // temporary per frame update method for CSS-Transform
-              if (this._needCssStyleUpdates)
-              {
-                  var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform") ||
-                              x3dom.getStyle(this._xmlNode, "-moz-transform");
-                  //x3dom.debug.logInfo('set css-trans: ' + this._DEF + ' to ' + trans);
+                if (this._xmlNode && (this._xmlNode['ontransform'] ||
+                         this._xmlNode.hasAttribute('ontransform') ||
+                         this._listeners['transform'])) {
+                    var transMatrix = this.getCurrentTransform();
 
-                  if (trans && (trans != 'none')) {
-                      this._trafo.setValueByStr(trans);
-                      //x3dom.debug.logInfo(' valid set:' + this._trafo);
+                    var event = {
+                        target: this._xmlNode,
+                        type: 'transform',
+                        worldX: transMatrix._03,
+                        worldY: transMatrix._13,
+                        worldZ: transMatrix._23,
+                        cancelBubble: false,
+                        stopPropagation: function () {
+                            this.cancelBubble = true;
+                        }
+                    };
 
-                      this.invalidateVolume();
-                      this.invalidateCache();
+                    this.callEvtHandler("ontransform", event);
+                }
 
-                      return true;
-                  }
-                  this._needCssStyleUpdates = false;    // no special CSS set
-              }
-              
-              return false;
+                // temporary per frame update method for CSS-Transform
+                if (this._needCssStyleUpdates) {
+                    var trans = x3dom.getStyle(this._xmlNode, "-webkit-transform") ||
+                                x3dom.getStyle(this._xmlNode, "-moz-transform");
+
+                    if (trans && (trans != 'none')) {
+                        this._trafo.setValueByStr(trans);
+
+                        this.invalidateVolume();
+                        this.invalidateCache();
+
+                        return true;
+                    }
+                    this._needCssStyleUpdates = false;    // no special CSS set
+                }
+
+                return false;
             },
 
             transformMatrix: function(transform) {
@@ -280,7 +277,7 @@ x3dom.registerNodeType(
             {
                 var i, n;
                 
-                if (this._parentNodes.length === 0) {
+                if (this._parentNodes.length == 0) {
                     var doc = this.findX3DDoc();
 
                     for (i=0, n=doc._nodeBag.trans.length; i<n; i++) {
@@ -414,19 +411,17 @@ x3dom.registerNodeType(
         function (ctx) {
             x3dom.nodeTypes.StaticGroup.superClass.call(this, ctx);
 
-            // FIXME; implement optimizations; no need to maintain the children's
+            // Node implements optimizations; no need to maintain the children node's
             // X3D representations, as they cannot be accessed after creation time
-            x3dom.debug.logWarning("StaticGroup NYI");
-
-            this.addField_SFBool(ctx,'debug', false);
-            this.addField_SFBool(ctx,'showDebugBoxVolumes', false);
+            this.addField_SFBool(ctx, 'debug', false);
+            this.addField_SFBool(ctx, 'showDebugBoxVolumes', false);
 
             // type of bvh to use, supported are 'jsBIH', 'BIH' and 'OCTREE'
-            this.addField_SFString(ctx,'bvhType', 'jsBIH' );
-            this.addField_SFInt32(ctx,'maxObjectsPerNode', 1);
+            this.addField_SFString(ctx, 'bvhType', 'jsBIH');
+            this.addField_SFInt32(ctx, 'maxObjectsPerNode', 1);
             // -1 sets default values, other values forces maxDepth
-            this.addField_SFInt32(ctx,'maxDepth',-1);
-            this.addField_SFFloat(ctx,'minRelativeBBoxSize', 0.01);
+            this.addField_SFInt32(ctx, 'maxDepth', -1);
+            this.addField_SFFloat(ctx, 'minRelativeBBoxSize', 0.01);
 
             this.needBvhRebuild = true;
             this.drawableCollection = null;
@@ -883,6 +878,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'pickMode', "idBuf");
             // experimental field to switch off picking
             this.addField_SFBool(ctx, 'doPickPass', true);
+
             // another experimental field for shadow DOM remapping
             this.addField_SFString(ctx, 'shadowObjectIdMapping', "");
 
@@ -890,17 +886,10 @@ x3dom.registerNodeType(
             this._lastMax = new x3dom.fields.SFVec3f(1, 1, 1);
             
             this._shadowIdMap = null;
+            this.loadMapping();
         },
         {
             /* Bindable getter (e.g. getViewpoint) are added automatically */
-            
-            nodeChanged: function()
-            {
-                this.loadMapping();
-
-                this.invalidateVolume();
-                this.invalidateCache();
-            },
             
             fieldChanged: function(fieldName)
             {

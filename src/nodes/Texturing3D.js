@@ -16,8 +16,7 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DTextureNode,
         function (ctx) {
             x3dom.nodeTypes.X3DTexture3DNode.superClass.call(this, ctx);
-        },
-        {}
+        }
     )
 );
 
@@ -30,10 +29,6 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.ComposedTexture3D.superClass.call(this, ctx);
 
             this.addField_MFNode('texture', x3dom.nodeTypes.X3DTexture3DNode);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -45,10 +40,6 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DTexture3DNode,
         function (ctx) {
             x3dom.nodeTypes.ImageTexture3D.superClass.call(this, ctx);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -60,10 +51,6 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.X3DTexture3DNode,
         function (ctx) {
             x3dom.nodeTypes.PixelTexture3D.superClass.call(this, ctx);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -94,11 +81,6 @@ x3dom.registerNodeType(
             this.addField_SFVec3f(ctx, 'scale', 1, 1, 1);
             this.addField_SFVec3f(ctx, 'translation', 0, 0, 0);
             this.addField_SFRotation(ctx, 'scaleOrientation', 0, 0, 1, 0);
-            
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -115,10 +97,6 @@ x3dom.registerNodeType(
                                                     0, 1, 0, 0,
                                                     0, 0, 1, 0,
                                                     0, 0, 0, 1);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -129,15 +107,12 @@ x3dom.registerNodeType(
     "Texturing",
     defineClass(x3dom.nodeTypes.Texture,
         function (ctx) {
-            x3dom.nodeTypes.ImageTexture.superClass.call(this, ctx);
-                this.addField_SFInt32(ctx, 'numberOfSlices', 0);
-                this.addField_SFInt32(ctx, 'slicesOverX', 0);
-                this.addField_SFInt32(ctx, 'slicesOverY', 0);
-                // Special helper node to represent tiles for volume rendering
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
+            x3dom.nodeTypes.ImageTextureAtlas.superClass.call(this, ctx);
+
+            this.addField_SFInt32(ctx, 'numberOfSlices', 0);
+            this.addField_SFInt32(ctx, 'slicesOverX', 0);
+            this.addField_SFInt32(ctx, 'slicesOverY', 0);
+            // Special helper node to represent tiles for volume rendering
         }
     )
 );

@@ -878,7 +878,7 @@ x3dom.registerNodeType(
 						this._mesh._colors[0] = [];
 							
 						var indexes = this._vf.index;
-						for (i=0; i < indexes.length; ++i)
+						for (var i=0; i < indexes.length; ++i)
 						{
 							if ((i > 0) && (i % 3 === 0 )) {                   
 								faceCnt++;							
@@ -910,7 +910,7 @@ x3dom.registerNodeType(
 						this._mesh._normals[0] = [];
 						
 						var faceCnt = 0;
-						for (i=0; i < indexes.length; ++i)
+						for (var i=0; i < indexes.length; ++i)
 						{
 							if ((i > 0) && (i % 3 === 0 )) {                   
 								faceCnt++;							
@@ -1027,8 +1027,8 @@ x3dom.registerNodeType(
                 this._mesh._normals[0] = [];
                 this._mesh._texCoords[0] = [];
                 this._mesh._colors[0] = [];
-                
-                this._mesh._invalidate = true;
+
+                this.invalidateVolume();
                 this._mesh._numFaces = 0;
                 this._mesh._numCoords = 0;
 				
@@ -1097,7 +1097,7 @@ x3dom.registerNodeType(
 				    
 				    var swapOrder = false;
 				    
-					for (i=1; i < indexes.length-2; ++i)
+					for (var i=1; i < indexes.length-2; ++i)
 					{
 						if (indexes[i+1] == -1) {
 							i = i+2;
@@ -1160,7 +1160,6 @@ x3dom.registerNodeType(
 							this._mesh._normals[0].push(normals[n3].x);
 							this._mesh._normals[0].push(normals[n3].y);
 							this._mesh._normals[0].push(normals[n3].z);
-									   
 						}
 	
 						if (hasColor) {
@@ -1314,7 +1313,7 @@ x3dom.registerNodeType(
 						 
 						if ( hasNormal  || hasTexCoord || hasColor) {
 							
-							for (i=1; i < indexes.length-2; ++i)
+							for (var i=1; i < indexes.length-2; ++i)
 							{
 								if (indexes[i+1] == -1) {
 									i = i+2;
@@ -1376,7 +1375,6 @@ x3dom.registerNodeType(
 									this._mesh._normals[0].push(normals[n3].x);
 									this._mesh._normals[0].push(normals[n3].y);
 									this._mesh._normals[0].push(normals[n3].z);
-											   
 								}
 			
 								if (hasColor) {
@@ -1431,7 +1429,7 @@ x3dom.registerNodeType(
 			
 						} else {
 							var swapOrder = false;
-							for (i = 1; i < indexes.length; ++i)
+							for (var i = 1; i < indexes.length; ++i)
 							{
 								if (indexes[i+1] == -1) {
 									i = i+2;
@@ -1439,14 +1437,14 @@ x3dom.registerNodeType(
 								}
 								
 								if (swapOrder) {
-									this._mesh._indices[0].push(indexes[i])	
-									this._mesh._indices[0].push(indexes[i-1])	
-									this._mesh._indices[0].push(indexes[i+1])	
+									this._mesh._indices[0].push(indexes[i]);
+									this._mesh._indices[0].push(indexes[i-1]);
+									this._mesh._indices[0].push(indexes[i+1]);
 								}
 								else {
-									this._mesh._indices[0].push(indexes[i-1])	
-									this._mesh._indices[0].push(indexes[i])	
-									this._mesh._indices[0].push(indexes[i+1])	
+									this._mesh._indices[0].push(indexes[i-1]);
+									this._mesh._indices[0].push(indexes[i]);
+									this._mesh._indices[0].push(indexes[i+1]);
 								}
 								swapOrder = !swapOrder;
 							}

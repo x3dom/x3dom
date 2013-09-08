@@ -34,8 +34,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 /*
-                This code largely taken from the IndexedTriangleSet
-                code
+                This code largely taken from the IndexedTriangleSet code
                 */
                 var time0 = new Date().getTime();
 
@@ -187,7 +186,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numFaces = 0;
                 this._mesh._numCoords = 0;
                 for (i=0; i<this._mesh._indices.length; i++) {
@@ -216,10 +215,11 @@ x3dom.registerNodeType(
                     this._mesh._positions[0] = pnts.toGL();
                     
                     // tells the mesh that its bbox requires update
-                    this._mesh._invalidate = true;
+                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {					
-                         node._dirty.positions = true;
+                        node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
                 else if (fieldName == "color")
@@ -321,8 +321,7 @@ x3dom.registerNodeType(
             nodeChanged: function()
             {
                 /*
-                This code largely taken from the IndexedTriangleSet
-                code
+                This code largely taken from the IndexedTriangleSet code
                 */
                 var time0 = new Date().getTime();
 
@@ -330,7 +329,6 @@ x3dom.registerNodeType(
 
 				var colPerVert = this._vf.colorPerVertex;
                 var normPerVert = this._vf.normalPerVertex;
-
 
                 var hasNormal = false, hasTexCoord = false, hasColor = false;
                 var positions, normals, texCoords, colors;
@@ -464,7 +462,7 @@ x3dom.registerNodeType(
                     }
                 }
 
-                this._mesh._invalidate = true;
+                this.invalidateVolume();
                 this._mesh._numFaces = 0;
                 this._mesh._numCoords = 0;
                 for (i=0; i<this._mesh._indices.length; i++) {
@@ -493,10 +491,11 @@ x3dom.registerNodeType(
                     this._mesh._positions[0] = pnts.toGL();
                     
                     // tells the mesh that its bbox requires update
-                    this._mesh._invalidate = true;
+                    this.invalidateVolume();
 
                     Array.forEach(this._parentNodes, function (node) {					
-                         node._dirty.positions = true;
+                        node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
                 else if (fieldName == "color")
@@ -629,8 +628,6 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.CADPart.superClass.call(this, ctx);
 
             this.addField_SFString(ctx, 'name', "");
-        },
-        {
         }
     )
 );

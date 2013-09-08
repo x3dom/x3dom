@@ -42,7 +42,6 @@ x3dom.registerNodeType(
         },
         {
             nodeChanged: function() {
-			
 				//TODO delete this if all works fine
                 if (!this._cf.material.node) {
 					//Unlit
@@ -175,7 +174,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'transparency', 0);
         },
 		{
-
 			fieldChanged: function(fieldName) {
 				if (fieldName == "ambientIntensity" || fieldName == "diffuseColor" ||
 					fieldName == "emissiveColor" || fieldName == "shininess" ||
@@ -314,6 +312,11 @@ x3dom.registerNodeType(
                     }
                 }
 
+                if (parent)
+                    parent.invalidateVolume();
+                if (this._parentNodes.length > 0)
+                    this.invalidateVolume();
+
                 // Cleans all GL objects for WebGL-based renderer
                 if (this._cleanupGLObjects) {
                     this._cleanupGLObjects();
@@ -388,17 +391,19 @@ x3dom.registerNodeType(
 			getTextures: function() {
 				var textures = [];
 
-                if (this._cf.appearance.node) {
-                    var tex = this._cf.appearance.node._cf.texture.node;
+                var appearance = this._cf.appearance.node;
+                if (appearance) {
+                    var tex = appearance._cf.texture.node;
                     if(tex) {
                         if(x3dom.isa(tex, x3dom.nodeTypes.MultiTexture)) {
                             textures = textures.concat(tex.getTextures());
-                        } else {
+                        }
+                        else {
                             textures.push(tex);
                         }
                     }
 
-                    var shader = this._cf.appearance.node._cf.shaders.nodes[0];
+                    var shader = appearance._cf.shaders.nodes[0];
                     if(shader) {
                         if(x3dom.isa(shader, x3dom.nodeTypes.CommonSurfaceShader)) {
                             textures = textures.concat(shader.getTextures());
@@ -410,7 +415,8 @@ x3dom.registerNodeType(
 				if (geometry) {
 					if(x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry)) {
 						textures = textures.concat(geometry.getTextures());
-					} else if(x3dom.isa(geometry, x3dom.nodeTypes.Text)) {
+					}
+                    else if(x3dom.isa(geometry, x3dom.nodeTypes.Text)) {
 						textures = textures.concat(geometry);
 					}
 				}

@@ -925,6 +925,12 @@ x3dom.registerNodeType(
                 this.invalidateCache();
             },
 
+            parentAdded: function(parent) {
+                // some default behavior if not overwitten
+                this.invalidateVolume();
+                this.invalidateCache();
+            },
+
             getVolume: function()
             {
                 var vol = this._graph.volume;

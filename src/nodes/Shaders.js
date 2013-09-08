@@ -133,14 +133,6 @@ x3dom.registerNodeType(
             };
         },
         {
-            nodeChanged: function()
-            {		
-            },
-
-            fieldChanged: function(fieldName)
-            {
-            },
-
             getDiffuseMap: function()
             {
                 if(this._cf.diffuseTexture.node) {

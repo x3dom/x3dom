@@ -156,10 +156,6 @@ x3dom.registerNodeType(
                 });
             },
 
-            nodeChanged: function()
-            {
-            },
-
             fieldChanged: function(fieldName)
             {
                 if (fieldName == "url" || fieldName ==  "origChannelCount" ||
@@ -286,7 +282,9 @@ x3dom.registerNodeType(
                         }
                     } );
                 }
-                catch(e) {}
+                catch(e) {
+                    x3dom.debug.logException(e);
+                }
             }
         }
     )
@@ -505,8 +503,6 @@ x3dom.registerNodeType(
     defineClass(x3dom.nodeTypes.Texture,
         function (ctx) {
             x3dom.nodeTypes.ImageTexture.superClass.call(this, ctx);
-        },
-        {
         }
     )
 );
@@ -522,8 +518,6 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFFloat(ctx, 'speed', 1.0);
             // TODO; implement startTime, stopTime,...
-        },
-        {
         }
     )
 );
@@ -573,15 +567,6 @@ x3dom.registerNodeType(
                     this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.left.node._vf.url[0]),
                     this._nameSpace.getURL(this._cf.right.node._vf.url[0])
-					
-                    /*
-					this._nameSpace.getURL(this._cf.right.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.left.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.top.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.bottom.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.front.node._vf.url[0]),
-                    this._nameSpace.getURL(this._cf.back.node._vf.url[0])
-					*/
                 ];
             }
         }
@@ -600,7 +585,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'update', 'NONE');  // ("NONE"|"NEXT_FRAME_ONLY"|"ALWAYS")
 
 			this._type = "cubeMap";
-            x3dom.debug.logWarning("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx
+            x3dom.debug.logWarning("GeneratedCubeMapTexture NYI");   // TODO; impl. in gfx when fbo type ready
         },
         {
             getTexSize: function() {
@@ -629,7 +614,7 @@ x3dom.registerNodeType(
                 }
             },
 
-            parentAdded: function (parent) {
+            parentAdded: function(parent) {
                 if (parent._mesh && //parent._cf.coord.node &&
                     parent._cf.texCoord.node !== this) {
                     parent.fieldChanged("texCoord");
