@@ -88,12 +88,11 @@ x3dom.registerNodeType(
 							} 
 						}
 					}
-                    var xhr = this.nodeChanged();
-                    xhr = null;
+                    this.nodeChanged();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
             },
 
@@ -138,7 +137,7 @@ x3dom.registerNodeType(
             },
 
             nodeChanged: function ()
-            {			
+            {
 				var that = this;
 
                 var xhr = new window.XMLHttpRequest();
@@ -246,7 +245,7 @@ x3dom.registerNodeType(
                         that.addChild(newScene);
 
                         that.invalidateVolume();
-                        that.invalidateCache();
+                        //that.invalidateCache();
 
                         that._nameSpace.doc.downloadCount -= 1;
                         that._nameSpace.doc.needRender = true;
@@ -257,11 +256,11 @@ x3dom.registerNodeType(
 
                         if (theScene) {
                             theScene.invalidateVolume();
-                            theScene.invalidateCache();
+                            //theScene.invalidateCache();
 
                             window.setTimeout( function() {
                                 that.invalidateVolume();
-                                that.invalidateCache();
+                                //that.invalidateCache();
 
                                 theScene.updateVolume();
                                 that._nameSpace.doc.needRender = true;
@@ -290,7 +289,6 @@ x3dom.registerNodeType(
                         x3dom.debug.logError(this._vf.url[0] + ": " + ex);
                     }
                 }
-                return xhr;
             }
         }
     )

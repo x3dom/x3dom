@@ -116,7 +116,6 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 var parent = domNode.parentNode._x3domNode;
                 var child = domNode._x3domNode;
 
-                //x3dom.debug.logInfo("Child: " + domNode.type + ", removed node=" + domNode.tagName);
                 if (parent && child) {
                     parent.removeChild(child);
                     parent.nodeChanged();
@@ -124,8 +123,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                     if (doc._viewarea && doc._viewarea._scene) {
                         doc._viewarea._scene.nodeChanged();
                         doc._viewarea._scene.updateVolume();
+                        doc.needRender = true;
                     }
-                    doc.needRender = true;
                 }
             }
             else if (domNode.localName && domNode.localName.toUpperCase() == "ROUTE" && domNode._nodeNameSpace) {
@@ -140,28 +139,31 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
         
         onNodeInserted: function(e) {
             var child = e.target;
+            var parentNode = child.parentNode;
             
             // only act on x3dom nodes, ignore regular HTML
-            if ('_x3domNode' in child.parentNode) {
-				if (child.parentNode.tagName && 
-				    child.parentNode.tagName.toLowerCase() == 'inline') {
+            if ('_x3domNode' in parentNode) {
+				if (parentNode.tagName && parentNode.tagName.toLowerCase() == 'inline') {
                     // do nothing
 				}
 				else {
-					var parent = child.parentNode._x3domNode;
+					var parent = parentNode._x3domNode;
 					
-					//x3dom.debug.logInfo("Inserted node=" + child.tagName + ", " + child.parentNode.tagName);
 					if (parent && parent._nameSpace && (child instanceof Element)) {
                         var newNode = parent._nameSpace.setupTree(child);
 
                         parent.addChild(newNode, child.getAttribute("containerField"));
                         parent.nodeChanged();
 
+                        var grandParentNode = parentNode.parentNode;
+                        if (grandParentNode && grandParentNode._x3domNode)
+                            grandParentNode._x3domNode.nodeChanged();
+
                         if (doc._viewarea && doc._viewarea._scene) {
                             doc._viewarea._scene.nodeChanged();
                             doc._viewarea._scene.updateVolume();
+                            doc.needRender = true;
                         }
-                        doc.needRender = true;
 					}
 					else {
 						x3dom.debug.logWarning("No _nameSpace in onNodeInserted");

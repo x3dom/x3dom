@@ -32,10 +32,6 @@ x3dom.registerNodeType(
             // [S|M]F<type> []       initialValue
         },
         {
-            nodeChanged: function() {},
-            
-            fieldChanged: function(fieldName) {},
-            
             parentRemoved: function(parent)
             {
                 if (this._parentNodes.length === 0) {
@@ -100,8 +96,6 @@ x3dom.registerNodeType(
             this._numSupports = 60;
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -122,8 +116,6 @@ x3dom.registerNodeType(
             this._lastTick = 0;
         },
         {
-            nodeChanged: function() {},
-            
             fieldChanged: function(fieldName)
             {
                 if (fieldName === "tolerance")
@@ -334,10 +326,6 @@ x3dom.registerNodeType(
             this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-            },
-            
             fieldChanged: function(fieldName)
             {
                 if (fieldName.indexOf("set_destination") >= 0)
@@ -707,10 +695,6 @@ x3dom.registerNodeType(
             this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-            },
-            
             fieldChanged: function(fieldName)
             {
                 if (fieldName.indexOf("set_destination") >= 0)
@@ -1254,10 +1238,6 @@ x3dom.registerNodeType(
             this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-            },
-            
             fieldChanged: function(fieldName)
             {
                 if (fieldName.indexOf("set_destination") >= 0)
@@ -1414,10 +1394,6 @@ x3dom.registerNodeType(
             this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-            },
-            
             fieldChanged: function(fieldName)
             {
                 if (fieldName.indexOf("set_destination") >= 0)
@@ -1748,10 +1724,6 @@ x3dom.registerNodeType(
             this.initialize();
         },
         {
-            nodeChanged: function() 
-            {
-            },
-            
             fieldChanged: function(fieldName)
             {
                 if (fieldName.indexOf("set_destination") >= 0)
@@ -1895,8 +1867,6 @@ x3dom.registerNodeType(
             x3dom.debug.logWarning("CoordinateDamper NYI");
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -1918,8 +1888,6 @@ x3dom.registerNodeType(
             x3dom.debug.logWarning("TexCoordDamper2D NYI");
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );

@@ -74,7 +74,7 @@ x3dom.registerNodeType(
             fieldChanged: function (fieldName) {
                 if (fieldName == "whichChoice") {
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
             },
 
@@ -198,7 +198,7 @@ x3dom.registerNodeType(
                         this._trafo.setValueByStr(trans);
 
                         this.invalidateVolume();
-                        this.invalidateCache();
+                        //this.invalidateCache();
 
                         return true;
                     }
@@ -337,11 +337,11 @@ x3dom.registerNodeType(
                             mult(x3dom.fields.SFMatrix4f.translation(this._vf.center.negate()));
 
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
             }
         }
@@ -368,11 +368,11 @@ x3dom.registerNodeType(
                     this._trafo = this._vf.matrix.transpose();
 
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
             }
         }
@@ -639,7 +639,7 @@ x3dom.registerNodeType(
                             //x3dom.debug.logInfo("WS Response: " + evt.data);
 
                             that.invalidateVolume();
-                            that.invalidateCache();
+                            //that.invalidateCache();
                         }
                     };
 
@@ -701,7 +701,7 @@ x3dom.registerNodeType(
                 }
 
                 this.invalidateVolume();
-                this.invalidateCache();
+                //this.invalidateCache();
 
                 x3dom.debug.logInfo("RemoteSelectionGroup has " + n + " entries.");
             },
@@ -752,11 +752,11 @@ x3dom.registerNodeType(
                     }
 
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
                 else if (fieldName == "render") {
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
             },
             

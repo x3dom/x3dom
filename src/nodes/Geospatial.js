@@ -48,8 +48,6 @@ x3dom.registerNodeType(
                 'WD' : [ 'WGS 72', '6378135', '298.26' ],
                 'WE' : [ 'WGS 84', '6378137', '298.257223563' ]
             },
-          
-            nodeChanged: function() {},
             
             fieldChanged: function(fieldName) {
                 Array.forEach(this._parentNodes, function (node) {
@@ -399,9 +397,6 @@ x3dom.registerNodeType(
               this._mesh._invalidate = true;
               this._mesh._numFaces = this._mesh._indices[0].length / 3;
               this._mesh._numCoords = this._mesh._positions[0].length / 3;
-            },
-
-            fieldChanged: function(fieldName) {
             }
         }
     )
@@ -459,7 +454,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.GeoMetadata.superClass.call(this, ctx);
 
             this.addField_MFString(ctx, 'url', []);
-            this.addField_MFNode('data', x3dom.nodeTypes.InfoNode);
+            this.addField_MFNode('data', x3dom.nodeTypes.X3DInfoNode);
             this.addField_MFString(ctx, 'summary', []);
         }
     )
@@ -490,11 +485,9 @@ x3dom.registerNodeType(
 
             this.addField_MFString(ctx, 'geoSystem', ['GD', 'WE']);
             this.addField_MFVec3d(ctx, 'keyValue', []);
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.LinearInterpolator);
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DInterpolatorNode);
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -533,11 +526,9 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'headlight', true);
             this.addField_MFString(ctx, 'navType', 'EXAMINE');
             this.addField_SFFloat(ctx, 'speedFactor', 1.0);
-            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.ViewBindable);
+            this.addField_SFNode('geoOrigin', x3dom.nodeTypes.X3DViewpointNode);
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );

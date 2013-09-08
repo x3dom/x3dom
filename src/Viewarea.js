@@ -888,7 +888,7 @@ x3dom.Viewarea.prototype.showAll = function(axis)
     var dist2 = (dia[x] / 2.0) / tanfov2 - diaz2;
 
     dia = min.add(dia.multiply(0.5));
-    dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.1;
+    dia[z] += sign * (dist1 > dist2 ? dist1 : dist2) * 1.01;
 
     var quat = x3dom.fields.Quaternion.rotateFromTo(from, to);
 

@@ -29,10 +29,6 @@ x3dom.registerNodeType(
             //this.addField_SFVec3f(ctx, 'sliceThickness', 1, 1, 1);
 
             x3dom.debug.logWarning('VolumeRendering component NYI!!!');
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -46,10 +42,6 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DVolumeRenderStyleNode.superClass.call(this, ctx);
 
             this.addField_SFBool(ctx, 'enabled', true);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -63,10 +55,6 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode.superClass.call(this, ctx);
 
             this.addField_SFNode('surfaceNormals', x3dom.nodeTypes.X3DTexture3DNode);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -87,10 +75,6 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'weightFunction2', "CONSTANT");
             this.addField_SFNode('weightTransferFunction1', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
             this.addField_SFNode('weightTransferFunction2', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -106,10 +90,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'retainedOpacity', 1);
             this.addField_SFFloat(ctx, 'boundaryOpacity', 0);
             this.addField_SFFloat(ctx, 'opacityFactor', 1);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -125,10 +105,6 @@ x3dom.registerNodeType(
             this.addField_SFColor(ctx, 'parallelColor', 0, 0, 0);
             this.addField_SFColor(ctx, 'orthogonalColor', 1, 1, 1);
             this.addField_SFInt32(ctx, 'colorSteps', 4);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -143,10 +119,6 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'ordered', false);
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DComposableVolumeRenderStyleNode);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -161,10 +133,6 @@ x3dom.registerNodeType(
 
             this.addField_SFColor(ctx, 'edgeColor', 0, 0, 0);
             this.addField_SFFloat(ctx, 'gradientThreshold', 0.4);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -182,16 +150,11 @@ x3dom.registerNodeType(
             this.addField_MFFloat(ctx, 'surfaceValues', []);
             this.addField_SFFloat(ctx, 'contourStepSize', 0);
             this.addField_SFFloat(ctx, 'surfaceTolerance', 0);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
 
 /* ### MPRVolumeStyle ### */
-
 x3dom.registerNodeType(
      "MPRVolumeStyle",
      "VolumeRendering",
@@ -206,11 +169,8 @@ x3dom.registerNodeType(
             this.uniformVec3fOriginLine = new x3dom.nodeTypes.Field(ctx);
             this.uniformVec3fFinalLine = new x3dom.nodeTypes.Field(ctx);
             this.uniformFloatPosition = new x3dom.nodeTypes.Field(ctx);
-             
          },
          {
-            nodeChanged: function() {},
-
             fieldChanged: function(fieldName) {
                  if (fieldName == "originLine" ||
                      fieldName == "finalLine" ||
@@ -243,7 +203,8 @@ x3dom.registerNodeType(
                 unis.push(this.uniformFloatPosition);
   
                 return unis;
-            },        
+            },
+
             vertexShaderText : function() {
                  var shader = 
                 "attribute vec3 position;\n"+
@@ -260,6 +221,7 @@ x3dom.registerNodeType(
                 "}";
                 return shader;
             },
+
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
                  var shader = 
                 "#ifdef GL_ES\n" +
@@ -322,7 +284,6 @@ x3dom.registerNodeType(
     )
 );
 
-
 /* ### OpacityMapVolumeStyle ### */
 x3dom.registerNodeType(
     "OpacityMapVolumeStyle",
@@ -335,15 +296,12 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'type', "simple");
             this.addField_SFFloat(ctx, 'opacityFactor', 0.01);
             this.addField_SFFloat(ctx, 'lightFactor', 0.3);
+
             this.uniformFloatOpacityFactor = new x3dom.nodeTypes.Field(ctx);
             this.uniformFloatLightFactor = new x3dom.nodeTypes.Field(ctx);
             this.uniformSampler2DTransferFunction = new x3dom.nodeTypes.Field(ctx);
-
         },
         {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {},
-
             uniforms: function() {
                 var unis = [];
                 
@@ -366,6 +324,7 @@ x3dom.registerNodeType(
 
                 return unis;
             },
+
             textures: function() {
                 var texs = [];
                 if (!(this._cf.transferFunction.node==null)) {
@@ -376,6 +335,7 @@ x3dom.registerNodeType(
                 }
                 return texs;
             },
+
             vertexShaderText : function() {
                  var shader = 
                 "attribute vec3 position;\n"+
@@ -392,6 +352,7 @@ x3dom.registerNodeType(
                 "}";
                 return shader;
             },
+
             fragmentShaderText : function (numberOfSlices, slicesOverX, slicesOverY) {
                  var shader = 
                 "#ifdef GL_ES\n" +
@@ -484,10 +445,6 @@ x3dom.registerNodeType(
 
             this.addField_SFFloat(ctx, 'intensityThreshold', 0);
             this.addField_SFString(ctx, 'type', "MAX");
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -503,10 +460,6 @@ x3dom.registerNodeType(
             this.addField_MFNode('renderStyle', x3dom.nodeTypes.X3DVolumeDataNode);
             //this.addField_MFBool(ctx, 'segmentEnabled', []);  // MFBool NYI!!!
             this.addField_SFNode('segmentIdentifiers', x3dom.nodeTypes.X3DVolumeDataNode);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -523,10 +476,6 @@ x3dom.registerNodeType(
             this.addField_SFBool(ctx, 'lighting', false);
             this.addField_SFBool(ctx, 'shadows', false);
             this.addField_SFString(ctx, 'phaseFunction', "Henyey-Greenstein");
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -542,10 +491,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'silhouetteBoundaryOpacity', 0);
             this.addField_SFFloat(ctx, 'silhouetteRetainedOpacity', 1);
             this.addField_SFFloat(ctx, 'silhouetteSharpness', 0.5);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -569,10 +514,6 @@ x3dom.registerNodeType(
             this.addField_SFFloat(ctx, 'silhouetteBoundaryOpacity', 0);
             this.addField_SFFloat(ctx, 'silhouetteOpacityFactor', 1);
             this.addField_SFFloat(ctx, 'resolutionFactor', 1);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
@@ -587,16 +528,12 @@ x3dom.registerNodeType(
 
             this.addField_SFColor(ctx, 'coolColor', 0, 0, 1);
             this.addField_SFColor(ctx, 'warmColor', 1, 1, 0);
-        },
-        {
-            nodeChanged: function() {},
-            fieldChanged: function(fieldName) {}
         }
     )
 );
 
+//FIXME: Not a real X3D Node but auxiliary geometry
 /* ### ColorBox ### */
-//FIXME: Not a real X3D Node Auxiliary geometry
 x3dom.registerNodeType(
     "ColorBox",
     "Geometry3D",
@@ -610,58 +547,58 @@ x3dom.registerNodeType(
                 sy = this._vf.size.y,
                 sz = this._vf.size.z;
 
-                var geoCacheID = 'ColorBox_'+sx+'-'+sy+'-'+sz;
+            var geoCacheID = 'ColorBox_'+sx+'-'+sy+'-'+sz;
 
-                if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
-                {
-                      this._mesh = x3dom.geoCache[geoCacheID];
-                }
-                else
-                {
-                      sx /= 2; sy /= 2; sz /= 2;
+            if( this._vf.useGeoCache && x3dom.geoCache[geoCacheID] !== undefined )
+            {
+                  this._mesh = x3dom.geoCache[geoCacheID];
+            }
+            else
+            {
+                  sx /= 2; sy /= 2; sz /= 2;
 
-                      this._mesh._positions[0] = [
-                            -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //back   0,0,-1
-                            -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //front  0,0,1
-                            -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //left   -1,0,0
-                             sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //right  1,0,0
-                            -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //top    0,1,0
-                            -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //bottom 0,-1,0
-                      ];
-                  
-                      this._mesh._colors[0] = [
-                            0, 0, 0,  0, 1, 0,  1, 1, 0,  1, 0, 0,
-                            0, 0, 1,  0, 1, 1,  1, 1, 1,  1, 0, 1,
-                            0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 1, 0,
-                            1, 0, 0,  1, 0, 1,  1, 1, 1,  1, 1, 0,
-                            0, 1, 0,  0, 1, 1,  1, 1, 1,  1, 1, 0,
-                            0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0
-                      ];
+                  this._mesh._positions[0] = [
+                        -sx,-sy,-sz,  -sx, sy,-sz,   sx, sy,-sz,   sx,-sy,-sz, //back   0,0,-1
+                        -sx,-sy, sz,  -sx, sy, sz,   sx, sy, sz,   sx,-sy, sz, //front  0,0,1
+                        -sx,-sy,-sz,  -sx,-sy, sz,  -sx, sy, sz,  -sx, sy,-sz, //left   -1,0,0
+                         sx,-sy,-sz,   sx,-sy, sz,   sx, sy, sz,   sx, sy,-sz, //right  1,0,0
+                        -sx, sy,-sz,  -sx, sy, sz,   sx, sy, sz,   sx, sy,-sz, //top    0,1,0
+                        -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //bottom 0,-1,0
+                  ];
 
-                      this._mesh._normals[0] = [
-                             0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1,
-                             0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1,
-                            -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0,
-                             1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0,
-                             0,  1,  0,   0,  1,  0,   0,  1,  0,   0,  1,  0,
-                             0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0
-                      ];
+                  this._mesh._colors[0] = [
+                        0, 0, 0,  0, 1, 0,  1, 1, 0,  1, 0, 0,
+                        0, 0, 1,  0, 1, 1,  1, 1, 1,  1, 0, 1,
+                        0, 0, 0,  0, 0, 1,  0, 1, 1,  0, 1, 0,
+                        1, 0, 0,  1, 0, 1,  1, 1, 1,  1, 1, 0,
+                        0, 1, 0,  0, 1, 1,  1, 1, 1,  1, 1, 0,
+                        0, 0, 0,  0, 0, 1,  1, 0, 1,  1, 0, 0
+                  ];
 
-                      this._mesh._indices[0] = [
-                             0,  1,  2,   2,  3,  0,
-                             4,  7,  5,   5,  7,  6,
-                             8,  9, 10,  10, 11,  8,
-                            12, 14, 13,  14, 12, 15,
-                            16, 17, 18,  18, 19, 16,
-                            20, 22, 21,  22, 20, 23
-                      ];
-                      
-                      this._mesh._invalidate = true;
-                      this._mesh._numFaces = 12;
-                      this._mesh._numCoords = 24;
+                  this._mesh._normals[0] = [
+                         0,  0, -1,   0,  0, -1,   0,  0, -1,   0,  0, -1,
+                         0,  0,  1,   0,  0,  1,   0,  0,  1,   0,  0,  1,
+                        -1,  0,  0,  -1,  0,  0,  -1,  0,  0,  -1,  0,  0,
+                         1,  0,  0,   1,  0,  0,   1,  0,  0,   1,  0,  0,
+                         0,  1,  0,   0,  1,  0,   0,  1,  0,   0,  1,  0,
+                         0, -1,  0,   0, -1,  0,   0, -1,  0,   0, -1,  0
+                  ];
 
-                      x3dom.geoCache[geoCacheID] = this._mesh;
-                }
+                  this._mesh._indices[0] = [
+                         0,  1,  2,   2,  3,  0,
+                         4,  7,  5,   5,  7,  6,
+                         8,  9, 10,  10, 11,  8,
+                        12, 14, 13,  14, 12, 15,
+                        16, 17, 18,  18, 19, 16,
+                        20, 22, 21,  22, 20, 23
+                  ];
+
+                  this._mesh._invalidate = true;
+                  this._mesh._numFaces = 12;
+                  this._mesh._numCoords = 24;
+
+                  x3dom.geoCache[geoCacheID] = this._mesh;
+            }
         },
         {
             fieldChanged: function(fieldName) {
@@ -679,8 +616,11 @@ x3dom.registerNodeType(
                            -sx,-sy,-sz,  -sx,-sy, sz,   sx,-sy, sz,   sx,-sy,-sz  //bottom 0,-1,0
                     ];
 
+                    this.invalidateVolume();
+
                     Array.forEach(this._parentNodes, function (node) {
                         node._dirty.positions = true;
+                        node.invalidateVolume();
                     });
                 }
             }
@@ -767,7 +707,7 @@ x3dom.registerNodeType(
                     this.vrcRenderTexture._nameSpace = this._nameSpace;
                     
                     this.vrcBackCubeGeometry._vf.size = new x3dom.fields.SFVec3f(
-                    this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
+                        this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
                     this.vrcBackCubeGeometry._vf.ccw = false;
                     this.vrcBackCubeGeometry._vf.solid = true;
                     // manually trigger size update
@@ -808,7 +748,6 @@ x3dom.registerNodeType(
                     this._cf.appearance.node.addChild(this.vrcMultiTexture);
                     this.vrcMultiTexture.nodeChanged();
                     
-                    
                     // here goes the volume shader
                     this.vrcFrontCubeShaderVertex._vf.type = 'vertex';
                     this.vrcFrontCubeShaderVertex._vf.url[0]=this._cf.renderStyle.node.vertexShaderText();
@@ -837,7 +776,6 @@ x3dom.registerNodeType(
                     this.vrcFrontCubeShader.addChild(this.vrcFrontCubeShaderFieldVolData, 'fields');
                     this.vrcFrontCubeShaderFieldVolData.nodeChanged();
                     
-                    
                     var ShaderUniforms = this._cf.renderStyle.node.uniforms()
                     for (var i = 0; i<ShaderUniforms.length; i++)
                     {
@@ -855,18 +793,14 @@ x3dom.registerNodeType(
                     this.addChild(new x3dom.nodeTypes.ColorBox());
 
                     this._cf.geometry.node._vf.size = new x3dom.fields.SFVec3f(
-                    this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
+                        this._vf.dimensions.x, this._vf.dimensions.y, this._vf.dimensions.z);
                     this._cf.geometry.node._vf.ccw = true;
                     this._cf.geometry.node._vf.solid = true;
 
                     // workaround to trigger field change...
                     this._cf.geometry.node.fieldChanged("size");
-                    this._cf.geometry.node.fieldChanged("ccw");
-                    this._cf.geometry.node.fieldChanged("solid");
                 }
-            },
-
-            fieldChanged: function(fieldName) {}
+            }
         }
     )
 );

@@ -229,22 +229,22 @@ x3dom.registerNodeType(
         "OrthoViewpoint",
         "Navigation",
         defineClass(x3dom.nodeTypes.X3DViewpointNode,
-                function (ctx) {
-                    x3dom.nodeTypes.OrthoViewpoint.superClass.call(this, ctx);
-                    
-                    this.addField_MFFloat(ctx, 'fieldOfView', [-1, -1, 1, 1]);
-                    this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
-                    this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
-                    this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
-                    this.addField_SFFloat(ctx, 'zNear', 0.1);
-                    this.addField_SFFloat(ctx, 'zFar', 10000);
-                    
-                    this._viewMatrix = null;
-                    this._projMatrix = null;
-                    this._lastAspect = 1.0;
-                    
-                    this.resetView();
-                },
+        function (ctx) {
+            x3dom.nodeTypes.OrthoViewpoint.superClass.call(this, ctx);
+
+            this.addField_MFFloat(ctx, 'fieldOfView', [-1, -1, 1, 1]);
+            this.addField_SFVec3f(ctx, 'position', 0, 0, 10);
+            this.addField_SFRotation(ctx, 'orientation', 0, 0, 0, 1);
+            this.addField_SFVec3f(ctx, 'centerOfRotation', 0, 0, 0);
+            this.addField_SFFloat(ctx, 'zNear', 0.1);
+            this.addField_SFFloat(ctx, 'zFar', 10000);
+
+            this._viewMatrix = null;
+            this._projMatrix = null;
+            this._lastAspect = 1.0;
+
+            this.resetView();
+        },
         {
             fieldChanged: function (fieldName) {
                 if (fieldName == "position" || 
@@ -643,11 +643,6 @@ x3dom.registerNodeType(
                         cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                     }
                 }
-
-                /*if (out !== null) {
-                    //optimization, exploit coherence and do it for next frame (see LOD)
-                    out.Billboards.push( [transform, this] );
-                }*/
             }
         }
     )
@@ -754,8 +749,7 @@ x3dom.registerNodeType(
             x3dom.nodeTypes.LOD.superClass.call(this, ctx);
 
             this.addField_MFFloat(ctx, "range", []);
-            
-            //this._needReRender = true;
+
             this._lastRangePos = -1;
         },
         {
@@ -796,12 +790,6 @@ x3dom.registerNodeType(
                     var childTransform = this.transformMatrix(transform);
                     cnode.collectDrawableObjects(childTransform, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
-                
-                // eye position invalid in first frame
-                /* if (this._needReRender) {
-                    this._needReRender = false;
-                    this._nameSpace.doc.needRender = true;
-                }*/
             },
 
             getVolume: function()
@@ -840,7 +828,7 @@ x3dom.registerNodeType(
             nodeChanged: function() {
                 //this._needReRender = true;
                 this.invalidateVolume();
-                this.invalidateCache();
+                //this.invalidateCache();
             },
             
             fieldChanged: function(fieldName) {
@@ -849,7 +837,7 @@ x3dom.registerNodeType(
                     fieldName == "center" ||
                     fieldName == "range") {
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
             }
         }

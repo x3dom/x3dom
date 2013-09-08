@@ -133,7 +133,8 @@
 <h1 style='color:darkblue;'>X3DOM Node Types</h1>
 <div>
     The <a href="#_types">node type tree</a> shows the complete node hierarchy,
-    whereas the <a href="#_components">components</a> list below also shows the nodes' fields.
+    whereas the <a href="#_components">components</a> list below also shows the
+    <span id="numNodeTypes"></span> nodes' fields.
 </div>
 <br/>
 <hr/>
@@ -209,8 +210,11 @@ urlMap["H-Anim"] = "hanim.html";    //due to "-" in name
 //var baseUrl = "http://www.web3d.org/x3d/specifications/ISO-IEC-19775-1.2-X3D-AbstractSpecification/Part01/components/";
 var baseUrl = "http://www.web3d.org/files/specifications/19775-1/V3.3/Part01/components/";
 
+var numNodeTypes = 0;
 
 function dumpType(t, parent) {
+    numNodeTypes++;
+
     var li = $(
             '<li>' +
                     '<a href="' + baseUrl + urlMap[x3dom.nodeTypes[t]._compName] + 
@@ -298,6 +302,7 @@ $(document).ready(function () {
 
     // Dump the nodetype hierachy
     dumpType("X3DNode", $("#types"));
+    $("#numNodeTypes").append(" " + numNodeTypes + " ");
 
     // Dump nodetypes by component
     // but first sort alphabetically

@@ -90,7 +90,9 @@ x3dom.registerNodeType(
                         }
                     } );
                 }
-                catch(e) {}
+                catch(e) {
+                    x3dom.debug.logException(e);
+                }
             }
         }
     )

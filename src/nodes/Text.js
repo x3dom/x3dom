@@ -89,7 +89,6 @@ x3dom.registerNodeType(
                     this.addChild(x3dom.nodeTypes.FontStyle.defaultNode());
                 }
                 this.invalidateVolume();
-                this.invalidateCache();
             },
 
             fieldChanged: function(fieldName) {

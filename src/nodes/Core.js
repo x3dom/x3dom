@@ -915,20 +915,20 @@ x3dom.registerNodeType(
                 // TODO; wait for sync traversal to invalidate en block
                 if (this._vf.hasOwnProperty(fieldName)) {
                     this.invalidateVolume();
-                    this.invalidateCache();
+                    //this.invalidateCache();
                 }
             },
 
             nodeChanged: function () {
                 // TODO; wait for sync traversal to invalidate en block
                 this.invalidateVolume();
-                this.invalidateCache();
+                //this.invalidateCache();
             },
 
             parentAdded: function(parent) {
                 // some default behavior if not overwitten
                 this.invalidateVolume();
-                this.invalidateCache();
+                //this.invalidateCache();
             },
 
             getVolume: function()

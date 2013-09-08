@@ -73,39 +73,42 @@ x3dom.registerNodeType(
         },
         {
             fieldChanged: function(fieldName) {
-					this._mesh._positions[0] = [];
-					this._mesh._indices[0] =[];
-						
-					var r = this._vf.radius;
-					var start = this._vf.startAngle;
-					var end = this._vf.endAngle;
-					var anzahl = this._vf.subdivision;
-					
-					var t = (end - start) / anzahl;
-					var theta = start;
-						
-					for (var i = 0; i <= anzahl +1; i++) {
-						var x = Math.cos(theta) * r;
-						var y = Math.sin(theta) * r;
-					
-						this._mesh._positions[0].push(x);
-						this._mesh._positions[0].push(y);
-						this._mesh._positions[0].push(0.0);
-						theta += t;
-					}
-												
-					for (var j = 0; j < anzahl; j++) {
-						this._mesh._indices[0].push(j);
-						this._mesh._indices[0].push(j + 1);		
-					}
-					this._mesh._invalidate = true;
-					this._mesh._numFaces = this._mesh._indices[0].length / 2;
-					this._mesh._numCoords = this._mesh._positions[0].length / 3;
-						   
-					Array.forEach(this._parentNodes, function (node) {
-						node._dirty.positions = true;
-					});}
-				} 
+                this._mesh._positions[0] = [];
+                this._mesh._indices[0] =[];
+
+                var r = this._vf.radius;
+                var start = this._vf.startAngle;
+                var end = this._vf.endAngle;
+                var anzahl = this._vf.subdivision;
+
+                var t = (end - start) / anzahl;
+                var theta = start;
+
+                for (var i = 0; i <= anzahl +1; i++) {
+                    var x = Math.cos(theta) * r;
+                    var y = Math.sin(theta) * r;
+
+                    this._mesh._positions[0].push(x);
+                    this._mesh._positions[0].push(y);
+                    this._mesh._positions[0].push(0.0);
+                    theta += t;
+                }
+
+                for (var j = 0; j < anzahl; j++) {
+                    this._mesh._indices[0].push(j);
+                    this._mesh._indices[0].push(j + 1);
+                }
+
+                this.invalidateVolume();
+                this._mesh._numFaces = this._mesh._indices[0].length / 2;
+                this._mesh._numCoords = this._mesh._positions[0].length / 3;
+
+                Array.forEach(this._parentNodes, function (node) {
+                    node._dirty.positions = true;
+                    node.invalidateVolume();
+                });
+            }
+        }
     )
 );
 
@@ -268,12 +271,13 @@ x3dom.registerNodeType(
 						this._mesh._positions[0].push(y);
 						this._mesh._positions[0].push(0.0);
 					}
-					
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 						   
 					Array.forEach(this._parentNodes, function (node) {
 						node._dirty.positions = true;
+                        node.invalidateVolume();
 					});
 				
 				} else {
@@ -366,7 +370,7 @@ x3dom.registerNodeType(
 					}
 					
 					this._mesh._numTexComponents = 2;
-					this._mesh._invalidate = true;
+                    this.invalidateVolume();
 					this._mesh._numFaces = this._mesh._indices[0].length / 2;
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 						   
@@ -456,12 +460,14 @@ x3dom.registerNodeType(
 						this._mesh._indices[0].push(i + 1);
 					}			
 				}
-				this._mesh._invalidate = true;
+
+                this.invalidateVolume();
 				this._mesh._numFaces = this._mesh._indices[0].length / 2;
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 					   
 				Array.forEach(this._parentNodes, function (node) {
                    	node._dirty.positions = true;
+                    node.invalidateVolume();
                 });	
 			}
         }
@@ -611,7 +617,7 @@ x3dom.registerNodeType(
 				}
 				
 				this._mesh._numTexComponents = 2;
-				this._mesh._invalidate = true;
+                this.invalidateVolume();
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
@@ -683,13 +689,14 @@ x3dom.registerNodeType(
 					this._mesh._indices[0].push(j);
 					this._mesh._indices[0].push(j + 1);		
 				}
-				
-				this._mesh._invalidate = true;
+
+                this.invalidateVolume();
 				this._mesh._numFaces = this._mesh._indices[0].length / 2;
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
 				Array.forEach(this._parentNodes, function (node) {
                    	node._dirty.positions = true;
+                    node.invalidateVolume();
                 });
 			}
         }
@@ -746,13 +753,14 @@ x3dom.registerNodeType(
 					this._mesh._positions[0].push(x);
 					this._mesh._positions[0].push(y);
 					this._mesh._positions[0].push(0.0);
-				}	
-				
-				this._mesh._invalidate = true;
+				}
+
+                this.invalidateVolume();
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
 				Array.forEach(this._parentNodes, function (node) {
                    	node._dirty.positions = true;
+                    node.invalidateVolume();
                 });	
 			}
         }
@@ -835,13 +843,13 @@ x3dom.registerNodeType(
 							this._mesh._positions[0].push(i * xstep - sx, j * ystep - sy, 0);
 						}
 					}
+
+                    this.invalidateVolume();
+				    this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				   
-				   this._mesh._invalidate = true;
-				   this._mesh._numCoords = this._mesh._positions[0].length / 3;
-				   
-				   Array.forEach(this._parentNodes, function (node) {
+				    Array.forEach(this._parentNodes, function (node) {
                         node.setAllDirty();
-                   });
+                    });
 					
                 } else {
 					this._mesh._positions[0] = [];
@@ -877,8 +885,8 @@ x3dom.registerNodeType(
 							this._mesh._indices[0].push(i * (partx + 1) + j + 1);
 						}
 					}
-					
-					this._mesh._invalidate = true;
+
+                    this.invalidateVolume();
 					this._mesh._numFaces = this._mesh._indices[0].length / 3;
 					this._mesh._numCoords = this._mesh._positions[0].length / 3;
 					
@@ -1003,7 +1011,7 @@ x3dom.registerNodeType(
 				}
 				
 				this._mesh._numTexComponents = 2;
-				this._mesh._invalidate = true;
+                this.invalidateVolume();
 				this._mesh._numFaces = this._mesh._indices[0].length / 3;
 				this._mesh._numCoords = this._mesh._positions[0].length / 3;
 				
