@@ -417,7 +417,7 @@ x3dom.gfx_webgl = (function () {
         {
             shape._cleanupGLObjects = function (force)
             {
-                // FIXME; what if complete tree is removed? Then _parentNodes.length my be greater 0.
+                // FIXME; what if complete tree is removed? Then _parentNodes.length may be greater 0.
                 if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
                 {
                     var sp = this._webgl.shader;
@@ -563,7 +563,7 @@ x3dom.gfx_webgl = (function () {
         {
             x3dom.BinaryContainerLoader.setupImgGeo(shape, sp, gl, viewarea, this);
         }
-        else // No BinaryMesh
+        else // No special BinaryMesh, but IFS or similar
         {
             for (q = 0; q < shape._webgl.positions.length; q++)
             {
@@ -722,8 +722,7 @@ x3dom.gfx_webgl = (function () {
                     positions: sphere._mesh._positions[0],
                     indexes: sphere._mesh._indices[0],
                     buffers: [
-                        {},
-                        {}
+                        {}, {}
                     ]
                 };
 
@@ -739,8 +738,7 @@ x3dom.gfx_webgl = (function () {
                     positions: [-w, -h, 0, -w, h, 0, w, -h, 0, w, h, 0],
                     indexes: [0, 1, 2, 3],
                     buffers: [
-                        {},
-                        {}
+                        {}, {}
                     ]
                 };
 
@@ -764,9 +762,7 @@ x3dom.gfx_webgl = (function () {
                     texcoords: sphere._mesh._texCoords[0],
                     indexes: sphere._mesh._indices[0],
                     buffers: [
-                        {},
-                        {},
-                        {}
+                        {}, {}, {}
                     ],
                     texture: texture,
                     primType: gl.TRIANGLES
@@ -1774,52 +1770,50 @@ x3dom.gfx_webgl = (function () {
         var mat = s_app ? s_app._cf.material.node : null;
         var shader = s_app ? s_app._shader : null;
 
-        {
-            if (mat || s_gl.csshader) {
-                if (s_gl.csshader) {
-                    sp.diffuseColor = shader._vf.diffuseFactor.toGL();
-                    sp.specularColor = shader._vf.specularFactor.toGL();
-                    sp.emissiveColor = shader._vf.emissiveFactor.toGL();
-                    sp.shininess = shader._vf.shininessFactor;
-                    sp.ambientIntensity = (shader._vf.ambientFactor.x +
-                        shader._vf.ambientFactor.y +
-                        shader._vf.ambientFactor.z) / 3;
-                    sp.transparency = 1.0 - shader._vf.alphaFactor;
-                    
-                    if (shader.getDisplacementMap()) {
-                      tex = x3dom.Utils.findTextureByName(s_gl.texture, "displacementMap");
-                      sp.displacementWidth = tex.texture.width;
-                      sp.displacementHeight = tex.texture.height;
-                      sp.displacementFactor = shader._vf.displacementFactor;
-                      sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
-                                            (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
-                    }
-                    else if (shader.getDiffuseDisplacementMap()) {
-                        tex = x3dom.Utils.findTextureByName(s_gl.texture, "diffuseDisplacementMap");
-                        sp.displacementWidth = tex.texture.width;
-                        sp.displacementHeight = tex.texture.height;
-                        sp.displacementFactor = shader._vf.displacementFactor;
-                        sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
-                                              (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
-                    }
+        if (mat || s_gl.csshader) {
+            if (s_gl.csshader) {
+                sp.diffuseColor = shader._vf.diffuseFactor.toGL();
+                sp.specularColor = shader._vf.specularFactor.toGL();
+                sp.emissiveColor = shader._vf.emissiveFactor.toGL();
+                sp.shininess = shader._vf.shininessFactor;
+                sp.ambientIntensity = (shader._vf.ambientFactor.x +
+                    shader._vf.ambientFactor.y +
+                    shader._vf.ambientFactor.z) / 3;
+                sp.transparency = 1.0 - shader._vf.alphaFactor;
+
+                if (shader.getDisplacementMap()) {
+                  tex = x3dom.Utils.findTextureByName(s_gl.texture, "displacementMap");
+                  sp.displacementWidth = tex.texture.width;
+                  sp.displacementHeight = tex.texture.height;
+                  sp.displacementFactor = shader._vf.displacementFactor;
+                  sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
+                                        (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
                 }
-                else if (mat) {
-                    sp.diffuseColor = mat._vf.diffuseColor.toGL();
-                    sp.specularColor = mat._vf.specularColor.toGL();
-                    sp.emissiveColor = mat._vf.emissiveColor.toGL();
-                    sp.shininess = mat._vf.shininess;
-                    sp.ambientIntensity = mat._vf.ambientIntensity;
-                    sp.transparency = mat._vf.transparency;
+                else if (shader.getDiffuseDisplacementMap()) {
+                    tex = x3dom.Utils.findTextureByName(s_gl.texture, "diffuseDisplacementMap");
+                    sp.displacementWidth = tex.texture.width;
+                    sp.displacementHeight = tex.texture.height;
+                    sp.displacementFactor = shader._vf.displacementFactor;
+                    sp.displacementAxis = (shader._vf.displacementAxis == "x") ? 0.0 :
+                                          (shader._vf.displacementAxis == "y") ? 1.0 : 2.0;
                 }
             }
-            else {
-                sp.diffuseColor = [1.0, 1.0, 1.0];
-                sp.specularColor = [0.0, 0.0, 0.0];
-                sp.emissiveColor = [0.0, 0.0, 0.0];
-                sp.shininess = 0.0;
-                sp.ambientIntensity = 1.0;
-                sp.transparency = 0.0;
+            else if (mat) {
+                sp.diffuseColor = mat._vf.diffuseColor.toGL();
+                sp.specularColor = mat._vf.specularColor.toGL();
+                sp.emissiveColor = mat._vf.emissiveColor.toGL();
+                sp.shininess = mat._vf.shininess;
+                sp.ambientIntensity = mat._vf.ambientIntensity;
+                sp.transparency = mat._vf.transparency;
             }
+        }
+        else {
+            sp.diffuseColor = [1.0, 1.0, 1.0];
+            sp.specularColor = [0.0, 0.0, 0.0];
+            sp.emissiveColor = [0.0, 0.0, 0.0];
+            sp.shininess = 0.0;
+            sp.ambientIntensity = 1.0;
+            sp.transparency = 0.0;
         }
 
         //Look for user-defined shaders
@@ -1847,10 +1841,10 @@ x3dom.gfx_webgl = (function () {
         //===========================================================================
         // Set Lights
         //===========================================================================
-        // TODO: when no state/shader switch occured, all light/fog/... uniforms don't need to be set again
-
+        // TODO: when no state/shader switch happens, all light/fog/... uniforms don't need to be set again
         if (numLights > 0) {
             for (var p = 0; p < numLights; p++) {
+                // FIXME; getCurrentTransform() doesn't work for shared lights/objects!
                 var light_transform = mat_view.mult(slights[p].getCurrentTransform());
 
                 if (x3dom.isa(slights[p], x3dom.nodeTypes.DirectionalLight)) {
@@ -1939,30 +1933,42 @@ x3dom.gfx_webgl = (function () {
         }
 
 
-        {
-            for (var cnt = 0, cnt_n = s_gl.texture.length; cnt < cnt_n; cnt++) {
-                tex = s_gl.texture[cnt];
+        for (var cnt = 0, cnt_n = s_gl.texture.length; cnt < cnt_n; cnt++) {
+            tex = s_gl.texture[cnt];
 
-                gl.activeTexture(gl.TEXTURE0 + cnt);
-                gl.bindTexture(tex.type, tex.texture);
-                gl.texParameteri(tex.type, gl.TEXTURE_WRAP_S, tex.wrapS);
-                gl.texParameteri(tex.type, gl.TEXTURE_WRAP_T, tex.wrapT);
-                gl.texParameteri(tex.type, gl.TEXTURE_MAG_FILTER, tex.magFilter);
-                gl.texParameteri(tex.type, gl.TEXTURE_MIN_FILTER, tex.minFilter);
-                if (tex.genMipMaps) {
-                    gl.generateMipmap(tex.type);
-                }
-
-                if (!shader || shader && !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
-                    if (!sp[tex.samplerName])
-                        sp[tex.samplerName] = cnt;
-                }
+            gl.activeTexture(gl.TEXTURE0 + cnt);
+            gl.bindTexture(tex.type, tex.texture);
+            gl.texParameteri(tex.type, gl.TEXTURE_WRAP_S, tex.wrapS);
+            gl.texParameteri(tex.type, gl.TEXTURE_WRAP_T, tex.wrapT);
+            gl.texParameteri(tex.type, gl.TEXTURE_MAG_FILTER, tex.magFilter);
+            gl.texParameteri(tex.type, gl.TEXTURE_MIN_FILTER, tex.minFilter);
+            if (tex.genMipMaps) {
+                gl.generateMipmap(tex.type);
             }
 
-            if (s_app && s_app._cf.textureTransform.node) {
-                var texTrafo = s_app.texTransformMatrix();
-                sp.texTrafoMatrix = texTrafo.toGL();
+            if (!shader || shader && !x3dom.isa(shader, x3dom.nodeTypes.ComposedShader)) {
+                if (!sp[tex.samplerName])
+                    sp[tex.samplerName] = cnt;
             }
+        }
+
+        if (s_app && s_app._cf.textureTransform.node) {
+            var texTrafo = s_app.texTransformMatrix();
+            sp.texTrafoMatrix = texTrafo.toGL();
+        }
+
+        if (shape.isSolid()) {
+            this.stateManager.enable(gl.CULL_FACE);
+
+            if (shape.isCCW()) {
+                this.stateManager.frontFace(gl.CCW);
+            }
+            else {
+                this.stateManager.frontFace(gl.CW);
+            }
+        }
+        else {
+            this.stateManager.disable(gl.CULL_FACE);
         }
 
         // TODO; FIXME; what if geometry with split mesh has dynamic fields?
@@ -1976,20 +1982,6 @@ x3dom.gfx_webgl = (function () {
 
                 gl.vertexAttribPointer(sp[attrib.name], attrib.numComponents, gl.FLOAT, false, 0, 0);
                 gl.enableVertexAttribArray(sp[attrib.name]);
-            }
-        }
-
-        {
-            if (shape.isSolid()) {
-                this.stateManager.enable(gl.CULL_FACE);
-
-                if (shape.isCCW()) {
-                    this.stateManager.frontFace(gl.CCW);
-                } else {
-                    this.stateManager.frontFace(gl.CW);
-                }
-            } else {
-                this.stateManager.disable(gl.CULL_FACE);
             }
         }
 
@@ -2127,6 +2119,15 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
+        for (df = 0, df_n = s_gl.dynamicFields.length; df < df_n; df++) {
+            attrib = s_gl.dynamicFields[df];
+
+            if (sp[attrib.name] !== undefined) {
+                gl.disableVertexAttribArray(sp[attrib.name]);
+            }
+        }
+
+        // update stats
         if (s_gl.indexes && s_gl.indexes[0]) {
             if (s_gl.imageGeometry != 0) {
                 for (i = 0, i_n = s_geo._vf.vertexCount.length; i < i_n; i++) {
@@ -2162,32 +2163,23 @@ x3dom.gfx_webgl = (function () {
             }
         }
 
-        for (df = 0, df_n = s_gl.dynamicFields.length; df < df_n; df++) {
-            attrib = s_gl.dynamicFields[df];
+        // cleanup
+        var s_gl_tex = s_gl.texture;
+        cnt_n = s_gl_tex ? s_gl_tex.length : 0;
 
-            if (sp[attrib.name] !== undefined) {
-                gl.disableVertexAttribArray(sp[attrib.name]);
-            }
-        }
+        for (cnt = 0; cnt < cnt_n; cnt++) {
+            if (!s_gl_tex[cnt])
+                continue;
 
-        {
-            var s_gl_tex = s_gl.texture;
-            cnt_n = s_gl_tex ? s_gl_tex.length : 0;
+            if (s_app && s_app._cf.texture.node) {
+                tex = s_app._cf.texture.node.getTexture(cnt);
+                gl.activeTexture(gl.TEXTURE0 + cnt);
 
-            for (cnt = 0; cnt < cnt_n; cnt++) {
-                if (!s_gl_tex[cnt])
-                    continue;
-
-                if (s_app && s_app._cf.texture.node) {
-                    tex = s_app._cf.texture.node.getTexture(cnt);
-                    gl.activeTexture(gl.TEXTURE0 + cnt);
-
-                    if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) {
-                        gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
-                    }
-                    else {
-                        gl.bindTexture(gl.TEXTURE_2D, null);
-                    }
+                if (x3dom.isa(tex, x3dom.nodeTypes.X3DEnvironmentTextureNode)) {
+                    gl.bindTexture(gl.TEXTURE_CUBE_MAP, null);
+                }
+                else {
+                    gl.bindTexture(gl.TEXTURE_2D, null);
                 }
             }
         }
@@ -2642,7 +2634,6 @@ x3dom.gfx_webgl = (function () {
             return;
         }
 
-        var vol = null;
         var rentex = viewarea._doc._nodeBag.renderTextures;
         var rt_tex, rtl_i, rtl_n = rentex.length;
 
@@ -2660,7 +2651,7 @@ x3dom.gfx_webgl = (function () {
         }
 
         var shadowedLights, numShadowMaps;
-        var i, j, size, sizeAvailable;
+        var i, j, n, size, sizeAvailable;
 
         scene.updateVolume();
 		
@@ -2696,8 +2687,9 @@ x3dom.gfx_webgl = (function () {
 			scene._webgl.fboShadow = [];
 			
 			shadowedLights = viewarea.getShadowedLights();
+            n = shadowedLights.length;
 
-			for (i=0; i<shadowedLights.length; i++)
+			for (i=0; i<n; i++)
             {
 				size = shadowedLights[i]._vf.shadowMapSize;
 
@@ -2719,7 +2711,7 @@ x3dom.gfx_webgl = (function () {
 			scene._webgl.fboBlur = [];
 						
 			//initialize blur fbo (different fbos for different sizes)
-			for (i = 0; i< shadowedLights.length; i++)
+			for (i=0; i<n; i++)
             {
 				size = scene._webgl.fboShadow[i][0].height;
 				sizeAvailable = false;
@@ -2789,8 +2781,9 @@ x3dom.gfx_webgl = (function () {
 			
 			//reinitialize shadow fbos if necessary
 			shadowedLights = viewarea.getShadowedLights();
+            n = shadowedLights.length;
 
-			for (i=0; i<shadowedLights.length; i++){
+			for (i=0; i<n; i++) {
 				size = shadowedLights[i]._vf.shadowMapSize;
 
 				if (!x3dom.isa(shadowedLights[i], x3dom.nodeTypes.PointLight))
@@ -2807,12 +2800,11 @@ x3dom.gfx_webgl = (function () {
 					for (j=0;j<numShadowMaps;j++){
 						scene._webgl.fboShadow[i][j] = this.initFbo(gl, size, size, nearestFilt, shadowType);
 					}
-					
 				}			
 			}
 			
 			//reinitialize blur fbos if necessary
-			for (i = 0; i< shadowedLights.length; i++){
+			for (i=0; i<n; i++){
 				size = scene._webgl.fboShadow[i][0].height;
 				
 				sizeAvailable = false;
@@ -3006,28 +2998,23 @@ x3dom.gfx_webgl = (function () {
         // calls gl.clear etc. (bgnd stuff)
         bgnd._webgl.render(gl, mat_view, mat_proj);
 
+        // HACK; fully impl. BlendMode and DepthMode (needs to be handled in renderShape just like Material etc.)
         this.stateManager.depthMask(true);
         this.stateManager.depthFunc(gl.LEQUAL);
         this.stateManager.enable(gl.DEPTH_TEST);
         this.stateManager.enable(gl.CULL_FACE);
 
         //this.stateManager.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
-        //Workaround for WebKit & Co.
-        this.stateManager.blendFuncSeparate(
-            gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
-            //gl.ONE_MINUS_DST_ALPHA, gl.ONE
-            gl.ONE, gl.ONE
-            //gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA
-        );
+        this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
         this.stateManager.enable(gl.BLEND);
 
         x3dom.nodeTypes.PopGeometry.numRenderedVerts = 0;
         x3dom.nodeTypes.PopGeometry.numRenderedTris = 0;
 
-        var n = scene.drawableCollection.length;
+        n = scene.drawableCollection.length;
 
-        // very experimental prio culling, currently coupled with small feature culling
-        // TODO; what about shadows, picking etc. (but picking needs all objects)
+        // Very, very experimental priority culling, currently coupled with frustum and small feature culling
+        // TODO; what about shadows, picking etc. (but picking needs all objects, though this is NYI)
         if (env._vf.smallFeatureCulling && env._lowPriorityThreshold < 1 && viewarea.isMoving()) {
             n = Math.floor(n * env._lowPriorityThreshold);
             if (n == 0 && scene.drawableCollection.length > 0)
@@ -3041,7 +3028,7 @@ x3dom.gfx_webgl = (function () {
             var needEnableDepthMask = false;
             var shapeApp = drawable.shape._cf.appearance.node;
 
-            // HACK; fully impl. BlendMode and DepthMode (needs to be handled in renderShape)
+            // HACK; fully impl. BlendMode and DepthMode (needs to be handled in renderShape just like Material etc.)
             {
                 if (shapeApp && shapeApp._cf.blendMode.node &&
                     shapeApp._cf.blendMode.node._vf.srcFactor.toLowerCase() === "none" &&
@@ -3059,7 +3046,7 @@ x3dom.gfx_webgl = (function () {
             this.renderShape(drawable, viewarea, slights, numLights,
                 mat_view, mat_scene, mat_light, mat_proj, gl);
 
-            // fully impl. BlendMode and DepthMode
+            // HACK; fully impl. BlendMode and DepthMode (needs to be handled in renderShape just like Material etc.)
             {
                 if (needEnableBlending) {
                     this.stateManager.enable(gl.BLEND);
@@ -3073,24 +3060,25 @@ x3dom.gfx_webgl = (function () {
         if (shadowCount > 0)
             this.renderShadows(gl, viewarea, shadowedLights, WCToLCMatrices, lMatrices, mat_view, mat_proj, mat_scene);
 
-        viewarea._numRenderedNodes = n;
-
         this.stateManager.disable(gl.BLEND);
-
         this.stateManager.disable(gl.DEPTH_TEST);
 
+        viewarea._numRenderedNodes = n;
+
+        // if _visDbgBuf then show helper buffers in foreground for debugging
         if (viewarea._visDbgBuf !== undefined && viewarea._visDbgBuf)
         {
             var pm = scene._vf.pickMode.toLowerCase();
+
             if (pm.indexOf("idbuf") == 0 || pm == "color" || pm == "texcoord") {
                 this.stateManager.viewport(0, 3 * this.canvas.height / 4,
-                            this.canvas.width / 4, this.canvas.height / 4);
+                                           this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboPick.tex);
             }
 
             if (shadowCount > 0) {
                 this.stateManager.viewport(this.canvas.width / 4, 3 * this.canvas.height / 4,
-                            this.canvas.width / 4, this.canvas.height / 4);
+                                           this.canvas.width / 4, this.canvas.height / 4);
                 scene._fgnd._webgl.render(gl, scene._webgl.fboScene.tex);
             }
 
@@ -3099,7 +3087,7 @@ x3dom.gfx_webgl = (function () {
                 var shadowMaps = scene._webgl.fboShadow[i];
                 for (j = 0; j < shadowMaps.length; j++) {
                     this.stateManager.viewport(col * this.canvas.width / 4, row * this.canvas.height / 4,
-                                this.canvas.width / 4, this.canvas.height / 4);
+                                               this.canvas.width / 4, this.canvas.height / 4);
                     scene._fgnd._webgl.render(gl, shadowMaps[j].tex);
                     if (col < 2) {
                         col++;
@@ -3114,7 +3102,7 @@ x3dom.gfx_webgl = (function () {
                 rt_tex = rentex[rtl_i];
 
                 this.stateManager.viewport(rtl_i * this.canvas.width / 8, 5 * this.canvas.height / 8,
-                            this.canvas.width / 8, this.canvas.height / 8);
+                                           this.canvas.width / 8, this.canvas.height / 8);
                 scene._fgnd._webgl.render(gl, rt_tex._webgl.fbo.tex);
             }
         }
@@ -3125,7 +3113,7 @@ x3dom.gfx_webgl = (function () {
         var renderTime = x3dom.Utils.stopMeasure('render');
 
         this.x3dElem.runtime.addMeasurement('RENDER', renderTime);
-        this.x3dElem.runtime.addMeasurement('DRAW', renderTime / scene.drawableCollection.length);
+        this.x3dElem.runtime.addMeasurement('DRAW', (n ? renderTime / n : 0));
 
         this.x3dElem.runtime.addInfo('#NODES:', scene.drawableCollection.numberOfNodes);
         this.x3dElem.runtime.addInfo('#SHAPES:', viewarea._numRenderedNodes);
@@ -3206,10 +3194,7 @@ x3dom.gfx_webgl = (function () {
         this.stateManager.enable(gl.DEPTH_TEST);
         this.stateManager.enable(gl.CULL_FACE);
 
-        this.stateManager.blendFuncSeparate(
-            gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA,
-            gl.ONE, gl.ONE
-        );
+        this.stateManager.blendFuncSeparate(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA, gl.ONE, gl.ONE);
         this.stateManager.enable(gl.BLEND);
 
         var slights = viewarea.getLights();
@@ -3385,7 +3370,6 @@ x3dom.gfx_webgl = (function () {
 
             var model_view_inv = mat_view.mult(trafo).inverse();
             sp.normalMatrix = model_view_inv.transpose().toGL();
-            //sp.normalMatrix = x3dom.fields.SFMatrix4f.identity();
             sp.modelViewProjectionMatrix = mat_scene.mult(trafo).toGL();
 
             //Set ImageGeometry switch (TODO; also impl. in Shader!)
@@ -3737,6 +3721,13 @@ x3dom.gfx_webgl = (function () {
 		
 		//render shadows for current render split
         var n = renderSplit.length - 1;
+        var mat_proj_inv = mat_proj.inverse();
+        var mat_scene_inv = mat_scene.inverse();
+
+        //enable (multiplicative) blending
+        this.stateManager.enable(gl.BLEND);
+        this.stateManager.blendFunc(gl.DST_COLOR, gl.ZERO);
+
 		for (var s=0; s<n; s++)
         {
 			var startIndex = renderSplit[s];
@@ -3754,10 +3745,6 @@ x3dom.gfx_webgl = (function () {
 			gl.bindBuffer(gl.ARRAY_BUFFER, scene._webgl.ppBuffer);
 			gl.vertexAttribPointer(sp.position, 2, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(sp.position);
-
-			//enable (multiplicative) blending
-			this.stateManager.enable(gl.BLEND);
-			this.stateManager.blendFunc(gl.DST_COLOR, gl.ZERO);
 			
 			//bind depth texture (depth from camera view)
 			sp.sceneMap = 0;
@@ -3769,16 +3756,16 @@ x3dom.gfx_webgl = (function () {
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
 			
 			//compute inverse projection matrix
-			sp.inverseProj = mat_proj.inverse().toGL();
+			sp.inverseProj = mat_proj_inv.toGL();
 			
 			//compute inverse view projection matrix
-			sp.inverseViewProj = mat_scene.inverse().toGL();
+			sp.inverseViewProj = mat_scene_inv.toGL();
 
 			var mat_light;
 			var lightMatrix;
 			var shadowIndex = 0;
 
-			for (var p=0; p<currentLights.length; p++) {
+			for (var p=0, pn=currentLights.length; p<pn; p++) {
 				//get light matrices and shadow maps for current light
 				lightMatrix = lMatrices[p+startIndex];
 				mat_light = wctolc[p+startIndex];
@@ -3862,6 +3849,8 @@ x3dom.gfx_webgl = (function () {
 			} 
 			gl.disableVertexAttribArray(sp.position);
 		}
+
+        this.stateManager.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
     };
 	
 	/*****************************************************************************
@@ -3881,12 +3870,14 @@ x3dom.gfx_webgl = (function () {
 		//first pass (horizontal blur), result stored in fboBlur
 		var width = targetFbo.width;
 		var height = targetFbo.height;
-		var fboBlur;
+		var fboBlur = null;
 		
-		for (var i=0; i<scene._webgl.fboBlur.length; i++)
-			if (height == scene._webgl.fboBlur[i].height)
-                fboBlur = scene._webgl.fboBlur[i];  // THINKABOUTME
-				
+		for (var i=0, n=scene._webgl.fboBlur.length; i<n; i++)
+			if (height == scene._webgl.fboBlur[i].height) {
+                fboBlur = scene._webgl.fboBlur[i];
+                break; // THINKABOUTME
+            }
+
 		this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, fboBlur.fbo);
 		this.stateManager.viewport(0, 0, width, height);
 		
@@ -3949,6 +3940,7 @@ x3dom.gfx_webgl = (function () {
 		gl.disableVertexAttribArray(sp.position);
         gl.flush();
 
+        this.stateManager.blendFunc(gl.SRC_ALPHA, gl.ONE_MINUS_SRC_ALPHA);
         this.stateManager.bindFramebuffer(gl.FRAMEBUFFER, null);
 		this.stateManager.viewport(0, 0, this.canvas.width, this.canvas.height);
 	};
