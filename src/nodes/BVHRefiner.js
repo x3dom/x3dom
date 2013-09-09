@@ -644,11 +644,10 @@ x3dom.registerNodeType(
             setLevel: function (level) {
                 this._mesh._indices[0] = this._indexBuffers[level];
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                this._mesh.invalidate();
-                
+                this.invalidateVolume();
+
                 Array.forEach(this._parentNodes, function (node) {
-                    node.setAllDirty();
-                    node.invalidateVolume();
+                    node.setGeoDirty();     // also invalidates
                 });
             }
         }
@@ -929,10 +928,10 @@ function QuadtreeNode2dWMTS(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
         texture.nodeChanged();
 
         // create shape with geometry and appearance data
-        shape._cf.geometry.node = geometry;
-        shape._cf.appearance.node = appearance;
-        geometry.nodeChanged();
+        shape.addChild(appearance);
         appearance.nodeChanged();
+        shape.addChild(geometry);
+        geometry.nodeChanged();
 
         // add shape to bvhRefiner object
         bvhRefiner.addChild(shape);
@@ -1236,10 +1235,10 @@ function QuadtreeNode2D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         texture.nodeChanged();
 
         // create shape with geometry and appearance data
-        shape._cf.geometry.node = geometry;
-        shape._cf.appearance.node = appearance;
-        geometry.nodeChanged();
+        shape.addChild(appearance);
         appearance.nodeChanged();
+        shape.addChild(geometry);
+        geometry.nodeChanged();
 
         // add shape to bvhRefiner object
         bvhRefiner.addChild(shape);
@@ -1623,10 +1622,10 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         composedShader.nodeChanged();
 
         // create shape with geometry and appearance data
-        shape._cf.geometry.node = geometry;
-        shape._cf.appearance.node = appearance;
-        shape._cf.geometry.node.nodeChanged();
+        shape.addChild(appearance);
         appearance.nodeChanged();
+        shape.addChild(geometry);
+        geometry.nodeChanged();
 
         // add shape to bvhRefiner object
         bvhRefiner.addChild(shape);
@@ -1636,8 +1635,8 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         cullObject.boundedNode = shape;
         cullObject.volume = shape.getVolume();
         // setting max and min in z-direction to get the complete volume
-        cullObject.volume.min.z = -Math.round(bvhRefiner._vf.maxElevation / 2);
         cullObject.volume.max.z = Math.round(bvhRefiner._vf.maxElevation / 2);
+        cullObject.volume.min.z = -cullObject.volume.max.z;
         
         calculateNeighborhood();
     }
@@ -2023,8 +2022,10 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         }
         
         if (indiceNumber !== lastIndice){
-            //shape._cf.geometry.node.setLevel(indiceNumber); 
+            shape._cf.geometry.node.setLevel(indiceNumber);
             lastIndice = indiceNumber;
+
+            drawableCollection.viewarea._doc.needRender = true; // just a try to force re-render...
         }
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
     }
@@ -2708,10 +2709,10 @@ function QuadtreeNode3D_NEW(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
         shader.nodeChanged();
 
         // create shape with geometry and appearance data
-        shape._cf.geometry.node = geometry;
-        shape._cf.appearance.node = appearance;
-        geometry.nodeChanged();
+        shape.addChild(appearance);
         appearance.nodeChanged();
+        shape.addChild(geometry);
+        geometry.nodeChanged();
 
         // add shape to bvhRefiner object
         bvhRefiner.addChild(shape);
@@ -2721,8 +2722,8 @@ function QuadtreeNode3D_NEW(ctx, bvhRefiner, level, nodeNumber, nodeTransformati
         cullObject.boundedNode = shape;
         cullObject.volume = shape.getVolume();
         // setting max and min in z-direction to get the complete volume
-        cullObject.volume.min.z = -Math.round(bvhRefiner._vf.maxElevation / 2);
         cullObject.volume.max.z = Math.round(bvhRefiner._vf.maxElevation / 2);
+        cullObject.volume.min.z = -cullObject.volume.max.z;
     }
 
 
@@ -2932,6 +2933,8 @@ function OctreeNode(ctx, bvhRefiner, level, nodeTransformation)
         appearance.nodeChanged();
         shape.addChild(geometry);
         geometry.nodeChanged();
+
+        //bvhRefiner.addChild(shape);
         shape.nodeChanged();
         
         // bind static cull-properties to cullObject
@@ -3183,10 +3186,10 @@ function QuadtreeNode3D_32bit(ctx, bvhRefiner, level, nodeNumber, nodeTransforma
         composedShader.nodeChanged();
 
         // create shape with geometry and appearance data
-        shape._cf.geometry.node = geometry;
-        shape._cf.appearance.node = appearance;
-        geometry.nodeChanged();
+        shape.addChild(appearance);
         appearance.nodeChanged();
+        shape.addChild(geometry);
+        geometry.nodeChanged();
 
         // add shape to bvhRefiner object
         bvhRefiner.addChild(shape);
@@ -3196,8 +3199,8 @@ function QuadtreeNode3D_32bit(ctx, bvhRefiner, level, nodeNumber, nodeTransforma
         cullObject.boundedNode = shape;
         cullObject.volume = shape.getVolume();
         // setting max and min in z-direction to get the complete volume
-        cullObject.volume.min.z = -Math.round(bvhRefiner._vf.maxElevation);
         cullObject.volume.max.z = Math.round(bvhRefiner._vf.maxElevation);
+        cullObject.volume.min.z = -cullObject.volume.max.z;
     }
 
 

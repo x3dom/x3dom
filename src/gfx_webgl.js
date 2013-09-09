@@ -253,13 +253,13 @@ x3dom.gfx_webgl = (function () {
             shape._webgl.shader = this.cache.getShaderByProperties(gl, shape, shape.getShaderProperties(viewarea));
 
 
-            if (shape._webgl.binaryGeometry == 0)   // FIXME; handle BG
+            if (shape._webgl.binaryGeometry == 0)   // TODO; handle BG update!
             {
                 for (q = 0; q < shape._webgl.positions.length; q++)
                 {
                     q5 = 5 * q;
 
-                    if (!needFullReInit && shape._dirty.positions === true) {
+                    if (!needFullReInit && (shape._dirty.positions == true || shape._dirty.indexes == true)) {
                         if (shape._webgl.shader.position !== undefined) {
                             shape._webgl.indexes[q] = geoNode._mesh._indices[q];
 
