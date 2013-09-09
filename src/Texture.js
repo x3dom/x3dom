@@ -309,11 +309,13 @@ x3dom.Texture.prototype.updateText = function()
 	var text_ctx = text_canvas.getContext('2d');
 	
 	// calculate font font_size in px
-	text_ctx.font = font_style + " " + textHeight + "px " + font_family;  //bold 
+	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 
 	var maxWidth = text_ctx.measureText(paragraph[0]).width;
+    var i;
+
 	// calculate maxWidth
-	for(var i = 1; i < paragraph.length; i++) {  
+	for(i = 1; i < paragraph.length; i++) {
 		if(text_ctx.measureText(paragraph[i]).width > maxWidth)
 			maxWidth = text_ctx.measureText(paragraph[i]).width;
 	}
@@ -339,11 +341,11 @@ x3dom.Texture.prototype.updateText = function()
 	text_ctx.strokeStyle = 'grey';
 	text_ctx.textBaseline = 'top';
 
-	text_ctx.font = font_style + " " + textHeight + "px " + font_family;  //bold 
+	text_ctx.font = font_style + " " + textHeight + "px " + font_family;
 	text_ctx.textAlign = textAlignment;
 
 	// create the multiline text
-	for(var i = 0; i < paragraph.length; i++) {  
+	for(i = 0; i < paragraph.length; i++) {
 		textY = i*textHeight;          
 		text_ctx.fillText(paragraph[i], textX,  textY);
 	}
@@ -360,9 +362,14 @@ x3dom.Texture.prototype.updateText = function()
 	//remove canvas after Texture creation
 	document.body.removeChild(text_canvas);
 	
-	var w  = txtW/100.0; 
-    var h  = txtH/100.0;
+	var w = txtW / 100.0;
+    var h = txtH / 100.0;
 	
 	this.node._mesh._positions[0] = [-w,-h+.4,0, w,-h+.4,0, w,h+.4,0, -w,h+.4,0];
+
+    this.node.invalidateVolume();
+    Array.forEach(this.node._parentNodes, function (node) {
+        node.setAllDirty();
+    });
 };
 

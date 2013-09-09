@@ -91,7 +91,7 @@
       <background skyColor='0.8 0.8 0.8'></background>
       <shape id="the_shape">
         <appearance>
-		   <material diffuseColor='0 0 0'></material>
+		   <material diffuseColor='0.5 0.5 0.5'></material>
         </appearance>
         <text id="the_text" string='"Lorem ipsum" "dolor sit amet" "consetetur sadi" "pscing elitr" "sed diamnonu"' solid='false'>
             <!-- Webfonts seem only to work in Webkit-Safari/Mac right now -->
@@ -108,6 +108,15 @@
       </transform>
     </scene>
     </x3d>
-
+	<script>
+		function changeText() {
+			var text = document.getElementById('the_text');
+            if (text.getAttribute('string') == 'Hello World') {
+                text.setAttribute('string', 'Ministry of Silly Walks');
+            } else {
+                text.setAttribute('string', 'Hello World');
+            }
+		}
+	</script>
 </body>
 </html>

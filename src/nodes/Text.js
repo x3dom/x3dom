@@ -97,9 +97,9 @@ x3dom.registerNodeType(
                     fieldName == 'language' || fieldName == 'leftToRight' ||
                     fieldName == 'size' || fieldName == 'spacing' ||
                     fieldName == 'style' || fieldName == 'topToBottom') {
+                    this.invalidateVolume();
                     Array.forEach(this._parentNodes, function (node) {
-                        node._dirty.texture = true;
-                        node._dirty.positions = true;
+                        node.setAllDirty();
                     });
                 }
             }
