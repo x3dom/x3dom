@@ -643,8 +643,13 @@ x3dom.registerNodeType(
         {
             setLevel: function (level) {
                 this._mesh._indices[0] = this._indexBuffers[level];
-                this._mesh._numFaces = this._indexBuffers[level].length / 3;
-                this.invalidateVolume();
+                this._mesh._numFaces = this._mesh._indices[0].length / 3;
+                this._mesh.invalidate();
+                
+                Array.forEach(this._parentNodes, function (node) {
+                    node.setAllDirty();
+                    node.invalidateVolume();
+                });
             }
         }
     )
@@ -1514,6 +1519,8 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
     var resizeFac = (bvhRefiner._vf.size.x + bvhRefiner._vf.size.y) / 2.0;
     // object that stores all information to do a frustum culling
     var cullObject = {};
+    // last indice number of mesh
+    var lastIndice = 0;
 
 
 
@@ -2015,7 +2022,10 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             indiceNumber = 2;
         }
         
-        //shape._cf.geometry.node.setLevel(indiceNumber); 
+        if (indiceNumber !== lastIndice){
+            //shape._cf.geometry.node.setLevel(indiceNumber); 
+            lastIndice = indiceNumber;
+        }
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
     }
 
