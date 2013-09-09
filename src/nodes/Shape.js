@@ -337,6 +337,14 @@ x3dom.registerNodeType(
 				this._dirty.text = false;
 				this._dirty.shader = false;
             },
+
+            unsetGeoDirty: function () {
+                this._dirty.positions = false;
+                this._dirty.normals = false;
+                this._dirty.texcoords = false;
+                this._dirty.colors =  false;
+                this._dirty.indexes = false;
+            },
 			
 			setAllDirty: function () {
 			    // vertex attributes

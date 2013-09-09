@@ -88,8 +88,9 @@
 	<body>
 		<h1>Blinking Light</h1>
     	<div class="group">
-		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' x='0px' y='0px' width='800px' height='600px'>
+		<X3D xmlns='http://www.web3d.org/specifications/x3d-namespace' id='someUniqueId' showStat='true' showLog='true' width='800px' height='600px'>
 			<Scene DEF='scene'>
+			    <Environment frustumCulling='false'/>
 				<NavigationInfo headlight='false'/>
 				<Background skyColor='0.000 0.000 0.000'/>
 				<DirectionalLight DEF='Direct01' on='TRUE' intensity='0.7000' shadowIntensity='0.5000' ambientIntensity='0.0000' color='1.0000 1.0000 1.0000' direction='0.0000 -1.0000 -0.0000' />

@@ -160,45 +160,15 @@ x3dom.gfx_webgl = (function () {
 
             // TODO; do same for texcoords etc.!
             if (shape._dirty.colors === true &&
-                shape._webgl.shader.color === undefined &&
-                geoNode._mesh._colors[0].length) {
+                shape._webgl.shader.color === undefined && geoNode._mesh._colors[0].length) {
                 // required since otherwise shape._webgl.shader.color stays undefined
                 // and thus the wrong shader will be chosen although there are colors
                 needFullReInit = true;
             }
 
-            if (needFullReInit) {
-                //Save old shader
-                var spOld = shape._webgl.shader;
-
-                for (q = 0; q < shape._webgl.positions.length; q++) {
-                    q5 = 5 * q;
-
-                    if (spOld.position !== undefined) {
-                        gl.deleteBuffer(shape._webgl.buffers[q5 + 1]);
-                        gl.deleteBuffer(shape._webgl.buffers[q5  ]);
-                    }
-
-                    if (spOld.normal !== undefined) {
-                        gl.deleteBuffer(shape._webgl.buffers[q5 + 2]);
-                    }
-
-                    if (spOld.texcoord !== undefined) {
-                        gl.deleteBuffer(shape._webgl.buffers[q5 + 3]);
-                    }
-
-                    if (spOld.color !== undefined) {
-                        gl.deleteBuffer(shape._webgl.buffers[q5 + 4]);
-                    }
-                }
-
-                for (var inc = 0; inc < shape._webgl.dynamicFields.length; inc++) {
-                    var h_attrib = shape._webgl.dynamicFields[inc];
-
-                    if (spOld[h_attrib.name] !== undefined) {
-                        gl.deleteBuffer(h_attrib.buf);
-                    }
-                }
+            // cleanup vertex buffer objects
+            if (needFullReInit && shape._cleanupGLObjects) {
+                shape._cleanupGLObjects(true, false);
             }
 
             //Check for dirty Textures
@@ -253,13 +223,13 @@ x3dom.gfx_webgl = (function () {
             shape._webgl.shader = this.cache.getShaderByProperties(gl, shape, shape.getShaderProperties(viewarea));
 
 
-            if (shape._webgl.binaryGeometry == 0)   // TODO; handle BG update!
+            if (!needFullReInit && shape._webgl.binaryGeometry == 0)    // THINKABOUTME: What about PopGeo & Co.?
             {
                 for (q = 0; q < shape._webgl.positions.length; q++)
                 {
                     q5 = 5 * q;
 
-                    if (!needFullReInit && (shape._dirty.positions == true || shape._dirty.indexes == true)) {
+                    if (shape._dirty.positions == true || shape._dirty.indexes == true) {
                         if (shape._webgl.shader.position !== undefined) {
                             shape._webgl.indexes[q] = geoNode._mesh._indices[q];
 
@@ -301,9 +271,10 @@ x3dom.gfx_webgl = (function () {
                         }
 
                         shape._dirty.positions = false;
+                        shape._dirty.indexes = false;
                     }
 
-                    if (!needFullReInit && shape._dirty.colors === true) {
+                    if (shape._dirty.colors == true) {
                         if (shape._webgl.shader.color !== undefined) {
                             shape._webgl.colors[q] = geoNode._mesh._colors[q];
 
@@ -328,7 +299,7 @@ x3dom.gfx_webgl = (function () {
                         shape._dirty.colors = false;
                     }
 
-                    if (!needFullReInit && shape._dirty.normals === true) {
+                    if (shape._dirty.normals == true) {
                         if (shape._webgl.shader.normal !== undefined) {
                             shape._webgl.normals[q] = geoNode._mesh._normals[q];
 
@@ -353,7 +324,7 @@ x3dom.gfx_webgl = (function () {
                         shape._dirty.normals = false;
                     }
 
-                    if (!needFullReInit && shape._dirty.texcoords === true) {
+                    if (shape._dirty.texcoords == true) {
                         if (shape._webgl.shader.texcoord !== undefined) {
                             shape._webgl.texcoords[q] = geoNode._mesh._texCoords[q];
 
@@ -379,6 +350,19 @@ x3dom.gfx_webgl = (function () {
                     }
                 }
             }
+            else
+            {
+                // TODO; does not yet work with shared objects
+                /*
+                var spOld = shape._webgl.shader;
+                if (shape._cleanupGLObjects && needFullReInit)
+                    shape._cleanupGLObjects(true, false);
+
+                // complete setup is sort of brute force, thus optimize!
+                x3dom.BinaryContainerLoader.setupBinGeo(shape, spOld, gl, viewarea, this);
+                shape.unsetGeoDirty();
+                */
+            }
 
             if (shape._webgl.imageGeometry != 0) {
                 for (t = 0; t < shape._webgl.texture.length; ++t) {
@@ -386,6 +370,7 @@ x3dom.gfx_webgl = (function () {
                 }
 
                 geoNode.unsetGeoDirty();
+                shape.unsetGeoDirty();
             }
 
             if (!needFullReInit) {
@@ -417,7 +402,7 @@ x3dom.gfx_webgl = (function () {
         // dynamically attach clean-up method for GL objects
         if (!shape._cleanupGLObjects)
         {
-            shape._cleanupGLObjects = function (force)
+            shape._cleanupGLObjects = function (force, delGL)
             {
                 // FIXME; what if complete tree is removed? Then _parentNodes.length may be greater 0.
                 if (this._webgl && ((arguments.length > 0 && force) || this._parentNodes.length == 0))
@@ -453,7 +438,11 @@ x3dom.gfx_webgl = (function () {
                         }
                     }
 
-                    delete this._webgl;
+                    if (delGL === undefined)
+                        delGL = true;
+
+                    if (delGL)
+                        delete this._webgl;
                 }
             };  // shape._cleanupGLObjects()
         }
