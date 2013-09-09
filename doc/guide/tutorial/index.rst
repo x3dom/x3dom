@@ -28,6 +28,7 @@ of different kinds, but they still feature everything you need to get started.
    max_export
    maya_export
    wow_export
+   bvh
    
 **Application prototypes**
 
