@@ -21,6 +21,7 @@ doc/guide/build
 # and contains the JSDOC stuff
 doc/guide/api
 #*#
+nbproject
 
 
 # remove with new build system
