@@ -99,8 +99,16 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
             removeX3DOMBackendGraph(children[i]);
         }
 
-        if (domNode._x3domNode !== undefined)
+        if (domNode._x3domNode !== undefined) {
+            var node = domNode._x3domNode;
+            if (x3dom.isa(node, x3dom.nodeTypes.X3DShapeNode)) {
+                if (node._cleanupGLObjects) {
+                    node._cleanupGLObjects(true);
+                }
+                // TODO: more cleanups, e.g. texture/shader cache?
+            }
             delete domNode._x3domNode;
+        }
     }
 
     // Test capturing DOM mutation events on the X3D subscene
@@ -163,7 +171,7 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 					var parent = parentNode._x3domNode;
 					
 					if (parent && parent._nameSpace && (child instanceof Element)) {
-                        removeX3DOMBackendGraph(child);
+                        removeX3DOMBackendGraph(child);    // not really necessary...
 
                         var newNode = parent._nameSpace.setupTree(child);
 
