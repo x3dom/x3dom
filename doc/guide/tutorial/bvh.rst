@@ -31,6 +31,8 @@ Example of a terrain with a WMTS conform dataset
 Parameter descriptions
 ----------------------
 
+The following table lists the parameters currently supported.
+
 ==================    =====================================================
   Parameter           Description
 ==================    =====================================================
@@ -61,12 +63,14 @@ Currently supported dataset formats
 
 We support two different types of datasets. The first is based on WMTS specification and the second version is a folder based file arrangement. Both, the usage of WMTS and nonWMTS for this BVHRefiner node are specified in the following subsections.
 
-WMTS (`Get the aopt tool <http://www.opengeospatial.org/standards/wmts/>`)
---------------------------------------------------------------------------
+WMTS
+----
 
-In WMTS a multidimensional dataset of a terrain can be integrated very easy. For every level of detail a new matrix of tiles is required. Every level has its own folder. So if you want to get five different levels of detail in your application, five folders must exist, numbered from 0 to 4. The detail from level to level grows up by a factor of four. Into the folders for the levels, subfolders that describe the columns of the matrix have to be inserted. On level 0 you only have one column, represented through the folder with the name 0. In the next level you have two columns named 0 and 1, growing up by a factor of two from level to level. In the subfolders you place the images that represent the tiles data. There must be as much images as subfolders. On level 0 you only have one image that represents the whole terrain data. On level one exist two subfolders. Every subfolder has to include two images, on the next level four per subfolder and so on. The following figure (figure 1) shows the addressing-scheme:  
+In WMTS (`more information <http://www.opengeospatial.org/standards/wmts/>`) a multidimensional dataset of a terrain can be integrated very easy. For every level of detail a new matrix of tiles is required. Every level has its own folder. So if you want to get five different levels of detail in your application, five folders must exist, numbered from 0 to 4. The detail from level to level grows up by a factor of four. Into the folders for the levels, subfolders that describe the columns of the matrix have to be inserted. On level 0 you only have one column, represented through the folder with the name 0. In the next level you have two columns named 0 and 1, growing up by a factor of two from level to level. In the subfolders you place the images that represent the tiles data. There must be as much images as subfolders. On level 0 you only have one image that represents the whole terrain data. On level one exist two subfolders. Every subfolder has to include two images, on the next level four per subfolder and so on. The following figure (figure 1) shows the addressing-scheme:  
 
 .. image:: /_static/tutorial/bvh_refiner/wmts.png
+   :align: center
+   :scale: 80%
 
 nonWMTS
 -------
@@ -79,8 +83,12 @@ The nonWMTS addressing-scheme is as easy as the WMTS addressing scheme. Every le
 * 4.png: bottom right
 
 .. image:: /_static/tutorial/bvh_refiner/non_wmts.png
+   :align: center
+   :scale: 80%
 
 Example of Puget Sound that was rendered with BVHRefiner node
 -------------------------------------------------------------
 
 .. image:: /_static/tutorial/bvh_refiner/puget_sound.jpg
+   :align: center
+   :scale: 80%
