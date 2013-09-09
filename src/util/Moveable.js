@@ -46,6 +46,8 @@ x3dom.Moveable = function(x3domElem, boundedObj, callback, gridSize) {
     this._firstRay = null;
     this._matrixTrafo = null;
 
+    this._navType = "examine";
+
     this.attachHandlers();
 };
 
@@ -231,6 +233,7 @@ x3dom.Moveable.prototype.start = function(event) {
         that._drag = true;
 
         // temporarily disable navigation
+        that._navType = that._runtime.navigationType();
         that._runtime.noNav();
 
         // calc view-aligned plane through original pick position
@@ -319,8 +322,8 @@ x3dom.Moveable.prototype.stop = function(event) {
             that._drag = false;
 
             // we're done, re-enable navigation
-            // TODO; set original navigation mode
-            that._runtime.examine();
+            var navi = that._runtime.canvas.doc._scene.getNavigationInfo();
+            navi.setType(that._navType);
 
             that._runtime.getCanvas().style.cursor = "pointer";
         }
