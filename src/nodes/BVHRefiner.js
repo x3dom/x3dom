@@ -678,7 +678,7 @@ x3dom.registerNodeType(
             this.addField_SFString(ctx, 'elevationUrl', "");
             this.addField_SFString(ctx, 'textureUrl', "");
             this.addField_SFString(ctx, 'normalUrl', "");
-            this.addField_SFString(ctx, 'mode', "");
+            this.addField_SFString(ctx, 'mode', "3d");
             this.addField_SFString(ctx, 'subMode', "wmts");
             this.addField_SFString(ctx, 'elevationFormat', "png");
             this.addField_SFString(ctx, 'textureFormat', "png");
