@@ -92,6 +92,17 @@ x3dom.findScene = function(x3dElem) {
 x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) {
     var doc = this;
 
+    function removeX3DOMBackendGraph(domNode) {
+        var children = domNode.childNodes;
+
+        for (var i=0, n=children.length; i<n; i++) {
+            removeX3DOMBackendGraph(children[i]);
+        }
+
+        if (domNode._x3domNode !== undefined)
+            delete domNode._x3domNode;
+    }
+
     // Test capturing DOM mutation events on the X3D subscene
     var domEventListener = {
         onAttrModified: function(e) {
@@ -119,6 +130,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
                 if (parent && child) {
                     parent.removeChild(child);
                     parent.nodeChanged();
+
+                    removeX3DOMBackendGraph(domNode);
 
                     if (doc._viewarea && doc._viewarea._scene) {
                         doc._viewarea._scene.nodeChanged();
@@ -150,6 +163,8 @@ x3dom.X3DDocument.prototype._setup = function (sceneDoc, uriDocs, sceneElemPos) 
 					var parent = parentNode._x3domNode;
 					
 					if (parent && parent._nameSpace && (child instanceof Element)) {
+                        removeX3DOMBackendGraph(child);
+
                         var newNode = parent._nameSpace.setupTree(child);
 
                         parent.addChild(newNode, child.getAttribute("containerField"));
