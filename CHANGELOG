@@ -1,3 +1,200 @@
+2013-09-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : removed personal project file
+
+2013-09-09  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : update docu of BVHRefiner
+
+2013-09-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : unset dirty
+
+  * : patch to tree fix
+
+2013-09-09  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : documentation update on parameter description of BVHRefiner
+
+  * : Added documentation of BVHRefiner
+
+2013-09-09  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : Text node volume update fix
+
+2013-09-08  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : even more cleanups
+
+  * : another update fix as well as cleanups
+
+2013-09-07  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed update problem when inserting node, also did some performance opts
+  and clenups
+
+2013-09-07  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Implemented automated triangulation for all 9 mesh versions on Patch
+  component of BVHRefiner
+
+2013-09-06  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : changed second deltaT to constant multiplier
+
+  * : cleanup of events examples (used Moveable)
+
+2013-09-06  Andreas Aderhold <andreas.aderhold@igd.fraunhofer.de>
+
+  * : Implemented noBackendFound callback. Implements #129
+
+2013-09-06  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added new geometry "Patch" to BVHRefiner.js
+
+2013-09-05  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Update of neighborhood calculation and new Patch 3D component
+
+2013-09-05  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Added first draft of culling tutorial
+
+2013-09-05  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : cleanups
+
+2013-09-05  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Added calculation of neighborhood to BVHRefiner - Quadtree3D node
+
+  * : Update on BVHRefiner demo for x3dom release
+
+2013-09-05  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Add IE11 test file
+
+2013-09-04  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : update tests
+
+  * : render flags update
+
+  * : ILS coordIndex field update
+
+2013-09-04  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Small reference fix on BVHRefiner.html
+
+  * : Renaming of terrain.html to bvh_refiner.html and Terrain.js to
+  BVHRefiner.js
+
+  * : Update of comments in BVHRefiner
+
+2013-09-03  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : implemented route removal
+
+2013-09-03  Michael Englert <michael.englert@igd.fraunhofer.de>
+
+  * : Improvements and CleanUps to BVHRefiner node
+
+2013-09-02  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : fixed typos
+
+2013-09-02  Christian Stein <chrstein@gmx.net>
+
+  * : moved arc to viewarea  arc is now initated and updated from within
+  viewarea
+
+  * : bvh update
+
+  * : added experimental backend
+
+  * : moved arc fields to environmental effects
+
+  * : added frameid for bvh, small fixes
+
+2013-08-31  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : improved line picking and fixed point picking
+
+2013-08-30  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : moved most flags from scene to env
+
+  * : activated picking for LineSet
+
+  * : moved SphereSegment node to Geometry3DExt.js
+
+2013-08-29  mlimper <max.limper@igd.fraunhofer.de>
+
+  * : Minimal hack/fix for DOM mutation bug
+
+2013-08-28  Christian Stein <chrstein@gmx.net>
+
+  * : minor bug fixes  fixed culling parameter passing and jsBVH sfculling
+
+  * : added fields and cleaned up staticGroup, refactored BVH  static group now
+  controls culler choice and compile setup
+
+2013-08-27  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added EnvironmentBindable
+
+  * : pass thru button state
+
+2013-08-26  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : renamed new Geo file and added detachHandler method to Moveable object
+
+  * : moveable hang on touch fix
+
+2013-08-25  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added convenience field 'height' and fixed tessellation
+
+2013-08-23  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : both tori now oriented similarly
+
+  * : implemented missing caps and did some cleanups
+
+2013-08-18  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : more runtime fixes
+
+  * : small runtime.debug fix
+
+2013-08-15  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added callback as third param
+
+  * : complete overhaul of solidOfRevolution
+
+2013-08-14  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : impl creaseAngle 0 for REVO
+
+  * : some revo improvements
+
+  * : fixed missing side caps in certain cases
+
+  * : started solidOfRev
+
+2013-08-14  tsturm <timo.sturm@igd.fraunhofer.de>
+
+  * : Add Nozzle Primitive
+
+2013-08-13  Yvonne Jung <yjung@igd.fhg.de>
+
+  * : added code skeleton
+
+  * : finished dish primitive (ellipsoid part)
+
+  * : fixed special case for dish, where sphere section is required
+
 2013-08-12  Yvonne Jung <yjung@igd.fhg.de>
 
   * : fixed pyramid
