@@ -13,7 +13,7 @@ All relevant parameters are included in the new Environment-Bindable. To change 
 
 .. code-block:: xml
 
-    <environment viewFrustumCulling='true' smallFeatureCulling='true' smallFeatureThreshold..>
+    <environment frustumCulling='true' smallFeatureCulling='true'>
     </environment>
     
 
@@ -25,7 +25,7 @@ The most common culling technique is the viewfrustum culling controlled by the v
 ========================    ====================================    ========================    
 Setting                     Usage                                   Values                     
 ========================    ====================================    ========================    
-viewFrustumCulling          (de-)activate the culling technique     [true;false]
+frustumCulling              (de-)activate the culling technique     [true;false]
 ========================    ====================================    ========================
  	
 

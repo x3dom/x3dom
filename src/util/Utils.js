@@ -62,7 +62,7 @@ x3dom.Utils.isNumber = function(n) {
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials)
+x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials, scale)
 {
 	doc.downloadCount++;
 
@@ -73,8 +73,9 @@ x3dom.Utils.createTexture2D = function(gl, doc, src, bgnd, withCredentials)
 	image.src = src;
 	
 	image.onload = function() {
-	
-		image = x3dom.Utils.scaleImage( image );
+
+        if (scale)
+		    image = x3dom.Utils.scaleImage( image );
 		
 		if(bgnd == true) {
 			gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, true);
@@ -178,7 +179,7 @@ x3dom.Utils.generateNonIndexedTriangleData = function(indices, positions, normal
 /*****************************************************************************
 * 
 *****************************************************************************/
-x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials) 
+x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials, scale)
 {
 	var texture = gl.createTexture();
 
@@ -214,7 +215,7 @@ x3dom.Utils.createTextureCube = function(gl, doc, url, bgnd, withCredentials)
 					width = image.width;
 					height = image.height;
 				}
-				else if (width != image.width || height != image.height) {
+				else if (scale && (width != image.width || height != image.height)) {
 					x3dom.debug.logWarning("[Utils|createTextureCube] Rescaling CubeMap images, which are of different size!");
 					image = x3dom.Utils.rescaleImage(image, width, height);
 				}
@@ -311,7 +312,7 @@ x3dom.Utils.scaleImage = function(image)
 		image = canvas;
 	}
 	return image;
-}
+};
 
 
 /*****************************************************************************
@@ -537,35 +538,35 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
 	var geometry 	= shape._cf.geometry.node;
 	var appearance 	= shape._cf.appearance.node;
 	var texture 	= appearance ? appearance._cf.texture.node : null;
-	var material    = appearance ? shape._cf.appearance.node._cf.material.node : null;
+	var material    = appearance ? appearance._cf.material.node : null;
 
 	//Check if it's a composed shader
 	if (appearance && appearance._shader &&
         x3dom.isa(appearance._shader, x3dom.nodeTypes.ComposedShader)) {
 		property.CSHADER   = shape._objectID;
-        //property.CSHADER_V = shape._cf.appearance.node._shader._vertex._vf.url[0];
-        //property.CSHADER_F = shape._cf.appearance.node._shader._fragment._vf.url[0];
+        //property.CSHADER_V = appearance._shader._vertex._vf.url[0];
+        //property.CSHADER_F = appearance._shader._fragment._vf.url[0];
 	}
     else if (geometry) {
 
 		property.CSHADER			    = -1;
 		property.SOLID				    = (shape.isSolid()) ? 1 : 0;
-		property.TEXT				      = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
+		property.TEXT				    = (x3dom.isa(geometry, x3dom.nodeTypes.Text)) ? 1 : 0;
 		property.POPGEOMETRY  	  = (x3dom.isa(geometry, x3dom.nodeTypes.PopGeometry)) ? 1 : 0;
 		property.BITLODGEOMETRY	  = (x3dom.isa(geometry, x3dom.nodeTypes.BitLODGeometry)) ? 1 : 0;
 		property.IMAGEGEOMETRY	  = (x3dom.isa(geometry, x3dom.nodeTypes.ImageGeometry))  ? 1 : 0;
 		property.IG_PRECISION		  = (property.IMAGEGEOMETRY) ? geometry.numCoordinateTextures() : 0;
 		property.IG_INDEXED			  = (property.IMAGEGEOMETRY && geometry.getIndexTexture() != null) ? 1 : 0;
-		property.POINTLINE2D		  = x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.PointSet) ||
-                                x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.IndexedLineSet) ||
-                                x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polypoint2D) ||
-                                x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Polyline2D) ||
-                                x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Arc2D) ||
-                                x3dom.isa(shape._cf.geometry.node, x3dom.nodeTypes.Circle2D) ? 1 : 0;					  
+		property.POINTLINE2D		  = x3dom.isa(geometry, x3dom.nodeTypes.PointSet) ||
+                                        x3dom.isa(geometry, x3dom.nodeTypes.IndexedLineSet) ||
+                                        x3dom.isa(geometry, x3dom.nodeTypes.Polypoint2D) ||
+                                        x3dom.isa(geometry, x3dom.nodeTypes.Polyline2D) ||
+                                        x3dom.isa(geometry, x3dom.nodeTypes.Arc2D) ||
+                                        x3dom.isa(geometry, x3dom.nodeTypes.Circle2D) ? 1 : 0;
 		
 		property.APPMAT					= (appearance && (material || property.CSSHADER) ) ? 1 : 0;
 		property.SHADOW				    = (viewarea.getLightsShadow()) ? 1 : 0;
-		property.FOG				      = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
+		property.FOG				    = (viewarea._scene.getFog()._vf.visibilityRange > 0) ? 1 : 0;
 		property.CSSHADER			    = (appearance && appearance._shader && x3dom.isa(appearance._shader, x3dom.nodeTypes.CommonSurfaceShader)) ? 1 : 0;
 		property.LIGHTS				    = (!property.POINTLINE2D && appearance && (material || property.CSSHADER)) ? (viewarea.getLights().length) + (viewarea._scene.getNavigationInfo()._vf.headlight) : 0;
 		property.TEXTURED			    = (texture || property.TEXT) ? 1 : 0;
@@ -593,7 +594,6 @@ x3dom.Utils.generateProperties = function (viewarea, shape)
                                 (property.BITLODGEOMETRY && geometry.hasColor()) || 
                                 (property.POPGEOMETRY    && geometry.hasColor()) ||
                                 (geometry._vf.color !== undefined && geometry._vf.color.length > 0)) ? 1 : 0;
-
 	}
 	
 	property.toIdentifier = function() { 

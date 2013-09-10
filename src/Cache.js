@@ -21,16 +21,12 @@ x3dom.Cache = function () {
 /**
  * Returns a Texture 2D
  */
-x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, withCredentials) {
+x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, withCredentials, scale) {
     var textureIdentifier = url;
 
     if (this.textures[textureIdentifier] === undefined) {
-        this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd, withCredentials);
+        this.textures[textureIdentifier] = x3dom.Utils.createTexture2D(gl, doc, url, bgnd, withCredentials, scale);
     }
-    /* else
-     {
-     x3dom.debug.logInfo("[Cache] Using Texture from Cache");
-     }*/
 
     return this.textures[textureIdentifier];
 };
@@ -38,7 +34,7 @@ x3dom.Cache.prototype.getTexture2D = function (gl, doc, url, bgnd, withCredentia
 /**
  * Returns a Cube Texture
  */
-x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, withCredentials) {
+x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, withCredentials, scale) {
     var textureIdentifier = "";
 
     for (var i = 0; i < url.length; ++i) {
@@ -46,12 +42,8 @@ x3dom.Cache.prototype.getTextureCube = function (gl, doc, url, bgnd, withCredent
     }
 
     if (this.textures[textureIdentifier] === undefined) {
-        this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd, withCredentials);
+        this.textures[textureIdentifier] = x3dom.Utils.createTextureCube(gl, doc, url, bgnd, withCredentials, scale);
     }
-    /* else
-     {
-     x3dom.debug.logInfo("[Cache] Using Texture from Cache");
-     }*/
 
     return this.textures[textureIdentifier];
 };
@@ -125,15 +117,16 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
     //Generate Properties
     var properties = x3dom.Utils.generateProperties(viewarea, shape);
 
-    var shaderID = properties.id;//toIdentifier();
+    var shaderID = properties.id;
 
     if (this.shaders[shaderID] === undefined) {
         var program;
         if (properties.CSHADER >= 0) {
             program = new x3dom.shader.ComposedShader(gl, shape);
         } else {
-            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ? new x3dom.shader.DynamicMobileShader(gl, properties) :
-                new x3dom.shader.DynamicShader(gl, properties);
+            program = (x3dom.caps.MOBILE && !properties.CSSHADER) ?
+                            new x3dom.shader.DynamicMobileShader(gl, properties) :
+                            new x3dom.shader.DynamicShader(gl, properties);
         }
         this.shaders[shaderID] = x3dom.Utils.wrapProgram(gl, program, shaderID);
     }
@@ -147,7 +140,7 @@ x3dom.Cache.prototype.getDynamicShader = function (gl, viewarea, shape) {
 x3dom.Cache.prototype.getShaderByProperties = function (gl, shape, properties) {
 
     //Get shaderID
-    var shaderID = properties.id;//toIdentifier();
+    var shaderID = properties.id;
 
     if (this.shaders[shaderID] === undefined)
     {

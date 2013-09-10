@@ -81,19 +81,20 @@ x3dom.registerNodeType(
 
 
             /*************************************************************/
-            // finer left triangulation
+            // finer bottom triangulation
             indices = [];
-            for (y = countY - 3; y < countY - 2; y += 2) {
-                for (x = 0; x < countX - 2; x += 2) {
+
+            for (y = 0; y < countY - 2; y += 2) {
+                for (x = 0; x < 2; x += 2) {
                     indices.push((x) + y * countX);
                     indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x) + (y + 1) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x) + (y + 1) * countX);
                     indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 2) * countX);
+                    indices.push((x) + (y + 2) * countX);
 
-                    indices.push((x + 1) + (y + 2) * countX);
+                    indices.push((x) + (y + 2) * countX);
                     indices.push((x + 1) + (y + 1) * countX);
                     indices.push((x + 2) + (y + 2) * countX);
 
@@ -107,8 +108,50 @@ x3dom.registerNodeType(
                 }
             }
 
-            for (y = 0; y < countY - 4; y += 2) {
-                for (x = 0; x < countX - 2; x += 2) {
+            for (y = 0; y < countY - 2; y += 2) {
+                for (x = 2; x < countX - 2; x += 2) {
+                    indices.push((x + 2) + (y + 2) * countX);
+                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x) + y * countX);
+
+                    indices.push((x) + y * countX);
+                    indices.push((x + 2) + y * countX);
+                    indices.push((x + 2) + (y + 2) * countX);
+                }
+            }
+
+            this._indexBuffers.push(indices);
+            
+            /*************************************************************/
+            // finer top triangulation
+            indices = [];
+
+            for (y = 0; y < countY - 2; y += 2) {
+                for (x = countX - 3; x < countX - 2; x += 2) {
+                    indices.push((x) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + (y + 2) * countX);
+
+                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + (y + 2) * countX);
+
+                    indices.push((x + 2) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + (y + 1) * countX);
+
+                    indices.push((x + 2) + (y + 1) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + y * countX);
+
+                    indices.push((x + 2) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + y * countX);
+                }
+            }
+
+            for (y = 0; y < countY - 2; y += 2) {
+                for (x = 0; x < countX - 4; x += 2) {
                     indices.push((x + 2) + (y + 2) * countX);
                     indices.push((x) + (y + 2) * countX);
                     indices.push((x) + y * countX);
@@ -165,20 +208,19 @@ x3dom.registerNodeType(
             this._indexBuffers.push(indices);
 
             /*************************************************************/
-            // finer bottom triangulation
+            // finer left triangulation
             indices = [];
-
-            for (y = 0; y < countY - 2; y += 2) {
-                for (x = 0; x < 2; x += 2) {
+            for (y = countY - 3; y < countY - 2; y += 2) {
+                for (x = 0; x < countX - 2; x += 2) {
                     indices.push((x) + y * countX);
                     indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 1) * countX);
+                    indices.push((x) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 1) * countX);
+                    indices.push((x) + (y + 2) * countX);
                     indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 2) * countX);
 
-                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 2) * countX);
                     indices.push((x + 1) + (y + 1) * countX);
                     indices.push((x + 2) + (y + 2) * countX);
 
@@ -192,8 +234,8 @@ x3dom.registerNodeType(
                 }
             }
 
-            for (y = 0; y < countY - 2; y += 2) {
-                for (x = 2; x < countX - 2; x += 2) {
+            for (y = 0; y < countY - 4; y += 2) {
+                for (x = 0; x < countX - 2; x += 2) {
                     indices.push((x + 2) + (y + 2) * countX);
                     indices.push((x) + (y + 2) * countX);
                     indices.push((x) + y * countX);
@@ -205,147 +247,7 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
-
-            /*************************************************************/
-            // finer top triangulation
-            indices = [];
-
-            for (y = 0; y < countY - 2; y += 2) {
-                for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
-
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
-
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
-
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
-
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
-                }
-            }
-
-            for (y = 0; y < countY - 2; y += 2) {
-                for (x = 0; x < countX - 4; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
-
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
-                }
-            }
-
-            this._indexBuffers.push(indices);
-
-            /*************************************************************/
-                // finer topRight triangulation
-            indices = [];
-
-            // finer right
-            for (y = 0; y < 2; y += 2) {
-                for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
-
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
-
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
-
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
-
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + y * countX);
-
-                    indices.push((x + 1) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
-                }
-            }
-
-            for (y = 2; y < countY - 2; y += 2) {
-                for (x = 0; x < countX - 4; x += 2) {
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x) + y * countX);
-
-                    indices.push((x) + y * countX);
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
-                }
-            }
-
-            //  finer top
-            for (y = 2; y < countY - 2; y += 2) {
-                for (x = countX - 3; x < countX - 2; x += 2) {
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
-
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
-
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 1) * countX);
-
-                    indices.push((x + 2) + (y + 1) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
-
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
-                }
-            }
-
-            // finer right
-            for (y = 0; y < 2; y += 2) {
-                for (x = 0; x < countX - 4; x += 2) {
-
-                    indices.push((x) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + (y + 2) * countX);
-
-                    indices.push((x) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + (y + 2) * countX);
-
-                    indices.push((x + 2) + (y + 2) * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 2) + y * countX);
-
-                    indices.push((x + 2) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x + 1) + y * countX);
-
-                    indices.push((x + 1) + y * countX);
-                    indices.push((x + 1) + (y + 1) * countX);
-                    indices.push((x) + y * countX);
-                }
-            }
-
-            this._indexBuffers.push(indices);
-
+            
             /*************************************************************/
             // finer topLeft triangulation
             indices = [];
@@ -439,9 +341,9 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
-
+            
             /*************************************************************/
-                // finer bottomLeft triangulation
+            // finer bottomLeft triangulation
             indices = [];
 
             for (y = countY - 3; y < countY - 2; y += 2) {
@@ -535,7 +437,7 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
-
+            
             /*************************************************************/
             // finer bottomRight triangulation
             indices = [];
@@ -632,6 +534,105 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+
+            /*************************************************************/
+            // finer topRight triangulation
+            indices = [];
+
+            // finer right
+            for (y = 0; y < 2; y += 2) {
+                for (x = countX - 3; x < countX - 2; x += 2) {
+                    indices.push((x) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + (y + 2) * countX);
+
+                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + (y + 2) * countX);
+
+                    indices.push((x + 2) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + (y + 1) * countX);
+
+                    indices.push((x + 2) + (y + 1) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + y * countX);
+
+                    indices.push((x + 2) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 1) + y * countX);
+
+                    indices.push((x + 1) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + y * countX);
+                }
+            }
+
+            for (y = 2; y < countY - 2; y += 2) {
+                for (x = 0; x < countX - 4; x += 2) {
+                    indices.push((x + 2) + (y + 2) * countX);
+                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x) + y * countX);
+
+                    indices.push((x) + y * countX);
+                    indices.push((x + 2) + y * countX);
+                    indices.push((x + 2) + (y + 2) * countX);
+                }
+            }
+
+            //  finer top
+            for (y = 2; y < countY - 2; y += 2) {
+                for (x = countX - 3; x < countX - 2; x += 2) {
+                    indices.push((x) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + (y + 2) * countX);
+
+                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + (y + 2) * countX);
+
+                    indices.push((x + 2) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + (y + 1) * countX);
+
+                    indices.push((x + 2) + (y + 1) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + y * countX);
+
+                    indices.push((x + 2) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + y * countX);
+                }
+            }
+
+            // finer right
+            for (y = 0; y < 2; y += 2) {
+                for (x = 0; x < countX - 4; x += 2) {
+
+                    indices.push((x) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + (y + 2) * countX);
+
+                    indices.push((x) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + (y + 2) * countX);
+
+                    indices.push((x + 2) + (y + 2) * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 2) + y * countX);
+
+                    indices.push((x + 2) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x + 1) + y * countX);
+
+                    indices.push((x + 1) + y * countX);
+                    indices.push((x + 1) + (y + 1) * countX);
+                    indices.push((x) + y * countX);
+                }
+            }
+
+            this._indexBuffers.push(indices);
+
 
             //Set current indexbuffer
             this._mesh._indices[0] = this._indexBuffers[0];
@@ -1577,11 +1578,21 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         composedShader.addChild(colorTextureField, 'fields');
         colorTextureField.nodeChanged();
 
+        var heightTexProp = new x3dom.nodeTypes.TextureProperties(ctx);
+        heightTexProp._vf.boundaryModeS = "CLAMP_TO_EDGE";
+        heightTexProp._vf.boundaryModeT = "CLAMP_TO_EDGE";
+        heightTexProp._vf.boundaryModeR = "CLAMP_TO_EDGE";
+        heightTexProp._vf.minificationFilter = "NEAREST";
+        heightTexProp._vf.magnificationFilter = "NEAREST";
+        heightTexture.addChild(heightTexProp, "textureProperties");
+        heightTexture.nodeChanged();
+        
         // create height-data
         heightTexture._nameSpace = bvhRefiner._nameSpace;
         heightTexture._vf.url[0] = imageAddressHeight;
         heightTexture._vf.repeatT = false;
         heightTexture._vf.repeatS = false;
+        heightTexture._vf.scale = false;
         textures.addChild(heightTexture, 'texture');
         heightTexture.nodeChanged();
         var heightTextureField = new x3dom.nodeTypes.Field(ctx);
@@ -1624,7 +1635,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // create shape with geometry and appearance data
         shape.addChild(appearance);
         appearance.nodeChanged();
-        shape.addChild(geometry);
+        shape.addChild(new x3dom.nodeTypes.Patch(ctx));
         geometry.nodeChanged();
 
         // add shape to bvhRefiner object
@@ -1666,15 +1677,17 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // on the bottom side of the quad
         neighbors[2] = levelStartID + (nodeNumber + c) % (Math.pow(4, level));
 
-        if (columnNr === 0) { neighbors[0] = sid; }
-        if (rowNr === 0) { neighbors[2] = sid; }
-        if (columnNr === c - 1) { neighbors[1] = sid; }
-        if (rowNr === c - 1) { neighbors[3] = sid; }
+        if (columnNr === 0) { neighbors[0] = -1; }
+        if (rowNr === 0) { neighbors[3] = -1; }
+        if (columnNr === c - 1) { neighbors[1] = -1; }
+        if (rowNr === c - 1) { neighbors[2] = -1; }
         
-        /*alert("NodeID: " + sid + " ::> (" + neighbors[0] + ", " 
-                                          + neighbors[1] + ", " 
-                                          + neighbors[2] + ", " 
-                                          + neighbors[3] + ")");*/
+        
+        
+        /*console.log("NodeID: " + sid + " ::> (" + neighbors[0] + ", " 
+                                                + neighbors[1] + ", " 
+                                                + neighbors[2] + ", " 
+                                                + neighbors[3] + ")");*/
     }
 
 
@@ -1820,6 +1833,15 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
     
     this.Shape = function(){
         return shape;
+    };
+    
+    
+    
+    /* 
+     * Returns if the children of this node exist and are ready to render
+     */
+    this.ChildrenReady = function(){
+        return childrenReadyState;
     };
     
     
@@ -1980,7 +2002,8 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // Calculation if neighbors levels 
         for (var i = 0; i < neighbors.length; i++){
             if (bvhRefiner.nodeList[neighbors[i]] !== undefined) {
-                if (bvhRefiner.nodeList[neighbors[i]].hasHigherRenderLevel(drawableCollection))
+                if (bvhRefiner.nodeList[neighbors[i]].ChildrenReady() && 
+                    bvhRefiner.nodeList[neighbors[i]].hasHigherRenderLevel(drawableCollection))
                     hasNeighborHigherResolution.push(true);
                 else 
                     hasNeighborHigherResolution.push(false);
@@ -2021,11 +2044,9 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             indiceNumber = 2;
         }
         
-        if (indiceNumber !== lastIndice){
+        if (lastIndice !== indiceNumber){
             shape._cf.geometry.node.setLevel(indiceNumber);
             lastIndice = indiceNumber;
-
-            drawableCollection.viewarea._doc.needRender = true; // just a try to force re-render...
         }
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
     }
