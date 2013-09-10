@@ -1592,6 +1592,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         heightTexture._vf.url[0] = imageAddressHeight;
         heightTexture._vf.repeatT = false;
         heightTexture._vf.repeatS = false;
+        heightTexture._vf.scale = false;
         textures.addChild(heightTexture, 'texture');
         heightTexture.nodeChanged();
         var heightTextureField = new x3dom.nodeTypes.Field(ctx);
@@ -2044,7 +2045,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         }
         
         if (lastIndice !== indiceNumber){
-            //shape._cf.geometry.node.setLevel(indiceNumber);
+            shape._cf.geometry.node.setLevel(indiceNumber);
             lastIndice = indiceNumber;
         }
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
