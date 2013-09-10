@@ -517,7 +517,12 @@ x3dom.registerNodeType(
 
             this.addField_SFBool(ctx, 'loop', false);
             this.addField_SFFloat(ctx, 'speed', 1.0);
-            // TODO; implement startTime, stopTime,...
+            // TODO; implement the following fields...
+            this.addField_SFTime(ctx, 'pauseTime', 0);
+            this.addField_SFFloat(ctx, 'pitch', 1.0);
+            this.addField_SFTime(ctx, 'resumeTime', 0);
+            this.addField_SFTime(ctx, 'startTime', 0);
+            this.addField_SFTime(ctx, 'stopTime', 0);
         }
     )
 );
