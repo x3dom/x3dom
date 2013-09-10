@@ -24,7 +24,7 @@ Example of a terrain with a WMTS conform dataset
                 textureFormat='png'
                 normalFormat='png' 
                 mode="3d" 
-                submode="wmts" >
+                submode="wmts">
     </BVHRefiner>
 
 
@@ -32,30 +32,30 @@ Parameter descriptions
 ----------------------
 The following table lists the parameters currently supported:
 
-==================    =========================    ===========     =================================================
+==================    =========================    ===========    =================================================
   Parameter            Values                       Default          Description
-==================    =========================    ===========     =================================================
-maxDepth              0, 1, ... n                  3                 maximum depth of the tree, or dataset
-minDepth              0, 1, ... n                  0                 minimum depth of the tree that should be rendered
-                                                                     as soon as possible
-interactionDepth      0, 1, ... n                  maxDepth          maximum rendered depth during user interaction
-                                                                     with the scene
-subdivision           0, 1, ... 125                1 1               resolution of a rendered tile
-size                  0, 1 ... n                   1 1               size of the entire terrain
-factor                0, 1, ... n                  1.0               factor affects the distance to create or render
-                                                                     the next level (the higher the more higher the
-                                                                     performance, the lower the more higher the quality)
-maxElevation          0.0, 0.1, ... n              1.0               maximum displacement in y direction 
-elevationUrl          string                       ""                Url to dataset of displacement data
-textureUrl            string                       ""                Url to dataset of surface texture data
-normalUrl             string                       ""                Url to dataset of normal data
-elevationFormat       png, jpg, gif ...            png               Data format of displacement dataset
-textureFormat         png, jpg, gif ...            png               Data format of surface texture dataset
-normalFormat          png, jpg, gif ...            png               Data format of normal dataset
-mode                  2D, 3D, bin, bvh             3D                2D (planes), 3D (displaced y-coordinate of 2D-Planes),
-                                                                     bin (binary files, WMTS), bvh (binary files, nonWMTS)
-submode               WMTS, nonWMTS                WMTS              utilized dataset (WMTS, nonWMTS)
-==================    =========================    ===========     =================================================
+==================    =========================    ===========    =================================================
+maxDepth              0, 1, ... n                  3              maximum depth of the tree, or dataset
+minDepth              0, 1, ... n                  0              minimum depth of the tree that should be rendered
+                                                                  as soon as possible
+interactionDepth      0, 1, ... n                  maxDepth       maximum rendered depth during user interaction
+                                                                  with the scene
+subdivision           0, 1, ... 125                1 1            resolution of a rendered tile
+size                  0, 1 ... n                   1 1            size of the entire terrain
+factor                0, 1, ... n                  1.0            factor affects the distance to create or render
+                                                                  the next level (the higher the more higher the
+                                                                  performance, the lower the more higher the quality)
+maxElevation          0.0, 0.1, ... n              1.0            maximum displacement in y direction 
+elevationUrl          string                       ""             Url to dataset of displacement data
+textureUrl            string                       ""             Url to dataset of surface texture data
+normalUrl             string                       ""             Url to dataset of normal data
+elevationFormat       png, jpg, gif ...            png            Data format of displacement dataset
+textureFormat         png, jpg, gif ...            png            Data format of surface texture dataset
+normalFormat          png, jpg, gif ...            png            Data format of normal dataset
+mode                  2D, 3D, bin, bvh             3D             2D (planes), 3D (displaced y-coordinate of 2D-Planes),
+                                                                  bin (binary files, WMTS), bvh (binary files, nonWMTS)
+submode               WMTS, nonWMTS                WMTS           utilized dataset (WMTS, nonWMTS)
+==================    =========================    ===========    =================================================
 
 
 Currently supported dataset formats
@@ -86,8 +86,8 @@ The nonWMTS addressing-scheme is as easy as the WMTS addressing scheme. Every le
    :align: center
    :scale: 50%
 
-Example of Puget Sound that was rendered with BVHRefiner node
--------------------------------------------------------------
+Example of Puget Sound rendered with BVHRefiner node
+----------------------------------------------------
 
 .. image:: /_static/tutorial/bvh_refiner/puget_sound.jpg
    :align: center
