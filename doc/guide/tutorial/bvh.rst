@@ -12,19 +12,19 @@ Example of a terrain with a WMTS conform dataset
 
     <BVHRefiner maxDepth='5'
                 minDepth='2'  
-           	interactionDepth='4'  
+                interactionDepth='4'  
                 subdivision='128 128'
-           	size='4096 4096' 
-           	factor='10'
-           	maxElevation='410' 
+                size='4096 4096' 
+                factor='10'
+                maxElevation='410' 
                 elevationUrl="Puget Sound WMTS/elevation" 
                 textureUrl="Puget Sound WMTS/satellite"
                 normalUrl="Puget Sound WMTS/normal"
                 elevationFormat='png' 
-           	textureFormat='png'
-           	normalFormat='png' 
+                textureFormat='png'
+                normalFormat='png' 
                 mode="3d" 
-           	submode="wmts" >
+                submode="wmts" >
     </BVHRefiner>
 
 
@@ -35,15 +35,15 @@ The following table lists the parameters currently supported:
 ==================    =========================    ===========     =================================================
   Parameter            Values                       Default          Description
 ==================    =========================    ===========     =================================================
-maxDepth	      0, 1, ... n                  3                 maximum depth of the tree, or dataset
-minDepth              0, 1, ... n                  0                 minimum depth of the tree that should be rendered 
-                                                                     as soon as possible  
-interactionDepth      0, 1, ... n                  maxDepth          maximum rendered depth during user interaction 
+maxDepth              0, 1, ... n                  3                 maximum depth of the tree, or dataset
+minDepth              0, 1, ... n                  0                 minimum depth of the tree that should be rendered
+                                                                     as soon as possible
+interactionDepth      0, 1, ... n                  maxDepth          maximum rendered depth during user interaction
                                                                      with the scene
-subdivision           0, 1, ... 125                1 1               resolution of a rendered tile                           
+subdivision           0, 1, ... 125                1 1               resolution of a rendered tile
 size                  0, 1 ... n                   1 1               size of the entire terrain
-factor                0, 1, ... n                  1.0               factor affects the distance to create or render 
-                                                                     the next level (the higher the more higher the 
+factor                0, 1, ... n                  1.0               factor affects the distance to create or render
+                                                                     the next level (the higher the more higher the
                                                                      performance, the lower the more higher the quality)
 maxElevation          0.0, 0.1, ... n              1.0               maximum displacement in y direction 
 elevationUrl          string                       ""                Url to dataset of displacement data
@@ -52,7 +52,7 @@ normalUrl             string                       ""                Url to data
 elevationFormat       png, jpg, gif ...            png               Data format of displacement dataset
 textureFormat         png, jpg, gif ...            png               Data format of surface texture dataset
 normalFormat          png, jpg, gif ...            png               Data format of normal dataset
-mode                  2D, 3D, bin, bvh             3D                2D (planes), 3D (displaced y-coordinate of 2D-Planes), 
+mode                  2D, 3D, bin, bvh             3D                2D (planes), 3D (displaced y-coordinate of 2D-Planes),
                                                                      bin (binary files, WMTS), bvh (binary files, nonWMTS)
 submode               WMTS, nonWMTS                WMTS              utilized dataset (WMTS, nonWMTS)
 ==================    =========================    ===========     =================================================
