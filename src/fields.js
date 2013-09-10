@@ -924,6 +924,48 @@ x3dom.fields.SFMatrix4f.prototype.inverse = function () {
             );
 };
 
+/**
+ * Returns an array of euler angles (in radians) - this must be a rotation matrix!
+ */
+x3dom.fields.SFMatrix4f.prototype.getEulerAngles = function() {
+    var theta_1, theta_2, theta;
+    var phi_1, phi_2, phi;
+    var psi_1, psi_2, psi;
+    var cos_theta_1, cos_theta_2;
+
+    if (Math.abs(this._20) != 1.0) {
+        theta_1 = -Math.asin(this._20);
+        theta_2 = Math.PI - theta_1;
+
+        cos_theta_1 = Math.cos(theta_1);
+        cos_theta_2 = Math.cos(theta_2);
+
+        psi_1   = Math.atan2(this._21 / cos_theta_1, this._22 / cos_theta_1);
+        psi_2   = Math.atan2(this._21 / cos_theta_2, this._22 / cos_theta_2);
+
+        phi_1   = Math.atan2(this._10 / cos_theta_1, this._00 / cos_theta_1);
+        phi_2   = Math.atan2(this._10 / cos_theta_2, this._00 / cos_theta_2);
+
+        return [psi_1, theta_1, phi_1,
+                psi_2, theta_2, phi_2];
+    }
+    else {
+        phi = 0;
+
+        if (this._20 == -1.0) {
+            theta = Math.PI / 2.0;
+            psi   = phi + Math.atan2(this._01, this._02);
+        }
+        else {
+            theta = -(Math.PI / 2.0);
+            psi   = -phi + Math.atan2(-this._01, -this._02);
+        }
+
+        return [psi, theta, phi,
+                psi, theta, phi];
+    }
+};
+
 x3dom.fields.SFMatrix4f.prototype.toString = function () {
     return '\n' +
 		this._00.toFixed(6)+', '+this._01.toFixed(6)+', '+
