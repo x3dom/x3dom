@@ -40,7 +40,7 @@ minDepth              0, 1, ... n                  0              minimum depth 
 interactionDepth      0, 1, ... n                  maxDepth       maximum rendered depth during user interaction with scene
 subdivision           0, 1, ... 125                1 1            resolution of a rendered tile
 size                  0, 1 ... n                   1 1            size of the entire terrain
-factor                0, 1, ... n                  1.0            factor affects the distance to create or render the next level (the higher the more higher the performance, the lower the more higher the quality)
+factor                0, 1, ... n                  1.0            factor affects the distance to create or render the next level (the higher the higher the performance, the lower the higher the quality)
 maxElevation          0.0, 0.1, ... n              1.0            maximum displacement in y direction 
 elevationUrl          string                       ""             Url to dataset of displacement data
 textureUrl            string                       ""             Url to dataset of surface texture data
