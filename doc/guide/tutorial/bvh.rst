@@ -10,7 +10,6 @@ The BVHRefiner is a component that refines and loads hierarchical data dynamical
 
 .. image:: /_static/tutorial/bvh_refiner/puget_sound.jpg
    :align: center
-   :scale: 51.5%
 
 
 .. code-block:: xml
