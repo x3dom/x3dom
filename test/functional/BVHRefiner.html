@@ -279,7 +279,8 @@
   <body style='width:100%; height:100%; float: left; border:0; margin:0; padding:0; background-color: #000;' onload="">
     
     <X3D id="x3d" showStat='false' showLog='false' style='width:100%; height:100%; float:left; border:0; margin:0; padding:0;'>
-      <Scene DEF='scene' frustumCulling='true' sortTrans="true">
+      <Scene DEF='scene'>
+          <Environment frustumCulling='true'></Environment>
         
         <!-- for viewing this example disable web security on your browser 
              because of cross origin problems -->
@@ -303,7 +304,7 @@
                     mode="3d" >
         </BVHRefiner>
         
-        <Viewpoint zNear="0.1" zFar="10000" position="-35.37671 357.67245 42.79925" 
+        <Viewpoint zNear="0.1" zFar="10000" position="-35.37671 357.67245 42.79925"
                    orientation="-0.41397 0.64145 0.64589 3.92558"
                    centerOfRotation="908.8588619817687 -48.190695936235045 0.1262787826381171">
         </Viewpoint>

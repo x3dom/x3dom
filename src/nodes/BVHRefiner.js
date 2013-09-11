@@ -1651,12 +1651,10 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // setting max and min in z-direction to get the complete volume
         cullObject.volume.max.z = bvhRefiner._vf.maxElevation;
         cullObject.volume.min.z = 0;
-        
-        cullObject.volume.center = new x3dom.fields.SFVec3f((cullObject.volume.min.x + cullObject.volume.max.x) / 2.0,
-                                                            (cullObject.volume.min.y + cullObject.volume.max.y) / 2.0,
-                                                            (cullObject.volume.min.z + cullObject.volume.max.z) / 2.0);
+
+        cullObject.volume.center = cullObject.volume.min.add(cullObject.volume.max).multiply(0.5);
         cullObject.volume.transform(nodeTransformation);
-        shape._graph.volume = cullObject.volume;
+        //shape._graph.volume = cullObject.volume;
         
         calculateNeighborhood();
     }
@@ -1933,16 +1931,18 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         // definition the actual transformation of the node
         cullObject.localMatrix = nodeTransformation;   
         // Checks the actual loading state of itself and children if something wasn't loaded in last frame
-        if (!readyState || !childrenReadyState) { updateLoadingState(drawableCollection, nodeTransformation); }
+        if (!readyState || !childrenReadyState) {
+            updateLoadingState(drawableCollection, nodeTransformation);
+        }
         var mat_view = drawableCollection.viewMatrix;
         var vPos = mat_view.multMatrixPnt(nodeTransformation.multMatrixPnt(position));
         var distanceToCamera = Math.sqrt(Math.pow(vPos.x, 2) + Math.pow(vPos.y, 2) + Math.pow(vPos.z, 2));
-            
-        //if (readyState && (planeMask = drawableCollection.cull(nodeTransformation, cullObject, singlePath, planeMask)) > 0) {
-        if (readyState && vPos.z - (cullObject.volume.diameter / 2) < 0) {  
-            if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) * resizeFac / bvhRefiner._vf.factor)  || level < bvhRefiner._vf.minDepth) {
-                if (bvhRefiner.view.isMoving() && children.length === 0 || 
-                    bvhRefiner.view.isMoving() && level >= bvhRefiner._vf.interactionDepth){
+
+        //if (readyState && (planeMask = drawableCollection.cull(nodeTransformation, shape.graphState(), singlePath, planeMask)) > 0) {
+        if (readyState && vPos.z - (cullObject.volume.diameter / 2) < 0) {
+            if ((distanceToCamera < Math.pow((bvhRefiner._vf.maxDepth - level), 2) * resizeFac / bvhRefiner._vf.factor) ||
+                    level < bvhRefiner._vf.minDepth) {
+                if (bvhRefiner.view.isMoving() && (children.length == 0 || level >= bvhRefiner._vf.interactionDepth)){
                     render(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
                 }
                 else {
