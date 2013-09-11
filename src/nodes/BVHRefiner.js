@@ -27,6 +27,7 @@ x3dom.registerNodeType(
             var subx = this._vf.subdivision.x, suby = this._vf.subdivision.y;
 
             this._indexBuffers = [];
+            this._indexBufferTriangulationParts = [];
             var indices;
 
             var x = 0, y = 0;
@@ -70,15 +71,10 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
-
-            /*************************************************************/
-            /*************************************************************/
-            /* TODO: check creation of special mesh triangulation on
-             * right creation of base mesh component
-             */
-            /*************************************************************/
-            /*************************************************************/
-
+            this._indexBufferTriangulationParts.push({ 
+                offset: 0, 
+                count: subx * suby * 6
+            });
 
             /*************************************************************/
             // finer bottom triangulation
@@ -121,6 +117,11 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + suby * 9
+            });
             
             /*************************************************************/
             // finer top triangulation
@@ -163,6 +164,11 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + suby * 9
+            });
 
             /*************************************************************/
             // finer right triangulation
@@ -206,7 +212,12 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
-
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + subx * 9
+            });
+            
             /*************************************************************/
             // finer left triangulation
             indices = [];
@@ -247,6 +258,11 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + subx * 9
+            });
             
             /*************************************************************/
             // finer topLeft triangulation
@@ -341,6 +357,11 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + subx * 9 + (suby - 1) * 9 + 3
+            });
             
             /*************************************************************/
             // finer bottomLeft triangulation
@@ -437,6 +458,11 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + subx * 9 + (suby - 1) * 9 + 3
+            });
             
             /*************************************************************/
             // finer bottomRight triangulation
@@ -534,6 +560,11 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + subx * 9 + (suby - 1) * 9 + 3
+            });
 
             /*************************************************************/
             // finer topRight triangulation
@@ -632,6 +663,11 @@ x3dom.registerNodeType(
             }
 
             this._indexBuffers.push(indices);
+            this._indexBufferTriangulationParts.push({ 
+                offset: this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].offset + 
+                        this._indexBufferTriangulationParts[this._indexBufferTriangulationParts.length - 1].count * 2, 
+                count: subx * suby * 6 + subx * 9 + (suby - 1) * 9 + 3
+            });
 
 
             //Set current indexbuffer
@@ -642,14 +678,18 @@ x3dom.registerNodeType(
             this._mesh._numCoords = this._mesh._positions[0].length / 3;
         },
         {
-            setLevel: function (level) {
-                this._mesh._indices[0] = this._indexBuffers[level];
+            setTriangulation: function (triangulationIndex) {
+                this._mesh._indices[0] = this._indexBuffers[triangulationIndex];
                 this._mesh._numFaces = this._mesh._indices[0].length / 3;
-                this.invalidateVolume();
 
                 Array.forEach(this._parentNodes, function (node) {
                     node.setGeoDirty();     // also invalidates
                 });
+            },
+
+            
+            getTriangulationAttributes: function(triangulationIndex){
+                return this._indexBufferTriangulationParts[triangulationIndex];
             }
         }
     )
@@ -1521,6 +1561,8 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
     var cullObject = {};
     // last indice number of mesh
     var lastIndice = 0;
+    // triangulation attributes --> offset and count of triangulation buffer
+    var triangulationAttributes = null;
 
 
 
@@ -1578,6 +1620,7 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         composedShader.addChild(colorTextureField, 'fields');
         colorTextureField.nodeChanged();
 
+        // create height-data
         var heightTexProp = new x3dom.nodeTypes.TextureProperties(ctx);
         heightTexProp._vf.boundaryModeS = "CLAMP_TO_EDGE";
         heightTexProp._vf.boundaryModeT = "CLAMP_TO_EDGE";
@@ -1586,8 +1629,6 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         heightTexProp._vf.magnificationFilter = "NEAREST";
         heightTexture.addChild(heightTexProp, "textureProperties");
         heightTexture.nodeChanged();
-        
-        // create height-data
         heightTexture._nameSpace = bvhRefiner._nameSpace;
         heightTexture._vf.url[0] = imageAddressHeight;
         heightTexture._vf.repeatT = false;
@@ -1636,7 +1677,6 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
         shape.addChild(appearance);
         appearance.nodeChanged();
         shape.addChild(new x3dom.nodeTypes.Patch(ctx));
-        geometry.nodeChanged();
 
         // add shape to bvhRefiner object
         bvhRefiner.addChild(shape);
@@ -2054,10 +2094,12 @@ function QuadtreeNode3D(ctx, bvhRefiner, level, nodeNumber, nodeTransformation,
             indiceNumber = 2;
         }
         
-        if (lastIndice !== indiceNumber){
-            shape._cf.geometry.node.setLevel(indiceNumber);
+        if (lastIndice !== indiceNumber || triangulationAttributes === null){
+            shape._cf.geometry.node.setTriangulation(indiceNumber);
+            triangulationAttributes = shape._cf.geometry.node.getTriangulationAttributes(indiceNumber);
             lastIndice = indiceNumber;
         }
+        drawableCollection.triangulationAttributes = triangulationAttributes;
         shape.collectDrawableObjects(nodeTransformation, drawableCollection, singlePath, invalidateCache, planeMask);
     }
 
